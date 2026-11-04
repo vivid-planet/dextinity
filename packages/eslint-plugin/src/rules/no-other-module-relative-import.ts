@@ -3,7 +3,7 @@ import path from "path";
 
 function parentDirCount(dir: string) {
     const match = dir.match(/^(\.\.\/)*/);
-    return match[0].length / 3;
+    return (match?.[0].length ?? 0) / 3;
 }
 
 export default {
@@ -30,7 +30,11 @@ export default {
             ImportDeclaration: function (node) {
                 const options = context.options[0] ?? { sourceRoot: "./src", sourceRootAlias: "@src" };
 
-                const importParentDirCount = parentDirCount(node.source.value.toString());
+                // An import source is always a string literal
+                if (typeof node.source.value !== "string") return;
+                const importPath = node.source.value;
+
+                const importParentDirCount = parentDirCount(importPath);
                 if (!importParentDirCount) {
                     // import is not relative
                     return;
@@ -57,7 +61,7 @@ export default {
                         node,
                         message: "Avoid relative import from other module",
                         fix: (fixer) => {
-                            const importPathRelativeToSourceDir = path.relative(sourceDir, `${fileDir}/${node.source.value.toString()}`);
+                            const importPathRelativeToSourceDir = path.relative(sourceDir, `${fileDir}/${importPath}`);
                             return fixer.replaceText(node.source, `"${options.sourceRootAlias}/${importPathRelativeToSourceDir}"`);
                         },
                     });

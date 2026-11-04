@@ -1,7 +1,7 @@
 import { css } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
-import { type GQLFocalPoint } from "../../graphql.generated";
+import type { GQLFocalPoint } from "../../graphql.generated";
 
 export const ImageContainer = styled("div")`
     .ReactCrop__crop-selection {

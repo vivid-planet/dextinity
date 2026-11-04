@@ -1,10 +1,10 @@
 import { type OperationVariables, useApolloClient } from "@apollo/client";
 import { useState } from "react";
 
-import { type Table } from "../Table";
-import { type ITableQueryApi } from "../TableQueryContext";
+import type { Table } from "../Table";
+import type { ITableQueryApi } from "../TableQueryContext";
 import { createExcelExportDownload, type IExcelExportOptions } from "./createExcelExportDownload";
-import { type IExportApi } from "./IExportApi";
+import type { IExportApi } from "./IExportApi";
 
 interface IOptions<IVariables> {
     variablesForPage: (page: number) => IVariables;
@@ -58,7 +58,7 @@ export function useExportPagedTableQuery<IVariables extends OperationVariables>(
                     const progressInPercent = (i / (toPage - fromPage)) * 100;
                     setProgress(progressInPercent);
                 }
-                createExcelExportDownload<any>(tableRef.props.columns, exportData, excelOptions);
+                await createExcelExportDownload<any>(tableRef.props.columns, exportData, excelOptions);
             } catch {
                 throw new Error("Error happend while exporting data");
             } finally {

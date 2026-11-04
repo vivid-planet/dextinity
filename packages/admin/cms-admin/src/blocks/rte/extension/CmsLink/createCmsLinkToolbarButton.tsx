@@ -1,6 +1,6 @@
-import { CancelButton, DeleteButton, OkayButton } from "@comet/admin";
-import { Link } from "@comet/admin-icons";
-import { ControlButton, findEntityInCurrentSelection, findTextInCurrentSelection, selectionIsInOneBlock } from "@comet/admin-rte";
+import { CancelButton, DeleteButton, OkayButton } from "@dextinity/admin";
+import { Link } from "@dextinity/admin-icons";
+import { ControlButton, findEntityInCurrentSelection, findTextInCurrentSelection, selectionIsInOneBlock } from "@dextinity/admin-rte";
 // eslint-disable-next-line no-restricted-imports
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -11,7 +11,7 @@ import { EditorState, type EntityInstance, RichUtils } from "draft-js";
 import { type MouseEvent, type ReactElement, useCallback, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
-import { type BlockInterface, type BlockState } from "../../../types";
+import type { BlockInterface, BlockState } from "../../../types";
 import { ENTITY_TYPE } from "./Decorator";
 
 interface IProps {
@@ -121,12 +121,12 @@ export function createCmsLinkToolbarButton({ link: LinkBlock }: CreateCmsLinkToo
                 <DialogTitle>
                     {linkEntity ? (
                         <FormattedMessage
-                            id="comet.rteExtensions.cmsLink.editLink"
+                            id="dextinity.rteExtensions.cmsLink.editLink"
                             defaultMessage='Edit link "{link}"'
                             values={{ link: selectedText }}
                         />
                     ) : (
-                        <FormattedMessage id="comet.rteExtensions.cmsLink.insertLink" defaultMessage="Insert link" />
+                        <FormattedMessage id="dextinity.rteExtensions.cmsLink.insertLink" defaultMessage="Insert link" />
                     )}
                 </DialogTitle>
                 <DialogContent>
@@ -137,7 +137,7 @@ export function createCmsLinkToolbarButton({ link: LinkBlock }: CreateCmsLinkToo
                     <ButtonContainer>
                         {linkEntity && (
                             <DeleteButton onClick={handleRemove}>
-                                <FormattedMessage id="comet.rteExtensions.cmsLink.removeLink" defaultMessage="Delete Link" />
+                                <FormattedMessage id="dextinity.rteExtensions.cmsLink.removeLink" defaultMessage="Delete Link" />
                             </DeleteButton>
                         )}
                         <OkayButton onClick={handleUpdate} />

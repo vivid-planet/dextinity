@@ -1,13 +1,13 @@
 import { gql } from "@apollo/client";
-import { Field } from "@comet/admin";
-import { Crop } from "@comet/admin-icons";
+import { Field } from "@dextinity/admin";
+import { Crop } from "@dextinity/admin-icons";
 import { styled } from "@mui/material/styles";
-import { deepClone } from "@mui/x-data-grid/utils/utils";
+import { deepClone } from "@mui/x-data-grid/internals";
 import { useCallback, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
-import { type PixelImageBlockData, type PixelImageBlockInput } from "../blocks.generated";
-import { useCometConfig } from "../config/CometConfigContext";
+import type { PixelImageBlockData, PixelImageBlockInput } from "../blocks.generated";
+import { useDextinityConfig } from "../config/DextinityConfigContext";
 import { useDamBasePath } from "../dam/config/damConfig";
 import { useDamAcceptedMimeTypes } from "../dam/config/useDamAcceptedMimeTypes";
 import { FileField } from "../form/file/FileField";
@@ -15,7 +15,8 @@ import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
 import { EditImageDialog } from "./image/EditImageDialog";
-import { type GQLImageBlockDamFileQuery, type GQLImageBlockDamFileQueryVariables } from "./PixelImageBlock.generated";
+import { pixelImageBlockFragment } from "./PixelImageBlock.fragment";
+import type { GQLImageBlockDamFileQuery, GQLImageBlockDamFileQueryVariables } from "./PixelImageBlock.generated";
 import { BlockCategory, type BlockDependency, type BlockInterface } from "./types";
 
 export type ImageBlockState = Omit<PixelImageBlockData, "urlTemplate">;
@@ -24,7 +25,9 @@ function createPreviewUrl(
     { damFile, cropArea }: ImageBlockState,
     { apiUrl, damBasePath, resize }: { apiUrl: string; resize?: { width: number; height: number }; damBasePath: string },
 ): string {
-    if (!damFile || !damFile.image) return "";
+    if (!damFile || !damFile.image) {
+        return "";
+    }
 
     const urlTemplateRoute = `/${damBasePath}/images/preview/$fileId/crop:$crop/resize:$resizeWidth:$resizeHeight/$fileName`;
     const imageCropArea = cropArea ? cropArea : damFile.image.cropArea;
@@ -50,7 +53,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
 
     name: "Image",
 
-    displayName: <FormattedMessage id="comet.blocks.image" defaultMessage="Image" />,
+    displayName: <FormattedMessage id="dextinity.blocks.image" defaultMessage="Image" />,
 
     defaultValues: () => ({
         file: undefined,
@@ -94,19 +97,12 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
                         altText
                         archived
                         image {
-                            width
-                            height
-                            cropArea {
-                                focalPoint
-                                width
-                                height
-                                x
-                                y
-                            }
+                            ...PixelImageBlockImage
                         }
                         fileUrl
                     }
                 }
+                ${pixelImageBlockFragment}
             `,
             variables: { id: output.damFileId },
         });
@@ -149,7 +145,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
 
     AdminComponent: ({ state, updateState }) => {
         const [open, setOpen] = useState(false);
-        const { apiUrl } = useCometConfig();
+        const { apiUrl } = useDextinityConfig();
         const damBasePath = useDamBasePath();
         const { filteredAcceptedMimeTypes } = useDamAcceptedMimeTypes();
 
@@ -177,12 +173,12 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
                         name="damFile"
                         component={FileField}
                         fullWidth
-                        buttonText={<FormattedMessage id="comet.blocks.image.chooseImage" defaultMessage="Choose image" />}
+                        buttonText={<FormattedMessage id="dextinity.blocks.image.chooseImage" defaultMessage="Choose image" />}
                         allowedMimetypes={filteredAcceptedMimeTypes.pixelImage}
                         preview={<PreviewImage src={previewUrl} width="70" height="70" />}
                         menuActions={[
                             {
-                                label: <FormattedMessage id="comet.blocks.image.cropImage" defaultMessage="Crop image" />,
+                                label: <FormattedMessage id="dextinity.blocks.image.cropImage" defaultMessage="Crop image" />,
                                 icon: <Crop />,
                                 onClick: handleCropClick,
                             },
@@ -234,8 +230,12 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
     extractTextContents: (state) => {
         const contents = [];
 
-        if (state.damFile?.altText) contents.push(state.damFile.altText);
-        if (state.damFile?.title) contents.push(state.damFile.title);
+        if (state.damFile?.altText) {
+            contents.push(state.damFile.altText);
+        }
+        if (state.damFile?.title) {
+            contents.push(state.damFile.title);
+        }
 
         return contents;
     },

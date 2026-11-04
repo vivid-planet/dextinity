@@ -8,7 +8,7 @@ import {
     ChildBlockInput,
     createBlock,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { HeadingBlock } from "@src/common/blocks/heading.block";
 import { IsEnum } from "class-validator";
 
@@ -38,6 +38,4 @@ class StandaloneHeadingBlockInput extends BlockInput {
     }
 }
 
-export const StandaloneHeadingBlock = createBlock(StandaloneHeadingBlockData, StandaloneHeadingBlockInput, {
-    name: "StandaloneHeading",
-});
+export const StandaloneHeadingBlock = createBlock(StandaloneHeadingBlockData, StandaloneHeadingBlockInput, "StandaloneHeading");

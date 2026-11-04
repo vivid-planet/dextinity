@@ -1,11 +1,12 @@
+import { describe, expect, it, vi } from "vitest";
+
 import { SKIP_AUTH_SERVICE } from "../util/auth-service.interface";
 import { createBasicAuthService } from "./basic.auth-service";
 
 describe("createBasicAuthService", () => {
     const createService = (username: string, password: string) => createBasicAuthService({ username, password });
     const instantianteService = (username: string, password: string) => new (createBasicAuthService({ username, password }))();
-    const mockRequest = (authorizationHeader: string) =>
-        jest.fn().mockReturnValue({ header: jest.fn().mockImplementation(() => authorizationHeader) })();
+    const mockRequest = (authorizationHeader: string) => vi.fn().mockReturnValue({ header: vi.fn().mockImplementation(() => authorizationHeader) })();
 
     it("throws error on wrong configuration", async () => {
         expect(() => createService("vivid", "")).toThrowError();

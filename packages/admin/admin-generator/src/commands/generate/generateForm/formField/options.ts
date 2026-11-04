@@ -1,7 +1,7 @@
-import { type Adornment, type FormConfig, type FormFieldConfig } from "../../generate-command";
+import type { Adornment, FormConfig, FormFieldConfig } from "../../generate-command";
 import { camelCaseToHumanReadable } from "../../utils/camelCaseToHumanReadable";
 import { convertConfigImport } from "../../utils/convertConfigImport";
-import { type Imports } from "../../utils/generateImportsCode";
+import type { Imports } from "../../utils/generateImportsCode";
 import { generateFormattedMessage } from "../../utils/intl";
 import { isGeneratorConfigImport } from "../../utils/runtimeTypeGuards";
 
@@ -22,7 +22,7 @@ const buildAdornmentData = ({ adornmentData }: { adornmentData: Adornment }): Ad
         adornmentString = `<${adornmentData.icon}Icon />`;
         adornmentImport = {
             name: `${adornmentData.icon} as ${adornmentData.icon}Icon`,
-            importPath: "@comet/admin-icons",
+            importPath: "@dextinity/admin-icons",
         };
     } else if (typeof adornmentData.icon === "object") {
         if (isGeneratorConfigImport(adornmentData.icon)) {
@@ -37,7 +37,7 @@ const buildAdornmentData = ({ adornmentData }: { adornmentData: Adornment }): Ad
             />`;
             adornmentImport = {
                 name: `${adornmentData.icon.name} as ${adornmentData.icon.name}Icon`,
-                importPath: "@comet/admin-icons",
+                importPath: "@dextinity/admin-icons",
             };
         }
     }

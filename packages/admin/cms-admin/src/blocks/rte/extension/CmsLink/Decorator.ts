@@ -1,4 +1,4 @@
-import { type DraftDecorator } from "draft-js";
+import type { DraftDecorator } from "draft-js";
 
 import { EditorComponent } from "./EditorComponent";
 

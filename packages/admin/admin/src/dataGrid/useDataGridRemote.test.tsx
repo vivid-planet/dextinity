@@ -1,6 +1,4 @@
-import { type GridSortDirection } from "@mui/x-data-grid";
-import { type GridApiCommunity } from "@mui/x-data-grid/models/api/gridApiCommunity";
-import { type GridFilterModel } from "@mui/x-data-grid/models/gridFilterModel";
+import type { GridApi, GridFilterModel, GridSortDirection } from "@mui/x-data-grid";
 import { createMemoryHistory } from "history";
 import queryString from "query-string";
 import { Router } from "react-router";
@@ -18,7 +16,7 @@ const mockedFilterModel: GridFilterModel = {
 const mockedPage = 17;
 const mockedPageSize = 42;
 
-const mockedApi: GridApiCommunity = {} as GridApiCommunity;
+const mockedApi: GridApi = {} as GridApi;
 
 describe("useDataGridRemote", () => {
     it("reads sort param from URL and returns correct value", () => {

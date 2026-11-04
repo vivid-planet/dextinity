@@ -1,6 +1,6 @@
 "use client";
-import { ListBlock, type PropsWithData } from "@comet/site-nextjs";
-import { type StageBlockData } from "@src/blocks.generated";
+import { ListBlock, type PropsWithData } from "@dextinity/site-nextjs";
+import type { StageBlockData } from "@src/blocks.generated";
 
 import { BasicStageBlock } from "./BasicStageBlock";
 

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { type Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { isFunction } from "@nestjs/common/utils/shared.utils";
 import { Field } from "@nestjs/graphql";
-import { type ClassDecoratorFactory } from "@nestjs/graphql/dist/interfaces/class-decorator-factory.interface";
-import { METADATA_FACTORY_NAME } from "@nestjs/graphql/dist/plugin/plugin-constants";
-import { getFieldsAndDecoratorForType } from "@nestjs/graphql/dist/schema-builder/utils/get-fields-and-decorator.util";
-import { applyFieldDecorators } from "@nestjs/graphql/dist/type-helpers/type-helpers.utils";
+import type { ClassDecoratorFactory } from "@nestjs/graphql/dist/interfaces/class-decorator-factory.interface";
+import { METADATA_FACTORY_NAME } from "@nestjs/graphql/dist/plugin/plugin-constants.js";
+import { getFieldsAndDecoratorForType } from "@nestjs/graphql/dist/schema-builder/utils/get-fields-and-decorator.util.js";
+import { applyFieldDecorators } from "@nestjs/graphql/dist/type-helpers/type-helpers.utils.js";
 import { inheritPropertyInitializers, inheritTransformationMetadata, inheritValidationMetadata } from "@nestjs/mapped-types";
 
 import { IsUndefinable } from "../validators/is-undefinable";

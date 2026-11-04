@@ -1,4 +1,4 @@
-import { type EditorState } from "draft-js";
+import type { EditorState } from "draft-js";
 
 export default function selectionIsInOneBlock(editorState: EditorState): boolean {
     const selection = editorState.getSelection();

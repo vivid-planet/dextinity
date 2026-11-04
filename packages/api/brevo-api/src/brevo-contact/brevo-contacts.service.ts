@@ -82,12 +82,7 @@ export class BrevoContactsService {
             }
 
             if (contactSource) {
-                const created = await this.brevoContactsApiService.createBrevoContactWithoutDoubleOptIn(
-                    { email, attributes },
-                    brevoIds,
-                    templateId,
-                    scope,
-                );
+                const created = await this.brevoContactsApiService.createBrevoContactWithoutDoubleOptIn({ email, attributes }, brevoIds, scope);
                 if (created) {
                     await this.brevoEmailImportLogService.addContactToLogs(email, responsibleUserId, scope, contactSource);
                     return SubscribeResponse.SUCCESSFUL;

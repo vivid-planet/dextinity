@@ -9,7 +9,7 @@ import {
     createBlock,
     DamImageBlock,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { LinkListBlock } from "@src/common/blocks/link-list.block";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
 import { IsString } from "class-validator";

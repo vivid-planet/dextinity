@@ -1,15 +1,14 @@
 import { Badge } from "@mui/material";
-import { type ListItemProps } from "@mui/material/ListItem";
-import { type ReactNode } from "react";
+import type { ListItemProps } from "@mui/material/ListItem";
+import type { ReactNode } from "react";
 import { Link, type LinkProps, Route } from "react-router-dom";
 
-import { type ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { MainNavigationItem, type MainNavigationItemProps } from "./Item";
 
-interface MainNavigationRouterLinkItemStandardProps
-    extends ThemedComponentBaseProps<{
-        badge: typeof Badge;
-    }> {
+interface MainNavigationRouterLinkItemStandardProps extends ThemedComponentBaseProps<{
+    badge: typeof Badge;
+}> {
     to: string;
     badgeContent?: ReactNode;
 }

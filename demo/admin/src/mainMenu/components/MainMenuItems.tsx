@@ -1,11 +1,11 @@
 import { gql } from "@apollo/client";
-import { MainContent, StackLink, Table, TableQuery, Toolbar, ToolbarAutomaticTitleItem, useTableQuery } from "@comet/admin";
-import { Edit } from "@comet/admin-icons";
-import { ContentScopeIndicator, useContentScope } from "@comet/cms-admin";
+import { MainContent, StackLink, Table, TableQuery, Toolbar, ToolbarAutomaticTitleItem, useTableQuery } from "@dextinity/admin";
+import { Edit } from "@dextinity/admin-icons";
+import { ContentScopeIndicator, useContentScope } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 
-import { type GQLMainMenuQuery, type GQLMainMenuQueryVariables } from "./MainMenuItems.generated";
+import type { GQLMainMenuQuery, GQLMainMenuQueryVariables } from "./MainMenuItems.generated";
 
 const mainMenuQuery = gql`
     query MainMenu($contentScope: PageTreeNodeScopeInput!) {

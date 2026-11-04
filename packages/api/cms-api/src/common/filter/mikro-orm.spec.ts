@@ -1,4 +1,5 @@
 import { raw } from "@mikro-orm/postgresql";
+import { describe, expect, it, vi } from "vitest";
 
 import { BooleanFilter } from "./boolean.filter";
 import { DateTimeFilter } from "./date-time.filter";
@@ -8,9 +9,9 @@ import { StringFilter } from "./string.filter";
 
 // Mock the raw helper to workaround different indices in the keys.
 // See https://github.com/mikro-orm/mikro-orm/blob/master/packages/core/src/utils/RawQueryFragment.ts#L21.
-jest.mock("@mikro-orm/postgresql", () => ({
-    ...jest.requireActual("@mikro-orm/postgresql"),
-    raw: jest.fn((argument) => {
+vi.mock("@mikro-orm/postgresql", async () => ({
+    ...(await vi.importActual("@mikro-orm/postgresql")),
+    raw: vi.fn((argument) => {
         if (typeof argument === "function") {
             return argument("alias");
         }

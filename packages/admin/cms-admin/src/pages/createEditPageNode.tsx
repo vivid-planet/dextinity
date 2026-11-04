@@ -1,37 +1,37 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
-import { CheckboxField, ErrorScope, Field, FieldContainer, FinalForm, FinalFormInput, FinalFormSelect, Loading, Tooltip } from "@comet/admin";
-import { Info } from "@comet/admin-icons";
+import { CheckboxField, ErrorScope, Field, FieldContainer, FinalForm, FinalFormInput, FinalFormSelect, Loading, Tooltip } from "@dextinity/admin";
+import { Info } from "@dextinity/admin-icons";
 import { Box, Divider, IconButton, MenuItem, Typography } from "@mui/material";
-import { type Mutator } from "final-form";
+import type { Mutator } from "final-form";
 import setFieldTouched from "final-form-set-field-touched";
-import { type DocumentNode } from "graphql";
+import type { DocumentNode } from "graphql";
 import debounce from "p-debounce";
-import { type ReactNode, useCallback, useEffect, useState } from "react";
+import { type JSX, type ReactNode, useCallback, useEffect, useState } from "react";
 import { FormSpy } from "react-final-form";
 import { FormattedMessage, useIntl } from "react-intl";
-import slugify from "slugify";
 import { useDebounce } from "use-debounce";
 
 import { useContentLanguage } from "../contentLanguage/useContentLanguage";
-import { type DocumentInterface, type DocumentType } from "../documents/types";
+import type { DocumentInterface, DocumentType } from "../documents/types";
 import { SyncFields } from "../form/SyncFields";
-import { type GQLSlugAvailability } from "../graphql.generated";
+import type { GQLSlugAvailability } from "../graphql.generated";
 import { useRedirectsScope } from "../redirects/redirectsConfig";
 import { usePageTreeScope } from "./config/usePageTreeScope";
-import {
-    type GQLCreatePageNodeMutation,
-    type GQLCreatePageNodeMutationVariables,
-    type GQLEditPageNodeQuery,
-    type GQLEditPageNodeQueryVariables,
-    type GQLEditPageParentNodeQuery,
-    type GQLEditPageParentNodeQueryVariables,
-    type GQLIsPathAvailableQuery,
-    type GQLIsPathAvailableQueryVariables,
-    type GQLRedirectSourceAvailableQuery,
-    type GQLRedirectSourceAvailableQueryVariables,
-    type GQLUpdatePageNodeMutation,
-    type GQLUpdatePageNodeMutationVariables,
+import type {
+    GQLCreatePageNodeMutation,
+    GQLCreatePageNodeMutationVariables,
+    GQLEditPageNodeQuery,
+    GQLEditPageNodeQueryVariables,
+    GQLEditPageParentNodeQuery,
+    GQLEditPageParentNodeQueryVariables,
+    GQLIsPathAvailableQuery,
+    GQLIsPathAvailableQueryVariables,
+    GQLRedirectSourceAvailableQuery,
+    GQLRedirectSourceAvailableQueryVariables,
+    GQLUpdatePageNodeMutation,
+    GQLUpdatePageNodeMutationVariables,
 } from "./createEditPageNode.generated";
+import { transformToSlug } from "./pageTree/transformToSlug";
 
 type SerializedInitialValues = string;
 
@@ -193,7 +193,7 @@ export function createEditPageNode({
         const validateSlug = async (value: string) => {
             if (!isValidSlug(value)) {
                 return intl.formatMessage({
-                    id: "comet.pages.pages.page.validate.slug.error",
+                    id: "dextinity.pages.pages.page.validate.slug.error",
                     defaultMessage: "Slug contains forbidden symbols",
                 });
             }
@@ -202,14 +202,14 @@ export function createEditPageNode({
 
                 if (pathAvailability === "Taken") {
                     return intl.formatMessage({
-                        id: "comet.pages.pages.page.validate.path.taken",
+                        id: "dextinity.pages.pages.page.validate.path.taken",
                         defaultMessage: "Slug leads to duplicated path",
                     });
                 }
 
                 if (pathAvailability === "Reserved") {
                     return intl.formatMessage({
-                        id: "comet.pages.pages.page.validate.path.block",
+                        id: "dextinity.pages.pages.page.validate.path.block",
                         defaultMessage: "Slug leads to reserved path",
                     });
                 }
@@ -307,7 +307,7 @@ export function createEditPageNode({
                                 )}
                                 <Field
                                     label={intl.formatMessage({
-                                        id: "comet.pages.pages.page.name",
+                                        id: "dextinity.pages.pages.page.name",
                                         defaultMessage: "Name",
                                     })}
                                     name="name"
@@ -320,7 +320,7 @@ export function createEditPageNode({
                                 {slug !== "home" && (
                                     <Field
                                         label={intl.formatMessage({
-                                            id: "comet.pages.pages.page.slug",
+                                            id: "dextinity.pages.pages.page.slug",
                                             defaultMessage: "Slug",
                                         })}
                                         name="slug"
@@ -357,7 +357,7 @@ export function createEditPageNode({
                                             <>
                                                 <FieldContainer
                                                     label={intl.formatMessage({
-                                                        id: "comet.pages.pages.page.path",
+                                                        id: "dextinity.pages.pages.page.path",
                                                         defaultMessage: "Complete Path",
                                                     })}
                                                     variant="horizontal"
@@ -377,7 +377,7 @@ export function createEditPageNode({
                                                             label={
                                                                 <>
                                                                     <FormattedMessage
-                                                                        id="comet.pages.pages.page.createAutomaticRedirects.headline"
+                                                                        id="dextinity.pages.pages.page.createAutomaticRedirects.headline"
                                                                         defaultMessage="Redirects"
                                                                     />
                                                                     <Tooltip
@@ -386,14 +386,14 @@ export function createEditPageNode({
                                                                                 <Typography variant="body2">
                                                                                     <strong>
                                                                                         <FormattedMessage
-                                                                                            id="comet.pages.pages.page.createAutomaticRedirects.tooltip.title"
+                                                                                            id="dextinity.pages.pages.page.createAutomaticRedirects.tooltip.title"
                                                                                             defaultMessage="Generate redirects"
                                                                                         />
                                                                                     </strong>
                                                                                 </Typography>
                                                                                 <Typography variant="body2">
                                                                                     <FormattedMessage
-                                                                                        id="comet.pages.pages.page.createAutomaticRedirects.tooltip.text"
+                                                                                        id="dextinity.pages.pages.page.createAutomaticRedirects.tooltip.text"
                                                                                         defaultMessage="You have changed the slug. Therefore redirects should be created, so that users and search engines automatically land at the correct page, even if they visit the old path. Check this box, if you already have published or shared {numberOfDescendants, plural, =0 {this page} other {these pages}}."
                                                                                         values={{
                                                                                             numberOfDescendants,
@@ -420,7 +420,7 @@ export function createEditPageNode({
                                                                             <Typography variant="body1">
                                                                                 <FormattedMessage
                                                                                     tagName="span"
-                                                                                    id="comet.pages.pages.page.createAutomaticRedirects.label"
+                                                                                    id="dextinity.pages.pages.page.createAutomaticRedirects.label"
                                                                                     defaultMessage="Create {numberOfDescendants, plural, =0 {a redirect} other {redirects}}"
                                                                                     values={{
                                                                                         numberOfDescendants,
@@ -431,7 +431,7 @@ export function createEditPageNode({
                                                                                 <Typography variant="body2" color="rgba(0, 0, 0, 0.6)">
                                                                                     <FormattedMessage
                                                                                         tagName="span"
-                                                                                        id="comet.pages.pages.page.createAutomaticRedirects.labelSubline"
+                                                                                        id="dextinity.pages.pages.page.createAutomaticRedirects.labelSubline"
                                                                                         defaultMessage="for this page and all its child pages"
                                                                                     />
                                                                                 </Typography>
@@ -448,7 +448,7 @@ export function createEditPageNode({
                                                     <FieldContainer variant="horizontal">
                                                         <Typography>
                                                             <FormattedMessage
-                                                                id="comet.pages.pages.page.redirectAlreadyExists"
+                                                                id="dextinity.pages.pages.page.redirectAlreadyExists"
                                                                 defaultMessage="The slug was changed, but a redirect for the old path already exists."
                                                             />
                                                         </Typography>
@@ -465,7 +465,7 @@ export function createEditPageNode({
 
                                 <Field
                                     label={intl.formatMessage({
-                                        id: "comet.pages.pages.page.documentType",
+                                        id: "dextinity.pages.pages.page.documentType",
                                         defaultMessage: "Document Type",
                                     })}
                                     name="documentType"
@@ -486,11 +486,11 @@ export function createEditPageNode({
                                 {!disableHideInMenu && (
                                     <CheckboxField
                                         fieldLabel={intl.formatMessage({
-                                            id: "comet.pages.pages.page.menuVisibility",
+                                            id: "dextinity.pages.pages.page.menuVisibility",
                                             defaultMessage: "Menu Visibility",
                                         })}
                                         label={intl.formatMessage({
-                                            id: "comet.pages.pages.page.hideInMenu",
+                                            id: "dextinity.pages.pages.page.hideInMenu",
                                             defaultMessage: "Hide in Menu",
                                         })}
                                         name="hideInMenu"
@@ -542,14 +542,6 @@ interface FormValues {
     hideInMenu: boolean;
     createAutomaticRedirectsOnSlugChange?: boolean;
 }
-
-const transformToSlug = (name: string, locale: string) => {
-    let slug = slugify(name, { replacement: "-", lower: true, locale });
-    // Remove everything except unreserved characters and percent encoding (https://tools.ietf.org/html/rfc3986#section-2.1)
-    // This is necessary because slugify does not remove all reserved characters per default (e.g. "@")
-    slug = slug.replace(/[^a-zA-Z0-9-._~]/g, "");
-    return slug;
-};
 
 const isValidSlug = (value: string) => {
     return /^[a-zA-Z0-9][a-zA-Z0-9-_]*$/.test(value);

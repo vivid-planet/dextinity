@@ -1,7 +1,7 @@
 import { Injectable, Scope } from "@nestjs/common";
 
 import { ExtractBlockData } from "../blocks/block";
-import { ExternalLinkBlock } from "../blocks/ExternalLinkBlock";
+import { ExternalLinkBlock } from "../blocks/externalLink/external-link.block";
 import { InternalLinkBlock } from "../page-tree/blocks/internal-link.block";
 import { PageTreeReadApiService } from "../page-tree/page-tree-read-api.service";
 import { RedirectsLinkBlock } from "./redirects.module";

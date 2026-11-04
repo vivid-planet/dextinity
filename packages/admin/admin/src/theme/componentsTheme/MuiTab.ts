@@ -1,7 +1,7 @@
 import { tabClasses } from "@mui/material";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
-import { type GetMuiComponentTheme } from "./getComponentsTheme";
+import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
 export const getMuiTab: GetMuiComponentTheme<"MuiTab"> = (component, { palette, breakpoints }) => ({
     ...component,

@@ -1,4 +1,4 @@
-import { type GQLPageTreeNodeScope } from "@src/graphql.generated";
+import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
 
 type CreateSitePathOptions = {
     path: string;

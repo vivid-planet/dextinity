@@ -1,4 +1,4 @@
-import { type ImgHTMLAttributes } from "react";
+import type { ImgHTMLAttributes } from "react";
 
 import { generateImageUrl, parseAspectRatio } from "./image.utils";
 

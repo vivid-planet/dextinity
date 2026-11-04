@@ -1,4 +1,4 @@
-import { type ContentScopeValues } from "../Provider";
+import type { ContentScopeValues } from "../Provider";
 
 /**
  * Groups objects into arrays based on their keys.

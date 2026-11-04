@@ -1,0 +1,7 @@
+.root {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s100);
+    margin-top: var(--spacing-s100);
+    color: var(--contact-form-text-error);
+}

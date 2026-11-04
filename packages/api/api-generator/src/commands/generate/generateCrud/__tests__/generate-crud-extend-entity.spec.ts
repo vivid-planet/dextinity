@@ -1,7 +1,8 @@
 import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field } from "@nestjs/graphql";
-import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage";
-import { v4 as uuid } from "uuid";
+import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
+import { randomUUID } from "crypto";
+import { describe, expect, it } from "vitest";
 
 import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
 import { generateCrud } from "../generate-crud";
@@ -22,7 +23,7 @@ export abstract class TimestampEntity extends BaseEntity {
 @Entity()
 export class TestEntityWithTimestamps extends TimestampEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     foo: string;
@@ -39,14 +40,13 @@ describe("GenerateCrudInputExtendEntity", () => {
             }),
         );
 
-        const out = await generateCrud(
-            { targetDirectory: __dirname, requiredPermission: testPermission },
-            orm.em.getMetadata().get("TestEntityWithTimestamps"),
-        );
+        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithTimestamps"));
         const formattedOut = await formatGeneratedFiles(out);
 
         const file = formattedOut.find((file) => file.name === "dto/test-entity-with-timestamps.filter.ts");
-        if (!file) throw new Error("File not found");
+        if (!file) {
+            throw new Error("File not found");
+        }
 
         const source = parseSource(file.content);
 

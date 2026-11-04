@@ -1,4 +1,4 @@
-import { type RefObject } from "react";
+import type { RefObject } from "react";
 
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
@@ -8,5 +8,5 @@ export interface IPagingInfo {
     fetchPreviousPage?: () => void;
     totalPages?: number | null;
     currentPage?: number;
-    attachTableRef: (ref: RefObject<HTMLDivElement | undefined>) => void;
+    attachTableRef: (ref: RefObject<HTMLDivElement | undefined | null>) => void;
 }

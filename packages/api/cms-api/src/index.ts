@@ -1,9 +1,9 @@
 import "reflect-metadata";
 
 export { AccessLogModule } from "./access-log/access-log.module";
-export { DisableCometGuards } from "./auth/decorators/disable-comet-guards.decorator";
+export { DisableDextinityGuards } from "./auth/decorators/disable-dextinity-guards.decorator";
 export { GetCurrentUser } from "./auth/decorators/get-current-user.decorator";
-export { CometAuthGuard } from "./auth/guards/comet.guard";
+export { DextinityAuthGuard } from "./auth/guards/dextinity.guard";
 export { createAuthResolver } from "./auth/resolver/auth.resolver";
 export { createBasicAuthService } from "./auth/services/basic.auth-service";
 export { createJwtAuthService, JwtPayload, JwtToUserServiceInterface } from "./auth/services/jwt.auth-service";
@@ -11,12 +11,8 @@ export { createSitePreviewAuthService } from "./auth/services/site-preview.auth-
 export { createStaticUserAuthService } from "./auth/services/static-authed-user.auth-service";
 export { createAuthGuardProviders } from "./auth/util/auth-guard.providers";
 export { AuthServiceInterface } from "./auth/util/auth-service.interface";
-export { BlobStorageAzureConfig } from "./blob-storage/backends/azure/blob-storage-azure.config";
-export { BlobStorageAzureStorage } from "./blob-storage/backends/azure/blob-storage-azure.storage";
 export { BlobStorageBackendInterface, CreateFileOptions, StorageMetaData } from "./blob-storage/backends/blob-storage-backend.interface";
 export { BlobStorageBackendService } from "./blob-storage/backends/blob-storage-backend.service";
-export { BlobStorageFileConfig } from "./blob-storage/backends/file/blob-storage-file.config";
-export { BlobStorageFileStorage } from "./blob-storage/backends/file/blob-storage-file.storage";
 export { BlobStorageConfig } from "./blob-storage/blob-storage.config";
 export { BlobStorageModule } from "./blob-storage/blob-storage.module";
 export { ScaledImagesCacheService } from "./blob-storage/cache/scaled-images-cache.service";
@@ -35,6 +31,8 @@ export {
     BlockMetaFieldKind,
     BlockMetaInterface,
     BlockMetaLiteralFieldKind,
+    BlockMetaTipTap,
+    BlockMetaTipTapStyledNode,
     BlockTransformerServiceInterface,
     BlockWarning,
     ChildBlockInfo,
@@ -63,7 +61,7 @@ export { AnnotationBlockMeta, BlockField } from "./blocks/decorators/field";
 export { RootBlock } from "./blocks/decorators/root-block";
 export { RootBlockEntity } from "./blocks/decorators/root-block-entity";
 export { EmailLinkBlock } from "./blocks/email-link.block";
-export { ExternalLinkBlock } from "./blocks/ExternalLinkBlock";
+export { ExternalLinkBlock } from "./blocks/externalLink/external-link.block";
 export { ColumnsBlockFactory } from "./blocks/factories/columns-block.factory";
 export {
     BaseBlocksBlockItemData,
@@ -88,6 +86,7 @@ export { createOptionalBlock, OptionalBlockInputInterface } from "./blocks/facto
 export { createRichTextBlock } from "./blocks/factories/createRichTextBlock";
 export { createSeoBlock, type SeoBlockInputInterface, SitemapPageChangeFrequency, SitemapPagePriority } from "./blocks/factories/createSeoBlock";
 export { createSpaceBlock } from "./blocks/factories/createSpaceBlock";
+export { createTableBlock } from "./blocks/factories/createTableBlock";
 export { createTextImageBlock, ImagePosition } from "./blocks/factories/createTextImageBlock";
 export { createTextLinkBlock } from "./blocks/factories/createTextLinkBlock";
 export type { BlockFactoryNameOrOptions } from "./blocks/factories/types";
@@ -104,9 +103,18 @@ export { PhoneLinkBlock } from "./blocks/phone-link.block";
 export { RootBlockType } from "./blocks/root-block-type";
 export { RootBlockDataScalar } from "./blocks/rootBlocks/root-block-data.scalar";
 export { RootBlockInputScalar } from "./blocks/rootBlocks/root-block-input.scalar";
-export { getSearchTextFromBlock, SearchText, WeightedSearchText } from "./blocks/search/get-search-text";
+export { blockToMikroOrmFullText, getSearchTextFromBlock, SearchText, WeightedSearchText } from "./blocks/search/get-search-text";
 export { SpaceBlock } from "./blocks/SpaceBlock/SpaceBlock";
+export {
+    createTipTapRichTextBlock,
+    type CreateTipTapRichTextBlockOptions,
+    type TipTapRichTextBlockContent,
+    type TipTapTextBlock,
+    type TipTapTextBlockStyle,
+    type TipTapTextBlockTag,
+} from "./blocks/tipTap/createTipTapRichTextBlock";
 export { transformToBlockSaveIndex } from "./blocks/transformToBlockSaveIndex/transformToBlockSaveIndex";
+export { IsLinkTarget } from "./blocks/validator/is-link-target.validator";
 export { VimeoVideoBlock } from "./blocks/vimeo-video.block";
 export { YouTubeVideoBlock } from "./blocks/YouTubeVideoBlock/you-tube-video.block";
 export { BUILDS_CONFIG, BUILDS_MODULE_OPTIONS } from "./builds/builds.constants";
@@ -129,13 +137,13 @@ export {
 } from "./common/decorators/crud-generator.decorator";
 export { getRequestContextHeadersFromRequest, RequestContext, RequestContextInterface } from "./common/decorators/request-context.decorator";
 export { getRequestFromExecutionContext } from "./common/decorators/utils";
-export { EntityInfo, EntityInfoServiceInterface } from "./common/entityInfo/entity-info.decorator";
 export { CorePermission } from "./common/enum/core-permission.enum";
-export { CometException } from "./common/errors/comet.exception";
-export { CometEntityNotFoundException } from "./common/errors/entity-not-found.exception";
+export { DextinityException } from "./common/errors/dextinity.exception";
+export { DextinityEntityNotFoundException } from "./common/errors/entity-not-found.exception";
 export { ExceptionFilter } from "./common/errors/exception.filter";
 export { ExceptionInterceptor } from "./common/errors/exception.interceptor";
-export { CometValidationException } from "./common/errors/validation.exception";
+export { FormattedValidationError, formatValidationErrors } from "./common/errors/format-validation-errors";
+export { DextinityValidationException } from "./common/errors/validation.exception";
 export { ValidationExceptionFactory } from "./common/errors/validation.exception-factory";
 export { BooleanFilter } from "./common/filter/boolean.filter";
 export { DateFilter } from "./common/filter/date.filter";
@@ -176,23 +184,26 @@ export { DamImageBlock } from "./dam/blocks/dam-image.block";
 export { PixelImageBlock } from "./dam/blocks/pixel-image.block";
 export { SvgImageBlock } from "./dam/blocks/svg-image.block";
 export { DamVideoBlock } from "./dam/blocks/video/dam-video.block";
-export { CometImageResolutionException } from "./dam/common/errors/image-resolution.exception";
+export { DextinityImageResolutionException } from "./dam/common/errors/image-resolution.exception";
 export { damDefaultAcceptedMimetypes } from "./dam/common/mimeTypes/dam-default-accepted-mimetypes";
+export { type DamFileCategory, getDamFileCategory } from "./dam/common/mimeTypes/dam-file-category";
 export { DamConfig } from "./dam/dam.config";
 export { DAM_CONFIG } from "./dam/dam.constants";
 export { DamModule } from "./dam/dam.module";
+export { DamFilesModule } from "./dam/dam-files.module";
 export { CreateFileInput, ImageFileInput, UpdateFileInput } from "./dam/files/dto/file.input";
 export { CreateFolderInput, UpdateFolderInput } from "./dam/files/dto/folder.input";
+export { DamFileAiContentType } from "./dam/files/entities/ai-content-type.enum";
 export { createFileEntity, FileInterface } from "./dam/files/entities/file.entity";
 export { DamFileImage } from "./dam/files/entities/file-image.entity";
 export { createFolderEntity, FolderInterface } from "./dam/files/entities/folder.entity";
-export { FileImagesResolver } from "./dam/files/file-image.resolver";
 export { FilesService } from "./dam/files/files.service";
 export { FoldersService } from "./dam/files/folders.service";
 export { ImageInterface } from "./dam/images/dto/image.interface";
 export { HashImageParams, ImageParams } from "./dam/images/dto/image.params";
 export { ImageCropAreaInput } from "./dam/images/dto/image-crop-area.input";
 export { ImageCropArea } from "./dam/images/entities/image-crop-area.entity";
+export { FileImagesResolver } from "./dam/images/file-image.resolver";
 export { ImagesService } from "./dam/images/images.service";
 export { calculateInheritAspectRatio } from "./dam/images/images.util";
 export { IsAllowedImageAspectRatio, IsAllowedImageAspectRatioConstraint } from "./dam/images/validators/is-allowed-aspect-ratio.validator";
@@ -207,6 +218,8 @@ export { Dependency } from "./dependencies/dto/dependency";
 export { DocumentInterface } from "./document/dto/document-interface";
 export { SaveDocument } from "./document/dto/save-document";
 export { validateNotModified } from "./document/validateNotModified";
+export { EntityInfo, EntityInfoSql } from "./entity-info/entity-info.decorator";
+export { EntityInfoObject } from "./entity-info/entity-info.object";
 export { FileUpload } from "./file-uploads/entities/file-upload.entity";
 export { FileUploadsModule } from "./file-uploads/file-uploads.module";
 export { FileUploadsService } from "./file-uploads/file-uploads.service";
@@ -214,6 +227,9 @@ export { FileUploadInput, FileUploadInterface } from "./file-utils/file-upload.i
 export { createFileUploadInputFromUrl, slugifyFilename } from "./file-utils/files.utils";
 export { FocalPoint } from "./file-utils/focal-point.enum";
 export { getCenteredPosition, getMaxDimensionsFromArea, ImageDimensionsAndCoordinates } from "./file-utils/images.util";
+export { PaginatedEntityInfo } from "./full-text-search/dto/paginated-entity-info";
+export { EntityInfoFullTextObject } from "./full-text-search/entities/entity-info-full-text.object";
+export { FullTextSearchModule } from "./full-text-search/full-text-search.module";
 export { IMGPROXY_CONFIG } from "./imgproxy/imgproxy.constants";
 export { Extension, Gravity, ResizingType } from "./imgproxy/imgproxy.enum";
 export { ImgproxyModule } from "./imgproxy/imgproxy.module";
@@ -236,6 +252,7 @@ export { MailerLog } from "./mailer/entities/mailer-log.entity";
 export { MAILER_SERVICE_CONFIG } from "./mailer/mailer.constants";
 export { MailerModule, MailerModuleConfig } from "./mailer/mailer.module";
 export { MailerService, SendMailParams } from "./mailer/mailer.service";
+export { entityToMikroOrmFullText } from "./mikro-orm/helper/entity-to-mikro-orm-full-text";
 export { createMigrationsList, createOrmConfig, MikroOrmModule, MikroOrmModuleOptions } from "./mikro-orm/mikro-orm.module";
 export { AttachedDocumentLoaderService } from "./page-tree/attached-document-loader.service";
 export { AnchorBlock } from "./page-tree/blocks/anchor.block";
@@ -250,12 +267,12 @@ export {
     PageTreeNodeBaseUpdateInput,
     PageTreeNodeUpdateVisibilityInput,
 } from "./page-tree/dto/page-tree-node.input";
+export { PaginatedPageTreeNodesFactory } from "./page-tree/dto/paginated-page-tree-nodes.factory";
 export { AttachedDocument } from "./page-tree/entities/attached-document.entity";
 export { PageTreeNodeBase } from "./page-tree/entities/page-tree-node-base.entity";
 export { PAGE_TREE_REPOSITORY } from "./page-tree/page-tree.constants";
 export { PageTreeModule } from "./page-tree/page-tree.module";
 export { PageTreeReadApi, PageTreeService } from "./page-tree/page-tree.service";
-export { PageTreeNodeDocumentEntityInfoService } from "./page-tree/page-tree-node-document-entity-info.service";
 export { PageTreeNodeDocumentEntityScopeService } from "./page-tree/page-tree-node-document-entity-scope.service";
 export { PageTreeReadApiService } from "./page-tree/page-tree-read-api.service";
 export { PageTreeNodeCategory, PageTreeNodeInterface, PageTreeNodeVisibility, ScopeInterface } from "./page-tree/types";
@@ -263,7 +280,7 @@ export { PageExists, PageExistsConstraint } from "./page-tree/validators/page-ex
 export { RedirectInterface } from "./redirects/entities/redirect-entity.factory";
 export { RedirectTargetUrlServiceInterface } from "./redirects/redirect-target-url.service";
 export { REDIRECTS_LINK_BLOCK } from "./redirects/redirects.constants";
-export { RedirectGenerationType, RedirectSourceTypeValues } from "./redirects/redirects.enum";
+export { RedirectGenerationType, RedirectSourceType } from "./redirects/redirects.enum";
 export { RedirectsLinkBlock, RedirectsModule } from "./redirects/redirects.module";
 export { createRedirectsResolver } from "./redirects/redirects.resolver";
 export { RedirectsService } from "./redirects/redirects.service";
@@ -273,7 +290,12 @@ export { AzureAiTranslatorModule } from "./translation/azure-ai-translator.modul
 export { AbstractAccessControlService } from "./user-permissions/access-control.service";
 export { AffectedEntity, AffectedEntityMeta, AffectedEntityOptions } from "./user-permissions/decorators/affected-entity.decorator";
 export { AffectedScope } from "./user-permissions/decorators/affected-scope.decorator";
-export { DisablePermissionCheck, RequiredPermission } from "./user-permissions/decorators/required-permission.decorator";
+export {
+    DisablePermissionCheck,
+    REQUIRED_PERMISSION_METADATA_KEY,
+    RequiredPermission,
+    RequiredPermissionMetadata,
+} from "./user-permissions/decorators/required-permission.decorator";
 export { SCOPED_ENTITY_METADATA_KEY, ScopedEntity, ScopedEntityMeta } from "./user-permissions/decorators/scoped-entity.decorator";
 export { CurrentUser } from "./user-permissions/dto/current-user";
 export { CurrentUserPermission } from "./user-permissions/dto/current-user";
@@ -282,7 +304,7 @@ export { ContentScope } from "./user-permissions/interfaces/content-scope.interf
 export { User } from "./user-permissions/interfaces/user";
 export { UserPermissionsModule } from "./user-permissions/user-permissions.module";
 export { UserPermissionsPublicService as UserPermissionsService } from "./user-permissions/user-permissions.public.service";
-export { type ContentScopeWithLabel } from "./user-permissions/user-permissions.types";
+export { type ContentScopeDimension, type ContentScopeWithLabel } from "./user-permissions/user-permissions.types";
 export { registerAdditionalPermissions } from "./user-permissions/user-permissions.types";
 export {
     AccessControlServiceInterface,

@@ -1,4 +1,4 @@
-import "@comet/site-react/css";
+import "@dextinity/site-react/css";
 
 export { DamVideoBlock } from "./blocks/DamVideoBlock";
 export { SeoBlock } from "./blocks/factories/SeoBlock";
@@ -9,12 +9,13 @@ export { VimeoVideoBlock } from "./blocks/VimeoVideoBlock";
 export { YouTubeVideoBlock } from "./blocks/YouTubeVideoBlock";
 export { createFetchWithDefaultNextRevalidate, createFetchWithDefaults } from "./graphQLFetch/graphQLFetch";
 export { Image } from "./image/Image";
-export { sitePreviewRoute } from "./sitePreview/appRouter/sitePreviewRoute";
-export { legacyPagesRouterSitePreviewApiHandler } from "./sitePreview/pagesRouter/legacyPagesRouterSitePreviewApiHandler";
-export { legacyPagesRouterPreviewParams, previewParams, type SitePreviewParams } from "./sitePreview/previewUtils";
 export { SitePreviewProvider } from "./sitePreview/SitePreviewProvider";
 export {
     AdminMessageType,
+    type AiContentAltTextPrefixLabels,
+    AiContentDisclosure,
+    type AiContentDisclosureProps,
+    type AiContentType,
     type BlockLoader,
     type BlockLoaderDependencies,
     type BlockLoaderOptions,
@@ -35,10 +36,12 @@ export {
     ErrorHandlerProvider,
     ExternalLinkBlock,
     generateImageUrl,
+    getAiContentAltTextWithPrefix,
     getMaxDimensionsFromArea,
     gql,
     type GraphQLFetch,
     hasRichTextBlockContent,
+    hasTipTapRichTextContent,
     type IAdminContentScopeMessage,
     type IAdminGraphQLApiUrlMessage,
     type IAdminHoverComponentMessage,
@@ -53,11 +56,12 @@ export {
     type ImageDimensions,
     type IReadyIFrameMessage,
     isWithPreviewPropsData,
+    JsonLd,
+    type JsonLdProps,
     ListBlock,
     OneOfBlock,
     OptionalBlock,
     parseAspectRatio,
-    persistedQueryRoute,
     PhoneLinkBlock,
     type PlayPauseButtonProps,
     Preview,
@@ -65,12 +69,20 @@ export {
     PreviewSkeleton,
     type PropsWithData,
     recursivelyLoadBlockData,
+    renderTipTapRichText,
+    type RenderTipTapRichTextOptions,
     sendSitePreviewIFrameMessage,
     /** @deprecated Use PreviewData instead. */
     type PreviewData as SitePreviewData,
     SitePreviewIFrameMessageType,
     type SupportedBlocks,
     SvgImageBlock,
+    type TipTapMark,
+    type TipTapMarkHandler,
+    type TipTapMarkHandlerProps,
+    type TipTapNode,
+    type TipTapNodeHandler,
+    type TipTapNodeHandlerProps,
     useBlockPreviewFetch,
     useCookieApi,
     useCookieBotCookieApi,
@@ -80,7 +92,6 @@ export {
     useOneTrustCookieApi,
     usePreview,
     type VideoPreviewImageProps,
-    webpackPersistedQueriesLoader,
     withPreview,
     type WithPreviewProps,
-} from "@comet/site-react";
+} from "@dextinity/site-react";

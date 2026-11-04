@@ -1,10 +1,10 @@
 import { type DocumentNode, type OperationVariables, useApolloClient } from "@apollo/client";
-import { type GridValidRowModel } from "@mui/x-data-grid";
-import { saveAs } from "file-saver";
+import type { GridValidRowModel } from "@mui/x-data-grid";
 import { useCallback, useState } from "react";
 import { useIntl } from "react-intl";
 
-import { type GridColDef } from "../GridColDef";
+import { downloadFile } from "../../helpers/downloadFile";
+import type { GridColDef } from "../GridColDef";
 import { type ExcelGenerationOptions, generateExcelFile } from "./generateExcelFile";
 
 export interface ExportApi {
@@ -36,15 +36,14 @@ export function useDataGridExcelExport<Row extends GridValidRowModel, GQLQuery, 
     const createExcelExportDownload = useCallback(
         async <Row extends GridValidRowModel>(columns: Array<GridColDef<Row>>, data: Row[], exportOptions: DataGridExcelExportOptions = {}) => {
             const {
-                fileName = intl.formatMessage({ id: "comet.dataGrid.excelExport.defaultFileName", defaultMessage: "ExcelExport" }),
-                worksheetName = intl.formatMessage({ id: "comet.dataGrid.excelExport.defaultWorksheetName", defaultMessage: "Table 1" }),
+                fileName = intl.formatMessage({ id: "dextinity.dataGrid.excelExport.defaultFileName", defaultMessage: "ExcelExport" }),
+                worksheetName = intl.formatMessage({ id: "dextinity.dataGrid.excelExport.defaultWorksheetName", defaultMessage: "Table 1" }),
                 styling,
             } = exportOptions;
             const workbook = generateExcelFile<Row>(columns, data, { worksheetName, styling });
 
-            workbook.xlsx.writeBuffer().then((buffer) => {
-                saveAs(new Blob([buffer]), safeFileNameWithExtension(fileName));
-            });
+            const buffer = await workbook.xlsx.writeBuffer();
+            downloadFile(new Blob([buffer]), safeFileNameWithExtension(fileName));
         },
         [intl],
     );
@@ -75,7 +74,7 @@ export function useDataGridExcelExport<Row extends GridValidRowModel, GQLQuery, 
             } while (hasPaging && data.length < totalCount);
 
             if (data.length > 0) {
-                createExcelExportDownload<Row>(columns, data, exportOptions);
+                await createExcelExportDownload<Row>(columns, data, exportOptions);
             }
         } catch (e) {
             setError(e);

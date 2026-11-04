@@ -1,37 +1,46 @@
 import { gql } from "@apollo/client";
-import { Field, FinalForm, FinalFormInput, type ISelectionApi, Selected, SelectionRoute, Table, TableQuery, useTableQuery } from "@comet/admin";
+import { Field, FinalForm, FinalFormInput, type ISelectionApi, Selected, SelectionRoute, Table, TableQuery, useTableQuery } from "@dextinity/admin";
 import { Grid } from "@mui/material";
 import { Redirect, Route, Switch } from "react-router";
 
-import { apolloRestStoryDecorator } from "../../apollo-rest-story.decorator";
+import type { Launch, LaunchesPastResult } from "../../../.storybook/mocks/handlers";
+import { apolloStoryDecorator } from "../../apollo-story.decorator";
 import { storyRouterDecorator } from "../../story-router.decorator";
 
-const gqlRest = gql;
-
-const query = gqlRest`
-query users {
-    users @rest(type: "User", path: "users") {
-        id
-        name
-        username
-        email
+const launchFormFragment = gql`
+    fragment LaunchForm on Launch {
+        mission_name
     }
-}
 `;
 
-interface IUser {
-    id: number;
-    name: string;
-    username: string;
-    email: string;
+interface ILaunchFormFragment {
+    mission_name: string;
 }
+
+const query = gql`
+    query LaunchesPast {
+        launchesPastResult {
+            data {
+                id
+                mission_name
+                launch_date_local
+                ...LaunchForm
+            }
+            result {
+                totalCount
+            }
+        }
+    }
+    ${launchFormFragment}
+`;
+
 interface IQueryData {
-    users: IUser[];
+    launchesPastResult: LaunchesPastResult;
 }
 
 interface IExampleTableProps {
     tableData: {
-        data: IQueryData["users"];
+        data: Launch[];
         totalCount: number;
     };
     selectionApi: ISelectionApi;
@@ -46,8 +55,8 @@ function ExampleTable(props: IExampleTableProps) {
             selectable={true}
             columns={[
                 {
-                    name: "name",
-                    header: "Name",
+                    name: "mission_name",
+                    header: "Mission Name",
                 },
             ]}
         />
@@ -55,7 +64,7 @@ function ExampleTable(props: IExampleTableProps) {
 }
 
 interface IExampleFormProps {
-    user: IUser;
+    launch: ILaunchFormFragment;
     mode: "add" | "edit";
 }
 function ExampleForm(props: IExampleFormProps) {
@@ -65,9 +74,9 @@ function ExampleForm(props: IExampleFormProps) {
             onSubmit={(values) => {
                 // submit here
             }}
-            initialValues={props.user}
+            initialValues={props.launch}
         >
-            <Field label="Name" name="name" defaultOptions required component={FinalFormInput} />
+            <Field label="Mission Name" name="mission_name" defaultOptions required component={FinalFormInput} />
         </FinalForm>
     );
 }
@@ -75,12 +84,14 @@ function ExampleForm(props: IExampleFormProps) {
 function Story() {
     const { tableData, api, loading, error } = useTableQuery<IQueryData, Record<string, any>>()(query, {
         resolveTableData: (data) => ({
-            data: data.users,
-            totalCount: data.users.length,
+            data: data.launchesPastResult.data,
+            totalCount: data.launchesPastResult.result.totalCount,
         }),
     });
 
-    if (!tableData) return null;
+    if (!tableData) {
+        return null;
+    }
 
     return (
         <SelectionRoute>
@@ -92,12 +103,12 @@ function Story() {
                         </Grid>
                         <Grid size={2}>
                             <Selected selectionMode={selectionMode} selectedId={selectedId} rows={tableData.data}>
-                                {(user, { selectionMode: selectedSelectionMode }) => {
-                                    if (user === undefined) {
+                                {(launch, { selectionMode: selectedSelectionMode }) => {
+                                    if (launch === undefined) {
                                         return null;
                                     }
 
-                                    return <ExampleForm mode={selectedSelectionMode} user={user} />;
+                                    return <ExampleForm mode={selectedSelectionMode} launch={launch} />;
                                 }}
                             </Selected>
                         </Grid>
@@ -109,8 +120,8 @@ function Story() {
 }
 
 export default {
-    title: "@comet/admin/table",
-    decorators: [apolloRestStoryDecorator(), storyRouterDecorator()],
+    title: "@dextinity/admin/table",
+    decorators: [apolloStoryDecorator("/graphql"), storyRouterDecorator()],
 };
 
 export const BesidesForm = () => {

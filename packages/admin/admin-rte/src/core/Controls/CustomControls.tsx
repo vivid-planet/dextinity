@@ -1,6 +1,6 @@
 import ButtonGroup from "@mui/material/ButtonGroup";
 
-import { type IControlProps } from "../types";
+import type { IControlProps } from "../types";
 
 export default function BlockTypesControls(p: IControlProps) {
     const {

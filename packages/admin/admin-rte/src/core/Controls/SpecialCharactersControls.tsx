@@ -2,7 +2,7 @@ import { ButtonGroup } from "@mui/material";
 
 import NonBreakingSpaceToolbarButton from "../extension/NonBreakingSpace/ToolbarButton";
 import { ToolbarButton as SoftHyphenToolbarButton } from "../extension/SoftHyphen/ToolbarButton";
-import { type IControlProps } from "../types";
+import type { IControlProps } from "../types";
 
 function SpecialCharactersControls(props: IControlProps) {
     const {

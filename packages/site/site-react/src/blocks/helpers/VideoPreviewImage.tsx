@@ -1,7 +1,7 @@
 import clsx from "clsx";
-import { type ReactElement, type ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
 
-import { type PixelImageBlockData } from "../../blocks.generated";
+import type { PixelImageBlockData } from "../../blocks.generated";
 import styles from "./VideoPreviewImage.module.scss";
 
 export interface VideoPreviewImageProps {

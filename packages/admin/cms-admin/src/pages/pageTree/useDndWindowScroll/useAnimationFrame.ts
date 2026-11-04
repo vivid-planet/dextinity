@@ -5,8 +5,8 @@ import { useCallback, useEffect, useRef } from "react";
 export default function useAnimationFrame(callback: (time?: number) => void): void {
     // Use useRef for mutable variables that we want to persist
     // without triggering a re-render on their change
-    const requestRef = useRef<number>();
-    const previousTimeRef = useRef<number>();
+    const requestRef = useRef<number>(undefined);
+    const previousTimeRef = useRef<number>(undefined);
 
     const animate = useCallback(
         (time: number) => {

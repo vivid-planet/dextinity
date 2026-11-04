@@ -281,6 +281,43 @@
         }
     }
 
+    &--list300 {
+        font-size: 15px;
+        line-height: 22px;
+        font-weight: 400;
+
+        @media (min-width: $breakpoint-sm) {
+            font-size: 16px;
+            line-height: 22px;
+        }
+
+        @media (min-width: $breakpoint-md) {
+            font-size: 17px;
+            line-height: 24px;
+        }
+
+        @media (min-width: $breakpoint-lg) {
+            font-size: 18px;
+            line-height: 26px;
+        }
+    }
+
+    &--list200 {
+        font-size: 13px;
+        line-height: 20px;
+        font-weight: 400;
+
+        @media (min-width: $breakpoint-sm) {
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        @media (min-width: $breakpoint-md) {
+            font-size: 15px;
+            line-height: 22px;
+        }
+    }
+
     &--noBottomSpacing {
         margin-bottom: 0;
 

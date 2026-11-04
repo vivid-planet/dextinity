@@ -6,6 +6,7 @@ import { CreateWarningsServiceInterface } from "../../warnings/decorators/create
 import { DamConfig } from "../dam.config";
 import { DAM_CONFIG } from "../dam.constants";
 import { FileInterface } from "./entities/file.entity";
+import { LicenseType } from "./entities/license.embeddable";
 
 @Injectable()
 export class FileWarningService implements CreateWarningsServiceInterface<FileInterface> {
@@ -66,9 +67,11 @@ export class FileWarningService implements CreateWarningsServiceInterface<FileIn
             });
         }
 
-        if (!this.config.enableLicenseFeature) return warnings; // license feature not enabled, no warnings
+        if (!this.config.enableLicenseFeature) {
+            return warnings;
+        } // license feature not enabled, no warnings
 
-        if (entity.license?.durationTo) {
+        if (entity.license?.durationTo && entity.license.type !== LicenseType.ROYALTY_FREE) {
             const soonToExpireDate = new Date();
             soonToExpireDate.setDate(soonToExpireDate.getDate() + 30);
 

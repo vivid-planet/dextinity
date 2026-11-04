@@ -1,4 +1,5 @@
 import { SvgIcon, type SvgIconProps } from "@mui/material";
+import type { JSX } from "react";
 
 export default function PicsumIcon(props: SvgIconProps): JSX.Element {
     return (

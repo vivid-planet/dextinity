@@ -1,5 +1,5 @@
-import { AnchorBlock, BlockCategory, createBlocksBlock, createCompositeBlock, createCompositeBlockSelectField } from "@comet/cms-admin";
-import { type ContentGroupBlockData } from "@src/blocks.generated";
+import { AnchorBlock, BlockCategory, createBlocksBlock, createCompositeBlock, createCompositeBlockSelectField } from "@dextinity/cms-admin";
+import type { ContentGroupBlockData } from "@src/blocks.generated";
 import { AccordionBlock } from "@src/common/blocks/AccordionBlock";
 import { MediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
@@ -7,10 +7,12 @@ import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCa
 import { StandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
 import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
 import { StandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
+import { TableBlock } from "@src/common/blocks/TableBlock";
+import { TipTapTableBlock } from "@src/common/blocks/TipTapTableBlock";
 import { ColumnsBlock } from "@src/documents/pages/blocks/ColumnsBlock";
 import { KeyFactsBlock } from "@src/documents/pages/blocks/KeyFactsBlock";
 import { TeaserBlock } from "@src/documents/pages/blocks/TeaserBlock";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
 const backgroundColorOptions: Array<{ value: ContentGroupBlockData["backgroundColor"]; label: ReactNode }> = [
@@ -33,6 +35,8 @@ const ContentGroupContentBlock = createBlocksBlock({
         keyFacts: KeyFactsBlock,
         media: StandaloneMediaBlock,
         mediaGallery: MediaGalleryBlock,
+        table: TableBlock,
+        tipTapTable: TipTapTableBlock,
     },
 });
 
@@ -46,6 +50,7 @@ export const ContentGroupBlock = createCompositeBlock(
                     label: <FormattedMessage id="contentGroupBlock.overlay" defaultMessage="Background Color" />,
                     defaultValue: "default",
                     options: backgroundColorOptions,
+                    required: true,
                 }),
                 hiddenInSubroute: true,
             },

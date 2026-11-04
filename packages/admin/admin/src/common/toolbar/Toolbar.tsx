@@ -3,23 +3,22 @@ import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import { type ReactNode, useContext } from "react";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { MasterLayoutContext } from "../../mui/MasterLayoutContext";
 import { FillSpace } from "../FillSpace";
 import { ToolbarBreadcrumbs } from "./ToolbarBreadcrumbs";
 
 export type ToolbarClassKey = "root" | "topBar" | "bottomBar" | "mainContentContainer" | "breadcrumbs" | "scopeIndicator" | "topBarActions";
 
-export interface ToolbarProps
-    extends ThemedComponentBaseProps<{
-        root: typeof Paper;
-        bottomBar: typeof MuiToolbar;
-        mainContentContainer: "div";
-        topBar: "div";
-        breadcrumbs: typeof ToolbarBreadcrumbs;
-        scopeIndicator: "div";
-        topBarActions: "div";
-    }> {
+export interface ToolbarProps extends ThemedComponentBaseProps<{
+    root: typeof Paper;
+    bottomBar: typeof MuiToolbar;
+    mainContentContainer: "div";
+    topBar: "div";
+    breadcrumbs: typeof ToolbarBreadcrumbs;
+    scopeIndicator: "div";
+    topBarActions: "div";
+}> {
     elevation?: number;
     children?: ReactNode;
     scopeIndicator?: ReactNode;
@@ -27,7 +26,7 @@ export interface ToolbarProps
     hideTopBar?: boolean;
     /**
      * The height of the header above the toolbar. Default behaviour is to use the height of the headerHeight from the
-     * MasterLayoutContext, but can be overriden here
+     * MasterLayoutContext, but can be overridden here
      */
     headerHeight?: number;
 }
@@ -138,7 +137,7 @@ export const Toolbar = (inProps: ToolbarProps) => {
         scopeIndicator,
         topBarActions,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminToolbar" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminToolbar" });
     const { headerHeight } = useContext(MasterLayoutContext);
 
     const ownerState: OwnerState = {
@@ -165,17 +164,17 @@ export const Toolbar = (inProps: ToolbarProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminToolbar: ToolbarClassKey;
+        DextinityAdminToolbar: ToolbarClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminToolbar: ToolbarProps;
+        DextinityAdminToolbar: ToolbarProps;
     }
 
     interface Components {
-        CometAdminToolbar?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminToolbar"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminToolbar"];
+        DextinityAdminToolbar?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminToolbar"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminToolbar"];
         };
     }
 }

@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import { SpaceBlock } from "../../SpaceBlock";
-import { type BlockInputApi, type BlockState } from "../../types";
+import type { BlockInputApi, BlockState } from "../../types";
 import { resolveNewState } from "../../utils";
 import { composeBlocks, type ComposeBlocksApi } from "./composeBlocks";
 import { createCompositeBlockField } from "./createCompositeBlockField";
 import { createCompositeBlockFields } from "./createCompositeBlockFields";
-import { type AdminComponentPropsMap, type CompositeBlocksConfig, type DataMapState } from "./types";
+import type { AdminComponentPropsMap, CompositeBlocksConfig, DataMapState } from "./types";
 
 // TODO: youtube block moved, space block deprecated, update tests
 

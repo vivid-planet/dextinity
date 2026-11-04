@@ -1,22 +1,24 @@
 import { gql } from "@apollo/client";
-import { Field } from "@comet/admin";
-import { deepClone } from "@mui/x-data-grid/utils/utils";
+import { Field } from "@dextinity/admin";
+import { deepClone } from "@mui/x-data-grid/internals";
 import { FormattedMessage } from "react-intl";
 
-import { type SvgImageBlockData, type SvgImageBlockInput } from "../blocks.generated";
-import { useCometConfig } from "../config/CometConfigContext";
+import type { SvgImageBlockData, SvgImageBlockInput } from "../blocks.generated";
+import { useDextinityConfig } from "../config/DextinityConfigContext";
 import { useDamAcceptedMimeTypes } from "../dam/config/useDamAcceptedMimeTypes";
 import { FileField } from "../form/file/FileField";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
-import { type GQLSvgImageBlockDamFileQuery, type GQLSvgImageBlockDamFileQueryVariables } from "./SvgImageBlock.generated";
+import type { GQLSvgImageBlockDamFileQuery, GQLSvgImageBlockDamFileQueryVariables } from "./SvgImageBlock.generated";
 import { BlockCategory, type BlockDependency, type BlockInterface } from "./types";
 
 type SvgImageBlockState = Omit<SvgImageBlockData, "urlTemplate">;
 
 function createPreviewUrl({ damFile }: SvgImageBlockState, { apiUrl }: { apiUrl: string }): string {
-    if (!damFile) return "";
+    if (!damFile) {
+        return "";
+    }
     return `${apiUrl}${damFile.fileUrl}`;
 }
 
@@ -25,7 +27,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
 
     name: "SVG",
 
-    displayName: <FormattedMessage id="comet.blocks.svgImage" defaultMessage="SVG" />,
+    displayName: <FormattedMessage id="dextinity.blocks.svgImage" defaultMessage="SVG" />,
 
     defaultValues: () => ({}),
 
@@ -114,7 +116,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
     definesOwnPadding: true,
 
     AdminComponent: ({ state, updateState }) => {
-        const { apiUrl } = useCometConfig();
+        const { apiUrl } = useDextinityConfig();
         const { filteredAcceptedMimeTypes } = useDamAcceptedMimeTypes();
 
         const previewUrl = createPreviewUrl(state, { apiUrl });
@@ -131,7 +133,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
                         name="damFile"
                         component={FileField}
                         fullWidth
-                        buttonText={<FormattedMessage id="comet.blocks.image.chooseImage" defaultMessage="Choose image" />}
+                        buttonText={<FormattedMessage id="dextinity.blocks.image.chooseImage" defaultMessage="Choose image" />}
                         allowedMimetypes={filteredAcceptedMimeTypes.svgImage}
                         preview={<img src={previewUrl} width="70" height="70" />}
                     />
@@ -154,8 +156,12 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
     extractTextContents: (state) => {
         const contents = [];
 
-        if (state.damFile?.altText) contents.push(state.damFile.altText);
-        if (state.damFile?.title) contents.push(state.damFile.title);
+        if (state.damFile?.altText) {
+            contents.push(state.damFile.altText);
+        }
+        if (state.damFile?.title) {
+            contents.push(state.damFile.title);
+        }
 
         return contents;
     },

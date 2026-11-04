@@ -1,4 +1,15 @@
 {
-    "exclude": ["**/*.test.tsx", "**/*.test.ts", "**/*.spec.tsx", "**/*.spec.ts", "**/__tests__/**"],
+    "exclude": [
+        "**/*.test.tsx",
+        "**/*.test.ts",
+        "**/*.spec.tsx",
+        "**/*.spec.ts",
+        "**/__tests__/**",
+        "**/__mocks__/**",
+        "**/__stories__/**",
+        "**/*.stories.js",
+        "**/*.stories.tsx",
+        "**/*.stories.ts"
+    ],
     "extends": "./tsconfig.json"
 }

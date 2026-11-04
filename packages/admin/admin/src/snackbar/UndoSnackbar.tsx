@@ -1,5 +1,5 @@
 import { Slide, type SlideProps, Snackbar, type SnackbarProps } from "@mui/material";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { Button } from "../common/buttons/Button";

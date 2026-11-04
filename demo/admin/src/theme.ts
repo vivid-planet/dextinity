@@ -1,3 +1,3 @@
-import { createCometTheme } from "@comet/admin";
+import { createDextinityTheme } from "@dextinity/admin";
 
-export const theme = createCometTheme();
+export const createTheme = (muiLocale: object[]) => createDextinityTheme({}, ...muiLocale);

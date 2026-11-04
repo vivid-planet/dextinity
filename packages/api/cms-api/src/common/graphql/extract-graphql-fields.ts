@@ -1,4 +1,4 @@
-import { type GraphQLResolveInfo } from "graphql";
+import type { GraphQLResolveInfo } from "graphql";
 import { parseResolveInfo, type ResolveTree } from "graphql-parse-resolve-info";
 
 export function extractGraphqlFields(info: GraphQLResolveInfo, options: { root?: string } = {}): string[] {
@@ -17,7 +17,9 @@ export function extractGraphqlFields(info: GraphQLResolveInfo, options: { root?:
         return ret;
     }
     return treeToList(resolveTree).reduce((acc, i) => {
-        if (!options.root) return [...acc, i];
+        if (!options.root) {
+            return [...acc, i];
+        }
         if (!i.startsWith(`${options.root}.`)) {
             return acc;
         }

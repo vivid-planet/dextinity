@@ -1,4 +1,4 @@
-import { type IPagingInfo, Table, useTableQueryPaging } from "@comet/admin";
+import { type IPagingInfo, Table, useTableQueryPaging } from "@dextinity/admin";
 
 interface IExampleRow {
     id: number;
@@ -7,17 +7,15 @@ interface IExampleRow {
 }
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
 };
 
 export const PagingClientside = () => {
-    const data = Array.from(Array(100).keys()).map(
-        (i): IExampleRow => ({
-            id: i,
-            foo1: `blub1 ${i}`,
-            foo2: `blub2 ${i}`,
-        }),
-    );
+    const data = Array.from(Array(100).keys()).map((i): IExampleRow => ({
+        id: i,
+        foo1: `blub1 ${i}`,
+        foo2: `blub2 ${i}`,
+    }));
 
     const pagingApi = useTableQueryPaging(1);
 

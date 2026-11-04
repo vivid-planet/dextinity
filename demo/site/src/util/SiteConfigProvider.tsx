@@ -8,7 +8,9 @@ const SiteConfigContext = createContext<PublicSiteConfig | undefined>(undefined)
 /** @knipignore */
 export const useSiteConfig = () => {
     const siteConfig = useContext(SiteConfigContext);
-    if (!siteConfig) throw new Error("SiteConfig not set in SiteConfigProvider");
+    if (!siteConfig) {
+        throw new Error("SiteConfig not set in SiteConfigProvider");
+    }
     return siteConfig;
 };
 

@@ -1,5 +1,5 @@
-import { BlockCategory, createCompositeBlock, createCompositeBlockSelectField } from "@comet/cms-admin";
-import { type StandaloneHeadingBlockData } from "@src/blocks.generated";
+import { BlockCategory, createCompositeBlock, createCompositeBlockSelectField } from "@dextinity/cms-admin";
+import type { StandaloneHeadingBlockData } from "@src/blocks.generated";
 import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { FormattedMessage } from "react-intl";
 

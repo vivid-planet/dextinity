@@ -1,4 +1,4 @@
-import { type DataGridProps, type GridFilterModel, type GridSortDirection } from "@mui/x-data-grid";
+import type { DataGridProps, GridFilterModel, GridSortDirection } from "@mui/x-data-grid";
 
 import { useDataGridUrlState } from "./useDataGridUrlState";
 

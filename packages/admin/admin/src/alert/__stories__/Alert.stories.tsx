@@ -1,7 +1,8 @@
-import { ArrowRight } from "@comet/admin-icons";
+import { ArrowRight } from "@dextinity/admin-icons";
 import { Box, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, within } from "storybook/test";
 
 import { Button } from "../../common/buttons/Button";
 import { Alert } from "../Alert";
@@ -22,6 +23,10 @@ export default config;
 export const Default: Story = {
     args: {
         children: "Description",
+    },
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        await expect(canvas.getByText("Description")).toBeInTheDocument();
     },
 };
 

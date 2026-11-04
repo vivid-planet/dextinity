@@ -2,8 +2,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { type Readable, Stream } from "stream";
 
-import { type BlobStorageBackendInterface, type CreateFileOptions, type StorageMetaData } from "../blob-storage-backend.interface";
-import { type BlobStorageFileConfig } from "./blob-storage-file.config";
+import type { BlobStorageBackendInterface, CreateFileOptions, StorageMetaData } from "../blob-storage-backend.interface";
+import type { BlobStorageFileConfig } from "./blob-storage-file.config";
 
 export class BlobStorageFileStorage implements BlobStorageBackendInterface {
     private readonly headersFile = "headers.json";
@@ -89,6 +89,18 @@ export class BlobStorageFileStorage implements BlobStorageBackendInterface {
             start: offset,
             end: offset + length - 1,
         });
+    }
+
+    async listFiles(folderName: string): Promise<string[]> {
+        if (!(await this.folderExists(folderName))) {
+            return [];
+        }
+
+        const basePath = path.resolve(this.path);
+        const dirPath = path.join(basePath, folderName);
+        const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
+
+        return entries.filter((entry) => entry.isFile() && !entry.name.endsWith(`-${this.headersFile}`)).map((entry) => entry.name);
     }
 
     async removeFile(folderName: string, fileName: string): Promise<void> {

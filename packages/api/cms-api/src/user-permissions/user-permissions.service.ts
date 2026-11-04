@@ -4,13 +4,11 @@ import { EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
 import { isFuture, isPast } from "date-fns";
 import { Request } from "express";
-import isEqual from "lodash.isequal";
-import uniqWith from "lodash.uniqwith";
 import getUuid from "uuid-by-string";
 
 import { AbstractAccessControlService } from "./access-control.service";
 import { DisablePermissionCheck, REQUIRED_PERMISSION_METADATA_KEY, RequiredPermissionMetadata } from "./decorators/required-permission.decorator";
-import { ContentScopeWithLabel } from "./dto/content-scope";
+import { ContentScopeDimension, ContentScopeWithLabel } from "./dto/content-scope";
 import { CurrentUser, CurrentUserPermission } from "./dto/current-user";
 import { FindUsersArgs } from "./dto/paginated-user-list";
 import { UserContentScopes } from "./entities/user-content-scopes.entity";
@@ -26,6 +24,11 @@ import {
     UserPermissionsOptions,
     UserPermissionsUserServiceInterface,
 } from "./user-permissions.types";
+
+function camelCaseToHumanReadable(s: string | number) {
+    const words = s.toString().match(/[A-Za-z0-9][a-z0-9]*/g) || [];
+    return words.map((word) => word.charAt(0).toUpperCase() + word.substring(1)).join(" ");
+}
 
 @Injectable()
 export class UserPermissionsService {
@@ -51,11 +54,6 @@ export class UserPermissionsService {
             }
         }
 
-        function camelCaseToHumanReadable(s: string | number) {
-            const words = s.toString().match(/[A-Za-z0-9][a-z0-9]*/g) || [];
-            return words.map((word) => word.charAt(0).toUpperCase() + word.substring(1)).join(" ");
-        }
-
         const contentScopesWithLabel = contentScopes
             .map((contentScope) =>
                 "scope" in contentScope
@@ -75,7 +73,24 @@ export class UserPermissionsService {
                     ]),
                 ),
             }));
-        return uniqWith(contentScopesWithLabel, (value: ContentScopeWithLabel, other: ContentScopeWithLabel) => isEqual(value.scope, other.scope));
+        return contentScopesWithLabel;
+    }
+
+    async getAvailableContentScopeDimensions(): Promise<ContentScopeDimension[]> {
+        if (this.options.availableContentScopeDimensions) {
+            const dimensions =
+                typeof this.options.availableContentScopeDimensions === "function"
+                    ? await this.options.availableContentScopeDimensions()
+                    : this.options.availableContentScopeDimensions;
+            return dimensions.map((dimension) => ({
+                name: dimension.name,
+                label: dimension.label ?? camelCaseToHumanReadable(dimension.name),
+            }));
+        }
+
+        // Derive the dimensions from the keys of the available content scopes when not explicitly configured
+        const dimensionNames = new Set((await this.getAvailableContentScopes()).flatMap((contentScope) => Object.keys(contentScope.scope)));
+        return [...dimensionNames].map((name) => ({ name, label: camelCaseToHumanReadable(name) }));
     }
 
     async getAvailablePermissions(): Promise<Permission[]> {
@@ -103,23 +118,33 @@ export class UserPermissionsService {
         return this.userService;
     }
 
-    async getUser(id: string): Promise<User> {
-        if (!this.userService) throw new Error("For this functionality you need to define the userService in the UserPermissionsModule.");
-        return this.userService.getUser(id);
+    async findUserForLoginOrThrow(id: string): Promise<User> {
+        if (this.userService?.findUserForLoginOrThrow) {
+            return this.userService.findUserForLoginOrThrow(id);
+        }
+        if (this.userService?.getUserForLogin) {
+            return this.userService.getUserForLogin(id);
+        }
+        throw new Error(
+            "For this functionality you need to define `findUserForLoginOrThrow` (or the deprecated `getUserForLogin`) in the userService.",
+        );
+    }
+
+    async findUserOrThrow(id: string): Promise<User> {
+        if (this.userService?.findUserOrThrow) {
+            return this.userService.findUserOrThrow(id);
+        }
+        if (this.userService?.getUser) {
+            return this.userService.getUser(id);
+        }
+        throw new Error("For this functionality you need to define `findUserOrThrow` (or the deprecated `getUser`) in the userService.");
     }
 
     async findUsers(args: FindUsersArgs): Promise<[User[], number]> {
-        if (!this.userService) throw new Error("For this functionality you need to define the userService in the UserPermissionsModule.");
+        if (!this.userService) {
+            throw new Error("For this functionality you need to define the userService in the UserPermissionsModule.");
+        }
         return this.userService.findUsers(args);
-    }
-
-    async checkContentScopes(contentScopes: ContentScope[]): Promise<void> {
-        const availableContentScopes = await this.getAvailableContentScopes();
-        contentScopes.forEach((scope) => {
-            if (!availableContentScopes.some((cs) => isEqual(cs.scope, scope))) {
-                throw new Error(`ContentScope does not exist: ${JSON.stringify(scope)}.`);
-            }
-        });
     }
 
     async warmupHasPermissionCache() {
@@ -134,15 +159,21 @@ export class UserPermissionsService {
             const availablePermissions = await this.getAvailablePermissions();
             const permissionsByRule = await this.accessControlService.getPermissionsForUser(user, availablePermissions);
             if (permissionsByRule === UserPermissions.allPermissions) {
-                if (availablePermissions.some((p) => permissions.includes(p))) return true;
+                if (availablePermissions.some((p) => permissions.includes(p))) {
+                    return true;
+                }
             } else {
-                if (permissionsByRule.some((p) => permissions.includes(p.permission))) return true;
+                if (permissionsByRule.some((p) => permissions.includes(p.permission))) {
+                    return true;
+                }
             }
         }
         if (this.manualPermissions === undefined) {
             throw new Error('You need to call "warmupHasPermissionCache" before using "hasPermission" for the first time.');
         }
-        if (this.manualPermissions.some((p) => p.userId === user.id && permissions.includes(p.permission))) return true;
+        if (this.manualPermissions.some((p) => p.userId === user.id && permissions.includes(p.permission))) {
+            return true;
+        }
 
         return false;
     }
@@ -180,14 +211,24 @@ export class UserPermissionsService {
             .sort((a, b) => availablePermissions.indexOf(a.permission) - availablePermissions.indexOf(b.permission));
     }
 
-    async getContentScopes(user: User, includeContentScopesManual = true): Promise<ContentScope[]> {
+    async filterContentScopesForUser({
+        user,
+        includeContentScopesManual,
+    }: {
+        user: User;
+        includeContentScopesManual: boolean;
+    }): Promise<ContentScope[]> {
         const contentScopes: ContentScope[] = [];
-        const availableContentScopes = (await this.getAvailableContentScopes()).map((cs) => cs.scope);
 
         if (this.accessControlService.getContentScopesForUser) {
             const userContentScopes = await this.accessControlService.getContentScopesForUser(user);
             if (userContentScopes === UserPermissions.allContentScopes) {
-                contentScopes.push(...availableContentScopes);
+                // Represent access to all content scopes as a single scope that grants any value ("*") of every
+                // dimension, so that the wildcard is preserved for permission comparison (impersonation) instead of
+                // being expanded to concrete scopes. Non-enumerable dimensions are covered because the wildcard spans
+                // all declared dimensions, not just the ones present in the available content scopes.
+                const dimensions = await this.getAvailableContentScopeDimensions();
+                contentScopes.push(Object.fromEntries(dimensions.map((dimension) => [dimension.name, "*"])));
             } else {
                 contentScopes.push(...userContentScopes);
             }
@@ -196,21 +237,21 @@ export class UserPermissionsService {
         if (includeContentScopesManual) {
             const entity = await this.contentScopeRepository.findOne({ userId: user.id });
             if (entity) {
-                contentScopes.push(...entity.contentScopes.filter((value) => availableContentScopes.some((cs) => isEqual(cs, value))));
+                contentScopes.push(...entity.contentScopes);
             }
         }
 
-        return uniqWith(contentScopes, isEqual);
+        return contentScopes;
     }
 
     async getImpersonatedUser(authenticatedUser: User, request: Request): Promise<User | undefined> {
-        if (request?.cookies["comet-impersonate-user-id"]) {
+        if (request?.cookies["dextinity-impersonate-user-id"]) {
             const permissions = await this.getPermissions(authenticatedUser);
             if (permissions.find((permission) => permission.permission === "impersonation")) {
                 try {
-                    const user = await this.getUser(request?.cookies["comet-impersonate-user-id"]);
+                    const user = await this.findUserOrThrow(request.cookies["dextinity-impersonate-user-id"]);
                     if (
-                        await AbstractAccessControlService.isEqualOrMorePermissions(
+                        AbstractAccessControlService.isEqualOrMorePermissions(
                             await this.getPermissionsAndContentScopes(authenticatedUser),
                             await this.getPermissionsAndContentScopes(user),
                         )
@@ -238,14 +279,17 @@ export class UserPermissionsService {
     }
 
     async getPermissionsAndContentScopes(user: User): Promise<CurrentUserPermission[]> {
-        const userContentScopes = await this.getContentScopes(user);
+        const userContentScopes = await this.filterContentScopesForUser({
+            user,
+            includeContentScopesManual: true,
+        });
         return (await this.getPermissions(user))
             .filter((p) => (!p.validFrom || isPast(p.validFrom)) && (!p.validTo || isFuture(p.validTo)))
             .reduce((acc: CurrentUser["permissions"], userPermission) => {
                 const contentScopes = userPermission.overrideContentScopes ? userPermission.contentScopes : userContentScopes;
                 const existingPermission = acc.find((p) => p.permission === userPermission.permission);
                 if (existingPermission) {
-                    existingPermission.contentScopes = uniqWith([...existingPermission.contentScopes, ...contentScopes], isEqual);
+                    existingPermission.contentScopes = [...existingPermission.contentScopes, ...contentScopes];
                 } else {
                     acc.push({
                         permission: userPermission.permission,

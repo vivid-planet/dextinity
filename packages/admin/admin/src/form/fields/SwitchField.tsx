@@ -1,5 +1,5 @@
 import { FormControlLabel, type FormControlLabelProps } from "@mui/material";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { Field, type FieldProps } from "../Field";
 import { FinalFormSwitch, type FinalFormSwitchProps } from "../Switch";

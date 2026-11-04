@@ -1,4 +1,4 @@
-import { ForcePromptRoute, RouterPrompt } from "@comet/admin";
+import { ForcePromptRoute, RouterPrompt } from "@dextinity/admin";
 import { useEffect, useState } from "react";
 import { Redirect, Route, Switch, useLocation } from "react-router";
 import { Link } from "react-router-dom";
@@ -52,7 +52,7 @@ function Path() {
 }
 
 export default {
-    title: "@comet/admin/router",
+    title: "@dextinity/admin/router",
     decorators: [storyRouterDecorator()],
 };
 

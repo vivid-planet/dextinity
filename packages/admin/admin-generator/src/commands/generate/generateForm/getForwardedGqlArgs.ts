@@ -1,8 +1,8 @@
-import { type IntrospectionField, type IntrospectionInputValue, type IntrospectionQuery } from "graphql";
+import type { IntrospectionField, IntrospectionInputValue, IntrospectionQuery } from "graphql";
 
-import { type FormFieldConfig } from "../generate-command";
-import { type Imports } from "../utils/generateImportsCode";
-import { type Prop } from "./generateForm";
+import type { FormFieldConfig } from "../generate-command";
+import type { Imports } from "../utils/generateImportsCode";
+import type { Prop } from "./generateForm";
 
 export type GqlArg = { type: string; name: string; isInputArgSubfield: boolean };
 
@@ -63,7 +63,9 @@ function getArgsIncludingInputArgSubfields(gqlOperation: IntrospectionField, gql
         acc: { name: string; type: string; isInputArgSubfield: boolean }[],
         inputField: IntrospectionInputValue,
     ): { name: string; type: string; isInputArgSubfield: boolean }[] {
-        if (inputField.type.kind !== "NON_NULL" || inputField.defaultValue) return acc;
+        if (inputField.type.kind !== "NON_NULL" || inputField.defaultValue) {
+            return acc;
+        }
 
         const gqlType = inputField.type.ofType;
         if (gqlType.kind === "INPUT_OBJECT") {

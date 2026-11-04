@@ -4,7 +4,7 @@ import { FormattedMessage } from "react-intl/lib";
 
 import PageLabel from "./PageLabel";
 import * as sc from "./PageTreeDragLayer.sc";
-import { type PageTreePage } from "./usePageTree";
+import type { PageTreePage } from "./usePageTree";
 
 function getItemStyles(initialOffset: XYCoord | null, currentOffset: XYCoord | null) {
     if (!initialOffset || !currentOffset) {
@@ -43,7 +43,7 @@ const PageTreeDragLayer = ({ numberSelectedPages }: PageTreeDragLayerProps) => {
                 ) : (
                     <Box pl={4}>
                         <FormattedMessage
-                            id="comet.pagetree.dragLayer.numberDraggedPages"
+                            id="dextinity.pagetree.dragLayer.numberDraggedPages"
                             defaultMessage="{numItems} pages"
                             values={{ numItems: numberSelectedPages }}
                         />

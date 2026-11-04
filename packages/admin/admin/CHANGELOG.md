@@ -1,5 +1,893 @@
 # @comet/admin
 
+## 10.13.1
+
+### Patch Changes
+
+- b6fde8f: Wait for the Excel file in the export hooks
+
+    The Excel export hooks (`useExportTableQuery`, `useExportPagedTableQuery`, `useExportDisplayedTableData` and `useDataGridExcelExport`) didn't wait for the Excel file to be written.
+    As a result, the loading state was reset before the file was downloaded, and errors thrown while writing the file weren't caught by the hooks' error handling.
+    - @dextinity/admin-icons@10.13.1
+
+## 10.13.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.13.0
+
+## 10.12.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.12.0
+
+## 10.11.0
+
+### Patch Changes
+
+- 3e0526b: Add the selected files up to `maxFiles` in `FileSelect` and `FinalFormFileSelect`
+
+    When more files are selected than `maxFiles` allows, the files up to the limit are added and only the remaining files are shown as rejected.
+    Before, none of the selected files were added.
+    The same applies when several files are selected in a single-file `FileSelect`: the first file is added.
+
+- 5bb4070: Fix styling of `Switch` with `size="small"`
+
+    Previously, the thumb was too large and overflowed the track.
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- Updated dependencies [75ebfd4]
+- Updated dependencies [43ee19a]
+    - @dextinity/admin-icons@10.11.0
+
+## 10.10.0
+
+### Patch Changes
+
+- c6b573b: Prevent `GridToolbarQuickFilter` and `DataGridPagination` from interfering with a surrounding form field
+
+    Previously, when a data grid was rendered inside a form field, for instance in a dialog opened from a field, the quick filter's search input and the pagination's page size select registered with the field's `FormControl`.
+    This caused a console error about multiple inputs inside a `FormControl`, and the field and the data grid shared their focused, filled, disabled, and error state.
+    - @dextinity/admin-icons@10.10.0
+
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- 847b2a0: Restore the search field's `searchbox` role in `GridToolbarQuickFilter`
+
+    The role and id that MUI's `QuickFilterControl` supplies for the input element were dropped, leaving the placeholder as the only way to address the field — for assistive technology as well as for end-to-end tests.
+    - @dextinity/admin-icons@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.8.0
+
+## 10.7.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.7.0
+
+## 10.6.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.4.0
+
+## 10.3.0
+
+### Patch Changes
+
+- 4d6408f: Fix `FormMutation` throwing when rendered
+
+    `FormMutation` accessed its children through `this.props` although it is a function component. Modules are always in strict mode, so `this` was `undefined` and rendering the component failed with `TypeError: Cannot read properties of undefined (reading 'props')`.
+    - @dextinity/admin-icons@10.3.0
+
+## 10.2.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- 48748b0: Show the GraphQL error messages in the error dialog again
+
+    `createErrorDialogApolloLink` only passed the message of network errors to the `ErrorDialog`.
+    For GraphQL errors, the dialog showed "Unknown error" instead of the actual messages (e.g., the message of a `BadRequestException` thrown by the API).
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin` to `@dextinity/admin`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { MainContent } from "@comet/admin";
+    + import { MainContent } from "@dextinity/admin";
+    ```
+
+    **Breaking changes**
+    - Rename `createCometTheme` to `createDextinityTheme`
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme`, the `name` passed to `useThemeProps` in custom components and the generated CSS class names (`.CometAdminClearInputAdornment-root` -> `.DextinityAdminClearInputAdornment-root`)
+    - Rename the CSS variables from `--comet-admin-*` to `--dextinity-admin-*`, for instance, `--comet-admin-master-layout-content-top-spacing` -> `--dextinity-admin-master-layout-content-top-spacing`
+    - Remove the `CometLogo` component. Use `DextinityLogo` from `@dextinity/admin-icons` instead
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-icons@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin` to `@dextinity/admin`
+
+    Update the dependency in `package.json` and all imports:
+
+    ```diff
+    - import { MainContent } from "@comet/admin";
+    + import { MainContent } from "@dextinity/admin";
+    ```
+
+    **Breaking changes**
+    - Rename `createCometTheme` to `createDextinityTheme`
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme`, the `name` passed to `useThemeProps` in custom components and the generated CSS class names (`.CometAdminClearInputAdornment-root` -> `.DextinityAdminClearInputAdornment-root`)
+    - Rename the CSS variables from `--comet-admin-*` to `--dextinity-admin-*`, for instance, `--comet-admin-master-layout-content-top-spacing` -> `--dextinity-admin-master-layout-content-top-spacing`
+    - Remove the `CometLogo` component. Use `DextinityLogo` from `@dextinity/admin-icons` instead
+
+## 9.5.0
+
+### Patch Changes
+
+- @comet/admin-icons@9.5.0
+
+## 9.4.0
+
+### Minor Changes
+
+- 085b9ac: Add `disabled` support to `ToggleButtonGroupField`
+
+    Setting `disabled` on the field was accepted but had no effect — every button stayed clickable. It now disables all buttons, and individual options can be disabled by setting `disabled` on the option. When both are set, the field wins — an option cannot re-enable itself.
+
+    **Example**
+
+    ```tsx
+    <ToggleButtonGroupField
+        name="type"
+        options={[
+            { label: "Address", value: "address" },
+            { label: "Coordinates", value: "coordinates", disabled: true },
+        ]}
+    />
+    ```
+
+    `FinalFormToggleButtonGroup` now also supports `sx`, `className`, `slotProps` and theme customization through `CometAdminFinalFormToggleButtonGroup`, with the new `FinalFormToggleButtonGroupClassKey` type describing its slots.
+
+### Patch Changes
+
+- bf1ff64: Apply theme customizations for `DateRangePicker`
+
+    `defaultProps` and `styleOverrides` defined for `CometAdminDateRangePicker` had no effect, as the component read its theme props from `CometAdminFutureDateRangePicker`.
+    - @comet/admin-icons@9.4.0
+
+## 9.3.0
+
+### Patch Changes
+
+- 7b2d8db: Fix end adornment layout in multi-select `AutocompleteField`
+
+    Previously, the clear button could wrap below the chips and fall outside the visible field area in narrow containers.
+    Now the end adornment (loading indicator, clear button, error icon, popup icon) is pinned to the top right corner of the field and the input reserves exactly the required space for the currently visible adornments, so chips can never overlap it.
+    Additionally, the clear button is no longer shown for an empty multi-select, and clearing a multi-select now resets the value to an empty array instead of an empty string.
+    The dropdown now opens when the input receives focus (`openOnFocus`), so clicking anywhere into the field – including next to the icons – opens it.
+    - @comet/admin-icons@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- @comet/admin-icons@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- @comet/admin-icons@9.2.1
+
+## 9.2.0
+
+### Patch Changes
+
+- 5a05d97: Fix separation of multiple selected values in `FinalFormSelect`
+
+    When using `multiple`, the selected values were rendered concatenated without any separator (e.g. `value-2value-1value-3value-4`). They are now separated by a comma, matching the display of `SelectField`.
+
+    This affects all fields that render their selected values through the options/`getOptionLabel` path (i.e. without JSX `children`), namely `AsyncSelectField` and any `FinalFormSelect` used with an array value. Within Comet, this also corrects the display of the `targetGroups` and test email address selects in `@comet/brevo-admin` (`SendManagerFields`, `TestEmailCampaignForm`), which consume `FinalFormSelect` and had the same issue.
+    - @comet/admin-icons@9.2.0
+
+## 9.1.1
+
+### Patch Changes
+
+- @comet/admin-icons@9.1.1
+
+## 9.1.0
+
+### Patch Changes
+
+- @comet/admin-icons@9.1.0
+
+## 9.0.1
+
+### Patch Changes
+
+- @comet/admin-icons@9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 5f1566a: Make packages ESM-only
+- 99140f8: Bump MUI X Data Grid peer dependency to v8
+
+    See the migration guide for information on how to upgrade.
+
+- 3fda20b: Remove the "Future" prefix from date/time components as they are now considered stable
+
+    **If already in use, update the imports of these components and their types:**
+
+    DatePicker:
+    - `Future_DatePicker` -> `DatePicker`
+    - `Future_DatePickerProps` -> `DatePickerProps`
+    - `Future_DatePickerClassKey` -> `DatePickerClassKey`
+    - `Future_DatePickerField` -> `DatePickerField`
+    - `Future_DatePickerFieldProps` -> `DatePickerFieldProps`
+
+    DateRangePicker:
+    - `Future_DateRangePicker` -> `DateRangePicker`
+    - `Future_DateRangePickerProps` -> `DateRangePickerProps`
+    - `Future_DateRangePickerClassKey` -> `DateRangePickerClassKey`
+    - `Future_DateRangePickerField` -> `DateRangePickerField`
+    - `Future_DateRangePickerFieldProps` -> `DateRangePickerFieldProps`
+
+    TimePicker:
+    - `Future_TimePicker` -> `TimePicker`
+    - `Future_TimePickerProps` -> `TimePickerProps`
+    - `Future_TimePickerClassKey` -> `TimePickerClassKey`
+    - `Future_TimePickerField` -> `TimePickerField`
+    - `Future_TimePickerFieldProps` -> `TimePickerFieldProps`
+
+    DateTimePicker:
+    - `Future_DateTimePicker` -> `DateTimePicker`
+    - `Future_DateTimePickerProps` -> `DateTimePickerProps`
+    - `Future_DateTimePickerClassKey` -> `DateTimePickerClassKey`
+    - `Future_DateTimePickerField` -> `DateTimePickerField`
+    - `Future_DateTimePickerFieldProps` -> `DateTimePickerFieldProps`
+
+    **If your theme is using `defaultProps` or `styleOverrides` for any of these components, update their component-keys:**
+    - `CometAdminFutureDatePicker` -> `CometAdminDatePicker`
+    - `CometAdminFutureDateRangePicker` -> `CometAdminDateRangePicker`
+    - `CometAdminFutureTimePicker` -> `CometAdminTimePicker`
+    - `CometAdminFutureDateTimePicker` -> `CometAdminDateTimePicker`
+
+    **If you are using class-names to access these components' slots, update them:**
+    - `CometAdminFuture_DatePicker-*` -> `CometAdminDatePicker-*`
+    - `CometAdminFuture_DateRangePicker-*` -> `CometAdminDateRangePicker-*`
+    - `CometAdminFuture_TimePicker-*` -> `CometAdminTimePicker-*`
+    - `CometAdminFuture_DateTimePicker-*` -> `CometAdminDateTimePicker-*`
+
+- fd5c36f: Remove `clearable` prop from `Autocomplete`, `FinalFormInput`, `FinalFormNumberInput` and `FinalFormSearchTextField`
+
+    Those fields are now clearable automatically when not set to `required`, `disabled` or `readOnly`.
+
+- 3c81ff0: Remove `hasClearableContent` prop from `ClearInputAdornment`
+
+    The component now always renders when included in the component tree. Callers should conditionally render the component instead of passing the `hasClearableContent` prop.
+
+    **Migration:**
+
+    Before:
+
+    ```tsx
+    <ClearInputAdornment position="end" hasClearableContent={Boolean(value)} onClick={() => onChange("")} />
+    ```
+
+    After:
+
+    ```tsx
+    {
+        value && <ClearInputAdornment position="end" onClick={() => onChange("")} />;
+    }
+    ```
+
+- 631540c: Rename `variant` prop of `Tooltip` to `color` and remove the `neutral` and `primary` options
+
+    ```diff
+     <Tooltip
+         title="Title"
+    -    variant="light"
+    +    color="light"
+     >
+         <Info />
+     </Tooltip>
+    ```
+
+    ```diff
+     <Tooltip
+         title="Title"
+    -    variant="neutral"
+     >
+         <Info />
+     </Tooltip>
+    ```
+
+- 9cb3f95: Bump MUI X Date Pickers peer dependency to v8
+
+    See the migration guide for information on how to upgrade.
+
+### Minor Changes
+
+- 15e771b: Add `TimeRangePicker` and `TimeRangePickerField` components
+
+    These MUI X-based components complete the set of date/time components in `@comet/admin` and replace the deprecated `TimeRangePicker`, `TimeRangeField` and `FinalFormTimeRangePicker` from `@comet/admin-date-time`.
+
+    The `value` and the value passed to `onChange` are a `TimeRange` object with `start` and `end` as 24-hour time strings (`HH:mm`):
+
+    ```ts
+    type TimeRange = {
+        start: string | null;
+        end: string | null;
+    };
+    ```
+
+- d7b77af: Add `ErrorHandlerProvider` and `useErrorHandler` for centralized error reporting from `ErrorBoundary`
+
+    `ErrorBoundary` now invokes an optional `onError(error, errorInfo)` callback provided through `ErrorHandlerProvider`'s context whenever it catches an error. The visible Alert UI of `ErrorBoundary` is unchanged — the callback is purely additive and intended for forwarding errors to a reporting service (e.g., Sentry).
+
+    **Example**
+
+    ```tsx
+    import { ErrorHandlerProvider } from "@comet/admin";
+
+    <ErrorHandlerProvider
+        onError={(error, errorInfo) => {
+            // Report the error to your error tracking service
+            console.error(error, errorInfo.componentStack);
+        }}
+    >
+        {children}
+    </ErrorHandlerProvider>;
+    ```
+
+- 8c2fdde: Add filtering and sorting to `DependenciesList` and `DependentsList`
+
+    Users can now filter dependencies/dependents by name, type, secondary information, and visibility, and sort by all columns. A default filter shows only visible items. The `GqlFilter` type is now exported from `@comet/admin`.
+
+    **Breaking changes:**
+
+    **`@comet/cms-api`:** `DependencyFilter.targetGraphqlObjectType` and `DependentFilter.rootGraphqlObjectType` changed from `string` to `StringFilter`. Update any code passing a plain string to use `{ equal: "..." }` instead.
+
+    **`@comet/cms-api`:** `DependenciesService.getDependents()` and `getDependencies()` consolidated the `filter`, `paginationArgs`, and `options` parameters into a single `options` object. If you call these methods directly, merge the arguments:
+
+    ```ts
+    // Before
+    service.getDependents(target, filter, { offset, limit }, { forceRefresh, sort });
+
+    // After
+    service.getDependents(target, { filter, offset, limit, forceRefresh, sort });
+    ```
+
+    **`@comet/cms-admin`:** The GQL queries passed to `DependenciesList` and `DependentsList` must now accept `$filter` and `$sort` variables and forward them to the `dependencies`/`dependents` field. Update your queries as follows:
+
+    ```graphql
+    # DependentsList
+    query MyDependents($id: ID!, $offset: Int!, $limit: Int!, $forceRefresh: Boolean = false, $filter: DependentFilter, $sort: [DependencySort!]) {
+        item: myEntity(id: $id) {
+            id
+            dependents(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+                nodes {
+                    rootGraphqlObjectType
+                    rootId
+                    rootColumnName
+                    jsonPath
+                    name
+                    secondaryInformation
+                    visible
+                }
+                totalCount
+            }
+        }
+    }
+
+    # DependenciesList
+    query MyDependencies($id: ID!, $offset: Int!, $limit: Int!, $forceRefresh: Boolean = false, $filter: DependencyFilter, $sort: [DependencySort!]) {
+        item: myEntity(id: $id) {
+            id
+            dependencies(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+                nodes {
+                    targetGraphqlObjectType
+                    targetId
+                    rootColumnName
+                    jsonPath
+                    name
+                    secondaryInformation
+                    visible
+                }
+                totalCount
+            }
+        }
+    }
+    ```
+
+- f066335: Add support for React 19
+- 8e3a074: New helper: downloadFile, to be used instead of file-saver dependency
+- 2fe9d4b: Add support for translating page and document content
+
+    Content translation can now be applied to entire documents at once, in addition to the existing field-level translation.
+
+    **Setup**
+
+    Wrap the application with `AzureAiTranslatorProvider` (supports `batchTranslate` automatically):
+
+    ```tsx
+    <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
+        {children}
+    </AzureAiTranslatorProvider>
+    ```
+
+    **Making a document type translatable**
+
+    Add `createDocumentTranslationMethods` and the `TranslatableInterface` type to the document definition:
+
+    ```tsx
+    import { createDocumentTranslationMethods, type TranslatableInterface } from "@comet/cms-admin";
+
+    const rootBlocks = {
+        content: PageContentBlock,
+        seo: SeoBlock,
+    };
+
+    export const Page: DocumentInterface & TranslatableInterface & DependencyInterface = {
+        // ...existing config
+        ...createDocumentRootBlocksMethods(rootBlocks),
+        ...createDocumentTranslationMethods(rootBlocks),
+    };
+    ```
+
+    **Adding translate action to the edit page**
+
+    `createUsePage` now returns a `translateContent` function. Use it with `TranslateContentMenuItem` inside a `CrudMoreActionsMenu`:
+
+    ```tsx
+    const { translateContent /* ...other fields */ } = usePage({ pageId: id });
+
+    <CrudMoreActionsMenu overallActions={[<TranslateContentMenuItem translateContent={translateContent} />]} />;
+    ```
+
+    **Page tree integration**
+
+    The page tree context menu and bulk action toolbar automatically show a "Translate" action for pages. This translates the page name, slug, and document content.
+
+- 460cbfb: Add translation support for textarea fields in `FinalFormInput`
+
+    Previously, only `type="text"` fields supported content translation. Now `type="textarea"` fields (used by `TextAreaField`) also show the translate button and use a multiline translation dialog.
+
+### Patch Changes
+
+- 92281f1: Add `"sideEffects"` to package.json for better tree-shakability
+- b4ba869: Fix Data Grid Excel export for `singleSelect` columns
+
+    When a `singleSelect` column uses `valueOptions`, Excel export now resolves the exported cell value to the matching option label unless a custom `valueFormatter` overrides it.
+
+- 57678d0: Fix `FinalFormNumberInput` dirtying the form on mount when the initial value is `null`
+
+    The value-sync effect inside `FinalFormNumberInput` ran on mount and called `input.onChange(undefined)` whenever `input.value` was empty. For a form whose initial value was `null`, this silently normalized the value to `undefined`, making the field `dirty` before any user interaction and breaking dirty-tracking features such as `EditDialog`, `SaveBoundary`, and the unsaved-changes router prompt.
+
+    The mount-time sync now only updates the formatted display string. The empty-input normalization to `undefined` still happens on real user interaction in `handleBlur`.
+
+- fdabaf1: Fix `MainContent` with `fullHeight` growing past the viewport after returning from a scrolled detail page
+
+    `useTopOffset` used `getBoundingClientRect().top`, which is viewport-relative. When navigating back from a scrolled page, the browser could restore the previous scroll position before the offset was measured, producing a too-small offset and a `calc(100vh - topOffset)` larger than the viewport. The offset is now measured relative to the document by adding `window.scrollY`.
+
+- 8e40458: Fix `Stack` crash when location changes before any breadcrumb is registered
+
+    `Stack` accessed the last entry of an empty breadcrumb array on location change, causing a `TypeError: Cannot set properties of undefined`. Guarded the update to skip when no breadcrumbs are registered yet.
+
+- b459ec7: Reduce published package size by keeping non-runtime build artifacts out of the bundle
+- cabba53: Fix `DataGridPagination` page information not pluralizing "items"
+
+    The default message for `comet.dataGridPagination.pageInformation` used a fixed plural form, forcing translations to follow the same shape. In languages with distinct singular/plural forms, this produced an incorrect result when `itemsTotal === 1`. The default message now uses ICU `plural` syntax so translators can branch on count.
+
+    Projects that maintain their own translation of `comet.dataGridPagination.pageInformation` should update it to use `plural` with `one` and `other` branches.
+
+- Updated dependencies [92281f1]
+- Updated dependencies [f066335]
+- Updated dependencies [5f1566a]
+    - @comet/admin-icons@9.0.0
+
+## 9.0.0-beta.6
+
+### Minor Changes
+
+- 15e771b: Add `TimeRangePicker` and `TimeRangePickerField` components
+
+    These MUI X-based components complete the set of date/time components in `@comet/admin` and replace the deprecated `TimeRangePicker`, `TimeRangeField` and `FinalFormTimeRangePicker` from `@comet/admin-date-time`.
+
+    The `value` and the value passed to `onChange` are a `TimeRange` object with `start` and `end` as 24-hour time strings (`HH:mm`):
+
+    ```ts
+    type TimeRange = {
+        start: string | null;
+        end: string | null;
+    };
+    ```
+
+### Patch Changes
+
+- b4ba869: Fix Data Grid Excel export for `singleSelect` columns
+
+    When a `singleSelect` column uses `valueOptions`, Excel export now resolves the exported cell value to the matching option label unless a custom `valueFormatter` overrides it.
+
+- 57678d0: Fix `FinalFormNumberInput` dirtying the form on mount when the initial value is `null`
+
+    The value-sync effect inside `FinalFormNumberInput` ran on mount and called `input.onChange(undefined)` whenever `input.value` was empty. For a form whose initial value was `null`, this silently normalized the value to `undefined`, making the field `dirty` before any user interaction and breaking dirty-tracking features such as `EditDialog`, `SaveBoundary`, and the unsaved-changes router prompt.
+
+    The mount-time sync now only updates the formatted display string. The empty-input normalization to `undefined` still happens on real user interaction in `handleBlur`.
+
+- b459ec7: Reduce published package size by keeping non-runtime build artifacts out of the bundle
+    - @comet/admin-icons@9.0.0-beta.6
+
+## 9.0.0-beta.5
+
+### Patch Changes
+
+- fdabaf1: Fix `MainContent` with `fullHeight` growing past the viewport after returning from a scrolled detail page
+
+    `useTopOffset` used `getBoundingClientRect().top`, which is viewport-relative. When navigating back from a scrolled page, the browser could restore the previous scroll position before the offset was measured, producing a too-small offset and a `calc(100vh - topOffset)` larger than the viewport. The offset is now measured relative to the document by adding `window.scrollY`.
+    - @comet/admin-icons@9.0.0-beta.5
+
+## 9.0.0-beta.4
+
+### Minor Changes
+
+- d7b77af: Add `ErrorHandlerProvider` and `useErrorHandler` for centralized error reporting from `ErrorBoundary`
+
+    `ErrorBoundary` now invokes an optional `onError(error, errorInfo)` callback provided through `ErrorHandlerProvider`'s context whenever it catches an error. The visible Alert UI of `ErrorBoundary` is unchanged — the callback is purely additive and intended for forwarding errors to a reporting service (e.g., Sentry).
+
+    **Example**
+
+    ```tsx
+    import { ErrorHandlerProvider } from "@comet/admin";
+
+    <ErrorHandlerProvider
+        onError={(error, errorInfo) => {
+            // Report the error to your error tracking service
+            console.error(error, errorInfo.componentStack);
+        }}
+    >
+        {children}
+    </ErrorHandlerProvider>;
+    ```
+
+- 2fe9d4b: Add support for translating page and document content
+
+    Content translation can now be applied to entire documents at once, in addition to the existing field-level translation.
+
+    **Setup**
+
+    Wrap the application with `AzureAiTranslatorProvider` (supports `batchTranslate` automatically):
+
+    ```tsx
+    <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
+        {children}
+    </AzureAiTranslatorProvider>
+    ```
+
+    **Making a document type translatable**
+
+    Add `createDocumentTranslationMethods` and the `TranslatableInterface` type to the document definition:
+
+    ```tsx
+    import { createDocumentTranslationMethods, type TranslatableInterface } from "@comet/cms-admin";
+
+    const rootBlocks = {
+        content: PageContentBlock,
+        seo: SeoBlock,
+    };
+
+    export const Page: DocumentInterface & TranslatableInterface & DependencyInterface = {
+        // ...existing config
+        ...createDocumentRootBlocksMethods(rootBlocks),
+        ...createDocumentTranslationMethods(rootBlocks),
+    };
+    ```
+
+    **Adding translate action to the edit page**
+
+    `createUsePage` now returns a `translateContent` function. Use it with `TranslateContentMenuItem` inside a `CrudMoreActionsMenu`:
+
+    ```tsx
+    const { translateContent /* ...other fields */ } = usePage({ pageId: id });
+
+    <CrudMoreActionsMenu overallActions={[<TranslateContentMenuItem translateContent={translateContent} />]} />;
+    ```
+
+    **Page tree integration**
+
+    The page tree context menu and bulk action toolbar automatically show a "Translate" action for pages. This translates the page name, slug, and document content.
+
+- 460cbfb: Add translation support for textarea fields in `FinalFormInput`
+
+    Previously, only `type="text"` fields supported content translation. Now `type="textarea"` fields (used by `TextAreaField`) also show the translate button and use a multiline translation dialog.
+
+### Patch Changes
+
+- 8e40458: Fix `Stack` crash when location changes before any breadcrumb is registered
+
+    `Stack` accessed the last entry of an empty breadcrumb array on location change, causing a `TypeError: Cannot set properties of undefined`. Guarded the update to skip when no breadcrumbs are registered yet.
+    - @comet/admin-icons@9.0.0-beta.4
+
+## 9.0.0-beta.3
+
+### Major Changes
+
+- 3c81ff0: Remove `hasClearableContent` prop from `ClearInputAdornment`
+
+    The component now always renders when included in the component tree. Callers should conditionally render the component instead of passing the `hasClearableContent` prop.
+
+    **Migration:**
+
+    Before:
+
+    ```tsx
+    <ClearInputAdornment position="end" hasClearableContent={Boolean(value)} onClick={() => onChange("")} />
+    ```
+
+    After:
+
+    ```tsx
+    {
+        value && <ClearInputAdornment position="end" onClick={() => onChange("")} />;
+    }
+    ```
+
+### Patch Changes
+
+- cabba53: Fix `DataGridPagination` page information not pluralizing "items"
+
+    The default message for `comet.dataGridPagination.pageInformation` used a fixed plural form, forcing translations to follow the same shape. In languages with distinct singular/plural forms, this produced an incorrect result when `itemsTotal === 1`. The default message now uses ICU `plural` syntax so translators can branch on count.
+
+    Projects that maintain their own translation of `comet.dataGridPagination.pageInformation` should update it to use `plural` with `one` and `other` branches.
+    - @comet/admin-icons@9.0.0-beta.3
+
+## 9.0.0-beta.2
+
+### Major Changes
+
+- 99140f8: Bump MUI X Data Grid peer dependency to v8
+
+    See the migration guide for information on how to upgrade.
+
+- 9cb3f95: Bump MUI X Date Pickers peer dependency to v8
+
+    See the migration guide for information on how to upgrade.
+
+### Patch Changes
+
+- 92281f1: Add `"sideEffects"` to package.json for better tree-shakability
+- Updated dependencies [92281f1]
+    - @comet/admin-icons@9.0.0-beta.2
+
+## 9.0.0-beta.1
+
+### Minor Changes
+
+- 8c2fdde: Add filtering and sorting to `DependenciesList` and `DependentsList`
+
+    Users can now filter dependencies/dependents by name, type, secondary information, and visibility, and sort by all columns. A default filter shows only visible items. The `GqlFilter` type is now exported from `@comet/admin`.
+
+    **Breaking changes:**
+
+    **`@comet/cms-api`:** `DependencyFilter.targetGraphqlObjectType` and `DependentFilter.rootGraphqlObjectType` changed from `string` to `StringFilter`. Update any code passing a plain string to use `{ equal: "..." }` instead.
+
+    **`@comet/cms-api`:** `DependenciesService.getDependents()` and `getDependencies()` consolidated the `filter`, `paginationArgs`, and `options` parameters into a single `options` object. If you call these methods directly, merge the arguments:
+
+    ```ts
+    // Before
+    service.getDependents(target, filter, { offset, limit }, { forceRefresh, sort });
+
+    // After
+    service.getDependents(target, { filter, offset, limit, forceRefresh, sort });
+    ```
+
+    **`@comet/cms-admin`:** The GQL queries passed to `DependenciesList` and `DependentsList` must now accept `$filter` and `$sort` variables and forward them to the `dependencies`/`dependents` field. Update your queries as follows:
+
+    ```graphql
+    # DependentsList
+    query MyDependents($id: ID!, $offset: Int!, $limit: Int!, $forceRefresh: Boolean = false, $filter: DependentFilter, $sort: [DependencySort!]) {
+        item: myEntity(id: $id) {
+            id
+            dependents(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+                nodes {
+                    rootGraphqlObjectType
+                    rootId
+                    rootColumnName
+                    jsonPath
+                    name
+                    secondaryInformation
+                    visible
+                }
+                totalCount
+            }
+        }
+    }
+
+    # DependenciesList
+    query MyDependencies($id: ID!, $offset: Int!, $limit: Int!, $forceRefresh: Boolean = false, $filter: DependencyFilter, $sort: [DependencySort!]) {
+        item: myEntity(id: $id) {
+            id
+            dependencies(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+                nodes {
+                    targetGraphqlObjectType
+                    targetId
+                    rootColumnName
+                    jsonPath
+                    name
+                    secondaryInformation
+                    visible
+                }
+                totalCount
+            }
+        }
+    }
+    ```
+
+- 8e3a074: New helper: downloadFile, to be used instead of file-saver dependency
+
+### Patch Changes
+
+- @comet/admin-icons@9.0.0-beta.1
+
+## 9.0.0-beta.0
+
+### Major Changes
+
+- 5f1566a: Make packages ESM-only
+- 3fda20b: Remove the "Future" prefix from date/time components as they are now considered stable
+
+    **If already in use, update the imports of these components and their types:**
+
+    DatePicker:
+    - `Future_DatePicker` -> `DatePicker`
+    - `Future_DatePickerProps` -> `DatePickerProps`
+    - `Future_DatePickerClassKey` -> `DatePickerClassKey`
+    - `Future_DatePickerField` -> `DatePickerField`
+    - `Future_DatePickerFieldProps` -> `DatePickerFieldProps`
+
+    DateRangePicker:
+    - `Future_DateRangePicker` -> `DateRangePicker`
+    - `Future_DateRangePickerProps` -> `DateRangePickerProps`
+    - `Future_DateRangePickerClassKey` -> `DateRangePickerClassKey`
+    - `Future_DateRangePickerField` -> `DateRangePickerField`
+    - `Future_DateRangePickerFieldProps` -> `DateRangePickerFieldProps`
+
+    TimePicker:
+    - `Future_TimePicker` -> `TimePicker`
+    - `Future_TimePickerProps` -> `TimePickerProps`
+    - `Future_TimePickerClassKey` -> `TimePickerClassKey`
+    - `Future_TimePickerField` -> `TimePickerField`
+    - `Future_TimePickerFieldProps` -> `TimePickerFieldProps`
+
+    DateTimePicker:
+    - `Future_DateTimePicker` -> `DateTimePicker`
+    - `Future_DateTimePickerProps` -> `DateTimePickerProps`
+    - `Future_DateTimePickerClassKey` -> `DateTimePickerClassKey`
+    - `Future_DateTimePickerField` -> `DateTimePickerField`
+    - `Future_DateTimePickerFieldProps` -> `DateTimePickerFieldProps`
+
+    **If your theme is using `defaultProps` or `styleOverrides` for any of these components, update their component-keys:**
+    - `CometAdminFutureDatePicker` -> `CometAdminDatePicker`
+    - `CometAdminFutureDateRangePicker` -> `CometAdminDateRangePicker`
+    - `CometAdminFutureTimePicker` -> `CometAdminTimePicker`
+    - `CometAdminFutureDateTimePicker` -> `CometAdminDateTimePicker`
+
+    **If you are using class-names to access these components' slots, update them:**
+    - `CometAdminFuture_DatePicker-*` -> `CometAdminDatePicker-*`
+    - `CometAdminFuture_DateRangePicker-*` -> `CometAdminDateRangePicker-*`
+    - `CometAdminFuture_TimePicker-*` -> `CometAdminTimePicker-*`
+    - `CometAdminFuture_DateTimePicker-*` -> `CometAdminDateTimePicker-*`
+
+- fd5c36f: Remove `clearable` prop from `Autocomplete`, `FinalFormInput`, `FinalFormNumberInput` and `FinalFormSearchTextField`
+
+    Those fields are now clearable automatically when not set to `required`, `disabled` or `readOnly`.
+
+- 631540c: Rename `variant` prop of `Tooltip` to `color` and remove the `neutral` and `primary` options
+
+    ```diff
+     <Tooltip
+         title="Title"
+    -    variant="light"
+    +    color="light"
+     >
+         <Info />
+     </Tooltip>
+    ```
+
+    ```diff
+     <Tooltip
+         title="Title"
+    -    variant="neutral"
+     >
+         <Info />
+     </Tooltip>
+    ```
+
+### Minor Changes
+
+- f066335: Add support for React 19
+
+### Patch Changes
+
+- Updated dependencies [f066335]
+- Updated dependencies [5f1566a]
+    - @comet/admin-icons@9.0.0-beta.0
+
+## 8.20.0
+
+### Patch Changes
+
+- 412ed19: Prevent form components used within `Field`/`FieldContainer` from overflowing their parent
+- Updated dependencies [caceff8]
+    - @comet/admin-icons@8.20.0
+
 ## 8.19.0
 
 ### Minor Changes

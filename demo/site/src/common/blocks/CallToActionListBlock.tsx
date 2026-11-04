@@ -1,6 +1,6 @@
 "use client";
-import { ListBlock, type PropsWithData, withPreview } from "@comet/site-nextjs";
-import { type CallToActionListBlockData } from "@src/blocks.generated";
+import { ListBlock, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import type { CallToActionListBlockData } from "@src/blocks.generated";
 
 import { CallToActionBlock } from "./CallToActionBlock";
 import styles from "./CallToActionListBlock.module.scss";

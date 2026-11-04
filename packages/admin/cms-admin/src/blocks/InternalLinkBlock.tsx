@@ -1,17 +1,17 @@
 import { gql } from "@apollo/client";
-import { Field, FinalFormSelect } from "@comet/admin";
+import { Field, FinalFormSelect } from "@dextinity/admin";
 import { Box, Divider, MenuItem } from "@mui/material";
-import { deepClone } from "@mui/x-data-grid/utils/utils";
+import { deepClone } from "@mui/x-data-grid/internals";
 import { FormattedMessage } from "react-intl";
 
-import { type InternalLinkBlockData, type InternalLinkBlockInput } from "../blocks.generated";
+import type { InternalLinkBlockData, InternalLinkBlockInput } from "../blocks.generated";
 import FinalFormPageTreeSelect from "../pages/pageTreeSelect/FinalFormPageTreeSelect";
 import { usePageTreeNodeDocumentAnchors } from "../pages/usePageTreeDocumentAnchors";
 import { BlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
-import { type GQLLinkBlockTargetPageQuery, type GQLLinkBlockTargetPageQueryVariables } from "./InternalLinkBlock.generated";
+import type { GQLLinkBlockTargetPageQuery, GQLLinkBlockTargetPageQueryVariables } from "./InternalLinkBlock.generated";
 import { BlockCategory, type BlockDependency, type BlockInterface, type LinkBlockInterface } from "./types";
 
 type State = InternalLinkBlockData;
@@ -21,7 +21,7 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
 
     name: "InternalLink",
 
-    displayName: <FormattedMessage id="comet.blocks.internalLink" defaultMessage="Page Tree" />,
+    displayName: <FormattedMessage id="dextinity.blocks.internalLink" defaultMessage="Page Tree" />,
 
     defaultValues: () => ({ targetPage: undefined }),
 
@@ -135,14 +135,14 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
                         <Box padding={3}>
                             <Field
                                 name="targetPageAnchor"
-                                label={<FormattedMessage id="comet.blocks.internalLink.anchor.label" defaultMessage="Anchor" />}
+                                label={<FormattedMessage id="dextinity.blocks.internalLink.anchor.label" defaultMessage="Anchor" />}
                                 fullWidth
                                 disabled={state.targetPage == null || anchorsLoading}
                             >
                                 {(props) => (
                                     <FinalFormSelect {...props} disabled={state.targetPage == null || anchorsLoading}>
                                         <MenuItem value="none">
-                                            <FormattedMessage id="comet.blocks.internalLink.anchor.none" defaultMessage="None" />
+                                            <FormattedMessage id="dextinity.blocks.internalLink.anchor.none" defaultMessage="None" />
                                         </MenuItem>
                                         {anchors?.map((anchor) => (
                                             <MenuItem key={anchor} value={anchor}>

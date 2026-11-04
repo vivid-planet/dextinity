@@ -5,9 +5,9 @@ import {
     type IRteRef,
     makeRteApi,
     Rte,
-} from "@comet/admin-rte";
+} from "@dextinity/admin-rte";
 import { Box, Card, CardContent, Typography } from "@mui/material";
-import { type EditorState, type EntityInstance } from "draft-js";
+import type { EditorState, EntityInstance } from "draft-js";
 import { useRef } from "react";
 
 import { PrintEditorState, useAutoFocus } from "./helper";
@@ -33,7 +33,7 @@ const filterEditorStateBeforeUpdate: FilterEditorStateBeforeUpdateFn = (nextStat
 };
 
 export default {
-    title: "@comet/admin-rte",
+    title: "@dextinity/admin-rte",
 };
 
 export const RteFilterContent = {
@@ -41,7 +41,7 @@ export const RteFilterContent = {
         const { editorState, setEditorState } = useRteApi();
 
         // focus the editor to see the cursor immediately
-        const editorRef = useRef<IRteRef>();
+        const editorRef = useRef<IRteRef>(undefined);
         useAutoFocus(editorRef);
 
         return (

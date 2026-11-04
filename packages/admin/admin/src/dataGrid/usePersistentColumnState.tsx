@@ -1,10 +1,10 @@
 import { type DataGridProps, type GridColumnVisibilityModel, type GridPinnedColumnFields, useGridApiRef } from "@mui/x-data-grid";
 import type { DataGridProProps } from "@mui/x-data-grid-pro";
-import { type MutableRefObject, useCallback, useEffect, useMemo, useState } from "react";
+import { type RefObject, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouteMatch } from "react-router";
 
 import { useStoredState } from "../hooks/useStoredState";
-import { type GridColDef } from "./GridColDef";
+import type { GridColDef } from "./GridColDef";
 
 const useGridColumns = (apiRef: ReturnType<typeof useGridApiRef>) => {
     const [columns, setColumns] = useState<GridColDef[] | undefined>();
@@ -15,8 +15,8 @@ const useGridColumns = (apiRef: ReturnType<typeof useGridApiRef>) => {
         setColumns(
             // TODO: find a better solution than the `as GridColDef[] | undefined` cast.
             // The problem is, that due to the more complicated GridColDef type, introduced in Mui-X v6 and the override
-            // GridColDef type from @comet/admin, the types returned from apiRef.current?.getAllColumns?.() are not
-            // compatible with the @comet/admin GridColDef.
+            // GridColDef type from @dextinity/admin, the types returned from apiRef.current?.getAllColumns?.() are not
+            // compatible with the @dextinity/admin GridColDef.
             apiRef.current?.getAllColumns?.() as GridColDef[] | undefined,
         );
     }, [apiRef]);
@@ -69,7 +69,7 @@ type GridProps = {
 
     initialState: DataGridProps["initialState"];
 
-    apiRef: MutableRefObject<any>;
+    apiRef: RefObject<any>;
 };
 
 export function usePersistentColumnState(stateKey: string): GridProps {

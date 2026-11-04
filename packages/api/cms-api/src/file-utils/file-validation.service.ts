@@ -1,6 +1,6 @@
 import { readFile } from "fs/promises";
 
-import { type FileUploadInput } from "./file-upload.input";
+import type { FileUploadInput } from "./file-upload.input";
 import { getValidExtensionsForMimetype, isValidSvg } from "./files.utils";
 
 export class FileValidationService {
@@ -45,7 +45,7 @@ export class FileValidationService {
         if (file.mimetype === "image/svg+xml") {
             const fileContent = await readFile(file.path, { encoding: "utf-8" });
 
-            if (!isValidSvg(fileContent)) {
+            if (!(await isValidSvg(fileContent))) {
                 return "SVG contains forbidden content (e.g., JavaScript, security-relevant tags or attributes)";
             }
         }

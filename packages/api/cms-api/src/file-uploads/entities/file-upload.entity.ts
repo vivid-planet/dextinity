@@ -1,21 +1,22 @@
 import { BaseEntity, BigIntType, Entity, Index, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
-import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { randomUUID } from "crypto";
+import { GraphQLBigInt } from "graphql-scalars";
 
 @ObjectType("FileUpload")
-@Entity({ tableName: "CometFileUpload" })
+@Entity({ tableName: "DextinityFileUpload" })
 export class FileUpload extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt";
 
     @Field(() => ID)
     @PrimaryKey({ columnType: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Field()
     @Property({ columnType: "text" })
     name: string;
 
-    @Field(() => Int)
+    @Field(() => GraphQLBigInt)
     @Property({ type: new BigIntType("number") })
     size: number;
 

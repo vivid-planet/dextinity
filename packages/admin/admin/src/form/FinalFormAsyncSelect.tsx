@@ -1,4 +1,4 @@
-import { type SelectProps } from "@mui/material";
+import type { SelectProps } from "@mui/material";
 import type { FieldRenderProps } from "react-final-form";
 
 import { useAsyncOptionsProps } from "../hooks/useAsyncOptionsProps";

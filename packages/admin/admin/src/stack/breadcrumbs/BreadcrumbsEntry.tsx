@@ -1,10 +1,10 @@
-import { LevelUp } from "@comet/admin-icons";
+import { LevelUp } from "@dextinity/admin-icons";
 import { IconButton as MuiIconButton, type Link as MuiLink, Typography } from "@mui/material";
 import { css } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type BreadcrumbItem } from "../Stack";
+import type { BreadcrumbItem } from "../Stack";
 import { BreadcrumbLink } from "./BreadcrumbLink";
 import { BackButtonSeparator, type StackBreadcrumbsClassKey, type StackBreadcrumbsProps } from "./StackBreadcrumbs";
 

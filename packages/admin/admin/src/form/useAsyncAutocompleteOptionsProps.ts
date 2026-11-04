@@ -1,4 +1,4 @@
-import { type UseAutocompleteProps } from "@mui/material";
+import type { UseAutocompleteProps } from "@mui/material";
 import { debounce } from "@mui/material/utils";
 import { type ChangeEvent, useCallback, useMemo, useState } from "react";
 

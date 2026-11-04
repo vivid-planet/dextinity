@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { BlockContext, BlockTransformerServiceInterface, TraversableTransformBlockResponse } from "../../../blocks/block";
+import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum";
 import { FilesService } from "../../files/files.service";
 import { DamScopeInterface } from "../../types";
 import { DamVideoBlockData } from "./dam-video.block";
@@ -14,6 +15,7 @@ type TransformResponse = {
         contentHash: string;
         title?: string;
         altText?: string;
+        aiContentType?: DamFileAiContentType;
         archived: boolean;
         scope?: DamScopeInterface;
         fileUrl: string;
@@ -41,13 +43,19 @@ export class DamVideoBlockTransformerService implements BlockTransformerServiceI
 
         const file = await this.filesService.findOneById(block.damFileId);
 
-        if (file) {
+        if (file && !this.filesService.isBlockedByLicense(file, { previewDamUrls })) {
             const captions = [];
             for (const caption of (await file.alternativesForThisFile.loadItems()).filter((alternative) => alternative.type === "captions")) {
+                const captionFile = await caption.alternative.loadOrFail();
+
+                if (this.filesService.isBlockedByLicense(captionFile, { previewDamUrls })) {
+                    continue;
+                }
+
                 captions.push({
                     id: caption.id,
                     language: caption.language,
-                    fileUrl: await this.filesService.createFileUrl(await caption.alternative.loadOrFail(), { previewDamUrls }),
+                    fileUrl: await this.filesService.createFileUrl(captionFile, { previewDamUrls }),
                 });
             }
 
@@ -59,6 +67,7 @@ export class DamVideoBlockTransformerService implements BlockTransformerServiceI
                 contentHash: file.contentHash,
                 title: file.title,
                 altText: file.altText,
+                aiContentType: file.aiContentType,
                 archived: file.archived,
                 scope: file.scope,
                 fileUrl: await this.filesService.createFileUrl(file, { previewDamUrls }),

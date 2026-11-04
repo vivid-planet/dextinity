@@ -1,4 +1,4 @@
-import { Alert } from "@comet/admin";
+import { Alert } from "@dextinity/admin";
 import { useField } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 

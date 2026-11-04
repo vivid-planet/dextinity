@@ -1,5 +1,5 @@
 import { iconButtonClasses, inputAdornmentClasses } from "@mui/material";
-import { type Components, type Theme } from "@mui/material/styles";
+import type { Components, Theme } from "@mui/material/styles";
 import { pickersInputBaseClasses, pickersInputClasses, pickersSectionListClasses } from "@mui/x-date-pickers";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
@@ -16,6 +16,11 @@ export const getMuiPickersInputBase = (
             backgroundColor: "#fff",
             paddingLeft: spacing(2),
             paddingRight: spacing(2),
+
+            // Hide the input underline
+            "&:before, &:after": {
+                display: "none",
+            },
 
             [`&.${pickersInputBaseClasses.focused}`]: {
                 borderColor: palette.primary.main,
@@ -54,11 +59,11 @@ export const getMuiPickersInputBase = (
                 },
             },
 
-            [`.CometAdminClearInputAdornment-root.${inputAdornmentClasses.positionStart}`]: {
+            [`.DextinityAdminClearInputAdornment-root.${inputAdornmentClasses.positionStart}`]: {
                 marginLeft: spacing(-2),
             },
 
-            [`.CometAdminClearInputAdornment-root.${inputAdornmentClasses.positionEnd}`]: {
+            [`.DextinityAdminClearInputAdornment-root.${inputAdornmentClasses.positionEnd}`]: {
                 marginRight: spacing(-2),
             },
         },

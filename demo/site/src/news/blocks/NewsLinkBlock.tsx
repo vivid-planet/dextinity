@@ -1,8 +1,8 @@
-import { type PropsWithData } from "@comet/site-nextjs";
-import { type NewsLinkBlockData } from "@src/blocks.generated";
+import type { PropsWithData } from "@dextinity/site-nextjs";
+import type { NewsLinkBlockData } from "@src/blocks.generated";
 import { createSitePath } from "@src/util/createSitePath";
 import Link from "next/link";
-import { type AnchorHTMLAttributes, type PropsWithChildren } from "react";
+import type { AnchorHTMLAttributes, JSX, PropsWithChildren } from "react";
 
 type Props = PropsWithData<NewsLinkBlockData> & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
 

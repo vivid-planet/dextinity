@@ -1,12 +1,12 @@
-import { ThreeDotSaving } from "@comet/admin-icons";
-import { type ComponentsOverrides } from "@mui/material";
+import { ThreeDotSaving } from "@dextinity/admin-icons";
+import type { ComponentsOverrides } from "@mui/material";
 import { type Theme, useThemeProps } from "@mui/material/styles";
 import { type ReactNode, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { createComponentSlot } from "../../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
-import { Tooltip as CometTooltip } from "../../Tooltip";
+import type { ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
+import { Tooltip as BaseTooltip } from "../../Tooltip";
 import { Button, type ButtonClassKey, type ButtonProps } from "../Button";
 
 export type FeedbackButtonClassKey = "idle" | "loading" | "success" | "error" | "tooltip" | ButtonClassKey;
@@ -26,15 +26,16 @@ const Root = createComponentSlot(Button)<FeedbackButtonClassKey, OwnerState>({
     },
 })();
 
-const Tooltip = createComponentSlot(CometTooltip)<FeedbackButtonClassKey>({
+const Tooltip = createComponentSlot(BaseTooltip)<FeedbackButtonClassKey>({
     componentName: "FeedbackButton",
     slotName: "tooltip",
 })();
 
 export interface FeedbackButtonProps
-    extends ThemedComponentBaseProps<{
+    extends
+        ThemedComponentBaseProps<{
             root: typeof Button;
-            tooltip: typeof CometTooltip;
+            tooltip: typeof BaseTooltip;
         }>,
         Omit<ButtonProps, "slotProps"> {
     onClick?: () => void | Promise<void>;
@@ -58,13 +59,13 @@ export function FeedbackButton(inProps: FeedbackButtonProps) {
         disabled,
         startIcon,
         endIcon,
-        tooltipSuccessMessage = <FormattedMessage id="comet.feedbackButton.tooltipSuccessMessage" defaultMessage="Success" />,
-        tooltipErrorMessage = <FormattedMessage id="comet.feedbackButton.tooltipErrorMessage" defaultMessage="Error" />,
+        tooltipSuccessMessage = <FormattedMessage id="dextinity.feedbackButton.tooltipSuccessMessage" defaultMessage="Success" />,
+        tooltipErrorMessage = <FormattedMessage id="dextinity.feedbackButton.tooltipErrorMessage" defaultMessage="Error" />,
         slotProps,
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminFeedbackButton",
+        name: "DextinityAdminFeedbackButton",
     });
 
     const [displayState, setDisplayState] = useState<FeedbackButtonDisplayState>("idle");
@@ -75,14 +76,14 @@ export function FeedbackButton(inProps: FeedbackButtonProps) {
 
     const isUncontrolled = loading === undefined && hasErrors === undefined;
 
-    const resolveTooltipForDisplayState = (displayState: FeedbackButtonDisplayState) => {
+    const resolveTooltipColorForDisplayState = (displayState: FeedbackButtonDisplayState) => {
         switch (displayState) {
             case "error":
                 return "error";
             case "success":
                 return "success";
             default:
-                return "neutral";
+                return "light";
         }
     };
 
@@ -104,7 +105,9 @@ export function FeedbackButton(inProps: FeedbackButtonProps) {
             : onClick;
 
     useEffect(() => {
-        if (isUncontrolled) return;
+        if (isUncontrolled) {
+            return;
+        }
 
         let timeoutId: number | undefined;
         let timeoutDuration: number | undefined;
@@ -143,7 +146,7 @@ export function FeedbackButton(inProps: FeedbackButtonProps) {
             title={displayState === "error" ? tooltipErrorMessage : displayState === "success" ? tooltipSuccessMessage : ""}
             open={displayState === "error" || displayState === "success"}
             placement={endIcon && !startIcon ? "top-end" : "top-start"}
-            variant={resolveTooltipForDisplayState(displayState)}
+            color={resolveTooltipColorForDisplayState(displayState)}
             {...slotProps?.tooltip}
         >
             <span>{startIcon || endIcon}</span>
@@ -170,17 +173,17 @@ export function FeedbackButton(inProps: FeedbackButtonProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFeedbackButton: FeedbackButtonClassKey;
+        DextinityAdminFeedbackButton: FeedbackButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFeedbackButton: FeedbackButtonProps;
+        DextinityAdminFeedbackButton: FeedbackButtonProps;
     }
 
     interface Components {
-        CometAdminFeedbackButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFeedbackButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFeedbackButton"];
+        DextinityAdminFeedbackButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFeedbackButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFeedbackButton"];
         };
     }
 }

@@ -1,6 +1,6 @@
 import "draft-js/dist/Draft.css"; // important for nesting of ul/ol
 
-import { createComponentSlot, type ThemedComponentBaseProps } from "@comet/admin";
+import { createComponentSlot, type ThemedComponentBaseProps } from "@dextinity/admin";
 import { type ComponentsOverrides, css, type Theme, useThemeProps } from "@mui/material";
 import {
     type DraftBlockType,
@@ -32,7 +32,7 @@ import composeFilterEditorFns from "./filterEditor/composeFilterEditorFns";
 import defaultFilterEditorStateBeforeUpdate from "./filterEditor/default";
 import manageDefaultBlockType from "./filterEditor/manageStandardBlockType";
 import removeBlocksExceedingBlockLimit from "./filterEditor/removeBlocksExceedingBlockLimit";
-import { type CustomInlineStyles, type IBlocktypeMap, type ICustomBlockTypeMap_Deprecated, type ToolbarButtonComponent } from "./types";
+import type { CustomInlineStyles, IBlocktypeMap, ICustomBlockTypeMap_Deprecated, ToolbarButtonComponent } from "./types";
 import createBlockRenderMap from "./utils/createBlockRenderMap";
 import getRteTheme, { type RteThemeColors } from "./utils/getRteTheme";
 import { pasteAndFilterText } from "./utils/pasteAndFilterText";
@@ -102,11 +102,10 @@ export type FilterEditorStateBeforeUpdateFn = (
     context: Pick<IRteOptions, "supports" | "listLevelMax" | "maxBlocks" | "standardBlockType">,
 ) => EditorState;
 
-export interface RteProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        editor: "div";
-    }> {
+export interface RteProps extends ThemedComponentBaseProps<{
+    root: "div";
+    editor: "div";
+}> {
     value: EditorState;
     onChange: OnEditorStateChangeFn;
     options?: IOptions;
@@ -168,7 +167,7 @@ export const Rte: ForwardRefExoticComponent<PropsWithoutRef<RteProps> & RefAttri
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminRte",
+        name: "DextinityAdminRte",
     });
 
     const ownerState: OwnerState = {
@@ -348,18 +347,18 @@ const Root = createComponentSlot("div")<RteClassKey, OwnerState>({
     },
 })(
     ({ theme }) => css`
-        --comet-admin-rte-outer-border-color: ${getRteTheme(theme.components?.CometAdminRte?.defaultProps).colors.border};
-        border: 1px solid var(--comet-admin-rte-outer-border-color);
+        --dextinity-admin-rte-outer-border-color: ${getRteTheme(theme.components?.DextinityAdminRte?.defaultProps).colors.border};
+        border: 1px solid var(--dextinity-admin-rte-outer-border-color);
         border-top-width: 0; // To prevent the top border from being hidden, when to toolbar is sticky, the top border must be handled by the Toolbar itself
         background-color: #fff;
         border-radius: 2px;
 
         &:hover {
-            --comet-admin-rte-outer-border-color: ${getRteTheme(theme.components?.CometAdminRte?.defaultProps).colors.outerBorderOnHover};
+            --dextinity-admin-rte-outer-border-color: ${getRteTheme(theme.components?.DextinityAdminRte?.defaultProps).colors.outerBorderOnHover};
         }
 
         &:focus-within {
-            --comet-admin-rte-outer-border-color: ${getRteTheme(theme.components?.CometAdminRte?.defaultProps).colors.outerBorderOnFocus};
+            --dextinity-admin-rte-outer-border-color: ${getRteTheme(theme.components?.DextinityAdminRte?.defaultProps).colors.outerBorderOnFocus};
         }
     `,
 );
@@ -375,35 +374,39 @@ const Editor = createComponentSlot("div")<RteClassKey, OwnerState>({
         & .public-DraftEditor-content {
             min-height: 240px;
 
-            ${ownerState.minHeight !== undefined &&
-            css`
-                min-height: ${`${ownerState.minHeight}px`};
-            `}
+            ${
+                ownerState.minHeight !== undefined &&
+                css`
+                    min-height: ${`${ownerState.minHeight}px`};
+                `
+            }
 
             padding: 20px;
             box-sizing: border-box;
         }
 
-        ${ownerState.disabled &&
-        css`
-            color: ${theme.palette.text.disabled};
-        `}
+        ${
+            ownerState.disabled &&
+            css`
+                color: ${theme.palette.text.disabled};
+            `
+        }
     `,
 );
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminRte: RteClassKey;
+        DextinityAdminRte: RteClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminRte: RteProps;
+        DextinityAdminRte: RteProps;
     }
 
     interface Components {
-        CometAdminRte?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminRte"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminRte"];
+        DextinityAdminRte?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminRte"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminRte"];
         };
     }
 }

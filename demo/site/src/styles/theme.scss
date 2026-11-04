@@ -55,25 +55,25 @@
     --contact-form-checkbox-bg-default: #fff;
     --contact-form-checkbox-bg-hover: var(--brand-grey-050);
     --contact-form-checkbox-bg-selected: var(--brand-grey-700);
-    --contact-form-checkbox-border-selected-hover: var(--brand-grey-900);
+    --contact-form-checkbox-bg-selected-hover: var(--brand-grey-900);
     --contact-form-checkbox-border: var(--brand-grey-300);
     --contact-form-checkbox-border-hover: var(--brand-grey-800);
     --contact-form-checkbox-border-focus: var(--brand-primary-main);
     --contact-form-checkbox-border-error: var(--functional-error-main);
 
     --contact-form-dropdown-text-default: var(--text-primary);
-    --contact-form-dropdown-text-selected: #fff;
+    --contact-form-dropdown-text-selected: var(--text-primary);
     --contact-form-dropdown-bg-default: #fff;
     --contact-form-dropdown-bg-hover: var(--brand-grey-050);
-    --contact-form-dropdown-bg-selected: var(--brand-primary-main);
-    --contact-form-dropdown-bg-selected-hover: var(--brand-primary-dark);
+    --contact-form-dropdown-bg-selected: var(--brand-grey-100);
+    --contact-form-dropdown-bg-selected-hover: var(--brand-grey-100);
 
     --contact-form-icon-default: var(--brand-grey-700);
     --contact-form-icon-hover: var(--brand-grey-800);
     --contact-form-icon-inverse: #fff;
 
     --contact-form-text-label: var(--brand-grey-800);
-    --contact-form-text-placeholder: var(--brand-grey-600);
+    --contact-form-text-placeholder: var(--brand-grey-500);
     --contact-form-text-input-text: var(--text-primary);
     --contact-form-helper-text: var(--brand-grey-600);
     --contact-form-text-error: var(--functional-error-main);
@@ -147,18 +147,18 @@
     --contact-form-checkbox-bg-default: var(--brand-grey-900);
     --contact-form-checkbox-bg-hover: var(--brand-grey-800);
     --contact-form-checkbox-bg-selected: var(--brand-grey-500);
-    --contact-form-checkbox-border-selected-hover: var(--brand-grey-200);
+    --contact-form-checkbox-bg-selected-hover: var(--brand-grey-200);
     --contact-form-checkbox-border: var(--brand-grey-700);
     --contact-form-checkbox-border-hover: var(--brand-grey-200);
     --contact-form-checkbox-border-focus: var(--brand-primary-main);
     --contact-form-checkbox-border-error: var(--functional-error-light);
 
     --contact-form-dropdown-text-default: var(--text-primary);
-    --contact-form-dropdown-text-selected: var(--brand-grey-900);
+    --contact-form-dropdown-text-selected: var(--text-primary);
     --contact-form-dropdown-bg-default: var(--brand-grey-900);
     --contact-form-dropdown-bg-hover: var(--brand-grey-800);
-    --contact-form-dropdown-bg-selected: var(--brand-grey-600);
-    --contact-form-dropdown-bg-selected-hover: var(--brand-grey-600);
+    --contact-form-dropdown-bg-selected: var(--brand-grey-700);
+    --contact-form-dropdown-bg-selected-hover: var(--brand-grey-700);
 
     --contact-form-icon-default: var(--brand-grey-300);
     --contact-form-icon-hover: var(--brand-grey-050);

@@ -1,7 +1,7 @@
 import { css, IconButton, ListItem as MuiListItem, ListItemText, Switch as MuiSwitch } from "@mui/material";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type DataGridColumnsManagementListItemClassKey } from "./DataGridColumnsManagementListItem";
+import type { DataGridColumnsManagementListItemClassKey } from "./DataGridColumnsManagementListItem";
 
 export const Root = createComponentSlot(MuiListItem)<DataGridColumnsManagementListItemClassKey>({
     componentName: "DataGridColumnsManagementListItem",

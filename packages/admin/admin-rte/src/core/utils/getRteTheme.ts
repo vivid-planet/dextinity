@@ -1,8 +1,8 @@
-import { greyPalette, primaryPalette } from "@comet/admin";
+import { greyPalette, primaryPalette } from "@dextinity/admin";
 import { grey as muiGreyPalette } from "@mui/material/colors";
-import { type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 
-import { type RteProps } from "../Rte";
+import type { RteProps } from "../Rte";
 
 export type RteThemeColors = {
     border: CSSProperties["color"];

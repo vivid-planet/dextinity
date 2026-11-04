@@ -1,3 +1,5 @@
+import { describe, expect, it } from "vitest";
+
 import { InternalLinkBlock } from "../../page-tree/blocks/internal-link.block";
 import { createImageLinkBlock } from "./createImageLinkBlock";
 

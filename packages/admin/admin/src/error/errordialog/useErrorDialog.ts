@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { type ErrorDialogOptions } from "./ErrorDialog";
+import type { ErrorDialogOptions } from "./ErrorDialog";
 import { errorDialogVar } from "./errorDialogVar";
 
 export interface UseErrorDialogReturn {

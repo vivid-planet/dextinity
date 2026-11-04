@@ -616,6 +616,12 @@
         ]
     },
     {
+        "name": "ContactForm",
+        "description": "A contact form that visitors can use to get in touch.",
+        "fields": [],
+        "inputFields": []
+    },
+    {
         "name": "ContentGroup",
         "fields": [
             {
@@ -691,7 +697,9 @@
                                 "mediaGallery": "MediaGallery",
                                 "richtext": "StandaloneRichText",
                                 "space": "Space",
-                                "teaser": "Teaser"
+                                "teaser": "Teaser",
+                                "table": "Table",
+                                "tipTapTable": "TipTapTable"
                             },
                             "nullable": false
                         }
@@ -735,7 +743,9 @@
                                 "mediaGallery": "MediaGallery",
                                 "richtext": "StandaloneRichText",
                                 "space": "Space",
-                                "teaser": "Teaser"
+                                "teaser": "Teaser",
+                                "table": "Table",
+                                "tipTapTable": "TipTapTable"
                             },
                             "nullable": false
                         }
@@ -881,6 +891,29 @@
         ],
         "inputFields": [
             {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "pixelImage": "PixelImage",
+                                "svgImage": "SvgImage"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
                 "name": "activeType",
                 "kind": "String",
                 "nullable": false
@@ -949,6 +982,15 @@
                         {
                             "name": "altText",
                             "kind": "String",
+                            "nullable": true
+                        },
+                        {
+                            "name": "aiContentType",
+                            "kind": "Enum",
+                            "enum": [
+                                "Generated",
+                                "Modified"
+                            ],
                             "nullable": true
                         },
                         {
@@ -1052,9 +1094,14 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "RichText",
-                                "divider": "EmailCampaignDivider",
-                                "salutation": "EmailCampaignSalutation",
-                                "image": "NewsletterImage"
+                                "twoListSizesText": "MailTwoListSizesRichText",
+                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
+                                "tipTapText": "EmailCampaignTipTapRichText",
+                                "image": "MailImage",
+                                "button": "MailButton",
+                                "divider": "MailDivider",
+                                "spacer": "MailSpacer",
+                                "salutation": "EmailCampaignSalutation"
                             },
                             "nullable": false
                         }
@@ -1089,9 +1136,14 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "text": "RichText",
-                                "divider": "EmailCampaignDivider",
-                                "salutation": "EmailCampaignSalutation",
-                                "image": "NewsletterImage"
+                                "twoListSizesText": "MailTwoListSizesRichText",
+                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
+                                "tipTapText": "EmailCampaignTipTapRichText",
+                                "image": "MailImage",
+                                "button": "MailButton",
+                                "divider": "MailDivider",
+                                "spacer": "MailSpacer",
+                                "salutation": "EmailCampaignSalutation"
                             },
                             "nullable": false
                         }
@@ -1102,14 +1154,130 @@
         ]
     },
     {
-        "name": "EmailCampaignDivider",
+        "name": "EmailCampaignSalutation",
+        "description": "The salutation of an email campaign, filled with the name of the recipient.",
         "fields": [],
         "inputFields": []
     },
     {
-        "name": "EmailCampaignSalutation",
-        "fields": [],
-        "inputFields": []
+        "name": "EmailCampaignTipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen",
+                        "placeholder"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "title",
+                                "header",
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [
+                        "SALUTATION"
+                    ],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen",
+                        "placeholder"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "title",
+                                "header",
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [
+                        "SALUTATION"
+                    ],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
+            }
+        ]
     },
     {
         "name": "EmailLink",
@@ -1140,6 +1308,11 @@
                 "name": "openInNewWindow",
                 "kind": "Boolean",
                 "nullable": false
+            },
+            {
+                "name": "noFollow",
+                "kind": "Boolean",
+                "nullable": false
             }
         ],
         "inputFields": [
@@ -1150,6 +1323,11 @@
             },
             {
                 "name": "openInNewWindow",
+                "kind": "Boolean",
+                "nullable": false
+            },
+            {
+                "name": "noFollow",
                 "kind": "Boolean",
                 "nullable": false
             }
@@ -1623,6 +1801,33 @@
         ],
         "inputFields": [
             {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "internal": "InternalLink",
+                                "external": "ExternalLink",
+                                "damFileDownload": "DamFileDownloadLink",
+                                "email": "EmailLink",
+                                "phone": "PhoneLink",
+                                "news": "NewsLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
                 "name": "activeType",
                 "kind": "String",
                 "nullable": false
@@ -1712,6 +1917,504 @@
         ]
     },
     {
+        "name": "MailButton",
+        "fields": [
+            {
+                "name": "text",
+                "kind": "String",
+                "nullable": false
+            },
+            {
+                "name": "link",
+                "kind": "Block",
+                "block": "ExternalLink",
+                "nullable": false
+            },
+            {
+                "name": "variant",
+                "kind": "Enum",
+                "enum": [
+                    "filled",
+                    "outlined"
+                ],
+                "nullable": false
+            },
+            {
+                "name": "align",
+                "kind": "Enum",
+                "enum": [
+                    "left",
+                    "center",
+                    "right"
+                ],
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "text",
+                "kind": "String",
+                "nullable": false
+            },
+            {
+                "name": "link",
+                "kind": "Block",
+                "block": "ExternalLink",
+                "nullable": false
+            },
+            {
+                "name": "variant",
+                "kind": "Enum",
+                "enum": [
+                    "filled",
+                    "outlined"
+                ],
+                "nullable": false
+            },
+            {
+                "name": "align",
+                "kind": "Enum",
+                "enum": [
+                    "left",
+                    "center",
+                    "right"
+                ],
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailDivider",
+        "fields": [],
+        "inputFields": []
+    },
+    {
+        "name": "MailImage",
+        "fields": [
+            {
+                "name": "image",
+                "kind": "Block",
+                "block": "PixelImage",
+                "nullable": false
+            },
+            {
+                "name": "fullWidth",
+                "kind": "Boolean",
+                "nullable": false
+            },
+            {
+                "name": "aspectRatio",
+                "kind": "Enum",
+                "enum": [
+                    "16x9",
+                    "4x3",
+                    "2x1",
+                    "1x1",
+                    "3x4"
+                ],
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "image",
+                "kind": "Block",
+                "block": "PixelImage",
+                "nullable": false
+            },
+            {
+                "name": "fullWidth",
+                "kind": "Boolean",
+                "nullable": false
+            },
+            {
+                "name": "aspectRatio",
+                "kind": "Enum",
+                "enum": [
+                    "16x9",
+                    "4x3",
+                    "2x1",
+                    "1x1",
+                    "3x4"
+                ],
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailLink",
+        "fields": [
+            {
+                "name": "title",
+                "kind": "String",
+                "nullable": true
+            },
+            {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "external": "ExternalLink",
+                                "phone": "PhoneLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
+                "name": "activeType",
+                "kind": "String",
+                "nullable": true
+            },
+            {
+                "name": "block",
+                "kind": "NestedObject",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "external": "ExternalLink",
+                                "phone": "PhoneLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "external": "ExternalLink",
+                                "phone": "PhoneLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
+                "name": "activeType",
+                "kind": "String",
+                "nullable": false
+            },
+            {
+                "name": "title",
+                "kind": "String",
+                "nullable": true
+            }
+        ]
+    },
+    {
+        "name": "MailSpacer",
+        "fields": [
+            {
+                "name": "spacing",
+                "kind": "Enum",
+                "enum": [
+                    "small",
+                    "medium",
+                    "large"
+                ],
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "spacing",
+                "kind": "Enum",
+                "enum": [
+                    "small",
+                    "medium",
+                    "large"
+                ],
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailTipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "title",
+                                "header",
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "title",
+                                "header",
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
+            }
+        ]
+    },
+    {
+        "name": "MailTwoListSizesRichText",
+        "description": "Formatted text, edited in the Draft.js based rich text editor.",
+        "fields": [
+            {
+                "name": "draftContent",
+                "kind": "Json",
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "draftContent",
+                "kind": "Json",
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailTwoListSizesTipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [
+                            "small"
+                        ],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [
+                            "small"
+                        ],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "small"
+                            ],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [
+                            "small"
+                        ],
+                        "defaultStyle": null
+                    },
+                    "unorderedList": {
+                        "styles": [
+                            "small"
+                        ],
+                        "defaultStyle": null
+                    },
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": "MailLink",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
+            }
+        ]
+    },
+    {
         "name": "Media",
         "fields": [
             {
@@ -1771,6 +2474,31 @@
             }
         ],
         "inputFields": [
+            {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "image": "DamImage",
+                                "damVideo": "DamVideo",
+                                "youTubeVideo": "YouTubeVideo",
+                                "vimeoVideo": "VimeoVideo"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
             {
                 "name": "activeType",
                 "kind": "String",
@@ -1998,6 +2726,7 @@
     },
     {
         "name": "NewsDetail",
+        "description": "The detail view of a single news entry.",
         "fields": [
             {
                 "name": "id",
@@ -2034,6 +2763,7 @@
     },
     {
         "name": "NewsLink",
+        "description": "A link to a news entry.",
         "fields": [
             {
                 "name": "id",
@@ -2211,8 +2941,11 @@
                                 "layout": "Layout",
                                 "textImage": "TextImage",
                                 "fullWidthImage": "FullWidthImage",
-                                "productList": "ProductList",
-                                "pageTreeIndex": "PageTreeIndex"
+                                "table": "Table",
+                                "tipTapTable": "TipTapTable",
+                                "tipTapRichText": "TipTapRichText",
+                                "pageTreeIndex": "PageTreeIndex",
+                                "contactForm": "ContactForm"
                             },
                             "nullable": false
                         },
@@ -2276,8 +3009,11 @@
                                 "layout": "Layout",
                                 "textImage": "TextImage",
                                 "fullWidthImage": "FullWidthImage",
-                                "productList": "ProductList",
-                                "pageTreeIndex": "PageTreeIndex"
+                                "table": "Table",
+                                "tipTapTable": "TipTapTable",
+                                "tipTapRichText": "TipTapRichText",
+                                "pageTreeIndex": "PageTreeIndex",
+                                "contactForm": "ContactForm"
                             },
                             "nullable": false
                         },
@@ -2299,6 +3035,7 @@
     },
     {
         "name": "PageTreeIndex",
+        "description": "A list of the pages below the current page in the page tree.",
         "fields": [],
         "inputFields": []
     },
@@ -2360,6 +3097,15 @@
                         {
                             "name": "altText",
                             "kind": "String",
+                            "nullable": true
+                        },
+                        {
+                            "name": "aiContentType",
+                            "kind": "Enum",
+                            "enum": [
+                                "Generated",
+                                "Modified"
+                            ],
                             "nullable": true
                         },
                         {
@@ -2546,60 +3292,68 @@
         ]
     },
     {
-        "name": "ProductList",
+        "name": "ProductPrice",
+        "description": "The current price of a product, loaded from the product itself.",
         "fields": [
             {
-                "name": "types",
-                "kind": "Enum",
-                "enum": [
-                    "cap",
-                    "shirt",
-                    "tie",
-                    "pants",
-                    "jacket",
-                    "shoes",
-                    "socks",
-                    "mug",
-                    "pen",
-                    "calendar",
-                    "notebook",
-                    "bag",
-                    "watch",
-                    "sunglasses",
-                    "wallet"
-                ],
-                "nullable": false,
-                "array": true
+                "name": "productId",
+                "kind": "String",
+                "nullable": true
+            },
+            {
+                "name": "product",
+                "kind": "NestedObject",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "title",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "price",
+                            "kind": "Number",
+                            "nullable": true
+                        }
+                    ]
+                },
+                "nullable": true
             }
         ],
         "inputFields": [
             {
-                "name": "types",
-                "kind": "Enum",
-                "enum": [
-                    "cap",
-                    "shirt",
-                    "tie",
-                    "pants",
-                    "jacket",
-                    "shoes",
-                    "socks",
-                    "mug",
-                    "pen",
-                    "calendar",
-                    "notebook",
-                    "bag",
-                    "watch",
-                    "sunglasses",
-                    "wallet"
-                ],
-                "nullable": false,
-                "array": true
+                "name": "productId",
+                "kind": "String",
+                "nullable": true
+            }
+        ]
+    },
+    {
+        "name": "ProductTeaser",
+        "description": "A teaser for a single product.",
+        "fields": [
+            {
+                "name": "productId",
+                "kind": "String",
+                "nullable": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "productId",
+                "kind": "String",
+                "nullable": true
             }
         ]
     },
     {
         "name": "RedirectsLink",
+        "description": "The target a redirect points to, for instance a page of the page tree or an external URL.",
         "fields": [
             {
                 "name": "attachedBlocks",
@@ -2657,6 +3411,30 @@
         ],
         "inputFields": [
             {
+                "name": "attachedBlocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "internal": "InternalLink",
+                                "external": "ExternalLink",
+                                "news": "NewsLink"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
                 "name": "activeType",
                 "kind": "String",
                 "nullable": false
@@ -2665,6 +3443,7 @@
     },
     {
         "name": "RichText",
+        "description": "Formatted text, edited in the Draft.js based rich text editor.",
         "fields": [
             {
                 "name": "draftContent",
@@ -2682,6 +3461,7 @@
     },
     {
         "name": "RichText",
+        "description": "Formatted text, edited in the Draft.js based rich text editor.",
         "fields": [
             {
                 "name": "draftContent",
@@ -2699,6 +3479,7 @@
     },
     {
         "name": "Seo",
+        "description": "The metadata of a page for search engines and social networks: title, description, preview image, sitemap settings and canonical URL.",
         "fields": [
             {
                 "name": "htmlTitle",
@@ -3354,6 +4135,194 @@
         ]
     },
     {
+        "name": "Table",
+        "fields": [
+            {
+                "name": "table",
+                "kind": "Block",
+                "block": "TableContent",
+                "nullable": false
+            },
+            {
+                "name": "responsiveBehavior",
+                "kind": "Enum",
+                "enum": [
+                    "scrollSideways",
+                    "none",
+                    "listByRow",
+                    "listByColumn"
+                ],
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "table",
+                "kind": "Block",
+                "block": "TableContent",
+                "nullable": false
+            },
+            {
+                "name": "responsiveBehavior",
+                "kind": "Enum",
+                "enum": [
+                    "scrollSideways",
+                    "none",
+                    "listByRow",
+                    "listByColumn"
+                ],
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "TableContent",
+        "fields": [
+            {
+                "name": "columns",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "size",
+                            "kind": "Enum",
+                            "enum": [
+                                "extraSmall",
+                                "small",
+                                "standard",
+                                "large",
+                                "extraLarge"
+                            ],
+                            "nullable": false
+                        },
+                        {
+                            "name": "highlighted",
+                            "kind": "Boolean",
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
+                "name": "rows",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "highlighted",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "cellValues",
+                            "kind": "NestedObjectList",
+                            "object": {
+                                "fields": [
+                                    {
+                                        "name": "columnId",
+                                        "kind": "String",
+                                        "nullable": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "kind": "Block",
+                                        "block": "RichText",
+                                        "nullable": false
+                                    }
+                                ]
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "columns",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "size",
+                            "kind": "Enum",
+                            "enum": [
+                                "extraSmall",
+                                "small",
+                                "standard",
+                                "large",
+                                "extraLarge"
+                            ],
+                            "nullable": false
+                        },
+                        {
+                            "name": "highlighted",
+                            "kind": "Boolean",
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
+                "name": "rows",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "highlighted",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "cellValues",
+                            "kind": "NestedObjectList",
+                            "object": {
+                                "fields": [
+                                    {
+                                        "name": "columnId",
+                                        "kind": "String",
+                                        "nullable": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "kind": "Block",
+                                        "block": "RichText",
+                                        "nullable": false
+                                    }
+                                ]
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ]
+    },
+    {
         "name": "Teaser",
         "fields": [
             {
@@ -3578,6 +4547,432 @@
         ]
     },
     {
+        "name": "TipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {
+                    "productPrice": "ProductPrice",
+                    "productTeaser": "ProductTeaser"
+                },
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen",
+                        "cmsBlock",
+                        "cmsInlineBlock"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "inlineStyle",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "paragraph300",
+                                "paragraph200",
+                                "eyebrow600",
+                                "eyebrow550",
+                                "eyebrow500",
+                                "eyebrow450"
+                            ],
+                            "defaultStyle": "paragraph300"
+                        },
+                        {
+                            "name": "display",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-1",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-2",
+                            "tag": "h2",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-3",
+                            "tag": "h3",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-4",
+                            "tag": "h4",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-5",
+                            "tag": "h5",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [
+                            "list300",
+                            "list200"
+                        ],
+                        "defaultStyle": "list300"
+                    },
+                    "unorderedList": {
+                        "styles": [
+                            "list300",
+                            "list200"
+                        ],
+                        "defaultStyle": "list300"
+                    },
+                    "inlineStyles": [
+                        {
+                            "name": "highlight",
+                            "appliesTo": null
+                        },
+                        {
+                            "name": "tag",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        }
+                    ],
+                    "placeholders": [],
+                    "link": "Link",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {
+                    "productPrice": "ProductPrice",
+                    "productTeaser": "ProductTeaser"
+                },
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "bulletList",
+                        "doc",
+                        "hardBreak",
+                        "orderedList",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen",
+                        "cmsBlock",
+                        "cmsInlineBlock"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "strike",
+                        "inlineStyle",
+                        "superscript",
+                        "subscript",
+                        "link"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [
+                                "paragraph300",
+                                "paragraph200",
+                                "eyebrow600",
+                                "eyebrow550",
+                                "eyebrow500",
+                                "eyebrow450"
+                            ],
+                            "defaultStyle": "paragraph300"
+                        },
+                        {
+                            "name": "display",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-1",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-2",
+                            "tag": "h2",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-3",
+                            "tag": "h3",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-4",
+                            "tag": "h4",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "heading-5",
+                            "tag": "h5",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": {
+                        "styles": [
+                            "list300",
+                            "list200"
+                        ],
+                        "defaultStyle": "list300"
+                    },
+                    "unorderedList": {
+                        "styles": [
+                            "list300",
+                            "list200"
+                        ],
+                        "defaultStyle": "list300"
+                    },
+                    "inlineStyles": [
+                        {
+                            "name": "highlight",
+                            "appliesTo": null
+                        },
+                        {
+                            "name": "tag",
+                            "appliesTo": [
+                                "paragraph"
+                            ]
+                        }
+                    ],
+                    "placeholders": [],
+                    "link": "Link",
+                    "maxTextBlocks": null,
+                    "listLevelMax": null
+                }
+            }
+        ]
+    },
+    {
+        "name": "TipTapTable",
+        "fields": [
+            {
+                "name": "table",
+                "kind": "Block",
+                "block": "TipTapTableContent",
+                "nullable": false
+            },
+            {
+                "name": "responsiveBehavior",
+                "kind": "Enum",
+                "enum": [
+                    "scrollSideways",
+                    "none",
+                    "listByRow",
+                    "listByColumn"
+                ],
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "table",
+                "kind": "Block",
+                "block": "TipTapTableContent",
+                "nullable": false
+            },
+            {
+                "name": "responsiveBehavior",
+                "kind": "Enum",
+                "enum": [
+                    "scrollSideways",
+                    "none",
+                    "listByRow",
+                    "listByColumn"
+                ],
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "TipTapTableContent",
+        "fields": [
+            {
+                "name": "columns",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "size",
+                            "kind": "Enum",
+                            "enum": [
+                                "extraSmall",
+                                "small",
+                                "standard",
+                                "large",
+                                "extraLarge"
+                            ],
+                            "nullable": false
+                        },
+                        {
+                            "name": "highlighted",
+                            "kind": "Boolean",
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
+                "name": "rows",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "highlighted",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "cellValues",
+                            "kind": "NestedObjectList",
+                            "object": {
+                                "fields": [
+                                    {
+                                        "name": "columnId",
+                                        "kind": "String",
+                                        "nullable": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "kind": "Block",
+                                        "block": "TipTapRichText",
+                                        "nullable": false
+                                    }
+                                ]
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "columns",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "size",
+                            "kind": "Enum",
+                            "enum": [
+                                "extraSmall",
+                                "small",
+                                "standard",
+                                "large",
+                                "extraLarge"
+                            ],
+                            "nullable": false
+                        },
+                        {
+                            "name": "highlighted",
+                            "kind": "Boolean",
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            },
+            {
+                "name": "rows",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "id",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "highlighted",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "cellValues",
+                            "kind": "NestedObjectList",
+                            "object": {
+                                "fields": [
+                                    {
+                                        "name": "columnId",
+                                        "kind": "String",
+                                        "nullable": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "kind": "Block",
+                                        "block": "TipTapRichText",
+                                        "nullable": false
+                                    }
+                                ]
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ]
+    },
+    {
         "name": "VimeoVideo",
         "fields": [
             {
@@ -3633,6 +5028,91 @@
                 "name": "vimeoIdentifier",
                 "kind": "String",
                 "nullable": true
+            }
+        ]
+    },
+    {
+        "name": "WelcomeEmailContent",
+        "fields": [
+            {
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "text": "RichText",
+                                "twoListSizesText": "MailTwoListSizesRichText",
+                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
+                                "tipTapText": "MailTipTapRichText",
+                                "image": "MailImage",
+                                "button": "MailButton",
+                                "divider": "MailDivider",
+                                "spacer": "MailSpacer"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "text": "RichText",
+                                "twoListSizesText": "MailTwoListSizesRichText",
+                                "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
+                                "tipTapText": "MailTipTapRichText",
+                                "image": "MailImage",
+                                "button": "MailButton",
+                                "divider": "MailDivider",
+                                "spacer": "MailSpacer"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
             }
         ]
     },

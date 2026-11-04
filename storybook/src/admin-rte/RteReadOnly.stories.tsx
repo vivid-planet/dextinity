@@ -1,6 +1,6 @@
-import { type IRteReadOnlyOptions, makeRteApi, RteReadOnly } from "@comet/admin-rte";
+import { type IRteReadOnlyOptions, makeRteApi, RteReadOnly } from "@dextinity/admin-rte";
 import { Box, Card, CardContent } from "@mui/material";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { exampleContent, PrintEditorState } from "./helper";
 
@@ -21,7 +21,7 @@ const rteOptions: IRteReadOnlyOptions = {
 };
 
 export default {
-    title: "@comet/admin-rte",
+    title: "@dextinity/admin-rte",
 };
 
 export const RteReadonly = {

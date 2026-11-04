@@ -1,5 +1,1681 @@
 # @comet/cms-api
 
+## 10.13.1
+
+### Patch Changes
+
+- 795901f: Support `@kubernetes/client-node` v2
+
+    The peer dependency now allows `^1.0.0 || ^2.0.0`. Note that v2 requires Node.js 22.19.0 or later.
+
+- 94991f8: Update `jose` to v6
+
+## 10.13.0
+
+### Minor Changes
+
+- 7d8cbff: Add `formatValidationErrors()` for readable validation errors
+
+    It turns the tree of class-validator errors into a list of `{ path, message }`, with paths like `content.blocks[3].props.height`, so that an API client, for instance an AI agent, can fix its input.
+    Use it, for instance, in a query that only validates an input:
+
+    ```ts
+    const errors = await validate(plainToInstance(PageInput, input), { whitelist: true, forbidNonWhitelisted: true });
+
+    return formatValidationErrors(errors);
+    // [{ path: "content.blocks[3].props.height", message: "height must be an integer number" }]
+    ```
+
+- ad3f6d5: Make blocking files with an invalid license opt-in with `blockFilesWithInvalidLicense`
+
+    A project decides whether files whose license has expired or isn't valid yet are blocked. While the option is off, which is the default, such files are delivered as before blocking was added: their URLs don't answer `410 Gone`, blocks don't hide them or replace them with the fallback image, and the DAM hides its "Settings" action, where the fallback image is chosen.
+
+    A project that blocks such files since blocking was added needs to enable the option in the API and in the Admin:
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            enableLicenseFeature: true,
+            blockFilesWithInvalidLicense: true,
+            // ...
+        },
+    });
+    ```
+
+    ```tsx
+    <DextinityConfigProvider dam={{ enableLicenseFeature: true, blockFilesWithInvalidLicense: true /* ... */ }}>
+    ```
+
+- a476170: Never treat a royalty-free license as expired or not valid yet
+
+    Switching a file's license from rights managed to royalty free keeps its duration. Such a file was still blocked once the duration ended: the DAM answered `410 Gone`, blocks replaced it with the invalid-license fallback image, and the warnings reported an expired license.
+    A royalty-free license now ignores its duration: `isLicenseValid` returns `true`, `expirationDate` is `null`, and no license warning is created.
+
+## 10.12.0
+
+### Minor Changes
+
+- 6d552f0: Add the TipTap editor schema of a `TipTapRichTextBlock` field to the block meta
+
+    The field's entry in `block-meta.json` now carries a `tipTap` description next to `childBlocks`: the node and mark types of the editor schema, the text blocks with their styles, the default text block, the ordered and unordered list (`null` when disabled), the inline styles, the placeholders, the link block (`null` when links are disabled), `maxTextBlocks` and `listLevelMax`.
+    This allows tools outside the editor, for instance an AI agent, to build content the API accepts instead of falling back to TipTap's defaults.
+    The block's default description explains how to build content from it.
+
+### Patch Changes
+
+- 2735896: TipTap Rich Text Block: disable the horizontal rule
+
+    The schema contained StarterKit's `horizontalRule` node, so the editor inserted one when typing `---`, `___ ` or `*** ` at the start of a text block. Neither the site nor the mail renderer renders it, so it silently disappeared on the site. The API now rejects content containing a `horizontalRule`, and the editor no longer creates one.
+
+    Remove horizontal rules from existing content before saving it again, as saving fails otherwise.
+
+- a3ba4c9: Fix combining multiple fields in a `RedirectFilter`
+
+    A filter like `{ sourceType: { equal: "domain" }, active: { equal: true } }` only applied its last field, so `paginatedRedirects` also returned redirects that didn't match the other fields. All fields of a filter now have to match.
+
+    If your site's domain redirect middleware (`redirectToMainHost.ts`) only filters on `sourceType`, add `active: { equal: true }` to the filter, so redirects that are deactivated in the admin no longer redirect:
+
+    ```ts
+    filter: { sourceType: { equal: "domain" }, active: { equal: true } },
+    ```
+
+## 10.11.0
+
+### Minor Changes
+
+- 05ea45d: Replace images with an invalid license with a fallback image
+
+    When the license feature is enabled (`enableLicenseFeature`), `PixelImageBlock` renders a fallback image instead of an image whose license has expired or isn't valid yet.
+    The fallback image is set per DAM scope in the DAM settings.
+    It is delivered under its own URL and with its own crop area, the crop area set in the block is ignored.
+    If no fallback image is set, the block renders no image.
+
+    `SvgImageBlock`, `DamVideoBlock` and `DamFileDownloadLinkBlock` render no file if its license is invalid, and `DamVideoBlock` leaves out captions with an invalid license.
+
+    The GraphQL fields `DamFile.fileUrl`, `DamFileImage.url` and `DamFileImage.urlTemplate` return the fallback image's URL for a pixel image with an invalid license.
+    `DamFileImage.url` and `DamFileImage.urlTemplate` return `null` if no fallback image is set.
+
+    None of this applies to requests for preview DAM URLs, so the Admin keeps showing the original file.
+
+    The public file and image URLs of a file with an invalid license respond with `410 Gone`.
+
+### Patch Changes
+
+- 97b3b42: Allow `graphql-scalars` v2
+
+    v2 only drops support for `graphql` below v16 and for Node 20, so projects can update to it whenever they want.
+
+- 22bd832: Fix the error after uploading files to the DAM when the asset list isn't sorted
+
+    When no sort column was selected in the asset list, `damItemListPosition` failed with an SQL error such as `column folder.undefined does not exist`, and the admin showed this error after every upload.
+    `damItemsList` and `damItemListPosition` now sort by `name` when no sort column is given, and the GraphQL schema declares `name` as the default of their `sortColumnName` argument.
+
+- bc24036: Keep inline styles and links in place after emojis when migrating Draft.js content to TipTap
+
+    Draft.js stores the offsets of inline styles and entities in code points, but `migrateFromDraftJs` used them as string indices, which count UTF-16 code units.
+    Every emoji or other character outside the Basic Multilingual Plane shifted the ranges after it by one character, and a range ending inside such a character split it into two broken characters.
+
+- 79c2746: Reject unknown block types in the input of `createBlocksBlock` and `createOneOfBlock`
+
+    Previously, an item with a `type` that isn't in `supportedBlocks` was removed from `blocks` or `attachedBlocks` before validation, and the mutation saved the block without it.
+    Now, such an input fails validation with an `isIn` error at the `type` of the item, for instance `blocks.1.type`.
+    The index in the error path is the index of the item in the input.
+    Code that calls `blockInputFactory` without validating the result keeps such an item now, and `transformToBlockData()` throws for it. Call `validate()` to detect it.
+
+    The Admin only sends supported block types and isn't affected.
+    Stored block data with unknown types is still filtered when loaded, as a block may have been removed from `supportedBlocks` since the data was saved.
+
+- 79c2746: Report invalid block input as validation errors instead of internal errors
+
+    - `createBlocksBlock` and `createOneOfBlock`: Report a `blocks` or `attachedBlocks` value that isn't an array with an `isArray` error. Previously, the mutation failed with `value.filter is not a function`. `createListBlock` additionally reports an `isArray` error. All three report an item that is an array with an `isObject` error, which `createListBlock` accepted before and which failed when saving.
+    - `ChildBlockInput`: Report a missing non-nullable child block with an `isDefined` error. Previously, the mutation failed with `Missing child block input for '<key>'`. Code that calls `blockInputFactory` without validating the result doesn't get this error anymore and must call `validate()` to detect a missing child block. This includes the `openGraphImage` of the SEO block, which was marked as optional although the mutation failed without it.
+    - `createRichTextBlock`: Add a message to the `isDraftContent` error, which was empty
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- 9a5fd29: Report each validation error in the `openGraphImage` of the SEO block once
+
+    The field had an additional `@ValidateNested()` next to `@ChildBlockInput()`, which already adds it, so the image was validated twice.
+
+- c5f02ac: Keep bold, italic and links on soft hyphens and non-breaking spaces in TipTap rich texts
+
+    `migrateFromDraftJs` and the editor's soft hyphen and non-breaking space buttons created these nodes without the marks of the surrounding text.
+    On the site, a soft hyphen in a bold word was rendered outside the `<strong>`, so the hyphen at a line break was thinner than the letters around it, and a link containing one was split into two links.
+
+- a6050c4: Validate `damFileId` as UUID in `PixelImageBlock` and `SvgImageBlock`
+
+    Previously, any non-empty string was accepted and saved, resulting in a broken image.
+
+## 10.10.0
+
+### Minor Changes
+
+- 3862673: Add the `includeFormatExtensionInImageUrls` option to include a file extension in DAM image URLs
+
+    CDN features that cache an image per format, such as Cloudflare's [Vary for Images](https://developers.cloudflare.com/cache/advanced-configuration/vary-for-images/) or the WebP option of Bunny's [Vary Cache](https://bunny.net/docs/cdn/vary-cache), require the file extension in the URL path.
+    With the option enabled, image URLs end with the extension of the format the API delivers when the `Accept` header offers no modern format, e.g. `photo.png`.
+    Originals that aren't JPEG, PNG or GIF get `.jpg`, because the API delivers them as JPEG.
+    Image URLs with an outdated filename, i.e. without extension or from before the file was renamed, permanently redirect to the current URL.
+
+    The API accepts image URLs with and without extension regardless of the option, so disabling it again doesn't break URLs that are already in use.
+
+    **Example**
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            // ...
+            includeFormatExtensionInImageUrls: true,
+        },
+        // ...
+    });
+    ```
+
+- b6bca3b: TipTap Rich Text Block: fill in a missing text block style with the `defaultStyle` when reading the block
+
+    Content written before a `defaultStyle` was configured carries no style, so the site had to render a missing style like the default. The API now applies the `defaultStyle` of the text block, or inside a list item of the list, whenever it reads a text block without a style. The site always receives the style's name, and the content needs no migration.
+
+- 7a121f1: Rework the content scopes management in the user permissions panel
+
+    The user permissions panel now renders a consistent set of content scope columns for every user based on the content scope dimensions declared in the API (`userPermissionsAvailableContentScopeDimensions`). A dimension whose value is the `"*"` wildcard is shown as "All".
+    - Content scopes are assigned through an "Add scope" dialog that builds a scope from one dropdown per enumerable dimension, cascading so that only existing combinations can be selected. Each dropdown also offers an "All" option to grant every value of that dimension (`*` wildcard). Dimensions that are not part of `availableContentScopes` are entered as a free text value (`*` grants all values).
+    - The assigned content scopes and the permission-specific content scopes (override dialog) use the same paginated grid and add dialog, and show manually assigned scopes first.
+    - Removing a content scope asks for confirmation, consistent with removing a permission.
+    - The assignment type is shown in a consistent way across the permissions and content scopes grids.
+
+- ad1ad05: Add `visible` to `EntityInfo` and support filtering and sorting warnings by it
+
+    The `EntityInfo` GraphQL type now exposes the entity's visibility (e.g., whether a page is published).
+    The `warnings` query accepts a `visible` filter and sort field, resolved via the joined `EntityInfo`.
+    Warnings of entities without an `EntityInfo` are treated as visible.
+
+### Patch Changes
+
+- b6441cb: Convert a soft line break in DraftJS content to a `hardBreak` node when migrating to TipTap
+
+    DraftJS stores a soft line break (Shift+Enter) as a newline within the block's text. The migration kept it as a newline in a TipTap text node, which the rich text renderers don't render as a line break.
+
+- d5d2a85: Return one search text entry per text block in `createTipTapRichTextBlock`
+
+    Previously, `searchText()` returned one entry per TipTap text node. Since TipTap splits a line into several text nodes wherever a mark such as bold, italic or a link starts or ends, a single sentence ended up as several entries. Consumers that join the entries with spaces got stray spaces, for instance before a period following a link.
+
+    Now `searchText()` returns one entry per paragraph or heading, like the DraftJS-based rich text block. A hard break within a text block becomes a newline.
+
+## 10.9.1
+
+## 10.9.0
+
+### Minor Changes
+
+- d32c558: Write a block's description to `block-meta.json`
+
+    Tools that read `block-meta.json` can use the description to tell the blocks of an application apart.
+
+    **Example**
+
+    ```ts
+    export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, {
+        name: "Headline",
+        description: "A headline with an optional eyebrow text above it. Use it to introduce a section.",
+    });
+    ```
+
+    ```json title="block-meta.json"
+    {
+        "name": "Headline",
+        "description": "A headline with an optional eyebrow text above it. Use it to introduce a section.",
+        "fields": [{ "name": "eyebrow", "kind": "String", "nullable": true }],
+        "inputFields": [{ "name": "eyebrow", "kind": "String", "nullable": true }]
+    }
+    ```
+
+- 13838dc: Support scopes in `DependentsList` and `DependenciesList`
+
+    Entities can be used across scopes, for instance a DAM that is shared between multiple sites. Until now, the links in both lists always pointed to the currently active scope, leading to a wrong or non-existent page. In addition, the lists didn't show which scope an entry belongs to.
+
+    The `Dependency` type now has a `scope` field, which is resolved from the entity's `scope` property or its `@ScopedEntity()` decorator. Both lists use it to link to the entry in its own scope and show a scope column when more than one scope exists.
+
+    **Example**
+
+    Request the new field in your dependents/dependencies queries:
+
+    ```diff
+        dependents(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+            nodes {
+                rootGraphqlObjectType
+                rootId
+                rootColumnName
+                jsonPath
+                name
+                secondaryInformation
+                visible
+    +           scope
+            }
+            totalCount
+        }
+    ```
+
+- d32c558: Describe blocks whose purpose isn't obvious from their name and fields
+
+    `RichText` and `TipTapRichText` now carry a description that says which rich text editor they use, since an application typically has both and their fields look alike. `Seo` carries a description of the fields it bundles (title, description, social preview, sitemap settings, canonical URL), since "Seo" alone doesn't say which of those it covers.
+
+    The description reaches an application through `block-meta.json`.
+
+- 1c29104: TipTap Rich Text Block: add `defaultStyle` to a text block
+
+    The styling select always offered a "Default" entry standing for "no style", even where a design has no unstyled variant and every paragraph or heading is meant to carry one of the configured styles.
+
+    A text block (or list) with a `defaultStyle` has no such state: the select drops its "Default" entry, and the style is applied to new content, to a text block the editor converts through the type select, and to any text block the editor creates without one — pressing Enter at the end of a text block, the `Mod-Alt-<level>` shortcuts, or pasting. Switching the type keeps a style the new text block also offers and falls back to its `defaultStyle` otherwise.
+
+    Toggling a list hands a paragraph from its text block to the list or back, so the styles of whichever now holds it apply. The list keyboard shortcuts do this as well as the toolbar's list buttons.
+
+    Because the default sits on the text block rather than on a shared tag, two text blocks with the same tag can have different defaults, and a text block without one keeps the "Default" entry next to text blocks that have one.
+
+    **Example**
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [
+            { name: "heading-1", label: "Heading 1", tag: "h1", styles: headlineStyles, defaultStyle: "headline300" },
+            { name: "heading-2", label: "Heading 2", tag: "h2", styles: headlineStyles, defaultStyle: "headline400" },
+        ],
+    });
+    ```
+
+    `defaultStyle` must be one of the text block's `styles`, otherwise an error is thrown. It only exists next to `styles`, not next to a text block's own `element`.
+
+    Content written before a `defaultStyle` was configured carries no style, and the editor fills it in on the first edit rather than when the document is opened, so opening a document does not mark it as changed.
+
+- 070b357: TipTap Rich Text Block: convert custom Draft.js list block types in `migrateFromDraftJs`
+
+    The Draft.js migration knew only the built-in `unordered-list-item` and `ordered-list-item`. A custom list block type, for instance a `blocktypeMap` entry with `supportedBy: "unordered-list"`, became a paragraph, and since the migration runs once, the list structure was lost for good.
+
+    Map such block types in `listItemMap` to the list they become items of and the list style the item carries:
+
+    ```ts
+    const listSizes = { styles: [{ name: "small" }, { name: "large" }] };
+
+    createTipTapRichTextBlock({
+        unorderedList: listSizes,
+        orderedList: listSizes,
+        migrateFromDraftJs: {
+            listItemMap: {
+                "unordered-list-item-small": { list: "unordered", textBlockStyle: "small" },
+                "ordered-list-item-small": { list: "ordered", textBlockStyle: "small" },
+            },
+        },
+    });
+    ```
+
+    Consecutive items of the same list stay one list, whatever their style. An error is thrown at startup when the list is disabled, when `textBlockStyle` isn't one of the list's `styles`, when a block type is also in `textBlockMap`, or when it is one of the built-in list types.
+
+- e84ba03: TipTap Rich Text Block: define text block styles inside the text blocks
+
+    A text block style had to be configured in two places: globally in `textBlockStyles`, and again through an `appliesTo` listing the text block types it was allowed for. Reading what a text block offers meant scanning every style's `appliesTo`.
+
+    A text block now carries its style definitions directly, and `textBlockStyles` is gone. Text blocks that offer the same style share its definition, which makes the shared set explicit instead of implying it through repeated names.
+
+    **Example**
+
+    ```tsx
+    const headlineStyles: TipTapTextBlockStyle[] = [
+        { name: "headline300", label: "Headline 300", element: (props, Tag) => <Tag {...props} /> },
+        { name: "headline400", label: "Headline 400", element: (props, Tag) => <Tag {...props} /> },
+    ];
+
+    createTipTapRichTextBlock({
+        textBlocks: [
+            {
+                name: "paragraph",
+                label: "Paragraph",
+                tag: "p",
+                styles: [
+                    { name: "copy100", label: "Copy 100", element: (props, Tag) => <Tag {...props} /> },
+                    { name: "copy200", label: "Copy 200", element: (props, Tag) => <Tag {...props} /> },
+                ],
+            },
+            { name: "heading-1", label: "Heading 1", tag: "h1", styles: headlineStyles },
+            { name: "heading-2", label: "Heading 2", tag: "h2", styles: headlineStyles },
+        ],
+    });
+    ```
+
+    In the API the styles are `{ name }` objects, mirroring the Admin configuration without the labels and elements.
+
+    A text block that needs no style choice carries its own `element` instead of `styles`. The two exclude each other, so a text block offers a style choice or renders one way, never both:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [{ name: "display", label: "Display", tag: "h1", element: (props, Tag) => <Tag style={{ fontSize: 64 }} {...props} /> }],
+    });
+    ```
+
+    **Migrating an existing configuration**
+    - `textBlockStyles` and a style's `appliesTo` → the `styles` of the text blocks that offer the style.
+    - `appliesTo: ["ordered-list", "unordered-list"]` → `orderedList`/`unorderedList` accept `{ styles }` instead of `true`.
+    - An inline style's `appliesTo` now lists text block names (plus `ordered-list`/`unordered-list`) instead of text block types.
+    - In the Admin, a style's `element` receives the tag of the text block it is applied to, so one style can be shared: `element: (props, Tag) => <Tag {...props} />`.
+
+    A style's `name` still identifies it in the content's `textBlockStyle` attribute, so the stored content format is unchanged.
+
+### Patch Changes
+
+- fa3c71f: Allow `class-validator` v0.15 as peer dependency
+
+    The peer dependency range is widened to `^0.14.0 || ^0.15.0`.
+
+    `class-validator` v0.15 changes the signature of `@IsIBAN()`: it now accepts an options argument, which breaks existing calls that pass an argument, e.g. `@IsIBAN({ forbidUnknownValues: false })`. Check your usage of `@IsIBAN()` before upgrading to v0.15.
+
+- 4446a81: Fix validation error for block inputs without validation annotations
+
+    Saving a document failed with `an unknown value was passed to the validate function` as soon as it contained a block whose input class has no class-validator annotations at all, for instance a block without fields. class-validator rejects such classes since v0.14, where `forbidUnknownValues` is enabled by default. Affected were, among others, link blocks in rich text blocks (DraftJS and TipTap) as their links are validated with a direct `validate()` call.
+
+    `BlockInput` now provides validation metadata, so block inputs validate as expected no matter which validation path is used.
+
+- 8c8f1c4: Update `nodemailer` to v10
+
+    nodemailer now ships its own type definitions, so `@types/nodemailer` is no longer needed. The return type of `MailerService#sendMail` is now the `SentMessageInfo` returned by the transport instead of the (incorrect) `Mail` type.
+
+    Since v9, nodemailer validates TLS certificates when fetching remote content (e.g., attachments with an `href`). To fetch from a host with a self-signed certificate, add its certificate or CA to the trusted ones (e.g., via `NODE_EXTRA_CA_CERTS` or the `tls.ca` option of the attachment) instead of disabling certificate verification.
+
+- e9067c3: Fix saving a TipTap rich text that ends with a list
+
+    Since v10.8.0, the editor added an empty list after a list at the end of the content. The API rejects a list without items, so saving failed with "Validation failed". Removing the list didn't fix it: the empty list stayed at the end of the content, where editors couldn't see or remove it.
+
+    ProseMirror fills content with the schema's first block node, for instance after a list at the end of the content or when all content is deleted. When the `textBlock` node replaced the paragraph and heading nodes, it lost the paragraph's priority, so a list became the first block node. The `textBlock` node gets the paragraph's priority again, so the editor adds an empty text block after a list, as it did before v10.8.0.
+
+    With `maxTextBlocks`, the editor only adds this empty text block when the content stays within the limit. Otherwise, a list as the last allowed block was followed by a block over the limit, and the content couldn't be saved.
+
+## 10.8.0
+
+### Minor Changes
+
+- 383e9ed: Add a `description` option to `createBlock`
+
+    A block's name alone often doesn't say what the block is meant for. The description holds that information, so that consumers of the block meta, such as editor tooling and AI agents, can tell blocks apart.
+
+    **Example**
+
+    ```ts
+    export const HeadlineBlock = createBlock(HeadlineBlockData, HeadlineBlockInput, {
+        name: "Headline",
+        description: "A headline with an optional eyebrow text above it. Use it to introduce a section.",
+    });
+    ```
+
+    The block factories that take a name, for instance `createBlocksBlock` and `createOneOfBlock`, accept the description in their options as well.
+
+- 0076f28: Add vendor migrations to blocks
+
+    A block's `version` is a single counter, so only one party can advance it. That doesn't work for a block that receives migrations from the library providing it as well as from the application using it: `createTipTapRichTextBlock` with `migrateFromDraftJs` took version 1, so the application had to know that and start its own migrations at 2 — and the numbers collided as soon as the library added a migration of its own.
+
+    The migrations that ship with a block are therefore declared in `migrateVendor`, next to the `migrate` option the application fills. They form a chain of their own, counting from 1 independently of the block's `version`, stored per block instance in `$$vendorVersion`, and they run before the block's own migrations. Both options stay separate, so neither side can overwrite the other's migrations.
+
+    **Example**
+
+    ```ts
+    createBlock(VideoBlockData, VideoBlockInput, {
+        name: "Video",
+        migrate: {
+            version: 1,
+            migrations: typeSafeBlockMigrationPipe([ChangeTitleMigration]),
+        },
+        migrateVendor: {
+            version: 1,
+            migrations: typeSafeBlockMigrationPipe([ChangeAspectRatioMigration]),
+        },
+    });
+    ```
+
+    The migrations of the blocks Dextinity ships — `ExternalLinkBlock`, `YouTubeVideoBlock`, `DamVideoBlock` and the Draft.js migration of `createTipTapRichTextBlock` — moved into their vendor chain. Existing content doesn't need to be touched: the version it was saved with is split into the two counters when it is loaded.
+
+    A block that extends the data of a block with vendor migrations inherits them, so it runs them before its own migrations without declaring them, and its own migrations start at 1.
+
+    Deploy this before content is saved with it: once a block instance has been saved with `$$vendorVersion`, an older Dextinity version reads its vendor chain as unmigrated and migrates it a second time.
+
+    **Migrating existing `migrateFromDraftJs` blocks**
+
+    The Draft.js → TipTap migration is now a vendor migration, so it no longer occupies version 1 of the block. Renumber the migrations of a block that uses `migrateFromDraftJs`, so they start at 1 again:
+
+    ```diff
+     export const TipTapRichTextBlock = createTipTapRichTextBlock(
+         { link: LinkBlock, migrateFromDraftJs: true },
+         {
+             name: "TipTapRichText",
+             migrate: {
+    -            version: 2,
+    +            version: 1,
+                 migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
+             },
+         },
+     );
+    ```
+
+    Lower the `toVersion` of each of those migrations by one as well.
+
+- 9109aa3: TipTap Rich Text Block: replace the `paragraph` and `heading` options with `textBlocks`
+
+    The text block type select could only ever offer a fixed paragraph entry plus every enabled heading level, in a fixed order. `textBlocks` configures the text block types explicitly, which decouples a text block from the tag it is stored as and lets several text blocks share a tag, for instance a display headline next to a regular heading 1.
+
+    **Example**
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [
+            { name: "paragraph", label: "Paragraph", tag: "p" },
+            { name: "display", label: "Display", tag: "h1" },
+            { name: "heading-1", label: "Heading 1", tag: "h1" },
+            { name: "heading-2", label: "Heading 2", tag: "h2" },
+        ],
+        defaultTextBlock: "paragraph",
+    });
+    ```
+
+    The API takes the same option without the labels.
+
+    **Migrating an existing configuration**
+    - `paragraph`/`heading` → one `textBlocks` entry per text block type (`tag: "p"` for the paragraph, `h1`-`h6` for the headings). It defaults to a paragraph plus a heading for every level, so only a restricted set needs to be configured. Leaving the paragraph out replaces `paragraph: false`.
+    - `heading: { levels }` → the `textBlocks` entries for those levels.
+    - `heading: { defaultLevel }` → `defaultTextBlock`, which names the text block new content starts with and defaults to the first one.
+    - `migrateFromDraftJs`' `textBlockStyleMap` → `textBlockMap`, which now takes a `{ textBlock, textBlockStyle }` object for every DraftJS block type: `textBlock` names the text block the block becomes (instead of the tag the previous `textBlockType` named), `textBlockStyle` stays optional. Where two text blocks share a heading tag, `textBlockMap` has to name the one a DraftJS `header-one`…`header-six` becomes, unless it is the `defaultTextBlock` — the block throws otherwise, because the conversion runs once and the DraftJS content is gone afterwards.
+
+    **The stored format changes**
+
+    Every paragraph and heading is now one `textBlock` node that names its text block, instead of a `paragraph`/`heading` node with a `level`:
+
+    ```json
+    { "type": "textBlock", "attrs": { "textBlock": "heading-2" }, "content": [{ "type": "text", "text": "Headline" }] }
+    ```
+
+    The tag lives in the configuration, so changing a text block's `tag` takes effect without a migration, while renaming or removing one invalidates the content that names it.
+
+    Content stored by an earlier version holds `paragraph` and `heading` nodes. A vendor migration converts it when the block is loaded, so a project needs no migration of its own. It resolves the text block from the node's tag, which is unambiguous for that content: two text blocks could not share a tag before `textBlocks` existed.
+
+    A project migration sees the converted nodes, because the vendor migrations run before the block's own. A migration written against `{ type: "heading", attrs: { level } }` has to be changed to match `{ type: "textBlock", attrs: { textBlock } }`.
+
+    On the site, `renderTipTapRichText` renders a `textBlock` by its name: `heading-1` to `heading-6` — the default text blocks — as `<h1>` to `<h6>`, anything else as `<p>`. A block that renames a text block or adds one needs its own handler, which reads the name:
+
+    ```tsx
+    const nodeMapping: Record<string, TipTapNodeHandler> = {
+        textBlock: ({ node, children }) => <Headline variant={node.attrs?.textBlock}>{children}</Headline>,
+    };
+    ```
+
+### Patch Changes
+
+- 44125b9: Wait for the permission to be deleted in the `userPermissionsDeletePermission` mutation
+
+    Previously, the mutation returned `true` before the deletion was flushed, so errors during deletion weren't reported to the client.
+
+- 8538d98: Fix DAM file URLs (both inline "open in new tab" and download links) missing the file extension, which caused browsers to save downloaded files without their extension (e.g. `.pdf`).
+
+    Requests for a DAM file URL whose filename segment no longer matches the file (for instance, a URL generated before this fix) now get a permanent redirect to the current canonical URL instead of being served under the stale filename.
+
+- 5d9bf35: Send `Vary: Accept` in DAM image responses
+
+    The image format depends on the `Accept` header. Without `Vary`, a CDN could send a cached WebP image to a client that does not support WebP. For example, images in emails could fail to load in classic Outlook for Windows.
+
+    Some CDNs ignore `Vary` by default. Check if your CDN needs a setting to cache each image format separately.
+
+- 4a1da4e: Exclude the TypeScript build cache from the published packages
+
+    The published tarballs contained the `.tsbuildinfo` files that TypeScript writes next to the build output for incremental builds — 1.3 MB of build cache in `@dextinity/cms-api` alone, which has no use outside the repository.
+
+- dddb222: Prevent the API from crashing when the dominant color calculation or the cleanup of outdated mail logs fails
+
+    Both run in the background without being awaited. A failure previously caused an unhandled promise rejection, which terminates the process by default. The error is now logged instead.
+
+- 8fbfbce: Replace the `hasha` dependency with Node's built-in `crypto`
+
+    `hasha` isn't needed — Node's `crypto` covers everything we use it for. Hashing now uses `crypto` directly, producing identical hex-encoded MD5 hashes, so existing `contentHash` values and scaled-image cache paths remain valid.
+
+- 36f7f17: Replace the deprecated `lodash.isequal` dependency with Node's built-in `util`
+
+    `lodash.isequal` is deprecated and isn't needed — Node's `isDeepStrictEqual` from `util` covers the deep comparisons we use it for, with the same results for the compared values (plain JSON block data and content scopes). Both packages drop the `lodash.isequal` dependency.
+
+## 10.7.0
+
+### Minor Changes
+
+- ae93af6: Support heading-only TipTap rich text blocks
+
+    `paragraph` is now a feature of `createTipTapRichTextBlock` like the other text block types, enabled by default. Turning it off results in a heading-only block (e.g. a headline): the text block type select only offers headings, the editor starts with a heading instead of a paragraph, and content containing a paragraph is rejected during validation.
+
+    The `heading` options gain a `defaultLevel`, the level a newly created heading gets. It defaults to the lowest allowed level and must be one of them. `migrateFromDraftJs` uses it for Draft.js blocks that don't carry a heading level, so migrated content doesn't fall back to paragraphs the schema doesn't allow.
+
+    **Example**
+
+    A headline block that only offers H2-H4 and starts with an H3:
+
+    ```tsx
+    createTipTapRichTextBlock({
+        paragraph: false,
+        heading: { levels: [2, 3, 4], defaultLevel: 3 },
+        maxTextBlocks: 1,
+    });
+    ```
+
+    Lists are disabled in a heading-only block, because a list item's content starts with a paragraph. Enabling one explicitly throws, as does turning off `paragraph` and `heading` together, which would leave no text block type at all.
+
+## 10.6.0
+
+### Patch Changes
+
+- 073dcd7: Add the file name to the `Content-Disposition` header of DAM file downloads
+
+    The header was previously set to `attachment` without a file name, so browsers derived the name of the downloaded file from the URL, which contains the file name without its extension.
+
+- 012411c: Add a `Content-Disposition: inline` header with the file name to DAM file endpoints
+
+    The endpoints serving a file for display previously sent no `Content-Disposition` header at all, so browsers derived the name from the URL when saving the file. They now send `inline` together with the file name, which keeps the file being displayed instead of downloaded.
+
+- d6a910e: Include `attachedBlocks` in the input fields of the block meta of one-of blocks
+
+    The block meta of blocks created with `createOneOfBlock` (and `createLinkBlock`) was missing the `attachedBlocks` field in `inputFields`, causing the generated block input types to only contain `activeType`.
+
+## 10.5.1
+
+### Patch Changes
+
+- 9d150e6: Fix scope validation in `PageTreeModule.forRoot` and `DamModule.register` rejecting correctly decorated scope classes
+
+    `@InputType()` doesn't register its metadata immediately, it only queues the registration until a GraphQL schema is built. Since the scope is validated while the module is being defined, the queued registration hadn't run yet and a scope class decorated with `@InputType("PageTreeNodeScopeInput")` could be rejected with:
+
+    ```
+    Error: Invalid input type name for provided page tree scope class.
+    Make sure to decorate the class with @InputType("PageTreeNodeScopeInput")
+    ```
+
+    The queued registrations are now executed before the scope is validated.
+
+## 10.5.0
+
+### Minor Changes
+
+- f4d091f: Allow declaring content scope dimensions at runtime
+
+    Add an optional `availableContentScopeDimensions` option to the `UserPermissionsModule` to declare the content scope dimensions (with optional labels). When omitted, the dimensions are derived from the keys of `availableContentScopes`.
+
+    A content scope may hold any value (including the `"*"` wildcard) for a dimension that is not part of `availableContentScopes`. Content scopes are no longer validated against `availableContentScopes`; access is enforced per request by `isAllowed`, which compares the requested scope against the user's granted scopes.
+
+    **Example**
+
+    ```ts
+    UserPermissionsModule.forRootAsync({
+        useFactory: () => ({
+            availableContentScopes: [ ... ],
+            availableContentScopeDimensions: [{ name: "domain", label: "Domain (Website)" }, { name: "language" }, { name: "product" }],
+            // ...
+        }),
+        // ...
+    });
+    ```
+
+- 0be2f59: Replace the TipTap Rich Text Block's `supports` array with one option per feature
+
+    `createTipTapRichTextBlock` now takes a single root options object with one option per editor feature, similar to TipTap's `StarterKit` configuration. Feature-specific options move into a nested options object of the feature they belong to, so `headingLevels` becomes `heading: { levels: [...] }`.
+
+    Every feature is enabled by default (except `underline`) and is disabled by passing `false`, so a configuration only has to state what deviates from the defaults instead of repeating every supported feature. Links stay the exception: they are enabled by passing the link block as `link`.
+
+    **Example**
+
+    ```ts
+    // Before
+    createTipTapRichTextBlock({
+        supports: ["bold", "italic", "strike", "sub", "sup", "heading", "ordered-list", "unordered-list"],
+        headingLevels: [2, 3],
+    });
+
+    // After
+    createTipTapRichTextBlock({
+        nonBreakingSpace: false,
+        softHyphen: false,
+        heading: { levels: [2, 3] },
+    });
+    ```
+
+    The features are named after their option: `bold`, `italic`, `underline`, `strike`, `sub`, `sup`, `heading`, `orderedList`, `unorderedList`, `nonBreakingSpace`, `softHyphen` and `link`. Additionally, `undoRedoButtons` (Admin only) shows or hides the undo/redo buttons in the toolbar; the keyboard shortcuts work regardless. The document-level limits `maxTextBlocks` and `listLevelMax` are unchanged.
+
+### Patch Changes
+
+- 02bba49: Validate the GraphQL type names of a custom `PageTreeNode` scope passed to `PageTreeModule.forRoot()`
+
+    `PageTreeModule.forRoot()` now throws an error at startup if the provided `Scope` class isn't decorated with `@ObjectType("PageTreeNodeScope")` and `@InputType("PageTreeNodeScopeInput")`, mirroring the existing validation for `DamModule`'s `Scope` option. This prevents runtime GraphQL schema errors caused by an accidentally renamed scope type.
+
+## 10.4.0
+
+### Minor Changes
+
+- a00f0b2: Support wildcard values for content scope dimensions in `getContentScopesForUser`
+
+    `getContentScopesForUser` can now use the wildcard value `"*"` as the value of a content scope dimension to grant access to any value for that dimension. The wildcard is matched during the content scope check, so it does not need to be part of `availableContentScopes`.
+
+    **Example**
+
+    ```ts
+    getContentScopesForUser(user: User): ContentScopesForUser {
+        // Grant access to every language within the "main" domain
+        return [{ domain: "main", language: "*" }];
+    }
+    ```
+
+    For users with access to all content scopes, `currentUser.permissions[].contentScopes` now returns a single wildcard scope (e.g. `[{ domain: "*", language: "*" }]`) instead of the enumerated `availableContentScopes`. The default `isAllowed` and `currentUser.allowedContentScopes` handle the wildcard; a custom `isAllowed` must treat `"*"` as matching any value of a dimension.
+
+## 10.3.0
+
+### Minor Changes
+
+- 0c211e9: Stop deduplicating content scopes in the user permissions API
+
+    `UserPermissionsService.getAvailableContentScopes()`, `getContentScopes()` and `getPermissionsAndContentScopes()` no longer deduplicate their content scopes. Deduplication only mattered for how the scopes are displayed, so it now happens in the admin where the lists are rendered. This also removes the `lodash.uniqwith` dependency.
+
+    Projects that consume `UserPermissionsPublicService` or the `currentUser` / `availableContentScopes` GraphQL fields directly and rely on the scopes being unique should deduplicate them on their side.
+
+- ddea65d: Remove the "Permissions" and "Scopes" columns from the user permissions users list
+
+    The users list now shows the name, the email and the row actions. The `permissionsCount` and `contentScopesCount` fields of `UserPermissionsUser` are deprecated and now return `0`. They will be removed in the next major version.
+
+- 66cb98a: DAM: Allow replacing a file with a file of the same category instead of the same mimetype
+
+    Previously, "Replace File" only accepted a file with the exact same mimetype, so a JPEG couldn't be replaced by a WebP even though both are pixel images. Now a file can be replaced by any file of the same category:
+
+    | Category     | Examples             |
+    | ------------ | -------------------- |
+    | `pixelImage` | JPEG, PNG, WebP      |
+    | `svgImage`   | SVG                  |
+    | `audio`      | MP3, OGG, WAV        |
+    | `video`      | MP4, WebM, QuickTime |
+    | `document`   | PDF, DOCX, VTT, ZIP  |
+
+    SVG images and pixel images remain separate categories.
+
+    Files in the `document` category still require the exact same mimetype, since their purposes vary too much: a VTT file is a video's subtitles, whereas a PDF is a download, so replacing one with the other must not be possible.
+
+    The file's usages stay unchanged. Only the extension of the file's name is adjusted to match the new file (for instance, `photo.jpg` becomes `photo.webp`). If a file with that name already exists in the same folder, a counter is appended to keep the name unique (for instance, `photo-2.webp`), and the Admin shows a snackbar informing about the new name.
+
+    The new `getDamFileCategory` helper is exported from both packages:
+
+    ```ts
+    import { getDamFileCategory } from "@dextinity/cms-api"; // or "@dextinity/cms-admin"
+
+    getDamFileCategory("image/webp"); // "pixelImage"
+    getDamFileCategory("image/svg+xml"); // "svgImage"
+    ```
+
+### Patch Changes
+
+- 3ffe174: Throw a validation error for malformed UUID id args in `@AffectedEntity`
+
+    The permission check loads affected entities before input validation (e.g., `@IsUUID()`) runs, because guards execute before pipes. A malformed UUID therefore reached PostgreSQL, which failed with `invalid input syntax for type uuid` and surfaced as an internal server error.
+
+    Now id args for entities with a UUID primary key (and `pageTreeNodeIdArg` values) are validated upfront, and a `DextinityValidationException` is thrown for malformed UUIDs.
+
+## 10.2.0
+
+### Minor Changes
+
+- a4ec0fe: Make the DAM's scope-based access control optional
+
+    The DAM controllers required an `AccessControlService`, so `DamFilesModule` couldn't be registered without `UserPermissionsModule`. The service is optional now. A DAM that has neither the service nor the option below refuses to start, because its GraphQL resolvers would serve requests unguarded.
+
+    Pass `disableScopeAccessControl` to run the DAM behind your own authentication guard, without any scope checks:
+
+    ```ts
+    DamFilesModule.register({
+        damConfig,
+        Scope: DamScope,
+        File: DamFile,
+        Folder: DamFolder,
+        disableScopeAccessControl: true,
+    });
+    ```
+
+    The option is only available on `DamFilesModule`, not on `DamModule`, which always runs with `UserPermissionsModule`.
+
+    Applications using `DamModule` together with `UserPermissionsModule` are unaffected: the endpoints keep using the registered `AccessControlService`.
+
+- edf2027: Allow restricting selectable heading levels in the TipTap rich text block via a new `headingLevels` option
+
+    `createTipTapRichTextBlock` accepts a new `headingLevels?: number[]` option to limit which heading levels (1-6) are allowed, mirroring the same option added to `@dextinity/cms-admin`. Content with a heading level outside this set is rejected during validation. Defaults to `[1, 2, 3, 4, 5, 6]`, so existing usages are unaffected. Must be a non-empty array of unique integers between 1 and 6, otherwise an error is thrown.
+
+    ```tsx
+    createTipTapRichTextBlock({
+        supports: ["heading"],
+        headingLevels: [2, 3, 4],
+    });
+    ```
+
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cms-api` to `@dextinity/cms-api`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename `CometException` and its subclasses: `CometValidationException` -> `DextinityValidationException`, `CometEntityNotFoundException` -> `DextinityEntityNotFoundException`, `CometImageResolutionException` -> `DextinityImageResolutionException`. The error codes returned by the API change accordingly, so a matching `@dextinity/cms-admin` version is required
+    - Rename `CometAuthGuard` to `DextinityAuthGuard` and the `@DisableCometGuards()` decorator to `@DisableDextinityGuards()`
+    - Rename the database tables `CometFileUpload`, `CometUserPermission` and `CometUserContentScopes` to `DextinityFileUpload`, `DextinityUserPermission` and `DextinityUserContentScopes`. A migration is shipped with the package, so running the migrations is sufficient
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview` and the impersonation cookie from `comet-impersonate-user-id` to `dextinity-impersonate-user-id`
+
+### Minor Changes
+
+- 86f90cb: Support `dextinity.com/*` Kubernetes labels and annotations
+
+    The Builds, Cron Jobs and Kubernetes modules now read the labels and annotations of Kubernetes resources with the `dextinity.com` prefix:
+
+    | Previously                      | Now                             |
+    | ------------------------------- | ------------------------------- |
+    | `comet-dxp.com/instance`        | `dextinity.com/instance`        |
+    | `comet-dxp.com/parent-cron-job` | `dextinity.com/parent-cron-job` |
+    | `comet-dxp.com/label`           | `dextinity.com/label`           |
+    | `comet-dxp.com/builder`         | `dextinity.com/builder`         |
+    | `comet-dxp.com/trigger`         | `dextinity.com/trigger`         |
+    | `comet-dxp.com/content-scope`   | `dextinity.com/content-scope`   |
+
+    The `comet-dxp.com` prefix is still supported, so existing Helm charts keep working without changes.
+    Resources are expected to use one prefix or the other: if no resource matches the `dextinity.com` labels, the `comet-dxp.com` ones are used instead.
+
+    **Example**
+
+    ```yaml
+    metadata:
+        annotations:
+            dextinity.com/label: "Demo Cron Job"
+            dextinity.com/content-scope: '{ "domain": "main", "language": "en" }'
+    ```
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/cms-api` to `@dextinity/cms-api`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename `CometException` and its subclasses: `CometValidationException` -> `DextinityValidationException`, `CometEntityNotFoundException` -> `DextinityEntityNotFoundException`, `CometImageResolutionException` -> `DextinityImageResolutionException`. The error codes returned by the API change accordingly, so a matching `@dextinity/cms-admin` version is required
+    - Rename `CometAuthGuard` to `DextinityAuthGuard` and the `@DisableCometGuards()` decorator to `@DisableDextinityGuards()`
+    - Rename the database tables `CometFileUpload`, `CometUserPermission` and `CometUserContentScopes` to `DextinityFileUpload`, `DextinityUserPermission` and `DextinityUserContentScopes`. A migration is shipped with the package, so running the migrations is sufficient
+    - Rename the site preview cookie from `__comet_site_preview` to `__dextinity_site_preview` and the impersonation cookie from `comet-impersonate-user-id` to `dextinity-impersonate-user-id`
+
+### Minor Changes
+
+- 86f90cb: Support `dextinity.com/*` Kubernetes labels and annotations
+
+    The Builds, Cron Jobs and Kubernetes modules now read the labels and annotations of Kubernetes resources with the `dextinity.com` prefix:
+
+    | Previously                      | Now                             |
+    | ------------------------------- | ------------------------------- |
+    | `comet-dxp.com/instance`        | `dextinity.com/instance`        |
+    | `comet-dxp.com/parent-cron-job` | `dextinity.com/parent-cron-job` |
+    | `comet-dxp.com/label`           | `dextinity.com/label`           |
+    | `comet-dxp.com/builder`         | `dextinity.com/builder`         |
+    | `comet-dxp.com/trigger`         | `dextinity.com/trigger`         |
+    | `comet-dxp.com/content-scope`   | `dextinity.com/content-scope`   |
+
+    The `comet-dxp.com` prefix is still supported, so existing Helm charts keep working without changes.
+    Resources are expected to use one prefix or the other: if no resource matches the `dextinity.com` labels, the `comet-dxp.com` ones are used instead.
+
+    **Example**
+
+    ```yaml
+    metadata:
+        annotations:
+            dextinity.com/label: "Demo Cron Job"
+            dextinity.com/content-scope: '{ "domain": "main", "language": "en" }'
+    ```
+
+### Patch Changes
+
+## 9.5.0
+
+### Minor Changes
+
+- 4eadaf5: Deprecate `FilesService.calculateDominantColor`
+
+    Computing the dominant color of an image was the only part of `FilesService` that used imgproxy. It moved to an internal service that `DamImagesModule` provides, so file handling no longer depends on imgproxy.
+
+    `FilesService.calculateDominantColor` returns the color when `DamImagesModule` is registered, and `undefined` when it is not.
+
+- 4eadaf5: Split `DamModule` into composable sub-modules
+
+    `DamModule` is now a facade composing four sub-modules: `DamFilesModule` (file and folder storage, upload and serving), `DamImagesModule` (image scaling via imgproxy, dominant color), `DamBlocksModule` (block transformers) and `DamDependentsModule` (the `dependents` field on `DamFile`). `DamModule.register()` keeps its signature and still composes all four.
+
+    `DamModule` and its sub-modules now throw when they are registered more than once in the same process. A second registration would mount the DAM routes twice and add the `dependents` field to the file type again, so it never worked as intended.
+
+    Projects that only need DAM file upload and storage can register `DamFilesModule` on its own, without `ImgproxyModule` and without `DependenciesModule`:
+
+    ```ts
+    DamFilesModule.register({ damConfig, Scope: DamScope, File: DamFile, Folder: DamFolder });
+    ```
+
+    In that setup, `FilesService` receives no dominant color calculator, so uploads skip the color and `FilesService.calculateDominantColor` returns `undefined`.
+
+## 9.4.0
+
+### Patch Changes
+
+- 0dac371: Keep the list nesting when migrating Draft.js content to TipTap
+
+    The `migrateFromDraftJs` option of `createTipTapRichTextBlock` ignored the `depth` of Draft.js list items, so nested lists were flattened into a single list. The migration now converts the `depth` into nested TipTap lists.
+
+    Nesting is limited by the block's `listLevelMax` option: list items that are indented deeper are placed on the deepest allowed level instead of being dropped.
+
+- 14d481e: Keep the text block type when the Draft.js → TipTap migration maps a block type to a `textBlockStyle`
+
+    A Draft.js block type listed in `migrateFromDraftJs.textBlockStyleMap` was always converted to a paragraph, so a `header-two` block mapped to a `headline450` style lost its heading tag and was rendered with whatever tag the style defaults to. Mapped header types now keep their heading level and only receive the mapped `textBlockStyle`.
+
+    For custom Draft.js block types that were rendered as a heading (e.g. a `headline450` block type rendered as `<h2>`), the target text block type can now be set explicitly by passing an object instead of a style name:
+
+    **Example**
+
+    ```ts
+    createTipTapRichTextBlock({
+        textBlockStyles: [{ name: "headline450", appliesTo: ["heading-2"] }],
+        migrateFromDraftJs: {
+            textBlockStyleMap: { headline450: { textBlockType: "heading-2", textBlockStyle: "headline450" } },
+        },
+    });
+    ```
+
+    `textBlockType` accepts `paragraph` and `heading-1` … `heading-6`, and both properties are optional.
+
+- 8c6be74: Improve performance of the `contentScopesCount` field when querying the users list
+
+    When resolving `contentScopesCount` for a list of users, the available content scopes were recomputed (and deduplicated) once per row. They are now resolved a single time per request through a request-scoped `DataLoader`, which noticeably speeds up the users list when many content scopes are configured.
+
+## 9.3.0
+
+### Minor Changes
+
+- 924b66c: Add `underline` support to `createTipTapRichTextBlock`
+
+    The `underline` inline style is now part of the `supports` list and can be toggled via a new toolbar button. The underline mark is validated by the API, rendered as `<u>` by `renderTipTapRichText`, and the DraftJS migration maps the `UNDERLINE` inline style to it when supported. Per default it is disabled, pass a `supports` list with `underline` to enable it.
+
+### Patch Changes
+
+- a8e8f02: Export `DamFileAiContentType` enum
+
+## 9.2.2
+
+### Patch Changes
+
+- d1022e2: Improve performance of the `block_index_dependencies` materialized view refresh
+
+    Resolve the `EntityInfo` of the root and target entity once over the union of all root blocks, instead of joining `EntityInfo` inside each root block's `SELECT`. Previously the `EntityInfo` view (a `UNION` over every entity, including a recursive DAM folder-path CTE) was re-evaluated once per root block, which dominated the refresh cost on large datasets. The refreshed view's columns and contents are unchanged.
+
+- a2515ce: Add timing and outcome logs to the `refreshBlockIndexViews` command
+
+    The command now logs how long the refresh took and whether a refresh was actually performed or skipped because the block index views were still fresh enough.
+
+## 9.2.1
+
+## 9.2.0
+
+### Minor Changes
+
+- ee0bf93: Add AI content disclosure for DAM assets (EU AI Act, Article 50)
+
+    Editors can mark a DAM asset as **AI generated** or **AI modified** in the file settings. When such an asset is published, the site renders the official EU AI-content label and merges the disclosure into the media element's accessible name, so screen-reader users learn which asset is AI.
+
+    **API**
+
+    New `aiContentType` field (`Generated` | `Modified`) on DAM files, exposed through the `PixelImage` and `DamVideo` blocks.
+
+    **Admin**
+
+    New "AI content" field in the DAM file settings, shown for image, video and audio assets only (other file types cannot constitute a deep fake).
+
+    **Site**
+
+    `PixelImageBlock` and `DamVideoBlock` render the disclosure automatically for marked assets. Both accept props to customize it:
+    - `aiContentDisclosureProps` — override the badge.
+    - `customAiContentDisclosure` — render your own disclosure, or `null` for none.
+    - `aiContentAltTextPrefixLabels` — localize the accessible-name prefix (defaults to English).
+
+    `@comet/site-react` also exports the `AiContentDisclosure` badge and the `getAiContentAltTextWithPrefix` helper.
+
+- 8d46a98: Remove special handling that excluded DAM URLs from the access log
+
+    Previously, requests to DAM routes were excluded from the access log. They are now logged like any other HTTP request.
+
+### Patch Changes
+
+- 3c28742: Prevent `pg_advisory_xact_lock` query spam when refreshing block index dependencies
+
+    `DependenciesService.refreshViews()` runs once per resolved `dependents`/`dependencies` field, so a single view (e.g. the DAM "Usages" column) triggers many parallel refreshes. When the last refresh was older than 15 minutes (or none existed), each took the blocking lock path and piled up waiting, each holding a database connection. This could exhaust the connection pool and surface as `Knex: Timeout acquiring a connection` errors.
+
+    Parallel refreshes within a process are now deduplicated into a single in-flight refresh, so at most one advisory lock is taken per instance, while the cross-instance advisory lock still prevents concurrent `REFRESH MATERIALIZED VIEW` runs.
+
+## 9.1.1
+
+## 9.1.0
+
+### Minor Changes
+
+- 319f5b8: Allow filtering, searching and sorting warnings by name, info and type
+
+    The warnings data grid now supports filtering and full-text searching by the related entity's name and secondary information, filtering by type, and sorting by name and type.
+
+    On the API, the `WarningFilter` gains `name` and `secondaryInformation` fields and `WarningSortField` gains a `name` value. The related entity's name and secondary information are resolved by joining the `EntityInfo` view, while the type is read from the warning's `sourceInfo`. The view is only joined when a query actually references name or info. A migration adds an index on the `EntityInfo` join keys to keep that join fast.
+
+## 9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 8c2fdde: Add filtering and sorting to `DependenciesList` and `DependentsList`
+
+    Users can now filter dependencies/dependents by name, type, secondary information, and visibility, and sort by all columns. A default filter shows only visible items. The `GqlFilter` type is now exported from `@comet/admin`.
+
+    **Breaking changes:**
+
+    **`@comet/cms-api`:** `DependencyFilter.targetGraphqlObjectType` and `DependentFilter.rootGraphqlObjectType` changed from `string` to `StringFilter`. Update any code passing a plain string to use `{ equal: "..." }` instead.
+
+    **`@comet/cms-api`:** `DependenciesService.getDependents()` and `getDependencies()` consolidated the `filter`, `paginationArgs`, and `options` parameters into a single `options` object. If you call these methods directly, merge the arguments:
+
+    ```ts
+    // Before
+    service.getDependents(target, filter, { offset, limit }, { forceRefresh, sort });
+
+    // After
+    service.getDependents(target, { filter, offset, limit, forceRefresh, sort });
+    ```
+
+    **`@comet/cms-admin`:** The GQL queries passed to `DependenciesList` and `DependentsList` must now accept `$filter` and `$sort` variables and forward them to the `dependencies`/`dependents` field. Update your queries as follows:
+
+    ```graphql
+    # DependentsList
+    query MyDependents($id: ID!, $offset: Int!, $limit: Int!, $forceRefresh: Boolean = false, $filter: DependentFilter, $sort: [DependencySort!]) {
+        item: myEntity(id: $id) {
+            id
+            dependents(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+                nodes {
+                    rootGraphqlObjectType
+                    rootId
+                    rootColumnName
+                    jsonPath
+                    name
+                    secondaryInformation
+                    visible
+                }
+                totalCount
+            }
+        }
+    }
+
+    # DependenciesList
+    query MyDependencies($id: ID!, $offset: Int!, $limit: Int!, $forceRefresh: Boolean = false, $filter: DependencyFilter, $sort: [DependencySort!]) {
+        item: myEntity(id: $id) {
+            id
+            dependencies(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+                nodes {
+                    targetGraphqlObjectType
+                    targetId
+                    rootColumnName
+                    jsonPath
+                    name
+                    secondaryInformation
+                    visible
+                }
+                totalCount
+            }
+        }
+    }
+    ```
+
+- 0e7d7e9: Import blob storage backends dynamically
+
+    `BlobStorageAzureConfig`, `BlobStorageAzureStorage`, `BlobStorageFileConfig`, and `BlobStorageFileStorage` are no longer exported from `@comet/cms-api` as they are now loaded dynamically based on the configured driver. Only the relevant backend class is imported, which avoids loading unused optional dependencies (e.g., `@azure/storage-blob` or `aws-sdk`).
+
+- 3f3da52: Switch to SQL-based entity info system
+
+    The `@EntityInfo` decorator now accepts a field-path-based object or a raw SQL string instead of a TypeScript function or service class.
+    This enables efficient SQL-level filtering and sorting of dependencies and warnings based on entity info.
+
+    **Breaking changes:**
+    - `@EntityInfo` decorator API changed: now accepts `{ name, secondaryInformation?, visible? }` with dot-notation field paths, or a raw SQL string
+    - `EntityInfoServiceInterface` has been removed from exports
+    - `PageTreeNodeDocumentEntityInfoService` has been removed; `@EntityInfo` on `Page`, `Link`, and similar document entities is no longer needed
+    - `block_index_dependencies` view exposes two new columns `blockVisible` and `entityVisible`; `visible` is now their logical AND (previously only reflected block-level visibility)
+    - `block_index_dependencies` view now includes `rootName`, `rootSecondaryInformation`, `targetName`, and `targetSecondaryInformation` columns from `EntityInfo`, removing the need for a runtime JOIN when querying dependencies/dependents
+
+- 962a320: Remove `importDamFileByDownload` mutation
+- 2ea835c: Rename `RedirectSourceTypeValues` to `RedirectSourceType`
+- 171c335: Redirects: add `domain` source type
+
+    To fully support domain redirects, additional handling is required in the site middleware.
+
+### Minor Changes
+
+- f1a473a: Allow `AffectedScope` to return multiple scopes
+
+    The `argsToScope` function can now return `ContentScope[]` in addition to a single `ContentScope`. When multiple scopes are returned, the user must have access to all of them (AND relationship).
+
+    ```ts
+    @AffectedScope((args: MyArgs) => [{ domain: args.fromDomain }, { domain: args.toDomain }])
+    ```
+
+- 8954d64: Add `findUser` / `findUserOrThrow` (and `findUserForLogin` / `findUserForLoginOrThrow`) to `UserPermissionsUserServiceInterface`
+
+    The throwing `getUser` and `getUserForLogin` methods on `UserPermissionsUserServiceInterface` are now deprecated in favor of paired find methods:
+    - `findUser(id): Promise<User | null>` / `findUserOrThrow(id): Promise<User>`
+    - `findUserForLogin(id): Promise<User | null>` / `findUserForLoginOrThrow(id): Promise<User>`
+
+    This lets consumers opt into a non-throwing path without wrapping lookups in `try`/`catch`. Existing implementations that only define `getUser` / `getUserForLogin` continue to work; the service falls back to them.
+
+    **Example**
+
+    ```ts
+    export class UserService implements UserPermissionsUserServiceInterface {
+        async findUser(id: string): Promise<User | null> {
+            return this.users.find((user) => user.id === id) ?? null;
+        }
+
+        async findUserOrThrow(id: string): Promise<User> {
+            const user = await this.findUser(id);
+            if (!user) {
+                throw new Error(`User not found: ${id}`);
+            }
+            return user;
+        }
+
+        // ...
+    }
+    ```
+
+- 4c1aeb2: Add `noFollow` option to `ExternalLinkBlock`
+
+    Editors can now mark an external link as `nofollow` via a new checkbox in the admin form. When enabled, the rendered `<a>` tag receives `rel="nofollow"`. Existing links are unaffected by an automatic block-data migration that sets `noFollow` to `false`.
+
+- 67938b2: Filter `myFullTextSearch` results by the entity's required permission
+
+    The `requiredPermission` of an entity (declared via the `@RequiredPermission` decorator) is now included in both the `EntityInfo` and `EntityInfoFullText` SQL views.
+
+    The `myFullTextSearch` query (formerly `fullTextSearch`) filters results based on the current user's permissions, only returning entities where the user has the required permission. Entries without a required permission are excluded from results, as the permission cannot be determined. The `my` prefix reflects that the query operates on the current user and only returns entities the user is allowed to see.
+
+    **Example usage:**
+
+    ```ts
+    @EntityInfo<Product>({
+        name: "title",
+        secondaryInformation: "category.name",
+        visible: { status: { $eq: ProductStatus.Published } },
+        fullText: "fullText",
+    })
+    @RequiredPermission("products")
+    @ObjectType()
+    @Entity()
+    export class Product {
+        // ...
+    }
+    ```
+
+- c0cee12: Add `placeholders` option to `createTipTapRichTextBlock` that allows inserting pre-defined placeholder tokens into the rich text editor. Placeholders are rendered as non-editable chips and can only be removed as a whole unit.
+- 7fbe2a7: Add `allowPageDelete` option to disable deletion of pages in the PageTree. When set to `false`, the delete option is hidden in the Admin UI and the API blocks deletion attempts.
+- 54f57dd: Support loading data for child blocks embedded in rich text content in `recursivelyLoadBlockData`
+
+    Child blocks embedded in a `createTipTapRichTextBlock` rich text block (stored as `cmsBlock`/`cmsInlineBlock` nodes) are now traversed by `recursivelyLoadBlockData`, so their registered block loaders run just like for any other nested block. This allows rich text child blocks to load additional data (e.g. via a GraphQL query) without relying on a `BlockTransformerService` on the API side.
+
+    To support this, the `tipTapContent` field of a `createTipTapRichTextBlock` block is now declared with a dedicated `TipTapRichTextBlock` block meta kind (instead of `Json`) that carries the configured child blocks. The block loader uses this kind to detect rich text content instead of inspecting arbitrary `Json` fields.
+
+    Also re-exported from `@comet/site-nextjs`.
+
+- a50793a: Add `listFiles` method to `BlobStorageBackendService`
+- cac2b3b: Add fullText query support for PageTree (pageTreeFullTextSearch query)
+
+    To enable add a fullText column for a PageTree document (Page or others):
+
+    ```ts
+    @Index({ type: "fulltext" })
+    @Property<Page>({ nullable: true, type: new FullTextType(), onUpdate: (page) => blockToMikroOrmFullText(page.content) })
+    searchableContent?: string;
+    ```
+
+    and enable fullText option for PageTreeModule
+
+- 9d5f045: Add a `urlTemplate` field resolver to `FileImagesResolver`
+- c6703db: Add `ids` filter to `damFilesList`
+
+    `FileFilterInput` now accepts an optional `ids: [ID!]` to restrict the result set to specific files. Useful for batch-loading a known selection (e.g. after a multi-file picker confirms) in a single request.
+
+- b0ceb9c: Export `IsLinkTarget` validator
+- 127a492: Add TipTapRichTextBlock as an alternative to RichTextBlock
+- 1b37655: Add scope support to `myFullTextSearch`
+
+    The `EntityInfoFullText` view now includes a `scopes` column, and the `myFullTextSearch` query accepts an optional `scope` argument to restrict results to a single content scope.
+
+    The scopes are derived from either a `scope` property on the entity (simple case) or the `@ScopedEntity` decorator. To support building the scopes in SQL, `@ScopedEntity` accepts a new declarative, SQL-convertible variant in addition to the existing callback/service:
+
+    ```ts
+    // Field path to the scope object (an embeddable)
+    @ScopedEntity("company.scope")
+
+    // Object mapping scope properties to field paths
+    @ScopedEntity({ companyId: "company.id" })
+
+    // Multiple scopes
+    @ScopedEntity(["company.scope", "otherCompany.scope"])
+    ```
+
+    The existing callback and service variants keep working everywhere `@ScopedEntity` is used (e.g. the auth guard). They cannot be converted to SQL, so an entity that is part of the full-text index must use the declarative variant (or have a `scope` property) — otherwise creating the `EntityInfoFullText` view throws.
+
+- 70a77db: Reuse `@RequiredPermission` from entity in resolver permissions
+
+    The `UserPermissionsGuard` now falls back to the entity's `@RequiredPermission` decorator when no permission is explicitly set on the resolver. The entity is resolved from the `@Resolver(() => Entity)` decorator.
+
+    Additionally, the CRUD generator no longer emits `@RequiredPermission` on generated resolvers if the entity already has `@RequiredPermission` set. This avoids redundant permission declarations.
+
+- 8498a7c: Export `EntityInfoObject`, `EntityInfoFullTextObject` and `PaginatedEntityInfo`
+
+    This allows building custom full-text search resolvers (for example a public, permission-independent site search) that reuse the existing full-text search views and re-use the `entityInfo` relation to return name and secondary information.
+
+- 8ad9dd8: Add support for deleting multiple redirects in the grid
+- bc57b4a: Add support for child blocks in `createTipTapRichTextBlock`
+
+    Child blocks can now be embedded into the TipTap rich text editor, similar to the existing link feature. Configure the supported blocks via the new `childBlocks` option (both admin and API): a record keyed by a stable key, where each entry is `{ block, display }`. `display` is either `"block"` (a standalone block element on its own line) or `"inline"` (rendered inline within the surrounding text). A "+" button in the toolbar opens a menu listing the configured child blocks. Selecting one opens a dialog with the block's Admin component; on confirmation, the block is inserted into the editor as a non-editable preview that can be edited (by clicking it) or removed.
+
+    **Example**
+
+    ```tsx
+    createTipTapRichTextBlock({
+        childBlocks: { productPrice: { block: ProductPriceBlock, display: "inline" } },
+    });
+    ```
+
+- 2fe9d4b: Add support for translating page and document content
+
+    Content translation can now be applied to entire documents at once, in addition to the existing field-level translation.
+
+    **Setup**
+
+    Wrap the application with `AzureAiTranslatorProvider` (supports `batchTranslate` automatically):
+
+    ```tsx
+    <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
+        {children}
+    </AzureAiTranslatorProvider>
+    ```
+
+    **Making a document type translatable**
+
+    Add `createDocumentTranslationMethods` and the `TranslatableInterface` type to the document definition:
+
+    ```tsx
+    import { createDocumentTranslationMethods, type TranslatableInterface } from "@comet/cms-admin";
+
+    const rootBlocks = {
+        content: PageContentBlock,
+        seo: SeoBlock,
+    };
+
+    export const Page: DocumentInterface & TranslatableInterface & DependencyInterface = {
+        // ...existing config
+        ...createDocumentRootBlocksMethods(rootBlocks),
+        ...createDocumentTranslationMethods(rootBlocks),
+    };
+    ```
+
+    **Adding translate action to the edit page**
+
+    `createUsePage` now returns a `translateContent` function. Use it with `TranslateContentMenuItem` inside a `CrudMoreActionsMenu`:
+
+    ```tsx
+    const { translateContent /* ...other fields */ } = usePage({ pageId: id });
+
+    <CrudMoreActionsMenu overallActions={[<TranslateContentMenuItem translateContent={translateContent} />]} />;
+    ```
+
+    **Page tree integration**
+
+    The page tree context menu and bulk action toolbar automatically show a "Translate" action for pages. This translates the page name, slug, and document content.
+
+- dd51208: Update TypeScript compilation target to ES2023 and lib to ES2023 to match the required Node.js v22
+
+### Patch Changes
+
+- fa5c7a4: Fix `FileField` breaking image block selection
+
+    The `DamFileFieldFile` fragment lost the image dimensions (`width`, `height`, `cropArea`) needed by `DamImageBlock`/`PixelImageBlock`. Selecting an image inside an image block crashed because those fields were missing. Restored them on the fragment.
+
+    Composing the fragment into a parent collection (e.g. a many-to-many to `DamFile`) exposed a Mikro-ORM gotcha: `Collection.loadItems()` does not honor `eager: true`, so each loaded `DamFile` had an uninitialized `image` Reference and GraphQL threw `Cannot return null for non-nullable field DamFileImage.width`. Added an `image` `@ResolveField` on `FilesResolver` that initializes the Reference if needed, so consumers don't have to remember to populate it.
+
+- f6a2932: Fix `MODULE_NOT_FOUND` errors caused by extensionless deep imports of `@nestjs/graphql` internals. `@nestjs/graphql` 13.3.0 tightened its `exports` map so that the `"./*": "./*"` pattern no longer maps to `.js` automatically. All deep imports of `@nestjs/graphql` internals now use explicit `.js` extensions.
+- 35e9e0d: Fix copying the home page creating a second page with the slug `home`
+
+    Previously, copying the home page produced a second page with the slug `home`, after which none of the home pages could be deleted (deleting a page with the slug `home` is forbidden). The copy now receives a different slug if the target scope already has a home page, and keeps `home` only when there is none yet.
+
+- 91f4a9f: Fix DAM file listing failing for files larger than ~2 GB
+
+    The `size` field of `DamFile` and `FileUpload` was exposed as a GraphQL `Int`, which can only represent 32-bit signed integers (max ~2.1 GB). Files exceeding this size (e.g. large videos) caused the GraphQL response to fail with `Int cannot represent non 32-bit signed integer value`, breaking the DAM file list and the "Select files from DAM" dialog. The field is now exposed as `BigInt`, which represents the full range of file sizes stored in the database (`bigint`).
+
+- 6b7adc7: Fix `damFilesList` returning no files in subfolders when filtering by `ids`
+
+    `damFilesList` implicitly constrains to the scope root when no `folderId` is passed. The constraint already had an escape hatch for `filter.searchText`; the same now applies to `filter.ids`. Resolving a selection via `filter: { ids: ... }` returns all matching files regardless of which folder they live in, which unblocks the admin `FileField` multi-select for files in subfolders.
+
+- 31d9296: Fix duplicate TipTap `'link'` extension warning by explicitly disabling StarterKit's built-in Link extension
+
+    StarterKit (v3+) includes `@tiptap/extension-link` by default. Since we register our own `CmsLink` mark (also named `"link"`), this caused a "Duplicate extension names found: ['link']" warning. Setting `link: false` in `StarterKit.configure()` resolves this.
+
+- 19a0528: Fix `MailerLogStatus` GQL enum name (was incorrectly registered as `WarningStatus`)
+- 71dce06: Support sorting folders by size (child count) in `FoldersService`
+- f162fa5: Fix `AzureOpenAiContentGenerationService` for newer GPT models
+
+    We still used the deprecated `max_tokens` that isn't supported anymore by newer models.
+    Replaced it with the newer `max_completion_tokens`.
+
+- 1ad7de3: Return null in `getNodeByPath` when path is `/home` to prevent the home page from being returned for that path (results in 404)
+- affbb11: Load `jsdom` lazily for SVG validation
+
+    `jsdom` (~90 MB resident) was imported and instantiated at module load time, so importing anything from `@comet/cms-api` pulled it into memory even when no SVG was ever validated. It's now loaded on the first SVG validation instead, reducing the package's base memory footprint.
+
+- fad0167: Load `@kubernetes/client-node` lazily in `KubernetesService`
+
+    `@kubernetes/client-node` (~85 MB resident) was statically imported, so importing anything from `@comet/cms-api` pulled it into memory even for projects that don't use the Kubernetes-based builds feature. The runtime parts of the client are now required lazily when `KubernetesService` actually connects to a cluster, reducing the package's base memory footprint.
+
+- 6793853: Load `openai` lazily in `AzureOpenAiContentGenerationService`
+
+    The `openai` client was statically imported, so importing anything from `@comet/cms-api` pulled it into memory even when the content-generation feature was disabled. It's now required lazily when a client is actually created, reducing the package's base memory footprint.
+
+- a2c2eb5: Log the reason when a permission check denies access
+
+    `AbstractAccessControlService.isEqualOrMorePermissions` now emits a NestJS `Logger.debug` line identifying the missing permission or content scope whenever it returns `false`. The `impersonationAllowed` resolver field additionally logs when a user attempts to impersonate themselves.
+
+- 802b0b8: Remove `sharp` dependency by parsing the dominant color directly from the 1x1 PNG produced by imgproxy
+- 8bf0e5b: Remove unused `ts-morph` dependency
+- ac59b62: Validate uploaded SVGs with `DOMPurify` (backed by `jsdom`) instead of the custom XML-based check
+
+    The previous implementation parsed SVGs with `fast-xml-parser` and applied a hand-written allow/deny list to reject scripts, event handlers and unsafe links.
+    SVGs are now sanitized with the vetted `DOMPurify` library and rejected when it has to strip any tags or attributes, providing more robust protection against XSS vectors in uploaded SVGs.
+
+    The `role` attribute and the `<use>` element are allowed, since they're commonly used in valid SVGs. `<use>` is restricted to same-document fragment references (e.g. `href="#id"`); references to external resources are rejected to prevent XSS/SSRF.
+
+- 8722deb: Upgrade `file-type` dependency from v16 to v21
+
+## 9.0.0-beta.6
+
+### Minor Changes
+
+- f1a473a: Allow `AffectedScope` to return multiple scopes
+
+    The `argsToScope` function can now return `ContentScope[]` in addition to a single `ContentScope`. When multiple scopes are returned, the user must have access to all of them (AND relationship).
+
+    ```ts
+    @AffectedScope((args: MyArgs) => [{ domain: args.fromDomain }, { domain: args.toDomain }])
+    ```
+
+- 8954d64: Add `findUser` / `findUserOrThrow` (and `findUserForLogin` / `findUserForLoginOrThrow`) to `UserPermissionsUserServiceInterface`
+
+    The throwing `getUser` and `getUserForLogin` methods on `UserPermissionsUserServiceInterface` are now deprecated in favor of paired find methods:
+    - `findUser(id): Promise<User | null>` / `findUserOrThrow(id): Promise<User>`
+    - `findUserForLogin(id): Promise<User | null>` / `findUserForLoginOrThrow(id): Promise<User>`
+
+    This lets consumers opt into a non-throwing path without wrapping lookups in `try`/`catch`. Existing implementations that only define `getUser` / `getUserForLogin` continue to work; the service falls back to them.
+
+    **Example**
+
+    ```ts
+    export class UserService implements UserPermissionsUserServiceInterface {
+        async findUser(id: string): Promise<User | null> {
+            return this.users.find((user) => user.id === id) ?? null;
+        }
+
+        async findUserOrThrow(id: string): Promise<User> {
+            const user = await this.findUser(id);
+            if (!user) {
+                throw new Error(`User not found: ${id}`);
+            }
+            return user;
+        }
+
+        // ...
+    }
+    ```
+
+- 4c1aeb2: Add `noFollow` option to `ExternalLinkBlock`
+
+    Editors can now mark an external link as `nofollow` via a new checkbox in the admin form. When enabled, the rendered `<a>` tag receives `rel="nofollow"`. Existing links are unaffected by an automatic block-data migration that sets `noFollow` to `false`.
+
+- 67938b2: Filter `myFullTextSearch` results by the entity's required permission
+
+    The `requiredPermission` of an entity (declared via the `@RequiredPermission` decorator) is now included in both the `EntityInfo` and `EntityInfoFullText` SQL views.
+
+    The `myFullTextSearch` query (formerly `fullTextSearch`) filters results based on the current user's permissions, only returning entities where the user has the required permission. Entries without a required permission are excluded from results, as the permission cannot be determined. The `my` prefix reflects that the query operates on the current user and only returns entities the user is allowed to see.
+
+    **Example usage:**
+
+    ```ts
+    @EntityInfo<Product>({
+        name: "title",
+        secondaryInformation: "category.name",
+        visible: { status: { $eq: ProductStatus.Published } },
+        fullText: "fullText",
+    })
+    @RequiredPermission("products")
+    @ObjectType()
+    @Entity()
+    export class Product {
+        // ...
+    }
+    ```
+
+- 7fbe2a7: Add `allowPageDelete` option to disable deletion of pages in the PageTree. When set to `false`, the delete option is hidden in the Admin UI and the API blocks deletion attempts.
+- 1b37655: Add scope support to `myFullTextSearch`
+
+    The `EntityInfoFullText` view now includes a `scopes` column, and the `myFullTextSearch` query accepts an optional `scope` argument to restrict results to a single content scope.
+
+    The scopes are derived from either a `scope` property on the entity (simple case) or the `@ScopedEntity` decorator. To support building the scopes in SQL, `@ScopedEntity` accepts a new declarative, SQL-convertible variant in addition to the existing callback/service:
+
+    ```ts
+    // Field path to the scope object (an embeddable)
+    @ScopedEntity("company.scope")
+
+    // Object mapping scope properties to field paths
+    @ScopedEntity({ companyId: "company.id" })
+
+    // Multiple scopes
+    @ScopedEntity(["company.scope", "otherCompany.scope"])
+    ```
+
+    The existing callback and service variants keep working everywhere `@ScopedEntity` is used (e.g. the auth guard). They cannot be converted to SQL, so an entity that is part of the full-text index must use the declarative variant (or have a `scope` property) — otherwise creating the `EntityInfoFullText` view throws.
+
+- 70a77db: Reuse `@RequiredPermission` from entity in resolver permissions
+
+    The `UserPermissionsGuard` now falls back to the entity's `@RequiredPermission` decorator when no permission is explicitly set on the resolver. The entity is resolved from the `@Resolver(() => Entity)` decorator.
+
+    Additionally, the CRUD generator no longer emits `@RequiredPermission` on generated resolvers if the entity already has `@RequiredPermission` set. This avoids redundant permission declarations.
+
+- 8498a7c: Export `EntityInfoObject`, `EntityInfoFullTextObject` and `PaginatedEntityInfo`
+
+    This allows building custom full-text search resolvers (for example a public, permission-independent site search) that reuse the existing full-text search views and re-use the `entityInfo` relation to return name and secondary information.
+
+### Patch Changes
+
+- 35e9e0d: Fix copying the home page creating a second page with the slug `home`
+
+    Previously, copying the home page produced a second page with the slug `home`, after which none of the home pages could be deleted (deleting a page with the slug `home` is forbidden). The copy now receives a different slug if the target scope already has a home page, and keeps `home` only when there is none yet.
+
+- 91f4a9f: Fix DAM file listing failing for files larger than ~2 GB
+
+    The `size` field of `DamFile` and `FileUpload` was exposed as a GraphQL `Int`, which can only represent 32-bit signed integers (max ~2.1 GB). Files exceeding this size (e.g. large videos) caused the GraphQL response to fail with `Int cannot represent non 32-bit signed integer value`, breaking the DAM file list and the "Select files from DAM" dialog. The field is now exposed as `BigInt`, which represents the full range of file sizes stored in the database (`bigint`).
+
+- affbb11: Load `jsdom` lazily for SVG validation
+
+    `jsdom` (~90 MB resident) was imported and instantiated at module load time, so importing anything from `@comet/cms-api` pulled it into memory even when no SVG was ever validated. It's now loaded on the first SVG validation instead, reducing the package's base memory footprint.
+
+- fad0167: Load `@kubernetes/client-node` lazily in `KubernetesService`
+
+    `@kubernetes/client-node` (~85 MB resident) was statically imported, so importing anything from `@comet/cms-api` pulled it into memory even for projects that don't use the Kubernetes-based builds feature. The runtime parts of the client are now required lazily when `KubernetesService` actually connects to a cluster, reducing the package's base memory footprint.
+
+- 6793853: Load `openai` lazily in `AzureOpenAiContentGenerationService`
+
+    The `openai` client was statically imported, so importing anything from `@comet/cms-api` pulled it into memory even when the content-generation feature was disabled. It's now required lazily when a client is actually created, reducing the package's base memory footprint.
+
+- ac59b62: Validate uploaded SVGs with `DOMPurify` (backed by `jsdom`) instead of the custom XML-based check
+
+    The previous implementation parsed SVGs with `fast-xml-parser` and applied a hand-written allow/deny list to reject scripts, event handlers and unsafe links.
+    SVGs are now sanitized with the vetted `DOMPurify` library and rejected when it has to strip any tags or attributes, providing more robust protection against XSS vectors in uploaded SVGs.
+
+    The `role` attribute and the `<use>` element are allowed, since they're commonly used in valid SVGs. `<use>` is restricted to same-document fragment references (e.g. `href="#id"`); references to external resources are rejected to prevent XSS/SSRF.
+
+## 9.0.0-beta.5
+
+### Minor Changes
+
+- c0cee12: Add `placeholders` option to `createTipTapRichTextBlock` that allows inserting pre-defined placeholder tokens into the rich text editor. Placeholders are rendered as non-editable chips and can only be removed as a whole unit.
+- 9d5f045: Add a `urlTemplate` field resolver to `FileImagesResolver`
+- b0ceb9c: Export `IsLinkTarget` validator
+- 8ad9dd8: Add support for deleting multiple redirects in the grid
+
+### Patch Changes
+
+- 6b7adc7: Fix `damFilesList` returning no files in subfolders when filtering by `ids`
+
+    `damFilesList` implicitly constrains to the scope root when no `folderId` is passed. The constraint already had an escape hatch for `filter.searchText`; the same now applies to `filter.ids`. Resolving a selection via `filter: { ids: ... }` returns all matching files regardless of which folder they live in, which unblocks the admin `FileField` multi-select for files in subfolders.
+
+- a2c2eb5: Log the reason when a permission check denies access
+
+    `AbstractAccessControlService.isEqualOrMorePermissions` now emits a NestJS `Logger.debug` line identifying the missing permission or content scope whenever it returns `false`. The `impersonationAllowed` resolver field additionally logs when a user attempts to impersonate themselves.
+
+## 9.0.0-beta.4
+
+### Minor Changes
+
+- c6703db: Add `ids` filter to `damFilesList`
+
+    `FileFilterInput` now accepts an optional `ids: [ID!]` to restrict the result set to specific files. Useful for batch-loading a known selection (e.g. after a multi-file picker confirms) in a single request.
+
+- 127a492: Add TipTapRichTextBlock as an alternative to RichTextBlock
+- 2fe9d4b: Add support for translating page and document content
+
+    Content translation can now be applied to entire documents at once, in addition to the existing field-level translation.
+
+    **Setup**
+
+    Wrap the application with `AzureAiTranslatorProvider` (supports `batchTranslate` automatically):
+
+    ```tsx
+    <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
+        {children}
+    </AzureAiTranslatorProvider>
+    ```
+
+    **Making a document type translatable**
+
+    Add `createDocumentTranslationMethods` and the `TranslatableInterface` type to the document definition:
+
+    ```tsx
+    import { createDocumentTranslationMethods, type TranslatableInterface } from "@comet/cms-admin";
+
+    const rootBlocks = {
+        content: PageContentBlock,
+        seo: SeoBlock,
+    };
+
+    export const Page: DocumentInterface & TranslatableInterface & DependencyInterface = {
+        // ...existing config
+        ...createDocumentRootBlocksMethods(rootBlocks),
+        ...createDocumentTranslationMethods(rootBlocks),
+    };
+    ```
+
+    **Adding translate action to the edit page**
+
+    `createUsePage` now returns a `translateContent` function. Use it with `TranslateContentMenuItem` inside a `CrudMoreActionsMenu`:
+
+    ```tsx
+    const { translateContent /* ...other fields */ } = usePage({ pageId: id });
+
+    <CrudMoreActionsMenu overallActions={[<TranslateContentMenuItem translateContent={translateContent} />]} />;
+    ```
+
+    **Page tree integration**
+
+    The page tree context menu and bulk action toolbar automatically show a "Translate" action for pages. This translates the page name, slug, and document content.
+
+### Patch Changes
+
+- fa5c7a4: Fix `FileField` breaking image block selection
+
+    The `DamFileFieldFile` fragment lost the image dimensions (`width`, `height`, `cropArea`) needed by `DamImageBlock`/`PixelImageBlock`. Selecting an image inside an image block crashed because those fields were missing. Restored them on the fragment.
+
+    Composing the fragment into a parent collection (e.g. a many-to-many to `DamFile`) exposed a Mikro-ORM gotcha: `Collection.loadItems()` does not honor `eager: true`, so each loaded `DamFile` had an uninitialized `image` Reference and GraphQL threw `Cannot return null for non-nullable field DamFileImage.width`. Added an `image` `@ResolveField` on `FilesResolver` that initializes the Reference if needed, so consumers don't have to remember to populate it.
+
+- 31d9296: Fix duplicate TipTap `'link'` extension warning by explicitly disabling StarterKit's built-in Link extension
+
+    StarterKit (v3+) includes `@tiptap/extension-link` by default. Since we register our own `CmsLink` mark (also named `"link"`), this caused a "Duplicate extension names found: ['link']" warning. Setting `link: false` in `StarterKit.configure()` resolves this.
+
+## 9.0.0-beta.3
+
+### Major Changes
+
+- 0e7d7e9: Import blob storage backends dynamically
+
+    `BlobStorageAzureConfig`, `BlobStorageAzureStorage`, `BlobStorageFileConfig`, and `BlobStorageFileStorage` are no longer exported from `@comet/cms-api` as they are now loaded dynamically based on the configured driver. Only the relevant backend class is imported, which avoids loading unused optional dependencies (e.g., `@azure/storage-blob` or `aws-sdk`).
+
+- 962a320: Remove `importDamFileByDownload` mutation
+- 2ea835c: Rename `RedirectSourceTypeValues` to `RedirectSourceType`
+
+### Minor Changes
+
+- a50793a: Add `listFiles` method to `BlobStorageBackendService`
+- cac2b3b: Add fullText query support for PageTree (pageTreeFullTextSearch query)
+
+    To enable add a fullText column for a PageTree document (Page or others):
+
+    ```ts
+    @Index({ type: "fulltext" })
+    @Property<Page>({ nullable: true, type: new FullTextType(), onUpdate: (page) => blockToMikroOrmFullText(page.content) })
+    searchableContent?: string;
+    ```
+
+    and enable fullText option for PageTreeModule
+
+- dd51208: Update TypeScript compilation target to ES2023 and lib to ES2023 to match the required Node.js v22
+
+### Patch Changes
+
+- f6a2932: Fix `MODULE_NOT_FOUND` errors caused by extensionless deep imports of `@nestjs/graphql` internals. `@nestjs/graphql` 13.3.0 tightened its `exports` map so that the `"./*": "./*"` pattern no longer maps to `.js` automatically. All deep imports of `@nestjs/graphql` internals now use explicit `.js` extensions.
+- 71dce06: Support sorting folders by size (child count) in `FoldersService`
+- 802b0b8: Remove `sharp` dependency by parsing the dominant color directly from the 1x1 PNG produced by imgproxy
+- 8bf0e5b: Remove unused `ts-morph` dependency
+- 8722deb: Upgrade `file-type` dependency from v16 to v21
+
+## 9.0.0-beta.2
+
+### Patch Changes
+
+- 1ad7de3: Return null in `getNodeByPath` when path is `/home` to prevent the home page from being returned for that path (results in 404)
+
+## 9.0.0-beta.1
+
+### Major Changes
+
+- 8c2fdde: Add filtering and sorting to `DependenciesList` and `DependentsList`
+
+    Users can now filter dependencies/dependents by name, type, secondary information, and visibility, and sort by all columns. A default filter shows only visible items. The `GqlFilter` type is now exported from `@comet/admin`.
+
+    **Breaking changes:**
+
+    **`@comet/cms-api`:** `DependencyFilter.targetGraphqlObjectType` and `DependentFilter.rootGraphqlObjectType` changed from `string` to `StringFilter`. Update any code passing a plain string to use `{ equal: "..." }` instead.
+
+    **`@comet/cms-api`:** `DependenciesService.getDependents()` and `getDependencies()` consolidated the `filter`, `paginationArgs`, and `options` parameters into a single `options` object. If you call these methods directly, merge the arguments:
+
+    ```ts
+    // Before
+    service.getDependents(target, filter, { offset, limit }, { forceRefresh, sort });
+
+    // After
+    service.getDependents(target, { filter, offset, limit, forceRefresh, sort });
+    ```
+
+    **`@comet/cms-admin`:** The GQL queries passed to `DependenciesList` and `DependentsList` must now accept `$filter` and `$sort` variables and forward them to the `dependencies`/`dependents` field. Update your queries as follows:
+
+    ```graphql
+    # DependentsList
+    query MyDependents($id: ID!, $offset: Int!, $limit: Int!, $forceRefresh: Boolean = false, $filter: DependentFilter, $sort: [DependencySort!]) {
+        item: myEntity(id: $id) {
+            id
+            dependents(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+                nodes {
+                    rootGraphqlObjectType
+                    rootId
+                    rootColumnName
+                    jsonPath
+                    name
+                    secondaryInformation
+                    visible
+                }
+                totalCount
+            }
+        }
+    }
+
+    # DependenciesList
+    query MyDependencies($id: ID!, $offset: Int!, $limit: Int!, $forceRefresh: Boolean = false, $filter: DependencyFilter, $sort: [DependencySort!]) {
+        item: myEntity(id: $id) {
+            id
+            dependencies(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
+                nodes {
+                    targetGraphqlObjectType
+                    targetId
+                    rootColumnName
+                    jsonPath
+                    name
+                    secondaryInformation
+                    visible
+                }
+                totalCount
+            }
+        }
+    }
+    ```
+
+- 3f3da52: Switch to SQL-based entity info system
+
+    The `@EntityInfo` decorator now accepts a field-path-based object or a raw SQL string instead of a TypeScript function or service class.
+    This enables efficient SQL-level filtering and sorting of dependencies and warnings based on entity info.
+
+    **Breaking changes:**
+    - `@EntityInfo` decorator API changed: now accepts `{ name, secondaryInformation?, visible? }` with dot-notation field paths, or a raw SQL string
+    - `EntityInfoServiceInterface` has been removed from exports
+    - `PageTreeNodeDocumentEntityInfoService` has been removed; `@EntityInfo` on `Page`, `Link`, and similar document entities is no longer needed
+    - `block_index_dependencies` view exposes two new columns `blockVisible` and `entityVisible`; `visible` is now their logical AND (previously only reflected block-level visibility)
+    - `block_index_dependencies` view now includes `rootName`, `rootSecondaryInformation`, `targetName`, and `targetSecondaryInformation` columns from `EntityInfo`, removing the need for a runtime JOIN when querying dependencies/dependents
+
+- 171c335: Redirects: add `domain` source type
+
+    To fully support domain redirects, additional handling is required in the site middleware.
+
+### Patch Changes
+
+- 19a0528: Fix `MailerLogStatus` GQL enum name (was incorrectly registered as `WarningStatus`)
+- f162fa5: Fix `AzureOpenAiContentGenerationService` for newer GPT models
+
+    We still used the deprecated `max_tokens` that isn't supported anymore by newer models.
+    Replaced it with the newer `max_completion_tokens`.
+
+## 9.0.0-beta.0
+
+## 8.20.0
+
+### Minor Changes
+
+- ed00704: Add `TableBlock` using the `createTableBlock()` factory
+
+    The passed in `richText` block is used to edit the cell content.
+
+    **Admin:**
+
+    ```ts
+    import { createTableBlock } from "@comet/cms-admin";
+    import { RichTextBlock } from "./RichTextBlock";
+
+    export const TableBlock = createTableBlock({ richText: RichTextBlock });
+    ```
+
+    **API:**
+
+    ```ts
+    import { createTableBlock } from "@comet/cms-api";
+    import { RichTextBlock } from "./rich-text.block";
+
+    export const TableBlock = createTableBlock({ richText: RichTextBlock });
+    ```
+
 ## 8.19.0
 
 ### Patch Changes

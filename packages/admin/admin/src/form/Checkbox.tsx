@@ -1,5 +1,5 @@
 import MuiCheckbox, { type CheckboxProps } from "@mui/material/Checkbox";
-import { type FieldRenderProps } from "react-final-form";
+import type { FieldRenderProps } from "react-final-form";
 
 export type FinalFormCheckboxProps = CheckboxProps;
 

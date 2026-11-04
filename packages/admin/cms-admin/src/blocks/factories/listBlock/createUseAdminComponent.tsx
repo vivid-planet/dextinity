@@ -1,13 +1,13 @@
-import { UndoSnackbar, useSnackbarApi } from "@comet/admin";
+import { UndoSnackbar, useSnackbarApi } from "@dextinity/admin";
 import { type ChangeEvent, type Dispatch, type ReactNode, type SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { v4 as uuid } from "uuid";
 
 import { CannotPasteBlockDialog } from "../../clipboard/CannotPasteBlockDialog";
 import { type ClipboardContent, useBlockClipboard } from "../../clipboard/useBlockClipboard";
-import { type BlockAdminComponentProps, type BlockInterface, type BlockState } from "../../types";
+import type { BlockAdminComponentProps, BlockInterface, BlockState } from "../../types";
 import { resolveNewState } from "../../utils";
-import { type ListBlockAdditionalItemField, type ListBlockState } from "../createListBlock";
+import type { ListBlockAdditionalItemField, ListBlockState } from "../createListBlock";
 
 interface CreateListBlockUseAdminComponentOptions<T extends BlockInterface> {
     block: T;
@@ -19,6 +19,7 @@ type ListBlockUseAdminComponentProps<T extends BlockInterface> = BlockAdminCompo
 
 interface ListBlockUseAdminComponentApi<T extends BlockInterface> {
     cannotPasteBlockErrorDialog: ReactNode;
+    clipboardProgressDialog: ReactNode;
     toggleVisible: (blockKey: string) => void;
     deleteBlocks: (blockKeys: string[]) => void;
     deleteAllSelectedBlocks: () => void;
@@ -101,7 +102,7 @@ export function createUseAdminComponent<T extends BlockInterface>({
                         <UndoSnackbar
                             message={
                                 <FormattedMessage
-                                    id="comet.blocks.list.blockDeleted"
+                                    id="dextinity.blocks.list.blockDeleted"
                                     defaultMessage="{count, plural, one {block} other {# blocks}} deleted"
                                     values={{ count: blocksToRemove.length }}
                                 />
@@ -176,7 +177,7 @@ export function createUseAdminComponent<T extends BlockInterface>({
 
         const totalVisibleBlocks = state.blocks.filter((block) => block.visible).length;
 
-        const { updateClipboardContent, getClipboardContent } = useBlockClipboard({ supports: block });
+        const { updateClipboardContent, getClipboardContent, progressDialog: clipboardProgressDialog } = useBlockClipboard({ supports: block });
 
         const cannotPasteBlockErrorDialog = useMemo(
             () =>
@@ -261,6 +262,7 @@ export function createUseAdminComponent<T extends BlockInterface>({
 
         return {
             cannotPasteBlockErrorDialog,
+            clipboardProgressDialog,
             toggleVisible,
             deleteBlocks,
             deleteAllSelectedBlocks,

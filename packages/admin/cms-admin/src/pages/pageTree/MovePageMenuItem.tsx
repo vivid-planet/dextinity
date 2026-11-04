@@ -1,13 +1,13 @@
 import { gql, useMutation } from "@apollo/client";
-import { RowActionsItem, RowActionsMenu } from "@comet/admin";
-import { MovePage } from "@comet/admin-icons";
+import { RowActionsItem, RowActionsMenu } from "@dextinity/admin";
+import { MovePage } from "@dextinity/admin-icons";
 import { FormattedMessage } from "react-intl";
 
-import { type DocumentInterface, type DocumentType } from "../../documents/types";
+import type { DocumentInterface, DocumentType } from "../../documents/types";
 import { usePageTreeScope } from "../config/usePageTreeScope";
 import { usePageTreeConfig } from "../pageTreeConfig";
-import { type GQLUpdatePageTreeNodeCategoryMutation, type GQLUpdatePageTreeNodeCategoryMutationVariables } from "./MovePageMenuItem.generated";
-import { type PageTreePage } from "./usePageTree";
+import type { GQLUpdatePageTreeNodeCategoryMutation, GQLUpdatePageTreeNodeCategoryMutationVariables } from "./MovePageMenuItem.generated";
+import type { PageTreePage } from "./usePageTree";
 import { usePageTreeContext } from "./usePageTreeContext";
 
 interface Props {
@@ -51,7 +51,7 @@ export function MovePageMenuItem({ page }: Props) {
     };
 
     return (
-        <RowActionsMenu icon={<MovePage />} text={<FormattedMessage id="comet.pages.pages.page.movePage" defaultMessage="Move page" />}>
+        <RowActionsMenu icon={<MovePage />} text={<FormattedMessage id="dextinity.pages.pages.page.movePage" defaultMessage="Move page" />}>
             {categories.map(({ category, label }) => {
                 const canMoveToTargetCategory = categorySupportsDocumentType(category, page.documentType, getDocumentTypesByCategory);
 

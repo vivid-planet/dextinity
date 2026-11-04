@@ -1,4 +1,4 @@
-import { Video } from "@comet/admin-icons";
+import { Video } from "@dextinity/admin-icons";
 import { styled } from "@mui/material/styles";
 
 const VideoThumbnailWrapper = styled("div")`

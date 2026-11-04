@@ -8,10 +8,11 @@ interface PlainTextTranslationDialogProps {
     originalText: string;
     translatedText: string;
     onApplyTranslation: (value: string) => void;
+    multiline?: boolean;
 }
 
 export const PlainTextTranslationDialog = (props: PlainTextTranslationDialogProps) => {
-    const { open, onClose, originalText, translatedText, onApplyTranslation } = props;
+    const { open, onClose, originalText, translatedText, onApplyTranslation, multiline } = props;
 
     return (
         <BaseTranslationDialog
@@ -20,8 +21,16 @@ export const PlainTextTranslationDialog = (props: PlainTextTranslationDialogProp
             originalText={originalText}
             translatedText={translatedText}
             onApplyTranslation={onApplyTranslation}
-            renderOriginalText={(text) => <TextField value={text} disabled fullWidth />}
-            renderTranslatedText={(text, onChange) => <TextField value={text} onChange={(event) => onChange(event.target.value)} fullWidth />}
+            renderOriginalText={(text) => <TextField value={text} disabled fullWidth multiline={multiline} rows={multiline ? 3 : undefined} />}
+            renderTranslatedText={(text, onChange) => (
+                <TextField
+                    value={text}
+                    onChange={(event) => onChange(event.target.value)}
+                    fullWidth
+                    multiline={multiline}
+                    rows={multiline ? 3 : undefined}
+                />
+            )}
         />
     );
 };

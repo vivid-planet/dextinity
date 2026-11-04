@@ -1,5 +1,5 @@
 "use client";
-import { type SVGProps } from "react";
+import type { SVGProps } from "react";
 
 interface SvgUseProps extends SVGProps<SVGSVGElement> {
     href: string;

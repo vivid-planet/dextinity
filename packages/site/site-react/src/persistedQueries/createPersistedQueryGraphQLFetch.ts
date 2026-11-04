@@ -1,10 +1,12 @@
-import { type GraphQLFetch } from "../graphQLFetch/graphQLFetch";
+import type { GraphQLFetch } from "../graphQLFetch/graphQLFetch";
 
 type Fetch = typeof fetch;
 
 export function createPersistedQueryGraphQLFetch(fetch: Fetch, url: string): GraphQLFetch {
     return async function <T, V>(query: string | { hash: string }, variables?: V, init?: RequestInit): Promise<T> {
-        if (typeof query === "string") throw new Error("at runtime only hashed queries are supported");
+        if (typeof query === "string") {
+            throw new Error("at runtime only hashed queries are supported");
+        }
         const hash = query.hash;
         let response;
         if (init?.method === "GET") {

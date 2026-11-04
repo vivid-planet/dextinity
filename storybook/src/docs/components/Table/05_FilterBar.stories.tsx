@@ -18,9 +18,11 @@ import {
     ToolbarTitleItem,
     usePersistedStateId,
     useTableQueryFilter,
-} from "@comet/admin";
+} from "@dextinity/admin";
 import { faker } from "@faker-js/faker";
 import { Typography } from "@mui/material";
+
+import { storyRouterDecorator } from "../../../story-router.decorator";
 
 interface ColorFilterFieldProps {
     colors: string[];
@@ -75,6 +77,7 @@ const tableData = Array.from(Array(10).keys()).map((i): Car => {
 
 export default {
     title: "Docs/Components/Table/Filterbar",
+    decorators: [storyRouterDecorator()],
 };
 
 export const TableWithFilterbar = {

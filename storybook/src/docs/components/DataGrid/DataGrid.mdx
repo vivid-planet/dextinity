@@ -6,7 +6,7 @@ import * as DataGridStories from "./DataGrid.stories";
 
 # DataGrid
 
-Comet Admin contains various helpers for using MUI X DataGrid. It works with the MIT or the commercial version.
+Dextinity Admin contains various helpers for using MUI X DataGrid. It works with the MIT or the commercial version.
 
 ## Hooks
 
@@ -84,7 +84,7 @@ Typical Usage Example:
 Use the existing column-type helpers to make sure columns of certain types are rendered consistently.
 
 ```ts
-import { GridColDef, dataGridDateColumn, dataGridDateTimeColumn } from "@comet/admin";
+import { GridColDef, dataGridDateColumn, dataGridDateTimeColumn } from "@dextinity/admin";
 
 const columns: GridColDef[] = [
     { ...dataGridDateColumn, field: "createdAt" },
@@ -99,7 +99,7 @@ const columns: GridColDef[] = [
 When using DataGrid Pro/Premium with `usePersistentColumnState`, you can change the columns' visibility depending on the screen size.
 This can be done by setting the `visible` property of the column definition to a media query.
 
-When defining the columns, use the `GridColDef` type from `@comet/admin` instead of `@mui/x-data-grid`.
+When defining the columns, use the `GridColDef` type from `@dextinity/admin` instead of `@mui/x-data-grid`.
 
 #### Example
 
@@ -142,9 +142,9 @@ The `ActionItem` type has the following properties:
 
 <Canvas of={DataGridStories._CrudMoreActionsMenu} />
 
-## DataGrid to Comet Graphl API Converter
+## DataGrid to Dextinity GraphQL API Converter
 
-Comet Admin comes with three helpers that convert MUI DataGrid state to standard Comet GraphQL API variables.
+Dextinity Admin comes with three helpers that convert MUI DataGrid state to standard Dextinity GraphQL API variables.
 
 - `muiGridFilterToGql`
 - `muiGridSortToGql`

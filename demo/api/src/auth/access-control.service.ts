@@ -1,4 +1,4 @@
-import { AbstractAccessControlService, ContentScopesForUser, Permission, PermissionsForUser, User, UserPermissions } from "@comet/cms-api";
+import { AbstractAccessControlService, ContentScopesForUser, Permission, PermissionsForUser, User, UserPermissions } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
@@ -15,7 +15,8 @@ export class AccessControlService extends AbstractAccessControlService {
         if (user.isAdmin) {
             return UserPermissions.allContentScopes;
         } else {
-            return [{ domain: "main", language: "en" }];
+            // Grant access to every language and product within the "main" domain using wildcard dimensions
+            return [{ domain: "main", language: "*", product: "*" }];
         }
     }
 }

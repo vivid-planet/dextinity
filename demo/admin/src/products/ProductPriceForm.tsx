@@ -1,18 +1,18 @@
 import { useApolloClient, useQuery } from "@apollo/client";
-import { Field, filterByFragment, FinalForm, FinalFormInput, type FinalFormSubmitEvent, useFormApiRef } from "@comet/admin";
-import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
+import { Field, filterByFragment, FinalForm, FinalFormInput, type FinalFormSubmitEvent, useFormApiRef } from "@dextinity/admin";
+import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { CircularProgress } from "@mui/material";
-import { type FormApi } from "final-form";
+import type { FormApi } from "final-form";
 import isEqual from "lodash.isequal";
 import { FormattedMessage } from "react-intl";
 
 import { productPriceFormFragment, productPriceFormQuery, updateProductPriceFormMutation } from "./ProductPriceForm.gql";
-import {
-    type GQLProductPriceFormFragment,
-    type GQLProductPriceFormQuery,
-    type GQLProductPriceFormQueryVariables,
-    type GQLProductPriceFormUpdateProductMutation,
-    type GQLProductPriceFormUpdateProductMutationVariables,
+import type {
+    GQLProductPriceFormFragment,
+    GQLProductPriceFormQuery,
+    GQLProductPriceFormQueryVariables,
+    GQLProductPriceFormUpdateProductMutation,
+    GQLProductPriceFormUpdateProductMutationVariables,
 } from "./ProductPriceForm.gql.generated";
 
 interface FormProps {
@@ -50,7 +50,9 @@ export function ProductPriceForm({ id }: FormProps) {
     });
 
     const handleSubmit = async (formValues: FormValues, form: FormApi<FormValues>, event: FinalFormSubmitEvent) => {
-        if (await saveConflict.checkForConflicts()) throw new Error("Conflicts detected");
+        if (await saveConflict.checkForConflicts()) {
+            throw new Error("Conflicts detected");
+        }
         const output = {
             ...formValues,
             price: formValues.price ? parseFloat(formValues.price) : null,

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { type ComponentProps, type ElementType, type PropsWithChildren } from "react";
+import type { ComponentProps, ElementType, PropsWithChildren } from "react";
 
 import styles from "./Typography.module.scss";
 
@@ -15,7 +15,9 @@ type TypographyVariant =
     | "eyebrow500"
     | "eyebrow450"
     | "paragraph300"
-    | "paragraph200";
+    | "paragraph200"
+    | "list300"
+    | "list200";
 
 const variantToElementMap: Record<TypographyVariant, ElementType> = {
     headline600: "h1",
@@ -30,6 +32,8 @@ const variantToElementMap: Record<TypographyVariant, ElementType> = {
     eyebrow450: "p",
     paragraph300: "p",
     paragraph200: "p",
+    list300: "p",
+    list200: "p",
 };
 
 export type TypographyProps<T extends ElementType> = {

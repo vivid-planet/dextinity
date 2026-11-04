@@ -1,4 +1,4 @@
-import { type IntrospectionQuery } from "graphql";
+import type { IntrospectionQuery } from "graphql";
 
 import {
     type FormConfig,
@@ -8,9 +8,9 @@ import {
     isFormFieldConfig,
     isFormLayoutConfig,
 } from "../generate-command";
-import { type Imports } from "../utils/generateImportsCode";
+import type { Imports } from "../utils/generateImportsCode";
 import { generateComponentFormField } from "./generateComponentFormField";
-import { type Prop } from "./generateForm";
+import type { Prop } from "./generateForm";
 import { generateFormField } from "./generateFormField";
 import { generateFormLayout } from "./generateFormLayout";
 

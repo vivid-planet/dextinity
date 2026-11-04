@@ -1,4 +1,4 @@
-import { type ContentScope } from "../contentScope/Provider";
+import type { ContentScope } from "../contentScope/Provider";
 import { useContentLanguageConfig } from "./contentLanguageConfig";
 
 interface UseContentLanguageOptions {

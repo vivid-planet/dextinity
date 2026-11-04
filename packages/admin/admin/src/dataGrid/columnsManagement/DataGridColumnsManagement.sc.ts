@@ -1,7 +1,7 @@
 import { css, Divider as MuiDivider, List as MuiList, ListSubheader } from "@mui/material";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type DataGridColumnsManagementClassKey } from "./DataGridColumnsManagement";
+import type { DataGridColumnsManagementClassKey } from "./DataGridColumnsManagement";
 
 export const Root = createComponentSlot("div")<DataGridColumnsManagementClassKey>({
     componentName: "DataGridColumnsManagement",

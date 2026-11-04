@@ -27,7 +27,9 @@ export class GenerateImageTitleResolver {
     @Mutation(() => String)
     async generateImageTitle(@Args() { fileId, language }: GenerateImageTitleArgs): Promise<string> {
         const imageTitle = await this.contentGenerationService.generateImageTitle?.(fileId, { language: language ?? "en" });
-        if (!imageTitle) throw new Error("Image title generation failed or is not supported");
+        if (!imageTitle) {
+            throw new Error("Image title generation failed or is not supported");
+        }
         return imageTitle;
     }
 }

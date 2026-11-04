@@ -1,6 +1,7 @@
-import { Archive, Offline, Online } from "@comet/admin-icons";
+import { Archive, Offline, Online } from "@dextinity/admin-icons";
+import type { JSX } from "react";
 
-import { type GQLPageTreeNodeVisibility } from "../../graphql.generated";
+import type { GQLPageTreeNodeVisibility } from "../../graphql.generated";
 
 interface PageVisibilityIconProps {
     visibility: GQLPageTreeNodeVisibility;

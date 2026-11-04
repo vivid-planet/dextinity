@@ -1,11 +1,12 @@
 import { SignJWT } from "jose";
+import { describe, expect, it, vi } from "vitest";
 
 import { SKIP_AUTH_SERVICE } from "../util/auth-service.interface";
 import { createSitePreviewAuthService, type SitePreviewAuthServiceConfig } from "./site-preview.auth-service";
 
 describe("createSitePreviewAuthService", () => {
     const instantianteService = (config: SitePreviewAuthServiceConfig) => new (createSitePreviewAuthService(config))();
-    const mockRequest = (cookieValue: string) => jest.fn().mockReturnValue({ cookies: { __comet_site_preview: cookieValue } })();
+    const mockRequest = (cookieValue: string) => vi.fn().mockReturnValue({ cookies: { __dextinity_site_preview: cookieValue } })();
     const authenticationError = expect.objectContaining({ authenticationError: expect.any(String) });
 
     it("throws Error on empty secret", async () => {

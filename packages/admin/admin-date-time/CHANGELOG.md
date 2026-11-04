@@ -1,5 +1,504 @@
 # @comet/admin-date-time
 
+## 10.13.1
+
+### Patch Changes
+
+- Updated dependencies [b6fde8f]
+    - @dextinity/admin@10.13.1
+    - @dextinity/admin-icons@10.13.1
+
+## 10.13.0
+
+### Patch Changes
+
+- @dextinity/admin@10.13.0
+- @dextinity/admin-icons@10.13.0
+
+## 10.12.0
+
+### Patch Changes
+
+- @dextinity/admin@10.12.0
+- @dextinity/admin-icons@10.12.0
+
+## 10.11.0
+
+### Patch Changes
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- Updated dependencies [3e0526b]
+- Updated dependencies [5bb4070]
+- Updated dependencies [75ebfd4]
+- Updated dependencies [43ee19a]
+    - @dextinity/admin@10.11.0
+    - @dextinity/admin-icons@10.11.0
+
+## 10.10.0
+
+### Patch Changes
+
+- Updated dependencies [c6b573b]
+    - @dextinity/admin@10.10.0
+    - @dextinity/admin-icons@10.10.0
+
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/admin@10.9.1
+- @dextinity/admin-icons@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- Updated dependencies [847b2a0]
+    - @dextinity/admin@10.9.0
+    - @dextinity/admin-icons@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- @dextinity/admin@10.8.0
+- @dextinity/admin-icons@10.8.0
+
+## 10.7.0
+
+### Patch Changes
+
+- @dextinity/admin@10.7.0
+- @dextinity/admin-icons@10.7.0
+
+## 10.6.0
+
+### Patch Changes
+
+- @dextinity/admin@10.6.0
+- @dextinity/admin-icons@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- @dextinity/admin@10.5.1
+- @dextinity/admin-icons@10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- @dextinity/admin@10.5.0
+- @dextinity/admin-icons@10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- @dextinity/admin@10.4.0
+- @dextinity/admin-icons@10.4.0
+
+## 10.3.0
+
+### Patch Changes
+
+- Updated dependencies [4d6408f]
+    - @dextinity/admin@10.3.0
+    - @dextinity/admin-icons@10.3.0
+
+## 10.2.0
+
+### Patch Changes
+
+- @dextinity/admin@10.2.0
+- @dextinity/admin-icons@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/admin@10.1.0
+- @dextinity/admin-icons@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- Updated dependencies [48748b0]
+    - @dextinity/admin@10.0.1
+    - @dextinity/admin-icons@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-date-time` to `@dextinity/admin-date-time`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme` and the generated CSS class names
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+    - @dextinity/admin-icons@10.0.0
+    - @dextinity/admin@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-date-time` to `@dextinity/admin-date-time`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the theme component prefix from `CometAdmin` to `DextinityAdmin`. This affects `components` overrides passed to `createDextinityTheme` and the generated CSS class names
+
+### Patch Changes
+
+- Updated dependencies [f843a5e]
+- Updated dependencies [f843a5e]
+- Updated dependencies [085b9ac]
+    - @dextinity/admin-icons@10.0.0-beta.0
+    - @dextinity/admin@10.0.0-beta.0
+
+## 9.5.0
+
+### Patch Changes
+
+- @comet/admin@9.5.0
+- @comet/admin-icons@9.5.0
+
+## 9.4.0
+
+### Patch Changes
+
+- Updated dependencies [bf1ff64]
+- Updated dependencies [085b9ac]
+    - @comet/admin@9.4.0
+    - @comet/admin-icons@9.4.0
+
+## 9.3.0
+
+### Patch Changes
+
+- Updated dependencies [7b2d8db]
+    - @comet/admin@9.3.0
+    - @comet/admin-icons@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- @comet/admin@9.2.2
+- @comet/admin-icons@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- @comet/admin@9.2.1
+- @comet/admin-icons@9.2.1
+
+## 9.2.0
+
+### Patch Changes
+
+- Updated dependencies [5a05d97]
+    - @comet/admin@9.2.0
+    - @comet/admin-icons@9.2.0
+
+## 9.1.1
+
+### Patch Changes
+
+- @comet/admin@9.1.1
+- @comet/admin-icons@9.1.1
+
+## 9.1.0
+
+### Patch Changes
+
+- @comet/admin@9.1.0
+- @comet/admin-icons@9.1.0
+
+## 9.0.1
+
+### Patch Changes
+
+- @comet/admin@9.0.1
+- @comet/admin-icons@9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 3fda20b: Add a "Legacy" prefix to class-names and theme component-keys
+
+    This affects the components of which their new counterparts are now considered stable in `@comet/admin`.
+
+    **Consider using the new components from `@comet/admin`**
+
+    In most cases, the new components will be a drop-in replacement for the legacy components, so you can simply replace the imports:
+
+    | Legacy component from `@comet/admin-date-time` | New component from `@comet/admin`                  |
+    | ---------------------------------------------- | -------------------------------------------------- |
+    | `DatePicker`                                   | `DatePicker`                                       |
+    | `DateField`                                    | `DatePickerField`                                  |
+    | `FinalFormDatePicker`                          | `DatePickerField` (without using `<Field />`)      |
+    | `DateRangePicker`                              | `DateRangePicker`                                  |
+    | `DateRangeField`                               | `DateRangePickerField`                             |
+    | `FinalFormDateRangePicker`                     | `DateRangePickerField` (without using `<Field />`) |
+    | `TimePicker`                                   | `TimePicker`                                       |
+    | `TimeField`                                    | `TimePickerField`                                  |
+    | `FinalFormTimePicker`                          | `TimePickerField` (without using `<Field />`)      |
+    | `DateTimePicker`                               | `DateTimePicker`                                   |
+    | `DateTimeField`                                | `DateTimePickerField`                              |
+    | `FinalFormDateTimePicker`                      | `DateTimePickerField` (without using `<Field />`)  |
+
+    **To continue using the existing components, the following changes will need to be made:**
+
+    Update any use of class-names of the component's slots:
+    - `CometAdminDatePicker-*` -> `CometAdminLegacyDatePicker-*`
+    - `CometAdminDateRangePicker-*` -> `CometAdminLegacyDateRangePicker-*`
+    - `CometAdminDateTimePicker-*` -> `CometAdminLegacyDateTimePicker-*`
+    - `CometAdminTimePicker-*` -> `CometAdminLegacyTimePicker-*`
+
+    Update the component-keys when using `defaultProps` or `styleOverrides` in the theme:
+    - `CometAdminDatePicker` -> `CometAdminLegacyDatePicker`
+    - `CometAdminDateRangePicker` -> `CometAdminLegacyDateRangePicker`
+    - `CometAdminDateTimePicker` -> `CometAdminLegacyDateTimePicker`
+    - `CometAdminTimePicker` -> `CometAdminLegacyTimePicker`
+
+- 15e771b: Deprecate `TimeRangePicker`, `TimeRangeField` and `FinalFormTimeRangePicker` and add a "Legacy" prefix to their class-names and theme component-key
+
+    Their new counterparts in `@comet/admin` are now considered stable.
+
+    **Consider using the new components from `@comet/admin`**
+
+    In most cases, the new components will be a drop-in replacement for the legacy components, so you can simply replace the imports:
+
+    | Legacy component from `@comet/admin-date-time` | New component from `@comet/admin`                  |
+    | ---------------------------------------------- | -------------------------------------------------- |
+    | `TimeRangePicker`                              | `TimeRangePicker`                                  |
+    | `TimeRangeField`                               | `TimeRangePickerField`                             |
+    | `FinalFormTimeRangePicker`                     | `TimeRangePickerField` (without using `<Field />`) |
+
+    **To continue using the existing component, the following changes will need to be made:**
+
+    Update any use of class-names of the component's slots:
+    - `CometAdminTimeRangePicker-*` -> `CometAdminLegacyTimeRangePicker-*`
+
+    Update the component-key when using `defaultProps` or `styleOverrides` in the theme:
+    - `CometAdminTimeRangePicker` -> `CometAdminLegacyTimeRangePicker`
+
+- 5f1566a: Make packages ESM-only
+
+### Minor Changes
+
+- 1a83c01: Deprecate the `@comet/admin-date-time` package
+
+    All of its components now have stable replacements in `@comet/admin`. The remaining exports (`DatePickerNavigation`, `DateFnsLocaleProvider`, `DateFnsLocaleContext` and `useDateFnsLocale`) are now marked as deprecated as well.
+
+    See the [migration guide](https://docs.comet-dxp.com/docs/migration-guide/migration-from-v8-to-v9) for how to migrate to the new components in `@comet/admin`.
+
+- f066335: Add support for React 19
+
+### Patch Changes
+
+- 92281f1: Add `"sideEffects"` to package.json for better tree-shakability
+- Updated dependencies [92281f1]
+- Updated dependencies [15e771b]
+- Updated dependencies [d7b77af]
+- Updated dependencies [8c2fdde]
+- Updated dependencies [f066335]
+- Updated dependencies [b4ba869]
+- Updated dependencies [57678d0]
+- Updated dependencies [fdabaf1]
+- Updated dependencies [8e40458]
+- Updated dependencies [5f1566a]
+- Updated dependencies [99140f8]
+- Updated dependencies [b459ec7]
+- Updated dependencies [cabba53]
+- Updated dependencies [8e3a074]
+- Updated dependencies [3fda20b]
+- Updated dependencies [fd5c36f]
+- Updated dependencies [3c81ff0]
+- Updated dependencies [631540c]
+- Updated dependencies [2fe9d4b]
+- Updated dependencies [460cbfb]
+- Updated dependencies [9cb3f95]
+    - @comet/admin@9.0.0
+    - @comet/admin-icons@9.0.0
+
+## 9.0.0-beta.6
+
+### Major Changes
+
+- 15e771b: Deprecate `TimeRangePicker`, `TimeRangeField` and `FinalFormTimeRangePicker` and add a "Legacy" prefix to their class-names and theme component-key
+
+    Their new counterparts in `@comet/admin` are now considered stable.
+
+    **Consider using the new components from `@comet/admin`**
+
+    In most cases, the new components will be a drop-in replacement for the legacy components, so you can simply replace the imports:
+
+    | Legacy component from `@comet/admin-date-time` | New component from `@comet/admin`                  |
+    | ---------------------------------------------- | -------------------------------------------------- |
+    | `TimeRangePicker`                              | `TimeRangePicker`                                  |
+    | `TimeRangeField`                               | `TimeRangePickerField`                             |
+    | `FinalFormTimeRangePicker`                     | `TimeRangePickerField` (without using `<Field />`) |
+
+    **To continue using the existing component, the following changes will need to be made:**
+
+    Update any use of class-names of the component's slots:
+    - `CometAdminTimeRangePicker-*` -> `CometAdminLegacyTimeRangePicker-*`
+
+    Update the component-key when using `defaultProps` or `styleOverrides` in the theme:
+    - `CometAdminTimeRangePicker` -> `CometAdminLegacyTimeRangePicker`
+
+### Minor Changes
+
+- 1a83c01: Deprecate the `@comet/admin-date-time` package
+
+    All of its components now have stable replacements in `@comet/admin`. The remaining exports (`DatePickerNavigation`, `DateFnsLocaleProvider`, `DateFnsLocaleContext` and `useDateFnsLocale`) are now marked as deprecated as well.
+
+    See the [migration guide](https://docs.comet-dxp.com/docs/migration-guide/migration-from-v8-to-v9) for how to migrate to the new components in `@comet/admin`.
+
+### Patch Changes
+
+- Updated dependencies [15e771b]
+- Updated dependencies [b4ba869]
+- Updated dependencies [57678d0]
+- Updated dependencies [b459ec7]
+    - @comet/admin@9.0.0-beta.6
+    - @comet/admin-icons@9.0.0-beta.6
+
+## 9.0.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [fdabaf1]
+    - @comet/admin@9.0.0-beta.5
+    - @comet/admin-icons@9.0.0-beta.5
+
+## 9.0.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [d7b77af]
+- Updated dependencies [8e40458]
+- Updated dependencies [2fe9d4b]
+- Updated dependencies [460cbfb]
+    - @comet/admin@9.0.0-beta.4
+    - @comet/admin-icons@9.0.0-beta.4
+
+## 9.0.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [cabba53]
+- Updated dependencies [3c81ff0]
+    - @comet/admin@9.0.0-beta.3
+    - @comet/admin-icons@9.0.0-beta.3
+
+## 9.0.0-beta.2
+
+### Patch Changes
+
+- 92281f1: Add `"sideEffects"` to package.json for better tree-shakability
+- Updated dependencies [92281f1]
+- Updated dependencies [99140f8]
+- Updated dependencies [9cb3f95]
+    - @comet/admin@9.0.0-beta.2
+    - @comet/admin-icons@9.0.0-beta.2
+
+## 9.0.0-beta.1
+
+### Patch Changes
+
+- Updated dependencies [8c2fdde]
+- Updated dependencies [8e3a074]
+    - @comet/admin@9.0.0-beta.1
+    - @comet/admin-icons@9.0.0-beta.1
+
+## 9.0.0-beta.0
+
+### Major Changes
+
+- 3fda20b: Add a "Legacy" prefix to class-names and theme component-keys
+
+    This affects the components of which their new counterparts are now considered stable in `@comet/admin`.
+
+    **Consider using the new components from `@comet/admin`**
+
+    In most cases, the new components will be a drop-in replacement for the legacy components, so you can simply replace the imports:
+
+    | Legacy component from `@comet/admin-date-time` | New component from `@comet/admin`                  |
+    | ---------------------------------------------- | -------------------------------------------------- |
+    | `DatePicker`                                   | `DatePicker`                                       |
+    | `DateField`                                    | `DatePickerField`                                  |
+    | `FinalFormDatePicker`                          | `DatePickerField` (without using `<Field />`)      |
+    | `DateRangePicker`                              | `DateRangePicker`                                  |
+    | `DateRangeField`                               | `DateRangePickerField`                             |
+    | `FinalFormDateRangePicker`                     | `DateRangePickerField` (without using `<Field />`) |
+    | `TimePicker`                                   | `TimePicker`                                       |
+    | `TimeField`                                    | `TimePickerField`                                  |
+    | `FinalFormTimePicker`                          | `TimePickerField` (without using `<Field />`)      |
+    | `DateTimePicker`                               | `DateTimePicker`                                   |
+    | `DateTimeField`                                | `DateTimePickerField`                              |
+    | `FinalFormDateTimePicker`                      | `DateTimePickerField` (without using `<Field />`)  |
+
+    **To continue using the existing components, the following changes will need to be made:**
+
+    Update any use of class-names of the component's slots:
+    - `CometAdminDatePicker-*` -> `CometAdminLegacyDatePicker-*`
+    - `CometAdminDateRangePicker-*` -> `CometAdminLegacyDateRangePicker-*`
+    - `CometAdminDateTimePicker-*` -> `CometAdminLegacyDateTimePicker-*`
+    - `CometAdminTimePicker-*` -> `CometAdminLegacyTimePicker-*`
+
+    Update the component-keys when using `defaultProps` or `styleOverrides` in the theme:
+    - `CometAdminDatePicker` -> `CometAdminLegacyDatePicker`
+    - `CometAdminDateRangePicker` -> `CometAdminLegacyDateRangePicker`
+    - `CometAdminDateTimePicker` -> `CometAdminLegacyDateTimePicker`
+    - `CometAdminTimePicker` -> `CometAdminLegacyTimePicker`
+
+- 5f1566a: Make packages ESM-only
+
+### Minor Changes
+
+- f066335: Add support for React 19
+
+### Patch Changes
+
+- Updated dependencies [f066335]
+- Updated dependencies [5f1566a]
+- Updated dependencies [3fda20b]
+- Updated dependencies [fd5c36f]
+- Updated dependencies [631540c]
+    - @comet/admin-icons@9.0.0-beta.0
+    - @comet/admin@9.0.0-beta.0
+
+## 8.20.0
+
+### Patch Changes
+
+- Updated dependencies [412ed19]
+- Updated dependencies [caceff8]
+    - @comet/admin@8.20.0
+    - @comet/admin-icons@8.20.0
+
 ## 8.19.0
 
 ### Patch Changes

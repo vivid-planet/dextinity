@@ -1,12 +1,12 @@
 import { JwtService } from "@nestjs/jwt";
+import { describe, expect, it, vi } from "vitest";
 
 import { SKIP_AUTH_SERVICE } from "../util/auth-service.interface";
 import { createJwtAuthService, type JwtAuthServiceOptions } from "./jwt.auth-service";
 
 describe("createJwtAuthService", () => {
     const instantianteService = (options: JwtAuthServiceOptions) => new (createJwtAuthService(options))(new JwtService());
-    const mockRequest = (authorizationHeader: string) =>
-        jest.fn().mockReturnValue({ header: jest.fn().mockImplementation(() => authorizationHeader) })();
+    const mockRequest = (authorizationHeader: string) => vi.fn().mockReturnValue({ header: vi.fn().mockImplementation(() => authorizationHeader) })();
     const authenticationError = expect.objectContaining({ authenticationError: expect.any(String) });
 
     // Default token from jwt.io:
@@ -62,13 +62,13 @@ describe("createJwtAuthService", () => {
     it("verifies token and returns user", async () => {
         const service = instantianteService({
             verifyOptions: { secret: "secret" },
-            convertJwtToUser: (jwt) => ({ id: jwt.sub, name: jwt.name, email: "test@comet-dxp.com" }),
+            convertJwtToUser: (jwt) => ({ id: jwt.sub, name: jwt.name, email: "test@dextinity.com" }),
         });
         expect(await service.authenticateUser(mockRequest(`Bearer ${token}`))).toStrictEqual({
             user: {
                 id: "1234567890",
                 name: "John Doe",
-                email: "test@comet-dxp.com",
+                email: "test@dextinity.com",
             },
         });
     });

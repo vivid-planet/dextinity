@@ -8,7 +8,7 @@ import { useState } from "react";
 import FocusLock from "react-focus-lock";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { type GQLMobileMenuFragment } from "./MobileMenu.fragment.generated";
+import type { GQLMobileMenuFragment } from "./MobileMenu.fragment.generated";
 import styles from "./MobileMenu.module.scss";
 
 interface Props {

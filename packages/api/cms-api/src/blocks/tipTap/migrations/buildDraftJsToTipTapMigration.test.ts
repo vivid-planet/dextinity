@@ -1,0 +1,644 @@
+import type { JSONContent } from "@tiptap/core";
+import { describe, expect, it } from "vitest";
+
+import { ExternalLinkBlock } from "../../externalLink/external-link.block";
+import { createLinkBlock } from "../../factories/createLinkBlock";
+import { BlockMigration } from "../../migrations/BlockMigration";
+import type { BlockMigrationInterface } from "../../migrations/types";
+import { typeSafeBlockMigrationPipe } from "../../migrations/typeSafeBlockMigrationPipe";
+import { createTipTapRichTextBlock } from "../createTipTapRichTextBlock";
+import type { DraftJsContent } from "./convertDraftJsToTipTap";
+
+type DraftBlock = DraftJsContent["blocks"][number];
+
+function draftBlock(overrides: Partial<DraftBlock> = {}): DraftBlock {
+    return {
+        key: "k",
+        type: "unstyled",
+        text: "",
+        depth: 0,
+        inlineStyleRanges: [],
+        entityRanges: [],
+        ...overrides,
+    };
+}
+
+describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
+    describe("end-to-end via blockDataFactory", () => {
+        const block = createTipTapRichTextBlock({ migrateFromDraftJs: true }, "MigratedRichText");
+
+        it("migrates DraftJS plain paragraph data and sets $$version", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "unstyled", text: "Hello" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "Hello" }] }],
+            });
+        });
+
+        it("preserves search text after migration", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "header-one", text: "Title" }), draftBlock({ type: "unstyled", text: "Body" })],
+                    entityMap: {},
+                },
+            });
+            const searchText = data.searchText();
+            expect(searchText).toEqual([{ weight: "h1", text: "Title" }, "Body"]);
+        });
+
+        it("is a no-op for data that already has $$version: 1", () => {
+            const input = {
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "already migrated" }] }],
+                },
+                $$version: 1,
+            };
+            const data = block.blockDataFactory(input);
+            expect(data.tipTapContent).toEqual(input.tipTapContent);
+        });
+
+        it("preserves TipTap-shaped data when no $$version is present", () => {
+            const tipTapContent = {
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "pre-existing" }] }],
+            };
+            const data = block.blockDataFactory({ tipTapContent });
+            expect(data.tipTapContent).toEqual(tipTapContent);
+        });
+    });
+
+    describe("inline style marks", () => {
+        const block = createTipTapRichTextBlock({ migrateFromDraftJs: true }, "MigratedRichTextInlineStyles");
+
+        it("converts DraftJS inline styles to the matching TipTap marks", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({
+                            type: "unstyled",
+                            text: "bold and italic",
+                            inlineStyleRanges: [
+                                { style: "BOLD", offset: 0, length: 4 },
+                                { style: "ITALIC", offset: 9, length: 6 },
+                            ],
+                        }),
+                    ],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph" },
+                        content: [
+                            { type: "text", text: "bold", marks: [{ type: "bold" }] },
+                            { type: "text", text: " and " },
+                            { type: "text", text: "italic", marks: [{ type: "italic" }] },
+                        ],
+                    },
+                ],
+            });
+        });
+
+        it("keeps the bold on soft hyphens and non-breaking spaces within bold text", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({
+                            type: "unstyled",
+                            text: "Wonder­ful world",
+                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 16 }],
+                        }),
+                    ],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph" },
+                        content: [
+                            { type: "text", text: "Wonder", marks: [{ type: "bold" }] },
+                            { type: "softHyphen", marks: [{ type: "bold" }] },
+                            { type: "text", text: "ful", marks: [{ type: "bold" }] },
+                            { type: "nonBreakingSpace", marks: [{ type: "bold" }] },
+                            { type: "text", text: "world", marks: [{ type: "bold" }] },
+                        ],
+                    },
+                ],
+            });
+        });
+    });
+
+    describe("with link block", () => {
+        const LinkBlock = createLinkBlock({ supportedBlocks: { external: ExternalLinkBlock } }, "MigratedRichTextLink");
+        const block = createTipTapRichTextBlock({ link: LinkBlock, migrateFromDraftJs: true }, "MigratedRichTextWithLink");
+
+        it("converts DraftJS LINK entity to a link mark and a child block", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({
+                            type: "unstyled",
+                            text: "click here",
+                            entityRanges: [{ key: 0, offset: 0, length: 10 }],
+                        }),
+                    ],
+                    entityMap: {
+                        "0": {
+                            type: "LINK",
+                            mutability: "MUTABLE",
+                            data: {
+                                attachedBlocks: [
+                                    { type: "external", props: { targetUrl: "https://example.com", openInNewWindow: false, noFollow: false } },
+                                ],
+                                activeType: "external",
+                            },
+                        },
+                    },
+                },
+            });
+            expect(data.tipTapContent).toMatchObject({
+                type: "doc",
+                content: [
+                    {
+                        type: "textBlock",
+                        content: [{ type: "text", text: "click here", marks: [{ type: "link" }] }],
+                    },
+                ],
+            });
+
+            expect(data.childBlocksInfo()).toHaveLength(1);
+            expect(data.childBlocksInfo()[0].name).toBe("MigratedRichTextLink");
+        });
+    });
+
+    describe("without link block configured", () => {
+        const block = createTipTapRichTextBlock({ migrateFromDraftJs: true }, "MigratedRichTextNoLink");
+
+        it("strips link entities and keeps the plain text", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({
+                            type: "unstyled",
+                            text: "click here",
+                            entityRanges: [{ key: 0, offset: 0, length: 10 }],
+                        }),
+                    ],
+                    entityMap: {
+                        "0": { type: "LINK", mutability: "MUTABLE", data: { href: "https://example.com" } },
+                    },
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "click here" }] }],
+            });
+            expect(data.childBlocksInfo()).toHaveLength(0);
+        });
+    });
+
+    describe("textBlockMap", () => {
+        const block = createTipTapRichTextBlock(
+            {
+                textBlocks: [
+                    { name: "paragraph", tag: "p", styles: [{ name: "paragraph200" }] },
+                    { name: "heading-2", tag: "h2", styles: [{ name: "headline450" }] },
+                ],
+                migrateFromDraftJs: {
+                    textBlockMap: {
+                        "paragraph-small": { textBlock: "paragraph", textBlockStyle: "paragraph200" },
+                        "headline-450": { textBlock: "heading-2", textBlockStyle: "headline450" },
+                    },
+                },
+            },
+            "MigratedRichTextTextBlockStyles",
+        );
+
+        it("converts a custom block type to a heading keeping both level and textBlockStyle", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "headline-450", text: "Title" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "heading-2", textBlockStyle: "headline450" },
+                        content: [{ type: "text", text: "Title" }],
+                    },
+                ],
+            });
+        });
+
+        it("converts a custom block type to a styled paragraph", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "paragraph-small", text: "small" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph", textBlockStyle: "paragraph200" },
+                        content: [{ type: "text", text: "small" }],
+                    },
+                ],
+            });
+        });
+    });
+
+    describe("listItemMap", () => {
+        const listSizes = { styles: [{ name: "small" }, { name: "large" }] };
+        const listItemMap = {
+            "unordered-list-item-small": { list: "unordered", textBlockStyle: "small" },
+            "unordered-list-item-large": { list: "unordered", textBlockStyle: "large" },
+            "ordered-list-item-small": { list: "ordered", textBlockStyle: "small" },
+            "ordered-list-item-large": { list: "ordered", textBlockStyle: "large" },
+        } as const;
+        const block = createTipTapRichTextBlock(
+            { unorderedList: listSizes, orderedList: listSizes, migrateFromDraftJs: { listItemMap } },
+            "MigratedRichTextListItemMap",
+        );
+
+        function textBlock(text: string, textBlockStyle?: string): JSONContent {
+            return {
+                type: "textBlock",
+                attrs: { textBlock: "paragraph", ...(textBlockStyle !== undefined ? { textBlockStyle } : {}) },
+                content: [{ type: "text", text }],
+            };
+        }
+
+        it("converts a rich text with all list sizes, mixed and nested, into valid content", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({ type: "unstyled", text: "intro" }),
+                        draftBlock({ type: "unordered-list-item", text: "standard" }),
+                        draftBlock({ type: "unordered-list-item-small", text: "small" }),
+                        draftBlock({ type: "unordered-list-item-small", text: "small nested", depth: 1 }),
+                        draftBlock({ type: "unordered-list-item-large", text: "large" }),
+                        draftBlock({ type: "ordered-list-item-large", text: "large nested", depth: 1 }),
+                        draftBlock({ type: "unstyled", text: "between" }),
+                        draftBlock({ type: "ordered-list-item-small", text: "1" }),
+                        draftBlock({ type: "ordered-list-item", text: "2" }),
+                        draftBlock({ type: "ordered-list-item-large", text: "3" }),
+                    ],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    textBlock("intro"),
+                    {
+                        type: "bulletList",
+                        content: [
+                            { type: "listItem", content: [textBlock("standard")] },
+                            {
+                                type: "listItem",
+                                content: [
+                                    textBlock("small", "small"),
+                                    { type: "bulletList", content: [{ type: "listItem", content: [textBlock("small nested", "small")] }] },
+                                ],
+                            },
+                            {
+                                type: "listItem",
+                                content: [
+                                    textBlock("large", "large"),
+                                    { type: "orderedList", content: [{ type: "listItem", content: [textBlock("large nested", "large")] }] },
+                                ],
+                            },
+                        ],
+                    },
+                    textBlock("between"),
+                    {
+                        type: "orderedList",
+                        content: [
+                            { type: "listItem", content: [textBlock("1", "small")] },
+                            { type: "listItem", content: [textBlock("2")] },
+                            { type: "listItem", content: [textBlock("3", "large")] },
+                        ],
+                    },
+                ],
+            });
+        });
+
+        it("throws when a mapped list is disabled", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    { orderedList: false, unorderedList: listSizes, migrateFromDraftJs: { listItemMap } },
+                    "MigratedRichTextListItemMapDisabledList",
+                ),
+            ).toThrow('listItemMap maps "ordered-list-item-small" to the ordered list, which is disabled');
+        });
+
+        it("throws when the list doesn't offer the mapped style", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    {
+                        unorderedList: { styles: [{ name: "small" }] },
+                        migrateFromDraftJs: { listItemMap: { custom: { list: "unordered", textBlockStyle: "large" } } },
+                    },
+                    "MigratedRichTextListItemMapUnknownStyle",
+                ),
+            ).toThrow('listItemMap maps "custom" to the style "large", which the unordered list doesn\'t offer');
+        });
+
+        it("throws when the list offers no styles at all", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    { migrateFromDraftJs: { listItemMap: { custom: { list: "unordered", textBlockStyle: "small" } } } },
+                    "MigratedRichTextListItemMapUnstyledList",
+                ),
+            ).toThrow('listItemMap maps "custom" to the style "small", which the unordered list doesn\'t offer');
+        });
+
+        it("throws when a DraftJS type is mapped in both textBlockMap and listItemMap", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    {
+                        unorderedList: listSizes,
+                        migrateFromDraftJs: {
+                            textBlockMap: { "unordered-list-item-small": { textBlock: "paragraph" } },
+                            listItemMap: { "unordered-list-item-small": { list: "unordered", textBlockStyle: "small" } },
+                        },
+                    },
+                    "MigratedRichTextListItemMapDuplicate",
+                ),
+            ).toThrow('"unordered-list-item-small" is mapped in both textBlockMap and listItemMap');
+        });
+
+        it("throws when a built-in list type is mapped", () => {
+            expect(() =>
+                createTipTapRichTextBlock(
+                    {
+                        unorderedList: listSizes,
+                        migrateFromDraftJs: { listItemMap: { "unordered-list-item": { list: "unordered", textBlockStyle: "small" } } },
+                    },
+                    "MigratedRichTextListItemMapBuiltIn",
+                ),
+            ).toThrow('listItemMap maps the built-in list type "unordered-list-item"');
+        });
+    });
+
+    describe("nested lists", () => {
+        const block = createTipTapRichTextBlock({ migrateFromDraftJs: true }, "MigratedRichTextNestedLists");
+
+        it("converts the Draft.js list item depth into nested TipTap lists", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        draftBlock({ type: "unordered-list-item", text: "a.1", depth: 1 }),
+                        draftBlock({ type: "unordered-list-item", text: "b", depth: 0 }),
+                    ],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    {
+                        type: "bulletList",
+                        content: [
+                            {
+                                type: "listItem",
+                                content: [
+                                    { type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "a" }] },
+                                    {
+                                        type: "bulletList",
+                                        content: [
+                                            {
+                                                type: "listItem",
+                                                content: [
+                                                    {
+                                                        type: "textBlock",
+                                                        attrs: { textBlock: "paragraph" },
+                                                        content: [{ type: "text", text: "a.1" }],
+                                                    },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                            {
+                                type: "listItem",
+                                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "b" }] }],
+                            },
+                        ],
+                    },
+                ],
+            });
+        });
+    });
+
+    describe("listLevelMax", () => {
+        const block = createTipTapRichTextBlock({ listLevelMax: 1, migrateFromDraftJs: true }, "MigratedRichTextListLevelMax");
+
+        it("keeps the list flat instead of exceeding listLevelMax", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        draftBlock({ type: "unordered-list-item", text: "a.1", depth: 1 }),
+                    ],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    {
+                        type: "bulletList",
+                        content: [
+                            {
+                                type: "listItem",
+                                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "a" }] }],
+                            },
+                            {
+                                type: "listItem",
+                                content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "a.1" }] }],
+                            },
+                        ],
+                    },
+                ],
+            });
+        });
+    });
+
+    describe("heading-only target schema", () => {
+        const block = createTipTapRichTextBlock(
+            {
+                textBlocks: [
+                    { name: "heading-2", tag: "h2" },
+                    { name: "heading-3", tag: "h3" },
+                    { name: "heading-4", tag: "h4" },
+                ],
+                defaultTextBlock: "heading-3",
+                migrateFromDraftJs: true,
+            },
+            "MigratedHeadingOnly",
+        );
+
+        it("migrates a DraftJS block without a heading level into a heading with the default level", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "unstyled", text: "Headline" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "heading-3" }, content: [{ type: "text", text: "Headline" }] }],
+            });
+        });
+
+        it("keeps a DraftJS heading level that is allowed", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [draftBlock({ type: "header-two", text: "Headline" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "heading-2" }, content: [{ type: "text", text: "Headline" }] }],
+            });
+        });
+
+        it("migrates empty DraftJS content into an empty heading with the default level", () => {
+            const data = block.blockDataFactory({
+                draftContent: { blocks: [], entityMap: {} },
+            });
+            expect(data.tipTapContent).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "heading-3" } }] });
+        });
+
+        it("falls back to headings with the default level when the conversion is invalid", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    // header-one is not one of the allowed levels, so the converted doc doesn't validate.
+                    blocks: [draftBlock({ type: "header-one", text: "Headline" })],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [{ type: "textBlock", attrs: { textBlock: "heading-3" }, content: [{ type: "text", text: "Headline" }] }],
+            });
+        });
+    });
+
+    describe("maxTextBlocks fallback", () => {
+        const block = createTipTapRichTextBlock({ maxTextBlocks: 2, migrateFromDraftJs: true }, "MigratedRichTextMaxBlocks");
+
+        it("falls back to an empty doc when conversion exceeds maxTextBlocks", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({ type: "unstyled", text: "one" }),
+                        draftBlock({ type: "unstyled", text: "two" }),
+                        draftBlock({ type: "unstyled", text: "three" }),
+                    ],
+                    entityMap: {},
+                },
+            });
+            // Both the converted doc (3 blocks) and the stripped doc (3 blocks) exceed maxTextBlocks,
+            // so the migration falls back to the empty doc.
+            expect(data.tipTapContent).toEqual({ type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "paragraph" } }] });
+        });
+    });
+});
+
+describe("createTipTapRichTextBlock with migrateFromDraftJs and the block's own migrations", () => {
+    interface OwnMigrationData {
+        tipTapContent: JSONContent;
+    }
+
+    const appendedParagraph = { type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "appended" }] };
+
+    class AppendParagraphMigration extends BlockMigration<(from: OwnMigrationData) => OwnMigrationData> implements BlockMigrationInterface {
+        // The DraftJS migration counts in the vendor chain, so the block's own migrations start at 1
+        public readonly toVersion = 1;
+
+        protected migrate({ tipTapContent }: OwnMigrationData): OwnMigrationData {
+            return { tipTapContent: { ...tipTapContent, content: [...(tipTapContent.content ?? []), appendedParagraph] } };
+        }
+    }
+
+    const block = createTipTapRichTextBlock(
+        { migrateFromDraftJs: true },
+        {
+            name: "MigratedRichTextWithOwnMigration",
+            migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([AppendParagraphMigration]) },
+        },
+    );
+
+    function tipTapDoc(text: string, content: JSONContent[] = []): JSONContent {
+        return { type: "doc", content: [{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text }] }, ...content] };
+    }
+
+    it("applies the DraftJS migration before the block's own migration", () => {
+        const data = block.blockDataFactory({
+            draftContent: { blocks: [draftBlock({ type: "unstyled", text: "Hello" })], entityMap: {} },
+        });
+
+        expect(data.tipTapContent).toEqual(tipTapDoc("Hello", [appendedParagraph]));
+    });
+
+    it("applies the block's own migration to data that already ran the DraftJS migration", () => {
+        const data = block.blockDataFactory({ tipTapContent: tipTapDoc("already converted"), $$vendorVersion: 1 });
+
+        expect(data.tipTapContent).toEqual(tipTapDoc("already converted", [appendedParagraph]));
+    });
+
+    it("is a no-op once both chains are up to date", () => {
+        const tipTapContent = tipTapDoc("done", [appendedParagraph]);
+        const data = block.blockDataFactory({ tipTapContent, $$version: 1, $$vendorVersion: 1 });
+
+        expect(data.tipTapContent).toEqual(tipTapContent);
+    });
+
+    describe("data saved before the DraftJS migration moved into the vendor chain", () => {
+        it("doesn't convert content a second time and applies the block's own migration", () => {
+            // `$$version: 1` was the DraftJS migration, the block's own migrations continued from 2
+            const data = block.blockDataFactory({ tipTapContent: tipTapDoc("already converted"), $$version: 1 });
+
+            expect(data.tipTapContent).toEqual(tipTapDoc("already converted", [appendedParagraph]));
+        });
+
+        it("doesn't re-run a migration that ran under the legacy numbering", () => {
+            const tipTapContent = tipTapDoc("already converted", [appendedParagraph]);
+            const data = block.blockDataFactory({ tipTapContent, $$version: 2 });
+
+            expect(data.tipTapContent).toEqual(tipTapContent);
+        });
+
+        it("runs both chains for data that predates the DraftJS migration", () => {
+            const data = block.blockDataFactory({
+                draftContent: { blocks: [draftBlock({ type: "unstyled", text: "Hello" })], entityMap: {} },
+                $$version: 0,
+            });
+
+            expect(data.tipTapContent).toEqual(tipTapDoc("Hello", [appendedParagraph]));
+        });
+    });
+});

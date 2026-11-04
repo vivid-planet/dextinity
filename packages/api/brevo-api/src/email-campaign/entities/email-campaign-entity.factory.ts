@@ -1,8 +1,17 @@
-import { Block, BlockDataInterface, DocumentInterface, RootBlock, RootBlockDataScalar, RootBlockType } from "@comet/cms-api";
+import {
+    Block,
+    BlockDataInterface,
+    DocumentInterface,
+    EntityInfo,
+    RootBlock,
+    RootBlockDataScalar,
+    RootBlockEntity,
+    RootBlockType,
+} from "@dextinity/cms-api";
 import { Collection, Embedded, Entity, Enum, ManyToMany, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { TargetGroupInterface } from "../../target-group/entity/target-group-entity.factory";
 import { EmailCampaignScopeInterface } from "../../types";
@@ -33,6 +42,8 @@ export function createEmailCampaignEntity({
     Scope: Type<EmailCampaignScopeInterface>;
     TargetGroup: Type<TargetGroupInterface>;
 }): Type<EmailCampaignInterface> {
+    @EntityInfo<EmailCampaignInterface>({ name: "title", secondaryInformation: "subject" })
+    @RootBlockEntity()
     @Entity()
     @ObjectType({
         implements: () => [DocumentInterface],
@@ -42,7 +53,7 @@ export function createEmailCampaignEntity({
 
         @PrimaryKey({ columnType: "uuid" })
         @Field(() => ID)
-        id: string = uuid();
+        id: string = randomUUID();
 
         @Property({
             columnType: "timestamp with time zone",

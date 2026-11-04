@@ -1,4 +1,4 @@
-import { Field, RadioGroupField, SelectField } from "@comet/admin";
+import { Field, RadioGroupField, SelectField } from "@dextinity/admin";
 import { Box, Divider, ToggleButton as MuiToggleButton, ToggleButtonGroup as MuiToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import isEqual from "lodash.isequal";
@@ -101,10 +101,11 @@ export const createOneOfBlock = <T extends boolean = boolean>(
         }
         const activeBlockState = s.attachedBlocks.find((c) => c.type === s.activeType);
         if (!activeBlockState) {
-            let message = `Can't find reference to active block of type "${s.activeType}".`;
+            const attachedTypes = s.attachedBlocks.map((c) => `"${c.type}"`).join(", ");
+            let message = `activeType "${s.activeType}" has no entry in attachedBlocks, which ${attachedTypes ? `holds: ${attachedTypes}` : "is empty"}.`;
 
             if (process.env.NODE_ENV === "development") {
-                message += ` This is probably due to a missing "x-include-invisible-content" HTTP header. Please make sure to include the header when fetching the block.`;
+                message += ` One possible cause is a missing "x-include-invisible-content" HTTP header when fetching the block.`;
             }
 
             throw new Error(message);
@@ -296,7 +297,7 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                 }
 
                 const options: Array<{ value: string; label: ReactNode }> = allowEmpty
-                    ? [{ value: "none", label: <FormattedMessage id="comet.blocks.oneOfBlock.empty" defaultMessage="None" /> }]
+                    ? [{ value: "none", label: <FormattedMessage id="dextinity.blocks.oneOfBlock.empty" defaultMessage="None" /> }]
                     : [];
 
                 Object.entries(filteredSupportedBlocks).forEach(([blockType, block]) => {
@@ -501,6 +502,20 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                 return [...content, ...(block.extractTextContents?.(child.props, options) ?? [])];
             }, []);
             return content;
+        },
+        translateContent: async (state, translate) => {
+            const translatedAttachedBlocks = await Promise.all(
+                state.attachedBlocks.map(async (child) => {
+                    const block = blockForType(child.type);
+                    if (!block) {
+                        throw new Error(`No Block found for type ${child.type}`);
+                    }
+
+                    const translatedProps = block.translateContent ? await block.translateContent(child.props, translate) : child.props;
+                    return { ...child, props: translatedProps };
+                }),
+            );
+            return { ...state, attachedBlocks: translatedAttachedBlocks };
         },
     };
     if (override) {

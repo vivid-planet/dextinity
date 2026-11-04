@@ -1,6 +1,6 @@
-import { type Provider, type Type } from "@nestjs/common";
+import type { Provider, Type } from "@nestjs/common";
 
-import { type AuthServiceInterface } from "./auth-service.interface";
+import type { AuthServiceInterface } from "./auth-service.interface";
 
 export function createAuthGuardProviders(...authServices: Type<AuthServiceInterface>[]): Provider[] {
     const providers: Provider[] = [];
@@ -14,7 +14,7 @@ export function createAuthGuardProviders(...authServices: Type<AuthServiceInterf
         });
     });
     providers.push({
-        provide: "COMET_AUTH_SERVICES",
+        provide: "DEXTINITY_AUTH_SERVICES",
         useFactory: (...authServices) => authServices,
         inject: authServiceNames,
     });

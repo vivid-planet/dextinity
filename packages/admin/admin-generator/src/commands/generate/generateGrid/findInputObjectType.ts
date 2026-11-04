@@ -1,4 +1,4 @@
-import { type IntrospectionInputObjectType, type IntrospectionInputValue, type IntrospectionQuery } from "graphql";
+import type { IntrospectionInputObjectType, IntrospectionInputValue, IntrospectionQuery } from "graphql";
 
 export function findInputObjectType(input: IntrospectionInputValue, schema: IntrospectionQuery) {
     let type = input.type;
@@ -10,7 +10,6 @@ export function findInputObjectType(input: IntrospectionInputValue, schema: Intr
     }
     const typeName = type.name;
     const filterType = schema.__schema.types.find((type) => type.kind === "INPUT_OBJECT" && type.name === typeName) as
-        | IntrospectionInputObjectType
-        | undefined;
+        IntrospectionInputObjectType | undefined;
     return filterType;
 }

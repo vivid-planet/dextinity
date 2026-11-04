@@ -5,14 +5,14 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "incremental": true,
-        "lib": ["ES2020"],
+        "lib": ["ES2023"],
         "outDir": "./lib",
         "removeComments": true,
         "sourceMap": true,
         "strict": true,
         "strictNullChecks": true,
         "strictPropertyInitialization": false,
-        "target": "ES2015"
+        "target": "ES2023"
     },
     "exclude": ["node_modules", "lib"],
     "extends": "../tsconfig.base.json",

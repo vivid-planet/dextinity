@@ -1,10 +1,18 @@
-import { BlockMetaFieldKind, type BlockMetaInterface, getRegisteredBlocks } from "./block";
+import { BlockMetaFieldKind, type BlockMetaInterface, type BlockMetaTipTap, getRegisteredBlocks } from "./block";
 
 type BlockMetaField =
     | {
           name: string;
           kind: "String" | "Number" | "Boolean" | "Json";
           nullable: boolean;
+          array?: boolean;
+      }
+    | {
+          name: string;
+          kind: "TipTapRichTextBlock";
+          nullable: boolean;
+          childBlocks: Record<string, string>;
+          tipTap?: BlockMetaTipTap;
       }
     | {
           name: string;
@@ -34,6 +42,7 @@ type BlockMetaField =
 
 interface BlockMeta {
     name: string;
+    description?: string;
     fields: BlockMetaField[];
     inputFields: BlockMetaField[];
 }
@@ -56,6 +65,14 @@ function extractFromBlockMeta(blockMeta: BlockMetaInterface): BlockMetaField[] {
                 kind: field.kind,
                 nullable: field.nullable,
                 array: field.array,
+            };
+        } else if (field.kind === BlockMetaFieldKind.TipTapRichTextBlock) {
+            return {
+                name: field.name,
+                kind: field.kind,
+                nullable: field.nullable,
+                childBlocks: Object.fromEntries(Object.entries(field.childBlocks).map(([blockType, block]) => [blockType, block.name])),
+                tipTap: field.tipTap,
             };
         } else if (field.kind === BlockMetaFieldKind.Enum) {
             return {
@@ -100,6 +117,7 @@ export function getBlocksMeta(): BlockMeta[] {
         .map((block) => {
             const meta: BlockMeta = {
                 name: block.name,
+                description: block.description,
                 fields: extractFromBlockMeta(block.blockMeta),
                 inputFields: extractFromBlockMeta(block.blockInputMeta),
             };

@@ -1,4 +1,4 @@
-import { SortDirection } from "@comet/cms-api";
+import { SortDirection } from "@dextinity/cms-api";
 import { Field, InputType, registerEnumType } from "@nestjs/graphql";
 import { IsEnum } from "class-validator";
 

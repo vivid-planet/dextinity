@@ -1,15 +1,15 @@
-import {
-    type GridActionsColDef as MuiGridActionsColDef,
-    type GridFilterItem,
-    type GridPinnedColumns,
-    type GridSingleSelectColDef as MuiGridSingleSelectColDef,
-    type GridValidRowModel,
-    type GridValueOptionsParams,
+import type {
+    GridActionsColDef as MuiGridActionsColDef,
+    GridFilterItem,
+    GridPinnedColumns,
+    GridSingleSelectColDef as MuiGridSingleSelectColDef,
+    GridValidRowModel,
+    GridValueOptionsParams,
 } from "@mui/x-data-grid";
-import { type GridBaseColDef as MuiGridBaseColDef } from "@mui/x-data-grid/models/colDef/gridColDef";
-import { type ReactNode } from "react";
+import type { GridBaseColDef as MuiGridBaseColDef } from "@mui/x-data-grid/internals";
+import type { ReactNode } from "react";
 
-import { type GqlFilter } from "./muiGridFilterToGql";
+import type { GqlFilter } from "./muiGridFilterToGql";
 
 type ValueOption =
     | string
@@ -46,6 +46,4 @@ export type GridBaseColDef<R extends GridValidRowModel = any, V = any, F = V> = 
 export type GridActionsColDef<R extends GridValidRowModel = any, V = any, F = V> = MuiGridActionsColDef<R, V, F> & GridColDefExtension<R>;
 export type GridSingleSelectColDef<R extends GridValidRowModel = any, V = any, F = V> = MuiGridSingleSelectColDef<R, V, F> & GridColDefExtension<R>;
 export type GridColDef<R extends GridValidRowModel = any, V = any, F = V> =
-    | GridBaseColDef<R, V, F>
-    | GridActionsColDef<R, V, F>
-    | GridSingleSelectColDef<R, V, F>;
+    GridBaseColDef<R, V, F> | GridActionsColDef<R, V, F> | GridSingleSelectColDef<R, V, F>;

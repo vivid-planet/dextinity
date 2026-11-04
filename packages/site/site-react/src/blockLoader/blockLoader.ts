@@ -1,4 +1,4 @@
-import { type GraphQLFetch } from "../graphQLFetch/graphQLFetch";
+import type { GraphQLFetch } from "../graphQLFetch/graphQLFetch";
 
 type BlockMetaField = {
     name: string;
@@ -7,6 +7,7 @@ type BlockMetaField = {
     enum?: string[];
     block?: string;
     blocks?: Record<string, string>;
+    childBlocks?: Record<string, string>;
     object?: { fields: BlockMetaField[] };
 };
 
@@ -24,6 +25,13 @@ type BetterBlockMetaField =
           name: string;
           kind: "String" | "Number" | "Boolean" | "Json";
           nullable: boolean;
+      }
+    | {
+          name: string;
+          kind: "TipTapRichTextBlock";
+          nullable: boolean;
+          // The child blocks the rich text content may contain, keyed by their stable config key.
+          childBlocks: Record<string, string>;
       }
     | {
           name: string;
@@ -83,6 +91,36 @@ export async function recursivelyLoadBlockData({
     blocksMeta: BlockMeta[];
     loaders: Record<string, BlockLoader>;
 } & BlockLoaderDependencies) {
+    // Rich text fields (e.g. TipTapRichText's `tipTapContent`) are marked in the block meta with the child
+    // blocks they may contain. Child blocks are embedded as `cmsBlock`/`cmsInlineBlock` nodes carrying their
+    // block type and data. Walk the content tree and run each embedded child block through the regular block
+    // loading so their loaders run too.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function loadRichTextChildBlocks(node: any, childBlocks: Record<string, string>): any {
+        if (!node || typeof node !== "object") {
+            return node;
+        }
+
+        let result = node;
+        const blockType = node.type === "cmsBlock" || node.type === "cmsInlineBlock" ? node.attrs?.blockType : undefined;
+        if (blockType && childBlocks[blockType]) {
+            result = {
+                ...result,
+                attrs: {
+                    ...result.attrs,
+                    data: iterateBlock({ blockType: childBlocks[blockType], blockData: result.attrs.data }),
+                },
+            };
+        }
+
+        if (Array.isArray(result.content)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            result = { ...result, content: result.content.map((child: any) => loadRichTextChildBlocks(child, childBlocks)) };
+        }
+
+        return result;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function iterateField(block: BetterBlockMeta | BetterBlockMetaNestedObject, passedBlockData: any) {
         const blockData = { ...passedBlockData };
@@ -99,7 +137,9 @@ export async function recursivelyLoadBlockData({
                 blockData[field.name] = iterateField(field.object, blockData[field.name]);
             } else if (field.kind == "OneOfBlocks") {
                 const oneOfBlockType = field.blocks[blockData.type];
-                if (!oneOfBlockType) throw new Error("invalid blockType");
+                if (!oneOfBlockType) {
+                    throw new Error("invalid blockType");
+                }
                 blockData[field.name] = iterateBlock({
                     blockType: oneOfBlockType,
                     blockData: blockData[field.name],
@@ -109,6 +149,8 @@ export async function recursivelyLoadBlockData({
                     blockType: field.block,
                     blockData: blockData[field.name],
                 });
+            } else if (field.kind == "TipTapRichTextBlock") {
+                blockData[field.name] = loadRichTextChildBlocks(blockData[field.name], field.childBlocks);
             }
         }
         return blockData;
@@ -117,7 +159,9 @@ export async function recursivelyLoadBlockData({
     const loadedBlockData: any[] = [];
     function iterateBlock({ blockType, blockData }: { blockType: string; blockData: unknown }) {
         const block = blocksMeta.find((block) => block.name === blockType) as BetterBlockMeta;
-        if (!block) throw new Error("invalid blockType");
+        if (!block) {
+            throw new Error("invalid blockType");
+        }
 
         const newBlockData = iterateField(block, blockData);
         if (loaders[blockType]) {

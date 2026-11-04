@@ -1,7 +1,7 @@
-import { BlockDataInterface, CrudSingleGenerator, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@comet/cms-api";
+import { BlockDataInterface, CrudSingleGenerator, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
 import { BaseEntity, Embedded, Entity, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { FooterContentBlock } from "../blocks/footer-content.block";
 import { FooterScope } from "../dto/footer-scope";
@@ -9,13 +9,13 @@ import { FooterScope } from "../dto/footer-scope";
 @Entity()
 @ObjectType()
 @RootBlockEntity()
-@CrudSingleGenerator({ targetDirectory: `${__dirname}/../generated/`, requiredPermission: ["pageTree"] })
+@CrudSingleGenerator({ requiredPermission: ["pageTree"] })
 export class Footer extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt";
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @RootBlock(FooterContentBlock)
     @Property({ type: new RootBlockType(FooterContentBlock) })

@@ -1,21 +1,21 @@
 import { Embedded, Entity, Enum, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { randomUUID } from "crypto";
 import { GraphQLJSONObject } from "graphql-scalars";
-import { v4 as uuid } from "uuid";
 
 import { Block, BlockDataInterface } from "../../blocks/block";
 import { RootBlock } from "../../blocks/decorators/root-block";
 import { RootBlockEntity } from "../../blocks/decorators/root-block-entity";
 import { RootBlockType } from "../../blocks/root-block-type";
-import { EntityInfo } from "../../common/entityInfo/entity-info.decorator";
-import { RedirectGenerationType, RedirectSourceTypeValues } from "../redirects.enum";
+import { EntityInfo } from "../../entity-info/entity-info.decorator";
+import { RedirectGenerationType, RedirectSourceType } from "../redirects.enum";
 import { RedirectScopeInterface } from "../types";
 
 export interface RedirectInterface {
     [OptionalProps]?: "createdAt" | "updatedAt" | "active";
     id: string;
-    sourceType: RedirectSourceTypeValues;
+    sourceType: RedirectSourceType;
     source: string;
     target: BlockDataInterface;
     comment?: string;
@@ -29,19 +29,19 @@ export interface RedirectInterface {
 
 export class RedirectEntityFactory {
     static create({ linkBlock, Scope: RedirectScope }: { linkBlock: Block; Scope?: Type<RedirectScopeInterface> }): Type<RedirectInterface> {
+        @EntityInfo<RedirectInterface>({ name: "source", secondaryInformation: "comment" })
         @Entity({ abstract: true })
         @ObjectType({ isAbstract: true })
-        @EntityInfo<RedirectInterface>((redirect) => ({ name: redirect.source, secondaryInformation: redirect.comment }))
         class RedirectBase implements RedirectInterface {
             [OptionalProps]?: "createdAt" | "updatedAt" | "active";
 
             @PrimaryKey({ columnType: "uuid" })
             @Field(() => ID)
-            id: string = uuid();
+            id: string = randomUUID();
 
-            @Enum(() => RedirectSourceTypeValues)
-            @Field(() => RedirectSourceTypeValues)
-            sourceType: RedirectSourceTypeValues;
+            @Enum(() => RedirectSourceType)
+            @Field(() => RedirectSourceType)
+            sourceType: RedirectSourceType;
 
             @Property({
                 columnType: "text",

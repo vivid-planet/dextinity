@@ -1,7 +1,7 @@
 import { MjmlText } from "@faire/mjml-react";
 import { Fragment } from "react";
 
-import { type SupportedBlocks } from "./types.js";
+import type { SupportedBlocks } from "./types.js";
 
 interface Props {
     supportedBlocks: SupportedBlocks;

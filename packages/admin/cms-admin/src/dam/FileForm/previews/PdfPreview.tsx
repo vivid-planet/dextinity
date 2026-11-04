@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 
-import { type DamFileDetails } from "../EditFile";
+import type { DamFileDetails } from "../EditFile";
 
 const PdfPreviewWrapper = styled("div")`
     width: 100%;

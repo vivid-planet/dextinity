@@ -1,19 +1,24 @@
 "use client";
 
-import { type AnchorHTMLAttributes, cloneElement, type MouseEventHandler, type ReactElement } from "react";
+import { type AnchorHTMLAttributes, cloneElement, type DetailedHTMLProps, type MouseEventHandler, type ReactElement } from "react";
 
-import { type ExternalLinkBlockData } from "../blocks.generated";
+import type { ExternalLinkBlockData } from "../blocks.generated";
 import { usePreview } from "../preview/usePreview";
 import { sendSitePreviewIFrameMessage } from "../sitePreview/iframebridge/sendSitePreviewIFrameMessage";
 import { SitePreviewIFrameMessageType } from "../sitePreview/iframebridge/SitePreviewIFrameMessage";
-import { type PropsWithData } from "./PropsWithData";
+import type { PropsWithData } from "./PropsWithData";
 
 interface ExternalLinkBlockProps extends PropsWithData<ExternalLinkBlockData>, Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
     children: ReactElement;
     legacyBehavior?: boolean;
 }
 
-export function ExternalLinkBlock({ data: { targetUrl, openInNewWindow }, children, legacyBehavior, ...anchorProps }: ExternalLinkBlockProps) {
+export function ExternalLinkBlock({
+    data: { targetUrl, openInNewWindow, noFollow },
+    children,
+    legacyBehavior,
+    ...anchorProps
+}: ExternalLinkBlockProps) {
     const preview = usePreview();
 
     if (preview.previewType === "SitePreview" || preview.previewType === "BlockPreview") {
@@ -22,14 +27,18 @@ export function ExternalLinkBlock({ data: { targetUrl, openInNewWindow }, childr
             if (preview.previewType === "SitePreview") {
                 // send link to admin to handle external link
                 sendSitePreviewIFrameMessage({
-                    cometType: SitePreviewIFrameMessageType.OpenLink,
-                    data: { link: { openInNewWindow, targetUrl } },
+                    dextinityType: SitePreviewIFrameMessageType.OpenLink,
+                    data: { link: { openInNewWindow, targetUrl, noFollow } },
                 });
             }
         };
 
         if (legacyBehavior) {
-            return cloneElement(children, { ...anchorProps, href: "#", onClick });
+            return cloneElement(children as ReactElement<DetailedHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>>, {
+                ...anchorProps,
+                href: "#",
+                onClick,
+            });
         }
 
         return (
@@ -48,13 +57,19 @@ export function ExternalLinkBlock({ data: { targetUrl, openInNewWindow }, childr
 
         const href = targetUrl;
         const target = openInNewWindow ? "_blank" : anchorProps.target;
+        const rel = [anchorProps.rel, noFollow ? "nofollow" : undefined].filter(Boolean).join(" ") || undefined;
 
         if (legacyBehavior) {
-            return cloneElement(children, { ...anchorProps, href, target });
+            return cloneElement(children as ReactElement<DetailedHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>>, {
+                ...anchorProps,
+                href,
+                target,
+                rel,
+            });
         }
 
         return (
-            <a {...anchorProps} href={href} target={target}>
+            <a {...anchorProps} href={href} target={target} rel={rel}>
                 {children}
             </a>
         );

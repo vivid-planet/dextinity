@@ -1,4 +1,4 @@
-import { type Visible, type VisibleType } from "./Table";
+import type { Visible, VisibleType } from "./Table";
 
 export const isVisible = (visibleType: VisibleType, visible?: Visible): boolean => {
     if (visible != null) {

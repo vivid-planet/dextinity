@@ -8,18 +8,18 @@ import {
     StackLink,
     useDataGridUrlState,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add as AddIcon, Edit as EditIcon } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add as AddIcon, Edit as EditIcon } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { DataGridPro, type GridSlotsComponent } from "@mui/x-data-grid-pro";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import {
-    type GQLDeleteProductHighlightMutation,
-    type GQLDeleteProductHighlightMutationVariables,
-    type GQLProductHighlightsFormFragment,
-    type GQLProductHighlightsGridQuery,
-    type GQLProductHighlightsGridQueryVariables,
+import type {
+    GQLDeleteProductHighlightMutation,
+    GQLDeleteProductHighlightMutationVariables,
+    GQLProductHighlightsFormFragment,
+    GQLProductHighlightsGridQuery,
+    GQLProductHighlightsGridQueryVariables,
 } from "./ProductHighlightsGrid.generated";
 
 const productHighlightsFragment = gql`
@@ -92,7 +92,9 @@ export function ProductHighlightsGrid() {
         },
     ];
     const { data, loading, error } = useQuery<GQLProductHighlightsGridQuery, GQLProductHighlightsGridQueryVariables>(productHighlightsQuery);
-    if (error) throw error;
+    if (error) {
+        throw error;
+    }
     const rows = data?.productHighlights ?? [];
     return (
         <DataGridPro
@@ -103,6 +105,7 @@ export function ProductHighlightsGrid() {
             slots={{
                 toolbar: ProductHighlightsGridToolbar as GridSlotsComponent["toolbar"],
             }}
+            showToolbar
         />
     );
 }

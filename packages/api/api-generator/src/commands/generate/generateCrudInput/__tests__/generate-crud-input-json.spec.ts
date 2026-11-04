@@ -1,7 +1,8 @@
 import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { InputType } from "@nestjs/graphql";
-import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage";
-import { v4 as uuid } from "uuid";
+import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
+import { randomUUID } from "crypto";
+import { describe, expect, it } from "vitest";
 
 import { formatSource, parseSource, testPermission } from "../../utils/test-helper";
 import { generateCrudInput } from "../generate-crud-input";
@@ -9,7 +10,7 @@ import { generateCrudInput } from "../generate-crud-input";
 @Entity()
 export class TestEntityWithJsonLiteralArray extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "json" })
     foo: string[] = [];
@@ -26,7 +27,7 @@ export class NestedObject {
 @Entity()
 export class TestEntityWithJsonObject extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "json" })
     foo: NestedObject;
@@ -38,7 +39,7 @@ export class TestEntityWithJsonObject extends BaseEntity {
 @Entity()
 export class TestEntityWithRecord extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "json" })
     foo: Record<string, string>;
@@ -55,10 +56,7 @@ describe("GenerateCrudInputJson", () => {
                 }),
             );
 
-            const out = await generateCrudInput(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithJsonLiteralArray"),
-            );
+            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithJsonLiteralArray"));
             const formattedOut = await formatSource(out[0].content);
             //console.log(formattedOut);
             const source = parseSource(formattedOut);
@@ -99,10 +97,7 @@ describe("GenerateCrudInputJson", () => {
                 }),
             );
 
-            const out = await generateCrudInput(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithJsonObject"),
-            );
+            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithJsonObject"));
             const formattedOut = await formatSource(out[0].content);
             //console.log(formattedOut);
             const source = parseSource(formattedOut);
@@ -142,10 +137,7 @@ describe("GenerateCrudInputJson", () => {
                 }),
             );
 
-            const out = await generateCrudInput(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithRecord"),
-            );
+            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithRecord"));
             const formattedOut = await formatSource(out[0].content);
             const source = parseSource(formattedOut);
 

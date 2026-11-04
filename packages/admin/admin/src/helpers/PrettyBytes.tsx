@@ -1,4 +1,4 @@
-import { type ComponentProps } from "react";
+import type { ComponentProps } from "react";
 import { FormattedNumber } from "react-intl";
 
 type AvailableUnits = "byte" | "kilobyte" | "megabyte" | "gigabyte" | "terabyte" | "petabyte";

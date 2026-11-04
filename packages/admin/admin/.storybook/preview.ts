@@ -1,9 +1,14 @@
-import type { Preview } from "@storybook/react-webpack5";
+import type { Preview } from "@storybook/react-vite";
 import { type GlobalTypes } from "storybook/internal/csf";
 
+import { ApolloDecorator } from "./decorators/Apollo.decorator";
 import { IntlDecorator, LocaleOption } from "./decorators/IntlProvider.decorator";
 import { LayoutDecorator, LayoutOption } from "./decorators/Layout.decorator";
+import { RouterDecorator } from "./decorators/Router.decorator";
 import { ThemeOption, ThemeProviderDecorator } from "./decorators/ThemeProvider.decorator";
+import { worker } from "./mocks/browser";
+
+const mswReady = typeof window === "undefined" ? Promise.resolve() : worker.start({ onUnhandledRequest: "bypass" });
 
 export const globalTypes: GlobalTypes = {
     theme: {
@@ -12,10 +17,9 @@ export const globalTypes: GlobalTypes = {
             title: "Theme",
             icon: "paintbrush",
             items: [
-                { value: ThemeOption.Comet, right: "🟩", title: "Comet Theme" },
+                { value: ThemeOption.Dextinity, right: "🟩", title: "Dextinity Theme" },
                 { value: ThemeOption.Mui, right: "🟦", title: "Mui Theme" },
             ],
-            showName: true,
             dynamicTitle: true,
         },
     },
@@ -29,7 +33,6 @@ export const globalTypes: GlobalTypes = {
                 { value: LocaleOption.English, title: "English", right: "🇺🇸" },
                 { value: LocaleOption.German, title: "German", right: "🇩🇪" },
             ],
-            showName: true,
             dynamicTitle: true,
         },
     },
@@ -42,7 +45,6 @@ export const globalTypes: GlobalTypes = {
                 { value: LayoutOption.Padded, title: "Padded" },
                 { value: LayoutOption.Default, title: "Default" },
             ],
-            showName: true,
             dynamicTitle: true,
         },
     },
@@ -50,7 +52,13 @@ export const globalTypes: GlobalTypes = {
 
 const preview: Preview = {
     tags: ["autodocs"],
-    decorators: [ThemeProviderDecorator, IntlDecorator, LayoutDecorator],
+    decorators: [ThemeProviderDecorator, LayoutDecorator, RouterDecorator, IntlDecorator, ApolloDecorator],
+    loaders: [
+        async () => {
+            await mswReady;
+            return {};
+        },
+    ],
 
     parameters: {
         docs: {

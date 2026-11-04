@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { type ReactNode, useMemo } from "react";
-import { type FieldRenderProps } from "react-final-form";
+import type { FieldRenderProps } from "react-final-form";
 
-import { type ColumnsBlockLayout } from "../createColumnsBlock";
+import type { ColumnsBlockLayout } from "../createColumnsBlock";
 
 interface Section {
     name?: string;

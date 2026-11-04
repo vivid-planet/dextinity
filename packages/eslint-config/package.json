@@ -1,11 +1,11 @@
 {
-    "name": "@comet/eslint-config",
-    "version": "8.19.0",
-    "description": "A set of ESLint configurations for Comet projects",
+    "name": "@dextinity/eslint-config",
+    "version": "10.13.1",
+    "description": "A set of ESLint configurations for Dextinity projects",
     "repository": {
         "directory": "packages/eslint-config",
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet"
+        "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
     "type": "module",
@@ -36,31 +36,35 @@
         "lint": "run-p lint:prettier lint:eslint",
         "lint:ci": "pnpm run lint",
         "lint:eslint": "eslint --max-warnings 0 '**/*.json' --no-warn-ignored",
+        "lint:fix": "run-p lint:fix:eslint lint:fix:prettier",
+        "lint:fix:eslint": "pnpm run lint:eslint --fix",
+        "lint:fix:prettier": "pnpm run lint:prettier --write",
         "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}'"
     },
     "dependencies": {
         "@calm/eslint-plugin-react-intl": "^1.4.1",
-        "@comet/eslint-plugin": "workspace:*",
-        "@eslint/eslintrc": "^3.3.3",
-        "@eslint/js": "^9.39.2",
-        "@next/eslint-plugin-next": "^16.1.6",
+        "@dextinity/eslint-plugin": "workspace:*",
+        "@eslint/eslintrc": "^3.3.7",
+        "@eslint/js": "^9.39.5",
+        "@graphql-eslint/eslint-plugin": "^4.4.2",
+        "@next/eslint-plugin-next": "^16.4.3",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-formatjs": "^5.4.2",
         "eslint-plugin-import": "^2.32.0",
         "eslint-plugin-jsonc": "^2.21.1",
-        "eslint-plugin-package-json": "^0.88.2",
-        "eslint-plugin-prettier": "^5.5.5",
+        "eslint-plugin-package-json": "^0.91.2",
+        "eslint-plugin-prettier": "^5.5.7",
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-hooks": "^5.2.0",
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "eslint-plugin-unused-imports": "^4.4.1",
-        "globals": "^15.15.0",
-        "npm-run-all2": "^8.0.4",
-        "typescript-eslint": "^8.53.0"
+        "globals": "^17.13.0",
+        "typescript-eslint": "^8.72.1"
     },
     "devDependencies": {
-        "eslint": "^9.39.2",
-        "prettier": "^3.6.2",
+        "eslint": "^9.39.5",
+        "npm-run-all2": "^9.0.4",
+        "prettier": "^3.9.10",
         "typescript": "^5.9.3"
     },
     "peerDependencies": {
@@ -73,7 +77,7 @@
         }
     },
     "engines": {
-        "node": ">=22.0.0"
+        "node": ">=22.12.0"
     },
     "publishConfig": {
         "access": "public",

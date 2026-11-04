@@ -1,7 +1,7 @@
 import { gql, useApolloClient } from "@apollo/client";
 import { MockedProvider, type MockedResponse } from "@apollo/client/testing";
-import { Field, FinalForm, FinalFormInput, FormSection, SaveButton, useFormApiRef } from "@comet/admin";
-import { type VoidFunctionComponent } from "react";
+import { Field, FinalForm, FinalFormInput, FormSection, SaveButton, useFormApiRef } from "@dextinity/admin";
+import type { FunctionComponent } from "react";
 
 export default {
     title: "Docs/Form/Components/FinalForm",
@@ -98,7 +98,7 @@ export const SubmitMutationBestPractices = () => {
     interface InnerFormProps {
         id: number;
     }
-    const InnerForm: VoidFunctionComponent<InnerFormProps> = ({ id }) => {
+    const InnerForm: FunctionComponent<InnerFormProps> = ({ id }) => {
         const client = useApolloClient();
 
         return (

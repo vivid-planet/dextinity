@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import { css } from "@mui/material/styles";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type InlineAlertClassKey } from "./InlineAlert";
+import type { InlineAlertClassKey } from "./InlineAlert";
 
 export const Root = createComponentSlot("div")<InlineAlertClassKey>({
     componentName: "InlineAlert",

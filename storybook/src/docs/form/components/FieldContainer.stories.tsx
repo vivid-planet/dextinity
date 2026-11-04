@@ -1,5 +1,5 @@
-import { FieldContainer } from "@comet/admin";
-import { Info } from "@comet/admin-icons";
+import { FieldContainer } from "@dextinity/admin";
+import { Info } from "@dextinity/admin-icons";
 import { InputBase } from "@mui/material";
 import { type ChangeEvent, useState } from "react";
 

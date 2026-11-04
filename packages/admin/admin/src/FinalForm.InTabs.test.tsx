@@ -54,7 +54,9 @@ test("Form DirtyPrompt for inner Tabs", async () => {
         </IntlProvider>,
     );
     const input = rendered.container.querySelector(`input[name="foo"]`);
-    if (!input) throw new Error("input not found");
+    if (!input) {
+        throw new Error("input not found");
+    }
     fireEvent.change(input, { target: { value: "xxxx" } });
     fireEvent.click(rendered.getByText("Form 2"));
 
@@ -98,7 +100,9 @@ test("Form DirtyPrompt for outer Tabs", async () => {
         </IntlProvider>,
     );
     const input = rendered.container.querySelector(`input[name="foo"]`);
-    if (!input) throw new Error("input not found");
+    if (!input) {
+        throw new Error("input not found");
+    }
     fireEvent.change(input, { target: { value: "xxxx" } });
     fireEvent.click(rendered.getByText("Page 2"));
 
@@ -152,7 +156,9 @@ test("Form DirtyPrompt for outer Stack", async () => {
     );
     fireEvent.click(rendered.getByText("go to page2"));
     const input = rendered.container.querySelector(`input[name="foo"]`);
-    if (!input) throw new Error("input not found");
+    if (!input) {
+        throw new Error("input not found");
+    }
     fireEvent.change(input, { target: { value: "xxxx" } });
     fireEvent.click(rendered.getByText("go to page1"));
 
@@ -205,7 +211,9 @@ test("Form DirtyPrompt for inner Stack", async () => {
         </IntlProvider>,
     );
     const input = rendered.container.querySelector(`input[name="foo"]`);
-    if (!input) throw new Error("input not found");
+    if (!input) {
+        throw new Error("input not found");
+    }
     fireEvent.change(input, { target: { value: "xxxx" } });
     fireEvent.click(rendered.getByText("go to page2"));
 

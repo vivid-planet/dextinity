@@ -1,21 +1,20 @@
-import { type ComponentsOverrides } from "@mui/material";
+import type { ComponentsOverrides } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
-import { type ComponentProps, type ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 import { SectionHeadline } from "../section/SectionHeadline";
 
 export type FormSectionClassKey = "root" | "disableMarginBottom" | "title" | "children";
 
 type OwnerState = Pick<FormSectionProps, "disableMarginBottom">;
 
-export interface FormSectionProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        title: typeof SectionHeadline;
-        children: "div";
-    }> {
+export interface FormSectionProps extends ThemedComponentBaseProps<{
+    root: "div";
+    title: typeof SectionHeadline;
+    children: "div";
+}> {
     children: ReactNode;
     title?: ReactNode;
     disableMarginBottom?: boolean;
@@ -29,7 +28,7 @@ export interface FormSectionProps
 export function FormSection(inProps: FormSectionProps) {
     const { children, title, disableMarginBottom, disableTypography, slotProps, infoTooltip, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminFormSection",
+        name: "DextinityAdminFormSection",
     });
 
     const ownerState: OwnerState = {
@@ -63,10 +62,12 @@ const Root = createComponentSlot("div")<FormSectionClassKey, OwnerState>({
     },
 })(
     ({ theme, ownerState }) => css`
-        ${!ownerState.disableMarginBottom &&
-        css`
-            margin-bottom: ${theme.spacing(12)};
-        `}
+        ${
+            !ownerState.disableMarginBottom &&
+            css`
+                margin-bottom: ${theme.spacing(12)};
+            `
+        }
     `,
 );
 
@@ -96,17 +97,17 @@ const Children = createComponentSlot("div")<FormSectionClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFormSection: FormSectionClassKey;
+        DextinityAdminFormSection: FormSectionClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFormSection: FormSectionProps;
+        DextinityAdminFormSection: FormSectionProps;
     }
 
     interface Components {
-        CometAdminFormSection?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFormSection"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFormSection"];
+        DextinityAdminFormSection?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFormSection"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFormSection"];
         };
     }
 }

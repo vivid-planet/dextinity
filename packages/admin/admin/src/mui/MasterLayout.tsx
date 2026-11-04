@@ -5,7 +5,7 @@ import { type ComponentType, type CSSProperties, type ReactNode, useEffect, useR
 import { AppHeader } from "../appHeader/AppHeader";
 import { AppHeaderMenuButton } from "../appHeader/menuButton/AppHeaderMenuButton";
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 import { useStoredState } from "../hooks/useStoredState";
 import { MainNavigationContext } from "./mainNavigation/Context";
 import { MasterLayoutContext } from "./MasterLayoutContext";
@@ -39,17 +39,16 @@ const ContentWrapper = createComponentSlot("div")<MasterLayoutClassKey>({
     slotName: "contentWrapper",
 })(css`
     flex-grow: 1;
-    padding-top: var(--comet-admin-master-layout-content-top-spacing);
-    width: calc(100% - var(--comet-admin-master-layout-menu-width));
+    padding-top: var(--dextinity-admin-master-layout-content-top-spacing);
+    width: calc(100% - var(--dextinity-admin-master-layout-menu-width));
 `);
 
-export interface MasterLayoutProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        header: "div";
-        menuWrapper: "div";
-        contentWrapper: "div";
-    }> {
+export interface MasterLayoutProps extends ThemedComponentBaseProps<{
+    root: "div";
+    header: "div";
+    menuWrapper: "div";
+    contentWrapper: "div";
+}> {
     children: ReactNode;
     menuComponent: ComponentType;
     headerComponent?: ComponentType;
@@ -69,7 +68,7 @@ export function MasterLayout(inProps: MasterLayoutProps) {
         headerHeight = 60,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminMasterLayout" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminMasterLayout" });
 
     const [open, setOpen] = useStoredState("main-navigation-open", openMenuByDefault);
     const [drawerVariant, setDrawerVariant] = useState<"permanent" | "temporary">("permanent");
@@ -78,7 +77,9 @@ export function MasterLayout(inProps: MasterLayoutProps) {
     const menuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!menuRef.current) return;
+        if (!menuRef.current) {
+            return;
+        }
 
         const resizeObserver = new ResizeObserver(([entry]) => {
             if (entry) {
@@ -120,8 +121,8 @@ export function MasterLayout(inProps: MasterLayoutProps) {
                         {...slotProps?.contentWrapper}
                         style={
                             {
-                                "--comet-admin-master-layout-content-top-spacing": `${headerHeight}px`,
-                                "--comet-admin-master-layout-menu-width": `${menuWidth}px`,
+                                "--dextinity-admin-master-layout-content-top-spacing": `${headerHeight}px`,
+                                "--dextinity-admin-master-layout-menu-width": `${menuWidth}px`,
                             } as CSSProperties
                         }
                     >
@@ -135,17 +136,17 @@ export function MasterLayout(inProps: MasterLayoutProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminMasterLayout: MasterLayoutClassKey;
+        DextinityAdminMasterLayout: MasterLayoutClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminMasterLayout: MasterLayoutProps;
+        DextinityAdminMasterLayout: MasterLayoutProps;
     }
 
     interface Components {
-        CometAdminMasterLayout?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminMasterLayout"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminMasterLayout"];
+        DextinityAdminMasterLayout?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminMasterLayout"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminMasterLayout"];
         };
     }
 }

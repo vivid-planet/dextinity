@@ -1,18 +1,18 @@
 export const dynamic = "error";
 
-import { gql } from "@comet/site-nextjs";
-import { type ExternalLinkBlockData, type InternalLinkBlockData, type NewsLinkBlockData, type RedirectsLinkBlockData } from "@src/blocks.generated";
+import { gql } from "@dextinity/site-nextjs";
+import type { ExternalLinkBlockData, InternalLinkBlockData, NewsLinkBlockData, RedirectsLinkBlockData } from "@src/blocks.generated";
 import { documentTypes } from "@src/documents";
-import { type GQLPageTreeNodeScope } from "@src/graphql.generated";
-import { type VisibilityParam } from "@src/middleware/domainRewrite";
+import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
+import type { VisibilityParam } from "@src/middleware/domainRewrite";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { setVisibilityParam } from "@src/util/ServerContext";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
-import { type Metadata, type ResolvingMetadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
-import { type GQLDocumentTypeQuery, type GQLDocumentTypeQueryVariables } from "./page.generated";
+import type { GQLDocumentTypeQuery, GQLDocumentTypeQueryVariables } from "./page.generated";
 
 const documentTypeQuery = gql`
     query DocumentType(
@@ -32,16 +32,17 @@ const documentTypeQuery = gql`
     }
 `;
 
-async function fetchPageTreeNode(params: PageProps["params"]) {
-    const siteConfig = getSiteConfigForDomain(params.domain);
+async function fetchPageTreeNode(params: PageProps<"/[visibility]/[domain]/[language]/[[...path]]">["params"]) {
+    const { domain, language, path: pathParam } = await params;
+    const siteConfig = getSiteConfigForDomain(domain);
 
     // Redirects are scoped by domain only, not by language.
     // If the language param isn't a valid language, it may still be the first segment of a redirect source.
     // In that case we skip resolving page and only check if the path is a redirect source.
-    const skipPage = !siteConfig.scope.languages.includes(params.language);
+    const skipPage = !siteConfig.scope.languages.includes(language);
 
-    const path = `/${(params.path ?? []).join("/")}`;
-    const { scope } = { scope: { domain: params.domain, language: params.language } };
+    const path = `/${(pathParam ?? []).join("/")}`;
+    const { scope } = { scope: { domain, language } };
     const graphQLFetch = createGraphQLFetch();
 
     return graphQLFetch<GQLDocumentTypeQuery, GQLDocumentTypeQueryVariables>(
@@ -50,20 +51,17 @@ async function fetchPageTreeNode(params: PageProps["params"]) {
             skipPage,
             path,
             scope,
-            redirectSource: `/${params.language}${path !== "/" ? path : ""}`,
+            redirectSource: `/${language}${path !== "/" ? path : ""}`,
             redirectScope: { domain: scope.domain },
         },
         { method: "GET" }, //for request memoization
     );
 }
 
-interface PageProps {
-    params: { path: string[]; domain: string; language: string; visibility: VisibilityParam };
-}
-
-export default async function Page({ params }: PageProps) {
-    setVisibilityParam(params.visibility);
-    const scope = { domain: params.domain, language: params.language };
+export default async function Page({ params }: PageProps<"/[visibility]/[domain]/[language]/[[...path]]">) {
+    const { visibility, domain, language } = await params;
+    setVisibilityParam(visibility as VisibilityParam);
+    const scope = { domain, language };
     const data = await fetchPageTreeNode(params);
 
     if (!data.pageTreeNodeByPath?.documentType) {
@@ -93,10 +91,9 @@ export default async function Page({ params }: PageProps) {
                         break;
                     }
                 }
-            }
-
-            if (destination) {
-                redirect(destination);
+                if (destination) {
+                    redirect(destination);
+                }
             }
         }
         notFound();
@@ -114,8 +111,12 @@ export default async function Page({ params }: PageProps) {
     return <Component {...props} />;
 }
 
-export async function generateMetadata({ params }: PageProps, parent: ResolvingMetadata): Promise<Metadata> {
-    const scope = { domain: params.domain, language: params.language };
+export async function generateMetadata(
+    { params }: PageProps<"/[visibility]/[domain]/[language]/[[...path]]">,
+    parent: ResolvingMetadata,
+): Promise<Metadata> {
+    const { domain, language } = await params;
+    const scope = { domain, language };
     const data = await fetchPageTreeNode(params);
 
     if (!data.pageTreeNodeByPath?.documentType) {
@@ -129,7 +130,9 @@ export async function generateMetadata({ params }: PageProps, parent: ResolvingM
         scope,
     };
     const { generateMetadata } = documentTypes[data.pageTreeNodeByPath.documentType];
-    if (!generateMetadata) return {};
+    if (!generateMetadata) {
+        return {};
+    }
 
     return generateMetadata(props, parent);
 }

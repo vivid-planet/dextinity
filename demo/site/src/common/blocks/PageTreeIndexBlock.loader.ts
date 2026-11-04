@@ -1,7 +1,7 @@
-import { type BlockLoaderOptions, gql } from "@comet/site-nextjs";
-import { type PageTreeIndexBlockData } from "@src/blocks.generated";
+import { type BlockLoaderOptions, gql } from "@dextinity/site-nextjs";
+import type { PageTreeIndexBlockData } from "@src/blocks.generated";
 
-import { type GQLPageTreeIndexDataQuery, type GQLPageTreeIndexDataQueryVariables } from "./PageTreeIndexBlock.loader.generated";
+import type { GQLPageTreeIndexDataQuery, GQLPageTreeIndexDataQueryVariables } from "./PageTreeIndexBlock.loader.generated";
 
 export type PageTreeNode = GQLPageTreeIndexDataQuery["paginatedPageTreeNodes"]["nodes"][number];
 export type LoadedData = Awaited<ReturnType<typeof loader>>;
@@ -36,6 +36,7 @@ export const loader = async ({ graphQLFetch, scope }: BlockLoaderOptions<PageTre
                 offset: currentCount,
                 limit: pageSize,
             },
+            { headers: { "x-include-invisible-content": "" } },
         );
 
         totalCount = paginatedPageTreeNodes.totalCount;

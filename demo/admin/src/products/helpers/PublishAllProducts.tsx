@@ -1,11 +1,11 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { Button, CancelButton, CrudMoreActionsMenuContext, Dialog } from "@comet/admin";
-import { Online } from "@comet/admin-icons";
+import { Button, CancelButton, CrudMoreActionsMenuContext, Dialog } from "@dextinity/admin";
+import { Online } from "@dextinity/admin-icons";
 import { DialogActions, DialogContent, ListItemIcon, MenuItem } from "@mui/material";
 import { useContext, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
-import { type GQLPublishAllProductsMutation, type GQLPublishAllProductsMutationVariables } from "./PublishAllProducts.generated";
+import type { GQLPublishAllProductsMutation, GQLPublishAllProductsMutationVariables } from "./PublishAllProducts.generated";
 
 export function PublishAllProducts() {
     const [open, setOpen] = useState(false);

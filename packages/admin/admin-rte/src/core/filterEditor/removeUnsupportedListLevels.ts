@@ -1,6 +1,6 @@
 import { EditorState } from "draft-js";
 
-import { type FilterEditorStateBeforeUpdateFn } from "../Rte";
+import type { FilterEditorStateBeforeUpdateFn } from "../Rte";
 
 const removeUnsupportedListLevels: FilterEditorStateBeforeUpdateFn = (newState, { listLevelMax }) => {
     const content = newState.getCurrentContent();

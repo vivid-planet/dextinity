@@ -5,11 +5,11 @@ import { IsEnum, IsOptional, ValidateNested, ValidationArguments } from "class-v
 import { GraphQLJSONObject } from "graphql-scalars";
 
 import { Block, BlockInputInterface, ExtractBlockInput } from "../../blocks/block";
-import { RedirectGenerationType, RedirectSourceTypeValues } from "../redirects.enum";
+import { RedirectGenerationType, RedirectSourceType } from "../redirects.enum";
 import { IsValidRedirectSource } from "../validators/isValidRedirectSource";
 
 export interface RedirectInputInterface {
-    sourceType: RedirectSourceTypeValues;
+    sourceType: RedirectSourceType;
     source: string;
     target: BlockInputInterface;
     comment?: string;
@@ -25,9 +25,9 @@ export class RedirectInputFactory {
     static create({ linkBlock }: { linkBlock: Block }): Type<RedirectInputInterface> {
         @InputType()
         class RedirectInput implements RedirectInputInterface {
-            @IsEnum(RedirectSourceTypeValues)
-            @Field(() => RedirectSourceTypeValues)
-            sourceType: RedirectSourceTypeValues;
+            @IsEnum(RedirectSourceType)
+            @Field(() => RedirectSourceType)
+            sourceType: RedirectSourceType;
 
             @IsValidRedirectSource()
             @Field()

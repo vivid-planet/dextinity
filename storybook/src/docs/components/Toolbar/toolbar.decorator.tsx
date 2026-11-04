@@ -1,5 +1,5 @@
-import { Stack, StackPage, StackPageTitle, StackSwitch } from "@comet/admin";
-import { type Decorator } from "@storybook/react-webpack5";
+import { Stack, StackPage, StackPageTitle, StackSwitch } from "@dextinity/admin";
+import type { Decorator } from "@storybook/react-vite";
 
 export function toolbarDecorator(): Decorator {
     return (Story) => {

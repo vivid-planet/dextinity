@@ -8,7 +8,7 @@ import {
     ChildBlockInput,
     createBlock,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { CallToActionListBlock } from "@src/common/blocks/call-to-action-list.block";
 import { IsEnum } from "class-validator";
 
@@ -39,6 +39,8 @@ class StandaloneCallToActionListBlockInput extends BlockInput {
     }
 }
 
-export const StandaloneCallToActionListBlock = createBlock(StandaloneCallToActionListBlockData, StandaloneCallToActionListBlockInput, {
-    name: "StandaloneCallToActionList",
-});
+export const StandaloneCallToActionListBlock = createBlock(
+    StandaloneCallToActionListBlockData,
+    StandaloneCallToActionListBlockInput,
+    "StandaloneCallToActionList",
+);

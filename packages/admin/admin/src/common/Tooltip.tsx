@@ -10,10 +10,10 @@ import {
     Typography,
 } from "@mui/material";
 import { css, useTheme, useThemeProps } from "@mui/material/styles";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 type SlotProps = MuiTooltipProps["slotProps"] &
     ThemedComponentBaseProps<{
@@ -22,7 +22,7 @@ type SlotProps = MuiTooltipProps["slotProps"] &
     }>["slotProps"];
 
 export interface TooltipProps extends Omit<MuiTooltipProps, "slotProps" | "title"> {
-    variant?: Variant;
+    color?: Color;
     title?: ReactNode;
     description?: ReactNode;
     customContent?: ReactNode;
@@ -30,13 +30,13 @@ export interface TooltipProps extends Omit<MuiTooltipProps, "slotProps" | "title
 }
 
 type Slot = "root" | "title" | "text";
-type Variant = "light" | "dark" | "neutral" | "primary" | "error" | "success" | "warning";
+type Color = "light" | "dark" | "error" | "success" | "warning";
 type ComponentState = "hasTitleOnly";
 
-export type TooltipClassKey = Slot | Variant | ComponentState | MuiTooltipClassKey;
+export type TooltipClassKey = Slot | Color | ComponentState | MuiTooltipClassKey;
 
 type OwnerState = {
-    variant: Variant;
+    color: Color;
     disableInteractive: boolean | undefined;
     arrow: boolean | undefined;
     isRtl: boolean;
@@ -53,7 +53,7 @@ const TooltipPopper = createComponentSlot(MuiPopper)<TooltipClassKey, OwnerState
     slotName: "popper",
     classesResolver(ownerState) {
         return [
-            ownerState.variant,
+            ownerState.color,
             // Copied the following from MUIs default TooltipPopper: https://github.com/mui/material-ui/blob/a13c0c026692aafc303756998a78f1d6c2dd707d/packages/mui-material/src/Tooltip/Tooltip.js#L48
             !ownerState.disableInteractive && "popperInteractive",
             ownerState.arrow && "popperArrow",
@@ -61,106 +61,114 @@ const TooltipPopper = createComponentSlot(MuiPopper)<TooltipClassKey, OwnerState
         ];
     },
 })(({ theme, ownerState }) => {
-    const variantToTextColor: Record<Variant, string> = {
+    const colorPropToTextColor: Record<Color, string> = {
         light: theme.palette.grey[900],
         dark: theme.palette.common.white,
-        neutral: theme.palette.grey[900],
-        primary: theme.palette.grey[900],
         error: theme.palette.common.white,
         success: theme.palette.common.black,
         warning: theme.palette.common.black,
     };
 
-    const variantToBackgroundColor: Record<Variant, string> = {
+    const colorPropToBackgroundColor: Record<Color, string> = {
         light: theme.palette.common.white,
         dark: ownerState.hasTitleOnly ? theme.palette.grey[500] : theme.palette.grey[900],
-        neutral: theme.palette.grey[100],
-        primary: theme.palette.primary.light,
         error: theme.palette.error.light,
         success: theme.palette.success.light,
         warning: theme.palette.warning.light,
     };
 
     return css`
-        ${!ownerState.hasTitleOnly &&
-        css`
-            min-width: 200px;
-        `}
+        ${
+            !ownerState.hasTitleOnly &&
+            css`
+                min-width: 200px;
+            `
+        }
 
         .${tooltipClasses.tooltip} {
             box-shadow: ${theme.shadows[3]};
             border-radius: 4px;
             padding: 3px 6px;
-            color: ${variantToTextColor[ownerState.variant]};
-            background-color: ${variantToBackgroundColor[ownerState.variant]};
+            color: ${colorPropToTextColor[ownerState.color]};
+            background-color: ${colorPropToBackgroundColor[ownerState.color]};
             line-height: 0; // Custom content may include space-caracters, due to code indentation. Removing the line-height prevents these from adding unintended whitespace.
 
-            ${!ownerState.hasTitleOnly &&
-            css`
-                padding: 10px;
-            `}
+            ${
+                !ownerState.hasTitleOnly &&
+                css`
+                    padding: 10px;
+                `
+            }
         }
 
         .${tooltipClasses.arrow} {
-            color: ${variantToBackgroundColor[ownerState.variant]};
+            color: ${colorPropToBackgroundColor[ownerState.color]};
         }
 
         // Copied the following from MUIs default TooltipPopper: https://github.com/mui/material-ui/blob/a13c0c026692aafc303756998a78f1d6c2dd707d/packages/mui-material/src/Tooltip/Tooltip.js#L55
         z-index: ${theme.zIndex.tooltip};
         pointer-events: none;
-        ${!ownerState.disableInteractive &&
-        css`
-            pointer-events: auto;
-        `};
-        ${ownerState.arrow &&
-        css`
-            &[data-popper-placement*="bottom"] .${tooltipClasses.arrow} {
-                top: 0;
-                margin-top: -0.71em;
-                &::before {
-                    transform-origin: 0 100%;
+        ${
+            !ownerState.disableInteractive &&
+            css`
+                pointer-events: auto;
+            `
+        };
+        ${
+            ownerState.arrow &&
+            css`
+                &[data-popper-placement*="bottom"] .${tooltipClasses.arrow} {
+                    top: 0;
+                    margin-top: -0.71em;
+                    &::before {
+                        transform-origin: 0 100%;
+                    }
                 }
-            }
-            &[data-popper-placement*="top"] .${tooltipClasses.arrow} {
-                bottom: 0;
-                margin-bottom: -0.71em;
-                &::before {
-                    transform-origin: 100% 0;
+                &[data-popper-placement*="top"] .${tooltipClasses.arrow} {
+                    bottom: 0;
+                    margin-bottom: -0.71em;
+                    &::before {
+                        transform-origin: 100% 0;
+                    }
                 }
-            }
-            &[data-popper-placement*="right"] .${tooltipClasses.arrow} {
-                ${!ownerState.isRtl
-                    ? css`
-                          left: 0;
-                          margin-left: -0.71em;
-                      `
-                    : css`
-                          right: 0;
-                          margin-right: -0.71em;
-                      `}
-                height: 1em;
-                width: 0.71em;
-                &::before {
-                    transform-origin: 100% 100%;
+                &[data-popper-placement*="right"] .${tooltipClasses.arrow} {
+                    ${
+                        !ownerState.isRtl
+                            ? css`
+                                  left: 0;
+                                  margin-left: -0.71em;
+                              `
+                            : css`
+                                  right: 0;
+                                  margin-right: -0.71em;
+                              `
+                    }
+                    height: 1em;
+                    width: 0.71em;
+                    &::before {
+                        transform-origin: 100% 100%;
+                    }
                 }
-            }
-            &[data-popper-placement*="left"] .${tooltipClasses.arrow} {
-                ${!ownerState.isRtl
-                    ? css`
-                          right: 0;
-                          margin-right: -0.71em;
-                      `
-                    : css`
-                          left: 0;
-                          margin-left: -0.71em;
-                      `}
-                height: 1em;
-                width: 0.71em;
-                &::before {
-                    transform-origin: 0 0;
+                &[data-popper-placement*="left"] .${tooltipClasses.arrow} {
+                    ${
+                        !ownerState.isRtl
+                            ? css`
+                                  right: 0;
+                                  margin-right: -0.71em;
+                              `
+                            : css`
+                                  left: 0;
+                                  margin-left: -0.71em;
+                              `
+                    }
+                    height: 1em;
+                    width: 0.71em;
+                    &::before {
+                        transform-origin: 0 0;
+                    }
                 }
-            }
-        `};
+            `
+        };
     `;
 });
 
@@ -177,8 +185,8 @@ const Text = createComponentSlot(Typography)<TooltipClassKey>({
 })();
 
 export const Tooltip = (inProps: TooltipProps) => {
-    const props = useThemeProps({ props: inProps, name: "CometAdminTooltip" });
-    const { variant = "dark", disableInteractive, arrow, children, title, description, customContent, slotProps = {}, ...restProps } = props;
+    const props = useThemeProps({ props: inProps, name: "DextinityAdminTooltip" });
+    const { color = "dark", disableInteractive, arrow, children, title, description, customContent, slotProps = {}, ...restProps } = props;
     const theme = useTheme();
 
     if (customContent && (title || description)) {
@@ -190,7 +198,7 @@ export const Tooltip = (inProps: TooltipProps) => {
     }
 
     const ownerState: OwnerState = {
-        variant,
+        color,
         disableInteractive,
         arrow,
         isRtl: theme.direction === "rtl",
@@ -260,17 +268,17 @@ const getMuiTooltipTitle = ({ title, description, customContent }: TooltipConten
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminTooltip: TooltipProps;
+        DextinityAdminTooltip: TooltipProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminTooltip: TooltipClassKey;
+        DextinityAdminTooltip: TooltipClassKey;
     }
 
     interface Components {
-        CometAdminTooltip?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminTooltip"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminTooltip"];
+        DextinityAdminTooltip?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminTooltip"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminTooltip"];
         };
     }
 }

@@ -6,10 +6,17 @@ import prettierPlugin from "eslint-plugin-prettier/recommended";
 import unusedImports from "eslint-plugin-unused-imports";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import { configs as eslintPluginJsonc } from "eslint-plugin-jsonc";
-import cometPlugin from "@comet/eslint-plugin";
+import dextinityPlugin from "@dextinity/eslint-plugin";
 import importPlugin from "eslint-plugin-import";
 import js from "@eslint/js";
 import packageJson from "eslint-plugin-package-json";
+
+export const restrictedImportPatterns = [
+    {
+        group: ["@dextinity/*/lib", "@dextinity/*/lib/**"],
+        message: "Don't import private files from @dextinity packages via /lib. Use the package root instead.",
+    },
+];
 
 /** @type {import('eslint')} */
 const config = [
@@ -40,10 +47,10 @@ const config = [
     },
     {
         plugins: {
-            "@comet": cometPlugin,
+            "@dextinity": dextinityPlugin,
         },
         rules: {
-            "@comet/no-other-module-relative-import": ["warn"],
+            "@dextinity/no-other-module-relative-import": ["warn"],
         },
     },
     {
@@ -72,6 +79,7 @@ const config = [
             ...packageJson.configs.recommended.rules,
             "package-json/require-type": "off",
             "package-json/require-description": "off",
+            "package-json/require-attribution": "off",
         },
     },
     {
@@ -90,12 +98,20 @@ const config = [
         rules: {
             "no-unused-vars": "off",
             "prefer-template": "error",
-            "no-console": ["error", { allow: ["warn", "error"] }],
+            "no-console": ["error", { allow: ["warn", "error", "info", "debug"] }],
+            curly: "error",
             "no-return-await": "error",
+            "no-restricted-imports": [
+                "error",
+                {
+                    patterns: restrictedImportPatterns,
+                },
+            ],
             "@typescript-eslint/no-unused-vars": ["error", { args: "none", ignoreRestSiblings: true }],
             "@typescript-eslint/no-inferrable-types": ["error", { ignoreProperties: true }],
             "@typescript-eslint/prefer-enum-initializers": "error",
             "@typescript-eslint/no-non-null-assertion": "error",
+            "@typescript-eslint/no-import-type-side-effects": "error",
             "@typescript-eslint/consistent-type-imports": [
                 "error",
                 {

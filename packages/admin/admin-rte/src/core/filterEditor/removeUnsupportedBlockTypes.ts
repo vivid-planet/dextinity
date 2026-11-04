@@ -1,6 +1,6 @@
-import { type DraftBlockType } from "draft-js";
+import type { DraftBlockType } from "draft-js";
 
-import { type FilterEditorStateBeforeUpdateFn, type SupportedThings } from "../Rte";
+import type { FilterEditorStateBeforeUpdateFn, SupportedThings } from "../Rte";
 import changeBlockType from "./utils/changeBlockType";
 
 const removeUnsupportedBlockTypes: FilterEditorStateBeforeUpdateFn = (newState, { supports, standardBlockType }) => {

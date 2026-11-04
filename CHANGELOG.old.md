@@ -23,7 +23,6 @@ _Mar 8, 2023_
 #### Breaking changes
 
 - Changes related to the new authorization strategy
-
     - Remove dependency on [@comet/react-app-auth](https://www.npmjs.com/package/@comet/react-app-auth) package
     - Remove `AuthorizationErrorPage` component
     - Remove `access-token-service-worker.js` file. You should remove it from your build setup
@@ -61,14 +60,12 @@ _Mar 8, 2023_
 ### @comet/cms-api
 
 - Changes related to the new authorization strategy
-
     - Remove `AuthModule`. The auth module should be created in the application using the factories provided by the package. See [AuthModule](demo/api/src/auth/auth.module.ts) for an example
     - Remove `BasicAuthStrategy`. Use `createStaticCredentialsBasicStrategy` instead
     - Remove `BearerTokenStrategy`. Use `createAuthProxyJwtStrategy` instead
     - Remove `GlobalAuthGuard`. Use `createCometAuthGuard` instead
 
 - Changes related to the new module configuration strategy
-
     - `BlocksModule`, `BlobStorageModule`, `DamModule` and `PublicUploadModule` are not initialized asynchronously anymore. See [AppModule](demo/api/src/app.module.ts) for an example
 
 - `BlocksTransformerMiddlewareFactory` now requires `BLOCKS_MODULE_TRANSFORMER_DEPENDENCIES` to be injected. See [AppModule](demo/api/src/app.module.ts) for an example
@@ -99,7 +96,6 @@ _Mar 8, 2023_
 #### Breaking changes
 
 - Changes related to the new authorization strategy
-
     - Remove dependency on [next-auth](https://www.npmjs.com/package/next-auth) package
     - Remove `access-token-service-worker.js` file. You should remove it from your build setup
     - Remove `AccessToken` message from `IFrameBridge`

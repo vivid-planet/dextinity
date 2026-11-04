@@ -1,8 +1,9 @@
 import { BaseEntity, defineConfig, Entity, ManyToOne, MikroORM, PrimaryKey, Ref } from "@mikro-orm/postgresql";
 import { ID } from "@nestjs/graphql";
-import { Field } from "@nestjs/graphql/dist/decorators/field.decorator";
-import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage";
-import { v4 as uuid } from "uuid";
+import { Field } from "@nestjs/graphql/dist/decorators/field.decorator.js";
+import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
+import { randomUUID } from "crypto";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { formatSource, parseSource, testPermission } from "../../utils/test-helper";
 import { generateCrudInput } from "../generate-crud-input";
@@ -10,7 +11,7 @@ import { generateCrudInput } from "../generate-crud-input";
 @Entity()
 export class Foo extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Field(() => RelationTypeId, { nullable: true })
     @ManyToOne(() => RelationTypeId, { nullable: true, ref: true })
@@ -57,7 +58,7 @@ describe("GenerateCrudInputRelationsString", () => {
         await orm.close();
     });
     it("n:1 input dto should contain relation id as ID or string", async () => {
-        const out = await generateCrudInput({ targetDirectory: __dirname, requiredPermission: testPermission }, orm.em.getMetadata().get("Foo"));
+        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("Foo"));
         const formattedOut = await formatSource(out[0].content);
         const source = parseSource(formattedOut);
 

@@ -1,5 +1,5 @@
-import { type DamFileImage } from "../files/entities/file-image.entity";
-import { type ImageCropArea } from "./entities/image-crop-area.entity";
+import type { DamFileImage } from "../files/entities/file-image.entity";
+import type { ImageCropArea } from "./entities/image-crop-area.entity";
 
 /**
  * Calculate a DAM image's aspect ratio based on a specified crop area.
@@ -19,8 +19,4 @@ export function calculateInheritAspectRatio(image: DamFileImage, cropArea: Image
 
         return (cropArea.width * image.width) / 100 / ((cropArea.height * image.height) / 100);
     }
-}
-
-export function rgbToHex(r: number, g: number, b: number): string {
-    return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
 }

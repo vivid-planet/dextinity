@@ -1,4 +1,4 @@
-import { type ContentScope } from "../contentScope/Provider";
+import type { ContentScope } from "../contentScope/Provider";
 
 export interface SiteConfig {
     url: string;

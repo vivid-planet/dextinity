@@ -1,47 +1,53 @@
 {
-    "name": "@comet/eslint-plugin",
-    "version": "8.19.0",
-    "description": "A set of ESLint rules and configurations for Comet projects",
+    "name": "@dextinity/eslint-plugin",
+    "version": "10.13.1",
+    "description": "A set of ESLint rules and configurations for Dextinity projects",
     "type": "commonjs",
     "main": "lib/index.js",
     "license": "BSD-2-Clause",
+    "sideEffects": false,
+    "files": [
+        "lib"
+    ],
     "scripts": {
-        "build": "pnpm run clean && tsc",
+        "build": "pnpm run clean && tsc --project ./tsconfig.build.json",
         "clean": "rimraf lib",
         "dev": "tsc --watch",
         "lint": "run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",
         "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",
+        "lint:fix": "run-p lint:fix:eslint lint:fix:prettier",
+        "lint:fix:eslint": "pnpm run lint:eslint --fix",
+        "lint:fix:prettier": "pnpm run lint:prettier --write",
         "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}'",
-        "lint:tsc": "tsc",
-        "test": "jest",
-        "test:watch": "jest --watch"
+        "lint:tsc": "tsc --noEmit",
+        "test": "pnpm run test:unit",
+        "test:unit": "vitest --run",
+        "test:watch": "vitest --watch"
     },
     "devDependencies": {
-        "@eslint/js": "^9.39.2",
-        "@types/jest": "^29.5.14",
-        "eslint": "^9.39.2",
+        "@eslint/js": "^9.39.5",
+        "eslint": "^9.39.5",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-import": "^2.32.0",
         "eslint-plugin-jsonc": "^2.21.1",
-        "eslint-plugin-package-json": "^0.88.2",
-        "eslint-plugin-prettier": "^5.5.5",
+        "eslint-plugin-package-json": "^0.91.2",
+        "eslint-plugin-prettier": "^5.5.7",
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "eslint-plugin-unused-imports": "^4.4.1",
-        "globals": "^15.15.0",
-        "jest": "^29.7.0",
-        "npm-run-all2": "^8.0.4",
-        "prettier": "^3.6.2",
-        "ts-jest": "^29.4.6",
+        "globals": "^17.13.0",
+        "npm-run-all2": "^9.0.4",
+        "prettier": "^3.9.10",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.53.0"
+        "typescript-eslint": "^8.72.1",
+        "vitest": "^5.0.5"
     },
     "peerDependencies": {
         "eslint": ">=9",
         "prettier": ">=3"
     },
     "engines": {
-        "node": ">=22.0.0"
+        "node": ">=22.12.0"
     },
     "publishConfig": {
         "access": "public",

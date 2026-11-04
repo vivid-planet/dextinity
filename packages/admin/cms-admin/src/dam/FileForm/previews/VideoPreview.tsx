@@ -2,7 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 import { styled } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 
-import { type DamFileDetails } from "../EditFile";
+import type { DamFileDetails } from "../EditFile";
 import { type GQLVideoPreviewCaptionsQuery, type GQLVideoPreviewCaptionsQueryVariables, namedOperations } from "./VideoPreview.generated";
 
 const VideoPreviewWrapper = styled("div")`
@@ -57,7 +57,7 @@ export const VideoPreview = ({ file }: VideoPreviewProps) => {
                         return <track key={caption.id} src={caption.alternative.fileUrl} kind="captions" srcLang={caption.language} />;
                     })}
                 <FormattedMessage
-                    id="comet.dam.file.unsupportedVideoTag"
+                    id="dextinity.dam.file.unsupportedVideoTag"
                     defaultMessage="Your browser does not support the video element. Please use another browser."
                 />
             </StyledVideo>

@@ -1,4 +1,4 @@
-import { Close, Delete, Save, Warning } from "@comet/admin-icons";
+import { Close, Delete, Save, Warning } from "@dextinity/admin-icons";
 import {
     type ComponentsOverrides,
     // eslint-disable-next-line no-restricted-imports
@@ -11,23 +11,16 @@ import {
     Typography,
 } from "@mui/material";
 import { css, useThemeProps } from "@mui/material/styles";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { Button } from "../common/buttons/Button";
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 import { messages } from "../messages";
 
 export type RouterConfirmationDialogClassKey =
-    | "root"
-    | "closeButton"
-    | "messageWrapper"
-    | "messageWarningIcon"
-    | "messageText"
-    | "actionButton"
-    | "saveButton"
-    | "discardButton";
+    "root" | "closeButton" | "messageWrapper" | "messageWarningIcon" | "messageText" | "actionButton" | "saveButton" | "discardButton";
 
 const StyledDialog = createComponentSlot(Dialog)<RouterConfirmationDialogClassKey>({
     componentName: "RouterConfirmationDialog",
@@ -101,16 +94,15 @@ export enum PromptAction {
     Save = "Save",
 }
 
-export interface RouterConfirmationDialogProps
-    extends ThemedComponentBaseProps<{
-        root: typeof Dialog;
-        closeButton: typeof IconButton;
-        messageWrapper: "div";
-        messageWarningIcon: typeof Warning;
-        messageText: typeof Typography;
-        saveButton: typeof Button;
-        discardButton: typeof Button;
-    }> {
+export interface RouterConfirmationDialogProps extends ThemedComponentBaseProps<{
+    root: typeof Dialog;
+    closeButton: typeof IconButton;
+    messageWrapper: "div";
+    messageWarningIcon: typeof Warning;
+    messageText: typeof Typography;
+    saveButton: typeof Button;
+    discardButton: typeof Button;
+}> {
     isOpen: boolean;
     message?: ReactNode; // typically a string or a FormattedMessage (intl) is passed
     handleClose: (action: PromptAction) => void;
@@ -125,7 +117,7 @@ export function RouterConfirmationDialog(inProps: RouterConfirmationDialogProps)
         showSaveButton = false,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminRouterConfirmationDialog" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminRouterConfirmationDialog" });
 
     return (
         <StyledDialog open={isOpen} onClose={() => handleClose(PromptAction.Cancel)} maxWidth="sm" {...slotProps?.root} {...restProps}>
@@ -162,12 +154,12 @@ export function RouterConfirmationDialog(inProps: RouterConfirmationDialogProps)
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminRouterConfirmationDialog: RouterConfirmationDialogClassKey;
+        DextinityAdminRouterConfirmationDialog: RouterConfirmationDialogClassKey;
     }
 
     interface Components {
-        CometAdminRouterConfirmationDialog?: {
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminRouterConfirmationDialog"];
+        DextinityAdminRouterConfirmationDialog?: {
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminRouterConfirmationDialog"];
         };
     }
 }

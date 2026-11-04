@@ -1,7 +1,7 @@
-import { type DocumentNode } from "graphql";
+import type { DocumentNode } from "graphql";
 import { createContext } from "react";
 
-import { type ITableData } from "./useTableQuery";
+import type { ITableData } from "./useTableQuery";
 
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.

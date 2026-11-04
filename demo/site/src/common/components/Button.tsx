@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { type ComponentProps, type ElementType } from "react";
+import type { ComponentProps, ElementType } from "react";
 
 import styles from "./Button.module.scss";
 

@@ -4,7 +4,7 @@ title: Access Control in the API
 
 :::note
 
-The term **operation** stands for the locations in which COMET DXP invokes permission checks:
+The term **operation** stands for the locations in which Dextinity invokes permission checks:
 
 - Queries/Mutations in GraphQL-resolvers
 - Routes in REST-controllers
@@ -12,7 +12,7 @@ The term **operation** stands for the locations in which COMET DXP invokes permi
 Normally you want to decorate the methods of these classes, however, decorating the whole class is also possible.
 :::
 
-After activating the module, COMET DXP checks every operation for the required permissions and scopes. Therefore it is necessary to decorate the operations to let the system know what to check. COMET DXP then checks if the current user possesses the permission defined in the decorator.
+After activating the module, Dextinity checks every operation for the required permissions and scopes. Therefore it is necessary to decorate the operations to let the system know what to check. Dextinity then checks if the current user possesses the permission defined in the decorator.
 
 Additionally, the scope of the data in operation will be checked against the scope of the users. To achieve this, the system has to know the scope of the data that is being handled right now.
 
@@ -26,7 +26,7 @@ You might also want to check the permissions on field resolvers. To do that, you
 
 This decorator is mandatory for all operations. The first parameter of type `string | string[] | "disablePermissionCheck"` configures which permission is necessary to access the decorated operation.
 
-The core of COMET DXP already defines a list of permissions (e.g. `pageTree`, `dam`, `cronJobs`, `userPermissions`). Permissions are defined as plain strings, in the most basic case they represent the main items of the menu bar in the admin panel.
+The core of Dextinity already defines a list of permissions (e.g. `pageTree`, `dam`, `cronJobs`, `userPermissions`). Permissions are defined as plain strings, in the most basic case they represent the main items of the menu bar in the admin panel.
 
 However, if you need a more fine-grained access control you might want to concatenate strings, e.g. `newsRead` or `newsCreate`. Only create as many permissions as really necessary.
 
@@ -39,7 +39,7 @@ Future version will support a dot-like notation (e.g. `news` will subsume `news.
 The scope check needs to know which scope is used for the current operation. This is described in [Evaluate Content Scopes documentation](/docs/core-concepts/content-scope/evaluate-content-scopes).
 
 :::caution
-COMET DXP validates the data relevant for the operation, but cannot check if the validated data is finally used. You are responsible for applying the validated data in your operations.
+Dextinity validates the data relevant for the operation, but cannot check if the validated data is finally used. You are responsible for applying the validated data in your operations.
 :::
 
 ## Disable permission/scope checks
@@ -67,14 +67,14 @@ Also, try to avoid using the `@GetCurrentUser` decorator (which often leads to u
 
 :::
 
-### @DisableCometGuards
+### @DisableDextinityGuards
 
-`@DisableCometGuards()` disables the global auth guards (`CometAuthGuard`, `UserPermissionsGuard`). This may be used if a different authentication method is desired (e.g., basic authentication) for a specific handler or class in combination with a custom guard.
+`@DisableDextinityGuards()` disables the global auth guards (`DextinityAuthGuard`, `UserPermissionsGuard`). This may be used if a different authentication method is desired (e.g., basic authentication) for a specific handler or class in combination with a custom guard.
 
 e.g.:
 
 ```typescript
-@DisableCometGuards()
+@DisableDextinityGuards()
 @UseGuards(MyCustomGuard)
 async handlerThatUsesACustomGuard(): {
     ...

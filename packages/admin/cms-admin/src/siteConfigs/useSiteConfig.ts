@@ -1,5 +1,5 @@
-import { type ContentScope } from "../contentScope/Provider";
-import { type SiteConfig } from "./siteConfigsConfig";
+import type { ContentScope } from "../contentScope/Provider";
+import type { SiteConfig } from "./siteConfigsConfig";
 import { useSiteConfigs } from "./useSiteConfigs";
 
 export function useSiteConfig({ scope }: { scope: ContentScope }): SiteConfig {

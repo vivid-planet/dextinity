@@ -1,7 +1,9 @@
 {
     "compilerOptions": {
         "noEmitOnError": true,
-        "outDir": "lib/"
+        "outDir": "lib/",
+        "rootDir": "src",
+        "strict": true
     },
     "extends": "../tsconfig.base.json",
     "include": ["./src"]

@@ -1,11 +1,11 @@
 import { Scope } from "@nestjs/common";
-import { type ContextId, type ModuleRef } from "@nestjs/core";
+import type { ContextId, ModuleRef } from "@nestjs/core";
 import opentelemetry from "@opentelemetry/api";
 
 import { isInjectableService } from "../common/helper/is-injectable-service.helper";
 import { type BlockContext, type BlockDataInterface, type BlockTransformerServiceInterface, isBlockDataInterface } from "./block";
 
-const tracer = opentelemetry.trace.getTracer("@comet/cms-api");
+const tracer = opentelemetry.trace.getTracer("@dextinity/cms-api");
 
 export async function transformToPlain(
     block: BlockDataInterface,

@@ -1,6 +1,7 @@
-import { createComponentSlot, InputWithPopper, type ThemedComponentBaseProps } from "@comet/admin";
+import { createComponentSlot, InputWithPopper, type ThemedComponentBaseProps } from "@dextinity/admin";
 import { Box, ButtonBase, IconButton, InputAdornment as MuiInputAdornment, Typography } from "@mui/material";
 import { css, type Theme } from "@mui/material/styles";
+import type { ComponentProps, ComponentType } from "react";
 import { HexColorPicker as HexColorPickerBase, RgbaStringColorPicker as RgbaStringColorPickerBase } from "react-colorful";
 
 export type ColorPickerClassKey =
@@ -248,44 +249,52 @@ export const PreviewIndicator = createComponentSlot("div")<ColorPickerClassKey, 
         border: thin solid ${theme.palette.divider};
         border-radius: ${theme.shape.borderRadius};
 
-        ${ownerState.type === "color" &&
-        css`
-            background-color: ${ownerState.color};
-        `}
+        ${
+            ownerState.type === "color" &&
+            css`
+                background-color: ${ownerState.color};
+            `
+        }
 
-        ${ownerState.type === "empty" &&
-        css`
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        ${
+            ownerState.type === "empty" &&
+            css`
+                display: flex;
+                align-items: center;
+                justify-content: center;
 
-            &:before {
-                content: "";
-                display: block;
-                background-color: #f62929;
-                width: 1px;
-                height: calc(100% - 4px);
-                transform: rotate(45deg);
-            }
-        `}
+                &:before {
+                    content: "";
+                    display: block;
+                    background-color: #f62929;
+                    width: 1px;
+                    height: calc(100% - 4px);
+                    transform: rotate(45deg);
+                }
+            `
+        }
 
-        ${ownerState.type === "invalid" &&
-        css`
-            font-size: 16px;
-            line-height: 24px;
-            font-weight: ${theme.typography.fontWeightBold};
-            color: ${theme.palette.text.secondary};
-            text-align: center;
-        `}
+        ${
+            ownerState.type === "invalid" &&
+            css`
+                font-size: 16px;
+                line-height: 24px;
+                font-weight: ${theme.typography.fontWeightBold};
+                color: ${theme.palette.text.secondary};
+                text-align: center;
+            `
+        }
     `,
 );
 
-export const HexColorPicker = createComponentSlot(HexColorPickerBase)<ColorPickerClassKey>({
+export const HexColorPicker: ComponentType<ComponentProps<typeof HexColorPickerBase>> = createComponentSlot(HexColorPickerBase)<ColorPickerClassKey>({
     componentName: "ColorPicker",
     slotName: "hexColorPicker",
 })();
 
-export const RgbaStringColorPicker = createComponentSlot(RgbaStringColorPickerBase)<ColorPickerClassKey>({
+export const RgbaStringColorPicker: ComponentType<ComponentProps<typeof RgbaStringColorPickerBase>> = createComponentSlot(
+    RgbaStringColorPickerBase,
+)<ColorPickerClassKey>({
     componentName: "ColorPicker",
     slotName: "rgbaStringColorPicker",
 })();

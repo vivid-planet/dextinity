@@ -17,7 +17,9 @@ export class MailTemplateService {
         const mailTemplates: { name: string; instance: MailTemplateInterface<unknown> }[] = [];
         for (const discovery of await this.discoveryService.providersWithMetaAtKey<MailTemplateMetadata>(MAIL_TEMPLATE_METADATA_KEY)) {
             const mailTemplate = discovery.discoveredClass.instance;
-            if (!isMailTemplate(mailTemplate)) throw new Error(`Class ${discovery.discoveredClass.name} does not implement MailTemplateInterface`);
+            if (!isMailTemplate(mailTemplate)) {
+                throw new Error(`Class ${discovery.discoveredClass.name} does not implement MailTemplateInterface`);
+            }
 
             mailTemplates.push({ name: discovery.discoveredClass.name, instance: mailTemplate });
         }
@@ -26,7 +28,9 @@ export class MailTemplateService {
 
     async getMailTemplate<T>(className: string): Promise<MailTemplateInterface<T>> {
         const ret = (await this.getMailTemplatesWithClassName()).find((mailTemplateWithClassName) => mailTemplateWithClassName.name === className);
-        if (!ret) throw new Error(`MailTemplate not found: ${className}`);
+        if (!ret) {
+            throw new Error(`MailTemplate not found: ${className}`);
+        }
         return ret.instance as MailTemplateInterface<T>;
     }
 

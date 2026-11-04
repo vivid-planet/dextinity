@@ -1,71 +1,86 @@
 {
-    "name": "@comet/admin-generator",
-    "version": "8.19.0",
-    "description": "Comet Admin Generator CLI tool",
+    "name": "@dextinity/admin-generator",
+    "version": "10.13.1",
+    "description": "Dextinity Admin Generator CLI tool",
     "repository": {
         "directory": "packages/admin/admin-generator",
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet"
+        "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
-    "type": "commonjs",
-    "main": "lib/index.js",
-    "typings": "lib/index.d.ts",
-    "bin": {
-        "comet-admin-generator": "bin/admin-generator.js"
+    "type": "module",
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "types": "./dist/index.d.mts"
+        }
     },
+    "bin": {
+        "dextinity-admin-generator": "bin/admin-generator.mjs"
+    },
+    "sideEffects": false,
     "files": [
-        "bin/**/*.js",
-        "lib/*"
+        "bin/**/*.mjs",
+        "dist/*"
     ],
     "scripts": {
-        "build": "pnpm run clean && tsc -p tsconfig.build.json",
-        "clean": "rimraf lib",
-        "dev": "tsc --watch --preserveWatchOutput -p tsconfig.build.json",
+        "build": "tsdown",
+        "dev": "tsdown --watch",
         "lint": "run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",
         "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",
+        "lint:fix": "run-p lint:fix:eslint lint:fix:prettier",
+        "lint:fix:eslint": "pnpm run lint:eslint --fix",
+        "lint:fix:prettier": "pnpm run lint:prettier --write",
         "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}'",
         "lint:tsc": "tsc",
-        "test": "vitest --run",
+        "test": "pnpm run test:unit",
+        "test:unit": "vitest --run",
         "test:updateSnapshot": "vitest --run --update",
         "test:watch": "vitest --watch"
     },
     "dependencies": {
-        "@graphql-tools/graphql-file-loader": "^7.5.17",
-        "@graphql-tools/load": "^7.8.14",
-        "change-case": "^4.1.2",
-        "commander": "^9.5.0",
-        "glob": "^11.1.0",
-        "graphql": "^16.11.0",
+        "@dextinity/admin": "workspace:*",
+        "@dextinity/admin-icons": "workspace:*",
+        "@dextinity/cms-admin": "workspace:*",
+        "@graphql-tools/graphql-file-loader": "^9.1.1",
+        "@graphql-tools/load": "^9.1.1",
+        "@mui/material": "^7.3.11",
+        "@mui/x-data-grid": "^8.29.5",
+        "change-case": "^5.4.4",
+        "commander": "^15.0.0",
+        "glob": "^14.0.3",
+        "graphql": "^16.14.2",
+        "jiti": "^2.7.0",
         "object-path": "^0.11.8",
         "pluralize": "^8.0.0",
-        "ts-node": "^10.9.2"
+        "typescript": "5.9.3"
     },
     "devDependencies": {
-        "@apollo/client": "^3.14.0",
-        "@comet/admin": "workspace:*",
-        "@comet/admin-icons": "workspace:*",
-        "@comet/cms-admin": "workspace:*",
-        "@comet/eslint-config": "workspace:*",
-        "@mui/material": "^7.3.7",
-        "@mui/x-data-grid": "^7.29.12",
-        "@types/node": "^24.10.9",
+        "@apollo/client": "^3.14.1",
+        "@dextinity/eslint-config": "workspace:*",
+        "@types/node": "^24.19.2",
         "@types/object-path": "^0.11.4",
         "@types/pluralize": "^0.0.33",
-        "@types/react": "^18.3.27",
-        "eslint": "^9.39.2",
+        "@types/react": "^19.3.0",
+        "@types/react-dom": "^19.3.0",
+        "eslint": "^9.39.5",
         "final-form": "^4.20.10",
-        "npm-run-all2": "^8.0.4",
-        "prettier": "^3.6.2",
-        "react": "^18.3.1",
-        "react-intl": "^7.1.11",
-        "rimraf": "^6.1.2",
-        "typescript": "^5.9.3",
-        "vitest": "^4.0.16"
+        "npm-run-all2": "^9.0.4",
+        "prettier": "^3.9.10",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1",
+        "react-intl": "^7.1.14",
+        "tsdown": "0.23.4",
+        "vitest": "^5.0.5"
+    },
+    "peerDependencies": {
+        "@apollo/client": "^3.7.0",
+        "final-form": "^4.0.0",
+        "react-intl": "^5.0.0 || ^6.0.0 || ^7.0.0"
     },
     "engines": {
-        "node": ">=22.0.0"
+        "node": ">=22.12.0"
     },
     "publishConfig": {
         "access": "public",

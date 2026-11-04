@@ -1,5 +1,5 @@
-import { type SvgIconProps } from "@mui/material/SvgIcon";
-import { type ComponentType } from "react";
+import type { SvgIconProps } from "@mui/material/SvgIcon";
+import type { ComponentType } from "react";
 
 import { Excel } from "./Excel";
 import { File } from "./File";

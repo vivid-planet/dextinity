@@ -1,6 +1,6 @@
 import isEqual from "lodash.isequal";
 
-import { type BlockDependency } from "../types";
+import type { BlockDependency } from "../types";
 
 export function deduplicateBlockDependencies(arr: BlockDependency[]) {
     const deduplicatedArr: BlockDependency[] = [];

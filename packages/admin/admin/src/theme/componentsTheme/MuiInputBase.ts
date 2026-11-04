@@ -1,7 +1,7 @@
 import { inputBaseClasses } from "@mui/material";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
-import { type GetMuiComponentTheme } from "./getComponentsTheme";
+import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
 export const getMuiInputBase: GetMuiComponentTheme<"MuiInputBase"> = (component, { palette, spacing }) => ({
     ...component,

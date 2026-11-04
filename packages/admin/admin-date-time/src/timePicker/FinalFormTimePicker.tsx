@@ -1,4 +1,4 @@
-import { type FieldRenderProps } from "react-final-form";
+import type { FieldRenderProps } from "react-final-form";
 
 import { TimePicker, type TimePickerProps } from "./TimePicker";
 
@@ -6,7 +6,7 @@ export type FinalFormTimePickerProps = TimePickerProps;
 type FinalFormTimePickerInternalProps = FieldRenderProps<string, HTMLInputElement | HTMLTextAreaElement>;
 
 /**
- * @deprecated `FinalFormTimePicker` from `@comet/admin-date-time` will be replaced by `TimePickerField` (currently `Future_TimePickerField`) from `@comet/admin` in a future major release.
+ * @deprecated Use `TimePickerField` from `@dextinity/admin` instead.
  *
  * Final Form-compatible TimePicker component.
  *

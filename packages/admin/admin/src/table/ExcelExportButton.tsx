@@ -1,10 +1,10 @@
 import { CircularProgress } from "@mui/material";
-import { type PropsWithChildren, type ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { Button } from "../common/buttons/Button";
 import { FileIcon } from "../fileIcons/FileIcon";
-import { type IExportApi } from "./excelexport/IExportApi";
+import type { IExportApi } from "./excelexport/IExportApi";
 
 interface IProps {
     exportApi: IExportApi<any>;
@@ -47,7 +47,7 @@ export const ExcelExportButton = ({ onClick, children, exportApi, loadingCompone
             {children != null ? (
                 children
             ) : (
-                <FormattedMessage id="comet.table.excelExportButton" defaultMessage="Export" description="Export Button" />
+                <FormattedMessage id="dextinity.table.excelExportButton" defaultMessage="Export" description="Export Button" />
             )}
         </Button>
     );

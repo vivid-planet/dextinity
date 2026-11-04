@@ -1,4 +1,4 @@
-import { type FieldRenderProps } from "react-final-form";
+import type { FieldRenderProps } from "react-final-form";
 
 import { DateTimePicker, type DateTimePickerProps } from "./DateTimePicker";
 
@@ -6,7 +6,7 @@ export type FinalFormDateTimePickerProps = DateTimePickerProps;
 type FinalFormDateTimePickerInternalProps = FieldRenderProps<Date, HTMLInputElement | HTMLTextAreaElement>;
 
 /**
- * @deprecated `FinalFormDateTimePicker` from `@comet/admin-date-time` will be replaced by `DateTimePickerField` (currently `Future_DateTimePickerField`) from `@comet/admin` in a future major release.
+ * @deprecated Use `DateTimePickerField` from `@dextinity/admin` instead.
  *
  * Final Form-compatible DateTimePicker component.
  *

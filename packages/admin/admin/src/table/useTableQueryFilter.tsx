@@ -4,7 +4,7 @@ import isEqual from "lodash.isequal";
 import { useEffect, useRef } from "react";
 
 import { usePersistedState } from "./usePersistedState";
-import { type IPagingApi } from "./useTableQueryPaging";
+import type { IPagingApi } from "./useTableQueryPaging";
 
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
@@ -26,7 +26,7 @@ export function useTableQueryFilter<FilterValues>(
     const [filters, setFilters] = usePersistedState<FilterValues>(defaultValues, {
         persistedStateId: options.persistedStateId ? `${options.persistedStateId}_filter` : undefined,
     });
-    const ref = useRef<FormApi<FilterValues>>();
+    const ref = useRef<FormApi<FilterValues>>(undefined);
     if (!ref.current) {
         ref.current = createForm({
             initialValues: filters,
@@ -37,7 +37,9 @@ export function useTableQueryFilter<FilterValues>(
     }
 
     useEffect(() => {
-        if (!ref.current) return;
+        if (!ref.current) {
+            return;
+        }
         const unsubscribe = ref.current.subscribe(
             debounce(
                 (formState) => {

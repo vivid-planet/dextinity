@@ -1,5 +1,5 @@
 declare module "draft-js-export-markdown" {
-    import { type ContentState } from "draft-js";
+    import type { ContentState } from "draft-js";
 
     const main: any;
 
@@ -10,7 +10,7 @@ declare module "draft-js-export-markdown" {
 }
 
 declare module "draft-js-import-markdown" {
-    import { type ContentState } from "draft-js";
+    import type { ContentState } from "draft-js";
 
     const main: any;
     export type stateFromMarkdown = (v: any) => ContentState;

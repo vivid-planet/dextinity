@@ -1,25 +1,17 @@
-import { ChevronRight } from "@comet/admin-icons";
+import { ChevronRight } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, css, type Theme, useTheme, useThemeProps } from "@mui/material/styles";
 import type Typography from "@mui/material/Typography";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { type Link } from "react-router-dom";
+import type { Link } from "react-router-dom";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { useObservedWidth } from "../../utils/useObservedWidth";
 import { useStackApi } from "../Api";
 import { getElementOuterWidth, useItemsToRender } from "./utils";
 
 export type StackBreadcrumbsClassKey =
-    | "root"
-    | "breadcrumbs"
-    | "listItem"
-    | "link"
-    | "disabledLink"
-    | "overflowLink"
-    | "separator"
-    | "backButton"
-    | "backButtonSeparator";
+    "root" | "breadcrumbs" | "listItem" | "link" | "disabledLink" | "overflowLink" | "separator" | "backButton" | "backButtonSeparator";
 
 const Root = createComponentSlot("div")<StackBreadcrumbsClassKey>({
     componentName: "StackBreadcrumbs",
@@ -74,24 +66,28 @@ export const BackButtonSeparator = createComponentSlot("div")<StackBreadcrumbsCl
     `,
 );
 
-export interface StackBreadcrumbsProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        breadcrumbs: "div";
-        listItem: "div";
-        link: typeof Link;
-        disabledLink: typeof Typography;
-        overflowLink: typeof Link;
-        separator: "div";
-        backButton: typeof Link;
-        backButtonSeparator: "div";
-    }> {
+export interface StackBreadcrumbsProps extends ThemedComponentBaseProps<{
+    root: "div";
+    breadcrumbs: "div";
+    listItem: "div";
+    link: typeof Link;
+    disabledLink: typeof Typography;
+    overflowLink: typeof Link;
+    separator: "div";
+    backButton: typeof Link;
+    backButtonSeparator: "div";
+}> {
     separator?: ReactNode;
     overflowLinkText?: ReactNode;
 }
 
 export function StackBreadcrumbs(inProps: StackBreadcrumbsProps) {
-    const { separator, overflowLinkText = ". . .", slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminStackBreadcrumbs" });
+    const {
+        separator,
+        overflowLinkText = ". . .",
+        slotProps,
+        ...restProps
+    } = useThemeProps({ props: inProps, name: "DextinityAdminStackBreadcrumbs" });
     const stackApi = useStackApi();
     const { palette } = useTheme();
     const breadcrumbsRef = useRef<HTMLDivElement>(null);
@@ -116,7 +112,9 @@ export function StackBreadcrumbs(inProps: StackBreadcrumbsProps) {
     const backButtonUrl = breadcrumbItems.length > 1 ? breadcrumbItems[breadcrumbItems.length - 2].url : undefined;
     const itemsToRender = useItemsToRender(breadcrumbItems, containerWidth ?? 0, itemWidths, overflowLinkText, backButtonUrl, slotProps);
 
-    if (!breadcrumbItems) return null;
+    if (!breadcrumbItems) {
+        return null;
+    }
 
     return (
         <Root {...slotProps?.root} {...restProps}>
@@ -138,17 +136,17 @@ export function StackBreadcrumbs(inProps: StackBreadcrumbsProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminStackBreadcrumbs: StackBreadcrumbsClassKey;
+        DextinityAdminStackBreadcrumbs: StackBreadcrumbsClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminStackBreadcrumbs: StackBreadcrumbsProps;
+        DextinityAdminStackBreadcrumbs: StackBreadcrumbsProps;
     }
 
     interface Components {
-        CometAdminStackBreadcrumbs?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminStackBreadcrumbs"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminStackBreadcrumbs"];
+        DextinityAdminStackBreadcrumbs?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminStackBreadcrumbs"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminStackBreadcrumbs"];
         };
     }
 }

@@ -10,7 +10,7 @@ export class BrevoApiEmailTemplateList {
 }
 
 @ObjectType()
-export class BrevoApiEmailTemplateSender {
+class BrevoApiEmailTemplateSender {
     @Field(() => String, { nullable: true })
     id?: string;
 

@@ -9,10 +9,29 @@ All warnings are shown in **one central place** inside a **grid in the admin pan
 
 In this grid, you can:
 
-- See **all warnings that concern you** (meaning you have the necessary scope permissions).
+- See the **warnings of the currently selected scope**. Warnings without a scope (e.g., DAM warnings) and warnings with a partial scope (e.g., only `domain`) are also shown. Switching the scope automatically updates the displayed warnings.
 - Click on an action to **jump directly to the issue** and fix it.
 
 ![Warnings Grid](images/warnings-grid.png)
+
+:::tip
+
+Use the `showAllScopes` prop on `WarningsPage` and `LatestWarningsDashboardWidget` to display the warnings of all scopes the user is allowed to access instead:
+
+```tsx
+<LatestWarningsDashboardWidget showAllScopes />
+```
+
+For `WarningsPage`, the masterMenu entry needs a `render` function instead of `component` to pass the prop:
+
+```tsx
+route: {
+    path: "/system/warnings",
+    render: () => <WarningsPage showAllScopes />,
+}
+```
+
+:::
 
 The Warning Module operates through two main mechanisms:
 
@@ -34,7 +53,7 @@ However, if your project does **not** have the Warning Module configured yet, yo
 Add the module to the `imports` array:
 
 ```typescript
-import { WarningsModule } from "@comet/cms-api";
+import { WarningsModule } from "@dextinity/cms-api";
 
 return {
     module: AppModule,
@@ -59,6 +78,15 @@ To make the warnings accessible in the admin panel, add the following entry to t
     },
     requiredPermission: "warnings",
 }
+```
+
+`requiredPermission` hides the entry for users without the `warnings` permission in the currently selected scope.
+Guard `LatestWarningsDashboardWidget` the same way with `useUserPermissionCheck`:
+
+```tsx
+const isAllowed = useUserPermissionCheck();
+
+return isAllowed("warnings") && <LatestWarningsDashboardWidget />;
 ```
 
 ### 3. Schedule the Daily Warning Check
@@ -262,10 +290,10 @@ class NewsWarningService implements CreateWarningsServiceInterface {
 
 ## Admin: Custom Block Warning Messages
 
-In the API, you defined custom warning messages for your blocks or entities. To make these messages translatable in the Admin, you need to define them in your `App.tsx` using the `CometConfigProvider`:
+In the API, you defined custom warning messages for your blocks or entities. To make these messages translatable in the Admin, you need to define them in your `App.tsx` using the `DextinityConfigProvider`:
 
 ```tsx
-<CometConfigProvider
+<DextinityConfigProvider
     {...otherConfigs}
     warnings: {
         messages: {

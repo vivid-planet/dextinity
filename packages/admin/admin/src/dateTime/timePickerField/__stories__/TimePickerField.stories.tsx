@@ -1,12 +1,12 @@
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { FinalForm } from "../../../FinalForm";
 import { FinalFormDebug } from "../../../form/FinalFormDebug";
-import { Future_TimePickerField } from "../TimePickerField";
+import { TimePickerField } from "../TimePickerField";
 
-type Story = StoryObj<typeof Future_TimePickerField>;
-const config: Meta<typeof Future_TimePickerField> = {
-    component: Future_TimePickerField,
+type Story = StoryObj<typeof TimePickerField>;
+const config: Meta<typeof TimePickerField> = {
+    component: TimePickerField,
     title: "components/dateTime/TimePickerField",
 };
 
@@ -36,7 +36,7 @@ export const Default: Story = {
                 {({ values }: { values: FormValues }) => {
                     return (
                         <>
-                            <Future_TimePickerField name="value" label="Time Picker" fullWidth variant="horizontal" />
+                            <TimePickerField name="value" label="Time Picker" fullWidth variant="horizontal" />
 
                             <FinalFormDebug />
                         </>
@@ -79,7 +79,7 @@ export const MinMaxTime: Story = {
                 {({ values }: { values: FormValues }) => {
                     return (
                         <>
-                            <Future_TimePickerField
+                            <TimePickerField
                                 name="value"
                                 label="Time Picker with Min/Max Time"
                                 fullWidth
@@ -121,7 +121,7 @@ export const Clearable: Story = {
                 {({ values }: { values: FormValues }) => {
                     return (
                         <>
-                            <Future_TimePickerField clearable name="value" label="Clearable Time Picker" fullWidth variant="horizontal" />
+                            <TimePickerField clearable name="value" label="Clearable Time Picker" fullWidth variant="horizontal" />
 
                             <FinalFormDebug />
                         </>
@@ -157,7 +157,7 @@ export const Disabled: Story = {
                 {({ values }: { values: FormValues }) => {
                     return (
                         <>
-                            <Future_TimePickerField disabled name="value" label="Disabled Time Picker" fullWidth variant="horizontal" />
+                            <TimePickerField disabled name="value" label="Disabled Time Picker" fullWidth variant="horizontal" />
 
                             <FinalFormDebug />
                         </>
@@ -183,7 +183,9 @@ export const CustomValidation: Story = {
         }
 
         const validateIsNotLunchBreak = async (value: string | undefined) => {
-            if (!value) return undefined;
+            if (!value) {
+                return undefined;
+            }
             const [hours, minutes] = value.split(":").map(Number);
             const totalMinutes = hours * 60 + minutes;
             const lunchStartMinutes = 12 * 60;
@@ -202,7 +204,7 @@ export const CustomValidation: Story = {
             >
                 {() => (
                     <>
-                        <Future_TimePickerField
+                        <TimePickerField
                             name="value"
                             label="Time Picker"
                             helperText="Lunch break (12:00-13:00) is not allowed"

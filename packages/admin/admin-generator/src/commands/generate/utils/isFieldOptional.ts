@@ -1,6 +1,6 @@
-import { type IntrospectionQuery } from "graphql";
+import type { IntrospectionQuery } from "graphql";
 
-import { type FormFieldConfig } from "../generate-command";
+import type { FormFieldConfig } from "../generate-command";
 
 export const isFieldOptional = ({
     config,
@@ -21,9 +21,15 @@ export const isFieldOptional = ({
     }
 
     const schemaEntity = gqlIntrospection.__schema.types.find((type) => type.kind === "OBJECT" && type.name === gqlType);
-    if (!schemaEntity) throw new Error(`didn't find entity ${gqlType} in schema types`);
-    if (schemaEntity.kind !== "OBJECT") throw new Error(`kind of ${gqlType} is not object, but should be.`); // this should not happen
+    if (!schemaEntity) {
+        throw new Error(`didn't find entity ${gqlType} in schema types`);
+    }
+    if (schemaEntity.kind !== "OBJECT") {
+        throw new Error(`kind of ${gqlType} is not object, but should be.`);
+    } // this should not happen
     const fieldDef = schemaEntity.fields.find((field) => field.name === String(config.name));
-    if (!fieldDef) return false;
+    if (!fieldDef) {
+        return false;
+    }
     return fieldDef.type.kind !== "NON_NULL";
 };

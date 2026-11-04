@@ -1,7 +1,7 @@
-import { type IntrospectionField, type IntrospectionInputValue } from "graphql";
+import type { IntrospectionField, IntrospectionInputValue } from "graphql";
 
-import { type Imports } from "../utils/generateImportsCode";
-import { type Prop } from "./generateGrid";
+import type { Imports } from "../utils/generateImportsCode";
+import type { Prop } from "./generateGrid";
 
 export type GqlArg = { type: string; name: string; queryOrMutationName: string };
 
@@ -40,8 +40,12 @@ export function getForwardedGqlArgs(gqlFields: IntrospectionField[]) {
 function getArgs(gqlFields: IntrospectionField[], skipGqlArgs: string[]) {
     return gqlFields.reduce<{ name: string; type: string; gqlArg: IntrospectionInputValue; gqlField: IntrospectionField }[]>((acc, gqlField) => {
         gqlField.args.forEach((gqlArg) => {
-            if (skipGqlArgs.includes(gqlArg.name)) return acc;
-            if (gqlArg.type.kind !== "NON_NULL" || gqlArg.defaultValue) return acc;
+            if (skipGqlArgs.includes(gqlArg.name)) {
+                return acc;
+            }
+            if (gqlArg.type.kind !== "NON_NULL" || gqlArg.defaultValue) {
+                return acc;
+            }
 
             const gqlType = gqlArg.type.ofType;
 

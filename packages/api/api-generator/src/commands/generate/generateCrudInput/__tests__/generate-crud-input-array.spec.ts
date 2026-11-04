@@ -1,7 +1,8 @@
 import { ArrayType, BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field } from "@nestjs/graphql";
-import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage";
-import { v4 as uuid } from "uuid";
+import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
+import { randomUUID } from "crypto";
+import { describe, expect, it } from "vitest";
 
 import { formatSource, parseSource, testPermission } from "../../utils/test-helper";
 import { generateCrudInput } from "../generate-crud-input";
@@ -9,7 +10,7 @@ import { generateCrudInput } from "../generate-crud-input";
 @Entity()
 export class TestEntityArrayString extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ columnType: "json" })
     @Field(() => [String])
@@ -43,10 +44,7 @@ describe("GenerateCrudInputArray", () => {
             }),
         );
 
-        const out = await generateCrudInput(
-            { targetDirectory: __dirname, requiredPermission: testPermission },
-            orm.em.getMetadata().get("TestEntityArrayString"),
-        );
+        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityArrayString"));
         const formattedOut = await formatSource(out[0].content);
         const source = parseSource(formattedOut);
 

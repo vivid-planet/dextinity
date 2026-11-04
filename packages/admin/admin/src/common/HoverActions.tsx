@@ -2,15 +2,14 @@ import { type ComponentsOverrides, css, Grow, type Theme, useThemeProps } from "
 import { type ReactNode, useState } from "react";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
-export interface HoverActionsProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        hoverAreaExpansion: "div";
-        actions: "div";
-        children: "div";
-    }> {
+export interface HoverActionsProps extends ThemedComponentBaseProps<{
+    root: "div";
+    hoverAreaExpansion: "div";
+    actions: "div";
+    children: "div";
+}> {
     actions?: ReactNode;
     children?: ReactNode;
 }
@@ -18,7 +17,7 @@ export interface HoverActionsProps
 export type HoverActionsClassKey = "root" | "hoverAreaExpansion" | "actions" | "children";
 
 export const HoverActions = (inProps: HoverActionsProps) => {
-    const { actions, children, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminHoverActions" });
+    const { actions, children, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminHoverActions" });
     const [isHovering, setIsHovering] = useState<boolean>(false);
 
     return (
@@ -78,17 +77,17 @@ const Children = createComponentSlot("div")<HoverActionsClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminHoverActions: HoverActionsClassKey;
+        DextinityAdminHoverActions: HoverActionsClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminHoverActions: HoverActionsProps;
+        DextinityAdminHoverActions: HoverActionsProps;
     }
 
     interface Components {
-        CometAdminHoverActions?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminHoverActions"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminHoverActions"];
+        DextinityAdminHoverActions?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminHoverActions"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminHoverActions"];
         };
     }
 }

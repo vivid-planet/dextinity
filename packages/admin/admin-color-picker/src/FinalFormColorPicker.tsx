@@ -1,4 +1,4 @@
-import { type FieldRenderProps } from "react-final-form";
+import type { FieldRenderProps } from "react-final-form";
 
 import { ColorPicker, type ColorPickerProps } from "./ColorPicker";
 

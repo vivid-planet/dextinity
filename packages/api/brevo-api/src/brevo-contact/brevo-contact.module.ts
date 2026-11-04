@@ -1,4 +1,4 @@
-import { FileUpload } from "@comet/cms-api";
+import { FileUpload } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { DynamicModule, Module, Type } from "@nestjs/common";
 

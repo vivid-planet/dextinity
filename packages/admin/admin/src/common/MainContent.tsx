@@ -2,7 +2,7 @@ import { type ComponentsOverrides, css, type Theme, useThemeProps } from "@mui/m
 import { type ReactNode, useRef } from "react";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 import { useTopOffset } from "../helpers/useTopOffset";
 import { useIsActiveStackSwitch } from "../stack/useIsActiveStackSwitch";
 
@@ -33,37 +33,45 @@ const Root = createComponentSlot("main")<MainContentClassKey, OwnerState>({
             padding: ${theme.spacing(4)};
         }
 
-        ${ownerState.fullHeight &&
-        css`
-            height: calc(100vh - ${ownerState.topOffset}px);
-        `}
+        ${
+            ownerState.fullHeight &&
+            css`
+                height: calc(100vh - ${ownerState.topOffset}px);
+            `
+        }
 
-        ${ownerState.disablePaddingTop &&
-        css`
-            padding-top: 0;
-
-            ${theme.breakpoints.up("md")} {
+        ${
+            ownerState.disablePaddingTop &&
+            css`
                 padding-top: 0;
-            }
-        `}
 
-        ${ownerState.disablePaddingBottom &&
-        css`
-            padding-bottom: 0;
+                ${theme.breakpoints.up("md")} {
+                    padding-top: 0;
+                }
+            `
+        }
 
-            ${theme.breakpoints.up("md")} {
+        ${
+            ownerState.disablePaddingBottom &&
+            css`
                 padding-bottom: 0;
-            }
-        `}
 
-        ${ownerState.disablePadding &&
-        css`
-            padding: 0;
+                ${theme.breakpoints.up("md")} {
+                    padding-bottom: 0;
+                }
+            `
+        }
 
-            ${theme.breakpoints.up("md")} {
+        ${
+            ownerState.disablePadding &&
+            css`
                 padding: 0;
-            }
-        `}
+
+                ${theme.breakpoints.up("md")} {
+                    padding: 0;
+                }
+            `
+        }
     `,
 );
 
@@ -78,7 +86,7 @@ export interface MainContentProps extends ThemedComponentBaseProps {
 export function MainContent(inProps: MainContentProps) {
     const { children, fullHeight, disablePaddingTop, disablePaddingBottom, disablePadding, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminMainContent",
+        name: "DextinityAdminMainContent",
     });
 
     const mainRef = useRef<HTMLElement>(null);
@@ -99,17 +107,17 @@ export function MainContent(inProps: MainContentProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminMainContent: MainContentClassKey;
+        DextinityAdminMainContent: MainContentClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminMainContent: MainContentProps;
+        DextinityAdminMainContent: MainContentProps;
     }
 
     interface Components {
-        CometAdminMainContent?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminMainContent"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminMainContent"];
+        DextinityAdminMainContent?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminMainContent"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminMainContent"];
         };
     }
 }

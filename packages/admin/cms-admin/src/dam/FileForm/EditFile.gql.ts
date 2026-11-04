@@ -13,6 +13,7 @@ const damFileDetailFragment = gql`
         contentHash
         title
         altText
+        aiContentType
         image {
             width
             height
@@ -59,10 +60,17 @@ export const updateDamFileMutation = gql`
 `;
 
 export const damFileDependentsQuery = gql`
-    query DamFileDependencies($id: ID!, $offset: Int!, $limit: Int!, $forceRefresh: Boolean = false) {
+    query DamFileDependencies(
+        $id: ID!
+        $offset: Int!
+        $limit: Int!
+        $forceRefresh: Boolean = false
+        $filter: DependentFilter
+        $sort: [DependencySort!]
+    ) {
         item: damFile(id: $id) {
             id
-            dependents(offset: $offset, limit: $limit, forceRefresh: $forceRefresh) {
+            dependents(offset: $offset, limit: $limit, forceRefresh: $forceRefresh, filter: $filter, sort: $sort) {
                 nodes {
                     rootGraphqlObjectType
                     rootId
@@ -70,6 +78,8 @@ export const damFileDependentsQuery = gql`
                     jsonPath
                     name
                     secondaryInformation
+                    visible
+                    scope
                 }
                 totalCount
             }

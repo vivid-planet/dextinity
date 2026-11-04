@@ -1,4 +1,4 @@
-import { type FileWithDamUploadMetadata } from "@comet/cms-admin";
+import type { FileWithDamUploadMetadata } from "@dextinity/cms-admin";
 
 export interface PicsumImage {
     file: FileWithDamUploadMetadata;
@@ -33,7 +33,7 @@ export async function getRandomPicsumImage(): Promise<PicsumImage> {
         const mimeType = image.blob.type;
 
         if (mimeType !== "image/jpeg") {
-            return getRandomPicsumImage();
+            return await getRandomPicsumImage();
         }
 
         const fileName = extractFileNameFromUrl(image.origin);

@@ -1,4 +1,4 @@
-import { type User, UserPermissions } from "@comet/cms-api";
+import { type User, UserPermissions } from "@dextinity/cms-api";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { beforeEach, describe, expect, it } from "vitest";
 
@@ -61,7 +61,7 @@ describe("AccessControlService", () => {
 
             const contentScopes = service.getContentScopesForUser(nonAdminUser);
 
-            expect(contentScopes).toEqual([{ domain: "main", language: "en" }]);
+            expect(contentScopes).toEqual([{ domain: "main", language: "*", product: "*" }]);
         });
 
         it("should return limited content scopes for unknown non-admin user", () => {
@@ -74,7 +74,7 @@ describe("AccessControlService", () => {
 
             const contentScopes = service.getContentScopesForUser(unknownUser);
 
-            expect(contentScopes).toEqual([{ domain: "main", language: "en" }]);
+            expect(contentScopes).toEqual([{ domain: "main", language: "*", product: "*" }]);
         });
     });
 });

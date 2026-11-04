@@ -10,7 +10,7 @@ const files = [
                   targetDir: ["demo/admin", "demo/api", "demo/site"],
               },
               {
-                  file: "demo/.env.local",
+                  file: ".env.local",
                   targetDir: ["demo/admin", "demo/api", "demo/site", "storybook"],
               },
               {
@@ -43,7 +43,7 @@ const files = [
         targetDir: ["demo/admin", "demo/site"],
     },
     {
-        file: "demo/api/src/comet-config.json",
+        file: "demo/api/src/dextinity-config.json",
         targetDir: ["demo/admin/src", "demo/site/src"],
     },
     {

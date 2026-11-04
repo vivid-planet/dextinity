@@ -1,8 +1,8 @@
-import { type EditorState } from "draft-js";
+import type { EditorState } from "draft-js";
 import { type RenderConfig, stateToHTML } from "draft-js-export-html";
 
 import defaultBlocktypeMap from "../defaultBlocktypeMap";
-import { type IOptions } from "../Rte";
+import type { IOptions } from "../Rte";
 
 export function stateToHtml({ editorState, options }: { editorState: EditorState; options: IOptions }) {
     const contentState = editorState.getCurrentContent();

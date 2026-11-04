@@ -1,4 +1,4 @@
-import { type ObservableQuery, type QueryHookOptions } from "@apollo/client";
+import type { ObservableQuery, QueryHookOptions } from "@apollo/client";
 import { useEffect } from "react";
 
 type FocusAwarePollingHookOptions = Pick<ObservableQuery, "refetch" | "startPolling" | "stopPolling"> &

@@ -2,15 +2,14 @@ import { type ComponentsOverrides, Typography, type TypographyTypeMap } from "@m
 import { type Theme, useThemeProps } from "@mui/material/styles";
 
 import { createComponentSlot } from "../../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
 import { useStackApi } from "../../../stack/Api";
 import { ToolbarItem } from "../item/ToolbarItem";
 
-export interface ToolbarAutomaticTitleItemProps
-    extends ThemedComponentBaseProps<{
-        root: typeof ToolbarItem;
-        typography: typeof Typography;
-    }> {
+export interface ToolbarAutomaticTitleItemProps extends ThemedComponentBaseProps<{
+    root: typeof ToolbarItem;
+    typography: typeof Typography;
+}> {
     /**
      * @deprecated Use `slotProps` instead.
      */
@@ -25,7 +24,7 @@ const Root = createComponentSlot(ToolbarItem)<ToolbarAutomaticTitleItemClassKey>
 export type ToolbarAutomaticTitleItemClassKey = "root" | "typography";
 
 export const ToolbarAutomaticTitleItem = (inProps: ToolbarAutomaticTitleItemProps) => {
-    const { typographyProps = {}, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminToolbarAutomaticTitleItem" });
+    const { typographyProps = {}, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminToolbarAutomaticTitleItem" });
     const stackApi = useStackApi();
 
     return (
@@ -39,16 +38,16 @@ export const ToolbarAutomaticTitleItem = (inProps: ToolbarAutomaticTitleItemProp
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminToolbarAutomaticTitleItem: ToolbarAutomaticTitleItemClassKey;
+        DextinityAdminToolbarAutomaticTitleItem: ToolbarAutomaticTitleItemClassKey;
     }
     interface ComponentsPropsList {
-        CometAdminToolbarAutomaticTitleItem: ToolbarAutomaticTitleItemProps;
+        DextinityAdminToolbarAutomaticTitleItem: ToolbarAutomaticTitleItemProps;
     }
 
     interface Components {
-        CometAdminToolbarAutomaticTitleItem?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminToolbarAutomaticTitleItem"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminToolbarAutomaticTitleItem"];
+        DextinityAdminToolbarAutomaticTitleItem?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminToolbarAutomaticTitleItem"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminToolbarAutomaticTitleItem"];
         };
     }
 }

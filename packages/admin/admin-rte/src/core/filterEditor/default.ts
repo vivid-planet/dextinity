@@ -1,4 +1,4 @@
-import { type FilterEditorStateBeforeUpdateFn } from "../Rte";
+import type { FilterEditorStateBeforeUpdateFn } from "../Rte";
 import composeFilterEditorFns from "./composeFilterEditorFns";
 import removeBlocksExceedingBlockLimit from "./removeBlocksExceedingBlockLimit";
 import removeUnsupportedBlockTypes from "./removeUnsupportedBlockTypes";

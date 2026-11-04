@@ -6,8 +6,8 @@
         "inlineSources": true,
         "jsx": "react-jsx",
         "jsxImportSource": "@emotion/react",
-        "module": "ESNext",
-        "moduleResolution": "Node",
+        "module": "preserve",
+        "moduleResolution": "bundler",
         "noEmit": true,
         "noImplicitAny": true,
         "paths": {

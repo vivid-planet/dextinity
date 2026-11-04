@@ -7,7 +7,7 @@ import { type PromptHandlerApi, RouterPromptHandler } from "./PromptHandler";
 // plus a PromptHandler that works with our Prompt (supporting multiple Prompts)
 
 export const RouterMemoryRouter = ({ children, ...props }: MemoryRouterProps) => {
-    const apiRef = useRef<PromptHandlerApi>();
+    const apiRef = useRef<PromptHandlerApi>(undefined);
 
     const getConfirmation = (message: string, callback: (ok: boolean) => void) => {
         if (apiRef.current) {

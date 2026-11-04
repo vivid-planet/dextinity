@@ -2,6 +2,8 @@ import { gql, useApolloClient, useQuery } from "@apollo/client";
 import {
     AsyncSelectField,
     CheckboxField,
+    DatePickerField,
+    DateTimePickerField,
     Field,
     filterByFragment,
     FinalForm,
@@ -13,25 +15,26 @@ import {
     TextAreaField,
     TextField,
     useFormApiRef,
-} from "@comet/admin";
-import { DateField, DateTimeField } from "@comet/admin-date-time";
+} from "@dextinity/admin";
 import {
     type BlockState,
     createFinalFormBlock,
     DamImageBlock,
+    FileField,
     FileUploadField,
+    type GQLDamFileFieldFileFragment,
     type GQLFinalFormFileUploadFragment,
     queryUpdatedAt,
     resolveHasSaveConflict,
     useFormSaveConflict,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { InputAdornment, MenuItem } from "@mui/material";
-import { type GQLProductMutationErrorCode, type GQLProductType } from "@src/graphql.generated";
-import {
-    type GQLManufacturerCountriesQuery,
-    type GQLManufacturerCountriesQueryVariables,
-    type GQLManufacturersQuery,
-    type GQLManufacturersQueryVariables,
+import type { GQLProductMutationErrorCode, GQLProductType } from "@src/graphql.generated";
+import type {
+    GQLManufacturerCountriesQuery,
+    GQLManufacturerCountriesQueryVariables,
+    GQLManufacturersQuery,
+    GQLManufacturersQueryVariables,
 } from "@src/products/ProductForm.generated";
 import { FORM_ERROR, type FormApi } from "final-form";
 import isEqual from "lodash.isequal";
@@ -39,21 +42,21 @@ import { type ReactNode, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { FutureProductNotice } from "./helpers/FutureProductNotice";
-import {
-    type GQLProductCategoriesSelectQuery,
-    type GQLProductCategoriesSelectQueryVariables,
-    type GQLProductTagsSelectQuery,
-    type GQLProductTagsSelectQueryVariables,
+import type {
+    GQLProductCategoriesSelectQuery,
+    GQLProductCategoriesSelectQueryVariables,
+    GQLProductTagsSelectQuery,
+    GQLProductTagsSelectQueryVariables,
 } from "./ProductForm.generated";
 import { createProductMutation, productFormFragment, productQuery, updateProductMutation } from "./ProductForm.gql";
-import {
-    type GQLCreateProductMutation,
-    type GQLCreateProductMutationVariables,
-    type GQLProductFormManualFragment,
-    type GQLProductQuery,
-    type GQLProductQueryVariables,
-    type GQLUpdateProductMutation,
-    type GQLUpdateProductMutationVariables,
+import type {
+    GQLCreateProductMutation,
+    GQLCreateProductMutationVariables,
+    GQLProductFormManualFragment,
+    GQLProductQuery,
+    GQLProductQueryVariables,
+    GQLUpdateProductMutation,
+    GQLUpdateProductMutationVariables,
 } from "./ProductForm.gql.generated";
 
 interface FormProps {
@@ -66,10 +69,11 @@ const rootBlocks = {
     image: DamImageBlock,
 };
 
-// Set types for FinalFormFileUpload manually, as they cannot be generated from the fragment in `@comet/cms-admin`
-type ProductFormManualFragment = Omit<GQLProductFormManualFragment, "priceList" | "datasheets"> & {
+// Set types for FinalFormFileUpload manually, as they cannot be generated from the fragment in `@dextinity/cms-admin`
+type ProductFormManualFragment = Omit<GQLProductFormManualFragment, "priceList" | "datasheets" | "relatedImages"> & {
     priceList: GQLFinalFormFileUploadFragment | null;
     datasheets: Array<GQLFinalFormFileUploadFragment>;
+    relatedImages: Array<GQLDamFileFieldFileFragment>;
 };
 
 type FormValues = Omit<ProductFormManualFragment, "image" | "lastCheckedAt"> & {
@@ -110,6 +114,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                 inStock: false,
                 additionalTypes: [],
                 tags: [],
+                relatedImages: [],
                 dimensions: width !== undefined ? { width } : undefined,
             };
         }
@@ -138,7 +143,9 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
     });
 
     const handleSubmit = async ({ manufacturerCountry, ...formValues }: FormValues, form: FormApi<FormValues>, event: FinalFormSubmitEvent) => {
-        if (await saveConflict.checkForConflicts()) throw new Error("Conflicts detected");
+        if (await saveConflict.checkForConflicts()) {
+            throw new Error("Conflicts detected");
+        }
 
         const output = {
             ...formValues,
@@ -152,12 +159,15 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
             statistics: { views: 0 },
             priceList: formValues.priceList ? formValues.priceList.id : null,
             datasheets: formValues.datasheets?.map(({ id }) => id),
+            relatedImages: formValues.relatedImages?.map(({ id }) => id) ?? [],
             manufacturer: formValues.manufacturer?.id,
             lastCheckedAt: formValues.lastCheckedAt ? formValues.lastCheckedAt.toISOString() : null,
         };
 
         if (mode === "edit") {
-            if (!id) throw new Error();
+            if (!id) {
+                throw new Error();
+            }
             await client.mutate<GQLUpdateProductMutation, GQLUpdateProductMutationVariables>({
                 mutation: updateProductMutation,
                 variables: { id, input: output },
@@ -190,7 +200,9 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
         }
     };
 
-    if (error) throw error;
+    if (error) {
+        throw error;
+    }
 
     if (loading) {
         return <Loading behavior="fillPageHeight" />;
@@ -222,7 +234,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                         disableSlider
                     />
                     <TextAreaField fullWidth name="description" label={<FormattedMessage id="product.description" defaultMessage="Description" />} />
-                    <DateField
+                    <DatePickerField
                         required
                         fullWidth
                         name="availableSince"
@@ -378,7 +390,15 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                         fullWidth
                         layout="grid"
                     />
-                    <DateTimeField
+                    <Field
+                        name="relatedImages"
+                        component={FileField}
+                        multiple
+                        fullWidth
+                        label={<FormattedMessage id="product.relatedImages" defaultMessage="Related images" />}
+                        buttonText={<FormattedMessage id="product.relatedImages.choose" defaultMessage="Choose related images" />}
+                    />
+                    <DateTimePickerField
                         label={<FormattedMessage id="product.lastCheckedAt" defaultMessage="Last checked at" />}
                         name="lastCheckedAt"
                         fullWidth

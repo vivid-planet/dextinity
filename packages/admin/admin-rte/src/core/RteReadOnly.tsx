@@ -5,7 +5,7 @@ import { useRef } from "react";
 
 import defaultBlocktypeMap, { cleanBlockTypeMap, mergeBlocktypeMaps } from "./defaultBlocktypeMap";
 import { styleMap } from "./Rte";
-import { type IBlocktypeMap as IBlocktypeMap, type ICustomBlockTypeMap_Deprecated } from "./types";
+import type { IBlocktypeMap as IBlocktypeMap, ICustomBlockTypeMap_Deprecated } from "./types";
 import createBlockRenderMap from "./utils/createBlockRenderMap";
 
 interface IRteReadOnlyOptions {

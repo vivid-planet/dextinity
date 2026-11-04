@@ -1,6 +1,6 @@
 import { camelCase } from "change-case";
 
-import { type FormattedMessageElement } from "../generate-command";
+import type { FormattedMessageElement } from "../generate-command";
 import { camelCaseToHumanReadable } from "../utils/camelCaseToHumanReadable";
 import { generateFormattedMessage } from "../utils/intl";
 

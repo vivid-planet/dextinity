@@ -1,7 +1,7 @@
 import { BaseEntity, Entity, Enum, Index, OptionalProps, PrimaryKey, Property } from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { randomUUID } from "crypto";
 import { GraphQLJSONObject } from "graphql-scalars";
-import { v4 as uuid } from "uuid";
 
 import { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
 import { WarningSourceInfo } from "../dto/warning-source-info";
@@ -15,12 +15,14 @@ import { WarningStatus } from "./warning-status.enum";
 @Index({
     properties: ["updatedAt", "sourceInfo.rootEntityName", "sourceInfo.rootColumnName", "sourceInfo.targetId", "sourceInfo.rootPrimaryKey"],
 })
+// Join keys for the EntityInfo view (warnings grid filter/sort by name/info)
+@Index({ properties: ["sourceInfo.rootEntityName", "sourceInfo.targetId"] })
 export class Warning extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt" | "status";
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ columnType: "timestamp with time zone" })
     @Field()

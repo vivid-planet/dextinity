@@ -1,7 +1,7 @@
 import { convertFromRaw, EditorState, type RawDraftContentState } from "draft-js";
 import { describe, expect, it } from "vitest";
 
-import { type IRteOptions } from "../Rte";
+import type { IRteOptions } from "../Rte";
 import { htmlToState } from "./htmlToState";
 import { stateToHtml } from "./stateToHtml";
 

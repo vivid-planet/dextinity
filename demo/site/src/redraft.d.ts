@@ -1,5 +1,5 @@
 declare module "redraft" {
-    import { type ReactElement, type ReactNode } from "react";
+    import type { ReactElement, ReactNode } from "react";
 
     interface InlineStylesMap {
         [key: string]: (children: ReactNode, options: { key: string }) => ReactNode;

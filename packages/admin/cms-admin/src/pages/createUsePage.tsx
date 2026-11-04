@@ -1,10 +1,11 @@
 import { type ApolloError, gql, type TypedDocumentNode, useApolloClient, useQuery } from "@apollo/client";
-import { messages, SaveButton } from "@comet/admin";
+import { messages, SaveButton } from "@dextinity/admin";
 import isEqual from "lodash.isequal";
 import {
     type ComponentProps,
     createElement,
     type Dispatch,
+    type JSX,
     type ReactNode,
     type SetStateAction,
     useCallback,
@@ -15,11 +16,11 @@ import {
 import { FormattedMessage } from "react-intl";
 import { v4 as uuid } from "uuid";
 
-import { type BlockInterface, type BlockState } from "../blocks/types";
+import type { BlockInterface, BlockState } from "../blocks/types";
 import { resolveNewState } from "../blocks/utils";
 import { parallelAsyncEvery } from "../blocks/utils/parallelAsyncEvery";
-import { type GQLDocumentInterface } from "../graphql.generated";
-import { type GQLCheckForChangesQuery, type GQLCheckForChangesQueryVariables } from "./createUsePage.generated";
+import type { GQLDocumentInterface } from "../graphql.generated";
+import type { GQLCheckForChangesQuery, GQLCheckForChangesQueryVariables } from "./createUsePage.generated";
 import { LocalPageTreeNodeDocumentAnchorsProvider } from "./LocalPageTreeNodeDocumentAnchors";
 import { resolveHasSaveConflict } from "./resolveHasSaveConflict";
 import { useSaveConflictQuery } from "./useSaveConflictQuery";
@@ -83,7 +84,7 @@ type ReplaceBlockInputDataWithBlockState<Doc extends Record<string, unknown> | n
           [K in keyof Doc]: K extends "id" ? string : K extends keyof RootBlocks ? BlockState<RootBlocks[K]> : Doc[K]; // key id is always a string and never a block
       };
 
-type PageState<
+export type PageState<
     GQLEditPageQuery extends GQLEditPageQueryInterface<PageType> | null,
     RootBlocks extends RootBlocksInterface,
     PageType extends string,
@@ -109,6 +110,12 @@ interface UsePageProps {
 }
 interface UsePageApi<PageState, RootBlocks extends RootBlocksInterface> {
     pageState?: PageState;
+    /**
+     * Updates the page state, for instance, to programmatically change the content of a root block.
+     *
+     * The changes are only applied locally, call `handleSavePage` to persist them.
+     */
+    setPageState: Dispatch<SetStateAction<PageState | undefined>>;
     rootBlocksApi: BlockNodeApi<RootBlocks>;
     handleSavePage: () => Promise<void>;
     hasChanges?: boolean;
@@ -119,6 +126,7 @@ interface UsePageApi<PageState, RootBlocks extends RootBlocksInterface> {
     pageSaveButton: JSX.Element;
     dialogs: ReactNode;
     resetPageStateToLatest: () => Promise<void>;
+    translateContent: (batchTranslate: (texts: string[]) => Promise<string[]>) => Promise<void>;
 }
 
 // signature of the usePage hook
@@ -419,10 +427,69 @@ export const createUsePage: CreateUsePage =
                 [hasConflict, hasChanges, handleSavePage, saveError, saving],
             );
 
+            const translateContent = useCallback(
+                async (batchTranslate: (texts: string[]) => Promise<string[]>) => {
+                    if (!pageState?.document) {
+                        return;
+                    }
+
+                    // Pass 1: Collect all translatable texts
+                    const collectedTexts: string[] = [];
+                    const collectingTranslate = async (text: string): Promise<string> => {
+                        collectedTexts.push(text);
+                        return text;
+                    };
+
+                    await Promise.all(
+                        Object.entries(rootBlocks).map(async ([key, block]) => {
+                            if (block.translateContent) {
+                                await block.translateContent(pageState.document?.[key], collectingTranslate);
+                            }
+                        }),
+                    );
+
+                    if (collectedTexts.length === 0) {
+                        return;
+                    }
+
+                    // Pass 2: Batch translate
+                    const translatedTexts = await batchTranslate(collectedTexts);
+
+                    // Pass 3: Apply translations
+                    let textIndex = 0;
+                    const applyingTranslate = async (_text: string): Promise<string> => {
+                        return translatedTexts[textIndex++];
+                    };
+
+                    const translatedRootBlocks = await Promise.all(
+                        Object.entries(rootBlocks).map(async ([key, block]) => {
+                            const state = pageState.document?.[key];
+                            const translatedState = block.translateContent ? await block.translateContent(state, applyingTranslate) : state;
+                            return [key, translatedState];
+                        }),
+                    );
+
+                    setPageState((s) => {
+                        if (!s?.document) {
+                            return s;
+                        }
+                        return {
+                            ...s,
+                            document: {
+                                ...s.document,
+                                ...Object.fromEntries(translatedRootBlocks),
+                            },
+                        } as PS;
+                    });
+                },
+                [pageState],
+            );
+
             return {
                 hasChanges,
                 handleSavePage,
                 pageState,
+                setPageState,
                 rootBlocksApi,
                 loading,
                 error,
@@ -430,6 +497,7 @@ export const createUsePage: CreateUsePage =
                 saving,
                 pageSaveButton,
                 resetPageStateToLatest,
+                translateContent,
                 dialogs,
             };
         };

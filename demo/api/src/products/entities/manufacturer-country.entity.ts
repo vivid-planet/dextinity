@@ -1,4 +1,4 @@
-import { CrudField, CrudGenerator } from "@comet/cms-api";
+import { CrudField, CrudGenerator } from "@dextinity/cms-api";
 import { Entity, Property } from "@mikro-orm/postgresql";
 import { Field, ObjectType } from "@nestjs/graphql";
 
@@ -9,7 +9,6 @@ import { Field, ObjectType } from "@nestjs/graphql";
 })
 // view-entity can't be saved or updated so disable create, update and delete
 @CrudGenerator({
-    targetDirectory: `${__dirname}/../generated/`,
     requiredPermission: ["manufacturers"],
     single: false,
     create: false,

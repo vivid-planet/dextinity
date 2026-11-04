@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`GenerateCrudInputRelationsString n:1 input dto should contain relation id as ID or string 1`] = `
+exports[`GenerateCrudInputRelationsString > n:1 input dto should contain relation id as ID or string 1`] = `
 "@InputType()
 export class FooInput {
     @IsNullable()

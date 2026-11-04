@@ -3,34 +3,35 @@ import { EntityManager, type EventArgs, MikroORM } from "@mikro-orm/postgresql";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { addSeconds } from "date-fns";
 import { Readable } from "stream";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { BlobStorageBackendService } from "../blob-storage/backends/blob-storage-backend.service";
 import { FileUpload } from "./entities/file-upload.entity";
 import { FileUploadExpirationSubscriber } from "./file-upload-expiration.subscriber";
-import { type FileUploadsConfig } from "./file-uploads.config";
+import type { FileUploadsConfig } from "./file-uploads.config";
 import { FILE_UPLOADS_CONFIG } from "./file-uploads.constants";
 import { FileUploadsService } from "./file-uploads.service";
 
 const mockBlobStorageBackendService = {
-    upload: jest.fn(),
-    fileExists: jest.fn(),
-    getFile: jest.fn(),
-    removeFile: jest.fn(),
+    upload: vi.fn(),
+    fileExists: vi.fn(),
+    getFile: vi.fn(),
+    removeFile: vi.fn(),
 };
 
 const mockEntityManager = {
-    persist: jest.fn(),
-    getEventManager: jest.fn().mockReturnValue({
-        registerSubscriber: jest.fn(),
+    persist: vi.fn(),
+    getEventManager: vi.fn().mockReturnValue({
+        registerSubscriber: vi.fn(),
     }),
-    remove: jest.fn(),
-    flush: jest.fn(),
+    remove: vi.fn(),
+    flush: vi.fn(),
 };
 
 const mockOrm = {};
 
 const mockRepository = {
-    create: jest.fn(),
+    create: vi.fn(),
 };
 
 const mockConfig: FileUploadsConfig = {
@@ -62,8 +63,8 @@ describe("FileUploadsService", () => {
     beforeEach(async () => {
         // Set a fixed base date for consistent testing
         baseDate = new Date("2023-01-01T00:00:00Z");
-        jest.useFakeTimers();
-        jest.setSystemTime(baseDate);
+        vi.useFakeTimers();
+        vi.setSystemTime(baseDate);
 
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -80,7 +81,7 @@ describe("FileUploadsService", () => {
         service = module.get<FileUploadsService>(FileUploadsService);
         expirationSubscriber = module.get<FileUploadExpirationSubscriber>(FileUploadExpirationSubscriber);
 
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     describe("getFileContent", () => {
@@ -106,7 +107,7 @@ describe("FileUploadsService", () => {
     describe("getFileContent expiration", () => {
         it("should handle expired files correctly", async () => {
             // Advance time by 1 hour and 1 second (past expiration)
-            jest.setSystemTime(addSeconds(baseDate, 3601));
+            vi.setSystemTime(addSeconds(baseDate, 3601));
 
             const buffer = Buffer.from("test");
             mockBlobStorageBackendService.fileExists.mockResolvedValue(true);

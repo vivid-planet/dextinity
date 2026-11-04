@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 
-import { type GQLDamPathLazyQuery, type GQLDamPathLazyQueryVariables } from "./DamPathLazy.generated";
+import type { GQLDamPathLazyQuery, GQLDamPathLazyQueryVariables } from "./DamPathLazy.generated";
 
 const damPathLazyQuery = gql`
     query DamPathLazy($id: ID!) {

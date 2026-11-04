@@ -1,16 +1,16 @@
-import { useCometConfig } from "../config/CometConfigContext";
-import { type ContentScope } from "../contentScope/Provider";
+import { useDextinityConfig } from "../config/DextinityConfigContext";
+import type { ContentScope } from "../contentScope/Provider";
 
 export type ContentLanguageConfig = {
     resolveContentLanguageForScope: (scope: ContentScope) => string;
 };
 
 export function useContentLanguageConfig(): ContentLanguageConfig {
-    const cometConfig = useCometConfig();
+    const dextinityConfig = useDextinityConfig();
 
-    if (!cometConfig.contentLanguage) {
+    if (!dextinityConfig.contentLanguage) {
         return { resolveContentLanguageForScope: () => "en" };
     }
 
-    return cometConfig.contentLanguage;
+    return dextinityConfig.contentLanguage;
 }

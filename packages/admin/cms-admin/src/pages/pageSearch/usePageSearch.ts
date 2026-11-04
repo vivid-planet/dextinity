@@ -1,10 +1,10 @@
 import { gql } from "@apollo/client";
 import escapeRegExp from "lodash.escaperegexp";
-import { type Dispatch, type SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { type TextMatch } from "../../common/MarkedMatches";
-import { type PageTreePage } from "../pageTree/usePageTree";
-import { type GQLPageSearchFragment } from "./usePageSearch.generated";
+import type { TextMatch } from "../../common/MarkedMatches";
+import type { PageTreePage } from "../pageTree/usePageTree";
+import type { GQLPageSearchFragment } from "./usePageSearch.generated";
 
 export type PageSearchMatch = TextMatch & { page: { id: string; ancestorIds: string[] }; where: "name" | "path" };
 
@@ -38,6 +38,10 @@ const usePageSearch = ({ tree, siteUrl, setExpandedIds, onUpdateCurrentMatch, pa
     const [matches, setMatches] = useState<PageSearchMatch[] | null>(null);
     const [currentMatchIndex, setCurrentMatchIndex] = useState<number | null>(null);
     const [query, setQuery] = useState("");
+
+    // Page id of a match that should be scrolled to once its tree row is rendered. Scrolling has to be deferred
+    // because navigating to a match may first need to re-expand collapsed ancestors (e.g. after "Collapse all").
+    const pageIdToScrollTo = useRef<string | null>(null);
 
     let domainHost: string | undefined;
 
@@ -157,6 +161,18 @@ const usePageSearch = ({ tree, siteUrl, setExpandedIds, onUpdateCurrentMatch, pa
         [matches, pagesToRender],
     );
 
+    useEffect(() => {
+        const pageId = pageIdToScrollTo.current;
+        if (pageId === null) {
+            return;
+        }
+
+        if (pagesToRenderWithMatches.some((page) => page.id === pageId)) {
+            onUpdateCurrentMatch(pageId, pagesToRenderWithMatches);
+            pageIdToScrollTo.current = null;
+        }
+    }, [pagesToRenderWithMatches, currentMatchIndex, onUpdateCurrentMatch]);
+
     const pageSearchPartialApi = useMemo(() => {
         if (matches === null || currentMatchIndex === null) {
             return {};
@@ -175,10 +191,13 @@ const usePageSearch = ({ tree, siteUrl, setExpandedIds, onUpdateCurrentMatch, pa
         };
 
         const updateCurrentMatch = (nextCurrentMatchIndex: number) => {
+            const nextMatch = matches[nextCurrentMatchIndex];
             setMatches(matches.map((match, index) => ({ ...match, focused: index === nextCurrentMatchIndex })));
             setCurrentMatchIndex(nextCurrentMatchIndex);
-            const pageIdOfCurrentMatch = matches[nextCurrentMatchIndex].page.id;
-            onUpdateCurrentMatch(pageIdOfCurrentMatch, pagesToRenderWithMatches);
+            // Re-expand the match's ancestors in case they were collapsed (e.g. via "Collapse all"), then scroll to it
+            // once the row is rendered.
+            expandTreeForMatches([nextMatch]);
+            pageIdToScrollTo.current = nextMatch.page.id;
         };
 
         return {
@@ -187,7 +206,7 @@ const usePageSearch = ({ tree, siteUrl, setExpandedIds, onUpdateCurrentMatch, pa
             jumpToNextMatch,
             jumpToPreviousMatch,
         };
-    }, [matches, currentMatchIndex, onUpdateCurrentMatch, pagesToRenderWithMatches]);
+    }, [matches, currentMatchIndex, expandTreeForMatches]);
 
     return { query, setQuery, pagesToRenderWithMatches, ...pageSearchPartialApi };
 };

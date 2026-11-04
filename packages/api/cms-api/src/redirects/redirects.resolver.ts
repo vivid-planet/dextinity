@@ -3,8 +3,8 @@ import { EntityManager, EntityRepository, FilterQuery, FindOptions, wrap } from 
 import { Inject, Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Mutation, ObjectType, Query, Resolver } from "@nestjs/graphql";
 
-import { type ExtractBlockData } from "../blocks/block";
-import { CometValidationException } from "../common/errors/validation.exception";
+import type { ExtractBlockData } from "../blocks/block";
+import { DextinityValidationException } from "../common/errors/validation.exception";
 import { PaginatedResponseFactory } from "../common/pagination/paginated-response.factory";
 import { DynamicDtoValidationPipe } from "../common/validation/dynamic-dto-validation.pipe";
 import { validateNotModified } from "../document/validateNotModified";
@@ -19,7 +19,7 @@ import { RedirectsArgsFactory } from "./dto/redirects-args.factory";
 import { RedirectInterface } from "./entities/redirect-entity.factory";
 import { RedirectTargetUrlServiceInterface } from "./redirect-target-url.service";
 import { REDIRECTS_TARGET_URL_SERVICE } from "./redirects.constants";
-import { RedirectSourceTypeValues } from "./redirects.enum";
+import { RedirectSourceType } from "./redirects.enum";
 import { RedirectsLinkBlock } from "./redirects.module";
 import { RedirectsService } from "./redirects.service";
 import { isEmptyFilter, redirectMatchesFilter } from "./redirects.util";
@@ -186,7 +186,7 @@ export function createRedirectsResolver({
         async redirectBySource(
             @Args("scope", { type: () => Scope, defaultValue: hasNonEmptyScope ? undefined : {} }) scope: typeof Scope,
             @Args("source", { type: () => String }) source: string,
-            @Args("sourceType", { type: () => RedirectSourceTypeValues }) sourceType: RedirectSourceTypeValues,
+            @Args("sourceType", { type: () => RedirectSourceType }) sourceType: RedirectSourceType,
         ): Promise<RedirectInterface | null> {
             const where: FilterQuery<RedirectInterface> = { source, sourceType };
             if (hasNonEmptyScope) {
@@ -211,7 +211,7 @@ export function createRedirectsResolver({
             @Args("input", { type: () => RedirectInput }, new DynamicDtoValidationPipe(RedirectInput)) input: RedirectInputInterface,
         ): Promise<RedirectInterface> {
             if (!(await this.redirectService.isRedirectSourceAvailable(input.source, nonEmptyScopeOrNothing(scope)))) {
-                throw new CometValidationException("Validation failed");
+                throw new DextinityValidationException("Validation failed");
             }
 
             const entity = this.repository.create({
@@ -237,7 +237,7 @@ export function createRedirectsResolver({
             }
 
             if (!(await this.redirectService.isRedirectSourceAvailable(input.source, redirect.scope, { excludedId: redirect.id }))) {
-                throw new CometValidationException("Validation failed");
+                throw new DextinityValidationException("Validation failed");
             }
 
             wrap(redirect).assign({ ...input, target: input.target.transformToBlockData() });
@@ -264,6 +264,17 @@ export function createRedirectsResolver({
         async deleteRedirect(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
             const entity = await this.repository.findOneOrFail(id);
             await this.entityManager.removeAndFlush(entity);
+            return true;
+        }
+
+        @Mutation(() => Boolean)
+        @AffectedEntity(Redirect, { idArg: "ids" })
+        async deleteRedirects(@Args("ids", { type: () => [ID] }) ids: string[]): Promise<boolean> {
+            const entities = await this.repository.find({ id: { $in: ids } });
+            if (entities.length !== ids.length) {
+                throw new Error("Couldn't find all redirects that were passed as input");
+            }
+            await this.entityManager.removeAndFlush(entities);
             return true;
         }
     }

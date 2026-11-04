@@ -1,11 +1,14 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
     Button,
+    CrudMoreActionsMenu,
     dataGridDateTimeColumn,
     DataGridToolbar,
+    DeleteDialog,
     FillSpace,
     type GridColDef,
     GridFilterButton,
+    GridToolbarQuickFilter,
     LocalErrorScopeApolloContext,
     MainContent,
     muiGridFilterToGql,
@@ -16,32 +19,61 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add as AddIcon, Delete as DeleteIcon, Edit } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add as AddIcon, Delete as DeleteIcon, Edit } from "@dextinity/admin-icons";
 import { IconButton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { DataGrid, getGridSingleSelectOperators, GridToolbarQuickFilter } from "@mui/x-data-grid";
+import {
+    type DataGridProps,
+    getGridSingleSelectOperators,
+    type GridRowSelectionModel,
+    type GridSlotsComponent,
+    type GridToolbarProps,
+} from "@mui/x-data-grid";
+import { type JSX, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { BlockPreviewContent } from "../blocks/common/blockRow/BlockPreviewContent";
-import { type BlockInterface } from "../blocks/types";
+import type { BlockInterface } from "../blocks/types";
+import { DataGrid } from "../dataGrid/DataGrid";
 import RedirectActiveness from "./RedirectActiveness";
-import { deleteRedirectMutation, paginatedRedirectsQuery } from "./RedirectsGrid.gql";
-import { type GQLPaginatedRedirectsQuery, type GQLPaginatedRedirectsQueryVariables, namedOperations } from "./RedirectsGrid.gql.generated";
+import { deleteRedirectMutation, deleteRedirectsMutation, paginatedRedirectsQuery } from "./RedirectsGrid.gql";
+import {
+    type GQLDeleteRedirectsMutation,
+    type GQLDeleteRedirectsMutationVariables,
+    type GQLPaginatedRedirectsQuery,
+    type GQLPaginatedRedirectsQueryVariables,
+    namedOperations,
+} from "./RedirectsGrid.gql.generated";
 
 interface Props {
     linkBlock: BlockInterface;
     scope: Record<string, unknown>;
 }
 
-function RedirectsGridToolbar() {
+interface RedirectsGridToolbarProps extends GridToolbarProps {
+    selectedIds?: string[];
+    onDeleteSelected?: () => void;
+}
+
+function RedirectsGridToolbar({ selectedIds = [], onDeleteSelected }: RedirectsGridToolbarProps) {
     return (
         <DataGridToolbar>
             <GridToolbarQuickFilter />
             <GridFilterButton />
             <FillSpace />
+            <CrudMoreActionsMenu
+                selectionSize={selectedIds.length}
+                selectiveActions={[
+                    {
+                        label: <FormattedMessage id="dextinity.pages.redirects.deleteSelected" defaultMessage="Delete" />,
+                        icon: <DeleteIcon />,
+                        onClick: onDeleteSelected,
+                    },
+                ]}
+            />
             <Button startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
-                <FormattedMessage id="comet.pages.redirects.add" defaultMessage="New redirect" />
+                <FormattedMessage id="dextinity.pages.redirects.add" defaultMessage="New redirect" />
             </Button>
         </DataGridToolbar>
     );
@@ -49,18 +81,34 @@ function RedirectsGridToolbar() {
 
 export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
     const intl = useIntl();
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+    const [deleteRedirects] = useMutation<GQLDeleteRedirectsMutation, GQLDeleteRedirectsMutationVariables>(deleteRedirectsMutation, {
+        refetchQueries: [namedOperations.Query.PaginatedRedirects],
+    });
+
+    const handleDeleteSelected = () => {
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        await deleteRedirects({ variables: { ids: selectedIds } });
+        setSelectedIds([]);
+        setDeleteDialogOpen(false);
+    };
 
     const typeOptions = [
         {
             label: intl.formatMessage({
-                id: "comet.redirects.redirect.generationType.manual",
+                id: "dextinity.redirects.redirect.generationType.manual",
                 defaultMessage: "Manual",
             }),
             value: "manual",
         },
         {
             label: intl.formatMessage({
-                id: "comet.redirects.redirect.generationType.automatic",
+                id: "dextinity.redirects.redirect.generationType.automatic",
                 defaultMessage: "Automatic",
             }),
             value: "automatic",
@@ -70,13 +118,13 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
     const columns: GridColDef[] = [
         {
             field: "source",
-            headerName: intl.formatMessage({ id: "comet.pages.redirects.redirect.source", defaultMessage: "Source" }),
+            headerName: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.source", defaultMessage: "Source" }),
             sortable: true,
             flex: 4,
         },
         {
             field: "target",
-            headerName: intl.formatMessage({ id: "comet.pages.redirects.redirect.target", defaultMessage: "Target" }),
+            headerName: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.target", defaultMessage: "Target" }),
             renderCell: (params) => {
                 return (
                     <TargetWrapper>
@@ -89,7 +137,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         },
         {
             field: "comment",
-            headerName: intl.formatMessage({ id: "comet.pages.redirects.redirect.comment", defaultMessage: "Comment" }),
+            headerName: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.comment", defaultMessage: "Comment" }),
             renderCell: (params) => <div>{params.value}</div>,
             sortable: false,
             flex: 2,
@@ -98,15 +146,15 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         {
             field: "generationType",
             headerName: intl.formatMessage({
-                id: "comet.pages.redirects.redirect.generationType",
+                id: "dextinity.pages.redirects.redirect.generationType",
                 defaultMessage: "Generation Type",
             }),
             renderCell: (params) => (
                 <Typography>
                     {params.value === "manual" ? (
-                        <FormattedMessage id="comet.redirects.redirect.generationType.manual" defaultMessage="Manual" />
+                        <FormattedMessage id="dextinity.redirects.redirect.generationType.manual" defaultMessage="Manual" />
                     ) : (
-                        <FormattedMessage id="comet.redirects.redirect.generationType.automatic" defaultMessage="Automatic" />
+                        <FormattedMessage id="dextinity.redirects.redirect.generationType.automatic" defaultMessage="Automatic" />
                     )}
                 </Typography>
             ),
@@ -119,7 +167,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         {
             field: "active",
             headerName: intl.formatMessage({
-                id: "comet.pages.redirects.redirect.activation",
+                id: "dextinity.pages.redirects.redirect.activation",
                 defaultMessage: "Activation",
             }),
             renderCell: (params) => <RedirectActiveness redirect={params.row} />,
@@ -131,7 +179,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
             ...dataGridDateTimeColumn,
             field: "activatedAt",
             headerName: intl.formatMessage({
-                id: "comet.pages.redirects.redirect.activatedAt",
+                id: "dextinity.pages.redirects.redirect.activatedAt",
                 defaultMessage: "Activation Date",
             }),
             sortable: false,
@@ -161,7 +209,15 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         },
     ];
 
-    const dataGridProps = { ...useDataGridRemote(), ...usePersistentColumnState("RedirectsGrid") };
+    const dataGridProps = {
+        ...useDataGridRemote(),
+        ...usePersistentColumnState("RedirectsGrid"),
+        rowSelectionModel: { type: "include", ids: new Set(selectedIds) } as DataGridProps["rowSelectionModel"],
+        onRowSelectionModelChange: (model: GridRowSelectionModel) => setSelectedIds([...model.ids] as string[]),
+        checkboxSelection: true,
+        keepNonExistentRowsSelected: true,
+        disableRowSelectionExcludeModel: true,
+    };
     const sortModel = dataGridProps.sortModel;
 
     const { data, loading, error } = useQuery<GQLPaginatedRedirectsQuery, GQLPaginatedRedirectsQueryVariables>(paginatedRedirectsQuery, {
@@ -189,7 +245,20 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
                 rowCount={rowCount}
                 columns={columns}
                 loading={loading}
-                slots={{ toolbar: RedirectsGridToolbar }}
+                slots={{ toolbar: RedirectsGridToolbar as GridSlotsComponent["toolbar"] }}
+                slotProps={{
+                    toolbar: {
+                        selectedIds,
+                        onDeleteSelected: handleDeleteSelected,
+                    } as RedirectsGridToolbarProps,
+                }}
+                showToolbar
+            />
+            <DeleteDialog
+                dialogOpen={deleteDialogOpen}
+                deleteCount={selectedIds.length}
+                onDelete={handleDeleteConfirm}
+                onCancel={() => setDeleteDialogOpen(false)}
             />
         </MainContent>
     );

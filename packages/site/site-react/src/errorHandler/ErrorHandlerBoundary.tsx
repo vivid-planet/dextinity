@@ -1,4 +1,4 @@
-import { type PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 import { ErrorHandlerBoundaryInternal } from "./ErrorHandlerBoundaryInternal";
 import { useErrorHandler } from "./ErrorHandlerProvider";

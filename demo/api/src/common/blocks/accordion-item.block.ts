@@ -10,7 +10,7 @@ import {
     createBlocksBlock,
     ExtractBlockInput,
     IsUndefinable,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
 import { SpaceBlock } from "@src/common/blocks/space.block";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/standalone-call-to-action-list.block";

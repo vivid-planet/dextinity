@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { FinalForm } from "../../../FinalForm";
 import { FinalFormDebug } from "../../../form/FinalFormDebug";
@@ -189,7 +189,9 @@ export const CustomValidation: Story = {
         }
 
         const validateMaxThirtyDayRange = async (value: { start: Date | null; end: Date | null } | undefined) => {
-            if (!value?.start || !value?.end) return undefined;
+            if (!value?.start || !value?.end) {
+                return undefined;
+            }
             const millisecondsDifference = value.end.getTime() - value.start.getTime();
             const daysDifference = millisecondsDifference / (1000 * 60 * 60 * 24);
             return daysDifference <= 30 ? undefined : "Please select a range no longer than 30 days";

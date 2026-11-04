@@ -1,13 +1,13 @@
 import { gql, useQuery } from "@apollo/client";
-import { CrudMoreActionsMenu, FillSpace, Loading, StackToolbar, ToolbarActions, ToolbarBackButton, ToolbarTitleItem } from "@comet/admin";
-import { ImpersonateUser, Reset } from "@comet/admin-icons";
+import { CrudMoreActionsMenu, FillSpace, Loading, StackToolbar, ToolbarActions, ToolbarBackButton, ToolbarTitleItem } from "@dextinity/admin";
+import { ImpersonateUser, Reset } from "@dextinity/admin-icons";
 import { styled } from "@mui/material/styles";
 
 import { commonImpersonationMessages } from "../../common/impersonation/commonImpersonationMessages";
 import { ContentScopeIndicator } from "../../contentScope/ContentScopeIndicator";
 import { useCurrentUser, useUserPermissionCheck } from "../hooks/currentUser";
 import { startImpersonation, stopImpersonation } from "../utils/handleImpersonation";
-import { type GQLUserPageQuery, type GQLUserPageQueryVariables } from "./UserPageToolbar.generated";
+import type { GQLUserPageQuery, GQLUserPageQueryVariables } from "./UserPageToolbar.generated";
 
 export const UserPermissionsUserPageToolbar = ({ userId }: { userId: string }) => {
     const currentUser = useCurrentUser();

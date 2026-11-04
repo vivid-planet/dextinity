@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
-import { type BlockInputApi, type BlockInterface } from "../blocks/types";
-import { type GQLPageTreeNode, type Maybe } from "../graphql.generated";
-import { type DependencyInterface } from "./types";
+import type { BlockInputApi, BlockInterface } from "../blocks/types";
+import type { GQLPageTreeNode, Maybe } from "../graphql.generated";
+import type { DependencyInterface } from "./types";
 
 interface Query<RootBlocks extends Record<string, BlockInterface>> {
     node: Maybe<

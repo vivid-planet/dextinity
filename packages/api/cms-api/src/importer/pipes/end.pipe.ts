@@ -1,6 +1,6 @@
 import { Transform, type TransformCallback } from "stream";
 
-import { type ImporterPipe } from "./importer-pipe.type";
+import type { ImporterPipe } from "./importer-pipe.type";
 
 export class ImporterEndPipe implements ImporterPipe {
     getPipe() {

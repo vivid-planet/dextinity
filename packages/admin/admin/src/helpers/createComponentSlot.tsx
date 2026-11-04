@@ -1,4 +1,4 @@
-import { type StyledComponent } from "@emotion/styled";
+import type { StyledComponent } from "@emotion/styled";
 import {
     css,
     generateUtilityClass,
@@ -6,10 +6,10 @@ import {
     styled,
     type Theme,
 } from "@mui/material";
-import { type CSSProperties } from "@mui/material/styles";
-import { type ComponentProps, type ElementType, forwardRef } from "react";
+import type { CSSProperties } from "@mui/material/styles";
+import { type ComponentProps, type ElementType, forwardRef, type JSX } from "react";
 
-const classNamePrefix = "CometAdmin";
+const classNamePrefix = "DextinityAdmin";
 
 type Options<ClassKey extends string, OwnerState extends object | undefined> = {
     componentName: string;
@@ -28,8 +28,7 @@ type OwnerStateObjectIfDefined<OwnerState extends object | undefined> = OwnerSta
 type StylesStringOrObject = ReturnType<typeof css> | CSSProperties;
 
 type SlotStylesOrStylesFunction<OwnerState extends object | undefined> =
-    | StylesStringOrObject
-    | ((props: { theme: Theme } & OwnerStateObjectIfDefined<OwnerState>) => StylesStringOrObject);
+    StylesStringOrObject | ((props: { theme: Theme } & OwnerStateObjectIfDefined<OwnerState>) => StylesStringOrObject);
 
 export const createComponentSlot = <BaseComponent extends ElementType | keyof JSX.IntrinsicElements>(component: BaseComponent) => {
     return <ClassKey extends string, OwnerState extends object | undefined = undefined>(options: Options<ClassKey, OwnerState>) => {

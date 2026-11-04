@@ -1,4 +1,4 @@
-import { type EntityMetadata } from "@mikro-orm/postgresql";
+import type { EntityMetadata } from "@mikro-orm/postgresql";
 
 import { CRUD_FIELD_METADATA_KEY, type CrudFieldOptions } from "../decorators/crud-generator.decorator";
 

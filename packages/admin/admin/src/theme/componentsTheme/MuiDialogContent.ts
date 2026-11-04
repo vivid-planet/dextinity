@@ -1,7 +1,7 @@
 import { dialogTitleClasses } from "@mui/material";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
-import { type GetMuiComponentTheme } from "./getComponentsTheme";
+import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
 export const getMuiDialogContent: GetMuiComponentTheme<"MuiDialogContent"> = (component, { palette, breakpoints, spacing }) => ({
     ...component,

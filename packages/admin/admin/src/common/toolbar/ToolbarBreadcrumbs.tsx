@@ -1,10 +1,10 @@
-import { ChevronDown, ChevronRight, ChevronUp } from "@comet/admin-icons";
+import { ChevronDown, ChevronRight, ChevronUp } from "@dextinity/admin-icons";
 import { ButtonBase, type ComponentsOverrides, css, ListItemText, Menu, MenuItem, type Theme, Typography, useThemeProps } from "@mui/material";
 import { Fragment, type ReactNode, useRef, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { useStackApi } from "../../stack/Api";
 import { useObservedWidth } from "../../utils/useObservedWidth";
 
@@ -23,22 +23,21 @@ export type ToolbarBreadcrumbsClassKey =
     | "mobileMenuItemText"
     | "mobileMenuItemNestingIndicator";
 
-export interface ToolbarBreadcrumbsProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        breadcrumbsList: "div";
-        mobileBreadcrumbsButton: typeof ButtonBase;
-        currentBreadcrumbsItem: typeof Typography;
-        breadcrumbsItem: typeof Typography;
-        mobileStandaloneCurrentBreadcrumbItem: "div";
-        breadcrumbsItemSeparator: "div";
-        breadcrumbsEllipsisItem: typeof Typography;
-        mobileMenu: typeof Menu;
-        mobileMenuIcon: "div";
-        mobileMenuItem: typeof MenuItem;
-        mobileMenuItemText: typeof ListItemText;
-        mobileMenuItemNestingIndicator: "div";
-    }> {
+export interface ToolbarBreadcrumbsProps extends ThemedComponentBaseProps<{
+    root: "div";
+    breadcrumbsList: "div";
+    mobileBreadcrumbsButton: typeof ButtonBase;
+    currentBreadcrumbsItem: typeof Typography;
+    breadcrumbsItem: typeof Typography;
+    mobileStandaloneCurrentBreadcrumbItem: "div";
+    breadcrumbsItemSeparator: "div";
+    breadcrumbsEllipsisItem: typeof Typography;
+    mobileMenu: typeof Menu;
+    mobileMenuIcon: "div";
+    mobileMenuItem: typeof MenuItem;
+    mobileMenuItemText: typeof ListItemText;
+    mobileMenuItemNestingIndicator: "div";
+}> {
     iconMapping?: {
         itemSeparator?: ReactNode;
         openMobileMenu?: ReactNode;
@@ -47,7 +46,7 @@ export interface ToolbarBreadcrumbsProps
 }
 
 export const ToolbarBreadcrumbs = (inProps: ToolbarBreadcrumbsProps) => {
-    const { iconMapping = {}, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminToolbarBreadcrumbs" });
+    const { iconMapping = {}, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminToolbarBreadcrumbs" });
     const {
         itemSeparator: itemSeparatorIcon = <ChevronRight />,
         openMobileMenu: openMobileMenuIcon = <ChevronDown />,
@@ -392,17 +391,17 @@ const MobileMenuItemNestingIndicator = createComponentSlot("div")<ToolbarBreadcr
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminToolbarBreadcrumbs: ToolbarBreadcrumbsClassKey;
+        DextinityAdminToolbarBreadcrumbs: ToolbarBreadcrumbsClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminToolbarBreadcrumbs: ToolbarBreadcrumbsProps;
+        DextinityAdminToolbarBreadcrumbs: ToolbarBreadcrumbsProps;
     }
 
     interface Components {
-        CometAdminToolbarBreadcrumbs?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminToolbarBreadcrumbs"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminToolbarBreadcrumbs"];
+        DextinityAdminToolbarBreadcrumbs?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminToolbarBreadcrumbs"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminToolbarBreadcrumbs"];
         };
     }
 }

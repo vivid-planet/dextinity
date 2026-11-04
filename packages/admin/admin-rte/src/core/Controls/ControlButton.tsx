@@ -1,8 +1,8 @@
-import { createComponentSlot, type ThemedComponentBaseProps } from "@comet/admin";
-import { type ComponentsOverrides } from "@mui/material";
+import { createComponentSlot, type ThemedComponentBaseProps } from "@dextinity/admin";
+import type { ComponentsOverrides } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
-import { type SvgIconProps } from "@mui/material/SvgIcon";
-import { type ForwardRefExoticComponent, type MouseEvent, type PropsWithChildren, type RefAttributes } from "react";
+import type { SvgIconProps } from "@mui/material/SvgIcon";
+import type { ForwardRefExoticComponent, MouseEvent, PropsWithChildren, RefAttributes } from "react";
 
 import getRteTheme from "../utils/getRteTheme";
 
@@ -17,7 +17,7 @@ const Root = createComponentSlot("button")<RteControlButtonClassKey, OwnerState>
         return [ownerState.selected && "selected", Boolean(ownerState.Icon) && "renderAsIcon"];
     },
 })(({ ownerState, theme }) => {
-    const rteTheme = getRteTheme(theme.components?.CometAdminRte?.defaultProps);
+    const rteTheme = getRteTheme(theme.components?.DextinityAdminRte?.defaultProps);
     return css`
         display: flex;
         justify-content: center;
@@ -50,26 +50,29 @@ const Root = createComponentSlot("button")<RteControlButtonClassKey, OwnerState>
             }
         }
 
-        ${ownerState.selected &&
-        css`
-            &:not(:disabled),
-            &:not(:disabled):hover {
-                border-color: ${rteTheme.colors?.buttonBorderHover};
-                background-color: white;
-            }
-        `}
+        ${
+            ownerState.selected &&
+            css`
+                &:not(:disabled),
+                &:not(:disabled):hover {
+                    border-color: ${rteTheme.colors?.buttonBorderHover};
+                    background-color: white;
+                }
+            `
+        }
 
-        ${Boolean(ownerState.Icon) &&
-        css`
-            width: 24px;
-        `}
+        ${
+            Boolean(ownerState.Icon) &&
+            css`
+                width: 24px;
+            `
+        }
     `;
 });
 
-export interface IProps
-    extends ThemedComponentBaseProps<{
-        root: "button";
-    }> {
+export interface IProps extends ThemedComponentBaseProps<{
+    root: "button";
+}> {
     disabled?: boolean;
     selected?: boolean;
     onButtonClick?: (e: MouseEvent) => void;
@@ -89,7 +92,7 @@ export function ControlButton(inProps: PropsWithChildren<IProps>) {
         Icon: deprecatedIcon,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminRteControlButton" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminRteControlButton" });
 
     const Icon = icon || deprecatedIcon;
 
@@ -108,12 +111,12 @@ export function ControlButton(inProps: PropsWithChildren<IProps>) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminRteControlButton: RteControlButtonClassKey;
+        DextinityAdminRteControlButton: RteControlButtonClassKey;
     }
 
     interface Components {
-        CometAdminRteControlButton?: {
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminRteControlButton"];
+        DextinityAdminRteControlButton?: {
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminRteControlButton"];
         };
     }
 }

@@ -3,21 +3,36 @@
 **/.watchmanconfig
 /.docker-sync
 storybook-static/
-comet-lang/
+dextinity-lang/
 lang/
 /.npm
 .pnp.*
 junit.xml
+junit-unit.xml
+junit-storybook.xml
 .env.local
 .env.site-configs
+.env.site-configs.deploy-preview
 **/.idea
 
 *storybook.log
 
-.claude
 .context
+.playwright
+.playwright-mcp
+.playwright-cli/
 
 # Agent files
 .agents/skills/
+.agents/rules/
 .cursor/skills/
+.cursor/rules/
 .claude/skills/
+.claude/rules/
+.claude/worktrees/
+.claude/settings.local.json
+.github/instructions/
+
+# Build output of @dextinity/agent-features (copied from the skills/ and rules/ folders at the repository root)
+/packages/agent-features/skills/
+/packages/agent-features/rules/

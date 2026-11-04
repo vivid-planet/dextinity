@@ -3,7 +3,7 @@ import { Button } from "@src/common/components/Button";
 import { PageLink } from "@src/layout/header/PageLink";
 import { FormattedMessage } from "react-intl";
 
-import { type GQLTopMenuPageTreeNodeFragment } from "./TopNavigation.fragment.generated";
+import type { GQLTopMenuPageTreeNodeFragment } from "./TopNavigation.fragment.generated";
 import styles from "./TopNavigation.module.scss";
 
 interface Props {

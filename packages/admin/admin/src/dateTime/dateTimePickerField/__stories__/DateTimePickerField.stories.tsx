@@ -1,12 +1,12 @@
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { FinalForm } from "../../../FinalForm";
 import { FinalFormDebug } from "../../../form/FinalFormDebug";
-import { Future_DateTimePickerField } from "../DateTimePickerField";
+import { DateTimePickerField } from "../DateTimePickerField";
 
-type Story = StoryObj<typeof Future_DateTimePickerField>;
-const config: Meta<typeof Future_DateTimePickerField> = {
-    component: Future_DateTimePickerField,
+type Story = StoryObj<typeof DateTimePickerField>;
+const config: Meta<typeof DateTimePickerField> = {
+    component: DateTimePickerField,
     title: "components/dateTime/DateTimePickerField",
 };
 
@@ -36,7 +36,7 @@ export const Default: Story = {
                 {({ values }: { values: FormValues }) => {
                     return (
                         <>
-                            <Future_DateTimePickerField name="value" label="Date Time Picker" fullWidth variant="horizontal" />
+                            <DateTimePickerField name="value" label="Date Time Picker" fullWidth variant="horizontal" />
 
                             <FinalFormDebug />
                         </>
@@ -79,7 +79,7 @@ export const MinMaxDate: Story = {
                 {({ values }: { values: FormValues }) => {
                     return (
                         <>
-                            <Future_DateTimePickerField
+                            <DateTimePickerField
                                 name="value"
                                 label="Date Time Picker with Min/Max Date"
                                 fullWidth
@@ -121,7 +121,7 @@ export const Clearable: Story = {
                 {({ values }: { values: FormValues }) => {
                     return (
                         <>
-                            <Future_DateTimePickerField clearable name="value" label="Clearable Date Time Picker" fullWidth variant="horizontal" />
+                            <DateTimePickerField clearable name="value" label="Clearable Date Time Picker" fullWidth variant="horizontal" />
 
                             <FinalFormDebug />
                         </>
@@ -157,7 +157,7 @@ export const Disabled: Story = {
                 {({ values }: { values: FormValues }) => {
                     return (
                         <>
-                            <Future_DateTimePickerField disabled name="value" label="Disabled Date Time Picker" fullWidth variant="horizontal" />
+                            <DateTimePickerField disabled name="value" label="Disabled Date Time Picker" fullWidth variant="horizontal" />
 
                             <FinalFormDebug />
                         </>
@@ -183,7 +183,9 @@ export const CustomValidation: Story = {
         }
 
         const validateIsWeekday = async (value: Date | undefined) => {
-            if (!value) return undefined;
+            if (!value) {
+                return undefined;
+            }
             const day = value.getDay();
             const isWeekday = day !== 0 && day !== 6;
             return isWeekday ? undefined : "Please select a weekday";
@@ -199,7 +201,7 @@ export const CustomValidation: Story = {
             >
                 {() => (
                     <>
-                        <Future_DateTimePickerField
+                        <DateTimePickerField
                             name="value"
                             label="Date Time Picker"
                             helperText="Only weekdays are valid"

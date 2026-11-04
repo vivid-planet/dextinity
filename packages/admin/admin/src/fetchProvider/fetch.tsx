@@ -11,7 +11,9 @@ export function createFetch(options: ICreateFetchOptions) {
     async function appFetch(input: RequestInfo, init?: RequestInit) {
         init = init || {};
         init.headers = init.headers ? new Headers(init.headers) : new Headers();
-        if (options.interceptHeaders) await options.interceptHeaders(init.headers);
+        if (options.interceptHeaders) {
+            await options.interceptHeaders(init.headers);
+        }
 
         // make sure we deal with a Request object even if we got a URL string
         if (options.baseUrl && typeof input === "string" && !isUrlAbsolute(input)) {

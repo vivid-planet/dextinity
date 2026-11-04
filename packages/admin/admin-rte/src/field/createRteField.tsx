@@ -1,13 +1,13 @@
-import { Field, type FieldProps } from "@comet/admin";
-import { type FunctionComponent } from "react";
+import { Field, type FieldProps } from "@dextinity/admin";
+import type { FunctionComponent } from "react";
 
-import { type RteProps } from "../core/Rte";
+import type { RteProps } from "../core/Rte";
 import { requiredValidator } from "../utils/requiredValidator";
 import createFinalFormRte, { type IConfig } from "./createFinalFormRte";
 
 export type RteFieldProps = FieldProps<string, HTMLInputElement> & Partial<RteProps>;
 
-// Same as in `Field` from `@comet/admin`
+// Same as in `Field` from `@dextinity/admin`
 const composeValidators =
     (...validators: Array<(value: any, allValues: object) => any>) =>
     (value: any, allValues: object) =>

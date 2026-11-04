@@ -53,7 +53,9 @@ export function transformConfigFile(fileName: string, sourceText: string) {
                 if (ts.isArrowFunction(node)) {
                     if (supportedInlineCodePaths.includes(path)) {
                         let code = node.getText();
-                        if (code.endsWith(",")) code = code.slice(0, -1); // for some unknown reason node can contain the trailing comma
+                        if (code.endsWith(",")) {
+                            code = code.slice(0, -1);
+                        } // for some unknown reason node can contain the trailing comma
                         const imports = findUsedImports(node.body, importedIdentifiers); //find all imports used in the function body
                         // replace inline code with { code, imports } object
                         return ts.factory.createObjectLiteralExpression(
@@ -138,7 +140,9 @@ export function transformConfigFile(fileName: string, sourceText: string) {
     const updatedSource = ts.transform(sourceFile, [
         (context) => {
             const visitor: ts.Visitor = (node) => {
-                if (node === configNode) return transformedConfigNode;
+                if (node === configNode) {
+                    return transformedConfigNode;
+                }
                 return ts.visitEachChild(node, visitor, context);
             };
             return (node: ts.SourceFile) => ts.visitNode(node, visitor) as ts.SourceFile;

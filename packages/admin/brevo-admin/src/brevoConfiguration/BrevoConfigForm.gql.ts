@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const brevoConfigFormFragment = gql`
+const brevoConfigFormFragment = gql`
     fragment BrevoConfigForm on BrevoConfig {
         senderMail
         senderName
@@ -20,14 +20,6 @@ export const brevoConfigFormQuery = gql`
         }
     }
     ${brevoConfigFormFragment}
-`;
-
-export const brevoConfigFormCheckForChangesQuery = gql`
-    query BrevoConfigFormCheckForChanges($scope: EmailCampaignContentScopeInput!) {
-        brevoConfig(scope: $scope) {
-            updatedAt
-        }
-    }
 `;
 
 export const createBrevoConfigMutation = gql`

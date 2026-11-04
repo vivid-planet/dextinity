@@ -1,5 +1,159 @@
 # @comet/admin-icons
 
+## 10.13.1
+
+## 10.13.0
+
+## 10.12.0
+
+## 10.11.0
+
+### Minor Changes
+
+- 43ee19a: Add `RowInsertAbove`, `RowInsertBelow`, `RowMoveUp`, `RowMoveDown`, `ColumnInsertLeft`, `ColumnInsertRight`, `ColumnMoveLeft` and `ColumnMoveRight` icons
+
+### Patch Changes
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+## 10.10.0
+
+## 10.9.1
+
+## 10.9.0
+
+## 10.8.0
+
+## 10.7.0
+
+## 10.6.0
+
+## 10.5.1
+
+## 10.5.0
+
+## 10.4.0
+
+## 10.3.0
+
+## 10.2.0
+
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-icons` to `@dextinity/admin-icons`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Remove the `Comet` and `CometOutline` icons
+    - Remove the `CometColor` component. Use `DextinityIcon` instead, which provides the `light`, `dark` and `masked` variants
+    - Remove the `CometDigitalExperienceLogo` component. Use `DextinityLogo` instead, which provides the `light`, `dark` and `monochrome` variants
+    - Rename the `CometColor` member of the `IconName` type to `DextinityIcon`
+
+    `DextinityIcon` and `DextinityLogo` derive their size from `fontSize`, so call sites no longer pass `width`/`height` pairs:
+
+    ```diff
+    - <CometDigitalExperienceLogo width={132} height={30} />
+    + <DextinityLogo sx={{ fontSize: 30 }} />
+    ```
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/admin-icons` to `@dextinity/admin-icons`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Remove the `Comet` and `CometOutline` icons
+    - Remove the `CometColor` component. Use `DextinityIcon` instead, which provides the `light`, `dark` and `masked` variants
+    - Remove the `CometDigitalExperienceLogo` component. Use `DextinityLogo` instead, which provides the `light`, `dark` and `monochrome` variants
+    - Rename the `CometColor` member of the `IconName` type to `DextinityIcon`
+
+    `DextinityIcon` and `DextinityLogo` derive their size from `fontSize`, so call sites no longer pass `width`/`height` pairs:
+
+    ```diff
+    - <CometDigitalExperienceLogo width={132} height={30} />
+    + <DextinityLogo sx={{ fontSize: 30 }} />
+    ```
+
+## 9.5.0
+
+## 9.4.0
+
+## 9.3.0
+
+## 9.2.2
+
+## 9.2.1
+
+## 9.2.0
+
+## 9.1.1
+
+## 9.1.0
+
+## 9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 5f1566a: Make packages ESM-only
+
+### Minor Changes
+
+- f066335: Add support for React 19
+
+### Patch Changes
+
+- 92281f1: Add `"sideEffects"` to package.json for better tree-shakability
+
+## 9.0.0-beta.6
+
+## 9.0.0-beta.5
+
+## 9.0.0-beta.4
+
+## 9.0.0-beta.3
+
+## 9.0.0-beta.2
+
+### Patch Changes
+
+- 92281f1: Add `"sideEffects"` to package.json for better tree-shakability
+
+## 9.0.0-beta.1
+
+## 9.0.0-beta.0
+
+### Major Changes
+
+- 5f1566a: Make packages ESM-only
+
+### Minor Changes
+
+- f066335: Add support for React 19
+
+## 8.20.0
+
+### Patch Changes
+
+- caceff8: Remove deprecated `xlinkHref` prop from `CometColor` icon component
+
 ## 8.19.0
 
 ## 8.18.0

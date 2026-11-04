@@ -4,6 +4,8 @@
 :root {
     @include global-theme-default;
 
+    --page-grid-column-count: 24;
+
     --spacing-s100: 4px;
     --spacing-s200: 8px;
     --spacing-s300: 12px;
@@ -151,8 +153,7 @@ legend {
     isolation: isolate;
 }
 
-:focus {
+:focus-visible {
     outline: 3px solid var(--functional-focus-main);
-    outline-offset: 0;
-    border: 2px solid var(--brand-primary-contrast);
+    outline-offset: 2px;
 }

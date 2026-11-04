@@ -1,4 +1,4 @@
-import { BlockData, BlockField, BlockIndexData, BlockInput, blockInputToData, createBlock } from "@comet/cms-api";
+import { BlockData, BlockField, BlockIndexData, BlockInput, blockInputToData, createBlock } from "@dextinity/cms-api";
 import { IsOptional, IsUUID } from "class-validator";
 
 class NewsDetailBlockData extends BlockData {
@@ -32,6 +32,9 @@ class NewsDetailBlockInput extends BlockInput {
     }
 }
 
-const NewsDetailBlock = createBlock(NewsDetailBlockData, NewsDetailBlockInput, "NewsDetail");
+const NewsDetailBlock = createBlock(NewsDetailBlockData, NewsDetailBlockInput, {
+    name: "NewsDetail",
+    description: "The detail view of a single news entry.",
+});
 
 export { NewsDetailBlock };

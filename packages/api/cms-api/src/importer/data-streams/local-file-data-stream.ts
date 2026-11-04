@@ -4,7 +4,7 @@ import { Readable } from "node:stream";
 import { Logger } from "@nestjs/common";
 import path from "path";
 
-import { type StreamChunkAndMetadata } from "./data-stream";
+import type { StreamChunkAndMetadata } from "./data-stream";
 import { FileDataStream, type FileStreamAndMetadata } from "./file-data-stream";
 
 export class ImporterLocalFileDataStream extends FileDataStream {

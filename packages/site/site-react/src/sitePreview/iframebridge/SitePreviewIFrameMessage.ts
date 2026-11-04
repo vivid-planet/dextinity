@@ -1,6 +1,6 @@
 // Same file in admin and site
 
-import { type ExternalLinkBlockData } from "../../blocks.generated";
+import type { ExternalLinkBlockData } from "../../blocks.generated";
 
 // Messages sent from iFrame -> Admin
 
@@ -10,14 +10,14 @@ export enum SitePreviewIFrameMessageType {
 }
 
 interface SitePreviewIFrameOpenLinkMessage {
-    cometType: SitePreviewIFrameMessageType.OpenLink;
+    dextinityType: SitePreviewIFrameMessageType.OpenLink;
     data: {
         link: ExternalLinkBlockData;
     };
 }
 
 export interface SitePreviewIFrameLocationMessage {
-    cometType: SitePreviewIFrameMessageType.SitePreviewLocation;
+    dextinityType: SitePreviewIFrameMessageType.SitePreviewLocation;
     data: Pick<Location, "search" | "pathname">;
 }
 

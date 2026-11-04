@@ -1,14 +1,16 @@
 import * as process from "node:process";
 
-import { type Permission } from "@comet/cms-api";
+import type { Permission } from "@dextinity/cms-api";
 import { format, type Options, resolveConfig } from "prettier";
 import { Project, type SourceFile } from "ts-morph";
 
-import { type GeneratedFile } from "./write-generated-files";
+import type { GeneratedFile } from "./write-generated-files";
 
 let options: Options | null;
 export async function formatSource(sourceCode: string): Promise<string> {
-    if (!options) options = await resolveConfig(process.cwd());
+    if (!options) {
+        options = await resolveConfig(process.cwd());
+    }
 
     return format(sourceCode, {
         ...options,

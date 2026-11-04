@@ -1,8 +1,8 @@
-import { Field, FinalFormInput } from "@comet/admin";
+import { Field, FinalFormInput } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 
-import { type VimeoVideoBlockData, type VimeoVideoBlockInput } from "../blocks.generated";
+import type { VimeoVideoBlockData, VimeoVideoBlockInput } from "../blocks.generated";
 import { useBlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
 import { BlockAdminComponentSection } from "./common/BlockAdminComponentSection";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
@@ -26,10 +26,12 @@ const isValidVimeoIdentifier = (value: string) => {
 };
 
 const validateIdentifier = (value?: string) => {
-    if (!value) return undefined;
+    if (!value) {
+        return undefined;
+    }
 
     return value && isValidVimeoIdentifier(value) ? undefined : (
-        <FormattedMessage id="comet.blocks.vimeoVideo.validation" defaultMessage="Should be a valid Vimeo URL or identifier" />
+        <FormattedMessage id="dextinity.blocks.vimeoVideo.validation" defaultMessage="Should be a valid Vimeo URL or identifier" />
     );
 };
 
@@ -38,7 +40,7 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
 
     name: "VimeoVideo",
 
-    displayName: <FormattedMessage id="comet.blocks.vimeoVideo" defaultMessage="Video (Vimeo)" />,
+    displayName: <FormattedMessage id="dextinity.blocks.vimeoVideo" defaultMessage="Video (Vimeo)" />,
 
     defaultValues: () => ({ showControls: true, previewImage: PixelImageBlock.defaultValues() }),
 
@@ -59,6 +61,13 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
         };
     },
 
+    dependencies: (state) => PixelImageBlock.dependencies?.(state.previewImage) ?? [],
+
+    replaceDependenciesInOutput: (output, replacements) => ({
+        ...output,
+        previewImage: PixelImageBlock.replaceDependenciesInOutput(output.previewImage, replacements),
+    }),
+
     definesOwnPadding: true,
 
     isValid: ({ vimeoIdentifier }) => !vimeoIdentifier || isValidVimeoIdentifier(vimeoIdentifier),
@@ -72,7 +81,7 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
                     <BlocksFinalForm onSubmit={updateState} initialValues={state}>
                         <Field
                             name="vimeoIdentifier"
-                            label={<FormattedMessage id="comet.blocks.vimeoVideo.vimeoIdentifier" defaultMessage="Vimeo URL or Vimeo Video ID" />}
+                            label={<FormattedMessage id="dextinity.blocks.vimeoVideo.vimeoIdentifier" defaultMessage="Vimeo URL or Vimeo Video ID" />}
                             validate={validateIdentifier}
                             type="text"
                             component={FinalFormInput}
@@ -81,7 +90,7 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
                         />
                         <VideoOptionsFields />
                     </BlocksFinalForm>
-                    <BlockAdminComponentSection title={<FormattedMessage id="comet.blocks.video.previewImage" defaultMessage="Preview Image" />}>
+                    <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.video.previewImage" defaultMessage="Preview Image" />}>
                         <PixelImageBlock.AdminComponent
                             state={state.previewImage}
                             updateState={(setStateAction) => {
@@ -102,8 +111,12 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
     extractTextContents: (state) => {
         const contents = [];
 
-        if (state.previewImage.damFile?.altText) contents.push(state.previewImage.damFile.altText);
-        if (state.previewImage.damFile?.title) contents.push(state.previewImage.damFile.title);
+        if (state.previewImage.damFile?.altText) {
+            contents.push(state.previewImage.damFile.altText);
+        }
+        if (state.previewImage.damFile?.title) {
+            contents.push(state.previewImage.damFile.title);
+        }
 
         return contents;
     },

@@ -1,10 +1,10 @@
-import { type TypedDocumentNode } from "@apollo/client";
-import { type SvgIconProps } from "@mui/material";
-import { type ComponentType, type ReactNode } from "react";
+import type { TypedDocumentNode } from "@apollo/client";
+import type { SvgIconProps } from "@mui/material";
+import type { ComponentType, ReactNode } from "react";
 
-import { type BlockDependency, type ReplaceDependencyObject } from "../blocks/types";
-import { type GQLDocumentInterface, type Maybe } from "../graphql.generated";
-import { type PageTreePage } from "../pages/pageTree/usePageTree";
+import type { BlockDependency, ReplaceDependencyObject } from "../blocks/types";
+import type { GQLDocumentInterface, Maybe } from "../graphql.generated";
+import type { PageTreePage } from "../pages/pageTree/usePageTree";
 
 export type DocumentType = string;
 
@@ -49,8 +49,13 @@ export interface DocumentInterface<
     dependencies: (input: DocumentInput) => BlockDependency[];
     replaceDependenciesInOutput: (output: DocumentOutput, replacements: ReplaceDependencyObject[]) => DocumentOutput;
     hasNoSitePreview?: true;
+    SitePreviewAction?: ComponentType<SitePreviewActionProps>;
 }
 
 export type InfoTagProps<PageTreeNodeAdditionalFields extends object = object> = {
     page: PageTreePage<PageTreeNodeAdditionalFields>;
+};
+
+export type SitePreviewActionProps<PageTreeNodeAdditionalFields extends object = object> = {
+    pageTreeNode: PageTreePage<PageTreeNodeAdditionalFields>;
 };

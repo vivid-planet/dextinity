@@ -1,4 +1,4 @@
-import { SortDirection, Table, useTableQuerySort } from "@comet/admin";
+import { SortDirection, Table, useTableQuerySort } from "@dextinity/admin";
 
 interface IExampleRow {
     id: number;
@@ -7,7 +7,7 @@ interface IExampleRow {
 }
 
 export default {
-    title: "@comet/admin/table",
+    title: "@dextinity/admin/table",
 };
 
 export const SortClientside = () => {

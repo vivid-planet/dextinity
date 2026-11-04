@@ -11,8 +11,9 @@ import {
     Ref,
     types,
 } from "@mikro-orm/postgresql";
-import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage";
-import { v4 as uuid } from "uuid";
+import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
+import { randomUUID } from "crypto";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
 import { GeneratedFile } from "../../utils/write-generated-files";
@@ -21,7 +22,7 @@ import { generateCrud } from "../generate-crud";
 @Entity()
 export class Product extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @OneToMany(() => ProductToCategory, (productCategory) => productCategory.product, { orphanRemoval: true })
     productCategories = new Collection<ProductToCategory>(this);
@@ -30,7 +31,7 @@ export class Product extends BaseEntity {
 @Entity()
 export class ProductToCategory extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @ManyToOne(() => Product, { deleteRule: "cascade", ref: true })
     product: Ref<Product>;
@@ -45,7 +46,7 @@ export class ProductToCategory extends BaseEntity {
 @Entity()
 export class Category extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @OneToMany(() => ProductToCategory, (productCategory) => productCategory.category, { orphanRemoval: true })
     productCategories = new Collection<ProductToCategory>(this);
@@ -65,12 +66,14 @@ describe("GenerateCrud Relation n:m with additional column", () => {
         );
 
         const out = await generateCrud(
-            { targetDirectory: __dirname, requiredPermission: testPermission, create: false, update: true, delete: false },
+            { requiredPermission: testPermission, create: false, update: true, delete: false },
             orm.em.getMetadata().get("Product"),
         );
         const formattedOut = await formatGeneratedFiles(out);
         const foundFile = formattedOut.find((file) => file.name === "product.resolver.ts");
-        if (!foundFile) throw new Error("File not found");
+        if (!foundFile) {
+            throw new Error("File not found");
+        }
 
         file = foundFile;
     });

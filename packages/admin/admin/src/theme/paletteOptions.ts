@@ -1,4 +1,4 @@
-import { type PaletteOptions } from "@mui/material/styles";
+import type { PaletteOptions } from "@mui/material/styles";
 
 import { errorPalette, greyPalette, infoPalette, primaryPalette, secondaryPalette, successPalette, warningPalette } from "./colors";
 

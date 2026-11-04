@@ -1,6 +1,6 @@
 import { type ApolloError, useQuery } from "@apollo/client";
 import { Box, Card, Typography } from "@mui/material";
-import { type DocumentNode } from "graphql";
+import type { DocumentNode } from "graphql";
 import { type ComponentType, Fragment, type ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -29,7 +29,7 @@ const SelectEdit = <Data extends { id: string | number }>(props: IProps<Data>) =
                 <Box padding={4}>
                     <Typography>
                         <FormattedMessage
-                            id="comet.table.tableQuery.error"
+                            id="dextinity.table.tableQuery.error"
                             defaultMessage="Error :( {error}"
                             description="Display apollo error message"
                             values={{

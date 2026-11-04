@@ -1,6 +1,6 @@
 import { type CustomDecorator, SetMetadata } from "@nestjs/common";
 
-import { type Permission } from "../user-permissions.types";
+import type { Permission } from "../user-permissions.types";
 
 type RequiredPermissionOptions = {
     skipScopeCheck?: boolean;

@@ -2,7 +2,7 @@ import { ListItemIcon, type ListItemIconProps, ListItemText, type ListItemTextPr
 import { styled } from "@mui/material/styles";
 import { type ElementType, type ForwardedRef, forwardRef, type PropsWithChildren, type ReactElement, type ReactNode } from "react";
 
-import { type CommonRowActionItemProps } from "./RowActionsItem";
+import type { CommonRowActionItemProps } from "./RowActionsItem";
 
 export type RowActionsListItemComponentsProps<MenuItemComponent extends ElementType = "li"> = PropsWithChildren<{
     listItemIcon?: Partial<ListItemIconProps>;

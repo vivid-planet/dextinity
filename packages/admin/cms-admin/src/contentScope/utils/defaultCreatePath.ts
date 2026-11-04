@@ -1,4 +1,4 @@
-import { type ContentScopeValues } from "../Provider";
+import type { ContentScopeValues } from "../Provider";
 import { createPathFromDimensionValues } from "./createPathFromDimensionValues";
 import { groupObjectsIntoArrays } from "./groupObjectsIntoArrays";
 

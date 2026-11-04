@@ -8,7 +8,7 @@ import {
     ChildBlockInput,
     createBlock,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { IsEnum } from "class-validator";
 
 import { RichTextBlock } from "./rich-text.block";
@@ -41,6 +41,4 @@ class StandaloneRichTextBlockInput extends BlockInput {
     }
 }
 
-export const StandaloneRichTextBlock = createBlock(StandaloneRichTextBlockData, StandaloneRichTextBlockInput, {
-    name: "StandaloneRichText",
-});
+export const StandaloneRichTextBlock = createBlock(StandaloneRichTextBlockData, StandaloneRichTextBlockInput, "StandaloneRichText");

@@ -2,12 +2,12 @@ import { createSitePath } from "@src/util/createSitePath";
 
 export const dynamic = "force-dynamic"; // don't generate at build time
 
-import { gql } from "@comet/site-nextjs";
+import { gql } from "@dextinity/site-nextjs";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { getSiteConfig } from "@src/util/siteConfig";
-import { type MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 
-import { type GQLPrebuildPageDataListSitemapQuery, type GQLPrebuildPageDataListSitemapQueryVariables } from "./sitemap.generated";
+import type { GQLPrebuildPageDataListSitemapQuery, GQLPrebuildPageDataListSitemapQueryVariables } from "./sitemap.generated";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const sitemap: MetadataRoute.Sitemap = [];

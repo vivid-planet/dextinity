@@ -1,5 +1,5 @@
-import { type PureQueryOptions } from "@apollo/client";
-import { Delete } from "@comet/admin-icons";
+import type { PureQueryOptions } from "@apollo/client";
+import { Delete } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import { Button, type ButtonProps, IconButton } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -31,7 +31,9 @@ export class TableDeleteButton extends Component<IProps> {
         return (
             <DeleteMutation mutation={mutation} refetchQueries={refetchQueries}>
                 {(deleteBrand, { loading }) => {
-                    if (loading) return <CircularProgress />;
+                    if (loading) {
+                        return <CircularProgress />;
+                    }
 
                     const onClick = this.handleDeleteClick.bind(this, deleteBrand);
 

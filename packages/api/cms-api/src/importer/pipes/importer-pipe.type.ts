@@ -1,6 +1,6 @@
-import { type LoggerService } from "@nestjs/common";
-import { type ValidationError as ClassValidationError } from "class-validator";
-import { type Transform } from "stream";
+import type { LoggerService } from "@nestjs/common";
+import type { ValidationError as ClassValidationError } from "class-validator";
+import type { Transform } from "stream";
 
 export type PipeData = Record<string, unknown>;
 export type PipeMetadata = Record<string, unknown>;

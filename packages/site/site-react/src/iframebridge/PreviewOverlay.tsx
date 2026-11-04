@@ -10,7 +10,9 @@ export const PreviewOverlay = () => {
     let bottomMostElementPosition = 0;
 
     iFrameBridge.previewElementsData.forEach((element) => {
-        if (element.position.zIndex > 1) return;
+        if (element.position.zIndex > 1) {
+            return;
+        }
 
         const elementBottom = element.position.top + element.position.height;
         if (elementBottom > bottomMostElementPosition) {

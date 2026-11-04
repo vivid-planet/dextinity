@@ -1,4 +1,4 @@
-import { type S3ClientConfig } from "@aws-sdk/client-s3";
+import type { S3ClientConfig } from "@aws-sdk/client-s3";
 
 export interface BlobStorageS3Config {
     driver: "s3";

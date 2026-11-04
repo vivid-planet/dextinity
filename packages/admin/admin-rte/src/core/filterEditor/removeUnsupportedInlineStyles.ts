@@ -1,5 +1,5 @@
-import { type FilterEditorStateBeforeUpdateFn, type SupportedThings } from "../Rte";
-import { type InlineStyleType } from "../types";
+import type { FilterEditorStateBeforeUpdateFn, SupportedThings } from "../Rte";
+import type { InlineStyleType } from "../types";
 import removeInlineStyles from "./utils/removeInlineStyles";
 
 const removeUnsupportedInlineStyles: FilterEditorStateBeforeUpdateFn = (newState, { supports }) => {

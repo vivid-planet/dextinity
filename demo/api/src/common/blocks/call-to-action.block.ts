@@ -8,7 +8,7 @@ import {
     ChildBlockInput,
     createBlock,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { IsEnum } from "class-validator";
 
 import { TextLinkBlock } from "./text-link.block";

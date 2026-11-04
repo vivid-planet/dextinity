@@ -1,15 +1,12 @@
-import { messages } from "@comet/admin";
-import { Domain } from "@comet/admin-icons";
+import { messages } from "@dextinity/admin";
+import { Domain } from "@dextinity/admin-icons";
 import { type SvgIconProps, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { type PropsWithChildren, type ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { type ContentScope, useContentScope } from "./Provider";
-
-const capitalizeString = (string: string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-};
+import { getContentScopeLabel } from "./utils/getContentScopeLabel";
 
 interface ContentScopeIndicatorProps {
     global?: boolean;
@@ -21,20 +18,11 @@ export const ContentScopeIndicator = ({ global = false, scope: passedScope, chil
     const { scope: contentScope, values } = useContentScope();
     const scope = passedScope ?? contentScope;
 
-    const findLabelForScopePart = (scopePart: keyof ContentScope) => {
-        const label = values.find((value) => {
-            return value.scope[scopePart] === scope[scopePart];
-        })?.label;
-        return (label && label[scopePart]) ?? (scope[scopePart] ? capitalizeString(scope[scopePart]) : undefined);
-    };
-
     let content: ReactNode;
     if (global) {
         content = <FormattedMessage {...messages.globalContentScope} />;
     } else {
-        const scopeParts = Object.keys(scope);
-        const scopeLabels = scopeParts.map((scopePart) => findLabelForScopePart(scopePart)).filter((label) => typeof label === "string") as string[];
-        content = scopeLabels.join(" / ");
+        content = getContentScopeLabel({ scope, values });
     }
 
     return (

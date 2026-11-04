@@ -1,13 +1,13 @@
-import { Edit } from "@comet/admin-icons";
+import { Edit } from "@dextinity/admin-icons";
 import { Box, Typography } from "@mui/material";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 
-import { type DateRange, Future_DateRangePicker } from "../DateRangePicker";
+import { type DateRange, DateRangePicker } from "../DateRangePicker";
 
-type Story = StoryObj<typeof Future_DateRangePicker>;
-const config: Meta<typeof Future_DateRangePicker> = {
-    component: Future_DateRangePicker,
+type Story = StoryObj<typeof DateRangePicker>;
+const config: Meta<typeof DateRangePicker> = {
+    component: DateRangePicker,
     title: "components/dateTime/DateRangePicker",
 };
 
@@ -21,14 +21,14 @@ export default config;
 export const Default: Story = {
     render: (args) => {
         const [value, setValue] = useState<DateRange | undefined>({ start: "2024-01-15", end: "2024-01-30" });
-        return <Future_DateRangePicker {...args} value={value} onChange={setValue} />;
+        return <DateRangePicker {...args} value={value} onChange={setValue} />;
     },
 };
 
 export const FullWidth: Story = {
     render: (args) => {
         const [value, setValue] = useState<DateRange | undefined>({ start: "2024-01-15", end: "2024-01-30" });
-        return <Future_DateRangePicker {...args} fullWidth value={value} onChange={setValue} />;
+        return <DateRangePicker {...args} fullWidth value={value} onChange={setValue} />;
     },
 };
 
@@ -45,7 +45,7 @@ export const FullWidth: Story = {
 export const Required: Story = {
     render: (args) => {
         const [value, setValue] = useState<DateRange | undefined>({ start: "2024-01-15", end: "2024-01-30" });
-        return <Future_DateRangePicker {...args} required value={value} onChange={setValue} />;
+        return <DateRangePicker {...args} required value={value} onChange={setValue} />;
     },
 };
 
@@ -60,7 +60,7 @@ export const Required: Story = {
 export const Disabled: Story = {
     render: (args) => {
         const [value, setValue] = useState<DateRange | undefined>({ start: "2024-01-15", end: "2024-01-30" });
-        return <Future_DateRangePicker {...args} disabled value={value} onChange={setValue} />;
+        return <DateRangePicker {...args} disabled value={value} onChange={setValue} />;
     },
 };
 
@@ -75,7 +75,7 @@ export const Disabled: Story = {
 export const ReadOnly: Story = {
     render: (args) => {
         const [value, setValue] = useState<DateRange | undefined>({ start: "2024-01-15", end: "2024-01-30" });
-        return <Future_DateRangePicker {...args} readOnly value={value} onChange={setValue} />;
+        return <DateRangePicker {...args} readOnly value={value} onChange={setValue} />;
     },
 };
 
@@ -91,7 +91,7 @@ export const WithCustomIcon: Story = {
     render: (args) => {
         const [value, setValue] = useState<DateRange | undefined>({ start: "2024-01-15", end: "2024-01-30" });
         return (
-            <Future_DateRangePicker
+            <DateRangePicker
                 {...args}
                 value={value}
                 onChange={setValue}
@@ -120,7 +120,7 @@ export const WithDateRestrictions: Story = {
     },
     render: (args) => {
         const [value, setValue] = useState<DateRange | undefined>();
-        return <Future_DateRangePicker {...args} label="Future Date Range Only" minDate={args.minDate} value={value} onChange={setValue} />;
+        return <DateRangePicker {...args} label="Future Date Range Only" minDate={args.minDate} value={value} onChange={setValue} />;
     },
 };
 
@@ -138,8 +138,8 @@ export const MultiplePickers: Story = {
         return (
             <Box display="flex" flexDirection="column" gap={4}>
                 <Typography variant="h5">Date Range Selection</Typography>
-                <Future_DateRangePicker {...args} label="Vacation Period" fullWidth value={vacation} onChange={setVacation} />
-                <Future_DateRangePicker {...args} label="Project Duration" fullWidth value={project} onChange={setProject} />
+                <DateRangePicker {...args} label="Vacation Period" fullWidth value={vacation} onChange={setVacation} />
+                <DateRangePicker {...args} label="Project Duration" fullWidth value={project} onChange={setProject} />
             </Box>
         );
     },

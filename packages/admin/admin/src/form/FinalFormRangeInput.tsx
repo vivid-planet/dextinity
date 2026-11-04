@@ -1,19 +1,14 @@
 import { FormControl, InputBase, Slider, type SliderProps } from "@mui/material";
 import { type ComponentsOverrides, css, type Theme, useThemeProps } from "@mui/material/styles";
 import { type ReactNode, useEffect, useState } from "react";
-import { type FieldRenderProps } from "react-final-form";
+import type { FieldRenderProps } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 export type FinalFormRangeInputClassKey =
-    | "root"
-    | "disableSlider"
-    | "inputsWrapper"
-    | "inputFieldsSeparatorContainer"
-    | "sliderWrapper"
-    | "inputFieldContainer";
+    "root" | "disableSlider" | "inputsWrapper" | "inputFieldsSeparatorContainer" | "sliderWrapper" | "inputFieldContainer";
 
 type OwnerState = {
     disableSlider: boolean;
@@ -34,10 +29,12 @@ const InputsWrapper = createComponentSlot("div")<FinalFormRangeInputClassKey, Ow
         align-items: center;
         display: flex;
 
-        ${!ownerState.disableSlider &&
-        css`
-            margin-bottom: ${theme.spacing(3)};
-        `}
+        ${
+            !ownerState.disableSlider &&
+            css`
+                margin-bottom: ${theme.spacing(3)};
+            `
+        }
     `,
 );
 
@@ -72,7 +69,8 @@ const InputFieldContainer = createComponentSlot("div")<FinalFormRangeInputClassK
 `);
 
 export interface FinalFormRangeInputProps
-    extends FieldRenderProps<{ min: number; max: number }, HTMLInputElement>,
+    extends
+        FieldRenderProps<{ min: number; max: number }, HTMLInputElement>,
         ThemedComponentBaseProps<{
             root: "div";
             inputsWrapper: "div";
@@ -96,14 +94,14 @@ export function FinalFormRangeInput(inProps: FinalFormRangeInputProps) {
         max,
         startAdornment,
         endAdornment,
-        separator = <FormattedMessage id="comet.rangeInput.separator" defaultMessage="to" />,
+        separator = <FormattedMessage id="dextinity.rangeInput.separator" defaultMessage="to" />,
         disableSlider,
         sliderProps,
         input: { name, onChange, value: fieldValue },
         slotProps,
         disabled,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminFinalFormRangeInput" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminFinalFormRangeInput" });
 
     const [internalMinInput, setInternalMinInput] = useState(fieldValue.min || undefined);
     const [internalMaxInput, setInternalMaxInput] = useState(fieldValue.max || undefined);
@@ -213,12 +211,12 @@ export function FinalFormRangeInput(inProps: FinalFormRangeInputProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFinalFormRangeInput: FinalFormRangeInputClassKey;
+        DextinityAdminFinalFormRangeInput: FinalFormRangeInputClassKey;
     }
 
     interface Components {
-        CometAdminFinalFormRangeInput?: {
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFinalFormRangeInput"];
+        DextinityAdminFinalFormRangeInput?: {
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFinalFormRangeInput"];
         };
     }
 }

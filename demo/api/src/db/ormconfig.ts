@@ -1,6 +1,6 @@
-import { migrationsList as brevoMigrationsList } from "@comet/brevo-api";
-import { createMigrationsList, createOrmConfig } from "@comet/cms-api";
-import { TextType, Type } from "@mikro-orm/core";
+import { migrationsList as brevoMigrationsList } from "@dextinity/brevo-api";
+import { createMigrationsList, createOrmConfig } from "@dextinity/cms-api";
+import { DataloaderType, TextType, Type } from "@mikro-orm/core";
 import { defineConfig, EntityCaseNamingStrategy } from "@mikro-orm/postgresql";
 import path from "path";
 
@@ -18,6 +18,8 @@ export const ormConfig = createOrmConfig(
         },
         namingStrategy: EntityCaseNamingStrategy,
         debug: false,
+        connect: process.env.MIKRO_ORM_NO_CONNECT !== "true",
+        dataloader: DataloaderType.ALL,
         discovery: {
             getMappedType(type: string, platform) {
                 // Map all string types to TEXT instead of VARCHAR

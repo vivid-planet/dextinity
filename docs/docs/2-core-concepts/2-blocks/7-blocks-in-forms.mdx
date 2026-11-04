@@ -33,10 +33,10 @@ The states and transitions can be viewed [here](/docs/core-concepts/blocks/lifec
 ## Create a Final Form component for the block
 
 The block's `AdminComponent` API (`state`, `updateState`) must be converted to the `Field` API (`input.value`, `input.onChange`).
-Use the [createFinalFormBlock](https://github.com/vivid-planet/comet/blob/main/packages/admin/cms-admin/src/blocks/form/createFinalFormBlock.tsx) helper for this:
+Use the [createFinalFormBlock](https://github.com/vivid-planet/dextinity/blob/main/packages/admin/cms-admin/src/blocks/form/createFinalFormBlock.tsx) helper for this:
 
 ```tsx
-import { createFinalFormBlock } from "@comet/cms-admin";
+import { createFinalFormBlock } from "@dextinity/cms-admin";
 
 const FinalFormDamImageBlock = createFinalFormBlock(DamImageBlock);
 ```
@@ -67,7 +67,7 @@ If a product exists (i.e., in edit mode), transform the block input to the block
 When creating a new product, use the block's default values:
 
 ```tsx
-import { BlockState } from "@comet/cms-admin";
+import { BlockState } from "@dextinity/cms-admin";
 import isEqual from "lodash.isequal";
 
 type FormValues = Omit<GQLProductFormFragment, "image"> & {

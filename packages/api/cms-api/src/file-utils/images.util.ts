@@ -1,6 +1,9 @@
 import { mediaType } from "@hapi/accept";
+import mime from "mime";
 
+import { Extension } from "../imgproxy/imgproxy.enum";
 import { FocalPoint } from "./focal-point.enum";
+import { BASIC_TYPES, JPEG } from "./images.constants";
 
 interface ImageDimensions {
     width: number;
@@ -59,17 +62,37 @@ export function getCenteredPosition(crop: ImageDimensions, area: ImageDimensions
     const focalPoint = getFocalPoint(area, focalPointPosition);
 
     let x = Math.max(focalPoint.x - crop.width / 2, 0);
-    if (x + crop.width > area.width) x -= x + crop.width - area.width;
-    if (x < 0) x = 0; // Can happen because width is rounded and x not
+    if (x + crop.width > area.width) {
+        x -= x + crop.width - area.width;
+    }
+    if (x < 0) {
+        x = 0;
+    } // Can happen because width is rounded and x not
 
     let y = Math.max(focalPoint.y - crop.height / 2, 0);
-    if (y + crop.height > area.height) y -= y + crop.height - area.height;
-    if (y < 0) y = 0; // Can happen because height is rounded and y not
+    if (y + crop.height > area.height) {
+        y -= y + crop.height - area.height;
+    }
+    if (y < 0) {
+        y = 0;
+    } // Can happen because height is rounded and y not
 
     return { x: x + area.x, y: y + area.y };
 }
 
-export function getSupportedMimeType(options: string[], accept = ""): string {
+export function getSupportedMimeType(options: string[], accept = ""): string | undefined {
     const mimeType = mediaType(accept, options);
-    return accept.includes(mimeType) ? mimeType : "";
+    if (!mimeType) {
+        return undefined;
+    }
+    return accept.includes(mimeType) ? mimeType : undefined;
+}
+
+export function getBasicImageMimeType(mimetype: string): string {
+    return getSupportedMimeType(BASIC_TYPES, mimetype) ?? JPEG;
+}
+
+export function getBasicImageExtension(mimetype: string): Extension {
+    const basicMimeType = getBasicImageMimeType(mimetype);
+    return basicMimeType === JPEG ? Extension.JPG : (mime.getExtension(basicMimeType) as Extension);
 }

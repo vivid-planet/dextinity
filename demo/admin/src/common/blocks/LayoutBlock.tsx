@@ -1,5 +1,5 @@
-import { Field } from "@comet/admin";
-import { Hamburger, Image } from "@comet/admin-icons";
+import { Field } from "@dextinity/admin";
+import { Hamburger, Image } from "@dextinity/admin-icons";
 import {
     BlockCategory,
     BlocksFinalForm,
@@ -10,8 +10,8 @@ import {
     createCompositeBlock,
     createCompositeBlockField,
     FinalFormLayoutSelect,
-} from "@comet/cms-admin";
-import { type LayoutBlockData } from "@src/blocks.generated";
+} from "@dextinity/cms-admin";
+import type { LayoutBlockData } from "@src/blocks.generated";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { FormattedMessage } from "react-intl";
 

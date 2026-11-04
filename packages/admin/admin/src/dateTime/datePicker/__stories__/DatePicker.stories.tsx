@@ -1,13 +1,13 @@
-import { Edit } from "@comet/admin-icons";
+import { Edit } from "@dextinity/admin-icons";
 import { Box, Typography } from "@mui/material";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 
-import { Future_DatePicker } from "../DatePicker";
+import { DatePicker } from "../DatePicker";
 
-type Story = StoryObj<typeof Future_DatePicker>;
-const config: Meta<typeof Future_DatePicker> = {
-    component: Future_DatePicker,
+type Story = StoryObj<typeof DatePicker>;
+const config: Meta<typeof DatePicker> = {
+    component: DatePicker,
     title: "components/dateTime/DatePicker",
 };
 
@@ -21,14 +21,14 @@ export default config;
 export const Default: Story = {
     render: (args) => {
         const [value, setValue] = useState<string | undefined>("2024-01-15");
-        return <Future_DatePicker {...args} value={value} onChange={setValue} />;
+        return <DatePicker {...args} value={value} onChange={setValue} />;
     },
 };
 
 export const FullWidth: Story = {
     render: (args) => {
         const [value, setValue] = useState<string | undefined>("2024-01-15");
-        return <Future_DatePicker {...args} fullWidth value={value} onChange={setValue} />;
+        return <DatePicker {...args} fullWidth value={value} onChange={setValue} />;
     },
 };
 
@@ -45,7 +45,7 @@ export const FullWidth: Story = {
 export const Required: Story = {
     render: (args) => {
         const [value, setValue] = useState<string | undefined>("2024-01-15");
-        return <Future_DatePicker {...args} required value={value} onChange={setValue} />;
+        return <DatePicker {...args} required value={value} onChange={setValue} />;
     },
 };
 
@@ -60,7 +60,7 @@ export const Required: Story = {
 export const Disabled: Story = {
     render: (args) => {
         const [value, setValue] = useState<string | undefined>("2024-01-15");
-        return <Future_DatePicker {...args} disabled value={value} onChange={setValue} />;
+        return <DatePicker {...args} disabled value={value} onChange={setValue} />;
     },
 };
 
@@ -75,7 +75,7 @@ export const Disabled: Story = {
 export const ReadOnly: Story = {
     render: (args) => {
         const [value, setValue] = useState<string | undefined>("2024-01-15");
-        return <Future_DatePicker {...args} readOnly value={value} onChange={setValue} />;
+        return <DatePicker {...args} readOnly value={value} onChange={setValue} />;
     },
 };
 
@@ -91,7 +91,7 @@ export const WithCustomIcon: Story = {
     render: (args) => {
         const [value, setValue] = useState<string | undefined>("2024-01-15");
         return (
-            <Future_DatePicker
+            <DatePicker
                 {...args}
                 value={value}
                 onChange={setValue}
@@ -120,7 +120,7 @@ export const WithDateRestrictions: Story = {
     },
     render: (args) => {
         const [value, setValue] = useState<string | undefined>();
-        return <Future_DatePicker {...args} label="Future Date Only" minDate={args.minDate} value={value} onChange={setValue} />;
+        return <DatePicker {...args} label="Future Date Only" minDate={args.minDate} value={value} onChange={setValue} />;
     },
 };
 
@@ -138,8 +138,8 @@ export const MultiplePickers: Story = {
         return (
             <Box display="flex" flexDirection="column" gap={4}>
                 <Typography variant="h5">Date Range Selection</Typography>
-                <Future_DatePicker {...args} label="Start Date" fullWidth value={startDate} onChange={setStartDate} />
-                <Future_DatePicker {...args} label="End Date" fullWidth value={endDate} onChange={setEndDate} />
+                <DatePicker {...args} label="Start Date" fullWidth value={startDate} onChange={setStartDate} />
+                <DatePicker {...args} label="End Date" fullWidth value={endDate} onChange={setEndDate} />
             </Box>
         );
     },

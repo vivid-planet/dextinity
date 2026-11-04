@@ -1,14 +1,16 @@
 {
-    "$schema": "https://unpkg.com/knip@5/schema.json",
+    "$schema": "https://unpkg.com/knip@6/schema.json",
+    "ignore": ["**/lib/**"],
     "workspaces": {
         ".": {
             "entry": ["dev-pm.config.ts"],
             "project": ["*.{js,ts,tsx}"],
             "ignoreDependencies": ["open-cli"],
-            "ignoreBinaries": ["oauth2-proxy"]
+            "ignoreBinaries": ["oauth2-proxy", "peers", "playwright"]
         },
         "packages/cli": {
-            "project": ["./src/**/*.{ts,tsx}"]
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreBinaries": ["op"]
         },
         "packages/eslint-config": {
             "ignore": ["*"],
@@ -21,7 +23,7 @@
             "project": []
         },
         "docs": {
-            "ignore": ["./docs/**/*.mdx", "./src/components/StorybookAdminComponentDocsIframe.tsx"],
+            "ignore": ["./docs/**/*.mdx", ".docusaurus/**"],
             "ignoreDependencies": ["@algolia/client-search", "search-insights"]
         },
         "packages/admin/admin-babel-preset": {
@@ -35,8 +37,8 @@
         },
         "packages/admin/admin": {
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignoreDependencies": ["@mui/x-data-grid-pro", "@mui/x-data-grid-premium", "@mui/x-date-pickers-pro", "msw"],
-            "ignore": [".storybook/middleware.js"]
+            "ignore": [".storybook/public/mockServiceWorker.js"],
+            "ignoreDependencies": ["@mui/x-data-grid-premium"]
         },
         "packages/admin/admin-color-picker": {
             "project": ["./src/**/*.{ts,tsx}"]
@@ -49,7 +51,7 @@
         },
         "packages/admin/cms-admin": {
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignore": ["**/*.generated.ts"]
+            "ignore": ["**/*.generated.ts", ".storybook/public/mockServiceWorker.js"]
         },
         "packages/admin/admin-generator": {
             "project": ["./src/**/*.{ts,tsx}"]
@@ -60,11 +62,12 @@
         },
         "packages/api/cms-api": {
             "entry": ["./src/**/migrations/*.ts"],
-            "project": ["./src/**/*.{ts,tsx}"],
-            "ignoreDependencies": ["@sentry/node"]
+            "project": ["./src/**/*.{ts,tsx}"]
         },
         "packages/api/api-generator": {
-            "project": ["./src/**/*.{ts,tsx}"]
+            "entry": ["./src/**/__tests__/**/*.ts"],
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreDependencies": ["tsconfig-paths"]
         },
         "packages/api/brevo-api": {
             "project": ["./src/**/*.{ts,tsx}"]
@@ -82,7 +85,7 @@
             "ignore": ["./src/**/*.generated.ts"]
         },
         "demo/admin": {
-            "entry": ["./src/loader.ts", "./src/**/*.cometGen.{ts,tsx}"],
+            "entry": ["./src/loader.ts", "./src/**/*.dextinityGen.{ts,tsx}"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/generated/**", "**/graphql.generated.ts", "**/*.generated.ts"],
             "ignoreDependencies": ["@swc/plugin-emotion", "cosmiconfig-toml-loader", "@babel/core"]
@@ -96,16 +99,18 @@
                 "./src/db/migrations/**/*.ts",
                 "./src/auth/user.interface.ts",
                 "./src/auth/permission.interface.ts",
-                "./src/reload.ts"
+                "./src/reload.ts",
+                "./src/tracing.dev.ts",
+                "./src/tracing.production.ts"
             ],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@as-integrations/express5"],
-            "ignore": ["./src/**/generated/**", "**/graphql.generated.ts"]
+            "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
         },
         "demo/site": {
-            "entry": ["./src/app/**", "./cache-handler.ts", "./server.ts", "./opentelemetry-metrics.ts"],
+            "entry": ["./src/app/**", "./cache-handler.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignoreDependencies": ["@babel/core"],
+            "ignoreDependencies": ["@babel/core", "@types/grecaptcha", "mjml"],
             "ignore": ["**/*.generated.ts"]
         },
         "storybook": {

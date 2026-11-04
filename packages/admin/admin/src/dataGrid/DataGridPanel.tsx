@@ -1,4 +1,4 @@
-import { Add, Check, Close, Reset } from "@comet/admin-icons";
+import { Add, Check, Close, Reset } from "@dextinity/admin-icons";
 import {
     type ComponentsOverrides,
     css,
@@ -25,17 +25,18 @@ import {
     useGridRootProps,
     useGridSelector,
 } from "@mui/x-data-grid";
-import { type DataGridProcessedProps } from "@mui/x-data-grid/internals";
+import type { DataGridProcessedProps } from "@mui/x-data-grid/internals";
 import { type ReactNode, useCallback, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { Button } from "../common/buttons/Button";
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 const panelTypeTitle: Record<GridPreferencePanelsValue, ReactNode> = {
-    [GridPreferencePanelsValue.filters]: <FormattedMessage id="dataGrid.panel.filters" defaultMessage="Filters" />,
-    [GridPreferencePanelsValue.columns]: <FormattedMessage id="dataGrid.panel.columns" defaultMessage="Columns" />,
+    [GridPreferencePanelsValue.filters]: <FormattedMessage id="dextinity.dataGrid.panel.filters" defaultMessage="Filters" />,
+    [GridPreferencePanelsValue.columns]: <FormattedMessage id="dextinity.dataGrid.panel.columns" defaultMessage="Columns" />,
+    [GridPreferencePanelsValue.aiAssistant]: <FormattedMessage id="dextinity.dataGrid.panel.aiAssistant" defaultMessage="AI Assistant" />,
 };
 
 export type DataGridPanelClassKey =
@@ -87,12 +88,19 @@ export type DataGridPanelProps = GridPanelProps &
         };
     };
 
-const addFilterText = <FormattedMessage id="dataGrid.panel.addFilter" defaultMessage="Add filter" />;
+const addFilterText = <FormattedMessage id="dextinity.dataGrid.panel.addFilter" defaultMessage="Add filter" />;
 
 let lastAddedFilterItemId = 0;
 
 export const DataGridPanel = (inProps: DataGridPanelProps) => {
-    const { children, open, slotProps, iconMapping = {} } = useThemeProps({ props: inProps, name: "CometAdminDataGridPanel" });
+    const {
+        children,
+        open,
+        slotProps,
+        iconMapping = {},
+        onClose,
+        ...restProps
+    } = useThemeProps({ props: inProps, name: "DextinityAdminDataGridPanel" });
     const apiRef = useGridApiContext();
     const filterModel = useGridSelector(apiRef, gridFilterModelSelector);
     const filterableColumns = useGridSelector(apiRef, gridFilterableColumnDefinitionsSelector);
@@ -153,31 +161,27 @@ export const DataGridPanel = (inProps: DataGridPanelProps) => {
     }, [apiRef, initialColumnVisibilityModel]);
 
     const closeDialog = useCallback(() => {
-        if (openedPanelValue === GridPreferencePanelsValue.filters) {
-            apiRef.current.hideFilterPanel();
-        } else {
-            apiRef.current.hidePreferences();
-        }
-    }, [apiRef, openedPanelValue]);
+        onClose?.();
+    }, [onClose]);
 
     const theme = useTheme();
     const renderFullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
     const resetFiltersButton = (
         <ResetFiltersButton variant="outlined" startIcon={resetFiltersIcon} onClick={resetFilters} {...slotProps?.resetFiltersButton}>
-            <FormattedMessage id="dataGrid.panel.resetFilters" defaultMessage="Reset filters" />
+            <FormattedMessage id="dextinity.dataGrid.panel.resetFilters" defaultMessage="Reset filters" />
         </ResetFiltersButton>
     );
 
     const resetColumnsButton = (
         <ResetColumnsButton variant="outlined" startIcon={resetColumnsIcon} onClick={resetColumns} {...slotProps?.resetColumnsButton}>
-            <FormattedMessage id="dataGrid.panel.resetColumns" defaultMessage="Reset columns" />
+            <FormattedMessage id="dextinity.dataGrid.panel.resetColumns" defaultMessage="Reset columns" />
         </ResetColumnsButton>
     );
 
     const applyButton = (
         <ApplyButton startIcon={applyIcon} onClick={closeDialog} {...slotProps?.applyButton}>
-            <FormattedMessage id="dataGrid.panel.apply" defaultMessage="Apply" />
+            <FormattedMessage id="dextinity.dataGrid.panel.apply" defaultMessage="Apply" />
         </ApplyButton>
     );
 
@@ -224,7 +228,7 @@ export const DataGridPanel = (inProps: DataGridPanelProps) => {
     }
 
     return (
-        <DesktopGridPanel ownerState={rootProps} open={open} {...slotProps?.desktopGridPanel}>
+        <DesktopGridPanel ownerState={rootProps} open={open} onClose={onClose} {...slotProps?.desktopGridPanel} {...restProps}>
             {children}
             <DesktopPanelFooterDivider {...slotProps?.desktopPanelFooterDivider} />
             <DesktopPanelFooter {...slotProps?.desktopPanelFooter}>
@@ -254,15 +258,26 @@ export const DataGridPanel = (inProps: DataGridPanelProps) => {
 const DesktopGridPanel = createComponentSlot(GridPanel)<DataGridPanelClassKey, DataGridProcessedProps>({
     componentName: "DataGridPanel",
     slotName: "desktopGridPanel",
-})(css`
-    .MuiDataGrid-panelHeader,
-    .MuiDataGrid-columnsManagementHeader,
-    .MuiDataGrid-panelFooter,
-    .MuiDataGrid-columnsManagementFooter {
-        // Hide MUIs header and footer so we can add our own with a better structure for styling
-        display: none;
-    }
-`);
+})(
+    ({ theme }) => css`
+        .MuiDataGrid-panelHeader,
+        .MuiDataGrid-columnsManagementHeader,
+        .MuiDataGrid-panelFooter,
+        .MuiDataGrid-columnsManagementFooter {
+            // Hide MUIs header and footer so we can add our own with a better structure for styling
+            display: none;
+        }
+
+        .MuiDataGrid-paper {
+            border: 1px solid ${theme.palette.grey[100]};
+            box-shadow: ${theme.shadows[4]};
+            border-radius: 4px;
+            max-height: none;
+            flex-direction: column;
+            padding: 0;
+        }
+    `,
+);
 
 const DesktopPanelFooterDivider = createComponentSlot(Divider)<DataGridPanelClassKey>({
     componentName: "DataGridPanel",
@@ -277,6 +292,7 @@ const DesktopPanelFooter = createComponentSlot("div")<DataGridPanelClassKey>({
         display: flex;
         justify-content: space-between;
         padding: ${theme.spacing(4)};
+        gap: ${theme.spacing(3)};
     `,
 );
 
@@ -397,17 +413,17 @@ const ApplyButton = createComponentSlot(Button)<DataGridPanelClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminDataGridPanel: DataGridPanelProps;
+        DextinityAdminDataGridPanel: DataGridPanelProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminDataGridPanel: DataGridPanelClassKey;
+        DextinityAdminDataGridPanel: DataGridPanelClassKey;
     }
 
     interface Components {
-        CometAdminDataGridPanel?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDataGridPanel"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDataGridPanel"];
+        DextinityAdminDataGridPanel?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDataGridPanel"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDataGridPanel"];
         };
     }
 }

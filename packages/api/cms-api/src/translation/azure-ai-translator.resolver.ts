@@ -6,6 +6,10 @@ import { RequiredPermission } from "../user-permissions/decorators/required-perm
 import { AzureAiTranslatorConfig } from "./azure-ai-translator.config";
 import { AZURE_AI_TRANSLATOR_CONFIG } from "./azure-ai-translator.constants";
 import { AzureAiTranslationInput } from "./dto/azure-ai-translation.input";
+import { AzureAiTranslationBatchInput } from "./dto/azure-ai-translation-batch.input";
+
+// Azure Translator API limits: max 25 texts and 50,000 characters per request
+const AZURE_BATCH_SIZE = 25;
 
 @Resolver()
 @RequiredPermission(["translation"], { skipScopeCheck: true })
@@ -22,16 +26,12 @@ export class AzureAiTranslatorResolver {
     @Query(() => String)
     async azureAiTranslate(@Args("input") input: AzureAiTranslationInput): Promise<string> {
         const translateResponse = await this.translationClient.path("/translate").post({
-            body: [{ text: input.text }],
-            queryParameters: {
-                to: input.targetLanguage,
-                textType: "html",
-            },
+            body: { inputs: [{ text: input.text, textType: "html", targets: [{ language: input.targetLanguage }] }] },
         });
 
         if (isUnexpected(translateResponse)) {
             // https://learn.microsoft.com/en-us/azure/ai-services/translator/reference/v3-0-reference#errors
-            if (translateResponse.body.error.code === 403001) {
+            if (String(translateResponse.body.error.code) === "403001") {
                 throw new Error("Translation failed. Exceeded free quota.");
             } else if (translateResponse.status === "429") {
                 throw new Error("Translation failed. Exceeded request limit.");
@@ -42,7 +42,39 @@ export class AzureAiTranslatorResolver {
             );
         }
 
-        const result = translateResponse.body[0].translations[0].text;
+        const result = translateResponse.body.value[0].translations[0].text;
         return result;
+    }
+
+    @Query(() => [String])
+    async azureAiTranslateBatch(@Args("input") input: AzureAiTranslationBatchInput): Promise<string[]> {
+        const results: string[] = [];
+
+        // Chunk texts to stay within Azure API limits
+        for (let i = 0; i < input.texts.length; i += AZURE_BATCH_SIZE) {
+            const chunk = input.texts.slice(i, i + AZURE_BATCH_SIZE);
+
+            const translateResponse = await this.translationClient.path("/translate").post({
+                body: { inputs: chunk.map((text) => ({ text, textType: "html", targets: [{ language: input.targetLanguage }] })) },
+            });
+
+            if (isUnexpected(translateResponse)) {
+                if (String(translateResponse.body.error.code) === "403001") {
+                    throw new Error("Translation failed. Exceeded free quota.");
+                } else if (translateResponse.status === "429") {
+                    throw new Error("Translation failed. Exceeded request limit.");
+                }
+
+                throw new Error(
+                    `Translation failed. Status: ${JSON.stringify(translateResponse.status)} Response Body: ${JSON.stringify(translateResponse.body)}`,
+                );
+            }
+
+            for (const item of translateResponse.body.value) {
+                results.push(item.translations[0].text);
+            }
+        }
+
+        return results;
     }
 }

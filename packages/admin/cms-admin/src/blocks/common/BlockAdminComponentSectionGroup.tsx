@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { type PropsWithChildren, type ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 import { HiddenInSubroute } from "./HiddenInSubroute";
 

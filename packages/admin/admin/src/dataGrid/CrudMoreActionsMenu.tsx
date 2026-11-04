@@ -1,4 +1,4 @@
-import { MoreVertical } from "@comet/admin-icons";
+import { MoreVertical } from "@dextinity/admin-icons";
 import {
     Chip,
     type ComponentsOverrides,
@@ -15,7 +15,7 @@ import {
     Typography,
     useTheme,
 } from "@mui/material";
-import { type Maybe } from "graphql/jsutils/Maybe";
+import type { Maybe } from "graphql/jsutils/Maybe";
 import {
     type ComponentProps,
     createContext,
@@ -31,7 +31,7 @@ import { FormattedMessage } from "react-intl";
 
 import { Button } from "../common/buttons/Button";
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 export type CrudMoreActionsMenuClassKey = "root" | "group" | "divider" | "button" | "chip" | "menuItem";
 
@@ -40,15 +40,14 @@ interface ActionItem extends ComponentProps<typeof MenuItem> {
     icon?: ReactNode;
 }
 
-export interface CrudMoreActionsMenuProps
-    extends ThemedComponentBaseProps<{
-        menu: typeof Menu;
-        menuItem: typeof MenuItem;
-        button: typeof Button;
-        group: typeof CrudMoreActionsGroup;
-        divider: typeof Divider;
-        chip: typeof Chip;
-    }> {
+export interface CrudMoreActionsMenuProps extends ThemedComponentBaseProps<{
+    menu: typeof Menu;
+    menuItem: typeof MenuItem;
+    button: typeof Button;
+    group: typeof CrudMoreActionsGroup;
+    divider: typeof Divider;
+    chip: typeof Chip;
+}> {
     selectionSize?: number;
     overallActions?: Maybe<ActionItem | ReactElement>[];
     selectiveActions?: Maybe<ActionItem | ReactElement>[];
@@ -143,7 +142,7 @@ export function CrudMoreActionsMenu({ slotProps, overallActions, selectiveAction
     return (
         <CrudMoreActionsMenuContext.Provider value={{ closeMenu: handleClose }}>
             <MoreActionsButton variant="textDark" endIcon={<MoreVertical />} {...buttonProps} onClick={handleClick} responsive>
-                <FormattedMessage id="comet.crudMoreActions.title" defaultMessage="More" />
+                <FormattedMessage id="dextinity.crudMoreActions.title" defaultMessage="More" />
                 {!!selectionSize && <MoreActionsSelectedItemsChip size="small" color="primary" {...chipProps} label={selectionSize} />}
             </MoreActionsButton>
             <Menu
@@ -160,13 +159,15 @@ export function CrudMoreActionsMenu({ slotProps, overallActions, selectiveAction
                     <CrudMoreActionsGroup
                         groupTitle={
                             hasSelectiveActions ? (
-                                <FormattedMessage id="comet.crudMoreActions.overallActions" defaultMessage="Overall actions" />
+                                <FormattedMessage id="dextinity.crudMoreActions.overallActions" defaultMessage="Overall actions" />
                             ) : undefined
                         }
                         {...groupProps}
                     >
                         {overallActions.map((item, index) => {
-                            if (!item) return null;
+                            if (!item) {
+                                return null;
+                            }
 
                             if (isValidElement(item)) {
                                 return item;
@@ -193,13 +194,15 @@ export function CrudMoreActionsMenu({ slotProps, overallActions, selectiveAction
                     <CrudMoreActionsGroup
                         groupTitle={
                             hasOverallActions ? (
-                                <FormattedMessage id="comet.crudMoreActions.selectiveActions" defaultMessage="Selective actions" />
+                                <FormattedMessage id="dextinity.crudMoreActions.selectiveActions" defaultMessage="Selective actions" />
                             ) : undefined
                         }
                         {...groupProps}
                     >
                         {selectiveActions.map((item, index) => {
-                            if (!item) return;
+                            if (!item) {
+                                return;
+                            }
 
                             if (isValidElement(item)) {
                                 return item;
@@ -229,17 +232,17 @@ export function CrudMoreActionsMenu({ slotProps, overallActions, selectiveAction
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminCrudMoreActionsMenu: CrudMoreActionsMenuProps;
+        DextinityAdminCrudMoreActionsMenu: CrudMoreActionsMenuProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminCrudMoreActionsMenu: CrudMoreActionsMenuClassKey;
+        DextinityAdminCrudMoreActionsMenu: CrudMoreActionsMenuClassKey;
     }
 
     interface Components {
-        CometAdminCrudMoreActionsMenu?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminCrudMoreActionsMenu"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminCrudMoreActionsMenu"];
+        DextinityAdminCrudMoreActionsMenu?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminCrudMoreActionsMenu"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminCrudMoreActionsMenu"];
         };
     }
 }

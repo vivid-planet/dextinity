@@ -2,17 +2,14 @@ name: Chromatic
 
 on:
     pull_request:
-        paths:
-            - packages/admin/admin/**
-        branches:
-            - main
-            - next
     push:
-        paths:
-            - packages/admin/admin/**
         branches:
             - main
             - next
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
     build:
@@ -21,28 +18,28 @@ jobs:
         steps:
             - run: echo "${{ github.actor }}"
 
-            - uses: actions/checkout@v5
+            - uses: actions/checkout@v7
               with:
-                  ref: ${{ github.event.pull_request.head.ref || github.ref }}
                   fetch-depth: 0
 
-            - uses: pnpm/action-setup@v4
+            - uses: ./.github/actions/setup
 
-            - name: Use Node.js 22.x
-              uses: actions/setup-node@v5
-              with:
-                  node-version: 22
-                  registry-url: "https://registry.npmjs.org"
-                  cache: "pnpm" # https://github.com/actions/setup-node/blob/main/docs/advanced-usage.md#caching-packages-dependencies
+            - run: pnpm --recursive --filter '@dextinity/*admin*' --filter '@dextinity/mail-react' --filter '@dextinity/eslint-plugin' --filter '@dextinity/cli' run build
 
-            - run: pnpm install --frozen-lockfile
-
-            - run: pnpm setup:ci
-
-            - run: pnpm --recursive --filter '@comet/*admin*' --filter '@comet/eslint-plugin' --filter '@comet/cli' run build
-
-            - name: Publish comet-admin to Chromatic
-              uses: chromaui/action@v1
+            - name: Publish dextinity-admin to Chromatic
+              uses: chromaui/action@v18
               with:
                   projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_ADMIN }}
                   workingDir: packages/admin/admin
+
+            - name: Publish dextinity-cms-admin to Chromatic
+              uses: chromaui/action@v18
+              with:
+                  projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_CMS_ADMIN }}
+                  workingDir: packages/admin/cms-admin
+
+            - name: Publish dextinity-mail-react to Chromatic
+              uses: chromaui/action@v18
+              with:
+                  projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_MAIL_REACT }}
+                  workingDir: packages/mail-react

@@ -1,4 +1,4 @@
-import { type Block, type BlockDataInterface, type BlockIndex, type BlockIndexItem } from "../block";
+import type { Block, BlockDataInterface, BlockIndex, BlockIndexItem } from "../block";
 import { FlatBlocks } from "../flat-blocks/flat-blocks";
 
 export function transformToBlockSaveIndex(block: Block, blockData: BlockDataInterface): BlockIndex {

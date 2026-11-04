@@ -1,7 +1,7 @@
-import { ExtractBlockInputFactoryProps } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { LinkListBlock } from "@src/common/blocks/link-list.block";
+import { faker } from "@src/db/fixtures/faker";
 import { TextLinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navigation/text-link-block-fixture.service";
 import { UserGroup } from "@src/user-groups/user-group";
 

@@ -1,12 +1,12 @@
 import { type RefObject, useEffect, useState } from "react";
 
-export const useTopOffset = (ref: RefObject<HTMLElement>) => {
+export const useTopOffset = (ref: RefObject<HTMLElement | null>) => {
     const [topOffset, setTopOffset] = useState(0);
 
     useEffect(() => {
         const updateTopOffset = () => {
             if (ref.current) {
-                setTopOffset(ref.current.getBoundingClientRect().top);
+                setTopOffset(ref.current.getBoundingClientRect().top + window.scrollY);
             }
         };
 

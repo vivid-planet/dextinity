@@ -11,7 +11,10 @@ import { EmptyDamScope } from "./empty-dam-scope";
 
 @InputType()
 export class FileFilterInput {
-    @Field({ nullable: true })
+    @Field({
+        nullable: true,
+        description: "Full-text search across file names. When set, the folder constraint is bypassed and results span the whole scope.",
+    })
     @IsOptional()
     @IsString()
     searchText?: string;
@@ -20,6 +23,15 @@ export class FileFilterInput {
     @IsOptional()
     @IsString({ each: true })
     mimetypes?: string[];
+
+    @Field(() => [ID], {
+        nullable: true,
+        description:
+            "Restrict the result to files with these IDs. When a non-empty list is provided, the folder constraint is bypassed and matches are returned regardless of which folder they live in.",
+    })
+    @IsOptional()
+    @IsUUID(4, { each: true })
+    ids?: string[];
 }
 
 export interface FileArgsInterface extends OffsetBasedPaginationArgs, SortArgs {
@@ -37,7 +49,11 @@ export function createFileArgs({ Scope }: { Scope: Type<DamScopeInterface> }): T
         @ValidateNested()
         scope: DamScopeInterface;
 
-        @Field(() => ID, { nullable: true })
+        @Field(() => ID, {
+            nullable: true,
+            description:
+                "Folder to list files from. When omitted, files at the scope root are returned. Ignored when filter.searchText or filter.ids is set.",
+        })
         @IsOptional()
         @IsUUID()
         folderId?: string;

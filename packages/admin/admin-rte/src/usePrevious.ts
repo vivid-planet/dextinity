@@ -7,7 +7,7 @@ type GenericOrUndefined<T> = T | undefined;
 export default function usePrevious<T>(value: T): GenericOrUndefined<T> {
     // The ref object is a generic container whose current property is mutable ...
     // ... and can hold any value, similar to an instance property on a class
-    const ref = useRef<T>();
+    const ref = useRef<T>(undefined);
 
     // Store current value in ref
     useEffect(() => {

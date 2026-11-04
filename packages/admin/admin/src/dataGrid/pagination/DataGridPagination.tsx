@@ -1,10 +1,10 @@
 import { type ComponentsOverrides, TablePagination, type TablePaginationProps, type Theme, type Typography, useThemeProps } from "@mui/material";
 import { gridPageCountSelector, gridPaginationSelector, useGridApiContext, useGridRootProps, useGridSelector } from "@mui/x-data-grid";
-import { type ThemedComponentBaseProps } from "helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "helpers/ThemedComponentBaseProps";
 import { type ChangeEvent, type FunctionComponent, useCallback } from "react";
 import { FormattedMessage } from "react-intl";
 
-import { PageInformation, Root } from "./DataGridPagination.styles";
+import { PageInformation, PageSizeFormControl, Root } from "./DataGridPagination.styles";
 import { DataGridPaginationActions } from "./paginationActions/DataGridPaginationActions";
 
 export type DataGridPaginationClassKey = "root" | "pageInformation";
@@ -21,7 +21,7 @@ export const DataGridPagination: FunctionComponent<DataGridPaginationProps> = (i
         slotProps = {},
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminDataGridPagination",
+        name: "DextinityAdminDataGridPagination",
     });
 
     const apiRef = useGridApiContext();
@@ -49,8 +49,8 @@ export const DataGridPagination: FunctionComponent<DataGridPaginationProps> = (i
         <Root sx={sx} className={className} {...slotProps.root}>
             <PageInformation variant="body2" {...slotProps.pageInformation}>
                 <FormattedMessage
-                    id="comet.dataGridPagination.pageInformation"
-                    defaultMessage="{itemsFrom}-{itemsTo} of {itemsTotal} items"
+                    id="dextinity.dataGridPagination.pageInformation"
+                    defaultMessage="{itemsFrom}-{itemsTo} of {itemsTotal, plural, one {# item} other {# items}}"
                     values={{
                         itemsFrom:
                             paginationState.rowCount === 0 ? 0 : paginationState.paginationModel.page * paginationState.paginationModel.pageSize + 1,
@@ -63,37 +63,41 @@ export const DataGridPagination: FunctionComponent<DataGridPaginationProps> = (i
                 />
             </PageInformation>
 
-            <TablePagination
-                ActionsComponent={DataGridPaginationActions}
-                component="div"
-                count={paginationState.rowCount}
-                labelDisplayedRows={() => {
-                    return null;
-                }}
-                labelRowsPerPage={<FormattedMessage defaultMessage="Items per page:" id="comet.dataGridPagination.itemsPerPageLabel" />}
-                page={paginationState.paginationModel.page <= pageCount ? paginationState.paginationModel.page : pageCount}
-                rowsPerPage={paginationState.paginationModel.pageSize}
-                rowsPerPageOptions={rootProps.pageSizeOptions?.includes(paginationState.paginationModel.pageSize) ? rootProps.pageSizeOptions : []}
-                onPageChange={handlePageChange}
-                onRowsPerPageChange={handlePageSizeChange}
-            />
+            <PageSizeFormControl>
+                <TablePagination
+                    ActionsComponent={DataGridPaginationActions}
+                    component="div"
+                    count={paginationState.rowCount}
+                    labelDisplayedRows={() => {
+                        return null;
+                    }}
+                    labelRowsPerPage={<FormattedMessage defaultMessage="Items per page:" id="dextinity.dataGridPagination.itemsPerPageLabel" />}
+                    page={paginationState.paginationModel.page <= pageCount ? paginationState.paginationModel.page : pageCount}
+                    rowsPerPage={paginationState.paginationModel.pageSize}
+                    rowsPerPageOptions={
+                        rootProps.pageSizeOptions?.includes(paginationState.paginationModel.pageSize) ? rootProps.pageSizeOptions : []
+                    }
+                    onPageChange={handlePageChange}
+                    onRowsPerPageChange={handlePageSizeChange}
+                />
+            </PageSizeFormControl>
         </Root>
     );
 };
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminDataGridPagination: DataGridPaginationProps;
+        DextinityAdminDataGridPagination: DataGridPaginationProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminDataGridPagination: DataGridPaginationClassKey;
+        DextinityAdminDataGridPagination: DataGridPaginationClassKey;
     }
 
     interface Components {
-        CometAdminDataGridPagination?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDataGridPagination"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDataGridPagination"];
+        DextinityAdminDataGridPagination?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDataGridPagination"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDataGridPagination"];
         };
     }
 }

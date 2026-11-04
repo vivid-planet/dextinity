@@ -1,5 +1,5 @@
-import { Button } from "@comet/admin";
-import { Check, Close, Delete, RteLink } from "@comet/admin-icons";
+import { Button } from "@dextinity/admin";
+import { Check, Close, Delete, RteLink } from "@dextinity/admin-icons";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -16,12 +16,12 @@ import { type MouseEvent, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { ControlButton } from "../../Controls/ControlButton";
-import { type IControlProps } from "../../types";
+import type { IControlProps } from "../../types";
 import findEntityDataInCurrentSelection from "../../utils/findEntityDataInCurrentSelection";
 import findEntityInCurrentSelection from "../../utils/findEntityInCurrentSelection";
 import selectionIsInOneBlock from "../../utils/selectionIsInOneBlock";
 import { ENTITY_TYPE } from "./Decorator";
-import { type ILinkProps } from "./EditorComponent";
+import type { ILinkProps } from "./EditorComponent";
 
 export default function ToolbarButton(props: IControlProps) {
     const [open, setOpen] = useState(false);
@@ -106,12 +106,12 @@ function LinkDialog(props: {
     return (
         <Dialog onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
             <DialogTitle>
-                <FormattedMessage id="comet.rte.extensions.link.editDialogTitle" defaultMessage="Link" />
+                <FormattedMessage id="dextinity.rte.extensions.link.editDialogTitle" defaultMessage="Link" />
             </DialogTitle>
             <DialogContent>
                 <FormControl fullWidth>
                     <FormLabel>
-                        <FormattedMessage id="comet.rte.extensions.link.url" defaultMessage="URL" />
+                        <FormattedMessage id="dextinity.rte.extensions.link.url" defaultMessage="URL" />
                     </FormLabel>
                     <InputBase
                         // autoFocus
@@ -124,23 +124,23 @@ function LinkDialog(props: {
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} variant="outlined" startIcon={<Close />}>
-                    {/** Same as in @comet/admin/messages.ts, not referenced as no dependency specified */}
-                    <FormattedMessage id="comet.generic.cancel" defaultMessage="Cancel" />
+                    {/** Same as in @dextinity/admin/messages.ts, not referenced as no dependency specified */}
+                    <FormattedMessage id="dextinity.generic.cancel" defaultMessage="Cancel" />
                 </Button>
                 <div>
                     <Grid container spacing={4}>
                         {linkData && (
                             <Grid>
                                 <Button startIcon={<Delete />} onClick={handleRemove}>
-                                    {/** Same as in @comet/admin/messages.ts, not referenced as no dependency specified */}
-                                    <FormattedMessage id="comet.generic.delete" defaultMessage="Delete" />
+                                    {/** Same as in @dextinity/admin/messages.ts, not referenced as no dependency specified */}
+                                    <FormattedMessage id="dextinity.generic.delete" defaultMessage="Delete" />
                                 </Button>
                             </Grid>
                         )}
                         <Grid>
                             <Button startIcon={<Check />} onClick={handleUpdate} disabled={!newUrl}>
-                                {/** Same as in @comet/admin/messages.ts, not referenced as no dependency specified */}
-                                <FormattedMessage id="comet.generic.save" defaultMessage="Save" />
+                                {/** Same as in @dextinity/admin/messages.ts, not referenced as no dependency specified */}
+                                <FormattedMessage id="dextinity.generic.save" defaultMessage="Save" />
                             </Button>
                         </Grid>
                     </Grid>

@@ -1,5 +1,5 @@
-import { createCompositeBlock, createCompositeBlockSelectField } from "@comet/cms-admin";
-import { type BasicStageBlockData } from "@src/blocks.generated";
+import { createCompositeBlock, createCompositeBlockSelectField } from "@dextinity/cms-admin";
+import type { BasicStageBlockData } from "@src/blocks.generated";
 import { CallToActionListBlock } from "@src/common/blocks/CallToActionListBlock";
 import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
@@ -40,6 +40,7 @@ export const BasicStageBlock = createCompositeBlock({
             block: createCompositeBlockSelectField<BasicStageBlockData["overlay"]>({
                 defaultValue: 50,
                 options: overlayOptions,
+                required: true,
             }),
             title: <FormattedMessage id="basicStageBlock.overlay" defaultMessage="Overlay" />,
             hiddenInSubroute: true,
@@ -51,6 +52,7 @@ export const BasicStageBlock = createCompositeBlock({
                     { value: "left", label: <FormattedMessage id="basicStageBlock.alignment.left" defaultMessage="left" /> },
                     { value: "center", label: <FormattedMessage id="basicStageBlock.alignment.center" defaultMessage="center" /> },
                 ],
+                required: true,
             }),
             title: <FormattedMessage id="basicStageBlock.alignment" defaultMessage="Alignment" />,
             hiddenInSubroute: true,

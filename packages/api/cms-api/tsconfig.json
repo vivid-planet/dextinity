@@ -5,5 +5,8 @@
     },
     "exclude": ["node_modules", "lib"],
     "extends": "../tsconfig.base.json",
-    "include": ["src/**/*"]
+    "include": ["src/**/*"],
+    "ts-node": {
+        "files": true
+    }
 }

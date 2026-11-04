@@ -1,7 +1,7 @@
-import { PageTreeNodeBaseCreateInput, PageTreeNodeInterface, PageTreeNodeVisibility, PageTreeService } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { PageTreeNodeBaseCreateInput, PageTreeNodeInterface, PageTreeNodeVisibility, PageTreeService } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
+import { faker } from "@src/db/fixtures/faker";
 import { PageContentBlock } from "@src/documents/pages/blocks/page-content.block";
 import { SeoBlock } from "@src/documents/pages/blocks/seo.block";
 import { StageBlock } from "@src/documents/pages/blocks/stage.block";
@@ -53,7 +53,7 @@ export class DocumentGeneratorService {
                 },
                 parentId,
                 userGroup: UserGroup.all,
-            } as PageTreeNodeBaseCreateInput, // Typing of PageTreeService is wrong https://github.com/vivid-planet/comet/pull/1515#issue-2042001589
+            } as PageTreeNodeBaseCreateInput, // Typing of PageTreeService is wrong https://github.com/vivid-planet/dextinity/pull/1515#issue-2042001589
             category,
             scope,
         );

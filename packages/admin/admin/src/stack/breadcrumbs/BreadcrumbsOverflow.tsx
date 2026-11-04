@@ -1,12 +1,12 @@
-import { ChevronRight } from "@comet/admin-icons";
+import { ChevronRight } from "@dextinity/admin-icons";
 import { Link, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { css } from "@mui/material/styles";
 import { type ReactNode, useRef, useState } from "react";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type BreadcrumbItem } from "../Stack";
+import type { BreadcrumbItem } from "../Stack";
 import { BreadcrumbLink } from "./BreadcrumbLink";
-import { type StackBreadcrumbsClassKey, type StackBreadcrumbsProps } from "./StackBreadcrumbs";
+import type { StackBreadcrumbsClassKey, StackBreadcrumbsProps } from "./StackBreadcrumbs";
 
 interface BreadcrumbsOverflowProps {
     items: BreadcrumbItem[];

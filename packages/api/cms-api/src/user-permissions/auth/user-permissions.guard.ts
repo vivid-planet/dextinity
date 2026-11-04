@@ -1,8 +1,9 @@
 import { CanActivate, ExecutionContext, Inject, Injectable, Logger } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
+import { TypeMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/type-metadata.storage.js";
 
-import { DISABLE_COMET_GUARDS_METADATA_KEY } from "../../auth/decorators/disable-comet-guards.decorator";
+import { DISABLE_DEXTINITY_GUARDS_METADATA_KEY } from "../../auth/decorators/disable-dextinity-guards.decorator";
 import { getRequestFromExecutionContext } from "../../common/decorators/utils";
 import { ContentScopeService } from "../content-scope.service";
 import { DisablePermissionCheck, REQUIRED_PERMISSION_METADATA_KEY, RequiredPermissionMetadata } from "../decorators/required-permission.decorator";
@@ -25,7 +26,8 @@ export class UserPermissionsGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const location = `${context.getClass().name}::${context.getHandler().name}()`;
 
-        const requiredPermission = this.getDecorator<RequiredPermissionMetadata>(context, REQUIRED_PERMISSION_METADATA_KEY);
+        const requiredPermission =
+            this.getDecorator<RequiredPermissionMetadata>(context, REQUIRED_PERMISSION_METADATA_KEY) ?? this.getRequiredPermissionFromEntity(context);
         const skipScopeCheck = requiredPermission?.options?.skipScopeCheck ?? false;
 
         let requiredContentScopes: ContentScope[][] = [];
@@ -38,22 +40,34 @@ export class UserPermissionsGuard implements CanActivate {
             request.contentScopes = this.contentScopeService.getUniqueScopes(requiredContentScopes);
         }
 
-        if (this.getDecorator(context, DISABLE_COMET_GUARDS_METADATA_KEY)) return true;
+        if (this.getDecorator(context, DISABLE_DEXTINITY_GUARDS_METADATA_KEY)) {
+            return true;
+        }
 
         const user = this.getUser(context);
         if (!user) {
-            this.logger.debug("Could not get authenticated user. Maybe CometAuthGuard is missing?");
+            this.logger.debug("Could not get authenticated user. Maybe DextinityAuthGuard is missing?");
             return false;
         }
 
         // System user authenticated via basic auth
-        if (typeof user === "string" && this.options.systemUsers?.includes(user)) return true;
+        if (typeof user === "string" && this.options.systemUsers?.includes(user)) {
+            return true;
+        }
 
-        if (!requiredPermission && this.isResolvingGraphQLField(context)) return true;
-        if (!requiredPermission) throw new Error(`RequiredPermission decorator is missing in ${location}`);
+        if (!requiredPermission && this.isResolvingGraphQLField(context)) {
+            return true;
+        }
+        if (!requiredPermission) {
+            throw new Error(`RequiredPermission decorator is missing in ${location}`);
+        }
         const requiredPermissions = requiredPermission.requiredPermission;
-        if (requiredPermissions.includes(DisablePermissionCheck)) return true;
-        if (requiredPermissions.length === 0) throw new Error(`RequiredPermission decorator has empty permissions in ${location}`);
+        if (requiredPermissions.includes(DisablePermissionCheck)) {
+            return true;
+        }
+        if (requiredPermissions.length === 0) {
+            throw new Error(`RequiredPermission decorator has empty permissions in ${location}`);
+        }
         if (this.isResolvingGraphQLField(context) || skipScopeCheck) {
             // At least one permission is required
             if (
@@ -64,10 +78,11 @@ export class UserPermissionsGuard implements CanActivate {
                 return true;
             }
         } else {
-            if (requiredContentScopes.length === 0)
+            if (requiredContentScopes.length === 0) {
                 throw new Error(
                     `Could not get content scope. Either pass a scope-argument or add an @AffectedEntity()/@AffectedScope()-decorator or enable skipScopeCheck in the @RequiredPermission()-decorator of ${location}`,
                 );
+            }
 
             // requiredContentScopes is an two level array of scopes
             // The first level has to be checked with AND, the second level with OR
@@ -98,6 +113,30 @@ export class UserPermissionsGuard implements CanActivate {
 
     private getDecorator<T = object>(context: ExecutionContext, decorator: string): T {
         return this.reflector.getAllAndOverride(decorator, [context.getHandler(), context.getClass()]);
+    }
+
+    private getRequiredPermissionFromEntity(context: ExecutionContext): RequiredPermissionMetadata | undefined {
+        const resolverClass = context.getClass();
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const metadataByTargetCollection = (TypeMetadataStorage as any).metadataByTargetCollection;
+        if (!metadataByTargetCollection) {
+            return undefined;
+        }
+
+        const targetMetadata = metadataByTargetCollection.get(resolverClass);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const resolverMetadata = targetMetadata?.resolver as { typeFn?: () => any } | undefined;
+        if (!resolverMetadata?.typeFn) {
+            return undefined;
+        }
+
+        const entityClass = resolverMetadata.typeFn();
+        if (!entityClass) {
+            return undefined;
+        }
+
+        return Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, entityClass) as RequiredPermissionMetadata | undefined;
     }
 
     // See https://docs.nestjs.com/graphql/other-features#execute-enhancers-at-the-field-resolver-level

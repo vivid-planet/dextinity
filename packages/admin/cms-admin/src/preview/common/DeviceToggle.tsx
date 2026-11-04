@@ -1,7 +1,7 @@
-import { DeviceDesktop, DevicePhone, DeviceResponsive, DeviceTablet } from "@comet/admin-icons";
+import { DeviceDesktop, DevicePhone, DeviceResponsive, DeviceTablet } from "@dextinity/admin-icons";
 import { ToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { type MouseEvent } from "react";
+import type { MouseEvent } from "react";
 
 import { Device } from "./Device";
 import { ToggleButton } from "./ToggleButton";

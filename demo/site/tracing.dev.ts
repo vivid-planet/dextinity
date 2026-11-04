@@ -9,7 +9,7 @@ diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
 
 const sdk = new NodeSDK({
     traceExporter: new OTLPTraceExporter({
-        url: `http://localhost:${process.env.JAEGER_OLTP_PORT}/v1/traces`,
+        url: `http://${process.env.JAEGER_HOST}:${process.env.JAEGER_OLTP_PORT}/v1/traces`,
     }),
     metricReaders: [
         new PrometheusExporter({}, () => {

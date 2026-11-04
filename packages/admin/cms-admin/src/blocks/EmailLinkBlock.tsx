@@ -1,8 +1,8 @@
-import { Field, FinalFormInput } from "@comet/admin";
+import { Field, FinalFormInput } from "@dextinity/admin";
 import { isEmail } from "class-validator";
 import { FormattedMessage } from "react-intl";
 
-import { type EmailLinkBlockData, type EmailLinkBlockInput } from "../blocks.generated";
+import type { EmailLinkBlockData, EmailLinkBlockInput } from "../blocks.generated";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
@@ -13,7 +13,7 @@ export const EmailLinkBlock: BlockInterface<EmailLinkBlockData, EmailLinkBlockDa
 
     name: "EmailLink",
 
-    displayName: <FormattedMessage id="comet.blocks.link.email" defaultMessage="Email" />,
+    displayName: <FormattedMessage id="dextinity.blocks.link.email" defaultMessage="Email" />,
 
     defaultValues: () => ({ email: undefined }),
 
@@ -28,13 +28,13 @@ export const EmailLinkBlock: BlockInterface<EmailLinkBlockData, EmailLinkBlockDa
             <SelectPreviewComponent>
                 <BlocksFinalForm onSubmit={updateState} initialValues={state}>
                     <Field
-                        label={<FormattedMessage id="comet.blocks.link.email" defaultMessage="Email" />}
+                        label={<FormattedMessage id="dextinity.blocks.link.email" defaultMessage="Email" />}
                         name="email"
                         component={FinalFormInput}
                         fullWidth
                         validate={(email: string) => {
                             if (email && !isEmail(email)) {
-                                return <FormattedMessage id="comet.blocks.link.email.invalid" defaultMessage="Invalid e-mail address" />;
+                                return <FormattedMessage id="dextinity.blocks.link.email.invalid" defaultMessage="Invalid e-mail address" />;
                             }
                         }}
                     />

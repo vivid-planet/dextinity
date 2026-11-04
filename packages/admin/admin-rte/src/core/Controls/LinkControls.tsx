@@ -1,21 +1,25 @@
-import { createComponentSlot, type ThemedComponentBaseProps } from "@comet/admin";
+import { createComponentSlot, type ThemedComponentBaseProps } from "@dextinity/admin";
 import { ButtonGroup, type ComponentsOverrides, css, type Theme, useThemeProps } from "@mui/material";
 
 import LinkToolbarButton from "../extension/Link/ToolbarButton";
 import LinksRemoveToolbarButton from "../extension/LinksRemove/ToolbarButton";
-import { type IControlProps } from "../types";
+import type { IControlProps } from "../types";
 
 export interface RteLinkControlsProps
-    extends IControlProps,
+    extends
+        IControlProps,
         ThemedComponentBaseProps<{
             root: typeof ButtonGroup;
             item: "div";
         }> {}
 
 function StyledLinkControls(inProps: RteLinkControlsProps) {
-    const props = useThemeProps({ props: inProps, name: "CometAdminRteLinkControls" });
+    const props = useThemeProps({ props: inProps, name: "DextinityAdminRteLinkControls" });
     const {
         options: { supports: supportedThings, overwriteLinkButton, overwriteLinksRemoveButton },
+        editorRef,
+        editorState,
+        setEditorState,
         slotProps,
         ...restProps
     } = props;
@@ -62,17 +66,17 @@ export default (p: IControlProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminRteLinkControls: RteLinkControlsProps;
+        DextinityAdminRteLinkControls: RteLinkControlsProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminRteLinkControls: RteLinkControlsClassKey;
+        DextinityAdminRteLinkControls: RteLinkControlsClassKey;
     }
 
     interface Components {
-        CometAdminRteLinkControls?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminRteLinkControls"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminRteLinkControls"];
+        DextinityAdminRteLinkControls?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminRteLinkControls"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminRteLinkControls"];
         };
     }
 }

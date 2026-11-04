@@ -1,7 +1,7 @@
-import { DamImageBlock } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { DamImageBlock } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
+import { faker } from "@src/db/fixtures/faker";
 import { NewsContentBlock } from "@src/news/blocks/news-content.block";
 import { News, NewsCategory, NewsStatus } from "@src/news/entities/news.entity";
 

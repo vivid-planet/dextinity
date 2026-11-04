@@ -1,6 +1,6 @@
-import { type Breakpoints } from "@mui/material";
-import { type TypographyVariantsOptions } from "@mui/material/styles";
-import { type CSSProperties } from "react";
+import type { Breakpoints } from "@mui/material";
+import type { TypographyVariantsOptions } from "@mui/material/styles";
+import type { CSSProperties } from "react";
 
 const fontFamily = "Roboto Flex Variable, Helvetica, Arial, sans-serif";
 

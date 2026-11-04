@@ -1,13 +1,13 @@
 import { gql, useQuery } from "@apollo/client";
-import { ClearInputAdornment } from "@comet/admin";
-import { ChevronDown } from "@comet/admin-icons";
+import { ClearInputAdornment } from "@dextinity/admin";
+import { ChevronDown } from "@dextinity/admin-icons";
 import Autocomplete from "@mui/material/Autocomplete";
 import { type GridFilterInputValueProps, type GridFilterOperator, useGridRootProps } from "@mui/x-data-grid-pro";
-import { useCallback, useState } from "react";
+import { type ChangeEvent, useCallback, useState } from "react";
 import { useIntl } from "react-intl";
 import { useDebounce } from "use-debounce";
 
-import { type GQLManufacturersFilterQuery, type GQLManufacturersFilterQueryVariables } from "./ManufacturerFilter.generated";
+import type { GQLManufacturersFilterQuery, GQLManufacturersFilterQueryVariables } from "./ManufacturerFilter.generated";
 
 const manufacturersQuery = gql`
     query ManufacturersFilter($offset: Int!, $limit: Int!, $search: String) {
@@ -72,10 +72,9 @@ function ManufacturerFilter({ item, applyValue, apiRef }: GridFilterInputValuePr
                 <rootProps.slots.baseTextField
                     {...params}
                     autoComplete="off"
-                    variant="standard"
                     placeholder={intl.formatMessage({ id: "manufacturer-filter.placeholder", defaultMessage: "Choose a manufacturer" })}
-                    value={search ? search : null}
-                    onChange={(event) => {
+                    value={search}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => {
                         setSearch(event.target.value);
                     }}
                     label={apiRef.current.getLocaleText("filterPanelInputLabel")}
@@ -87,11 +86,7 @@ function ManufacturerFilter({ item, applyValue, apiRef }: GridFilterInputValuePr
                             ...params.InputProps,
                             endAdornment: (
                                 <>
-                                    <ClearInputAdornment
-                                        position="end"
-                                        hasClearableContent={Boolean(item.value)}
-                                        onClick={() => handleApplyValue(undefined)}
-                                    />
+                                    {item.value && <ClearInputAdornment position="end" onClick={() => handleApplyValue(undefined)} />}
                                     {params.InputProps.endAdornment}
                                 </>
                             ),

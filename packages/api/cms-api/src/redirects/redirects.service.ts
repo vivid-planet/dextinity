@@ -8,7 +8,7 @@ import { PageTreeNodeInterface } from "../page-tree/types";
 import { RedirectFilter } from "./dto/redirects.filter";
 import { RedirectInterface } from "./entities/redirect-entity.factory";
 import { REDIRECTS_LINK_BLOCK } from "./redirects.constants";
-import { RedirectGenerationType, RedirectSourceTypeValues } from "./redirects.enum";
+import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
 import { RedirectsLinkBlock } from "./redirects.module";
 import { RedirectScopeInterface } from "./types";
 
@@ -76,7 +76,7 @@ export class RedirectsService {
         await this.entityManager.persistAndFlush(
             this.repository.create({
                 scope: node.scope,
-                sourceType: RedirectSourceTypeValues.path,
+                sourceType: RedirectSourceType.path,
                 source: path,
                 target: this.linkBlock
                     .blockInputFactory({

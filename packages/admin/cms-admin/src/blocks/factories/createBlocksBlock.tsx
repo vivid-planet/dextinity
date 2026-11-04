@@ -8,8 +8,8 @@ import {
     Tooltip,
     UndoSnackbar,
     useSnackbarApi,
-} from "@comet/admin";
-import { Add, Copy, Delete, Invisible, Paste, Visible } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add, Copy, Delete, Invisible, Paste, Visible } from "@dextinity/admin-icons";
 import { Box, Checkbox, FormControlLabel, IconButton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import {
@@ -41,7 +41,7 @@ import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { deduplicateBlockDependencies } from "../helpers/deduplicateBlockDependencies";
 import { HoverPreviewComponent } from "../iframebridge/HoverPreviewComponent";
 import { SelectPreviewComponent } from "../iframebridge/SelectPreviewComponent";
-import { type BlockDependency, type BlockInterface, type BlockState, type PreviewContent } from "../types";
+import type { BlockDependency, BlockInterface, BlockState, PreviewContent } from "../types";
 import { resolveNewState } from "../utils";
 import { parallelAsyncEvery } from "../utils/parallelAsyncEvery";
 
@@ -124,7 +124,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
     {
         supportedBlocks,
         name,
-        displayName = <FormattedMessage id="comet.blocks.blocks.name" defaultMessage="Blocks" />,
+        displayName = <FormattedMessage id="dextinity.blocks.blocks.name" defaultMessage="Blocks" />,
         maxVisibleBlocks,
         additionalItemFields,
         AdditionalItemContextMenuItems,
@@ -390,7 +390,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                             <UndoSnackbar
                                 message={
                                     <FormattedMessage
-                                        id="comet.blocks.list.blockDeleted"
+                                        id="dextinity.blocks.list.blockDeleted"
                                         defaultMessage="{count, plural, one {block} other {# blocks}} deleted"
                                         values={{ count: blocksToRemove.length }}
                                     />
@@ -495,7 +495,11 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                 }
             }, [scope, isBlockSupported]);
 
-            const { updateClipboardContent, getClipboardContent } = useBlockClipboard({ supports: Object.values(filteredSupportedBlocks) });
+            const {
+                updateClipboardContent,
+                getClipboardContent,
+                progressDialog: clipboardProgressDialog,
+            } = useBlockClipboard({ supports: Object.values(filteredSupportedBlocks) });
 
             const pasteBlock = async (insertAt: number) => {
                 const response = await getClipboardContent();
@@ -620,7 +624,10 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                                                                     />
                                                                 }
                                                                 label={
-                                                                    <FormattedMessage id="comet.blocks.list.selectAll" defaultMessage="Select all" />
+                                                                    <FormattedMessage
+                                                                        id="dextinity.blocks.list.selectAll"
+                                                                        defaultMessage="Select all"
+                                                                    />
                                                                 }
                                                             />
                                                         ) : (
@@ -637,7 +644,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                                                                             onClick={() => handleToggleVisibilityOfAllSelectedBlocks(true)}
                                                                         >
                                                                             <FormattedMessage
-                                                                                id="comet.blocks.list.action.visible"
+                                                                                id="dextinity.blocks.list.action.visible"
                                                                                 defaultMessage="Make visible"
                                                                             />
                                                                         </RowActionsItem>
@@ -647,7 +654,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                                                                             onClick={() => handleToggleVisibilityOfAllSelectedBlocks()}
                                                                         >
                                                                             <FormattedMessage
-                                                                                id="comet.blocks.list.action.invisible"
+                                                                                id="dextinity.blocks.list.action.invisible"
                                                                                 defaultMessage="Make invisible"
                                                                             />
                                                                         </RowActionsItem>
@@ -659,17 +666,23 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                                                                     disabled={selectedCount === 0}
                                                                     onClick={handleDeleteAllSelectedBlocks}
                                                                 >
-                                                                    <FormattedMessage id="comet.blocks.list.action.delete" defaultMessage="Delete" />
+                                                                    <FormattedMessage
+                                                                        id="dextinity.blocks.list.action.delete"
+                                                                        defaultMessage="Delete"
+                                                                    />
                                                                 </RowActionsItem>
                                                                 <RowActionsItem
                                                                     icon={<Copy />}
                                                                     disabled={selectedCount === 0}
                                                                     onClick={handleCopySelectedBlocks}
                                                                 >
-                                                                    <FormattedMessage id="comet.blocks.list.action.copy" defaultMessage="Copy" />
+                                                                    <FormattedMessage id="dextinity.blocks.list.action.copy" defaultMessage="Copy" />
                                                                 </RowActionsItem>
                                                                 <RowActionsItem icon={<Paste />} onClick={() => pasteBlock(0)}>
-                                                                    <FormattedMessage id="comet.blocks.list.action.paste" defaultMessage="Paste" />
+                                                                    <FormattedMessage
+                                                                        id="dextinity.blocks.list.action.paste"
+                                                                        defaultMessage="Paste"
+                                                                    />
                                                                 </RowActionsItem>
                                                             </RowActionsMenu>
                                                         </BlockListHeaderActionContainer>
@@ -714,7 +727,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                                                                             title={
                                                                                 showMaxBlocksAllowedMessage ? (
                                                                                     <FormattedMessage
-                                                                                        id="comet.blocks.block.maxVisibleBlocks"
+                                                                                        id="dextinity.blocks.block.maxVisibleBlocks"
                                                                                         defaultMessage="Max. visible blocks allowed: {maxVisibleBlocks}"
                                                                                         values={{ maxVisibleBlocks }}
                                                                                     />
@@ -796,7 +809,10 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                                                             <LargeAddButtonContent>
                                                                 <LargeAddButtonIcon />
                                                                 <Typography>
-                                                                    <FormattedMessage id="comet.blocks.list.addNewBlock" defaultMessage="Add block" />
+                                                                    <FormattedMessage
+                                                                        id="dextinity.blocks.list.addNewBlock"
+                                                                        defaultMessage="Add block"
+                                                                    />
                                                                 </Typography>
                                                             </LargeAddButtonContent>
                                                         </BlockAdminComponentButton>
@@ -808,7 +824,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                                                                 size="large"
                                                                 startIcon={<Add />}
                                                             >
-                                                                <FormattedMessage id="comet.blocks.list.addNewBlock" defaultMessage="Add block" />
+                                                                <FormattedMessage id="dextinity.blocks.list.addNewBlock" defaultMessage="Add block" />
                                                             </BlockAdminComponentButton>
                                                         </AdminComponentStickyFooter>
                                                     )}
@@ -851,7 +867,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
 
                                         return (
                                             <StackPageTitle title={block.displayName}>
-                                                <block.AdminComponent state={match.props} updateState={createUpdateSubBlocksFn(id)} />
+                                                <block.AdminComponent key={id} state={match.props} updateState={createUpdateSubBlocksFn(id)} />
                                             </StackPageTitle>
                                         );
                                     }}
@@ -862,6 +878,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                     {cannotPasteBlockError !== undefined && (
                         <CannotPasteBlockDialog open onClose={() => setCannotPasteBlockError(undefined)} error={cannotPasteBlockError} />
                     )}
+                    {clipboardProgressDialog}
                 </>
             );
         },
@@ -872,7 +889,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                         type: "text",
                         content: (
                             <FormattedMessage
-                                id="comet.blocks.list.count"
+                                id="dextinity.blocks.list.count"
                                 defaultMessage="{count, plural, =0 {No blocks} one {# block} other {# blocks}}"
                                 values={{ count: state.blocks.length }}
                             />
@@ -923,6 +940,20 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
 
                 return [...content, ...(block.extractTextContents?.(child.props, options) ?? [])];
             }, []);
+        },
+        translateContent: async (state, translate) => {
+            const translatedBlocks = await Promise.all(
+                state.blocks.map(async (child) => {
+                    const block = blockForType(child.type);
+                    if (!block) {
+                        throw new Error(`No Block found for type ${child.type}`);
+                    }
+
+                    const translatedProps = block.translateContent ? await block.translateContent(child.props, translate) : child.props;
+                    return { ...child, props: translatedProps };
+                }),
+            );
+            return { ...state, blocks: translatedBlocks };
         },
     };
 

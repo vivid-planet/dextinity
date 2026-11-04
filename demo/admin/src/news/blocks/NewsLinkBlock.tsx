@@ -1,7 +1,7 @@
-import { TextField } from "@comet/admin";
-import { FileData } from "@comet/admin-icons";
-import { type BlockInterface, BlocksFinalForm, createBlockSkeleton, type LinkBlockInterface } from "@comet/cms-admin";
-import { type NewsLinkBlockData, type NewsLinkBlockInput } from "@src/blocks.generated";
+import { TextField } from "@dextinity/admin";
+import { FileData } from "@dextinity/admin-icons";
+import { type BlockInterface, BlocksFinalForm, createBlockSkeleton, type LinkBlockInterface } from "@dextinity/cms-admin";
+import type { NewsLinkBlockData, NewsLinkBlockInput } from "@src/blocks.generated";
 import { FormattedMessage } from "react-intl";
 
 type State = NewsLinkBlockData;

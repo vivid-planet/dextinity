@@ -1,29 +1,19 @@
-import { Error as ErrorIcon } from "@comet/admin-icons";
-import { type ComponentsOverrides, FormHelperText, Typography } from "@mui/material";
+import { Error as ErrorIcon } from "@dextinity/admin-icons";
+import { type ComponentsOverrides, Typography } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
-import { type ReactNode } from "react";
-import { type Accept, type DropzoneOptions } from "react-dropzone";
+import type { ReactNode } from "react";
+import type { Accept, DropzoneOptions } from "react-dropzone";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { Alert } from "../../alert/Alert";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { FileDropzone } from "./FileDropzone";
-import { type ErrorFileSelectItem, type FileSelectItem, type ValidFileSelectItem } from "./fileSelectItemTypes";
+import type { ErrorFileSelectItem, FileSelectItem, ValidFileSelectItem } from "./fileSelectItemTypes";
 import { FileSelectListItem } from "./FileSelectListItem";
-import { getFilesInfoText } from "./getFilesInfoText";
 
 export type FileSelectClassKey =
-    | "root"
-    | "listLayout"
-    | "gridLayout"
-    | "maxFilesReachedInfo"
-    | "dropzone"
-    | "fileList"
-    | "fileListItem"
-    | "error"
-    | "errorMessage"
-    | "filesInfoText";
+    "root" | "listLayout" | "gridLayout" | "maxFilesReachedInfo" | "dropzone" | "fileList" | "fileListItem" | "error" | "errorMessage";
 
 type Layout = "list" | "grid";
 
@@ -35,7 +25,6 @@ type ThemeProps = ThemedComponentBaseProps<{
     fileListItem: typeof FileSelectListItem;
     error: "div";
     errorMessage: typeof Typography;
-    filesInfoText: typeof FormHelperText;
 }>;
 
 type OwnerState = {
@@ -81,7 +70,7 @@ export const FileSelect = <AdditionalValidFileValues = Record<string, unknown>,>
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminFileSelect",
+        name: "DextinityAdminFileSelect",
     });
 
     const { error: errorIcon = <ErrorIcon color="error" /> } = iconMapping;
@@ -93,7 +82,6 @@ export const FileSelect = <AdditionalValidFileValues = Record<string, unknown>,>
     const numberOfValidFiles = files?.filter((file) => !("error" in file)).length ?? 0;
     const maxAmountOfFilesSelected = typeof maxFiles !== "undefined" && multiple && numberOfValidFiles >= maxFiles;
     const maxNumberOfFilesToBeAdded = maxFiles ? maxFiles - numberOfValidFiles : undefined;
-    const filesInfoText = getFilesInfoText(maxFiles, maxFileSize);
     const showFileList = files.length > 0 || readOnly;
 
     const ownerState: OwnerState = {
@@ -106,12 +94,12 @@ export const FileSelect = <AdditionalValidFileValues = Record<string, unknown>,>
                 <>
                     {maxAmountOfFilesSelected ? (
                         <MaxFilesReachedInfo
-                            title={<FormattedMessage id="comet.fileSelect.maximumReached" defaultMessage="Maximum reached" />}
+                            title={<FormattedMessage id="dextinity.fileSelect.maximumReached" defaultMessage="Maximum reached" />}
                             severity="info"
                             {...slotProps?.maxFilesReachedInfo}
                         >
                             <FormattedMessage
-                                id="comet.fileSelect.maximumFilesAmount"
+                                id="dextinity.fileSelect.maximumFilesAmount"
                                 defaultMessage="The maximum number of uploads has been reached. Please delete files from the list before uploading new files."
                             />
                         </MaxFilesReachedInfo>
@@ -170,7 +158,7 @@ export const FileSelect = <AdditionalValidFileValues = Record<string, unknown>,>
                         <FileListItem
                             file={{
                                 name: intl.formatMessage({
-                                    id: "comet.fileSelect.noAttachments",
+                                    id: "dextinity.fileSelect.noAttachments",
                                     defaultMessage: "There are no attachments",
                                 }),
                             }}
@@ -187,7 +175,6 @@ export const FileSelect = <AdditionalValidFileValues = Record<string, unknown>,>
                     </ErrorMessage>
                 </Error>
             )}
-            {Boolean(filesInfoText && !readOnly) && <FilesInfoText {...slotProps?.filesInfoText}>{filesInfoText}</FilesInfoText>}
         </Root>
     );
 };
@@ -215,20 +202,22 @@ const FileList = createComponentSlot("div")<FileSelectClassKey, OwnerState>({
     ({ theme, ownerState }) => css`
         width: 100%;
 
-        ${ownerState.layout === "grid" &&
-        css`
-            display: grid;
-            gap: ${theme.spacing(2)};
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        ${
+            ownerState.layout === "grid" &&
+            css`
+                display: grid;
+                gap: ${theme.spacing(2)};
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 
-            ${theme.breakpoints.up("md")} {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                ${theme.breakpoints.up("md")} {
+                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 
-                .CometAdminFormFieldContainer-horizontal & {
-                    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                    .DextinityAdminFormFieldContainer-horizontal & {
+                        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                    }
                 }
-            }
-        `}
+            `
+        }
     `,
 );
 
@@ -262,27 +251,19 @@ const ErrorMessage = createComponentSlot(Typography)<FileSelectClassKey>({
     slotName: "errorMessage",
 })();
 
-const FilesInfoText = createComponentSlot(FormHelperText)<FileSelectClassKey>({
-    componentName: "FileSelect",
-    slotName: "filesInfoText",
-})(css`
-    margin: 0;
-    display: none;
-`);
-
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFileSelect: FileSelectClassKey;
+        DextinityAdminFileSelect: FileSelectClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFileSelect: FileSelectProps;
+        DextinityAdminFileSelect: FileSelectProps;
     }
 
     interface Components {
-        CometAdminFileSelect?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFileSelect"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFileSelect"];
+        DextinityAdminFileSelect?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFileSelect"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFileSelect"];
         };
     }
 }

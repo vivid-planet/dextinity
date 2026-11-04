@@ -1,6 +1,6 @@
 import { FormControlLabel, RadioGroup } from "@mui/material";
 import MuiRadio from "@mui/material/Radio";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { Field, type FieldProps } from "../../form/Field";
 

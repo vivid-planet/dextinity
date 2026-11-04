@@ -1,5 +1,5 @@
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
-import { type GetMuiComponentTheme } from "./getComponentsTheme";
+import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
 export const getMuiPaper: GetMuiComponentTheme<"MuiPaper"> = (component, { palette }) => ({
     ...component,

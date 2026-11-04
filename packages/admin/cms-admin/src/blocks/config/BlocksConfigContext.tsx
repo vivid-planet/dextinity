@@ -1,7 +1,7 @@
 import { createContext, type PropsWithChildren, useContext } from "react";
 
-import { type ContentScope } from "../../contentScope/Provider";
-import { type BlockInterface } from "../types";
+import type { ContentScope } from "../../contentScope/Provider";
+import type { BlockInterface } from "../types";
 
 export type BlocksConfig = {
     /**

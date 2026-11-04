@@ -1,9 +1,9 @@
-import { FocusPointCenter, FocusPointNortheast, FocusPointNorthwest, FocusPointSoutheast, FocusPointSouthwest } from "@comet/admin-icons";
+import { FocusPointCenter, FocusPointNortheast, FocusPointNorthwest, FocusPointSoutheast, FocusPointSouthwest } from "@dextinity/admin-icons";
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 
 import { BlockAdminComponentSection } from "../../blocks/common/BlockAdminComponentSection";
-import { type GQLFocalPoint } from "../../graphql.generated";
+import type { GQLFocalPoint } from "../../graphql.generated";
 
 interface ChooseFocalPointProps {
     focalPoint: GQLFocalPoint;
@@ -13,7 +13,7 @@ interface ChooseFocalPointProps {
 export const ChooseFocalPoint = ({ focalPoint, onChangeFocalPoint }: ChooseFocalPointProps) => {
     return (
         <BlockAdminComponentSection
-            title={<FormattedMessage id="comet.blocks.image.focalPoint" defaultMessage="Set manual focus point" />}
+            title={<FormattedMessage id="dextinity.blocks.image.focalPoint" defaultMessage="Set manual focus point" />}
             disableBottomMargin
         >
             <ToggleButtonGroup

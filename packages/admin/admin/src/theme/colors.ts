@@ -1,4 +1,4 @@
-import { type Color, type PaletteColor, type SimplePaletteColorOptions } from "@mui/material/styles";
+import type { Color, PaletteColor, SimplePaletteColorOptions } from "@mui/material/styles";
 
 export const primaryPalette: PaletteColor = {
     light: "#53C4F7",

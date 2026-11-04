@@ -1,11 +1,19 @@
-export const BLOCK_PREVIEW_CONTAINER_DATA_ATTRIBUTE = "data-comet-block-preview-container";
-export const PREVIEW_ELEMENT_SCROLLED_INTO_VIEW_EVENT = "comet-preview-element-scrolled-into-view";
+import type { PreviewElement } from "./IFrameBridge";
+
+export const BLOCK_PREVIEW_CONTAINER_DATA_ATTRIBUTE = "data-dextinity-block-preview-container";
+export const PREVIEW_ELEMENT_SCROLLED_INTO_VIEW_EVENT = "dextinity-preview-element-scrolled-into-view";
+
+export const removePreviewElementFromList = (previewElements: PreviewElement[], removedPreviewElement: PreviewElement) => {
+    return previewElements.filter((previewElement) => previewElement.element !== removedPreviewElement.element);
+};
 
 export const getRecursiveChildrenOfPreviewElement = (rootElement: Element): Element[] => {
     const previewElementChildNodes: Element[] = [];
 
     rootElement.childNodes.forEach((childNode) => {
-        if (!(childNode instanceof Element)) return;
+        if (!(childNode instanceof Element)) {
+            return;
+        }
 
         if (childNode.hasAttribute(BLOCK_PREVIEW_CONTAINER_DATA_ATTRIBUTE)) {
             previewElementChildNodes.push(...getRecursiveChildrenOfPreviewElement(childNode));

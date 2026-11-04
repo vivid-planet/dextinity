@@ -1,4 +1,4 @@
-import { type Block } from "../block";
+import type { Block } from "../block";
 
 export const ROOT_BLOCK_METADATA_KEY = "data:rootBlock";
 export const ROOT_BLOCK_KEYS_METADATA_KEY = "keys:rootBlock";

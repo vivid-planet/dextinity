@@ -2,7 +2,7 @@
 module.exports = {
     client: {
         service: {
-            name: "comet-cms-api",
+            name: "dextinity-cms-api",
             localSchemaFile: "./schema.gql",
         },
     },

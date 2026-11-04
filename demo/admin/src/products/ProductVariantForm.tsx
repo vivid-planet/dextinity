@@ -8,12 +8,19 @@ import {
     Loading,
     useFormApiRef,
     useStackSwitchApi,
-} from "@comet/admin";
-import { type BlockState, createFinalFormBlock, DamImageBlock, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
-import { type GQLProductVariantMutationErrorCode } from "@src/graphql.generated";
+} from "@dextinity/admin";
+import {
+    type BlockState,
+    createFinalFormBlock,
+    DamImageBlock,
+    queryUpdatedAt,
+    resolveHasSaveConflict,
+    useFormSaveConflict,
+} from "@dextinity/cms-admin";
+import type { GQLProductVariantMutationErrorCode } from "@src/graphql.generated";
 import { FORM_ERROR, type FormApi } from "final-form";
 import isEqual from "lodash.isequal";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
 import {
@@ -22,14 +29,14 @@ import {
     productVariantFormQuery,
     updateProductVariantFormMutation,
 } from "./ProductVariantForm.gql";
-import {
-    type GQLCreateProductVariantMutation,
-    type GQLCreateProductVariantMutationVariables,
-    type GQLProductVariantFormFragment,
-    type GQLProductVariantFormQuery,
-    type GQLProductVariantFormQueryVariables,
-    type GQLUpdateProductVariantMutation,
-    type GQLUpdateProductVariantMutationVariables,
+import type {
+    GQLCreateProductVariantMutation,
+    GQLCreateProductVariantMutationVariables,
+    GQLProductVariantFormFragment,
+    GQLProductVariantFormQuery,
+    GQLProductVariantFormQueryVariables,
+    GQLUpdateProductVariantMutation,
+    GQLUpdateProductVariantMutationVariables,
 } from "./ProductVariantForm.gql.generated";
 
 interface FormProps {
@@ -86,13 +93,17 @@ export function ProductVariantForm({ id, productId }: FormProps) {
     });
 
     const handleSubmit = async (formValues: FormValues, form: FormApi<FormValues>, event: FinalFormSubmitEvent) => {
-        if (await saveConflict.checkForConflicts()) throw new Error("Conflicts detected");
+        if (await saveConflict.checkForConflicts()) {
+            throw new Error("Conflicts detected");
+        }
         const output = {
             ...formValues,
             image: rootBlocks.image.state2Output(formValues.image),
         };
         if (mode === "edit") {
-            if (!id) throw new Error();
+            if (!id) {
+                throw new Error();
+            }
             const { data: mutationResponse } = await client.mutate<GQLUpdateProductVariantMutation, GQLUpdateProductVariantMutationVariables>({
                 mutation: updateProductVariantFormMutation,
                 variables: { id, input: output },
@@ -139,7 +150,9 @@ export function ProductVariantForm({ id, productId }: FormProps) {
         }
     };
 
-    if (error) throw error;
+    if (error) {
+        throw error;
+    }
 
     if (loading) {
         return <Loading behavior="fillPageHeight" />;

@@ -27,7 +27,9 @@ export class GenerateAltTextResolver {
     @Mutation(() => String)
     async generateAltText(@Args() { fileId, language }: GenerateAltTextArgs): Promise<string> {
         const altText = await this.contentGenerationService.generateAltText?.(fileId, { language: language ?? "en" });
-        if (!altText) throw new Error("Alt text generation failed or is not supported");
+        if (!altText) {
+            throw new Error("Alt text generation failed or is not supported");
+        }
         return altText;
     }
 }

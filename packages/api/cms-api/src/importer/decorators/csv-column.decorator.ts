@@ -1,7 +1,7 @@
 import { Transform } from "class-transformer";
 import { parse, parseISO } from "date-fns";
 
-import { type ImporterInputClass } from "../importer-input.type";
+import type { ImporterInputClass } from "../importer-input.type";
 
 export enum CsvColumnType {
     String = "String",

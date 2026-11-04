@@ -1,10 +1,10 @@
 import { gql, useQuery } from "@apollo/client";
-import { Field, FillSpace, FinalForm, FinalFormInput, Loading, ToolbarTitleItem } from "@comet/admin";
+import { Field, FillSpace, FinalForm, FinalFormInput, Loading, ToolbarTitleItem } from "@dextinity/admin";
 import { Card, CardContent, Toolbar } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 
-import { type GQLUserBasicDataQuery, type GQLUserBasicDataQueryVariables } from "./UserBasicData.generated";
+import type { GQLUserBasicDataQuery, GQLUserBasicDataQueryVariables } from "./UserBasicData.generated";
 
 export const UserPermissionsUserPageBasicDataPanel = ({ userId }: { userId: string }) => {
     const { data, error, loading } = useQuery<GQLUserBasicDataQuery, GQLUserBasicDataQueryVariables>(
@@ -34,7 +34,7 @@ export const UserPermissionsUserPageBasicDataPanel = ({ userId }: { userId: stri
         <Card>
             <CardToolbar>
                 <ToolbarTitleItem>
-                    <FormattedMessage id="comet.userPermissions.basicData" defaultMessage="Basic Data" />
+                    <FormattedMessage id="dextinity.userPermissions.basicData" defaultMessage="Basic Data" />
                 </ToolbarTitleItem>
                 <FillSpace />
             </CardToolbar>
@@ -51,14 +51,14 @@ export const UserPermissionsUserPageBasicDataPanel = ({ userId }: { userId: stri
                         name="email"
                         component={FinalFormInput}
                         disabled={true}
-                        label={<FormattedMessage id="comet.userPermissions.email" defaultMessage="E-Mail" />}
+                        label={<FormattedMessage id="dextinity.userPermissions.email" defaultMessage="E-Mail" />}
                     />
                     <Field
                         variant="horizontal"
                         name="name"
                         component={FinalFormInput}
                         disabled={true}
-                        label={<FormattedMessage id="comet.userPermissions.name" defaultMessage="Name" />}
+                        label={<FormattedMessage id="dextinity.userPermissions.name" defaultMessage="Name" />}
                     />
                 </FinalForm>
             </CardContent>

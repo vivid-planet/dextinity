@@ -1,4 +1,4 @@
-import { Delete, Download, Error, File as FileIcon, FileNotMenu, ThreeDotSaving } from "@comet/admin-icons";
+import { Delete, Download, Error, File as FileIcon, FileNotMenu, ThreeDotSaving } from "@dextinity/admin-icons";
 import {
     Chip,
     type ComponentsOverrides,
@@ -14,9 +14,9 @@ import { type ReactNode, useRef } from "react";
 import { Tooltip } from "../../common/Tooltip";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import { PrettyBytes } from "../../helpers/PrettyBytes";
-import { type ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { useElementIsOverflowing } from "../../hooks/useElementIsOverflowing";
-import { type ErrorFileSelectItem, type FileSelectItem } from "./fileSelectItemTypes";
+import type { ErrorFileSelectItem, FileSelectItem } from "./fileSelectItemTypes";
 
 type OwnerState = {
     hasFilePreview: boolean;
@@ -85,7 +85,7 @@ export const FileSelectListItem = (inProps: FileSelectListItemProps) => {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminFileSelectListItem",
+        name: "DextinityAdminFileSelectListItem",
     });
     const fileNameRef = useRef<HTMLDivElement>(null);
     const fileNameIsOverflowing = useElementIsOverflowing(fileNameRef);
@@ -180,12 +180,14 @@ export const FileSelectListItem = (inProps: FileSelectListItemProps) => {
 };
 
 const getCommonItemSpacingStyles = (ownerState: OwnerState) => css`
-    ${!ownerState.hasFilePreview &&
-    css`
-        &:not(:last-child) {
-            margin-bottom: 2px;
-        }
-    `}
+    ${
+        !ownerState.hasFilePreview &&
+        css`
+            &:not(:last-child) {
+                margin-bottom: 2px;
+            }
+        `
+    }
 `;
 
 const Root = createComponentSlot("div")<FileSelectListItemClassKey, OwnerState>({
@@ -212,25 +214,29 @@ const Root = createComponentSlot("div")<FileSelectListItemClassKey, OwnerState>(
         &:hover {
             background-color: ${theme.palette.grey[100]};
 
-            .CometAdminFileSelectListItem-fileSize {
+            .DextinityAdminFileSelectListItem-fileSize {
                 background-color: ${theme.palette.grey[200]};
             }
 
-            .CometAdminFileSelectListItem-iconButton {
+            .DextinityAdminFileSelectListItem-iconButton {
                 color: ${theme.palette.grey[900]};
             }
         }
 
-        ${(ownerState.hasErrorWithDetails || ownerState.hasErrorWithoutDetails) &&
-        css`
-            outline: 1px dashed ${theme.palette.error.main};
-            outline-offset: -1px;
-        `}
+        ${
+            (ownerState.hasErrorWithDetails || ownerState.hasErrorWithoutDetails) &&
+            css`
+                outline: 1px dashed ${theme.palette.error.main};
+                outline-offset: -1px;
+            `
+        }
 
-        ${ownerState.disabled &&
-        css`
-            pointer-events: none;
-        `}
+        ${
+            ownerState.disabled &&
+            css`
+                pointer-events: none;
+            `
+        }
     `,
 );
 const Skeleton = createComponentSlot(MuiSkeleton)<FileSelectListItemClassKey, OwnerState>({
@@ -246,13 +252,15 @@ const Skeleton = createComponentSlot(MuiSkeleton)<FileSelectListItemClassKey, Ow
         box-sizing: border-box;
         ${getCommonItemSpacingStyles(ownerState)};
 
-        ${ownerState.hasFilePreview &&
-        css`
-            aspect-ratio: 1;
-            height: auto;
-            padding-bottom: 34px;
-            box-sizing: content-box;
-        `}
+        ${
+            ownerState.hasFilePreview &&
+            css`
+                aspect-ratio: 1;
+                height: auto;
+                padding-bottom: 34px;
+                box-sizing: content-box;
+            `
+        }
     `,
 );
 
@@ -273,10 +281,12 @@ const Preview = createComponentSlot("div")<FileSelectListItemClassKey, OwnerStat
         font-size: 30px;
         color: white;
 
-        ${ownerState.hasErrorWithDetails &&
-        css`
-            margin-bottom: 0;
-        `}
+        ${
+            ownerState.hasErrorWithDetails &&
+            css`
+                margin-bottom: 0;
+            `
+        }
     `,
 );
 
@@ -299,11 +309,13 @@ const Content = createComponentSlot("div")<FileSelectListItemClassKey, OwnerStat
         justify-content: space-between;
         gap: ${theme.spacing(1)};
 
-        ${ownerState.hasFilePreview &&
-        !ownerState.hasErrorWithDetails &&
-        css`
-            margin-bottom: 7px;
-        `}
+        ${
+            ownerState.hasFilePreview &&
+            !ownerState.hasErrorWithDetails &&
+            css`
+                margin-bottom: 7px;
+            `
+        }
     `,
 );
 
@@ -317,17 +329,21 @@ const FileListItemInfos = createComponentSlot("div")<FileSelectListItemClassKey,
         justify-content: end;
         margin-left: auto;
 
-        ${ownerState.hasErrorWithDetails &&
-        css`
-            padding-top: 3.5px;
-            margin-bottom: -3.5px;
-
-            ${ownerState.hasFilePreview &&
+        ${
+            ownerState.hasErrorWithDetails &&
             css`
-                padding-top: 0;
-                margin-bottom: 0;
-            `}
-        `};
+                padding-top: 3.5px;
+                margin-bottom: -3.5px;
+
+                ${
+                    ownerState.hasFilePreview &&
+                    css`
+                        padding-top: 0;
+                        margin-bottom: 0;
+                    `
+                }
+            `
+        };
     `,
 );
 
@@ -344,32 +360,42 @@ const FileName = createComponentSlot(Typography)<FileSelectListItemClassKey, Own
         padding-top: 9px;
         padding-bottom: 9px;
 
-        ${ownerState.hasFilePreview &&
-        css`
-            padding-top: ${theme.spacing(2)};
-            padding-bottom: ${theme.spacing(2)};
-        `}
-
-        ${ownerState.hasErrorWithoutDetails &&
-        css`
-            color: ${theme.palette.error.main};
-        `}
-
-        ${ownerState.hasErrorWithDetails &&
-        css`
-            padding-top: 7px;
-            padding-bottom: 4px;
-
-            ${ownerState.hasFilePreview &&
+        ${
+            ownerState.hasFilePreview &&
             css`
-                padding-top: 4px;
-            `}
-        `}
+                padding-top: ${theme.spacing(2)};
+                padding-bottom: ${theme.spacing(2)};
+            `
+        }
 
-        ${ownerState.disabled &&
-        css`
-            color: ${theme.palette.text.disabled};
-        `}
+        ${
+            ownerState.hasErrorWithoutDetails &&
+            css`
+                color: ${theme.palette.error.main};
+            `
+        }
+
+        ${
+            ownerState.hasErrorWithDetails &&
+            css`
+                padding-top: 7px;
+                padding-bottom: 4px;
+
+                ${
+                    ownerState.hasFilePreview &&
+                    css`
+                        padding-top: 4px;
+                    `
+                }
+            `
+        }
+
+        ${
+            ownerState.disabled &&
+            css`
+                color: ${theme.palette.text.disabled};
+            `
+        }
     `,
 );
 
@@ -439,30 +465,32 @@ const IconButton = createComponentSlot(MuiIconButton)<FileSelectListItemClassKey
             margin-right: ${theme.spacing(-1)};
         }
 
-        ${ownerState.hasFilePreview &&
-        css`
-            padding: 4px;
+        ${
+            ownerState.hasFilePreview &&
+            css`
+                padding: 4px;
 
-            &:last-child {
-                margin-right: -4px;
-            }
-        `}
+                &:last-child {
+                    margin-right: -4px;
+                }
+            `
+        }
     `,
 );
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFileSelectListItem: FileSelectListItemClassKey;
+        DextinityAdminFileSelectListItem: FileSelectListItemClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFileSelectListItem: FileSelectListItemProps;
+        DextinityAdminFileSelectListItem: FileSelectListItemProps;
     }
 
     interface Components {
-        CometAdminFileSelectListItem?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFileSelectListItem"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFileSelectListItem"];
+        DextinityAdminFileSelectListItem?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFileSelectListItem"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFileSelectListItem"];
         };
     }
 }

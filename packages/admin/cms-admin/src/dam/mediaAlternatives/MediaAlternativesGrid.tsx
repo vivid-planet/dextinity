@@ -6,6 +6,7 @@ import {
     FillSpace,
     GridCellContent,
     type GridColDef,
+    GridToolbarQuickFilter,
     messages,
     muiGridFilterToGql,
     muiGridSortToGql,
@@ -15,23 +16,23 @@ import {
     useDataGridRemote,
     useEditDialog,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from "@dextinity/admin-icons";
 import { DialogContent, IconButton } from "@mui/material";
-import { DataGrid, type GridSlotsComponent, GridToolbarQuickFilter } from "@mui/x-data-grid";
-import type { GridToolbarProps } from "@mui/x-data-grid/components/toolbar/GridToolbar";
+import type { GridSlotsComponent, GridToolbarProps } from "@mui/x-data-grid";
 import { type ReactElement, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { type GQLDamMediaAlternativeType } from "../../graphql.generated";
+import { DataGrid } from "../../dataGrid/DataGrid";
+import type { GQLDamMediaAlternativeType } from "../../graphql.generated";
 import { VideoPreviewCaptionsQueryName } from "../FileForm/previews/VideoPreview";
 import { MediaAlternativeForm } from "./MediaAlternativeForm";
-import {
-    type GQLDamMediaAlternativeGridFragment,
-    type GQLDamMediaAlternativesQuery,
-    type GQLDamMediaAlternativesQueryVariables,
-    type GQLDeleteDamMediaAlternativeMutation,
-    type GQLDeleteDamMediaAlternativeMutationVariables,
+import type {
+    GQLDamMediaAlternativeGridFragment,
+    GQLDamMediaAlternativesQuery,
+    GQLDamMediaAlternativesQueryVariables,
+    GQLDeleteDamMediaAlternativeMutation,
+    GQLDeleteDamMediaAlternativeMutationVariables,
 } from "./MediaAlternativesGrid.generated";
 
 const damMediaAlternativeFragment = gql`
@@ -118,7 +119,7 @@ export function MediaAlternativesGrid({ file, type, direction }: MediaAlternativ
     const columns: GridColDef<GQLDamMediaAlternativeGridFragment>[] = [
         {
             field: direction === "for" ? "alternative" : "for",
-            headerName: intl.formatMessage({ id: "damMediaAlternatives.title", defaultMessage: "File" }),
+            headerName: intl.formatMessage({ id: "dextinity.damMediaAlternatives.title", defaultMessage: "File" }),
             flex: 1,
             minWidth: 150,
             renderCell: ({ row }) =>
@@ -131,7 +132,7 @@ export function MediaAlternativesGrid({ file, type, direction }: MediaAlternativ
         },
         {
             field: "language",
-            headerName: intl.formatMessage({ id: "damMediaAlternatives.language", defaultMessage: "Language" }),
+            headerName: intl.formatMessage({ id: "dextinity.damMediaAlternatives.language", defaultMessage: "Language" }),
             flex: 1,
             minWidth: 50,
             filterable: false,
@@ -183,7 +184,9 @@ export function MediaAlternativesGrid({ file, type, direction }: MediaAlternativ
         },
     });
     const rowCount = useBufferedRowCount(data?.damMediaAlternatives.totalCount);
-    if (error) throw error;
+    if (error) {
+        throw error;
+    }
     const rows = data?.damMediaAlternatives.nodes ?? [];
 
     return (
@@ -202,6 +205,7 @@ export function MediaAlternativesGrid({ file, type, direction }: MediaAlternativ
                 slotProps={{
                     toolbar: { handleAdd: () => editDialogApi.openAddDialog(file.id) } as MediaAlternativesGridToolbarProps,
                 }}
+                showToolbar
             />
             <EditDialog>
                 {selection.id && selection.mode ? (

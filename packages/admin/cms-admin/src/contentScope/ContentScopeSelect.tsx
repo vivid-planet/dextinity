@@ -1,5 +1,5 @@
-import { AppHeaderDropdown, ClearInputAdornment } from "@comet/admin";
-import { Domain, Language, Search } from "@comet/admin-icons";
+import { AppHeaderDropdown, ClearInputAdornment } from "@dextinity/admin";
+import { Domain, Language, Search } from "@dextinity/admin-icons";
 import {
     Box,
     Divider,
@@ -19,7 +19,7 @@ import { Fragment, type ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { findTextMatches, MarkedMatches } from "../common/MarkedMatches";
-import { type ContentScope } from "./Provider";
+import type { ContentScope } from "./Provider";
 
 type Option = {
     scope: ContentScope;
@@ -227,20 +227,21 @@ export function ContentScopeSelect({
                                         </InputAdornment>
                                     }
                                     placeholder={intl.formatMessage({
-                                        id: "contentScopeSelect.searchInput.placeholder",
+                                        id: "dextinity.contentScopeSelect.searchInput.placeholder",
                                         defaultMessage: "Search...",
                                     })}
                                     value={searchValue}
                                     onChange={(event) => setSearchValue(event.currentTarget.value)}
                                     endAdornment={
-                                        <ClearInputAdornment
-                                            onClick={() => setSearchValue("")}
-                                            hasClearableContent={searchValue !== ""}
-                                            position="end"
-                                            slotProps={{
-                                                buttonBase: { sx: { fontSize: "16px" } },
-                                            }}
-                                        />
+                                        searchValue !== "" ? (
+                                            <ClearInputAdornment
+                                                onClick={() => setSearchValue("")}
+                                                position="end"
+                                                slotProps={{
+                                                    buttonBase: { sx: { fontSize: "16px" } },
+                                                }}
+                                            />
+                                        ) : undefined
                                     }
                                     autoFocus
                                     fullWidth
@@ -302,7 +303,7 @@ export function ContentScopeSelect({
                         })}
                         {filteredOptions.length === 0 && (
                             <ListItem>
-                                <FormattedMessage id="contentScopeSelect.list.noOptions" defaultMessage="No options" />
+                                <FormattedMessage id="dextinity.contentScopeSelect.list.noOptions" defaultMessage="No options" />
                             </ListItem>
                         )}
                     </List>

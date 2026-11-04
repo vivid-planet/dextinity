@@ -1,11 +1,12 @@
-import { CrudField } from "@comet/cms-api";
+import { CrudField } from "@dextinity/cms-api";
 import { BaseEntity, defineConfig, Embeddable, Embedded, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field, InputType } from "@nestjs/graphql";
-import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage";
-import { v4 as uuid } from "uuid";
+import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
+import { randomUUID } from "crypto";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
-import { type GeneratedFile } from "../../utils/write-generated-files";
+import type { GeneratedFile } from "../../utils/write-generated-files";
 import { generateCrud } from "../generate-crud";
 
 @Embeddable()
@@ -19,7 +20,7 @@ export class TestEmbedded {
 @Entity()
 export class TestEntityWithEmbedded extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     foo: string;
@@ -39,7 +40,7 @@ export class TestWithoutEmbedded {
 @Entity()
 export class TestEntityWithoutEmbedded extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     foo: string;
@@ -63,13 +64,12 @@ describe("GenerateCrudInputEmbedded", () => {
                 }),
             );
 
-            const out = await generateCrud(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithEmbedded"),
-            );
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithEmbedded"));
             formattedOut = await formatGeneratedFiles(out);
             const foundFile = formattedOut.find((file) => file.name === "test-entity-with-embedded.resolver.ts");
-            if (!foundFile) throw new Error("File not found");
+            if (!foundFile) {
+                throw new Error("File not found");
+            }
         });
         afterEach(async () => {
             await orm.close();
@@ -77,7 +77,9 @@ describe("GenerateCrudInputEmbedded", () => {
 
         it("filter for embedded field should exist", async () => {
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-embedded.filter.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
 
             // console.log(file.content);
             const source = parseSource(file.content);
@@ -105,7 +107,9 @@ describe("GenerateCrudInputEmbedded", () => {
 
         it("input for embedded field should exist", async () => {
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-embedded.input.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
 
             // console.log(file.content);
             const source = parseSource(file.content);
@@ -133,7 +137,9 @@ describe("GenerateCrudInputEmbedded", () => {
 
         it("sort for embedded field should exist", async () => {
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-embedded.sort.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
 
             // console.log(file.content);
             const source = parseSource(file.content);
@@ -163,13 +169,12 @@ describe("GenerateCrudInputEmbedded", () => {
                 }),
             );
 
-            const out = await generateCrud(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithoutEmbedded"),
-            );
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithoutEmbedded"));
             formattedOut = await formatGeneratedFiles(out);
             const foundFile = formattedOut.find((file) => file.name === "test-entity-without-embedded.resolver.ts");
-            if (!foundFile) throw new Error("File not found");
+            if (!foundFile) {
+                throw new Error("File not found");
+            }
         });
         afterEach(async () => {
             await orm.close();
@@ -177,7 +182,9 @@ describe("GenerateCrudInputEmbedded", () => {
 
         it("filter for embedded field should not exist", async () => {
             const file = formattedOut.find((file) => file.name === "dto/test-entity-without-embedded.filter.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
 
             // console.log(file.content);
             const source = parseSource(file.content);
@@ -203,7 +210,9 @@ describe("GenerateCrudInputEmbedded", () => {
 
         it("input for embedded field should not exist", async () => {
             const file = formattedOut.find((file) => file.name === "dto/test-entity-without-embedded.input.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
 
             // console.log(file.content);
             const source = parseSource(file.content);
@@ -230,7 +239,9 @@ describe("GenerateCrudInputEmbedded", () => {
 
         it("sort for embedded field should not exist", async () => {
             const file = formattedOut.find((file) => file.name === "dto/test-entity-without-embedded.sort.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
 
             // console.log(file.content);
             const source = parseSource(file.content);

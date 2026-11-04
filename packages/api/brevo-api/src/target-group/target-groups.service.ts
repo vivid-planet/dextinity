@@ -1,4 +1,4 @@
-import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@comet/cms-api";
+import { filtersToMikroOrmQuery, searchToMikroOrmQuery } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, FilterQuery, ObjectQuery, wrap } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
@@ -39,7 +39,9 @@ export class TargetGroupsService {
     ): boolean {
         if (filters && contactAttributes) {
             for (const [key, value] of Object.entries(filters)) {
-                if (!value || value.length === 0) continue;
+                if (!value || value.length === 0) {
+                    continue;
+                }
 
                 let isFound = false;
 

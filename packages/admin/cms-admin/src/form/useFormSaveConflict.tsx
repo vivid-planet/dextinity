@@ -1,11 +1,11 @@
-import { type FormApi } from "final-form";
-import { type MutableRefObject } from "react";
+import type { FormApi } from "final-form";
+import type { RefObject } from "react";
 
 import { useSaveConflict } from "../pages/useSaveConflict";
 
 interface FormSaveConflictOptions<FormValues, InitialFormValues> {
     checkConflict: () => Promise<boolean>;
-    formApiRef: MutableRefObject<FormApi<FormValues, InitialFormValues> | undefined>;
+    formApiRef: RefObject<FormApi<FormValues, InitialFormValues> | undefined>;
     loadLatestVersion: () => Promise<void>;
 }
 

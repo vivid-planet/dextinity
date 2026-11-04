@@ -10,8 +10,7 @@ Create a new service in the `fixtures/generators` directory with the following c
 
 ```ts title="customers-fixture.service.ts"
 import { faker } from "@faker-js/faker";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
 import { Customer } from "@src/customers/entities/customer.entity";
 
@@ -19,16 +18,13 @@ import { Customer } from "@src/customers/entities/customer.entity";
 export class CustomersFixtureService {
     private logger = new Logger(CustomersFixtureService.name);
 
-    constructor(
-        private readonly entityManager: EntityManager,
-        @InjectRepository(Customer) private readonly repository: EntityRepository<Customer>,
-    ) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     async generate(): Promise<void> {
         this.logger.log("Generating customers...");
 
         for (let i = 0; i < 100; i++) {
-            const customer = this.repository.create({
+            const customer = this.entityManager.create(Customer, {
                 id: faker.string.uuid(),
                 firstName: faker.person.firstName(),
                 lastName: faker.person.lastName(),

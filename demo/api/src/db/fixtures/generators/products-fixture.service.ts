@@ -1,7 +1,7 @@
-import { DamImageBlock } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { DamImageBlock } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
+import { faker } from "@src/db/fixtures/faker";
 import { Manufacturer } from "@src/products/entities/manufacturer.entity";
 import { Product, ProductStatus } from "@src/products/entities/product.entity";
 import { ProductCategory } from "@src/products/entities/product-category.entity";
@@ -67,6 +67,8 @@ export class ProductsFixtureService {
             productCategoryTypes.push(productCategoryType);
         }
 
+        const usedSlugs = new Set<string>();
+
         this.logger.log("Generating product categories...");
         const productCategories: ProductCategory[] = [];
         for (let i = 0; i < 10; i++) {
@@ -75,7 +77,7 @@ export class ProductsFixtureService {
                 id: faker.string.uuid(),
                 title: title,
                 type: faker.helpers.arrayElement(productCategoryTypes),
-                slug: faker.helpers.slugify(title),
+                slug: this.generateUniqueSlug(title, usedSlugs),
                 position: i + 1,
             });
             this.entityManager.persist(productCategory);
@@ -90,7 +92,7 @@ export class ProductsFixtureService {
                 id: faker.string.uuid(),
                 title: faker.commerce.productName(),
                 status: faker.helpers.arrayElement([ProductStatus.Published, ProductStatus.Unpublished]),
-                slug: faker.helpers.slugify(title),
+                slug: this.generateUniqueSlug(title, usedSlugs),
                 description: faker.commerce.productDescription(),
                 type: faker.helpers.arrayElement([ProductType.cap, ProductType.shirt, ProductType.tie]),
                 category: faker.helpers.arrayElement(productCategories),
@@ -108,5 +110,24 @@ export class ProductsFixtureService {
 
             this.entityManager.persist(product);
         }
+    }
+
+    private generateUniqueSlug(title: string, usedSlugs: Set<string>): string {
+        const baseSlug = faker.helpers.slugify(title);
+
+        if (!usedSlugs.has(baseSlug)) {
+            usedSlugs.add(baseSlug);
+            return baseSlug;
+        }
+
+        let suffix = 2;
+        let candidateSlug = `${baseSlug}-${suffix}`;
+        while (usedSlugs.has(candidateSlug)) {
+            suffix++;
+            candidateSlug = `${baseSlug}-${suffix}`;
+        }
+
+        usedSlugs.add(candidateSlug);
+        return candidateSlug;
     }
 }

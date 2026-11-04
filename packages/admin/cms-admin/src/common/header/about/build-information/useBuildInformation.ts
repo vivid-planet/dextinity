@@ -1,6 +1,6 @@
-import { useCometConfig } from "../../../../config/CometConfigContext";
-import { type BuildInformation } from "./buildInformation";
+import { useDextinityConfig } from "../../../../config/DextinityConfigContext";
+import type { BuildInformation } from "./buildInformation";
 
 export function useBuildInformation(): BuildInformation | undefined {
-    return useCometConfig().buildInformation;
+    return useDextinityConfig().buildInformation;
 }

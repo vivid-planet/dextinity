@@ -1,3 +1,4 @@
+import { useSubRoutePrefix } from "@dextinity/admin";
 import { type PropsWithChildren, useEffect, useRef } from "react";
 import { useRouteMatch } from "react-router";
 import scrollIntoView from "scroll-into-view-if-needed";
@@ -9,12 +10,26 @@ interface HoverPreviewComponentProps {
     componentSlug: string;
 }
 
-export const HoverPreviewComponent = ({ children, componentSlug }: PropsWithChildren<HoverPreviewComponentProps>) => {
+function useComponentRoute(componentSlug: string) {
     const match = useRouteMatch();
+    const subRoutePrefix = useSubRoutePrefix();
+
+    if (componentSlug.startsWith("#")) {
+        // The preview builds anchor routes from `parentUrl`, which doesn't contain the sub-route a composite block
+        // renders its child blocks in, so the router match is the matching prefix.
+        return `${match.url}${componentSlug}`;
+    }
+
+    // The preview builds page routes from `parentUrlSubRoute ?? parentUrl`, like the `StackSwitch` builds its page URLs, so they
+    // contain the path of a `SubRoute`, for instance the one of a `SaveBoundary`. These components are rendered on the switch's
+    // initial page, though, whose sub-route prefix has an additional `/index` segment.
+    return `${subRoutePrefix.replace(/\/index$/, "")}/${componentSlug}`;
+}
+
+export const HoverPreviewComponent = ({ children, componentSlug }: PropsWithChildren<HoverPreviewComponentProps>) => {
+    const componentRoute = useComponentRoute(componentSlug);
     const iFrameBridge = useIFrameBridge();
     const rootEl = useRef<HTMLDivElement | null>(null);
-
-    const componentRoute = componentSlug.startsWith("#") ? `${match.url}${componentSlug}` : `${match.url}/${componentSlug}`;
 
     const isHovered = iFrameBridge.hoveredSiteRoute?.includes(componentRoute) ?? false;
     useEffect(() => {

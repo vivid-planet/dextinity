@@ -1,17 +1,17 @@
-import { CrudGenerator } from "@comet/cms-api";
+import { CrudGenerator } from "@dextinity/cms-api";
 import { BaseEntity, Collection, Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { ProductCategory } from "./product-category.entity";
 
 @ObjectType()
 @Entity()
-@CrudGenerator({ targetDirectory: `${__dirname}/../generated/`, requiredPermission: ["products"] })
+@CrudGenerator({ requiredPermission: ["products"] })
 export class ProductCategoryType extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     @Field()

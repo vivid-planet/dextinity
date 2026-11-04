@@ -5,7 +5,7 @@ import useConstant from "use-constant";
 import { v4 as uuid } from "uuid";
 
 import { RouterContext } from "./Context";
-import { type ResetAction, type SaveAction } from "./PromptHandler";
+import type { ResetAction, SaveAction } from "./PromptHandler";
 import { SubRoute, useSubRoutePrefix } from "./SubRoute";
 
 type PromptRoute = {

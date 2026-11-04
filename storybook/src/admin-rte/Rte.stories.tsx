@@ -1,4 +1,4 @@
-import { type IRteRef, makeRteApi, Rte } from "@comet/admin-rte";
+import { type IRteRef, makeRteApi, Rte } from "@dextinity/admin-rte";
 import { Box, Card, CardContent } from "@mui/material";
 import { useRef } from "react";
 
@@ -7,7 +7,7 @@ import { exampleContent, PrintEditorState, useAutoFocus } from "./helper";
 const [useRteApi] = makeRteApi();
 
 export default {
-    title: "@comet/admin-rte",
+    title: "@dextinity/admin-rte",
 };
 
 export const RteMinimalConfiguration = {
@@ -15,7 +15,7 @@ export const RteMinimalConfiguration = {
         const { editorState, setEditorState } = useRteApi({ defaultValue: JSON.stringify(exampleContent) }); // defaultValue is optional
 
         // focus the editor to see the cursor immediately
-        const editorRef = useRef<IRteRef>();
+        const editorRef = useRef<IRteRef>(undefined);
         useAutoFocus(editorRef);
 
         return (

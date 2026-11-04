@@ -1,17 +1,19 @@
 import { gql } from "@apollo/client";
-import { messages } from "@comet/admin";
-import { Link as LinkIcon } from "@comet/admin-icons";
+import { messages } from "@dextinity/admin";
+import { Link as LinkIcon } from "@dextinity/admin-icons";
 import {
     createDocumentDependencyMethods,
     createDocumentRootBlocksMethods,
+    createDocumentTranslationMethods,
     type DependencyInterface,
     type DocumentInterface,
     type InfoTagProps,
-} from "@comet/cms-admin";
+    type TranslatableInterface,
+} from "@dextinity/cms-admin";
 import { Chip } from "@mui/material";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
-import { type GQLPageTreeNodeAdditionalFieldsFragment } from "@src/common/EditPageNode";
-import { type GQLLink, type GQLLinkInput } from "@src/graphql.generated";
+import type { GQLPageTreeNodeAdditionalFieldsFragment } from "@src/common/EditPageNode";
+import type { GQLLink, GQLLinkInput } from "@src/graphql.generated";
 import { categoryToUrlParam } from "@src/pageTree/pageTreeCategories";
 import { FormattedMessage } from "react-intl";
 
@@ -21,7 +23,9 @@ const rootBlocks = {
     content: LinkBlock,
 };
 
-export const Link: DocumentInterface<Pick<GQLLink, "content">, GQLLinkInput> & DependencyInterface = {
+export const Link: DocumentInterface<Pick<GQLLink, "content">, GQLLinkInput> &
+    TranslatableInterface<Pick<GQLLink, "content">, GQLLinkInput> &
+    DependencyInterface = {
     displayName: <FormattedMessage {...messages.link} />,
     editComponent: EditLink,
     getQuery: gql`
@@ -62,6 +66,7 @@ export const Link: DocumentInterface<Pick<GQLLink, "content">, GQLLinkInput> & D
     menuIcon: LinkIcon,
     hasNoSitePreview: true,
     ...createDocumentRootBlocksMethods(rootBlocks),
+    ...createDocumentTranslationMethods(rootBlocks),
     ...createDocumentDependencyMethods({
         rootQueryName: "link",
         rootBlocks,

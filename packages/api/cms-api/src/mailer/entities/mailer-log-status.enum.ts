@@ -5,5 +5,5 @@ export enum MailerLogStatus {
     sent = "sent",
 }
 registerEnumType(MailerLogStatus, {
-    name: "WarningStatus",
+    name: "MailerLogStatus",
 });

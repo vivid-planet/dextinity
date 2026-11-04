@@ -1,9 +1,9 @@
-import { type ComponentsOverrides } from "@mui/material";
+import type { ComponentsOverrides } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { createComponentSlot } from "../../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
 
 export type ToolbarFillSpaceClassKey = "root";
 
@@ -22,23 +22,23 @@ const Root = createComponentSlot("div")<ToolbarFillSpaceClassKey>({
  * @deprecated Use `FillSpace` instead.
  */
 export const ToolbarFillSpace = (inProps: ToolbarFillSpaceProps) => {
-    const { children, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminToolbarFillSpace" });
+    const { children, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminToolbarFillSpace" });
     return <Root {...restProps}>{children}</Root>;
 };
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminToolbarFillSpace: ToolbarFillSpaceClassKey;
+        DextinityAdminToolbarFillSpace: ToolbarFillSpaceClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminToolbarFillSpace: ToolbarFillSpaceProps;
+        DextinityAdminToolbarFillSpace: ToolbarFillSpaceProps;
     }
 
     interface Components {
-        CometAdminToolbarFillSpace?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminToolbarFillSpace"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminToolbarFillSpace"];
+        DextinityAdminToolbarFillSpace?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminToolbarFillSpace"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminToolbarFillSpace"];
         };
     }
 }

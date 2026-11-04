@@ -1,25 +1,25 @@
 {
-    "name": "@comet/admin-babel-preset",
-    "version": "8.19.0",
+    "name": "@dextinity/admin-babel-preset",
+    "version": "10.13.1",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vivid-planet/comet",
+        "url": "https://github.com/vivid-planet/dextinity",
         "directory": "packages/admin/admin-babel-preset"
     },
     "type": "commonjs",
-    "description": "Babel preset for Comet Admin packages",
+    "description": "Babel preset for Dextinity Admin packages",
     "license": "BSD-2-Clause",
     "main": "index.js",
     "dependencies": {
-        "@babel/cli": "^7.28.6",
-        "@babel/core": "^7.28.6",
-        "@babel/preset-env": "^7.28.6",
-        "@babel/preset-react": "^7.28.5",
-        "@babel/preset-typescript": "^7.28.5",
+        "@babel/cli": "^7.29.7",
+        "@babel/core": "^7.29.7",
+        "@babel/preset-env": "^7.29.7",
+        "@babel/preset-react": "^7.29.7",
+        "@babel/preset-typescript": "^7.29.7",
         "@emotion/babel-plugin": "^11.13.5"
     },
     "devDependencies": {
-        "@babel/cli": "^7.28.6"
+        "@babel/cli": "^7.29.7"
     },
     "peerDependencies": {
         "@babel/cli": ">= 7"
@@ -29,6 +29,6 @@
         "registry": "https://registry.npmjs.org"
     },
     "engines": {
-        "node": ">=22.0.0"
+        "node": ">=22.12.0"
     }
 }

@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`GenerateCrudInputTypeOrColumnType should generate correct input type for integer values 1`] = `
+exports[`GenerateCrudInputTypeOrColumnType > should generate correct input type for integer values 1`] = `
 "@InputType()
 export class TestEntityWithIntegerTypesInput {
     @IsNotEmpty()

@@ -1,6 +1,6 @@
-import { type Theme } from "@mui/material/styles";
-import { type MUIStyledCommonProps, type SxProps } from "@mui/system";
-import { type ComponentPropsWithRef, type ElementType } from "react";
+import type { Theme } from "@mui/material/styles";
+import type { MUIStyledCommonProps, SxProps } from "@mui/system";
+import type { ComponentPropsWithRef, ElementType } from "react";
 
 type SlotProps<Component extends ElementType> = Partial<ComponentPropsWithRef<Component>> & MUIStyledCommonProps<Theme>;
 

@@ -4,7 +4,7 @@ title: Coding Guidelines
 
 ## Scope
 
-These coding best practices were primarily developed for Comet projects. However, many of the principles are generally applicable.
+These coding best practices were primarily developed for Dextinity projects. However, many of the principles are generally applicable.
 
 ## Goals
 

@@ -1,4 +1,4 @@
-import { type Readable } from "stream";
+import type { Readable } from "stream";
 
 export type StorageMetaData = {
     size: number;
@@ -22,5 +22,6 @@ export interface BlobStorageBackendInterface {
     getPartialFile(folderName: string, fileName: string, offset: number, length: number): Promise<Readable>;
     getFileMetaData(folderName: string, fileName: string): Promise<StorageMetaData>;
     removeFile(folderName: string, fileName: string): Promise<void>;
+    listFiles(folderName: string): Promise<string[]>;
     getBackendFilePathPrefix(): string;
 }

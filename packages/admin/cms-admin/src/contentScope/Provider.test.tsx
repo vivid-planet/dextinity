@@ -1,8 +1,8 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { cleanup, render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Router } from "react-router";
+import { cleanup, render, waitFor } from "test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { CurrentUserContext } from "../userPermissions/hooks/currentUser";

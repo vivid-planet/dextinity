@@ -1,3 +1,4 @@
+import { DependenciesResolverFactory } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { Module } from "@nestjs/common";
 
@@ -6,6 +7,6 @@ import { PagesResolver } from "./pages.resolver";
 
 @Module({
     imports: [MikroOrmModule.forFeature([Page])],
-    providers: [PagesResolver],
+    providers: [PagesResolver, DependenciesResolverFactory.create(Page)],
 })
 export class PagesModule {}

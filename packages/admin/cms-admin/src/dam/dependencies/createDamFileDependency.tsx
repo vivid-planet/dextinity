@@ -1,9 +1,9 @@
 import { gql } from "@apollo/client";
-import { messages } from "@comet/admin";
+import { messages } from "@dextinity/admin";
 import { FormattedMessage } from "react-intl";
 
-import { type DependencyInterface } from "../../dependencies/types";
-import { type GQLFileDependencyQuery, type GQLFileDependencyQueryVariables } from "./createDamFileDependency.generated";
+import type { DependencyInterface } from "../../dependencies/types";
+import type { GQLFileDependencyQuery, GQLFileDependencyQueryVariables } from "./createDamFileDependency.generated";
 
 function createDamFileDependency(basePath = "/assets"): DependencyInterface {
     return {

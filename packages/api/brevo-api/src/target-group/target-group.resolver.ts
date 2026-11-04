@@ -1,4 +1,4 @@
-import { AffectedEntity, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@comet/cms-api";
+import { AffectedEntity, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
@@ -223,7 +223,9 @@ export function createTargetGroupsResolver({
 
         @ResolveField(() => Int)
         async brevoTotalSubscribers(@Parent() targetGroup: TargetGroupInterface): Promise<number> {
-            if (targetGroup.totalSubscribers !== undefined) return targetGroup.totalSubscribers;
+            if (targetGroup.totalSubscribers !== undefined) {
+                return targetGroup.totalSubscribers;
+            }
 
             const { uniqueSubscribers } = await this.brevoApiContactsService.findBrevoContactListById(targetGroup.brevoId, targetGroup.scope);
 

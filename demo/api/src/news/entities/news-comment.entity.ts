@@ -1,31 +1,19 @@
-import { ScopedEntity } from "@comet/cms-api";
+import { ScopedEntity } from "@dextinity/cms-api";
 import { BaseEntity, Entity, ManyToOne, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { News } from "./news.entity";
 
 @Entity()
 @ObjectType()
-@ScopedEntity(async (newsComment: NewsComment) => {
-    const news = await newsComment.news.init();
-
-    if (!news) {
-        throw new Error("News not found");
-    }
-
-    const scope = news.scope;
-    return {
-        domain: scope.domain as "main" | "secondary",
-        language: scope.language,
-    };
-})
+@ScopedEntity("news.scope")
 export class NewsComment extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt";
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @ManyToOne(() => News)
     news!: News;

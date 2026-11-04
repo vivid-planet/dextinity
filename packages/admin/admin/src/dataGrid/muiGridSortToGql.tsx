@@ -1,6 +1,6 @@
-import { type GridSortModel } from "@mui/x-data-grid";
+import type { GridSortModel } from "@mui/x-data-grid";
 
-import { type GridColDef } from "./GridColDef";
+import type { GridColDef } from "./GridColDef";
 
 type SortEntry = {
     field: any; // any to be compatible with enum
@@ -8,7 +8,9 @@ type SortEntry = {
 };
 
 export function muiGridSortToGql(sortModel?: GridSortModel, columns?: GridColDef[]) {
-    if (!sortModel || sortModel.length === 0) return undefined;
+    if (!sortModel || sortModel.length === 0) {
+        return undefined;
+    }
 
     const sortFieldMapping: Record<string, string[]> = {};
 

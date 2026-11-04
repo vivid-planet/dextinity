@@ -1,19 +1,19 @@
 {
-    "name": "comet-demo-admin-server",
-    "version": "1.0.1",
+    "name": "dextinity-demo-admin-server",
     "private": true,
-    "description": "Comet Admin Demo Server Application",
-    "type": "commonjs",
+    "description": "Dextinity Admin Demo Server Application",
+    "type": "module",
     "dependencies": {
-        "express": "^5.2.1",
-        "express-static-gzip": "^3.0.0",
-        "helmet": "^7.2.0",
-        "http-proxy-middleware": "^3.0.5"
+        "express": "^5.3.0",
+        "express-static-gzip": "^3.0.2",
+        "helmet": "^8.3.0",
+        "http-proxy-middleware": "^4.2.1"
     },
     "engines": {
         "node": "24"
     },
     "devDependencies": {
-        "@types/node": "^24.10.9"
+        "@types/express": "^5.0.6",
+        "@types/node": "^24.19.2"
     }
 }

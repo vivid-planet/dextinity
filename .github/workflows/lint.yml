@@ -11,6 +11,10 @@ on:
             - main
             - next
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     lint:
         name: Lint
@@ -18,58 +22,38 @@ jobs:
         steps:
             - run: echo "${{ github.actor }}"
 
-            - uses: actions/checkout@v5
-              with:
-                  ref: ${{ github.event.pull_request.head.ref || github.ref }}
-                  token: ${{ secrets.GITHUB_TOKEN }}
+            - uses: actions/checkout@v7
             - run: |
                   git config user.name github-actions
                   git config user.email github-actions@github.com
 
             - name: "Library: Clone translations"
-              uses: actions/checkout@v5
+              uses: actions/checkout@v7
               with:
-                  repository: vivid-planet/comet-lang
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  path: "demo/admin/lang/comet-lang"
+                  repository: vivid-planet/dextinity-lang
+                  path: "demo/admin/lang/dextinity-lang"
 
             - name: "Demo Admin: Clone translations"
-              uses: actions/checkout@v5
+              uses: actions/checkout@v7
               with:
-                  repository: vivid-planet/comet-demo-lang
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  path: "demo/admin/lang/comet-demo-lang"
+                  repository: vivid-planet/dextinity-demo-lang
+                  path: "demo/admin/lang/dextinity-demo-lang"
 
             - name: "Demo Site: Clone translations"
-              uses: actions/checkout@v5
+              uses: actions/checkout@v7
               with:
-                  repository: vivid-planet/comet-demo-lang
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  path: "demo/site/lang/comet-demo-lang"
+                  repository: vivid-planet/dextinity-demo-lang
+                  path: "demo/site/lang/dextinity-demo-lang"
 
             - name: "Demo Api: Clone translations"
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
               with:
-                  repository: vivid-planet/comet-demo-lang
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  path: "demo/api/lang/comet-demo-lang"
+                  repository: vivid-planet/dextinity-demo-lang
+                  path: "demo/api/lang/dextinity-demo-lang"
 
-            - uses: pnpm/action-setup@v4
-
-            - name: Use Node.js 24.x
-              uses: actions/setup-node@v5
+            - uses: ./.github/actions/setup
               with:
-                  node-version: 24
-                  registry-url: "https://registry.npmjs.org"
-                  cache: "pnpm" # https://github.com/actions/setup-node/blob/main/docs/advanced-usage.md#caching-packages-dependencies
-
-            - run: pnpm install --frozen-lockfile
-
-            - name: Setup project for CI run
-              run: pnpm run setup:ci
-
-            - name: Build
-              run: pnpm run build:packages
+                  build-packages: "true"
 
             - name: Lint
               run: |
@@ -77,6 +61,7 @@ jobs:
                   # check for duplicate ids of formatted messages
                   pnpm run intl:extract
                   # check if schema files are up to date
-                  pnpm --filter '@comet/cms-api' run generate-block-meta
-                  pnpm --filter '@comet/cms-api' run generate-schema
+                  pnpm --filter '@dextinity/cms-api' run generate-block-meta
+                  pnpm --filter '@dextinity/cms-api' run generate-schema
+                  pnpm --filter '@dextinity/brevo-api' run generate-schema
                   git diff --exit-code HEAD --

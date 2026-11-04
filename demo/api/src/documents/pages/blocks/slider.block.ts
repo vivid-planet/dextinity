@@ -8,7 +8,7 @@ import {
     createBlock,
     createListBlock,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { MediaBlock } from "@src/common/blocks/media.block";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
 
@@ -32,9 +32,7 @@ class SliderItemBlockInput extends BlockInput {
     }
 }
 
-const SliderItemBlock = createBlock(SliderItemBlockData, SliderItemBlockInput, {
-    name: "SliderItem",
-});
+const SliderItemBlock = createBlock(SliderItemBlockData, SliderItemBlockInput, "SliderItem");
 
 const SliderListBlock = createListBlock({ block: SliderItemBlock }, "SliderList");
 
@@ -52,6 +50,4 @@ class SliderBlockInput extends BlockInput {
     }
 }
 
-export const SliderBlock = createBlock(SliderBlockData, SliderBlockInput, {
-    name: "Slider",
-});
+export const SliderBlock = createBlock(SliderBlockData, SliderBlockInput, "Slider");

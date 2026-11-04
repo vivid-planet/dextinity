@@ -1,6 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
 import crypto from "crypto";
-import fetch from "node-fetch";
 
 import { BrevoModuleConfig } from "../../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../../config/brevo-module.constants";
@@ -45,12 +44,13 @@ export class EcgRtrListService {
         const headers = { "X-API-KEY": this.config.ecgRtrList.apiKey, "Content-Type": "application/json" };
         const body = { emails: emailsAndDomains, contained: true, hashed: true };
         const response = await fetch("https://ecg.rtr.at/dev/api/v1/emails/check/batch", { method: "POST", body: JSON.stringify(body), headers });
-        const data = await response.json();
-        const hashedResponseValues: string[] = data.emails ?? [];
 
-        if (response.status !== 200) {
+        if (!response.ok) {
             throw new Error("ECG-RTR List check could not be executed.");
         }
+
+        const data = (await response.json()) as { emails?: string[] };
+        const hashedResponseValues: string[] = data.emails ?? [];
 
         let containedEmails: string[] = [];
 

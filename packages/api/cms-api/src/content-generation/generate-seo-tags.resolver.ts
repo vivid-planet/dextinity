@@ -25,7 +25,9 @@ export class GenerateSeoTagsResolver {
     @Mutation(() => SeoTags)
     async generateSeoTags(@Args() { content, language }: GenerateSeoTagsArgs): Promise<SeoTags> {
         const seoTags = await this.contentGenerationService.generateSeoTags?.(content, { language });
-        if (!seoTags) throw new Error("SEO tag generation failed or is not supported");
+        if (!seoTags) {
+            throw new Error("SEO tag generation failed or is not supported");
+        }
         return seoTags;
     }
 }

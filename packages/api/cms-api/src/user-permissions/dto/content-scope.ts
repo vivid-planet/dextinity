@@ -11,3 +11,12 @@ export class ContentScopeWithLabel {
     @Field(() => GraphQLJSONObject)
     label: { [key in keyof ContentScope]: string };
 }
+
+@ObjectType()
+export class ContentScopeDimension {
+    @Field()
+    name: string;
+
+    @Field()
+    label: string;
+}

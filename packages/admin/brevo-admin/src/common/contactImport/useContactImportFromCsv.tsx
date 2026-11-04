@@ -1,18 +1,17 @@
 import { useApolloClient } from "@apollo/client";
-import { type RefetchQueriesInclude } from "@apollo/client/core/types";
-import { Alert, Button, CheckboxField, Dialog, FinalForm, Loading, messages, useErrorDialog } from "@comet/admin";
-import { Upload } from "@comet/admin-icons";
+import type { RefetchQueriesInclude } from "@apollo/client/core/types";
+import { Alert, Button, CheckboxField, Dialog, downloadFile, FinalForm, Loading, messages, useErrorDialog } from "@dextinity/admin";
+import { Upload } from "@dextinity/admin-icons";
 import { Box, DialogActions, DialogContent, DialogTitle, type MenuItem } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import saveAs from "file-saver";
 import { type ComponentProps, type ReactNode, type RefObject, useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { type GQLCsvImportInformation, type GQLEmailCampaignContentScopeInput } from "../../graphql.generated";
+import type { GQLCsvImportInformation, GQLEmailCampaignContentScopeInput } from "../../graphql.generated";
 import { useBrevoConfig } from "../BrevoConfigProvider";
 import { startBrevoContactImportMutation } from "./useContactImportFromCsv.gql";
-import { type GQLStartBrevoContactImportMutation, type GQLStartBrevoContactImportMutationVariables } from "./useContactImportFromCsv.gql.generated";
+import type { GQLStartBrevoContactImportMutation, GQLStartBrevoContactImportMutationVariables } from "./useContactImportFromCsv.gql.generated";
 
 interface UseContactImportProps {
     scope: GQLEmailCampaignContentScopeInput;
@@ -40,12 +39,7 @@ export const useContactImportFromCsv = ({ scope, targetGroupId, refetchQueries }
     const moreActionsMenuItem: ActionItem = useMemo(
         () => ({
             type: "action",
-            label: (
-                <FormattedMessage
-                    id="cometBrevoModule.targetGroup.assignedContacts.actions.importFromCsv"
-                    defaultMessage="Import contacts from CSV"
-                />
-            ),
+            label: <FormattedMessage id="dextinity.targetGroup.assignedContacts.actions.importFromCsv" defaultMessage="Import contacts from CSV" />,
             startAdornment: <Upload />,
             onClick: () => setOpen(true),
         }),
@@ -57,7 +51,7 @@ export const useContactImportFromCsv = ({ scope, targetGroupId, refetchQueries }
     const dialog = (
         <Dialog open={open} onClose={handleClose}>
             <DialogTitle>
-                <FormattedMessage id="cometBrevoModule.contactImport.title" defaultMessage="Importing contacts from CSV" />
+                <FormattedMessage id="dextinity.contactImport.title" defaultMessage="Importing contacts from CSV" />
             </DialogTitle>
             <DialogContent>
                 <FinalForm<ContactImportFromCsvForm>
@@ -75,14 +69,14 @@ export const useContactImportFromCsv = ({ scope, targetGroupId, refetchQueries }
                                 {values.sendDoubleOptIn ? (
                                     <Alert severity="warning" sx={{ marginBottom: 5 }}>
                                         <FormattedMessage
-                                            id="cometBrevoModule.contactImport.contactAddAlert"
+                                            id="dextinity.contactImport.contactAddAlert"
                                             defaultMessage="The contact will get a double opt-in email to confirm the subscription. After the contact's confirmation, the contact will be added to the corresponding target groups in this scope depending on the contact's attributes. Before the confirmation the contact will not be shown on the contacts page."
                                         />
                                     </Alert>
                                 ) : (
                                     <Alert severity="error" sx={{ marginBottom: 5 }}>
                                         <FormattedMessage
-                                            id="cometBrevoModule.contactImport.contactNoOptInAlert"
+                                            id="dextinity.contactImport.contactNoOptInAlert"
                                             defaultMessage="No Double Opt-In email will be sent. Please ensure recipients have given their consent before proceeding."
                                         />
                                     </Alert>
@@ -92,7 +86,7 @@ export const useContactImportFromCsv = ({ scope, targetGroupId, refetchQueries }
                                         name="sendDoubleOptIn"
                                         label={
                                             <FormattedMessage
-                                                id="cometBrevoModule.contactImport.sendDoubleOptInMail"
+                                                id="dextinity.contactImport.sendDoubleOptInMail"
                                                 defaultMessage="Send double opt-in email"
                                             />
                                         }
@@ -109,7 +103,7 @@ export const useContactImportFromCsv = ({ scope, targetGroupId, refetchQueries }
                     <FormattedMessage {...messages.cancel} />
                 </Button>
                 <Button variant="primary" onClick={() => fileInputRef.current?.click()}>
-                    <FormattedMessage id="cometBrevoModule.contactImport.importContacts" defaultMessage="Import Contacts" />
+                    <FormattedMessage id="dextinity.contactImport.importContacts" defaultMessage="Import Contacts" />
                 </Button>
             </DialogActions>
         </Dialog>
@@ -138,7 +132,7 @@ export const useContactImportFromCsv = ({ scope, targetGroupId, refetchQueries }
 };
 
 interface UseContactComponentProps extends UseContactImportProps {
-    fileInputRef: RefObject<HTMLInputElement>;
+    fileInputRef: RefObject<HTMLInputElement | null>;
 }
 
 const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDoubleOptIn, refetchQueries }: UseContactComponentProps) => {
@@ -161,9 +155,7 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
         });
 
         if (!response.ok) {
-            throw new Error(
-                intl.formatMessage({ id: "cometBrevoModule.useContactImport.error.fileUpload", defaultMessage: "Could not upload file" }),
-            );
+            throw new Error(intl.formatMessage({ id: "dextinity.useContactImport.error.fileUpload", defaultMessage: "Could not upload file" }));
         }
 
         const fileUploadId = (await response.json()).id;
@@ -181,9 +173,9 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
         if (!data) {
             throw new Error(
                 intl.formatMessage({
-                    id: "cometBrevoModule.useContactImport.error.defaultMessage",
+                    id: "dextinity.useContactImport.error.defaultMessage",
                     defaultMessage:
-                        "An error occured during the import. Please try again in a while or contact your administrator if the error persists.",
+                        "An error occurred during the import. Please try again in a while or contact your administrator if the error persists.",
                 }),
             );
         }
@@ -193,7 +185,7 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
     const saveErrorFile = () => {
         const failedColumns = importInformation?.failedColumns;
         if (!failedColumns || failedColumns.length === 0) {
-            throw new Error(intl.formatMessage({ id: "export", defaultMessage: "No failed columns to save" }));
+            throw new Error(intl.formatMessage({ id: "dextinity.export", defaultMessage: "No failed columns to save" }));
         }
 
         let errorData = "";
@@ -214,14 +206,13 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
         }
 
         // Create and download the file
-        const file = new Blob([errorData], { type: "text/csv;charset=utf-8" });
-        saveAs(file, `error-log-${new Date().toISOString()}.csv`);
+        downloadFile(new Blob([errorData], { type: "text/csv;charset=utf-8" }), `error-log-${new Date().toISOString()}.csv`);
     };
 
     const saveBlacklistedContactsFile = () => {
         const blacklistedContactsColumns = importInformation?.blacklistedColumns;
         if (!blacklistedContactsColumns || blacklistedContactsColumns.length === 0) {
-            throw new Error(intl.formatMessage({ id: "export", defaultMessage: "No failed columns to save" }));
+            throw new Error(intl.formatMessage({ id: "dextinity.export", defaultMessage: "No failed columns to save" }));
         }
 
         let blacklistedContactsData = "";
@@ -242,8 +233,10 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
         }
 
         // Create and download the file
-        const file = new Blob([blacklistedContactsData], { type: "text/csv;charset=utf-8" });
-        saveAs(file, `blacklisted-contact-log-${new Date().toISOString()}.csv`);
+        downloadFile(
+            new Blob([blacklistedContactsData], { type: "text/csv;charset=utf-8" }),
+            `blacklisted-contact-log-${new Date().toISOString()}.csv`,
+        );
     };
 
     const { getInputProps } = useDropzone({
@@ -277,8 +270,8 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
 
                 const userMessage = (
                     <FormattedMessage
-                        id="cometBrevoModule.useContactImport.error.defaultMessage"
-                        defaultMessage="An error occured during the import. Please try again in a while or contact your administrator if the error persists."
+                        id="dextinity.useContactImport.error.defaultMessage"
+                        defaultMessage="An error occurred during the import. Please try again in a while or contact your administrator if the error persists."
                     />
                 );
 
@@ -297,10 +290,10 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
             <Dialog open={dialogOpen}>
                 <DialogTitle>
                     {importingCsv && (
-                        <FormattedMessage id="cometBrevoModule.useContactImport.importing.title" defaultMessage="Importing contacts from CSV..." />
+                        <FormattedMessage id="dextinity.useContactImport.importing.title" defaultMessage="Importing contacts from CSV..." />
                     )}
                     {importInformation && (
-                        <FormattedMessage id="cometBrevoModule.useContactImport.importSuccessful.title" defaultMessage="Import successful" />
+                        <FormattedMessage id="dextinity.useContactImport.importSuccessful.title" defaultMessage="Import successful" />
                     )}
                 </DialogTitle>
                 <DialogContent>
@@ -309,14 +302,14 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
                         <>
                             {importInformation.created > 0 && (
                                 <FormattedMessage
-                                    id="cometBrevoModule.useContactImport.importSuccessful.contactsImported"
+                                    id="dextinity.useContactImport.importSuccessful.contactsImported"
                                     defaultMessage="{amount} contact(s) have been created successfully."
                                     values={{ amount: importInformation.created }}
                                 />
                             )}
                             {importInformation.updated > 0 && (
                                 <FormattedMessage
-                                    id="cometBrevoModule.useContactImport.importSuccessful.contactsUpdated"
+                                    id="dextinity.useContactImport.importSuccessful.contactsUpdated"
                                     defaultMessage="{amount} contact(s) have been updated."
                                     values={{ amount: importInformation.updated }}
                                 />
@@ -326,7 +319,7 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
                                 <Box mt={2}>
                                     <Alert severity="error">
                                         <FormattedMessage
-                                            id="cometBrevoModule.useContactImport.error.contactsCouldNotBeImported"
+                                            id="dextinity.useContactImport.error.contactsCouldNotBeImported"
                                             defaultMessage="{amount} contact(s) could not be imported. <link>Download this file</link> to get the failing row(s)."
                                             values={{
                                                 amount: importInformation.failed,
@@ -341,7 +334,7 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
                                 <Box mt={2}>
                                     <Alert severity="error">
                                         <FormattedMessage
-                                            id="cometBrevoModule.useContactImport.error.contactsAreBlacklisted"
+                                            id="dextinity.useContactImport.error.contactsAreBlacklisted"
                                             defaultMessage="{amount} contacts could not be imported as they are blacklisted.  <link>Download this file</link> to get the blacklisted contact(s)."
                                             values={{
                                                 amount: importInformation.blacklisted,
@@ -358,7 +351,7 @@ const ContactImportComponent = ({ scope, targetGroupId, fileInputRef, sendDouble
                                 <Box mt={2}>
                                     <Alert severity="warning">
                                         <FormattedMessage
-                                            id="cometBrevoModule.useContactImport.importSuccessful.doiNotice"
+                                            id="dextinity.useContactImport.importSuccessful.doiNotice"
                                             defaultMessage="Contacts who have not yet confirmed their subscription will receive a double opt-in email to complete the process. These contacts will not appear in this list until they confirm their subscription. Once confirmed, they will automatically be added to the appropriate target group(s)."
                                         />
                                     </Alert>

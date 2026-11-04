@@ -1,6 +1,6 @@
 import { type RefObject, useEffect, useState } from "react";
 
-export const useElementIsOverflowing = (ref: RefObject<HTMLElement>) => {
+export const useElementIsOverflowing = (ref: RefObject<HTMLElement | null>) => {
     const [isOverflowing, setIsOverflowing] = useState(false);
 
     useEffect(() => {

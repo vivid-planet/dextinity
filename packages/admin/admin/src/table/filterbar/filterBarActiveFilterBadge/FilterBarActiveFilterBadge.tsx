@@ -2,7 +2,7 @@ import { type ComponentsOverrides, Typography } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 
 import { createComponentSlot } from "../../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
 
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
@@ -30,10 +30,9 @@ const HasValueCount = createComponentSlot("div")<FilterBarActiveFilterBadgeClass
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
-export interface FilterBarActiveFilterBadgeProps
-    extends ThemedComponentBaseProps<{
-        hasValueCount: "div";
-    }> {
+export interface FilterBarActiveFilterBadgeProps extends ThemedComponentBaseProps<{
+    hasValueCount: "div";
+}> {
     countValue: number;
 }
 
@@ -43,7 +42,7 @@ export interface FilterBarActiveFilterBadgeProps
 export function FilterBarActiveFilterBadge(inProps: FilterBarActiveFilterBadgeProps) {
     const { countValue, slotProps, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminFilterBarActiveFilterBadge",
+        name: "DextinityAdminFilterBarActiveFilterBadge",
     });
     if (countValue > 0) {
         return (
@@ -60,17 +59,17 @@ export function FilterBarActiveFilterBadge(inProps: FilterBarActiveFilterBadgePr
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFilterBarActiveFilterBadge: FilterBarActiveFilterBadgeClassKey;
+        DextinityAdminFilterBarActiveFilterBadge: FilterBarActiveFilterBadgeClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFilterBarActiveFilterBadge: FilterBarActiveFilterBadgeProps;
+        DextinityAdminFilterBarActiveFilterBadge: FilterBarActiveFilterBadgeProps;
     }
 
     interface Components {
-        CometAdminFilterBarActiveFilterBadge?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFilterBarActiveFilterBadge"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFilterBarActiveFilterBadge"];
+        DextinityAdminFilterBarActiveFilterBadge?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFilterBarActiveFilterBadge"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFilterBarActiveFilterBadge"];
         };
     }
 }

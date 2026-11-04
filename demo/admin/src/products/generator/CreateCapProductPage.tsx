@@ -8,8 +8,8 @@ import {
     ToolbarActions,
     ToolbarAutomaticTitleItem,
     ToolbarBackButton,
-} from "@comet/admin";
-import { ContentScopeIndicator } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { ContentScopeIndicator } from "@dextinity/cms-admin";
 import { CreateCapProductForm } from "@src/products/generator/generated/CreateCapProductForm";
 import { useIntl } from "react-intl";
 

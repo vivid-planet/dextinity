@@ -1,51 +1,70 @@
 import { useApolloClient } from "@apollo/client";
-import { Assets, Delete, MoreVertical, OpenNewTab } from "@comet/admin-icons";
-import { Box, Divider, Grid, IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Typography } from "@mui/material";
-import { type ComponentProps, isValidElement, type ReactElement, type ReactNode, useState } from "react";
-import { type FieldRenderProps } from "react-final-form";
+import { Alert, useSnackbarApi } from "@dextinity/admin";
+import { Assets, Delete, MoreVertical } from "@dextinity/admin-icons";
+import { Box, Divider, Grid, IconButton, List, Snackbar, Typography } from "@mui/material";
+import { type ReactElement, type ReactNode, useState } from "react";
+import type { FieldRenderProps } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
 import { BlockAdminComponentButton } from "../../blocks/common/BlockAdminComponentButton";
 import { BlockAdminComponentPaper } from "../../blocks/common/BlockAdminComponentPaper";
-import { useContentScope } from "../../contentScope/Provider";
-import { useDependenciesConfig } from "../../dependencies/dependenciesConfig";
-import { ChooseFileDialog } from "./chooseFile/ChooseFileDialog";
+import { DamScopeProvider } from "../../dam/config/DamScopeProvider";
+import { useDamScope } from "../../dam/config/useDamScope";
+import { ChooseDamFileDialog } from "./chooseFile/ChooseDamFileDialog";
+import { ChooseDamFilesDialog } from "./chooseFile/ChooseDamFilesDialog";
 import { DamPathLazy } from "./DamPathLazy";
-import { damFileFieldFileQuery } from "./FileField.gql";
-import { type GQLDamFileFieldFileFragment, type GQLDamFileFieldFileQuery, type GQLDamFileFieldFileQueryVariables } from "./FileField.gql.generated";
+import type { GQLDamFileFieldFileFragment } from "./FileField.fragment.generated";
+import { damFileFieldFileQuery, damFileFieldFilesByIdsQuery } from "./FileField.gql";
+import type {
+    GQLDamFileFieldFileQuery,
+    GQLDamFileFieldFileQueryVariables,
+    GQLDamFileFieldFilesByIdsQuery,
+    GQLDamFileFieldFilesByIdsQueryVariables,
+} from "./FileField.gql.generated";
+import { type ActionItem, FileFieldMenu, useHasFileFieldMenu } from "./FileFieldMenu";
+import { FileFieldRow } from "./FileFieldRow";
 
-export type { GQLDamFileFieldFileFragment } from "./FileField.gql.generated";
+export type { GQLDamFileFieldFileFragment } from "./FileField.fragment.generated";
 
-interface ActionItem extends ComponentProps<typeof MenuItem> {
-    label: ReactNode;
-    icon?: ReactNode;
-}
-
-interface FileFieldProps extends FieldRenderProps<GQLDamFileFieldFileFragment | undefined, HTMLInputElement> {
-    buttonText?: string;
+type CommonProps = {
+    buttonText?: ReactNode;
     allowedMimetypes?: string[];
-    preview?: ReactNode;
     menuActions?: Array<ActionItem | ReactElement | null | undefined>;
+};
+
+type SingleFileFieldProps = FieldRenderProps<GQLDamFileFieldFileFragment | undefined, HTMLInputElement> &
+    CommonProps & {
+        multiple?: false;
+        preview?: ReactNode;
+    };
+
+type MultiFileFieldProps = FieldRenderProps<GQLDamFileFieldFileFragment[] | undefined, HTMLInputElement> &
+    CommonProps & {
+        multiple: true;
+        preview?: (file: GQLDamFileFieldFileFragment) => ReactNode;
+    };
+
+export function FileField(props: SingleFileFieldProps): ReactElement;
+export function FileField(props: MultiFileFieldProps): ReactElement;
+export function FileField(props: SingleFileFieldProps | MultiFileFieldProps): ReactElement {
+    // `react-final-form`'s `<Field>` strips `multiple` from the component's top-level props
+    // and puts it on `input.multiple`, so we have to check both locations.
+    const isMultiple = Boolean(props.multiple) || Boolean(props.input?.multiple);
+    if (isMultiple) {
+        return <MultiFileField {...(props as MultiFileFieldProps)} />;
+    }
+    return <SingleFileField {...(props as SingleFileFieldProps)} />;
 }
 
-const FileField = ({ buttonText, input, allowedMimetypes, preview, menuActions }: FileFieldProps) => {
+const SingleFileField = ({ buttonText, input, allowedMimetypes, preview, menuActions }: SingleFileFieldProps) => {
     const [chooseFileDialogOpen, setChooseFileDialogOpen] = useState<boolean>(false);
-    const client = useApolloClient();
-
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-    const contentScope = useContentScope();
     const apolloClient = useApolloClient();
-    const { entityDependencyMap } = useDependenciesConfig();
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
+    const showMenu = useHasFileFieldMenu(menuActions);
 
     const damFile = input.value;
 
     if (damFile) {
-        const showMenu = Boolean(entityDependencyMap["DamFile"]) || (menuActions !== undefined && menuActions.length > 0);
         return (
             <>
                 <BlockAdminComponentPaper disablePadding>
@@ -76,46 +95,11 @@ const FileField = ({ buttonText, input, allowedMimetypes, preview, menuActions }
                     </Box>
                     <Divider />
                     <BlockAdminComponentButton startIcon={<Delete />} onClick={() => input.onChange(undefined)}>
-                        <FormattedMessage id="comet.form.file.empty" defaultMessage="Empty" />
+                        <FormattedMessage id="dextinity.form.file.empty" defaultMessage="Empty" />
                     </BlockAdminComponentButton>
                 </BlockAdminComponentPaper>
                 {showMenu && (
-                    <Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                        {entityDependencyMap["DamFile"] && (
-                            <MenuItem
-                                onClick={async () => {
-                                    const path = await entityDependencyMap["DamFile"].resolvePath({
-                                        apolloClient,
-                                        id: damFile.id,
-                                    });
-                                    const url = contentScope.match.url + path;
-                                    window.open(url, "_blank");
-                                }}
-                            >
-                                <ListItemIcon>
-                                    <OpenNewTab />
-                                </ListItemIcon>
-                                <ListItemText primary={<FormattedMessage id="comet.form.file.openInDam" defaultMessage="Open in DAM" />} />
-                            </MenuItem>
-                        )}
-                        {menuActions &&
-                            menuActions.map((item, index) => {
-                                if (!item) return null;
-
-                                if (isValidElement(item)) {
-                                    return item;
-                                }
-
-                                const { label, icon, ...rest } = item as ActionItem;
-
-                                return (
-                                    <MenuItem key={index} {...rest}>
-                                        {!!icon && <ListItemIcon>{icon}</ListItemIcon>}
-                                        <ListItemText primary={label} />
-                                    </MenuItem>
-                                );
-                            })}
-                    </Menu>
+                    <FileFieldMenu fileId={damFile.id} anchorEl={anchorEl} onClose={() => setAnchorEl(null)} menuActions={menuActions} keepMounted />
                 )}
             </>
         );
@@ -124,15 +108,15 @@ const FileField = ({ buttonText, input, allowedMimetypes, preview, menuActions }
     return (
         <>
             <BlockAdminComponentButton onClick={() => setChooseFileDialogOpen(true)} startIcon={<Assets />} size="large">
-                {buttonText ?? <FormattedMessage id="comet.form.file.chooseFile" defaultMessage="Choose file" />}
+                {buttonText ?? <FormattedMessage id="dextinity.form.file.chooseFile" defaultMessage="Choose file" />}
             </BlockAdminComponentButton>
-            <ChooseFileDialog
+            <ChooseDamFileDialog
                 open={chooseFileDialogOpen}
                 allowedMimetypes={allowedMimetypes}
                 onClose={() => setChooseFileDialogOpen(false)}
                 onChooseFile={async (fileId) => {
                     setChooseFileDialogOpen(false);
-                    const { data } = await client.query<GQLDamFileFieldFileQuery, GQLDamFileFieldFileQueryVariables>({
+                    const { data } = await apolloClient.query<GQLDamFileFieldFileQuery, GQLDamFileFieldFileQueryVariables>({
                         query: damFileFieldFileQuery,
                         variables: {
                             id: fileId,
@@ -146,4 +130,82 @@ const FileField = ({ buttonText, input, allowedMimetypes, preview, menuActions }
     );
 };
 
-export { FileField };
+const MultiFileField = (props: MultiFileFieldProps) => (
+    <DamScopeProvider>
+        <MultiFileFieldInner {...props} />
+    </DamScopeProvider>
+);
+
+const MultiFileFieldInner = ({ buttonText, input, allowedMimetypes, preview, menuActions }: MultiFileFieldProps) => {
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const apolloClient = useApolloClient();
+    const snackbarApi = useSnackbarApi();
+    const damScope = useDamScope();
+
+    // react-final-form may pass "" as the default when no initial value is set; fall back to [].
+    const files: GQLDamFileFieldFileFragment[] = Array.isArray(input.value) ? input.value : [];
+
+    const handleRemove = (id: string) => {
+        input.onChange(files.filter((f) => f.id !== id));
+    };
+
+    const handleConfirm = async (fileIds: string[]) => {
+        try {
+            const { data } = await apolloClient.query<GQLDamFileFieldFilesByIdsQuery, GQLDamFileFieldFilesByIdsQueryVariables>({
+                query: damFileFieldFilesByIdsQuery,
+                variables: { ids: fileIds, limit: fileIds.length, scope: damScope },
+            });
+
+            const sortedFiles = [...data.damFilesList.nodes].sort((a, b) => fileIds.indexOf(a.id) - fileIds.indexOf(b.id));
+            input.onChange(sortedFiles);
+            setDialogOpen(false);
+        } catch {
+            snackbarApi.showSnackbar(
+                <Snackbar autoHideDuration={5000}>
+                    <Alert severity="error">
+                        <FormattedMessage
+                            id="dextinity.form.file.failedToLoadSelection"
+                            defaultMessage="Failed to load selected files. Please try again."
+                        />
+                    </Alert>
+                </Snackbar>,
+            );
+        }
+    };
+
+    return (
+        <>
+            {files.length === 0 ? (
+                <BlockAdminComponentButton onClick={() => setDialogOpen(true)} startIcon={<Assets />} size="large">
+                    {buttonText ?? <FormattedMessage id="dextinity.form.file.chooseFiles" defaultMessage="Choose files" />}
+                </BlockAdminComponentButton>
+            ) : (
+                <BlockAdminComponentPaper disablePadding>
+                    <List disablePadding>
+                        {files.map((file) => (
+                            <FileFieldRow
+                                key={file.id}
+                                file={file}
+                                onRemove={() => handleRemove(file.id)}
+                                preview={preview}
+                                menuActions={menuActions}
+                            />
+                        ))}
+                    </List>
+                    <Divider />
+                    <BlockAdminComponentButton startIcon={<Assets />} onClick={() => setDialogOpen(true)}>
+                        <FormattedMessage id="dextinity.form.file.changeSelectedFiles" defaultMessage="Change selected files" />
+                    </BlockAdminComponentButton>
+                </BlockAdminComponentPaper>
+            )}
+            {dialogOpen && (
+                <ChooseDamFilesDialog
+                    allowedMimetypes={allowedMimetypes}
+                    initialFileIds={files.map((f) => f.id)}
+                    onClose={() => setDialogOpen(false)}
+                    onConfirm={handleConfirm}
+                />
+            )}
+        </>
+    );
+};

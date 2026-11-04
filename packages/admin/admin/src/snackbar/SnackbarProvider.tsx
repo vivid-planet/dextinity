@@ -1,8 +1,8 @@
-import { type SnackbarCloseReason, type SnackbarProps } from "@mui/material";
+import type { SnackbarCloseReason, SnackbarProps } from "@mui/material";
 import { cloneElement, createContext, type ReactElement, type ReactNode, type SyntheticEvent, useContext, useState } from "react";
 import { v4 as uuid } from "uuid";
 
-import { type UndoSnackbarProps } from "./UndoSnackbar";
+import type { UndoSnackbarProps } from "./UndoSnackbar";
 
 export interface SnackbarApi {
     showSnackbar: (newSnackbar: ReactElement<Omit<SnackbarProps | UndoSnackbarProps<unknown>, "open">>) => void;
@@ -26,10 +26,10 @@ type HandleClose = (event: SnackbarCloseEvent, reason: SnackbarCloseReason, onCl
 
 export const SnackbarProvider = ({ children }: { children?: ReactNode }) => {
     const [open, setOpen] = useState<boolean>(false);
-    const [snackbar, setSnackbar] = useState<ReactElement>();
+    const [snackbar, setSnackbar] = useState<ReactElement<Omit<SnackbarProps | UndoSnackbarProps<unknown>, "open">>>();
     const [key, setKey] = useState(uuid());
 
-    const updateSnackbar = (newSnackbar: ReactElement) => {
+    const updateSnackbar = (newSnackbar: ReactElement<Omit<SnackbarProps | UndoSnackbarProps<unknown>, "open">>) => {
         setKey(uuid());
         setSnackbar(newSnackbar);
         if (newSnackbar !== undefined) {

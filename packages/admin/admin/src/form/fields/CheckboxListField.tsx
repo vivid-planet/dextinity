@@ -1,5 +1,5 @@
 import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { Field, type FieldProps } from "../Field";
 

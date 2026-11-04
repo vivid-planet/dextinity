@@ -1,4 +1,4 @@
-import { Button, UndoSnackbar, useSnackbarApi } from "@comet/admin";
+import { Button, UndoSnackbar, useSnackbarApi } from "@dextinity/admin";
 import { List, ListItem, Snackbar, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { type MouseEvent, useState } from "react";
 

@@ -1,5 +1,6 @@
-import { AnchorBlock, BaseBlocksBlockItemData, BaseBlocksBlockItemInput, BlockField, createBlocksBlock, DamImageBlock } from "@comet/cms-api";
+import { AnchorBlock, BaseBlocksBlockItemData, BaseBlocksBlockItemInput, BlockField, createBlocksBlock, DamImageBlock } from "@dextinity/cms-api";
 import { AccordionBlock } from "@src/common/blocks/accordion.block";
+import { ContactFormBlock } from "@src/common/blocks/contact-form.block";
 import { MediaGalleryBlock } from "@src/common/blocks/media-gallery.block";
 import { PageTreeIndexBlock } from "@src/common/blocks/page-tree-index.block";
 import { SpaceBlock } from "@src/common/blocks/space.block";
@@ -7,7 +8,10 @@ import { StandaloneCallToActionListBlock } from "@src/common/blocks/standalone-c
 import { StandaloneHeadingBlock } from "@src/common/blocks/standalone-heading.block";
 import { StandaloneMediaBlock } from "@src/common/blocks/standalone-media.block";
 import { StandaloneRichTextBlock } from "@src/common/blocks/standalone-rich-text.block";
+import { TableBlock } from "@src/common/blocks/table.block";
 import { TextImageBlock } from "@src/common/blocks/text-image.block";
+import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block";
+import { TipTapTableBlock } from "@src/common/blocks/tip-tap-table.block";
 import { BillboardTeaserBlock } from "@src/documents/pages/blocks/billboard-teaser.block";
 import { ColumnsBlock } from "@src/documents/pages/blocks/columns.block";
 import { ContentGroupBlock } from "@src/documents/pages/blocks/content-group.block";
@@ -15,7 +19,6 @@ import { KeyFactsBlock } from "@src/documents/pages/blocks/key-facts.block";
 import { TeaserBlock } from "@src/documents/pages/blocks/teaser.block";
 import { NewsDetailBlock } from "@src/news/blocks/news-detail.block";
 import { NewsListBlock } from "@src/news/blocks/news-list.block";
-import { ProductListBlock } from "@src/products/blocks/product-list.block";
 import { UserGroup } from "@src/user-groups/user-group";
 import { IsEnum } from "class-validator";
 
@@ -45,8 +48,11 @@ const supportedBlocks = {
     layout: LayoutBlock,
     textImage: TextImageBlock,
     fullWidthImage: FullWidthImageBlock,
-    productList: ProductListBlock,
+    table: TableBlock,
+    tipTapTable: TipTapTableBlock,
+    tipTapRichText: TipTapRichTextBlock,
     pageTreeIndex: PageTreeIndexBlock,
+    contactForm: ContactFormBlock,
 };
 
 class BlocksBlockItemData extends BaseBlocksBlockItemData(supportedBlocks) {

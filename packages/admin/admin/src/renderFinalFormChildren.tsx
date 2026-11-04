@@ -1,5 +1,5 @@
 import { createElement, type ReactNode } from "react";
-import { type FormRenderProps, type RenderableProps } from "react-final-form";
+import type { FormRenderProps, RenderableProps } from "react-final-form";
 
 // Render children like final-form does.
 export function renderFinalFormChildren<FormValues = Record<string, any>, InitialFormValues = Partial<FormValues>>(

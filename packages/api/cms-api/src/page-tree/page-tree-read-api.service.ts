@@ -57,6 +57,9 @@ export class PageTreeReadApiService {
     async getNodeOrFail(id: string): Promise<PageTreeNodeInterface> {
         return this.api.getNodeOrFail(id);
     }
+    async getNodesByIds(ids: string[]): Promise<PageTreeNodeInterface[]> {
+        return this.api.getNodesByIds(ids);
+    }
     async getParentNode(node: PageTreeNodeInterface): Promise<PageTreeNodeInterface | null> {
         return this.api.getParentNode(node);
     }

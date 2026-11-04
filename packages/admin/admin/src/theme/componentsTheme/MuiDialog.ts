@@ -1,7 +1,7 @@
-import { type Components } from "@mui/material/styles";
+import type { Components } from "@mui/material/styles";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
-import { type GetMuiComponentTheme } from "./getComponentsTheme";
+import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
 export const getMuiDialog: GetMuiComponentTheme<"MuiDialog"> = (component, { spacing }): Components["MuiDialog"] => ({
     ...component,

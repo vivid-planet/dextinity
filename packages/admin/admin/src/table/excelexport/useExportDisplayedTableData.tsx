@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { type Table } from "../Table";
+import type { Table } from "../Table";
 import { createExcelExportDownload, type IExcelExportOptions } from "./createExcelExportDownload";
-import { type IExportApi } from "./IExportApi";
+import type { IExportApi } from "./IExportApi";
 
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.

@@ -1,4 +1,4 @@
-import { ArrowLeft } from "@comet/admin-icons";
+import { ArrowLeft } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, type Theme, useThemeProps } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 
@@ -11,7 +11,11 @@ export type StackBackButtonClassKey = ButtonClassKey;
 export type StackBackButtonProps = ButtonProps;
 
 export function StackBackButton(inProps: StackBackButtonProps) {
-    const { startIcon = <ArrowLeft />, variant = "textDark", ...restProps } = useThemeProps({ props: inProps, name: "CometAdminStackBackButton" });
+    const {
+        startIcon = <ArrowLeft />,
+        variant = "textDark",
+        ...restProps
+    } = useThemeProps({ props: inProps, name: "DextinityAdminStackBackButton" });
 
     return (
         <StackApiContext.Consumer>
@@ -39,17 +43,17 @@ const Root = createComponentSlot(Button)<StackBackButtonClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminStackBackButton: StackBackButtonClassKey;
+        DextinityAdminStackBackButton: StackBackButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminStackBackButton: StackBackButtonProps;
+        DextinityAdminStackBackButton: StackBackButtonProps;
     }
 
     interface Components {
-        CometAdminStackBackButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminStackBackButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminStackBackButton"];
+        DextinityAdminStackBackButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminStackBackButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminStackBackButton"];
         };
     }
 }

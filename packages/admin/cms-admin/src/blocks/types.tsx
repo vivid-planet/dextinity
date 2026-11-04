@@ -1,7 +1,7 @@
-import { type ComponentType, type Dispatch, type ReactElement, type ReactNode, type SetStateAction } from "react";
+import type { ComponentType, Dispatch, ReactElement, ReactNode, SetStateAction } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
-import { type BlockContext } from "./context/BlockContext";
+import type { BlockContext } from "./context/BlockContext";
 
 export interface BlockPreviewContext {
     showVisibleOnly?: boolean;
@@ -91,6 +91,13 @@ export interface BlockMethods<
     replaceDependenciesInOutput: (output: OutputApi, replacements: ReplaceDependencyObject[]) => OutputApi;
     resolveDependencyPath: (state: State, jsonPath: string) => string;
     extractTextContents?: (state: State, options: { includeInvisibleContent: boolean }) => string[];
+    /**
+     * Translates all translatable text content within a block's state.
+     * Each block decides what is translatable (e.g., RTE content, plain text fields)
+     * and what should remain unchanged (e.g., URLs, email addresses).
+     * Container blocks recursively delegate to their children.
+     */
+    translateContent?: (state: State, translate: (text: string) => Promise<string>) => Promise<State>;
     icon?: (state: State) => ReactNode;
 }
 
@@ -164,14 +171,14 @@ export enum BlockCategory {
 export type CustomBlockCategory = { id: string; label: string | ReactElement<MessageDescriptor>; insertBefore?: BlockCategory };
 
 export const blockCategoryLabels = {
-    [BlockCategory.TextAndContent]: <FormattedMessage id="comet.blocks.category.textAndContent" defaultMessage="Text & Content" />,
-    [BlockCategory.Media]: <FormattedMessage id="comet.blocks.category.media" defaultMessage="Media" />,
-    [BlockCategory.Navigation]: <FormattedMessage id="comet.blocks.category.navigation" defaultMessage="Navigation" />,
-    [BlockCategory.Teaser]: <FormattedMessage id="comet.blocks.category.teaser" defaultMessage="Teaser" />,
-    [BlockCategory.StructuredContent]: <FormattedMessage id="comet.blocks.category.structuredContent" defaultMessage="Structured Content" />,
-    [BlockCategory.Layout]: <FormattedMessage id="comet.blocks.category.layout" defaultMessage="Layout" />,
-    [BlockCategory.Form]: <FormattedMessage id="comet.blocks.category.form" defaultMessage="Form" />,
-    [BlockCategory.Other]: <FormattedMessage id="comet.blocks.category.other" defaultMessage="Other" />,
+    [BlockCategory.TextAndContent]: <FormattedMessage id="dextinity.blocks.category.textAndContent" defaultMessage="Text & Content" />,
+    [BlockCategory.Media]: <FormattedMessage id="dextinity.blocks.category.media" defaultMessage="Media" />,
+    [BlockCategory.Navigation]: <FormattedMessage id="dextinity.blocks.category.navigation" defaultMessage="Navigation" />,
+    [BlockCategory.Teaser]: <FormattedMessage id="dextinity.blocks.category.teaser" defaultMessage="Teaser" />,
+    [BlockCategory.StructuredContent]: <FormattedMessage id="dextinity.blocks.category.structuredContent" defaultMessage="Structured Content" />,
+    [BlockCategory.Layout]: <FormattedMessage id="dextinity.blocks.category.layout" defaultMessage="Layout" />,
+    [BlockCategory.Form]: <FormattedMessage id="dextinity.blocks.category.form" defaultMessage="Form" />,
+    [BlockCategory.Other]: <FormattedMessage id="dextinity.blocks.category.other" defaultMessage="Other" />,
 };
 
 export interface LinkBlockInterface<
@@ -179,4 +186,9 @@ export interface LinkBlockInterface<
     State = any,
 > {
     url2State?: (url: string) => State | false;
+}
+
+export interface ReadOnlyBlockRenderInterface<State = unknown> {
+    /** Renders the block's state without an editing UI. */
+    ReadOnlyComponent(props: { state: State }): ReactNode;
 }

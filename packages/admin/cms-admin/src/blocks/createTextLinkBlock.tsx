@@ -1,9 +1,9 @@
-import { Field, FinalFormInput, messages } from "@comet/admin";
+import { Field, FinalFormInput, messages } from "@dextinity/admin";
 import { Box } from "@mui/material";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
-import { type TextLinkBlockData, type TextLinkBlockInput } from "../blocks.generated";
+import type { TextLinkBlockData, TextLinkBlockInput } from "../blocks.generated";
 import { BlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { composeBlocks } from "./helpers/composeBlocks/composeBlocks";
@@ -78,6 +78,10 @@ export function createTextLinkBlock(
             content.push(...blockContent);
 
             return content;
+        },
+        translateContent: async (state, translate) => {
+            const translatedText = state.text ? await translate(state.text) : state.text;
+            return { ...state, text: translatedText };
         },
     };
 

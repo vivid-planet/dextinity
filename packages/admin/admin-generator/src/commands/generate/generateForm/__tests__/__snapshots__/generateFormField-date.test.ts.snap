@@ -2,7 +2,7 @@
 
 exports[`generateFormField - datePicker > should generate simple date field with LocalType scalar 1`] = `
 "
-            <Future_DatePickerField
+            <DatePickerField
                 
                 
                 variant="horizontal"

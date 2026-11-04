@@ -1,4 +1,4 @@
-import { type BlockDataInterface } from "../block";
+import type { BlockDataInterface } from "../block";
 import { visitBlocksBreadthFirst } from "./visit-blocks-breadth-first";
 import { visitBlocksDepthFirst } from "./visit-blocks-depth-first";
 

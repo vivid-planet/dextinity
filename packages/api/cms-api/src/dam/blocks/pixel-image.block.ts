@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsOptional, IsUUID, ValidateNested } from "class-validator";
 
 import {
     BlockContext,
@@ -13,6 +13,7 @@ import {
 } from "../../blocks/block";
 import { AnnotationBlockMeta } from "../../blocks/decorators/field";
 import { FocalPoint } from "../../file-utils/focal-point.enum";
+import { DamFileAiContentType } from "../files/entities/ai-content-type.enum";
 import { FILE_ENTITY } from "../files/entities/file.entity";
 import { FilesService } from "../files/files.service";
 import { ImageCropAreaInput } from "../images/dto/image-crop-area.input";
@@ -45,7 +46,9 @@ class PixelImageBlockData extends BlockData {
             return undefined;
         }
 
-        return imagesService.createUrlTemplate({ file, cropArea: this.cropArea }, { previewDamUrls });
+        const image = await filesService.findImageToDeliver({ file, cropArea: this.cropArea }, { previewDamUrls });
+
+        return image ? imagesService.createUrlTemplate(image, { previewDamUrls }) : undefined;
     }
 
     indexData(): BlockIndexData {
@@ -66,8 +69,7 @@ class PixelImageBlockData extends BlockData {
 
 class PixelImageBlockInput extends BlockInput {
     @IsOptional()
-    @IsNotEmpty()
-    @IsString()
+    @IsUUID()
     damFileId?: string;
 
     @Type(() => ImageCropAreaInput)
@@ -123,6 +125,12 @@ class Meta extends AnnotationBlockMeta {
                         {
                             name: "altText",
                             kind: BlockMetaFieldKind.String,
+                            nullable: true,
+                        },
+                        {
+                            name: "aiContentType",
+                            kind: BlockMetaFieldKind.Enum,
+                            enum: Object.values(DamFileAiContentType),
                             nullable: true,
                         },
                         {

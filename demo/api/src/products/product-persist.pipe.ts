@@ -1,13 +1,13 @@
-import { type BlockDataInterface, DamImageBlock, type ImporterPipe } from "@comet/cms-api";
-import { type Connection, type EntityManager, type FilterQuery, type IDatabaseDriver, type Reference } from "@mikro-orm/core";
-import { type LoggerService } from "@nestjs/common";
+import { type BlockDataInterface, DamImageBlock, type ImporterPipe } from "@dextinity/cms-api";
+import type { Connection, EntityManager, FilterQuery, IDatabaseDriver, Reference } from "@mikro-orm/core";
+import type { LoggerService } from "@nestjs/common";
+import { randomUUID } from "crypto";
 import { Transform, type TransformCallback } from "stream";
-import { v4 as uuid } from "uuid";
 
 import { Product } from "./entities/product.entity";
-import { type ProductCategory } from "./entities/product-category.entity";
+import type { ProductCategory } from "./entities/product-category.entity";
 import { ProductColor } from "./entities/product-color.entity";
-import { type ProductImporterInput } from "./product-importer.input";
+import type { ProductImporterInput } from "./product-importer.input";
 
 type ProductData = Omit<ProductImporterInput, "image"> & {
     id: string;
@@ -74,7 +74,7 @@ class ProductPersist extends Transform {
                 await this.em.nativeUpdate(Product.name, { id: record.id }, { ...productData, category, id: data.id, updatedAt: new Date() });
             } else {
                 // in case the id is not provided
-                data.id = data?.id || uuid();
+                data.id = data?.id || randomUUID();
                 await this.logger.log(
                     `${updateQuery ? `No record for query ${JSON.stringify(updateQuery)} found` : "No query provided"}, inserting with id ${
                         data.id
@@ -101,7 +101,7 @@ class ProductPersist extends Transform {
 
             if (colorsArray.length > 0) {
                 const productColors = colorsArray.map((color) => ({
-                    id: uuid(),
+                    id: randomUUID(),
                     name: color.name,
                     hexCode: color.hex,
                     product: data.id,

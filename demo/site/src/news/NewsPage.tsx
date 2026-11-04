@@ -6,7 +6,7 @@ import { useState } from "react";
 import { FormattedDate } from "react-intl";
 
 import { fetchNewsList } from "./NewsPage.loader";
-import { type GQLNewsIndexPageQuery } from "./NewsPage.loader.generated";
+import type { GQLNewsIndexPageQuery } from "./NewsPage.loader.generated";
 import styles from "./NewsPage.module.scss";
 
 export function NewsPage({ initialData, scope }: { initialData: GQLNewsIndexPageQuery["newsList"]; scope: { domain: string; language: string } }) {

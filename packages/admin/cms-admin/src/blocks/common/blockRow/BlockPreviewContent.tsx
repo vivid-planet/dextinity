@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import { type ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 
 import { useBlockContext } from "../../context/useBlockContext";
 import { type BlockInterface, isPreviewContentImageRule, isPreviewContentTextRule } from "../../types";

@@ -30,6 +30,18 @@
     }
 }
 
+.inlineStyle-highlight {
+    background-color: #fff3cd;
+    padding: 2px 4px;
+}
+
+.inlineStyle-tag {
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.85em;
+}
+
 .pageLayoutContent {
     grid-column: 3 / -3;
 }

@@ -1,8 +1,11 @@
 @use "@src/styles/variables" as *;
 
+.root {
+    position: relative;
+}
+
 .pageLayoutContent {
     grid-column: 2 / -2;
-    position: relative;
 
     @media (min-width: $breakpoint-sm) {
         grid-column: 5 / -5;

@@ -4,17 +4,16 @@ on:
     pull_request:
         paths:
             - docs/**
-            - storybook/**
-        branches:
-            - main
-            - next
     push:
         paths:
             - docs/**
-            - storybook/**
         branches:
             - main
             - next
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
     build:
@@ -23,23 +22,9 @@ jobs:
         steps:
             - run: echo "${{ github.actor }}"
 
-            - uses: actions/checkout@v5
-              with:
-                  ref: ${{ github.event.pull_request.head.ref || github.ref }}
+            - uses: actions/checkout@v7
 
-            - uses: pnpm/action-setup@v4
-
-            - name: Use Node.js 24.x
-              uses: actions/setup-node@v5
-              with:
-                  node-version: 24
-                  registry-url: "https://registry.npmjs.org"
-                  cache: "pnpm" # https://github.com/actions/setup-node/blob/main/docs/advanced-usage.md#caching-packages-dependencies
-
-            - run: pnpm install --frozen-lockfile
-
-            - name: Setup project for CI run
-              run: pnpm run setup:ci
+            - uses: ./.github/actions/setup
 
             - name: Build docs
               run: pnpm build:docs

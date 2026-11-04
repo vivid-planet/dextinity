@@ -2,7 +2,7 @@
 title: Preview
 ---
 
-COMET DXP comes with a built-in preview system. There are two different types of preview: the web preview and the block preview.
+Dextinity comes with a built-in preview system. There are two different types of preview: the site preview and the block preview.
 
 ## Block Preview
 
@@ -62,13 +62,15 @@ Blocks almost always consist of several elements. So if you want to edit one of 
 
 ![PreviewHover3](images/preview-hover3.png)
 
-## Web Preview
+## Site Preview
 
-The web preview is an overview of the entire website in preview mode, as seen in the image below.
+The site preview is an overview of the entire website in preview mode, as seen in the image below.
 
 ![WebPreview](images/web-preview.png)
 
-So what are the advantages of the web preview? The web preview is always live, while the current website may not be built yet. The menu bar in the web preview works just like the [menu bar in the block preview](#menuBarButtons). If you still want to view the website directly, you can find the URL to your website in the left area of the menu bar.
+So what are the advantages of the site preview? The site preview is always live, while the current website may not be built yet. The menu bar in the site preview works just like the [menu bar in the block preview](#menuBarButtons). If you still want to view the website directly, you can find the URL to your website in the left area of the menu bar.
+
+For a detailed explanation of how the Site Preview is implemented under the hood — including the JWT handshake, cookie storage, and scope resolution — see [How Site Preview Works](how-site-preview-works).
 
 ### Implementation
 
@@ -91,12 +93,12 @@ export const HeadlineBlock = withPreview(
 
 ## Additional Implementation Details
 
-### Manually Opening the Web Preview
+### Manually Opening the Site Preview
 
-If you want to open the web preview at a particular place, you can do that with the following code:
+If you want to open the site preview at a particular place, you can do that with the following code:
 
 ```ts
-import { openPreviewWindow } from "@comet/cms-admin";
+import { openPreviewWindow } from "@dextinity/cms-admin";
 
 function myCustomFunction() {
     const { scope, match } = useContentScope();
@@ -107,7 +109,7 @@ function myCustomFunction() {
 We recommend using the default icon for the preview button, which can be imported as follows:
 
 ```ts
-import { Preview } from "@comet/admin-icons";
+import { Preview } from "@dextinity/admin-icons";
 ```
 
 :::warning

@@ -1,12 +1,12 @@
 import { gql, useQuery } from "@apollo/client";
-import { Link } from "@comet/admin-icons";
+import { Link } from "@dextinity/admin-icons";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { BlockAdminComponentButton } from "../../blocks/common/BlockAdminComponentButton";
 import { BlockAdminComponentNestedButton } from "../../blocks/common/BlockAdminComponentNestedButton";
 import { usePageTreeConfig } from "../pageTreeConfig";
-import { type GQLPageTreeSelectDetailQuery, type GQLPageTreeSelectDetailQueryVariables } from "./PageTreeSelect.generated";
+import type { GQLPageTreeSelectDetailQuery, GQLPageTreeSelectDetailQueryVariables } from "./PageTreeSelect.generated";
 import PageTreeSelectDialog, { type GQLSelectedPageFragment } from "./PageTreeSelectDialog";
 
 interface PageTreeSelectProps {
@@ -22,7 +22,7 @@ const pageTreeSelectDetail = gql`
     }
 `;
 
-export default function PageTreeSelect({ value, onChange }: PageTreeSelectProps) {
+export function PageTreeSelect({ value, onChange }: PageTreeSelectProps) {
     const config = usePageTreeConfig();
     const [open, setOpen] = useState(false);
 
@@ -51,7 +51,7 @@ export default function PageTreeSelect({ value, onChange }: PageTreeSelectProps)
                 <BlockAdminComponentNestedButton onClick={handleButtonClick} displayName={value.name} preview={value.path} />
             ) : (
                 <BlockAdminComponentButton onClick={handleButtonClick} size="large" startIcon={<Link />} disabled={loading}>
-                    <FormattedMessage id="comet.pages.pageTreeSelect.label" defaultMessage="Select Page" />
+                    <FormattedMessage id="dextinity.pages.pageTreeSelect.label" defaultMessage="Select Page" />
                 </BlockAdminComponentButton>
             )}
 

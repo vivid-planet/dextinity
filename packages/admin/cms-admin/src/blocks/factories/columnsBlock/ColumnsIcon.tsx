@@ -1,4 +1,5 @@
 import { SvgIcon, type SvgIconProps } from "@mui/material";
+import type { JSX } from "react";
 
 interface ColumnsIconProps extends SvgIconProps {
     columns: number;

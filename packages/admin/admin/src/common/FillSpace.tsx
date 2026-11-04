@@ -1,8 +1,8 @@
-import { type ComponentsOverrides, type Theme } from "@mui/material";
+import type { ComponentsOverrides, Theme } from "@mui/material";
 import { css, useThemeProps } from "@mui/material/styles";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 export type FillSpaceClassKey = "root";
 
@@ -18,22 +18,22 @@ const Root = createComponentSlot("div")<FillSpaceClassKey>({
 `);
 
 export function FillSpace(inProps: FillSpaceProps) {
-    const { slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminFillSpace" });
+    const { slotProps, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminFillSpace" });
     return <Root {...slotProps?.root} {...restProps} />;
 }
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminFillSpace: FillSpaceProps;
+        DextinityAdminFillSpace: FillSpaceProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminFillSpace: FillSpaceClassKey;
+        DextinityAdminFillSpace: FillSpaceClassKey;
     }
 
     interface Components {
-        CometAdminFillSpace?: {
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFillSpace"];
+        DextinityAdminFillSpace?: {
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFillSpace"];
         };
     }
 }

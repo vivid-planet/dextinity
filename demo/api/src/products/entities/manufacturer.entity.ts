@@ -1,14 +1,27 @@
-import { CrudGenerator, IsNullable, IsUndefinable } from "@comet/cms-api";
-import { BaseEntity, Embeddable, Embedded, Entity, IType, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { CrudGenerator, EntityInfo, IsNullable, IsUndefinable, RequiredPermission } from "@dextinity/cms-api";
+import {
+    BaseEntity,
+    Embeddable,
+    Embedded,
+    Entity,
+    Enum,
+    FullTextType,
+    Index,
+    IType,
+    OptionalProps,
+    PrimaryKey,
+    Property,
+} from "@mikro-orm/postgresql";
 import { Field, ID, InputType, ObjectType } from "@nestjs/graphql";
 import { IsNumber, IsObject, IsString } from "class-validator";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { Coordinates, CoordinatesType } from "../coordinates.type";
+import { ProductType } from "./product-type.enum";
 
 @ObjectType()
 @InputType("AlternativeAddressInput")
-export class AlternativeAddress {
+class AlternativeAddress {
     @Field()
     @Property()
     @IsString()
@@ -45,7 +58,7 @@ export class Address extends AlternativeAddress {
 @Embeddable()
 @ObjectType()
 @InputType("AlternativeAddressAsEmbeddableInput")
-export class AlternativeAddressAsEmbeddable {
+class AlternativeAddressAsEmbeddable {
     @Field()
     @Property()
     @IsString()
@@ -78,15 +91,20 @@ export class AddressAsEmbeddable extends AlternativeAddressAsEmbeddable {
     alternativeAddress: AlternativeAddressAsEmbeddable;
 }
 
+@EntityInfo<Manufacturer>({
+    name: "name",
+    fullText: "fullText",
+})
+@RequiredPermission("manufacturers", { skipScopeCheck: true })
 @Entity()
 @ObjectType()
-@CrudGenerator({ targetDirectory: `${__dirname}/../generated/`, requiredPermission: ["manufacturers"] })
+@CrudGenerator({ requiredPermission: ["manufacturers"] })
 export class Manufacturer extends BaseEntity {
     [OptionalProps]?: "updatedAt";
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     @Field()
@@ -104,7 +122,28 @@ export class Manufacturer extends BaseEntity {
     @Field(() => Coordinates, { nullable: true })
     coordinates?: IType<Coordinates, string>;
 
+    @Enum({ items: () => ProductType, nullable: true })
+    @Field(() => ProductType, { nullable: true })
+    productType?: ProductType;
+
     @Property({ onUpdate: () => new Date() })
     @Field()
     updatedAt: Date = new Date();
+
+    @Index({ type: "fulltext" })
+    @Property<Manufacturer>({
+        nullable: true,
+        type: new FullTextType(),
+        onCreate: (manufacturer) => {
+            return {
+                A: manufacturer.name,
+            };
+        },
+        onUpdate: (manufacturer) => {
+            return {
+                A: manufacturer.name,
+            };
+        },
+    })
+    fullText?: string;
 }

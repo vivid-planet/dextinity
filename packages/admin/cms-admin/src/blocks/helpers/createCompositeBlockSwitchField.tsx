@@ -1,7 +1,7 @@
-import { SwitchField, type SwitchFieldProps } from "@comet/admin";
+import { SwitchField, type SwitchFieldProps } from "@dextinity/admin";
 
 import { BlocksFinalForm } from "../form/BlocksFinalForm";
-import { type BlockMethods } from "../types";
+import type { BlockMethods } from "../types";
 import { createCompositeBlockField } from "./composeBlocks/createCompositeBlockField";
 
 interface Options extends Partial<SwitchFieldProps> {

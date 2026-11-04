@@ -1,12 +1,12 @@
 import { Chip, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { type MouseEvent } from "react";
+import type { MouseEvent } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { MarkedMatches } from "../../common/MarkedMatches";
 import { usePageTreeConfig } from "../pageTreeConfig";
 import { PageTypeIcon } from "./PageTypeIcon";
-import { type PageTreePage } from "./usePageTree";
+import type { PageTreePage } from "./usePageTree";
 
 interface PageLabelProps {
     page: PageTreePage;
@@ -34,7 +34,7 @@ const PageLabel = ({ page, disabled, onClick }: PageLabelProps) => {
                 {page.visibility === "Archived" && (
                     <ArchivedChip
                         component="span"
-                        label={<FormattedMessage id="comet.pages.pages.archived" defaultMessage="Archived" />}
+                        label={<FormattedMessage id="dextinity.pages.pages.archived" defaultMessage="Archived" />}
                         color="primary"
                         clickable={false}
                         size="small"

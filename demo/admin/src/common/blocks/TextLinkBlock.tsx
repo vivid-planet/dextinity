@@ -1,4 +1,4 @@
-import { createTextLinkBlock } from "@comet/cms-admin";
+import { createTextLinkBlock } from "@dextinity/cms-admin";
 
 import { LinkBlock } from "./LinkBlock";
 

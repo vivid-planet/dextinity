@@ -1,7 +1,7 @@
 import { MjmlText } from "@faire/mjml-react";
-import { type PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
-import { type SupportedBlocks } from "./types.js";
+import type { SupportedBlocks } from "./types.js";
 
 interface Props extends PropsWithChildren {
     data: {

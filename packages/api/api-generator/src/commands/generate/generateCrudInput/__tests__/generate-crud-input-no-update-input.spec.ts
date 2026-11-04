@@ -1,5 +1,6 @@
 import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey } from "@mikro-orm/postgresql";
-import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage";
+import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
+import { describe, expect, it } from "vitest";
 
 import { formatSource, testPermission } from "../../utils/test-helper";
 import { generateCrudInput } from "../generate-crud-input";
@@ -21,15 +22,11 @@ describe("GenerateCrudInput", () => {
             }),
         );
 
-        const out = await generateCrudInput(
-            { targetDirectory: __dirname, requiredPermission: testPermission },
-            orm.em.getMetadata().get("TestEntity"),
-            {
-                nested: false,
-                excludeFields: [],
-                generateUpdateInput: false,
-            },
-        );
+        const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntity"), {
+            nested: false,
+            excludeFields: [],
+            generateUpdateInput: false,
+        });
 
         const formattedOut = await formatSource(out[0].content);
 

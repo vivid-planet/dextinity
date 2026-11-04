@@ -1,12 +1,12 @@
-import { type IntrospectionQuery } from "graphql";
+import type { IntrospectionQuery } from "graphql";
 
-import { type FormConfig, type FormLayoutConfig, type GQLDocumentConfigMap } from "../generate-command";
+import type { FormConfig, FormLayoutConfig, GQLDocumentConfigMap } from "../generate-command";
 import { camelCaseToHumanReadable } from "../utils/camelCaseToHumanReadable";
 import { findIntrospectionFieldType } from "../utils/findIntrospectionFieldType";
-import { type Imports } from "../utils/generateImportsCode";
+import type { Imports } from "../utils/generateImportsCode";
 import { generateFormattedMessage } from "../utils/intl";
 import { generateFields, type GenerateFieldsReturn } from "./generateFields";
-import { type Prop } from "./generateForm";
+import type { Prop } from "./generateForm";
 
 export function generateFormLayout({
     gqlIntrospection,
@@ -63,7 +63,7 @@ export function generateFormLayout({
         finalFormConfig.subscription = { ...finalFormConfig.subscription, ...generatedFields.finalFormConfig?.subscription };
         finalFormConfig.renderProps = { ...finalFormConfig.renderProps, ...generatedFields.finalFormConfig?.renderProps };
 
-        imports.push({ name: "FieldSet", importPath: "@comet/admin" });
+        imports.push({ name: "FieldSet", importPath: "@dextinity/admin" });
         const supportPlaceholder = config.supportText?.includes("{");
         if (supportPlaceholder) {
             imports.push({ name: "FormSpy", importPath: "react-final-form" });
@@ -98,8 +98,12 @@ export function generateFormLayout({
         const name = String(config.name);
 
         const introspectionFieldType = findIntrospectionFieldType({ name, gqlType, gqlIntrospection });
-        if (!introspectionFieldType) throw new Error(`field ${name} in gql introspection type ${gqlType} not found`);
-        if (introspectionFieldType.kind !== "OBJECT") throw new Error(`field ${name} in gql introspection type ${gqlType} has to be OBJECT`);
+        if (!introspectionFieldType) {
+            throw new Error(`field ${name} in gql introspection type ${gqlType} not found`);
+        }
+        if (introspectionFieldType.kind !== "OBJECT") {
+            throw new Error(`field ${name} in gql introspection type ${gqlType} has to be OBJECT`);
+        }
 
         const generatedFields = generateFields({
             gqlIntrospection,
@@ -136,8 +140,8 @@ export function generateFormLayout({
             wrapFormValueToGqlInputCode: `${name.split(".").pop()}Enabled && $fieldName ? $inner : null`,
         });
 
-        imports.push({ name: "FinalFormSwitch", importPath: "@comet/admin" });
-        imports.push({ name: "messages", importPath: "@comet/admin" });
+        imports.push({ name: "FinalFormSwitch", importPath: "@dextinity/admin" });
+        imports.push({ name: "messages", importPath: "@dextinity/admin" });
         imports.push({ name: "FormControlLabel", importPath: "@mui/material" });
 
         code = `<Field

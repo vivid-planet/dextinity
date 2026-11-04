@@ -1,7 +1,7 @@
 import { DefaultDraftBlockRenderMap, type DraftBlockRenderConfig, type DraftBlockType } from "draft-js";
 import * as Immutable from "immutable";
 
-import { type IBlocktypeConfig, type IBlocktypeMap } from "../types";
+import type { IBlocktypeConfig, IBlocktypeMap } from "../types";
 
 export default function createBlockRenderMap({ blocktypeMap }: { blocktypeMap: IBlocktypeMap }) {
     const customBlockRenderMapObject = Object.entries<IBlocktypeConfig>(blocktypeMap).reduce<{

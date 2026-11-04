@@ -28,7 +28,9 @@ export class StackSwitchMeta extends Component<IProps> {
     }
 
     public componentDidMount() {
-        if (!this.context) throw new Error("Switch must be wrapped by a Stack");
+        if (!this.context) {
+            throw new Error("Switch must be wrapped by a Stack");
+        }
         this.context.addSwitchMeta(this.props.id, {
             parentId: this.parentId,
             activePage: this.props.activePage,
@@ -37,7 +39,9 @@ export class StackSwitchMeta extends Component<IProps> {
     }
 
     public componentDidUpdate(prevProps: IProps) {
-        if (!this.context) throw new Error("Switch must be wrapped by a Stack");
+        if (!this.context) {
+            throw new Error("Switch must be wrapped by a Stack");
+        }
         if (this.props.activePage !== prevProps.activePage || this.props.isInitialPageActive !== prevProps.isInitialPageActive) {
             this.context.addSwitchMeta(this.props.id, {
                 parentId: this.parentId,
@@ -48,7 +52,9 @@ export class StackSwitchMeta extends Component<IProps> {
     }
 
     public componentWillUnmount() {
-        if (!this.context) throw new Error("Switch must be wrapped by a Stack");
+        if (!this.context) {
+            throw new Error("Switch must be wrapped by a Stack");
+        }
         this.context.removeSwitchMeta(this.props.id);
     }
 }

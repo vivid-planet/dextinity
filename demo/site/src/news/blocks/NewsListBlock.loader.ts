@@ -1,7 +1,7 @@
-import { type BlockLoaderOptions, gql } from "@comet/site-nextjs";
-import { type NewsListBlockData } from "@src/blocks.generated";
+import { type BlockLoaderOptions, gql } from "@dextinity/site-nextjs";
+import type { NewsListBlockData } from "@src/blocks.generated";
 
-import { type GQLNewsListBlockQuery, type GQLNewsListBlockQueryVariables } from "./NewsListBlock.loader.generated";
+import type { GQLNewsListBlockQuery, GQLNewsListBlockQueryVariables } from "./NewsListBlock.loader.generated";
 
 export type LoadedData = Awaited<ReturnType<typeof loader>>;
 

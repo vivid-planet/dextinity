@@ -1,3 +1,5 @@
+import { isDeepStrictEqual } from "node:util";
+
 import * as csv from "@fast-csv/parse";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityRepository } from "@mikro-orm/postgresql";
@@ -5,7 +7,6 @@ import { Inject, Injectable } from "@nestjs/common";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { IsEmail, IsNotEmpty, validateSync } from "class-validator";
 import { GraphQLJSONObject } from "graphql-scalars";
-import isEqual from "lodash.isequal";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 import { TargetGroupInterface } from "src/target-group/entity/target-group-entity.factory";
 import { Readable } from "stream";
@@ -93,7 +94,7 @@ export class BrevoContactImportService {
                 throw new Error("Main lists are not allowed as target groups for import");
             }
 
-            if (!isEqual(targetGroup.scope, scope)) {
+            if (!isDeepStrictEqual(targetGroup.scope, scope)) {
                 throw new Error("Target group scope does not match the scope of the import file");
             }
         }
@@ -190,7 +191,9 @@ export class BrevoContactImportService {
                     contactSource,
                     importId,
                 );
-                if (updatedBrevoContact) return "updated";
+                if (updatedBrevoContact) {
+                    return "updated";
+                }
             } else if (!brevoContact) {
                 const brevoConfig = await this.brevoConfigRepository.findOneOrFail({ scope });
 
@@ -203,8 +206,12 @@ export class BrevoContactImportService {
                     responsibleUserId,
                     contactSource,
                 });
-                if (!success) return "blacklisted";
-                if (success) return "created";
+                if (!success) {
+                    return "blacklisted";
+                }
+                if (success) {
+                    return "created";
+                }
             }
         } catch (err) {
             console.error(err);

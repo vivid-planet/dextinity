@@ -1,5 +1,5 @@
-import { ImporterCsvParseAndTransformPipes, type ImporterDataStream, ImporterEndPipe, type ImporterInputClass } from "@comet/cms-api";
-import { type EntityManager } from "@mikro-orm/core";
+import { ImporterCsvParseAndTransformPipes, type ImporterDataStream, ImporterEndPipe, type ImporterInputClass } from "@dextinity/cms-api";
+import type { EntityManager } from "@mikro-orm/core";
 import { Logger } from "@nestjs/common";
 import { pipeline, type Readable, Transform } from "stream";
 

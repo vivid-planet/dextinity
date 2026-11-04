@@ -1,5 +1,5 @@
 import { type ApolloError, type ApolloQueryResult, type OperationVariables, useQuery } from "@apollo/client";
-import { type DocumentNode } from "graphql";
+import type { DocumentNode } from "graphql";
 import isEqual from "lodash.isequal";
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useState } from "react";
 

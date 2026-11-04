@@ -1,8 +1,8 @@
-import { type Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 
-import { type CurrentUser } from "../../user-permissions/dto/current-user";
-import { type Permission } from "../../user-permissions/user-permissions.types";
-import { type MutationError } from "../graphql/mutation-error";
+import type { CurrentUser } from "../../user-permissions/dto/current-user";
+import type { Permission } from "../../user-permissions/user-permissions.types";
+import type { MutationError } from "../graphql/mutation-error";
 
 export interface CrudGeneratorHooksService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,7 +12,6 @@ export interface CrudGeneratorHooksService {
 }
 
 export interface CrudGeneratorOptions {
-    targetDirectory: string;
     requiredPermission: Permission | Permission[];
     create?: boolean;
     update?: boolean;
@@ -27,7 +26,6 @@ export interface CrudGeneratorOptions {
 export const CRUD_GENERATOR_METADATA_KEY = "data:crudGeneratorOptions";
 
 export function CrudGenerator({
-    targetDirectory,
     requiredPermission,
     create = true,
     update = true,
@@ -42,14 +40,13 @@ export function CrudGenerator({
     return function (target: Function) {
         Reflect.defineMetadata(
             CRUD_GENERATOR_METADATA_KEY,
-            { targetDirectory, requiredPermission, create, update, delete: deleteMutation, list, single, position, hooksService, paging },
+            { requiredPermission, create, update, delete: deleteMutation, list, single, position, hooksService, paging },
             target,
         );
     };
 }
 
 export interface CrudSingleGeneratorOptions {
-    targetDirectory: string;
     requiredPermission: Permission | Permission[];
 }
 

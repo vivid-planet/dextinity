@@ -1,9 +1,9 @@
-import { TreeCollapse, TreeExpand } from "@comet/admin-icons";
+import { TreeCollapse, TreeExpand } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { type PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
-import { type PageTreePage } from "./usePageTree";
+import type { PageTreePage } from "./usePageTree";
 
 interface PageInfoProps {
     page: PageTreePage;

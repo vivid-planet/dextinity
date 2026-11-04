@@ -1,12 +1,12 @@
 import { gql, useQuery } from "@apollo/client";
-import { RowActionsItem } from "@comet/admin";
-import { ImpersonateUser, Reset } from "@comet/admin-icons";
+import { RowActionsItem } from "@dextinity/admin";
+import { ImpersonateUser, Reset } from "@dextinity/admin-icons";
 import { CircularProgress } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 
 import { commonImpersonationMessages } from "../common/impersonation/commonImpersonationMessages";
 import { useCurrentUser } from "./hooks/currentUser";
-import { type GQLUserImpersonationCheckQuery, type GQLUserImpersonationCheckQueryVariables } from "./ImpersonateMenuItem.generated";
+import type { GQLUserImpersonationCheckQuery, GQLUserImpersonationCheckQueryVariables } from "./ImpersonateMenuItem.generated";
 import { startImpersonation, stopImpersonation } from "./utils/handleImpersonation";
 
 const userImpersonationCheckQuery = gql`
@@ -43,11 +43,11 @@ function StartImpersonationMenuItem({ userId }: { userId: string }) {
     const impersonationAllowed = data?.user.impersonationAllowed ?? false;
 
     const label = loading ? (
-        <FormattedMessage id="comet.userPermissions.evaluatingPermissions" defaultMessage="Evaluating permissions" />
+        <FormattedMessage id="dextinity.userPermissions.evaluatingPermissions" defaultMessage="Evaluating permissions" />
     ) : isSelf ? (
-        <FormattedMessage id="comet.userPermissions.cannotImpersonateYourself" defaultMessage="Cannot impersonate yourself" />
+        <FormattedMessage id="dextinity.userPermissions.cannotImpersonateYourself" defaultMessage="Cannot impersonate yourself" />
     ) : !impersonationAllowed ? (
-        <FormattedMessage id="comet.userPermissions.cannotImpersonate" defaultMessage="Cannot impersonate" />
+        <FormattedMessage id="dextinity.userPermissions.cannotImpersonate" defaultMessage="Cannot impersonate" />
     ) : (
         commonImpersonationMessages.startImpersonation
     );

@@ -2,13 +2,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
-import { type CookieApi, type CookieApiHook } from "./CookieApiContext";
+import type { CookieApi, CookieApiHook } from "./CookieApiContext";
 
-const localStorageCookieApiKey = "comet-dev-cookie-api-consented-cookies";
+const localStorageCookieApiKey = "dextinity-dev-cookie-api-consented-cookies";
 
 declare global {
     interface Window {
-        cometLocalStorageCookieApi: CookieApi;
+        dextinityLocalStorageCookieApi: CookieApi;
     }
 }
 
@@ -33,7 +33,7 @@ export const useLocalStorageCookieApi: CookieApiHook = () => {
 
         const simulateLoadingTimeout = setTimeout(() => {
             setInitialized(true);
-            window.cometLocalStorageCookieApi = {
+            window.dextinityLocalStorageCookieApi = {
                 initialized: true,
                 consentedCookies,
                 openCookieSettings: openCookieSettings,
@@ -53,6 +53,5 @@ export const useLocalStorageCookieApi: CookieApiHook = () => {
 };
 
 const logCookieUpdate = (cookies: string[]) => {
-    // eslint-disable-next-line no-console
     console.info("Consented cookies updated:", cookies);
 };

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { isURL, registerDecorator, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 
 import { RedirectValidationArguments } from "../dto/redirect-input.factory";
-import { RedirectSourceTypeValues } from "../redirects.enum";
+import { RedirectSourceType } from "../redirects.enum";
 
 export const IsValidRedirectSource = (validationOptions?: ValidationOptions) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,7 +22,7 @@ export class IsValidRedirectSourceConstraint implements ValidatorConstraintInter
     async validate(value: string, validationArguments: RedirectValidationArguments): Promise<boolean> {
         const sourceType = validationArguments.object.sourceType;
 
-        if (sourceType === RedirectSourceTypeValues.path) {
+        if (sourceType === RedirectSourceType.path) {
             return /^\/([a-zA-Z0-9-._~/:?=&]|%[0-9a-fA-F]{2})+$/.test(value);
         } else {
             return isURL(value);

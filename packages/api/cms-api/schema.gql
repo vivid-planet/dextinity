@@ -30,6 +30,7 @@ enum Permission {
   warnings
   sitePreview
   blockPreview
+  fullTextSearch
 }
 
 """
@@ -47,12 +48,17 @@ type ContentScopeWithLabel {
   label: JSONObject!
 }
 
+type ContentScopeDimension {
+  name: String!
+  label: String!
+}
+
 type UserPermissionsUser {
   id: String!
   name: String!
   email: String!
-  permissionsCount: Int!
-  contentScopesCount: Int!
+  permissionsCount: Int! @deprecated(reason: "The Permissions column was removed from the users list. Will be removed in the next version.")
+  contentScopesCount: Int! @deprecated(reason: "The Scopes column was removed from the users list. Will be removed in the next version.")
   impersonationAllowed: Boolean!
 }
 
@@ -73,6 +79,14 @@ type CurrentUser {
   allowedContentScopes: [ContentScopeWithLabel!]!
 }
 
+type EntityInfo {
+  id: String!
+  entityName: String!
+  name: String!
+  secondaryInformation: String
+  visible: Boolean!
+}
+
 type Dependency {
   rootId: String!
   rootGraphqlObjectType: String!
@@ -83,6 +97,11 @@ type Dependency {
   targetId: String!
   name: String
   secondaryInformation: String
+
+  """
+  Scope of the root entity for dependents, of the target entity for dependencies. Entities with multiple scopes return their first.
+  """
+  scope: JSONObject
 }
 
 type PaginatedDependencies {
@@ -100,6 +119,26 @@ type DamMediaAlternative {
 
 enum DamMediaAlternativeType {
   captions
+}
+
+type DamFileLicense {
+  type: LicenseType
+  details: String
+  author: String
+  durationFrom: DateTime
+  durationTo: DateTime
+
+  """The expirationDate is the durationTo + 1 day"""
+  expirationDate: DateTime
+  isNotValidYet: Boolean!
+  expiresWithinThirtyDays: Boolean!
+  hasExpired: Boolean!
+  isValid: Boolean!
+}
+
+enum LicenseType {
+  ROYALTY_FREE
+  RIGHTS_MANAGED
 }
 
 type ImageCropArea {
@@ -126,27 +165,13 @@ type DamFileImage {
   exif: JSONObject
   dominantColor: String
   cropArea: ImageCropArea!
+  urlTemplate: String
   url(width: Int!, height: Int!): String
 }
 
-type DamFileLicense {
-  type: LicenseType
-  details: String
-  author: String
-  durationFrom: DateTime
-  durationTo: DateTime
-
-  """The expirationDate is the durationTo + 1 day"""
-  expirationDate: DateTime
-  isNotValidYet: Boolean!
-  expiresWithinThirtyDays: Boolean!
-  hasExpired: Boolean!
-  isValid: Boolean!
-}
-
-enum LicenseType {
-  ROYALTY_FREE
-  RIGHTS_MANAGED
+type DamSettings {
+  id: ID!
+  invalidLicenseFallbackImage: DamFile
 }
 
 type BuildTemplate {
@@ -154,7 +179,7 @@ type BuildTemplate {
   name: String!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
 }
@@ -171,7 +196,7 @@ type Build {
   name: String
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   trigger: String
@@ -199,7 +224,7 @@ type KubernetesCronJob {
   name: String!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   schedule: String!
@@ -213,7 +238,7 @@ type KubernetesJob {
   name: String!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   status: KubernetesJobStatus!
@@ -235,7 +260,7 @@ type FilenameResponse {
 type FileUpload {
   id: ID!
   name: String!
-  size: Int!
+  size: BigInt!
   mimetype: String!
   contentHash: String!
   createdAt: DateTime!
@@ -248,6 +273,16 @@ type FileUpload {
   downloadUrl: String!
   previewUrl: String!
   imageUrl(resizeWidth: Int!): String
+}
+
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
+
+type PaginatedEntityInfo {
+  nodes: [EntityInfo!]!
+  totalCount: Int!
 }
 
 type UserPermissionPaginatedUserList {
@@ -287,11 +322,6 @@ enum WarningStatus {
   ignored
 }
 
-type EntityInfo {
-  name: String!
-  secondaryInformation: String
-}
-
 type PaginatedWarnings {
   nodes: [Warning!]!
   totalCount: Int!
@@ -314,7 +344,7 @@ type PageTreeNode {
   path: String!
   parentNodes: [PageTreeNode!]!
   document: PageContentUnion
-  dependents(offset: Int! = 0, limit: Int! = 25, filter: DependentFilter, forceRefresh: Boolean! = false): PaginatedDependencies!
+  dependents(offset: Int! = 0, limit: Int! = 25, filter: DependentFilter, sort: [DependencySort!], forceRefresh: Boolean! = false): PaginatedDependencies!
 }
 
 enum PageTreeNodeVisibility {
@@ -336,14 +366,52 @@ interface DocumentInterface {
 }
 
 input DependentFilter {
-  rootGraphqlObjectType: String
+  rootGraphqlObjectType: StringFilter
   rootId: String
   rootColumnName: String
+  name: StringFilter
+  secondaryInformation: StringFilter
+  visible: BooleanFilter
+  and: [DependentFilter!]
+  or: [DependentFilter!]
+}
+
+input StringFilter {
+  contains: String
+  notContains: String
+  startsWith: String
+  endsWith: String
+  equal: String
+  notEqual: String
+  isAnyOf: [String!]
+  isEmpty: Boolean
+  isNotEmpty: Boolean
+}
+
+input BooleanFilter {
+  equal: Boolean
+}
+
+input DependencySort {
+  field: DependencySortField!
+  direction: SortDirection! = ASC
+}
+
+enum DependencySortField {
+  name
+  secondaryInformation
+  graphqlObjectType
+  visible
+}
+
+enum SortDirection {
+  ASC
+  DESC
 }
 
 type Redirect {
   id: ID!
-  sourceType: RedirectSourceTypeValues!
+  sourceType: RedirectSourceType!
   source: String!
   target: JSONObject!
   comment: String
@@ -352,11 +420,12 @@ type Redirect {
   generationType: RedirectGenerationType!
   createdAt: DateTime!
   updatedAt: DateTime!
-  dependencies(offset: Int! = 0, limit: Int! = 25, filter: DependencyFilter, forceRefresh: Boolean! = false): PaginatedDependencies!
+  dependencies(offset: Int! = 0, limit: Int! = 25, filter: DependencyFilter, sort: [DependencySort!], forceRefresh: Boolean! = false): PaginatedDependencies!
 }
 
-enum RedirectSourceTypeValues {
+enum RedirectSourceType {
   path
+  domain
 }
 
 enum RedirectGenerationType {
@@ -365,9 +434,14 @@ enum RedirectGenerationType {
 }
 
 input DependencyFilter {
-  targetGraphqlObjectType: String
+  targetGraphqlObjectType: StringFilter
   targetId: String
   rootColumnName: String
+  name: StringFilter
+  secondaryInformation: StringFilter
+  visible: BooleanFilter
+  and: [DependencyFilter!]
+  or: [DependencyFilter!]
 }
 
 type PaginatedRedirects {
@@ -398,11 +472,12 @@ type DamFile {
   id: ID!
   folder: DamFolder
   name: String!
-  size: Int!
+  size: BigInt!
   mimetype: String!
   contentHash: String!
   title: String
   altText: String
+  aiContentType: DamFileAiContentType
   archived: Boolean!
   image: DamFileImage
   license: DamFileLicense
@@ -415,7 +490,12 @@ type DamFile {
   damPath: String!
   alternativesForThisFile: [DamMediaAlternative!]!
   thisFileIsAlternativeFor: [DamMediaAlternative!]!
-  dependents(offset: Int! = 0, limit: Int! = 25, filter: DependentFilter, forceRefresh: Boolean! = false): PaginatedDependencies!
+  dependents(offset: Int! = 0, limit: Int! = 25, filter: DependentFilter, sort: [DependencySort!], forceRefresh: Boolean! = false): PaginatedDependencies!
+}
+
+enum DamFileAiContentType {
+  Generated
+  Modified
 }
 
 type PaginatedDamItems {
@@ -459,11 +539,24 @@ type Query {
   redirects(scope: RedirectScopeInput! = {}, query: String, type: RedirectGenerationType, active: Boolean, sortColumnName: String, sortDirection: SortDirection! = ASC): [Redirect!]! @deprecated(reason: "Use paginatedRedirects instead. Will be removed in the next version.")
   paginatedRedirects(scope: RedirectScopeInput! = {}, search: String, filter: RedirectFilter, sort: [RedirectSort!], offset: Int! = 0, limit: Int! = 25): PaginatedRedirects!
   redirect(id: ID!): Redirect!
-  redirectBySource(scope: RedirectScopeInput! = {}, source: String!, sourceType: RedirectSourceTypeValues!): Redirect
+  redirectBySource(scope: RedirectScopeInput! = {}, source: String!, sourceType: RedirectSourceType!): Redirect
   redirectSourceAvailable(scope: RedirectScopeInput! = {}, source: String!): Boolean!
-  damItemsList(offset: Int! = 0, limit: Int! = 25, sortColumnName: String, sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, folderId: ID, includeArchived: Boolean, filter: DamItemFilterInput): PaginatedDamItems!
-  damItemListPosition(sortColumnName: String, sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, id: ID!, type: DamItemType!, folderId: ID, includeArchived: Boolean, filter: DamItemFilterInput): Int!
-  damFilesList(offset: Int! = 0, limit: Int! = 25, sortColumnName: String, sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, folderId: ID, includeArchived: Boolean = false, filter: FileFilterInput): PaginatedDamFiles!
+  damItemsList(offset: Int! = 0, limit: Int! = 25, sortColumnName: String = "name", sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, folderId: ID, includeArchived: Boolean, filter: DamItemFilterInput): PaginatedDamItems!
+  damItemListPosition(sortColumnName: String = "name", sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, id: ID!, type: DamItemType!, folderId: ID, includeArchived: Boolean, filter: DamItemFilterInput): Int!
+  damFilesList(
+    offset: Int! = 0
+    limit: Int! = 25
+    sortColumnName: String
+    sortDirection: SortDirection! = ASC
+    scope: DamScopeInput! = {}
+
+    """
+    Folder to list files from. When omitted, files at the scope root are returned. Ignored when filter.searchText or filter.ids is set.
+    """
+    folderId: ID
+    includeArchived: Boolean = false
+    filter: FileFilterInput
+  ): PaginatedDamFiles!
   damFile(id: ID!): DamFile!
   findCopiesOfFileInScope(id: ID!, scope: DamScopeInput! = {}, imageCropArea: ImageCropAreaInput): [DamFile!]!
   damIsFilenameOccupied(filename: String!, scope: DamScopeInput! = {}, folderId: String): Boolean!
@@ -490,23 +583,22 @@ type Query {
   userPermissionsAvailablePermissions: [String!]!
   userPermissionsContentScopes(userId: String!, skipManual: Boolean): [JSONObject!]!
   userPermissionsAvailableContentScopes: [ContentScopeWithLabel!]!
+  userPermissionsAvailableContentScopeDimensions: [ContentScopeDimension!]!
   fileUploadForTypesGenerationDoNotUse: FileUpload!
   azureAiTranslate(input: AzureAiTranslationInput!): String!
+  azureAiTranslateBatch(input: AzureAiTranslationBatchInput!): [String!]!
   sitePreviewJwt(scope: JSONObject!, path: String!, includeInvisible: Boolean!): String!
   blockPreviewJwt(scope: JSONObject!, url: String!, includeInvisible: Boolean!): String!
   warning(id: ID!): Warning!
   warnings(offset: Int! = 0, limit: Int! = 25, status: [WarningStatus!]! = [open], search: String, scopes: [JSONObject!]!, filter: WarningFilter, sort: [WarningSort!]): PaginatedWarnings!
   damMediaAlternative(id: ID!): DamMediaAlternative!
   damMediaAlternatives(offset: Int! = 0, limit: Int! = 25, search: String, sort: [DamMediaAlternativeSort!], for: ID, alternative: ID, type: DamMediaAlternativeType): PaginatedDamMediaAlternatives!
+  damSettings(scope: DamScopeInput! = {}): DamSettings
+  myFullTextSearch(search: String!, offset: Int! = 0, limit: Int! = 25, scope: JSONObject): PaginatedEntityInfo!
 }
 
 input RedirectScopeInput {
   thisScopeHasNoFields____: String
-}
-
-enum SortDirection {
-  ASC
-  DESC
 }
 
 input RedirectFilter {
@@ -514,6 +606,7 @@ input RedirectFilter {
   source: StringFilter
   target: StringFilter
   active: BooleanFilter
+  sourceType: RedirectSourceTypeEnumFilter
   activatedAt: DateTimeFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
@@ -521,20 +614,10 @@ input RedirectFilter {
   or: [RedirectFilter!]
 }
 
-input StringFilter {
-  contains: String
-  notContains: String
-  startsWith: String
-  endsWith: String
-  equal: String
-  notEqual: String
-  isAnyOf: [String!]
-  isEmpty: Boolean
-  isNotEmpty: Boolean
-}
-
-input BooleanFilter {
-  equal: Boolean
+input RedirectSourceTypeEnumFilter {
+  isAnyOf: [RedirectSourceType!]
+  equal: RedirectSourceType
+  notEqual: RedirectSourceType
 }
 
 input DateTimeFilter {
@@ -574,8 +657,16 @@ enum DamItemType {
 }
 
 input FileFilterInput {
+  """
+  Full-text search across file names. When set, the folder constraint is bypassed and results span the whole scope.
+  """
   searchText: String
   mimetypes: [String!]
+
+  """
+  Restrict the result to files with these IDs. When a non-empty list is provided, the folder constraint is bypassed and matches are returned regardless of which folder they live in.
+  """
+  ids: [ID!]
 }
 
 input ImageCropAreaInput {
@@ -646,11 +737,19 @@ input AzureAiTranslationInput {
   targetLanguage: String!
 }
 
+input AzureAiTranslationBatchInput {
+  texts: [String!]!
+  targetLanguage: String!
+}
+
 input WarningFilter {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   message: StringFilter
   type: StringFilter
+  name: StringFilter
+  secondaryInformation: StringFilter
+  visible: BooleanFilter
   severity: WarningSeverityEnumFilter
   status: WarningStatusEnumFilter
   scope: ScopeFilter
@@ -686,6 +785,8 @@ enum WarningSortField {
   updatedAt
   message
   type
+  name
+  visible
   severity
   status
 }
@@ -709,8 +810,8 @@ type Mutation {
   updateRedirect(id: ID!, input: RedirectInput!, lastUpdatedAt: DateTime): Redirect!
   updateRedirectActiveness(id: ID!, input: RedirectUpdateActivenessInput!): Redirect!
   deleteRedirect(id: ID!): Boolean!
+  deleteRedirects(ids: [ID!]!): Boolean!
   updateDamFile(id: ID!, input: UpdateDamFileInput!): DamFile!
-  importDamFileByDownload(url: String!, scope: DamScopeInput! = {}, input: UpdateDamFileInput!): DamFile!
   moveDamFiles(fileIds: [ID!]!, targetFolderId: ID): [DamFile!]!
   copyFilesToScope(fileIds: [ID!]!, inboxFolderId: ID!): CopyFilesResponse!
   archiveDamFile(id: ID!): DamFile!
@@ -743,6 +844,7 @@ type Mutation {
   createDamMediaAlternative(for: ID!, alternative: ID!, input: DamMediaAlternativeInput!): DamMediaAlternative!
   updateDamMediaAlternative(id: ID!, input: DamMediaAlternativeUpdateInput!): DamMediaAlternative!
   deleteDamMediaAlternative(id: ID!): Boolean!
+  updateDamSettings(scope: DamScopeInput! = {}, input: DamSettingsInput!): DamSettings!
 }
 
 input CreateBuildsInput {
@@ -750,7 +852,7 @@ input CreateBuildsInput {
 }
 
 input RedirectInput {
-  sourceType: RedirectSourceTypeValues!
+  sourceType: RedirectSourceType!
   source: String!
   target: JSONObject!
   comment: String
@@ -766,6 +868,7 @@ input UpdateDamFileInput {
   name: String
   title: String
   altText: String
+  aiContentType: DamFileAiContentType
   image: UpdateImageFileInput
   folderId: ID
   license: LicenseInput
@@ -862,4 +965,8 @@ input DamMediaAlternativeUpdateInput {
   type: DamMediaAlternativeType
   for: ID
   alternative: ID
+}
+
+input DamSettingsInput {
+  invalidLicenseFallbackImageId: ID
 }

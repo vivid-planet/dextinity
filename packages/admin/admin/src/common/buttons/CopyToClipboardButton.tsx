@@ -1,32 +1,24 @@
-import { Accept, Copy } from "@comet/admin-icons";
+import { Accept, Copy } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, css, Grow, IconButton, type Theme, useThemeProps } from "@mui/material";
 import { type ReactNode, useState } from "react";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 
-export interface CopyToClipboardButtonProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        copyButtonContainer: "div";
-        successButtonContainer: "div";
-        copyButton: typeof IconButton;
-        successButton: typeof IconButton;
-    }> {
+export interface CopyToClipboardButtonProps extends ThemedComponentBaseProps<{
+    root: "div";
+    copyButtonContainer: "div";
+    successButtonContainer: "div";
+    copyButton: typeof IconButton;
+    successButton: typeof IconButton;
+}> {
     copyText: string;
     copyIcon?: ReactNode;
     successIcon?: ReactNode;
 }
 
 export type CopyToClipboardButtonClassKey =
-    | "root"
-    | "showSuccess"
-    | "buttonContainer"
-    | "copyButtonContainer"
-    | "successButtonContainer"
-    | "button"
-    | "copyButton"
-    | "successButton";
+    "root" | "showSuccess" | "buttonContainer" | "copyButtonContainer" | "successButtonContainer" | "button" | "copyButton" | "successButton";
 
 type OwnerState = {
     showSuccess: boolean;
@@ -39,7 +31,7 @@ export const CopyToClipboardButton = (inProps: CopyToClipboardButtonProps) => {
         successIcon = <Accept />,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminCopyToClipboardButton" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminCopyToClipboardButton" });
 
     const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
@@ -150,17 +142,17 @@ const SuccessButton = createComponentSlot(IconButton)<CopyToClipboardButtonClass
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminCopyToClipboardButton: CopyToClipboardButtonClassKey;
+        DextinityAdminCopyToClipboardButton: CopyToClipboardButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminCopyToClipboardButton: CopyToClipboardButtonProps;
+        DextinityAdminCopyToClipboardButton: CopyToClipboardButtonProps;
     }
 
     interface Components {
-        CometAdminCopyToClipboardButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminCopyToClipboardButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminCopyToClipboardButton"];
+        DextinityAdminCopyToClipboardButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminCopyToClipboardButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminCopyToClipboardButton"];
         };
     }
 }

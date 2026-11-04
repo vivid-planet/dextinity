@@ -1,12 +1,12 @@
-import { gql } from "@comet/site-nextjs";
+import { gql } from "@dextinity/site-nextjs";
 import { predefinedPagePaths } from "@src/documents/predefinedPages/predefinedPagePaths";
 import { createGraphQLFetchMiddleware } from "@src/util/graphQLClientMiddleware";
 import { getHostByHeaders, getSiteConfigForDomain, getSiteConfigForHost } from "@src/util/siteConfig";
 import { type NextRequest, NextResponse } from "next/server";
 
 import { memoryCache } from "./cache";
-import { type CustomMiddleware } from "./chain";
-import { type GQLPredefinedPagesQuery, type GQLPredefinedPagesQueryVariables } from "./predefinedPages.generated";
+import type { CustomMiddleware } from "./chain";
+import type { GQLPredefinedPagesQuery, GQLPredefinedPagesQueryVariables } from "./predefinedPages.generated";
 
 async function getPredefinedPageRedirect(domain: string, pathname: string): Promise<string | undefined> {
     const pages = await fetchPredefinedPages(domain);

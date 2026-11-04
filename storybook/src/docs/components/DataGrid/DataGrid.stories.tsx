@@ -20,8 +20,8 @@ import {
     useDataGridExcelExport,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Delete, Download, Favorite, MoreVertical, Move } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Delete, Download, Favorite, MoreVertical, Move } from "@dextinity/admin-icons";
 import { Divider, Menu, MenuItem, useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
 import { DataGrid, type GridRowSelectionModel } from "@mui/x-data-grid";
@@ -309,6 +309,7 @@ export const _GridFilterButton = {
                     slots={{
                         toolbar: DemoToolbar,
                     }}
+                    showToolbar
                 />
             </Box>
         );
@@ -499,6 +500,7 @@ export const UseDataGridExcelExport = {
                     slots={{
                         toolbar: DemoToolbar,
                     }}
+                    showToolbar
                 />
             </Box>
         );
@@ -575,7 +577,10 @@ export const GridColumnTypes = {
 
 export const _CrudMoreActionsMenu = {
     render: () => {
-        const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
+        const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({
+            type: "include",
+            ids: new Set([]),
+        });
         const dataGridProps = useDataGridRemote();
 
         function DemoToolBar() {
@@ -583,7 +588,7 @@ export const _CrudMoreActionsMenu = {
                 <DataGridToolbar>
                     <FillSpace />
                     <CrudMoreActionsMenu
-                        selectionSize={selectionModel.length}
+                        selectionSize={selectionModel.ids.size}
                         overallActions={[
                             {
                                 label: "Export to excel",
@@ -625,9 +630,11 @@ export const _CrudMoreActionsMenu = {
                         setSelectionModel(newSelectionModel);
                     }}
                     rowSelectionModel={selectionModel}
+                    disableRowSelectionExcludeModel
                     slots={{
                         toolbar: DemoToolBar,
                     }}
+                    showToolbar
                 />
             </Box>
         );

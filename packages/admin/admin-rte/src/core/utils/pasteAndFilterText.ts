@@ -1,4 +1,4 @@
-import { type EditorState } from "draft-js";
+import type { EditorState } from "draft-js";
 import { handleDraftEditorPastedText } from "draftjs-conductor";
 
 import defaultFilterEditorStateBeforeUpdate from "../filterEditor/default";

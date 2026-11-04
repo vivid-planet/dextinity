@@ -3,7 +3,7 @@
     "compilerOptions": {
         "target": "ES2015",
         "module": "ESNext",
-        "moduleResolution": "Node",
+        "moduleResolution": "Bundler",
         "noImplicitAny": true,
         "jsx": "react-jsx",
         "noEmitOnError": true,

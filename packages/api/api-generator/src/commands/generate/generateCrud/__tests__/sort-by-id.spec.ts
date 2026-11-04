@@ -1,7 +1,8 @@
-import { CrudField } from "@comet/cms-api";
+import { CrudField } from "@dextinity/cms-api";
 import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
-import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage";
-import { v4 as uuid } from "uuid";
+import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
+import { randomUUID } from "crypto";
+import { describe, expect, it } from "vitest";
 
 import { formatGeneratedFiles, testPermission } from "../../utils/test-helper";
 import { buildSortProps } from "../build-options";
@@ -10,13 +11,13 @@ import { generateCrud } from "../generate-crud";
 @Entity()
 export class TestEntity1 extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 }
 
 @Entity()
 export class TestEntity2 extends BaseEntity {
     @PrimaryKey({ columnType: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 }
 
 @Entity()
@@ -25,7 +26,7 @@ export class TestEntity3 extends BaseEntity {
     @CrudField({
         sort: false,
     })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     name: string;
@@ -75,11 +76,13 @@ describe("sort by id", () => {
         const sortProps = buildSortProps(orm.em.getMetadata().get("TestEntity3"));
         expect(sortProps).toEqual(["name"]);
 
-        const out = await generateCrud({ targetDirectory: __dirname, requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntity3"));
+        const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntity3"));
         const formattedOut = await formatGeneratedFiles(out);
 
         const file = formattedOut.find((file) => file.name === "dto/test-entity3s.args.ts");
-        if (!file) throw new Error("File not found");
+        if (!file) {
+            throw new Error("File not found");
+        }
 
         expect(file.content).toMatchSnapshot();
         await orm.close();

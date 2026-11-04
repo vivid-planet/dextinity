@@ -1,5 +1,5 @@
-import { type Theme } from "@mui/material";
-import { type CSSProperties } from "@mui/material/styles";
+import type { Theme } from "@mui/material";
+import type { CSSProperties } from "@mui/material/styles";
 
 export const getReactDateRangeStyles = ({ palette, typography }: Theme): CSSProperties => ({
     backgroundColor: "transparent",

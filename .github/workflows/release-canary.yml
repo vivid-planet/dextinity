@@ -6,7 +6,11 @@ on:
             - main
             - next
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+# Releases publish to npm, so an in-flight run must never be aborted:
+# queue the next run instead of cancelling the running one.
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
 
 jobs:
     release-canary:
@@ -14,22 +18,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout Repo
-              uses: actions/checkout@v5
+              uses: actions/checkout@v7
 
-            - uses: pnpm/action-setup@v4
-
-            - name: Use Node.js 24.x
-              uses: actions/setup-node@v5
-              with:
-                  node-version: 24
-                  registry-url: "https://registry.npmjs.org"
-                  cache: "pnpm" # https://github.com/actions/setup-node/blob/main/docs/advanced-usage.md#caching-packages-dependencies
-
-            - name: Install Dependencies
-              run: pnpm install --frozen-lockfile
-
-            - name: Setup project for CI run
-              run: pnpm run setup:ci
+            - uses: ./.github/actions/setup
 
             - name: "Exit Prelease Mode"
               if: ${{ hashFiles('.changeset/pre.json') != '' }}
@@ -39,12 +30,12 @@ jobs:
               if: ${{ github.ref_name == 'main' && !contains(github.event.head_commit.message, 'Version Packages') }}
               run: |
                   echo --- > .changeset/canary.md
-                  echo '"@comet/cli": patch' >> .changeset/canary.md
+                  echo '"@dextinity/cli": patch' >> .changeset/canary.md
                   echo --- >> .changeset/canary.md
                   echo >> .changeset/canary.md
                   echo fake change to always get a canary release >> .changeset/canary.md
                   pnpm exec changeset version --snapshot canary
-                  pnpm run publish --tag canary --no-git-checks
+                  pnpm run publish --tag canary
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -52,11 +43,11 @@ jobs:
               if: ${{ github.ref_name == 'next' && !contains(github.event.head_commit.message, 'Version Packages') }}
               run: |
                   echo --- > .changeset/canary.md
-                  echo '"@comet/cli": major' >> .changeset/canary.md
+                  echo '"@dextinity/cli": major' >> .changeset/canary.md
                   echo --- >> .changeset/canary.md
                   echo >> .changeset/canary.md
                   echo fake change to always get a canary release >> .changeset/canary.md
                   pnpm exec changeset version --snapshot canary
-                  pnpm run publish --tag next-canary --no-git-checks
+                  pnpm run publish --tag next-canary
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

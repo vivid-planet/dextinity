@@ -10,7 +10,7 @@ import { PageTreeService } from "../page-tree/page-tree.service";
 import { PageTreeReadApiOptions } from "../page-tree/page-tree-read-api";
 import { RedirectInterface } from "./entities/redirect-entity.factory";
 import { REDIRECTS_LINK_BLOCK } from "./redirects.constants";
-import { RedirectGenerationType, RedirectSourceTypeValues } from "./redirects.enum";
+import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
 import { RedirectsLinkBlock } from "./redirects.module";
 import { RedirectScopeInterface } from "./types";
 
@@ -79,7 +79,7 @@ export class ImportRedirectsCommand extends CommandRunner {
                     successes++;
                 } else {
                     const redirect = this.repository.create({
-                        sourceType: RedirectSourceTypeValues.path,
+                        sourceType: RedirectSourceType.path,
                         source: row["source"],
                         target: this.linkBlock
                             .blockInputFactory({
@@ -114,6 +114,7 @@ export class ImportRedirectsCommand extends CommandRunner {
                                         props: {
                                             targetUrl: row["target"],
                                             openInNewWindow: true,
+                                            noFollow: false,
                                         },
                                     },
                                 ],
@@ -126,7 +127,7 @@ export class ImportRedirectsCommand extends CommandRunner {
                     successes++;
                 } else {
                     const redirect = this.repository.create({
-                        sourceType: RedirectSourceTypeValues.path,
+                        sourceType: RedirectSourceType.path,
                         source: row["source"],
                         target: this.linkBlock
                             .blockInputFactory({
@@ -136,6 +137,7 @@ export class ImportRedirectsCommand extends CommandRunner {
                                         props: {
                                             targetUrl: row["target"],
                                             openInNewWindow: true,
+                                            noFollow: false,
                                         },
                                     },
                                 ],

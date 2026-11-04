@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { type AnyObject, Form, type FormProps, FormSpy } from "react-final-form";
 
 function AutosaveSpy() {

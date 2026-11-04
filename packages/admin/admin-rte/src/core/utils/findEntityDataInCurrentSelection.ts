@@ -1,4 +1,4 @@
-import { type EditorState } from "draft-js";
+import type { EditorState } from "draft-js";
 
 import findEntityInCurrentSelection from "./findEntityInCurrentSelection";
 

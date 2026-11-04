@@ -6,7 +6,7 @@
         "experimentalDecorators": true,
         "incremental": true,
         "jsx": "react-jsx",
-        "lib": ["esnext"],
+        "lib": ["ES2023"],
         "module": "nodenext",
         "moduleResolution": "nodenext",
         "outDir": "./dist",
@@ -20,6 +20,7 @@
         "strict": true,
         "strictNullChecks": true,
         "strictPropertyInitialization": false,
-        "target": "es2017"
+        "target": "ES2023",
+        "useDefineForClassFields": false
     }
 }

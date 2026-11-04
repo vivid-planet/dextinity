@@ -4,11 +4,11 @@ import { compareAsc, compareDesc, isEqual } from "date-fns";
 
 import { SortDirection } from "../common/sorting/sort-direction.enum";
 import { type PageTreeNodeSort, PageTreeNodeSortField } from "./dto/page-tree-node.sort";
-import { type AttachedDocument } from "./entities/attached-document.entity";
+import type { AttachedDocument } from "./entities/attached-document.entity";
 import { type PageTreeNodeCategory, type PageTreeNodeInterface, PageTreeNodeVisibility as Visibility, type ScopeInterface } from "./types";
 import pathBuilder from "./utils/path-builder";
 
-const tracer = opentelemetry.trace.getTracer("@comet/cms-api");
+const tracer = opentelemetry.trace.getTracer("@dextinity/cms-api");
 
 interface PageTreeNodeFilterOptions {
     parentId?: string | null;
@@ -32,6 +32,7 @@ export interface PageTreeReadApi {
     parentNodes(node: PageTreeNodeInterface): Promise<PageTreeNodeInterface[]>;
     getNode(id: string): Promise<PageTreeNodeInterface | null>;
     getNodeOrFail(id: string): Promise<PageTreeNodeInterface>;
+    getNodesByIds(ids: string[]): Promise<PageTreeNodeInterface[]>;
     getParentNode(node: PageTreeNodeInterface): Promise<PageTreeNodeInterface | null>;
     getNodes(options?: PageTreeReadApiOptions): Promise<PageTreeNodeInterface[]>;
     getNodesCount(options?: PageTreeReadApiOptions): Promise<number>;
@@ -45,7 +46,9 @@ export interface PageTreeReadApi {
 
 // hash from scope object used as key for preloadedNodes Map
 function scopeHash(scope: ScopeInterface | undefined): string {
-    if (!scope) return "";
+    if (!scope) {
+        return "";
+    }
     return JSON.stringify(scope);
 }
 
@@ -207,7 +210,9 @@ export function createReadApi(
     let preloadRunning = false;
     const waitForPreloadingResolvers: Array<() => void> = [];
     const waitForPreloadDone = async (): Promise<void> => {
-        if (!preloadRunning) return;
+        if (!preloadRunning) {
+            return;
+        }
         return new Promise((resolve, reject) => {
             waitForPreloadingResolvers.push(resolve);
         });
@@ -284,8 +289,43 @@ export function createReadApi(
             return node;
         },
 
+        async getNodesByIds(ids) {
+            await waitForPreloadDone();
+            const missingIds: string[] = [];
+
+            for (const id of ids) {
+                if (!nodesById.has(id)) {
+                    missingIds.push(id);
+                }
+            }
+
+            if (missingIds.length > 0) {
+                await tracer.startActiveSpan("live query PageTree getNodesByIds", async (span) => {
+                    span.setAttribute("ids count", missingIds.length);
+                    const nodes = await pageTreeNodeRepository.find({ id: { $in: missingIds }, visibility: { $in: visibilityFilter } });
+                    for (const node of nodes) {
+                        nodesById.set(node.id, node);
+                    }
+                    span.end();
+                });
+            }
+
+            // Return in the same order as input ids, throw if any not found
+            return ids.map((id) => {
+                const node = nodesById.get(id);
+                if (!node) {
+                    throw new NotFoundError(
+                        `Cannot find PageTreeNode with ID ${id} and visibility ${Array.isArray(visibility) ? visibility.join(" or ") : visibility}`,
+                    );
+                }
+                return node;
+            });
+        },
+
         async getParentNode(node) {
-            if (!node.parentId) return null;
+            if (!node.parentId) {
+                return null;
+            }
 
             return this.getNodeOrFail(node.parentId);
         },
@@ -310,6 +350,10 @@ export function createReadApi(
         },
 
         async getNodeByPath(path, options = {}) {
+            if (path === "/home") {
+                return null;
+            }
+
             if (path === "/") {
                 const nodes = await queryNodes(options.scope, {
                     slug: "home",
@@ -332,7 +376,9 @@ export function createReadApi(
                 });
                 node = nodes[0];
 
-                if (!node) return null;
+                if (!node) {
+                    return null;
+                }
                 parentId = node.id;
             }
             return node;
@@ -361,13 +407,17 @@ export function createReadApi(
 
         async getFirstNodeByAttachedPageId(pageId: string): Promise<PageTreeNodeInterface | null> {
             const attachedDocument = await attachedDocumentsRepository.findOne({ documentId: pageId });
-            if (!attachedDocument) return null;
+            if (!attachedDocument) {
+                return null;
+            }
             return this.getNode(attachedDocument.pageTreeNodeId);
         },
 
         async preloadNodes(scope?: ScopeInterface) {
             const hash = scopeHash(scope);
-            if (preloadedNodes.has(hash)) return; //don't double-preload
+            if (preloadedNodes.has(hash)) {
+                return;
+            } //don't double-preload
             return tracer.startActiveSpan("preload PageTreeNode", async (span) => {
                 span.setAttribute("scope", JSON.stringify(scope));
                 preloadRunning = true;

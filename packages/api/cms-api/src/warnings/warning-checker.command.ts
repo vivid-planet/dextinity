@@ -9,6 +9,7 @@ import { FlatBlocks } from "../blocks/flat-blocks/flat-blocks";
 import { isInjectableService } from "../common/helper/is-injectable-service.helper";
 import { DiscoverService } from "../dependencies/discover.service";
 import { SCOPED_ENTITY_METADATA_KEY, ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator";
+import { getScopesForScopedEntity } from "../user-permissions/get-scopes-for-scoped-entity";
 import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
 import { CREATE_WARNINGS_METADATA_KEY, CreateWarningsFunction, CreateWarningsMeta } from "./decorators/create-warnings.decorator";
 import { Warning } from "./entities/warning.entity";
@@ -78,14 +79,13 @@ export class WarningCheckerCommand extends CommandRunner {
                             const scoped = this.reflector.getAllAndOverride<ScopedEntityMeta>(SCOPED_ENTITY_METADATA_KEY, [entity]);
 
                             if (scoped) {
-                                let scopedEntityScope: ContentScope | ContentScope[];
-
-                                if (isInjectableService(scoped)) {
-                                    const service = this.moduleRef.get(scoped, { strict: false });
-                                    scopedEntityScope = await service.getEntityScope(rootBlock);
-                                } else {
-                                    scopedEntityScope = await scoped(rootBlock);
-                                }
+                                const scopedEntityScope = await getScopesForScopedEntity({
+                                    scoped,
+                                    entity,
+                                    row: rootBlock,
+                                    entityManager: this.entityManager,
+                                    moduleRef: this.moduleRef,
+                                });
 
                                 if (Array.isArray(scopedEntityScope)) {
                                     throw new Error("Multiple scopes are not supported for warnings");

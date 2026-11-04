@@ -1,7 +1,7 @@
-import { messages } from "@comet/admin";
-import { Copy, Delete, Drag, MoreVertical, Paste, Warning } from "@comet/admin-icons";
+import { messages } from "@dextinity/admin";
+import { Copy, Delete, Drag, MoreVertical, Paste, Warning } from "@dextinity/admin-icons";
 import { Checkbox, Divider, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
-import { type ChangeEvent, type MouseEventHandler, type ReactNode, useRef, useState } from "react";
+import { type ChangeEvent, type JSX, type MouseEventHandler, type ReactNode, useRef, useState } from "react";
 import { type DropTargetMonitor, useDrag, useDrop, type XYCoord } from "react-dnd";
 import { FormattedMessage } from "react-intl";
 
@@ -185,7 +185,9 @@ export function BlockRow(props: BlockRowProps): JSX.Element {
                 </sc.InnerBlock>
                 <sc.RowClickContainer
                     onClick={() => {
-                        if (props.onContentClick) props.onContentClick();
+                        if (props.onContentClick) {
+                            props.onContentClick();
+                        }
                     }}
                 />
 

@@ -1,12 +1,21 @@
 import { parseISO } from "date-fns";
+import { describe, expect, it } from "vitest";
 
 import { SortDirection } from "../common/sorting/sort-direction.enum";
 import { getError, NoErrorThrownError } from "../common/test/get-error";
 import { PageTreeNodeSortField } from "./dto/page-tree-node.sort";
-import { paginatePreloadedNodes, sortPreloadedNodes } from "./page-tree-read-api";
-import { type PageTreeNodeInterface } from "./types";
+import { createReadApi, paginatePreloadedNodes, sortPreloadedNodes } from "./page-tree-read-api";
+import type { PageTreeNodeInterface } from "./types";
 
 describe("PageTreeReadApi", () => {
+    describe("getNodeByPath", () => {
+        it("should return null for path /home", async () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const api = createReadApi({ pageTreeNodeRepository: {} as any, attachedDocumentsRepository: {} as any });
+            await expect(api.getNodeByPath("/home")).resolves.toBeNull();
+        });
+    });
+
     describe("sortPreloadedNodes", () => {
         it("should skip sorting if only sort criteria is by pos ascending", () => {
             const alreadySorted = [{ pos: 1 }, { pos: 2 }] as PageTreeNodeInterface[];

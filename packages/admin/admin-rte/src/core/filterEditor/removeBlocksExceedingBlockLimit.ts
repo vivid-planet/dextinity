@@ -1,6 +1,6 @@
 import { EditorState, SelectionState } from "draft-js";
 
-import { type FilterEditorStateBeforeUpdateFn } from "../Rte";
+import type { FilterEditorStateBeforeUpdateFn } from "../Rte";
 
 // when a maxBlocks-limit is set, all blocks exceeding this limit are removed completely (with the content)
 //

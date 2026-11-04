@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { css, styled } from "@mui/material/styles";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { DateTime } from "./DateTime";
 import { DefaultGreeting } from "./DefaultGreeting";

@@ -1,10 +1,12 @@
-import { type PropsWithData, withPreview } from "@comet/site-nextjs";
-import { type PageTreeIndexBlockData } from "@src/blocks.generated";
+import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import type { PageTreeIndexBlockData } from "@src/blocks.generated";
 import { PageLayout } from "@src/layout/PageLayout";
+import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import { createSitePath } from "@src/util/createSitePath";
 import NextLink from "next/link";
+import type { JSX } from "react";
 
-import { type LoadedData, type PageTreeNode } from "./PageTreeIndexBlock.loader";
+import type { LoadedData, PageTreeNode } from "./PageTreeIndexBlock.loader";
 import styles from "./PageTreeIndexBlock.module.scss";
 
 type PageTreeNodeWithChildren = PageTreeNode & { children: PageTreeNodeWithChildren[] };
@@ -42,7 +44,9 @@ export const PageTreeIndexBlock = withPreview(
         const tree = buildTree(allNodes);
         return (
             <PageLayout grid>
-                <div className={styles.root}>{renderTree(tree)}</div>
+                <AnimateBoxInOnScroll direction="bottom" className={styles.root}>
+                    {renderTree(tree)}
+                </AnimateBoxInOnScroll>
             </PageLayout>
         );
     },

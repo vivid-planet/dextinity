@@ -1,4 +1,4 @@
-import { type BlockDataInterface } from "../block";
+import type { BlockDataInterface } from "../block";
 import { FlatBlockNode } from "./flat-blocks";
 
 export interface RootBlockInfo {

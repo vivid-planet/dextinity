@@ -1,4 +1,4 @@
-import { type FunctionComponent } from "react";
+import type { FunctionComponent } from "react";
 
 type FullPageAlertBackgroundProps = {
     className?: string;

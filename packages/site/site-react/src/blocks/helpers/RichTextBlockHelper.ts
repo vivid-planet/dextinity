@@ -1,6 +1,6 @@
-import { type RawDraftContentState } from "draft-js";
+import type { RawDraftContentState } from "draft-js";
 
-import { type RichTextBlockData } from "../../blocks.generated";
+import type { RichTextBlockData } from "../../blocks.generated";
 
 export const hasRichTextBlockContent = (data: RichTextBlockData) => {
     const draftContent = data.draftContent as RawDraftContentState;

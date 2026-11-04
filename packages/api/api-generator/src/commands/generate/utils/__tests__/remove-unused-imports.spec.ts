@@ -1,4 +1,5 @@
 import ts from "typescript";
+import { describe, expect, it } from "vitest";
 
 import { removeUnusedImports } from "../write-generated-file";
 

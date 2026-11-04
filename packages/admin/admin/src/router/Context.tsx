@@ -1,8 +1,8 @@
 import type * as History from "history";
-import { createContext, type MutableRefObject } from "react";
+import { createContext, type RefObject } from "react";
 
-import { type PromptRoutes } from "./Prompt";
-import { type ResetAction, type SaveAction } from "./PromptHandler";
+import type { PromptRoutes } from "./Prompt";
+import type { ResetAction, SaveAction } from "./PromptHandler";
 
 interface IContext {
     register: (options: {
@@ -12,7 +12,7 @@ interface IContext {
         resetAction?: ResetAction;
         path: string;
         subRoutePath?: string;
-        promptRoutes?: MutableRefObject<PromptRoutes>;
+        promptRoutes?: RefObject<PromptRoutes>;
     }) => void;
     unregister: (id: string) => void;
 }

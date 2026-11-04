@@ -1,7 +1,7 @@
 import { useApolloClient, useQuery } from "@apollo/client";
-import { filterByFragment, FinalForm, type FinalFormSubmitEvent, Loading, TextField, useFormApiRef, useStackSwitchApi } from "@comet/admin";
-import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
-import { type FormApi } from "final-form";
+import { filterByFragment, FinalForm, type FinalFormSubmitEvent, Loading, TextField, useFormApiRef, useStackSwitchApi } from "@dextinity/admin";
+import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
+import type { FormApi } from "final-form";
 import isEqual from "lodash.isequal";
 import { useMemo } from "react";
 import { FormattedMessage } from "react-intl";
@@ -12,14 +12,14 @@ import {
     productCategoryQuery,
     updateProductCategoryMutation,
 } from "./ProductCategoryForm.gql";
-import {
-    type GQLCreateProductCategoryMutation,
-    type GQLCreateProductCategoryMutationVariables,
-    type GQLProductCategoryFormHandmadeFragment,
-    type GQLProductCategoryQuery,
-    type GQLProductCategoryQueryVariables,
-    type GQLUpdateProductCategoryMutation,
-    type GQLUpdateProductCategoryMutationVariables,
+import type {
+    GQLCreateProductCategoryMutation,
+    GQLCreateProductCategoryMutationVariables,
+    GQLProductCategoryFormHandmadeFragment,
+    GQLProductCategoryQuery,
+    GQLProductCategoryQueryVariables,
+    GQLUpdateProductCategoryMutation,
+    GQLUpdateProductCategoryMutationVariables,
 } from "./ProductCategoryForm.gql.generated";
 
 type FormValues = GQLProductCategoryFormHandmadeFragment;
@@ -55,12 +55,16 @@ export function ProductCategoryForm({ id }: FormProps) {
         },
     });
     const handleSubmit = async (formValues: FormValues, form: FormApi<FormValues>, event: FinalFormSubmitEvent) => {
-        if (await saveConflict.checkForConflicts()) throw new Error("Conflicts detected");
+        if (await saveConflict.checkForConflicts()) {
+            throw new Error("Conflicts detected");
+        }
         const output = {
             ...formValues,
         };
         if (mode === "edit") {
-            if (!id) throw new Error();
+            if (!id) {
+                throw new Error();
+            }
             const { ...updateInput } = output;
             await client.mutate<GQLUpdateProductCategoryMutation, GQLUpdateProductCategoryMutationVariables>({
                 mutation: updateProductCategoryMutation,
@@ -81,7 +85,9 @@ export function ProductCategoryForm({ id }: FormProps) {
             }
         }
     };
-    if (error) throw error;
+    if (error) {
+        throw error;
+    }
     if (loading) {
         return <Loading behavior="fillPageHeight" />;
     }

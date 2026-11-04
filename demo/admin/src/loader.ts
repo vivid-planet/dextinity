@@ -5,7 +5,9 @@ import { App } from "./App";
 
 const loadHtml = () => {
     const rootElement = document.querySelector<HTMLElement>("#root");
-    if (!rootElement) return false;
+    if (!rootElement) {
+        return false;
+    }
 
     const root = createRoot(rootElement);
     root.render(createElement(App));

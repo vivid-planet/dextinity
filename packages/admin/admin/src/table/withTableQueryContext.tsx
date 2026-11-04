@@ -1,4 +1,4 @@
-import { type ComponentType, type FC } from "react";
+import type { ComponentType, FC } from "react";
 
 import { type ITableQueryContext, TableQueryContext } from "./TableQueryContext";
 

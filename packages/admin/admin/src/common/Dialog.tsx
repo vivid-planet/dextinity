@@ -1,4 +1,4 @@
-import { Close } from "@comet/admin-icons";
+import { Close } from "@dextinity/admin-icons";
 import {
     type ComponentsOverrides,
     css,
@@ -10,10 +10,10 @@ import {
     type Theme,
     useThemeProps,
 } from "@mui/material";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 export type DialogClassKey = "root" | "closeButton" | "dialogTitle";
 
@@ -41,7 +41,7 @@ export function Dialog(inProps: DialogProps) {
         children,
         onClose,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminDialog" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminDialog" });
     const { closeIcon = <Close color="inherit" /> } = iconMapping;
 
     const ownerState: OwnerState = {
@@ -73,10 +73,12 @@ const DialogTitle = createComponentSlot(MuiDialogTitle)<DialogClassKey, OwnerSta
     slotName: "dialogTitle",
 })(
     ({ ownerState, theme }) => css`
-        ${ownerState.hasCloseButton &&
-        css`
-            padding-right: ${theme.spacing(10)};
-        `}
+        ${
+            ownerState.hasCloseButton &&
+            css`
+                padding-right: ${theme.spacing(10)};
+            `
+        }
     `,
 );
 
@@ -98,17 +100,17 @@ const CloseButton = createComponentSlot(IconButton)<DialogClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminDialog: DialogProps;
+        DextinityAdminDialog: DialogProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminDialog: DialogClassKey;
+        DextinityAdminDialog: DialogClassKey;
     }
 
     interface Components {
-        CometAdminDialog?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDialog"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDialog"];
+        DextinityAdminDialog?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminDialog"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminDialog"];
         };
     }
 }

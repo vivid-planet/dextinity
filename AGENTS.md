@@ -1,5 +1,15 @@
 # Agent Instructions
 
+## Keeping This File Up to Date
+
+When making changes that affect project structure, commands, architecture, ports, conventions, or configuration, update the relevant section of this file to reflect the new state. This includes:
+
+- Adding or removing packages or demo services
+- Changing commands or scripts
+- Introducing new patterns or conventions
+- Modifying ports, environment files, or Docker services
+- Updating tooling or linting configuration
+
 ## Local Usage (IDE / CLI)
 
 - you can expect setup is already done: all dependencies are installed and builds are done
@@ -10,14 +20,14 @@
 
 When running in the cloud/web environment and repo is cloned from scratch, if required you can:
 
-1. Install dependencies
+1. Install dependencies (**only** run if not yet done by eg. pipeline setup, check if `node_modules` exists)
     - `NODE_USE_ENV_PROXY=1 ./install.sh`
-2. Run build for packages you are working on
+2. Run build for packages you are working on (**only** run if build file doesn't exist yet, check if `lib` exists in package)
     - `pnpm --recursive --filter '<package-name>' run build`
 
 **If Docker is available:**
 
-- You can start the full demo application using dev-pm and access it at localhost
+- You can start the full demo application using dev-pm and access it at localhost. Do **not** use docker compose directly, always use dev-pm and start `demo-docker`.
 
 **If Docker is not available:**
 
@@ -25,56 +35,55 @@ When running in the cloud/web environment and repo is cloned from scratch, if re
 
 When making changes to demo api, either start the api and verify it's running or at least run `pnpm run console --help` to verify AppModule is configured correctly and schema.gql/block-meta.json regenerates.
 
+## Comments
+
+- Default to writing no comments. Only add a comment when the _why_ is non-obvious (hidden constraint, workaround, surprising invariant).
+- Never write comments that restate _what_ the code does — the names should do that.
+- Prefer descriptive identifiers over explanatory comments — comments drift out of sync with the code.
+- Never reference the current task, ticket, or PR in comments — that context belongs in the PR description and rots in code.
+
 ## Linting
 
 Run the appropriate checks after every change and fix all reported errors.
 
-### In a package (`packages/*`) or demo service (`demo/*`)
+### Post-Change Workflow
 
-Run from the package or service folder, or from the repo root using the `--filter` flag:
+After making changes to any package (`packages/*`) or the demo project (`demo/*`), run `lint:fix` to auto-fix ESLint and Prettier issues:
 
 ```bash
-# Auto-fix ESLint issues (also applies prettier formatting via eslint-plugin-prettier)
-pnpm run lint:eslint --fix
+# Fix a single package (from the package folder or repo root)
+pnpm run lint:fix
 # or from repo root:
-pnpm --filter <package-name> run lint:eslint --fix
+pnpm --filter <package-name> run lint:fix
 
-# Fix remaining prettier errors (if any still reported after lint:eslint --fix)
-pnpm exec prettier --write .
-# or from repo root:
-pnpm --filter <package-name> exec prettier --write .
-
-# Verify all checks pass: prettier, eslint, tsc
-pnpm run lint
-# or from repo root:
-pnpm --filter <package-name> run lint
+# Fix all packages at once (from repo root)
+pnpm run lint:fix
 ```
 
-`tsc` errors must be fixed manually. There is no standalone prettier format script — prettier formatting is applied via `lint:eslint --fix`.
+`tsc` errors must be fixed manually — `lint:fix` does not cover type errors.
+
+### `lint:fix` scripts
+
+Every package and demo service exposes these scripts:
+
+- `lint:fix` — runs `lint:fix:eslint` and `lint:fix:prettier` in parallel (plus `lint:fix:style` in `demo/site`)
+- `lint:fix:eslint` — runs ESLint with `--fix` (also applies Prettier formatting via `eslint-plugin-prettier`)
+- `lint:fix:prettier` — runs Prettier with `--write` for any remaining formatting issues
+- `lint:fix:style` — runs Stylelint with `--fix` (`demo/site` only)
+
+The root-level `lint:fix` runs all workspace `lint:fix` scripts recursively, then formats root-level config files.
 
 ### In `docs/`
 
 Run from the `docs/` folder:
 
 ```bash
-# Auto-fix ESLint issues
-pnpm run lint:eslint --fix
+# Auto-fix ESLint + Prettier issues
+pnpm run lint:fix
 
-# Verify all checks pass: prettier, eslint, cspell
+# Verify all checks pass: prettier, eslint
 pnpm run lint
 ```
-
-For cspell errors: add unknown words to `.cspellignore` at the repo root.
-
-### For `.changeset/*.md` files
-
-Run from the repo root:
-
-```bash
-pnpm cspell .changeset/*.md
-```
-
-Add unknown words to `.cspellignore` at the repo root.
 
 ## Demo application
 
@@ -83,73 +92,93 @@ This repository includes a demo application which is showcasing the libraries.
 **Api:**
 Demo backend API (NestJS, PostgreSQL)
 
-- Start using `pnpm exec dev-pm @demo-api`
+- Start using `pnpm exec dev-pm start @demo-api`
 - access at: http://localhost:4000/
 
 **Admin:**
 Demo admin app (Vite, React, Apollo)
 
-- Start using `pnpm exec dev-pm @demo-admin`
+- Start using `pnpm exec dev-pm start @demo-admin`
 - access at: http://localhost:8000/
 - Usually Login as "Admin" in the IDP Login Page
 
 **Site:**
 Demo frontend site (Next.js)
 
-- Start using `pnpm exec dev-pm @demo-site`
+- Start using `pnpm exec dev-pm start @demo-site`
 - access at: http://localhost:3000/
+
+### dev-pm
+
+Use dev-pm for managing demo processes:
+
+- command: `pnpm exec -- dev-pm`
+- config: `dev-pm.config.ts`
+
+Common commands:
+
+- start script/service: `pnpm exec -- dev-pm start scriptName`
+- start group `pnpm exec -- dev-pm start @group`
+- view status `pnpm exec -- dev-pm status`
+- view logs `pnpm exec -- dev-pm logs --lines 100 scriptName`
+
+### Running multiple instances in parallel
+
+To run several checkouts at once without host port collisions, run `pnpm run assign-ports` before starting the demo. It finds a free +100..+900 offset for all `*_PORT` entries in `.env` and writes the offset ports to `.env.local`. The access URLs above shift by that offset.
+
+Every process loads `.env.local` itself: the demo packages and `dev:*` scripts run through `dotenv -e .env.local -e .env`, and the `demo-docker` script sources `.env` and `.env.local` before `docker compose up`. Docker needs this because dev-pm doesn't pass the env files to its scripts, and Compose prefers real env vars over its `.env` file.
 
 ## Packages
 
 ### Admin (`packages/admin/`)
 
-| Package                     | Description                                                                               |
-| --------------------------- | ----------------------------------------------------------------------------------------- |
-| `@comet/admin`              | Core admin components and framework (React, MUI, Apollo, Final Form)                      |
-| `@comet/admin-babel-preset` | Shared Babel preset for transpiling admin packages                                        |
-| `@comet/admin-color-picker` | Color picker form field component                                                         |
-| `@comet/admin-date-time`    | Date/time picker form field components                                                    |
-| `@comet/admin-icons`        | SVG icon library as React components                                                      |
-| `@comet/admin-rte`          | Rich text editor component (Draft.js-based)                                               |
-| `@comet/admin-generator`    | CLI tool that generates admin CRUD UIs from GraphQL schemas (`comet-admin-generator` bin) |
-| `@comet/cms-admin`          | Admin UI for CMS features (pages, blocks, content management)                             |
-| `@comet/brevo-admin`        | Admin UI for Brevo email/marketing integration                                            |
+| Package                         | Description                                                                                   |
+| ------------------------------- | --------------------------------------------------------------------------------------------- |
+| `@dextinity/admin`              | Core admin components and framework (React, MUI, Apollo, Final Form)                          |
+| `@dextinity/admin-babel-preset` | Shared Babel preset for transpiling admin packages                                            |
+| `@dextinity/admin-color-picker` | Color picker form field component                                                             |
+| `@dextinity/admin-date-time`    | Date/time picker form field components                                                        |
+| `@dextinity/admin-icons`        | SVG icon library as React components                                                          |
+| `@dextinity/admin-rte`          | Rich text editor component (Draft.js-based)                                                   |
+| `@dextinity/admin-generator`    | CLI tool that generates admin CRUD UIs from GraphQL schemas (`dextinity-admin-generator` bin) |
+| `@dextinity/cms-admin`          | Admin UI for CMS features (pages, blocks, content management)                                 |
+| `@dextinity/brevo-admin`        | Admin UI for Brevo email/marketing integration                                                |
 
 ### API (`packages/api/`)
 
-| Package                | Description                                                                                |
-| ---------------------- | ------------------------------------------------------------------------------------------ |
-| `@comet/cms-api`       | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage) |
-| `@comet/brevo-api`     | NestJS integration for the Brevo email/marketing service                                   |
-| `@comet/api-generator` | CLI tool that generates TypeScript types from GraphQL schemas (`comet-api-generator` bin)  |
+| Package                    | Description                                                                                   |
+| -------------------------- | --------------------------------------------------------------------------------------------- |
+| `@dextinity/cms-api`       | NestJS/GraphQL API for CMS features (file uploads, translations, blocks, S3/Azure storage)    |
+| `@dextinity/brevo-api`     | NestJS integration for the Brevo email/marketing service                                      |
+| `@dextinity/api-generator` | CLI tool that generates TypeScript types from GraphQL schemas (`dextinity-api-generator` bin) |
 
 ### Site (`packages/site/`)
 
-| Package              | Description                                                   |
-| -------------------- | ------------------------------------------------------------- |
-| `@comet/site-react`  | React components and utilities for the frontend/site layer    |
-| `@comet/site-nextjs` | Next.js-specific site layer components (extends `site-react`) |
+| Package                  | Description                                                   |
+| ------------------------ | ------------------------------------------------------------- |
+| `@dextinity/site-react`  | React components and utilities for the frontend/site layer    |
+| `@dextinity/site-nextjs` | Next.js-specific site layer components (extends `site-react`) |
 
 ### Utilities
 
-| Package                | Description                                                |
-| ---------------------- | ---------------------------------------------------------- |
-| `@comet/cli`           | Central CLI entry point for Comet projects (`comet` bin)   |
-| `@comet/eslint-config` | Shared ESLint configurations                               |
-| `@comet/eslint-plugin` | Custom ESLint rules for Comet projects                     |
-| `@comet/mail-react`    | Utilities for building HTML emails with React (MJML-based) |
+| Package                    | Description                                                      |
+| -------------------------- | ---------------------------------------------------------------- |
+| `@dextinity/cli`           | Central CLI entry point for Dextinity projects (`dextinity` bin) |
+| `@dextinity/eslint-config` | Shared ESLint configurations                                     |
+| `@dextinity/eslint-plugin` | Custom ESLint rules for Dextinity projects                       |
+| `@dextinity/mail-react`    | Utilities for building HTML emails with React (MJML-based)       |
 
 ### Docs & Storybook
 
-| Package           | Description                                       |
-| ----------------- | ------------------------------------------------- |
-| `comet-storybook` | Storybook for all Comet components (`storybook/`) |
-| `comet-docs`      | Docusaurus documentation site (`docs/`)           |
+| Package               | Description                                           |
+| --------------------- | ----------------------------------------------------- |
+| `dextinity-storybook` | Storybook for all Dextinity components (`storybook/`) |
+| `dextinity-docs`      | Docusaurus documentation site (`docs/`)               |
 
 ## Changesets and changelog
 
 - We use Changesets for tracking changes. Create a non-empty changeset file when making relevant user-facing/package changes (not for docs-only, demo-only or internal-only updates).
-- See [CONTRIBUTING.md](CONTRIBUTING.md#changeset) for detailed guidelines on when and how to add changesets.
+- Important: See @CONTRIBUTING.md#changeset for detailed guidelines on when and how to add changesets.
 - `CHANGELOG.md` is autogenerated; do not edit it manually.
 
 ### Quick changeset creation
@@ -164,7 +193,7 @@ Example:
 
 ```markdown
 ---
-"@comet/package-name": patch
+"@dextinity/package-name": patch
 ---
 
 Fix description here
@@ -173,7 +202,26 @@ Fix description here
 ## Commit messages
 
 - Do not use Conventional Commits.
-- If a change is scoped to one package, prefix the commit message with the affected package name. Don't include `@comet/` in the package name.
+- If a change is scoped to one package or top-level directory, prefix the commit message with its name. Don't include `@dextinity/` in the package name.
+
+## Pull request descriptions
+
+- Fill in `.github/pull_request_template.md`. Don't add sections beyond it, and delete the sections and instruction comments that don't apply.
+- End the description with the template's task line as plain visible text, not as an HTML comment: `Task: …` (only when there is a task). Only the attribution may follow it.
+- Add an attribution for the AI tool you used once, at the very end. For Claude Code, when a session link is available (`https://claude.ai/code/session_…`), use that as the attribution instead of the generic "Generated with Claude Code" line. Before updating an existing description, remove its attribution first so it never appears twice.
+- Describe why the change is needed, not what changed. Never restate the diff: no file-by-file list of changes, no summary of the code the reviewer is about to read.
+- Don't document how you arrived at the change: which files you read, which documentation you checked, which checks you ran to verify it. Only the outcome belongs in the description.
+- Delete the "Example" section when a unit test is the example — the reviewer finds it in the diff, and a bare file path is worthless in the commit message. Fill it in only for an example the diff doesn't lead to: a linked Storybook story or the implementation in Demo, with a sentence on what it shows.
+- Default to deleting "Further information". Add it only for something the reviewer needs in order to decide and can't get from the diff: an alternative you rejected, a related pull request, a link to a task or documentation. Adjacent problems you noticed and left out of scope belong in a follow-up task, not in the description.
+- Keep the length proportional to the change. A one-line fix gets a paragraph, not a report.
+- The description becomes the message of the squashed commit. See CONTRIBUTING.md#pull-requests.
+- After opening a pull request, always check its description and rewrite it to follow these rules, also when the pull request was created by a tool or UI that generated the description.
+
+## Pull request comments
+
+- When watching or driving a pull request, reply on GitHub only to comments and reviews from bots (e.g. Greptile, Claude Code Review, lint bots). Bot accounts end in `[bot]` or are review/CI tools.
+- Never reply to comments or reviews from humans on GitHub. Report what you did, your proposals, and your questions to the user in the session instead of on the pull request.
+- Only act on a human's feedback when it is a small, concrete change (e.g. a nit, a rename, a missing test). For conceptual feedback (design questions, alternative approaches, questions about why something was done), don't change any code: summarize it for the user and wait for their decision.
 
 ## Generated demo files
 
@@ -182,7 +230,7 @@ Fix description here
 
 ### admin-generator
 
-The source for generated files are \*.cometGen.tsx config files. Modify those and re-run `admin-generator` for changes.
+The source for generated files are \*.dextinityGen.tsx config files. Modify those and re-run `admin-generator` for changes.
 
 ### api-generator
 

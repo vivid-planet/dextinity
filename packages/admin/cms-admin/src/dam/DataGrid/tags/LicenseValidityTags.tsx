@@ -1,4 +1,4 @@
-import { WarningSolid } from "@comet/admin-icons";
+import { WarningSolid } from "@dextinity/admin-icons";
 import { formatDistanceToNow } from "date-fns";
 import { FormattedMessage } from "react-intl";
 
@@ -8,7 +8,7 @@ const LicenseNotValidYetTag = () => {
     return (
         <Tag type="error">
             <WarningSolid />
-            <FormattedMessage id="comet.pages.dam.tag.licenseNotValidYet" defaultMessage="License not valid yet" />
+            <FormattedMessage id="dextinity.pages.dam.tag.licenseNotValidYet" defaultMessage="License not valid yet" />
         </Tag>
     );
 };
@@ -17,7 +17,7 @@ const LicenseExpiredTag = () => {
     return (
         <Tag type="error">
             <WarningSolid />
-            <FormattedMessage id="comet.pages.dam.tag.licenseExpired" defaultMessage="License expired" />
+            <FormattedMessage id="dextinity.pages.dam.tag.licenseExpired" defaultMessage="License expired" />
         </Tag>
     );
 };
@@ -31,7 +31,7 @@ const LicenseExpiresSoonTag = ({ expirationDate }: LicenseExpiresSoonTagProps) =
         <Tag type="warning">
             <WarningSolid />
             <FormattedMessage
-                id="comet.pages.dam.tag.licenseExpiresSoon"
+                id="dextinity.pages.dam.tag.licenseExpiresSoon"
                 defaultMessage="License expires in {distance}"
                 values={{
                     distance: formatDistanceToNow(expirationDate),

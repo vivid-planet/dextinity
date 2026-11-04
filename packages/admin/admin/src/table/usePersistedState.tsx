@@ -14,12 +14,16 @@ export function usePersistedState<T>(defaultValue: T, options: IOptions = {}): [
     const v = (stateId && allStates[stateId]) || defaultValue;
 
     const [state, setState] = useState<T>(v);
-    if (stateId) delete allStates[stateId]; // delete from allStates as the component is mounted now and handles it's state itself
+    if (stateId) {
+        delete allStates[stateId];
+    } // delete from allStates as the component is mounted now and handles it's state itself
 
     useEffect(() => {
         return () => {
             // on unmount we backup the current state into allStates
-            if (stateId) allStates[stateId] = state;
+            if (stateId) {
+                allStates[stateId] = state;
+            }
         };
     }, [state, stateId]);
     return [state, setState];

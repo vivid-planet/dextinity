@@ -1,9 +1,9 @@
-import { RadioChecked, RadioUnchecked } from "@comet/admin-icons";
+import { RadioChecked, RadioUnchecked } from "@dextinity/admin-icons";
 import { radioClasses, svgIconClasses } from "@mui/material";
-import { type Components } from "@mui/material/styles";
+import type { Components } from "@mui/material/styles";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
-import { type GetMuiComponentTheme } from "./getComponentsTheme";
+import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
 export const getMuiRadio: GetMuiComponentTheme<"MuiRadio"> = (component, { palette }): Components["MuiRadio"] => ({
     ...component,

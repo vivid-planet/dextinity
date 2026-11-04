@@ -1,7 +1,7 @@
-import { SelectField, type SelectFieldOption, type SelectFieldProps } from "@comet/admin";
+import { SelectField, type SelectFieldOption, type SelectFieldProps } from "@dextinity/admin";
 
 import { BlocksFinalForm } from "../form/BlocksFinalForm";
-import { type BlockMethods } from "../types";
+import type { BlockMethods } from "../types";
 import { createCompositeBlockField } from "./composeBlocks/createCompositeBlockField";
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;

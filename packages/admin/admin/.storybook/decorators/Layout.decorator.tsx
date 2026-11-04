@@ -1,7 +1,7 @@
 import { MainContent } from "../../src/common/MainContent";
 import { useTheme } from "@mui/material";
 import { GlobalStyles } from "@mui/system";
-import { type Decorator } from "@storybook/react-webpack5";
+import { type Decorator } from "@storybook/react-vite";
 
 import { previewGlobalStyles } from "./Layout.decorator.styles";
 

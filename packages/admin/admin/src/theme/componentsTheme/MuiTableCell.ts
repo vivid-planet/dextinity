@@ -1,7 +1,7 @@
 import { buttonClasses, iconButtonClasses } from "@mui/material";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
-import { type GetMuiComponentTheme } from "./getComponentsTheme";
+import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
 export const getMuiTableCell: GetMuiComponentTheme<"MuiTableCell"> = (component, { palette, typography }) => ({
     ...component,

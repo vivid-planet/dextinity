@@ -1,6 +1,7 @@
 import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
-import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage";
-import { v4 as uuid } from "uuid";
+import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
+import { randomUUID } from "crypto";
+import { describe, expect, it } from "vitest";
 
 import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
 import { generateCrud } from "../generate-crud";
@@ -8,7 +9,7 @@ import { generateCrud } from "../generate-crud";
 @Entity()
 export class TestEntityWithString extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ columnType: "text" })
     title: string;
@@ -17,7 +18,7 @@ export class TestEntityWithString extends BaseEntity {
 @Entity()
 export class TestEntityWithNumber extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     foo: number;
@@ -26,7 +27,7 @@ export class TestEntityWithNumber extends BaseEntity {
 @Entity()
 export class TestEntityWithTextRuntimeType extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "text" })
     title: string;
@@ -44,14 +45,13 @@ describe("GenerateCrud", () => {
                 }),
             );
 
-            const out = await generateCrud(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithString"),
-            );
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithString"));
             const lintedOut = await formatGeneratedFiles(out);
 
             const file = lintedOut.find((file) => file.name === "test-entity-with-string.resolver.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
 
             const source = parseSource(file.content);
 
@@ -80,14 +80,13 @@ describe("GenerateCrud", () => {
                 }),
             );
 
-            const out = await generateCrud(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithString"),
-            );
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithString"));
             const formattedOut = await formatGeneratedFiles(out);
 
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-string.filter.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
 
             const source = parseSource(file.content);
 
@@ -99,7 +98,9 @@ describe("GenerateCrud", () => {
             const structure = cls.getStructure();
 
             expect(structure.properties?.length).toBe(4);
-            if (!structure.properties || !structure.properties[1]) throw new Error("property not found");
+            if (!structure.properties || !structure.properties[1]) {
+                throw new Error("property not found");
+            }
             const filterProp = structure.properties[1];
             expect(filterProp.name).toBe("title");
             expect(filterProp.type).toBe("StringFilter");
@@ -119,14 +120,13 @@ describe("GenerateCrud", () => {
                 }),
             );
 
-            const out = await generateCrud(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithNumber"),
-            );
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithNumber"));
             const formattedOut = await formatGeneratedFiles(out);
 
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-number.filter.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
 
             const source = parseSource(file.content);
 
@@ -138,7 +138,9 @@ describe("GenerateCrud", () => {
             const structure = cls.getStructure();
 
             expect(structure.properties?.length).toBe(4);
-            if (!structure.properties || !structure.properties[1]) throw new Error("property not found");
+            if (!structure.properties || !structure.properties[1]) {
+                throw new Error("property not found");
+            }
             const filterProp = structure.properties[1];
             expect(filterProp.name).toBe("foo");
             expect(filterProp.type).toBe("NumberFilter");
@@ -158,13 +160,12 @@ describe("GenerateCrud", () => {
                 }),
             );
 
-            const out = await generateCrud(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithTextRuntimeType"),
-            );
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithTextRuntimeType"));
             const formattedOut = await formatGeneratedFiles(out);
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-text-runtime-type.filter.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
 
             const source = parseSource(file.content);
 
@@ -176,7 +177,9 @@ describe("GenerateCrud", () => {
             const structure = cls.getStructure();
 
             expect(structure.properties?.length).toBe(4);
-            if (!structure.properties || !structure.properties[1]) throw new Error("property not found");
+            if (!structure.properties || !structure.properties[1]) {
+                throw new Error("property not found");
+            }
             const filterProp = structure.properties[1];
             expect(filterProp.name).toBe("title");
             expect(filterProp.type).toBe("StringFilter");

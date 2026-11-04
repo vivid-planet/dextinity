@@ -9,12 +9,12 @@ import {
     useTheme,
     useThemeProps,
 } from "@mui/material";
-import { type OverridableComponent, type OverridableTypeMap } from "@mui/material/OverridableComponent";
+import type { OverridableComponent, OverridableTypeMap } from "@mui/material/OverridableComponent";
 import { type ElementType, type ForwardedRef, forwardRef, type ReactNode } from "react";
 
 import { Tooltip } from "../../common/Tooltip";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { useWindowSize } from "../../helpers/useWindowSize";
 
 type Variant = "primary" | "secondary" | "outlined" | "destructive" | "success" | "textLight" | "textDark";
@@ -86,7 +86,7 @@ export const Button = forwardRef(<C extends ElementType = "button">(inProps: But
         endIcon,
         children,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminButton" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminButton" });
 
     const windowSize = useWindowSize();
     const theme = useTheme();
@@ -141,30 +141,36 @@ const Root = createComponentSlot(MuiButton)<ButtonClassKey, OwnerState>({
     },
 })(
     ({ ownerState, theme }) => css`
-        ${ownerState.usingResponsiveBehavior &&
-        css`
-            min-width: 0;
-        `}
+        ${
+            ownerState.usingResponsiveBehavior &&
+            css`
+                min-width: 0;
+            `
+        }
 
-        ${ownerState.variant === "textLight" &&
-        css`
-            color: ${theme.palette.common.white};
-            &:focus {
-                color: ${theme.palette.primary.main};
-            }
+        ${
+            ownerState.variant === "textLight" &&
+            css`
+                color: ${theme.palette.common.white};
+                &:focus {
+                    color: ${theme.palette.primary.main};
+                }
 
-            &.Mui-disabled {
-                color: ${theme.palette.grey[200]};
-            }
-        `}
+                &.Mui-disabled {
+                    color: ${theme.palette.grey[200]};
+                }
+            `
+        }
 
-        ${ownerState.variant === "textDark" &&
-        css`
-            color: ${theme.palette.common.black};
-            &.Mui-disabled {
-                color: ${theme.palette.grey[200]};
-            }
-        `}
+        ${
+            ownerState.variant === "textDark" &&
+            css`
+                color: ${theme.palette.common.black};
+                &.Mui-disabled {
+                    color: ${theme.palette.grey[200]};
+                }
+            `
+        }
     `,
 );
 
@@ -175,17 +181,17 @@ const MobileTooltip = createComponentSlot(Tooltip)<ButtonClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminButton: ButtonClassKey;
+        DextinityAdminButton: ButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminButton: ButtonProps;
+        DextinityAdminButton: ButtonProps;
     }
 
     interface Components {
-        CometAdminButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminButton"];
+        DextinityAdminButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminButton"];
         };
     }
 }

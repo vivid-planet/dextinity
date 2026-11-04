@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 
 import { MarkedMatches, type TextMatch } from "../../../common/MarkedMatches";
 import { isFile } from "../../helpers/isFile";
-import { type GQLDamFileTableFragment, type GQLDamFolderTableFragment } from "../FolderDataGrid";
+import type { GQLDamFileTableFragment, GQLDamFolderTableFragment } from "../FolderDataGrid";
 import { ArchivedTag } from "../tags/ArchivedTag";
 import { DamThumbnail } from "../thumbnail/DamThumbnail";
 

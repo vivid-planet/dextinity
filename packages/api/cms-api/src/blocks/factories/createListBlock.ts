@@ -1,5 +1,5 @@
 import { ClassConstructor, plainToInstance, Transform, Type } from "class-transformer";
-import { Allow, IsBoolean, IsString, ValidateNested } from "class-validator";
+import { Allow, IsArray, IsBoolean, IsObject, IsString, ValidateNested } from "class-validator";
 
 import {
     Block,
@@ -139,6 +139,8 @@ export function createListBlock<B extends Block>(
 
     class ListBlockInput extends BlockInput {
         @Type(() => ListBlockItemInput)
+        @IsArray()
+        @IsObject({ each: true })
         @ValidateNested({ each: true })
         @BlockField(ListBlockItemInput)
         blocks: ListBlockItemInputInterface<ExtractBlockInput<B>>[];

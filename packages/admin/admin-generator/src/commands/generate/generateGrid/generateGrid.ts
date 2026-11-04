@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { type GridColDef } from "@comet/admin";
-import {
-    type IntrospectionEnumType,
-    type IntrospectionField,
-    type IntrospectionInputObjectType,
-    type IntrospectionNamedTypeRef,
-    type IntrospectionObjectType,
-    type IntrospectionQuery,
-    type IntrospectionType,
+import type { GridColDef } from "@dextinity/admin";
+import type {
+    IntrospectionEnumType,
+    IntrospectionField,
+    IntrospectionInputObjectType,
+    IntrospectionNamedTypeRef,
+    IntrospectionObjectType,
+    IntrospectionQuery,
+    IntrospectionType,
 } from "graphql";
-import { plural, singular } from "pluralize";
-import { type ReactNode } from "react";
+import pluralize from "pluralize";
+import type { ReactNode } from "react";
 
-import {
-    type ActionsGridColumnConfig,
-    type FormattedMessageElement,
-    type GeneratorReturn,
-    type GQLDocumentConfigMap,
-    type GridColumnConfig,
-    type GridColumnStaticSelectLabelCellContent,
-    type GridConfig,
-    type VirtualGridColumnConfig,
+import type {
+    ActionsGridColumnConfig,
+    FormattedMessageElement,
+    GeneratorReturn,
+    GQLDocumentConfigMap,
+    GridColumnConfig,
+    GridColumnStaticSelectLabelCellContent,
+    GridConfig,
+    VirtualGridColumnConfig,
 } from "../generate-command";
 import { camelCaseToHumanReadable } from "../utils/camelCaseToHumanReadable";
 import { convertConfigImport } from "../utils/convertConfigImport";
@@ -39,6 +39,8 @@ import { generateGridToolbar } from "./generateGridToolbar";
 import { getForwardedGqlArgs, type GqlArg } from "./getForwardedGqlArgs";
 import { getPropsForFilterProp } from "./getPropsForFilterProp";
 
+const { plural, singular } = pluralize;
+
 type TsCodeRecordToStringObject = Record<string, string | number | undefined>;
 
 function tsCodeRecordToString(object: TsCodeRecordToStringObject, spreadAbove?: string) {
@@ -56,7 +58,9 @@ export type Prop = {
 };
 
 function generateGridPropsCode(props: Prop[]): { gridPropsTypeCode: string; gridPropsParamsCode: string } {
-    if (!props.length) return { gridPropsTypeCode: "", gridPropsParamsCode: "" };
+    if (!props.length) {
+        return { gridPropsTypeCode: "", gridPropsParamsCode: "" };
+    }
     const uniqueProps = props.reduce<Prop[]>((acc, prop) => {
         const propWithSameName = acc.find((filteredProps) => filteredProps.name === prop.name);
         if (propWithSameName) {
@@ -196,8 +200,7 @@ function queryHasPaging(gridQueryType: IntrospectionField, gqlIntrospection: Int
     if (returnType.kind === "OBJECT") {
         const typeName = returnType.name;
         const objectType = gqlIntrospection.__schema.types.find((type: IntrospectionType) => type.kind === "OBJECT" && type.name === typeName) as
-            | IntrospectionObjectType
-            | undefined;
+            IntrospectionObjectType | undefined;
         if (objectType) {
             const hasNodes = objectType.fields.some((f) => f.name === "nodes");
             const hasTotalCount = objectType.fields.some((f) => f.name === "totalCount");
@@ -238,31 +241,31 @@ export function generateGrid<T extends { __typename?: string }>(
         { name: "gql", importPath: "@apollo/client" },
         { name: "useApolloClient", importPath: "@apollo/client" },
         { name: "useQuery", importPath: "@apollo/client" },
-        { name: "Button", importPath: "@comet/admin" },
-        { name: "CrudContextMenu", importPath: "@comet/admin" },
-        { name: "CrudMoreActionsMenu", importPath: "@comet/admin" },
-        { name: "DataGridToolbar", importPath: "@comet/admin" },
-        { name: "ExportApi", importPath: "@comet/admin" },
-        { name: "filterByFragment", importPath: "@comet/admin" },
-        { name: "GridFilterButton", importPath: "@comet/admin" },
-        { name: "GridCellContent", importPath: "@comet/admin" },
-        { name: "GridColDef", importPath: "@comet/admin" },
-        { name: "dataGridDateTimeColumn", importPath: "@comet/admin" },
-        { name: "dataGridDateColumn", importPath: "@comet/admin" },
-        { name: "dataGridIdColumn", importPath: "@comet/admin" },
-        { name: "dataGridManyToManyColumn", importPath: "@comet/admin" },
-        { name: "dataGridOneToManyColumn", importPath: "@comet/admin" },
-        { name: "renderStaticSelectCell", importPath: "@comet/admin" },
-        { name: "messages", importPath: "@comet/admin" },
-        { name: "muiGridFilterToGql", importPath: "@comet/admin" },
-        { name: "StackLink", importPath: "@comet/admin" },
-        { name: "useStackSwitchApi", importPath: "@comet/admin" },
-        { name: "FillSpace", importPath: "@comet/admin" },
-        { name: "Tooltip", importPath: "@comet/admin" },
-        { name: "useBufferedRowCount", importPath: "@comet/admin" },
-        { name: "useDataGridExcelExport", importPath: "@comet/admin" },
-        { name: "usePersistentColumnState", importPath: "@comet/admin" },
-        { name: "BlockPreviewContent", importPath: "@comet/cms-admin" },
+        { name: "Button", importPath: "@dextinity/admin" },
+        { name: "CrudContextMenu", importPath: "@dextinity/admin" },
+        { name: "CrudMoreActionsMenu", importPath: "@dextinity/admin" },
+        { name: "DataGridToolbar", importPath: "@dextinity/admin" },
+        { name: "ExportApi", importPath: "@dextinity/admin" },
+        { name: "filterByFragment", importPath: "@dextinity/admin" },
+        { name: "GridFilterButton", importPath: "@dextinity/admin" },
+        { name: "GridCellContent", importPath: "@dextinity/admin" },
+        { name: "GridColDef", importPath: "@dextinity/admin" },
+        { name: "dataGridDateTimeColumn", importPath: "@dextinity/admin" },
+        { name: "dataGridDateColumn", importPath: "@dextinity/admin" },
+        { name: "dataGridIdColumn", importPath: "@dextinity/admin" },
+        { name: "dataGridManyToManyColumn", importPath: "@dextinity/admin" },
+        { name: "dataGridOneToManyColumn", importPath: "@dextinity/admin" },
+        { name: "renderStaticSelectCell", importPath: "@dextinity/admin" },
+        { name: "messages", importPath: "@dextinity/admin" },
+        { name: "muiGridFilterToGql", importPath: "@dextinity/admin" },
+        { name: "StackLink", importPath: "@dextinity/admin" },
+        { name: "useStackSwitchApi", importPath: "@dextinity/admin" },
+        { name: "FillSpace", importPath: "@dextinity/admin" },
+        { name: "Tooltip", importPath: "@dextinity/admin" },
+        { name: "useBufferedRowCount", importPath: "@dextinity/admin" },
+        { name: "useDataGridExcelExport", importPath: "@dextinity/admin" },
+        { name: "usePersistentColumnState", importPath: "@dextinity/admin" },
+        { name: "BlockPreviewContent", importPath: "@dextinity/cms-admin" },
         { name: "Alert", importPath: "@mui/material" },
         { name: "Box", importPath: "@mui/material" },
         { name: "IconButton", importPath: "@mui/material" },
@@ -280,7 +283,7 @@ export function generateGrid<T extends { __typename?: string }>(
         { name: "GridSlotsComponent", importPath: muiXGridVariant.package },
         { name: "GridToolbarProps", importPath: muiXGridVariant.package },
         { name: "GridColumnHeaderTitle", importPath: muiXGridVariant.package },
-        { name: "GridToolbarQuickFilter", importPath: muiXGridVariant.package },
+        { name: "GridToolbarQuickFilter", importPath: "@dextinity/admin" },
         { name: "GridRowOrderChangeParams", importPath: muiXGridVariant.package },
         { name: "useMemo", importPath: "react" },
     ];
@@ -316,9 +319,9 @@ export function generateGrid<T extends { __typename?: string }>(
     const hasPaging = queryHasPaging(gridQueryType, gqlIntrospection);
 
     if (hasPaging) {
-        imports.push({ name: "useDataGridRemote", importPath: "@comet/admin" });
+        imports.push({ name: "useDataGridRemote", importPath: "@dextinity/admin" });
     } else {
-        imports.push({ name: "useDataGridUrlState", importPath: "@comet/admin" });
+        imports.push({ name: "useDataGridUrlState", importPath: "@dextinity/admin" });
     }
 
     const updateMutationType = findMutationType(`update${gqlType}`, gqlIntrospection);
@@ -334,7 +337,9 @@ export function generateGrid<T extends { __typename?: string }>(
     const updateInputArg = updateMutationType?.args.find((arg) => arg.name === "input");
     if (allowRowReordering && updateInputArg) {
         const inputType = findInputObjectType(updateInputArg, gqlIntrospection);
-        if (!inputType) throw new Error("Can't find update input type");
+        if (!inputType) {
+            throw new Error("Can't find update input type");
+        }
         if (!inputType.inputFields?.find((field) => field.name === "position")) {
             throw new Error("Position field is needed when using 'rowReordering'");
         }
@@ -373,7 +378,7 @@ export function generateGrid<T extends { __typename?: string }>(
         }
     }
     if (useScopeFromContext) {
-        imports.push({ name: "useContentScope", importPath: "@comet/cms-admin" });
+        imports.push({ name: "useContentScope", importPath: "@dextinity/cms-admin" });
     }
 
     const renderToolbar = config.toolbar ?? true;
@@ -384,7 +389,9 @@ export function generateGrid<T extends { __typename?: string }>(
     let filterFields: string[] = [];
     if (filterArg) {
         const filterType = findInputObjectType(filterArg, gqlIntrospection);
-        if (!filterType) throw new Error("Can't find filter type");
+        if (!filterType) {
+            throw new Error("Can't find filter type");
+        }
         filterFields = filterType.inputFields.map((f) => f.name.replace(/_/g, "."));
 
         const {
@@ -406,7 +413,7 @@ export function generateGrid<T extends { __typename?: string }>(
     const hasSort = !!sortArg;
     let sortFields: string[] = [];
     if (sortArg) {
-        imports.push({ name: "muiGridSortToGql", importPath: "@comet/admin" });
+        imports.push({ name: "muiGridSortToGql", importPath: "@dextinity/admin" });
         let sortArgType = sortArg.type;
         if (sortArgType.kind === "NON_NULL") {
             sortArgType = sortArgType.ofType;
@@ -423,18 +430,26 @@ export function generateGrid<T extends { __typename?: string }>(
         }
         const sortTypeName = sortArgType.ofType.ofType.name;
         const sortType = gqlIntrospection.__schema.types.find((type) => type.kind === "INPUT_OBJECT" && type.name === sortTypeName) as
-            | IntrospectionInputObjectType
-            | undefined;
-        if (!sortType) throw new Error("Can't find sort type");
+            IntrospectionInputObjectType | undefined;
+        if (!sortType) {
+            throw new Error("Can't find sort type");
+        }
         const sortField = sortType.inputFields.find((i) => i.name == "field");
-        if (!sortField) throw new Error("Can't find sortFieldName");
-        if (sortField.type.kind !== "NON_NULL") throw new Error("sortField must be NON_NULL");
-        if (sortField.type.ofType.kind != "ENUM") throw new Error("sortField must be NON_NULL->ENUM");
+        if (!sortField) {
+            throw new Error("Can't find sortFieldName");
+        }
+        if (sortField.type.kind !== "NON_NULL") {
+            throw new Error("sortField must be NON_NULL");
+        }
+        if (sortField.type.ofType.kind != "ENUM") {
+            throw new Error("sortField must be NON_NULL->ENUM");
+        }
         const sortFieldEnumName = sortField.type.ofType.name;
         const sortInputEnum = gqlIntrospection.__schema.types.find((type) => type.kind === "ENUM" && type.name === sortFieldEnumName) as
-            | IntrospectionEnumType
-            | undefined;
-        if (!sortInputEnum) throw new Error("Can't find sortInputEnum");
+            IntrospectionEnumType | undefined;
+        if (!sortInputEnum) {
+            throw new Error("Can't find sortInputEnum");
+        }
         sortFields = sortInputEnum.enumValues.map((v) => v.name.replace(/_/g, "."));
         if (allowRowReordering && !sortFields.includes("position")) {
             throw new Error("Sort argument must include 'position' field for row reordering");
@@ -444,9 +459,10 @@ export function generateGrid<T extends { __typename?: string }>(
     const hasSearch = gridQueryType.args.some((arg) => arg.name === "search") && !allowRowReordering;
 
     const schemaEntity = gqlIntrospection.__schema.types.find((type) => type.kind === "OBJECT" && type.name === gqlType) as
-        | IntrospectionObjectType
-        | undefined;
-    if (!schemaEntity) throw new Error("didn't find entity in schema types");
+        IntrospectionObjectType | undefined;
+    if (!schemaEntity) {
+        throw new Error("didn't find entity in schema types");
+    }
 
     const actionsColumnConfig = config.columns.find((column) => column.type === "actions") as ActionsGridColumnConfig<any>;
     const {
@@ -519,7 +535,9 @@ export function generateGrid<T extends { __typename?: string }>(
         } else if (type == "staticSelect") {
             valueFormatter = `(value, row) => row.${name}?.toString()`;
             const introspectionFieldType = findIntrospectionFieldType({ name, gqlType, gqlIntrospection });
-            if (!introspectionFieldType) throw new Error(`didn't find field ${name} in gql introspection type ${gqlType}`);
+            if (!introspectionFieldType) {
+                throw new Error(`didn't find field ${name} in gql introspection type ${gqlType}`);
+            }
 
             const enumType = gqlIntrospection.__schema.types.find(
                 (t) => t.kind === "ENUM" && t.name === (introspectionFieldType as IntrospectionNamedTypeRef).name,
@@ -659,7 +677,7 @@ export function generateGrid<T extends { __typename?: string }>(
     iconsToImport.forEach((icon) => {
         imports.push({
             name: `${icon} as ${icon}Icon`,
-            importPath: "@comet/admin-icons",
+            importPath: "@dextinity/admin-icons",
         });
     });
 
@@ -700,7 +718,7 @@ export function generateGrid<T extends { __typename?: string }>(
     const { gridPropsTypeCode, gridPropsParamsCode } = generateGridPropsCode(props);
     const gridToolbarComponentName = `${gqlTypePlural}GridToolbar`;
     const dataGridRemoteParameters =
-        config.initialSort || config.queryParamsPrefix || config.initialFilter
+        config.initialSort || config.queryParamsPrefix || config.initialFilter || config.initialPageSize
             ? `{${
                   config.initialSort
                       ? ` initialSort: [${config.initialSort
@@ -725,6 +743,7 @@ export function generateGrid<T extends { __typename?: string }>(
                       : ""
               }
               ${config.queryParamsPrefix ? `queryParamsPrefix: "${config.queryParamsPrefix}",` : ""}
+              ${config.initialPageSize ? `pageSize: ${config.initialPageSize},` : ""}
               }`
             : "";
 
@@ -825,9 +844,9 @@ export function generateGrid<T extends { __typename?: string }>(
         const intl = useIntl();
         const dataGridProps = { ...${hasPaging ? "useDataGridRemote" : "useDataGridUrlState"}(${dataGridRemoteParameters}), ...usePersistentColumnState("${gqlTypePlural}Grid")${
             config.selectionProps === "multiSelect"
-                ? `, rowSelectionModel, onRowSelectionModelChange, checkboxSelection: true, keepNonExistentRowsSelected: true`
+                ? `, rowSelectionModel, onRowSelectionModelChange, checkboxSelection: true, keepNonExistentRowsSelected: true, disableRowSelectionExcludeModel: true`
                 : config.selectionProps === "singleSelect"
-                  ? `, rowSelectionModel, onRowSelectionModelChange, checkboxSelection: false, keepNonExistentRowsSelected: false, disableRowSelectionOnClick: false`
+                  ? `, rowSelectionModel, onRowSelectionModelChange, checkboxSelection: false, keepNonExistentRowsSelected: false, disableRowSelectionOnClick: false, disableRowSelectionExcludeModel: true`
                   : ``
         } };
         ${useScopeFromContext ? `const { scope } = useContentScope();` : ""}
@@ -1103,6 +1122,7 @@ export function generateGrid<T extends { __typename?: string }>(
                 }
                 ${config.density ? `density="${config.density}"` : ""}
                 ${showEditInActionsColumn ? `onRowClick={handleRowClick}` : forwardRowAction ? `onRowClick={onRowClick}` : ""}
+                showToolbar
             />
         );
     }

@@ -1,4 +1,4 @@
-import { type Breakpoint, type BreakpointsOptions } from "@mui/system";
+import type { Breakpoint, BreakpointsOptions } from "@mui/system";
 
 export const breakpointValues: { [key in Breakpoint]: number } = {
     xs: 0,

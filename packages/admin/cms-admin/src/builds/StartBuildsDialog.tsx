@@ -1,5 +1,5 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Alert, Button, CancelButton, LocalErrorScopeApolloContext } from "@comet/admin";
+import { Alert, Button, CancelButton, LocalErrorScopeApolloContext } from "@dextinity/admin";
 import {
     CircularProgress,
     // eslint-disable-next-line no-restricted-imports
@@ -8,11 +8,12 @@ import {
     DialogContent,
     DialogTitle,
 } from "@mui/material";
-import { DataGrid, type GridRowSelectionModel } from "@mui/x-data-grid";
+import type { GridRowSelectionModel } from "@mui/x-data-grid";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { type GQLBuildTemplatesQuery, type GQLCreateBuildsMutation, type GQLCreateBuildsMutationVariables } from "./StartBuildsDialog.generated";
+import { DataGrid } from "../dataGrid/DataGrid";
+import type { GQLBuildTemplatesQuery, GQLCreateBuildsMutation, GQLCreateBuildsMutationVariables } from "./StartBuildsDialog.generated";
 
 const buildTemplatesQuery = gql`
     query BuildTemplates {
@@ -47,19 +48,22 @@ export function StartBuildsDialog(props: StartBuildsDialogProps) {
         refetchQueries: ["Builds"],
     });
 
-    const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
+    const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({
+        type: "include",
+        ids: new Set([]),
+    });
 
     const rows = data?.buildTemplates ?? [];
 
     return (
         <Dialog open={open} onClose={onClose}>
             <DialogTitle>
-                <FormattedMessage id="comet.pages.publisher.startBuildsDialog.header" defaultMessage="Start manual builds" />
+                <FormattedMessage id="dextinity.pages.publisher.startBuildsDialog.header" defaultMessage="Start manual builds" />
             </DialogTitle>
             <DialogContent>
                 <Alert severity="info">
                     <FormattedMessage
-                        id="comet.pages.publisher.startBuildsDialog.hint"
+                        id="dextinity.pages.publisher.startBuildsDialog.hint"
                         defaultMessage="Please use this function only in exceptional cases. The more builds you start, the longer it takes until they are completed. If you need to rebuild manually, select only the scopes required."
                     />
                 </Alert>
@@ -70,7 +74,7 @@ export function StartBuildsDialog(props: StartBuildsDialogProps) {
                         {
                             field: "name",
                             headerName: intl.formatMessage({
-                                id: "comet.pages.publisher.startBuildsDialog.buildTemplates.name",
+                                id: "dextinity.pages.publisher.startBuildsDialog.buildTemplates.name",
                                 defaultMessage: "Name",
                             }),
                             flex: 1,
@@ -84,24 +88,24 @@ export function StartBuildsDialog(props: StartBuildsDialogProps) {
                     onRowSelectionModelChange={(newSelectionModel) => {
                         setSelectionModel(newSelectionModel);
                     }}
+                    disableRowSelectionExcludeModel
                     rowSelectionModel={selectionModel}
-                    paginationModel={{ page: 0, pageSize: 5 }}
-                    hideFooterPagination={rows.length <= 5}
+                    hideFooter
                 />
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={() => onClose()} />
                 <Button
-                    disabled={loading || selectionModel.length < 1}
+                    disabled={loading || selectionModel.ids.size < 1}
                     startIcon={loading ? <CircularProgress size={20} /> : undefined}
                     onClick={async () => {
                         await startBuilds({
-                            variables: { input: { names: rows.filter((row) => selectionModel.includes(row.id)).map((row) => row.name) } },
+                            variables: { input: { names: rows.filter((row) => selectionModel.ids.has(row.id)).map((row) => row.name) } },
                         });
                         onClose();
                     }}
                 >
-                    <FormattedMessage id="comet.pages.publisher.startBuildsDialog.button" defaultMessage="Start builds" />
+                    <FormattedMessage id="dextinity.pages.publisher.startBuildsDialog.button" defaultMessage="Start builds" />
                 </Button>
             </DialogActions>
         </Dialog>

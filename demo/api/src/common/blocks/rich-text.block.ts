@@ -1,4 +1,4 @@
-import { createRichTextBlock } from "@comet/cms-api";
+import { createRichTextBlock } from "@dextinity/cms-api";
 
 import { LinkBlock } from "./link.block";
 

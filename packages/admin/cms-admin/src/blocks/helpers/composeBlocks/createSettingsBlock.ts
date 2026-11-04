@@ -1,5 +1,5 @@
 import { createBlockSkeleton } from "../../helpers/createBlockSkeleton";
-import { type AnonymousBlockInterface, type BlockAdminComponent, type BlockMethods } from "../../types";
+import type { AnonymousBlockInterface, BlockAdminComponent, BlockMethods } from "../../types";
 
 interface Options<State> {
     defaultValues: State;
@@ -7,6 +7,7 @@ interface Options<State> {
     isValid?: (values: State) => boolean | Promise<boolean>;
     definesOwnPadding?: boolean;
     extractTextContents?: BlockMethods["extractTextContents"];
+    translateContent?: BlockMethods["translateContent"];
 }
 
 export function createSettingsAnonymousBlock<State>({
@@ -15,6 +16,7 @@ export function createSettingsAnonymousBlock<State>({
     isValid,
     definesOwnPadding,
     extractTextContents,
+    translateContent,
 }: Options<State>): AnonymousBlockInterface<State, State, State, State> {
     const AnonymousSettingsBlock: AnonymousBlockInterface<State, State, State, State> = {
         ...createBlockSkeleton(),
@@ -39,6 +41,9 @@ export function createSettingsAnonymousBlock<State>({
 
     if (extractTextContents) {
         AnonymousSettingsBlock.extractTextContents = extractTextContents;
+    }
+    if (translateContent) {
+        AnonymousSettingsBlock.translateContent = translateContent;
     }
     return AnonymousSettingsBlock;
 }

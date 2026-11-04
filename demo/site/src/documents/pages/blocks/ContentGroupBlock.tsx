@@ -1,5 +1,5 @@
-import { BlocksBlock, type PropsWithData, type SupportedBlocks, withPreview } from "@comet/site-nextjs";
-import { type ContentGroupBlockData, type ContentGroupContentBlockData } from "@src/blocks.generated";
+import { BlocksBlock, type PropsWithData, type SupportedBlocks, withPreview } from "@dextinity/site-nextjs";
+import type { ContentGroupBlockData, ContentGroupContentBlockData } from "@src/blocks.generated";
 import { PageContentAccordionBlock } from "@src/common/blocks/AccordionBlock";
 import { AnchorBlock } from "@src/common/blocks/AnchorBlock";
 import { PageContentMediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
@@ -8,6 +8,8 @@ import { PageContentStandaloneCallToActionListBlock } from "@src/common/blocks/S
 import { PageContentStandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
 import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
 import { PageContentStandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
+import { TableBlock } from "@src/common/blocks/TableBlock";
+import { TipTapTableBlock } from "@src/common/blocks/TipTapTableBlock";
 import { ColumnsBlock } from "@src/documents/pages/blocks/ColumnsBlock";
 import { KeyFactsBlock } from "@src/documents/pages/blocks/KeyFactsBlock";
 import { TeaserBlock } from "@src/documents/pages/blocks/TeaserBlock";
@@ -28,6 +30,8 @@ const supportedBlocks: SupportedBlocks = {
     keyFacts: (props) => <KeyFactsBlock data={props} />,
     media: (props) => <StandaloneMediaBlock data={props} />,
     mediaGallery: (props) => <PageContentMediaGalleryBlock data={props} />,
+    table: (props) => <TableBlock data={props} />,
+    tipTapTable: (props) => <TipTapTableBlock data={props} />,
 };
 
 const ContentGroupContentBlock = withPreview(

@@ -1,5 +1,6 @@
 import { getNotFoundContext } from "@src/util/ServerContext";
 import Link from "next/link";
+import type { JSX } from "react";
 
 export default async function NotFound404(): Promise<JSX.Element> {
     const scope = getNotFoundContext() || { domain: "main", language: "en" };

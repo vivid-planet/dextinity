@@ -1,15 +1,15 @@
-import { Field, FinalFormInput } from "@comet/admin";
+import { Field, FinalFormInput } from "@dextinity/admin";
 import { Box } from "@mui/system";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
-import { type LinkBlockData } from "../blocks.generated";
+import type { LinkBlockData } from "../blocks.generated";
 import { useBlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
 import { BlockAdminComponentSection } from "./common/BlockAdminComponentSection";
 import { ExternalLinkBlock } from "./ExternalLinkBlock";
 import { createOneOfBlock, type CreateOneOfBlockOptions } from "./factories/createOneOfBlock";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { InternalLinkBlock } from "./InternalLinkBlock";
-import { type BlockInterface, type LinkBlockInterface } from "./types";
+import type { BlockInterface, LinkBlockInterface } from "./types";
 
 interface CreateLinkBlockOptions extends Omit<CreateOneOfBlockOptions<boolean>, "name" | "supportedBlocks"> {
     name?: string;
@@ -20,7 +20,7 @@ interface CreateLinkBlockOptions extends Omit<CreateOneOfBlockOptions<boolean>, 
 function createLinkBlock(
     {
         name = "Link",
-        displayName = <FormattedMessage id="comet.blocks.link" defaultMessage="Link" />,
+        displayName = <FormattedMessage id="dextinity.blocks.link" defaultMessage="Link" />,
         supportedBlocks = { internal: InternalLinkBlock, external: ExternalLinkBlock },
         allowEmpty = false,
         tags,
@@ -67,7 +67,7 @@ function createLinkBlock(
                                 <Field
                                     name="title"
                                     component={FinalFormInput}
-                                    label={<FormattedMessage id="comet.blocks.link.title" defaultMessage="Title" />}
+                                    label={<FormattedMessage id="dextinity.blocks.link.title" defaultMessage="Title" />}
                                     fullWidth
                                 />
                             </BlocksFinalForm>
@@ -89,6 +89,11 @@ function createLinkBlock(
             return false;
         },
         tags: tags ? tags : childTags,
+        translateContent: async (state, translate) => {
+            const translatedState = OneOfBlock.translateContent ? await OneOfBlock.translateContent(state, translate) : state;
+            const translatedTitle = state.title ? await translate(state.title) : state.title;
+            return { ...translatedState, title: translatedTitle };
+        },
     };
 }
 

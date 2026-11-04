@@ -1,4 +1,4 @@
-import { type AnyEntity } from "@mikro-orm/postgresql";
+import type { AnyEntity } from "@mikro-orm/postgresql";
 
 export interface RootBlockEntityOptions<Entity extends AnyEntity = AnyEntity> {
     isVisible?: (entity: Entity) => boolean;

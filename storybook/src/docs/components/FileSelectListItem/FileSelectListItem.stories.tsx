@@ -1,6 +1,6 @@
-import { FileSelectListItem } from "@comet/admin";
+import { FileSelectListItem } from "@dextinity/admin";
 import { Box, Card, CardContent } from "@mui/material";
-import { type Meta } from "@storybook/react-webpack5";
+import type { Meta } from "@storybook/react-vite";
 
 export default {
     title: "Docs/Components/FileSelectListItem",

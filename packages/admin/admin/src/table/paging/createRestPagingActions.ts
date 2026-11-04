@@ -1,7 +1,7 @@
 import queryString from "query-string";
 
-import { type IPagingApi } from "../useTableQueryPaging";
-import { type IPagingInfo } from "./IPagingInfo";
+import type { IPagingApi } from "../useTableQueryPaging";
+import type { IPagingInfo } from "./IPagingInfo";
 
 function getPageParameterFromUrl(url: string, options: IOptions) {
     const params = queryString.parse(queryString.extract(url));

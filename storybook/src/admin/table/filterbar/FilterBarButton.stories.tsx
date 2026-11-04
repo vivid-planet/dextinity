@@ -1,5 +1,5 @@
-import { FilterBarButton } from "@comet/admin";
-import { ChevronDown } from "@comet/admin-icons";
+import { FilterBarButton } from "@dextinity/admin";
+import { ChevronDown } from "@dextinity/admin-icons";
 import { List, ListItem } from "@mui/material";
 
 function Story() {
@@ -50,7 +50,7 @@ function Story() {
 }
 
 export default {
-    title: "@comet/admin/table/filterbar",
+    title: "@dextinity/admin/table/filterbar",
 };
 
 export const _FilterBarButton = () => {

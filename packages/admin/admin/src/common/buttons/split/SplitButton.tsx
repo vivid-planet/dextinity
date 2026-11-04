@@ -1,4 +1,4 @@
-import { ChevronDown } from "@comet/admin-icons";
+import { ChevronDown } from "@dextinity/admin-icons";
 import {
     // eslint-disable-next-line no-restricted-imports
     Button,
@@ -13,7 +13,7 @@ import { useThemeProps } from "@mui/material/styles";
 import { Children, isValidElement, type MouseEvent, type PropsWithChildren, type ReactElement, type ReactNode, useRef, useState } from "react";
 
 import { createComponentSlot } from "../../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
 import { useStoredState } from "../../../hooks/useStoredState";
 import { SplitButtonContext } from "./SplitButtonContext";
 
@@ -26,7 +26,8 @@ export type SplitButtonClassKey = "root" | "activeButton" | "popover" | "menuLis
  * @deprecated Use a simple `SaveButton` instead as we are retiring the SplitButton pattern.
  */
 export interface SplitButtonProps
-    extends ButtonGroupProps<any>,
+    extends
+        ButtonGroupProps<any>,
         ThemedComponentBaseProps<{
             root: typeof MuiButtonGroup;
             activeButton: typeof Button;
@@ -89,7 +90,7 @@ export function SplitButton(inProps: PropsWithChildren<SplitButtonProps>) {
         popoverProps,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminSplitButton" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminSplitButton" });
 
     const [showSelectButtonState, setShowSelectButtonState] = useState<boolean | undefined>(undefined);
 
@@ -105,10 +106,10 @@ export function SplitButton(inProps: PropsWithChildren<SplitButtonProps>) {
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<HTMLDivElement>(null);
 
-    const handleMenuItemClick: (event: MouseEvent, index: number, child: ReactElement) => void = (
+    const handleMenuItemClick: (event: MouseEvent, index: number, child: ReactElement<any>) => void = (
         event: MouseEvent,
         index: number,
-        child: ReactElement,
+        child: ReactElement<any>,
     ) => {
         _onSelectIndex(index, child);
         setOpen(false);
@@ -133,7 +134,7 @@ export function SplitButton(inProps: PropsWithChildren<SplitButtonProps>) {
         return null;
     }
 
-    const ActiveChild = childrenArray[_selectedIndex] as ReactElement;
+    const ActiveChild = childrenArray[_selectedIndex] as ReactElement<any>;
 
     const { variant: activeChildVariant, color: activeChildColor } = ActiveChild.props;
 
@@ -165,7 +166,7 @@ export function SplitButton(inProps: PropsWithChildren<SplitButtonProps>) {
                 {...slotProps?.popover}
             >
                 <MenuList {...slotProps?.menuList}>
-                    {childrenArray.map((child: ReactElement, index) => {
+                    {childrenArray.map((child: ReactElement<any>, index) => {
                         return (
                             <MenuItem
                                 key={index}
@@ -186,12 +187,12 @@ export function SplitButton(inProps: PropsWithChildren<SplitButtonProps>) {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminSplitButton: SplitButtonProps;
+        DextinityAdminSplitButton: SplitButtonProps;
     }
 
     interface Components {
-        CometAdminSplitButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminSplitButton"]>;
+        DextinityAdminSplitButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminSplitButton"]>;
         };
     }
 }

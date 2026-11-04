@@ -1,5 +1,127 @@
 # @comet/eslint-plugin
 
+## 10.13.1
+
+## 10.13.0
+
+## 10.12.0
+
+## 10.11.0
+
+### Patch Changes
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+## 10.10.0
+
+## 10.9.1
+
+## 10.9.0
+
+## 10.8.0
+
+## 10.7.0
+
+## 10.6.0
+
+## 10.5.1
+
+## 10.5.0
+
+## 10.4.0
+
+## 10.3.0
+
+## 10.2.0
+
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/eslint-plugin` to `@dextinity/eslint-plugin`
+
+    Update the dependency in `package.json`.
+
+    **Breaking changes**
+    - Register the plugin under the `@dextinity` namespace instead of `@comet`. Rule names change accordingly, for instance, `@comet/no-private-sibling-import` -> `@dextinity/no-private-sibling-import`
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/eslint-plugin` to `@dextinity/eslint-plugin`
+
+    Update the dependency in `package.json`.
+
+    **Breaking changes**
+    - Register the plugin under the `@dextinity` namespace instead of `@comet`. Rule names change accordingly, for instance, `@comet/no-private-sibling-import` -> `@dextinity/no-private-sibling-import`
+
+## 9.5.0
+
+## 9.4.0
+
+## 9.3.0
+
+## 9.2.2
+
+## 9.2.1
+
+## 9.2.0
+
+## 9.1.1
+
+## 9.1.0
+
+## 9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- db6b83a: Prevent lib imports from `@comet/` packages
+
+    Use `no-restricted-imports` to prevent importing private files from `@comet/*/lib`. For example, the following import would be forbidden:
+
+    ```ts
+    import { something } from "@comet/admin/lib/some/private/file";
+    ```
+
+## 9.0.0-beta.6
+
+## 9.0.0-beta.5
+
+## 9.0.0-beta.4
+
+## 9.0.0-beta.3
+
+## 9.0.0-beta.2
+
+## 9.0.0-beta.1
+
+## 9.0.0-beta.0
+
+### Major Changes
+
+- db6b83a: Prevent lib imports from `@comet/` packages
+
+    Use `no-restricted-imports` to prevent importing private files from `@comet/*/lib`. For example, the following import would be forbidden:
+
+    ```ts
+    import { something } from "@comet/admin/lib/some/private/file";
+    ```
+
+## 8.20.0
+
 ## 8.19.0
 
 ## 8.18.0

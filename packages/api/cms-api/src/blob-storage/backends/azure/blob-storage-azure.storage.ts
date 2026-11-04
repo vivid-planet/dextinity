@@ -2,8 +2,8 @@ import { type BlobHTTPHeaders, BlobServiceClient, RestError, StorageSharedKeyCre
 import { Logger } from "@nestjs/common";
 import { Readable } from "stream";
 
-import { type BlobStorageBackendInterface, type CreateFileOptions, type StorageMetaData } from "../blob-storage-backend.interface";
-import { type BlobStorageAzureConfig } from "./blob-storage-azure.config";
+import type { BlobStorageBackendInterface, CreateFileOptions, StorageMetaData } from "../blob-storage-backend.interface";
+import type { BlobStorageAzureConfig } from "./blob-storage-azure.config";
 
 export class BlobStorageAzureStorage implements BlobStorageBackendInterface {
     private readonly logger = new Logger(BlobStorageAzureStorage.name);
@@ -83,6 +83,17 @@ export class BlobStorageAzureStorage implements BlobStorageBackendInterface {
         const response = await this.client.getContainerClient(folderName).getBlobClient(fileName).download(offset, length);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return Readable.from(response.readableStreamBody!); // is defined in node.js but not for browsers
+    }
+
+    async listFiles(folderName: string): Promise<string[]> {
+        const containerClient = this.client.getContainerClient(folderName);
+        const fileNames: string[] = [];
+
+        for await (const blob of containerClient.listBlobsFlat()) {
+            fileNames.push(blob.name);
+        }
+
+        return fileNames;
     }
 
     async removeFile(folderName: string, fileName: string): Promise<void> {

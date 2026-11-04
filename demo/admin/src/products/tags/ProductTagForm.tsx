@@ -1,20 +1,20 @@
 import { useApolloClient, useQuery } from "@apollo/client";
-import { filterByFragment, FinalForm, type FinalFormSubmitEvent, Loading, TextField, useFormApiRef, useStackSwitchApi } from "@comet/admin";
-import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
-import { type FormApi } from "final-form";
+import { filterByFragment, FinalForm, type FinalFormSubmitEvent, Loading, TextField, useFormApiRef, useStackSwitchApi } from "@dextinity/admin";
+import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
+import type { FormApi } from "final-form";
 import isEqual from "lodash.isequal";
 import { useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { createProductTagMutation, productTagFormFragment, productTagQuery, updateProductTagMutation } from "./ProductTagForm.gql";
-import {
-    type GQLCreateProductTagMutation,
-    type GQLCreateProductTagMutationVariables,
-    type GQLProductTagFormFragment,
-    type GQLProductTagQuery,
-    type GQLProductTagQueryVariables,
-    type GQLUpdateProductTagMutation,
-    type GQLUpdateProductTagMutationVariables,
+import type {
+    GQLCreateProductTagMutation,
+    GQLCreateProductTagMutationVariables,
+    GQLProductTagFormFragment,
+    GQLProductTagQuery,
+    GQLProductTagQueryVariables,
+    GQLUpdateProductTagMutation,
+    GQLUpdateProductTagMutationVariables,
 } from "./ProductTagForm.gql.generated";
 
 type FormValues = GQLProductTagFormFragment;
@@ -50,12 +50,16 @@ export function ProductTagForm({ id }: FormProps) {
         },
     });
     const handleSubmit = async (formValues: FormValues, form: FormApi<FormValues>, event: FinalFormSubmitEvent) => {
-        if (await saveConflict.checkForConflicts()) throw new Error("Conflicts detected");
+        if (await saveConflict.checkForConflicts()) {
+            throw new Error("Conflicts detected");
+        }
         const output = {
             ...formValues,
         };
         if (mode === "edit") {
-            if (!id) throw new Error();
+            if (!id) {
+                throw new Error();
+            }
             const { ...updateInput } = output;
             await client.mutate<GQLUpdateProductTagMutation, GQLUpdateProductTagMutationVariables>({
                 mutation: updateProductTagMutation,
@@ -76,7 +80,9 @@ export function ProductTagForm({ id }: FormProps) {
             }
         }
     };
-    if (error) throw error;
+    if (error) {
+        throw error;
+    }
     if (loading) {
         return <Loading behavior="fillPageHeight" />;
     }

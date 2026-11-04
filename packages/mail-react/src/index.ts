@@ -4,6 +4,69 @@ export { OneOfBlock } from "./blocks/factories/OneOfBlock.js";
 export { OptionalBlock } from "./blocks/factories/OptionalBlock.js";
 export type { SupportedBlocks } from "./blocks/factories/types.js";
 export type { PropsWithData } from "./blocks/helpers/PropsWithData.js";
+export type { HtmlPixelImageBlockProps } from "./blocks/pixelImage/HtmlPixelImageBlock.js";
+export { HtmlPixelImageBlock } from "./blocks/pixelImage/HtmlPixelImageBlock.js";
+export type { MjmlPixelImageBlockProps } from "./blocks/pixelImage/MjmlPixelImageBlock.js";
+export { MjmlPixelImageBlock } from "./blocks/pixelImage/MjmlPixelImageBlock.js";
+export type { CreateRichTextBlockOptions, RichTextBlockProps } from "./blocks/richText/draftJs/common.js";
+export { createRichTextBlock } from "./blocks/richText/draftJs/createRichTextBlock.js";
+export type { CreateTipTapRichTextBlockOptions, TipTapRichTextBlockProps } from "./blocks/richText/tipTap/common.js";
+export { createTipTapRichTextBlock } from "./blocks/richText/tipTap/createTipTapRichTextBlock.js";
+export type { HtmlButtonProps } from "./components/button/HtmlButton.js";
+export { HtmlButton } from "./components/button/HtmlButton.js";
+export type { MjmlButtonProps } from "./components/button/MjmlButton.js";
+export { MjmlButton } from "./components/button/MjmlButton.js";
+export type { HtmlDividerProps } from "./components/divider/HtmlDivider.js";
+export { HtmlDivider } from "./components/divider/HtmlDivider.js";
+export type { MjmlDividerProps } from "./components/divider/MjmlDivider.js";
+export { MjmlDivider } from "./components/divider/MjmlDivider.js";
+export type { HtmlImageProps } from "./components/image/HtmlImage.js";
+export { HtmlImage } from "./components/image/HtmlImage.js";
+export type { MjmlImageProps } from "./components/image/MjmlImage.js";
+export { MjmlImage } from "./components/image/MjmlImage.js";
+export type { HtmlInlineLinkProps } from "./components/inlineLink/HtmlInlineLink.js";
+export { HtmlInlineLink } from "./components/inlineLink/HtmlInlineLink.js";
+export { MjmlMailRoot } from "./components/mailRoot/MjmlMailRoot.js";
+export type { MjmlSectionProps } from "./components/section/MjmlSection.js";
+export { MjmlSection } from "./components/section/MjmlSection.js";
+export type { HtmlTextProps } from "./components/text/HtmlText.js";
+export { HtmlText } from "./components/text/HtmlText.js";
+export type { MjmlTextProps } from "./components/text/MjmlText.js";
+export { MjmlText } from "./components/text/MjmlText.js";
+export type { MjmlWrapperProps } from "./components/wrapper/MjmlWrapper.js";
+export { MjmlWrapper } from "./components/wrapper/MjmlWrapper.js";
+export { type Config, ConfigProvider, type PixelImageBlockConfig, useConfig } from "./config/ConfigProvider.js";
+export { useRefToRegisterMailBlocksForPreview } from "./preview/useRefToRegisterMailBlocksForPreview.js";
+export { withPreview } from "./preview/withPreview.js";
+export { registerStyles } from "./styles/registerStyles.js";
+export { createBreakpoint } from "./theme/createBreakpoint.js";
+export { createTheme } from "./theme/createTheme.js";
+export type { ResponsiveValue } from "./theme/responsiveValue.js";
+export { getDefaultFromResponsiveValue, getResponsiveOverrides } from "./theme/responsiveValue.js";
+export { ThemeProvider, useTheme } from "./theme/ThemeProvider.js";
+export type {
+    ButtonStyles,
+    ButtonVariants,
+    ButtonVariantStyles,
+    DividerStyles,
+    DividerVariants,
+    DividerVariantStyles,
+    ListMarker,
+    ListMarkerOptions,
+    TextStyles,
+    TextVariants,
+    TextVariantStyles,
+    Theme,
+    ThemeBackgroundColors,
+    ThemeBreakpoint,
+    ThemeBreakpoints,
+    ThemeButton,
+    ThemeColors,
+    ThemeDivider,
+    ThemeList,
+    ThemeSizes,
+    ThemeText,
+} from "./theme/themeTypes.js";
 export { css } from "./utils/css.js";
 export {
     Mjml,
@@ -23,8 +86,6 @@ export {
     type IMjmlBodyProps as MjmlBodyProps,
     MjmlBreakpoint,
     type IMjmlBreakpointProps as MjmlBreakpointProps,
-    MjmlButton,
-    type IMjmlButtonProps as MjmlButtonProps,
     MjmlCarousel,
     MjmlCarouselImage,
     type IMjmlCarouselImageProps as MjmlCarouselImageProps,
@@ -33,8 +94,6 @@ export {
     type IMjmlClassProps as MjmlClassProps,
     MjmlColumn,
     type IMjmlColumnProps as MjmlColumnProps,
-    MjmlDivider,
-    type IMjmlDividerProps as MjmlDividerProps,
     MjmlFont,
     type IMjmlFontProps as MjmlFontProps,
     MjmlGroup,
@@ -47,8 +106,6 @@ export {
     type IMjmlHtmlAttributeProps as MjmlHtmlAttributeProps,
     MjmlHtmlAttributes,
     type IMjmlHtmlAttributesProps as MjmlHtmlAttributesProps,
-    MjmlImage,
-    type IMjmlImageProps as MjmlImageProps,
     MjmlInclude,
     type IMjmlIncludeProps as MjmlIncludeProps,
     MjmlNavbar,
@@ -60,8 +117,6 @@ export {
     type IMjmlProps as MjmlProps,
     MjmlRaw,
     type IMjmlRawProps as MjmlRawProps,
-    MjmlSection,
-    type IMjmlSectionProps as MjmlSectionProps,
     MjmlSelector,
     type IMjmlSelectorProps as MjmlSelectorProps,
     MjmlSocial,
@@ -74,12 +129,8 @@ export {
     type IMjmlStyleProps as MjmlStyleProps,
     MjmlTable,
     type IMjmlTableProps as MjmlTableProps,
-    MjmlText,
-    type IMjmlTextProps as MjmlTextProps,
     MjmlTitle,
     type IMjmlTitleProps as MjmlTitleProps,
-    MjmlWrapper,
-    type IMjmlWrapperProps as MjmlWrapperProps,
 } from "@faire/mjml-react";
 export { MjmlComment, MjmlConditionalComment, MjmlHtml, MjmlTrackingPixel, MjmlYahooStyle } from "@faire/mjml-react/extensions/index.js";
 export { renderToMjml } from "@faire/mjml-react/utils/renderToMjml.js";

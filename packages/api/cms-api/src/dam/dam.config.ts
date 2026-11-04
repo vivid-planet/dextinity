@@ -1,3 +1,5 @@
+export const damDefaultBasePath = "dam";
+
 export interface DamConfig {
     secret: string;
     allowedImageSizes: number[];
@@ -7,6 +9,8 @@ export interface DamConfig {
     maxFileSize: number;
     requireLicense?: boolean;
     enableLicenseFeature?: boolean;
+    blockFilesWithInvalidLicense?: boolean;
     maxSrcResolution: number;
     basePath: string;
+    includeFormatExtensionInImageUrls?: boolean;
 }

@@ -8,6 +8,8 @@ enum WarningSortField {
     updatedAt = "updatedAt",
     message = "message",
     type = "type",
+    name = "name",
+    visible = "visible",
     severity = "severity",
     status = "status",
 }

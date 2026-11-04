@@ -1,9 +1,9 @@
-import { type DocumentNode } from "graphql";
+import type { DocumentNode } from "graphql";
 import { createContext, type ReactNode } from "react";
 
-import { type DocumentInterface, type DocumentType } from "../../documents/types";
-import { type TreeMap } from "./treemap/TreeMapUtils";
-import { type GQLPageTreePageFragment } from "./usePageTree";
+import type { DocumentInterface, DocumentType } from "../../documents/types";
+import type { TreeMap } from "./treemap/TreeMapUtils";
+import type { GQLPageTreePageFragment } from "./usePageTree";
 
 export type AllCategories = Array<{ category: string; label: ReactNode }>;
 

@@ -3,8 +3,10 @@ import {
     Button,
     CrudContextMenu,
     DataGridToolbar,
+    downloadFile,
     type GridColDef,
     GridFilterButton,
+    GridToolbarQuickFilter,
     MainContent,
     muiGridFilterToGql,
     muiGridSortToGql,
@@ -15,28 +17,27 @@ import {
     useDataGridRemote,
     useEditDialog,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add as AddIcon, Download, Edit } from "@comet/admin-icons";
-import { type ContentScope } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { Add as AddIcon, Download, Edit } from "@dextinity/admin-icons";
+import type { ContentScope } from "@dextinity/cms-admin";
 import { DialogContent, IconButton } from "@mui/material";
-import { DataGrid, GridToolbarQuickFilter } from "@mui/x-data-grid";
-import saveAs from "file-saver";
-import { type DocumentNode } from "graphql";
-import { type ReactElement } from "react";
+import type { DocumentNode } from "graphql";
+import type { ReactElement } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
+import { DataGrid } from "../dataGrid/DataGrid";
 import { TargetGroupDialog } from "./TargetGroupDialog";
-import {
-    type GQLCreateTargetGroupMutation,
-    type GQLCreateTargetGroupMutationVariables,
-    type GQLDeleteTargetGroupMutation,
-    type GQLDeleteTargetGroupMutationVariables,
-    type GQLTargetGroupContactItemFragment,
-    type GQLTargetGroupContactsQuery,
-    type GQLTargetGroupContactsQueryVariables,
-    type GQLTargetGroupsGridQuery,
-    type GQLTargetGroupsGridQueryVariables,
-    type GQLTargetGroupsListFragment,
+import type {
+    GQLCreateTargetGroupMutation,
+    GQLCreateTargetGroupMutationVariables,
+    GQLDeleteTargetGroupMutation,
+    GQLDeleteTargetGroupMutationVariables,
+    GQLTargetGroupContactItemFragment,
+    GQLTargetGroupContactsQuery,
+    GQLTargetGroupContactsQueryVariables,
+    GQLTargetGroupsGridQuery,
+    GQLTargetGroupsGridQueryVariables,
+    GQLTargetGroupsListFragment,
 } from "./TargetGroupsGrid.generated";
 
 export type AdditionalContactAttributesType = Record<string, unknown>;
@@ -123,7 +124,7 @@ export function TargetGroupsGrid({
                         editDialogApi.openAddDialog();
                     }}
                 >
-                    <FormattedMessage id="cometBrevoModule.targetGroup.newTargetGroup" defaultMessage="New target group" />
+                    <FormattedMessage id="dextinity.targetGroup.newTargetGroup" defaultMessage="New target group" />
                 </Button>
             </DataGridToolbar>
         );
@@ -149,10 +150,10 @@ export function TargetGroupsGrid({
 
     const convertToCsv = (data: ContactWithAdditionalAttributes[]) => {
         const header = [
-            intl.formatMessage({ id: "cometBrevoModule.targetGroup.export.brevoId", defaultMessage: "Brevo ID" }),
-            intl.formatMessage({ id: "cometBrevoModule.targetGroup.export.email", defaultMessage: "Email" }),
-            intl.formatMessage({ id: "cometBrevoModule.targetGroup.export.emailBlacklisted", defaultMessage: "Email blacklisted" }),
-            intl.formatMessage({ id: "cometBrevoModule.targetGroup.export.smsBlacklisted", defaultMessage: "Sms blacklisted" }),
+            intl.formatMessage({ id: "dextinity.targetGroup.export.brevoId", defaultMessage: "Brevo ID" }),
+            intl.formatMessage({ id: "dextinity.targetGroup.export.email", defaultMessage: "Email" }),
+            intl.formatMessage({ id: "dextinity.targetGroup.export.emailBlacklisted", defaultMessage: "Email blacklisted" }),
+            intl.formatMessage({ id: "dextinity.targetGroup.export.smsBlacklisted", defaultMessage: "Sms blacklisted" }),
         ].concat(exportTargetGroupOptions?.exportFields.map((field) => field?.headerName ?? "") ?? []);
 
         const csvData = data.map((contact) => [
@@ -190,16 +191,16 @@ export function TargetGroupsGrid({
         }
 
         const csvData = convertToCsv(allContacts);
-
         const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
-        saveAs(blob, `${title}.csv`);
+
+        downloadFile(blob, `${title}.csv`);
     }
 
     const columns: GridColDef<GQLTargetGroupsListFragment>[] = [
-        { field: "title", headerName: intl.formatMessage({ id: "cometBrevoModule.targetGroup.title", defaultMessage: "Title" }), flex: 1 },
+        { field: "title", headerName: intl.formatMessage({ id: "dextinity.targetGroup.title", defaultMessage: "Title" }), flex: 1 },
         {
             field: "totalSubscribers",
-            headerName: intl.formatMessage({ id: "cometBrevoModule.targetGroup.totalSubscribers", defaultMessage: "Total subscribers" }),
+            headerName: intl.formatMessage({ id: "dextinity.targetGroup.totalSubscribers", defaultMessage: "Total subscribers" }),
             type: "number",
             filterable: false,
             sortable: false,
@@ -212,7 +213,9 @@ export function TargetGroupsGrid({
             filterable: false,
             type: "actions",
             renderCell: ({ row }) => {
-                if (row.isMainList) return;
+                if (row.isMainList) {
+                    return;
+                }
                 return (
                     <>
                         <IconButton component={StackLink} pageName="edit" payload={row.id}>
@@ -260,7 +263,9 @@ export function TargetGroupsGrid({
         },
     });
     const rowCount = useBufferedRowCount(data?.brevoTargetGroups.totalCount);
-    if (error) throw error;
+    if (error) {
+        throw error;
+    }
     const rows = data?.brevoTargetGroups.nodes ?? [];
 
     return (
@@ -275,6 +280,7 @@ export function TargetGroupsGrid({
                 slots={{
                     toolbar: TargetGroupsGridToolbar,
                 }}
+                showToolbar
             />
             <EditDialog disableCloseAfterSave componentsProps={{ dialog: { maxWidth: "sm" } }}>
                 <DialogContent>

@@ -1,6 +1,6 @@
-import { IsValidRedirectSource } from "@comet/cms-api";
+import { IsValidRedirectSource } from "@dextinity/cms-api";
 import { BaseEntity, defineConfig, Entity, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
-import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage";
+import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
 import {
     IsEmail,
     IsISO8601,
@@ -12,7 +12,8 @@ import {
     ValidatorConstraint,
     ValidatorConstraintInterface,
 } from "class-validator";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
+import { describe, expect, it } from "vitest";
 
 import { generateCrud } from "../../generateCrud/generate-crud";
 import { formatGeneratedFiles, parseSource, testPermission } from "../../utils/test-helper";
@@ -43,7 +44,7 @@ class IsSlugConstraint implements ValidatorConstraintInterface {
 @Entity()
 export class TestEntityWithEmail extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @IsEmail()
     @IsString()
@@ -54,7 +55,7 @@ export class TestEntityWithEmail extends BaseEntity {
 @Entity()
 export class TestEntityWithCaseSensitiveConstraintName extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @IsISO8601()
     @Property({ columnType: "text" })
@@ -64,7 +65,7 @@ export class TestEntityWithCaseSensitiveConstraintName extends BaseEntity {
 @Entity()
 export class TestEntityWithShortenedDecoratorName extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Length(2, 5)
     @Property({ columnType: "text" })
@@ -74,7 +75,7 @@ export class TestEntityWithShortenedDecoratorName extends BaseEntity {
 @Entity()
 export class TestEntityWithRelativeImportDecorator extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @IsValidRedirectSource()
     @Property({ columnType: "text" })
@@ -84,7 +85,7 @@ export class TestEntityWithRelativeImportDecorator extends BaseEntity {
 @Entity()
 export class TestEntityWithDuplicateDefaultDecorator extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @IsString()
     @IsOptional()
@@ -95,7 +96,7 @@ export class TestEntityWithDuplicateDefaultDecorator extends BaseEntity {
 @Entity()
 export class TestEntityWithValidatorDefinedInFile extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @IsTrueAsString()
     @Property({ columnType: "text" })
@@ -114,13 +115,12 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 }),
             );
 
-            const out = await generateCrud(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithEmail"),
-            );
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithEmail"));
             const formattedOut = await formatGeneratedFiles(out);
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-email.input.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
             const source = parseSource(file.content);
             const classes = source.getClasses();
             const cls = classes[0];
@@ -155,12 +155,14 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 );
 
                 const out = await generateCrud(
-                    { targetDirectory: __dirname, requiredPermission: testPermission },
+                    { requiredPermission: testPermission },
                     orm.em.getMetadata().get("TestEntityWithCaseSensitiveConstraintName"),
                 );
                 const formattedOut = await formatGeneratedFiles(out);
                 const file = formattedOut.find((file) => file.name === "dto/test-entity-with-case-sensitive-constraint-name.input.ts");
-                if (!file) throw new Error("File not found");
+                if (!file) {
+                    throw new Error("File not found");
+                }
                 const source = parseSource(file.content);
                 const classes = source.getClasses();
                 const cls = classes[0];
@@ -195,12 +197,14 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 );
 
                 const out = await generateCrud(
-                    { targetDirectory: __dirname, requiredPermission: testPermission },
+                    { requiredPermission: testPermission },
                     orm.em.getMetadata().get("TestEntityWithShortenedDecoratorName"),
                 );
                 const formattedOut = await formatGeneratedFiles(out);
                 const file = formattedOut.find((file) => file.name === "dto/test-entity-with-shortened-decorator-name.input.ts");
-                if (!file) throw new Error("File not found");
+                if (!file) {
+                    throw new Error("File not found");
+                }
                 const source = parseSource(file.content);
                 const classes = source.getClasses();
                 const cls = classes[0];
@@ -235,12 +239,14 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 );
 
                 const out = await generateCrud(
-                    { targetDirectory: __dirname, requiredPermission: testPermission },
+                    { requiredPermission: testPermission },
                     orm.em.getMetadata().get("TestEntityWithShortenedDecoratorName"),
                 );
                 const formattedOut = await formatGeneratedFiles(out);
                 const file = formattedOut.find((file) => file.name === "dto/test-entity-with-shortened-decorator-name.input.ts");
-                if (!file) throw new Error("File not found");
+                if (!file) {
+                    throw new Error("File not found");
+                }
                 const source = parseSource(file.content);
                 const classes = source.getClasses();
                 const cls = classes[0];
@@ -276,12 +282,14 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 );
 
                 const out = await generateCrud(
-                    { targetDirectory: __dirname, requiredPermission: testPermission },
+                    { requiredPermission: testPermission },
                     orm.em.getMetadata().get("TestEntityWithRelativeImportDecorator"),
                 );
                 const formattedOut = await formatGeneratedFiles(out);
                 const file = formattedOut.find((file) => file.name === "dto/test-entity-with-relative-import-decorator.input.ts");
-                if (!file) throw new Error("File not found");
+                if (!file) {
+                    throw new Error("File not found");
+                }
                 const source = parseSource(file.content);
                 const classes = source.getClasses();
                 const cls = classes[0];
@@ -298,7 +306,7 @@ describe("GenerateDefinedValidatorDecorators", () => {
                     getImportDeclaration.getNamedImports().some((namedImport) => namedImport.getName() === "IsValidRedirectSource"),
                 );
                 expect(isSlugImport).toBeDefined();
-                expect(isSlugImport?.getModuleSpecifierValue()).toBe("@comet/cms-api");
+                expect(isSlugImport?.getModuleSpecifierValue()).toBe("@dextinity/cms-api");
 
                 await orm.close();
             });
@@ -316,13 +324,12 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 }),
             );
 
-            const out = await generateCrud(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithValidatorDefinedInFile"),
-            );
+            const out = await generateCrud({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithValidatorDefinedInFile"));
             const formattedOut = await formatGeneratedFiles(out);
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-validator-defined-in-file.input.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
             const source = parseSource(file.content);
             const classes = source.getClasses();
             const cls = classes[0];
@@ -339,7 +346,7 @@ describe("GenerateDefinedValidatorDecorators", () => {
                 getImportDeclaration.getNamedImports().some((namedImport) => namedImport.getName() === "IsTrueAsString"),
             );
             expect(isTrueAsStringImport).toBeDefined();
-            expect(isTrueAsStringImport?.getModuleSpecifierValue()).toBe("../generate-crud-input-validators.spec");
+            expect(isTrueAsStringImport?.getModuleSpecifierValue()).toBe("../../generate-crud-input-validators.spec");
 
             await orm.close();
         });
@@ -357,12 +364,14 @@ describe("GenerateDefinedValidatorDecorators", () => {
             );
 
             const out = await generateCrud(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
+                { requiredPermission: testPermission },
                 orm.em.getMetadata().get("TestEntityWithDuplicateDefaultDecorator"),
             );
             const formattedOut = await formatGeneratedFiles(out);
             const file = formattedOut.find((file) => file.name === "dto/test-entity-with-duplicate-default-decorator.input.ts");
-            if (!file) throw new Error("File not found");
+            if (!file) {
+                throw new Error("File not found");
+            }
             const source = parseSource(file.content);
             const classes = source.getClasses();
             const cls = classes[0];

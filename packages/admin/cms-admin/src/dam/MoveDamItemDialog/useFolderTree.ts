@@ -1,7 +1,7 @@
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 
 import { traversePreOrder, TreeMap } from "../../pages/pageTree/treemap/TreeMapUtils";
-import { type GQLAllFoldersWithoutFiltersQuery } from "./ChooseFolder";
+import type { GQLAllFoldersWithoutFiltersQuery } from "./ChooseFolder";
 
 interface FolderTreeFolder {
     id: string;

@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-restricted-imports
 import { Button } from "@mui/material";
-import { type MouseEventHandler, type PropsWithChildren, type ReactNode } from "react";
+import type { MouseEventHandler, PropsWithChildren, ReactNode } from "react";
 
 import { BlockAdminComponentPaper } from "./BlockAdminComponentPaper";
 

@@ -5,7 +5,7 @@ import {
     PageTreeReadApiService,
     RedirectsLinkBlock,
     RedirectTargetUrlServiceInterface,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Scope } from "@nestjs/common";
 import { Config } from "@src/config/config";
@@ -14,7 +14,7 @@ import { PredefinedPageType } from "@src/documents/predefined-pages/entities/pre
 import { PredefinedPagesService } from "@src/documents/predefined-pages/predefined-pages.service";
 import { NewsLinkBlock } from "@src/news/blocks/news-link.block";
 import { News } from "@src/news/entities/news.entity";
-import { type PageTreeNodeScope } from "@src/page-tree/dto/page-tree-node-scope";
+import type { PageTreeNodeScope } from "@src/page-tree/dto/page-tree-node-scope";
 
 @Injectable({ scope: Scope.REQUEST })
 export class RedirectTargetUrlService implements RedirectTargetUrlServiceInterface {

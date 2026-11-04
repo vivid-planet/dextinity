@@ -123,10 +123,18 @@ export class ApiMetricsMiddleware implements NestMiddleware {
     }
 
     private getStatusCodeClass(code: number): string {
-        if (code < 200) return "info";
-        if (code < 300) return "success";
-        if (code < 400) return "redirect";
-        if (code < 500) return "client_error";
+        if (code < 200) {
+            return "info";
+        }
+        if (code < 300) {
+            return "success";
+        }
+        if (code < 400) {
+            return "redirect";
+        }
+        if (code < 500) {
+            return "client_error";
+        }
         return "server_error";
     }
 }

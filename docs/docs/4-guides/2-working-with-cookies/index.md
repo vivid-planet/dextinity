@@ -12,7 +12,7 @@ By configuring the cookie API and using the `<CookieSafe />` component, we can e
 The `useCookieApi` hook provides access to the list of consented cookies and a function that can be called to open the cookie settings.
 
 ```ts
-import { useCookieApi } from "@comet/site-nextjs";
+import { useCookieApi } from "@dextinity/site-nextjs";
 
 const { consentedCookies, openCookieSettings } = useCookieApi();
 ```
@@ -33,18 +33,18 @@ For local development and other environments that do not embed the project's coo
 
 #### Debugging using the dev tools console
 
-The localStorage cookie api can be accessed via the dev tools console with `window.cometLocalStorageCookieApi`.
+The localStorage cookie api can be accessed via the dev tools console with `window.dextinityLocalStorageCookieApi`.
 
 ##### Open Cookie Settings
 
 ```js
-window.cometLocalStorageCookieApi.openCookieSettings();
+window.dextinityLocalStorageCookieApi.openCookieSettings();
 ```
 
 ##### View the currently consented cookies
 
 ```js
-window.cometLocalStorageCookieApi.consentedCookies;
+window.dextinityLocalStorageCookieApi.consentedCookies;
 ```
 
 ## Using the `<CookieSafe />` component
@@ -54,7 +54,7 @@ If the required cookies have not been consented to, a fallback component is rend
 While the cookie platform has not been initialized, a loading component is rendered.
 
 ```tsx
-import { CookieSafe, useCookieApi } from "@comet/site-nextjs";
+import { CookieSafe, useCookieApi } from "@dextinity/site-nextjs";
 import { cookieIds } from "@src/util/cookieIds";
 
 export const CookieSafeExternalContent = () => {
@@ -77,7 +77,7 @@ export const CookieSafeExternalContent = () => {
 The fallback component should display a message to the user and allow them to open the cookie settings.
 
 ```tsx
-import { useCookieApi } from "@comet/site-nextjs";
+import { useCookieApi } from "@dextinity/site-nextjs";
 
 export const CookieFallback = () => {
     const { openCookieSettings } = useCookieApi();
@@ -116,7 +116,7 @@ import {
     CookieApiProvider,
     useLocalStorageCookieApi,
     useOneTrustCookieApi as useProductionCookieApi,
-} from "@comet/site-nextjs";
+} from "@dextinity/site-nextjs";
 // ...
 return (
     <html>

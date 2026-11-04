@@ -47,7 +47,7 @@ override async up(): Promise<void> {
 
 ### Update the module
 
-Once the API of the entity has been regenerated, a new `MyEntity.service.ts` file should be present in the CrudGenerator's `targetDirectory`.
+Once the API of the entity has been regenerated, a new `MyEntity.service.ts` file should be present in the `generated/` subdirectory.
 This service needs to be included in your module's `providers`.
 
 ```ts
@@ -63,7 +63,7 @@ export class MyEntityModule {}
 
 ## Updating the Grid generator config
 
-In your `.cometGen.ts` file, add the `rowReordering` property to the grid config.
+In your `.dextinityGen.ts` file, add the `rowReordering` property to the grid config.
 
 ```ts
 export const MyEntityGrid: GridConfig<GQLMyEntity> = {

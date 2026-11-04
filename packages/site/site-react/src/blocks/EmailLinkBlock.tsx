@@ -1,7 +1,7 @@
-import { type AnchorHTMLAttributes, cloneElement, type ReactElement } from "react";
+import { type AnchorHTMLAttributes, cloneElement, type DetailedHTMLProps, type ReactElement } from "react";
 
-import { type EmailLinkBlockData } from "../blocks.generated";
-import { type PropsWithData } from "./PropsWithData";
+import type { EmailLinkBlockData } from "../blocks.generated";
+import type { PropsWithData } from "./PropsWithData";
 
 interface EmailLinkBlockProps extends PropsWithData<EmailLinkBlockData>, Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href"> {
     children: ReactElement;
@@ -20,7 +20,10 @@ export const EmailLinkBlock = ({ data: { email }, children, legacyBehavior, ...a
     const href = `mailto:${email}`;
 
     if (legacyBehavior) {
-        return cloneElement(children, { ...anchorProps, href });
+        return cloneElement(children as ReactElement<DetailedHTMLProps<AnchorHTMLAttributes<HTMLAnchorElement>, HTMLAnchorElement>>, {
+            ...anchorProps,
+            href,
+        });
     }
 
     return (

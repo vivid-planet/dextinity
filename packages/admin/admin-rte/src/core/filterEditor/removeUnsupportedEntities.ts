@@ -1,6 +1,6 @@
-import { type DraftEntityType } from "draft-js";
+import type { DraftEntityType } from "draft-js";
 
-import { type FilterEditorStateBeforeUpdateFn } from "../Rte";
+import type { FilterEditorStateBeforeUpdateFn } from "../Rte";
 import removeEntities from "./utils/removeEntities";
 
 const removeUnsupportedEntities: FilterEditorStateBeforeUpdateFn = (newState, { supports }) => {

@@ -1,9 +1,9 @@
-import { Home, Link as LinkIcon } from "@comet/admin-icons";
-import { type SvgIconProps } from "@mui/material";
-import { type ReactNode } from "react";
+import { Home, Link as LinkIcon } from "@dextinity/admin-icons";
+import type { SvgIconProps } from "@mui/material";
+import type { JSX, ReactNode } from "react";
 
 import { usePageTreeConfig } from "../pageTreeConfig";
-import { type PageTreePage } from "./usePageTree";
+import type { PageTreePage } from "./usePageTree";
 
 interface PageTypeIconProps {
     page: PageTreePage;

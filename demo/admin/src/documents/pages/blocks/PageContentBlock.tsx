@@ -1,5 +1,6 @@
-import { AnchorBlock, createBlocksBlock, DamImageBlock } from "@comet/cms-admin";
+import { AnchorBlock, createBlocksBlock, DamImageBlock } from "@dextinity/cms-admin";
 import { AccordionBlock } from "@src/common/blocks/AccordionBlock";
+import { ContactFormBlock } from "@src/common/blocks/ContactFormBlock";
 import { LayoutBlock } from "@src/common/blocks/LayoutBlock";
 import { MediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
 import { PageTreeIndexBlock } from "@src/common/blocks/PageTreeIndexBlock";
@@ -8,10 +9,12 @@ import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCa
 import { StandaloneHeadingBlock } from "@src/common/blocks/StandaloneHeadingBlock";
 import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
 import { StandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
+import { TableBlock } from "@src/common/blocks/TableBlock";
 import { TextImageBlock } from "@src/common/blocks/TextImageBlock";
+import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
+import { TipTapTableBlock } from "@src/common/blocks/TipTapTableBlock";
 import { NewsDetailBlock } from "@src/news/blocks/NewsDetailBlock";
 import { NewsListBlock } from "@src/news/blocks/NewsListBlock";
-import { ProductListBlock } from "@src/products/blocks/ProductListBlock";
 import { userGroupAdditionalItemFields } from "@src/userGroups/userGroupAdditionalItemFields";
 import { UserGroupChip } from "@src/userGroups/UserGroupChip";
 import { UserGroupContextMenuItem } from "@src/userGroups/UserGroupContextMenuItem";
@@ -48,8 +51,11 @@ export const PageContentBlock = createBlocksBlock({
         layout: LayoutBlock,
         textImage: TextImageBlock,
         fullWidthImage: FullWidthImageBlock,
-        productList: ProductListBlock,
+        table: TableBlock,
+        tipTapTable: TipTapTableBlock,
+        tipTapRichText: TipTapRichTextBlock,
         pageTreeIndex: PageTreeIndexBlock,
+        contactForm: ContactFormBlock,
     },
     additionalItemFields: {
         ...userGroupAdditionalItemFields,

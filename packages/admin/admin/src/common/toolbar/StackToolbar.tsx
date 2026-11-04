@@ -1,4 +1,4 @@
-import { type ComponentProps } from "react";
+import type { ComponentProps } from "react";
 
 import { useIsActiveStackSwitch } from "../../stack/useIsActiveStackSwitch";
 import { Toolbar } from "./Toolbar";

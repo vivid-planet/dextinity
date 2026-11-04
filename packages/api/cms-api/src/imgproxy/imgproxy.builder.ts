@@ -12,7 +12,9 @@ export class ImgproxyBuilder {
 
     crop(width: number, height: number, gravity: Gravity = Gravity.CENTER, xOffset = 0, yOffset = 0): this {
         const options = [width, height, gravity];
-        if (gravity !== Gravity.SMART) options.push(xOffset, yOffset);
+        if (gravity !== Gravity.SMART) {
+            options.push(xOffset, yOffset);
+        }
 
         return this.setOption("crop", options.join(":"));
     }

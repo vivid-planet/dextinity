@@ -7,7 +7,7 @@ import * as FinalFormStories from "./FinalForm.stories";
 
 # FinalForm
 
-Comet Admin provides a `FinalForm` component.
+Dextinity Admin provides a `FinalForm` component.
 It's built on top of [React Final Form's `Form` component](https://final-form.org/docs/react-final-form/api/Form).
 
 There are two required properties:
@@ -17,18 +17,18 @@ There are two required properties:
 
 <Canvas of={FinalFormStories.BasicFinalForm} />
 
-## Differences between Comet Admin `FinalForm` and React Final Form's `Form`
+## Differences between Dextinity Admin `FinalForm` and React Final Form's `Form`
 
 RFF's `Form` is a pure wrapper component.
 It creates and maintains a [form instance](https://final-form.org/docs/final-form/api#createform) that handles the form state.
 This form instance is provided to child components via React Context.
 It doesn't render any HTML.
 
-Comet Admin `FinalForm` renders some HTML: a `<form>` wrapper and a div containing submit errors.
-Additionally, it uses the React Contexts of other Comet Admin components to interact with them.
+Dextinity Admin `FinalForm` renders some HTML: a `<form>` wrapper and a div containing submit errors.
+Additionally, it uses the React Contexts of other Dextinity Admin components to interact with them.
 You can find more information about these interactions in the following sections.
 
-The following example shows the definition of a simple form with RFF `Form` and Comet Admin `FinalForm`.
+The following example shows the definition of a simple form with RFF `Form` and Dextinity Admin `FinalForm`.
 
 Plain RFF `Form`:
 
@@ -52,12 +52,12 @@ Plain RFF `Form`:
   `}
 />
 
-Comet Admin `FinalForm`:
+Dextinity Admin `FinalForm`:
 
 <Source
     language="tsx"
     code={dedent`
-        import { FinalForm, Field, SaveButton } from "@comet/admin";
+        import { FinalForm, Field, SaveButton } from "@dextinity/admin";
         // ...
         <FinalForm
             mode="add"

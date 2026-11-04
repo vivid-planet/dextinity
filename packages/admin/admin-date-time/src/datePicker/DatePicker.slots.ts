@@ -1,6 +1,6 @@
-import { createComponentSlot, InputWithPopper, type InputWithPopperClassKey, type ThemedComponentBaseProps } from "@comet/admin";
+import { createComponentSlot, InputWithPopper, type InputWithPopperClassKey, type ThemedComponentBaseProps } from "@dextinity/admin";
 import { InputAdornment } from "@mui/material";
-import { type CSSProperties } from "@mui/material/styles";
+import type { CSSProperties } from "@mui/material/styles";
 import { deepmerge } from "@mui/utils";
 import { Calendar as CalendarBase } from "react-date-range";
 
@@ -15,17 +15,17 @@ export type SlotProps = ThemedComponentBaseProps<{
 }>["slotProps"];
 
 export const Root = createComponentSlot(InputWithPopper)<DatePickerClassKey>({
-    componentName: "DatePicker",
+    componentName: "LegacyDatePicker",
     slotName: "root",
 })();
 
 export const StartAdornment = createComponentSlot(InputAdornment)<DatePickerClassKey>({
-    componentName: "DatePicker",
+    componentName: "LegacyDatePicker",
     slotName: "startAdornment",
 })();
 
 export const Calendar = createComponentSlot(CalendarBase)<DatePickerClassKey>({
-    componentName: "DatePicker",
+    componentName: "LegacyDatePicker",
     slotName: "calendar",
 })(({ theme }) =>
     deepmerge<CSSProperties>(getReactDateRangeStyles(theme), {

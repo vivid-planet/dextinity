@@ -5,6 +5,9 @@ import {
     Button,
     CheckboxField,
     CheckboxListField,
+    DatePickerField,
+    DateRangePickerField,
+    DateTimePickerField,
     Field,
     FieldSet,
     FinalFormRangeInput,
@@ -16,15 +19,16 @@ import {
     SwitchField,
     TextAreaField,
     TextField,
-} from "@comet/admin";
-import { ColorField } from "@comet/admin-color-picker";
-import { DateField, DateRangeField, DateTimeField, TimeField, TimeRangeField } from "@comet/admin-date-time";
+    TimePickerField,
+    TimeRangePickerField,
+} from "@dextinity/admin";
+import { ColorField } from "@dextinity/admin-color-picker";
 import { Box, Link, MenuItem } from "@mui/material";
 import { useMemo } from "react";
 import { Form } from "react-final-form";
 
 export default {
-    title: "@comet/admin/form",
+    title: "@dextinity/admin/form",
     args: {
         fieldVariant: "horizontal",
     },
@@ -127,7 +131,7 @@ export const AllFieldComponents = {
                                         label={
                                             <>
                                                 This label has a{" "}
-                                                <Link href="https://www.comet-dxp.com" target="_blank">
+                                                <Link href="https://www.dextinity.com" target="_blank">
                                                     link
                                                 </Link>{" "}
                                                 inside of it.
@@ -309,14 +313,14 @@ export const AllFieldComponents = {
                                     fullWidth
                                 />
                             </FieldSet>
-                            <FieldSet title="Date and Time" supportText="@comet/admin-date-time">
-                                <DateField name="date" label="Date" variant={fieldVariant} fullWidth />
-                                <DateRangeField name="dateRange" label="Date Range" variant={fieldVariant} fullWidth />
-                                <TimeField name="time" label="Time" variant={fieldVariant} fullWidth />
-                                <TimeRangeField name="timeRange" label="Time Range" variant={fieldVariant} fullWidth />
-                                <DateTimeField name="dateTime" label="Date Time" variant={fieldVariant} fullWidth />
+                            <FieldSet title="Date and Time" supportText="@dextinity/admin">
+                                <DatePickerField name="date" label="Date" variant={fieldVariant} fullWidth />
+                                <DateRangePickerField name="dateRange" label="Date Range" variant={fieldVariant} fullWidth />
+                                <TimePickerField name="time" label="Time" variant={fieldVariant} fullWidth />
+                                <TimeRangePickerField name="timeRange" label="Time Range" variant={fieldVariant} fullWidth />
+                                <DateTimePickerField name="dateTime" label="Date Time" variant={fieldVariant} fullWidth />
                             </FieldSet>
-                            <FieldSet title="Color" supportText="@comet/admin-color-picker">
+                            <FieldSet title="Color" supportText="@dextinity/admin-color-picker">
                                 <ColorField name="hexColor" label="Color (hex)" variant={fieldVariant} fullWidth />
                                 <ColorField name="rgbaColor" label="Color (rgba)" colorFormat="rgba" variant={fieldVariant} fullWidth />
                             </FieldSet>

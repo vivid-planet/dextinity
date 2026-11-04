@@ -33,7 +33,7 @@ const getSharedStyles = (theme: Theme, headerHeight: number) => css`
     height: calc(100% - ${headerHeight}px);
     top: ${headerHeight}px;
 
-    .CometAdminMainNavigationItemGroup-root + .CometAdminMainNavigationItem-root {
+    .DextinityAdminMainNavigationItemGroup-root + .DextinityAdminMainNavigationItem-root {
         margin-top: ${theme.spacing(8)};
     }
 `;
@@ -55,9 +55,11 @@ export const TemporaryDrawer = createComponentSlot(MuiDrawer)<MainNavigationClas
 
         .${drawerClasses.paper} {
             ${getSharedStyles(theme, ownerState.headerHeight)}
-            ${ownerState.open
-                ? getOpenedAnimation(theme, "temporary", ownerState.drawerWidth)
-                : getClosedAnimation(theme, "temporary", ownerState.drawerWidth)}
+            ${
+                ownerState.open
+                    ? getOpenedAnimation(theme, "temporary", ownerState.drawerWidth)
+                    : getClosedAnimation(theme, "temporary", ownerState.drawerWidth)
+            }
         }
 
         .${drawerClasses.paperAnchorLeft} {
@@ -78,16 +80,20 @@ export const PermanentDrawer = createComponentSlot(MuiDrawer)<MainNavigationClas
         flex-shrink: 0;
         white-space: nowrap;
         box-sizing: border-box;
-        ${ownerState.open
-            ? getOpenedAnimation(theme, "permanent", ownerState.drawerWidth)
-            : getClosedAnimation(theme, "permanent", ownerState.drawerWidthCollapsed)}
+        ${
+            ownerState.open
+                ? getOpenedAnimation(theme, "permanent", ownerState.drawerWidth)
+                : getClosedAnimation(theme, "permanent", ownerState.drawerWidthCollapsed)
+        }
 
         .${drawerClasses.paper} {
             ${getSharedStyles(theme, ownerState.headerHeight)}
             height: calc(100% - ${ownerState.headerHeight}px);
-            ${ownerState.open
-                ? getOpenedAnimation(theme, "permanent", ownerState.drawerWidth)
-                : getClosedAnimation(theme, "permanent", ownerState.drawerWidthCollapsed)}
+            ${
+                ownerState.open
+                    ? getOpenedAnimation(theme, "permanent", ownerState.drawerWidth)
+                    : getClosedAnimation(theme, "permanent", ownerState.drawerWidthCollapsed)
+            }
         }
 
         .${drawerClasses.paperAnchorLeft} {

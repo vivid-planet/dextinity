@@ -1,10 +1,10 @@
-import { FormSection } from "@comet/admin";
-import { type IRteRef } from "@comet/admin-rte";
+import { FormSection } from "@dextinity/admin";
+import type { IRteRef } from "@dextinity/admin-rte";
 import { Card, CardContent } from "@mui/material";
 import { convertToRaw, type EditorState, type RawDraftContentState } from "draft-js";
-import { type MutableRefObject, useEffect } from "react";
+import { type RefObject, useEffect } from "react";
 
-export function useAutoFocus(editorRef: MutableRefObject<IRteRef | undefined>) {
+export function useAutoFocus(editorRef: RefObject<IRteRef | undefined>) {
     useEffect(() => {
         if (editorRef && editorRef.current) {
             editorRef.current.focus();

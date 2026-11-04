@@ -1,6 +1,6 @@
-import { AnchorBlock, ExtractBlockInputFactoryProps } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { AnchorBlock, ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
+import { faker } from "@src/db/fixtures/faker";
 
 @Injectable()
 export class AnchorBlockFixtureService {

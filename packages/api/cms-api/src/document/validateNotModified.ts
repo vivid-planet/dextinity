@@ -1,6 +1,6 @@
 import { isEqual, isValid } from "date-fns";
 
-import { type DocumentInterface } from "./dto/document-interface";
+import type { DocumentInterface } from "./dto/document-interface";
 
 export function validateNotModified(document: DocumentInterface, lastUpdatedAt: Date): void {
     if (!isValid(lastUpdatedAt)) {

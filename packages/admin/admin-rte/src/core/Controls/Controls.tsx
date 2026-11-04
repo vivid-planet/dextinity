@@ -1,4 +1,4 @@
-import { type IControlProps } from "../types";
+import type { IControlProps } from "../types";
 import BlockTypesControls from "./BlockTypesControls";
 import CustomControls from "./CustomControls";
 import HistoryControls from "./HistoryContols";

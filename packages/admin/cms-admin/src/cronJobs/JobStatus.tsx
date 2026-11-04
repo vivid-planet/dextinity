@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 
-import { type GQLKubernetesJobStatus } from "../graphql.generated";
+import type { GQLKubernetesJobStatus } from "../graphql.generated";
 
 export const JobStatus = styled("div")<{ status: GQLKubernetesJobStatus }>`
     color: ${({ theme, status }) => {

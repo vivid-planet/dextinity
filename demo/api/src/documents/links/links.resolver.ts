@@ -5,7 +5,7 @@ import {
     PageTreeService,
     RequiredPermission,
     validateNotModified,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { UnauthorizedException } from "@nestjs/common";
 import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";

@@ -34,7 +34,9 @@ export function generateGqlQueryTreeFromFields(fields: string[]) {
         } else {
             // e.g. foo.bar.baz
             const path = field.split(".").filter(Boolean);
-            if (path.length === 0) continue;
+            if (path.length === 0) {
+                continue;
+            }
             // Mark the leaf node (no need to store field names, just ensure the path exists)
             getOrCreateNode(root, path);
         }

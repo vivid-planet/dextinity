@@ -3,7 +3,7 @@ import { cleanup, render, waitFor, within } from "test-utils";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import { FinalForm } from "../../FinalForm";
-import { Future_TimePickerField } from "./TimePickerField";
+import { TimePickerField } from "./TimePickerField";
 
 describe("TimePickerField", () => {
     describe("validation", () => {
@@ -29,7 +29,9 @@ describe("TimePickerField", () => {
             const user = userEvent.setup();
 
             const validateIsBusinessHours = vi.fn(async (value: string | undefined) => {
-                if (!value) return undefined;
+                if (!value) {
+                    return undefined;
+                }
                 const [hours] = value.split(":").map(Number);
                 return hours >= 9 ? undefined : "Please select a time during business hours";
             });
@@ -45,7 +47,7 @@ describe("TimePickerField", () => {
                         subscription={{ values: true }}
                     >
                         {() => (
-                            <Future_TimePickerField
+                            <TimePickerField
                                 name="value"
                                 label="Time Picker"
                                 helperText="Only business hours are valid"
@@ -60,7 +62,7 @@ describe("TimePickerField", () => {
 
             const rendered = render(<Story />);
 
-            user.click(rendered.getByRole("button", { name: "Open time picker" }));
+            await user.click(rendered.getByRole("button", { name: "Open time picker" }));
 
             await waitFor(() => expect(rendered.getByRole("dialog")).toBeInTheDocument());
 
@@ -70,6 +72,6 @@ describe("TimePickerField", () => {
 
             await waitFor(() => expect(rendered.getByText("Please select a time during business hours")).toBeInTheDocument());
             await waitFor(() => expect(validateIsBusinessHours).toHaveBeenCalled());
-        });
+        }, 15000);
     });
 });

@@ -1,9 +1,9 @@
 "use client";
 
-import { createFetchInMemoryCache, useIFrameBridge } from "@comet/site-nextjs";
-import { type FooterContentBlockData } from "@src/blocks.generated";
+import { createFetchInMemoryCache, useIFrameBridge } from "@dextinity/site-nextjs";
+import type { FooterContentBlockData } from "@src/blocks.generated";
 import { FooterContentBlock } from "@src/layout/footer/blocks/FooterContentBlock";
-import { type ContentScope } from "@src/site-configs";
+import type { ContentScope } from "@src/site-configs";
 import { withBlockPreview } from "@src/util/blockPreview";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";

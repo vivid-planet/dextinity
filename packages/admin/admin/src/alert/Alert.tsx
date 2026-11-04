@@ -1,20 +1,19 @@
-import { Close } from "@comet/admin-icons";
+import { Close } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import { Alert as MuiAlert, alertClasses, AlertTitle, IconButton, Typography } from "@mui/material";
 import { css, useThemeProps } from "@mui/material/styles";
 import { forwardRef, type ReactNode } from "react";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
-export interface AlertProps
-    extends ThemedComponentBaseProps<{
-        root: typeof MuiAlert;
-        title: typeof AlertTitle;
-        text: typeof Typography;
-        action: "div";
-        closeIcon: typeof IconButton;
-    }> {
+export interface AlertProps extends ThemedComponentBaseProps<{
+    root: typeof MuiAlert;
+    title: typeof AlertTitle;
+    text: typeof Typography;
+    action: "div";
+    closeIcon: typeof IconButton;
+}> {
     /**
      * The severity level of the alert
      * - 'info' (default): For general information or neutral messages
@@ -55,7 +54,7 @@ type OwnerState = {
  * and custom content, actions and close functionality to communicate various types of information.
  * Use for feedback messages, notifications, or status updates.
  *
- * - [Storybook](https://storybook.comet-dxp.com/?path=/docs/@comet/admin_components-alert-alert--docs)
+ * - [Storybook](https://cms-storybook.dextinity.com/?path=/docs/@dextinity/admin_components-alert-alert--docs)
  * - [MUI Documentation](https://mui.com/material-ui/react-alert/)
  */
 export const Alert = forwardRef<HTMLDivElement, AlertProps>((inProps, ref) => {
@@ -67,7 +66,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>((inProps, ref) => {
         action,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminAlert" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminAlert" });
     const singleRow = !title && (action || onClose);
 
     const ownerState: OwnerState = {
@@ -111,24 +110,28 @@ const Root = createComponentSlot(MuiAlert)<AlertClassKey, OwnerState>({
             flex-grow: 1;
         }
 
-        ${ownerState.hasTitle &&
-        css`
-            position: relative;
-            align-items: flex-start;
-            padding: ${theme.spacing(4, 6, 4, 4)};
-
-            & .${alertClasses.message} {
-                flex-direction: column;
+        ${
+            ownerState.hasTitle &&
+            css`
+                position: relative;
                 align-items: flex-start;
-            }
-        `}
+                padding: ${theme.spacing(4, 6, 4, 4)};
 
-        ${ownerState.renderAsSingleRow &&
-        css`
-            display: flex;
-            align-items: center;
-            padding: ${theme.spacing(2, 4, 2, 4)};
-        `}
+                & .${alertClasses.message} {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+            `
+        }
+
+        ${
+            ownerState.renderAsSingleRow &&
+            css`
+                display: flex;
+                align-items: center;
+                padding: ${theme.spacing(2, 4, 2, 4)};
+            `
+        }
     `,
 );
 
@@ -151,10 +154,12 @@ const Action = createComponentSlot("div")<AlertClassKey, OwnerState>({
     slotName: "action",
 })(
     ({ theme, ownerState }) => css`
-        ${ownerState.hasTitle &&
-        css`
-            margin-top: ${theme.spacing(2)};
-        `}
+        ${
+            ownerState.hasTitle &&
+            css`
+                margin-top: ${theme.spacing(2)};
+            `
+        }
     `,
 );
 
@@ -163,33 +168,37 @@ const CloseIcon = createComponentSlot(IconButton)<AlertClassKey, OwnerState>({
     slotName: "closeIcon",
 })(
     ({ ownerState }) => css`
-        ${ownerState.hasTitle &&
-        css`
-            position: absolute;
-            right: 2px;
-            top: 2px;
-        `}
+        ${
+            ownerState.hasTitle &&
+            css`
+                position: absolute;
+                right: 2px;
+                top: 2px;
+            `
+        }
 
-        ${ownerState.renderAsSingleRow &&
-        css`
-            padding: 10px;
-        `}
+        ${
+            ownerState.renderAsSingleRow &&
+            css`
+                padding: 10px;
+            `
+        }
     `,
 );
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminAlert: AlertProps;
+        DextinityAdminAlert: AlertProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminAlert: AlertClassKey;
+        DextinityAdminAlert: AlertClassKey;
     }
 
     interface Components {
-        CometAdminAlert?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminAlert"]>;
-            styleOverrides?: ComponentNameToClassKey["CometAdminAlert"];
+        DextinityAdminAlert?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminAlert"]>;
+            styleOverrides?: ComponentNameToClassKey["DextinityAdminAlert"];
         };
     }
 }

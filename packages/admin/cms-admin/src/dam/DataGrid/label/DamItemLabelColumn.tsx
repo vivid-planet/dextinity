@@ -1,17 +1,17 @@
-import { type IFilterApi, StackLink } from "@comet/admin";
+import { type IFilterApi, StackLink } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { type ReactNode, useEffect, useRef } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
 
-import { type TextMatch } from "../../../common/MarkedMatches";
+import type { TextMatch } from "../../../common/MarkedMatches";
 import { useDamConfig } from "../../config/damConfig";
-import { type DamFilter } from "../../DamTable";
+import type { DamFilter } from "../../DamTable";
 import { isFile } from "../../helpers/isFile";
 import { isFolder } from "../../helpers/isFolder";
-import { type FileUploadApi } from "../fileUpload/useDamFileUpload";
-import { type GQLDamFileTableFragment, type GQLDamFolderTableFragment } from "../FolderDataGrid";
-import { type DamItemMatches } from "../useDamSearchHighlighting";
+import type { FileUploadApi } from "../fileUpload/useDamFileUpload";
+import type { GQLDamFileTableFragment, GQLDamFolderTableFragment } from "../FolderDataGrid";
+import type { DamItemMatches } from "../useDamSearchHighlighting";
 import DamItemLabel from "./DamItemLabel";
 
 interface DamLabelWrapperProps {
@@ -40,6 +40,7 @@ export interface RenderDamLabelOptions {
     matches?: TextMatch[];
     filterApi: IFilterApi<DamFilter>;
     showLicenseWarnings?: boolean;
+    showPath: boolean;
 }
 
 interface DamItemLabelColumnProps {
@@ -73,7 +74,7 @@ export const DamItemLabelColumn = ({
     scrollIntoView = false,
 }: DamItemLabelColumnProps) => {
     const damConfig = useDamConfig();
-    const columnRef = useRef<HTMLDivElement>();
+    const columnRef = useRef<HTMLDivElement>(undefined);
 
     useEffect(() => {
         if (scrollIntoView) {
@@ -109,7 +110,12 @@ export const DamItemLabelColumn = ({
     return (
         <DamItemLabelWrapper ref={columnRef} isHovered={hoverApi.isHovered} {...(isFolder(item) && getFolderRootProps())}>
             {renderDamLabel ? (
-                renderDamLabel(item, { matches: matches.get(item.id), filterApi, showLicenseWarnings: damConfig.enableLicenseFeature })
+                renderDamLabel(item, {
+                    matches: matches.get(item.id),
+                    filterApi,
+                    showLicenseWarnings: damConfig.enableLicenseFeature,
+                    showPath: isSearching,
+                })
             ) : (
                 <StyledStackLink
                     pageName={isFile(item) ? "edit" : "folder"}

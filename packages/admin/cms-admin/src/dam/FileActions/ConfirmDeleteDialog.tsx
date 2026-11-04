@@ -1,4 +1,4 @@
-import { CancelButton, DeleteButton, messages } from "@comet/admin";
+import { CancelButton, DeleteButton, messages } from "@dextinity/admin";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -20,7 +20,7 @@ export const ConfirmDeleteDialog = ({ open, onCloseDialog, name, itemType }: Con
     return (
         <Dialog open={open} onClose={() => onCloseDialog(false)}>
             <DialogTitle>
-                <FormattedMessage id="comet.dam.delete.deleteSelection" defaultMessage="Delete selection?" />
+                <FormattedMessage id="dextinity.dam.delete.deleteSelection" defaultMessage="Delete selection?" />
             </DialogTitle>
             <sc.ConfirmDialogContent>
                 {/* @TODO: Only show warning if there are dependencies */}
@@ -33,21 +33,21 @@ export const ConfirmDeleteDialog = ({ open, onCloseDialog, name, itemType }: Con
                         <sc.WarningText>
                             {itemType === "file" && (
                                 <FormattedMessage
-                                    id="comet.dam.delete.file.mightHaveDependenciesWarning"
+                                    id="dextinity.dam.delete.file.mightHaveDependenciesWarning"
                                     defaultMessage="The file {name} might be used somewhere on the website. If you delete this file, it will disappear from all pages."
                                     values={{ name: name }}
                                 />
                             )}
                             {itemType === "folder" && (
                                 <FormattedMessage
-                                    id="comet.dam.delete.folder.mightHaveDependenciesWarning"
+                                    id="dextinity.dam.delete.folder.mightHaveDependenciesWarning"
                                     defaultMessage="All files inside the folder {name} will also be removed. These files might be used somewhere on the website. If you delete them, they will disappear from all pages."
                                     values={{ name: name }}
                                 />
                             )}
                             {itemType === "selected_items" && (
                                 <FormattedMessage
-                                    id="comet.dam.delete.selectedItems.mightHaveDependenciesWarning"
+                                    id="dextinity.dam.delete.selectedItems.mightHaveDependenciesWarning"
                                     defaultMessage="All selected files and folders (including their content) will be removed. Some of the files might be used on the website. If you delete them, they will disappear from all pages."
                                 />
                             )}
@@ -56,14 +56,14 @@ export const ConfirmDeleteDialog = ({ open, onCloseDialog, name, itemType }: Con
                 </sc.WarningWrapper>
                 <strong>
                     {itemType === "file" && (
-                        <FormattedMessage id="comet.dam.delete.file.areYouSure" defaultMessage="Do you still want to delete this file?" />
+                        <FormattedMessage id="dextinity.dam.delete.file.areYouSure" defaultMessage="Do you still want to delete this file?" />
                     )}
                     {itemType === "folder" && (
-                        <FormattedMessage id="comet.dam.delete.folder.areYouSure" defaultMessage="Do you still want to delete this folder?" />
+                        <FormattedMessage id="dextinity.dam.delete.folder.areYouSure" defaultMessage="Do you still want to delete this folder?" />
                     )}
                     {itemType === "selected_items" && (
                         <FormattedMessage
-                            id="comet.dam.delete.selectedItems.areYouSure"
+                            id="dextinity.dam.delete.selectedItems.areYouSure"
                             defaultMessage="Do you still want to delete all selected items?"
                         />
                     )}
@@ -77,7 +77,7 @@ export const ConfirmDeleteDialog = ({ open, onCloseDialog, name, itemType }: Con
                     }}
                     autoFocus={true}
                 >
-                    <FormattedMessage id="comet.dam.delete.deleteNow" defaultMessage="Delete Now" />
+                    <FormattedMessage id="dextinity.dam.delete.deleteNow" defaultMessage="Delete Now" />
                 </DeleteButton>
             </DialogActions>
         </Dialog>

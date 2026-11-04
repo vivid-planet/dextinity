@@ -1,9 +1,9 @@
 import { gql, useQuery } from "@apollo/client";
-import { LatestContentUpdatesDashboardWidget, useContentScope } from "@comet/cms-admin";
-import { type GQLLatestContentUpdatesQueryVariables } from "@src/dashboard/LatestContentUpdates.generated";
+import { LatestContentUpdatesDashboardWidget, useContentScope } from "@dextinity/cms-admin";
+import type { GQLLatestContentUpdatesQueryVariables } from "@src/dashboard/LatestContentUpdates.generated";
 import { categoryToUrlParam } from "@src/pageTree/pageTreeCategories";
 
-import { type GQLLatestContentUpdatesQuery } from "./LatestContentUpdates.generated";
+import type { GQLLatestContentUpdatesQuery } from "./LatestContentUpdates.generated";
 
 export const LatestContentUpdates = () => {
     const contentScope = useContentScope();

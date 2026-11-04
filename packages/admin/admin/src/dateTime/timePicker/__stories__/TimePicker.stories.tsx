@@ -1,13 +1,13 @@
-import { Edit } from "@comet/admin-icons";
+import { Edit } from "@dextinity/admin-icons";
 import { Box, Typography } from "@mui/material";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 
-import { Future_TimePicker } from "../TimePicker";
+import { TimePicker } from "../TimePicker";
 
-type Story = StoryObj<typeof Future_TimePicker>;
-const config: Meta<typeof Future_TimePicker> = {
-    component: Future_TimePicker,
+type Story = StoryObj<typeof TimePicker>;
+const config: Meta<typeof TimePicker> = {
+    component: TimePicker,
     title: "components/dateTime/TimePicker",
 };
 
@@ -21,14 +21,14 @@ export default config;
 export const Default: Story = {
     render: (args) => {
         const [value, setValue] = useState<string | undefined>("14:30");
-        return <Future_TimePicker {...args} value={value} onChange={setValue} />;
+        return <TimePicker {...args} value={value} onChange={setValue} />;
     },
 };
 
 export const FullWidth: Story = {
     render: (args) => {
         const [value, setValue] = useState<string | undefined>("14:30");
-        return <Future_TimePicker {...args} fullWidth value={value} onChange={setValue} />;
+        return <TimePicker {...args} fullWidth value={value} onChange={setValue} />;
     },
 };
 
@@ -45,7 +45,7 @@ export const FullWidth: Story = {
 export const Required: Story = {
     render: (args) => {
         const [value, setValue] = useState<string | undefined>("14:30");
-        return <Future_TimePicker {...args} required value={value} onChange={setValue} />;
+        return <TimePicker {...args} required value={value} onChange={setValue} />;
     },
 };
 
@@ -60,7 +60,7 @@ export const Required: Story = {
 export const Disabled: Story = {
     render: (args) => {
         const [value, setValue] = useState<string | undefined>("14:30");
-        return <Future_TimePicker {...args} disabled value={value} onChange={setValue} />;
+        return <TimePicker {...args} disabled value={value} onChange={setValue} />;
     },
 };
 
@@ -75,7 +75,7 @@ export const Disabled: Story = {
 export const ReadOnly: Story = {
     render: (args) => {
         const [value, setValue] = useState<string | undefined>("14:30");
-        return <Future_TimePicker {...args} readOnly value={value} onChange={setValue} />;
+        return <TimePicker {...args} readOnly value={value} onChange={setValue} />;
     },
 };
 
@@ -91,7 +91,7 @@ export const WithCustomIcon: Story = {
     render: (args) => {
         const [value, setValue] = useState<string | undefined>("14:30");
         return (
-            <Future_TimePicker
+            <TimePicker
                 {...args}
                 value={value}
                 onChange={setValue}
@@ -122,16 +122,7 @@ export const WithTimeRestrictions: Story = {
     },
     render: (args) => {
         const [value, setValue] = useState<string | undefined>();
-        return (
-            <Future_TimePicker
-                {...args}
-                label="Business Hours Only"
-                minTime={args.minTime}
-                maxTime={args.maxTime}
-                value={value}
-                onChange={setValue}
-            />
-        );
+        return <TimePicker {...args} label="Business Hours Only" minTime={args.minTime} maxTime={args.maxTime} value={value} onChange={setValue} />;
     },
 };
 
@@ -149,8 +140,8 @@ export const MultiplePickers: Story = {
         return (
             <Box display="flex" flexDirection="column" gap={4}>
                 <Typography variant="h5">Work Hours</Typography>
-                <Future_TimePicker {...args} label="Start Time" fullWidth value={startTime} onChange={setStartTime} />
-                <Future_TimePicker {...args} label="End Time" fullWidth value={endTime} onChange={setEndTime} />
+                <TimePicker {...args} label="Start Time" fullWidth value={startTime} onChange={setStartTime} />
+                <TimePicker {...args} label="End Time" fullWidth value={endTime} onChange={setEndTime} />
             </Box>
         );
     },

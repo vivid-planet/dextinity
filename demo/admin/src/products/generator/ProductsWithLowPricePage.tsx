@@ -1,4 +1,4 @@
-import { MainContent } from "@comet/admin";
+import { MainContent } from "@dextinity/admin";
 
 import { ProductsGrid } from "./generated/ProductsGrid";
 

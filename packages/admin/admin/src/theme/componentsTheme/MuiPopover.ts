@@ -1,4 +1,4 @@
-import { type GetMuiComponentTheme } from "./getComponentsTheme";
+import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
 export const getMuiPopover: GetMuiComponentTheme<"MuiPopover"> = (component) => ({
     ...component,

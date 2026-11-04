@@ -1,10 +1,10 @@
 import { type OperationVariables, useApolloClient } from "@apollo/client";
 import { useState } from "react";
 
-import { type Table } from "../Table";
-import { type ITableQueryApi } from "../TableQueryContext";
+import type { Table } from "../Table";
+import type { ITableQueryApi } from "../TableQueryContext";
 import { createExcelExportDownload, type IExcelExportOptions } from "./createExcelExportDownload";
-import { type IExportApi } from "./IExportApi";
+import type { IExportApi } from "./IExportApi";
 
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
@@ -38,7 +38,7 @@ export function useExportTableQuery<IVariables extends OperationVariables>(
                 const data = api.resolveTableData(response.data);
 
                 if (data && data.data) {
-                    createExcelExportDownload<any>(tableRef.props.columns, data.data, options);
+                    await createExcelExportDownload<any>(tableRef.props.columns, data.data, options);
                 }
             } catch {
                 throw new Error("Error happend while exporting data");

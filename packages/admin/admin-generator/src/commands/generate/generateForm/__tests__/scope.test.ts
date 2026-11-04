@@ -1,7 +1,7 @@
 import { buildSchema, introspectionFromSchema } from "graphql";
 import { describe, expect, it } from "vitest";
 
-import { type FormConfig } from "../../generate-command";
+import type { FormConfig } from "../../generate-command";
 import { generateForm } from "../generateForm";
 
 describe("Form Scope", () => {

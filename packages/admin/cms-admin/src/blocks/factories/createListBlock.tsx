@@ -1,8 +1,8 @@
-import { StackPage, StackSwitch, StackSwitchApiContext, Tooltip } from "@comet/admin";
-import { Add, Copy, Delete, Invisible, Paste, Visible } from "@comet/admin-icons";
+import { StackPage, StackSwitch, StackSwitchApiContext, Tooltip } from "@dextinity/admin";
+import { Add, Copy, Delete, Invisible, Paste, Visible } from "@dextinity/admin-icons";
 import { Box, Checkbox, FormControlLabel, IconButton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { type FunctionComponent, type ReactNode } from "react";
+import { Fragment, type FunctionComponent, type ReactNode } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 import { v4 as uuid } from "uuid";
 
@@ -16,7 +16,7 @@ import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { deduplicateBlockDependencies } from "../helpers/deduplicateBlockDependencies";
 import { HoverPreviewComponent } from "../iframebridge/HoverPreviewComponent";
 import { SelectPreviewComponent } from "../iframebridge/SelectPreviewComponent";
-import { type BlockDependency, type BlockInterface, type BlockState, type PreviewContent } from "../types";
+import type { BlockDependency, BlockInterface, BlockState, PreviewContent } from "../types";
 import { parallelAsyncEvery } from "../utils/parallelAsyncEvery";
 import { createUseAdminComponent } from "./listBlock/createUseAdminComponent";
 
@@ -90,9 +90,9 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
     {
         name,
         block,
-        displayName = <FormattedMessage id="comet.blocks.listBlock.name" defaultMessage="List" />,
-        itemName = <FormattedMessage id="comet.blocks.listBlock.itemName" defaultMessage="block" />,
-        itemsName = <FormattedMessage id="comet.blocks.listBlock.itemsName" defaultMessage="blocks" />,
+        displayName = <FormattedMessage id="dextinity.blocks.listBlock.name" defaultMessage="List" />,
+        itemName = <FormattedMessage id="dextinity.blocks.listBlock.itemName" defaultMessage="block" />,
+        itemsName = <FormattedMessage id="dextinity.blocks.listBlock.itemsName" defaultMessage="blocks" />,
         minVisibleBlocks,
         maxVisibleBlocks,
         createDefaultListEntry,
@@ -110,10 +110,11 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
     ) => BlockInterface<ListBlockFragment<AdditionalItemFields>, ListBlockState<T, AdditionalItemFields>, ListBlockOutput<AdditionalItemFields>>,
 ): BlockInterface<ListBlockFragment<AdditionalItemFields>, ListBlockState<T, AdditionalItemFields>, ListBlockOutput<AdditionalItemFields>> {
     const useAdminComponent = createUseAdminComponent({ block, maxVisibleBlocks, additionalItemFields });
-    if (minVisibleBlocks && maxVisibleBlocks && minVisibleBlocks > maxVisibleBlocks)
+    if (minVisibleBlocks && maxVisibleBlocks && minVisibleBlocks > maxVisibleBlocks) {
         throw new Error(
             `${name}: The property 'minVisibleBlocks' (value: ${minVisibleBlocks}) must be equal to or smaller than 'maxVisibleBlocks' (value: ${maxVisibleBlocks})`,
         );
+    }
 
     const getDefaultListEntry = () => ({
         key: uuid(),
@@ -270,6 +271,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
         AdminComponent: ({ state, updateState }) => {
             const {
                 cannotPasteBlockErrorDialog,
+                clipboardProgressDialog,
                 createUpdateSubBlocksFn,
                 totalVisibleBlocks,
                 updateClipboardContent,
@@ -306,7 +308,10 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                                                     />
                                                                 }
                                                                 label={
-                                                                    <FormattedMessage id="comet.blocks.list.selectAll" defaultMessage="Select all" />
+                                                                    <FormattedMessage
+                                                                        id="dextinity.blocks.list.selectAll"
+                                                                        defaultMessage="Select all"
+                                                                    />
                                                                 }
                                                             />
                                                         ) : (
@@ -369,13 +374,13 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                                                             title={
                                                                                 showMaxBlocksAllowedMessage ? (
                                                                                     <FormattedMessage
-                                                                                        id="comet.blocks.list.maxVisibleBlocks"
+                                                                                        id="dextinity.blocks.list.maxVisibleBlocks"
                                                                                         defaultMessage="Max. visible blocks allowed: {maxVisibleBlocks}"
                                                                                         values={{ maxVisibleBlocks }}
                                                                                     />
                                                                                 ) : showMinBlocksRequiredMessage ? (
                                                                                     <FormattedMessage
-                                                                                        id="comet.blocks.list.minVisibleBlocks"
+                                                                                        id="dextinity.blocks.list.minVisibleBlocks"
                                                                                         defaultMessage="Min. visible blocks required: {minVisibleBlocks}"
                                                                                         values={{ minVisibleBlocks }}
                                                                                     />
@@ -460,9 +465,9 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                                             <LargeAddButtonIcon />
                                                             <Typography>
                                                                 <FormattedMessage
-                                                                    id="comet.blocks.list.add"
+                                                                    id="dextinity.blocks.list.add"
                                                                     defaultMessage="Add {itemName}"
-                                                                    values={{ itemName }}
+                                                                    values={{ itemName: <Fragment key="itemName">{itemName}</Fragment> }}
                                                                 />
                                                             </Typography>
                                                         </LargeAddButtonContent>
@@ -479,9 +484,9 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                                             startIcon={<Add />}
                                                         >
                                                             <FormattedMessage
-                                                                id="comet.blocks.list.add"
+                                                                id="dextinity.blocks.list.add"
                                                                 defaultMessage="Add {itemName}"
-                                                                values={{ itemName }}
+                                                                values={{ itemName: <Fragment key="itemName">{itemName}</Fragment> }}
                                                             />
                                                         </BlockAdminComponentButton>
                                                     </AdminComponentStickyFooter>
@@ -502,13 +507,16 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                             return;
                                         }
 
-                                        return <block.AdminComponent state={match.props} updateState={createUpdateSubBlocksFn(itemId)} />;
+                                        return (
+                                            <block.AdminComponent key={itemId} state={match.props} updateState={createUpdateSubBlocksFn(itemId)} />
+                                        );
                                     }}
                                 </StackSwitchApiContext.Consumer>
                             )}
                         </StackPage>
                     </StackSwitch>
                     {cannotPasteBlockErrorDialog}
+                    {clipboardProgressDialog}
                 </SelectPreviewComponent>
             );
         },
@@ -517,7 +525,13 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                 return [
                     {
                         type: "text",
-                        content: <FormattedMessage id="comet.blocks.list.noBlocks" defaultMessage="No {itemsName}" values={{ itemsName }} />,
+                        content: (
+                            <FormattedMessage
+                                id="dextinity.blocks.list.noBlocks"
+                                defaultMessage="No {itemsName}"
+                                values={{ itemsName: <Fragment key="itemsName">{itemsName}</Fragment> }}
+                            />
+                        ),
                     },
                 ];
             }
@@ -550,6 +564,15 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                 return [...content, ...(block.extractTextContents?.(child.props, options) ?? [])];
             }, []);
             return content;
+        },
+        translateContent: async (state, translate) => {
+            const translatedBlocks = await Promise.all(
+                state.blocks.map(async (child) => {
+                    const translatedProps = block.translateContent ? await block.translateContent(child.props, translate) : child.props;
+                    return { ...child, props: translatedProps };
+                }),
+            );
+            return { ...state, blocks: translatedBlocks };
         },
     };
     if (override) {

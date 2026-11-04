@@ -1,6 +1,6 @@
-import { Field, FinalFormInput } from "@comet/admin";
-import { type BlockInterface, BlocksFinalForm, createBlockSkeleton } from "@comet/cms-admin";
-import { type NewsDetailBlockData, type NewsDetailBlockInput } from "@src/blocks.generated";
+import { Field, FinalFormInput } from "@dextinity/admin";
+import { type BlockInterface, BlocksFinalForm, createBlockSkeleton } from "@dextinity/cms-admin";
+import type { NewsDetailBlockData, NewsDetailBlockInput } from "@src/blocks.generated";
 import { FormattedMessage } from "react-intl";
 
 type State = NewsDetailBlockData;

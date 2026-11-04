@@ -1,11 +1,11 @@
-import { type ModuleMetadata, type Type } from "@nestjs/common";
+import type { ModuleMetadata, Type } from "@nestjs/common";
 
 import { CorePermission } from "../common/enum/core-permission.enum";
-import { type CurrentUser } from "./dto/current-user";
-import { type FindUsersArgs } from "./dto/paginated-user-list";
-import { type UserPermission } from "./entities/user-permission.entity";
-import { type ContentScope } from "./interfaces/content-scope.interface";
-import { type User } from "./interfaces/user";
+import type { CurrentUser } from "./dto/current-user";
+import type { FindUsersArgs } from "./dto/paginated-user-list";
+import type { UserPermission } from "./entities/user-permission.entity";
+import type { ContentScope } from "./interfaces/content-scope.interface";
+import type { User } from "./interfaces/user";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface PermissionOverrides {} // This interface can be overwritten to add custom permissions
@@ -34,12 +34,25 @@ export interface AccessControlServiceInterface {
 }
 
 export interface UserPermissionsUserServiceInterface {
+    findUser?: (id: string) => Promise<User | null> | User | null;
     /**
-     * Optional method to get the user for login if a different code path from the default `getUser` is required
+     * Optional method to look up the user for login if a different code path from the default `findUser` is required.
+     */
+    findUserForLogin?: (id: string) => Promise<User | null> | User | null;
+    /**
+     * Optional method to look up the user for login if a different code path from the default `findUserOrThrow` is required.
+     */
+    findUserForLoginOrThrow?: (id: string) => Promise<User> | User;
+    findUserOrThrow?: (id: string) => Promise<User> | User;
+    findUsers: (args: FindUsersArgs) => Promise<Users> | Users;
+    /**
+     * @deprecated Implement `findUser` and `findUserOrThrow` instead.
+     */
+    getUser?: (id: string) => Promise<User> | User;
+    /**
+     * @deprecated Implement `findUserForLogin` and `findUserForLoginOrThrow` instead.
      */
     getUserForLogin?: (id: string) => Promise<User> | User;
-    getUser: (id: string) => Promise<User> | User;
-    findUsers: (args: FindUsersArgs) => Promise<Users> | Users;
     getAccountUrl?: (user: User) => Promise<string> | string;
 }
 
@@ -49,8 +62,20 @@ export type ContentScopeWithLabel = {
 };
 export type AvailableContentScope = ContentScope | ContentScopeWithLabel;
 
+export type ContentScopeDimension = {
+    name: string;
+    label?: string;
+};
+
 export interface UserPermissionsOptions {
     availableContentScopes?: AvailableContentScope[] | (() => Promise<AvailableContentScope[]> | AvailableContentScope[]);
+    /**
+     * Declares the content scope dimensions (e.g. `domain`, `language`) available in the system. Use this to make dimensions
+     * that are not part of `availableContentScopes` (e.g. an optional dimension with too many values to enumerate) known at
+     * runtime, so they are shown in the user permissions admin panel. When omitted, the dimensions are derived from the keys
+     * of `availableContentScopes`.
+     */
+    availableContentScopeDimensions?: ContentScopeDimension[] | (() => Promise<ContentScopeDimension[]> | ContentScopeDimension[]);
     systemUsers?: string[];
 }
 export interface UserPermissionsModuleSyncOptions extends UserPermissionsOptions {

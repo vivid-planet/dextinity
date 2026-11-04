@@ -1,4 +1,4 @@
-import { type Worksheet } from "exceljs";
+import type { Worksheet } from "exceljs";
 
 export function applyDefaultStyling(worksheet: Worksheet) {
     worksheet.eachRow((row, rowNumber) => {

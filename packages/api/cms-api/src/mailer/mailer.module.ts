@@ -10,7 +10,15 @@ import { SendTestMailCommand } from "./send-test-mail.command";
 
 export type MailerModuleConfig = {
     defaultFrom: string;
+    /**
+     * Send every mail to these addresses instead of the original `to`; the original `cc` and `bcc` are dropped.
+     * Intended for non-prod environments to prevent mails from reaching real users.
+     */
     sendAllMailsTo?: string[];
+    /**
+     * Add these addresses as additional BCC to every mail.
+     * Intended as a production backup recipient; not applied when `sendAllMailsTo` is set.
+     */
     sendAllMailsBcc?: string[];
     disableMailLog?: boolean;
     /** @default 90 */

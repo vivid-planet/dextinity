@@ -1,12 +1,17 @@
 import { Controls, Description, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
-import { type Preview } from "@storybook/react-vite";
+import { type Decorator, type Preview } from "@storybook/react-vite";
 import React from "react";
+import { IntlProvider } from "react-intl";
 
-import { MailRendererDecorator } from "./decorators/MailRenderer.decorator";
+const IntlDecorator: Decorator = (Story) => (
+    <IntlProvider locale="en" defaultLocale="en" messages={{}}>
+        <Story />
+    </IntlProvider>
+);
 
 const preview: Preview = {
     tags: ["autodocs"],
-    decorators: [MailRendererDecorator],
+    decorators: [IntlDecorator],
     parameters: {
         layout: "fullscreen",
         docs: {

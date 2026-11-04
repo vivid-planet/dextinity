@@ -1,5 +1,5 @@
 import { BlockMigration } from "../../migrations/BlockMigration";
-import { type BlockMigrationInterface } from "../../migrations/types";
+import type { BlockMigrationInterface } from "../../migrations/types";
 
 interface From {
     youtubeIdentifier?: string;

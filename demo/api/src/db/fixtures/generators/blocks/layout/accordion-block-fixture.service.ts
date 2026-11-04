@@ -1,8 +1,8 @@
-import { ExtractBlockInputFactoryProps } from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import { AccordionBlock } from "@src/common/blocks/accordion.block";
 import { AccordionContentBlock, AccordionItemBlock, AccordionItemTitleHtmlTag } from "@src/common/blocks/accordion-item.block";
+import { faker } from "@src/db/fixtures/faker";
 
 import { BlockFixture } from "../block-fixture";
 import { StandaloneCallToActionListBlockFixtureService } from "../navigation/standalone-call-to-action-list-block-fixture.service";

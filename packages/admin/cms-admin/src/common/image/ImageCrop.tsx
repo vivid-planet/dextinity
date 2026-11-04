@@ -2,8 +2,8 @@ import isEqual from "lodash.isequal";
 import { Field, useForm, useFormState } from "react-final-form";
 import ReactCrop, { type ReactCropProps } from "react-image-crop";
 
-import { type EditImageFormValues } from "../../dam/FileForm/EditFile";
-import { type GQLFocalPoint } from "../../graphql.generated";
+import type { EditImageFormValues } from "../../dam/FileForm/EditFile";
+import type { GQLFocalPoint } from "../../graphql.generated";
 import * as sc from "./ImageCrop.sc";
 
 const focalPoints: GQLFocalPoint[] = ["CENTER", "NORTHEAST", "NORTHWEST", "SOUTHEAST", "SOUTHWEST"];

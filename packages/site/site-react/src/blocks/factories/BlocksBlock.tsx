@@ -2,7 +2,7 @@ import { Fragment } from "react";
 
 import { ErrorHandlerBoundary } from "../../errorHandler/ErrorHandlerBoundary";
 import { PreviewSkeleton } from "../../previewskeleton/PreviewSkeleton";
-import { type SupportedBlocks } from "./types";
+import type { SupportedBlocks } from "./types";
 
 interface Props {
     supportedBlocks: SupportedBlocks;

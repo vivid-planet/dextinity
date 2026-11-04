@@ -10,9 +10,8 @@ import {
     DamImageBlock,
     ExtractBlockData,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
-import { ValidateNested } from "class-validator";
 
 const FullWidthImageContentBlock = createOptionalBlock(RichTextBlock);
 
@@ -26,11 +25,9 @@ class FullWidthImageBlockData extends BlockData {
 
 class FullWidthImageBlockInput extends BlockInput {
     @ChildBlockInput(DamImageBlock)
-    @ValidateNested()
     image: ExtractBlockInput<typeof DamImageBlock>;
 
     @ChildBlockInput(FullWidthImageContentBlock)
-    @ValidateNested()
     content: ExtractBlockInput<typeof FullWidthImageContentBlock>;
 
     transformToBlockData(): BlockDataInterface {

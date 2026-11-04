@@ -77,6 +77,11 @@ type AutoBuildStatus {
   nextCheck: DateTime!
 }
 
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
+
 input BooleanFilter {
   equal: Boolean
 }
@@ -289,7 +294,7 @@ type Build {
   id: ID!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   name: String
@@ -302,9 +307,14 @@ type BuildTemplate {
   id: ID!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
+  name: String!
+}
+
+type ContentScopeDimension {
+  label: String!
   name: String!
 }
 
@@ -375,13 +385,14 @@ type CurrentUserPermission {
 }
 
 type DamFile {
+  aiContentType: DamFileAiContentType
   altText: String
   alternativesForThisFile: [DamMediaAlternative!]!
   archived: Boolean!
   contentHash: String!
   createdAt: DateTime!
   damPath: String!
-  dependents(filter: DependentFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0): PaginatedDependencies!
+  dependents(filter: DependentFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
   duplicates: [DamFile!]!
   fileUrl: String!
   folder: DamFolder
@@ -393,10 +404,15 @@ type DamFile {
   mimetype: String!
   name: String!
   scope: DamScope!
-  size: Int!
+  size: BigInt!
   thisFileIsAlternativeFor: [DamMediaAlternative!]!
   title: String
   updatedAt: DateTime!
+}
+
+enum DamFileAiContentType {
+  Generated
+  Modified
 }
 
 type DamFileImage {
@@ -406,6 +422,7 @@ type DamFileImage {
   height: Int!
   id: ID!
   url(height: Int!, width: Int!): String
+  urlTemplate: String
   width: Int!
 }
 
@@ -502,6 +519,15 @@ input DamScopeInput {
   domain: String!
 }
 
+type DamSettings {
+  id: ID!
+  invalidLicenseFallbackImage: DamFile
+}
+
+input DamSettingsInput {
+  invalidLicenseFallbackImageId: ID
+}
+
 input DateFilter {
   equal: LocalDate
   greaterThan: LocalDate
@@ -535,6 +561,11 @@ type Dependency {
   rootColumnName: String!
   rootGraphqlObjectType: String!
   rootId: String!
+
+  """
+  Scope of the root entity for dependents, of the target entity for dependencies. Entities with multiple scopes return their first.
+  """
+  scope: JSONObject
   secondaryInformation: String
   targetGraphqlObjectType: String!
   targetId: String!
@@ -542,15 +573,37 @@ type Dependency {
 }
 
 input DependencyFilter {
+  and: [DependencyFilter!]
+  name: StringFilter
+  or: [DependencyFilter!]
   rootColumnName: String
-  targetGraphqlObjectType: String
+  secondaryInformation: StringFilter
+  targetGraphqlObjectType: StringFilter
   targetId: String
+  visible: BooleanFilter
+}
+
+input DependencySort {
+  direction: SortDirection! = ASC
+  field: DependencySortField!
+}
+
+enum DependencySortField {
+  graphqlObjectType
+  name
+  secondaryInformation
+  visible
 }
 
 input DependentFilter {
+  and: [DependentFilter!]
+  name: StringFilter
+  or: [DependentFilter!]
   rootColumnName: String
-  rootGraphqlObjectType: String
+  rootGraphqlObjectType: StringFilter
   rootId: String
+  secondaryInformation: StringFilter
+  visible: BooleanFilter
 }
 
 interface DocumentInterface {
@@ -615,12 +668,23 @@ input EmailCampaignUpdateInput {
 }
 
 type EntityInfo {
+  entityName: String!
+  id: String!
   name: String!
   secondaryInformation: String
+  visible: Boolean!
 }
 
 input FileFilterInput {
+  """
+  Restrict the result to files with these IDs. When a non-empty list is provided, the folder constraint is bypassed and matches are returned regardless of which folder they live in.
+  """
+  ids: [ID!]
   mimetypes: [String!]
+
+  """
+  Full-text search across file names. When set, the folder constraint is bypassed and results span the whole scope.
+  """
   searchText: String
 }
 
@@ -638,7 +702,7 @@ type FileUpload {
   mimetype: String!
   name: String!
   previewUrl: String!
-  size: Int!
+  size: BigInt!
   updatedAt: DateTime!
 }
 
@@ -669,7 +733,7 @@ input FolderFilterInput {
 type Footer {
   content: FooterContentBlockData!
   createdAt: DateTime!
-  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0): PaginatedDependencies!
+  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
   id: ID!
   scope: FooterScope!
   updatedAt: DateTime!
@@ -726,7 +790,7 @@ type KubernetesCronJob {
   id: ID!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   lastJobRun: KubernetesJob
@@ -741,7 +805,7 @@ type KubernetesJob {
   id: ID!
 
   """
-  Human readable label provided by comet-dxp.com/label annotation. Use name as fallback if not present
+  Human readable label provided by dextinity.com/label (or the legacy comet-dxp.com/label) annotation. Use name as fallback if not present
   """
   label: String
   name: String!
@@ -799,7 +863,7 @@ type MainMenu {
 type MainMenuItem {
   content: RichTextBlockData
   createdAt: DateTime!
-  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0): PaginatedDependencies!
+  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
   id: ID!
   node: PageTreeNode!
   updatedAt: DateTime!
@@ -815,6 +879,7 @@ type Manufacturer {
   coordinates: Coordinates
   id: ID!
   name: String!
+  productType: ProductType
   updatedAt: DateTime!
 }
 
@@ -845,6 +910,7 @@ input ManufacturerFilter {
   id: IdFilter
   name: StringFilter
   or: [ManufacturerFilter!]
+  productType: ProductTypeEnumFilter
   updatedAt: DateTimeFilter
 }
 
@@ -853,6 +919,7 @@ input ManufacturerInput {
   addressAsEmbeddable: AddressAsEmbeddableInput!
   coordinates: CoordinatesInput
   name: String!
+  productType: ProductType = null
 }
 
 input ManufacturerSort {
@@ -871,6 +938,7 @@ enum ManufacturerSortField {
   addressAsEmbeddable_zip
   id
   name
+  productType
   updatedAt
 }
 
@@ -879,6 +947,7 @@ input ManufacturerUpdateInput {
   addressAsEmbeddable: AddressAsEmbeddableInput
   coordinates: CoordinatesInput
   name: String
+  productType: ProductType
 }
 
 input ManyToManyFilter {
@@ -952,7 +1021,7 @@ type Mutation {
   deleteProductTag(id: ID!): Boolean!
   deleteProductVariant(id: ID!): Boolean!
   deleteRedirect(id: ID!): Boolean!
-  importDamFileByDownload(input: UpdateDamFileInput!, scope: DamScopeInput!, url: String!): DamFile!
+  deleteRedirects(ids: [ID!]!): Boolean!
   moveDamFiles(fileIds: [ID!]!, targetFolderId: ID): [DamFile!]!
   moveDamFolders(folderIds: [ID!]!, scope: DamScopeInput!, targetFolderId: ID): [DamFolder!]!
   movePageTreeNodesByNeighbour(ids: [ID!]!, input: MovePageTreeNodesByNeighbourInput!): [PageTreeNode!]!
@@ -965,8 +1034,10 @@ type Mutation {
   saveLink(attachedPageTreeNodeId: ID, id: ID!, input: LinkInput!, lastUpdatedAt: DateTime): Link!
   savePage(attachedPageTreeNodeId: ID, input: PageInput!, lastUpdatedAt: DateTime, pageId: ID!): Page!
   savePredefinedPage(attachedPageTreeNodeId: ID!, id: ID!, input: PredefinedPageInput!, lastUpdatedAt: DateTime): PredefinedPage!
+  saveWelcomeEmail(input: WelcomeEmailInput!, scope: WelcomeEmailScopeInput!): WelcomeEmail!
   sendBrevoEmailCampaignNow(id: ID!): Boolean!
   sendBrevoEmailCampaignToTestEmails(data: SendTestEmailCampaignArgs!, id: ID!): Boolean!
+  sendWelcomeEmailTestMail(scope: WelcomeEmailScopeInput!): Boolean!
   startBrevoContactImport(fileId: ID!, scope: EmailCampaignContentScopeInput!, sendDoubleOptIn: Boolean!, targetGroupIds: [ID!]): CsvImportInformation!
   subscribeBrevoContact(input: SubscribeInput!, scope: EmailCampaignContentScopeInput!): SubscribeResponse!
   triggerKubernetesCronJob(name: String!): KubernetesJob!
@@ -977,6 +1048,7 @@ type Mutation {
   updateDamFile(id: ID!, input: UpdateDamFileInput!): DamFile!
   updateDamFolder(id: ID!, input: UpdateDamFolderInput!): DamFolder!
   updateDamMediaAlternative(id: ID!, input: DamMediaAlternativeUpdateInput!): DamMediaAlternative!
+  updateDamSettings(input: DamSettingsInput!, scope: DamScopeInput!): DamSettings!
   updateMainMenuItem(input: MainMenuItemInput!, lastUpdatedAt: DateTime, pageTreeNodeId: ID!): MainMenuItem!
   updateManufacturer(id: ID!, input: ManufacturerUpdateInput!): Manufacturer!
   updateNews(id: ID!, input: NewsUpdateInput!): News!
@@ -1006,8 +1078,8 @@ type News {
   content: NewsContentBlockData!
   createdAt: DateTime!
   date: DateTime!
-  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0): PaginatedDependencies!
-  dependents(filter: DependentFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0): PaginatedDependencies!
+  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
+  dependents(filter: DependentFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
   id: ID!
   image: DamImageBlockData!
   scope: NewsContentScope!
@@ -1138,6 +1210,7 @@ input OneToManyFilter {
 type Page implements DocumentInterface {
   content: PageContentBlockData!
   createdAt: DateTime!
+  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
   id: ID!
   pageTreeNode: PageTreeNode
   seo: SeoBlockData!
@@ -1162,7 +1235,8 @@ input PageInput {
 type PageTreeNode {
   category: PageTreeNodeCategory!
   childNodes: [PageTreeNode!]!
-  dependents(filter: DependentFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0): PaginatedDependencies!
+  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
+  dependents(filter: DependentFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
   document: PageContentUnion
   documentType: String!
   hideInMenu: Boolean!
@@ -1271,6 +1345,11 @@ type PaginatedEmailCampaigns {
   totalCount: Int!
 }
 
+type PaginatedEntityInfo {
+  nodes: [EntityInfo!]!
+  totalCount: Int!
+}
+
 type PaginatedManufacturerCountries {
   nodes: [ManufacturerCountry!]!
   totalCount: Int!
@@ -1340,6 +1419,7 @@ enum Permission {
   dam
   dependencies
   fileUploads
+  fullTextSearch
   impersonation
   manufacturers
   news
@@ -1392,6 +1472,7 @@ type Product {
   price: Float
   priceList: FileUpload
   priceRange: ProductPriceRange
+  relatedImages: [DamFile!]!
   slug: String!
   soldCount: Int
   statistics: ProductStatistics
@@ -1540,7 +1621,9 @@ input ProductFilter {
   or: [ProductFilter!]
   price: NumberFilter
   priceList: ManyToOneFilter
+  relatedImages: ManyToManyFilter
   slug: StringFilter
+  soldCount: NumberFilter
   status: ProductStatusEnumFilter
   tags: ManyToManyFilter
   tagsWithStatus: OneToManyFilter
@@ -1585,6 +1668,7 @@ input ProductInput {
   price: Float = null
   priceList: ID = null
   priceRange: ProductPriceRangeInput
+  relatedImages: [ID!]! = []
   slug: String!
   statistics: ProductNestedProductStatisticsInput
   status: ProductStatus! = Unpublished
@@ -1660,6 +1744,7 @@ enum ProductSortField {
   manufacturer_addressAsEmbeddable_streetNumber
   manufacturer_addressAsEmbeddable_zip
   manufacturer_name
+  manufacturer_productType
   manufacturer_updatedAt
   price
   priceList
@@ -1670,6 +1755,7 @@ enum ProductSortField {
   priceList_name
   priceList_updatedAt
   slug
+  soldCount
   statistics_createdAt
   statistics_updatedAt
   statistics_views
@@ -1799,6 +1885,7 @@ input ProductUpdateInput {
   price: Float
   priceList: ID
   priceRange: ProductPriceRangeInput
+  relatedImages: [ID!]
   slug: String
   statistics: ProductNestedProductStatisticsInput
   status: ProductStatus
@@ -1865,6 +1952,7 @@ enum ProductVariantSortField {
   product_price
   product_priceList
   product_slug
+  product_soldCount
   product_status
   product_title
   product_type
@@ -1897,16 +1985,30 @@ type Query {
   currentUser: CurrentUser!
   damAreFilenamesOccupied(filenames: [FilenameInput!]!, scope: DamScopeInput!): [FilenameResponse!]!
   damFile(id: ID!): DamFile!
-  damFilesList(filter: FileFilterInput, folderId: ID, includeArchived: Boolean = false, limit: Int! = 25, offset: Int! = 0, scope: DamScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC): PaginatedDamFiles!
+  damFilesList(
+    filter: FileFilterInput
+
+    """
+    Folder to list files from. When omitted, files at the scope root are returned. Ignored when filter.searchText or filter.ids is set.
+    """
+    folderId: ID
+    includeArchived: Boolean = false
+    limit: Int! = 25
+    offset: Int! = 0
+    scope: DamScopeInput!
+    sortColumnName: String
+    sortDirection: SortDirection! = ASC
+  ): PaginatedDamFiles!
   damFolder(id: ID!): DamFolder!
   damFolderByNameAndParentId(name: String!, parentId: ID, scope: DamScopeInput!): DamFolder
   damFoldersFlat(scope: DamScopeInput!): [DamFolder!]!
   damFoldersList(filter: FolderFilterInput, includeArchived: Boolean, limit: Int! = 25, offset: Int! = 0, parentId: ID, scope: DamScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC): PaginatedDamFolders!
   damIsFilenameOccupied(filename: String!, folderId: String, scope: DamScopeInput!): Boolean!
-  damItemListPosition(filter: DamItemFilterInput, folderId: ID, id: ID!, includeArchived: Boolean, scope: DamScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC, type: DamItemType!): Int!
-  damItemsList(filter: DamItemFilterInput, folderId: ID, includeArchived: Boolean, limit: Int! = 25, offset: Int! = 0, scope: DamScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC): PaginatedDamItems!
+  damItemListPosition(filter: DamItemFilterInput, folderId: ID, id: ID!, includeArchived: Boolean, scope: DamScopeInput!, sortColumnName: String = "name", sortDirection: SortDirection! = ASC, type: DamItemType!): Int!
+  damItemsList(filter: DamItemFilterInput, folderId: ID, includeArchived: Boolean, limit: Int! = 25, offset: Int! = 0, scope: DamScopeInput!, sortColumnName: String = "name", sortDirection: SortDirection! = ASC): PaginatedDamItems!
   damMediaAlternative(id: ID!): DamMediaAlternative!
   damMediaAlternatives(alternative: ID, for: ID, limit: Int! = 25, offset: Int! = 0, search: String, sort: [DamMediaAlternativeSort!], type: DamMediaAlternativeType): PaginatedDamMediaAlternatives!
+  damSettings(scope: DamScopeInput!): DamSettings
   findCopiesOfFileInScope(id: ID!, imageCropArea: ImageCropAreaInput, scope: DamScopeInput!): [DamFile!]!
   footer(scope: FooterScopeInput!): Footer
   isBrevoConfigDefined(scope: EmailCampaignContentScopeInput!): Boolean!
@@ -1922,11 +2024,13 @@ type Query {
   manufacturer(id: ID!): Manufacturer!
   manufacturerCountries(filter: ManufacturerCountryFilter, limit: Int! = 25, offset: Int! = 0, search: String): PaginatedManufacturerCountries!
   manufacturers(filter: ManufacturerFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [ManufacturerSort!]! = [{direction: ASC, field: id}]): PaginatedManufacturers!
+  myFullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: JSONObject, search: String!): PaginatedEntityInfo!
   news(id: ID!): News!
   newsBySlug(scope: NewsContentScopeInput!, slug: String!): News
   newsList(filter: NewsFilter, limit: Int! = 25, offset: Int! = 0, scope: NewsContentScopeInput!, search: String, sort: [NewsSort!]! = [{direction: ASC, field: createdAt}]): PaginatedNews!
   newsListByIds(ids: [ID!]!): [News!]!
   page(id: ID!): Page!
+  pageTreeFullTextSearch(limit: Int! = 25, offset: Int! = 0, scope: PageTreeNodeScopeInput!, search: String!): PaginatedPageTreeNodes!
   pageTreeNode(id: ID!): PageTreeNode
   pageTreeNodeByPath(path: String!, scope: PageTreeNodeScopeInput!): PageTreeNode
   pageTreeNodeList(category: String, scope: PageTreeNodeScopeInput!): [PageTreeNode!]!
@@ -1949,11 +2053,12 @@ type Query {
   productVariants(filter: ProductVariantFilter, limit: Int! = 25, offset: Int! = 0, product: ID!, search: String, sort: [ProductVariantSort!]! = [{direction: ASC, field: position}]): PaginatedProductVariants!
   products(filter: ProductFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [ProductSort!]! = [{direction: ASC, field: createdAt}]): PaginatedProducts!
   redirect(id: ID!): Redirect!
-  redirectBySource(scope: RedirectScopeInput!, source: String!, sourceType: RedirectSourceTypeValues!): Redirect
+  redirectBySource(scope: RedirectScopeInput!, source: String!, sourceType: RedirectSourceType!): Redirect
   redirectSourceAvailable(scope: RedirectScopeInput!, source: String!): Boolean!
   redirects(active: Boolean, query: String, scope: RedirectScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC, type: RedirectGenerationType): [Redirect!]! @deprecated(reason: "Use paginatedRedirects instead. Will be removed in the next version.")
   sitePreviewJwt(includeInvisible: Boolean!, path: String!, scope: JSONObject!): String!
   topMenu(scope: PageTreeNodeScopeInput!): [PageTreeNode!]!
+  userPermissionsAvailableContentScopeDimensions: [ContentScopeDimension!]!
   userPermissionsAvailableContentScopes: [ContentScopeWithLabel!]!
   userPermissionsAvailablePermissions: [String!]!
   userPermissionsContentScopes(skipManual: Boolean, userId: String!): [JSONObject!]!
@@ -1963,6 +2068,7 @@ type Query {
   userPermissionsUsers(filter: UserPermissionsUserFilter, limit: Int! = 25, offset: Int! = 0, search: String, sort: [UserPermissionsUserSort!]): UserPermissionPaginatedUserList!
   warning(id: ID!): Warning!
   warnings(filter: WarningFilter, limit: Int! = 25, offset: Int! = 0, scopes: [JSONObject!]!, search: String, sort: [WarningSort!], status: [WarningStatus!]! = [open]): PaginatedWarnings!
+  welcomeEmail(scope: WelcomeEmailScopeInput!): WelcomeEmail
 }
 
 type Redirect {
@@ -1970,12 +2076,12 @@ type Redirect {
   active: Boolean!
   comment: String
   createdAt: DateTime!
-  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0): PaginatedDependencies!
+  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
   generationType: RedirectGenerationType!
   id: ID!
   scope: RedirectScope!
   source: String!
-  sourceType: RedirectSourceTypeValues!
+  sourceType: RedirectSourceType!
   target: JSONObject!
   updatedAt: DateTime!
 }
@@ -1988,6 +2094,7 @@ input RedirectFilter {
   generationType: StringFilter
   or: [RedirectFilter!]
   source: StringFilter
+  sourceType: RedirectSourceTypeEnumFilter
   target: StringFilter
   updatedAt: DateTimeFilter
 }
@@ -2002,7 +2109,7 @@ input RedirectInput {
   comment: String
   generationType: RedirectGenerationType!
   source: String!
-  sourceType: RedirectSourceTypeValues!
+  sourceType: RedirectSourceType!
   target: JSONObject!
 }
 
@@ -2025,8 +2132,15 @@ enum RedirectSortField {
   updatedAt
 }
 
-enum RedirectSourceTypeValues {
+enum RedirectSourceType {
+  domain
   path
+}
+
+input RedirectSourceTypeEnumFilter {
+  equal: RedirectSourceType
+  isAnyOf: [RedirectSourceType!]
+  notEqual: RedirectSourceType
 }
 
 input RedirectUpdateActivenessInput {
@@ -2146,6 +2260,7 @@ input TargetGroupUpdateInput {
 }
 
 input UpdateDamFileInput {
+  aiContentType: DamFileAiContentType
   altText: String
   folderId: ID
   image: UpdateImageFileInput
@@ -2218,12 +2333,12 @@ enum UserPermissionSource {
 }
 
 type UserPermissionsUser {
-  contentScopesCount: Int!
+  contentScopesCount: Int! @deprecated(reason: "The Scopes column was removed from the users list. Will be removed in the next version.")
   email: String!
   id: String!
   impersonationAllowed: Boolean!
   name: String!
-  permissionsCount: Int!
+  permissionsCount: Int! @deprecated(reason: "The Permissions column was removed from the users list. Will be removed in the next version.")
 }
 
 input UserPermissionsUserFilter {
@@ -2262,12 +2377,15 @@ input WarningFilter {
   and: [WarningFilter!]
   createdAt: DateTimeFilter
   message: StringFilter
+  name: StringFilter
   or: [WarningFilter!]
   scope: ScopeFilter
+  secondaryInformation: StringFilter
   severity: WarningSeverityEnumFilter
   status: WarningStatusEnumFilter
   type: StringFilter
   updatedAt: DateTimeFilter
+  visible: BooleanFilter
 }
 
 enum WarningSeverity {
@@ -2290,10 +2408,12 @@ input WarningSort {
 enum WarningSortField {
   createdAt
   message
+  name
   severity
   status
   type
   updatedAt
+  visible
 }
 
 type WarningSourceInfo {
@@ -2322,4 +2442,33 @@ input WarningStatusEnumFilter {
   equal: WarningStatus
   isAnyOf: [WarningStatus!]
   notEqual: WarningStatus
+}
+
+type WelcomeEmail {
+  content: WelcomeEmailContentBlockData!
+  createdAt: DateTime!
+  dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
+  id: ID!
+  scope: WelcomeEmailScope!
+  updatedAt: DateTime!
+}
+
+"""WelcomeEmailContent root block data"""
+scalar WelcomeEmailContentBlockData @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+"""WelcomeEmailContent root block input"""
+scalar WelcomeEmailContentBlockInput @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+input WelcomeEmailInput {
+  content: WelcomeEmailContentBlockInput!
+}
+
+type WelcomeEmailScope {
+  domain: String!
+  language: String!
+}
+
+input WelcomeEmailScopeInput {
+  domain: String!
+  language: String!
 }

@@ -1,5 +1,5 @@
 import { BlockMigration } from "../../../../blocks/migrations/BlockMigration";
-import { type BlockMigrationInterface } from "../../../../blocks/migrations/types";
+import type { BlockMigrationInterface } from "../../../../blocks/migrations/types";
 
 interface From {
     damFileId?: string;

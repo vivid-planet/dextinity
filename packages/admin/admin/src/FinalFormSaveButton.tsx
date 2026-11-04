@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useForm, useFormState } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
@@ -23,7 +23,9 @@ export const FinalFormSaveButton = ({ message = <FormattedMessage {...messages.s
             disabled={isDisabled}
             loading={submitting}
             onClick={() => {
-                if (!isDisabled) form.submit();
+                if (!isDisabled) {
+                    form.submit();
+                }
             }}
         >
             {message}

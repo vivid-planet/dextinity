@@ -1,4 +1,4 @@
-import { createFileUploadInputFromUrl, FileUpload, FileUploadsService } from "@comet/cms-api";
+import { createFileUploadInputFromUrl, FileUpload, FileUploadsService } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import path from "path";
 

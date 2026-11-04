@@ -1,12 +1,12 @@
-import { Dialog, Tooltip } from "@comet/admin";
-import { View } from "@comet/admin-icons";
+import { Dialog, Tooltip } from "@dextinity/admin";
+import { View } from "@dextinity/admin-icons";
 import { DialogContent, IconButton, Typography } from "@mui/material";
-import { type GridCellParams } from "@mui/x-data-grid-pro";
-import { type GQLProductsGridFutureFragment } from "@src/products/generator/generated/ProductsGrid.generated";
+import type { GridCellParams } from "@mui/x-data-grid-pro";
+import type { GQLProductsGridFutureFragment } from "@src/products/generator/generated/ProductsGrid.generated";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 
-import { type GQLProductsListManualFragment } from "./ProductsGrid.generated";
+import type { GQLProductsListManualFragment } from "./ProductsGrid.generated";
 
 type Props = GridCellParams<GQLProductsListManualFragment | GQLProductsGridFutureFragment>;
 

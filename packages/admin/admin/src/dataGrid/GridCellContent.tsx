@@ -1,19 +1,18 @@
 import { type ComponentsOverrides, css, type Theme, Typography, useThemeProps } from "@mui/material";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 export type GridCellContentClassKey = "root" | "hasSecondaryText" | "iconContainer" | "textContainer" | "primaryText" | "secondaryText";
 
-export interface GridCellContentProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        textContainer: "div";
-        iconContainer: "div";
-        primaryText: typeof Typography;
-        secondaryText: typeof Typography;
-    }> {
+export interface GridCellContentProps extends ThemedComponentBaseProps<{
+    root: "div";
+    textContainer: "div";
+    iconContainer: "div";
+    primaryText: typeof Typography;
+    secondaryText: typeof Typography;
+}> {
     primaryText?: ReactNode;
     secondaryText?: ReactNode;
     children?: ReactNode;
@@ -27,7 +26,7 @@ type OwnerState = {
 export const GridCellContent = (inProps: GridCellContentProps) => {
     const { children, primaryText, secondaryText, slotProps, icon, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminGridCellContent",
+        name: "DextinityAdminGridCellContent",
     });
 
     const ownerState: OwnerState = {
@@ -121,17 +120,17 @@ const SecondaryText = createComponentSlot(Typography)<GridCellContentClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminGridCellContent: GridCellContentProps;
+        DextinityAdminGridCellContent: GridCellContentProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminGridCellContent: GridCellContentClassKey;
+        DextinityAdminGridCellContent: GridCellContentClassKey;
     }
 
     interface Components {
-        CometAdminGridCellContent?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminGridCellContent"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminGridCellContent"];
+        DextinityAdminGridCellContent?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminGridCellContent"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminGridCellContent"];
         };
     }
 }

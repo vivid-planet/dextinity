@@ -1,26 +1,32 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import { Readable } from "stream";
 
 import { BlobStorageConfig } from "../blob-storage.config";
 import { BLOB_STORAGE_CONFIG } from "../blob-storage.constants";
 import { BlobStorageFileUploadInterface } from "../dto/blob-storage-file-upload.interface";
 import { createHashedPath } from "../utils/create-hashed-path.util";
-import { BlobStorageAzureStorage } from "./azure/blob-storage-azure.storage";
 import { BlobStorageBackendInterface, CreateFileOptions, StorageMetaData } from "./blob-storage-backend.interface";
-import { BlobStorageFileStorage } from "./file/blob-storage-file.storage";
-import { BlobStorageS3Storage } from "./s3/blob-storage-s3.storage";
 
 @Injectable()
-export class BlobStorageBackendService implements BlobStorageBackendInterface {
-    private readonly backend: BlobStorageBackendInterface;
+export class BlobStorageBackendService implements BlobStorageBackendInterface, OnModuleInit {
+    private backend!: BlobStorageBackendInterface;
 
-    constructor(@Inject(BLOB_STORAGE_CONFIG) readonly config: BlobStorageConfig) {
-        if (config.backend.driver === "file") {
-            this.backend = new BlobStorageFileStorage(config.backend.file);
-        } else if (config.backend.driver === "azure") {
-            this.backend = new BlobStorageAzureStorage(config.backend.azure);
-        } else if (config.backend.driver === "s3") {
-            this.backend = new BlobStorageS3Storage(config.backend.s3);
+    constructor(@Inject(BLOB_STORAGE_CONFIG) readonly config: BlobStorageConfig) {}
+
+    async onModuleInit(): Promise<void> {
+        if (this.config.backend.driver === "file") {
+            const { BlobStorageFileStorage } = await import("./file/blob-storage-file.storage");
+            this.backend = new BlobStorageFileStorage(this.config.backend.file);
+        } else if (this.config.backend.driver === "azure") {
+            const { BlobStorageAzureStorage } = await import("./azure/blob-storage-azure.storage");
+            this.backend = new BlobStorageAzureStorage(this.config.backend.azure);
+        } else if (this.config.backend.driver === "s3") {
+            const { BlobStorageS3Storage } = await import("./s3/blob-storage-s3.storage");
+            this.backend = new BlobStorageS3Storage(this.config.backend.s3);
+        } else {
+            throw new Error(
+                `Unsupported blob storage driver: ${(this.config.backend as { driver: string }).driver}. Supported drivers are: file, azure, s3`,
+            );
         }
     }
 
@@ -59,6 +65,10 @@ export class BlobStorageBackendService implements BlobStorageBackendInterface {
 
     async removeFile(folderName: string, fileName: string): Promise<void> {
         return this.backend.removeFile(folderName, fileName);
+    }
+
+    async listFiles(folderName: string): Promise<string[]> {
+        return this.backend.listFiles(folderName);
     }
 
     async getFileMetaData(folderName: string, fileName: string): Promise<StorageMetaData> {

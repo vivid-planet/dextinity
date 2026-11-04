@@ -2,7 +2,7 @@ import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { ClassProvider, DynamicModule, Global, Module, ModuleMetadata, Type, ValueProvider } from "@nestjs/common";
 
 import { Block } from "../blocks/block";
-import { ExternalLinkBlock } from "../blocks/ExternalLinkBlock";
+import { ExternalLinkBlock } from "../blocks/externalLink/external-link.block";
 import { createOneOfBlock, OneOfBlock } from "../blocks/factories/createOneOfBlock";
 import { DependenciesResolverFactory } from "../dependencies/dependencies.resolver.factory";
 import { InternalLinkBlock, InternalLinkBlockData, InternalLinkBlockInput } from "../page-tree/blocks/internal-link.block";
@@ -35,7 +35,10 @@ export class RedirectsModule {
                 supportedBlocks: { internal: InternalLinkBlock, external: ExternalLinkBlock, ...customTargets },
                 allowEmpty: false,
             },
-            "RedirectsLink",
+            {
+                name: "RedirectsLink",
+                description: "The target a redirect points to, for instance a page of the page tree or an external URL.",
+            },
         );
 
         const Redirect = RedirectEntityFactory.create({ linkBlock, Scope });

@@ -1,7 +1,7 @@
 import { buildSchema, introspectionFromSchema } from "graphql";
 import { describe, expect, it } from "vitest";
 
-import { type FormConfig, type FormFieldConfig } from "../../generate-command";
+import type { FormConfig, FormFieldConfig } from "../../generate-command";
 import { generateFormField } from "../generateFormField";
 
 describe("AsyncSelect autocomplete", () => {

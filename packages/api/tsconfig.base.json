@@ -1,8 +1,8 @@
 {
     "extends": "../../tsconfig.core.json",
     "compilerOptions": {
-        "target": "ES2015",
-        "lib": ["ES2020"],
+        "target": "ES2023",
+        "lib": ["ES2023"],
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "sourceMap": true,
@@ -10,6 +10,7 @@
         "strict": true,
         "strictPropertyInitialization": false,
         "strictNullChecks": true,
-        "declarationMap": true
+        "declarationMap": true,
+        "useDefineForClassFields": false
     }
 }

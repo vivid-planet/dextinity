@@ -9,18 +9,18 @@ import {
     TextField,
     useFormApiRef,
     useStackSwitchApi,
-} from "@comet/admin";
-import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
-import { type FormApi } from "final-form";
+} from "@dextinity/admin";
+import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
+import type { FormApi } from "final-form";
 import isEqual from "lodash.isequal";
 import { useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 
-import {
-    type GQLProductCategoriesSelectQuery,
-    type GQLProductCategoriesSelectQueryVariables,
-    type GQLProductsSelectQuery,
-    type GQLProductsSelectQueryVariables,
+import type {
+    GQLProductCategoriesSelectQuery,
+    GQLProductCategoriesSelectQueryVariables,
+    GQLProductsSelectQuery,
+    GQLProductsSelectQueryVariables,
 } from "./ProductHighlightForm.generated";
 import {
     createProductHighlightMutation,
@@ -28,14 +28,14 @@ import {
     productHighlightQuery,
     updateProductHighlightMutation,
 } from "./ProductHighlightForm.gql";
-import {
-    type GQLCreateProductHighlightMutation,
-    type GQLCreateProductHighlightMutationVariables,
-    type GQLProductHighlightFormHandmadeDetailsFragment,
-    type GQLProductHighlightQuery,
-    type GQLProductHighlightQueryVariables,
-    type GQLUpdateProductHighlightMutation,
-    type GQLUpdateProductHighlightMutationVariables,
+import type {
+    GQLCreateProductHighlightMutation,
+    GQLCreateProductHighlightMutationVariables,
+    GQLProductHighlightFormHandmadeDetailsFragment,
+    GQLProductHighlightQuery,
+    GQLProductHighlightQueryVariables,
+    GQLUpdateProductHighlightMutation,
+    GQLUpdateProductHighlightMutationVariables,
 } from "./ProductHighlightForm.gql.generated";
 
 type FormValues = GQLProductHighlightFormHandmadeDetailsFragment & {
@@ -74,13 +74,17 @@ export function ProductHighlightForm({ id }: FormProps) {
         },
     });
     const handleSubmit = async ({ productCategory, ...formValues }: FormValues, form: FormApi<FormValues>, event: FinalFormSubmitEvent) => {
-        if (await saveConflict.checkForConflicts()) throw new Error("Conflicts detected");
+        if (await saveConflict.checkForConflicts()) {
+            throw new Error("Conflicts detected");
+        }
         const output = {
             ...formValues,
             product: formValues.product?.id,
         };
         if (mode === "edit") {
-            if (!id) throw new Error();
+            if (!id) {
+                throw new Error();
+            }
             const { ...updateInput } = output;
             await client.mutate<GQLUpdateProductHighlightMutation, GQLUpdateProductHighlightMutationVariables>({
                 mutation: updateProductHighlightMutation,
@@ -101,7 +105,9 @@ export function ProductHighlightForm({ id }: FormProps) {
             }
         }
     };
-    if (error) throw error;
+    if (error) {
+        throw error;
+    }
     if (loading) {
         return <Loading behavior="fillPageHeight" />;
     }

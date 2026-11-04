@@ -7,10 +7,10 @@ import {
     type Popper as MuiPopper,
 } from "@mui/material";
 import { useThemeProps } from "@mui/material/styles";
-import { type TransitionProps } from "@mui/material/transitions";
+import type { TransitionProps } from "@mui/material/transitions";
 import { type ElementType, type ReactNode, type RefObject, useCallback, useEffect, useRef, useState } from "react";
 
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 import { InputBase, Paper, Popper, Root } from "./InputWithPopper.slots";
 
 export type InputWithPopperComponents = InputBaseProps["components"] & {
@@ -32,7 +32,7 @@ export interface InputWithPopperProps extends Omit<InputBaseProps, "components" 
     components?: InputWithPopperComponents;
     onOpenPopper?: () => void;
     onClosePopper?: () => void;
-    inputRef?: RefObject<HTMLElement>;
+    inputRef?: RefObject<HTMLElement | null>;
     slotProps?: BaseProps["slotProps"] & {
         transition?: TransitionProps;
     };
@@ -48,7 +48,7 @@ export const InputWithPopper = (inProps: InputWithPopperProps) => {
         inputRef: inputRefProp,
         slotProps,
         ...inputBaseProps
-    } = useThemeProps({ props: inProps, name: "CometAdminInputWithPopper" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminInputWithPopper" });
     const { Transition = Grow, ...inputBaseComponents } = components;
 
     const rootRef = useRef<HTMLDivElement>(null);

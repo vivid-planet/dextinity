@@ -1,9 +1,9 @@
-import { type CrudGeneratorOptions } from "@comet/cms-api";
-import { type EntityMetadata } from "@mikro-orm/core";
+import type { CrudGeneratorOptions } from "@dextinity/cms-api";
+import type { EntityMetadata } from "@mikro-orm/core";
 import * as path from "path";
 import { Node, ts, type Type } from "ts-morph";
 
-import { type Imports } from "./generate-imports-code";
+import type { Imports } from "./generate-imports-code";
 import { findImportPath, morphTsClass } from "./ts-morph-helper";
 
 function findReturnTypeImport(type: Type, serviceSourceFile: Node, targetDirectory: string): { name: string; importPath: string } | null {
@@ -55,8 +55,20 @@ function unwrapArrayType(type: Type): Type {
     throw new Error(`Return type must be an array`);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function findHooksService({ generatorOptions, metadata }: { generatorOptions: CrudGeneratorOptions; metadata: EntityMetadata<any> }) {
+export function findHooksService({
+    generatorOptions,
+    metadata,
+    targetDirectory,
+}: {
+    generatorOptions: CrudGeneratorOptions;
+    metadata: EntityMetadata;
+    targetDirectory: string;
+}): {
+    validateCreateInput: { options?: string[]; returnType: string } | null;
+    validateUpdateInput: { options?: string[]; returnType: string } | null;
+    imports: Imports;
+    className: string;
+} | null {
     if (!generatorOptions.hooksService) {
         return null;
     }
@@ -90,7 +102,7 @@ export function findHooksService({ generatorOptions, metadata }: { generatorOpti
                 throw new Error("hooksService initializer is not an identifier");
             }
             const hooksServiceClassName = initializer.getText();
-            const { importPath } = findImportPath(hooksServiceClassName, generatorOptions.targetDirectory, metadata);
+            const { importPath } = findImportPath(hooksServiceClassName, targetDirectory, metadata);
             if (importPath) {
                 imports.push({ name: hooksServiceClassName, importPath });
             }
@@ -107,7 +119,7 @@ export function findHooksService({ generatorOptions, metadata }: { generatorOpti
                     const unwrappedType = unwrapArrayType(unwrapPromiseType(method.getReturnType()));
 
                     const returnType = unwrappedType.getText(method, ts.TypeFormatFlags.None);
-                    const returnTypeImport = findReturnTypeImport(unwrappedType, serviceClassDeclaration, generatorOptions.targetDirectory);
+                    const returnTypeImport = findReturnTypeImport(unwrappedType, serviceClassDeclaration, targetDirectory);
                     if (returnTypeImport) {
                         imports.push(returnTypeImport);
                     }
@@ -130,7 +142,7 @@ export function findHooksService({ generatorOptions, metadata }: { generatorOpti
                     validateUpdateInput = {};
                     const unwrappedType = unwrapArrayType(unwrapPromiseType(method.getReturnType()));
                     const returnType = unwrappedType.getText(method, ts.TypeFormatFlags.None);
-                    const returnTypeImport = findReturnTypeImport(unwrappedType, serviceClassDeclaration, generatorOptions.targetDirectory);
+                    const returnTypeImport = findReturnTypeImport(unwrappedType, serviceClassDeclaration, targetDirectory);
                     if (returnTypeImport) {
                         imports.push(returnTypeImport);
                     }

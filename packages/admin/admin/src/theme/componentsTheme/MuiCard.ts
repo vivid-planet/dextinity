@@ -1,7 +1,7 @@
 import { paperClasses } from "@mui/material";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
-import { type GetMuiComponentTheme } from "./getComponentsTheme";
+import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
 export const getMuiCard: GetMuiComponentTheme<"MuiCard"> = (component, { spacing }) => ({
     ...component,

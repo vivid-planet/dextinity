@@ -1,10 +1,10 @@
-import { RteIndentDecrease, RteIndentIncrease } from "@comet/admin-icons";
+import { RteIndentDecrease, RteIndentIncrease } from "@dextinity/admin-icons";
 import { type BlockMap, type ContentState, EditorState } from "draft-js";
 import { type MouseEvent, useCallback, useMemo } from "react";
 import { useIntl } from "react-intl";
 
-import { type SupportedThings } from "../Rte";
-import { type IFeatureConfig } from "../types";
+import type { SupportedThings } from "../Rte";
+import type { IFeatureConfig } from "../types";
 import getCurrentBlock from "../utils/getCurrentBlock";
 import selectionIsInOneBlock from "../utils/selectionIsInOneBlock";
 
@@ -110,7 +110,7 @@ export default function useListIndent({ editorState, setEditorState, supportedTh
                       disabled: !canIndentRight,
                       onButtonClick: handleListIndentRightClick,
                       icon: RteIndentIncrease,
-                      tooltipText: intl.formatMessage({ id: "comet.rte.controls.listIndent.right.tooltip", defaultMessage: "Tab" }),
+                      tooltipText: intl.formatMessage({ id: "dextinity.rte.controls.listIndent.right.tooltip", defaultMessage: "Tab" }),
                   },
                   {
                       name: "list-indent-left",
@@ -118,7 +118,7 @@ export default function useListIndent({ editorState, setEditorState, supportedTh
                       disabled: !canIndentLeft,
                       onButtonClick: handleListIndentLeftClick,
                       icon: RteIndentDecrease,
-                      tooltipText: intl.formatMessage({ id: "comet.rte.controls.listIndent.left.tooltip", defaultMessage: "Shift+Tab" }),
+                      tooltipText: intl.formatMessage({ id: "dextinity.rte.controls.listIndent.left.tooltip", defaultMessage: "Shift+Tab" }),
                   },
               ]
             : [];

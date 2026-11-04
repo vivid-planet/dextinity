@@ -26,7 +26,9 @@ export class CoordinatesType extends Type<Coordinates | null, string | null> {
         }
 
         const match = value.match(/\(([^,]+),([^)]+)\)/);
-        if (!match) throw new Error("Invalid coordinate format");
+        if (!match) {
+            throw new Error("Invalid coordinate format");
+        }
         return {
             latitude: parseFloat(match[1]),
             longitude: parseFloat(match[2]),

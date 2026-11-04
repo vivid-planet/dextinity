@@ -1,3 +1,3 @@
 # Mailer Module
 
-See https://docs.comet-dxp.com/docs/features-modules/mailer-module for more information
+See https://cms-docs.dextinity.com/docs/features-modules/mailer-module for more information

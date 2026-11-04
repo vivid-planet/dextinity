@@ -16,8 +16,10 @@ export function createSitePreviewAuthService({ sitePreviewSecret }: SitePreviewA
                 throw new Error("secret must not be empty");
             }
 
-            const cookieValue = request.cookies["__comet_site_preview"];
-            if (!cookieValue) return SKIP_AUTH_SERVICE;
+            const cookieValue = request.cookies["__dextinity_site_preview"];
+            if (!cookieValue) {
+                return SKIP_AUTH_SERVICE;
+            }
 
             try {
                 const {

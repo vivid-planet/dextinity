@@ -1,17 +1,19 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { ContentTranslationServiceProvider } from "@comet/admin";
-import { type ComponentProps, type PropsWithChildren } from "react";
+import { ContentTranslationServiceProvider } from "@dextinity/admin";
+import type { ComponentProps, PropsWithChildren } from "react";
 
+import { useContentLanguage } from "../contentLanguage/useContentLanguage";
 import { useContentScope } from "../contentScope/Provider";
 import { useUserPermissionCheck } from "../userPermissions/hooks/currentUser";
-import { type GQLTranslateQuery, type GQLTranslateQueryVariables } from "./AzureAiTranslatorProvider.generated";
+import type { GQLTranslateQuery, GQLTranslateQueryVariables } from "./AzureAiTranslatorProvider.generated";
 
-interface AzureAiTranslatorProps extends Omit<ComponentProps<typeof ContentTranslationServiceProvider>, "enabled" | "translate"> {
+interface AzureAiTranslatorProps extends Omit<ComponentProps<typeof ContentTranslationServiceProvider>, "enabled" | "translate" | "batchTranslate"> {
     enabled?: boolean;
 }
 
 export const AzureAiTranslatorProvider = ({ children, enabled = false, ...rest }: PropsWithChildren<AzureAiTranslatorProps>) => {
     const { scope } = useContentScope();
+    const language = useContentLanguage({ scope });
     const apolloClient = useApolloClient();
     const isAllowed = useUserPermissionCheck();
 
@@ -23,10 +25,20 @@ export const AzureAiTranslatorProvider = ({ children, enabled = false, ...rest }
                 const { data } = await apolloClient.query<GQLTranslateQuery, GQLTranslateQueryVariables>({
                     query: translationQuery,
                     variables: {
-                        input: { text, targetLanguage: scope.language },
+                        input: { text, targetLanguage: language },
                     },
                 });
                 return data.azureAiTranslate;
+            }}
+            batchTranslate={async function (texts: string[]): Promise<string[]> {
+                const { data } = await apolloClient.query<{ azureAiTranslateBatch: string[] }>({
+                    query: batchTranslationQuery,
+                    variables: {
+                        input: { texts, targetLanguage: language },
+                    },
+                    fetchPolicy: "no-cache",
+                });
+                return data.azureAiTranslateBatch;
             }}
         >
             {children}
@@ -37,5 +49,11 @@ export const AzureAiTranslatorProvider = ({ children, enabled = false, ...rest }
 const translationQuery = gql`
     query Translate($input: AzureAiTranslationInput!) {
         azureAiTranslate(input: $input)
+    }
+`;
+
+const batchTranslationQuery = gql`
+    query TranslateBatch($input: AzureAiTranslationBatchInput!) {
+        azureAiTranslateBatch(input: $input)
     }
 `;

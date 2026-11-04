@@ -1,4 +1,4 @@
-import { Tooltip } from "@comet/admin";
+import { Tooltip } from "@dextinity/admin";
 import { Grid } from "@mui/material";
 
 export default {
@@ -21,28 +21,33 @@ export const BasicTooltip = {
     name: "BasicTooltip",
 };
 
-export const TooltipVariant = {
+export const TooltipColors = {
     render: () => {
         return (
             <Grid container justifyContent="center" spacing={4}>
                 <Grid>
-                    <Tooltip title="This is a light tooltip" variant="light">
+                    <Tooltip title="This is a light tooltip" color="light">
                         <div>Hover over me - light</div>
                     </Tooltip>
                 </Grid>
                 <Grid>
-                    <Tooltip title="This is a dark tooltip" variant="dark">
+                    <Tooltip title="This is a dark tooltip" color="dark">
                         <div>Hover over me - dark</div>
                     </Tooltip>
                 </Grid>
                 <Grid>
-                    <Tooltip title="This is a neutral tooltip" variant="neutral">
-                        <div>Hover over me - neutral</div>
+                    <Tooltip title="This is a error tooltip" color="error">
+                        <div>Hover over me - error</div>
                     </Tooltip>
                 </Grid>
                 <Grid>
-                    <Tooltip title="This is a primary tooltip" variant="primary">
-                        <div>Hover over me - primary</div>
+                    <Tooltip title="This is a success tooltip" color="success">
+                        <div>Hover over me - success</div>
+                    </Tooltip>
+                </Grid>
+                <Grid>
+                    <Tooltip title="This is a warning tooltip" color="warning">
+                        <div>Hover over me - warning</div>
                     </Tooltip>
                 </Grid>
             </Grid>

@@ -1,7 +1,7 @@
 import { buildSchema, type GraphQLSchema, introspectionFromSchema, type IntrospectionQuery } from "graphql";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { type GridConfig } from "../../generate-command";
+import type { GridConfig } from "../../generate-command";
 import { generateGrid } from "../generateGrid";
 
 describe("generateGrid", () => {
@@ -444,6 +444,31 @@ describe("generateGrid", () => {
         // Number value should NOT be quoted
         expect(result.code).toMatch(/value: 42/);
         expect(result.code).not.toMatch(/value: "42"/);
+    });
+    it("should pass initialPageSize as pageSize to useDataGridRemote", () => {
+        const config: GridConfig<Book> = {
+            type: "grid",
+            gqlType: "Book",
+            initialPageSize: 50,
+            columns: [
+                {
+                    type: "text",
+                    name: "title",
+                },
+            ],
+        };
+
+        const result = generateGrid(
+            {
+                exportName: "BooksGrid",
+                baseOutputFilename: "BooksGrid",
+                targetDirectory: "/test",
+                gqlIntrospection: introspection,
+            },
+            config,
+        );
+
+        expect(result.code).toMatch(/useDataGridRemote\(\{[^}]*pageSize: 50/s);
     });
     it("should generate onRowClick prop when rowActionProp is true", () => {
         const config: GridConfig<Book> = {

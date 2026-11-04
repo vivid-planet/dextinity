@@ -1,5 +1,5 @@
-import { SnackbarProvider } from "@comet/admin";
-import { type Decorator } from "@storybook/react-webpack5";
+import { SnackbarProvider } from "@dextinity/admin";
+import type { Decorator } from "@storybook/react-vite";
 
 export function snackbarDecorator(): Decorator {
     return (Story) => {

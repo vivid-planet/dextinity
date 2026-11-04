@@ -1,7 +1,7 @@
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { Module } from "@nestjs/common";
 
-import { EntityInfoModule } from "../common/entityInfo/entity-info.module";
+import { EntityInfoModule } from "../entity-info/entity-info.module";
 import { Warning } from "./entities/warning.entity";
 import { WarningResolver } from "./warning.resolver";
 import { WarningService } from "./warning.service";

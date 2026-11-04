@@ -1,10 +1,11 @@
-import { CrudMoreActionsMenu, useEditDialog, useSnackbarApi } from "@comet/admin";
-import { AddFolder as AddFolderIcon, Archive, Delete, Download, Move, Restore, Upload } from "@comet/admin-icons";
+import { CrudMoreActionsMenu, useEditDialog, useSnackbarApi, useStackSwitchApi } from "@dextinity/admin";
+import { AddFolder as AddFolderIcon, Archive, Delete, Download, Move, Restore, Settings, Upload } from "@dextinity/admin-icons";
 import { type PopoverOrigin, Slide, type SlideProps, Snackbar } from "@mui/material";
 import { useRef } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
 import { FormattedMessage, useIntl } from "react-intl";
 
+import { useDamConfig } from "../../config/damConfig";
 import { useDamAcceptedMimeTypes } from "../../config/useDamAcceptedMimeTypes";
 import { useDamFileUpload } from "../fileUpload/useDamFileUpload";
 import { useDamSelectionApi } from "./DamSelectionContext";
@@ -16,15 +17,26 @@ interface DamMoreActionsProps {
     filter?: {
         allowedMimetypes?: string[];
     };
+    hideSelectiveActions?: boolean;
+    hideSettingsAction?: boolean;
 }
 
-export const DamMoreActions = ({ transformOrigin, anchorOrigin, folderId, filter }: DamMoreActionsProps) => {
+export const DamMoreActions = ({
+    transformOrigin,
+    anchorOrigin,
+    folderId,
+    filter,
+    hideSelectiveActions,
+    hideSettingsAction,
+}: DamMoreActionsProps) => {
     const damSelectionActionsApi = useDamSelectionApi();
     const { selectionMap, archiveSelected, deleteSelected, downloadSelected, restoreSelected, moveSelected } = damSelectionActionsApi;
     const snackbarApi = useSnackbarApi();
     const [, , editDialogApi] = useEditDialog();
     const intl = useIntl();
     const { allAcceptedMimeTypes } = useDamAcceptedMimeTypes();
+    const { enableLicenseFeature, blockFilesWithInvalidLicense } = useDamConfig();
+    const stackSwitchApi = useStackSwitchApi();
 
     const folderInputRef = useRef<HTMLInputElement>(null);
 
@@ -40,7 +52,7 @@ export const DamMoreActions = ({ transformOrigin, anchorOrigin, folderId, filter
                 autoHideDuration={5000}
                 TransitionComponent={(props: SlideProps) => <Slide {...props} direction="right" />}
                 message={intl.formatMessage({
-                    id: "comet.dam.moreActions.folderNotDownloaded",
+                    id: "dextinity.dam.moreActions.folderNotDownloaded",
                     defaultMessage: "Download of files started successfully. Folder downloads are not supported yet.",
                 })}
             />
@@ -72,47 +84,58 @@ export const DamMoreActions = ({ transformOrigin, anchorOrigin, folderId, filter
             <CrudMoreActionsMenu
                 overallActions={[
                     {
-                        label: <FormattedMessage id="comet.dam.moreActions.uploadFolder" defaultMessage="Upload folder" />,
+                        label: <FormattedMessage id="dextinity.dam.moreActions.uploadFolder" defaultMessage="Upload folder" />,
                         onClick: () => folderInputRef.current?.click(),
                         icon: <Upload />,
                     },
                     {
-                        label: <FormattedMessage id="comet.pages.dam.addFolder" defaultMessage="Add Folder" />,
+                        label: <FormattedMessage id="dextinity.pages.dam.addFolder" defaultMessage="Add Folder" />,
                         onClick: () => editDialogApi.openAddDialog(folderId),
                         icon: <AddFolderIcon />,
                     },
-                ]}
-                selectiveActions={[
-                    !onlyFoldersSelected
+                    enableLicenseFeature && blockFilesWithInvalidLicense && !hideSettingsAction
                         ? {
-                              label: <FormattedMessage id="comet.dam.moreActions.downloadSelected" defaultMessage="Download" />,
-                              onClick: handleDownloadClick,
-                              icon: <Download />,
+                              label: <FormattedMessage id="dextinity.dam.moreActions.settings" defaultMessage="Settings" />,
+                              onClick: () => stackSwitchApi.activatePage("settings", "settings"),
+                              icon: <Settings />,
                           }
                         : null,
-                    {
-                        label: <FormattedMessage id="comet.dam.moreActions.moveItems" defaultMessage="Move" />,
-                        onClick: moveSelected,
-                        icon: <Move />,
-                        divider: true,
-                    },
-                    {
-                        label: <FormattedMessage id="comet.dam.moreActions.archiveItems" defaultMessage="Archive" />,
-                        onClick: archiveSelected,
-                        icon: <Archive />,
-                    },
-                    {
-                        label: <FormattedMessage id="comet.dam.moreActions.restoreItems" defaultMessage="Restore" />,
-                        onClick: restoreSelected,
-                        icon: <Restore />,
-                    },
-                    {
-                        label: <FormattedMessage id="comet.dam.moreActions.deleteItems" defaultMessage="Delete" />,
-                        onClick: deleteSelected,
-                        icon: <Delete />,
-                    },
                 ]}
-                selectionSize={selectionSize}
+                selectiveActions={
+                    hideSelectiveActions
+                        ? undefined
+                        : [
+                              !onlyFoldersSelected
+                                  ? {
+                                        label: <FormattedMessage id="dextinity.dam.moreActions.downloadSelected" defaultMessage="Download" />,
+                                        onClick: handleDownloadClick,
+                                        icon: <Download />,
+                                    }
+                                  : null,
+                              {
+                                  label: <FormattedMessage id="dextinity.dam.moreActions.moveItems" defaultMessage="Move" />,
+                                  onClick: moveSelected,
+                                  icon: <Move />,
+                                  divider: true,
+                              },
+                              {
+                                  label: <FormattedMessage id="dextinity.dam.moreActions.archiveItems" defaultMessage="Archive" />,
+                                  onClick: archiveSelected,
+                                  icon: <Archive />,
+                              },
+                              {
+                                  label: <FormattedMessage id="dextinity.dam.moreActions.restoreItems" defaultMessage="Restore" />,
+                                  onClick: restoreSelected,
+                                  icon: <Restore />,
+                              },
+                              {
+                                  label: <FormattedMessage id="dextinity.dam.moreActions.deleteItems" defaultMessage="Delete" />,
+                                  onClick: deleteSelected,
+                                  icon: <Delete />,
+                              },
+                          ]
+                }
+                selectionSize={hideSelectiveActions ? 0 : selectionSize}
                 slotProps={{
                     menu: {
                         transformOrigin,

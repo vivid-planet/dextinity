@@ -1,7 +1,7 @@
-import { Music } from "@comet/admin-icons";
+import { Music } from "@dextinity/admin-icons";
 import { styled } from "@mui/material/styles";
 
-import { type DamFileDetails } from "../EditFile";
+import type { DamFileDetails } from "../EditFile";
 
 const AudioPreviewWrapper = styled("div")`
     width: 100%;

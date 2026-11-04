@@ -1,11 +1,12 @@
-import { Field, FieldContainer } from "@comet/admin";
-import { DateTimePicker, FinalFormDateTimePicker } from "@comet/admin-date-time";
+import { Field, FieldContainer } from "@dextinity/admin";
+import { DateTimePicker, FinalFormDateTimePicker } from "@dextinity/admin-date-time";
 import { Grid } from "@mui/material";
 import { useState } from "react";
 import { Form } from "react-final-form";
 
 export default {
     title: "Docs/Form/Components/Date & Time Pickers/Date-Time Picker",
+    tags: ["deprecated"],
 };
 
 export const Basic = () => {

@@ -43,3 +43,9 @@ export const deleteRedirectMutation = gql`
         deleteRedirect(id: $id)
     }
 `;
+
+export const deleteRedirectsMutation = gql`
+    mutation DeleteRedirects($ids: [ID!]!) {
+        deleteRedirects(ids: $ids)
+    }
+`;

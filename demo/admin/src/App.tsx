@@ -1,26 +1,29 @@
 import "@fontsource-variable/roboto-flex/full.css";
 
 import { ApolloProvider } from "@apollo/client";
-import { ErrorDialogHandler, MasterLayout, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@comet/admin";
-import { BrevoConfigProvider } from "@comet/brevo-admin";
+import { ErrorDialogHandler, MasterLayout, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@dextinity/admin";
+import { BrevoConfigProvider } from "@dextinity/brevo-admin";
 import {
-    CometConfigProvider,
+    AzureAiTranslatorProvider,
     type ContentScope,
     ContentScopeProvider,
     createDamFileDependency,
     CurrentUserProvider,
+    DextinityConfigProvider,
     SitePreview,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { css, Global } from "@emotion/react";
+import { DataGridPro } from "@mui/x-data-grid-pro";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LicenseInfo } from "@mui/x-license";
 import { createApolloClient } from "@src/common/apollo/createApolloClient";
 import { createConfig } from "@src/config";
+import { PageTreeNodeDependency } from "@src/pageTree/PageTreeNodeDependency";
 import type { ContentScope as BaseContentScope } from "@src/site-configs";
-import { theme } from "@src/theme";
-import { enUS } from "date-fns/locale";
+import { createTheme } from "@src/theme";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
+import { useMemo } from "react";
 import { DndProvider } from "react-dnd-multi-backend";
 import { FormattedMessage, IntlProvider } from "react-intl";
 import { Route, Switch } from "react-router";
@@ -31,8 +34,8 @@ import { AppMasterMenu, AppMasterMenuRoutes, pageTreeDocumentTypes } from "./com
 import { ImportFromPicsum } from "./dam/ImportFromPicsum";
 import { Link } from "./documents/links/Link";
 import { Page } from "./documents/pages/Page";
-import { type GQLPermission } from "./graphql.generated";
-import { getMessages } from "./lang";
+import type { GQLPermission } from "./graphql.generated";
+import { getLanguageConfig } from "./lang";
 import { NewsDetailBlock } from "./news/blocks/NewsDetailBlock";
 import { NewsLinkBlock } from "./news/blocks/NewsLinkBlock";
 import { NewsListBlock } from "./news/blocks/NewsListBlock";
@@ -52,7 +55,7 @@ const GlobalStyle = () => (
 const config = createConfig();
 const apolloClient = createApolloClient(config.apiUrl);
 
-declare module "@comet/cms-admin" {
+declare module "@dextinity/cms-admin" {
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface ContentScope extends BaseContentScope {}
 
@@ -64,10 +67,16 @@ declare module "@comet/cms-admin" {
 LicenseInfo.setLicenseKey(config.muiLicenseKey);
 
 export function App() {
+    const { language, messages, dateFnsLocale, muiLocale } = getLanguageConfig();
+    const theme = useMemo(() => createTheme(muiLocale), [muiLocale]);
+
     return (
-        <CometConfigProvider
+        <DextinityConfigProvider
             {...config}
             graphQLApiUrl={`${config.apiUrl}/graphql`}
+            onError={(error, errorInfo) => {
+                console.error("Error caught by error boundary", error, errorInfo.componentStack);
+            }}
             pageTree={{
                 categories: pageTreeCategories,
                 documentTypes: pageTreeDocumentTypes,
@@ -76,6 +85,9 @@ export function App() {
             }}
             redirects={{
                 scopeParts: ["domain"],
+            }}
+            dataGrid={{
+                component: DataGridPro,
             }}
             dam={{
                 ...config.dam,
@@ -97,6 +109,7 @@ export function App() {
                     Link,
                     News: NewsDependency,
                     Redirect: RedirectDependency,
+                    PageTreeNode: PageTreeNodeDependency,
                     DamFile: createDamFileDependency(),
                 },
             }}
@@ -107,15 +120,14 @@ export function App() {
                         return config.scope.domain === scope.domain;
                     });
 
-                    if (!siteConfig) throw new Error(`siteConfig not found for domain ${scope.domain}`);
+                    if (!siteConfig) {
+                        throw new Error(`siteConfig not found for domain ${scope.domain}`);
+                    }
                     return {
                         url: siteConfig.url,
                         preloginEnabled: siteConfig.preloginEnabled || false,
-                        blockPreviewBaseUrl:
-                            siteConfig.scope.domain === "secondary"
-                                ? `${siteConfig.url}/block-preview`
-                                : `${siteConfig.url}/block-preview/${scope.domain}/${scope.language}`,
-                        sitePreviewApiUrl: `${siteConfig.url}/site-preview`,
+                        blockPreviewBaseUrl: `${config.previewUrl}/block-preview/${scope.domain}/${scope.language}`,
+                        sitePreviewApiUrl: `${config.previewUrl}/site-preview`,
                     };
                 },
             }}
@@ -146,9 +158,9 @@ export function App() {
                 }}
             >
                 <ApolloProvider client={apolloClient}>
-                    <IntlProvider locale="en" messages={getMessages("en")}>
-                        <LocalizationProvider adapterLocale={enUS} dateAdapter={AdapterDateFns}>
-                            <MuiThemeProvider theme={theme}>
+                    <IntlProvider locale={language} messages={messages}>
+                        <MuiThemeProvider theme={theme}>
+                            <LocalizationProvider adapterLocale={dateFnsLocale} dateAdapter={AdapterDateFns}>
                                 <DndProvider options={HTML5toTouch}>
                                     <SnackbarProvider>
                                         <ErrorDialogHandler />
@@ -157,37 +169,39 @@ export function App() {
                                                 <GlobalStyle />
                                                 <ContentScopeProvider>
                                                     {({ match }) => (
-                                                        <Switch>
-                                                            <Route
-                                                                path={`${match.path}/preview`}
-                                                                render={(props) => (
-                                                                    <SitePreview
-                                                                        resolvePath={(path: string, scope) => {
-                                                                            return `/${scope.language}${path}`;
-                                                                        }}
-                                                                        {...props}
-                                                                    />
-                                                                )}
-                                                            />
-                                                            <Route
-                                                                render={() => (
-                                                                    <MasterLayout headerComponent={MasterHeader} menuComponent={AppMasterMenu}>
-                                                                        <AppMasterMenuRoutes />
-                                                                    </MasterLayout>
-                                                                )}
-                                                            />
-                                                        </Switch>
+                                                        <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
+                                                            <Switch>
+                                                                <Route
+                                                                    path={`${match.path}/preview`}
+                                                                    render={(props) => (
+                                                                        <SitePreview
+                                                                            resolvePath={(path: string, scope) => {
+                                                                                return `/${scope.language}${path}`;
+                                                                            }}
+                                                                            {...props}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                                <Route
+                                                                    render={() => (
+                                                                        <MasterLayout headerComponent={MasterHeader} menuComponent={AppMasterMenu}>
+                                                                            <AppMasterMenuRoutes />
+                                                                        </MasterLayout>
+                                                                    )}
+                                                                />
+                                                            </Switch>
+                                                        </AzureAiTranslatorProvider>
                                                     )}
                                                 </ContentScopeProvider>
                                             </RouterBrowserRouter>
                                         </CurrentUserProvider>
                                     </SnackbarProvider>
                                 </DndProvider>
-                            </MuiThemeProvider>
-                        </LocalizationProvider>
+                            </LocalizationProvider>
+                        </MuiThemeProvider>
                     </IntlProvider>
                 </ApolloProvider>
             </BrevoConfigProvider>
-        </CometConfigProvider>
+        </DextinityConfigProvider>
     );
 }

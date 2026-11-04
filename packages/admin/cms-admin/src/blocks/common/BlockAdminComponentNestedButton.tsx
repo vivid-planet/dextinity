@@ -1,8 +1,8 @@
-import { Button } from "@comet/admin";
-import { Edit, Warning } from "@comet/admin-icons";
+import { Button } from "@dextinity/admin";
+import { Edit, Warning } from "@dextinity/admin-icons";
 import { Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { type MouseEventHandler, type ReactNode } from "react";
+import type { MouseEventHandler, ReactNode } from "react";
 
 import { BlockAdminComponentPaper } from "./BlockAdminComponentPaper";
 import { usePromise } from "./usePromise";

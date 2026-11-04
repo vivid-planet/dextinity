@@ -3,6 +3,7 @@
         "inlineSources": true,
         "sourceRoot": "/dist"
     },
-    "exclude": ["**/*.stories.tsx", "**/*.stories.ts", ".storybook"],
-    "extends": "./tsconfig.json"
+    "exclude": ["**/*.stories.tsx", "**/*.stories.ts"],
+    "extends": "./tsconfig.json",
+    "include": ["src"]
 }

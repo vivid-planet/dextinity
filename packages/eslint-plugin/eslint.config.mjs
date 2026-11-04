@@ -48,7 +48,12 @@ export default defineConfig([
             "jsonc/sort-keys": "error",
         },
     },
-    packageJson.configs.recommended,
+    {
+        ...packageJson.configs.recommended,
+        rules: {
+            "package-json/require-attribution": "off",
+        },
+    },
     {
         ignores: ["*.json"],
         languageOptions: {
@@ -66,7 +71,7 @@ export default defineConfig([
         // Rules
         rules: {
             "prefer-template": "error",
-            "no-console": ["error", { allow: ["warn", "error"] }],
+            "no-console": ["error", { allow: ["warn", "error", "info", "debug"] }],
             "no-return-await": "error",
             "@typescript-eslint/consistent-type-imports": [
                 "error",

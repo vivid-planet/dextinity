@@ -1,4 +1,4 @@
-import { type BlockInputApi, type BlockInterface, type BlockMethods, type BlockOutputApi, type BlockState } from "../types";
+import type { BlockInputApi, BlockInterface, BlockMethods, BlockOutputApi, BlockState } from "../types";
 
 type Decorate = BlockMethods;
 type Decorated<Block extends Decorate, Add extends Record<string, DefaultValue>> = BlockMethods<

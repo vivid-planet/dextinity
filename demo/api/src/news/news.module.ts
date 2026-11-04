@@ -1,4 +1,4 @@
-import { DependenciesResolverFactory, DependentsResolverFactory } from "@comet/cms-api";
+import { DependenciesResolverFactory, DependentsResolverFactory } from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { Module } from "@nestjs/common";
 import { News, NewsContentScope } from "@src/news/entities/news.entity";

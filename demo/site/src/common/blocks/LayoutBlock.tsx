@@ -1,6 +1,6 @@
 "use client";
-import { type PropsWithData, withPreview } from "@comet/site-nextjs";
-import { type LayoutBlockData } from "@src/blocks.generated";
+import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import type { LayoutBlockData } from "@src/blocks.generated";
 import clsx from "clsx";
 
 import styles from "./LayoutBlock.module.scss";

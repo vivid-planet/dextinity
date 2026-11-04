@@ -33,7 +33,9 @@ const sortByParentId = <TSortNode extends SortNode>(nodes: TSortNode[]) => {
 
     // then traverse this tree
     const preOrderTraverse = (sortTreeNode: SortTree<TSortNode>, fn: (node: TSortNode) => void) => {
-        if (sortTreeNode.node) fn(sortTreeNode.node);
+        if (sortTreeNode.node) {
+            fn(sortTreeNode.node);
+        }
         sortTreeNode.children.forEach((e) => {
             preOrderTraverse(e, fn);
         });
@@ -143,6 +145,9 @@ export const Stack = (props: PropsWithChildren<StackProps>) => {
     useEffect(() => {
         // execute on location change, set locationUrl for the last breadcrumb to the current location
         setBreadcrumbs((old) => {
+            if (old.length === 0) {
+                return old;
+            }
             const sorted = sortByParentId(old);
             sorted[sorted.length - 1].locationUrl = location.pathname + location.search; // modify object in place
             return [...old]; // clone (with modified object) to new array to trigger a state update

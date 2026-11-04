@@ -1,7 +1,8 @@
-import { messages } from "@comet/admin";
-import { ArrowLeft, File, Folder } from "@comet/admin-icons";
+import { messages } from "@dextinity/admin";
+import { ArrowLeft, File, Folder } from "@dextinity/admin-icons";
 import { List, ListItem, ListItemButton, ListItemIcon } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import type { JSX } from "react";
 import { FormattedMessage } from "react-intl";
 
 export interface PageListItem {
@@ -45,7 +46,7 @@ export function PageList({ items, showBackButton, onItemClick, onBackClick, site
                 ))}
                 {items.length === 0 && (
                     <ListItem>
-                        <FormattedMessage id="comet.pages.pageList.noItems" defaultMessage="No items" />
+                        <FormattedMessage id="dextinity.pages.pageList.noItems" defaultMessage="No items" />
                     </ListItem>
                 )}
             </ScrollableListSection>

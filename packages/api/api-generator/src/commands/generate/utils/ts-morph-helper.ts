@@ -1,4 +1,4 @@
-import { type EntityMetadata } from "@mikro-orm/postgresql";
+import type { EntityMetadata } from "@mikro-orm/postgresql";
 import * as path from "path";
 import { type ArrowFunction, ClassDeclaration, type Identifier, Project, SyntaxKind } from "ts-morph";
 
@@ -10,21 +10,27 @@ const project = new Project({
 });
 function morphTsSource(metadata: EntityMetadata<any>) {
     let tsSource = project.getSourceFile(metadata.path);
-    if (!tsSource) tsSource = project.addSourceFileAtPath(metadata.path);
+    if (!tsSource) {
+        tsSource = project.addSourceFileAtPath(metadata.path);
+    }
     return tsSource;
 }
 
 export function morphTsClass(metadata: EntityMetadata<any>) {
     const tsSource = morphTsSource(metadata);
     const tsClass = tsSource.getClass(metadata.className);
-    if (!tsClass) throw new Error(`Class ${metadata.className} not found in ${metadata.path}`);
+    if (!tsClass) {
+        throw new Error(`Class ${metadata.className} not found in ${metadata.path}`);
+    }
     return tsClass;
 }
 export function morphTsProperty(name: string, metadata: EntityMetadata<any>) {
     let currentClass: ClassDeclaration | undefined = morphTsClass(metadata);
     while (currentClass) {
         const prop = currentClass.getProperty(name);
-        if (prop) return prop;
+        if (prop) {
+            return prop;
+        }
 
         currentClass = currentClass.getBaseClass();
     }
@@ -45,7 +51,9 @@ export function findImportPath(importName: string, targetDirectory: string, meta
                     throw new Error(`Can't resolve import ${importPath}`);
                 }
                 const exportedDeclarations = importSource.getExportedDeclarations().get(importName);
-                if (!exportedDeclarations) throw new Error(`Can't get exported declaration for ${importName}`);
+                if (!exportedDeclarations) {
+                    throw new Error(`Can't get exported declaration for ${importName}`);
+                }
                 const exportedDeclaration = exportedDeclarations[0];
 
                 if (importPath.startsWith("./") || importPath.startsWith("../")) {
@@ -102,25 +110,29 @@ export function findEnumImportPath(enumName: string, targetDirectory: string, me
     }
 }
 
-export function findValidatorImportPath(validatorName: string, generatorOptions: { targetDirectory: string }, metadata: EntityMetadata<any>): string {
+export function findValidatorImportPath(validatorName: string, targetDirectory: string, metadata: EntityMetadata<any>): string {
     const tsSource = morphTsSource(metadata);
     //validator defined in same file as entity
     if (tsSource.getVariableDeclaration(validatorName) || tsSource.getFunction(validatorName)) {
         if (!(tsSource.getVariableDeclaration(validatorName)?.isExported() || tsSource.getFunction(validatorName)?.isExported())) {
             throw new Error(`Validator ${validatorName} is not exported in ${metadata.path}`);
         }
-        return path.relative(`${generatorOptions.targetDirectory}/dto`, metadata.path).replace(/\.ts$/, "");
+        return path.relative(`${targetDirectory}/dto`, metadata.path).replace(/\.ts$/, "");
     } else {
-        const { importPath } = findImportPathOrThrow(validatorName, generatorOptions.targetDirectory, metadata);
+        const { importPath } = findImportPathOrThrow(validatorName, targetDirectory, metadata);
         return importPath;
     }
 }
 
 export function findBlockName(propertyName: string, metadata: EntityMetadata<any>): string {
     const tsProp = morphTsProperty(propertyName, metadata);
-    if (!tsProp) throw new Error("property not found");
+    if (!tsProp) {
+        throw new Error("property not found");
+    }
     const rootBlockDecorator = tsProp.getDecorators().find((i) => i.getName() == "RootBlock");
-    if (!rootBlockDecorator) throw new Error(`RootBlock decorator not found for property ${propertyName}`);
+    if (!rootBlockDecorator) {
+        throw new Error(`RootBlock decorator not found for property ${propertyName}`);
+    }
     return rootBlockDecorator.getArguments()[0].getText();
 }
 
@@ -176,12 +188,17 @@ export function getFieldDecoratorClassName(propertyName: string, metadata: Entit
         return false;
     }
     const typeFnArg = fieldDecorator.getArguments()[0];
-    if (!typeFnArg) throw new Error(`${propertyName}: @Field is missing argument`);
-    if (typeFnArg.getKind() != SyntaxKind.ArrowFunction) throw new Error(`${propertyName}: @Field first argument must be an ArrowFunction`);
+    if (!typeFnArg) {
+        throw new Error(`${propertyName}: @Field is missing argument`);
+    }
+    if (typeFnArg.getKind() != SyntaxKind.ArrowFunction) {
+        throw new Error(`${propertyName}: @Field first argument must be an ArrowFunction`);
+    }
     const typeReturningArrowFunction = typeFnArg as ArrowFunction;
     const body = typeReturningArrowFunction.getBody();
-    if (body.getKind() != SyntaxKind.Identifier)
+    if (body.getKind() != SyntaxKind.Identifier) {
         throw new Error(`${propertyName}: @Field first argument must be an ArrowFunction returning an Identifier`);
+    }
     const identifier = body as Identifier;
     const className = identifier.getText();
     return className;

@@ -1,12 +1,12 @@
-import { type ApolloError } from "@apollo/client";
+import type { ApolloError } from "@apollo/client";
 import { type ComponentsOverrides, Paper } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { Loading } from "../common/Loading";
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 import { type ITableQueryApi, TableQueryContext } from "./TableQueryContext";
 
 /**
@@ -14,7 +14,9 @@ import { type ITableQueryApi, TableQueryContext } from "./TableQueryContext";
  */
 export const parseIdFromIri = (iri: string) => {
     const m = iri.match(/\/(\d+)/);
-    if (!m) return null;
+    if (!m) {
+        return null;
+    }
     return m[1];
 };
 
@@ -64,12 +66,11 @@ const LoadingPaper = createComponentSlot(Paper)<TableQueryClassKey>({
     width: 100px;
 `);
 
-export interface TableQueryProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        loadingContainer: "div";
-        loadingPaper: typeof Paper;
-    }> {
+export interface TableQueryProps extends ThemedComponentBaseProps<{
+    root: "div";
+    loadingContainer: "div";
+    loadingPaper: typeof Paper;
+}> {
     api: ITableQueryApi;
     loading: boolean;
     error?: ApolloError;
@@ -80,7 +81,7 @@ export interface TableQueryProps
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
 export function TableQuery(inProps: TableQueryProps) {
-    const { loading, error, children, api, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminTableQuery" });
+    const { loading, error, children, api, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminTableQuery" });
 
     return (
         <TableQueryContext.Provider
@@ -99,7 +100,7 @@ export function TableQuery(inProps: TableQueryProps) {
                 {error && (
                     <p>
                         <FormattedMessage
-                            id="comet.table.tableQuery.error"
+                            id="dextinity.table.tableQuery.error"
                             defaultMessage="Error :( {error}"
                             description="Display apollo error message"
                             values={{
@@ -116,17 +117,17 @@ export function TableQuery(inProps: TableQueryProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminTableQuery: TableQueryProps;
+        DextinityAdminTableQuery: TableQueryProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminTableQuery: TableQueryClassKey;
+        DextinityAdminTableQuery: TableQueryClassKey;
     }
 
     interface Components {
-        CometAdminTableQuery?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminTableQuery"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminTableQuery"];
+        DextinityAdminTableQuery?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminTableQuery"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminTableQuery"];
         };
     }
 }

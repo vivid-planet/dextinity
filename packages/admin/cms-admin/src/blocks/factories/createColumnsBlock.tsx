@@ -1,8 +1,8 @@
-import { Field, StackPage, StackPageTitle, StackSwitch, StackSwitchApiContext } from "@comet/admin";
-import { Add, Copy, Delete, Invisible, Paste, Visible } from "@comet/admin-icons";
+import { Field, StackPage, StackPageTitle, StackSwitch, StackSwitchApiContext } from "@dextinity/admin";
+import { Add, Copy, Delete, Invisible, Paste, Visible } from "@dextinity/admin-icons";
 import { Checkbox, Divider, FormControlLabel, IconButton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { type Dispatch, type ReactNode, type SetStateAction } from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { FormattedMessage, type IntlShape, type MessageDescriptor, useIntl } from "react-intl";
 import { v4 as uuid } from "uuid";
 
@@ -29,7 +29,7 @@ import { resolveNewState } from "../utils";
 import { parallelAsyncEvery } from "../utils/parallelAsyncEvery";
 import { FinalFormColumnsSelect } from "./columnsBlock/FinalFormColumnsSelect";
 import { FinalFormLayoutSelect } from "./columnsBlock/FinalFormLayoutSelect";
-import { type ListBlockItem, type ListBlockState } from "./createListBlock";
+import type { ListBlockItem, ListBlockState } from "./createListBlock";
 import { createUseAdminComponent as createUseListBlockAdminComponent } from "./listBlock/createUseAdminComponent";
 
 export interface ColumnsBlockLayout {
@@ -232,6 +232,7 @@ export function createColumnsBlock<T extends BlockInterface>(
             };
             const {
                 cannotPasteBlockErrorDialog,
+                clipboardProgressDialog,
                 createUpdateSubBlocksFn,
                 updateClipboardContent,
                 addNewBlock,
@@ -268,20 +269,20 @@ export function createColumnsBlock<T extends BlockInterface>(
                             >
                                 <Field
                                     name="columns"
-                                    label={<FormattedMessage id="comet.blocks.columns.columns" defaultMessage="Columns" />}
+                                    label={<FormattedMessage id="dextinity.blocks.columns.columns" defaultMessage="Columns" />}
                                     component={FinalFormColumnsSelect}
                                     columns={groupLayoutsByColumnsApi.columns}
                                     fullWidth
                                 />
                                 <Field
                                     name="layout"
-                                    label={<FormattedMessage id="comet.blocks.columns.layout" defaultMessage="Layout" />}
+                                    label={<FormattedMessage id="dextinity.blocks.columns.layout" defaultMessage="Layout" />}
                                     component={FinalFormLayoutSelect}
                                     layouts={groupLayoutsByColumnsApi.getLayouts(state.layout.columns)}
                                     fullWidth
                                 />
                             </BlocksFinalForm>
-                            <BlockAdminComponentSection title={<FormattedMessage id="comet.blocks.columns.items" defaultMessage="Items" />}>
+                            <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.columns.items" defaultMessage="Items" />}>
                                 <BlockAdminComponentPaper disablePadding>
                                     <StackSwitchApiContext.Consumer>
                                         {(stackApi) => {
@@ -298,7 +299,10 @@ export function createColumnsBlock<T extends BlockInterface>(
                                                                     />
                                                                 }
                                                                 label={
-                                                                    <FormattedMessage id="comet.blocks.list.selectAll" defaultMessage="Select all" />
+                                                                    <FormattedMessage
+                                                                        id="dextinity.blocks.list.selectAll"
+                                                                        defaultMessage="Select all"
+                                                                    />
                                                                 }
                                                             />
                                                         ) : (
@@ -325,7 +329,7 @@ export function createColumnsBlock<T extends BlockInterface>(
                                                     <div>
                                                         {state.columns.map((column, columnIndex) => {
                                                             return (
-                                                                <HoverPreviewComponent key={column.key} componentSlug={`${column.key}/content`}>
+                                                                <HoverPreviewComponent key={column.key} componentSlug={`${column.key}/edit`}>
                                                                     <BlockRow
                                                                         id={column.key}
                                                                         renderPreviewContent={() => (
@@ -395,7 +399,10 @@ export function createColumnsBlock<T extends BlockInterface>(
                                                             <LargeAddButtonContent>
                                                                 <LargeAddButtonIcon />
                                                                 <Typography>
-                                                                    <FormattedMessage id="comet.blocks.columns.addItem" defaultMessage="Add item" />
+                                                                    <FormattedMessage
+                                                                        id="dextinity.blocks.columns.addItem"
+                                                                        defaultMessage="Add item"
+                                                                    />
                                                                 </Typography>
                                                             </LargeAddButtonContent>
                                                         </BlockAdminComponentButton>
@@ -410,7 +417,7 @@ export function createColumnsBlock<T extends BlockInterface>(
                                                                 size="large"
                                                                 startIcon={<Add />}
                                                             >
-                                                                <FormattedMessage id="comet.blocks.columns.addItem" defaultMessage="Add item" />
+                                                                <FormattedMessage id="dextinity.blocks.columns.addItem" defaultMessage="Add item" />
                                                             </BlockAdminComponentButton>
                                                         </AdminComponentStickyFooter>
                                                     )}
@@ -421,12 +428,15 @@ export function createColumnsBlock<T extends BlockInterface>(
                                 </BlockAdminComponentPaper>
                             </BlockAdminComponentSection>
                         </StackPage>
-                        <StackPage name="edit" title={intl.formatMessage({ id: "comet.blocks.columns.editColumn", defaultMessage: "Edit column" })}>
+                        <StackPage
+                            name="edit"
+                            title={intl.formatMessage({ id: "dextinity.blocks.columns.editColumn", defaultMessage: "Edit column" })}
+                        >
                             {(key) => {
                                 const matchIndex = state.columns.findIndex((column) => column.key === key);
 
                                 if (matchIndex === -1) {
-                                    return <FormattedMessage id="comet.blocks.columns.unknownColumn" defaultMessage="Can't find column" />;
+                                    return <FormattedMessage id="dextinity.blocks.columns.unknownColumn" defaultMessage="Can't find column" />;
                                 }
 
                                 const match = state.columns[matchIndex];
@@ -440,6 +450,7 @@ export function createColumnsBlock<T extends BlockInterface>(
                         </StackPage>
                     </StackSwitch>
                     {cannotPasteBlockErrorDialog}
+                    {clipboardProgressDialog}
                 </>
             );
         },
@@ -449,7 +460,7 @@ export function createColumnsBlock<T extends BlockInterface>(
                 return [
                     {
                         type: "text",
-                        content: <FormattedMessage id="comet.blocks.columns.noColumns" defaultMessage="No columns" />,
+                        content: <FormattedMessage id="dextinity.blocks.columns.noColumns" defaultMessage="No columns" />,
                     },
                 ];
             }
@@ -483,6 +494,17 @@ export function createColumnsBlock<T extends BlockInterface>(
 
                 return [...content, ...(contentBlock.extractTextContents?.(column.props, options) ?? [])];
             }, []);
+        },
+        translateContent: async (state, translate) => {
+            const translatedColumns = await Promise.all(
+                state.columns.map(async (column) => {
+                    const translatedProps = contentBlock.translateContent
+                        ? await contentBlock.translateContent(column.props, translate)
+                        : column.props;
+                    return { ...column, props: translatedProps };
+                }),
+            );
+            return { ...state, columns: translatedColumns };
         },
     };
 
@@ -528,7 +550,7 @@ type GroupedLayoutsByColumnsApi = {
 function columnCountLabel(intl: IntlShape, count: number): string {
     return intl.formatMessage(
         {
-            id: "comet.blocks.columns.columnTitle",
+            id: "dextinity.blocks.columns.columnTitle",
             defaultMessage: "Column {number}",
         },
         { number: count },

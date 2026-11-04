@@ -1,8 +1,5 @@
-import { FileUploadsService } from "@comet/cms-api";
-import { FileUploadsConfig } from "@comet/cms-api/lib/file-uploads/file-uploads.config";
-import { FILE_UPLOADS_CONFIG } from "@comet/cms-api/lib/file-uploads/file-uploads.constants";
-import { DynamicModule, Global, Module, Optional } from "@nestjs/common";
-import { ModuleRef } from "@nestjs/core";
+import { FileUploadsService } from "@dextinity/cms-api";
+import { DynamicModule, Global, Module, OnModuleInit } from "@nestjs/common";
 
 import { BlacklistedContactsModule } from "./blacklisted-contacts/blacklisted-contacts.module";
 import { BrevoApiModule } from "./brevo-api/brevo-api.module";
@@ -17,22 +14,15 @@ import { TargetGroupModule } from "./target-group/target-group.module";
 
 @Global()
 @Module({})
-export class BrevoModule {
-    constructor(
-        private readonly moduleRef: ModuleRef,
-        @Optional() private readonly myGlobalService: FileUploadsService,
-    ) {
-        let fileUploadsConfig: FileUploadsConfig | undefined;
-        try {
-            fileUploadsConfig = this.moduleRef.get(FILE_UPLOADS_CONFIG, { strict: false });
-        } catch {
-            throw new Error("FileUploadsModule is an required import for BrevoModule");
-        }
+export class BrevoModule implements OnModuleInit {
+    constructor(private readonly fileUploadsService: FileUploadsService) {}
 
-        if (fileUploadsConfig && !fileUploadsConfig.acceptedMimeTypes.includes("text/csv")) {
+    onModuleInit(): void {
+        if (!this.fileUploadsService.acceptsMimeType("text/csv")) {
             throw new Error("BrevoModule requires mime type 'text/csv' in FileUploadsModule's config");
         }
     }
+
     static register(config: BrevoModuleConfig): DynamicModule {
         const BrevoConfig = BrevoConfigEntityFactory.create({
             Scope: config.emailCampaigns.Scope,

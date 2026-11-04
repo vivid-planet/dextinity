@@ -1,4 +1,4 @@
-import { Maximize } from "@comet/admin-icons";
+import { Maximize } from "@dextinity/admin-icons";
 import { css } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ReactSplit from "react-split";
@@ -17,6 +17,10 @@ interface ColumnProps {
 export const Column = styled("div")<ColumnProps>`
     position: relative;
     height: ${({ height }) => height}px;
+`;
+
+export const ScrollableColumn = styled(Column)`
+    overflow-y: auto;
 `;
 
 export const Split = styled(ReactSplit)`

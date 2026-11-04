@@ -1,4 +1,4 @@
-import { type VisibilityParam } from "@src/middleware/domainRewrite";
+import type { VisibilityParam } from "@src/middleware/domainRewrite";
 import type { ContentScope } from "@src/site-configs";
 import { cache } from "react";
 

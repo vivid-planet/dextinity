@@ -1,8 +1,8 @@
-import { gql } from "@comet/site-nextjs";
-import { type GQLNewsContentScopeInput } from "@src/graphql.generated";
+import { gql } from "@dextinity/site-nextjs";
+import type { GQLNewsContentScopeInput } from "@src/graphql.generated";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 
-import { type GQLNewsIndexPageQuery, type GQLNewsIndexPageQueryVariables } from "./NewsPage.loader.generated";
+import type { GQLNewsIndexPageQuery, GQLNewsIndexPageQueryVariables } from "./NewsPage.loader.generated";
 
 const newsFragment = gql`
     fragment NewsListItem on News {

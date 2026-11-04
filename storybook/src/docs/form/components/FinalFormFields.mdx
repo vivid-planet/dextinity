@@ -1,19 +1,26 @@
 import { Canvas, Meta } from "@storybook/addon-docs/blocks";
 
-import * as FinalFormFieldsStories from "./FinalFormFields.stories";
+import * as FinalFormAutocompleteStories from "./FinalFormFields/FinalFormAutocomplete.stories";
+import * as FinalFormCheckboxStories from "./FinalFormFields/FinalFormCheckbox.stories";
+import * as FinalFormInputStories from "./FinalFormFields/FinalFormInput.stories";
+import * as FinalFormRadioStories from "./FinalFormFields/FinalFormRadio.stories";
+import * as FinalFormRangeInputStories from "./FinalFormFields/FinalFormRangeInput.stories";
+import * as FinalFormSearchTextFieldStories from "./FinalFormFields/FinalFormSearchTextField.stories";
+import * as FinalFormSelectStories from "./FinalFormFields/FinalFormSelect.stories";
+import * as FinalFormSwitchStories from "./FinalFormFields/FinalFormSwitch.stories";
 
-<Meta of={FinalFormFieldsStories} />
+<Meta title="Docs/Form/Components/FinalForm Fields" />
 
-# Comet Admin FinalForm Fields
+# Dextinity Admin FinalForm Fields
 
-Comet Admin provides a set of FinalForm compatible form fields.
+Dextinity Admin provides a set of FinalForm compatible form fields.
 
 ## FinalFormInput
 
 `FinalFormInput` is a plain input field.
 You can use it like the HTML input element.
 
-<Canvas of={FinalFormFieldsStories._FinalFormInput} />
+<Canvas of={FinalFormInputStories.Default} />
 
 ## FinalFormSearchTextField
 
@@ -21,7 +28,7 @@ You can use it like the HTML input element.
 You can use it for implementing a search field.
 It doesn't have any built-in search functionality.
 
-<Canvas of={FinalFormFieldsStories._FinalFormSearchTextField} />
+<Canvas of={FinalFormSearchTextFieldStories.Default} />
 
 ## FinalFormSelect
 
@@ -29,28 +36,28 @@ It doesn't have any built-in search functionality.
 For async options, use the special `FinalFormAsyncSelect` component that uses the `useAsyncOptionsProps()` hook internally.
 It expects the value to be an object to be able to display the current value without having to load the async options.
 
-<Canvas of={FinalFormFieldsStories._FinalFormSelect} />
+<Canvas of={FinalFormSelectStories.Default} />
 
 ## FinalFormAutocomplete
 
 `FinalFormAutocomplete` provides a select with a search field.
 It can be used similarly to [FinalFormSelect](#finalformselect).
 
-<Canvas of={FinalFormFieldsStories._FinalFormAutocomplete} />
+<Canvas of={FinalFormAutocompleteStories.Default} />
 
 ## FinalFormCheckbox
 
 `FinalFormCheckbox` provides a checkbox.
 It should be used inside a [Material UI `FormControlLabel`](https://v4.mui.com/api/form-control-label/#formcontrollabel-api).
 
-<Canvas of={FinalFormFieldsStories._FinalFormCheckbox} />
+<Canvas of={FinalFormCheckboxStories.Default} />
 
 ## FinalFormSwitch
 
 `FinalFormSwitch` provides a switch.
 It should be used inside a [Material UI `FormControlLabel`](https://v4.mui.com/api/form-control-label/#formcontrollabel-api).
 
-<Canvas of={FinalFormFieldsStories._FinalFormSwitch} />
+<Canvas of={FinalFormSwitchStories.Default} />
 
 ## FinalFormRadio
 
@@ -60,7 +67,7 @@ It should be used inside a [Material UI `FormControlLabel`](https://v4.mui.com/a
 Each radio option must be a separate `Field`.
 All the Fields should be wrapped in a `FieldContainer`.
 
-<Canvas of={FinalFormFieldsStories._FinalFormRadio} />
+<Canvas of={FinalFormRadioStories.Default} />
 
 ## FinalFormRangeInput
 
@@ -68,4 +75,4 @@ All the Fields should be wrapped in a `FieldContainer`.
 It consists of two text input fields and a slider.
 This range input can, for example, be used for filtering products by price.
 
-<Canvas of={FinalFormFieldsStories._FinalFormRangeInput} />
+<Canvas of={FinalFormRangeInputStories.Default} />

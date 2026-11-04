@@ -2,12 +2,12 @@ import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, MikroORM, QueryBuilder, raw } from "@mikro-orm/postgresql";
 import { forwardRef, Inject, Injectable, Logger } from "@nestjs/common";
 import JSZip from "jszip";
-import isEqual from "lodash.isequal";
 
 import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service";
 import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
-import { CometEntityNotFoundException } from "../../common/errors/entity-not-found.exception";
+import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception";
 import { SortDirection } from "../../common/sorting/sort-direction.enum";
+import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
 import { DamConfig } from "../dam.config";
 import { DAM_CONFIG } from "../dam.constants";
 import { DamScopeInterface } from "../types";
@@ -51,7 +51,13 @@ const withFoldersSelect = (
     }
 
     if (args.sortColumnName && args.sortDirection) {
-        qb.orderBy({ [`folder.${args.sortColumnName}`]: args.sortDirection });
+        if (args.sortColumnName === "size") {
+            qb.orderBy({ [raw("(COUNT(DISTINCT children.id) + COUNT(DISTINCT files.id))")]: args.sortDirection });
+        } else if (args.sortColumnName === "mimetype") {
+            qb.orderBy({ [`folder.name`]: args.sortDirection });
+        } else {
+            qb.orderBy({ [`folder.${args.sortColumnName}`]: args.sortDirection });
+        }
     }
 
     if (args.offset) {
@@ -129,7 +135,8 @@ export class FoldersService {
         const qb = withFoldersSelect(this.selectQueryBuilder(), args);
         const folders = await qb.getResult();
 
-        const countQb = withFoldersSelect(this.countQueryBuilder(), args);
+        // Omit sort args: ordering is irrelevant for counting and the count query builder lacks the joins required for "size" sorting
+        const countQb = withFoldersSelect(this.countQueryBuilder(), { ...args, sortColumnName: undefined, sortDirection: undefined });
         const totalCount = await countQb.getCount();
 
         return [folders, totalCount];
@@ -188,7 +195,9 @@ export class FoldersService {
 
     async updateById(id: string, data: UpdateFolderInput): Promise<FolderInterface> {
         const folder = await this.findOneById(id);
-        if (!folder) throw new CometEntityNotFoundException();
+        if (!folder) {
+            throw new DextinityEntityNotFoundException();
+        }
         return this.updateByEntity(folder, data);
     }
 
@@ -253,8 +262,7 @@ export class FoldersService {
                 throw new Error("Target folder doesn't exist");
             }
 
-            // Convert to JS object because deep-comparing classes and objects doesn't work
-            if (scope && targetFolder.scope && !isEqual({ ...targetFolder.scope }, scope)) {
+            if (scope && targetFolder.scope && !contentScopesAreEqual(targetFolder.scope, scope)) {
                 throw new Error("Scope arg doesn't match folder scope");
             }
         }
@@ -266,8 +274,7 @@ export class FoldersService {
                 throw new Error("Folder doesn't exist");
             }
 
-            // Convert to JS object because deep-comparing classes and objects doesn't work
-            if (scope && folder.scope && !isEqual({ ...folder.scope }, scope)) {
+            if (scope && folder.scope && !contentScopesAreEqual(folder.scope, scope)) {
                 throw new Error("Scope arg doesn't match folder scope");
             }
 
@@ -294,19 +301,26 @@ export class FoldersService {
     }
 
     async getFolderPosition(folderId: string, args: Omit<DamFolderListPositionArgs, "scope">, scope?: DamScopeInterface): Promise<number> {
-        const subQb = withFoldersSelect(
-            this.foldersRepository
-                .createQueryBuilder("folder")
-                .select(["folder.id", raw(`ROW_NUMBER() OVER( ORDER BY folder."${args.sortColumnName}" ${args.sortDirection} ) AS row_number`)]),
-            {
-                includeArchived: args.includeArchived,
-                parentId: args.parentId,
-                query: args.filter?.searchText,
-                sortColumnName: args.sortColumnName,
-                sortDirection: args.sortDirection,
-                scope,
-            },
-        );
+        const isSizeSort = args.sortColumnName === "size";
+        const effectiveSortColumn = args.sortColumnName === "mimetype" ? "name" : args.sortColumnName;
+        const rowNumberExpr = isSizeSort
+            ? raw(`ROW_NUMBER() OVER( ORDER BY (COUNT(DISTINCT children.id) + COUNT(DISTINCT files.id)) ${args.sortDirection} ) AS row_number`)
+            : raw(`ROW_NUMBER() OVER( ORDER BY folder."${effectiveSortColumn}" ${args.sortDirection} ) AS row_number`);
+
+        let baseQb = this.foldersRepository.createQueryBuilder("folder").select(["folder.id", rowNumberExpr]);
+
+        if (isSizeSort) {
+            baseQb = baseQb.leftJoin("folder.children", "children").leftJoin("folder.files", "files").groupBy(["folder.id"]);
+        }
+
+        const subQb = withFoldersSelect(baseQb, {
+            includeArchived: args.includeArchived,
+            parentId: args.parentId,
+            query: args.filter?.searchText,
+            sortColumnName: args.sortColumnName,
+            sortDirection: args.sortDirection,
+            scope,
+        });
 
         const result: { rows: Array<{ row_number: string }> } = await this.foldersRepository.getKnex().raw(
             `select "folder_with_row_number".row_number

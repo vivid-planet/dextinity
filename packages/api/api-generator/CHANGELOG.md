@@ -1,5 +1,511 @@
 # @comet/api-generator
 
+## 10.13.1
+
+### Patch Changes
+
+- 9f07f46: Keep `generate --watch` running when generating a changed entity fails
+
+    Previously, the failure caused an unhandled promise rejection that terminated the watcher instead of logging the error.
+
+- Updated dependencies [795901f]
+- Updated dependencies [94991f8]
+    - @dextinity/cms-api@10.13.1
+
+## 10.13.0
+
+### Patch Changes
+
+- Updated dependencies [7d8cbff]
+- Updated dependencies [ad3f6d5]
+- Updated dependencies [a476170]
+    - @dextinity/cms-api@10.13.0
+
+## 10.12.0
+
+### Patch Changes
+
+- Updated dependencies [2735896]
+- Updated dependencies [a3ba4c9]
+- Updated dependencies [6d552f0]
+    - @dextinity/cms-api@10.12.0
+
+## 10.11.0
+
+### Patch Changes
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- 48a9757: Update `commander` to v14
+
+    Commands now fail with "too many arguments" when they receive positional arguments they don't declare. Before, these arguments were ignored.
+    For example, an unquoted glob passed to `dextinity-admin-generator generate --file` is expanded by the shell into several arguments, and only the first file was generated. Quote the glob so the admin generator receives it as one pattern:
+
+    ```bash
+    dextinity-admin-generator generate --file 'src/products/**/*.dextinityGen.tsx'
+    ```
+
+- Updated dependencies [97b3b42]
+- Updated dependencies [22bd832]
+- Updated dependencies [bc24036]
+- Updated dependencies [79c2746]
+- Updated dependencies [05ea45d]
+- Updated dependencies [79c2746]
+- Updated dependencies [75ebfd4]
+- Updated dependencies [9a5fd29]
+- Updated dependencies [c5f02ac]
+- Updated dependencies [a6050c4]
+    - @dextinity/cms-api@10.11.0
+
+## 10.10.0
+
+### Patch Changes
+
+- Updated dependencies [3862673]
+- Updated dependencies [b6441cb]
+- Updated dependencies [b6bca3b]
+- Updated dependencies [d5d2a85]
+- Updated dependencies [7a121f1]
+- Updated dependencies [ad1ad05]
+    - @dextinity/cms-api@10.10.0
+
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/cms-api@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- fa3c71f: Allow `class-validator` v0.15 as peer dependency
+
+    The peer dependency range is widened to `^0.14.0 || ^0.15.0`.
+
+    `class-validator` v0.15 changes the signature of `@IsIBAN()`: it now accepts an options argument, which breaks existing calls that pass an argument, e.g. `@IsIBAN({ forbidUnknownValues: false })`. Check your usage of `@IsIBAN()` before upgrading to v0.15.
+
+- 91131d2: Fix import paths in nested entity resolvers when the nested entity is located in a different directory
+
+    The resolver is written to the parent entity's `generated` directory, but the import paths were calculated relative to the nested entity's `generated` directory.
+
+- Updated dependencies [fa3c71f]
+- Updated dependencies [d32c558]
+- Updated dependencies [13838dc]
+- Updated dependencies [d32c558]
+- Updated dependencies [4446a81]
+- Updated dependencies [8c8f1c4]
+- Updated dependencies [e9067c3]
+- Updated dependencies [1c29104]
+- Updated dependencies [070b357]
+- Updated dependencies [e84ba03]
+    - @dextinity/cms-api@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- 07bf882: Add `tsconfig-paths` as a dependency
+
+    `dextinity-api-generator` registers `tsconfig-paths/register` at runtime, but the package only worked because `tsconfig-paths` happened to be hoisted from another package's dependencies. Declaring it directly ensures the CLI works when installed standalone.
+
+- Updated dependencies [44125b9]
+- Updated dependencies [383e9ed]
+- Updated dependencies [0076f28]
+- Updated dependencies [8538d98]
+- Updated dependencies [5d9bf35]
+- Updated dependencies [4a1da4e]
+- Updated dependencies [dddb222]
+- Updated dependencies [8fbfbce]
+- Updated dependencies [36f7f17]
+- Updated dependencies [9109aa3]
+    - @dextinity/cms-api@10.8.0
+
+## 10.7.0
+
+### Patch Changes
+
+- Updated dependencies [ae93af6]
+    - @dextinity/cms-api@10.7.0
+
+## 10.6.0
+
+### Patch Changes
+
+- Updated dependencies [073dcd7]
+- Updated dependencies [012411c]
+- Updated dependencies [d6a910e]
+    - @dextinity/cms-api@10.6.0
+
+## 10.5.1
+
+### Patch Changes
+
+- Updated dependencies [9d150e6]
+    - @dextinity/cms-api@10.5.1
+
+## 10.5.0
+
+### Patch Changes
+
+- Updated dependencies [f4d091f]
+- Updated dependencies [0be2f59]
+- Updated dependencies [02bba49]
+    - @dextinity/cms-api@10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- Updated dependencies [a00f0b2]
+    - @dextinity/cms-api@10.4.0
+
+## 10.3.0
+
+### Patch Changes
+
+- Updated dependencies [0c211e9]
+- Updated dependencies [ddea65d]
+- Updated dependencies [66cb98a]
+- Updated dependencies [3ffe174]
+    - @dextinity/cms-api@10.3.0
+
+## 10.2.0
+
+### Patch Changes
+
+- Updated dependencies [a4ec0fe]
+- Updated dependencies [edf2027]
+    - @dextinity/cms-api@10.2.0
+
+## 10.1.0
+
+### Patch Changes
+
+- @dextinity/cms-api@10.1.0
+
+## 10.0.1
+
+### Patch Changes
+
+- @dextinity/cms-api@10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/api-generator` to `@dextinity/api-generator`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `comet-api-generator` binary to `dextinity-api-generator`:
+
+        ```diff
+        - "generate-crud": "comet-api-generator"
+        + "generate-crud": "dextinity-api-generator"
+        ```
+
+    - Change the header of generated files. Rerun the generator to update them
+
+### Patch Changes
+
+- Updated dependencies [86f90cb]
+- Updated dependencies [f843a5e]
+    - @dextinity/cms-api@10.0.0
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/api-generator` to `@dextinity/api-generator`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `comet-api-generator` binary to `dextinity-api-generator`:
+
+        ```diff
+        - "generate-crud": "comet-api-generator"
+        + "generate-crud": "dextinity-api-generator"
+        ```
+
+    - Change the header of generated files. Rerun the generator to update them
+
+### Patch Changes
+
+- Updated dependencies [86f90cb]
+- Updated dependencies [f843a5e]
+- Updated dependencies [8c6be74]
+    - @dextinity/cms-api@10.0.0-beta.0
+
+## 9.5.0
+
+### Patch Changes
+
+- Updated dependencies [4eadaf5]
+- Updated dependencies [4eadaf5]
+    - @comet/cms-api@9.5.0
+
+## 9.4.0
+
+### Patch Changes
+
+- Updated dependencies [0dac371]
+- Updated dependencies [14d481e]
+- Updated dependencies [8c6be74]
+    - @comet/cms-api@9.4.0
+
+## 9.3.0
+
+### Patch Changes
+
+- Updated dependencies [a8e8f02]
+- Updated dependencies [924b66c]
+    - @comet/cms-api@9.3.0
+
+## 9.2.2
+
+### Patch Changes
+
+- Updated dependencies [d1022e2]
+- Updated dependencies [a2515ce]
+    - @comet/cms-api@9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- @comet/cms-api@9.2.1
+
+## 9.2.0
+
+### Patch Changes
+
+- Updated dependencies [ee0bf93]
+- Updated dependencies [3c28742]
+- Updated dependencies [8d46a98]
+    - @comet/cms-api@9.2.0
+
+## 9.1.1
+
+### Patch Changes
+
+- @comet/cms-api@9.1.1
+
+## 9.1.0
+
+### Patch Changes
+
+- Updated dependencies [319f5b8]
+    - @comet/cms-api@9.1.0
+
+## 9.0.1
+
+### Patch Changes
+
+- @comet/cms-api@9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 18748d1: Stop generating GraphQL selection-set based `populate` handling in generated CRUD list resolvers.
+
+    MikroORM dataloader must now be enabled in API projects (for example with `dataloader: DataloaderType.ALL` in your MikroORM config) to efficiently resolve relation fields.
+
+- 10dda8c: Remove `targetDirectory` config from `@CrudGenerator` decorator and always generate files to `${__dirname}/../generated/`
+
+### Minor Changes
+
+- 623111e: Support re-using an enum (for filters) in multiple models by using a shared generated filter type
+- 70a77db: Reuse `@RequiredPermission` from entity in resolver permissions
+
+    The `UserPermissionsGuard` now falls back to the entity's `@RequiredPermission` decorator when no permission is explicitly set on the resolver. The entity is resolved from the `@Resolver(() => Entity)` decorator.
+
+    Additionally, the CRUD generator no longer emits `@RequiredPermission` on generated resolvers if the entity already has `@RequiredPermission` set. This avoids redundant permission declarations.
+
+- dd51208: Update TypeScript compilation target to ES2023 and lib to ES2023 to match the required Node.js v22
+
+### Patch Changes
+
+- 8642996: Fix `MODULE_NOT_FOUND` errors caused by extensionless deep imports of `@nestjs/graphql` internals. `@nestjs/graphql` 13.3.0 tightened its `exports` map so that the `"./*": "./*"` pattern no longer maps to `.js` automatically. All deep imports of `@nestjs/graphql` internals now use explicit `.js` extensions.
+- 16c0e64: Fix missing import for nested `ManyToOne` resolver target entities
+
+    `@comet/api-generator` now imports nested `ManyToOne` target entities in generated resolvers so generated code compiles without unresolved symbol errors.
+
+- Updated dependencies [f1a473a]
+- Updated dependencies [8954d64]
+- Updated dependencies [4c1aeb2]
+- Updated dependencies [67938b2]
+- Updated dependencies [c0cee12]
+- Updated dependencies [7fbe2a7]
+- Updated dependencies [54f57dd]
+- Updated dependencies [a50793a]
+- Updated dependencies [cac2b3b]
+- Updated dependencies [9d5f045]
+- Updated dependencies [c6703db]
+- Updated dependencies [8c2fdde]
+- Updated dependencies [b0ceb9c]
+- Updated dependencies [127a492]
+- Updated dependencies [fa5c7a4]
+- Updated dependencies [f6a2932]
+- Updated dependencies [35e9e0d]
+- Updated dependencies [91f4a9f]
+- Updated dependencies [6b7adc7]
+- Updated dependencies [31d9296]
+- Updated dependencies [19a0528]
+- Updated dependencies [71dce06]
+- Updated dependencies [1b37655]
+- Updated dependencies [f162fa5]
+- Updated dependencies [1ad7de3]
+- Updated dependencies [0e7d7e9]
+- Updated dependencies [3f3da52]
+- Updated dependencies [affbb11]
+- Updated dependencies [fad0167]
+- Updated dependencies [6793853]
+- Updated dependencies [a2c2eb5]
+- Updated dependencies [962a320]
+- Updated dependencies [802b0b8]
+- Updated dependencies [8bf0e5b]
+- Updated dependencies [70a77db]
+- Updated dependencies [2ea835c]
+- Updated dependencies [8498a7c]
+- Updated dependencies [ac59b62]
+- Updated dependencies [171c335]
+- Updated dependencies [8ad9dd8]
+- Updated dependencies [bc57b4a]
+- Updated dependencies [2fe9d4b]
+- Updated dependencies [dd51208]
+- Updated dependencies [8722deb]
+    - @comet/cms-api@9.0.0
+
+## 9.0.0-beta.6
+
+### Minor Changes
+
+- 70a77db: Reuse `@RequiredPermission` from entity in resolver permissions
+
+    The `UserPermissionsGuard` now falls back to the entity's `@RequiredPermission` decorator when no permission is explicitly set on the resolver. The entity is resolved from the `@Resolver(() => Entity)` decorator.
+
+    Additionally, the CRUD generator no longer emits `@RequiredPermission` on generated resolvers if the entity already has `@RequiredPermission` set. This avoids redundant permission declarations.
+
+### Patch Changes
+
+- Updated dependencies [f1a473a]
+- Updated dependencies [8954d64]
+- Updated dependencies [4c1aeb2]
+- Updated dependencies [67938b2]
+- Updated dependencies [7fbe2a7]
+- Updated dependencies [35e9e0d]
+- Updated dependencies [91f4a9f]
+- Updated dependencies [1b37655]
+- Updated dependencies [affbb11]
+- Updated dependencies [fad0167]
+- Updated dependencies [6793853]
+- Updated dependencies [70a77db]
+- Updated dependencies [8498a7c]
+- Updated dependencies [ac59b62]
+    - @comet/cms-api@9.0.0-beta.6
+
+## 9.0.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [c0cee12]
+- Updated dependencies [9d5f045]
+- Updated dependencies [b0ceb9c]
+- Updated dependencies [6b7adc7]
+- Updated dependencies [a2c2eb5]
+- Updated dependencies [8ad9dd8]
+    - @comet/cms-api@9.0.0-beta.5
+
+## 9.0.0-beta.4
+
+### Patch Changes
+
+- 16c0e64: Fix missing import for nested `ManyToOne` resolver target entities
+
+    `@comet/api-generator` now imports nested `ManyToOne` target entities in generated resolvers so generated code compiles without unresolved symbol errors.
+
+- Updated dependencies [c6703db]
+- Updated dependencies [127a492]
+- Updated dependencies [fa5c7a4]
+- Updated dependencies [31d9296]
+- Updated dependencies [2fe9d4b]
+    - @comet/cms-api@9.0.0-beta.4
+
+## 9.0.0-beta.3
+
+### Minor Changes
+
+- dd51208: Update TypeScript compilation target to ES2023 and lib to ES2023 to match the required Node.js v22
+
+### Patch Changes
+
+- 8642996: Fix `MODULE_NOT_FOUND` errors caused by extensionless deep imports of `@nestjs/graphql` internals. `@nestjs/graphql` 13.3.0 tightened its `exports` map so that the `"./*": "./*"` pattern no longer maps to `.js` automatically. All deep imports of `@nestjs/graphql` internals now use explicit `.js` extensions.
+- Updated dependencies [a50793a]
+- Updated dependencies [cac2b3b]
+- Updated dependencies [f6a2932]
+- Updated dependencies [71dce06]
+- Updated dependencies [0e7d7e9]
+- Updated dependencies [962a320]
+- Updated dependencies [802b0b8]
+- Updated dependencies [8bf0e5b]
+- Updated dependencies [2ea835c]
+- Updated dependencies [dd51208]
+- Updated dependencies [8722deb]
+    - @comet/cms-api@9.0.0-beta.3
+
+## 9.0.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [1ad7de3]
+    - @comet/cms-api@9.0.0-beta.2
+
+## 9.0.0-beta.1
+
+### Patch Changes
+
+- Updated dependencies [8c2fdde]
+- Updated dependencies [19a0528]
+- Updated dependencies [f162fa5]
+- Updated dependencies [3f3da52]
+- Updated dependencies [171c335]
+    - @comet/cms-api@9.0.0-beta.1
+
+## 9.0.0-beta.0
+
+### Major Changes
+
+- 18748d1: Stop generating GraphQL selection-set based `populate` handling in generated CRUD list resolvers.
+
+    MikroORM dataloader must now be enabled in API projects (for example with `dataloader: DataloaderType.ALL` in your MikroORM config) to efficiently resolve relation fields.
+
+- 10dda8c: Remove `targetDirectory` config from `@CrudGenerator` decorator and always generate files to `${__dirname}/../generated/`
+
+### Minor Changes
+
+- 623111e: Support re-using an enum (for filters) in multiple models by using a shared generated filter type
+
+### Patch Changes
+
+- @comet/cms-api@9.0.0-beta.0
+
+## 8.20.0
+
+### Patch Changes
+
+- Updated dependencies [ed00704]
+    - @comet/cms-api@8.20.0
+
 ## 8.19.0
 
 ### Patch Changes

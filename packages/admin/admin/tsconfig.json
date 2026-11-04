@@ -5,10 +5,10 @@
         "paths": {
             "test-utils": ["./utils/test-utils"]
         },
-        "rootDir": "src",
+        "rootDir": ".",
         "typeRoots": ["node_modules/@types", "node_modules/@testing-library"]
     },
     "exclude": [],
     "extends": "../tsconfig.base.json",
-    "include": ["./src"]
+    "include": ["./src", "./.storybook", "./vitest.setup.ts"]
 }

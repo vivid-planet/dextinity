@@ -4,15 +4,30 @@ import {
     CrudGenerator,
     DamImageBlock,
     EntityInfo,
+    entityToMikroOrmFullText,
+    RequiredPermission,
     RootBlock,
     RootBlockDataScalar,
     RootBlockEntity,
     RootBlockType,
-} from "@comet/cms-api";
-import { BaseEntity, Collection, Embeddable, Embedded, Entity, Enum, OneToMany, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+} from "@dextinity/cms-api";
+import {
+    BaseEntity,
+    Collection,
+    Embeddable,
+    Embedded,
+    Entity,
+    Enum,
+    FullTextType,
+    Index,
+    OneToMany,
+    OptionalProps,
+    PrimaryKey,
+    Property,
+} from "@mikro-orm/postgresql";
 import { Field, ID, InputType, ObjectType, registerEnumType } from "@nestjs/graphql";
 import { IsString } from "class-validator";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { NewsContentBlock } from "../blocks/news-content.block";
 import { NewsComment } from "./news-comment.entity";
@@ -47,17 +62,23 @@ export class NewsContentScope {
     language: string;
 }
 
-@EntityInfo<News>((news) => ({ name: news.title, secondaryInformation: news.slug }))
+@EntityInfo<News>({
+    name: "title",
+    secondaryInformation: "slug",
+    visible: { status: { $eq: NewsStatus.active } },
+    fullText: "fullText",
+})
+@RequiredPermission("news")
 @RootBlockEntity()
 @ObjectType()
 @Entity()
-@CrudGenerator({ targetDirectory: `${__dirname}/../generated/`, requiredPermission: ["news"] })
+@CrudGenerator({ requiredPermission: ["news"] })
 export class News extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt" | "status";
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Embedded(() => NewsContentScope)
     @Field(() => NewsContentScope)
@@ -108,4 +129,13 @@ export class News extends BaseEntity {
     @Property({ onUpdate: () => new Date(), columnType: "timestamp with time zone" })
     @Field()
     updatedAt: Date = new Date();
+
+    @Index({ type: "fulltext" })
+    @Property<News>({
+        nullable: true,
+        type: new FullTextType(),
+        onCreate: (news) => entityToMikroOrmFullText({ A: news.title, D: news.slug }, news.content),
+        onUpdate: (news) => entityToMikroOrmFullText({ A: news.title, D: news.slug }, news.content),
+    })
+    fullText?: string;
 }

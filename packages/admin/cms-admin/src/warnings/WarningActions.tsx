@@ -1,13 +1,13 @@
 import { useApolloClient } from "@apollo/client";
-import { messages, Tooltip } from "@comet/admin";
-import { ArrowRight, OpenNewTab } from "@comet/admin-icons";
+import { messages, Tooltip } from "@dextinity/admin";
+import { ArrowRight, OpenNewTab } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 import { useHistory } from "react-router";
 
 import { type ContentScope, useContentScope } from "../contentScope/Provider";
 import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
-import { type DependencyInterface } from "../dependencies/types";
+import type { DependencyInterface } from "../dependencies/types";
 
 interface Props {
     sourceInfo: {
@@ -28,7 +28,9 @@ export function WarningActions({ sourceInfo, scope }: Props) {
 
     const dependencyObject = entityDependencyMap[sourceInfo.rootEntityName] as DependencyInterface | undefined;
 
-    if (!dependencyObject) return null; // to some warnings it cannot be linked to. When missing a dependency or for example a failing job cannot be resolved in the admin and therefore cannot have a link
+    if (!dependencyObject) {
+        return null;
+    } // to some warnings it cannot be linked to. When missing a dependency or for example a failing job cannot be resolved in the admin and therefore cannot have a link
 
     if (dependencyObject === undefined) {
         if (process.env.NODE_ENV === "development") {
@@ -36,7 +38,7 @@ export function WarningActions({ sourceInfo, scope }: Props) {
                 `Cannot load URL because no implementation of DependencyInterface for ${sourceInfo.rootEntityName} was provided via the DependenciesConfig`,
             );
         }
-        return <FormattedMessage id="comet.dependencies.dataGrid.cannotLoadUrl" defaultMessage="Cannot determine URL" />;
+        return <FormattedMessage id="dextinity.dependencies.dataGrid.cannotLoadUrl" defaultMessage="Cannot determine URL" />;
     }
 
     const loadUrl = async () => {

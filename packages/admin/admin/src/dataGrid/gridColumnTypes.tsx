@@ -6,12 +6,12 @@ import {
     GridFilterInputValue,
     type GridFilterInputValueProps,
 } from "@mui/x-data-grid";
-import { DateTimePicker } from "@mui/x-date-pickers";
 import { format, parse } from "date-fns";
 import { useState } from "react";
 import { FormattedDate, FormattedMessage } from "react-intl";
 
-import { Future_DatePicker as DatePicker } from "../dateTime/datePicker/DatePicker";
+import { DatePicker } from "../dateTime/datePicker/DatePicker";
+import { DateTimePicker } from "../dateTime/dateTimePicker/DateTimePicker";
 
 const dateFormat = "yyyy-MM-dd";
 const dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
@@ -39,7 +39,7 @@ const DatePickerFilter = ({ item, applyValue }: GridFilterInputValueProps) => {
                     },
                     slotProps: {
                         textField: {
-                            label: <FormattedMessage id="dataGrid.filterOperator.date.label" defaultMessage="Value" />,
+                            label: <FormattedMessage id="dextinity.dataGrid.filterOperator.date.label" defaultMessage="Value" />,
                             onBlur: () => {
                                 applyValue({ ...item, value: internalValue });
                             },
@@ -69,10 +69,10 @@ export const dataGridDateColumn: GridColTypeDef = {
 };
 
 const DateTimePickerFilter = ({ item, applyValue }: GridFilterInputValueProps) => {
-    const dateValue = item.value ? parse(item.value, dateTimeFormat, new Date()) : null;
-    const [internalValue, setInternalValue] = useState<Date | null>(dateValue);
+    const dateValue = item.value ? parse(item.value, dateTimeFormat, new Date()) : undefined;
+    const [internalValue, setInternalValue] = useState<Date | undefined>(dateValue);
 
-    const applyDateValue = (newValue: Date | null) => {
+    const applyDateValue = (newValue: Date | null | undefined) => {
         const stringValue = newValue ? format(newValue, dateTimeFormat) : null;
         applyValue({ ...item, value: stringValue });
     };
@@ -80,23 +80,28 @@ const DateTimePickerFilter = ({ item, applyValue }: GridFilterInputValueProps) =
     return (
         <DateTimePicker
             value={internalValue}
-            label={<FormattedMessage id="dataGrid.filterOperator.dateTime.label" defaultMessage="Value" />}
-            onChange={(newValue: Date | null) => {
+            label={<FormattedMessage id="dextinity.dataGrid.filterOperator.dateTime.label" defaultMessage="Value" />}
+            onChange={(newValue: Date | undefined) => {
                 setInternalValue(newValue);
             }}
             onAccept={(newValue: Date | null) => {
                 applyDateValue(newValue);
             }}
             slotProps={{
-                textField: {
-                    variant: "standard",
-                    size: "small",
-                    fullWidth: true,
-                    InputProps: {
-                        disableUnderline: true,
+                root: {
+                    sx: {
+                        [`& .${inputLabelClasses.root}`]: {
+                            // Render the label normally as no `FieldContainer` is used here to be consistent with other inputs in the datagrid filters
+                            display: "block",
+                        },
                     },
-                    onBlur: () => {
-                        applyDateValue(internalValue);
+                    slotProps: {
+                        textField: {
+                            fullWidth: true,
+                            onBlur: () => {
+                                applyDateValue(internalValue);
+                            },
+                        },
                     },
                 },
             }}

@@ -27,7 +27,9 @@ export class AttachedDocumentLoaderService {
                     };
                 }),
             })) {
-                if (!attachedDocumentsByType[attachedDocument.type]) attachedDocumentsByType[attachedDocument.type] = [];
+                if (!attachedDocumentsByType[attachedDocument.type]) {
+                    attachedDocumentsByType[attachedDocument.type] = [];
+                }
                 attachedDocumentsByType[attachedDocument.type].push(attachedDocument);
 
                 attachedDocumentsByKey.set(`${attachedDocument.pageTreeNodeId}$${attachedDocument.type}`, attachedDocument);
@@ -42,7 +44,9 @@ export class AttachedDocumentLoaderService {
             }
             return keys.map((key) => {
                 const attachedDocument = attachedDocumentsByKey.get(key);
-                if (!attachedDocument) return null;
+                if (!attachedDocument) {
+                    return null;
+                }
                 return documentsMap.get(attachedDocument.documentId) ?? null;
             });
         });

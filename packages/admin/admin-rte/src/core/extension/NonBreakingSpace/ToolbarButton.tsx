@@ -1,12 +1,12 @@
-import { RteNonBreakingSpace } from "@comet/admin-icons";
+import { RteNonBreakingSpace } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import Tooltip from "@mui/material/Tooltip";
 import { EditorState, Modifier } from "draft-js";
-import { type MouseEvent } from "react";
+import type { MouseEvent } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { ControlButton } from "../../Controls/ControlButton";
-import { type IControlProps } from "../../types";
+import type { IControlProps } from "../../types";
 
 const NO_BREAK_SPACE_UNICODE_CHAR = 0x00a0;
 
@@ -31,7 +31,7 @@ function ToolbarButton({ editorState, setEditorState }: IControlProps) {
 
     return (
         <Tooltip
-            title={<FormattedMessage id="comet.rte.extensions.nonBreakingSpace.buttonTooltip" defaultMessage="Insert a non-breaking space" />}
+            title={<FormattedMessage id="dextinity.rte.extensions.nonBreakingSpace.buttonTooltip" defaultMessage="Insert a non-breaking space" />}
             placement="top"
         >
             <span>

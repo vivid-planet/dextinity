@@ -1,8 +1,8 @@
-import { Clear } from "@comet/admin-icons";
+import { Clear } from "@dextinity/admin-icons";
 import { autocompleteClasses } from "@mui/material";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
-import { type GetMuiComponentTheme } from "./getComponentsTheme";
+import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
 export const getMuiAutocomplete: GetMuiComponentTheme<"MuiAutocomplete"> = (component, { spacing }) => ({
     ...component,

@@ -1,7 +1,7 @@
 "use client";
-import { CookieSafe, useCookieApi, YouTubeVideoBlock } from "@comet/site-nextjs";
+import { CookieSafe, useCookieApi, YouTubeVideoBlock } from "@dextinity/site-nextjs";
 import { cookieIds } from "@src/util/cookieIds";
-import { type ComponentProps } from "react";
+import type { ComponentProps } from "react";
 
 import { FallbackCookiePlaceholder, LoadingCookiePlaceholder } from "../helpers/CookiePlaceholders";
 import styles from "./CookieSafeYouTubeVideoBlock.module.scss";

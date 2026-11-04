@@ -1,26 +1,25 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { RowActionsItem, RowActionsMenu, useEditDialog, useErrorDialog, useStackSwitchApi } from "@comet/admin";
-import { Archive, Delete, Download, Edit, Move, Restore } from "@comet/admin-icons";
+import { downloadFile, RowActionsItem, RowActionsMenu, useEditDialog, useErrorDialog, useStackSwitchApi } from "@dextinity/admin";
+import { Archive, Delete, Download, Edit, Move, Restore } from "@dextinity/admin-icons";
 import { Divider } from "@mui/material";
-import { saveAs } from "file-saver";
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { UnknownError } from "../../common/errors/errorMessages";
-import { useCometConfig } from "../../config/CometConfigContext";
-import { type GQLDamFile, type GQLDamFolder } from "../../graphql.generated";
+import { useDextinityConfig } from "../../config/DextinityConfigContext";
+import type { GQLDamFile, GQLDamFolder } from "../../graphql.generated";
 import { useDamBasePath } from "../config/damConfig";
 import { ConfirmDeleteDialog } from "../FileActions/ConfirmDeleteDialog";
 import { clearDamItemCache } from "../helpers/clearDamItemCache";
-import { type GQLDeleteDamFolderMutation, type GQLDeleteDamFolderMutationVariables } from "./DamContextMenu.generated";
+import type { GQLDeleteDamFolderMutation, GQLDeleteDamFolderMutationVariables } from "./DamContextMenu.generated";
 import { archiveDamFileMutation, deleteDamFileMutation, restoreDamFileMutation } from "./DamContextMenu.gql";
-import {
-    type GQLArchiveFileMutation,
-    type GQLArchiveFileMutationVariables,
-    type GQLDeleteDamFileMutation,
-    type GQLDeleteDamFileMutationVariables,
-    type GQLRestoreFileMutation,
-    type GQLRestoreFileMutationVariables,
+import type {
+    GQLArchiveFileMutation,
+    GQLArchiveFileMutationVariables,
+    GQLDeleteDamFileMutation,
+    GQLDeleteDamFileMutationVariables,
+    GQLRestoreFileMutation,
+    GQLRestoreFileMutationVariables,
 } from "./DamContextMenu.gql.generated";
 
 interface FolderInnerMenuProps {
@@ -32,7 +31,7 @@ const FolderInnerMenu = ({ folder, openMoveDialog }: FolderInnerMenuProps) => {
     const [, , editDialogApi] = useEditDialog();
     const errorDialog = useErrorDialog();
     const apolloClient = useApolloClient();
-    const { apiUrl } = useCometConfig();
+    const { apiUrl } = useDextinityConfig();
     const damBasePath = useDamBasePath();
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
@@ -54,7 +53,7 @@ const FolderInnerMenu = ({ folder, openMoveDialog }: FolderInnerMenuProps) => {
         if (!data?.deleteSuccessful) {
             errorDialog?.showError({
                 error: "",
-                title: <FormattedMessage id="comet.pages.dam.deleteFolderError.title" defaultMessage="Folder could not be deleted" />,
+                title: <FormattedMessage id="dextinity.pages.dam.deleteFolderError.title" defaultMessage="Folder could not be deleted" />,
                 userMessage: <UnknownError />,
             });
         }
@@ -72,7 +71,7 @@ const FolderInnerMenu = ({ folder, openMoveDialog }: FolderInnerMenuProps) => {
                             editDialogApi?.openEditDialog(folder.id);
                         }}
                     >
-                        <FormattedMessage id="comet.pages.dam.rename" defaultMessage="Rename" />
+                        <FormattedMessage id="dextinity.pages.dam.rename" defaultMessage="Rename" />
                     </RowActionsItem>
                     <RowActionsItem<"a">
                         icon={<Download />}
@@ -80,7 +79,7 @@ const FolderInnerMenu = ({ folder, openMoveDialog }: FolderInnerMenuProps) => {
                             menuItem: { component: "a", href: downloadUrl, target: "_blank" },
                         }}
                     >
-                        <FormattedMessage id="comet.pages.dam.downloadFolder" defaultMessage="Download folder" />
+                        <FormattedMessage id="dextinity.pages.dam.downloadFolder" defaultMessage="Download folder" />
                     </RowActionsItem>
                     <RowActionsItem
                         icon={<Move />}
@@ -88,7 +87,7 @@ const FolderInnerMenu = ({ folder, openMoveDialog }: FolderInnerMenuProps) => {
                             openMoveDialog({ id: folder.id, type: "folder" });
                         }}
                     >
-                        <FormattedMessage id="comet.pages.dam.move" defaultMessage="Move" />
+                        <FormattedMessage id="dextinity.pages.dam.move" defaultMessage="Move" />
                     </RowActionsItem>
                     <Divider />
                     <RowActionsItem
@@ -97,7 +96,7 @@ const FolderInnerMenu = ({ folder, openMoveDialog }: FolderInnerMenuProps) => {
                             setDeleteDialogOpen(true);
                         }}
                     >
-                        <FormattedMessage id="comet.pages.dam.delete" defaultMessage="Delete" />
+                        <FormattedMessage id="dextinity.pages.dam.delete" defaultMessage="Delete" />
                     </RowActionsItem>
                 </RowActionsMenu>
             </RowActionsMenu>
@@ -137,7 +136,7 @@ const FileInnerMenu = ({ file, openMoveDialog }: FileInnerMenuProps) => {
                             stackApi.activatePage("edit", file.id);
                         }}
                     >
-                        <FormattedMessage id="comet.pages.dam.showEdit" defaultMessage="Show/edit" />
+                        <FormattedMessage id="dextinity.pages.dam.showEdit" defaultMessage="Show/edit" />
                     </RowActionsItem>
                     <RowActionsItem
                         icon={<Move />}
@@ -145,15 +144,15 @@ const FileInnerMenu = ({ file, openMoveDialog }: FileInnerMenuProps) => {
                             openMoveDialog({ id: file.id, type: "file" });
                         }}
                     >
-                        <FormattedMessage id="comet.pages.dam.moveFile" defaultMessage="Move file" />
+                        <FormattedMessage id="dextinity.pages.dam.moveFile" defaultMessage="Move file" />
                     </RowActionsItem>
                     <RowActionsItem
                         icon={<Download />}
                         onClick={() => {
-                            saveAs(file.fileUrl, file.name);
+                            downloadFile(file.fileUrl, file.name);
                         }}
                     >
-                        <FormattedMessage id="comet.pages.dam.downloadFile" defaultMessage="Download file" />
+                        <FormattedMessage id="dextinity.pages.dam.downloadFile" defaultMessage="Download file" />
                     </RowActionsItem>
                     <RowActionsItem
                         icon={file.archived ? <Restore /> : <Archive />}
@@ -174,9 +173,9 @@ const FileInnerMenu = ({ file, openMoveDialog }: FileInnerMenuProps) => {
                         }}
                     >
                         {file.archived ? (
-                            <FormattedMessage id="comet.pages.dam.restoreFile" defaultMessage="Restore file" />
+                            <FormattedMessage id="dextinity.pages.dam.restoreFile" defaultMessage="Restore file" />
                         ) : (
-                            <FormattedMessage id="comet.pages.dam.archiveFile" defaultMessage="Archive file" />
+                            <FormattedMessage id="dextinity.pages.dam.archiveFile" defaultMessage="Archive file" />
                         )}
                     </RowActionsItem>
                     <Divider />
@@ -186,7 +185,7 @@ const FileInnerMenu = ({ file, openMoveDialog }: FileInnerMenuProps) => {
                             setDeleteDialogOpen(true);
                         }}
                     >
-                        <FormattedMessage id="comet.pages.dam.deleteFile" defaultMessage="Delete file" />
+                        <FormattedMessage id="dextinity.pages.dam.deleteFile" defaultMessage="Delete file" />
                     </RowActionsItem>
                 </RowActionsMenu>
             </RowActionsMenu>

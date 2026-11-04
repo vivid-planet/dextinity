@@ -6,24 +6,25 @@ import {
     FillSpace,
     type GridColDef,
     GridFilterButton,
+    GridToolbarQuickFilter,
     muiGridFilterToGql,
     muiGridSortToGql,
     StackLink,
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add as AddIcon, Edit as EditIcon } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add as AddIcon, Edit as EditIcon } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
-import { DataGridPro, type GridSlotsComponent, GridToolbarQuickFilter } from "@mui/x-data-grid-pro";
+import { DataGridPro, type GridSlotsComponent } from "@mui/x-data-grid-pro";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import {
-    type GQLDeleteProductTagMutation,
-    type GQLDeleteProductTagMutationVariables,
-    type GQLProductTagsGridFragment,
-    type GQLProductTagsGridQuery,
-    type GQLProductTagsGridQueryVariables,
+import type {
+    GQLDeleteProductTagMutation,
+    GQLDeleteProductTagMutationVariables,
+    GQLProductTagsGridFragment,
+    GQLProductTagsGridQuery,
+    GQLProductTagsGridQueryVariables,
 } from "./ProductTagsGrid.generated";
 
 const productTagsFragment = gql`
@@ -112,7 +113,9 @@ export function ProductTagsGrid() {
         },
     });
     const rowCount = useBufferedRowCount(data?.productTags.totalCount);
-    if (error) throw error;
+    if (error) {
+        throw error;
+    }
     const rows = data?.productTags.nodes ?? [];
     return (
         <DataGridPro
@@ -124,6 +127,7 @@ export function ProductTagsGrid() {
             slots={{
                 toolbar: ProductTagsGridToolbar as GridSlotsComponent["toolbar"],
             }}
+            showToolbar
         />
     );
 }

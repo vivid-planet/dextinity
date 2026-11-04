@@ -1,9 +1,9 @@
 import { type ComponentsOverrides, TableRow } from "@mui/material";
 import { type Theme, useThemeProps } from "@mui/material/styles";
-import { type TableRowProps } from "@mui/material/TableRow";
+import type { TableRowProps } from "@mui/material/TableRow";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
@@ -24,7 +24,8 @@ const Root = createComponentSlot(TableRow)<TableBodyRowClassKey, OwnerState>({
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
 export interface TableBodyRowProps
-    extends ThemedComponentBaseProps<{
+    extends
+        ThemedComponentBaseProps<{
             root: typeof TableRow;
         }>,
         TableRowProps {
@@ -36,7 +37,7 @@ export interface TableBodyRowProps
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
 export function TableBodyRow(inProps: TableBodyRowProps) {
-    const { title, children, index, hideTableHead, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminTableBodyRow" });
+    const { title, children, index, hideTableHead, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "DextinityAdminTableBodyRow" });
 
     const ownerState: OwnerState = {
         isOdd: ((index || 0) + (hideTableHead ? 1 : 0)) % 2 === 1,
@@ -51,17 +52,17 @@ export function TableBodyRow(inProps: TableBodyRowProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminTableBodyRow: TableBodyRowClassKey;
+        DextinityAdminTableBodyRow: TableBodyRowClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminTableBodyRow: TableBodyRowProps;
+        DextinityAdminTableBodyRow: TableBodyRowProps;
     }
 
     interface Components {
-        CometAdminTableBodyRow?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminTableBodyRow"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminTableBodyRow"];
+        DextinityAdminTableBodyRow?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminTableBodyRow"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminTableBodyRow"];
         };
     }
 }

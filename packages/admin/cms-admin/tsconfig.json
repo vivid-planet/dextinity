@@ -1,6 +1,10 @@
 {
     "compilerOptions": {
+        "baseUrl": "src",
         "outDir": "lib",
+        "paths": {
+            "test-utils": ["./testing/test-utils"]
+        },
         "rootDir": "src",
         "strict": true
     },

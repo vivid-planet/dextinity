@@ -1,11 +1,11 @@
-import { Tooltip, useContentTranslationService } from "@comet/admin";
-import { Translate } from "@comet/admin-icons";
-import { type EditorState } from "draft-js";
+import { Tooltip, useContentTranslationService } from "@dextinity/admin";
+import { Translate } from "@dextinity/admin-icons";
+import type { EditorState } from "draft-js";
 import { type MouseEvent, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { ControlButton } from "../Controls/ControlButton";
-import { type IControlProps } from "../types";
+import type { IControlProps } from "../types";
 import { EditorStateTranslationDialog } from "./EditorStateTranslationDialog";
 import { htmlToState } from "./htmlToState";
 import { stateToHtml } from "./stateToHtml";
@@ -17,7 +17,9 @@ function ToolbarButton({ editorState, setEditorState, options }: IControlProps) 
     const [pendingTranslation, setPendingTranslation] = useState<EditorState | undefined>(undefined);
 
     async function handleClick(event: MouseEvent) {
-        if (!translationContext) return;
+        if (!translationContext) {
+            return;
+        }
 
         event.preventDefault();
 
@@ -37,7 +39,7 @@ function ToolbarButton({ editorState, setEditorState, options }: IControlProps) 
 
     return (
         <>
-            <Tooltip title={<FormattedMessage id="comet.rte.translation.buttonTooltip" defaultMessage="Translate" />} placement="top">
+            <Tooltip title={<FormattedMessage id="dextinity.rte.translation.buttonTooltip" defaultMessage="Translate" />} placement="top">
                 <span>
                     <ControlButton icon={Translate} onButtonClick={handleClick} />
                 </span>

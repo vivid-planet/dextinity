@@ -1,4 +1,4 @@
-import { type IntrospectionEnumType, type IntrospectionQuery } from "graphql";
+import type { IntrospectionEnumType, IntrospectionQuery } from "graphql";
 
 import { camelCaseToHumanReadable } from "../utils/camelCaseToHumanReadable";
 
@@ -19,8 +19,7 @@ export function generateErrorMessagesCode({
 }): string {
     // Find enum type in introspection
     const enumType = gqlIntrospection.__schema.types.find((type) => type.kind === "ENUM" && type.name === enumName) as
-        | IntrospectionEnumType
-        | undefined;
+        IntrospectionEnumType | undefined;
 
     if (!enumType || enumType.enumValues.length === 0) {
         return "";

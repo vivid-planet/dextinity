@@ -1,7 +1,7 @@
-import { type ApolloClient } from "@apollo/client";
+import type { ApolloClient } from "@apollo/client";
 import { createContext } from "react";
 
-import { type ContentScope } from "../../contentScope/Provider";
+import type { ContentScope } from "../../contentScope/Provider";
 
 export interface BlockContext {
     apiUrl: string;

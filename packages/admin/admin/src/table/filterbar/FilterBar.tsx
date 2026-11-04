@@ -1,8 +1,8 @@
 import { type ComponentsOverrides, css, type Theme, useThemeProps } from "@mui/material/styles";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
@@ -13,7 +13,7 @@ const Root = createComponentSlot("div")<FilterBarClassKey>({
     componentName: "FilterBar",
     slotName: "root",
 })(css`
-    .CometAdminFormFieldContainer-root {
+    .DextinityAdminFormFieldContainer-root {
         margin-bottom: 0;
     }
 `);
@@ -29,11 +29,10 @@ const BarWrapper = createComponentSlot("div")<FilterBarClassKey>({
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
-export interface FilterBarProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        barWrapper: "div";
-    }> {
+export interface FilterBarProps extends ThemedComponentBaseProps<{
+    root: "div";
+    barWrapper: "div";
+}> {
     children?: ReactNode;
 }
 
@@ -43,7 +42,7 @@ export interface FilterBarProps
 export function FilterBar(inProps: FilterBarProps) {
     const { children, slotProps, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminFilterBar",
+        name: "DextinityAdminFilterBar",
     });
 
     return (
@@ -55,17 +54,17 @@ export function FilterBar(inProps: FilterBarProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFilterBar: FilterBarClassKey;
+        DextinityAdminFilterBar: FilterBarClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFilterBar: FilterBarProps;
+        DextinityAdminFilterBar: FilterBarProps;
     }
 
     interface Components {
-        CometAdminFilterBar?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFilterBar"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFilterBar"];
+        DextinityAdminFilterBar?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFilterBar"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFilterBar"];
         };
     }
 }

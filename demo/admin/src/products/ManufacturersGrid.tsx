@@ -7,6 +7,7 @@ import {
     FillSpace,
     type GridColDef,
     GridFilterButton,
+    GridToolbarQuickFilter,
     muiGridFilterToGql,
     muiGridSortToGql,
     StackLink,
@@ -14,15 +15,15 @@ import {
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
-} from "@comet/admin";
-import { Add as AddIcon, Edit, Info } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Add as AddIcon, Edit, Info } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
-import { DataGridPro, GridColumnHeaderTitle, GridToolbarQuickFilter } from "@mui/x-data-grid-pro";
-import {
-    type GQLDeleteManufacturerMutation,
-    type GQLDeleteManufacturerMutationVariables,
-    type GQLManufacturersListQuery,
-    type GQLManufacturersListQueryVariables,
+import { DataGridPro, GridColumnHeaderTitle } from "@mui/x-data-grid-pro";
+import type {
+    GQLDeleteManufacturerMutation,
+    GQLDeleteManufacturerMutationVariables,
+    GQLManufacturersListQuery,
+    GQLManufacturersListQueryVariables,
 } from "@src/products/ManufacturersGrid.generated";
 import { useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -57,7 +58,7 @@ export function ManufacturersGrid() {
                 renderHeader: () => (
                     <>
                         <GridColumnHeaderTitle label={intl.formatMessage({ id: "manufacturers.id", defaultMessage: "ID" })} columnWidth={150} />
-                        <Tooltip title={<FormattedMessage id="comet.manufacturers.id.info" defaultMessage="The id of the manufacturer" />}>
+                        <Tooltip title={<FormattedMessage id="manufacturers.id.info" defaultMessage="The id of the manufacturer" />}>
                             <Info sx={{ marginLeft: 1 }} />
                         </Tooltip>
                     </>
@@ -146,7 +147,9 @@ export function ManufacturersGrid() {
             sort: muiGridSortToGql(sortModel),
         },
     });
-    if (error) throw error;
+    if (error) {
+        throw error;
+    }
 
     const rows = data?.manufacturers.nodes ?? [];
     const rowCount = useBufferedRowCount(data?.manufacturers.totalCount);
@@ -161,6 +164,7 @@ export function ManufacturersGrid() {
             slots={{
                 toolbar: ManufacturersGridToolbar,
             }}
+            showToolbar
         />
     );
 }

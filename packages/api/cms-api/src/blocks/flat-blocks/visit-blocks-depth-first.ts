@@ -1,6 +1,6 @@
-import { type BlockDataInterface } from "../block";
+import type { BlockDataInterface } from "../block";
 import { FlatBlockNode } from "./flat-blocks";
-import { type RootBlockInfo } from "./visit-blocks-breadth-first";
+import type { RootBlockInfo } from "./visit-blocks-breadth-first";
 
 export function visitBlocksDepthFirst(blockData: BlockDataInterface, rootBlockInfo?: Partial<RootBlockInfo>): FlatBlockNode[] {
     const visitedNodes: FlatBlockNode[] = [];

@@ -1,6 +1,6 @@
 import { Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { type PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 const FooterBar = styled(Paper)`
     position: fixed;
@@ -16,7 +16,7 @@ const FooterBar = styled(Paper)`
     }
 
     background-color: ${({ theme }) => theme.palette.grey.A400};
-    color: ${({ theme }) => theme.palette.grey.A100};
+    color: ${({ theme }) => theme.palette.common.white};
 
     display: flex;
     justify-content: space-between;

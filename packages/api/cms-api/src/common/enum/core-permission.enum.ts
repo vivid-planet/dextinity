@@ -12,4 +12,5 @@ export enum CorePermission {
     warnings = "warnings",
     sitePreview = "sitePreview",
     blockPreview = "blockPreview",
+    fullTextSearch = "fullTextSearch",
 }

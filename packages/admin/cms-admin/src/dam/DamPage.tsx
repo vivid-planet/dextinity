@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useRouteMatch } from "react-router";
 
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";

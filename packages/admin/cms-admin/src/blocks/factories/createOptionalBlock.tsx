@@ -1,14 +1,14 @@
 import { Box, Divider } from "@mui/material";
 import isEqual from "lodash.isequal";
-import { type Dispatch, type ReactNode, type SetStateAction } from "react";
-import { type MessageDescriptor } from "react-intl";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
+import type { MessageDescriptor } from "react-intl";
 import { Route, useRouteMatch } from "react-router";
 
 import { BlockAdminComponentPaper } from "../common/BlockAdminComponentPaper";
 import { Collapsible } from "../common/Collapsible";
 import { CollapsibleSwitchButtonHeader } from "../common/CollapsibleSwitchButtonHeader";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
-import { type BlockInputApi, type BlockInterface, type BlockOutputApi, type BlockState } from "../types";
+import type { BlockInputApi, BlockInterface, BlockOutputApi, BlockState } from "../types";
 import { resolveNewState } from "../utils";
 
 // @TODO: move to general types
@@ -188,6 +188,14 @@ export function createOptionalBlock<T extends BlockInterface>(
             }
 
             return [];
+        },
+        translateContent: async (state, translate) => {
+            if (state.block === undefined) {
+                return state;
+            }
+
+            const translatedBlock = decoratedBlock.translateContent ? await decoratedBlock.translateContent(state.block, translate) : state.block;
+            return { ...state, block: translatedBlock };
         },
     };
 

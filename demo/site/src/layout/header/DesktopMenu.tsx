@@ -7,7 +7,7 @@ import { useId, useState } from "react";
 import FocusLock from "react-focus-lock";
 import { useIntl } from "react-intl";
 
-import { type GQLDesktopMenuFragment } from "./DesktopMenu.fragment.generated";
+import type { GQLDesktopMenuFragment } from "./DesktopMenu.fragment.generated";
 import styles from "./DesktopMenu.module.scss";
 
 interface Props {

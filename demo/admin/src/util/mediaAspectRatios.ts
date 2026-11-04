@@ -1,5 +1,5 @@
-import { type StandaloneMediaBlockData } from "@src/blocks.generated";
-import { type ReactNode } from "react";
+import type { StandaloneMediaBlockData } from "@src/blocks.generated";
+import type { ReactNode } from "react";
 
 export const mediaAspectRatioOptions: Array<{
     value: StandaloneMediaBlockData["aspectRatio"];

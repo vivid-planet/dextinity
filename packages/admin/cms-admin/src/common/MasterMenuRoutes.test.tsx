@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { type Permission } from "../userPermissions/hooks/currentUser";
-import { type MasterMenuData } from "./MasterMenu";
+import type { Permission } from "../userPermissions/hooks/currentUser";
+import type { MasterMenuData } from "./MasterMenu";
 import { useRoutePropsFromMasterMenuData } from "./MasterMenuRoutes";
 
 vi.mock("../userPermissions/hooks/currentUser", () => ({

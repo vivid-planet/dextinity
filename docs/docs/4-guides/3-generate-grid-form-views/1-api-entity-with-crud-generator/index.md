@@ -7,14 +7,14 @@ title: API Entity with CRUD Generator
 Since we are building the API first, we will start by generating a new entity. Navigate to the `api` folder and create a new directory, for example, `api/src/customer`. Inside this directory, create a new file `customer.entity.ts` with the following content:
 
 ```typescript
-import { CrudField, CrudGenerator } from "@comet/cms-api";
+import { CrudField, CrudGenerator } from "@dextinity/cms-api";
 import { BaseEntity, Entity, PrimaryKey, Property } from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 
 @Entity()
 @ObjectType()
-@CrudGenerator({ targetDirectory: `${__dirname}/../generated/`, requiredPermission: "customer" })
+@CrudGenerator({ requiredPermission: "customer" })
 export class Customer extends BaseEntity<Customer, "id"> {
     @CrudField({ search: true, filter: true, sort: true, input: false })
     @Field(() => ID)

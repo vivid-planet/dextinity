@@ -1,3 +1,5 @@
+import { describe, expect, it } from "vitest";
+
 import { getSearchTextFromBlock } from "./get-search-text";
 import { ABlock } from "./test/blocks/A/ABlock";
 import { ABlock as InvisibleChildrenBlock } from "./test/blocks/InvisibleChildren/ABlock";

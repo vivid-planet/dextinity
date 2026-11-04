@@ -2,7 +2,7 @@ import { Card, css, Divider, Typography } from "@mui/material";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
 import { InlineAlert } from "../inlineAlert/InlineAlert";
-import { type FullPageAlertClassKey } from "./FullPageAlert";
+import type { FullPageAlertClassKey } from "./FullPageAlert";
 import { FullPageAlertBackground } from "./FullPageAlertBackground";
 
 export const Root = createComponentSlot("div")<FullPageAlertClassKey>({
@@ -65,6 +65,8 @@ export const LogoContainer = createComponentSlot("div")<FullPageAlertClassKey>({
 })(
     ({ theme }) => css`
         width: 100%;
+        display: flex;
+        justify-content: center;
         margin-bottom: ${theme.spacing(6)};
     `,
 );

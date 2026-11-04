@@ -6,8 +6,12 @@
         "noImplicitAny": true,
         "sourceMap": true,
         "strictNullChecks": true,
-        "target": "es5",
-        "declarationMap": true
+        "target": "esnext",
+        "declarationMap": true,
+        "module": "preserve",
+        "moduleResolution": "bundler",
+        "rootDir": "src",
+        "verbatimModuleSyntax": true
     },
     "compileOnSave": false
 }

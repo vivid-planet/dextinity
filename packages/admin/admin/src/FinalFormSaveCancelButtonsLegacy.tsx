@@ -1,20 +1,19 @@
-import { type ComponentsOverrides } from "@mui/material";
+import type { ComponentsOverrides } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useFormState } from "react-final-form";
 
 import { CancelButton } from "./common/buttons/cancel/CancelButton";
 import { SaveButton } from "./common/buttons/SaveButton";
 import { createComponentSlot } from "./helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "./helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "./helpers/ThemedComponentBaseProps";
 import { useStackApi } from "./stack/Api";
 
-export interface FinalFormSaveCancelButtonsLegacyProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        cancelButton: typeof CancelButton;
-        saveButton: typeof SaveButton;
-    }> {
+export interface FinalFormSaveCancelButtonsLegacyProps extends ThemedComponentBaseProps<{
+    root: "div";
+    cancelButton: typeof CancelButton;
+    saveButton: typeof SaveButton;
+}> {
     cancelIcon?: ReactNode;
     saveIcon?: ReactNode;
 }
@@ -45,7 +44,10 @@ const StyledSaveButton = createComponentSlot(SaveButton)<FinalFormSaveCancelButt
 );
 
 export function FinalFormSaveCancelButtonsLegacy(inProps: FinalFormSaveCancelButtonsLegacyProps) {
-    const { cancelIcon, saveIcon, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminFinalFormSaveCancelButtonsLegacy" });
+    const { cancelIcon, saveIcon, slotProps, ...restProps } = useThemeProps({
+        props: inProps,
+        name: "DextinityAdminFinalFormSaveCancelButtonsLegacy",
+    });
     const stackApi = useStackApi();
     const formState = useFormState();
 
@@ -72,17 +74,17 @@ export function FinalFormSaveCancelButtonsLegacy(inProps: FinalFormSaveCancelBut
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFinalFormSaveCancelButtonsLegacy: FinalFormSaveCancelButtonsLegacyClassKey;
+        DextinityAdminFinalFormSaveCancelButtonsLegacy: FinalFormSaveCancelButtonsLegacyClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFinalFormSaveCancelButtonsLegacy: FinalFormSaveCancelButtonsLegacyProps;
+        DextinityAdminFinalFormSaveCancelButtonsLegacy: FinalFormSaveCancelButtonsLegacyProps;
     }
 
     interface Components {
-        CometAdminFinalFormSaveCancelButtonsLegacy?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFinalFormSaveCancelButtonsLegacy"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFinalFormSaveCancelButtonsLegacy"];
+        DextinityAdminFinalFormSaveCancelButtonsLegacy?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFinalFormSaveCancelButtonsLegacy"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFinalFormSaveCancelButtonsLegacy"];
         };
     }
 }

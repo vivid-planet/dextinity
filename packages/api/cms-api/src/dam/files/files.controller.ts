@@ -5,7 +5,9 @@ import {
     Controller,
     ForbiddenException,
     Get,
+    GoneException,
     Headers,
+    HttpStatus,
     Inject,
     Logger,
     NotFoundException,
@@ -18,25 +20,25 @@ import {
 } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
+import { create as createContentDisposition } from "content-disposition";
 import { Response } from "express";
 import { OutgoingHttpHeaders } from "http";
 import { basename, extname } from "path";
 import { Readable } from "stream";
 
-import { DisableCometGuards } from "../../auth/decorators/disable-comet-guards.decorator";
+import { DisableDextinityGuards } from "../../auth/decorators/disable-dextinity-guards.decorator";
 import { GetCurrentUser } from "../../auth/decorators/get-current-user.decorator";
 import { BlobStorageBackendService } from "../../blob-storage/backends/blob-storage-backend.service";
 import { createHashedPath } from "../../blob-storage/utils/create-hashed-path.util";
-import { CometValidationException } from "../../common/errors/validation.exception";
+import { DextinityValidationException } from "../../common/errors/validation.exception";
 import { FileUploadInput } from "../../file-utils/file-upload.input";
 import { calculatePartialRanges, slugifyFilename } from "../../file-utils/files.utils";
-import { ContentScopeService } from "../../user-permissions/content-scope.service";
+import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
 import { CurrentUser } from "../../user-permissions/dto/current-user";
-import { ACCESS_CONTROL_SERVICE } from "../../user-permissions/user-permissions.constants";
-import { AccessControlServiceInterface } from "../../user-permissions/user-permissions.types";
 import { DamConfig } from "../dam.config";
 import { DAM_CONFIG } from "../dam.constants";
+import { DamScopeAccessControlService } from "../scope-access-control.service";
 import { DamScopeInterface } from "../types";
 import { DamUploadFileInterceptor } from "./dam-upload-file.interceptor";
 import { EmptyDamScope } from "./dto/empty-dam-scope";
@@ -66,9 +68,8 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
             @Inject(DAM_CONFIG) private readonly damConfig: DamConfig,
             private readonly filesService: FilesService,
             private readonly blobStorageBackendService: BlobStorageBackendService,
-            @Inject(ACCESS_CONTROL_SERVICE) private accessControlService: AccessControlServiceInterface,
-            private readonly contentScopeService: ContentScopeService,
             private readonly foldersService: FoldersService,
+            private readonly scopeAccessControl: DamScopeAccessControlService,
         ) {}
 
         @Post("upload")
@@ -83,19 +84,21 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
             const errors = await validate(transformedBody, { whitelist: true, forbidNonWhitelisted: true });
 
             if (errors.length > 0) {
-                throw new CometValidationException("Validation failed", errors);
+                throw new DextinityValidationException("Validation failed", errors);
             }
             const scope = nonEmptyScopeOrNothing(transformedBody.scope);
 
-            if (scope && !this.accessControlService.isAllowed(user, "dam", scope)) {
+            if (scope && !this.scopeAccessControl.isAllowed(user, scope)) {
                 throw new ForbiddenException();
             }
 
             const folderId = transformedBody.folderId;
             if (folderId) {
                 const folder = await this.foldersService.findOneById(folderId);
-                if (!folder) throw new BadRequestException(`Folder ${folderId} not found`);
-                if (!this.contentScopeService.scopesAreEqual(folder.scope, scope)) {
+                if (!folder) {
+                    throw new BadRequestException(`Folder ${folderId} not found`);
+                }
+                if (!contentScopesAreEqual(folder.scope, scope)) {
                     throw new BadRequestException("Folder scope doesn't match passed scope");
                 }
             }
@@ -120,19 +123,21 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
             const errors = await validate(transformedBody, { whitelist: true, forbidNonWhitelisted: true });
 
             if (errors.length > 0) {
-                throw new CometValidationException("Validation failed", errors);
+                throw new DextinityValidationException("Validation failed", errors);
             }
             const scope = nonEmptyScopeOrNothing(transformedBody.scope);
 
-            if (scope && !this.accessControlService.isAllowed(user, "dam", scope)) {
+            if (scope && !this.scopeAccessControl.isAllowed(user, scope)) {
                 throw new ForbiddenException();
             }
 
             const folderId = transformedBody.folderId;
             if (folderId) {
                 const folder = await this.foldersService.findOneById(folderId);
-                if (!folder) throw new BadRequestException(`Folder ${folderId} not found`);
-                if (!this.contentScopeService.scopesAreEqual(folder.scope, scope)) {
+                if (!folder) {
+                    throw new BadRequestException(`Folder ${folderId} not found`);
+                }
+                if (!contentScopesAreEqual(folder.scope, scope)) {
                     throw new BadRequestException("Folder scope doesn't match passed scope");
                 }
             }
@@ -145,7 +150,7 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
             if (!fileToReplace) {
                 throw new NotFoundException(`File not found`);
             }
-            if (!this.accessControlService.isAllowed(user, "dam", fileToReplace.scope)) {
+            if (!this.scopeAccessControl.isAllowed(user, fileToReplace.scope)) {
                 throw new ForbiddenException();
             }
 
@@ -172,14 +177,14 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
             const { fileId, ...restBody } = transformedBody;
 
             if (errors.length > 0) {
-                throw new CometValidationException("Validation failed", errors);
+                throw new DextinityValidationException("Validation failed", errors);
             }
 
             const fileToReplace = await this.filesService.findOneById(fileId);
             if (!fileToReplace) {
                 throw new NotFoundException(`File ${fileId} not found`);
             }
-            if (!this.accessControlService.isAllowed(user, "dam", fileToReplace.scope)) {
+            if (!this.scopeAccessControl.isAllowed(user, fileToReplace.scope)) {
                 throw new ForbiddenException();
             }
 
@@ -209,10 +214,11 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
-            if (file.scope !== undefined && !this.accessControlService.isAllowed(user, "dam", file.scope)) {
+            if (file.scope !== undefined && !this.scopeAccessControl.isAllowed(user, file.scope)) {
                 throw new ForbiddenException();
             }
 
+            res.setHeader("Content-Disposition", createContentDisposition(file.name, { type: "inline" }));
             return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, private" } }); // Local caches only (1 year)
         }
 
@@ -233,15 +239,15 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
-            if (file.scope !== undefined && !this.accessControlService.isAllowed(user, "dam", file.scope)) {
+            if (file.scope !== undefined && !this.scopeAccessControl.isAllowed(user, file.scope)) {
                 throw new ForbiddenException();
             }
 
-            res.setHeader("Content-Disposition", "attachment");
+            res.setHeader("Content-Disposition", createContentDisposition(file.name));
             return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, private" } }); // Local caches only (1 year)
         }
 
-        @DisableCometGuards()
+        @DisableDextinityGuards()
         @Get(`/download/:hash{/:contentHash}/${fileUrl}`)
         async downloadFile(
             @Param() { hash, contentHash, ...params }: HashFileParams,
@@ -262,11 +268,21 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
-            res.setHeader("Content-Disposition", "attachment");
+            this.throwIfLicenseIsInvalid(file, res);
+
+            // Requested with a filename that no longer matches the file (e.g. an extension-less URL from before file
+            // extensions were added to DAM file URLs). The hash still validates because it was signed for that filename,
+            // so permanently redirect to the current canonical URL instead of serving under the stale one.
+            if (params.filename !== file.name) {
+                res.redirect(HttpStatus.MOVED_PERMANENTLY, await this.filesService.createFileDownloadUrl(file, {}));
+                return;
+            }
+
+            res.setHeader("Content-Disposition", createContentDisposition(file.name));
             return this.streamFile(file, res, { range, overrideHeaders: { "cache-control": "max-age=31536000, s-maxage=86400, public" } }); // Public cache, 1 year for browsers, 1 day for proxies/cdn's
         }
 
-        @DisableCometGuards()
+        @DisableDextinityGuards()
         @Get(`/:hash{/:contentHash}/${fileUrl}`)
         async hashedFileUrl(
             @Param() { hash, contentHash, ...params }: HashFileParams,
@@ -287,6 +303,15 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
                 throw new BadRequestException("Content Hash mismatch!");
             }
 
+            this.throwIfLicenseIsInvalid(file, res);
+
+            // See the comment in downloadFile above.
+            if (params.filename !== file.name) {
+                res.redirect(HttpStatus.MOVED_PERMANENTLY, await this.filesService.createFileUrl(file, {}));
+                return;
+            }
+
+            res.setHeader("Content-Disposition", createContentDisposition(file.name, { type: "inline" }));
             return this.streamFile(file, res, {
                 range,
                 overrideHeaders: {
@@ -297,6 +322,13 @@ export function createFilesController({ Scope: PassedScope, damBasePath }: { Sco
 
         private isValidHash(hash: string, fileParams: FileParams): boolean {
             return hash === this.filesService.createHash(fileParams);
+        }
+
+        private throwIfLicenseIsInvalid(file: FileInterface, res: Response): void {
+            if (this.filesService.hasInvalidLicense(file)) {
+                res.setHeader("cache-control", "no-store"); // The file must be delivered again once the license becomes valid
+                throw new GoneException();
+            }
         }
 
         private async streamFile(

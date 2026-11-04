@@ -1,18 +1,28 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import eslintConfigReact, { restrictedImportPaths } from "@comet/eslint-config/future/react.js";
+import eslintConfigReact, { restrictedImportPaths } from "@dextinity/eslint-config/future/react.js";
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 import storybook from "eslint-plugin-storybook";
 
-import cometPlugin from "@comet/eslint-plugin";
+import dextinityPlugin from "@dextinity/eslint-plugin";
 
 export default defineConfig([
     globalIgnores(["src/*.generated.ts", "lib/**"]),
     ...eslintConfigReact,
     {
+        // `buildRestMutation.tsx` interpolates JS expressions into `gql` templates, which `@graphql-eslint/eslint-plugin` cannot parse.
+        files: ["src/buildRestMutation.tsx"],
+        processor: {
+            meta: { name: "no-op" },
+            preprocess: (code) => [code],
+            postprocess: (messages) => messages.flat(),
+            supportsAutofix: true,
+        },
+    },
+    {
         rules: {
             "@typescript-eslint/no-explicit-any": "off",
             "@typescript-eslint/no-non-null-assertion": "off",
-            "@comet/no-other-module-relative-import": "off",
+            "@dextinity/no-other-module-relative-import": "off",
         },
     },
     {
@@ -35,10 +45,10 @@ export default defineConfig([
     },
     {
         plugins: {
-            "@comet": cometPlugin,
+            "@dextinity": dextinityPlugin,
         },
         rules: {
-            "@comet/no-private-sibling-import": ["error", ["gql", "sc", "styles", "generated"]],
+            "@dextinity/no-private-sibling-import": ["error", ["gql", "sc", "styles", "generated"]],
         },
     },
     ...storybook.configs["flat/recommended"],
@@ -50,7 +60,7 @@ export default defineConfig([
             "@typescript-eslint/no-explicit-any": "off",
             "@typescript-eslint/no-non-null-assertion": "off",
             "no-console": "off",
-            "@comet/no-other-module-relative-import": "off",
+            "@dextinity/no-other-module-relative-import": "off",
             "react/react-in-jsx-scope": "off",
             "react/jsx-no-literals": "off",
         },

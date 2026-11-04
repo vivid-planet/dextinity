@@ -1,11 +1,11 @@
-import { File, Folder, FolderCopy, Pdf } from "@comet/admin-icons";
+import { File, Folder, FolderCopy, Pdf } from "@dextinity/admin-icons";
 import { Fade, Popper, useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { type MouseEvent, useState } from "react";
 
-import { type GQLDamFile, type GQLDamFolder } from "../../../graphql.generated";
+import type { GQLDamFile, GQLDamFolder } from "../../../graphql.generated";
 import { AudioThumbnail } from "./AudioThumbnail";
-import { type GQLDamFileThumbnailFragment } from "./DamThumbnail.gql.generated";
+import type { GQLDamFileThumbnailFragment } from "./DamThumbnail.gql.generated";
 import { VideoThumbnail } from "./VideoThumbnail";
 
 export { damFileThumbnailFragment } from "./DamThumbnail.gql";

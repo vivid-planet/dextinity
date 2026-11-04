@@ -1,9 +1,9 @@
-import { RteClearLink } from "@comet/admin-icons";
+import { RteClearLink } from "@dextinity/admin-icons";
 import { RichUtils } from "draft-js";
-import { type MouseEvent } from "react";
+import type { MouseEvent } from "react";
 
 import { ControlButton } from "../../Controls/ControlButton";
-import { type IControlProps } from "../../types";
+import type { IControlProps } from "../../types";
 
 export default function ToolbarButton(props: IControlProps) {
     const selection = props.editorState.getSelection();

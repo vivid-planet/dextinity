@@ -1,5 +1,5 @@
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { type FieldRenderProps } from "react-final-form";
+import type { FieldRenderProps } from "react-final-form";
 
 import { ColumnsIcon } from "./ColumnsIcon";
 

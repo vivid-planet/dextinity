@@ -6,10 +6,10 @@ The Admin Generator is a powerful tool to generate a complete CRUD interface for
 
 ## Generate DataGrid
 
-To generate a DataGrid with the Admin Generator, you have to create a `.cometGen.ts` file. Those files are used by the Admin Generator to generate different kinds of interfaces (DataGrids or Forms). Create a new file `CustomerGrid.cometGen.ts` in the `admin/src/customer` directory with the following content:
+To generate a DataGrid with the Admin Generator, you have to create a `.dextinityGen.ts` file. Those files are used by the Admin Generator to generate different kinds of interfaces (DataGrids or Forms). Create a new file `CustomerGrid.dextinityGen.ts` in the `admin/src/customer` directory with the following content:
 
 ```typescript
-import { future_GridConfig as GridConfig } from "@comet/cms-admin";
+import { future_GridConfig as GridConfig } from "@dextinity/cms-admin";
 import { GQLCustomer } from "@src/graphql.generated";
 
 export const CustomerGrid: GridConfig<GQLCustomer> = {
@@ -23,7 +23,7 @@ export const CustomerGrid: GridConfig<GQLCustomer> = {
 };
 ```
 
-The `@comet/cms-admin` has types available for all the different components that can be generated. The `GridConfig` type is used to define the configuration of the DataGrid. The `GQLCustomer` got created in the section before, with the crud generator. The `GQLCustomer`
+The `@dextinity/cms-admin` has types available for all the different components that can be generated. The `GridConfig` type is used to define the configuration of the DataGrid. The `GQLCustomer` got created in the section before, with the crud generator. The `GQLCustomer`
 type is the GraphQL type that will be used to guarantee type safety. The `columns` array defines the columns of the DataGrid. Each column has a `type`, `name`, and other properties.
 
 ## Run Admin Generator
@@ -50,7 +50,7 @@ The component is ready to be used in the application. Simply use the generated c
 `src/customers/CustomerPage.tsx`
 
 ```typescript
-import { StackMainContent } from "@comet/admin";
+import { StackMainContent } from "@dextinity/admin";
 import { CustomersGrid } from "@src/customers/generated/CustomerGrid";
 import { FunctionComponent } from "react";
 

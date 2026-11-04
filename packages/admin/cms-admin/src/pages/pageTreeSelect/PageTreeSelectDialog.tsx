@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import { Button, FillSpace, Toolbar, ToolbarActions, useFocusAwarePolling } from "@comet/admin";
-import { ArrowRight, Close, Delete } from "@comet/admin-icons";
+import { Button, FillSpace, Toolbar, ToolbarActions, useFocusAwarePolling } from "@dextinity/admin";
+import { ArrowRight, Close, Delete } from "@dextinity/admin-icons";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -12,12 +12,12 @@ import {
     Select,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { type JSX, useCallback, useMemo, useRef, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { FixedSizeList as List, type ListChildComponentProps } from "react-window";
+import { List, type ListImperativeAPI, type RowComponentProps } from "react-window";
 
-import { type ContentScope } from "../../contentScope/Provider";
-import { type Maybe } from "../../graphql.generated";
+import type { ContentScope } from "../../contentScope/Provider";
+import type { Maybe } from "../../graphql.generated";
 import { useSiteConfig } from "../../siteConfigs/useSiteConfig";
 import { usePageTreeScope } from "../config/usePageTreeScope";
 import { PageSearch } from "../pageSearch/PageSearch";
@@ -31,7 +31,7 @@ import { PageTreeRowDivider } from "../pageTree/PageTreeRowDivider";
 import { PageVisibilityIcon } from "../pageTree/PageVisibilityIcon";
 import { type PageTreePage, usePageTree } from "../pageTree/usePageTree";
 import { usePageTreeConfig } from "../pageTreeConfig";
-import { type GQLSelectedPageFragment } from "./PageTreeSelectDialog.generated";
+import type { GQLSelectedPageFragment } from "./PageTreeSelectDialog.generated";
 import * as sc from "./PageTreeSelectDialog.sc";
 
 export type { GQLSelectedPageFragment };
@@ -82,7 +82,7 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
     const { categories, additionalPageTreeNodeFragment } = usePageTreeConfig();
     const scope = usePageTreeScope();
     const [category, setCategory] = useState<string>(defaultCategory);
-    const refList = useRef<List>(null);
+    const refList = useRef<ListImperativeAPI>(null);
     const [height, setHeight] = useState(200);
     const refDialogContent = useRef<HTMLDivElement>(null);
     const selectedPageId = value?.id;
@@ -129,7 +129,7 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
             const index = pagesToRender.findIndex((c) => c.id === pageId);
 
             if (index !== -1) {
-                refList.current?.scrollToItem(index, "smart");
+                refList.current?.scrollToRow({ index, align: "smart" });
             }
         },
     });
@@ -157,7 +157,7 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
         if (selectedPageId) {
             const index = pagesToRender.findIndex((c) => c.id === selectedPageId);
             if (index) {
-                refList.current?.scrollToItem(index, "smart");
+                refList.current?.scrollToRow({ index, align: "smart" });
             }
         }
     }, [selectedPageId, pagesToRender]);
@@ -172,16 +172,6 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
             onClose();
         },
         [onChange, onClose, scope],
-    );
-
-    const itemData = useMemo<ItemData>(
-        () => ({
-            pages: pagesToRenderWithMatches,
-            toggleExpand,
-            onSelect: handleSelect,
-            selectedPage: value,
-        }),
-        [pagesToRenderWithMatches, toggleExpand, handleSelect, value],
     );
 
     return (
@@ -202,7 +192,7 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
             }}
         >
             <StyledDialogTitle>
-                <FormattedMessage id="comet.pages.pageTreeSelect.label" defaultMessage="Select Page" />
+                <FormattedMessage id="dextinity.pages.pageTreeSelect.label" defaultMessage="Select Page" />
                 <CloseButton onClick={onClose} color="inherit">
                     <Close />
                 </CloseButton>
@@ -238,16 +228,13 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
                     }}
                 >
                     <List
-                        ref={refList}
-                        height={height}
-                        itemCount={pagesToRenderWithMatches.length}
-                        itemData={itemData}
-                        width="100%"
-                        itemSize={listItemSize}
-                        style={{ background: "white" }}
-                    >
-                        {Row}
-                    </List>
+                        listRef={refList}
+                        rowCount={pagesToRenderWithMatches.length}
+                        rowComponent={Row}
+                        rowProps={{ pages: pagesToRenderWithMatches, toggleExpand, onSelect: handleSelect, selectedPage: value }}
+                        rowHeight={listItemSize}
+                        style={{ background: "white", height }}
+                    />
                 </PageTreeContext.Provider>
             </DialogContent>
             <StyledDialogAction>
@@ -260,7 +247,7 @@ export default function PageTreeSelectDialog({ value, onChange, open, onClose, d
                         }}
                         startIcon={<Delete />}
                     >
-                        <FormattedMessage id="comet.pages.pageTreeSelect.removeSelection" defaultMessage="Remove Selection" />
+                        <FormattedMessage id="dextinity.pages.pageTreeSelect.removeSelection" defaultMessage="Remove Selection" />
                     </Button>
                 )}
             </StyledDialogAction>
@@ -276,14 +263,14 @@ const PageVisibility = styled("div")`
     align-items: center;
 `;
 
-interface ItemData {
+interface RowProps {
     pages: PageTreePage[];
     toggleExpand: (pageId: string) => void;
     selectedPage?: Maybe<GQLSelectedPageFragment>;
     onSelect: (page: PageTreePage) => void;
 }
 
-const Row = memo(({ index, style, data: { pages, selectedPage, toggleExpand, onSelect } }: ListChildComponentProps<ItemData>) => {
+function Row({ index, style, pages, selectedPage, toggleExpand, onSelect }: RowComponentProps<RowProps>) {
     const [hover, setHover] = useState(false);
 
     const page = pages[index];
@@ -323,7 +310,7 @@ const Row = memo(({ index, style, data: { pages, selectedPage, toggleExpand, onS
                 <PageVisibility>
                     <PageVisibilityIcon visibility={page.visibility} />
                     <FormattedMessage
-                        id="comet.pages.pages.page.visibility"
+                        id="dextinity.pages.pages.page.visibility"
                         defaultMessage="{visibility, select, visible {Published} hidden {Unpublished} archived {Archived} other {unknown}}"
                         values={{
                             visibility: page.visibility === "Published" ? "visible" : page.visibility === "Unpublished" ? "hidden" : "archived",
@@ -338,4 +325,4 @@ const Row = memo(({ index, style, data: { pages, selectedPage, toggleExpand, onS
             <PageTreeRowDivider align="bottom" leftSpacing={0} highlight={false} />
         </PageTreeTableRow>
     );
-});
+}

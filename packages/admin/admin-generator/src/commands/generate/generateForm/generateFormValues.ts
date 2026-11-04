@@ -1,6 +1,6 @@
-import { type IntrospectionObjectType, type IntrospectionQuery } from "graphql";
+import type { IntrospectionObjectType, IntrospectionQuery } from "graphql";
 
-import { type GenerateFieldsReturn } from "./generateFields";
+import type { GenerateFieldsReturn } from "./generateFields";
 
 type FormValuesConfigTreeNode = {
     config?: GenerateFieldsReturn["formValuesConfig"][0];
@@ -28,9 +28,10 @@ export function formValuesConfigToTree({
         let currentGqlType = gqlType;
         for (const part of fieldName.split(".")) {
             const introspectionObject = gqlIntrospection.__schema.types.find((type) => type.kind === "OBJECT" && type.name === currentGqlType) as
-                | IntrospectionObjectType
-                | undefined;
-            if (!introspectionObject) throw new Error(`didn't find object ${gqlType} in gql introspection`);
+                IntrospectionObjectType | undefined;
+            if (!introspectionObject) {
+                throw new Error(`didn't find object ${gqlType} in gql introspection`);
+            }
 
             const introspectionField = (introspectionObject as IntrospectionObjectType).fields.find((field) => field.name === part);
 

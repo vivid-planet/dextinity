@@ -5,12 +5,12 @@ import {
     PageTreeNodeInterface,
     PageTreeNodeVisibility,
     PageTreeService,
-} from "@comet/cms-api";
-import { faker } from "@faker-js/faker";
+} from "@dextinity/cms-api";
 import { CreateRequestContext, EntityManager, MikroORM } from "@mikro-orm/postgresql";
 import { Inject, Logger } from "@nestjs/common";
 import { Config } from "@src/config/config";
 import { CONFIG } from "@src/config/config.module";
+import { faker } from "@src/db/fixtures/faker";
 import { generateSeoBlock } from "@src/db/fixtures/generators/blocks/seo.generator";
 import { PageContentBlock } from "@src/documents/pages/blocks/page-content.block";
 import { StageBlock } from "@src/documents/pages/blocks/stage.block";
@@ -23,6 +23,7 @@ import { Command, CommandRunner } from "nest-commander";
 import slugify from "slugify";
 
 import { DocumentGeneratorService } from "./generators/document-generator.service";
+import { DraftJsMigrationPageFixtureService } from "./generators/draft-js-migration-page-fixture.service";
 import { FileUploadsFixtureService } from "./generators/file-uploads-fixture.service";
 import { ImageFixtureService } from "./generators/image-fixture.service";
 import { ManyImagesTestPageFixtureService } from "./generators/many-images-test-page-fixture.service";
@@ -30,6 +31,7 @@ import { NewsFixtureService } from "./generators/news-fixture.service";
 import { ProductsFixtureService } from "./generators/products-fixture.service";
 import { RedirectsFixtureService } from "./generators/redirects-fixture.service";
 import { VideoFixtureService } from "./generators/video-fixture.service";
+import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.service";
 
 const getDefaultPageInput = (): PageInput => {
     const pageInput = new PageInput();
@@ -66,6 +68,8 @@ export class FixturesCommand extends CommandRunner {
         private readonly redirectsFixtureService: RedirectsFixtureService,
         private readonly videoFixtureService: VideoFixtureService,
         private readonly newsFixtureService: NewsFixtureService,
+        private readonly draftJsMigrationPageFixtureService: DraftJsMigrationPageFixtureService,
+        private readonly welcomeEmailFixtureService: WelcomeEmailFixtureService,
     ) {
         super();
     }
@@ -104,6 +108,9 @@ export class FixturesCommand extends CommandRunner {
         this.logger.log("Generate Videos...");
         await this.videoFixtureService.generateVideos({ domain: "main" });
 
+        this.logger.log("Generate Welcome Email...");
+        await this.welcomeEmailFixtureService.generate(scope);
+
         this.logger.log("Generate Pages...");
         await this.documentGeneratorService.generatePage({ name: "Home", scope });
         const blockCategoriesPage = await this.documentGeneratorService.generatePage({ name: "Fixtures: Blocks", scope });
@@ -124,9 +131,20 @@ export class FixturesCommand extends CommandRunner {
             parentId: blockCategoriesPage.id,
         });
 
+        await this.documentGeneratorService.generatePage({
+            name: "Form",
+            scope,
+            blockCategory: "form",
+            parentId: blockCategoriesPage.id,
+        });
+
         this.logger.log("Generate Many Images Test Page...");
         await this.manyImagesTestPageFixtureService.execute();
         this.logger.log("Many Images Test Page created");
+
+        this.logger.log("Generate DraftJS Migration Demo Page...");
+        await this.draftJsMigrationPageFixtureService.execute();
+        this.logger.log("DraftJS Migration Demo Page created");
 
         this.logger.log("Generate Lorem Ispum Fixtures...");
         const NUMBER_OF_DOMAINS_WITH_LORUM_IPSUM_CONTENT = 0; // Increase number to generate lorum ipsum fixtures
@@ -148,7 +166,7 @@ export class FixturesCommand extends CommandRunner {
                             parentId: level > 0 ? faker.helpers.arrayElement(pages[level - 1]).id : undefined,
                             attachedDocument: { id: pageId, type: "Page" },
                             userGroup: UserGroup.all,
-                        } as PageTreeNodeBaseCreateInput, // Typing of PageTreeService is wrong https://github.com/vivid-planet/comet/pull/1515#issue-2042001589
+                        } as PageTreeNodeBaseCreateInput, // Typing of PageTreeService is wrong https://github.com/vivid-planet/dextinity/pull/1515#issue-2042001589
                         PageTreeNodeCategory.mainNavigation,
                         {
                             domain,

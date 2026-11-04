@@ -7,11 +7,11 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import { Component, createRef, type KeyboardEvent, type ReactNode, type RefObject } from "react";
 
-import { type ISelectionApi } from "../SelectionApi";
-import { type IExportApi } from "./excelexport/IExportApi";
+import type { ISelectionApi } from "../SelectionApi";
+import type { IExportApi } from "./excelexport/IExportApi";
 import { isVisible } from "./isVisible";
 import { TablePagination } from "./Pagination";
-import { type IPagingInfo } from "./paging/IPagingInfo";
+import type { IPagingInfo } from "./paging/IPagingInfo";
 import { safeColumnGet } from "./safeColumnGet";
 import { TableBodyRow, type TableBodyRowProps } from "./TableBodyRow";
 import { type ISortApi, SortDirection } from "./useTableQuerySort";
@@ -41,13 +41,17 @@ export interface ITableHeadColumnsProps<TRow extends IRow> {
  */
 export function TableHeadColumns<TRow extends IRow>({ columns, sortApi }: ITableHeadColumnsProps<TRow>) {
     const handleSortClick = (name: string, ev: MouseEvent) => {
-        if (sortApi) sortApi.changeSort(name);
+        if (sortApi) {
+            sortApi.changeSort(name);
+        }
     };
 
     return (
         <>
             {columns.map((column: any, colIndex: number) => {
-                if (!isVisible(VisibleType.Browser, column.visible)) return null;
+                if (!isVisible(VisibleType.Browser, column.visible)) {
+                    return null;
+                }
                 const { name, header, sortable, headerProps } = column;
                 return (
                     <TableCell key={colIndex} {...headerProps}>
@@ -84,7 +88,9 @@ export function TableColumns<TRow extends IRow>({ row, columns }: ITableColumnsP
     return (
         <>
             {columns.map((column: any, colIndex: number) => {
-                if (!isVisible(VisibleType.Browser, column.visible)) return null;
+                if (!isVisible(VisibleType.Browser, column.visible)) {
+                    return null;
+                }
                 return (
                     <TableCell key={colIndex} {...column.cellProps}>
                         {column.render ? column.render(row) : safeColumnGet(row, column.name)}
@@ -171,7 +177,7 @@ function DefaultTableRow<TRow extends IRow>({ columns, row, rowProps }: ITableRo
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
 export class Table<TRow extends IRow> extends Component<ITableProps<TRow>> {
-    private domRef: RefObject<HTMLTableElement>;
+    private domRef: RefObject<HTMLTableElement | null>;
     constructor(props: ITableProps<TRow>) {
         super(props);
         this.domRef = createRef<HTMLTableElement>();

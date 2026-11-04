@@ -1,16 +1,8 @@
-import { type SvgIconProps } from "@mui/material/SvgIcon";
-import { type DraftInlineStyleType, type Editor, type EditorState } from "draft-js";
-import {
-    type ComponentType,
-    type CSSProperties,
-    type ForwardRefExoticComponent,
-    type MouseEvent,
-    type ReactNode,
-    type RefAttributes,
-    type RefObject,
-} from "react";
+import type { SvgIconProps } from "@mui/material/SvgIcon";
+import type { DraftInlineStyleType, Editor, EditorState } from "draft-js";
+import type { ComponentType, CSSProperties, ForwardRefExoticComponent, JSX, MouseEvent, ReactNode, RefAttributes, RefObject } from "react";
 
-import { type IRteOptions, type SupportedThings } from "./Rte";
+import type { IRteOptions, SupportedThings } from "./Rte";
 
 // overwrite draftjs' insufficient type for Draft.DraftBlockRenderConfig
 interface DraftBlockRenderConfig {
@@ -52,7 +44,7 @@ export interface IControlProps {
     editorState: EditorState;
     setEditorState: (editorState: EditorState) => void;
     options: IRteOptions;
-    editorRef: RefObject<Editor>;
+    editorRef: RefObject<Editor | null>;
     disabled?: boolean;
 }
 

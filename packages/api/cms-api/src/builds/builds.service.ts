@@ -2,12 +2,13 @@ import { V1CronJob, V1Job } from "@kubernetes/client-node";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import parser from "cron-parser";
+import { CronExpressionParser } from "cron-parser";
 import { format } from "date-fns";
 
 import { KubernetesJobStatus } from "../kubernetes/job-status.enum";
 import { INSTANCE_LABEL, LABEL_ANNOTATION, PARENT_CRON_JOB_LABEL } from "../kubernetes/kubernetes.constants";
 import { KubernetesService } from "../kubernetes/kubernetes.service";
+import { getAnnotation, getLabel } from "../kubernetes/kubernetes-metadata";
 import { CurrentUser } from "../user-permissions/dto/current-user";
 import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
 import { ACCESS_CONTROL_SERVICE } from "../user-permissions/user-permissions.constants";
@@ -100,10 +101,10 @@ export class BuildsService {
                     completionTime: job.status?.completionTime,
                     estimatedCompletionTime: await this.kubernetesService.estimateJobCompletionTime(
                         job,
-                        `${PARENT_CRON_JOB_LABEL} = ${job.metadata?.labels?.[PARENT_CRON_JOB_LABEL]}`,
+                        `${PARENT_CRON_JOB_LABEL} = ${getLabel(job, PARENT_CRON_JOB_LABEL)}`,
                     ),
-                    trigger: job.metadata?.annotations?.[TRIGGER_ANNOTATION],
-                    label: job.metadata?.annotations?.[LABEL_ANNOTATION],
+                    trigger: getAnnotation(job, TRIGGER_ANNOTATION),
+                    label: getAnnotation(job, LABEL_ANNOTATION),
                 };
             }),
         );
@@ -120,7 +121,7 @@ export class BuildsService {
         }
         autoBuildStatus.lastCheck = cronJob.status?.lastScheduleTime;
 
-        const interval = parser.parseExpression(cronJob.spec?.schedule as string);
+        const interval = CronExpressionParser.parse(cronJob.spec?.schedule as string);
         autoBuildStatus.nextCheck = interval.next().toDate();
 
         return autoBuildStatus;

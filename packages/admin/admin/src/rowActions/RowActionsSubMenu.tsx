@@ -1,4 +1,4 @@
-import { ChevronRight, MoreVertical } from "@comet/admin-icons";
+import { ChevronRight, MoreVertical } from "@dextinity/admin-icons";
 import { Menu, type MenuProps } from "@mui/material";
 import { type ReactNode, useContext, useRef } from "react";
 

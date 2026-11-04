@@ -1,4 +1,4 @@
-import { type ChildProcessWithoutNullStreams } from "child_process";
+import type { ChildProcessWithoutNullStreams } from "child_process";
 
 export function handleChildProcess(child: ChildProcessWithoutNullStreams): Promise<string> {
     return new Promise((resolve, reject) => {

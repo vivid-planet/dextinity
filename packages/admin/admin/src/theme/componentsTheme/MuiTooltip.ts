@@ -1,4 +1,4 @@
-import { type GetMuiComponentTheme } from "./getComponentsTheme";
+import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
 export const getMuiTooltip: GetMuiComponentTheme<"MuiTooltip"> = (component) => ({
     ...component,

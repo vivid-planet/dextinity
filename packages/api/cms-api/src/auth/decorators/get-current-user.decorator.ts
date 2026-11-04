@@ -1,7 +1,7 @@
 import { createParamDecorator, type ExecutionContext } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
 
-import { type CurrentUser } from "../../user-permissions/dto/current-user";
+import type { CurrentUser } from "../../user-permissions/dto/current-user";
 
 // Allows injecting Current User into resolvers via `@GetCurrentUser() user: CurrentUser`
 export const GetCurrentUser = createParamDecorator((data: unknown, context: ExecutionContext): CurrentUser => {

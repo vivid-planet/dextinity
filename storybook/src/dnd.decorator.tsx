@@ -1,4 +1,4 @@
-import { type Decorator } from "@storybook/react-webpack5";
+import type { Decorator } from "@storybook/react-vite";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 

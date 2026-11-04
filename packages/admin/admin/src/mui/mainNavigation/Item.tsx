@@ -7,11 +7,11 @@ import {
     type Theme,
     useThemeProps,
 } from "@mui/material";
-import { type ReactElement, type ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
 
 import { Tooltip as CommonTooltip } from "../../common/Tooltip";
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
 import { useMainNavigation } from "./Context";
 import { Icon, type MainNavigationItemClassKey, type OwnerState, Root, Text } from "./Item.styles";
 
@@ -23,7 +23,8 @@ const Tooltip = createComponentSlot(CommonTooltip)<MainNavigationItemClassKey>({
 export type MainNavigationItemLevel = 1 | 2 | 3;
 
 export interface MainNavigationItemProps
-    extends ThemedComponentBaseProps<{
+    extends
+        ThemedComponentBaseProps<{
             root: typeof ListItemButton;
             icon: typeof ListItemIcon;
             text: typeof ListItemText;
@@ -52,11 +53,13 @@ export const MainNavigationItem = (inProps: MainNavigationItemProps) => {
         isCollapsibleOpen,
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminMainNavigationItem" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminMainNavigationItem" });
 
     const { drawerVariant } = useMainNavigation();
 
-    if (level > 3) throw new Error("Maximum nesting level of 2 exceeded.");
+    if (level > 3) {
+        throw new Error("Maximum nesting level of 2 exceeded.");
+    }
 
     const showIcon = !!icon && level === 1;
 
@@ -75,7 +78,6 @@ export const MainNavigationItem = (inProps: MainNavigationItemProps) => {
 
     return (
         <Tooltip
-            variant="light"
             placement="right"
             disableHoverListener={!showTooltip}
             disableFocusListener={!showTooltip}
@@ -98,17 +100,17 @@ export const MainNavigationItem = (inProps: MainNavigationItemProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminMainNavigationItem: MainNavigationItemProps;
+        DextinityAdminMainNavigationItem: MainNavigationItemProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminMainNavigationItem: MainNavigationItemClassKey;
+        DextinityAdminMainNavigationItem: MainNavigationItemClassKey;
     }
 
     interface Components {
-        CometAdminMainNavigationItem?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminMainNavigationItem"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminMainNavigationItem"];
+        DextinityAdminMainNavigationItem?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminMainNavigationItem"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminMainNavigationItem"];
         };
     }
 }

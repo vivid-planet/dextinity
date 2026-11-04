@@ -1,8 +1,7 @@
 import { Inject, Type } from "@nestjs/common";
-import { Args, ArgsType, createUnionType, ID, Info, Int, Mutation, ObjectType, Parent, Query, ResolveField, Resolver, Union } from "@nestjs/graphql";
+import { Args, ArgsType, createUnionType, ID, Info, Int, Mutation, Parent, Query, ResolveField, Resolver, Union } from "@nestjs/graphql";
 import { GraphQLError, GraphQLResolveInfo } from "graphql";
 
-import { PaginatedResponseFactory } from "../common/pagination/paginated-response.factory";
 import { DynamicDtoValidationPipe } from "../common/validation/dynamic-dto-validation.pipe";
 import { DocumentInterface } from "../document/dto/document-interface";
 import { AffectedEntity } from "../user-permissions/decorators/affected-entity.decorator";
@@ -37,17 +36,16 @@ export function createPageTreeResolver({
     PageTreeNodeUpdateInput = DefaultPageTreeNodeUpdateInput,
     Documents,
     Scope: PassedScope,
+    PaginatedPageTreeNodes,
 }: {
     PageTreeNode: Type<PageTreeNodeInterface>;
     PageTreeNodeCreateInput?: Type<PageTreeNodeCreateInputInterface>;
     PageTreeNodeUpdateInput?: Type<PageTreeNodeUpdateInputInterface>;
     Documents: Type<DocumentInterface>[];
     Scope?: Type<ScopeInterface>;
+    PaginatedPageTreeNodes: Type;
 }): Type<unknown> {
     const Scope = PassedScope || EmptyPageTreeNodeScope;
-
-    @ObjectType()
-    class PaginatedPageTreeNodes extends PaginatedResponseFactory.create(PageTreeNode) {}
 
     @ArgsType()
     class PaginatedPageTreeNodesArgs extends PaginatedPageTreeNodesArgsFactory.create({ Scope }) {}
@@ -102,7 +100,7 @@ export function createPageTreeResolver({
         @Query(() => PaginatedPageTreeNodes)
         async paginatedPageTreeNodes(
             @Args() { scope, category, sort, offset, limit, documentType }: PaginatedPageTreeNodesArgs,
-        ): Promise<PaginatedPageTreeNodes> {
+        ): Promise<typeof PaginatedPageTreeNodes> {
             await this.pageTreeReadApi.preloadNodes(scope);
             const nodes = await this.pageTreeReadApi.getNodes({ scope: nonEmptyScopeOrNothing(scope), category, offset, limit, sort, documentType });
             const count = await this.pageTreeReadApi.getNodesCount({ scope: nonEmptyScopeOrNothing(scope), category, documentType });
@@ -189,7 +187,9 @@ export function createPageTreeResolver({
                 if (fieldNode.selectionSet) {
                     const ret = fieldNode.selectionSet.selections.reduce(
                         (acc, selection) => {
-                            if (!acc) return acc;
+                            if (!acc) {
+                                return acc;
+                            }
                             if (selection.kind == "Field" && selection.name.value === "__typename") {
                                 //__typename is already in acc
                                 return acc;
@@ -251,6 +251,10 @@ export function createPageTreeResolver({
         @Mutation(() => Boolean)
         @AffectedEntity(PageTreeNode)
         async deletePageTreeNode(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
+            if (!this.config.allowPageDelete) {
+                throw new GraphQLError("Page deletion is disabled in the configuration.");
+            }
+
             const pageTreeReadApi = this.pageTreeService.createReadApi({
                 visibility: "all",
             });

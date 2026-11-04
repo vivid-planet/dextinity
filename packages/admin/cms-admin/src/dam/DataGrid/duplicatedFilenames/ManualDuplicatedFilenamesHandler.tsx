@@ -1,13 +1,10 @@
 import { useApolloClient } from "@apollo/client";
 import { createContext, type PropsWithChildren, useCallback, useContext, useState } from "react";
 
-import { type GQLFilenameResponse } from "../../../graphql.generated";
+import type { GQLFilenameResponse } from "../../../graphql.generated";
 import { useDamScope } from "../../config/useDamScope";
 import { damAreFilenamesOccupied } from "./ManualDuplicatedFilenamesHandler.gql";
-import {
-    type GQLDamAreFilenamesOccupiedQuery,
-    type GQLDamAreFilenamesOccupiedQueryVariables,
-} from "./ManualDuplicatedFilenamesHandler.gql.generated";
+import type { GQLDamAreFilenamesOccupiedQuery, GQLDamAreFilenamesOccupiedQueryVariables } from "./ManualDuplicatedFilenamesHandler.gql.generated";
 import { ManuallyHandleDuplicatedFilenamesDialog } from "./ManuallyHandleDuplicatedFilenamesDialog";
 
 interface ManualDuplicatedFilenamesHandlerApi {

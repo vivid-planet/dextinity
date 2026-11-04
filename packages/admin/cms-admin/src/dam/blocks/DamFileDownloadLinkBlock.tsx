@@ -1,23 +1,23 @@
 import { gql } from "@apollo/client";
-import { Field, FinalFormSelect } from "@comet/admin";
+import { Field, FinalFormSelect } from "@dextinity/admin";
 import { Divider, MenuItem } from "@mui/material";
-import { deepClone } from "@mui/x-data-grid/utils/utils";
+import { deepClone } from "@mui/x-data-grid/internals";
 import { FormattedMessage } from "react-intl";
 
-import { type DamFileDownloadLinkBlockData, type DamFileDownloadLinkBlockInput } from "../../blocks.generated";
+import type { DamFileDownloadLinkBlockData, DamFileDownloadLinkBlockInput } from "../../blocks.generated";
 import { BlockAdminComponentPaper } from "../../blocks/common/BlockAdminComponentPaper";
 import { BlocksFinalForm } from "../../blocks/form/BlocksFinalForm";
 import { createBlockSkeleton } from "../../blocks/helpers/createBlockSkeleton";
 import { BlockCategory, type BlockDependency, type BlockInterface } from "../../blocks/types";
 import { FileField } from "../../form/file/FileField";
-import { type GQLDamFileDownloadLinkFileQuery, type GQLDamFileDownloadLinkFileQueryVariables } from "./DamFileDownloadLinkBlock.generated";
+import type { GQLDamFileDownloadLinkFileQuery, GQLDamFileDownloadLinkFileQueryVariables } from "./DamFileDownloadLinkBlock.generated";
 
 export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockData, DamFileDownloadLinkBlockData, DamFileDownloadLinkBlockInput> = {
     ...createBlockSkeleton(),
 
     name: "DamFileDownloadLink",
 
-    displayName: <FormattedMessage id="comet.blocks.damFileDownloadLink" defaultMessage="CMS Asset" />,
+    displayName: <FormattedMessage id="dextinity.blocks.damFileDownloadLink" defaultMessage="CMS Asset" />,
 
     previewContent: (state) => (state.file ? [{ type: "text", content: state.file?.name }] : []),
 
@@ -121,15 +121,18 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
                     <Field
                         name="openFileType"
                         fullWidth
-                        label={<FormattedMessage id="comet.blocks.damFileDownloadLink.openFileType" defaultMessage="Open file" />}
+                        label={<FormattedMessage id="dextinity.blocks.damFileDownloadLink.openFileType" defaultMessage="Open file" />}
                     >
                         {(props) => (
                             <FinalFormSelect {...props}>
                                 <MenuItem value="Download">
-                                    <FormattedMessage id="comet.blocks.damFileDownloadLink.openFileType.download" defaultMessage="as a download" />
+                                    <FormattedMessage
+                                        id="dextinity.blocks.damFileDownloadLink.openFileType.download"
+                                        defaultMessage="as a download"
+                                    />
                                 </MenuItem>
                                 <MenuItem value="NewTab">
-                                    <FormattedMessage id="comet.blocks.damFileDownloadLink.openFileType.newTab" defaultMessage="in a new tab" />
+                                    <FormattedMessage id="dextinity.blocks.damFileDownloadLink.openFileType.newTab" defaultMessage="in a new tab" />
                                 </MenuItem>
                             </FinalFormSelect>
                         )}
@@ -142,8 +145,12 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
     extractTextContents: (state) => {
         const contents = [];
 
-        if (state.file?.altText) contents.push(state.file.altText);
-        if (state.file?.title) contents.push(state.file.title);
+        if (state.file?.altText) {
+            contents.push(state.file.altText);
+        }
+        if (state.file?.title) {
+            contents.push(state.file.title);
+        }
 
         return contents;
     },

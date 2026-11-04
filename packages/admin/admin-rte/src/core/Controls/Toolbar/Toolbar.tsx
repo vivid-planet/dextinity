@@ -1,13 +1,14 @@
-import { type ThemedComponentBaseProps } from "@comet/admin";
-import { type ComponentsOverrides, type Theme } from "@mui/material";
+import type { ThemedComponentBaseProps } from "@dextinity/admin";
+import type { ComponentsOverrides, Theme } from "@mui/material";
 import { useThemeProps } from "@mui/material/styles";
-import { createElement } from "react";
+import type { JSX } from "react";
 
-import { type IControlProps } from "../../types";
+import type { IControlProps } from "../../types";
 import { Root, type RteToolbarClassKey, Slot } from "./Toolbar.styles";
 
 interface RteToolbarProps
-    extends IControlProps,
+    extends
+        IControlProps,
         ThemedComponentBaseProps<{
             root: "div";
             slot: "div";
@@ -16,21 +17,25 @@ interface RteToolbarProps
 }
 
 export function Toolbar(inProps: RteToolbarProps) {
-    const { children, slotProps, ...restProps } = useThemeProps({ props: inProps, name: "CometAdminRteToolbar" });
+    const { children, slotProps, editorState, setEditorState, options, editorRef, disabled, ...restProps } = useThemeProps({
+        props: inProps,
+        name: "DextinityAdminRteToolbar",
+    });
+    const controlProps: IControlProps = { editorState, setEditorState, options, editorRef, disabled };
 
     const childrenElements = children
         .filter((c) => {
             const Comp = c;
-            return Comp(restProps) !== null; // filter out unused control components
+            return Comp(controlProps) !== null; // filter out unused control components
         })
         .map((c) => {
             const Comp = c;
-            return createElement(Comp, restProps);
+            return <Comp {...controlProps} />;
         });
 
     return (
         // TODO: Find alternative to className
-        <Root {...slotProps?.root} {...restProps} className="CometAdminRteToolbar-root">
+        <Root {...slotProps?.root} {...restProps} className="DextinityAdminRteToolbar-root">
             {childrenElements.map((c, idx) => {
                 return (
                     <Slot key={idx} {...slotProps?.slot}>
@@ -44,17 +49,17 @@ export function Toolbar(inProps: RteToolbarProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminRteToolbar: RteToolbarProps;
+        DextinityAdminRteToolbar: RteToolbarProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminRteToolbar: RteToolbarClassKey;
+        DextinityAdminRteToolbar: RteToolbarClassKey;
     }
 
     interface Components {
-        CometAdminRteToolbar?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminRteToolbar"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminRteToolbar"];
+        DextinityAdminRteToolbar?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminRteToolbar"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminRteToolbar"];
         };
     }
 }

@@ -1,4 +1,4 @@
-import { type IMakeRteApiProps, makeRteApi, type OnDebouncedContentChangeFn, Rte } from "@comet/admin-rte";
+import { type IMakeRteApiProps, makeRteApi, type OnDebouncedContentChangeFn, Rte } from "@dextinity/admin-rte";
 import { Box, Card, CardContent } from "@mui/material";
 import { stateToMarkdown } from "draft-js-export-markdown";
 import { stateFromMarkdown } from "draft-js-import-markdown";
@@ -26,7 +26,7 @@ const makeRteApiProps: IMakeRteApiProps<Markdown> = {
 const [useRteApi] = makeRteApi<Markdown>(makeRteApiProps);
 
 export default {
-    title: "@comet/admin-rte/save-as",
+    title: "@dextinity/admin-rte/save-as",
 };
 
 export const SaveAsMd = {

@@ -1,19 +1,19 @@
-import { CrudGenerator } from "@comet/cms-api";
+import { CrudGenerator } from "@dextinity/cms-api";
 import { BaseEntity, Entity, ManyToOne, OptionalProps, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { Product } from "./product.entity";
 
 @ObjectType()
 @Entity()
-@CrudGenerator({ targetDirectory: `${__dirname}/../generated/`, requiredPermission: ["products"], paging: false })
+@CrudGenerator({ requiredPermission: ["products"], paging: false })
 export class ProductHighlight extends BaseEntity {
     [OptionalProps]?: "createdAt" | "updatedAt";
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "text" })
     @Field()

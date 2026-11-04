@@ -1,9 +1,9 @@
+import type { HeaderArray, ParserOptionsArgs } from "@fast-csv/parse";
 import * as csv from "@fast-csv/parse";
-import { type HeaderArray, type ParserOptionsArgs } from "@fast-csv/parse";
 import { Transform, type TransformCallback } from "stream";
 
-import { type ImportFieldMetadata } from "../../decorators/csv-column.decorator";
-import { type ImporterPipe, type PipeMetadata } from "../importer-pipe.type";
+import type { ImportFieldMetadata } from "../../decorators/csv-column.decorator";
+import type { ImporterPipe, PipeMetadata } from "../importer-pipe.type";
 
 export type CsvParserOptions = Omit<ParserOptionsArgs, "encoding"> & { encoding: BufferEncoding };
 
@@ -56,7 +56,7 @@ export class CsvParsePipe implements ImporterPipe {
     }
 }
 
-export class CsvParser extends Transform {
+class CsvParser extends Transform {
     private parser: csv.CsvParserStream<csv.Row<unknown>, csv.Row<unknown>>;
 
     constructor(private readonly options: CsvParserOptions) {

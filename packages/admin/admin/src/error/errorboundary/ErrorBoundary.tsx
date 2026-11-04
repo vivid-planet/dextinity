@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, Error } from "@comet/admin-icons";
+import { ChevronDown, ChevronRight, Error } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import { Alert as MuiAlert, type AlertProps, type ComponentsOverrides, Typography } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
@@ -6,7 +6,8 @@ import { Component, type ErrorInfo, type PropsWithChildren, type ReactNode } fro
 import { FormattedMessage } from "react-intl";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import { useErrorHandler } from "../errorHandler/ErrorHandlerProvider";
 
 export type ErrorBoundaryClassKey =
     | "alert"
@@ -41,6 +42,10 @@ export type ErrorBoundaryProps = PropsWithChildren<{
         exceptionSummaryTitle: typeof Typography;
         exceptionStackTrace: typeof Typography;
     }>;
+
+type CoreErrorBoundaryProps = ErrorBoundaryProps & {
+    onError?: (error: Error, errorInfo: ErrorInfo) => void;
+};
 
 interface IErrorBoundaryState {
     error?: Error;
@@ -93,10 +98,12 @@ const ExceptionSummaryIconOpen = createComponentSlot("div")<ErrorBoundaryClassKe
         align-items: center;
         display: flex;
 
-        ${ownerState.showDetails &&
-        css`
-            display: none;
-        `}
+        ${
+            ownerState.showDetails &&
+            css`
+                display: none;
+            `
+        }
     `,
 );
 
@@ -111,10 +118,12 @@ const ExceptionSummaryIconClosed = createComponentSlot("div")<ErrorBoundaryClass
         align-items: center;
         display: none;
 
-        ${ownerState.showDetails &&
-        css`
-            display: flex;
-        `}
+        ${
+            ownerState.showDetails &&
+            css`
+                display: flex;
+            `
+        }
     `,
 );
 
@@ -134,18 +143,20 @@ const ExceptionStackTrace = createComponentSlot(Typography)<ErrorBoundaryClassKe
 })();
 
 export const ErrorBoundary = (inProps: ErrorBoundaryProps) => {
-    const props = useThemeProps({ props: inProps, name: "CometAdminErrorBoundary" });
-    return <CoreErrorBoundary {...props} />;
+    const props = useThemeProps({ props: inProps, name: "DextinityAdminErrorBoundary" });
+    const { onError } = useErrorHandler();
+    return <CoreErrorBoundary {...props} onError={onError} />;
 };
 
-class CoreErrorBoundary extends Component<ErrorBoundaryProps, IErrorBoundaryState> {
-    constructor(props: ErrorBoundaryProps) {
+class CoreErrorBoundary extends Component<CoreErrorBoundaryProps, IErrorBoundaryState> {
+    constructor(props: CoreErrorBoundaryProps) {
         super(props);
         this.state = {};
     }
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         this.setState((prev) => ({ ...prev, error, errorInfo }));
+        this.props.onError?.(error, errorInfo);
     }
 
     public render() {
@@ -158,6 +169,7 @@ class CoreErrorBoundary extends Component<ErrorBoundaryProps, IErrorBoundaryStat
             slotProps,
             userErrorMessage,
             key,
+            onError,
             ...restProps
         } = this.props;
         const { error, errorInfo, showDetails } = this.state;
@@ -173,7 +185,7 @@ class CoreErrorBoundary extends Component<ErrorBoundaryProps, IErrorBoundaryStat
                         {userErrorMessage ? (
                             userErrorMessage
                         ) : (
-                            <FormattedMessage id="comet.error.abstractErrorMessage" defaultMessage="An error has occurred" />
+                            <FormattedMessage id="dextinity.error.abstractErrorMessage" defaultMessage="An error has occurred" />
                         )}
                     </Message>
 
@@ -208,17 +220,17 @@ class CoreErrorBoundary extends Component<ErrorBoundaryProps, IErrorBoundaryStat
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminErrorBoundary: ErrorBoundaryClassKey;
+        DextinityAdminErrorBoundary: ErrorBoundaryClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminErrorBoundary: ErrorBoundaryProps;
+        DextinityAdminErrorBoundary: ErrorBoundaryProps;
     }
 
     interface Components {
-        CometAdminErrorBoundary?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminErrorBoundary"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminErrorBoundary"];
+        DextinityAdminErrorBoundary?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminErrorBoundary"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminErrorBoundary"];
         };
     }
 }

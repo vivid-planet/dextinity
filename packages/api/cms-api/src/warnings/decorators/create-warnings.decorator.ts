@@ -1,8 +1,8 @@
-import { type AnyEntity } from "@mikro-orm/postgresql";
+import type { AnyEntity } from "@mikro-orm/postgresql";
 import { type CustomDecorator, SetMetadata, type Type } from "@nestjs/common";
 
-import { type ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
-import { type WarningData } from "../dto/warning-data";
+import type { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
+import type { WarningData } from "../dto/warning-data";
 
 interface BulkCreateWarningData {
     warnings: WarningData[];

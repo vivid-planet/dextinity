@@ -31,7 +31,7 @@ export const CrudVisibility = ({ visibility, onUpdateVisibility }: CrudVisibilit
             <UndoSnackbar
                 message={
                     <FormattedMessage
-                        id="comet.common.visibilityChanged"
+                        id="dextinity.common.visibilityChanged"
                         defaultMessage="Changed visibility to {visibility, select, true {published} false {unpublished} other {unknown}}"
                         values={{
                             visibility,
@@ -49,7 +49,7 @@ export const CrudVisibility = ({ visibility, onUpdateVisibility }: CrudVisibilit
         <>
             <Button size="small" onClick={handleMenuOpen} startIcon={<CrudVisibilityIcon visibility={visibility} />} variant="textDark">
                 <FormattedMessage
-                    id="comet.common.visibility"
+                    id="dextinity.common.visibility"
                     defaultMessage="{visibility, select, true {Published} false {Unpublished} other {unknown}}"
                     values={{
                         visibility,
@@ -61,13 +61,13 @@ export const CrudVisibility = ({ visibility, onUpdateVisibility }: CrudVisibilit
                     <ListItemIcon>
                         <CrudVisibilityIcon visibility={true} />
                     </ListItemIcon>
-                    <FormattedMessage id="comet.common.visibility.published" defaultMessage="Published" />
+                    <FormattedMessage id="dextinity.common.visibility.published" defaultMessage="Published" />
                 </MenuItem>
                 <MenuItem onClick={() => handleVisibilityClick(false)} disabled={visibility == false}>
                     <ListItemIcon>
                         <CrudVisibilityIcon visibility={false} />
                     </ListItemIcon>
-                    <FormattedMessage id="comet.common.visibility.unpublished" defaultMessage="Unpublished" />
+                    <FormattedMessage id="dextinity.common.visibility.unpublished" defaultMessage="Unpublished" />
                 </MenuItem>
             </Menu>
         </>

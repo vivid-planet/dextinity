@@ -14,10 +14,10 @@ import {
     ToolbarItem,
     useEditDialog,
     useEditDialogApi,
-} from "@comet/admin";
-import { Edit } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { Edit } from "@dextinity/admin-icons";
 import { DialogContent, IconButton, MenuItem, Typography } from "@mui/material";
-import { useRef, useState, type VoidFunctionComponent } from "react";
+import { type FunctionComponent, useRef, useState } from "react";
 import { useLocation } from "react-router";
 import { v4 as uuid } from "uuid";
 
@@ -86,7 +86,7 @@ export const Component = {
 
 export const UseEditDialogApi = {
     render: () => {
-        const ChildComponentWithOpenButton: VoidFunctionComponent = () => {
+        const ChildComponentWithOpenButton: FunctionComponent = () => {
             const editDialogApi = useEditDialogApi();
 
             return <Button onClick={() => editDialogApi?.openAddDialog()}>Open Edit Dialog with useEditDialogApi()</Button>;
@@ -204,7 +204,7 @@ export const WithTable = {
             selectionApi: ISelectionApi;
         }
 
-        const UserForm: VoidFunctionComponent<UserFormProps> = ({ selectionApi, id, mode = "add" }) => {
+        const UserForm: FunctionComponent<UserFormProps> = ({ selectionApi, id, mode = "add" }) => {
             const selection = { id, mode };
             const user = selection.mode === "edit" ? users.find((user) => user.id === id) : undefined;
 

@@ -1,4 +1,4 @@
-import { OffsetBasedPaginationArgs } from "@comet/cms-api";
+import { OffsetBasedPaginationArgs } from "@dextinity/cms-api";
 import { Type } from "@nestjs/common";
 import { ArgsType, Field, ID } from "@nestjs/graphql";
 import { Type as TransformerType } from "class-transformer";

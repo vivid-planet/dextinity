@@ -1,7 +1,7 @@
-import { type ComponentFormFieldConfig } from "../generate-command";
+import type { ComponentFormFieldConfig } from "../generate-command";
 import { convertConfigImport } from "../utils/convertConfigImport";
 import { isGeneratorConfigImport } from "../utils/runtimeTypeGuards";
-import { type GenerateFieldsReturn } from "./generateFields";
+import type { GenerateFieldsReturn } from "./generateFields";
 
 export function generateComponentFormField({ config }: { config: ComponentFormFieldConfig }): GenerateFieldsReturn {
     if (!isGeneratorConfigImport(config.component)) {

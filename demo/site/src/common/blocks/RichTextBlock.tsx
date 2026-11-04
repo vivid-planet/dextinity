@@ -1,7 +1,6 @@
 "use client";
-import { hasRichTextBlockContent, PreviewSkeleton, type PropsWithData, withPreview } from "@comet/site-nextjs";
-import { type LinkBlockData, type RichTextBlockData } from "@src/blocks.generated";
-import { PageLayout } from "@src/layout/PageLayout";
+import { hasRichTextBlockContent, PreviewSkeleton, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import type { LinkBlockData, RichTextBlockData } from "@src/blocks.generated";
 import clsx from "clsx";
 import redraft, { type Renderers, type TextBlockRenderFn } from "redraft";
 
@@ -106,12 +105,4 @@ export const RichTextBlock = withPreview(
         );
     },
     { label: "Rich Text" },
-);
-
-export const PageContentRichTextBlock = (props: RichTextBlockProps) => (
-    <PageLayout grid>
-        <div className={styles.pageLayoutContent}>
-            <RichTextBlock {...props} />
-        </div>
-    </PageLayout>
 );

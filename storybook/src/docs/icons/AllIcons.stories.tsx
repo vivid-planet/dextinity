@@ -1,14 +1,17 @@
-import { ClearInputAdornment } from "@comet/admin";
-import * as imports from "@comet/admin-icons";
+import { ClearInputAdornment } from "@dextinity/admin";
+import * as imports from "@dextinity/admin-icons";
 import { Grid, InputAdornment, InputBase, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useState } from "react";
 import { useDebounce } from "use-debounce";
 
-const iconBlockList = ["CometDigitalExperienceLogo"];
+// The wordmark is far too wide for the icon grid; it has its own story.
+const iconBlockList = ["DextinityLogo"];
 
 const matchesSearchQuery = (str: string, query: string): boolean => {
-    if (!query.length) return true;
+    if (!query.length) {
+        return true;
+    }
 
     let strIncludesPartOfSearchQuery = false;
 
@@ -104,11 +107,7 @@ export const AllIcons = () => {
                     endAdornment={
                         debouncedSearchQuery.length !== 0 && (
                             <InputAdornment position="end">
-                                <ClearInputAdornment
-                                    position="end"
-                                    hasClearableContent={Boolean(debouncedSearchQuery.length !== 0)}
-                                    onClick={() => setSearchQuery("")}
-                                />
+                                <ClearInputAdornment position="end" onClick={() => setSearchQuery("")} />
                             </InputAdornment>
                         )
                     }

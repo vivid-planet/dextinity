@@ -1,4 +1,4 @@
-import { type BlockContext, type BlockDataInterface } from "./block";
+import type { BlockContext, BlockDataInterface } from "./block";
 import { FlatBlocks } from "./flat-blocks/flat-blocks";
 
 export async function getPreviewImageUrlTemplatesFromBlock(

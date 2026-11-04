@@ -1,9 +1,9 @@
-import { type SelectChangeEvent } from "@mui/material";
+import type { SelectChangeEvent } from "@mui/material";
 import { type DraftBlockType, type Editor, type EditorState, RichUtils } from "draft-js";
 import { type MouseEvent, type RefObject, useCallback, useMemo } from "react";
 
-import { type SupportedThings } from "../Rte";
-import { type IBlocktypeMap, type IFeatureConfig } from "../types";
+import type { SupportedThings } from "../Rte";
+import type { IBlocktypeMap, IFeatureConfig } from "../types";
 import getCurrentBlock from "../utils/getCurrentBlock";
 
 interface IProps {
@@ -11,7 +11,7 @@ interface IProps {
     setEditorState: (editorState: EditorState) => void;
     supportedThings: SupportedThings[];
     blocktypeMap: IBlocktypeMap;
-    editorRef: RefObject<Editor>;
+    editorRef: RefObject<Editor | null>;
     standardBlockType: DraftBlockType;
 }
 

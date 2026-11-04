@@ -1,4 +1,4 @@
-import { ImporterLocalFileDataStream } from "@comet/cms-api";
+import { ImporterLocalFileDataStream } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/core";
 import { Injectable } from "@nestjs/common";
 

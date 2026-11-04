@@ -1,4 +1,4 @@
-import { SwitchField } from "@comet/admin";
+import { SwitchField } from "@dextinity/admin";
 import {
     BlockCategory,
     BlocksFinalForm,
@@ -7,8 +7,8 @@ import {
     createCompositeBlockField,
     createCompositeBlockSelectField,
     createCompositeBlockTextField,
-} from "@comet/cms-admin";
-import { type AccordionItemBlockData } from "@src/blocks.generated";
+} from "@dextinity/cms-admin";
+import type { AccordionItemBlockData } from "@src/blocks.generated";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";

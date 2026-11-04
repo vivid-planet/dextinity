@@ -2,7 +2,7 @@ import { dividerClasses, listItemIconClasses } from "@mui/material";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
 import { commonListItemRootStyles } from "./commonListStyles";
-import { type GetMuiComponentTheme } from "./getComponentsTheme";
+import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
 export const getMuiMenuItem: GetMuiComponentTheme<"MuiMenuItem"> = (component) => ({
     ...component,

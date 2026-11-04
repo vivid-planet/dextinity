@@ -1,4 +1,4 @@
-import { BrevoModule } from "@comet/brevo-api";
+import { BrevoModule } from "@dextinity/brevo-api";
 import {
     AccessLogModule,
     AzureAiTranslatorModule,
@@ -12,6 +12,7 @@ import {
     DamModule,
     DependenciesModule,
     FileUploadsModule,
+    FullTextSearchModule,
     ImgproxyModule,
     KubernetesModule,
     MailerModule,
@@ -21,7 +22,7 @@ import {
     SentryModule,
     UserPermissionsModule,
     WarningsModule,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 import { ApolloDriver, ApolloDriverConfig, ValidationError } from "@nestjs/apollo";
 import { DynamicModule, Module } from "@nestjs/common";
@@ -47,7 +48,8 @@ import { TranslationModule } from "@src/translation/translation.module";
 import { Request } from "express";
 
 import { AccessControlService } from "./auth/access-control.service";
-import { AuthModule, SYSTEM_USER_NAME } from "./auth/auth.module";
+import { AuthModule } from "./auth/auth.module";
+import { SYSTEM_USER_NAME } from "./auth/constants";
 import { UserService } from "./auth/user.service";
 import { DamScope } from "./dam/dto/dam-scope";
 import { DamFile } from "./dam/entities/dam-file.entity";
@@ -69,6 +71,7 @@ import { ProductsModule } from "./products/products.module";
 import { RedirectScope } from "./redirects/dto/redirect-scope";
 import { RedirectTargetUrlService } from "./redirects/redirect-target-url.service";
 import { StatusModule } from "./status/status.module";
+import { WelcomeEmailModule } from "./welcome-email/welcome-email.module";
 
 @Module({})
 export class AppModule {
@@ -124,6 +127,12 @@ export class AppModule {
                                 label: { domain: siteConfig.name },
                             })),
                         ),
+                        availableContentScopeDimensions: [
+                            { name: "domain", label: "Domain (Website)" },
+                            { name: "language", label: "Language" },
+                            // "product" is declared here so it shows up in the admin panel although it is not part of availableContentScopes
+                            { name: "product", label: "Product Category" },
+                        ],
                         userService,
                         accessControlService,
                         systemUsers: [SYSTEM_USER_NAME],
@@ -156,6 +165,7 @@ export class AppModule {
                         }
                         return config.sitePreviewSecret;
                     },
+                    fullText: true,
                 }),
 
                 RedirectsModule.register({
@@ -177,6 +187,7 @@ export class AppModule {
                         filesDirectory: `${config.blob.storageDirectoryPrefix}-files`,
                         maxFileSize: config.dam.uploadsMaxFileSize,
                         maxSrcResolution: config.dam.maxSrcResolution,
+                        includeFormatExtensionInImageUrls: true,
                     },
                     Scope: DamScope,
                     File: DamFile,
@@ -212,42 +223,37 @@ export class AppModule {
                 NewsModule,
                 MenusModule,
                 FooterModule,
+                WelcomeEmailModule,
                 PredefinedPagesModule,
                 CronJobsModule,
                 MailerModule.register(config.mailer),
                 MailTemplatesModule,
                 ProductsModule,
                 ...(config.azureAiTranslator ? [AzureAiTranslatorModule.register(config.azureAiTranslator)] : []),
-                AccessLogModule.forRoot({
-                    shouldLogRequest: ({ user }) => {
-                        // Ignore system user
-                        if (user === "system-user") {
-                            return false;
-                        }
-                        return true;
-                    },
-                }),
+                ...(!config.debug
+                    ? [
+                          AccessLogModule.forRoot({
+                              shouldLogRequest: ({ req }) => !req.route.path.startsWith("/api/healthcheck/"),
+                          }),
+                      ]
+                    : []),
                 OpenTelemetryModule,
                 ...(config.sentry ? [SentryModule.forRootAsync(config.sentry)] : []),
                 WarningsModule,
+                FullTextSearchModule,
                 BrevoModule.register({
                     brevo: {
                         resolveConfig: (scope: EmailCampaignContentScope) => {
                             // change config based on scope - for example different sender email
                             // this is just to show you can use the scope to change the config but it has no real use in this example
-                            if (scope.domain === "main") {
-                                return {
-                                    apiKey: config.brevo.apiKey,
-                                    redirectUrlForImport: config.brevo.redirectUrlForImport,
-                                };
-                            } else if (scope.domain === "secondary") {
-                                return {
-                                    apiKey: config.brevo.apiKey,
-                                    redirectUrlForImport: config.brevo.redirectUrlForImport,
-                                };
+                            const siteConfig = config.siteConfigs.find((siteConfig) => siteConfig.scope.domain == scope.domain);
+                            if (!siteConfig) {
+                                throw Error("Invalid scope passed");
                             }
-
-                            throw Error("Invalid scope passed");
+                            return {
+                                apiKey: config.brevo.apiKey,
+                                redirectUrlForImport: siteConfig.url,
+                            };
                         },
                         BlacklistedContacts,
                         BrevoContactAttributes,
@@ -272,7 +278,7 @@ export class AppModule {
                                 throw new Error(`No site config found for scope ${scope.domain}`);
                             }
                             return {
-                                url: `${siteConfig.url}/${scope.language}/render-brevo-email-campaign`,
+                                url: `${siteConfig.url}/api/render-brevo-email-campaign`,
                                 basicAuth: {
                                     username: config.brevo.campaign.basicAuth.username,
                                     password: config.brevo.campaign.basicAuth.password,

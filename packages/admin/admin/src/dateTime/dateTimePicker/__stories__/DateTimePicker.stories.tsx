@@ -1,13 +1,13 @@
-import { Edit } from "@comet/admin-icons";
+import { Edit } from "@dextinity/admin-icons";
 import { Box, Typography } from "@mui/material";
-import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 
-import { Future_DateTimePicker } from "../DateTimePicker";
+import { DateTimePicker } from "../DateTimePicker";
 
-type Story = StoryObj<typeof Future_DateTimePicker>;
-const config: Meta<typeof Future_DateTimePicker> = {
-    component: Future_DateTimePicker,
+type Story = StoryObj<typeof DateTimePicker>;
+const config: Meta<typeof DateTimePicker> = {
+    component: DateTimePicker,
     title: "components/dateTime/DateTimePicker",
 };
 
@@ -21,14 +21,14 @@ export default config;
 export const Default: Story = {
     render: (args) => {
         const [value, setValue] = useState<Date | undefined>(new Date(2024, 0, 15, 14, 30));
-        return <Future_DateTimePicker {...args} value={value} onChange={setValue} />;
+        return <DateTimePicker {...args} value={value} onChange={setValue} />;
     },
 };
 
 export const FullWidth: Story = {
     render: (args) => {
         const [value, setValue] = useState<Date | undefined>(new Date(2024, 0, 15, 14, 30));
-        return <Future_DateTimePicker {...args} fullWidth value={value} onChange={setValue} />;
+        return <DateTimePicker {...args} fullWidth value={value} onChange={setValue} />;
     },
 };
 
@@ -45,7 +45,7 @@ export const FullWidth: Story = {
 export const Required: Story = {
     render: (args) => {
         const [value, setValue] = useState<Date | undefined>(new Date(2024, 0, 15, 14, 30));
-        return <Future_DateTimePicker {...args} required value={value} onChange={setValue} />;
+        return <DateTimePicker {...args} required value={value} onChange={setValue} />;
     },
 };
 
@@ -60,7 +60,7 @@ export const Required: Story = {
 export const Disabled: Story = {
     render: (args) => {
         const [value, setValue] = useState<Date | undefined>(new Date(2024, 0, 15, 14, 30));
-        return <Future_DateTimePicker {...args} disabled value={value} onChange={setValue} />;
+        return <DateTimePicker {...args} disabled value={value} onChange={setValue} />;
     },
 };
 
@@ -75,7 +75,7 @@ export const Disabled: Story = {
 export const ReadOnly: Story = {
     render: (args) => {
         const [value, setValue] = useState<Date | undefined>(new Date(2024, 0, 15, 14, 30));
-        return <Future_DateTimePicker {...args} readOnly value={value} onChange={setValue} />;
+        return <DateTimePicker {...args} readOnly value={value} onChange={setValue} />;
     },
 };
 
@@ -91,7 +91,7 @@ export const WithCustomIcon: Story = {
     render: (args) => {
         const [value, setValue] = useState<Date | undefined>(new Date(2024, 0, 15, 14, 30));
         return (
-            <Future_DateTimePicker
+            <DateTimePicker
                 {...args}
                 value={value}
                 onChange={setValue}
@@ -120,7 +120,7 @@ export const WithDateRestrictions: Story = {
     },
     render: (args) => {
         const [value, setValue] = useState<Date | undefined>();
-        return <Future_DateTimePicker {...args} label="Future Date Time Only" minDate={args.minDate} value={value} onChange={setValue} />;
+        return <DateTimePicker {...args} label="Future Date Time Only" minDate={args.minDate} value={value} onChange={setValue} />;
     },
 };
 
@@ -138,8 +138,8 @@ export const MultiplePickers: Story = {
         return (
             <Box display="flex" flexDirection="column" gap={4}>
                 <Typography variant="h5">Date Time Range Selection</Typography>
-                <Future_DateTimePicker {...args} label="Start Date Time" fullWidth value={startDateTime} onChange={setStartDateTime} />
-                <Future_DateTimePicker {...args} label="End Date Time" fullWidth value={endDateTime} onChange={setEndDateTime} />
+                <DateTimePicker {...args} label="Start Date Time" fullWidth value={startDateTime} onChange={setStartDateTime} />
+                <DateTimePicker {...args} label="End Date Time" fullWidth value={endDateTime} onChange={setEndDateTime} />
             </Box>
         );
     },

@@ -1,6 +1,6 @@
 import { CharacterMetadata, EditorState, type EntityInstance } from "draft-js";
 
-import { type FilterEditorStateFn } from "../../types";
+import type { FilterEditorStateFn } from "../../types";
 
 type FilterFn = (entity: EntityInstance) => boolean; // when function returns false the entity is removed
 

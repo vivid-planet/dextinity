@@ -15,12 +15,12 @@ import {
     ToolbarTitleItem,
     useFormApiRef,
     useStackApi,
-} from "@comet/admin";
-import { ArrowLeft } from "@comet/admin-icons";
-import { type ContentScope, resolveHasSaveConflict, useFormSaveConflict } from "@comet/cms-admin";
+} from "@dextinity/admin";
+import { ArrowLeft } from "@dextinity/admin-icons";
+import { type ContentScope, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { Card, IconButton } from "@mui/material";
 import { Box } from "@mui/system";
-import { type FormApi } from "final-form";
+import type { FormApi } from "final-form";
 import { type ReactElement, type ReactNode, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 
@@ -30,15 +30,15 @@ import {
     createBrevoTestContactMutation,
     updateBrevoContactMutation,
 } from "./BrevoTestContactForm.gql";
-import {
-    type GQLBrevoContactFormCheckForChangesQuery,
-    type GQLBrevoContactFormCheckForChangesQueryVariables,
-    type GQLBrevoContactFormQuery,
-    type GQLBrevoContactFormQueryVariables,
-    type GQLCreateBrevoTestContactMutation,
-    type GQLCreateBrevoTestContactMutationVariables,
-    type GQLUpdateBrevoContactMutation,
-    type GQLUpdateBrevoContactMutationVariables,
+import type {
+    GQLBrevoContactFormCheckForChangesQuery,
+    GQLBrevoContactFormCheckForChangesQueryVariables,
+    GQLBrevoContactFormQuery,
+    GQLBrevoContactFormQueryVariables,
+    GQLCreateBrevoTestContactMutation,
+    GQLCreateBrevoTestContactMutationVariables,
+    GQLUpdateBrevoContactMutation,
+    GQLUpdateBrevoContactMutationVariables,
 } from "./BrevoTestContactForm.gql.generated";
 
 export type EditBrevoContactFormValues = {
@@ -159,7 +159,9 @@ export function BrevoTestContactForm({ id, scope, input2State, additionalFormFie
         }
     };
 
-    if (error) throw error;
+    if (error) {
+        throw error;
+    }
 
     if (loading) {
         return <Loading behavior="fillPageHeight" />;
@@ -176,7 +178,7 @@ export function BrevoTestContactForm({ id, scope, input2State, additionalFormFie
                         </IconButton>
                     </ToolbarItem>
                     <ToolbarTitleItem>
-                        <FormattedMessage id="cometBrevoModule.brevoTestContacts.brevoTestContact" defaultMessage="Test contact" />
+                        <FormattedMessage id="dextinity.brevoTestContacts.brevoTestContact" defaultMessage="Test contact" />
                     </ToolbarTitleItem>
                     <FillSpace />
                     <ToolbarActions>
@@ -188,7 +190,7 @@ export function BrevoTestContactForm({ id, scope, input2State, additionalFormFie
                         <Box sx={{ marginBottom: 4 }}>
                             <Alert severity="warning">
                                 <FormattedMessage
-                                    id="cometBrevoModule.brevoContact.contactEditAlert"
+                                    id="dextinity.brevoContact.contactEditAlert"
                                     defaultMessage="Editing a contact will affect all scopes and the target groups within those scopes."
                                 />
                             </Alert>
@@ -198,13 +200,13 @@ export function BrevoTestContactForm({ id, scope, input2State, additionalFormFie
                         required
                         fullWidth
                         name="email"
-                        label={<FormattedMessage id="cometBrevoModule.brevoTestContact.email" defaultMessage="Email" />}
+                        label={<FormattedMessage id="dextinity.brevoTestContact.email" defaultMessage="Email" />}
                         disabled={mode === "edit"}
                     />
 
                     {additionalFormFields && (
                         <Card sx={{ padding: 4 }}>
-                            <FormSection title={<FormattedMessage id="cometBrevoModule.brevoTestContact.attributes" defaultMessage="Attributes" />}>
+                            <FormSection title={<FormattedMessage id="dextinity.brevoTestContact.attributes" defaultMessage="Attributes" />}>
                                 {additionalFormFields}
                             </FormSection>
                         </Card>

@@ -3,7 +3,7 @@ import { Button, type ButtonProps, type ComponentsOverrides, IconButton } from "
 import { css, type Theme, useTheme, useThemeProps } from "@mui/material/styles";
 
 import { createComponentSlot } from "../../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
 import { useWindowSize } from "../../../helpers/useWindowSize";
 import { Tooltip } from "../../Tooltip";
 
@@ -33,26 +33,30 @@ const StyledIconButton = createComponentSlot(IconButton)<ToolbarActionButtonClas
     },
 })(
     ({ theme, ownerState }) => css`
-        ${ownerState.variant === "contained" &&
-        css`
-            background: ${theme.palette.primary.main};
-            color: ${theme.palette.primary.contrastText};
-            border-radius: 4px;
-            &:hover {
-                background: ${theme.palette.primary.dark};
-            }
-        `}
-        ${ownerState.variant === "outlined" &&
-        css`
-            border-radius: 4px;
-            border-width: 1px;
-            border-style: solid;
-            border-color: ${theme.palette.grey[200]};
-            &:hover {
-                background-color: ${theme.palette.grey[50]};
+        ${
+            ownerState.variant === "contained" &&
+            css`
+                background: ${theme.palette.primary.main};
+                color: ${theme.palette.primary.contrastText};
+                border-radius: 4px;
+                &:hover {
+                    background: ${theme.palette.primary.dark};
+                }
+            `
+        }
+        ${
+            ownerState.variant === "outlined" &&
+            css`
+                border-radius: 4px;
+                border-width: 1px;
+                border-style: solid;
                 border-color: ${theme.palette.grey[200]};
-            }
-        `}
+                &:hover {
+                    background-color: ${theme.palette.grey[50]};
+                    border-color: ${theme.palette.grey[200]};
+                }
+            `
+        }
     `,
 );
 
@@ -65,10 +69,10 @@ const StyledButton = createComponentSlot(Button)<ToolbarActionButtonClassKey, Ow
 })();
 
 /**
- * @deprecated Use `Button` from `@comet/admin` with the `responsive` prop instead.
+ * @deprecated Use `Button` from `@dextinity/admin` with the `responsive` prop instead.
  */
 export const ToolbarActionButton = (props: ToolbarActionButtonProps) => {
-    const { children, slotProps = {}, ...restProps } = useThemeProps({ props, name: "CometAdminToolbarActionButton" });
+    const { children, slotProps = {}, ...restProps } = useThemeProps({ props, name: "DextinityAdminToolbarActionButton" });
     const { iconButton: iconButtonProps, tooltip: tooltipProps, button: buttonProps } = slotProps;
 
     const windowSize = useWindowSize();
@@ -93,15 +97,15 @@ export const ToolbarActionButton = (props: ToolbarActionButtonProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminToolbarActionButton: ToolbarActionButtonProps;
+        DextinityAdminToolbarActionButton: ToolbarActionButtonProps;
     }
     interface ComponentNameToClassKey {
-        CometAdminToolbarActionButton: ToolbarActionButtonClassKey;
+        DextinityAdminToolbarActionButton: ToolbarActionButtonClassKey;
     }
     interface Components {
-        CometAdminToolbarActionButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminToolbarActionButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminToolbarActionButton"];
+        DextinityAdminToolbarActionButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminToolbarActionButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminToolbarActionButton"];
         };
     }
 }

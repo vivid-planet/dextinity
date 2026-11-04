@@ -1,9 +1,7 @@
-import "tsconfig-paths/register";
-
 import { MikroORM } from "@mikro-orm/core";
 import { NestFactory } from "@nestjs/core";
 import { repl } from "@nestjs/core/repl";
-import { type NestExpressApplication } from "@nestjs/platform-express";
+import type { NestExpressApplication } from "@nestjs/platform-express";
 
 import { AppModule } from "./app.module";
 import { createConfig } from "./config/config";

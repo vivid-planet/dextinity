@@ -1,7 +1,7 @@
-import { type PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
 import { ErrorHandlerBoundary } from "../../errorHandler/ErrorHandlerBoundary";
-import { type SupportedBlocks } from "./types";
+import type { SupportedBlocks } from "./types";
 
 interface Props extends PropsWithChildren {
     data: {

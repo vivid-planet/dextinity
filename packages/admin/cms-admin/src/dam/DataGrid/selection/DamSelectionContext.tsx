@@ -1,21 +1,21 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { saveAs } from "file-saver";
+import { downloadFile } from "@dextinity/admin";
 import { createContext, type Dispatch, type ReactNode, type SetStateAction, useCallback, useContext, useState } from "react";
 
 import { ConfirmDeleteDialog } from "../../FileActions/ConfirmDeleteDialog";
 import { clearDamItemCache } from "../../helpers/clearDamItemCache";
 import { MoveDamItemDialog } from "../../MoveDamItemDialog/MoveDamItemDialog";
-import { type DamItemSelectionMap } from "../FolderDataGrid";
-import {
-    type GQLArchiveFilesMutation,
-    type GQLArchiveFilesMutationVariables,
-    type GQLDamFileDownloadInfoFragment,
-    type GQLDeleteDamFileMutation,
-    type GQLDeleteDamFileMutationVariables,
-    type GQLDeleteDamFolderMutation,
-    type GQLDeleteDamFolderMutationVariables,
-    type GQLRestoreFilesMutation,
-    type GQLRestoreFilesMutationVariables,
+import type { DamItemSelectionMap } from "../FolderDataGrid";
+import type {
+    GQLArchiveFilesMutation,
+    GQLArchiveFilesMutationVariables,
+    GQLDamFileDownloadInfoFragment,
+    GQLDeleteDamFileMutation,
+    GQLDeleteDamFileMutationVariables,
+    GQLDeleteDamFolderMutation,
+    GQLDeleteDamFolderMutationVariables,
+    GQLRestoreFilesMutation,
+    GQLRestoreFilesMutationVariables,
 } from "./DamSelectionContext.generated";
 
 const damFileDownloadInfoFragment = gql`
@@ -28,7 +28,7 @@ const damFileDownloadInfoFragment = gql`
 
 interface DamSelectionApi {
     selectionMap: DamItemSelectionMap;
-    setSelectionMap: Dispatch<SetStateAction<DamItemSelectionMap>>;
+    setSelectionMap: (selectionMap: DamItemSelectionMap) => void;
 
     // delete
     deleteSelected: () => void;
@@ -97,9 +97,20 @@ export const useDamSelectionApi = () => {
     return useContext(DamSelectionContext);
 };
 
-export const DamSelectionProvider = ({ children }: { children?: ReactNode }) => {
+interface DamSelectionProviderProps {
+    children?: ReactNode;
+    initialSelection?: DamItemSelectionMap;
+    onSelectionChange?: (next: DamItemSelectionMap) => void;
+}
+
+export const DamSelectionProvider = ({ children, initialSelection, onSelectionChange }: DamSelectionProviderProps) => {
     const apolloClient = useApolloClient();
-    const [selectionMap, setSelectionMap] = useState<DamItemSelectionMap>(new Map());
+    const [selectionMap, setSelectionMap] = useState<DamItemSelectionMap>(() => initialSelection ?? new Map());
+
+    const onSelectionMapChange = (newSelectionMap: DamItemSelectionMap) => {
+        setSelectionMap(newSelectionMap);
+        onSelectionChange?.(newSelectionMap);
+    };
 
     const showError = (setError: Dispatch<SetStateAction<boolean>>) => {
         setError(true);
@@ -267,7 +278,7 @@ export const DamSelectionProvider = ({ children }: { children?: ReactNode }) => 
             if (downloadInfo === null) {
                 showError(setHasDownloadErrors);
             } else {
-                saveAs(downloadInfo.fileUrl, downloadInfo.name);
+                downloadFile(downloadInfo.fileUrl, downloadInfo.name);
             }
         }
 
@@ -278,7 +289,7 @@ export const DamSelectionProvider = ({ children }: { children?: ReactNode }) => 
         <DamSelectionContext.Provider
             value={{
                 selectionMap,
-                setSelectionMap,
+                setSelectionMap: onSelectionMapChange,
 
                 deleteSelected: openDeleteDialog,
                 deleting,

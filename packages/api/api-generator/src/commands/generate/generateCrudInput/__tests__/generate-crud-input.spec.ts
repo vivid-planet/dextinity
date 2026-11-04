@@ -1,7 +1,8 @@
 import { BaseEntity, DateType, defineConfig, Entity, Enum, MikroORM, PrimaryKey, Property } from "@mikro-orm/postgresql";
 import { Field, ObjectType, registerEnumType } from "@nestjs/graphql";
-import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage";
-import { v4 as uuid } from "uuid";
+import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
+import { randomUUID } from "crypto";
+import { describe, expect, it } from "vitest";
 
 import { formatSource, parseSource, testPermission } from "../../utils/test-helper";
 import { generateCrudInput } from "../generate-crud-input";
@@ -9,7 +10,7 @@ import { generateCrudInput } from "../generate-crud-input";
 @Entity()
 export class TestEntityWithString extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     title: string;
@@ -17,7 +18,7 @@ export class TestEntityWithString extends BaseEntity {
 @Entity()
 export class TestEntityWithDate extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: DateType })
     foo: Date;
@@ -25,7 +26,7 @@ export class TestEntityWithDate extends BaseEntity {
 @Entity()
 export class TestEntityWithBoolean extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     foo: boolean;
@@ -43,7 +44,7 @@ registerEnumType(TestEnumType, {
 @ObjectType()
 export class TestEntityWithEnum extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Enum({ items: () => TestEnumType })
     @Field(() => TestEnumType)
@@ -53,7 +54,7 @@ export class TestEntityWithEnum extends BaseEntity {
 @Entity()
 export class TestEntityWithUuid extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "uuid" })
     fooId: string;
@@ -62,7 +63,7 @@ export class TestEntityWithUuid extends BaseEntity {
 @Entity()
 export class TestEntityWithTextRuntimeType extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "text" })
     title: string;
@@ -71,7 +72,7 @@ export class TestEntityWithTextRuntimeType extends BaseEntity {
 @Entity()
 export class TestEntityWithNullablePropWithInitializer extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "text", nullable: true })
     title?: string = undefined;
@@ -80,7 +81,7 @@ export class TestEntityWithNullablePropWithInitializer extends BaseEntity {
 @Entity()
 export class TestEntityWithNullablePropWithoutInitializer extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ type: "text", nullable: true })
     title?: string;
@@ -98,10 +99,7 @@ describe("GenerateCrudInput", () => {
                 }),
             );
 
-            const out = await generateCrudInput(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithString"),
-            );
+            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithString"));
             //console.log(out);
             const formattedOut = await formatSource(out[0].content);
             //console.log(formattedOut);
@@ -136,10 +134,7 @@ describe("GenerateCrudInput", () => {
                     entities: [TestEntityWithDate],
                 }),
             );
-            const out = await generateCrudInput(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithDate"),
-            );
+            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithDate"));
             //console.log(out);
             const formattedOut = await formatSource(out[0].content);
             const source = parseSource(formattedOut);
@@ -175,10 +170,7 @@ describe("GenerateCrudInput", () => {
                     entities: [TestEntityWithBoolean],
                 }),
             );
-            const out = await generateCrudInput(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithBoolean"),
-            );
+            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithBoolean"));
             //console.log(out);
             const formattedOut = await formatSource(out[0].content);
             const source = parseSource(formattedOut);
@@ -215,10 +207,7 @@ describe("GenerateCrudInput", () => {
                     entities: [TestEntityWithEnum],
                 }),
             );
-            const out = await generateCrudInput(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithEnum"),
-            );
+            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithEnum"));
             const formattedOut = await formatSource(out[0].content);
             //console.log(formattedOut);
             const source = parseSource(formattedOut);
@@ -255,10 +244,7 @@ describe("GenerateCrudInput", () => {
                     entities: [TestEntityWithUuid],
                 }),
             );
-            const out = await generateCrudInput(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithUuid"),
-            );
+            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithUuid"));
             const formattedOut = await formatSource(out[0].content);
             //console.log(formattedOut);
             const source = parseSource(formattedOut);
@@ -295,10 +281,7 @@ describe("GenerateCrudInput", () => {
                     entities: [TestEntityWithTextRuntimeType],
                 }),
             );
-            const out = await generateCrudInput(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
-                orm.em.getMetadata().get("TestEntityWithTextRuntimeType"),
-            );
+            const out = await generateCrudInput({ requiredPermission: testPermission }, orm.em.getMetadata().get("TestEntityWithTextRuntimeType"));
             const formattedOut = await formatSource(out[0].content);
             //console.log(formattedOut);
             const source = parseSource(formattedOut);
@@ -336,7 +319,7 @@ describe("GenerateCrudInput", () => {
                 }),
             );
             const out = await generateCrudInput(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
+                { requiredPermission: testPermission },
                 orm.em.getMetadata().get("TestEntityWithNullablePropWithInitializer"),
             );
             const formattedOut = await formatSource(out[0].content);
@@ -383,7 +366,7 @@ describe("GenerateCrudInput", () => {
                 }),
             );
             const out = await generateCrudInput(
-                { targetDirectory: __dirname, requiredPermission: testPermission },
+                { requiredPermission: testPermission },
                 orm.em.getMetadata().get("TestEntityWithNullablePropWithoutInitializer"),
             );
             const formattedOut = await formatSource(out[0].content);

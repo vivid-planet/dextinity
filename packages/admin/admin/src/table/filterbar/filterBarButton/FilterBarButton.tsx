@@ -1,12 +1,12 @@
-import { ChevronDown } from "@comet/admin-icons";
+import { ChevronDown } from "@dextinity/admin-icons";
 // eslint-disable-next-line no-restricted-imports
 import { Button, buttonClasses, type ButtonProps, type ComponentsOverrides, svgIconClasses } from "@mui/material";
 import { css, type Theme } from "@mui/material/styles";
 import { useThemeProps } from "@mui/system";
-import { type ComponentType } from "react";
+import type { ComponentType } from "react";
 
 import { createComponentSlot } from "../../../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";
 import { FilterBarActiveFilterBadge, type FilterBarActiveFilterBadgeProps } from "../filterBarActiveFilterBadge/FilterBarActiveFilterBadge";
 
 /**
@@ -45,20 +45,24 @@ const Root = createComponentSlot(Button)<FilterBarButtonClassKey, OwnerState>({
             background-color: ${theme.palette.common.white};
         }
 
-        ${ownerState.openPopover &&
-        css`
-            border-color: ${theme.palette.primary.main};
-        `}
+        ${
+            ownerState.openPopover &&
+            css`
+                border-color: ${theme.palette.primary.main};
+            `
+        }
 
-        ${ownerState.hasDirtyFields &&
-        css`
-            border-color: ${theme.palette.grey[400]};
-            font-weight: ${theme.typography.fontWeightBold};
+        ${
+            ownerState.hasDirtyFields &&
+            css`
+                border-color: ${theme.palette.grey[400]};
+                font-weight: ${theme.typography.fontWeightBold};
 
-            &:disabled {
-                border-color: ${theme.palette.grey[100]};
-            }
-        `}
+                &:disabled {
+                    border-color: ${theme.palette.grey[100]};
+                }
+            `
+        }
     `,
 );
 
@@ -73,7 +77,8 @@ const FilterBadge = createComponentSlot("span")<FilterBarButtonClassKey>({
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
 export interface FilterBarButtonProps
-    extends ThemedComponentBaseProps<{
+    extends
+        ThemedComponentBaseProps<{
             root: typeof Button;
             filterBadge: "span";
         }>,
@@ -97,7 +102,7 @@ export function FilterBarButton(inProps: FilterBarButtonProps) {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminFilterBarButton",
+        name: "DextinityAdminFilterBarButton",
     });
 
     const hasDirtyFields = !!(numberDirtyFields && numberDirtyFields > 0);
@@ -119,17 +124,17 @@ export function FilterBarButton(inProps: FilterBarButtonProps) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFilterBarButton: FilterBarButtonClassKey;
+        DextinityAdminFilterBarButton: FilterBarButtonClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFilterBarButton: FilterBarButtonProps;
+        DextinityAdminFilterBarButton: FilterBarButtonProps;
     }
 
     interface Components {
-        CometAdminFilterBarButton?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFilterBarButton"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFilterBarButton"];
+        DextinityAdminFilterBarButton?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFilterBarButton"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFilterBarButton"];
         };
     }
 }

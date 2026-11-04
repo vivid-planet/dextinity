@@ -1,7 +1,7 @@
 import { type EntityMetadata, type FilterQuery, type ObjectQuery, type OrderDefinition, raw } from "@mikro-orm/postgresql";
 
 import { type CrudSearchField, getCrudSearchFieldsFromMetadata } from "../helper/crud-generator.helper";
-import { type SortDirection } from "../sorting/sort-direction.enum";
+import type { SortDirection } from "../sorting/sort-direction.enum";
 import { BooleanFilter } from "./boolean.filter";
 import { DateFilter } from "./date.filter";
 import { DateTimeFilter } from "./date-time.filter";

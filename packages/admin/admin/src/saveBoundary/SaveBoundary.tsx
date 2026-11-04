@@ -149,7 +149,9 @@ export interface SavableProps {
 export const Savable = ({ doSave, doReset, hasChanges, checkForChanges }: SavableProps) => {
     const id = useConstant<string>(() => uuid());
     const saveBoundaryApi = useSaveBoundaryApi();
-    if (!saveBoundaryApi) throw new Error("Savable must be inside SaveBoundary");
+    if (!saveBoundaryApi) {
+        throw new Error("Savable must be inside SaveBoundary");
+    }
     useEffect(() => {
         saveBoundaryApi.register(id, { doSave, doReset, hasChanges, checkForChanges });
         return function cleanup() {

@@ -1,4 +1,4 @@
-import { Close, Maximize } from "@comet/admin-icons";
+import { Close, Maximize } from "@dextinity/admin-icons";
 import {
     ButtonBase,
     type ComponentsOverrides,
@@ -16,7 +16,7 @@ import { type PropsWithChildren, type ReactNode, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { createComponentSlot } from "./helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "./helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "./helpers/ThemedComponentBaseProps";
 
 export type ContentOverflowClassKey =
     | "root"
@@ -30,19 +30,18 @@ export type ContentOverflowClassKey =
     | "dialogContent"
     | "innerDialogContent";
 
-export interface ContentOverflowProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        clickableContent: typeof ButtonBase;
-        contentContainer: "div";
-        openDialogIcon: "div";
-        dialog: typeof MuiDialog;
-        dialogPaper: typeof Paper;
-        dialogTitle: typeof MuiDialogTitle;
-        closeDialogButton: typeof IconButton;
-        dialogContent: typeof MuiDialogContent;
-        innerDialogContent: "div";
-    }> {
+export interface ContentOverflowProps extends ThemedComponentBaseProps<{
+    root: "div";
+    clickableContent: typeof ButtonBase;
+    contentContainer: "div";
+    openDialogIcon: "div";
+    dialog: typeof MuiDialog;
+    dialogPaper: typeof Paper;
+    dialogTitle: typeof MuiDialogTitle;
+    closeDialogButton: typeof IconButton;
+    dialogContent: typeof MuiDialogContent;
+    innerDialogContent: "div";
+}> {
     dialogTitle?: ReactNode;
     iconMapping?: {
         openDialog?: ReactNode;
@@ -53,11 +52,11 @@ export interface ContentOverflowProps
 export const ContentOverflow = (inProps: PropsWithChildren<ContentOverflowProps>) => {
     const {
         children,
-        dialogTitle = <FormattedMessage id="comet.contentOverflow.dialogTitle" defaultMessage="Preview" />,
+        dialogTitle = <FormattedMessage id="dextinity.contentOverflow.dialogTitle" defaultMessage="Preview" />,
         iconMapping = {},
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminContentOverflow" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminContentOverflow" });
     const { openDialog: openDialogIcon = <Maximize fontSize="inherit" />, closeDialog: closeDialogIcon = <Close /> } = iconMapping;
 
     const [open, setOpen] = useState(false);
@@ -208,17 +207,17 @@ const InnerDialogContent = createComponentSlot("div")<ContentOverflowClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminContentOverflow: ContentOverflowClassKey;
+        DextinityAdminContentOverflow: ContentOverflowClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminContentOverflow: ContentOverflowProps;
+        DextinityAdminContentOverflow: ContentOverflowProps;
     }
 
     interface Components {
-        CometAdminContentOverflow?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminContentOverflow"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminContentOverflow"];
+        DextinityAdminContentOverflow?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminContentOverflow"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminContentOverflow"];
         };
     }
 }

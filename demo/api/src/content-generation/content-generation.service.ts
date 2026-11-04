@@ -1,4 +1,4 @@
-import { AzureOpenAiContentGenerationService, ContentGenerationServiceInterface } from "@comet/cms-api";
+import { AzureOpenAiContentGenerationService, ContentGenerationServiceInterface } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()

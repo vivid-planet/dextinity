@@ -1,5 +1,5 @@
 import { MenuItem } from "@mui/material";
-import { type ComponentProps, type ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 
 import { Field, type FieldProps } from "../Field";
 import { FinalFormSelect } from "../FinalFormSelect";

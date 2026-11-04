@@ -1,8 +1,8 @@
-import { Field, FinalFormInput } from "@comet/admin";
+import { Field, FinalFormInput } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 
-import { type YouTubeVideoBlockData, type YouTubeVideoBlockInput } from "../blocks.generated";
+import type { YouTubeVideoBlockData, YouTubeVideoBlockInput } from "../blocks.generated";
 import { useBlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
 import { BlockAdminComponentSection } from "./common/BlockAdminComponentSection";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
@@ -26,10 +26,12 @@ const isValidYouTubeIdentifier = (value: string) => {
 };
 
 const validateIdentifier = (value?: string) => {
-    if (!value) return undefined;
+    if (!value) {
+        return undefined;
+    }
 
     return value && isValidYouTubeIdentifier(value) ? undefined : (
-        <FormattedMessage id="comet.blocks.youTubeVideo.validation" defaultMessage="Should be a valid YouTube URL or identifier" />
+        <FormattedMessage id="dextinity.blocks.youTubeVideo.validation" defaultMessage="Should be a valid YouTube URL or identifier" />
     );
 };
 
@@ -38,7 +40,7 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
 
     name: "YouTubeVideo",
 
-    displayName: <FormattedMessage id="comet.blocks.youTubeVideo" defaultMessage="Video (YouTube)" />,
+    displayName: <FormattedMessage id="dextinity.blocks.youTubeVideo" defaultMessage="Video (YouTube)" />,
 
     defaultValues: () => ({ showControls: true, previewImage: PixelImageBlock.defaultValues() }),
 
@@ -59,6 +61,13 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
         };
     },
 
+    dependencies: (state) => PixelImageBlock.dependencies?.(state.previewImage) ?? [],
+
+    replaceDependenciesInOutput: (output, replacements) => ({
+        ...output,
+        previewImage: PixelImageBlock.replaceDependenciesInOutput(output.previewImage, replacements),
+    }),
+
     definesOwnPadding: true,
 
     isValid: ({ youtubeIdentifier }) => !youtubeIdentifier || isValidYouTubeIdentifier(youtubeIdentifier),
@@ -72,7 +81,10 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
                     <BlocksFinalForm onSubmit={updateState} initialValues={state}>
                         <Field
                             label={
-                                <FormattedMessage id="comet.blocks.youTubeVideo.youtubeIdentifier" defaultMessage="YouTube URL or YouTube Video ID" />
+                                <FormattedMessage
+                                    id="dextinity.blocks.youTubeVideo.youtubeIdentifier"
+                                    defaultMessage="YouTube URL or YouTube Video ID"
+                                />
                             }
                             validate={validateIdentifier}
                             name="youtubeIdentifier"
@@ -82,7 +94,7 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
                         />
                         <VideoOptionsFields />
                     </BlocksFinalForm>
-                    <BlockAdminComponentSection title={<FormattedMessage id="comet.blocks.video.previewImage" defaultMessage="Preview Image" />}>
+                    <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.video.previewImage" defaultMessage="Preview Image" />}>
                         <PixelImageBlock.AdminComponent
                             state={state.previewImage}
                             updateState={(setStateAction) => {
@@ -100,8 +112,12 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
     extractTextContents: (state) => {
         const contents = [];
 
-        if (state.previewImage.damFile?.altText) contents.push(state.previewImage.damFile.altText);
-        if (state.previewImage.damFile?.title) contents.push(state.previewImage.damFile.title);
+        if (state.previewImage.damFile?.altText) {
+            contents.push(state.previewImage.damFile.altText);
+        }
+        if (state.previewImage.damFile?.title) {
+            contents.push(state.previewImage.damFile.title);
+        }
 
         return contents;
     },

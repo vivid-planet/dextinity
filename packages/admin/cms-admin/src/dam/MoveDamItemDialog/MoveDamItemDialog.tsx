@@ -1,7 +1,7 @@
 import { useApolloClient, useQuery } from "@apollo/client";
-import { type FetchResult } from "@apollo/client/link/core";
-import { Button, SaveButton } from "@comet/admin";
-import { Move, Reset } from "@comet/admin-icons";
+import type { FetchResult } from "@apollo/client/link/core";
+import { Button, SaveButton } from "@dextinity/admin";
+import { Move, Reset } from "@dextinity/admin-icons";
 import {
     // eslint-disable-next-line no-restricted-imports
     Dialog,
@@ -13,7 +13,7 @@ import { styled } from "@mui/material/styles";
 import { useCallback } from "react";
 import { FormattedMessage } from "react-intl";
 
-import { type TextMatch } from "../../common/MarkedMatches";
+import type { TextMatch } from "../../common/MarkedMatches";
 import { SearchInput } from "../../common/SearchInput";
 import { useDamScope } from "../config/useDamScope";
 import {
@@ -158,7 +158,7 @@ const MoveDamItemDialogInner = ({
             maxWidth="lg"
         >
             <DialogTitle>
-                <FormattedMessage id="comet.dam.moveDamItemDialog.selectTargetFolder" defaultMessage="Select target folder" />
+                <FormattedMessage id="dextinity.dam.moveDamItemDialog.selectTargetFolder" defaultMessage="Select target folder" />
             </DialogTitle>
             <DialogContent sx={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
                 <div
@@ -210,7 +210,7 @@ const MoveDamItemDialogInner = ({
                     }}
                     disabled={selectedId === undefined}
                 >
-                    <FormattedMessage id="comet.dam.moveDamItemDialog.startOver" defaultMessage="Start over" />
+                    <FormattedMessage id="dextinity.dam.moveDamItemDialog.startOver" defaultMessage="Start over" />
                 </Button>
                 <SaveButton
                     startIcon={<Move />}
@@ -223,7 +223,7 @@ const MoveDamItemDialogInner = ({
                     hasErrors={hasErrors}
                 >
                     <FormattedMessage
-                        id="comet.dam.moveDamItemDialog.moveItems"
+                        id="dextinity.dam.moveDamItemDialog.moveItems"
                         defaultMessage="Move {num, plural, one {item} other {items}}"
                         values={{
                             num: damItemsToMove.length,

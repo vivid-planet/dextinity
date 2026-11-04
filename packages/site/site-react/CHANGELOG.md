@@ -1,5 +1,517 @@
 # @comet/site-react
 
+## 10.13.1
+
+### Patch Changes
+
+- 94991f8: Update `jose` to v6
+
+## 10.13.0
+
+## 10.12.0
+
+### Patch Changes
+
+- ea0ad37: Reload changed persisted queries during development
+
+    `persistedQueryRoute` loaded the persisted queries file only once. Queries and fragments that changed while the dev server was running were ignored until a restart: a changed query failed with `PersistedQueryNotFound`, and a changed fragment silently sent the old fragment to the API.
+    Outside production, the route now reloads the file whenever it changes.
+
+## 10.11.0
+
+### Minor Changes
+
+- a4cc3bb: Make mail blocks selectable in the admin's block preview
+
+    Mail blocks now work in the block preview like site blocks: a hover highlights them, and a click opens their form. The sent mail does not change.
+
+    Wrap each mail block in `withPreview` and apply the `className` it passes to the block's root element:
+
+    ```tsx
+    export const MailButtonBlock = withPreview<PropsWithData<MailButtonBlockData>>(
+        ({ data, className }) => (
+            <MjmlSection className={className}>
+                <MjmlColumn>
+                    <MjmlButton href={data.link.targetUrl}>{data.text}</MjmlButton>
+                </MjmlColumn>
+            </MjmlSection>
+        ),
+        { label: "Button" },
+    );
+    ```
+
+    Pass the block's props as the type argument of `withPreview`, as in `withPreview<PropsWithData<MailButtonBlockData>>`, and it adds the `className` to them.
+
+    In the block preview page, pass the result of `useIFrameBridge` to `useRefToRegisterMailBlocksForPreview`, and put the ref it returns on the element that contains the mail HTML:
+
+    ```tsx
+    const mailContainerRef = useRefToRegisterMailBlocksForPreview<HTMLSpanElement>(useIFrameBridge());
+
+    return <span ref={mailContainerRef} dangerouslySetInnerHTML={{ __html: mailHtml }} />;
+    ```
+
+### Patch Changes
+
+- 85eecab: Keep the headers of a `Request` passed to `fetch` in the block preview
+
+    `BlockPreviewProvider` wraps `window.fetch` to add the `X-Block-Preview` header.
+    When `fetch` was called with a `Request` object, as `openapi-fetch` and other libraries do, the wrapper dropped all headers set on the `Request`.
+    Now the headers of the `Request` and of `init` are merged, with `init` taking precedence.
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+## 10.10.0
+
+### Patch Changes
+
+- 9d65d08: Fix the selection in the block preview for blocks that a page renders more than once
+
+    When one copy of such a block unmounted, the other copies could not be selected in the block preview until it was reloaded.
+
+- 41b3249: Respect the `autoplay` setting of `YouTubeVideoBlock` when no preview image is set
+
+    Previously the video only started playing after the preview image was clicked, so blocks without a preview image (e.g. in a kiosk) never autoplayed.
+
+    The embedded player is now also loaded lazily, so a video further down the page doesn't start playing before it is anywhere near the viewport.
+
+- 3ba43d6: Play the video unmuted in `YouTubeVideoBlock`, `VimeoVideoBlock` and `DamVideoBlock` when it is started by clicking the preview image
+
+    Autoplaying videos still start muted, since browsers block unmuted autoplay without a user interaction. The click on the preview image is such an interaction, so muting is no longer necessary from that point on.
+
+## 10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- 6caa864: Stop forwarding preview headers from the client in `persistedQueryRoute`
+
+    Previously, `persistedQueryRoute` forwarded the `x-include-invisible-content` and `x-preview-dam-urls` headers of the incoming request to the API.
+    Since the route usually authenticates against the API with a system user, any visitor could request unpublished pages and invisible blocks.
+
+    The headers are now only set based on the new `previewData` option, which must come from a verified source such as the site preview cookie:
+
+    ```ts
+    import { persistedQueryRoute, previewParams } from "@dextinity/site-nextjs/server";
+
+    async function handler(request: Request) {
+        const preview = await previewParams();
+        return persistedQueryRoute(request, {
+            // ...
+            previewData: preview?.previewData,
+        });
+    }
+    ```
+
+    Responses for preview requests are sent with `Cache-Control: private, no-store`.
+
+## 10.8.0
+
+### Minor Changes
+
+- 9109aa3: TipTap Rich Text Block: replace the `paragraph` and `heading` options with `textBlocks`
+
+    The text block type select could only ever offer a fixed paragraph entry plus every enabled heading level, in a fixed order. `textBlocks` configures the text block types explicitly, which decouples a text block from the tag it is stored as and lets several text blocks share a tag, for instance a display headline next to a regular heading 1.
+
+    **Example**
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [
+            { name: "paragraph", label: "Paragraph", tag: "p" },
+            { name: "display", label: "Display", tag: "h1" },
+            { name: "heading-1", label: "Heading 1", tag: "h1" },
+            { name: "heading-2", label: "Heading 2", tag: "h2" },
+        ],
+        defaultTextBlock: "paragraph",
+    });
+    ```
+
+    The API takes the same option without the labels.
+
+    **Migrating an existing configuration**
+    - `paragraph`/`heading` → one `textBlocks` entry per text block type (`tag: "p"` for the paragraph, `h1`-`h6` for the headings). It defaults to a paragraph plus a heading for every level, so only a restricted set needs to be configured. Leaving the paragraph out replaces `paragraph: false`.
+    - `heading: { levels }` → the `textBlocks` entries for those levels.
+    - `heading: { defaultLevel }` → `defaultTextBlock`, which names the text block new content starts with and defaults to the first one.
+    - `migrateFromDraftJs`' `textBlockStyleMap` → `textBlockMap`, which now takes a `{ textBlock, textBlockStyle }` object for every DraftJS block type: `textBlock` names the text block the block becomes (instead of the tag the previous `textBlockType` named), `textBlockStyle` stays optional. Where two text blocks share a heading tag, `textBlockMap` has to name the one a DraftJS `header-one`…`header-six` becomes, unless it is the `defaultTextBlock` — the block throws otherwise, because the conversion runs once and the DraftJS content is gone afterwards.
+
+    **The stored format changes**
+
+    Every paragraph and heading is now one `textBlock` node that names its text block, instead of a `paragraph`/`heading` node with a `level`:
+
+    ```json
+    { "type": "textBlock", "attrs": { "textBlock": "heading-2" }, "content": [{ "type": "text", "text": "Headline" }] }
+    ```
+
+    The tag lives in the configuration, so changing a text block's `tag` takes effect without a migration, while renaming or removing one invalidates the content that names it.
+
+    Content stored by an earlier version holds `paragraph` and `heading` nodes. A vendor migration converts it when the block is loaded, so a project needs no migration of its own. It resolves the text block from the node's tag, which is unambiguous for that content: two text blocks could not share a tag before `textBlocks` existed.
+
+    A project migration sees the converted nodes, because the vendor migrations run before the block's own. A migration written against `{ type: "heading", attrs: { level } }` has to be changed to match `{ type: "textBlock", attrs: { textBlock } }`.
+
+    On the site, `renderTipTapRichText` renders a `textBlock` by its name: `heading-1` to `heading-6` — the default text blocks — as `<h1>` to `<h6>`, anything else as `<p>`. A block that renames a text block or adds one needs its own handler, which reads the name:
+
+    ```tsx
+    const nodeMapping: Record<string, TipTapNodeHandler> = {
+        textBlock: ({ node, children }) => <Headline variant={node.attrs?.textBlock}>{children}</Headline>,
+    };
+    ```
+
+### Patch Changes
+
+- ccffc10: Replace the deprecated `lodash.isequal` dependency with `fast-equals`
+
+## 10.7.0
+
+### Patch Changes
+
+- ae93af6: Treat a document with only empty headings as empty in `hasTipTapRichTextContent`
+
+    An empty heading renders nothing, just like an empty paragraph, so a heading-only TipTap rich text block now shows the preview skeleton while it has no text.
+
+## 10.6.0
+
+### Minor Changes
+
+- 4028c49: Pass the item index as second argument to `ListBlock`'s `block` function
+
+    This allows rendering list items based on their position, for instance, to stagger scroll-in animations.
+
+    **Example**
+
+    ```tsx
+    <ListBlock
+        data={data}
+        block={(block, index) => (
+            <AnimateBoxInOnScroll direction="bottom" delay={200 * index}>
+                <KeyFactItemBlock data={block} />
+            </AnimateBoxInOnScroll>
+        )}
+    />
+    ```
+
+### Patch Changes
+
+- 1059762: Add `rel="noopener"` to `DamFileDownloadLinkBlock` links that open in a new tab
+
+    Links with `target="_blank"` gave the opened page access to `window.opener`, allowing it to redirect the original tab (reverse tabnabbing). `rel="noopener"` is now set whenever the link opens in a new tab, whether via `openFileType: "NewTab"` or an explicitly passed `target="_blank"`.
+
+## 10.5.1
+
+### Patch Changes
+
+- 3a6c451: Make the generated `TipTapNode` type compatible with TipTap's `JSONContent`
+
+    `TipTapNode["type"]` is optional now, matching `JSONContent["type"]`. Both types can be used interchangeably, so no cast is needed when passing a rich text block's content to a TipTap utility or when rendering a `JSONContent` value with `renderTipTapRichText`. `renderTipTapRichText` renders a node without a `type` as a text node.
+
+    **Example**
+
+    ```ts
+    import { generateHTML } from "@tiptap/core";
+    import type { TipTapRichTextBlockData } from "@src/blocks.generated";
+
+    function renderToHtml(data: TipTapRichTextBlockData) {
+        return generateHTML(data.tipTapContent, extensions);
+    }
+    ```
+
+## 10.5.0
+
+## 10.4.0
+
+### Patch Changes
+
+- 0e88bab: Fix block preview outlines being cut off when `IFrameBridgeProvider` does not start at the left edge of the page, for instance because of padding or centering
+
+## 10.3.0
+
+## 10.2.0
+
+## 10.1.0
+
+## 10.0.1
+
+## 10.0.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/site-react` to `@dextinity/site-react`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `cometType` property of iframe messages to `dextinityType`. A matching `@dextinity/cms-admin` version is required
+    - Rename the window property of `useLocalStorageCookieApi` from `window.cometLocalStorageCookieApi` to `window.dextinityLocalStorageCookieApi` and its localStorage key from `comet-dev-cookie-api-consented-cookies` to `dextinity-dev-cookie-api-consented-cookies`. Previously consented cookies are therefore reset in local development
+
+## 10.0.0-beta.0
+
+### Major Changes
+
+- f843a5e: Rename `@comet/site-react` to `@dextinity/site-react`
+
+    Update the dependency in `package.json` and all imports.
+
+    **Breaking changes**
+    - Rename the `cometType` property of iframe messages to `dextinityType`. A matching `@dextinity/cms-admin` version is required
+    - Rename the window property of `useLocalStorageCookieApi` from `window.cometLocalStorageCookieApi` to `window.dextinityLocalStorageCookieApi` and its localStorage key from `comet-dev-cookie-api-consented-cookies` to `dextinity-dev-cookie-api-consented-cookies`. Previously consented cookies are therefore reset in local development
+
+## 9.5.0
+
+## 9.4.0
+
+## 9.3.0
+
+### Minor Changes
+
+- 924b66c: Add `underline` support to `createTipTapRichTextBlock`
+
+    The `underline` inline style is now part of the `supports` list and can be toggled via a new toolbar button. The underline mark is validated by the API, rendered as `<u>` by `renderTipTapRichText`, and the DraftJS migration maps the `UNDERLINE` inline style to it when supported. Per default it is disabled, pass a `supports` list with `underline` to enable it.
+
+## 9.2.2
+
+## 9.2.1
+
+### Patch Changes
+
+- 94a1d58: Fix client-side crash in `useCookieBotCookieApi` when Cookiebot is not yet initialized
+
+    The hook read `window.Cookiebot.consent` in its initial call, but `window.Cookiebot` exists as soon as the Cookiebot script has run, while `consent` is only populated once Cookiebot fires `CookiebotOnConsentReady`. Calling `Object.keys(consent)` before that threw `TypeError: Cannot convert undefined or null to object`, crashing the client. The initial call is now a no-op until consent is available.
+
+## 9.2.0
+
+### Minor Changes
+
+- ee0bf93: Add AI content disclosure for DAM assets (EU AI Act, Article 50)
+
+    Editors can mark a DAM asset as **AI generated** or **AI modified** in the file settings. When such an asset is published, the site renders the official EU AI-content label and merges the disclosure into the media element's accessible name, so screen-reader users learn which asset is AI.
+
+    **API**
+
+    New `aiContentType` field (`Generated` | `Modified`) on DAM files, exposed through the `PixelImage` and `DamVideo` blocks.
+
+    **Admin**
+
+    New "AI content" field in the DAM file settings, shown for image, video and audio assets only (other file types cannot constitute a deep fake).
+
+    **Site**
+
+    `PixelImageBlock` and `DamVideoBlock` render the disclosure automatically for marked assets. Both accept props to customize it:
+    - `aiContentDisclosureProps` — override the badge.
+    - `customAiContentDisclosure` — render your own disclosure, or `null` for none.
+    - `aiContentAltTextPrefixLabels` — localize the accessible-name prefix (defaults to English).
+
+    `@comet/site-react` also exports the `AiContentDisclosure` badge and the `getAiContentAltTextWithPrefix` helper.
+
+## 9.1.1
+
+## 9.1.0
+
+## 9.0.1
+
+## 9.0.0
+
+### Major Changes
+
+- 8b3932d: Move server-only exports to `/server` subpath
+
+    Server-only exports have been moved to a separate `/server` entry point to prevent server-only code from being pulled into client bundles. While tree-shaking previously removed unused server code, this is an optional optimization — Vite's dev server, for example, does not tree-shake, causing errors when importing these packages in non-server environments (e.g., Storybook).
+
+    **`@comet/site-nextjs`**: `sitePreviewRoute`, `legacyPagesRouterSitePreviewApiHandler`, `previewParams`, `legacyPagesRouterPreviewParams`, and `persistedQueryRoute` must now be imported from `@comet/site-nextjs/server`:
+
+    ```diff
+    - import { sitePreviewRoute } from "@comet/site-nextjs";
+    + import { sitePreviewRoute } from "@comet/site-nextjs/server";
+    ```
+
+    ```diff
+    - import { previewParams } from "@comet/site-nextjs";
+    + import { previewParams } from "@comet/site-nextjs/server";
+    ```
+
+    ```diff
+    - import { persistedQueryRoute } from "@comet/site-nextjs";
+    + import { persistedQueryRoute } from "@comet/site-nextjs/server";
+    ```
+
+    **`@comet/site-react`**: `persistedQueryRoute` must now be imported from `@comet/site-react/server`:
+
+    ```diff
+    - import { persistedQueryRoute } from "@comet/site-react";
+    + import { persistedQueryRoute } from "@comet/site-react/server";
+    ```
+
+### Minor Changes
+
+- ab5e547: Add `JsonLd` component for typed schema.org structured data
+
+    Renders any [`schema-dts`](https://www.npmjs.com/package/schema-dts) entity inside a `<script type="application/ld+json">` tag. The payload is escaped so a `</script>` sequence in user content cannot break out of the script tag.
+
+    ```tsx
+    import { JsonLd } from "@comet/site-react";
+    import type { Organization } from "schema-dts";
+
+    <JsonLd<Organization>
+        data={{
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Acme",
+            url: "https://acme.example",
+            logo: "https://acme.example/logo.png",
+        }}
+    />;
+    ```
+
+    Also re-exported from `@comet/site-nextjs`.
+
+- 4c1aeb2: Add `noFollow` option to `ExternalLinkBlock`
+
+    Editors can now mark an external link as `nofollow` via a new checkbox in the admin form. When enabled, the rendered `<a>` tag receives `rel="nofollow"`. Existing links are unaffected by an automatic block-data migration that sets `noFollow` to `false`.
+
+- 54f57dd: Support loading data for child blocks embedded in rich text content in `recursivelyLoadBlockData`
+
+    Child blocks embedded in a `createTipTapRichTextBlock` rich text block (stored as `cmsBlock`/`cmsInlineBlock` nodes) are now traversed by `recursivelyLoadBlockData`, so their registered block loaders run just like for any other nested block. This allows rich text child blocks to load additional data (e.g. via a GraphQL query) without relying on a `BlockTransformerService` on the API side.
+
+    To support this, the `tipTapContent` field of a `createTipTapRichTextBlock` block is now declared with a dedicated `TipTapRichTextBlock` block meta kind (instead of `Json`) that carries the configured child blocks. The block loader uses this kind to detect rich text content instead of inspecting arbitrary `Json` fields.
+
+    Also re-exported from `@comet/site-nextjs`.
+
+- 740dba8: Add support for React 19
+
+### Patch Changes
+
+- cfa70a2: Fix preview-image to playback transition in video blocks
+    - `DamVideoBlock`: clicking the preview image's play button now starts video playback. Previously, the click dismissed the preview but the browser's autoplay policy blocked playback of videos with sound because the gesture happened on the preview image rather than the `<video>` element. Playback is now triggered explicitly inside the ref callback to stay within the user gesture window.
+    - `YouTubeVideoBlock` / `VimeoVideoBlock`: when the preview image is dismissed, `isPlaying` is now set to `true` so `PlayPauseButton` shows the correct icon, and the playback is flagged as manually handled so the viewport handler does not immediately pause the video.
+
+- 4f018d5: Fix `VimeoVideoBlock` not autoplaying on initial page load when `autoplay` is enabled and no `previewImage` is set
+
+    Without a `previewImage`, the iframe URL was missing `autoplay=1` and playback relied on a `postMessage("play")` fired from the `IntersectionObserver` callback. That message raced against the Vimeo player's initialization inside the iframe — when it arrived first the message was dropped and the video stayed paused, while the `PlayPauseButton` optimistically showed the "Pause" state, requiring two clicks to recover. `autoplay=1` is now appended whenever `autoplay` is enabled so Vimeo handles autoplay natively. The existing `muted=1` param satisfies the browser autoplay policy.
+
+    The iframe is also marked with `loading="lazy"` so blocks far below the fold don't request the Vimeo player upfront.
+
+- d870d05: Fix Cookiebot consent initialization
+
+    Fix a race condition where the `CookiebotOnConsentReady` event fires before the `useCookieBotCookieApi` hook is mounted.
+
+- e125c84: Use `OnetrustActiveGroups` instead of `ConsentIntegrationData` in `useOneTrustCookieApi`
+
+    `ConsentIntegrationData` is used for OneTrust's internal logging and can be `null`, which caused `useOneTrustCookieApi` to crash. As recommended by OneTrust support, `window.OnetrustActiveGroups` is used instead, as it is always available when the consent banner is implemented.
+
+- 865fcfd: Remove legacy CJS fields (`module`, `types`) from package.json as these packages are ESM-only
+
+## 9.0.0-beta.6
+
+### Minor Changes
+
+- 4c1aeb2: Add `noFollow` option to `ExternalLinkBlock`
+
+    Editors can now mark an external link as `nofollow` via a new checkbox in the admin form. When enabled, the rendered `<a>` tag receives `rel="nofollow"`. Existing links are unaffected by an automatic block-data migration that sets `noFollow` to `false`.
+
+### Patch Changes
+
+- d870d05: Fix Cookiebot consent initialization
+
+    Fix a race condition where the `CookiebotOnConsentReady` event fires before the `useCookieBotCookieApi` hook is mounted.
+
+## 9.0.0-beta.5
+
+### Patch Changes
+
+- cfa70a2: Fix preview-image to playback transition in video blocks
+    - `DamVideoBlock`: clicking the preview image's play button now starts video playback. Previously, the click dismissed the preview but the browser's autoplay policy blocked playback of videos with sound because the gesture happened on the preview image rather than the `<video>` element. Playback is now triggered explicitly inside the ref callback to stay within the user gesture window.
+    - `YouTubeVideoBlock` / `VimeoVideoBlock`: when the preview image is dismissed, `isPlaying` is now set to `true` so `PlayPauseButton` shows the correct icon, and the playback is flagged as manually handled so the viewport handler does not immediately pause the video.
+
+- 4f018d5: Fix `VimeoVideoBlock` not autoplaying on initial page load when `autoplay` is enabled and no `previewImage` is set
+
+    Without a `previewImage`, the iframe URL was missing `autoplay=1` and playback relied on a `postMessage("play")` fired from the `IntersectionObserver` callback. That message raced against the Vimeo player's initialization inside the iframe — when it arrived first the message was dropped and the video stayed paused, while the `PlayPauseButton` optimistically showed the "Pause" state, requiring two clicks to recover. `autoplay=1` is now appended whenever `autoplay` is enabled so Vimeo handles autoplay natively. The existing `muted=1` param satisfies the browser autoplay policy.
+
+    The iframe is also marked with `loading="lazy"` so blocks far below the fold don't request the Vimeo player upfront.
+
+## 9.0.0-beta.4
+
+### Major Changes
+
+- 8b3932d: Move server-only exports to `/server` subpath
+
+    Server-only exports have been moved to a separate `/server` entry point to prevent server-only code from being pulled into client bundles. While tree-shaking previously removed unused server code, this is an optional optimization — Vite's dev server, for example, does not tree-shake, causing errors when importing these packages in non-server environments (e.g., Storybook).
+
+    **`@comet/site-nextjs`**: `sitePreviewRoute`, `legacyPagesRouterSitePreviewApiHandler`, `previewParams`, `legacyPagesRouterPreviewParams`, and `persistedQueryRoute` must now be imported from `@comet/site-nextjs/server`:
+
+    ```diff
+    - import { sitePreviewRoute } from "@comet/site-nextjs";
+    + import { sitePreviewRoute } from "@comet/site-nextjs/server";
+    ```
+
+    ```diff
+    - import { previewParams } from "@comet/site-nextjs";
+    + import { previewParams } from "@comet/site-nextjs/server";
+    ```
+
+    ```diff
+    - import { persistedQueryRoute } from "@comet/site-nextjs";
+    + import { persistedQueryRoute } from "@comet/site-nextjs/server";
+    ```
+
+    **`@comet/site-react`**: `persistedQueryRoute` must now be imported from `@comet/site-react/server`:
+
+    ```diff
+    - import { persistedQueryRoute } from "@comet/site-react";
+    + import { persistedQueryRoute } from "@comet/site-react/server";
+    ```
+
+### Minor Changes
+
+- ab5e547: Add `JsonLd` component for typed schema.org structured data
+
+    Renders any [`schema-dts`](https://www.npmjs.com/package/schema-dts) entity inside a `<script type="application/ld+json">` tag. The payload is escaped so a `</script>` sequence in user content cannot break out of the script tag.
+
+    ```tsx
+    import { JsonLd } from "@comet/site-react";
+    import type { Organization } from "schema-dts";
+
+    <JsonLd<Organization>
+        data={{
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Acme",
+            url: "https://acme.example",
+            logo: "https://acme.example/logo.png",
+        }}
+    />;
+    ```
+
+    Also re-exported from `@comet/site-nextjs`.
+
+## 9.0.0-beta.3
+
+### Patch Changes
+
+- e125c84: Use `OnetrustActiveGroups` instead of `ConsentIntegrationData` in `useOneTrustCookieApi`
+
+    `ConsentIntegrationData` is used for OneTrust's internal logging and can be `null`, which caused `useOneTrustCookieApi` to crash. As recommended by OneTrust support, `window.OnetrustActiveGroups` is used instead, as it is always available when the consent banner is implemented.
+
+## 9.0.0-beta.2
+
+## 9.0.0-beta.1
+
+### Patch Changes
+
+- 865fcfd: Remove legacy CJS fields (`module`, `types`) from package.json as these packages are ESM-only
+
+## 9.0.0-beta.0
+
+### Minor Changes
+
+- 740dba8: Add support for React 19
+
+## 8.20.0
+
 ## 8.19.0
 
 ## 8.18.0

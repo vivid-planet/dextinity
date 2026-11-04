@@ -3,13 +3,13 @@
 import clsx from "clsx";
 import { type ComponentType, type ReactElement, type ReactNode, useCallback, useRef, useState } from "react";
 
-import { type YouTubeVideoBlockData } from "../blocks.generated";
+import type { YouTubeVideoBlockData } from "../blocks.generated";
 import { withPreview } from "../iframebridge/withPreview";
 import { PreviewSkeleton } from "../previewskeleton/PreviewSkeleton";
 import { PlayPauseButton, type PlayPauseButtonProps } from "./helpers/PlayPauseButton";
 import { useIsElementInViewport } from "./helpers/useIsElementInViewport";
-import { type VideoPreviewImageProps } from "./helpers/VideoPreviewImage";
-import { type PropsWithData } from "./PropsWithData";
+import type { VideoPreviewImageProps } from "./helpers/VideoPreviewImage";
+import type { PropsWithData } from "./PropsWithData";
 import styles from "./YouTubeVideoBlock.module.scss";
 
 const EXPECTED_YT_ID_LENGTH = 11;
@@ -90,19 +90,47 @@ export const YouTubeVideoBlock = withPreview(
         searchParams.append("rel", "0");
         searchParams.append("enablejsapi", "1");
 
-        // start playing the video when the preview image has been hidden
-        if (hasPreviewImage && !showPreviewImage) searchParams.append("autoplay", "1");
+        const hasPreviewImageBeenHidden = hasPreviewImage && !showPreviewImage;
 
-        if (autoplay) searchParams.append("mute", "1");
+        if (autoplay || hasPreviewImageBeenHidden) {
+            searchParams.append("autoplay", "1");
+        }
 
-        if (showControls !== undefined) searchParams.append("controls", Number(showControls).toString());
+        // browsers only allow unmuted autoplay after a user interaction, which the click on the preview image provides
+        if (autoplay && !hasPreviewImageBeenHidden) {
+            searchParams.append("mute", "1");
+        }
 
-        if (loop !== undefined) searchParams.append("loop", Number(loop).toString());
-        if (loop && identifier) searchParams.append("playlist", identifier);
+        if (showControls !== undefined) {
+            searchParams.append("controls", Number(showControls).toString());
+        }
+
+        if (loop !== undefined) {
+            searchParams.append("loop", Number(loop).toString());
+        }
+        if (loop && identifier) {
+            searchParams.append("playlist", identifier);
+        }
 
         const youtubeBaseUrl = "https://www.youtube-nocookie.com/embed/";
         const youtubeUrl = new URL(`${youtubeBaseUrl}${identifier ?? ""}`);
         youtubeUrl.search = searchParams.toString();
+
+        const handlePreviewPlay = () => {
+            setShowPreviewImage(false);
+            setIsPlaying(true);
+            setIsHandledManually(true);
+        };
+
+        const handleIframeLoad = () => {
+            // YouTube discards commands sent before the player has initialized, so anything that happened while
+            // the iframe was loading never arrived. Apply the intended state once the player can receive it.
+            if (isPlaying) {
+                playYouTubeVideo();
+            } else {
+                pauseYouTubeVideo();
+            }
+        };
 
         const handlePlayPauseClick = () => {
             if (isPlaying) {
@@ -120,7 +148,7 @@ export const YouTubeVideoBlock = withPreview(
             <>
                 {hasPreviewImage && showPreviewImage ? (
                     renderPreviewImage({
-                        onPlay: () => setShowPreviewImage(false),
+                        onPlay: handlePreviewPlay,
                         image: previewImage,
                         aspectRatio,
                         sizes: previewImageSizes,
@@ -149,8 +177,10 @@ export const YouTubeVideoBlock = withPreview(
                             ref={iframeRef}
                             className={styles.youtubeContainer}
                             allow="autoplay"
+                            loading="lazy"
                             referrerPolicy="strict-origin-when-cross-origin"
                             src={youtubeUrl.toString()}
+                            onLoad={handleIframeLoad}
                         />
                     </div>
                 )}

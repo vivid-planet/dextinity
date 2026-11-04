@@ -1,7 +1,7 @@
 import { type ComponentsOverrides, css, IconButton, InputAdornment, type InputAdornmentProps, type Theme, useThemeProps } from "@mui/material";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 type OpenPickerAdornmentClassKey = "root" | "openPickerButton" | "inputIsDisabled";
 
@@ -33,7 +33,7 @@ export const OpenPickerAdornment = (inProps: OpenPickerAdornmentProps) => {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminOpenPickerAdornment",
+        name: "DextinityAdminOpenPickerAdornment",
     });
 
     const ownerState: OwnerState = {
@@ -68,28 +68,30 @@ const OpenPickerButton = createComponentSlot(IconButton)<OpenPickerAdornmentClas
     slotName: "openPickerButton",
 })(
     ({ theme, ownerState: { inputIsDisabled } }) => css`
-        ${!inputIsDisabled &&
-        css`
-            &.Mui-disabled {
-                color: ${theme.palette.text.primary};
-            }
-        `}
+        ${
+            !inputIsDisabled &&
+            css`
+                &.Mui-disabled {
+                    color: ${theme.palette.text.primary};
+                }
+            `
+        }
     `,
 );
 
 declare module "@mui/material/styles" {
     interface ComponentsPropsList {
-        CometAdminOpenPickerAdornment: OpenPickerAdornmentProps;
+        DextinityAdminOpenPickerAdornment: OpenPickerAdornmentProps;
     }
 
     interface ComponentNameToClassKey {
-        CometAdminOpenPickerAdornment: OpenPickerAdornmentClassKey;
+        DextinityAdminOpenPickerAdornment: OpenPickerAdornmentClassKey;
     }
 
     interface Components {
-        CometAdminOpenPickerAdornment?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminOpenPickerAdornment"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminOpenPickerAdornment"];
+        DextinityAdminOpenPickerAdornment?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminOpenPickerAdornment"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminOpenPickerAdornment"];
         };
     }
 }

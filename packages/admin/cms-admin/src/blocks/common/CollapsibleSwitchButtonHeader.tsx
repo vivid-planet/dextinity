@@ -1,6 +1,6 @@
 import { Switch, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 interface CollapsibleSwitchButtonHeaderProps {
     checked: boolean;

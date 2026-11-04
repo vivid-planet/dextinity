@@ -1,24 +1,23 @@
-import { Info } from "@comet/admin-icons";
+import { Info } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, Divider, Typography } from "@mui/material";
 import { css, type Theme, useThemeProps } from "@mui/material/styles";
 import { type ComponentProps, isValidElement, type ReactElement, type ReactNode } from "react";
 
 import { Tooltip } from "../common/Tooltip";
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 export type SectionHeadlineClassKey = "root" | "header" | "titleContainer" | "headline" | "divider" | "supportText" | "infoTooltip";
 
-export interface SectionHeadlineProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        header: "div";
-        titleContainer: "div";
-        headline: typeof Typography;
-        infoTooltip: typeof Tooltip;
-        supportText: typeof Typography;
-        divider: typeof Divider;
-    }> {
+export interface SectionHeadlineProps extends ThemedComponentBaseProps<{
+    root: "div";
+    header: "div";
+    titleContainer: "div";
+    headline: typeof Typography;
+    infoTooltip: typeof Tooltip;
+    supportText: typeof Typography;
+    divider: typeof Divider;
+}> {
     children: ReactNode;
     divider?: boolean;
     supportText?: ReactNode;
@@ -44,7 +43,7 @@ export function SectionHeadline(inProps: SectionHeadlineProps) {
         ...restProps
     } = useThemeProps({
         props: inProps,
-        name: "CometAdminSectionHeadline",
+        name: "DextinityAdminSectionHeadline",
     });
 
     const { tooltip: tooltipIcon = <Info sx={{ fontSize: "inherit" }} /> } = iconMapping;
@@ -77,7 +76,9 @@ export function SectionHeadline(inProps: SectionHeadlineProps) {
 }
 
 const getTooltipProps = (infoTooltip: SectionHeadlineProps["infoTooltip"]) => {
-    if (!infoTooltip) return null;
+    if (!infoTooltip) {
+        return null;
+    }
 
     if (isValidElement(infoTooltip) || typeof infoTooltip === "string") {
         return {
@@ -149,17 +150,17 @@ const StyledDivider = createComponentSlot(Divider)<SectionHeadlineClassKey>({
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminSectionHeadline: SectionHeadlineClassKey;
+        DextinityAdminSectionHeadline: SectionHeadlineClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminSectionHeadline: SectionHeadlineProps;
+        DextinityAdminSectionHeadline: SectionHeadlineProps;
     }
 
     interface Components {
-        CometAdminSectionHeadline?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminSectionHeadline"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminSectionHeadline"];
+        DextinityAdminSectionHeadline?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminSectionHeadline"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminSectionHeadline"];
         };
     }
 }

@@ -8,7 +8,7 @@ import {
     ChildBlockInput,
     createBlock,
     ExtractBlockInput,
-} from "@comet/cms-api";
+} from "@dextinity/cms-api";
 import { MediaBlock } from "@src/common/blocks/media.block";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
 import { IsEnum } from "class-validator";
@@ -62,6 +62,4 @@ class LayoutBlockInput extends BlockInput {
     }
 }
 
-export const LayoutBlock = createBlock(LayoutBlockData, LayoutBlockInput, {
-    name: "Layout",
-});
+export const LayoutBlock = createBlock(LayoutBlockData, LayoutBlockInput, "Layout");

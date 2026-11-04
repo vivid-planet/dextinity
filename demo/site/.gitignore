@@ -11,6 +11,7 @@
 # next.js
 /.next/
 /out/
+next-env.d.ts
 
 # production
 /build
@@ -46,7 +47,7 @@ public/robots.txt
 
 tsconfig.tsbuildinfo
 
-src/comet-config.json
+src/dextinity-config.json
 persisted-queries.json
 
 lang

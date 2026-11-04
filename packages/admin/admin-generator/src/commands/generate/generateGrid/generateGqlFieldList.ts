@@ -1,6 +1,6 @@
 import objectPath from "object-path";
 
-import { type GridConfig } from "../generate-command";
+import type { GridConfig } from "../generate-command";
 
 type FieldsObjectType = { [key: string]: FieldsObjectType | boolean | string };
 const recursiveStringify = (obj: FieldsObjectType): string => {

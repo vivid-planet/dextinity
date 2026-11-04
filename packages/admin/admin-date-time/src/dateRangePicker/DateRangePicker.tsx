@@ -1,11 +1,11 @@
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
-import { ClearInputAdornment, type InputWithPopperProps } from "@comet/admin";
-import { Calendar } from "@comet/admin-icons";
-import { type ComponentsOverrides } from "@mui/material";
+import { ClearInputAdornment, type InputWithPopperProps } from "@dextinity/admin";
+import { Calendar } from "@dextinity/admin-icons";
+import type { ComponentsOverrides } from "@mui/material";
 import { type Theme, useThemeProps } from "@mui/material/styles";
-import { type Range } from "react-date-range";
+import type { Range } from "react-date-range";
 import { type FormatDateOptions, useIntl } from "react-intl";
 
 import { DatePickerNavigation } from "../DatePickerNavigation";
@@ -14,7 +14,7 @@ import { defaultMaxDate, defaultMinDate, getIsoDateString } from "../utils/dateP
 import { DateRange, type DateRangePickerClassKey, Root, type SlotProps, StartAdornment } from "./DateRangePicker.slots";
 
 /**
- * @deprecated `DateRange` from `@comet/admin-date-time` will be replaced by `DateRange` from `@comet/admin` in a future major release.
+ * @deprecated Use `DateRange` from `@dextinity/admin` instead.
  */
 export type DateRange = {
     start: string;
@@ -73,7 +73,7 @@ const getRangeFromValue = (value: undefined | DateRange): Range => {
 };
 
 /**
- * @deprecated `DateRangePicker` from `@comet/admin-date-time` will be replaced by `DateRangePicker` (currently `Future_DateRangePicker`) from `@comet/admin` in a future major release.
+ * @deprecated Use `DateRangePicker` from `@dextinity/admin` instead.
  */
 export const DateRangePicker = (inProps: DateRangePickerProps) => {
     const {
@@ -89,7 +89,7 @@ export const DateRangePicker = (inProps: DateRangePickerProps) => {
         maxDate = defaultMaxDate,
         slotProps,
         ...inputWithPopperProps
-    } = useThemeProps({ props: inProps, name: "CometAdminDateRangePicker" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminLegacyDateRangePicker" });
     const intl = useIntl();
     const textValue = useDateRangeTextValue(value, rangeStringSeparator, formatDateOptions);
     const dateFnsLocale = useDateFnsLocale();
@@ -102,15 +102,15 @@ export const DateRangePicker = (inProps: DateRangePickerProps) => {
                     <Calendar />
                 </StartAdornment>
             }
-            placeholder={placeholder ?? intl.formatMessage({ id: "comet.dateRangePicker.selectDateRange", defaultMessage: "Select date range" })}
+            placeholder={placeholder ?? intl.formatMessage({ id: "dextinity.dateRangePicker.selectDateRange", defaultMessage: "Select date range" })}
             {...slotProps?.root}
             {...inputWithPopperProps}
             readOnly
             required={required}
             endAdornment={
-                !required ? (
+                !required && value ? (
                     <>
-                        <ClearInputAdornment position="end" hasClearableContent={Boolean(value)} onClick={() => onChange && onChange(undefined)} />
+                        <ClearInputAdornment position="end" onClick={() => onChange && onChange(undefined)} />
                         {endAdornment}
                     </>
                 ) : (
@@ -156,17 +156,17 @@ export const DateRangePicker = (inProps: DateRangePickerProps) => {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminDateRangePicker: DateRangePickerClassKey;
+        DextinityAdminLegacyDateRangePicker: DateRangePickerClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminDateRangePicker: DateRangePickerProps;
+        DextinityAdminLegacyDateRangePicker: DateRangePickerProps;
     }
 
     interface Components {
-        CometAdminDateRangePicker?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminDateRangePicker"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminDateRangePicker"];
+        DextinityAdminLegacyDateRangePicker?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminLegacyDateRangePicker"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminLegacyDateRangePicker"];
         };
     }
 }

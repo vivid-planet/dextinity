@@ -1,5 +1,5 @@
-import { type ApolloClient } from "@apollo/client";
-import { type DocumentNode } from "graphql";
+import type { ApolloClient } from "@apollo/client";
+import type { DocumentNode } from "graphql";
 import { Component, type ReactNode } from "react";
 
 import { RouterPrompt } from "../router/Prompt";
@@ -123,7 +123,9 @@ export class TableLocalChanges<TData extends { id: string; [key: string]: any }>
 
     private setLocalDataChange<K extends keyof TData>(id: string, column: K, value: TData[K]) {
         const changes = { ...this.state.changes };
-        if (!changes[id]) changes[id] = {};
+        if (!changes[id]) {
+            changes[id] = {};
+        }
 
         this.props.data.find((i) => i.id === id);
         const row = this.props.data.find((i) => i.id === id);

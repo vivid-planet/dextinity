@@ -1,19 +1,31 @@
-import { readFile } from "fs/promises";
+import { readFile, stat } from "fs/promises";
+
+import { convertPreviewDataToHeaders, type PreviewData } from "../graphQLFetch/graphQLFetch";
 
 let queryMap: Record<string, string>;
 let fragmentsMap: Record<string, string>;
+let persistedQueriesModifiedAt: number | undefined;
 async function loadPersistedQueries(path: string) {
-    const file = await readFile(path, { encoding: "utf-8" });
-    queryMap = JSON.parse(file.toString()) as typeof queryMap;
+    const { mtimeMs } = await stat(path);
+    if (mtimeMs === persistedQueriesModifiedAt) {
+        return;
+    }
 
-    fragmentsMap = {};
-    for (const [, query] of Object.entries(queryMap)) {
+    const file = await readFile(path, { encoding: "utf-8" });
+    const newQueryMap = JSON.parse(file.toString()) as typeof queryMap;
+
+    const newFragmentsMap: typeof fragmentsMap = {};
+    for (const [, query] of Object.entries(newQueryMap)) {
         const match = query.match(/^\s*fragment\s+(\w+)\s+on\s+\w+/m);
         if (match) {
             const fragmentName = match[1];
-            fragmentsMap[fragmentName] = query.replace(/\${.*?}/g, ""); // remove interpolations that would be injected at runtime;
+            newFragmentsMap[fragmentName] = query.replace(/\${.*?}/g, ""); // remove interpolations that would be injected at runtime;
         }
     }
+
+    queryMap = newQueryMap;
+    fragmentsMap = newFragmentsMap;
+    persistedQueriesModifiedAt = mtimeMs;
 }
 
 function injectFragments(query: string) {
@@ -51,10 +63,24 @@ export async function persistedQueryRoute(
         headers: headersInit,
         persistedQueriesPath = ".persisted-queries.json",
         cacheMaxAge,
-    }: { graphqlTarget: string; headers?: HeadersInit; persistedQueriesPath: string; cacheMaxAge: number | undefined },
+        previewData,
+    }: {
+        graphqlTarget: string;
+        headers?: HeadersInit;
+        persistedQueriesPath: string;
+        cacheMaxAge: number | undefined;
+        /**
+         * Must be obtained from a verified source (e.g. the signed site preview cookie), never from the incoming request.
+         */
+        previewData?: PreviewData;
+    },
 ) {
     if (!queryMap) {
         await loadPersistedQueries(persistedQueriesPath);
+    } else if (process.env.NODE_ENV !== "production") {
+        // During development, the bundler plugin rewrites the file without an atomic rename, so a reload can see it half-written.
+        // Keep the previous queries in that case and retry on the next request.
+        await loadPersistedQueries(persistedQueriesPath).catch(() => undefined);
     }
 
     let hash: string | null | undefined;
@@ -95,11 +121,8 @@ export async function persistedQueryRoute(
     const headers = new Headers(headersInit);
     headers.set("Content-Type", "application/json");
 
-    for (const header of ["x-include-invisible-content", "x-preview-dam-urls"]) {
-        const value = req.headers.get(header);
-        if (value !== null) {
-            headers.set(header, value);
-        }
+    for (const [name, value] of Object.entries(convertPreviewDataToHeaders(previewData))) {
+        headers.set(name, value);
     }
 
     // Forward to actual GraphQL server
@@ -112,7 +135,9 @@ export async function persistedQueryRoute(
     const responseHeaders: Record<string, string> = {
         "Content-Type": "application/json",
     };
-    if (req.method === "GET" && upstreamRes.ok && cacheMaxAge !== undefined) {
+    if (previewData) {
+        responseHeaders["Cache-Control"] = "private, no-store";
+    } else if (req.method === "GET" && upstreamRes.ok && cacheMaxAge !== undefined) {
         responseHeaders["Cache-Control"] = `public, max-age=${cacheMaxAge}`;
     }
 

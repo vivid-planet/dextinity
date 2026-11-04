@@ -1,6 +1,7 @@
 import { addDays, subDays } from "date-fns";
+import { describe, expect, it } from "vitest";
 
-import { RedirectGenerationType } from "./redirects.enum";
+import { RedirectGenerationType, RedirectSourceType } from "./redirects.enum";
 import { type FilterableRedirect, isEmptyFilter, redirectMatchesFilter } from "./redirects.util";
 
 describe("redirectMatchesFilter", () => {
@@ -8,6 +9,7 @@ describe("redirectMatchesFilter", () => {
         const redirect: FilterableRedirect = {
             generationType: RedirectGenerationType.manual,
             source: "/source",
+            sourceType: RedirectSourceType.path,
             target: "/target",
             active: true,
             createdAt: new Date(),
@@ -21,6 +23,7 @@ describe("redirectMatchesFilter", () => {
         const redirect: FilterableRedirect = {
             generationType: RedirectGenerationType.manual,
             source: "/source",
+            sourceType: RedirectSourceType.path,
             target: "/target",
             active: true,
             createdAt: new Date(),
@@ -56,6 +59,7 @@ describe("redirectMatchesFilter", () => {
         const redirect: FilterableRedirect = {
             generationType: RedirectGenerationType.manual,
             source: "/source",
+            sourceType: RedirectSourceType.path,
             target: "/target",
             active: true,
             createdAt: new Date(),
@@ -67,6 +71,31 @@ describe("redirectMatchesFilter", () => {
         expect(redirectMatchesFilter(redirect, { active: {} })).toBe(true);
     });
 
+    it("should match for enum filter", () => {
+        const redirect: FilterableRedirect = {
+            generationType: RedirectGenerationType.manual,
+            source: "/source",
+            sourceType: RedirectSourceType.path,
+            target: "/target",
+            active: true,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        expect(redirectMatchesFilter(redirect, { sourceType: { equal: RedirectSourceType.path } })).toBe(true);
+        expect(redirectMatchesFilter(redirect, { sourceType: { equal: RedirectSourceType.domain } })).toBe(false);
+
+        expect(redirectMatchesFilter(redirect, { sourceType: { notEqual: RedirectSourceType.domain } })).toBe(true);
+        expect(redirectMatchesFilter(redirect, { sourceType: { notEqual: RedirectSourceType.path } })).toBe(false);
+
+        expect(
+            redirectMatchesFilter(redirect, {
+                sourceType: { isAnyOf: [RedirectSourceType.path, RedirectSourceType.domain] },
+            }),
+        ).toBe(true);
+        expect(redirectMatchesFilter(redirect, { sourceType: { isAnyOf: [RedirectSourceType.domain] } })).toBe(false);
+    });
+
     it("should match for date time filter", () => {
         const today = new Date();
         const yesterday = subDays(today, 1);
@@ -75,6 +104,7 @@ describe("redirectMatchesFilter", () => {
         const redirect: FilterableRedirect = {
             generationType: RedirectGenerationType.manual,
             source: "/source",
+            sourceType: RedirectSourceType.path,
             target: "/target",
             active: true,
             createdAt: yesterday,
@@ -107,6 +137,7 @@ describe("redirectMatchesFilter", () => {
         const redirect: FilterableRedirect = {
             generationType: RedirectGenerationType.manual,
             source: "/source",
+            sourceType: RedirectSourceType.path,
             target: "/target",
             active: true,
             createdAt: new Date(),
@@ -115,12 +146,16 @@ describe("redirectMatchesFilter", () => {
 
         expect(redirectMatchesFilter(redirect, { source: { contains: "our" }, active: { equal: true } })).toBe(true);
         expect(redirectMatchesFilter(redirect, { source: { contains: "our" }, active: { equal: false } })).toBe(false);
+        expect(redirectMatchesFilter(redirect, { source: { contains: "arg" }, active: { equal: true } })).toBe(false);
+        expect(redirectMatchesFilter(redirect, { sourceType: { equal: RedirectSourceType.path }, active: { equal: true } })).toBe(true);
+        expect(redirectMatchesFilter(redirect, { active: { equal: false }, sourceType: { equal: RedirectSourceType.path } })).toBe(false);
     });
 
     it("should match for and filters", () => {
         const redirect: FilterableRedirect = {
             generationType: RedirectGenerationType.manual,
             source: "/source",
+            sourceType: RedirectSourceType.path,
             target: "/target",
             active: true,
             createdAt: new Date(),
@@ -139,6 +174,7 @@ describe("redirectMatchesFilter", () => {
         const redirect: FilterableRedirect = {
             generationType: RedirectGenerationType.manual,
             source: "/source",
+            sourceType: RedirectSourceType.path,
             target: "/target",
             active: true,
             createdAt: new Date(),
@@ -161,6 +197,7 @@ describe("redirectMatchesFilter", () => {
         const redirect: FilterableRedirect = {
             generationType: RedirectGenerationType.manual,
             source: "/source",
+            sourceType: RedirectSourceType.path,
             target: "https://example.com/target",
             active: true,
             createdAt: new Date(),

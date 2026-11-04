@@ -1,8 +1,8 @@
-import { type DocumentNode } from "graphql";
+import type { DocumentNode } from "graphql";
 
-import { useCometConfig } from "../config/CometConfigContext";
-import { type DocumentInterface, type DocumentType } from "../documents/types";
-import { type AllCategories } from "./pageTree/PageTreeContext";
+import { useDextinityConfig } from "../config/DextinityConfigContext";
+import type { DocumentInterface, DocumentType } from "../documents/types";
+import type { AllCategories } from "./pageTree/PageTreeContext";
 
 export interface PageTreeConfig {
     categories: AllCategories;
@@ -12,14 +12,19 @@ export interface PageTreeConfig {
         fragment: DocumentNode;
     };
     scopeParts?: string[];
+    /**
+     * Controls whether delete actions are shown in the page tree UI.
+     * Defaults to `true` when not set.
+     */
+    allowPageDelete?: boolean;
 }
 
 export function usePageTreeConfig(): PageTreeConfig {
-    const cometConfig = useCometConfig();
+    const dextinityConfig = useDextinityConfig();
 
-    if (!cometConfig.pageTree) {
-        throw new Error("No page tree configuration found. Make sure to set `pageTree` in `CometConfigProvider`.");
+    if (!dextinityConfig.pageTree) {
+        throw new Error("No page tree configuration found. Make sure to set `pageTree` in `DextinityConfigProvider`.");
     }
 
-    return cometConfig.pageTree;
+    return dextinityConfig.pageTree;
 }

@@ -1,5 +1,5 @@
-import { Field, type FieldProps, FinalFormInput, Loading, messages, SelectField } from "@comet/admin";
-import { Add, ArtificialIntelligence, Delete } from "@comet/admin-icons";
+import { Field, type FieldProps, FinalFormInput, Loading, messages, SelectField } from "@dextinity/admin";
+import { Add, ArtificialIntelligence, Delete } from "@dextinity/admin-icons";
 import { Box, Divider, Grid, IconButton, Paper, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import arrayMutators from "final-form-arrays";
@@ -8,8 +8,9 @@ import { Field as ReactFinalFormField, useForm } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
 import { FormattedMessage, useIntl } from "react-intl";
 
-import { type SeoBlockData, type SeoBlockInput } from "../blocks.generated";
+import type { SeoBlockData, SeoBlockInput } from "../blocks.generated";
 import { useContentGenerationConfig } from "../documents/ContentGenerationConfigContext";
+import { validateJson } from "../validation/validateJson";
 import { validateUrl } from "../validation/validateUrl";
 import { BlockAdminComponentButton } from "./common/BlockAdminComponentButton";
 import { BlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
@@ -26,7 +27,7 @@ import { PixelImageBlock } from "./PixelImageBlock";
 import { type SeoTag, useSeoTagGeneration } from "./seo/useSeoTagGeneration";
 import useSitemapChangeFrequencyFormOptions from "./seo/useSitemapChangeFrequencyFormOptions";
 import useSitemapPagePriorityFormOptions from "./seo/useSitemapPagePriorityFormOptions";
-import { type BlockInterface, type BlockState } from "./types";
+import type { BlockInterface, BlockState } from "./types";
 
 interface CreateSeoBlockOptions {
     image?: BlockInterface;
@@ -37,7 +38,7 @@ export function createSeoBlock(
     override?: (block: BlockInterface) => BlockInterface,
 ): BlockInterface {
     const OptionalImageBlock = createOptionalBlock(image, {
-        title: <FormattedMessage id="comet.sitemap.openGraphImage" defaultMessage="Open Graph Image" />,
+        title: <FormattedMessage id="dextinity.sitemap.openGraphImage" defaultMessage="Open Graph Image" />,
     });
 
     const composed = composeBlocks({ openGraphImage: OptionalImageBlock });
@@ -64,7 +65,28 @@ export function createSeoBlock(
         ...block,
         name: "Seo",
 
-        displayName: <FormattedMessage id="comet.blocks.seo" defaultMessage="SEO" />,
+        displayName: <FormattedMessage id="dextinity.blocks.seo" defaultMessage="SEO" />,
+
+        extractTextContents: (state, options) => {
+            const contents: string[] = [];
+
+            if (state.htmlTitle) {
+                contents.push(state.htmlTitle);
+            }
+            if (state.metaDescription) {
+                contents.push(state.metaDescription);
+            }
+            if (state.openGraphTitle) {
+                contents.push(state.openGraphTitle);
+            }
+            if (state.openGraphDescription) {
+                contents.push(state.openGraphDescription);
+            }
+
+            contents.push(...(block.extractTextContents?.(state, options) ?? []));
+
+            return contents;
+        },
 
         AdminComponent: ({ state, updateState }) => {
             const intl = useIntl();
@@ -123,12 +145,12 @@ export function createSeoBlock(
                         {/* Meta */}
                         <Box marginBottom={8}>
                             <Typography variant="h4" gutterBottom>
-                                <FormattedMessage id="comet.blocks.seo.meta.sectionTitle" defaultMessage="Meta Tags" />
+                                <FormattedMessage id="dextinity.blocks.seo.meta.sectionTitle" defaultMessage="Meta Tags" />
                             </Typography>
 
                             <FieldWithContentGeneration
                                 label={intl.formatMessage({
-                                    id: "comet.blocks.seo.htmlTitle",
+                                    id: "dextinity.blocks.seo.htmlTitle",
                                     defaultMessage: "HTML Title",
                                 })}
                                 name="htmlTitle"
@@ -139,14 +161,13 @@ export function createSeoBlock(
 
                             <FieldWithContentGeneration
                                 label={intl.formatMessage({
-                                    id: "comet.blocks.seo.metaDescription",
+                                    id: "dextinity.blocks.seo.metaDescription",
                                     defaultMessage: "Meta Description",
                                 })}
                                 name="metaDescription"
                                 generateSeoTag={generateSeoTag}
                                 multiline
                                 rows={3}
-                                rowsMax={5}
                                 component={FinalFormInput}
                                 fullWidth
                             />
@@ -155,11 +176,11 @@ export function createSeoBlock(
                         {/* Open Graph */}
                         <Box marginTop={8} marginBottom={8}>
                             <Typography variant="h4" gutterBottom>
-                                <FormattedMessage id="comet.blocks.seo.openGraph.sectionTitle" defaultMessage="Open Graph" />
+                                <FormattedMessage id="dextinity.blocks.seo.openGraph.sectionTitle" defaultMessage="Open Graph" />
                             </Typography>
                             <FieldWithContentGeneration
                                 label={intl.formatMessage({
-                                    id: "comet.blocks.seo.openGraphTitle",
+                                    id: "dextinity.blocks.seo.openGraphTitle",
                                     defaultMessage: "Title",
                                 })}
                                 name="openGraphTitle"
@@ -169,14 +190,13 @@ export function createSeoBlock(
                             />
                             <FieldWithContentGeneration
                                 label={intl.formatMessage({
-                                    id: "comet.blocks.seo.openGraphDescription",
+                                    id: "dextinity.blocks.seo.openGraphDescription",
                                     defaultMessage: "Description",
                                 })}
                                 name="openGraphDescription"
                                 generateSeoTag={generateSeoTag}
                                 multiline={true}
                                 rows={3}
-                                rowsMax={5}
                                 component={FinalFormInput}
                                 fullWidth
                             />
@@ -186,15 +206,15 @@ export function createSeoBlock(
                         {/* Structured Data */}
                         <Box marginTop={8} marginBottom={8}>
                             <Typography variant="h4" gutterBottom>
-                                <FormattedMessage id="comet.blocks.seo.structuredData.sectionTitle" defaultMessage="Structured Data" />
+                                <FormattedMessage id="dextinity.blocks.seo.structuredData.sectionTitle" defaultMessage="Structured Data" />
                             </Typography>
-                            <Field name="structuredData" multiline={true} rows={15} component={FinalFormInput} fullWidth />
+                            <Field name="structuredData" multiline={true} rows={15} component={FinalFormInput} fullWidth validate={validateJson} />
                         </Box>
 
                         {/* Sitemap */}
                         <Box marginTop={8} marginBottom={8}>
                             <Typography variant="h4" gutterBottom>
-                                <FormattedMessage id="comet.blocks.seo.sitemap.sectionTitle" defaultMessage="Sitemap" />
+                                <FormattedMessage id="dextinity.blocks.seo.sitemap.sectionTitle" defaultMessage="Sitemap" />
                             </Typography>
 
                             <ReactFinalFormField
@@ -216,7 +236,7 @@ export function createSeoBlock(
                                                 header={
                                                     <CollapsibleSwitchButtonHeader
                                                         checked={open}
-                                                        title={<FormattedMessage id="comet.seo.sitemap.pageIndex" defaultMessage="Page Index" />}
+                                                        title={<FormattedMessage id="dextinity.seo.sitemap.pageIndex" defaultMessage="Page Index" />}
                                                     />
                                                 }
                                                 onChange={onChange}
@@ -225,7 +245,7 @@ export function createSeoBlock(
                                                 <Box padding={4}>
                                                     <SelectField
                                                         label={intl.formatMessage({
-                                                            id: "comet.blocks.seo.sitemap.priority",
+                                                            id: "dextinity.blocks.seo.sitemap.priority",
                                                             defaultMessage: "Priority",
                                                         })}
                                                         name="priority"
@@ -235,7 +255,7 @@ export function createSeoBlock(
                                                     />
                                                     <SelectField
                                                         label={intl.formatMessage({
-                                                            id: "comet.blocks.seo.sitemap.changeFrequency",
+                                                            id: "dextinity.blocks.seo.sitemap.changeFrequency",
                                                             defaultMessage: "Change Frequency",
                                                         })}
                                                         name="changeFrequency"
@@ -254,7 +274,7 @@ export function createSeoBlock(
                         {/* Canonical Tag */}
                         <Box marginTop={8} marginBottom={8}>
                             <Typography variant="h4" gutterBottom>
-                                <FormattedMessage id="comet.blocks.seo.canonicalTag.sectionTitle" defaultMessage="Canonical Tag" />
+                                <FormattedMessage id="dextinity.blocks.seo.canonicalTag.sectionTitle" defaultMessage="Canonical Tag" />
                             </Typography>
                             <Field label={<FormattedMessage {...messages.url} />} name="canonicalUrl" component={FinalFormInput} fullWidth />
                         </Box>
@@ -262,7 +282,7 @@ export function createSeoBlock(
                         {/* Alternate Hreflang */}
                         <Box marginTop={8} marginBottom={8}>
                             <BlockAdminComponentSectionGroup
-                                title={<FormattedMessage id="comet.blocks.seo.alternativeLinks.sectionTitle" defaultMessage="Alternate links" />}
+                                title={<FormattedMessage id="dextinity.blocks.seo.alternativeLinks.sectionTitle" defaultMessage="Alternate links" />}
                             >
                                 <BlockAdminComponentPaper>
                                     <FieldArray name="alternativeLinks">
@@ -274,7 +294,7 @@ export function createSeoBlock(
                                                             <Field
                                                                 label={
                                                                     <FormattedMessage
-                                                                        id="comet.blocks.seo.alternativeLinks.code"
+                                                                        id="dextinity.blocks.seo.alternativeLinks.code"
                                                                         defaultMessage="Code"
                                                                     />
                                                                 }
@@ -329,8 +349,10 @@ export function createSeoBlock(
 }
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-interface FieldWithContentGenerationProps<FieldValue = any, FieldElement extends HTMLElement = HTMLElement>
-    extends FieldProps<FieldValue, FieldElement> {
+interface FieldWithContentGenerationProps<FieldValue = any, FieldElement extends HTMLElement = HTMLElement> extends FieldProps<
+    FieldValue,
+    FieldElement
+> {
     name: SeoTag;
     generateSeoTag: (tag: SeoTag, currentValue: string | undefined) => Promise<string>;
 }

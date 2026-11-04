@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { type DocumentNode } from "graphql";
+import type { DocumentNode } from "graphql";
 
 import { pageSearchFragment } from "../pageSearch/usePageSearch";
 import { pageTreePageFragment } from "../pageTree/usePageTree";

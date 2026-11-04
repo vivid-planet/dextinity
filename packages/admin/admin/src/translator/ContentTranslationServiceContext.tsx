@@ -4,6 +4,7 @@ export interface ContentTranslationServiceContext {
     enabled: boolean;
     showApplyTranslationDialog?: boolean;
     translate: (text: string) => Promise<string>;
+    batchTranslate?: (texts: string[]) => Promise<string[]>;
 }
 
 export const ContentTranslationServiceContext = createContext<ContentTranslationServiceContext>({

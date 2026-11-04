@@ -11,8 +11,8 @@ import {
     useFormApiRef,
     useStackApi,
     useStackSwitchApi,
-} from "@comet/admin";
-import { ArrowLeft } from "@comet/admin-icons";
+} from "@dextinity/admin";
+import { ArrowLeft } from "@dextinity/admin-icons";
 import {
     BlockAdminComponentRoot,
     BlockAdminTabLabel,
@@ -31,7 +31,7 @@ import {
     useEditState,
     useFormSaveConflict,
     useSaveState,
-} from "@comet/cms-admin";
+} from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { isBefore } from "date-fns";
 import { useMemo } from "react";
@@ -39,17 +39,17 @@ import { FormattedMessage } from "react-intl";
 import { useRouteMatch } from "react-router";
 
 import { useBrevoConfig } from "../../common/BrevoConfigProvider";
-import { type GQLEmailCampaignInput } from "../../graphql.generated";
+import type { GQLEmailCampaignInput } from "../../graphql.generated";
 import { ConfigFields } from "./ConfigFields";
 import { createEmailCampaignMutation, emailCampaignFormQuery, updateEmailCampaignMutation } from "./EmailCampaignForm.gql";
-import {
-    type GQLCreateEmailCampaignMutation,
-    type GQLCreateEmailCampaignMutationVariables,
-    type GQLEmailCampaignFormFragment,
-    type GQLEmailCampaignFormQuery,
-    type GQLEmailCampaignFormQueryVariables,
-    type GQLUpdateEmailCampaignMutation,
-    type GQLUpdateEmailCampaignMutationVariables,
+import type {
+    GQLCreateEmailCampaignMutation,
+    GQLCreateEmailCampaignMutationVariables,
+    GQLEmailCampaignFormFragment,
+    GQLEmailCampaignFormQuery,
+    GQLEmailCampaignFormQueryVariables,
+    GQLUpdateEmailCampaignMutation,
+    GQLUpdateEmailCampaignMutationVariables,
 } from "./EmailCampaignForm.gql.generated";
 import { SendManagerFields } from "./SendManagerFields";
 import { SendManagerWrapper } from "./SendManagerWrapper";
@@ -139,7 +139,9 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
         saveConflict,
         mode,
         validate: async () => {
-            if (!state) return false;
+            if (!state) {
+                return false;
+            }
 
             const validateBlocks = await parallelAsyncEvery(
                 Object.entries(rootBlocks) as Array<[keyof typeof rootBlocks, BlockInterface]>,
@@ -164,7 +166,9 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
             throw new Error("Conflicts detected");
         }
 
-        if (!output) throw new Error("Output is required");
+        if (!output) {
+            throw new Error("Output is required");
+        }
 
         if (mode === "edit") {
             if (!id) {
@@ -199,7 +203,9 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
         return null;
     }
 
-    if (error) throw error;
+    if (error) {
+        throw error;
+    }
 
     if (loading) {
         return <Loading behavior="fillPageHeight" />;
@@ -230,7 +236,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
                     </IconButton>
                 </ToolbarItem>
                 <ToolbarTitleItem>
-                    <FormattedMessage id="cometBrevoModule.emailCampaigns.EmailCampaign" defaultMessage="Email Campaign" />
+                    <FormattedMessage id="dextinity.emailCampaigns.EmailCampaign" defaultMessage="Email Campaign" />
                 </ToolbarTitleItem>
                 <ToolbarFillSpace />
                 <ToolbarActions>{saveButton}</ToolbarActions>
@@ -242,7 +248,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
                             key: "config",
                             label: (
                                 <BlockAdminTabLabel>
-                                    <FormattedMessage id="cometBrevoModule.emailCampaigns.config" defaultMessage="Config" />
+                                    <FormattedMessage id="dextinity.emailCampaigns.config" defaultMessage="Config" />
                                 </BlockAdminTabLabel>
                             ),
                             content: (
@@ -261,7 +267,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
                             key: "blocks",
                             label: (
                                 <BlockAdminTabLabel>
-                                    <FormattedMessage id="cometBrevoModule.emailCampaigns.blocks" defaultMessage="Blocks" />
+                                    <FormattedMessage id="dextinity.emailCampaigns.blocks" defaultMessage="Blocks" />
                                 </BlockAdminTabLabel>
                             ),
                             content: (
@@ -281,7 +287,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
                             key: "send-manager",
                             label: (
                                 <BlockAdminTabLabel>
-                                    <FormattedMessage id="cometBrevoModule.emailCampaigns.sendManager" defaultMessage="Send manager" />
+                                    <FormattedMessage id="dextinity.emailCampaigns.sendManager" defaultMessage="Send manager" />
                                 </BlockAdminTabLabel>
                             ),
                             content: (

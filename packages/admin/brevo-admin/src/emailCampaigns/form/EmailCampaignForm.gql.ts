@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const emailCampaignFormFragment = gql`
+const emailCampaignFormFragment = gql`
     fragment EmailCampaignForm on BrevoEmailCampaign {
         title
         subject
@@ -23,14 +23,6 @@ export const emailCampaignFormQuery = gql`
         }
     }
     ${emailCampaignFormFragment}
-`;
-
-export const emailCampaignFormCheckForChangesQuery = gql`
-    query EmailCampaignFormCheckForChanges($id: ID!) {
-        brevoEmailCampaign(id: $id) {
-            updatedAt
-        }
-    }
 `;
 
 export const createEmailCampaignMutation = gql`

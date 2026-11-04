@@ -2,7 +2,7 @@ import { type ComponentsOverrides, css, type Theme, useThemeProps } from "@mui/m
 import { type ReactNode, useRef } from "react";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 import { useTopOffset } from "../helpers/useTopOffset";
 
 export type FullHeightContentClassKey = "root" | "disableBottomContentSpacing";
@@ -22,7 +22,7 @@ export type FullHeightContentProps = ThemedComponentBaseProps<{
 export const FullHeightContent = (inProps: FullHeightContentProps) => {
     const { children, slotProps, disableBottomContentSpacing, ...restProps } = useThemeProps({
         props: inProps,
-        name: "CometAdminFullHeightContent",
+        name: "DextinityAdminFullHeightContent",
     });
 
     const elementRef = useRef<HTMLDivElement>(null);
@@ -49,26 +49,28 @@ const Root = createComponentSlot("div")<FullHeightContentClassKey, OwnerState>({
         position: relative;
         height: calc(100vh - ${ownerState.topOffset}px - ${theme.spacing(4)});
 
-        ${ownerState.disableBottomContentSpacing &&
-        css`
-            height: calc(100vh - ${ownerState.topOffset}px);
-        `}
+        ${
+            ownerState.disableBottomContentSpacing &&
+            css`
+                height: calc(100vh - ${ownerState.topOffset}px);
+            `
+        }
     `,
 );
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminFullHeightContent: FullHeightContentClassKey;
+        DextinityAdminFullHeightContent: FullHeightContentClassKey;
     }
 
     interface ComponentsPropsList {
-        CometAdminFullHeightContent: FullHeightContentProps;
+        DextinityAdminFullHeightContent: FullHeightContentProps;
     }
 
     interface Components {
-        CometAdminFullHeightContent?: {
-            defaultProps?: Partial<ComponentsPropsList["CometAdminFullHeightContent"]>;
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminFullHeightContent"];
+        DextinityAdminFullHeightContent?: {
+            defaultProps?: Partial<ComponentsPropsList["DextinityAdminFullHeightContent"]>;
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminFullHeightContent"];
         };
     }
 }

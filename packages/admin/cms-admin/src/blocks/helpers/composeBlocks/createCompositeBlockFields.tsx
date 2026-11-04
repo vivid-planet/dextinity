@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { type AnonymousBlockInterface, type BlockAdminComponent, type BlockMethods } from "../../types";
+import type { AnonymousBlockInterface, BlockAdminComponent, BlockMethods } from "../../types";
 import { createSettingsAnonymousBlock } from "./createSettingsBlock";
 
 interface Options<State extends Record<string, any>> {

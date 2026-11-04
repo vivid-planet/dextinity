@@ -1,17 +1,24 @@
 import { gql } from "@apollo/client";
-import { FillSpace, Loading, MainContent, messages, RouterPrompt, RouterTab, RouterTabs, Toolbar, ToolbarItem, useStackApi } from "@comet/admin";
-import { ArrowLeft } from "@comet/admin-icons";
-import { BlockAdminComponentRoot, ContentScopeIndicator, createUsePage, PageName } from "@comet/cms-admin";
+import {
+    CrudMoreActionsMenu,
+    FillSpace,
+    Loading,
+    MainContent,
+    messages,
+    RouterPrompt,
+    RouterTab,
+    RouterTabs,
+    Toolbar,
+    ToolbarItem,
+    useStackApi,
+} from "@dextinity/admin";
+import { ArrowLeft } from "@dextinity/admin-icons";
+import { BlockAdminComponentRoot, ContentScopeIndicator, createUsePage, PageName, TranslateContentMenuItem } from "@dextinity/cms-admin";
 import { IconButton } from "@mui/material";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 import { useIntl } from "react-intl";
 
-import {
-    type GQLEditLinkQuery,
-    type GQLEditLinkQueryVariables,
-    type GQLUpdateLinkMutation,
-    type GQLUpdateLinkMutationVariables,
-} from "./EditLink.generated";
+import type { GQLEditLinkQuery, GQLEditLinkQueryVariables, GQLUpdateLinkMutation, GQLUpdateLinkMutationVariables } from "./EditLink.generated";
 
 const usePage = createUsePage({
     rootBlocks: {
@@ -66,6 +73,7 @@ export const EditLink = ({ id }: Props) => {
         dialogs,
         pageSaveButton,
         handleSavePage,
+        translateContent,
     } = usePage({
         pageId: id,
     });
@@ -83,7 +91,9 @@ export const EditLink = ({ id }: Props) => {
         return <Loading behavior="fillPageHeight" />;
     }
 
-    if (!linkState) return null;
+    if (!linkState) {
+        return null;
+    }
 
     return (
         <>
@@ -103,6 +113,11 @@ export const EditLink = ({ id }: Props) => {
                 </ToolbarItem>
                 <PageName pageId={id} />
                 <FillSpace />
+                <ToolbarItem>
+                    <CrudMoreActionsMenu
+                        overallActions={[<TranslateContentMenuItem key="translate" translateContent={translateContent} disabled={!linkState} />]}
+                    />
+                </ToolbarItem>
                 <ToolbarItem>{pageSaveButton}</ToolbarItem>
             </Toolbar>
             <MainContent>

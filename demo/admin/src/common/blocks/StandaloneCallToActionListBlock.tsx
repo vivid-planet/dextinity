@@ -1,5 +1,5 @@
-import { BlockCategory, createCompositeBlock, createCompositeBlockSelectField } from "@comet/cms-admin";
-import { type StandaloneCallToActionListBlockData } from "@src/blocks.generated";
+import { BlockCategory, createCompositeBlock, createCompositeBlockSelectField } from "@dextinity/cms-admin";
+import type { StandaloneCallToActionListBlockData } from "@src/blocks.generated";
 import { CallToActionListBlock } from "@src/common/blocks/CallToActionListBlock";
 import { FormattedMessage } from "react-intl";
 
@@ -20,6 +20,7 @@ export const StandaloneCallToActionListBlock = createCompositeBlock(
                         { value: "center", label: <FormattedMessage id="standaloneCallToActionList.alignment.center" defaultMessage="center" /> },
                         { value: "right", label: <FormattedMessage id="standaloneCallToActionList.alignment.right" defaultMessage="right" /> },
                     ],
+                    required: true,
                 }),
                 hiddenInSubroute: true,
             },

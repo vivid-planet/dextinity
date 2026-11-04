@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 
-import { type GQLPageQuery, type GQLPageQueryVariables } from "../documents/types";
+import type { GQLPageQuery, GQLPageQueryVariables } from "../documents/types";
 import { useLocalPageTreeNodeAnchors } from "./LocalPageTreeNodeDocumentAnchors";
 import { usePageTreeConfig } from "./pageTreeConfig";
 

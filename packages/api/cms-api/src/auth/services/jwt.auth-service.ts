@@ -40,15 +40,21 @@ export function createJwtAuthService({ jwksOptions, verifyOptions, ...options }:
             private jwtService: JwtService,
             private readonly moduleRef: ModuleRef,
         ) {
-            if (jwksOptions) this.jwksClient = new JwksClient(jwksOptions);
+            if (jwksOptions) {
+                this.jwksClient = new JwksClient(jwksOptions);
+            }
         }
 
         async authenticateUser<T extends JwtPayload>(request: Request): Promise<AuthenticateUserResult> {
             const token = this.extractTokenFromRequest(request);
-            if (!token) return SKIP_AUTH_SERVICE;
+            if (!token) {
+                return SKIP_AUTH_SERVICE;
+            }
 
             if (this.jwksClient) {
-                if (!verifyOptions) verifyOptions = {};
+                if (!verifyOptions) {
+                    verifyOptions = {};
+                }
                 verifyOptions.secret = await this.loadSecretFromJwks(token);
             }
             if (!verifyOptions?.secret) {
@@ -101,7 +107,9 @@ export function createJwtAuthService({ jwksOptions, verifyOptions, ...options }:
         }
 
         private async loadSecretFromJwks(token: string): Promise<string> {
-            if (!this.jwksClient) throw new Error("jwksOptions.jwksUri not set");
+            if (!this.jwksClient) {
+                throw new Error("jwksOptions.jwksUri not set");
+            }
             const jwt = this.jwtService.decode(token, { complete: true }) as { header: { kid: string } };
             return (await this.jwksClient.getSigningKey(jwt.header.kid)).getPublicKey();
         }

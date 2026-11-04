@@ -4,7 +4,7 @@ import { Children, type ComponentType, isValidElement, type ReactElement, type R
 import { Route, useHistory, useRouteMatch } from "react-router-dom";
 
 import { createComponentSlot } from "../helpers/createComponentSlot";
-import { type ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
+import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 import { useSubRoutePrefix } from "../router/SubRoute";
 import { useIsActiveStackSwitch } from "../stack/useIsActiveStackSwitch";
 import { TabScrollButton } from "./TabScrollButton";
@@ -31,10 +31,12 @@ const Content = createComponentSlot("div")<RouterTabsClassKey, OwnerState>({
     },
 })(
     ({ ownerState }) => css`
-        ${ownerState.contentHidden &&
-        css`
-            display: none;
-        `}
+        ${
+            ownerState.contentHidden &&
+            css`
+                display: none;
+            `
+        }
     `,
 );
 
@@ -54,12 +56,11 @@ export const RouterTab = (props: TabProps) => null;
 type RouterTabsChild = ReactElement<TabProps> | boolean | null | undefined;
 type RouterTabsChildren = RouterTabsChild | Array<RouterTabsChild | Array<RouterTabsChild>>;
 
-interface Props
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        tabs: typeof Tabs;
-        content: "div";
-    }> {
+interface Props extends ThemedComponentBaseProps<{
+    root: "div";
+    tabs: typeof Tabs;
+    content: "div";
+}> {
     children: RouterTabsChildren;
     tabComponent?: ComponentType<MuiTabProps>;
     tabsProps?: Partial<TabsProps>;
@@ -72,7 +73,7 @@ export function RouterTabs(inProps: Props) {
         tabsProps: { ScrollButtonComponent = TabScrollButton, ...tabsProps } = {},
         slotProps,
         ...restProps
-    } = useThemeProps({ props: inProps, name: "CometAdminRouterTabs" });
+    } = useThemeProps({ props: inProps, name: "DextinityAdminRouterTabs" });
 
     const history = useHistory();
     const subRoutePrefix = useSubRoutePrefix();
@@ -181,12 +182,12 @@ export function RouterTabs(inProps: Props) {
 
 declare module "@mui/material/styles" {
     interface ComponentNameToClassKey {
-        CometAdminRouterTabs: RouterTabsClassKey;
+        DextinityAdminRouterTabs: RouterTabsClassKey;
     }
 
     interface Components {
-        CometAdminRouterTabs?: {
-            styleOverrides?: ComponentsOverrides<Theme>["CometAdminRouterTabs"];
+        DextinityAdminRouterTabs?: {
+            styleOverrides?: ComponentsOverrides<Theme>["DextinityAdminRouterTabs"];
         };
     }
 }

@@ -1,17 +1,17 @@
 import { gql, useQuery } from "@apollo/client";
-import { Minimize } from "@comet/admin-icons";
+import { Minimize } from "@dextinity/admin-icons";
 import { Grid, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useEffect } from "react";
 
 import { useIFrameBridge } from "../../blocks/iframebridge/useIFrameBridge";
-import { useCometConfig } from "../../config/CometConfigContext";
+import { useDextinityConfig } from "../../config/DextinityConfigContext";
 import { useContentScope } from "../../contentScope/Provider";
 import { DeviceToggle } from "../common/DeviceToggle";
 import { IFrameViewer } from "../common/IFrameViewer";
 import { VisibilityToggle } from "../common/VisibilityToggle";
-import { type GQLBlockPreviewJwtQuery } from "./BlockPreview.generated";
-import { type BlockPreviewApi } from "./useBlockPreview";
+import type { GQLBlockPreviewJwtQuery } from "./BlockPreview.generated";
+import type { BlockPreviewApi } from "./useBlockPreview";
 
 interface Props {
     previewApi: BlockPreviewApi;
@@ -23,7 +23,7 @@ function BlockPreview({ url, previewState, previewApi: { device, setDevice, show
     const iFrameBridge = useIFrameBridge();
     const { scope } = useContentScope();
 
-    const { graphQLApiUrl } = useCometConfig();
+    const { graphQLApiUrl } = useDextinityConfig();
 
     const { data, error } = useQuery<GQLBlockPreviewJwtQuery>(
         gql`
@@ -41,7 +41,9 @@ function BlockPreview({ url, previewState, previewApi: { device, setDevice, show
             pollInterval: 1000 * 60 * 60 * 24, // due to expiration time of jwt
         },
     );
-    if (error) throw new Error(error.message);
+    if (error) {
+        throw new Error(error.message);
+    }
 
     useEffect(() => {
         if (iFrameBridge.iFrameReady && data?.blockPreviewJwt) {

@@ -1,36 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { readFile, writeFile } from "node:fs/promises";
 
-import { type ApolloClient } from "@apollo/client";
-import { type GridColDef } from "@comet/admin";
-import { type IconName } from "@comet/admin-icons";
-import { type BlockInterface, type ContentScope, type FinalFormFileUploadProps } from "@comet/cms-admin";
+import type { ApolloClient } from "@apollo/client";
+import type { GridColDef } from "@dextinity/admin";
+import type { IconName } from "@dextinity/admin-icons";
+import type { BlockInterface, ContentScope, FinalFormFileUploadProps } from "@dextinity/cms-admin";
 import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader";
 import { loadSchema } from "@graphql-tools/load";
-import { type IconProps } from "@mui/material";
-import {
-    type GridCellParams,
-    type GridFilterItem,
-    type GridFilterOperator,
-    type GridRenderCellParams,
-    type GridSortDirection,
-    type GridValidRowModel,
+import type { IconProps } from "@mui/material";
+import type {
+    GridCellParams,
+    GridFilterItem,
+    GridFilterOperator,
+    GridRenderCellParams,
+    GridSortDirection,
+    GridValidRowModel,
 } from "@mui/x-data-grid";
 import { Command } from "commander";
-import { type FieldValidator, type FormApi } from "final-form";
+import type { FieldValidator, FormApi } from "final-form";
 import { promises as fs } from "fs";
 import { glob } from "glob";
 import { introspectionFromSchema } from "graphql";
 import { basename, dirname } from "path";
 import { format, resolveConfig } from "prettier";
-import type { ComponentType, ReactElement } from "react";
+import type { ComponentType, JSX, ReactElement } from "react";
 import type { FormattedMessage, MessageDescriptor } from "react-intl";
 
 import { parseConfig } from "./config/parseConfig";
 import { generateForm } from "./generateForm/generateForm";
 import { generateGrid } from "./generateGrid/generateGrid";
-import { type UsableFields, type UsableFormFields } from "./generateGrid/usableFields";
-import { type ColumnVisibleOption } from "./utils/columnVisibility";
+import type { UsableFields, UsableFormFields } from "./generateGrid/usableFields";
+import type { ColumnVisibleOption } from "./utils/columnVisibility";
 import { writeGenerated } from "./utils/writeGenerated";
 
 export type FormattedMessageElement = ReactElement<MessageDescriptor, typeof FormattedMessage>;
@@ -323,6 +323,7 @@ export type GridConfig<T extends { __typename?: string }> = {
         deleteType?: "delete" | "remove";
         deleteText?: string;
     };
+    initialPageSize?: number;
 };
 
 export type GeneratorConfig<T extends { __typename?: string }> = FormConfig<T> | GridConfig<T>;
@@ -338,7 +339,7 @@ export type GeneratorReturn = { code: string; gqlDocuments: GQLDocumentConfigMap
 /**
  * @experimental
  */
-async function runGenerate(filePattern = "src/**/*.cometGen.{ts,tsx}") {
+async function runGenerate(filePattern = "src/**/*.dextinityGen.{ts,tsx}") {
     const schema = await loadSchema("./schema.gql", {
         loaders: [new GraphQLFileLoader()],
     });
@@ -350,17 +351,19 @@ async function runGenerate(filePattern = "src/**/*.cometGen.{ts,tsx}") {
         let outputCode = "";
         let gqlDocumentsOutputCode = "";
         const targetDirectory = `${dirname(file)}/generated`;
-        const baseOutputFilename = basename(file).replace(/\.cometGen\.tsx?$/, "");
+        const baseOutputFilename = basename(file).replace(/\.dextinityGen\.tsx?$/, "");
 
         console.log(`generating ${file}`);
 
-        const config = await parseConfig(file);
+        const config = await parseConfig(`${process.cwd()}/${file}`);
 
-        const codeOuputFilename = `${targetDirectory}/${basename(file.replace(/\.cometGen\.tsx?$/, ""))}.tsx`;
+        const codeOuputFilename = `${targetDirectory}/${basename(file.replace(/\.dextinityGen\.tsx?$/, ""))}.tsx`;
         await fs.rm(codeOuputFilename, { force: true });
 
-        const exportName = file.match(/([^/]+)\.cometGen\.tsx?$/)?.[1];
-        if (!exportName) throw new Error("Can not determine exportName");
+        const exportName = file.match(/([^/]+)\.dextinityGen\.tsx?$/)?.[1];
+        if (!exportName) {
+            throw new Error("Can not determine exportName");
+        }
 
         let generated: GeneratorReturn;
         if (config.type == "form") {
@@ -380,10 +383,10 @@ async function runGenerate(filePattern = "src/**/*.cometGen.{ts,tsx}") {
         writtenFiles.push(codeOuputFilename);
 
         if (gqlDocumentsOutputCode != "") {
-            const gqlDocumentsOuputFilename = `${targetDirectory}/${basename(file.replace(/\.cometGen\.tsx?$/, ""))}.gql.tsx`;
+            const gqlDocumentsOuputFilename = `${targetDirectory}/${basename(file.replace(/\.dextinityGen\.tsx?$/, ""))}.gql.tsx`;
             await fs.rm(gqlDocumentsOuputFilename, { force: true });
             gqlDocumentsOutputCode = `import { gql } from "@apollo/client";
-                import { finalFormFileUploadFragment, finalFormFileUploadDownloadableFragment } from "@comet/cms-admin";
+                import { finalFormFileUploadFragment, finalFormFileUploadDownloadableFragment } from "@dextinity/cms-admin";
 
                 ${gqlDocumentsOutputCode}
             `;

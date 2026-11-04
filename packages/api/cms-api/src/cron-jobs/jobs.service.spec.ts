@@ -1,9 +1,10 @@
 import { Test, type TestingModule } from "@nestjs/testing";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { KubernetesModule } from "../kubernetes/kubernetes.module";
 import { JobsService } from "./jobs.service";
 
-jest.mock("@kubernetes/client-node", () => ({}));
+vi.mock("@kubernetes/client-node", () => ({}));
 
 describe("KubernetesJobsService", () => {
     let service: JobsService;

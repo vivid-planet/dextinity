@@ -1,5 +1,6 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
 import {
+    Alert,
     Field,
     FillSpace,
     FinalForm,
@@ -13,24 +14,24 @@ import {
     ToolbarBackButton,
     ToolbarTitleItem,
     useStackSwitchApi,
-} from "@comet/admin";
-import { MenuItem } from "@mui/material";
+} from "@dextinity/admin";
+import { Box, MenuItem } from "@mui/material";
+import { isFQDN } from "class-validator";
 import isEqual from "lodash.isequal";
-import { useMemo } from "react";
+import { type JSX, useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { createFinalFormBlock } from "../blocks/form/createFinalFormBlock";
-import { type BlockInterface, type BlockState } from "../blocks/types";
-import { isValidUrl } from "../blocks/validators/isValidUrl";
+import type { BlockInterface, BlockState } from "../blocks/types";
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
-import { type GQLRedirectSourceTypeValues } from "../graphql.generated";
-import { type GQLRedirectSourceAvailableQuery, type GQLRedirectSourceAvailableQueryVariables } from "./RedirectForm.generated";
+import type { GQLRedirectSourceType } from "../graphql.generated";
+import type { GQLRedirectSourceAvailableQuery, GQLRedirectSourceAvailableQueryVariables } from "./RedirectForm.generated";
 import { redirectDetailQuery } from "./RedirectForm.gql";
-import {
-    type GQLCreateRedirectMutation,
-    type GQLRedirectDetailFragment,
-    type GQLRedirectDetailQuery,
-    type GQLRedirectDetailQueryVariables,
+import type {
+    GQLCreateRedirectMutation,
+    GQLRedirectDetailFragment,
+    GQLRedirectDetailQuery,
+    GQLRedirectDetailQueryVariables,
 } from "./RedirectForm.gql.generated";
 import { useSubmitMutation } from "./submitMutation";
 
@@ -45,7 +46,7 @@ interface Props {
 }
 
 export interface FormValues {
-    sourceType: GQLRedirectSourceTypeValues;
+    sourceType: GQLRedirectSourceType;
     source: string;
     target: BlockState<BlockInterface>;
     comment?: string;
@@ -93,8 +94,15 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
         {
             value: "path",
             label: intl.formatMessage({
-                id: "comet.pages.redirects.redirect.source.type.path",
+                id: "dextinity.pages.redirects.redirect.source.type.path",
                 defaultMessage: "Path",
+            }),
+        },
+        {
+            value: "domain",
+            label: intl.formatMessage({
+                id: "dextinity.pages.redirects.redirect.source.type.domain",
+                defaultMessage: "Domain",
             }),
         },
     ];
@@ -129,15 +137,15 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
     const validateSource = async (value: string, allValues: GQLRedirectDetailFragment) => {
         if (allValues.sourceType === "path") {
             if (!value.startsWith("/")) {
-                return <FormattedMessage id="comet.pages.redirects.validate.path.error" defaultMessage="Needs to start with /" />;
+                return <FormattedMessage id="dextinity.pages.redirects.validate.path.error" defaultMessage="Needs to start with /" />;
             } else if (!/^\/([a-zA-Z0-9-._~/:?=&]|%[0-9a-fA-F]{2})+$/.test(value)) {
-                return <FormattedMessage id="comet.pages.redirects.validate.path.invalidPathError" defaultMessage="Invalid path" />;
+                return <FormattedMessage id="dextinity.pages.redirects.validate.path.invalidPathError" defaultMessage="Invalid path" />;
             }
 
             if (!(await isRedirectSourceAvailable(value))) {
                 return (
                     <FormattedMessage
-                        id="comet.redirects.form.validation.sourceTaken"
+                        id="dextinity.redirects.form.validation.sourceTaken"
                         defaultMessage="Source {source} is not available"
                         values={{ source: value }}
                     />
@@ -149,10 +157,10 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
     };
 
     const validateDomain = (value: string) => {
-        if (!isValidUrl(value)) {
+        if (!isFQDN(value)) {
             return intl.formatMessage({
-                id: "comet.pages.redirects.validate.domain.error",
-                defaultMessage: "Needs to start with http:// or https://",
+                id: "dextinity.pages.redirects.validate.domain.error",
+                defaultMessage: "Needs to be a valid domain (e.g. example.com)",
             });
         }
     };
@@ -182,7 +190,11 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
                     <Toolbar scopeIndicator={<ContentScopeIndicator scope={scope} />}>
                         <ToolbarBackButton />
                         <ToolbarTitleItem>
-                            {values.source ? values.source : <FormattedMessage id="comet.redirects.defaultTitle" defaultMessage="Redirect Detail" />}
+                            {values.source ? (
+                                values.source
+                            ) : (
+                                <FormattedMessage id="dextinity.redirects.defaultTitle" defaultMessage="Redirect Detail" />
+                            )}
                         </ToolbarTitleItem>
                         <FillSpace />
                         <ToolbarActions>
@@ -192,7 +204,7 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
                     <MainContent>
                         <Field
                             label={intl.formatMessage({
-                                id: "comet.pages.redirects.redirect.source.type",
+                                id: "dextinity.pages.redirects.redirect.source.type",
                                 defaultMessage: "Source type",
                             })}
                             name="sourceType"
@@ -209,23 +221,33 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
                                 </FinalFormSelect>
                             )}
                         </Field>
+                        {values.sourceType === "domain" && (
+                            <Box sx={{ marginBottom: 4 }}>
+                                <Alert severity="warning">
+                                    <FormattedMessage
+                                        id="dextinity.pages.redirects.redirect.source.type.domain.warning"
+                                        defaultMessage="This only works if the domain is configured correctly."
+                                    />
+                                </Alert>
+                            </Box>
+                        )}
                         <Field
-                            label={intl.formatMessage({ id: "comet.pages.redirects.redirect.source", defaultMessage: "Source" })}
+                            label={intl.formatMessage({ id: "dextinity.pages.redirects.redirect.source", defaultMessage: "Source" })}
                             name="source"
                             required
                             component={FinalFormInput}
-                            // @TODO: FIX ts-type here: https://github.com/vivid-planet/comet-admin/blob/next/packages/admin/src/form/Field.tsx#L18
+                            // @TODO: FIX ts-type here: https://github.com/vivid-planet/dextinity/blob/main/packages/admin/admin/src/form/Field.tsx
                             // type object doesnt work with "strict"
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             validate={validateSource as any}
                             fullWidth
-                            placeholder="/example-path"
+                            placeholder={values.sourceType === "domain" ? "example.com" : "/example-path"}
                             disableContentTranslation
                         />
                         <Field
                             name="target"
                             label={intl.formatMessage({
-                                id: "comet.pages.redirects.redirect.target",
+                                id: "dextinity.pages.redirects.redirect.target",
                                 defaultMessage: "Target",
                             })}
                             required
@@ -233,7 +255,7 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
                             component={targetInput}
                         />
                         <Field
-                            label={intl.formatMessage({ id: "comet.pages.redirects.redirect.comment", defaultMessage: "Comment" })}
+                            label={intl.formatMessage({ id: "dextinity.pages.redirects.redirect.comment", defaultMessage: "Comment" })}
                             name="comment"
                             component={FinalFormInput}
                             fullWidth

@@ -1,6 +1,6 @@
 "use client";
 
-import { type ComponentProps, type PropsWithChildren } from "react";
+import type { ComponentProps, PropsWithChildren } from "react";
 import { IntlProvider as LibraryIntlProvider } from "react-intl";
 
 type Messages = ComponentProps<typeof LibraryIntlProvider>["messages"];

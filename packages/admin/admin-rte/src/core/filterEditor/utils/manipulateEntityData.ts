@@ -1,6 +1,6 @@
 import { EditorState, type EntityInstance } from "draft-js";
 
-import { type FilterEditorStateFn } from "../../types";
+import type { FilterEditorStateFn } from "../../types";
 
 type UpdateEntityDataFn = (entity: EntityInstance) => Record<string, any> | undefined; // if object is returned the entity data is updated with this object
 

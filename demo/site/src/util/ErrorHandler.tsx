@@ -1,7 +1,7 @@
 "use client";
 
-import { ErrorHandlerProvider } from "@comet/site-nextjs";
-import { type ErrorInfo, type PropsWithChildren } from "react";
+import { ErrorHandlerProvider } from "@dextinity/site-nextjs";
+import type { ErrorInfo, PropsWithChildren } from "react";
 
 export function ErrorHandler({ children }: PropsWithChildren) {
     function onError(error: Error, errorInfo: ErrorInfo) {

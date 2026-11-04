@@ -1,0 +1,814 @@
+---
+name: dextinity-mail-react
+description: Guide for building HTML emails with @dextinity/mail-react and MJML. Use whenever working on email templates, mail markup, MJML components, email theming, email styling, responsive emails, column layouts, multi-column email sections, rendering Dextinity CMS block data (such as pixel-image blocks) in emails, or anything involving @dextinity/mail-react or HTML email development — even for seemingly simple tasks like putting content side-by-side in columns, since email client compatibility is a minefield that requires specific patterns and research before implementing.
+---
+
+# Building HTML Emails with @dextinity/mail-react
+
+`@dextinity/mail-react` lets you build responsive, themed HTML emails using React components. Under the hood it uses [MJML](https://documentation.mjml.io/) to generate cross-client-compatible HTML. The library provides a theme system, higher-level wrapper components, a style utility layer, and Storybook integration for live previewing emails during development.
+
+---
+
+## Research Before You Code
+
+Email development is fundamentally different from web development. There is no shared rendering engine across email clients — the most constrained major client, Outlook on Windows (2007–2019), uses **Microsoft Word** to render HTML, supporting only a fraction of modern CSS. What works perfectly in a browser will often break in email clients, sometimes in surprising ways.
+
+Before implementing any visual technique — even things that seem basic like rounded corners, background images, custom fonts, or flexbox layouts — **verify support across email clients**. Many common CSS properties are partially or fully unsupported. This isn't a "nice to have" step — it prevents hours of debugging and rework.
+
+### Essential Resources
+
+Keep these open during email development:
+
+| Resource                       | What it's for                                                                    | URL                                                      |
+| ------------------------------ | -------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| **Can I email**                | Check CSS/HTML feature support across email clients (like caniuse.com for email) | https://www.caniemail.com/                               |
+| **Gmail CSS support**          | Google's own list of the CSS properties and selectors Gmail applies              | https://developers.google.com/workspace/gmail/design/css |
+| **MJML Documentation**         | Full reference for all MJML tags and their attributes                            | https://documentation.mjml.io/                           |
+| **Litmus Blog & Resources**    | Email development best practices, testing guides, client quirks                  | https://www.litmus.com/blog/                             |
+| **Campaign Monitor CSS Guide** | Comprehensive CSS support tables per email client                                | https://www.campaignmonitor.com/css/                     |
+| **Bulletproof Backgrounds**    | VML-based background image generator for Outlook                                 | https://www.backgrounds.cm/                              |
+| **Bulletproof Buttons**        | VML-based rounded button generator for Outlook                                   | https://www.buttons.cm/                                  |
+
+### The Research Habit
+
+When implementing any visual feature:
+
+1. Check [Can I email](https://www.caniemail.com/) for the CSS properties and selectors involved
+2. If the property isn't supported in Outlook, search for VML workarounds or provide a graceful fallback (skipping border-radius is generally acceptable)
+3. Test in Storybook with the MJML Warnings panel open
+4. When uncertain, consult the Litmus blog or Campaign Monitor guide for known patterns
+
+This applies to seemingly simple things: `border-radius`, `background-image`, `flexbox`, `gap`, custom fonts — all have partial or no support in major email clients.
+
+For which selectors reach which clients, see [`styling-and-customization.md`](references/styling-and-customization.md) → Selectors That Reach Every Client.
+
+### Library Documentation
+
+Full documentation for `@dextinity/mail-react`: https://cms-docs.dextinity.com/docs/features-modules/building-html-emails/
+
+---
+
+## The MJML Layout Model
+
+MJML enforces a strict **section → column → content** nesting hierarchy:
+
+- **`MjmlSection`** — a full-width horizontal row
+- **`MjmlColumn`** — divides a section into vertical columns (stacking on mobile by default)
+- **Content components** (`MjmlText`, `MjmlImage`, `MjmlButton`, etc.) — placed inside a column
+
+Content components placed outside this hierarchy produce MJML validation warnings and broken layouts. The MJML Warnings panel in Storybook surfaces these during development.
+
+```tsx
+<MjmlSection indent>
+    <MjmlColumn>
+        <MjmlText variant="heading">Section title</MjmlText>
+        <MjmlText variant="body" bottomSpacing>
+            Body paragraph with spacing below.
+        </MjmlText>
+        <MjmlImage src="https://example.com/image.jpg" alt="Example" />
+    </MjmlColumn>
+</MjmlSection>
+```
+
+### Multi-Column Layouts
+
+MJML has no `gap` property. Column padding reduces the content area _inside_ the column — it doesn't add space between column cells. To create a visual gap between columns, apply padding to the inner edges of adjacent columns (`paddingRight` on the left column, `paddingLeft` on the right column). Their sum becomes the visible gap.
+
+For two equal columns, apply half the desired gap to each column's inner edge. Both columns have the same total padding, so MJML's equal-width split produces equal content areas without explicit `width` props:
+
+```tsx
+const columnGap = 20;
+const halfGap = columnGap / 2;
+
+<MjmlSection indent className="twoColumnsSection">
+    <MjmlColumn className="twoColumnsSection__leftColumn" paddingRight={halfGap}>
+        <MjmlText>Left column</MjmlText>
+    </MjmlColumn>
+    <MjmlColumn className="twoColumnsSection__rightColumn" paddingLeft={halfGap}>
+        <MjmlText>Right column</MjmlText>
+    </MjmlColumn>
+</MjmlSection>;
+```
+
+**Do not** apply equal padding on all sides of every column — this adds extra outer-edge spacing that compounds with `indent`/`contentIndentation`, pushing content inward beyond the theme's intended margins.
+
+On mobile, reset the gap padding so content stretches full-width, and add a vertical margin between the stacked columns. Column padding compiles to an inner `<td>`, so target it via `.className > table > tbody > tr > td`.
+
+Set `disableResponsiveBehavior` on **every** section with more than one column. It wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline; without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX, Web.de and the Gmail apps with a non-Google account, for example — show the columns stacked. The group never stacks by itself, so write the mobile stacking into `registerStyles`, and target the column container one level deeper (`… > td > div`).
+
+→ For complete patterns — two columns, three or more, fixed+fluid — with responsive styles, CSS targeting rules, the stacking strategies, and the `direction="rtl"` technique for controlling mobile stack order, read [`references/layout-patterns.md`](references/layout-patterns.md).
+
+### Ending Tags
+
+Some MJML components are [**ending tags**](https://documentation.mjml.io/#ending-tags) — they accept raw HTML as children but **cannot** contain other MJML components. The most common: `MjmlText`, `MjmlButton`, `MjmlTable`, `MjmlRaw`.
+
+Once inside an ending tag, you are in **HTML-land for the entire subtree**. Use HTML elements (`<span>`, `<a>`, `<table>`, `<td>`) but not MJML components. The library provides `HtmlText` and `HtmlInlineLink` for themed text and links inside ending tags.
+
+For raw HTML layouts outside text, use `MjmlRaw` (or `MjmlTable`). These are escape hatches for cases MJML components can't handle — use them as a last resort.
+
+---
+
+## The Styling Model
+
+Email styling follows a **desktop-first** approach:
+
+1. **Base/default styles are inline** — applied through MJML component props or explicit `style` attributes on HTML elements. Desktop clients like Outlook ignore `<style>` blocks entirely, so the base rendering must look correct with inline styles alone.
+
+2. **Responsive overrides are progressive enhancement** — registered via `registerStyles` with media queries targeting mobile viewports. Clients that support media queries also support modern CSS, so properties like `flex`, and CSS custom properties are safe inside media queries.
+
+3. **`!important` is required** in media query overrides — because inline styles take precedence over `<style>` block rules, responsive overrides need `!important` to win.
+
+Never rely on `<style>` blocks for base/desktop layout. Set all default styles inline via MJML component props.
+
+MJML breaks this rule for column widths: it puts them in a `min-width` media query, so a multi-column section stacks in any client that drops that query — GMX, Web.de and the Gmail apps with a non-Google account, for example. See [Multi-Column Layouts](#multi-column-layouts).
+
+### Prefer Theme Breakpoints
+
+Always use `theme.breakpoints.*.belowMediaQuery` inside `registerStyles` instead of hardcoding media query values. This keeps responsive styles in sync with the theme configuration. If a breakpoint value is needed repeatedly but doesn't exist in the theme, add it via `createBreakpoint` and module augmentation rather than duplicating raw media queries. Reserve hardcoded media queries for genuinely one-off values.
+
+→ For the full `registerStyles` API, `css` helper, and custom component patterns, read [`references/styling-and-customization.md`](references/styling-and-customization.md).
+
+### Switching Content by Breakpoint
+
+Sometimes you cannot make both views from the same HTML, because the mobile view needs a different structure than the desktop view. Then put both layouts in the email and hide one of them: inline styles hide the mobile layout, and a media query in `registerStyles` switches the two.
+
+Two layouts make twice as much markup, so first try to make one layout that works at each width. The column patterns already stack on mobile.
+
+The default layout is the one that shows when the `<style>` block is gone, so if it has columns its section needs `disableResponsiveBehavior` as well.
+
+→ For the hiding styles, the extra step classic Outlook needs, and what to avoid, read [`references/layout-patterns.md`](references/layout-patterns.md) → Breakpoint Content Switch.
+
+---
+
+## Common Pitfalls
+
+### Start Raw Content Inside a Column With `<tr>`
+
+`mj-column` wraps every child in its own `<tr><td>` — except `MjmlRaw` content, which goes straight into the column's table unwrapped. A `<table>`, `<div>`, or `<img>` in that position ends up outside the column's table instead, and MJML reports no error. This covers the `Html*` components. Open with a `<tr>` and put the markup in a `<td>`:
+
+```tsx
+<MjmlColumn>
+    <MjmlRaw>
+        <tr>
+            <td>{/* your raw markup */}</td>
+        </tr>
+    </MjmlRaw>
+</MjmlColumn>
+```
+
+`HtmlText` is the exception: it renders the `<td>` itself, so a surrounding `<tr>` is all it needs — unless its `element` prop renders something else, which needs a `<td>` again.
+
+`MjmlColumn` and `MjmlHero` are both affected — `MjmlSection` and `MjmlWrapper` already place their children inside a shared cell, so any root element is safe there. `MjmlDivider` supplies both the row and the cell; use it instead of a hand-wrapped `HtmlDivider` whenever you are in an `MjmlColumn`.
+
+### Avoid Block-Level HTML Elements Inside Ending Tags
+
+Don't use `<p>`, `<h1>`, `<h2>`, or other block-level HTML elements inside ending tags. They have wildly inconsistent default margins and spacing across email clients and add no rendering value in email HTML. Instead, use `<td>`, `<div>`, and `<span>` for structure, and build your typography hierarchy through `MjmlText`/`HtmlText` variants rather than HTML semantics. If a block-level element is truly unavoidable, always reset its margins inline: `style={{ margin: 0 }}`.
+
+### Set `mso-line-height-rule: exactly` on Every Manual `line-height`
+
+Outlook calculates line-height using its own rules, causing unexpected vertical spacing. **Every time** you set `line-height` on a raw HTML element inside an ending tag (`MjmlRaw`, `MjmlText`, etc.), you must also set `mso-line-height-rule: exactly` as an inline style on the same element. This applies to `<span>`, `<td>`, `<div>`, or any other element where you manually control line height. `HtmlText` and built-in MJML components handle this automatically — but any hand-written HTML needs it explicitly.
+
+### Do Not Set `line-height: 0` Around Images
+
+Classic Outlook cuts off the top of an image when `line-height: 0` is set on the `<td>` that holds the image, or on its `<table>`: about `3px` with `font-size: 0`, about `20px` with the default font size. A `line-height: 0` on a `<span>` or link inside that `<td>` does not prevent it.
+
+- Use `1px` instead of `0`, or leave `line-height` unset. Without `mso-line-height-rule: exactly`, any other `line-height` smaller than the image does not cut it: classic Outlook treats the value as a minimum. `MjmlTable` has a default `line-height` of `22px`, and that value does no harm. Do not set `lineHeight={0}` on `MjmlTable`.
+- With `mso-line-height-rule: exactly`, a `line-height` smaller than the image cuts the image to that height. `HtmlText` sets the theme `line-height` (`20px` by default) with `mso-line-height-rule: exactly`, so do not put images in it.
+
+### No CSS `background-image` in Outlook
+
+Classic Outlook ignores `background-image` entirely. Use a VML-based workaround for Outlook support, or provide a `background-color` fallback for graceful degradation. See [Bulletproof Backgrounds](https://www.backgrounds.cm/).
+
+### No CSS `border-radius` in Outlook
+
+Classic Outlook ignores `border-radius` entirely — rounded corners on buttons, containers, or any other element render as sharp rectangles.
+
+`MjmlImage` and `HtmlImage` handle images for you, as long as `width` and `height` are given in pixels and `borderRadius` is a single pixel value or `"50%"`. Other values — a percentage width, `1em`, `16px 4px` — leave the image square in Outlook.
+
+Everything else, buttons and containers included, needs a VML `v:roundrect` written by hand, inside a conditional comment. Give the shape a fixed pixel `width` and `height` — it cannot be fluid:
+
+```html
+<!--[if mso]>
+    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="19%" stroked="f" style="width:199px;height:43px;">
+        <center>Button label</center>
+    </v:roundrect>
+<![endif]-->
+```
+
+Set `arcsize` to the corner radius divided by the shorter declared side, capped at `50%` — `8px` on a `44px`-high button, declared `43px`, gives `19%`. Do not take the value from the VML specification; it is twice what Outlook needs.
+
+More rules for a hand-written VML shape:
+
+- Declare a `v:roundrect` or `v:oval` `1px` smaller in `width` and `height` than the size it must have, and compute `arcsize` from that declared size. Classic Outlook draws the shape `1px` larger, even with `stroked="f"`.
+- Copy the link (`href` on the shape), the alignment and the padding from the HTML element that the shape replaces, and hide that element from classic Outlook with `<!--[if !mso]><!-->…<!--<![endif]-->`.
+- Give the shape a width that fits its column. Classic Outlook does not shrink VML to its container, so a wider shape makes the whole mail wider.
+
+See the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
+
+### No CSS `calc()`
+
+Yahoo Mail (webmail and both mobile apps) and Outlook.com drop every declaration whose value contains a `calc()`, single-unit expressions such as `calc(300px - 200px)` included. The declaration disappears, so the element keeps the value the `calc()` was meant to override — a plausible wrong width rather than no width.
+
+Where an element has to fill the space next to a fixed-width one, let the table compute the width: the fixed cells get their pixel width, and the flexible cell gets `width="100%"`, so the table gives it whatever the fixed cells leave ([Good Email Code](https://www.goodemailcode.com/email-code/columns.html)). Where a `calc()` is unavoidable, put a plain value before it in the same rule, chosen so the row still fits at the narrowest viewport the media query covers:
+
+```css
+.fluidColumn {
+    width: 40% !important;
+    width: calc(100% - 192px) !important;
+}
+```
+
+The asymmetric two-column layout in [`references/layout-patterns.md`](references/layout-patterns.md) uses this fallback.
+
+### `height` Becomes `min-height` in Yahoo Mail
+
+Yahoo Mail rewrites `height` into `min-height`, which is only a lower limit — it can make an element taller, never shorter — and does nothing at all on a `<td>`:
+
+- An `<img>` that a media query shrinks with `height` keeps its original size — use `max-height`.
+- A row whose height comes only from `height` on a `<td>` collapses to nothing, and the cell's background disappears with it — put the height on a `<div>` inside the cell, or use padding.
+
+### Keep `}}` Out of the Head CSS
+
+Outlook on the web (Outlook.com) and the Outlook iOS and Android apps drop everything after the first `}}` in a `<style>` tag. Minified `@media` blocks end in `}}`. mail-react separates the braces in the registered styles, but not in CSS that you add through the `head` slot of `MjmlMailRoot`; write `} }` there. See [email-bugs#92](https://github.com/hteumeuleu/email-bugs/issues/92).
+
+### Gmail Drops Head CSS Past 16 kB
+
+Gmail counts the content of all `<style>` tags together, MJML's own included. Past `16 kB` (`16,384` characters), Gmail removes the `<style>` tag that passes the limit. mail-react puts the registered styles and the CSS from the `head` slot of `MjmlMailRoot` in one `<style>` tag, placed last, so the mail loses all of that CSS. `registerStyles` emits the CSS of every imported module, used or not; mail-react minifies the registered CSS. Keep unused variants and modules out of the mail, and check the size: count the characters in all `<style>` tags of a full rendered mail. See [email-bugs#90](https://github.com/hteumeuleu/email-bugs/issues/90).
+
+### MJML Sets `word-break: break-word` on Column Content
+
+MJML writes `word-break: break-word` on the `<td>` around each child of a column, except `MjmlRaw`, and nested cells inherit it. In Outlook on the web, this breaks short content onto several lines when its cell sits next to a `width="100%"` cell, such as the marker cell of a list item. Set `word-break: normal` inline on the cell of the short content, together with `white-space: nowrap`. `white-space: nowrap` alone does not help: Outlook on the web removes it from inline styles, and it also removes the `nowrap` attribute. Resetting `overflow-wrap` does not help either.
+
+### Style the Links That Mail Clients Create
+
+Clients turn plain-text mail addresses, URLs and phone numbers into links of their own, without the mail's inline styles:
+
+- Gmail (iOS and web), Outlook iOS, Apple Mail iOS: a CSS rule in the mail head for links inside text components restores the text style: `.mjmlText a, .htmlText a { color: inherit !important; font-family: inherit !important; font-size: inherit !important; line-height: inherit !important; font-weight: inherit !important; text-decoration: underline !important; }`. The rule also changes links you write yourself, because `inherit !important` wins over their inline styles. To keep a custom color, font or `text-decoration` on such a link, set it with `!important` (see `HtmlInlineLink` → Custom Color in [`references/components-and-theme.md`](references/components-and-theme.md)).
+- Classic Outlook: colors these links blue, and accepts only one color for them in the whole mail. Set the color in the mail head, inside `<!--[if mso]><style>…</style><![endif]-->`, and choose a color with enough contrast on every background of the mail (`#767677` is an example):
+
+    ```css
+    a:link,
+    span.MsoHyperlink {
+        mso-style-priority: 99;
+        color: #767677;
+        text-decoration: underline;
+    }
+    a:visited,
+    span.MsoHyperlinkFollowed {
+        mso-style-priority: 99;
+        color: #767677;
+        text-decoration: underline;
+    }
+    ```
+
+### Dark Mode Repaints Colors, Not Most Images
+
+In dark mode, Gmail iOS, Yahoo Mail on the web, classic Outlook, Outlook on the web, Outlook iOS and Outlook Mac change the colors of the mail but leave most images alone. So a color that must stay is safest inside an image. Gmail Android is the exception: it inverts images with few colors that it shows at about `64px` or less.
+
+- Keep a background color: set `background-color` and a `background-image` of a `100×100` px solid PNG in the same color. Use this technique behind images only, not behind text: some clients keep the background but still change the text color, so the text disappears.
+- Keep a logo readable: put a light background into the image file of the logo, not behind it. Some Gmail Android phones invert only the logo or only a separate background; in one image, both change together. On a dark section, put a background image in the section color behind the logo only, not behind the whole section (Gmail iOS, Outlook on the web).
+- Classic Outlook ignores CSS background images; use a VML shape with `fillcolor` there.
+
+→ For per-client behavior, placement rules and size limits, read [`references/dark-mode.md`](references/dark-mode.md).
+
+---
+
+## Theme Setup & Type-Safety
+
+Create a theme with `createTheme()` and pass it to `MjmlMailRoot`:
+
+```tsx
+import { createTheme, MjmlMailRoot } from "@dextinity/mail-react";
+
+const theme = createTheme({
+    sizes: {
+        bodyWidth: 700,
+        contentIndentation: { default: 40, mobile: 20 },
+    },
+    text: {
+        fontFamily: "Georgia, serif",
+        fontSize: "18px",
+    },
+    colors: {
+        background: { body: "#EAEAEA", content: "#FAFAFA" },
+    },
+});
+
+function MyEmail() {
+    return <MjmlMailRoot theme={theme}>{/* email content */}</MjmlMailRoot>;
+}
+```
+
+### Contributing to `<MjmlHead>` and `<MjmlAttributes>`
+
+`MjmlMailRoot` accepts `head` and `attributes` slot props for content that can't be expressed via `registerStyles`:
+
+- `head` — use for `<MjmlFont>`, `<MjmlConditionalComment>`, `<MjmlPreview>`, or `<MjmlStyle>` content that depends on React context at render time.
+- `attributes` — use for `<MjmlClass>` or per-element defaults (e.g. `<MjmlText fontSize="14px" />`).
+
+Pass the children directly — do not wrap them in another `<MjmlHead>` / `<MjmlAttributes>`:
+
+```tsx
+<MjmlMailRoot theme={theme} attributes={<MjmlClass name="link" color="blue" />} head={<MjmlFont name="Foo" href="https://example.com/foo.css" />}>
+    {/* email content */}
+</MjmlMailRoot>
+```
+
+For module-scoped responsive CSS that depends only on the theme, prefer `registerStyles`.
+
+### Module Augmentation for Type-Safety
+
+`@dextinity/mail-react` uses TypeScript module augmentation to make custom theme tokens type-safe. Always augment these interfaces when extending the theme — TypeScript will then error on typos or unknown keys.
+
+**Text Variants** — restrict `variant` prop to defined names:
+
+```ts
+declare module "@dextinity/mail-react" {
+    interface TextVariants {
+        heading: true;
+        body: true;
+        caption: true;
+    }
+}
+```
+
+**Custom Breakpoints** — make new breakpoint keys available in responsive values:
+
+```ts
+declare module "@dextinity/mail-react" {
+    interface ThemeBreakpoints {
+        tablet: ThemeBreakpoint;
+    }
+}
+```
+
+**Custom Colors** — add project-specific color tokens:
+
+```ts
+declare module "@dextinity/mail-react" {
+    interface ThemeBackgroundColors {
+        highlight: string;
+    }
+    interface ThemeColors {
+        brand: { primary: string; secondary: string };
+    }
+}
+```
+
+Place `declare module` blocks in your theme file below the `createTheme()` call.
+
+→ For the full theme structure, responsive values, module augmentation, and scoped theming, read [`references/components-and-theme.md`](references/components-and-theme.md).
+
+---
+
+## Configuration
+
+`Config` exposes environment-specific values — e.g. asset base URLs — to every component in the tree. Add keys via module augmentation:
+
+```ts
+declare module "@dextinity/mail-react" {
+    interface Config {
+        assetBaseUrl?: string;
+    }
+}
+```
+
+Wire at the root and read from any descendant:
+
+```tsx
+import { MjmlMailRoot, useConfig, type Config } from "@dextinity/mail-react";
+
+const config: Config = { assetBaseUrl: process.env.ASSET_BASE_URL };
+
+<MjmlMailRoot config={config}>{/* descendants can call useConfig() */}</MjmlMailRoot>;
+```
+
+---
+
+## Components Overview
+
+### MJML Components (Layout Level)
+
+| Component             | Purpose                                                            | CSS Classes                                                     |
+| --------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------- |
+| `MjmlMailRoot`        | Root element, provides theme, renders `<mjml>` skeleton            | —                                                               |
+| `MjmlWrapper`         | Groups sections sharing a background; theme-aware default bg       | —                                                               |
+| `MjmlSection`         | Full-width row; theme indentation, columns stack on mobile         | `.mjmlSection`, `.mjmlSection--indented`                        |
+| `MjmlColumn`          | Vertical column inside a section                                   | —                                                               |
+| `MjmlText`            | Themed text block with typography variants                         | `.mjmlText`, `.mjmlText--{variant}`, `.mjmlText--bottomSpacing` |
+| `MjmlImage`           | Responsive image                                                   | `.mjmlImage`                                                    |
+| `MjmlPixelImageBlock` | Renders a Dextinity CMS `PixelImageBlockData` via `MjmlImage`      | `.mjmlPixelImageBlock`                                          |
+| `MjmlButton`          | Themed button (ending tag), theme styling and variants             | `.mjmlButton`, `.mjmlButton--{variant}`                         |
+| `MjmlDivider`         | Themed horizontal divider, configurable through theme and variants | `.mjmlDivider`, `.mjmlDivider--{variant}`                       |
+| `MjmlSpacer`          | Vertical spacing                                                   | —                                                               |
+| `MjmlRaw`             | Raw HTML escape hatch (ending tag)                                 | —                                                               |
+
+### HTML Components (Inside Ending Tags)
+
+| Component             | Purpose                                                            | CSS Classes                                                     |
+| --------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------- |
+| `HtmlText`            | Themed text rendered as an HTML element                            | `.htmlText`, `.htmlText--{variant}`, `.htmlText--bottomSpacing` |
+| `HtmlInlineLink`      | `<a>` that inherits parent text styles, works in Outlook           | `.htmlInlineLink`                                               |
+| `HtmlImage`           | Responsive image (`<img>`)                                         | `.htmlImage`                                                    |
+| `HtmlPixelImageBlock` | Renders a Dextinity CMS `PixelImageBlockData` as `<img>`           | `.htmlPixelImageBlock`                                          |
+| `HtmlButton`          | Themed button for ending tags or non-MJML contexts                 | `.htmlButton`, `.htmlButton--{variant}`                         |
+| `HtmlDivider`         | Themed horizontal divider, configurable through theme and variants | `.htmlDivider`, `.htmlDivider--{variant}`                       |
+
+Variants are named typography presets (font size, weight, line height, color) defined in the theme; their values can change per breakpoint.
+
+All components are imported from `@dextinity/mail-react` — never from `@faire/mjml-react` directly.
+
+→ For theme tokens, responsive values, component behavior, scoped theming, and MJML re-exports, read [`references/components-and-theme.md`](references/components-and-theme.md).
+
+---
+
+## Blocks
+
+`@dextinity/mail-react` ships components that render Dextinity CMS block data — currently pixel-image blocks and the two rich-text blocks, draft-js and Tip-Tap. Reach for these instead of hand-rolled markup whenever the source is a CMS block-data record.
+
+### Pixel-image blocks
+
+| Component             | Renders                 | Use within                                     |
+| --------------------- | ----------------------- | ---------------------------------------------- |
+| `MjmlPixelImageBlock` | re-exported `MjmlImage` | an `MjmlColumn` (standard MJML layout)         |
+| `HtmlPixelImageBlock` | raw `<img>`             | raw HTML or MJML ending tags such as `MjmlRaw` |
+
+Inside `MjmlRaw` in an `MjmlColumn`, `HtmlPixelImageBlock` needs its own `<tr>` and `<td>` — see _Start Raw Content Inside a Column With `<tr>`_ above.
+
+```tsx
+<MjmlSection indent>
+    <MjmlColumn>
+        <MjmlPixelImageBlock data={pixelImageData} width={536} />
+    </MjmlColumn>
+</MjmlSection>
+```
+
+#### Configuration
+
+Both blocks require `config.pixelImageBlock` and throw without it. Wire it once on `MjmlMailRoot.config`:
+
+```tsx
+const config: Config = {
+    pixelImageBlock: {
+        validSizes: [...dextinityConfig.images.imageSizes, ...dextinityConfig.images.deviceSizes],
+        baseUrl: process.env.API_URL,
+    },
+};
+```
+
+#### Render width
+
+The block picks the source size from the configured `validSizes`, accounting for retina displays. Use `largestPossibleRenderWidth` when the image stretches wider on a narrower breakpoint than its desktop width — e.g. a two-column layout that stacks on mobile.
+
+```tsx
+<MjmlPixelImageBlock data={pixelImageData} width={300} largestPossibleRenderWidth={420} />
+```
+
+#### Aspect ratio
+
+Without `aspectRatio`, the rendered ratio comes from the DAM crop area. Pass `aspectRatio` to override it.
+
+```tsx
+<MjmlPixelImageBlock data={pixelImageData} width={536} aspectRatio="16x9" />
+```
+
+When `data.damFile?.image` is absent, both blocks render nothing — no element, no error. Render a placeholder at the call site if you need one.
+
+### Rich-text blocks
+
+Two factories render CMS rich text: `createTipTapRichTextBlock` for TipTapRichText block data, and `createRichTextBlock` for RichText block data (draft-js). Each returns an MJML and an HTML component, driven by one configuration. **Call the factory once per configuration — at the top level of a file, never inside a component** — and export the returned pair.
+
+```tsx title="src/emails/blocks/tipTapRichText.ts"
+export const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+    textBlockStyles: {
+        title: { variant: "title" },
+        header: { variant: "header" },
+    },
+});
+```
+
+| Component                                       | Renders each text block as | Use within                                     |
+| ----------------------------------------------- | -------------------------- | ---------------------------------------------- |
+| `MjmlTipTapRichTextBlock` / `MjmlRichTextBlock` | `MjmlText`                 | an `MjmlColumn` (standard MJML layout)         |
+| `HtmlTipTapRichTextBlock` / `HtmlRichTextBlock` | `HtmlText` (`<div>`)       | raw HTML or MJML ending tags such as `MjmlRaw` |
+
+Inside `MjmlRaw` in an `MjmlColumn`, the `Html*` component needs its own `<tr>` and `<td>` — see _Start Raw Content Inside a Column With `<tr>`_ above.
+
+Usage sites pass only `data`:
+
+```tsx
+<MjmlSection indent>
+    <MjmlColumn>
+        <MjmlTipTapRichTextBlock data={richTextData} />
+    </MjmlColumn>
+</MjmlSection>
+```
+
+Both factories:
+
+- **Text style entries are text-component props**: a theme `variant`, plain (non-responsive) style values (`color`, `fontSize`, `fontWeight`, …), and a `className`. Text no entry covers renders with the theme's `text.defaultVariant`, or the base `theme.text` styles. For responsive styling without a variant, set a `className` and register CSS via `registerStyles`:
+
+    ```tsx
+    const { MjmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+        textBlockStyles: { title: { className: "richTextTitle" } },
+    });
+
+    registerStyles(
+        (theme) => css`
+            ${theme.breakpoints.default.belowMediaQuery} {
+                .richTextTitle > div {
+                    font-size: 24px !important;
+                }
+            }
+        `,
+    );
+    ```
+
+    For a list, target `.<className> .richTextBlock__listItemText` instead of `> div` — the list's cells carry their own font styles.
+
+- **Multiple configurations**: each factory call is independent — rename the destructured components per use case:
+
+    ```tsx
+    export const { MjmlTipTapRichTextBlock: MjmlHeadlineRichTextBlock, HtmlTipTapRichTextBlock: HtmlHeadlineRichTextBlock } =
+        createTipTapRichTextBlock({
+            textBlockStyles: { title: { variant: "title" }, header: { variant: "header" } },
+        });
+    ```
+
+- **Links**: the `external` link type is built in and renders as `HtmlInlineLink`. Add other link types via `linkTypes`, a resolver per link block type that receives the link block's props and returns the `href` (or `undefined` for no link). Type the parameter with the app's generated block-data type. Link types without a resolver render as plain text:
+
+    ```tsx
+    import type { PhoneLinkBlockData } from "@src/blocks.generated";
+
+    const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+        linkTypes: {
+            phone: (props: PhoneLinkBlockData) => (props.phone ? `tel:${props.phone}` : undefined),
+        },
+    });
+    ```
+
+- **Inline styles**: bold, italic and the other built-in formats render by default. Override one via `marks` (Tip-Tap) or `inline` (draft-js). Render a custom inline style the app adds to its RTE via `inlineStyles` (Tip-Tap) or `inline` (draft-js). Register under the exact style name, use `<span>`, `<strong>` or `<em>` (not `<mark>`), and set explicit styles:
+
+    ```tsx
+    const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+        inlineStyles: {
+            highlight: (children, { key }) => (
+                <span key={key} style={{ backgroundColor: "#ff0000", color: "#ffffff" }}>
+                    {children}
+                </span>
+            ),
+        },
+    });
+    ```
+
+- **Lists** render as a table inside one text component, with a row per item, a marker cell and a text cell.
+- **List spacing** comes from the theme's `list.indent` (before the marker), `list.markerGap` (between the marker and the text) and `list.itemSpacing` (between items, and above a nested level's first item), all responsive and all applying to every list the block renders. To override it, register a rule scoped to a list's type, depth or variant modifier with `{ inline: true }`, so it also reaches Outlook.
+- **List markers** come from the theme's `list.unorderedMarker` and `list.orderedMarker`, each either a fixed node (`unorderedMarker: "▪"`) or a function of the item's `index` and its list's `depth`.
+- Spacing between text blocks comes from the theme's `bottomSpacing` (the last block gets none); headings are styled text, not semantic `<h1>` elements.
+- Rendered elements carry `richTextBlock__text`, `richTextBlock__list`, `richTextBlock__listItem`, `richTextBlock__listItemMarker`, `richTextBlock__listItemText`, and `richTextBlock__link` class names for targeting with `registerStyles`. The list table also carries `richTextBlock__list--ordered` or `richTextBlock__list--unordered`, and `richTextBlock__list--depth<Level>` naming its nesting level, counting the outermost as zero, with `richTextBlock__list--nested` on every level below that one. The outermost table also names the text variant of its items, such as `richTextBlock__list--variantBody`, and each row names the variant of its own item, such as `richTextBlock__listItem--variantBody`. The rows carry `richTextBlock__listItem--itemSpacing`, or `richTextBlock__listItem--blockSpacing` on the last row when spacing follows the list, and `richTextBlock__listItem--itemSpacingAbove` on a nested level's first row, which carries the item spacing as `padding-top`. The cells restate the text styles inline, so a rule targeting list text needs `!important`.
+
+#### Tip-Tap content
+
+Options of `createTipTapRichTextBlock`:
+
+- `textBlockStyles` — text styles per style the content editor picks.
+- `textBlocks` — text styles per text block or list for text without a style. Only needed when that text must look different from the theme's `text.defaultVariant`, e.g. `{ "unordered-list": { variant: "list" } }`.
+- `marks` — renderers for Tip-Tap's marks.
+- `inlineStyles` — renderers for the inline styles the app declares in the CMS block's `inlineStyles` option.
+- `linkTypes` — see _Links_ above.
+
+Rendering:
+
+- Each list item renders with the style of its text block. A numbered list keeps counting across items with different styles.
+- **Placeholders render as their literal `{{name}}` text**, for the sending system to substitute. Declare them in the CMS block's `placeholders` option instead of letting authors type the braces.
+- **Child blocks don't render in the mail**, so don't enable `childBlocks` on a CMS block that mails use.
+
+#### Draft-js content
+
+Options of `createRichTextBlock`:
+
+- `blockTypes` — text styles per draft block type, plus a `list` kind.
+- `inline` — renderers for draft-js inline styles, including the custom ones from `customInlineStyles` on `IRteOptions`.
+- `linkTypes` — see _Links_ above.
+
+Lists:
+
+- **A block type is a list when it declares a kind**: `{ variant: "copyLarge", list: "unordered" }`. `unordered-list-item` and `ordered-list-item` are draft-js's own list types and default to their kind. Every other block type is a paragraph unless it sets `list`.
+- A list in a second text variant needs a custom block type.
+- Two adjacent list block types render as two lists, and the numbered one starts again at `1.`
+- Draft-js indents `unordered-list-item` and `ordered-list-item` only, so a content editor cannot nest a custom list block type.
+
+→ To register a custom list block type across the admin RTE and the mail block, read [`references/rich-text-list-block-types.md`](references/rich-text-list-block-types.md).
+
+---
+
+## Custom Components
+
+When built-in components don't cover your needs, create custom components. **Always try to compose layouts using MJML components first** (`MjmlSection`, `MjmlColumn`, `MjmlText`, `MjmlImage`, etc.) — they handle cross-client compatibility automatically. Only drop into raw HTML (`MjmlRaw`, `MjmlTable`) when the MJML layout model genuinely can't express the structure you need. Raw HTML is an escape hatch, not the default approach.
+
+When raw HTML is necessary, follow these conventions:
+
+### BEM Class Naming
+
+Use BEM with camelCase blocks for CSS class names:
+
+| BEM Part | Pattern                       | Example                   |
+| -------- | ----------------------------- | ------------------------- |
+| Block    | `componentName`               | `calloutBox`              |
+| Element  | `componentName__elementName`  | `calloutBox__title`       |
+| Modifier | `componentName--modifierName` | `calloutBox--highlighted` |
+
+### The Pattern
+
+1. **Inline styles** for base/desktop rendering
+2. **BEM class names** on elements that need responsive overrides
+3. **`registerStyles`** at module level with media queries
+4. **`!important`** on all responsive overrides
+
+```tsx
+import { css, MjmlColumn, MjmlRaw, MjmlSection, registerStyles } from "@dextinity/mail-react";
+
+function CalloutBox({ title, children }: { title: string; children: React.ReactNode }) {
+    return (
+        <MjmlSection>
+            <MjmlColumn>
+                <MjmlRaw>
+                    <tr>
+                        <td className="calloutBox" style={{ border: "2px solid #0066cc", borderRadius: "8px", padding: "20px" }}>
+                            <span
+                                className="calloutBox__title"
+                                style={{ display: "block", margin: "0 0 8px 0", fontSize: "18px", lineHeight: "24px", msoLineHeightRule: "exactly" }}
+                            >
+                                {title}
+                            </span>
+                            <div>{children}</div>
+                        </td>
+                    </tr>
+                </MjmlRaw>
+            </MjmlColumn>
+        </MjmlSection>
+    );
+}
+
+registerStyles(
+    (theme) => css`
+        ${theme.breakpoints.mobile.belowMediaQuery} {
+            .calloutBox {
+                padding: 12px !important;
+            }
+            .calloutBox__title {
+                font-size: 16px !important;
+            }
+        }
+    `,
+);
+```
+
+→ For the full `registerStyles` API, `belowMediaQuery` pattern, overriding built-in components, and `slotProps`, read [`references/styling-and-customization.md`](references/styling-and-customization.md).
+
+---
+
+## Rendering
+
+Use `renderMailHtml` to convert the React tree to final HTML for sending:
+
+```tsx
+import { MjmlMailRoot, MjmlSection, MjmlColumn, MjmlText } from "@dextinity/mail-react";
+import { renderMailHtml } from "@dextinity/mail-react/server";
+
+const { html, mjmlWarnings } = renderMailHtml(
+    <MjmlMailRoot theme={theme}>
+        <MjmlSection indent>
+            <MjmlColumn>
+                <MjmlText>Hello, world!</MjmlText>
+            </MjmlColumn>
+        </MjmlSection>
+    </MjmlMailRoot>,
+);
+```
+
+- **Server** (`@dextinity/mail-react/server`) — uses `mjml`, requires Node.js
+- **Client** (`@dextinity/mail-react/client`) — uses `mjml-browser`, works without `fs`
+- `renderMailHtml` is **not** on the main `@dextinity/mail-react` barrel — always import from `/server` or `/client`
+- Returns `{ html: string; mjmlWarnings: MjmlWarning[] }` — warnings are collected, not thrown
+- The server `renderMailHtml` turns off `mj-include` by default, because an include can read files on the server. To use it, pass `{ ignoreIncludes: false }`.
+- A framework that bundles server code (Next.js) must list `mjml` in the application's own `package.json` too, or rendering fails at runtime
+- Nothing imports it directly — add `mjml` to `ignoreDependencies` in `knip.json` rather than removing it as unused
+
+### Logging MJML Warnings
+
+When generating emails outside Storybook (e.g., in a mail template's `generateMail` method), always log `mjmlWarnings` in development to catch structural issues early:
+
+```tsx
+const { html, mjmlWarnings } = renderMailHtml(/* ... */);
+
+if (process.env.NODE_ENV === "development" && mjmlWarnings.length) {
+    console.warn(`${mjmlWarnings.length} MJML Warnings`, mjmlWarnings);
+}
+```
+
+**Never log MJML warnings in production.** These warnings flag structural MJML issues (e.g., content outside the section → column → content hierarchy) and are useful during development, but the rendered HTML is always produced successfully regardless of warnings. In rare cases, achieving a specific layout intentionally requires a technically invalid MJML structure — logging these in production would spam error trackers like Sentry with noise that cannot be acted upon.
+
+Outside Storybook, wrap content in `MjmlMailRoot` yourself (the Storybook decorator handles it automatically).
+
+### Block Preview in the Admin
+
+Wrap each mail block in `withPreview` and put the `className` it passes on the component that spans the whole block, usually the outer `MjmlSection`:
+
+```tsx
+export const MailTextBlock = withPreview<PropsWithData<MailTextBlockData>>(
+    ({ data, className }) => (
+        <MjmlSection className={className}>
+            <MjmlColumn>
+                <MjmlText>{data.text}</MjmlText>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+    { label: "Text" },
+);
+```
+
+- Register a block without data of its own with its data anyway, `divider: (data) => <MailDividerBlock data={data} />`, or it gets no route.
+- The block preview page must put the ref from `useRefToRegisterMailBlocksForPreview(useIFrameBridge())` on the element that contains the mail HTML.
+
+---
+
+## Storybook Development
+
+### Setup
+
+Add the addon to `.storybook/main.ts`:
+
+```ts
+const config = {
+    addons: [
+        // ... other addons
+        "@dextinity/mail-react/storybook",
+    ],
+};
+```
+
+This single entry auto-configures:
+
+- A **decorator** that wraps each story in `MjmlMailRoot`, converts MJML to HTML, and displays the rendered email
+- A **Copy Mail HTML** toolbar button for copying rendered HTML to the clipboard
+- A **Use Public Image URLs** toggle that replaces image sources with public placeholders — useful for testing on external services (Litmus, Email on Acid) that can't reach localhost
+- An **MJML Warnings** panel for debugging validation issues
+
+### Writing Stories
+
+Stories only define the email content — the decorator handles `MjmlMailRoot`. Every story should render the actual component being demonstrated (not just surrounding context):
+
+```tsx
+import { MjmlColumn, MjmlSection, MjmlText } from "@dextinity/mail-react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+const config: Meta = { title: "Mails/WelcomeEmail" };
+export default config;
+
+export const Basic: StoryObj = {
+    render: () => (
+        <MjmlSection indent>
+            <MjmlColumn>
+                <MjmlText>Hello from my first email!</MjmlText>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};
+```
+
+Pass a custom theme via `parameters.theme`:
+
+```tsx
+export const CustomTheme: StoryObj = {
+    parameters: { theme: createTheme({ sizes: { bodyWidth: 500 } }) },
+    render: () => (
+        <MjmlSection indent>
+            <MjmlColumn>
+                <MjmlText>Narrower email at 500px</MjmlText>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+};
+```
+
+### Development Workflow
+
+1. Write email templates as Storybook stories
+2. Preview rendered HTML in the Storybook canvas
+3. Check the **MJML Warnings** panel for validation issues
+4. Use **Copy Mail HTML** to test in external services (Litmus, Email on Acid)
+5. Enable **Use Public Image URLs** when testing on services that can't reach localhost (e.g., Litmus, Email on Acid)
+
+### Cross-Client Testing
+
+Storybook previews show how the email renders in a web browser, but email clients vary dramatically. Use services like [Litmus](https://www.litmus.com/) or [Email on Acid](https://www.emailonacid.com/) to test the rendered HTML across real email clients and devices. The **Copy Mail HTML** button and **Use Public Image URLs** toggle in Storybook are designed for this workflow.
+
+---
+
+## Related Modules
+
+The `@dextinity/mail-react` package focuses on building email markup. For sending emails and managing templates in a Dextinity project:
+
+- **Mail Templates Module** — server-side template registration, dependency injection, and sending. Integrates with `@dextinity/mail-react` via `renderMailHtml`. Docs: https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/
+- **Mailer Module** — lower-level mail sending service. Docs: https://cms-docs.dextinity.com/docs/features-modules/mailer-module/

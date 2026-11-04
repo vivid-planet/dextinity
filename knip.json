@@ -101,10 +101,9 @@
                 "./src/vite/index.ts",
                 "./e2e/fixture/vite.config.ts",
                 "./e2e/fixture/react-router.config.ts",
-                "./e2e/fixture/app/app.ts",
+                "./e2e/fixture/app/entry.*.tsx",
                 "./e2e/fixture/app/routes.ts",
                 "./e2e/fixture/app/root.tsx",
-                "./e2e/fixture/app/entry.server.tsx",
                 "./e2e/fixture/app/routes/**/*.{ts,tsx}"
             ],
             "project": ["./src/**/*.{ts,tsx}", "./e2e/**/*.{ts,tsx}"],
@@ -150,9 +149,9 @@
             "ignore": ["**/*.generated.ts"]
         },
         "demo/site-react-router": {
-            "entry": ["./src/entry.*.tsx", "./src/app.ts", "./src/routes/**/*.{ts,tsx}", "./server.ts", "tracing.dev.ts"],
+            "entry": ["./src/entry.*.tsx", "./src/routes/**/*.{ts,tsx}", "./src/routes/mails/mailsEntry.ts", "./server.ts", "tracing.dev.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignoreDependencies": ["@babel/core", "csso", "isbot", "mjml"],
+            "ignoreDependencies": ["@babel/core", "@react-router/node", "csso", "isbot", "mjml"],
             "ignore": ["**/*.generated.ts"]
         },
         "storybook": {

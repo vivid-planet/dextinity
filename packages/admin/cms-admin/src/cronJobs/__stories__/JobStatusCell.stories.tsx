@@ -1,27 +1,23 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { JobAttempts } from "../JobAttempts";
+import { JobStatusCell } from "../JobStatusCell";
 
-const config: Meta<typeof JobAttempts> = {
-    component: JobAttempts,
-    title: "cronJobs/JobAttempts",
+const config: Meta<typeof JobStatusCell> = {
+    component: JobStatusCell,
+    title: "cronJobs/JobStatusCell",
 };
 
 export default config;
 
 type Story = StoryObj<typeof config>;
 
-const oomKilledAttempt = {
-    podName: "channel-migration-29365020-abcde",
-    startedAt: "2026-11-03T10:00:00Z",
-    finishedAt: "2026-11-03T10:04:00Z",
-    terminationReason: "OOMKilled",
-    exitCode: 137,
-};
+const oomKilledAttempt = { podName: "channel-migration-29365020-abcde", terminationReason: "OOMKilled", exitCode: 137 };
+const retryAttempt = { podName: "channel-migration-29365020-fghij", terminationReason: null, exitCode: null };
 
 export const Succeeded: Story = {
     args: {
         job: {
+            status: "succeeded",
             failureReason: null,
             failureMessage: null,
             attempts: [{ ...oomKilledAttempt, terminationReason: "Completed", exitCode: 0 }],
@@ -31,29 +27,17 @@ export const Succeeded: Story = {
 
 export const RetriedAfterOomKill: Story = {
     args: {
-        job: {
-            failureReason: null,
-            failureMessage: null,
-            attempts: [
-                oomKilledAttempt,
-                {
-                    podName: "channel-migration-29365020-fghij",
-                    startedAt: "2026-11-03T10:04:10Z",
-                    finishedAt: null,
-                    terminationReason: null,
-                    exitCode: null,
-                },
-            ],
-        },
+        job: { status: "active", failureReason: null, failureMessage: null, attempts: [oomKilledAttempt, retryAttempt] },
     },
 };
 
 export const FailedAfterRetries: Story = {
     args: {
         job: {
+            status: "failed",
             failureReason: "BackoffLimitExceeded",
             failureMessage: "Job has reached the specified backoff limit",
-            attempts: [oomKilledAttempt, { ...oomKilledAttempt, podName: "channel-migration-29365020-fghij" }],
+            attempts: [oomKilledAttempt, { ...oomKilledAttempt, podName: retryAttempt.podName }],
         },
     },
 };
@@ -61,6 +45,7 @@ export const FailedAfterRetries: Story = {
 export const DeadlineExceeded: Story = {
     args: {
         job: {
+            status: "failed",
             failureReason: "DeadlineExceeded",
             failureMessage: "Job was active longer than specified deadline",
             attempts: [{ ...oomKilledAttempt, terminationReason: "DeadlineExceeded", exitCode: 143 }],

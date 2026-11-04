@@ -7,7 +7,6 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
 import { DataGrid } from "../dataGrid/DataGrid";
-import { JobAttempts, jobAttemptsFragment } from "./JobAttempts";
 import { JobRuntime } from "./JobRuntime";
 import type {
     GQLKubernetesCronJobQuery,
@@ -15,7 +14,7 @@ import type {
     GQLKubernetesJobsQuery,
     GQLKubernetesJobsQueryVariables,
 } from "./JobsGrid.generated";
-import { JobStatus } from "./JobStatus";
+import { JobStatusCell, jobStatusCellFragment } from "./JobStatusCell";
 
 const disableFieldOptions = {
     filterable: false,
@@ -40,11 +39,10 @@ const jobsQuery = gql`
             name
             startTime
             completionTime
-            status
-            ...JobAttempts
+            ...JobStatusCell
         }
     }
-    ${jobAttemptsFragment}
+    ${jobStatusCellFragment}
 `;
 
 function JobsToolbar(props: { cronJobName: string }) {
@@ -108,9 +106,9 @@ export function JobsGrid(props: JobsGridProps) {
                         {
                             field: "status",
                             headerName: intl.formatMessage({ id: "dextinity.pages.publisher.status", defaultMessage: "Status" }),
-                            flex: 1,
+                            flex: 2,
                             ...disableFieldOptions,
-                            renderCell: ({ row }) => <JobStatus status={row.status}>{row.status}</JobStatus>,
+                            renderCell: ({ row }) => <JobStatusCell job={row} />,
                         },
                         {
                             field: "runtime",
@@ -131,13 +129,6 @@ export function JobsGrid(props: JobsGridProps) {
                                     />
                                 );
                             },
-                        },
-                        {
-                            field: "attempts",
-                            headerName: intl.formatMessage({ id: "dextinity.pages.jobs.attempts", defaultMessage: "Attempts" }),
-                            flex: 2,
-                            ...disableFieldOptions,
-                            renderCell: ({ row }) => <JobAttempts job={row} />,
                         },
                         {
                             field: "actions",

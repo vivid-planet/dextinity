@@ -1,5 +1,6 @@
 import { type ContextType, createContext, type PropsWithChildren, useCallback, useContext, useId, useMemo } from "react";
 import {
+    type Location,
     type PathMatch,
     renderMatches,
     type RouteMatch,
@@ -158,14 +159,15 @@ export function RouteMatchProvider({ match, children }: PropsWithChildren<RouteM
 }
 
 /**
- * Returns a function telling whether the data router currently blocks a navigation. Unlike the blocker returned by `useBlocker()`,
- * which is only updated with the next render, it reflects navigations that have been proceeded, reset or completed in the meantime.
+ * Returns a function returning the location of the navigation the data router currently blocks. Unlike the blocker returned by
+ * `useBlocker()`, which is only updated with the next render, it reflects navigations that have been proceeded, reset, completed or
+ * blocked in the meantime. Each blocked navigation has its own location object, so comparing it identifies a navigation attempt.
  */
-export function useIsNavigationBlocked(): () => boolean {
+export function useGetBlockedLocation(): () => Location | undefined {
     const dataRouterContext = useContext(UNSAFE_DataRouterContext);
     return useCallback(() => {
         const blockers = dataRouterContext?.router.state.blockers.values() ?? [];
-        return Array.from(blockers).some((blocker) => blocker.state === "blocked");
+        return Array.from(blockers).find((blocker) => blocker.state === "blocked")?.location;
     }, [dataRouterContext]);
 }
 

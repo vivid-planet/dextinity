@@ -4,7 +4,7 @@ import { type BlockerFunction, type Location, type NavigationType, useBlocker } 
 import { PromptAction, RouterConfirmationDialog } from "./ConfirmationDialog";
 import { RouterContext } from "./Context";
 import { isPathnameStartingWith, matchAbsolutePath } from "./internal/pathMatching";
-import { useIsNavigationBlocked } from "./internal/routeContext";
+import { useGetBlockedLocation } from "./internal/routeContext";
 import type { PromptRoutes } from "./Prompt";
 
 interface PromptMessages {
@@ -59,7 +59,7 @@ function InnerPromptHandler({ registeredMessages }: { registeredMessages: RefObj
         [registeredMessages],
     );
     const blocker = useBlocker(shouldBlockNavigation);
-    const isNavigationBlocked = useIsNavigationBlocked();
+    const getBlockedLocation = useGetBlockedLocation();
     const isSaving = useRef(false);
 
     useEffect(() => {
@@ -70,9 +70,12 @@ function InnerPromptHandler({ registeredMessages }: { registeredMessages: RefObj
     }, [blocker]);
 
     const handleClose = async (action: PromptAction) => {
-        // `blocker` is only updated with the next render. It must not be used once its navigation has been proceeded or reset
-        // (e.g. by a double click or by another navigation while saving): proceeding it again throws
-        if (blocker.state !== "blocked" || !isNavigationBlocked()) {
+        // `blocker` is only updated with the next render. It must not be used once its navigation has been proceeded, reset or replaced by
+        // another blocked navigation (e.g. by a double click or by navigating while saving): proceeding it would throw or resume the
+        // navigation the user cancelled
+        const blockedLocation = blocker.location;
+        const isStillBlocked = () => blockedLocation !== undefined && getBlockedLocation() === blockedLocation;
+        if (blocker.state !== "blocked" || !isStillBlocked()) {
             return;
         }
 
@@ -87,7 +90,7 @@ function InnerPromptHandler({ registeredMessages }: { registeredMessages: RefObj
             const results: Array<SaveActionSuccess> = await Promise.all(saveActions.map((saveAction) => saveAction!())).finally(() => {
                 isSaving.current = false;
             });
-            if (!isNavigationBlocked()) {
+            if (!isStillBlocked()) {
                 return;
             }
             if (results.every((saveActionSuccess) => saveActionSuccess)) {

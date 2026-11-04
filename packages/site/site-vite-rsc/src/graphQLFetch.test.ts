@@ -86,3 +86,68 @@ describe("createServerGraphQLFetch", () => {
         expect(getSentHeaders(1).get("x-include-invisible-content")).toBe("Pages:Unpublished");
     });
 });
+
+describe("createServerGraphQLFetch request memoization", () => {
+    beforeEach(() => {
+        fetchMock.mockImplementation(async () => Response.json({ data: { page: "content" } }));
+        vi.stubGlobal("fetch", fetchMock);
+    });
+
+    afterEach(() => {
+        fetchMock.mockReset();
+        vi.unstubAllGlobals();
+    });
+
+    it("sends identical queries only once per request in a preview, which bypasses the cache", async () => {
+        const graphQLFetch = createTestGraphQLFetch();
+
+        await runWithVisibility("invisibleBlocks", async () => {
+            const [layout, page] = await Promise.all([graphQLFetch("query Page { page }"), graphQLFetch("query Page { page }")]);
+            const metadata = await graphQLFetch("query Page { page }");
+            expect([layout, page, metadata]).toEqual([{ page: "content" }, { page: "content" }, { page: "content" }]);
+        });
+
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("returns a separate result to each caller", async () => {
+        const graphQLFetch = createTestGraphQLFetch();
+
+        await runWithVisibility("invisibleBlocks", async () => {
+            const first = await graphQLFetch<{ page: string }, undefined>("query Page { page }");
+            first.page = "changed";
+            expect(await graphQLFetch("query Page { page }")).toEqual({ page: "content" });
+        });
+    });
+
+    it("sends queries with different variables separately", async () => {
+        const graphQLFetch = createTestGraphQLFetch();
+
+        await runWithVisibility("invisibleBlocks", async () => {
+            await graphQLFetch("query Page($id: ID!) { page(id: $id) }", { id: "1" });
+            await graphQLFetch("query Page($id: ID!) { page(id: $id) }", { id: "2" });
+        });
+
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it("doesn't memoize mutations", async () => {
+        const graphQLFetch = createTestGraphQLFetch();
+
+        await runWithVisibility("invisibleBlocks", async () => {
+            await graphQLFetch("mutation Subscribe { subscribe }");
+            await graphQLFetch("mutation Subscribe { subscribe }");
+        });
+
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+
+    it("doesn't share the queries of a preview with other requests", async () => {
+        const graphQLFetch = createTestGraphQLFetch();
+
+        await runWithVisibility("invisibleBlocks", () => graphQLFetch("query Page { page }"));
+        await runWithVisibility("invisibleBlocks", () => graphQLFetch("query Page { page }"));
+
+        expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+});

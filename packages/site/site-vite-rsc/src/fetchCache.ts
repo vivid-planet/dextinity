@@ -1,22 +1,8 @@
-import { createHash } from "node:crypto";
-
 import type { CachedResponse, FetchCacheStore } from "./fetchCacheStore.js";
+import { createRequestKey } from "./requestKey.js";
+import { isJsonContentType, isSuccessfulResponse, nullBodyStatuses } from "./successfulResponse.js";
 
 type Fetch = typeof fetch;
-
-function createCacheKey(request: Request, body: Uint8Array<ArrayBuffer>) {
-    const headers = [...request.headers.entries()].sort(([a], [b]) => a.localeCompare(b));
-    return createHash("sha256")
-        .update(JSON.stringify([request.method, request.url, headers]))
-        .update(body)
-        .digest("hex");
-}
-
-const nullBodyStatuses = [204, 205, 304];
-
-function isJsonContentType(contentType: string) {
-    return /^application\/([\w.-]+\+)?json\b/i.test(contentType);
-}
 
 // Binary responses would be changed by storing them as text, so they aren't cached
 function hasTextBody(response: Response) {
@@ -25,21 +11,6 @@ function hasTextBody(response: Response) {
     }
     const contentType = response.headers.get("content-type") ?? "";
     return /^(text\/|application\/([\w.-]+\+)?xml\b)/i.test(contentType) || isJsonContentType(contentType);
-}
-
-function isCacheable(response: Response, body: string) {
-    if (!response.ok) {
-        return false;
-    }
-    if (isJsonContentType(response.headers.get("content-type") ?? "")) {
-        try {
-            // Must not cache GraphQL errors
-            return !(JSON.parse(body) as { errors?: unknown }).errors;
-        } catch {
-            return false;
-        }
-    }
-    return true;
 }
 
 /**
@@ -78,7 +49,7 @@ export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds, stor
                     ),
                     body: await response.text(),
                 };
-                if (isCacheable(response, cachedResponse.body)) {
+                if (isSuccessfulResponse({ status: response.status, contentType: response.headers.get("content-type"), body: cachedResponse.body })) {
                     await store.set(key, { lastModified: Date.now(), value: cachedResponse });
                 } else {
                     console.error("FetchCache: not caching failed response", request.url, cachedResponse.status, cachedResponse.body);
@@ -96,7 +67,7 @@ export function createCachingFetch(baseFetch: Fetch, { revalidateInSeconds, stor
         const request = new Request(input, init);
         // As bytes, so that binary request bodies are sent unchanged
         const body = new Uint8Array(await request.arrayBuffer());
-        const key = createCacheKey(request, body);
+        const key = createRequestKey(request, body);
 
         const cacheEntry = await store.get(key);
         let cachedResponse: CachedResponse | Response;

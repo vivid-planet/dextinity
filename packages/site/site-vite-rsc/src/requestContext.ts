@@ -3,6 +3,8 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import type { PreviewData } from "@dextinity/site-react";
 import { parse } from "hono/utils/cookie";
 
+import type { MemoizedResponse } from "./requestMemoizedFetch.js";
+
 export type Visibility = "default" | "invisiblePages" | "invisibleBlocks";
 
 export type SitePreview = { previewData?: PreviewData };
@@ -33,12 +35,13 @@ type RequestContext = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     previewScope?: Record<string, any>;
     data: Partial<RequestContextData>;
+    memoizedResponses: Map<string, Promise<MemoizedResponse>>;
 };
 
 const requestContextStorage = new AsyncLocalStorage<RequestContext>();
 
 export function runWithRequestContext<T>({ request, isRscRequest }: { request: Request; isRscRequest: boolean }, callback: () => T): T {
-    return requestContextStorage.run({ request, isRscRequest, data: {} }, callback);
+    return requestContextStorage.run({ request, isRscRequest, data: {}, memoizedResponses: new Map() }, callback);
 }
 
 function getRequestContext() {
@@ -100,4 +103,11 @@ export function setRequestData<Key extends keyof RequestContextData>(key: Key, v
 
 export function getRequestData<Key extends keyof RequestContextData>(key: Key): RequestContextData[Key] | undefined {
     return getRequestContext().data[key];
+}
+
+/**
+ * Undefined outside of requests, e.g. at startup, where nothing is memoized
+ */
+export function getMemoizedResponses(): Map<string, Promise<MemoizedResponse>> | undefined {
+    return requestContextStorage.getStore()?.memoizedResponses;
 }

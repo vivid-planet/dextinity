@@ -28,6 +28,7 @@ export {
     type SitePreview,
     type Visibility,
 } from "./requestContext.js";
+export { createRequestMemoizedFetch } from "./requestMemoizedFetch.js";
 export { sitePreviewMiddleware, sitePreviewRoute } from "./sitePreview.js";
 export { staticFilesMiddleware } from "./staticFiles.js";
 export { trailingSlashRedirectMiddleware } from "./trailingSlashRedirect.js";

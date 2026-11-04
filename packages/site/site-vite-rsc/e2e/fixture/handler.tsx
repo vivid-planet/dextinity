@@ -6,6 +6,7 @@ import { type ReactNode, Suspense } from "react";
 import { publicCacheControl } from "../helpers.js";
 import { ClientComponentOfOtherBuild, ClientError, ClientNotFound, ClientRouterInfo } from "./clientComponents.js";
 import { Layout } from "./Layout.js";
+import { MemoizedData, RequestMemoizationNotFound, RequestMemoizationPage, upstreamRoutes } from "./requestMemoization.js";
 import { Nested, RequestInfo, ServerError, ServerNotFound, ServerRedirect } from "./serverComponents.js";
 import { TestPage } from "./TestPage.js";
 
@@ -165,6 +166,21 @@ app.get("/error-in-error-page", (c) => renderTestPage(c, <ServerError />, { erro
 
 app.get("/error-in-handler", (c) => {
     throw new Error(`Handler failed${c.req.query("id") ?? ""}`);
+});
+
+app.route("/request-memoization/upstream", upstreamRoutes);
+
+app.get("/request-memoization/:id", (c) => renderTestPage(c, <RequestMemoizationPage id={c.req.param("id")} />));
+
+app.get("/request-memoization/:id/not-found", (c) => {
+    const id = c.req.param("id");
+    return renderTestPage(c, <RequestMemoizationNotFound id={id} />, {
+        notFound: () => (
+            <Layout>
+                <MemoizedData label="Not found page" id={id} />
+            </Layout>
+        ),
+    });
 });
 
 app.get("/reported-errors", (c) => c.json(globalThis.reportedErrors ?? []));

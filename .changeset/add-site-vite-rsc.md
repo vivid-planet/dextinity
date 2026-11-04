@@ -147,6 +147,24 @@ export const graphQLFetch = createServerGraphQLFetch({
 });
 ```
 
+Identical queries are sent only once per request of the site, also in the previews, so that e.g. the layout, the metadata and the page can load the same data. Each caller gets its own result. Queries are memoized also when sent with `POST`, mutations never.
+
+**Request memoization** (`@dextinity/site-vite-rsc/server`)
+
+Like the request memoization of Next.js, `createRequestMemoizedFetch(fetch)` creates a fetch that sends identical `GET` and `HEAD` requests, i.e. with the same URL, headers and body, only once per request of the site. Unlike Next.js, the memoized responses are kept for the whole request instead of one render, so they are also shared with middlewares and with the not found page and the error page rendered after a `notFound()` or an error. Pass `isMemoizable` to memoize other requests without side effects, e.g. `POST` requests of a search API. Requests with a `signal` and outside of a request of the site aren't memoized. Only successful responses are reused: identical requests while a failed one is in flight get the same failure, the next ones are sent again.
+
+```ts
+export const serverFetch = createRequestMemoizedFetch(fetch);
+```
+
+Memoize other functions of server components with React's `cache()`, it's scoped to one render:
+
+```ts
+import { cache } from "react";
+
+export const getProduct = cache(async (id: string) => loadProductFromDatabase(id));
+```
+
 **Persisted queries** (`@dextinity/site-vite-rsc/vite`)
 
 `persistedQueriesPlugin({ persistedQueriesPath, include })` replaces the GraphQL queries in client code with their hashes and writes the hashes to `persistedQueriesPath`, which the BFF route of the site (`persistedQueryRoute()` from `@dextinity/site-react`) reads:

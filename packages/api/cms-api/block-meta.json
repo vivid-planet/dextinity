@@ -97,6 +97,7 @@
     },
     {
         "name": "DamImage",
+        "description": "One of several blocks. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. The block can't be empty, so `activeType` must be set.",
         "fields": [
             {
                 "name": "attachedBlocks",
@@ -439,6 +440,7 @@
     },
     {
         "name": "Link",
+        "description": "A link to one of several targets. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. The block can't be empty, so `activeType` must be set.",
         "fields": [
             {
                 "name": "title",
@@ -541,6 +543,7 @@
     },
     {
         "name": "OptionalPixelImage",
+        "description": "A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{\"visible\":false}` without `block`.",
         "fields": [
             {
                 "name": "block",

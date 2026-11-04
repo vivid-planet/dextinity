@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { createIsScopeWithinAny, isScopeWithin } from "./access-control.service";
+import { isScopeWithin } from "./access-control.service";
+import { createIsScopeWithinAny } from "./create-is-scope-within-any";
 import type { ContentScope } from "./interfaces/content-scope.interface";
 
 function scope(values: Record<string, unknown>): ContentScope {

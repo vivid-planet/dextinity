@@ -137,7 +137,7 @@ const cachingFetch = createCachingFetch(fetch, {
 
 **GraphQL** (`@dextinity/site-vite-rsc/server`)
 
-`createServerGraphQLFetch({ url, headers, cache })` creates the GraphQL fetch for server components, one instance for the whole site. In the site preview and the block preview, it sends the preview headers to the API and bypasses the cache:
+`createServerGraphQLFetch({ url, headers, cache })` creates the GraphQL fetch for server components, one instance for the whole site. In the site preview and the block preview, it sends the preview headers to the API and bypasses the cache. Mutations always bypass the cache, so that they are sent every time:
 
 ```ts
 export const graphQLFetch = createServerGraphQLFetch({

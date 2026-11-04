@@ -2,6 +2,7 @@ import { convertPreviewDataToHeaders, createFetchWithDefaults, createGraphQLFetc
 
 import { createCachingFetch } from "./fetchCache.js";
 import type { FetchCacheStore } from "./fetchCacheStore.js";
+import { isGraphQLQuery } from "./graphQLQueryRequest.js";
 import { getVisibility, type Visibility } from "./requestContext.js";
 
 function getPreviewData(visibility: Visibility): PreviewData | undefined {
@@ -14,6 +15,7 @@ function getPreviewData(visibility: Visibility): PreviewData | undefined {
 /**
  * Creates the GraphQL fetch for server components, one instance for the whole site.
  * Each query sends the preview headers of the current request, e.g. in the site preview, and bypasses the cache in a preview.
+ * Mutations always bypass the cache.
  */
 export function createServerGraphQLFetch({
     url,
@@ -29,8 +31,8 @@ export function createServerGraphQLFetch({
 
     return function <T, V>(query: string, variables?: V, init?: RequestInit): Promise<T> {
         const previewData = getPreviewData(getVisibility());
-        // Preview content must always be up to date
-        const baseFetch = previewData ? fetch : cachingFetch;
+        // Preview content must always be up to date, and mutations must always be sent
+        const baseFetch = previewData || !isGraphQLQuery(query) ? fetch : cachingFetch;
         const graphQLFetch = createGraphQLFetch(
             createFetchWithDefaults(baseFetch, { headers: { ...headers, ...convertPreviewDataToHeaders(previewData) } }),
             url,

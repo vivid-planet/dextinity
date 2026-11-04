@@ -64,6 +64,17 @@ describe("createServerGraphQLFetch", () => {
         expect(getSentHeaders(0).get("authorization")).toBe("Basic secret");
     });
 
+    it("sends every mutation, bypassing the cache", async () => {
+        const graphQLFetch = createTestGraphQLFetch();
+
+        await runWithVisibility("default", () =>
+            Promise.all([graphQLFetch("mutation Update { update }"), graphQLFetch("mutation Update { update }")]),
+        );
+        await runWithVisibility("default", () => graphQLFetch("mutation Update { update }"));
+
+        expect(fetchMock).toHaveBeenCalledTimes(3);
+    });
+
     it("reads the visibility of the current request for each query", async () => {
         const graphQLFetch = createTestGraphQLFetch();
 

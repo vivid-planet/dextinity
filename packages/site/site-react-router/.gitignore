@@ -1,0 +1,8 @@
+lib/
+block-meta.json
+src/blocks.generated.ts
+e2e/fixture/build/
+e2e/fixture/.react-router/
+e2e/fixture/persisted-queries.json
+test-results/
+playwright-report/

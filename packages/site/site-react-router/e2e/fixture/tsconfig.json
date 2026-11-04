@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "allowImportingTsExtensions": true,
+        "jsx": "react-jsx",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "noEmit": true,
+        "paths": {
+            "@dextinity/site-react-router": ["../../src/index.ts"],
+            "@dextinity/site-react-router/node": ["../../src/node.ts"],
+            "@dextinity/site-react-router/server": ["../../src/server.ts"]
+        },
+        "resolveJsonModule": true,
+        "rootDirs": [".", "./.react-router/types"],
+        "skipLibCheck": true,
+        "strict": true,
+        "target": "es2022",
+        "types": ["node", "vite/client", "@vitejs/plugin-rsc/types", "@react-router/dev/rsc-types"]
+    },
+    "include": ["app/**/*", "*.ts", ".react-router/types/**/*", "../../src/vendor.d.ts", "../../src/css-modules.d.ts"]
+}

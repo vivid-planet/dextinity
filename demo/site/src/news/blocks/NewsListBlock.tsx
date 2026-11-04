@@ -1,7 +1,6 @@
 import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { NewsListBlockData } from "@src/blocks.generated";
-import { createSitePath } from "@src/util/createSitePath";
-import Link from "next/link";
+import { NewsLink } from "@src/news/NewsLink";
 
 import type { LoadedData } from "./NewsListBlock.loader";
 
@@ -15,14 +14,7 @@ export const NewsListBlock = withPreview(
             <ol>
                 {newsList.map((news) => (
                     <li key={news.id}>
-                        <Link
-                            href={createSitePath({
-                                scope: news.scope,
-                                path: `/news/${news.slug}`,
-                            })}
-                        >
-                            {news.title}
-                        </Link>
+                        <NewsLink news={news}>{news.title}</NewsLink>
                     </li>
                 ))}
             </ol>

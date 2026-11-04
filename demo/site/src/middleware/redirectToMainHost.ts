@@ -1,6 +1,8 @@
 import { gql } from "@dextinity/site-nextjs";
 import type { ExternalLinkBlockData, InternalLinkBlockData, NewsLinkBlockData, RedirectsLinkBlockData } from "@src/blocks.generated";
+import { fetchPredefinedPages } from "@src/documents/predefinedPages/predefinedPages.loader";
 import type { GQLPageTreeNodeScope, GQLRedirectScopeInput } from "@src/graphql.generated";
+import { createNewsSitePath } from "@src/news/createNewsSitePath";
 import type { PublicSiteConfig } from "@src/site-configs";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetchMiddleware } from "@src/util/graphQLClientMiddleware";
@@ -83,7 +85,11 @@ const matchesHostWithPattern = (siteConfig: PublicSiteConfig, host: string) => {
     return new RegExp(siteConfig.domains.pattern).test(host);
 };
 
-function getRedirectTargetUrl(block: RedirectsLinkBlockData["block"], targetBaseUrl: string): string | undefined {
+async function fetchPredefinedPagesCached(domain: string) {
+    return memoryCache.wrap(`predefinedPages-${domain}`, () => fetchPredefinedPages({ domain, graphQLFetch }));
+}
+
+async function getRedirectTargetUrl(block: RedirectsLinkBlockData["block"], targetBaseUrl: string): Promise<string | undefined> {
     if (!block) {
         return undefined;
     }
@@ -103,10 +109,11 @@ function getRedirectTargetUrl(block: RedirectsLinkBlockData["block"], targetBase
         case "news": {
             const newsLink = block.props as NewsLinkBlockData;
             if (newsLink.news) {
-                return createSitePath({
-                    path: `/news/${newsLink.news.slug}`,
-                    scope: newsLink.news.scope,
+                const newsSitePath = createNewsSitePath({
+                    predefinedPages: await fetchPredefinedPagesCached(newsLink.news.scope.domain),
+                    news: newsLink.news,
                 });
+                return newsSitePath ? `${targetBaseUrl}${newsSitePath}` : undefined;
             }
             break;
         }
@@ -133,7 +140,7 @@ export function withRedirectToMainHostMiddleware(middleware: CustomMiddleware) {
                 const redirect = domainRedirects.find((redirect) => normalizeHost(redirect.source) === normalizeHost(host));
 
                 if (redirect) {
-                    const destination = getRedirectTargetUrl(redirect.target.block, `https://${redirectSiteConfig.domains.main}`);
+                    const destination = await getRedirectTargetUrl(redirect.target.block, `https://${redirectSiteConfig.domains.main}`);
                     if (destination) {
                         if (normalizeHost(new URL(destination).host) === normalizeHost(host)) {
                             throw new Error(`Redirect loop detected: ${host} -> ${destination}`);
@@ -162,7 +169,7 @@ export function withRedirectToMainHostMiddleware(middleware: CustomMiddleware) {
                     throw new Error(`Got redirect to domain ${redirect.scope.domain}, but couldn't find corresponding site-config.`);
                 }
 
-                const destination = getRedirectTargetUrl(redirect.target.block, `https://${scopedSiteConfig.domains.main}`);
+                const destination = await getRedirectTargetUrl(redirect.target.block, `https://${scopedSiteConfig.domains.main}`);
 
                 if (destination) {
                     if (normalizeHost(new URL(destination).host) === normalizeHost(host)) {

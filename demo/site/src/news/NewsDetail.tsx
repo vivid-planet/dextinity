@@ -1,15 +1,15 @@
 "use client";
 
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
-import { NewsContentBlock } from "@src/news/blocks/NewsContentBlock";
 import { FormattedDate } from "react-intl";
 
-import type { GQLNewsDetailPageFragment } from "./fragment.generated";
+import { NewsContentBlock } from "./blocks/NewsContentBlock";
+import type { GQLNewsDetailFragment } from "./NewsDetail.fragment.generated";
 
 type Props = {
-    news: GQLNewsDetailPageFragment;
+    news: GQLNewsDetailFragment;
 };
-export function Content({ news }: Props) {
+export function NewsDetail({ news }: Props) {
     return (
         <div>
             <DamImageBlock data={news.image} sizes="100vw" aspectRatio="16x9" />

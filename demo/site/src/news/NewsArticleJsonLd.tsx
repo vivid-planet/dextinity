@@ -1,7 +1,6 @@
 import { generateImageUrl, gql, JsonLd } from "@dextinity/site-nextjs";
 import type { DamImageBlockData } from "@src/blocks.generated";
 import type { ContentScope } from "@src/site-configs";
-import { createSitePath } from "@src/util/createSitePath";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import type { Article, WithContext } from "schema-dts";
 
@@ -13,13 +12,13 @@ export const newsArticleJsonLdFragment = gql`
         image
         date
         updatedAt
-        slug
     }
 `;
 
 interface Props {
     news: GQLNewsArticleJsonLdFragment;
     scope: ContentScope;
+    sitePath: string;
 }
 
 // Google recommends providing the article image in these aspect ratios.
@@ -42,7 +41,7 @@ function articleImageUrls(image: DamImageBlockData, siteUrl: string): string[] {
     return props.damFile?.fileUrl ? [new URL(props.damFile.fileUrl, siteUrl).toString()] : [];
 }
 
-export function NewsArticleJsonLd({ news, scope }: Props) {
+export function NewsArticleJsonLd({ news, scope, sitePath }: Props) {
     const siteConfig = getSiteConfigForDomain(scope.domain);
     const images = articleImageUrls(news.image, siteConfig.url);
 
@@ -53,7 +52,7 @@ export function NewsArticleJsonLd({ news, scope }: Props) {
         ...(images.length > 0 ? { image: images } : {}),
         datePublished: news.date,
         dateModified: news.updatedAt,
-        mainEntityOfPage: `${siteConfig.url}${createSitePath({ scope: { language: scope.language }, path: `/news/${news.slug}` })}`,
+        mainEntityOfPage: `${siteConfig.url}${sitePath}`,
     };
 
     return <JsonLd<Article> data={data} />;

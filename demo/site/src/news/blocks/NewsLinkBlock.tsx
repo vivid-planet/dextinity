@@ -1,7 +1,6 @@
 import type { PropsWithData } from "@dextinity/site-nextjs";
 import type { NewsLinkBlockData } from "@src/blocks.generated";
-import { createSitePath } from "@src/util/createSitePath";
-import Link from "next/link";
+import { NewsLink } from "@src/news/NewsLink";
 import type { AnchorHTMLAttributes, JSX, PropsWithChildren } from "react";
 
 type Props = PropsWithData<NewsLinkBlockData> & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
@@ -12,15 +11,9 @@ function NewsLinkBlock({ data: { news }, children, ...anchorProps }: PropsWithCh
     }
 
     return (
-        <Link
-            {...anchorProps}
-            href={createSitePath({
-                scope: news.scope,
-                path: `/news/${news.slug}`,
-            })}
-        >
+        <NewsLink {...anchorProps} news={news}>
             {children}
-        </Link>
+        </NewsLink>
     );
 }
 

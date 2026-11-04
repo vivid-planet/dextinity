@@ -1,4 +1,6 @@
 import { gql } from "@dextinity/site-nextjs";
+import { fetchPredefinedPages } from "@src/documents/predefinedPages/predefinedPages.loader";
+import { PredefinedPagesProvider } from "@src/documents/predefinedPages/PredefinedPagesProvider";
 import { Footer } from "@src/layout/footer/Footer";
 import { footerFragment } from "@src/layout/footer/Footer.fragment";
 import { Header } from "@src/layout/header/Header";
@@ -29,6 +31,8 @@ export default async function Layout({ children, params }: LayoutProps<"/[visibi
 
     const graphQLFetch = createGraphQLFetch();
 
+    const predefinedPagesPromise = fetchPredefinedPages({ domain, graphQLFetch });
+
     const { footer, header, topMenu } = await graphQLFetch<GQLLayoutQuery, GQLLayoutQueryVariables>(
         gql`
             query Layout($domain: String!, $language: String!) {
@@ -51,6 +55,7 @@ export default async function Layout({ children, params }: LayoutProps<"/[visibi
     );
 
     const messages = await loadMessages(language);
+    const predefinedPages = await predefinedPagesPromise;
 
     if (footer) {
         footer.content = await recursivelyLoadBlockData({
@@ -64,11 +69,13 @@ export default async function Layout({ children, params }: LayoutProps<"/[visibi
 
     return (
         <IntlProvider locale={language} messages={messages}>
-            <OrganizationJsonLd siteConfig={siteConfig} />
-            <TopNavigation data={topMenu} />
-            <Header header={header} />
-            {children}
-            {footer && <Footer footer={footer} />}
+            <PredefinedPagesProvider predefinedPages={predefinedPages}>
+                <OrganizationJsonLd siteConfig={siteConfig} />
+                <TopNavigation data={topMenu} />
+                <Header header={header} />
+                {children}
+                {footer && <Footer footer={footer} />}
+            </PredefinedPagesProvider>
         </IntlProvider>
     );
 }

@@ -3,8 +3,12 @@ export const dynamic = "error";
 import { gql } from "@dextinity/site-nextjs";
 import type { ExternalLinkBlockData, InternalLinkBlockData, NewsLinkBlockData, RedirectsLinkBlockData } from "@src/blocks.generated";
 import { documentTypes } from "@src/documents";
+import { PredefinedPageRoute } from "@src/documents/predefinedPages/PredefinedPageRoute";
+import { matchPredefinedPage } from "@src/documents/predefinedPages/predefinedPages";
+import { fetchPredefinedPages } from "@src/documents/predefinedPages/predefinedPages.loader";
 import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
 import type { VisibilityParam } from "@src/middleware/domainRewrite";
+import { createNewsSitePath } from "@src/news/createNewsSitePath";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { setVisibilityParam } from "@src/util/ServerContext";
@@ -31,6 +35,18 @@ const documentTypeQuery = gql`
         }
     }
 `;
+
+async function fetchPredefinedPageMatch(params: PageProps<"/[visibility]/[domain]/[language]/[[...path]]">["params"]) {
+    const { domain, language, path: pathParam } = await params;
+
+    if (!getSiteConfigForDomain(domain).scope.languages.includes(language)) {
+        return undefined;
+    }
+
+    const predefinedPages = await fetchPredefinedPages({ domain, graphQLFetch: createGraphQLFetch() });
+
+    return matchPredefinedPage(predefinedPages, { path: `/${(pathParam ?? []).join("/")}`, scope: { domain, language } });
+}
 
 async function fetchPageTreeNode(params: PageProps<"/[visibility]/[domain]/[language]/[[...path]]">["params"]) {
     const { domain, language, path: pathParam } = await params;
@@ -62,6 +78,13 @@ export default async function Page({ params }: PageProps<"/[visibility]/[domain]
     const { visibility, domain, language } = await params;
     setVisibilityParam(visibility as VisibilityParam);
     const scope = { domain, language };
+
+    const predefinedPageMatch = await fetchPredefinedPageMatch(params);
+
+    if (predefinedPageMatch) {
+        return <PredefinedPageRoute predefinedPage={predefinedPageMatch.predefinedPage} segments={predefinedPageMatch.segments} />;
+    }
+
     const data = await fetchPageTreeNode(params);
 
     if (!data.pageTreeNodeByPath?.documentType) {
@@ -86,7 +109,11 @@ export default async function Page({ params }: PageProps<"/[visibility]/[domain]
                     case "news": {
                         const newsLink = target.block.props as NewsLinkBlockData;
                         if (newsLink.news) {
-                            destination = `/${newsLink.news.scope.language}/news/${newsLink.news.slug}`;
+                            const predefinedPages = await fetchPredefinedPages({
+                                domain: newsLink.news.scope.domain,
+                                graphQLFetch: createGraphQLFetch(),
+                            });
+                            destination = createNewsSitePath({ predefinedPages, news: newsLink.news });
                         }
                         break;
                     }
@@ -117,6 +144,11 @@ export async function generateMetadata(
 ): Promise<Metadata> {
     const { domain, language } = await params;
     const scope = { domain, language };
+
+    if (await fetchPredefinedPageMatch(params)) {
+        return {};
+    }
+
     const data = await fetchPageTreeNode(params);
 
     if (!data.pageTreeNodeByPath?.documentType) {

@@ -14,7 +14,7 @@ Follow-ups for [vivid-planet/dextinity#6779](https://github.com/vivid-planet/dex
 
 ### #1 Allow `notFound()`/`redirect()` anywhere in the tree (done)
 
-Errors carry a digest (`NOT_FOUND`, `REDIRECT;307;/path`), the RSC payload is buffered completely in `framework/render.tsx` before responding, SSR `onError` handles client components. Pages are plain components again. Ref: Next.js digests.
+Errors carry a digest (`NOT_FOUND`, `REDIRECT;307;/path`), the RSC payload is buffered completely in `framework/render.tsx` before responding (except for streamed pages, see #37), SSR `onError` handles client components. Pages are plain components again. Ref: Next.js digests.
 
 ### #2 Render a 500 error page and add a client error boundary (done)
 
@@ -75,11 +75,30 @@ Measured the GraphQL requests of 7 page types, each normally and in the site pre
 
 Measured before: superseded navigations kept loading, and when one failed, its full page load fallback opened the page the user had left; back from a short page to a long one ended at the short page's height (the browser restored the position on `popstate`, before the page was rendered); no feedback while loading; nothing announced to screen readers, focus stayed on the clicked link. Now `entry.browser.tsx` aborts superseded navigations (not after the payload is displayed, as it may still stream), stores the scroll position per history entry (`framework/scrollPositions.ts`, `history.scrollRestoration = "manual"`, kept in `sessionStorage` for reloads; fragment changes on the current page don't refetch), runs the navigation as a transition with `useNavigationPending()` (the demo shows `layout/NavigationProgress.tsx` after 200 ms; the router moved into the same context), and announces the title of the new page in a live region and moves the focus to the start of the document (`framework/announceNavigation.ts`). Verified in dev and production. **Prefetch deferred**: all pages are dynamic, prefetching costs a server render per link; if navigations feel slow, prefetch on intent only (hover/focus/touchstart on `Link`, ≤30 s, used once, not in the site preview). Ref: React Router `ScrollRestoration`, Next.js `RouteAnnouncer`.
 
-### #37 Stream the RSC payload with Next.js-style fallbacks (option D) (deferred)
+### #37 Stream pages with Next.js-style fallbacks (done)
 
-`renderPage` buffers the complete RSC payload, so that `notFound()`, `redirect()` and render errors anywhere in the tree can still set the status and `no-store` (#1, #2, #6); SSR streams, but only gets the complete payload. Measured: the time to first byte equals the total time, Suspense fallbacks are never shown. Deferred, not a real issue: the pages are cached by the CDN, so only cache misses wait for the render, and neither the demo nor site-react uses Suspense.
+- Problem: `renderPage` buffered the complete RSC payload and SSR waited for `allReady`, so that `notFound()`, `redirect()` and errors anywhere in the tree could set the status and `no-store`. The time to first byte equaled the total time and Suspense fallbacks were never shown.
+- Solution: `renderPage` streams responses that CDNs don't cache (`no-store`/`private` in `cacheControl`, e.g. site preview, block preview) and buffers pages cached by the CDN as before; `streaming: true | false` overrides it, bots (user agent, `src/bots.ts` of the package) always get the buffered page. HTML: status and headers are decided when the SSR shell is ready (404/500/3xx before it as before, `no-store` if an error already happened). After it, like Next.js: `notFound()` inserts `<meta name="robots" content="noindex">` and the browser loads the not found page of the route (`/_rsc/<path>?_rsc_not_found`, status 404, the history entry stays), `redirect()` inserts `<meta http-equiv="refresh" content="0;url=…">` (the browser follows it, also without JavaScript), errors go to the error boundary. The meta tags are inserted between React's flushes (chunks of the same task belong together, like `rsc-html-stream`), never before the shell. RSC requests stream from the start with status 200 (the RSC format has no shell); `GlobalErrorBoundary` handles late `notFound()` (not found request), `redirect()` (client-side, counted towards the 20 redirects) and errors.
+- Decision: streaming by `Cache-Control` instead of always (Next.js only streams dynamic pages, which are always `no-store`, and renders ISR pages completely before caching), so failed pages are still never cached publicly; with stale-while-revalidate, visitors of CDN pages almost never wait for the origin anyway. Bots get the complete page with the right status (Next.js streams the body to bots too, but only dynamic pages, which aren't cached).
+- Compression: `hono/compress` (`CompressionStream`) held streamed responses back until the end (first body byte after 1007 ms for a 1 s Suspense boundary). `createRequestListener` now uses gzip that flushes after each task (`src/compress.ts` of the package), +0.4 % size (5090 vs 5068 bytes for a 61 KB page), same throughput. Streamed responses send `X-Accel-Buffering: no` for nginx. The Vite dev server and the middleware mode stream without changes.
+- Demo: the content blocks (loaders of news, products, page tree index), the footer (own query) and the product list are rendered in Suspense boundaries, the header, stage and metadata are in the shell.
+- Measured (median of 5, Chromium, fixture with a Suspense boundary waiting 1 s / demo `/en` with the loaders of the content blocks delayed by 500 ms, forced streaming):
 
-If a project needs it: decide status and headers when React DOM reports the SSR shell and stream the rest, opt-in per page (`renderPage(c, { stream: true })`), as a CDN would cache a page whose late part failed until it revalidates. Late `notFound()`/`redirect()` like Next.js: inject `<meta name="robots" content="noindex">` or a meta refresh, and client boundaries around the page render the not found page or redirect with the router. RSC requests stay buffered (the RSC format has no shell signal), streaming them would answer 200 and rely on the client boundaries, together with #38. Streaming adds React's inline `$RC()` scripts (see #16). Needs the browser tests of #40. Refs: Next.js `app-render.js` + `make-get-server-inserted-html.js`, React Router `server.ssr.js` (redirect transform).
+    | Page                   | Mode     | TTFB    | FCP     | Content complete |
+    | ---------------------- | -------- | ------- | ------- | ---------------- |
+    | Fixture, production    | buffered | 1006 ms | 1028 ms | 1016 ms          |
+    | Fixture, production    | streamed | 5 ms    | 36 ms   | 1006 ms          |
+    | Fixture, dev           | buffered | 1011 ms | 1028 ms | 1018 ms          |
+    | Fixture, dev           | streamed | 8 ms    | 24 ms   | 1008 ms          |
+    | Demo `/en`, production | buffered | 550 ms  | 680 ms  | 571 ms           |
+    | Demo `/en`, production | streamed | 23 ms   | 108 ms  | 582 ms           |
+    | Demo `/en`, dev        | buffered | 618 ms  | 768 ms  | 621 ms           |
+    | Demo `/en`, dev        | streamed | 33 ms   | 112 ms  | 614 ms           |
+
+    RSC requests: first byte 1007 → 4 ms (fixture), 527 → 4 ms (demo). Throughput unchanged within noise (fixture 554 vs 548 req/s without delay, 221 vs 243 req/s with 200 ms; demo 18 vs 20 req/s for `/en`, 230 vs 222 req/s for `/en/product`).
+
+- Known limitations: a late `notFound()` costs a second request (the not found page isn't rendered in advance like in Next.js, as `notFound` renders a whole document with its own data), and the page is blank until it's loaded. The block error boundaries of `@dextinity/site-react` (`ErrorHandlerBoundary`) swallow late `notFound()`/`redirect()` inside blocks; they should rethrow navigation errors (follow-up in site-react). With `streaming: true` for a page cached by the CDN, a page failing after the response started is cached with its `cacheControl`.
+- Refs: Next.js `app-render.js` (`waitForAllReady` only for prerenders), `make-get-server-inserted-html.js`, `lib/cache-control.js`, `shared/lib/router/utils/html-bots.js`, `server/pipe-readable.js` (flushes the compression).
 
 ### #38 Answer redirects of RSC requests with a redirect payload instead of 3xx (done)
 

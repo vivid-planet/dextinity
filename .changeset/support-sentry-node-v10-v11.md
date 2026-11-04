@@ -12,5 +12,5 @@ Review the [Sentry v10 to v11 migration guide](https://github.com/getsentry/sent
 
 - `sendDefaultPii` was replaced by `dataCollection`, which collects more data by default (user info, cookies, request/response bodies and headers, database queries). Pass `dataCollection` to `SentryModule.forRootAsync()` to restrict it.
 - `skipOpenTelemetrySetup` was replaced by `enableOpenTelemetrySetup` with inverted meaning.
-- `Sentry.setupExpressErrorHandler(app)` is deprecated because Express errors are now captured automatically. It still works, but the call can be removed.
+- `Sentry.setupExpressErrorHandler(app)` is deprecated, but keep calling it. Sentry's automatic Express error capturing only works when Sentry is initialized before Express is loaded, and `SentryModule` initializes it afterwards.
 - v11 supports self-hosted Sentry 26.4.2 or later.

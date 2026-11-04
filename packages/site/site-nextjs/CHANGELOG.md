@@ -1,5 +1,13 @@
 # @comet/site-nextjs
 
+## 10.13.1
+
+### Patch Changes
+
+- 94991f8: Update `jose` to v6
+- Updated dependencies [94991f8]
+    - @dextinity/site-react@10.13.1
+
 ## 10.13.0
 
 ### Patch Changes

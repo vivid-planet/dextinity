@@ -1,5 +1,11 @@
 # @comet/site-react
 
+## 10.13.1
+
+### Patch Changes
+
+- 94991f8: Update `jose` to v6
+
 ## 10.13.0
 
 ## 10.12.0

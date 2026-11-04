@@ -2,7 +2,7 @@
 title: Accessibility
 ---
 
-Comet projects aim to conform to [WCAG 2.1 Level AA](https://www.w3.org/TR/WCAG21/).
+Dextinity projects aim to conform to [WCAG 2.1 Level AA](https://www.w3.org/TR/WCAG21/).
 
 ## POUR Principles
 

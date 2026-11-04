@@ -1,3 +1,5 @@
+"use client";
+
 import { type VideoPreviewImageProps, VimeoVideoBlock as SiteReactVimeoVideoBlock } from "@dextinity/site-react";
 import type { ComponentProps } from "react";
 

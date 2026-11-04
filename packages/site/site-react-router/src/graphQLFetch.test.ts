@@ -63,4 +63,25 @@ describe("createServerGraphQLFetch", () => {
         expect(getSentHeaders(0).get("x-include-invisible-content")).toBe(includeInvisibleContent);
         expect(getSentHeaders(0).get("authorization")).toBe("Basic secret");
     });
+
+    it("sends each query once per request", async () => {
+        const getGraphQLFetch = createTestGraphQLFetch();
+        const context = createContext("invisiblePages");
+
+        await getGraphQLFetch(context)("query Page { page }", { id: "1" });
+        await getGraphQLFetch(context)("query Page { page }", { id: "1" });
+        await getGraphQLFetch(context)("query Page { page }", { id: "2" });
+        await getGraphQLFetch(createContext("invisiblePages"))("query Page { page }", { id: "1" });
+
+        expect(fetchMock).toHaveBeenCalledTimes(3);
+    });
+
+    it("sends failed queries again", async () => {
+        const getGraphQLFetch = createTestGraphQLFetch();
+        const context = createContext("invisiblePages");
+        fetchMock.mockImplementationOnce(async () => new Response("Bad Gateway", { status: 502 }));
+
+        await expect(getGraphQLFetch(context)("query Page { page }")).rejects.toThrow();
+        expect(await getGraphQLFetch(context)("query Page { page }")).toEqual({ page: "content" });
+    });
 });

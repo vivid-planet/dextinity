@@ -21,6 +21,7 @@ export {
     sitePreviewMiddleware,
     type Visibility,
 } from "./preview.js";
-export { renderDocument } from "./renderDocument.js";
+export { getRequestContext, requestContextMiddleware } from "./requestContext.js";
+export { matchRscRequest } from "./rscRequest.js";
 export { staticFilesMiddleware } from "./staticFiles.js";
 export { trailingSlashRedirectMiddleware } from "./trailingSlashRedirect.js";

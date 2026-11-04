@@ -4,6 +4,6 @@ export function loader() {
     redirect("javascript:alert(1)");
 }
 
-export default function UnsafeRedirectPage() {
+export function ServerComponent() {
     return <h1>Never rendered</h1>;
 }

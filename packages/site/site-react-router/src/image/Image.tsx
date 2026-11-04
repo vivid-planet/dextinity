@@ -1,3 +1,5 @@
+"use client";
+
 import { generateImageUrl, parseAspectRatio } from "@dextinity/site-react";
 import { type CSSProperties, type ImgHTMLAttributes, useEffect, useRef, useState } from "react";
 import { preload as preloadResource } from "react-dom";

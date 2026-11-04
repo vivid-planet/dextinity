@@ -1,29 +1,12 @@
-import type { PropsWithChildren } from "react";
-import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, useRouteError } from "react-router";
+import { requestContextMiddleware } from "@dextinity/site-react-router/server";
+import { Outlet } from "react-router";
 
-export function Layout({ children }: PropsWithChildren) {
-    return (
-        <html lang="en">
-            <head>
-                <meta charSet="utf-8" />
-                {/* The test app has no favicon, the browser would request it */}
-                <link rel="icon" href="data:," />
-                <Meta />
-                <Links />
-            </head>
-            <body>
-                {children}
-                <Scripts />
-            </body>
-        </html>
-    );
-}
+import type { Route } from "./+types/root";
 
-export default function App() {
+export { ErrorBoundary, Layout } from "./RootDocument";
+
+export const middleware: Route.MiddlewareFunction[] = [requestContextMiddleware];
+
+export function ServerComponent() {
     return <Outlet />;
-}
-
-export function ErrorBoundary() {
-    const error = useRouteError();
-    return <p>{isRouteErrorResponse(error) ? `Error page ${error.status}` : "Error page 500"}</p>;
 }

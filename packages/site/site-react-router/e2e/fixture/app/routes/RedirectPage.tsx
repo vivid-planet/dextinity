@@ -4,6 +4,6 @@ export function loader() {
     redirect("/cached", { headers: { "Cache-Control": "public, s-maxage=60" } });
 }
 
-export default function RedirectPage() {
+export function ServerComponent() {
     return <h1>Never rendered</h1>;
 }

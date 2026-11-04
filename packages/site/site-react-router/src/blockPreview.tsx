@@ -1,3 +1,5 @@
+"use client";
+
 import { BlockPreviewProvider, IFrameBridgeProvider, useIFrameBridge } from "@dextinity/site-react";
 import { type ReactNode, Suspense, useEffect, useState } from "react";
 

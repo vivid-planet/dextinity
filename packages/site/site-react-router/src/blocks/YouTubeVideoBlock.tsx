@@ -1,3 +1,5 @@
+"use client";
+
 import { type VideoPreviewImageProps, YouTubeVideoBlock as SiteReactYouTubeVideoBlock } from "@dextinity/site-react";
 import type { ComponentProps } from "react";
 

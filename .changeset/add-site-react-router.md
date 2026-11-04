@@ -4,35 +4,27 @@
 
 Add `@dextinity/site-react-router`
 
-The counterpart to `@dextinity/site-nextjs` and `@dextinity/site-vite-rsc` for sites built with React Router's framework mode. Pages load their data in loaders, including the data of the blocks with `recursivelyLoadBlockData()`, and are rendered with SSR. It re-exports `@dextinity/site-react`.
+The counterpart to `@dextinity/site-nextjs` and `@dextinity/site-vite-rsc` for sites built with React Router's RSC Framework Mode (React Router 8, `unstable_reactRouterRSC` and `@vitejs/plugin-rsc`). Pages are React Server Components: loaders decide the status, redirects and metadata of a page, its `ServerComponent` renders the content, including the blocks with their data. It re-exports `@dextinity/site-react`.
 
-The site keeps React Router's own files: `routes.ts`, `root.tsx`, `entry.server.tsx` and `entry.client.tsx`. Enable the middleware of React Router in `react-router.config.ts`:
+The site keeps React Router's own files: `routes.ts`, `root.tsx`, `entry.rsc.tsx`, `entry.ssr.tsx` and `entry.client.tsx`.
 
 ```ts
-export default {
-    appDirectory: "src",
-    future: { v8_middleware: true, v8_passThroughRequests: true },
-} satisfies Config;
+// vite.config.ts
+export default defineConfig({
+    plugins: [reactRouterRSC(), rsc()],
+    build: { assetsDir: "_assets" },
+});
 ```
+
+Requires `@vitejs/plugin-rsc` 0.5.35 or earlier: from 0.5.36 on, the production build of React Router 8.5 fails with "Vite RSC assets manifest not found".
 
 **Server** (`@dextinity/site-react-router/node`, `@dextinity/site-react-router/server`)
 
-The server entry of the site is a Hono app, which handles what also applies to the static files and passes the requests to React Router. Build it as server entry in `vite.config.ts`:
+`matchRscRequest()` is the `fetchServer()` of React Router's default `entry.rsc.tsx` with error reporting: errors of middlewares, loaders and server components are passed to `reportError`, and payloads with errors get `no-store` instead of the `Cache-Control` of the page, also for client navigations. The entry wraps it in a Hono app, which handles what also applies to the static files:
 
-```ts
-export default defineConfig(({ isSsrBuild }) => ({
-    plugins: [reactRouter()],
-    build: { assetsDir: "_assets", rollupOptions: isSsrBuild ? { input: "./src/app.ts" } : undefined },
-}));
-```
-
-```ts
-// src/app.ts
-import * as build from "virtual:react-router/server-build";
-
-const handleRequest = createRequestHandler(build, import.meta.env.MODE);
-
-export const app = new Hono();
+```tsx
+// src/entry.rsc.tsx
+const app = new Hono();
 if (process.env.CDN_ORIGIN_CHECK_SECRET) {
     app.use(cdnOriginCheckMiddleware({ secret: process.env.CDN_ORIGIN_CHECK_SECRET }));
 }
@@ -41,46 +33,52 @@ if (import.meta.env.PROD) {
     app.use(staticFilesMiddleware);
 }
 app.use(trailingSlashRedirectMiddleware);
-app.all("*", (c) => handleRequest(c.req.raw, new RouterContextProvider()));
+app.all("*", async (c) => {
+    const response = await matchRscRequest({
+        request: c.req.raw,
+        routes,
+        basename,
+        clientVersion,
+        routeDiscovery,
+        ...pluginRscFunctions,
+        reportError,
+    });
+    const ssr = await import.meta.viteRsc.loadModule<typeof import("./entry.ssr")>("ssr", "index");
+    return ssr.generateHTML(c.req.raw, response);
+});
+
+export default { fetch: app.fetch };
 ```
 
-`createRequestListener({ dev, server, appModule })` handles the requests with Vite during development and with the build in production:
+`createRequestListener({ dev, server })` handles the requests with Vite during development and with the build in production:
 
 ```ts
 const server = createServer();
-server.on("request", await createRequestListener({ dev: process.env.NODE_ENV !== "production", server, appModule: "./src/app.ts" }));
+server.on("request", await createRequestListener({ dev: process.env.NODE_ENV !== "production", server }));
 server.listen(3000);
 ```
 
-`renderDocument()` renders the HTML in `entry.server.tsx`, like React Router's default entry, but bots get the complete page:
+**Request context** (`@dextinity/site-react-router/server`)
 
-```tsx
-export default function handleRequest(request: Request, status: number, headers: Headers, routerContext: EntryContext) {
-    return renderDocument({ request, status, headers, routerContext });
-}
-```
+React Router passes the context of the request only to middlewares, loaders and actions. `requestContextMiddleware`, registered in the root route, makes it available to server components with `getRequestContext()`.
 
 **Site preview and block preview** (`@dextinity/site-react-router/server`)
 
 `sitePreviewMiddleware` reads the site preview and the block preview of each request into `previewContext`, `getVisibility(context)`, `getSitePreview(context)` and `getPreviewScope(context)` read it. `sitePreviewLoader` is the loader of the route that starts the site preview. Both use the `SITE_PREVIEW_SECRET` environment variable. Render `SitePreviewProvider` while `getSitePreview(context)` is set, it marks the page as site preview for the blocks and reports its location to the admin.
 
-```ts
-// A pathless layout above the pages of the site
-export const middleware: Route.MiddlewareFunction[] = [sitePreviewMiddleware, siteMiddleware];
-```
-
-`createBlockPreview()` creates the component for the block preview of the admin, one route for all previews. Check the type in the loader with `BlockPreview.hasPreview(type)`.
+`createBlockPreview()` creates the client component for the block preview of the admin, one route for all previews.
 
 **GraphQL and fetch cache** (`@dextinity/site-react-router/server`)
 
-`createServerGraphQLFetch({ url, headers, cache })` returns the GraphQL fetch of a request for the loaders. In the site preview and the block preview, it sends the preview headers to the API and bypasses the cache:
+`createServerGraphQLFetch({ url, headers, cache })` returns the GraphQL fetch of a request. It sends each query only once per request, e.g. when a loader checks that a page exists and its server component renders it. In the site preview and the block preview, it sends the preview headers to the API and bypasses the cache:
 
 ```ts
 export const getGraphQLFetch = createServerGraphQLFetch({ url, headers, cache: { revalidateInSeconds: 450, store } });
 
-export async function loader({ context }: Route.LoaderArgs) {
-    const data = await getGraphQLFetch(context)(query, variables);
-}
+// In a loader
+const data = await getGraphQLFetch(context)(query, variables);
+// In a server component
+const data = await getGraphQLFetch(getRequestContext())(query, variables);
 ```
 
 `createCachingFetch()`, `createMemoryFetchCacheStore()` and `createValkeyFetchCacheStore()` are the same as in `@dextinity/site-vite-rsc`.
@@ -94,7 +92,7 @@ export async function loader({ context }: Route.LoaderArgs) {
 
 **Images and videos**
 
-`PixelImageBlock`, `Image`, `DamVideoBlock`, `YouTubeVideoBlock` and `VimeoVideoBlock` are the same as in `@dextinity/site-vite-rsc`. Set the widths the API resizes images to with `ImageConfigProvider` in `root.tsx`.
+`PixelImageBlock`, `Image`, `DamVideoBlock`, `YouTubeVideoBlock` and `VimeoVideoBlock` are the same as in `@dextinity/site-vite-rsc`. Set the widths the API resizes images to with `ImageConfigProvider` in the layout of `root.tsx`.
 
 **Persisted queries** (`@dextinity/site-react-router/vite`)
 

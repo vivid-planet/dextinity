@@ -9,7 +9,7 @@ test("renders the page with the metadata of its route", async ({ request }) => {
     expect(html).toContain('<link rel="canonical" href="https://www.example.com/"/>');
 });
 
-for (const path of ["/cached", "/cached.data"]) {
+for (const path of ["/cached", "/cached.rsc"]) {
     test(`uses the Cache-Control of the loader for ${path}`, async ({ request }) => {
         const response = await request.get(path);
 
@@ -32,6 +32,23 @@ test("renders the error boundary with status 500 for errors of loaders and doesn
     expect(response.status()).toBe(500);
     expect(response.headers()["cache-control"]).toBe(noStoreCacheControl);
     expect(await response.text()).toContain("Page error <!-- -->500");
+});
+
+test("renders the error boundary with status 500 for errors of server components and doesn't cache them", async ({ request }) => {
+    const response = await request.get("/render-error");
+
+    expect(response.status()).toBe(500);
+    expect(response.headers()["cache-control"]).toBe(noStoreCacheControl);
+});
+
+test("doesn't cache the payload of client navigations with errors of server components", async ({ request }) => {
+    const response = await request.get("/render-error.rsc");
+
+    expect(response.headers()["cache-control"]).toBe(noStoreCacheControl);
+});
+
+test("makes the context of the request available to server components", async ({ request }) => {
+    expect(await (await request.get("/request-context")).text()).toContain("Visibility of the request: <!-- -->default");
 });
 
 test("redirects with the response init of redirect()", async ({ request }) => {

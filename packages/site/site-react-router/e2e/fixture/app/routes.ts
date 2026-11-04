@@ -11,6 +11,8 @@ export default [
             route("server-error", "routes/ServerErrorPage.tsx"),
             route("redirect", "routes/RedirectPage.tsx"),
             route("unsafe-redirect", "routes/UnsafeRedirectPage.tsx"),
+            route("render-error", "routes/RenderErrorPage.tsx"),
+            route("request-context", "routes/RequestContextPage.tsx"),
             route("cdn/page", "routes/CdnPage.tsx"),
         ]),
     ]),

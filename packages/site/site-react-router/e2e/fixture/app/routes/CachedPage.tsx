@@ -9,6 +9,6 @@ export function loader() {
     return data({ message: "Cached page" }, { headers: { "Cache-Control": "public, s-maxage=60" } });
 }
 
-export default function CachedPage({ loaderData }: Route.ComponentProps) {
+export function ServerComponent({ loaderData }: Route.ServerComponentProps) {
     return <h1>{loaderData.message}</h1>;
 }

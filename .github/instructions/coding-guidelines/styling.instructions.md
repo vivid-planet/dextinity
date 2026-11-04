@@ -1,1 +1,0 @@
-/home/user/dextinity/rules/coding-guidelines/styling.instructions.md

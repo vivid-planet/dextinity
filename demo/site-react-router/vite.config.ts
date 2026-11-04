@@ -17,6 +17,11 @@ export default defineConfig({
     // The environment variables are read by the server at runtime, not at build time
     envDir: false,
     environments: {
+        client: {
+            // The client components are only found when a page requests them, so Vite would optimize their dependencies late and reload the page.
+            // Scanning all source files finds the dependencies when the development server starts.
+            optimizeDeps: { entries: ["src/**/*.tsx"] },
+        },
         ssr: {
             resolve: {
                 // CommonJS dependencies whose exports Node.js doesn't detect when they are imported from an ES module

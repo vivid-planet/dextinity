@@ -23,7 +23,7 @@ services:
             - ./.deploy-preview/Caddyfile:/etc/caddy/Caddyfile:ro
 
     postgres:
-        image: mirror.gcr.io/library/postgres:16
+        image: mirror.gcr.io/library/postgres:18
         pull_policy: weekly
         restart: unless-stopped
         # Deploy preview data is disposable, so durability can be traded for speed.

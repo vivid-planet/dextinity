@@ -1,4 +1,5 @@
 import { Brevo, BrevoError } from "@getbrevo/brevo";
+import { InternalServerErrorException } from "@nestjs/common";
 import { describe, expect, it } from "vitest";
 
 import { handleBrevoError, isErrorFromBrevo } from "./brevo-api.utils";
@@ -27,6 +28,20 @@ describe("brevo-api.utils", () => {
             const error = new BrevoError({ message: "Something went wrong", statusCode: 500 });
 
             expect(() => handleBrevoError(error)).toThrowError(error.message);
+        });
+
+        it("throws an InternalServerErrorException explaining the configuration when Brevo rejects the API key", () => {
+            const error = new BrevoError({ message: "Status code: 401", statusCode: 401, body: { code: "unauthorized", message: "Key not found" } });
+
+            let caught: unknown;
+            try {
+                handleBrevoError(error);
+            } catch (e) {
+                caught = e;
+            }
+
+            expect(caught).toBeInstanceOf(InternalServerErrorException);
+            expect((caught as InternalServerErrorException).message).toMatch(/^Brevo rejected the API key\./);
         });
 
         it("rethrows a non-Brevo error unchanged", () => {

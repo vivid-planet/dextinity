@@ -2290,6 +2290,151 @@
         ]
     },
     {
+        "name": "MailTwoColumns",
+        "fields": [
+            {
+                "name": "layout",
+                "kind": "String",
+                "nullable": false
+            },
+            {
+                "name": "columns",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "Block",
+                            "block": "MailTwoColumnsContent",
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "layout",
+                "kind": "String",
+                "nullable": false
+            },
+            {
+                "name": "columns",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "Block",
+                            "block": "MailTwoColumnsContent",
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailTwoColumnsContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
+        "fields": [
+            {
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "text": "RichText",
+                                "image": "PixelImage",
+                                "button": "MailButton",
+                                "spacer": "MailSpacer"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "text": "RichText",
+                                "image": "PixelImage",
+                                "button": "MailButton",
+                                "spacer": "MailSpacer"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ]
+    },
+    {
         "name": "MailTwoListSizesRichText",
         "description": "Formatted text, edited in the Draft.js based rich text editor.",
         "fields": [
@@ -5086,7 +5231,8 @@
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
-                                "spacer": "MailSpacer"
+                                "spacer": "MailSpacer",
+                                "twoColumns": "MailTwoColumns"
                             },
                             "nullable": false
                         }
@@ -5127,7 +5273,8 @@
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
-                                "spacer": "MailSpacer"
+                                "spacer": "MailSpacer",
+                                "twoColumns": "MailTwoColumns"
                             },
                             "nullable": false
                         }

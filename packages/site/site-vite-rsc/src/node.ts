@@ -4,7 +4,8 @@ import { pathToFileURL } from "node:url";
 
 import { getRequestListener } from "@hono/node-server";
 import { Hono } from "hono";
-import { compress } from "hono/compress";
+
+import { compressMiddleware } from "./compress.js";
 
 type RequestListener = (request: IncomingMessage, response: ServerResponse) => unknown;
 
@@ -25,7 +26,7 @@ export async function createRequestListener({ dev, server }: { dev: boolean; ser
 
     // Headers and static files are handled by the site's Hono app
     const app = new Hono();
-    app.use(compress());
+    app.use(compressMiddleware);
     app.all("*", (c) => rscHandler.fetch(c.req.raw));
 
     return getRequestListener(app.fetch);

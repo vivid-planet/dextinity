@@ -2579,8 +2579,8 @@ importers:
         specifier: ^4.18.0
         version: 4.18.0
       mjml-browser:
-        specifier: ^4.18.0
-        version: 4.18.0
+        specifier: ^5.4.1
+        version: 5.4.1
       redraft:
         specifier: ^0.10.2
         version: 0.10.2
@@ -2607,8 +2607,8 @@ importers:
         specifier: ^4.18.2
         version: 4.18.2
       '@types/mjml-browser':
-        specifier: ^4.15.0
-        version: 4.15.0
+        specifier: ^5.0.0
+        version: 5.0.0
       '@types/react':
         specifier: ^19.3.0
         version: 19.3.0
@@ -9775,8 +9775,8 @@ packages:
   '@types/mime@2.0.3':
     resolution: {integrity: sha512-Jus9s4CDbqwocc5pOAnh8ShfrnMcPHuJYzVcSUU7lrh8Ni5HuIqX3oilL86p3dlTrk0LzHRCgA/GQ7uNCw6l2Q==}
 
-  '@types/mjml-browser@4.15.0':
-    resolution: {integrity: sha512-WNmr7LB4XfSM4pe+ES3zCcF4NY3hfPQxLNPn8v3GgNYc3u2rJbiQ56Ahswn/WF9kpO+M5jKd2jlq8u2ZAV0g6A==}
+  '@types/mjml-browser@5.0.0':
+    resolution: {integrity: sha512-jmzlRPcVd5QSXYHyilG7APIwP/jN5dxycDdDBcof6iylMtorKlP25LcgJslnHDM8X7ZhNDgDEL/nRmLalzBbiA==}
 
   '@types/mjml-core@4.15.2':
     resolution: {integrity: sha512-Q7SxFXgoX979HP57DEVsRI50TV8x1V4lfCA4Up9AvfINDM5oD/X9ARgfoyX1qS987JCnDLv85JjkqAjt3hZSiQ==}
@@ -10871,6 +10871,9 @@ packages:
 
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
+
+  buffer@6.0.3:
+    resolution: {integrity: sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==}
 
   buffers@0.1.1:
     resolution: {integrity: sha512-9q/rDEGSb/Qsvv2qvzIzdluL5k7AaJOTrw23z9reQthrbF7is4CtlT0DXyO1oei2DCp4uojjzQ7igaSHp1kAEQ==}
@@ -15072,8 +15075,8 @@ packages:
   mjml-body@4.18.0:
     resolution: {integrity: sha512-34AwX70/7NkRIajPsa5j6NySRiNrlLatTKhiLwTVFiVtrEFlfCcbeMNmdVixI3Ldvs8209ZC6euaAnXDRyR1zw==}
 
-  mjml-browser@4.18.0:
-    resolution: {integrity: sha512-Y3kpr3IFBk3Wm7AwONZ5vDAX7FxAaMk+RKbcKKewsuGI9oNCOSM2dWNcWVFdzZ9PF7awoaCgBSQudnJaJbUiBA==}
+  mjml-browser@5.4.1:
+    resolution: {integrity: sha512-E+b8bItN/pMXN1I+Uxi3CeZuVaN0B1Ml8Y8+fFn5TAD59fJi//scSIjPxjs1ks3Qnu25Ht+V/TnE/kwIg2SsQg==}
 
   mjml-button@4.18.0:
     resolution: {integrity: sha512-ZsWMI0j7EcFCMqbqdVwMWhmsVc03FhmypWXokKopGhwySn4IAB4AOURonRmFrO7k6sDeQ+iJ9QtTu7jA+S8wmg==}
@@ -16394,6 +16397,10 @@ packages:
 
   process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
+
+  process@0.11.10:
+    resolution: {integrity: sha512-cdGef/drWFoydD1JsMzuFf8100nZl+GT+yacc2bEced5f9Rjk4z+WtFUTBu9PhOi9j/jfmBPu0mMEY4wIdAF8A==}
+    engines: {node: '>= 0.6.0'}
 
   promise@7.3.1:
     resolution: {integrity: sha512-nolQXZ/4L+bP/UGlkfaIujX9BKxGwmQ9OT4mOt5yvy8iK1h3wqTEJCijzGANTCCl9nWjY41juyAn2K3Q1hLLTg==}
@@ -27601,7 +27608,7 @@ snapshots:
 
   '@types/mime@2.0.3': {}
 
-  '@types/mjml-browser@4.15.0':
+  '@types/mjml-browser@5.0.0':
     dependencies:
       '@types/mjml-core': 4.15.2
 
@@ -28926,6 +28933,11 @@ snapshots:
       ieee754: 1.2.1
 
   buffer@5.7.1:
+    dependencies:
+      base64-js: 1.5.1
+      ieee754: 1.2.1
+
+  buffer@6.0.3:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
@@ -33962,7 +33974,12 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  mjml-browser@4.18.0: {}
+  mjml-browser@5.4.1:
+    dependencies:
+      buffer: 6.0.3
+      html-minifier-terser: 7.2.0
+      path-browserify: 1.0.1
+      process: 0.11.10
 
   mjml-button@4.18.0:
     dependencies:
@@ -35773,6 +35790,8 @@ snapshots:
   proc-log@6.1.0: {}
 
   process-nextick-args@2.0.1: {}
+
+  process@0.11.10: {}
 
   promise@7.3.1:
     dependencies:

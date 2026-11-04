@@ -13,17 +13,15 @@ import {
     useWindowSize,
 } from "@dextinity/admin";
 import { type ReactNode, useEffect } from "react";
+import type { PathRouteProps } from "react-router";
 
 import { type Permission, useUserPermissionCheck } from "../userPermissions/hooks/currentUser";
 
-export interface MasterMenuRoute {
-    /**
-     * Path relative to the content scope URL, e.g. `/dashboard`. Also matches all sub paths (e.g. `/dashboard/foo`).
-     * Use `useParams()` in the element to access path params.
-     */
-    path: string;
-    element: ReactNode;
-}
+/**
+ * The `path` is relative to the content scope URL, e.g. `/dashboard`, and also matches all sub paths (e.g. `/dashboard/foo`).
+ * Use `useParams()` in the element to access path params.
+ */
+export type MasterMenuRoute = Required<Pick<PathRouteProps, "path" | "element">>;
 
 type MasterMenuItemBase = {
     requiredPermission?: Permission | Permission[];

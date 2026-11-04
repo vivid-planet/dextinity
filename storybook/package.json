@@ -39,7 +39,7 @@
         "@mui/x-date-pickers": "^8.29.5",
         "@mui/x-date-pickers-pro": "^8.29.5",
         "@mui/x-license": "^8.29.3",
-        "@types/node": "^24.19.2",
+        "@types/node": "^26.6.6",
         "date-fns": "^4.4.0",
         "final-form": "^4.20.10",
         "graphql": "^16.14.2",

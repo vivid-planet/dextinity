@@ -43,7 +43,7 @@
     },
     "devDependencies": {
         "@dextinity/eslint-config": "workspace:*",
-        "@types/node": "^24.19.2",
+        "@types/node": "^26.6.6",
         "eslint": "^9.39.5",
         "npm-run-all2": "^9.0.4",
         "rimraf": "^6.1.3",

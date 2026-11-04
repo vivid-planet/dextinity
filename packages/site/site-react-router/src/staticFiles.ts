@@ -1,8 +1,6 @@
 import { serveStatic } from "@hono/node-server/serve-static";
 import { createMiddleware } from "hono/factory";
 
-const serveClientBuild = serveStatic({ root: "./build/client" });
-
 function getStaticFileMaxAge(pathname: string) {
     if (pathname.startsWith("/_assets/")) {
         // build assets have a content hash in their filename
@@ -20,7 +18,11 @@ function getStaticFileMaxAge(pathname: string) {
 /**
  * Serves the client build including the files of public/ in production, Vite serves them during development
  */
+// Created on use, so that the build folder is only checked in production
+let serveClientBuild: ReturnType<typeof serveStatic> | undefined;
+
 export const staticFilesMiddleware = createMiddleware(async (c, next) => {
+    serveClientBuild ??= serveStatic({ root: "./build/client" });
     let isFileFound = true;
     const response = await serveClientBuild(c, async () => {
         isFileFound = false;

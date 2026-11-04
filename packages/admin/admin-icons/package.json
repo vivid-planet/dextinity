@@ -53,7 +53,7 @@
         "@types/react-dom": "^19.3.0",
         "change-case": "^5.4.4",
         "cli-progress": "^3.12.0",
-        "eslint": "^9.39.5",
+        "eslint": "^10.14.0",
         "fast-xml-parser": "^5.11.2",
         "npm-run-all2": "^9.0.4",
         "prettier": "^3.9.10",

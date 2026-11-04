@@ -54,7 +54,7 @@
         "@types/node": "^24.19.2",
         "@types/pluralize": "^0.0.33",
         "class-validator": "^0.15.1",
-        "eslint": "^9.39.5",
+        "eslint": "^10.14.0",
         "npm-run-all2": "^9.0.4",
         "prettier": "^3.9.10",
         "reflect-metadata": "^0.2.2",

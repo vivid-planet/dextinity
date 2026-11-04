@@ -60,7 +60,7 @@
         "@types/react-dom": "^19.3.0",
         "@vitejs/plugin-react": "^6.1.2",
         "chokidar-cli": "^3.0.0",
-        "eslint": "^9.39.5",
+        "eslint": "^10.14.0",
         "jsdom": "^28.1.0",
         "npm-run-all2": "^9.0.4",
         "prettier": "^3.9.10",

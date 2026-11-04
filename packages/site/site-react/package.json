@@ -71,7 +71,7 @@
         "rollup-plugin-preserve-directives": "^0.4.0",
         "sass": "^1.107.1",
         "schema-dts": "^2.1.0",
-        "typescript": "^5.9.3",
+        "typescript": "^7.0.2",
         "unplugin-dts": "^1.1.2",
         "vite": "^8.3.5",
         "vitest": "^5.0.5",

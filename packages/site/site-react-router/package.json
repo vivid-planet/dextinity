@@ -47,11 +47,12 @@
         "lint:fix:eslint": "pnpm run lint:eslint --fix",
         "lint:fix:prettier": "pnpm run lint:prettier --write",
         "lint:prettier": "pnpm exec prettier --check '*.{ts,mts,js,json,md,yml,yaml,css,scss}'",
-        "lint:tsc": "tsc --noEmit && tsc --noEmit --project e2e/fixture",
+        "lint:tsc": "pnpm run typegen:e2e && tsc --noEmit && tsc --noEmit --project e2e/fixture",
         "test": "pnpm run test:unit",
         "test:e2e": "playwright test",
         "test:unit": "vitest --run",
-        "test:watch": "vitest --watch"
+        "test:watch": "vitest --watch",
+        "typegen:e2e": "cd e2e/fixture && react-router typegen"
     },
     "dependencies": {
         "@dextinity/site-react": "workspace:*",

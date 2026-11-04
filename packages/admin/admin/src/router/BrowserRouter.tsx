@@ -17,9 +17,5 @@ export interface RouterBrowserRouterProps {
 export const RouterBrowserRouter = ({ basename, children }: PropsWithChildren<RouterBrowserRouterProps>) => {
     const router = useDataRouter(() => createBrowserRouter(createRouterRoutes(), { basename }));
 
-    return (
-        <RouterChildrenProvider value={children}>
-            <RouterProvider router={router} />
-        </RouterChildrenProvider>
-    );
+    return <RouterChildrenProvider value={children}>{router && <RouterProvider router={router} />}</RouterChildrenProvider>;
 };

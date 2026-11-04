@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from "react";
+import { createContext, type ReactNode, useContext, useLayoutEffect, useRef, useState } from "react";
 import { type DataRouter, type RouteObject, useRouteError } from "react-router";
 
 import { PromptContext } from "../Prompt";
@@ -30,27 +30,19 @@ export function createRouterRoutes(): RouteObject[] {
     return [{ path: "*", element: <RouterRoot />, ErrorBoundary: RethrowRouteError }];
 }
 
-const disposedRouters = new WeakSet<DataRouter>();
-
-export function useDataRouter(createRouter: () => DataRouter): DataRouter {
-    const [router, setRouter] = useState(createRouter);
+export function useDataRouter(createRouter: () => DataRouter): DataRouter | undefined {
+    const [router, setRouter] = useState<DataRouter>();
     const createRouterRef = useRef(createRouter);
 
-    useEffect(() => {
-        createRouterRef.current = createRouter;
-    });
-
-    useEffect(() => {
-        if (disposedRouters.has(router)) {
-            // StrictMode remounts after disposing the router in the cleanup
-            setRouter(createRouterRef.current());
-            return;
-        }
+    // Created in an effect instead of during render: StrictMode renders twice but only keeps one state, and the router created by the
+    // discarded render would never be disposed. A layout effect renders the router before the first paint.
+    useLayoutEffect(() => {
+        const createdRouter = createRouterRef.current();
+        setRouter(createdRouter);
         return () => {
-            router.dispose();
-            disposedRouters.add(router);
+            createdRouter.dispose();
         };
-    }, [router]);
+    }, []);
 
     return router;
 }

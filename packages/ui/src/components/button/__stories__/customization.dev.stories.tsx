@@ -8,8 +8,8 @@ import styles from "./customization.dev.module.scss";
 
 const meta = {
     component: Button,
-    title: "Components/Button/Dev/Customization",
-    tags: ["!autodocs", "!manifest"],
+    title: "Components/Button",
+    tags: ["development", "!autodocs", "!manifest"],
     decorators: [themeDecorator],
 } satisfies Meta<typeof Button>;
 
@@ -17,7 +17,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const ViaSlotPropsClassName: Story = {
+export const CustomizationViaSlotPropsClassName: Story = {
     args: {
         children: "Slot-level override",
         startIcon: <FavoriteIcon />,
@@ -29,7 +29,7 @@ export const ViaSlotPropsClassName: Story = {
     },
 };
 
-export const ViaWrapperGlobalSelectors: Story = {
+export const CustomizationViaWrapperGlobalSelectors: Story = {
     render: () => (
         <div className={styles.wrapper}>
             <Button startIcon={<FavoriteIcon />}>Themed via wrapper</Button>

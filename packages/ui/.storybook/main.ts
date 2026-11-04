@@ -3,8 +3,11 @@ import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
     stories: ["../src/**/*.mdx", "../src/**/__stories__/*.stories.tsx"],
-    addons: ["@storybook/addon-docs", "@storybook/addon-mcp", "@storybook/addon-vitest"],
+    addons: ["@storybook/addon-docs", "@storybook/addon-mcp", "@storybook/addon-vitest", "storybook-addon-tag-badges"],
     framework: "@storybook/react-vite",
+    tags: {
+        development: { defaultFilterSelection: "exclude" },
+    },
     features: { componentsManifest: true },
     viteFinal: (viteConfig) =>
         mergeConfig(viteConfig, {

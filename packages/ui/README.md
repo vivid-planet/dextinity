@@ -158,7 +158,11 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 
 #### Dev story
 
-`__stories__/<name>.dev.stories.tsx`, optional, nests its title under a `Dev` segment (`Components/<Component>/Dev/<Name>`) and sets `tags: ["!autodocs", "!manifest"]` in its meta, keeping these out of the consumer docs and out of what the MCP server serves. A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
+`__stories__/<name>.dev.stories.tsx`, optional, shares the main story's title (`Components/<Component>`) and sets `tags: ["development", "!autodocs", "!manifest"]` in its meta. `!autodocs` and `!manifest` keep its stories out of the consumer docs and out of what the MCP server serves. `development` hides them from the sidebar by default — select the tag in the sidebar's tag filter to show them — and marks them with a "Dev" badge. Storybook merges files with the same title into one entry, so a dev story's export name must differ from the main story's and carry its context, e.g. `CustomizationViaSlotPropsClassName` in `customization.dev.stories.tsx`.
+
+The tag is `development` rather than `dev` because Storybook already uses `dev` as a built-in tag on every story.
+
+A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
 
 ## Testing
 

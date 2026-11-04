@@ -728,6 +728,7 @@ export const MailTextBlock = withPreview<PropsWithData<MailTextBlockData>>(
 );
 ```
 
+- The rich-text components have no root element of their own: for a rich text inside a column, pass the `className` to the `textClassName` of `MjmlRichTextBlock` or `MjmlTipTapRichTextBlock`, which put it on each of their text elements.
 - Register a block without data of its own with its data anyway, `divider: (data) => <MailDividerBlock data={data} />`, or it gets no route.
 - The block preview page must put the ref from `useRefToRegisterMailBlocksForPreview(useIFrameBridge())` on the element that contains the mail HTML.
 

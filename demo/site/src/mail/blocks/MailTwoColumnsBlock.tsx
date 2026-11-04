@@ -13,7 +13,13 @@ import {
     useTheme,
     withPreview,
 } from "@dextinity/mail-react";
-import type { MailButtonBlockData, MailSpacerBlockData, MailTwoColumnsBlockData, PixelImageBlockData } from "@src/blocks.generated";
+import type {
+    MailButtonBlockData,
+    MailSpacerBlockData,
+    MailTwoColumnsBlockData,
+    PixelImageBlockData,
+    RichTextBlockData,
+} from "@src/blocks.generated";
 import { MjmlRichTextBlock } from "@src/mail/blocks/MailRichTextBlock";
 import { spacingToHeight } from "@src/mail/blocks/MailSpacerBlock";
 
@@ -42,6 +48,11 @@ registerStyles(
             }
         }
     `,
+);
+
+const ColumnRichTextBlock = withPreview<PropsWithData<RichTextBlockData>>(
+    ({ data, className }) => <MjmlRichTextBlock data={data} textClassName={className} />,
+    { label: "Text" },
 );
 
 const ColumnImageBlock = withPreview<PropsWithData<PixelImageBlockData>>(
@@ -78,7 +89,7 @@ const ColumnSpacerBlock = withPreview<PropsWithData<MailSpacerBlockData>>(
 );
 
 const supportedBlocks: SupportedBlocks = {
-    text: (data) => <MjmlRichTextBlock data={data} />,
+    text: (data) => <ColumnRichTextBlock data={data} />,
     image: (data) => <ColumnImageBlock data={data} />,
     button: (data) => <ColumnButtonBlock data={data} />,
     spacer: (data) => <ColumnSpacerBlock data={data} />,

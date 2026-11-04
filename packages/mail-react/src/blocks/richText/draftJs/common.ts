@@ -6,7 +6,10 @@ export interface RichTextBlockData {
     draftContent: unknown;
 }
 
-export type RichTextBlockProps = PropsWithData<RichTextBlockData>;
+export type RichTextBlockProps = PropsWithData<RichTextBlockData> & {
+    /** Set on each text element the block renders. */
+    textClassName?: string;
+};
 
 export interface CreateRichTextBlockOptions<TLinkTypes extends Record<string, unknown> = Record<string, unknown>> {
     /**

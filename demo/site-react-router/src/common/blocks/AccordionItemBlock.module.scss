@@ -1,0 +1,50 @@
+.iconWrapper {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accordion-default-icon);
+    flex-shrink: 0;
+}
+
+.titleWrapper {
+    text-align: left;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid var(--accordion-border);
+    padding: var(--spacing-s500) 0;
+    gap: 8px;
+
+    &:hover {
+        color: var(--accordion-hover-text);
+
+        .iconWrapper {
+            background-color: var(--accordion-hover-iconBg);
+            color: var(--accordion-hover-icon);
+        }
+    }
+}
+
+.contentWrapper {
+    position: relative;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition:
+        grid-template-rows 0.5s ease-out,
+        visibility 0s linear 0.5s;
+    visibility: hidden;
+
+    &--expanded {
+        grid-template-rows: 1fr;
+        padding-bottom: var(--spacing-s300);
+        visibility: visible;
+        transition-delay: 0s;
+    }
+}
+
+.contentWrapperInner {
+    overflow: hidden;
+    padding-left: 32px;
+}

@@ -1,0 +1,15 @@
+@use "@src/styles/variables" as *;
+
+.pageLayoutContent {
+    grid-column: 3 / -3;
+}
+
+.itemWrapper {
+    display: grid;
+    gap: var(--spacing-d100);
+    grid-template-columns: repeat(min(var(--list-item-count), 2), 1fr);
+
+    @media (min-width: $breakpoint-md) {
+        grid-template-columns: repeat(min(var(--list-item-count), 4), 1fr);
+    }
+}

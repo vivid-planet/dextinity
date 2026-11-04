@@ -12,6 +12,7 @@ const packageFolderMapping = {
     "@dextinity/brevo-api": "packages/api/brevo-api",
     "@dextinity/site-nextjs": "packages/site/site-nextjs",
     "@dextinity/site-react": "packages/site/site-react",
+    "@dextinity/site-react-router": "packages/site/site-react-router",
 };
 
 const waitOnPackages = (...packages: (keyof typeof packageFolderMapping)[]) => {
@@ -271,6 +272,36 @@ export default defineConfig({
             name: "demo-site-css-types",
             script: "pnpm --filter dextinity-demo-site run css:types:watch",
             group: ["demo-site", "demo"],
+        },
+
+        //group demo site react router
+        {
+            name: "demo-site-react-router",
+            script: "pnpm --filter dextinity-demo-site-react-router run dev",
+            group: ["demo-site-react-router"],
+            waitOn: [...waitOnPackages("@dextinity/site-react-router"), "tcp:$API_PORT"],
+        },
+        {
+            name: "demo-site-react-router-codegen",
+            script: "pnpm --filter dextinity-demo-site-react-router run gql:watch",
+            group: ["demo-site-react-router"],
+            waitOn: ["tcp:$API_PORT"],
+        },
+        {
+            name: "demo-site-react-router-block-codegen",
+            script: "pnpm --filter dextinity-demo-site-react-router run generate-block-types:watch",
+            group: ["demo-site-react-router"],
+            waitOn: ["tcp:$API_PORT"],
+        },
+        {
+            name: "demo-site-react-router-css-types",
+            script: "pnpm --filter dextinity-demo-site-react-router run css:types:watch",
+            group: ["demo-site-react-router"],
+        },
+        {
+            name: "demo-site-react-router-typegen",
+            script: "pnpm --filter dextinity-demo-site-react-router run typegen --watch",
+            group: ["demo-site-react-router"],
         },
 
         // group docs

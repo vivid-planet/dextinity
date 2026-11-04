@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "allowImportingTsExtensions": true,
+        "erasableSyntaxOnly": true,
+        "module": "preserve",
+        "noEmit": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "target": "ESNext",
+        "types": ["node"],
+        "verbatimModuleSyntax": true
+    },
+    "include": ["server.ts", "tracing.production.ts", "tracing.dev.ts", "opentelemetry-metrics.ts", "react-router.config.ts", "vite.config.ts"]
+}

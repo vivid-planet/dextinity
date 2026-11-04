@@ -60,12 +60,28 @@ Code of the site, e.g. a route handler or the `onError` of `ErrorHandlerProvider
 - `redirect()` only accepts http(s), `mailto:` and `tel:` URLs and relative paths, e.g. no `javascript:` URLs from redirect entries of the CMS
 - Client navigation follows redirects of pages, middlewares and route handlers itself, also to other origins
 - Redirects of `renderPage()` are cached like the page, i.e. with `cacheControl`
-- Pages with errors, also errors inside Suspense boundaries that an error boundary in the browser handles, aren't cached
+- Pages with errors, also errors inside Suspense boundaries that an error boundary in the browser handles, aren't cached (except with `streaming: true`, see below)
 - During a deployment with several instances, a client navigation can get a page of another build with client components the loaded build doesn't know. The page is then loaded fully instead of showing the error page or hiding the block
 - `Link` navigates on the client, `useRouter()` offers `push()`, `replace()` and `refresh()`
 - `usePathname()`, `useSearchParams()`, `useParams()` and `useNavigationPending()`
 - In the site preview of the admin, i.e. when `getSitePreview()` is set, `renderPage()` marks the pages as site preview for the blocks and reports their location to the admin
 - `Metadata` renders the description, robots, canonical, alternate and Open Graph tags of a page and resolves relative URLs, e.g. of DAM images, against `baseUrl`
+
+**Streaming**
+
+`renderPage()` streams responses that CDNs don't cache, i.e. with `no-store` or `private` in `cacheControl`, e.g. the site preview: the response starts when the content outside of Suspense boundaries is rendered, the content of Suspense boundaries follows when it's ready. Pages cached by the CDN are rendered completely before responding, like Next.js does for ISR pages, so that the status is always right and failed pages are never cached. Bots, recognized by their user agent, always get the complete page. Override the default with `streaming`:
+
+```tsx
+renderPage(c, { root, notFound, error, cacheControl, streaming: true });
+```
+
+Wrap slow parts of a page, e.g. a block that loads its data, in a Suspense boundary to show the rest of the page before it. When the response already started, the status can't be changed anymore, so the browser handles what happens inside Suspense boundaries, like Next.js:
+
+- `notFound()` adds `<meta name="robots" content="noindex">`, the browser loads and shows the not found page of the route
+- `redirect()` adds a meta refresh, the browser follows it
+- Errors are shown by the error boundary, the response isn't cached when the error happens before the response starts
+
+With `streaming: true` for a page cached by the CDN, a page failing after the response started is cached with `cacheControl`. RSC payloads of client navigations are streamed from the start, `notFound()`, `redirect()` and errors are handled by the browser too.
 
 **Images and videos**
 
@@ -160,7 +176,7 @@ plugins: [
 
 **Server** (`@dextinity/site-vite-rsc/node`)
 
-`createRequestListener({ dev, server })` handles the requests with Vite during development and with the build in production. The project's server adds what its operation needs, e.g. tracing and metrics:
+`createRequestListener({ dev, server })` handles the requests with Vite during development and with the build in production, compressed with gzip, which is flushed while a page streams. The project's server adds what its operation needs, e.g. tracing and metrics:
 
 ```ts
 const server = createServer();

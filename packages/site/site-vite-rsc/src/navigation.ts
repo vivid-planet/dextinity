@@ -14,14 +14,16 @@ class NavigationError extends Error {
 }
 
 /**
- * Renders the not found page with status 404.
+ * Renders the not found page with status 404. When the response already started, e.g. inside a Suspense boundary of a
+ * streamed page, the page is marked as noindex and the browser shows the not found page.
  */
 export function notFound(): never {
     throw new NavigationError(notFoundDigest);
 }
 
 /**
- * Responds with a redirect to an http(s), mailto or tel URL or a relative path.
+ * Responds with a redirect to an http(s), mailto or tel URL or a relative path. When the response already started, e.g.
+ * inside a Suspense boundary of a streamed page, the browser follows the redirect.
  */
 export function redirect(location: string, status: RedirectStatus = 307): never {
     if (!isAllowedRedirectTarget(location)) {

@@ -710,6 +710,18 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      embla-carousel:
+        specifier: 9.0.0-rc04
+        version: 9.0.0-rc04
+      embla-carousel-accessibility:
+        specifier: 9.0.0-rc04
+        version: 9.0.0-rc04(embla-carousel@9.0.0-rc04)
+      embla-carousel-auto-height:
+        specifier: 9.0.0-rc04
+        version: 9.0.0-rc04(embla-carousel@9.0.0-rc04)
+      embla-carousel-react:
+        specifier: 9.0.0-rc04
+        version: 9.0.0-rc04(react@19.3.1)
       filesize:
         specifier: ^11.0.29
         version: 11.0.29
@@ -746,9 +758,6 @@ importers:
       redraft:
         specifier: ^0.10.2
         version: 0.10.2
-      swiper:
-        specifier: ^14.4.0
-        version: 14.4.0
       usehooks-ts:
         specifier: ^3.1.1
         version: 3.1.1(react@19.3.1)
@@ -12182,6 +12191,29 @@ packages:
   elkjs@0.9.3:
     resolution: {integrity: sha512-f/ZeWvW/BCXbhGEf1Ujp29EASo/lk1FDnETgNKwJrsVvGZhUWCZyg3xLJjAsxfOmt8KjswHmI5EwCQcPMpOYhQ==}
 
+  embla-carousel-accessibility@9.0.0-rc04:
+    resolution: {integrity: sha512-RkfHGMchy4kabQ7kUbhtGvLXWbC/WaNDdz6tyjewp7GViZ45N/emGn3TvJdGb4/2XypB9dUftysCFERd4dJZGQ==}
+    peerDependencies:
+      embla-carousel: 9.0.0-rc04
+
+  embla-carousel-auto-height@9.0.0-rc04:
+    resolution: {integrity: sha512-Q2rg4sRCACOO+rcqNMzs+8Wl7toSAtpkz/GG1BLbWu7bvjYeoL7P+I2ENsHw/BfS9OmdKe62IRGekbXhxA4VCA==}
+    peerDependencies:
+      embla-carousel: 9.0.0-rc04
+
+  embla-carousel-react@9.0.0-rc04:
+    resolution: {integrity: sha512-qdqNfM7bGmOPG50uo9ldaL8Yz6ODCN/IzNYzO+8Sux10a1D6FwAq95qOW9ZCXG+kueAAlLQOhF4uVIW35M0Bsg==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.1 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+
+  embla-carousel-reactive-utils@9.0.0-rc04:
+    resolution: {integrity: sha512-38m/mPUs/VAqANCRlMzqz9mAY+vm4tOWHmqOu2cegO+Otm4PMZlt/yuZua8CH3z0kNFLS23hAkq7WAXNkYC1pA==}
+    peerDependencies:
+      embla-carousel: 9.0.0-rc04
+
+  embla-carousel@9.0.0-rc04:
+    resolution: {integrity: sha512-17JjAySlf/Sj0AawBmusMjap+SgGa+Yw0HpNCSnNs2v3Mj/wXNUdzpBAGv9uBizyYR/QcxG+pjXbHHg7xoE/iA==}
+
   emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
     engines: {node: '>=12'}
@@ -17807,10 +17839,6 @@ packages:
 
   swap-case@2.0.2:
     resolution: {integrity: sha512-kc6S2YS/2yXbtkSMunBtKdah4VFETZ8Oh6ONSmSd9bRxhqTrtARUCBUiWXH3xVPpvR7tz2CSnkuXVE42EcGnMw==}
-
-  swiper@14.4.0:
-    resolution: {integrity: sha512-6axnAuBsttFJe0gwsM5tT203/Bts0vcI+FwIX6dqFE4pUFVW6qrdRprNFQVxOYMW7V0S6A/KIqJ6JaPpNN2MCw==}
-    engines: {node: '>= 4.7.0'}
 
   symbol-observable@1.2.0:
     resolution: {integrity: sha512-e900nM8RRtGhlV36KGEU9k65K3mPb1WV70OdjfxlG2EAuM1noi/E/BaW/uMhL7bPEssK8QV57vN3esixjUvcXQ==}
@@ -30342,6 +30370,26 @@ snapshots:
 
   elkjs@0.9.3: {}
 
+  embla-carousel-accessibility@9.0.0-rc04(embla-carousel@9.0.0-rc04):
+    dependencies:
+      embla-carousel: 9.0.0-rc04
+
+  embla-carousel-auto-height@9.0.0-rc04(embla-carousel@9.0.0-rc04):
+    dependencies:
+      embla-carousel: 9.0.0-rc04
+
+  embla-carousel-react@9.0.0-rc04(react@19.3.1):
+    dependencies:
+      embla-carousel: 9.0.0-rc04
+      embla-carousel-reactive-utils: 9.0.0-rc04(embla-carousel@9.0.0-rc04)
+      react: 19.3.1
+
+  embla-carousel-reactive-utils@9.0.0-rc04(embla-carousel@9.0.0-rc04):
+    dependencies:
+      embla-carousel: 9.0.0-rc04
+
+  embla-carousel@9.0.0-rc04: {}
+
   emittery@0.13.1: {}
 
   emoji-regex-xs@2.0.1: {}
@@ -37599,8 +37647,6 @@ snapshots:
   swap-case@2.0.2:
     dependencies:
       tslib: 2.8.1
-
-  swiper@14.4.0: {}
 
   symbol-observable@1.2.0: {}
 

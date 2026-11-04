@@ -5,6 +5,7 @@ import type { PublicSiteConfig } from "@src/site-configs";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetchMiddleware } from "@src/util/graphQLClientMiddleware";
 import { getSiteConfigs } from "@src/util/siteConfig";
+import { redirect } from "react-router";
 
 import { memoryCache } from "./cache";
 import type { GQLDomainRedirectsQuery, GQLDomainRedirectsQueryVariables } from "./redirectToMainHost.generated";
@@ -128,15 +129,15 @@ export async function redirectToMainHost(request: Request, host: string): Promis
 
         const domainRedirects = await fetchDomainRedirects(scope);
 
-        const redirect = domainRedirects.find((redirect) => normalizeHost(redirect.source) === normalizeHost(host));
+        const domainRedirect = domainRedirects.find((domainRedirect) => normalizeHost(domainRedirect.source) === normalizeHost(host));
 
-        if (redirect) {
-            const destination = getRedirectTargetUrl(redirect.target.block, `https://${redirectSiteConfig.domains.main}`);
+        if (domainRedirect) {
+            const destination = getRedirectTargetUrl(domainRedirect.target.block, `https://${redirectSiteConfig.domains.main}`);
             if (destination) {
                 if (normalizeHost(new URL(destination, request.url).host) === normalizeHost(host)) {
                     throw new Error(`Redirect loop detected: ${host} -> ${destination}`);
                 }
-                return Response.redirect(new URL(destination, request.url), 301);
+                return redirect(new URL(destination, request.url).toString(), 301);
             }
         }
         // Redirect to Main Host
@@ -144,26 +145,26 @@ export async function redirectToMainHost(request: Request, host: string): Promis
         if (mainHost === normalizeHost(host)) {
             throw new Error(`Redirect loop detected: main host ${mainHost} equals current host`);
         }
-        return Response.redirect(`https://${redirectSiteConfig.domains.main}${url.pathname}${url.search}`, 301);
+        return redirect(`https://${redirectSiteConfig.domains.main}${url.pathname}${url.search}`, 301);
     }
 
     const domainRedirects = await fetchDomainRedirectsForAllScopes();
 
-    const redirect = domainRedirects.find((redirect) => normalizeHost(redirect.source) === normalizeHost(host));
-    if (redirect) {
-        const scopedSiteConfig = getSiteConfigs().find((config) => config.scope.domain === redirect.scope.domain);
+    const domainRedirect = domainRedirects.find((domainRedirect) => normalizeHost(domainRedirect.source) === normalizeHost(host));
+    if (domainRedirect) {
+        const scopedSiteConfig = getSiteConfigs().find((config) => config.scope.domain === domainRedirect.scope.domain);
 
         if (!scopedSiteConfig) {
-            throw new Error(`Got redirect to domain ${redirect.scope.domain}, but couldn't find corresponding site-config.`);
+            throw new Error(`Got redirect to domain ${domainRedirect.scope.domain}, but couldn't find corresponding site-config.`);
         }
 
-        const destination = getRedirectTargetUrl(redirect.target.block, `https://${scopedSiteConfig.domains.main}`);
+        const destination = getRedirectTargetUrl(domainRedirect.target.block, `https://${scopedSiteConfig.domains.main}`);
 
         if (destination) {
             if (normalizeHost(new URL(destination, request.url).host) === normalizeHost(host)) {
                 throw new Error(`Redirect loop detected: ${host} -> ${destination}`);
             }
-            return Response.redirect(new URL(destination, request.url), 301);
+            return redirect(new URL(destination, request.url).toString(), 301);
         }
     }
 

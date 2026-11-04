@@ -21,6 +21,9 @@ export default defineConfig({
             resolve: {
                 // CommonJS dependencies whose exports Node.js doesn't detect when they are imported from an ES module
                 noExternal: ["prop-types"],
+                // Used by the mails of @dextinity/mail-react, its dependency css-tree reads its package.json at runtime, which fails when it's bundled.
+                // The site depends on it directly, so that Node.js can resolve it.
+                external: ["csso"],
             },
             optimizeDeps: { include: ["react-focus-lock > prop-types"] },
             build: {

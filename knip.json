@@ -130,7 +130,7 @@
         "demo/site-react-router": {
             "entry": ["./src/entry.*.tsx", "./src/routes/**/*.{ts,tsx}", "tracing.dev.ts", "tracing.production.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignoreDependencies": ["@react-router/node", "isbot", "mjml"]
+            "ignoreDependencies": ["@react-router/node", "isbot", "mjml", "csso"]
         },
         "storybook": {
             "entry": ["./src/**/*.stories.tsx"],

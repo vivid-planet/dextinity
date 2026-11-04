@@ -1,4 +1,9 @@
-import { createRSCResponseRenderer, preventCachingOfErrorResponse, runWithRequestContext } from "@dextinity/site-react-router/server";
+import {
+    createRSCResponseRenderer,
+    preventCachingOfErrorResponse,
+    runWithRequestContext,
+    trailingSlashRedirect,
+} from "@dextinity/site-react-router/server";
 import { withSecurityHeaders } from "@src/middleware/securityHeaders";
 import { reportError } from "@src/util/reportError";
 import {
@@ -48,6 +53,11 @@ async function fetchServer(request: Request, requestContext: RouterContextProvid
  */
 export default {
     async fetch(request: Request): Promise<Response> {
+        const redirect = trailingSlashRedirect(request);
+        if (redirect) {
+            return redirect;
+        }
+
         const ssr = await import.meta.viteRsc.loadModule<typeof import("./entry.ssr")>("ssr", "index");
         const response = await ssr.generateHTML(request, await fetchServer(request, new RouterContextProvider()));
         return withSecurityHeaders(preventCachingOfErrorResponse(response));

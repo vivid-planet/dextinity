@@ -7,6 +7,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
 import { DataGrid } from "../dataGrid/DataGrid";
+import { JobAttempts, jobAttemptsFragment } from "./JobAttempts";
 import { JobRuntime } from "./JobRuntime";
 import type {
     GQLKubernetesCronJobQuery,
@@ -40,8 +41,10 @@ const jobsQuery = gql`
             startTime
             completionTime
             status
+            ...JobAttempts
         }
     }
+    ${jobAttemptsFragment}
 `;
 
 function JobsToolbar(props: { cronJobName: string }) {
@@ -128,6 +131,13 @@ export function JobsGrid(props: JobsGridProps) {
                                     />
                                 );
                             },
+                        },
+                        {
+                            field: "attempts",
+                            headerName: intl.formatMessage({ id: "dextinity.pages.jobs.attempts", defaultMessage: "Attempts" }),
+                            flex: 2,
+                            ...disableFieldOptions,
+                            renderCell: ({ row }) => <JobAttempts job={row} />,
                         },
                         {
                             field: "actions",

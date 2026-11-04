@@ -8,6 +8,15 @@ import { ContentScope } from "../user-permissions/interfaces/content-scope.inter
 import { KubernetesJobStatus } from "./job-status.enum";
 import { KUBERNETES_CONFIG, PARENT_CRON_JOB_LABEL } from "./kubernetes.constants";
 import { KubernetesConfig } from "./kubernetes.module";
+import {
+    formatAttemptLogFooter,
+    formatAttemptLogHeader,
+    formatJobFailedLogLine,
+    getJobAttempt,
+    getJobFailedCondition,
+    groupPodsByJobName,
+    sortPodsByCreationTimestamp,
+} from "./kubernetes-job-attempts";
 import { getAnnotation, toLegacyLabelSelector } from "./kubernetes-metadata";
 
 @Injectable()
@@ -94,19 +103,49 @@ export class KubernetesService implements OnModuleInit {
         return items;
     }
 
+    /**
+     * Returns the Pods of multiple Jobs with a single request, grouped by Job name
+     */
+    async getPodsForJobs(jobs: V1Job[]): Promise<Map<string, V1Pod[]>> {
+        const jobNames = jobs.map((job) => job.metadata?.name).filter((name) => name !== undefined);
+        if (jobNames.length === 0) {
+            return new Map();
+        }
+
+        const { items } = await this.coreApi.listNamespacedPod({ namespace: this.namespace, labelSelector: `job-name in (${jobNames.join(",")})` });
+        return groupPodsByJobName(items);
+    }
+
     async getPodLogs(pod: V1Pod): Promise<string> {
         return this.coreApi.readNamespacedPodLog({ name: pod.metadata?.name ?? "", namespace: this.namespace });
     }
 
     async getJobLogs(job: V1Job): Promise<string> {
-        let logs = "";
+        const pods = sortPodsByCreationTimestamp(await this.getPodsForJob(job));
+        const lines: string[] = [];
 
-        const pods = await this.getPodsForJob(job);
-        for (const pod of pods) {
-            logs += await this.getPodLogs(pod);
+        for (const [index, pod] of pods.entries()) {
+            const attempt = getJobAttempt(pod);
+            lines.push(formatAttemptLogHeader(attempt, index + 1, pods.length));
+
+            try {
+                const podLogs = await this.getPodLogs(pod);
+                if (podLogs) {
+                    lines.push(podLogs.replace(/\n$/, ""));
+                }
+            } catch (error) {
+                lines.push(`Logs unavailable: ${error instanceof Error ? error.message : String(error)}`);
+            }
+
+            lines.push(formatAttemptLogFooter(attempt, index + 1, pods.length));
         }
 
-        return logs;
+        const failedCondition = getJobFailedCondition(job);
+        if (failedCondition) {
+            lines.push(formatJobFailedLogLine(failedCondition));
+        }
+
+        return lines.length > 0 ? `${lines.join("\n")}\n` : "";
     }
 
     /**

@@ -801,7 +801,19 @@ type KubernetesCronJob {
 }
 
 type KubernetesJob {
+  """
+  Attempts (Pods) of the Job sorted by creation time. More than one attempt means the Job was retried
+  """
+  attempts: [KubernetesJobAttempt!]!
   completionTime: DateTime
+
+  """Message of the Job's Failed condition"""
+  failureMessage: String
+
+  """
+  Reason of the Job's Failed condition, e.g. BackoffLimitExceeded or DeadlineExceeded
+  """
+  failureReason: String
   id: ID!
 
   """
@@ -811,6 +823,21 @@ type KubernetesJob {
   name: String!
   startTime: DateTime
   status: KubernetesJobStatus!
+}
+
+"""
+A single attempt (Pod) of a Job. A Job has multiple attempts if it was retried.
+"""
+type KubernetesJobAttempt {
+  exitCode: Int
+  finishedAt: DateTime
+  podName: String!
+  startedAt: DateTime
+
+  """
+  Why the attempt ended, e.g. Completed, Error, OOMKilled or DeadlineExceeded. Not set while the attempt is still running
+  """
+  terminationReason: String
 }
 
 enum KubernetesJobStatus {

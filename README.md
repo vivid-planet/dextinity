@@ -128,8 +128,10 @@ Demo will be available at
 It is also possible to start specific microservices
 
 ```bash
-pnpm exec dev-pm start @demo-api # (@demo-api|@demo-admin|@demo-site)
+pnpm exec dev-pm start @demo-api # (@demo-api|@demo-admin|@demo-site|@demo-site-react-router)
 ```
+
+The demo site on React Router (`@demo-site-react-router`) isn't part of `@demo` and is available at [http://localhost:3002/](http://localhost:3002/).
 
 #### Run multiple Demo instances in parallel
 

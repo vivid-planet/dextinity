@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 
 import { createRequestListener } from "@remix-run/node-fetch-server";
 
-import { cdnOriginCheck, createStaticFileHandler } from "../../lib/node.js";
+import { cdnOriginCheck, compressResponse, createStaticFileHandler } from "../../lib/node.js";
 
 // Started by playwright.config.ts: with Vite during development and with the build in production, like the server of a site
 const server = createServer();
@@ -27,7 +27,7 @@ if (process.env.NODE_ENV !== "production") {
                     return rejection;
                 }
             }
-            return (await serveStaticFile(request)) ?? rscEntry.fetch(request);
+            return compressResponse(request, (await serveStaticFile(request)) ?? (await rscEntry.fetch(request)));
         }),
     );
 }

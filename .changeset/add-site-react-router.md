@@ -13,7 +13,7 @@ It's the counterpart of `@dextinity/site-nextjs` for sites built with the RSC Fr
 - `robotsResponse()` and `sitemapResponse()` for the `robots.txt` and `sitemap.xml` routes
 - `runWithRequestContext()` and `getRequestContext()`, which make the context of the middlewares available to server components
 - `createRSCResponseRenderer()`, `preventCachingOfErrorResponse()` and `trailingSlashRedirect()` for the error reporting, the caching and the redirects of the responses in `entry.rsc.tsx`
-- `createStaticFileHandler()` and `cdnOriginCheck()` for the server in `@dextinity/site-react-router/node`
+- `createStaticFileHandler()`, `compressResponse()` and `cdnOriginCheck()` for the server in `@dextinity/site-react-router/node`
 - `persistedQueriesPlugin()` for Vite in `@dextinity/site-react-router/vite`
 
 **Example**

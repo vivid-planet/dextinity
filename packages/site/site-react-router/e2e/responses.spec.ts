@@ -111,6 +111,13 @@ test.describe("production build", () => {
         expect(response.headers()["cache-control"]).toBe("public, max-age=31536000, immutable");
     });
 
+    test("compresses the responses", async ({ request }) => {
+        const response = await request.get("/", { headers: { "Accept-Encoding": "br" } });
+
+        expect(response.headers()["content-encoding"]).toBe("br");
+        expect(await response.text()).toContain("<title>Home</title>");
+    });
+
     test("rejects requests that didn't pass the CDN", async ({ request }) => {
         expect((await request.get("/cdn/anything")).status()).toBe(403);
         expect((await request.get("/cdn/anything", { headers: { "x-cdn-origin-check": "e2e-cdn-secret" } })).status()).toBe(404);

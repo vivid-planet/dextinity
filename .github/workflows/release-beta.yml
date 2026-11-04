@@ -49,10 +49,10 @@ jobs:
               id: changesets
               uses: changesets/action@v2.1.2
               with:
-                  version: pnpm run version
-                  publish: pnpm run publish
+                  version-script: pnpm run version
+                  publish-script: pnpm run publish
                   # We create one release for all packages instead of a release per package
-                  createGithubReleases: false
+                  create-github-releases: false
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -63,4 +63,4 @@ jobs:
               run: node .github/scripts/create-github-release.mjs
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
+                  PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.published-packages }}

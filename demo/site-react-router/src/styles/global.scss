@@ -1,0 +1,159 @@
+@use "./theme.scss" as *;
+@use "./variables" as *;
+
+:root {
+    @include global-theme-default;
+
+    --page-grid-column-count: 24;
+
+    --spacing-s100: 4px;
+    --spacing-s200: 8px;
+    --spacing-s300: 12px;
+    --spacing-s400: 16px;
+    --spacing-s500: 24px;
+    --spacing-s600: 32px;
+
+    --spacing-d100: 20px;
+    --spacing-d200: 28px;
+    --spacing-d300: 44px;
+    --spacing-d400: 72px;
+
+    @media (min-width: $breakpoint-sm) {
+        --spacing-d100: 24px;
+        --spacing-d200: 52px;
+        --spacing-d300: 68px;
+        --spacing-d400: 96px;
+    }
+
+    @media (min-width: $breakpoint-md) {
+        --spacing-d100: 32px;
+        --spacing-d200: 64px;
+        --spacing-d300: 84px;
+        --spacing-d400: 120px;
+    }
+
+    @media (min-width: $breakpoint-lg) {
+        --spacing-d100: 48px;
+        --spacing-d200: 72px;
+        --spacing-d300: 100px;
+        --spacing-d400: 172px;
+    }
+}
+
+/* Fix a problem with Flexbox to avoid overflows: https://defensivecss.dev/tip/flexbox-min-content-size/ */
+* {
+    min-width: 0;
+}
+
+html {
+    /* Prevent font size adjustments after orientation changes in mobile devices */
+    text-size-adjust: 100%;
+
+    --header-height: 100px;
+    --full-viewport-height: 100vh;
+
+    @supports (height: 100dvh) {
+        --full-viewport-height: 100dvh;
+    }
+}
+
+body {
+    margin: 0;
+    font-family: "Inter Variable", sans-serif;
+
+    /* Improve text rendering with font-smoothing */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: var(--brand-grey-900);
+
+    /* Make body take the height of the viewport to put footer at the bottom  */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
+    /* Balance text wrapping for better readability */
+    text-wrap: balance;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
+
+/* Prevent sub and sup elements from affecting the line height in all browsers */
+sub,
+sup {
+    font-size: max(12px, 75%);
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+sup {
+    top: -0.5em;
+}
+
+button {
+    appearance: none;
+    margin: 0;
+    border: none;
+    padding: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+button,
+input,
+select,
+textarea {
+    /* Use the application's default font for form elements */
+    font: inherit;
+
+    /* Remove default border-radius that is added by iOS Safari */
+    border-radius: 0;
+}
+
+/* Improve media defaults */
+img,
+picture,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+/* Fieldset CSS Reset */
+fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+}
+
+legend {
+    padding: 0;
+    margin-bottom: 0;
+}
+
+/* Create a root stacking context: https://www.joshwcomeau.com/css/custom-css-reset/#eight-root-stacking-context-9 */
+/* stylelint-disable selector-id-pattern */
+#root,
+#__next {
+    isolation: isolate;
+}
+
+:focus-visible {
+    outline: 3px solid var(--functional-focus-main);
+    outline-offset: 2px;
+}

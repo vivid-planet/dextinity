@@ -1,0 +1,76 @@
+@use "@src/styles/variables" as *;
+
+.button {
+    display: inline-flex;
+    padding: var(--spacing-s400);
+    border-radius: 4px;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition:
+        background-color 0.2s ease-out,
+        color 0.2s ease-out,
+        border-color 0.2s ease-out;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 110%;
+
+    &:disabled {
+        pointer-events: none;
+    }
+
+    &--contained {
+        background-color: var(--cta-contained-default-bg);
+        color: var(--cta-contained-default-text);
+        border: 1px solid var(--cta-contained-default-border);
+
+        &:hover {
+            color: var(--cta-contained-hover-text);
+            border-color: var(--cta-contained-hover-border);
+            background-color: var(--cta-contained-hover-bg);
+        }
+
+        &:disabled {
+            background-color: var(--cta-contained-disabled-bg);
+            color: var(--cta-contained-disabled-text);
+            border-color: var(--cta-contained-disabled-border);
+        }
+    }
+
+    &--outlined {
+        background-color: transparent;
+        color: var(--cta-outlined-default-text);
+        border: 1px solid var(--cta-outlined-default-border);
+
+        &:hover {
+            background-color: var(--cta-outlined-hover-bg);
+            color: var(--cta-outlined-hover-text);
+            border-color: var(--cta-outlined-hover-border);
+        }
+
+        &:disabled {
+            color: var(--cta-outlined-disabled-text);
+            border-color: var(--cta-outlined-disabled-border);
+        }
+    }
+
+    &--text {
+        background-color: transparent;
+        color: var(--cta-text-default);
+        border: 1px solid transparent;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+
+        &:hover {
+            color: var(--cta-text-hover);
+            text-decoration-thickness: 2px;
+        }
+
+        &:disabled {
+            color: var(--cta-text-disabled);
+        }
+    }
+}

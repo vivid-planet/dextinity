@@ -1,0 +1,15 @@
+@use "@src/styles/theme.scss" as *;
+
+.root {
+    @include global-theme-default;
+
+    &--lightGray {
+        background-color: var(--brand-grey-100);
+    }
+
+    &--darkGray {
+        @include global-theme-inverted;
+        background-color: var(--brand-grey-900);
+        color: var(--brand-primary-contrast);
+    }
+}

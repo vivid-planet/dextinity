@@ -1,0 +1,11 @@
+.pageLayoutContent {
+    grid-column: 2 / -2;
+}
+
+.root {
+    display: flex;
+    height: var(--header-height);
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--brand-grey-200);
+}

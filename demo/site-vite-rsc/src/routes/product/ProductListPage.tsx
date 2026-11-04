@@ -2,6 +2,7 @@ import { gql } from "@dextinity/site-react";
 import { Link } from "@dextinity/site-vite-rsc";
 import { createSitePath } from "@src/util/createSitePath";
 import { graphQLFetch } from "@src/util/graphQLClient";
+import { Suspense } from "react";
 
 import type { GQLProductListPageQuery, GQLProductListPageQueryVariables } from "./ProductListPage.generated";
 
@@ -38,20 +39,29 @@ async function fetchAllPublishedProducts() {
     return products;
 }
 
-export async function ProductListPage({ language }: { language: string }) {
+async function ProductList({ language }: { language: string }) {
     const products = await fetchAllPublishedProducts();
 
+    return (
+        <ul>
+            {products.map((product) => (
+                <li key={product.id}>
+                    <Link href={createSitePath({ path: `/product/${product.slug}`, scope: { language } })}>{product.title}</Link>
+                </li>
+            ))}
+        </ul>
+    );
+}
+
+export function ProductListPage({ language }: { language: string }) {
     return (
         <div>
             <title>Products</title>
             <h1>Products</h1>
-            <ul>
-                {products.map((product) => (
-                    <li key={product.id}>
-                        <Link href={createSitePath({ path: `/product/${product.slug}`, scope: { language } })}>{product.title}</Link>
-                    </li>
-                ))}
-            </ul>
+            {/* Loads all pages of products, streamed responses show the page before it */}
+            <Suspense>
+                <ProductList language={language} />
+            </Suspense>
         </div>
     );
 }

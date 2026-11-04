@@ -1,16 +1,19 @@
 import { generateImageUrl, gql, JsonLd } from "@dextinity/site-react";
 import { Metadata, notFound } from "@dextinity/site-vite-rsc";
+import type { PageContentBlockData } from "@src/blocks.generated";
 import { Breadcrumbs } from "@src/common/components/breadcrumbs/Breadcrumbs";
 import { breadcrumbsFragment } from "@src/common/components/breadcrumbs/Breadcrumbs.fragment";
 import type { GQLPageTreeNodeScopeInput } from "@src/graphql.generated";
 import { graphQLFetch } from "@src/util/graphQLClient";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
+import { Suspense } from "react";
 import type { Thing, WithContext } from "schema-dts";
 
 import { PageContentBlock } from "./blocks/PageContentBlock";
 import { StageBlock } from "./blocks/StageBlock";
 import type { GQLPageQuery, GQLPageQueryVariables } from "./Page.generated";
+import styles from "./Page.module.scss";
 
 const pageQuery = gql`
     query Page($pageTreeNodeId: ID!) {
@@ -63,6 +66,11 @@ async function fetchData({ pageTreeNodeId, scope }: Props) {
     };
 }
 
+async function PageContent({ content, scope }: { content: PageContentBlockData; scope: GQLPageTreeNodeScopeInput }) {
+    const loadedContent = await recursivelyLoadBlockData({ blockType: "PageContent", blockData: content, graphQLFetch, fetch, scope });
+    return <PageContentBlock data={loadedContent} />;
+}
+
 export async function Page({ pageTreeNodeId, scope }: { pageTreeNodeId: string; scope: GQLPageTreeNodeScopeInput }) {
     const data = await fetchData({ pageTreeNodeId, scope });
     const document = data?.pageContent?.document;
@@ -74,14 +82,7 @@ export async function Page({ pageTreeNodeId, scope }: { pageTreeNodeId: string; 
         throw new Error(`invalid document type`);
     }
 
-    [document.content, document.seo, document.stage] = await Promise.all([
-        recursivelyLoadBlockData({
-            blockType: "PageContent",
-            blockData: document.content,
-            graphQLFetch,
-            fetch,
-            scope,
-        }),
+    [document.seo, document.stage] = await Promise.all([
         recursivelyLoadBlockData({
             blockType: "Seo",
             blockData: document.seo,
@@ -135,7 +136,10 @@ export async function Page({ pageTreeNodeId, scope }: { pageTreeNodeId: string; 
             {/* ID is used for skip link */}
             <main id="mainContent">
                 <StageBlock data={document.stage} />
-                <PageContentBlock data={document.content} />
+                {/* The loaders of the content blocks, e.g. news and products, may be slow, the stage is shown before them in streamed responses */}
+                <Suspense fallback={<div className={styles.contentPlaceholder} />}>
+                    <PageContent content={document.content} scope={scope} />
+                </Suspense>
             </main>
         </>
     );

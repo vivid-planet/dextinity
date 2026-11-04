@@ -13,12 +13,32 @@ import { loadMessages } from "@src/util/loadMessages";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { SiteConfigProvider } from "@src/util/SiteConfigProvider";
-import type { PropsWithChildren } from "react";
+import { type PropsWithChildren, Suspense } from "react";
 
-import type { GQLLayoutQuery, GQLLayoutQueryVariables } from "./LanguageLayout.generated";
+import type { GQLLayoutFooterQuery, GQLLayoutFooterQueryVariables, GQLLayoutQuery, GQLLayoutQueryVariables } from "./LanguageLayout.generated";
 
 export function getLayoutLanguage({ domain, language }: ContentScope) {
     return getSiteConfigForDomain(domain).scope.languages.includes(language) ? language : "en";
+}
+
+async function LanguageFooter(scope: ContentScope) {
+    const { footer } = await graphQLFetch<GQLLayoutFooterQuery, GQLLayoutFooterQueryVariables>(
+        gql`
+            query LayoutFooter($domain: String!, $language: String!) {
+                footer: footer(scope: { domain: $domain, language: $language }) {
+                    ...Footer
+                }
+            }
+
+            ${footerFragment}
+        `,
+        scope,
+    );
+    if (!footer) {
+        return null;
+    }
+    const content = await recursivelyLoadBlockData({ blockData: footer.content, blockType: "FooterContent", graphQLFetch, fetch, scope });
+    return <Footer footer={{ ...footer, content }} />;
 }
 
 export async function LanguageLayout({ children, ...params }: PropsWithChildren<ContentScope>) {
@@ -26,12 +46,9 @@ export async function LanguageLayout({ children, ...params }: PropsWithChildren<
     const siteConfig = getSiteConfigForDomain(domain);
     const language = getLayoutLanguage(params);
 
-    const { footer, header, topMenu } = await graphQLFetch<GQLLayoutQuery, GQLLayoutQueryVariables>(
+    const { header, topMenu } = await graphQLFetch<GQLLayoutQuery, GQLLayoutQueryVariables>(
         gql`
             query Layout($domain: String!, $language: String!) {
-                footer: footer(scope: { domain: $domain, language: $language }) {
-                    ...Footer
-                }
                 header: mainMenu(scope: { domain: $domain, language: $language }) {
                     ...Header
                 }
@@ -40,7 +57,6 @@ export async function LanguageLayout({ children, ...params }: PropsWithChildren<
                 }
             }
 
-            ${footerFragment}
             ${headerFragment}
             ${topMenuPageTreeNodeFragment}
         `,
@@ -49,16 +65,6 @@ export async function LanguageLayout({ children, ...params }: PropsWithChildren<
 
     const messages = await loadMessages(language);
 
-    if (footer) {
-        footer.content = await recursivelyLoadBlockData({
-            blockData: footer.content,
-            blockType: "FooterContent",
-            graphQLFetch,
-            fetch,
-            scope: { domain, language },
-        });
-    }
-
     return (
         <SiteConfigProvider siteConfig={siteConfig}>
             <IntlProvider locale={language} messages={messages}>
@@ -66,7 +72,10 @@ export async function LanguageLayout({ children, ...params }: PropsWithChildren<
                 <TopNavigation data={topMenu} />
                 <Header header={header} />
                 {children}
-                {footer && <Footer footer={footer} />}
+                {/* Below the fold, streamed responses show the page before it */}
+                <Suspense>
+                    <LanguageFooter domain={domain} language={language} />
+                </Suspense>
             </IntlProvider>
         </SiteConfigProvider>
     );

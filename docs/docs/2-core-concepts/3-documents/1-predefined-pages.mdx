@@ -22,7 +22,7 @@ The implementation of the news in the project is not covered here.
 Have a look at the implementation in the Demo project:
 [API](https://github.com/vivid-planet/dextinity/blob/main/demo/api/src/news/entities/news.entity.ts),
 [Admin](https://github.com/vivid-planet/dextinity/blob/main/demo/admin/crud-generator-config.ts),
-[Site](https://github.com/vivid-planet/dextinity/tree/main/demo/site/src/app/%5Blang%5D/news).
+[Site](https://github.com/vivid-planet/dextinity/tree/main/demo/site/src/news).
 
 :::
 
@@ -157,8 +157,9 @@ export const pageTreeDocumentTypes: Record<string, DocumentInterface<any, any>> 
 The following steps are required in the Site:
 
 1. Creation of the predefined pages module
-2. Adding the predefined pages to the middleware
-3. Adding the predefined page document type to the `PageLink`
+2. Routing predefined pages in the catch-all route
+3. Providing the predefined pages for creating links
+4. Adding the predefined page document type to the `PageLink`
 
 #### Creation of the predefined pages module
 
@@ -166,54 +167,93 @@ Create the module in `src/documents/predefinedPages`.
 To do this, copy the corresponding [folder](https://github.com/vivid-planet/dextinity/tree/main/demo/site/src/documents/predefinedPages) from the Demo project.
 The following files should be copied:
 
-- `predefinedPagePaths.ts`: The paths where the predefined pages are located in the code
+- `predefinedPages.ts`: Helpers to match a path to a predefined page and to create paths to predefined pages
+- `predefinedPages.loader.ts`: Loads the predefined pages of a domain from the API
+- `PredefinedPagesProvider.tsx`: Provides the predefined pages to client components
+- `PredefinedPageRoute.tsx`: Renders the component of the predefined page type
 
-#### Adding the predefined pages to the middleware
+:::warning
 
-We use a combination of a redirect and a rewrite in the middleware to ensure that a predefined page can be viewed at the expected location in the page tree.
+Support for filtering by document type in the `paginatedPageTreeNodes` query has been added in version 7.4.0.
+Make sure your project uses Dextinity 7.4.0 or later.
+
+:::
+
+#### Routing predefined pages in the catch-all route
+
+A predefined page has no route folder in `app`.
+Instead, it is rendered by the catch-all route `[[...path]]` at its location in the page tree.
 
 For example, consider a Dextinity website that is available in English and German.
-For the German site, the news page should be located at `https://example.com/de/aktuelles`.
-However, in code, the news page is located at `/app/[language]/news`, resulting in `https://example.com/de/news`.
-To ensure that the page can be viewed at the expected location, we need the following redirect and rewrite:
+For the German site, the news page is located at `/aktuelles` in the page tree.
+The catch-all route renders the news page at `https://example.com/de/aktuelles` and a news detail page at `https://example.com/de/aktuelles/my-news`.
 
-- A **rewrite** from `/de/aktuelles` to `/de/news` (to ensure that the page can be viewed at the expected location)
-- A **redirect** from `/de/news` to `/de/aktuelles` (to avoid duplicate content)
+Load the predefined pages before resolving the page tree node and render the matching predefined page:
 
-Perform the following changes in the middleware:
+```diff title="src/app/[visibility]/[domain]/[language]/[[...path]]/page.tsx"
+export default async function Page({ params }: PageProps<"/[visibility]/[domain]/[language]/[[...path]]">) {
+    const { domain, language, path } = await params;
 
-1.  Copy the predefined pages [helper functions](https://github.com/vivid-planet/dextinity/tree/main/demo/site/src/middleware/predefinedPages.ts) from the Demo project
++   const predefinedPages = await fetchPredefinedPages({ domain, graphQLFetch: createGraphQLFetch() });
++   const predefinedPageMatch = matchPredefinedPage(predefinedPages, {
++       path: `/${(path ?? []).join("/")}`,
++       scope: { domain, language },
++   });
++
++   if (predefinedPageMatch) {
++       return <PredefinedPageRoute predefinedPage={predefinedPageMatch.predefinedPage} segments={predefinedPageMatch.segments} />;
++   }
 
-    :::warning
+    /* ... */
+}
+```
 
-    Support for filtering by document type in the `paginatedPageTreeNodes` query has been added in version 7.4.0.
-    Make sure your project uses Dextinity 7.4.0 or later.
+`segments` contains the path segments below the predefined page, for instance `["my-news"]` for a news detail page.
+The component of the predefined page type decides what to render for them, see [`NewsPredefinedPage`](https://github.com/vivid-planet/dextinity/blob/main/demo/site/src/news/NewsPredefinedPage.tsx).
 
-    :::
+#### Providing the predefined pages for creating links
 
-2.  Add the rewrite and redirect to the middleware:
+Links to a predefined page, for instance to a news detail page, depend on where the predefined page is located in the page tree.
+Load the predefined pages in the layout and provide them to client components:
 
-    ```diff
-    + import { getPredefinedPageRedirect, getPredefinedPageRewrite } from "./middleware/predefinedPages";
+```diff title="src/app/[visibility]/[domain]/[language]/layout.tsx"
+export default async function Layout({ children, params }: LayoutProps<"/[visibility]/[domain]/[language]">) {
+    const { domain } = await params;
++   const predefinedPages = await fetchPredefinedPages({ domain, graphQLFetch: createGraphQLFetch() });
 
-    export async function middleware(request: NextRequest) {
-        /* ... */
+    return (
+-       <>{children}</>
++       <PredefinedPagesProvider predefinedPages={predefinedPages}>{children}</PredefinedPagesProvider>
+    );
+}
+```
 
-    +   const predefinedPageRedirect = await getPredefinedPageRedirect(scope, pathname);
-    +
-    +   if (predefinedPageRedirect) {
-    +       return NextResponse.redirect(new URL(predefinedPageRedirect, request.url), 307);
-    +   }
-    +
-    +   const predefinedPageRewrite = await getPredefinedPageRewrite(scope, pathname);
-    +
-    +   if (predefinedPageRewrite) {
-    +       return NextResponse.rewrite(new URL(predefinedPageRewrite, request.url));
-    +   }
+Create the path in the link component using `createPredefinedPageSitePath`:
 
-        return NextResponse.next();
+```tsx title="src/news/NewsLink.tsx"
+"use client";
+
+export function NewsLink({
+    news,
+    children,
+}: PropsWithChildren<{ news: { slug: string; scope: ContentScope } }>) {
+    const predefinedPages = usePredefinedPages();
+    const href = createPredefinedPageSitePath({
+        predefinedPages,
+        type: "news",
+        scope: news.scope,
+        path: `/${news.slug}`,
+    });
+
+    if (href === undefined) {
+        return <span>{children}</span>;
     }
-    ```
+
+    return <Link href={href}>{children}</Link>;
+}
+```
+
+`createPredefinedPageSitePath` returns `undefined` if no predefined page of the type exists in the scope.
 
 #### Adding the predefined page document type to the `PageLink`
 
@@ -262,11 +302,11 @@ If you want to add another predefined page type (e.g., products), make the follo
     };
     ```
 
-3. Site: Add the new type to the code paths:
+3. Site: Add a component for the new type to the predefined page routes:
 
-    ```diff title="src/documents/predefinedPages/predefinedPagePaths.ts"
-    export const predefinedPagePaths = {
-        News: "/news",
-    +   Products: "/products",
+    ```diff title="src/documents/predefinedPages/PredefinedPageRoute.tsx"
+    const predefinedPageRoutes: Record<GQLPredefinedPageType, (props: PredefinedPageRouteProps) => Promise<JSX.Element>> = {
+        News: NewsPredefinedPage,
+    +   Products: ProductsPredefinedPage,
     };
     ```

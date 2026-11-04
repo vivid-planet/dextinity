@@ -86,9 +86,34 @@ jobs:
                   echo "Packages with Storybook tests to run: $packages"
                   echo "packages=$packages" >> "$GITHUB_OUTPUT"
 
+    build-packages:
+        name: Build packages
+        needs: detect-storybook-packages
+        if: needs.detect-storybook-packages.outputs.packages != '[]'
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  ref: ${{ github.event.pull_request.head.ref || github.ref }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - uses: ./.github/actions/setup
+              with:
+                  build-packages: "true"
+
+            # The build also generates files in src/, so archive everything the build added instead of only lib/
+            - name: Archive build output
+              run: git ls-files --others --ignored --exclude-standard --directory packages | grep -v '/node_modules/' | tar -czf build-output.tgz -T -
+
+            - uses: actions/upload-artifact@v7
+              with:
+                  name: build-output
+                  path: build-output.tgz
+                  retention-days: 1
+
     test-storybook:
         name: Test (storybook, ${{ matrix.package }})
-        needs: detect-storybook-packages
+        needs: [detect-storybook-packages, build-packages]
         if: needs.detect-storybook-packages.outputs.packages != '[]'
         runs-on: ubuntu-latest
         strategy:
@@ -107,8 +132,13 @@ jobs:
                   git config user.email github-actions@github.com
 
             - uses: ./.github/actions/setup
+
+            - uses: actions/download-artifact@v8
               with:
-                  build-packages: "true"
+                  name: build-output
+
+            - name: Extract build output
+              run: tar -xzf build-output.tgz && rm build-output.tgz
 
             - name: Install Playwright Browsers
               run: pnpm --filter dextinity-storybook exec playwright install chromium-headless-shell

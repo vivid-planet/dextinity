@@ -4,7 +4,7 @@ import { getSiteContext, hasSiteContext } from "@src/util/siteContext";
 import { RouterContextProvider } from "react-router";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
-import { siteContextMiddleware } from "./siteContext.server";
+import { siteContextMiddleware } from "./siteContext";
 
 const siteConfigs = [
     { scope: { domain: "main", languages: ["en"] }, domains: { main: "www.example.com" }, url: "https://www.example.com" },

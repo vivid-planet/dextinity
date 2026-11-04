@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@src/common/components/Button";
 import { PageLink } from "@src/layout/header/PageLink";
 import { FormattedMessage } from "react-intl";

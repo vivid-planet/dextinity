@@ -1,5 +1,5 @@
 import { robotsResponse } from "@dextinity/site-react-router/server";
-import { getSiteConfigForDomain } from "@src/util/siteConfig.server";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { getSiteContext } from "@src/util/siteContext";
 
 import type { Route } from "./+types/robotsRoute";

@@ -1,3 +1,4 @@
+"use client";
 import { hasRichTextBlockContent, PreviewSkeleton, type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { LinkBlockData, RichTextBlockData } from "@src/blocks.generated";
 import clsx from "clsx";

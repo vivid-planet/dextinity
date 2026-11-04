@@ -1,3 +1,7 @@
+"use client";
+
+"use client";
+
 import { useNavigation } from "react-router";
 
 import styles from "./NavigationProgress.module.scss";

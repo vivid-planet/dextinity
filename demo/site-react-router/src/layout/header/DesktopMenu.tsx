@@ -1,3 +1,4 @@
+"use client";
 import { SvgUse } from "@src/common/helpers/SvgUse";
 import { PageLink } from "@src/layout/header/PageLink";
 import { useEscapeKeyPressed } from "@src/util/useEscapeKeyPressed";

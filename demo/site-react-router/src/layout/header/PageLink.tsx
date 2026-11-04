@@ -1,3 +1,4 @@
+"use client";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 import { createSitePath } from "@src/util/createSitePath";
 import type { JSX, PropsWithChildren } from "react";

@@ -1,3 +1,5 @@
+"use client";
+
 import type { ComponentProps, PropsWithChildren } from "react";
 import { IntlProvider as LibraryIntlProvider } from "react-intl";
 

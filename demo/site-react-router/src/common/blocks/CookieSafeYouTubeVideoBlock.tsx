@@ -1,3 +1,4 @@
+"use client";
 import { CookieSafe, useCookieApi } from "@dextinity/site-react";
 import { YouTubeVideoBlock } from "@dextinity/site-react-router";
 import { cookieIds } from "@src/util/cookieIds";

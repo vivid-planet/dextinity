@@ -2,7 +2,7 @@
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
 
-import { securityHeadersMiddleware } from "./securityHeaders.server";
+import { securityHeadersMiddleware } from "./securityHeaders";
 
 const app = new Hono();
 app.use(securityHeadersMiddleware);

@@ -1,6 +1,6 @@
 import { acceptedFileTypes, maxFileSizeBytes } from "@src/util/fileUpload";
-import { assessRecaptchaToken } from "@src/util/recaptcha/assessRecaptchaToken.server";
-import { getSiteConfigForDomain } from "@src/util/siteConfig.server";
+import { assessRecaptchaToken } from "@src/util/recaptcha/assessRecaptchaToken";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { getSiteContext } from "@src/util/siteContext";
 
 import type { Route } from "./+types/fileUploadRoute";

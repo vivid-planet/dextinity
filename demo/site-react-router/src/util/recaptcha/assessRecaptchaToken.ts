@@ -1,4 +1,4 @@
-import { recaptchaClient, recaptchaResourceName } from "./recaptchaClient.server";
+import { recaptchaClient, recaptchaResourceName } from "./recaptchaClient";
 
 interface Options {
     token: string;

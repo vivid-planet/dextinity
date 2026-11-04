@@ -1,8 +1,8 @@
-import { gql, type GraphQLFetch } from "@dextinity/site-react";
+import { gql } from "@dextinity/site-react";
 import { cacheControlHeaders } from "@dextinity/site-react-router";
 import { createSitePath } from "@src/util/createSitePath";
-import { getGraphQLFetch } from "@src/util/graphQLClient.server";
-import { getPageHeaders } from "@src/util/pageCacheControl.server";
+import { graphQLFetch } from "@src/util/graphQLClient";
+import { getPageHeaders } from "@src/util/pageCacheControl";
 import { data, Link } from "react-router";
 
 import type { Route } from "./+types/ProductListPage";
@@ -10,7 +10,7 @@ import type { GQLProductListPageQuery, GQLProductListPageQueryVariables } from "
 
 const productsPerRequest = 100;
 
-async function fetchAllPublishedProducts(graphQLFetch: GraphQLFetch) {
+async function fetchAllPublishedProducts() {
     const products: GQLProductListPageQuery["products"]["nodes"] = [];
     let hasMoreProducts: boolean;
 
@@ -45,11 +45,13 @@ export const headers = cacheControlHeaders;
 
 export const meta: Route.MetaFunction = () => [{ title: "Products" }];
 
-export async function loader({ context }: Route.LoaderArgs) {
-    return data({ products: await fetchAllPublishedProducts(getGraphQLFetch(context)) }, getPageHeaders(context));
+export function loader({ context }: Route.LoaderArgs) {
+    return data(null, getPageHeaders(context));
 }
 
-export default function ProductListPage({ loaderData: { products }, params: { language } }: Route.ComponentProps) {
+export async function ServerComponent({ params: { language } }: Route.ServerComponentProps) {
+    const products = await fetchAllPublishedProducts();
+
     return (
         <div>
             <h1>Products</h1>

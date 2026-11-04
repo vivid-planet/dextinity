@@ -1,3 +1,4 @@
+"use client";
 import { ListBlock, type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { CallToActionListBlockData } from "@src/blocks.generated";
 

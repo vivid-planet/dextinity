@@ -1,20 +1,17 @@
 import { cacheControlHeaders } from "@dextinity/site-react-router";
-import { NewsPage } from "@src/news/NewsPage";
-import { getGraphQLFetch } from "@src/util/graphQLClient.server";
-import { getPageHeaders } from "@src/util/pageCacheControl.server";
+import { getPageHeaders } from "@src/util/pageCacheControl";
 import { getSiteContext } from "@src/util/siteContext";
 import { data } from "react-router";
 
 import type { Route } from "./+types/NewsIndexPage";
-import { loadNewsIndexPage } from "./loadNewsPages.server";
+import { NewsIndex } from "./NewsIndex";
 
 export const headers = cacheControlHeaders;
 
-export async function loader({ params, context }: Route.LoaderArgs) {
-    const scope = { domain: getSiteContext(context).domain, language: params.language };
-    return data(await loadNewsIndexPage({ scope, graphQLFetch: getGraphQLFetch(context) }), getPageHeaders(context));
+export function loader({ params, context }: Route.LoaderArgs) {
+    return data({ scope: { domain: getSiteContext(context).domain, language: params.language } }, getPageHeaders(context));
 }
 
-export default function NewsIndexPage({ loaderData }: Route.ComponentProps) {
-    return <NewsPage scope={loaderData.scope} initialData={loaderData.initialData} />;
+export function ServerComponent({ loaderData }: Route.ServerComponentProps) {
+    return <NewsIndex scope={loaderData.scope} />;
 }

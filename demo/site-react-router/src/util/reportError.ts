@@ -1,6 +1,6 @@
 /**
- * Called for all unexpected errors on the server and in the browser: by `handleError` of `entry.server.tsx`, `onError` of
- * `HydratedRouter` in `entry.client.tsx` and the error handler of the blocks
+ * Called for all unexpected errors on the server and in the browser: by the entries (`entry.rsc.tsx`, `entry.ssr.tsx` and
+ * `entry.client.tsx`) and the error handler of the blocks
  */
 export function reportError(error: unknown) {
     // Report the error to the error tracking service (e.g. Sentry) here. This module runs on the server and in the browser,

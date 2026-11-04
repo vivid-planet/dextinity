@@ -4,13 +4,13 @@ import type { ExternalLinkBlockData, InternalLinkBlockData, NewsLinkBlockData, R
 import type { GQLPageTreeNodeScope, GQLRedirectScopeInput } from "@src/graphql.generated";
 import type { PublicSiteConfig } from "@src/site-configs";
 import { createSitePath } from "@src/util/createSitePath";
-import { createGraphQLFetchMiddleware } from "@src/util/graphQLClientMiddleware.server";
-import { getHostByHeaders, getSiteConfigs } from "@src/util/siteConfig.server";
+import { createGraphQLFetchMiddleware } from "@src/util/graphQLClientMiddleware";
+import { getHostByHeaders, getSiteConfigs } from "@src/util/siteConfig";
 import { hasSiteContext } from "@src/util/siteContext";
 import type { MiddlewareFunction } from "react-router";
 
-import { memoryCache } from "./cache.server";
-import type { GQLDomainRedirectsQuery, GQLDomainRedirectsQueryVariables } from "./redirectToMainHost.server.generated";
+import { memoryCache } from "./cache";
+import type { GQLDomainRedirectsQuery, GQLDomainRedirectsQueryVariables } from "./redirectToMainHost.generated";
 
 const domainRedirectsQuery = gql`
     query DomainRedirects($scope: RedirectScopeInput!, $filter: RedirectFilter, $offset: Int, $limit: Int) {

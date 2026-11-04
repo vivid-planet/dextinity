@@ -1,9 +1,10 @@
 import type { WelcomeEmailContentBlockData } from "@src/blocks.generated";
-import { getGraphQLFetch } from "@src/util/graphQLClient.server";
+import { getGraphQLFetch } from "@src/util/graphQLClient";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
 import { z } from "zod";
 
 import type { Route } from "./+types/welcomeEmailRoute";
+import { loadMailsEntry } from "./loadMailsEntry";
 
 const QueryValidationSchema = z.object({
     domain: z.string(),
@@ -49,9 +50,7 @@ export async function loader({ url, context }: Route.LoaderArgs) {
         scope,
     });
 
-    // Loaded on use, so that the mail renderer isn't loaded for the pages
-    const { renderWelcomeEmail } = await import("./renderWelcomeEmail.server");
-    const html = await renderWelcomeEmail({ content, scope });
+    const html = await (await loadMailsEntry()).renderWelcomeEmail({ content, scope });
 
     return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
 }

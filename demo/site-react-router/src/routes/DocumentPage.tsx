@@ -1,26 +1,25 @@
 import { gql, type GraphQLFetch } from "@dextinity/site-react";
 import { cacheControlHeaders, notFound, redirect } from "@dextinity/site-react-router";
 import type { ExternalLinkBlockData, InternalLinkBlockData, NewsLinkBlockData, RedirectsLinkBlockData } from "@src/blocks.generated";
-import { redirectToLink } from "@src/documents/links/redirectToLink.server";
-import { loadPage } from "@src/documents/pages/loadPage.server";
+import { redirectToLink } from "@src/documents/links/redirectToLink";
+import { loadPageMetadata } from "@src/documents/pages/loadPage";
 import { Page } from "@src/documents/pages/Page";
 import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
 import { defaultTitle } from "@src/layout/defaultTitle";
-import { getPredefinedPageRewrite } from "@src/middleware/predefinedPages.server";
-import { NewsArticleJsonLd } from "@src/news/NewsArticleJsonLd";
-import { NewsPage } from "@src/news/NewsPage";
+import { getPredefinedPageRewrite } from "@src/middleware/predefinedPages";
 import type { ContentScope } from "@src/site-configs";
 import { createSitePath } from "@src/util/createSitePath";
-import { getGraphQLFetch } from "@src/util/graphQLClient.server";
-import { getPageHeaders } from "@src/util/pageCacheControl.server";
-import { getSiteConfigForDomain } from "@src/util/siteConfig.server";
+import { getGraphQLFetch } from "@src/util/graphQLClient";
+import { getPageHeaders } from "@src/util/pageCacheControl";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { getSiteContext } from "@src/util/siteContext";
-import { data, matchPath } from "react-router";
+import { data } from "react-router";
 
 import type { Route } from "./+types/DocumentPage";
 import type { GQLDocumentTypeQuery, GQLDocumentTypeQueryVariables } from "./DocumentPage.generated";
-import { loadNewsDetailPage, loadNewsIndexPage } from "./news/loadNewsPages.server";
-import { NewsDetailContent } from "./news/NewsDetailContent";
+import { fetchNews } from "./news/loadNewsPages";
+import { NewsDetail } from "./news/NewsDetail";
+import { NewsIndex } from "./news/NewsIndex";
 
 const documentTypeQuery = gql`
     query DocumentType(
@@ -109,7 +108,7 @@ async function loadDocument(params: Params & { graphQLFetch: GraphQLFetch; pageH
     const pageTreeNodeId = data.pageTreeNodeByPath.id;
     switch (data.pageTreeNodeByPath.documentType) {
         case "Page":
-            return { type: "page" as const, ...(await loadPage({ pageTreeNodeId, scope, graphQLFetch })) };
+            return { type: "page" as const, pageTreeNodeId, scope, metadata: await loadPageMetadata({ pageTreeNodeId, scope, graphQLFetch }) };
         case "Link":
             return redirectToLink({ pageTreeNodeId, graphQLFetch, pageHeaders });
         default:
@@ -121,12 +120,14 @@ async function loadDocument(params: Params & { graphQLFetch: GraphQLFetch; pageH
  * Pages of the code, e.g. the news, below the path of their predefined page in the page tree, see `predefinedPagesMiddleware`
  */
 async function loadPredefinedPage(codePath: string, { scope, graphQLFetch }: { scope: ContentScope; graphQLFetch: GraphQLFetch }) {
-    if (matchPath("/:language/news", codePath)) {
-        return { type: "newsIndex" as const, ...(await loadNewsIndexPage({ scope, graphQLFetch })) };
+    // matchPath() of React Router isn't available in server components
+    const [, , codePage, slug, ...rest] = codePath.split("/");
+    if (codePage === "news" && slug === undefined) {
+        return { type: "newsIndex" as const, scope };
     }
-    const newsDetailMatch = matchPath("/:language/news/:slug", codePath);
-    if (newsDetailMatch?.params.slug) {
-        return { type: "newsDetail" as const, ...(await loadNewsDetailPage({ scope, slug: newsDetailMatch.params.slug, graphQLFetch })) };
+    if (codePage === "news" && slug && rest.length === 0) {
+        const news = await fetchNews({ scope, slug, graphQLFetch });
+        return { type: "newsDetail" as const, scope, slug, metadata: [{ title: news.title }] };
     }
     notFound();
 }
@@ -134,7 +135,7 @@ async function loadPredefinedPage(codePath: string, { scope, graphQLFetch }: { s
 export const headers = cacheControlHeaders;
 
 export const meta: Route.MetaFunction = ({ loaderData }) =>
-    loaderData && "metadata" in loaderData ? loaderData.metadata : [{ title: defaultTitle }];
+    (loaderData && "metadata" in loaderData && loaderData.metadata) || [{ title: defaultTitle }];
 
 /**
  * The pages of the page tree, e.g. `/en/about/team` for the path `/about/team`
@@ -155,18 +156,13 @@ export async function loader({ params, url, context }: Route.LoaderArgs) {
     return data(await loadDocument({ ...scope, path, graphQLFetch, pageHeaders }), pageHeaders);
 }
 
-export default function DocumentPage({ loaderData }: Route.ComponentProps) {
+export function ServerComponent({ loaderData }: Route.ServerComponentProps) {
     switch (loaderData.type) {
         case "page":
-            return <Page {...loaderData} />;
+            return <Page pageTreeNodeId={loaderData.pageTreeNodeId} scope={loaderData.scope} />;
         case "newsIndex":
-            return <NewsPage scope={loaderData.scope} initialData={loaderData.initialData} />;
+            return <NewsIndex scope={loaderData.scope} />;
         case "newsDetail":
-            return (
-                <>
-                    <NewsArticleJsonLd news={loaderData.news} scope={loaderData.scope} />
-                    <NewsDetailContent news={loaderData.news} />
-                </>
-            );
+            return <NewsDetail scope={loaderData.scope} slug={loaderData.slug} />;
     }
 }

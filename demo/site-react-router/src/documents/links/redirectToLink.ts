@@ -2,7 +2,7 @@ import { gql, type GraphQLFetch } from "@dextinity/site-react";
 import { notFound, redirect } from "@dextinity/site-react-router";
 import type { DamFileDownloadLinkBlockData, ExternalLinkBlockData, InternalLinkBlockData } from "@src/blocks.generated";
 
-import type { GQLLinkRedirectQuery, GQLLinkRedirectQueryVariables } from "./redirectToLink.server.generated";
+import type { GQLLinkRedirectQuery, GQLLinkRedirectQueryVariables } from "./redirectToLink.generated";
 
 const linkRedirectQuery = gql`
     query LinkRedirect($id: ID!) {

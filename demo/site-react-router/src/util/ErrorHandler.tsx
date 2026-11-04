@@ -1,3 +1,5 @@
+"use client";
+
 import { ErrorHandlerProvider } from "@dextinity/site-react";
 import { reportError } from "@src/util/reportError";
 import type { ErrorInfo, PropsWithChildren } from "react";

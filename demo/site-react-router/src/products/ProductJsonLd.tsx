@@ -2,7 +2,7 @@ import { generateImageUrl, gql, JsonLd } from "@dextinity/site-react";
 import type { DamImageBlockData } from "@src/blocks.generated";
 import type { ContentScope } from "@src/site-configs";
 import { createSitePath } from "@src/util/createSitePath";
-import { useSiteConfig } from "@src/util/SiteConfigProvider";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import type { AggregateOffer, ItemAvailability, Offer, Product, WithContext } from "schema-dts";
 
 import type { GQLProductJsonLdFragment } from "./ProductJsonLd.generated";
@@ -77,7 +77,7 @@ function productOffers(product: GQLProductJsonLdFragment, url: string): Offer | 
 }
 
 export function ProductJsonLd({ product, scope }: Props) {
-    const siteConfig = useSiteConfig();
+    const siteConfig = getSiteConfigForDomain(scope.domain);
     const url = new URL(createSitePath({ scope, path: `/product/${product.slug}` }), siteConfig.url).toString();
     const image = productImageUrl(product.image, siteConfig.url);
     const offers = productOffers(product, url);

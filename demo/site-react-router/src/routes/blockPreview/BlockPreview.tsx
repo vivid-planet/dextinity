@@ -1,5 +1,7 @@
+"use client";
+
 import { createFetchInMemoryCache } from "@dextinity/site-react";
-import { createBlockPreview, defineBlockPreview } from "@dextinity/site-react-router";
+import { type BlockPreviewDefinition, createBlockPreview, defineBlockPreview } from "@dextinity/site-react-router";
 import type {
     AllBlockNames,
     EmailCampaignContentBlockData,
@@ -19,40 +21,44 @@ import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
 import { reportError } from "@src/util/reportError";
 import { lazy } from "react";
 
+import type { BlockPreviewType } from "./blockPreviewTypes";
+
 // Loaded on demand, as only the mail previews need the mail renderer
 const WelcomeEmailPreview = lazy(async () => ({ default: (await import("./WelcomeEmailPreview")).WelcomeEmailPreview }));
 const EmailCampaignPreview = lazy(async () => ({ default: (await import("./EmailCampaignPreview")).EmailCampaignPreview }));
 
 const cachingFetch = createFetchInMemoryCache(fetch);
 
+const previews = {
+    page: defineBlockPreview({
+        blockType: "PageContent",
+        render: (data: PageContentBlockData) => <PageContentBlock data={data} />,
+    }),
+    stage: defineBlockPreview({
+        blockType: "Stage",
+        render: (data: StageBlockData) => <StageBlock data={data} />,
+    }),
+    "main-menu": defineBlockPreview({
+        blockType: "RichText",
+        render: (data: RichTextBlockData) => <RichTextBlock data={data} />,
+    }),
+    footer: defineBlockPreview({
+        blockType: "FooterContent",
+        render: (data: FooterContentBlockData) => <FooterContentBlock data={data} />,
+    }),
+    "welcome-email": defineBlockPreview({
+        blockType: "WelcomeEmailContent",
+        render: (data: WelcomeEmailContentBlockData) => <WelcomeEmailPreview data={data} />,
+    }),
+    "brevo-email-campaign": defineBlockPreview({
+        blockType: "EmailCampaignContent",
+        getBlock: (state: { content: unknown }) => state.content,
+        render: (data: EmailCampaignContentBlockData) => <EmailCampaignPreview data={data} />,
+    }),
+} satisfies Record<BlockPreviewType, BlockPreviewDefinition<AllBlockNames>>;
+
 export const BlockPreview = createBlockPreview<AllBlockNames>({
-    previews: {
-        page: defineBlockPreview({
-            blockType: "PageContent",
-            render: (data: PageContentBlockData) => <PageContentBlock data={data} />,
-        }),
-        stage: defineBlockPreview({
-            blockType: "Stage",
-            render: (data: StageBlockData) => <StageBlock data={data} />,
-        }),
-        "main-menu": defineBlockPreview({
-            blockType: "RichText",
-            render: (data: RichTextBlockData) => <RichTextBlock data={data} />,
-        }),
-        footer: defineBlockPreview({
-            blockType: "FooterContent",
-            render: (data: FooterContentBlockData) => <FooterContentBlock data={data} />,
-        }),
-        "welcome-email": defineBlockPreview({
-            blockType: "WelcomeEmailContent",
-            render: (data: WelcomeEmailContentBlockData) => <WelcomeEmailPreview data={data} />,
-        }),
-        "brevo-email-campaign": defineBlockPreview({
-            blockType: "EmailCampaignContent",
-            getBlock: (state: { content: unknown }) => state.content,
-            render: (data: EmailCampaignContentBlockData) => <EmailCampaignPreview data={data} />,
-        }),
-    },
+    previews,
     loadBlockData: ({ blockType, block, contentScope }) =>
         recursivelyLoadBlockData({
             blockType,

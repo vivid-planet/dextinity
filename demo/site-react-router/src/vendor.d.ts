@@ -12,8 +12,3 @@ declare module "react" {
         [key: `--${string}`]: string | number;
     }
 }
-
-declare module "virtual:react-router/server-build" {
-    const build: import("react-router").ServerBuild;
-    export = build;
-}

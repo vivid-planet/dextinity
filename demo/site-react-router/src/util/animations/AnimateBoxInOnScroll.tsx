@@ -1,3 +1,5 @@
+"use client";
+
 import { usePreview } from "@dextinity/site-react";
 import { useAnimateGroup } from "@src/util/animations/AnimateGroup";
 import { useGlobalScrollSpeed } from "@src/util/animations/useGlobalScrollSpeed";

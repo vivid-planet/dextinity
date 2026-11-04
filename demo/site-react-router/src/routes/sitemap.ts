@@ -1,9 +1,9 @@
 import { gql, type GraphQLFetch } from "@dextinity/site-react";
 import type { Sitemap } from "@dextinity/site-react-router/server";
 import { createSitePath } from "@src/util/createSitePath";
-import { getSiteConfigForDomain } from "@src/util/siteConfig.server";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 
-import type { GQLPrebuildPageDataListSitemapQuery, GQLPrebuildPageDataListSitemapQueryVariables } from "./sitemap.server.generated";
+import type { GQLPrebuildPageDataListSitemapQuery, GQLPrebuildPageDataListSitemapQueryVariables } from "./sitemap.generated";
 
 export async function loadSitemap({ domain, graphQLFetch }: { domain: string; graphQLFetch: GraphQLFetch }): Promise<Sitemap> {
     const sitemap: Sitemap = [];

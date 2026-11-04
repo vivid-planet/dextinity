@@ -20,8 +20,8 @@ async function main() {
     const { createServer } = createRequire(import.meta.url)("node:http") as typeof import("node:http");
     const server = createServer();
 
-    // The Hono app of the site, which passes the requests to React Router
-    const handle = await createRequestListener({ dev, server, appModule: "./src/app.ts" });
+    // Handles the requests with src/entry.rsc.tsx
+    const handle = await createRequestListener({ dev, server });
 
     server
         .on("request", async (req: IncomingMessage, res: ServerResponse) => {

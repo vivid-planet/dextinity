@@ -1,3 +1,4 @@
+"use client";
 import { type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { BasicStageBlockData } from "@src/blocks.generated";
 import { CallToActionListBlock } from "@src/common/blocks/CallToActionListBlock";

@@ -1,4 +1,4 @@
-import { getSiteConfigForDomain } from "@src/util/siteConfig.server";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { getSiteContext } from "@src/util/siteContext";
 import { data, redirect } from "react-router";
 

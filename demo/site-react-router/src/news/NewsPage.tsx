@@ -1,3 +1,4 @@
+"use client";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 import { createBrowserGraphQLFetch } from "@src/util/browserGraphQLClient";
 import { useState } from "react";

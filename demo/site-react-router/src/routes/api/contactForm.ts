@@ -1,6 +1,6 @@
-import { mailerTransport } from "@src/util/mailer.server";
-import { assessRecaptchaToken } from "@src/util/recaptcha/assessRecaptchaToken.server";
-import { getSiteConfigForDomain } from "@src/util/siteConfig.server";
+import { mailerTransport } from "@src/util/mailer";
+import { assessRecaptchaToken } from "@src/util/recaptcha/assessRecaptchaToken";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { getSiteContext } from "@src/util/siteContext";
 import { z } from "zod";
 

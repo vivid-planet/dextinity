@@ -1,3 +1,4 @@
+"use client";
 import { type PropsWithData, withPreview } from "@dextinity/site-react";
 import type { ProductPriceBlockData } from "@src/blocks.generated";
 

@@ -1,12 +1,12 @@
 import { gql } from "@dextinity/site-react";
 import { predefinedPagePaths } from "@src/documents/predefinedPages/predefinedPagePaths";
-import { createGraphQLFetchMiddleware } from "@src/util/graphQLClientMiddleware.server";
-import { getSiteConfigForDomain } from "@src/util/siteConfig.server";
+import { createGraphQLFetchMiddleware } from "@src/util/graphQLClientMiddleware";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { getSiteContext } from "@src/util/siteContext";
 import { type MiddlewareFunction, redirect } from "react-router";
 
-import { memoryCache } from "./cache.server";
-import type { GQLPredefinedPagesQuery, GQLPredefinedPagesQueryVariables } from "./predefinedPages.server.generated";
+import { memoryCache } from "./cache";
+import type { GQLPredefinedPagesQuery, GQLPredefinedPagesQueryVariables } from "./predefinedPages.generated";
 
 async function getPredefinedPageRedirect(domain: string, pathname: string): Promise<string | undefined> {
     const pages = await fetchPredefinedPages(domain);

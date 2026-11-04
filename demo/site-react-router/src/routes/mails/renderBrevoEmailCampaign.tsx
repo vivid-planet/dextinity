@@ -1,8 +1,8 @@
 import { renderMailHtml } from "@dextinity/mail-react/server";
 import { EmailCampaignMail } from "@src/brevo/EmailCampaignMail";
 import { replaceMailHtmlPlaceholders } from "@src/brevo/util/replaceMailHtmlPlaceholders";
-import { getMailConfig } from "@src/mail/util/getMailConfig.server";
-import { loadMessages } from "@src/util/loadMessages.server";
+import { getMailConfig } from "@src/mail/util/getMailConfig";
+import { loadMessages } from "@src/util/loadMessages";
 import { z } from "zod";
 
 const RequestBodyValidationSchema = z.object({

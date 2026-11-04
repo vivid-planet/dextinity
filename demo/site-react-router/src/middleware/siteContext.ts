@@ -1,5 +1,5 @@
 import { getPreviewScope } from "@dextinity/site-react-router/server";
-import { getHostByHeaders, getSiteConfigForHost } from "@src/util/siteConfig.server";
+import { getHostByHeaders, getSiteConfigForHost } from "@src/util/siteConfig";
 import { setSiteContext } from "@src/util/siteContext";
 import type { MiddlewareFunction } from "react-router";
 

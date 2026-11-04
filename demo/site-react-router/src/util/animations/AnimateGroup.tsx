@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 const breakpoints = {

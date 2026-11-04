@@ -1,3 +1,4 @@
+"use client";
 import type { SVGProps } from "react";
 
 interface SvgUseProps extends SVGProps<SVGSVGElement> {

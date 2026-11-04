@@ -1,3 +1,4 @@
+"use client";
 import { JsonLd } from "@dextinity/site-react";
 import { SvgUse } from "@src/common/helpers/SvgUse";
 import { PageLayout } from "@src/layout/PageLayout";

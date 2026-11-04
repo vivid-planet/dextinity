@@ -6,11 +6,12 @@ import { headerFragment } from "@src/layout/header/Header.fragment";
 import { TopNavigation } from "@src/layout/topNavigation/TopNavigation";
 import { topMenuPageTreeNodeFragment } from "@src/layout/topNavigation/TopNavigation.fragment";
 import { OrganizationJsonLd } from "@src/organization/OrganizationJsonLd";
-import { getGraphQLFetch } from "@src/util/graphQLClient.server";
+import type { ContentScope } from "@src/site-configs";
+import { graphQLFetch } from "@src/util/graphQLClient";
 import { IntlProvider } from "@src/util/IntlProvider";
-import { loadMessages } from "@src/util/loadMessages.server";
+import { loadMessages } from "@src/util/loadMessages";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
-import { getSiteConfigForDomain } from "@src/util/siteConfig.server";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { SiteConfigProvider } from "@src/util/SiteConfigProvider";
 import { getSiteContext } from "@src/util/siteContext";
 import { Outlet, type ShouldRevalidateFunctionArgs } from "react-router";
@@ -18,35 +19,53 @@ import { Outlet, type ShouldRevalidateFunctionArgs } from "react-router";
 import type { Route } from "./+types/LanguageLayout";
 import type { GQLLayoutQuery, GQLLayoutQueryVariables } from "./LanguageLayout.generated";
 
-const layoutQuery = gql`
-    query Layout($domain: String!, $language: String!) {
-        footer: footer(scope: { domain: $domain, language: $language }) {
-            ...Footer
-        }
-        header: mainMenu(scope: { domain: $domain, language: $language }) {
-            ...Header
-        }
-        topMenu(scope: { domain: $domain, language: $language }) {
-            ...TopMenuPageTreeNode
-        }
-    }
+// Paths with an unknown language, e.g. redirect sources, are rendered in the default language
+function getLayoutLanguage({ domain, language }: ContentScope) {
+    return getSiteConfigForDomain(domain).scope.languages.includes(language) ? language : "en";
+}
 
-    ${footerFragment}
-    ${headerFragment}
-    ${topMenuPageTreeNodeFragment}
-`;
-
-export async function loader({ params, context }: Route.LoaderArgs) {
+/**
+ * The scope of the layout, also for the document language and the not found page
+ */
+export function loader({ params, context }: Route.LoaderArgs) {
     const { domain } = getSiteContext(context);
-    const siteConfig = getSiteConfigForDomain(domain);
-    // Paths with an unknown language, e.g. redirect sources, are rendered in the default language
-    const language = siteConfig.scope.languages.includes(params.language) ? params.language : "en";
-    const graphQLFetch = getGraphQLFetch(context);
+    return { scope: { domain, language: getLayoutLanguage({ domain, language: params.language }) } };
+}
 
-    const [{ footer, header, topMenu }, messages] = await Promise.all([
-        graphQLFetch<GQLLayoutQuery, GQLLayoutQueryVariables>(layoutQuery, { domain, language }),
-        loadMessages(language),
-    ]);
+// The layout only depends on the language, so client navigations within a language don't render it again
+export function shouldRevalidate({ currentParams, nextParams, defaultShouldRevalidate, formMethod }: ShouldRevalidateFunctionArgs) {
+    if (formMethod && formMethod !== "GET") {
+        return defaultShouldRevalidate;
+    }
+    return currentParams.language !== nextParams.language;
+}
+
+export async function ServerComponent({ loaderData: { scope } }: Route.ServerComponentProps) {
+    const { domain, language } = scope;
+    const siteConfig = getSiteConfigForDomain(domain);
+
+    const { footer, header, topMenu } = await graphQLFetch<GQLLayoutQuery, GQLLayoutQueryVariables>(
+        gql`
+            query Layout($domain: String!, $language: String!) {
+                footer: footer(scope: { domain: $domain, language: $language }) {
+                    ...Footer
+                }
+                header: mainMenu(scope: { domain: $domain, language: $language }) {
+                    ...Header
+                }
+                topMenu(scope: { domain: $domain, language: $language }) {
+                    ...TopMenuPageTreeNode
+                }
+            }
+
+            ${footerFragment}
+            ${headerFragment}
+            ${topMenuPageTreeNodeFragment}
+        `,
+        { domain, language },
+    );
+
+    const messages = await loadMessages(language);
 
     if (footer) {
         footer.content = await recursivelyLoadBlockData({
@@ -58,21 +77,9 @@ export async function loader({ params, context }: Route.LoaderArgs) {
         });
     }
 
-    return { siteConfig, scope: { domain, language }, messages, footer, header, topMenu };
-}
-
-// The layout only depends on the language, so client navigations within a language don't load it again
-export function shouldRevalidate({ currentParams, nextParams, defaultShouldRevalidate, formMethod }: ShouldRevalidateFunctionArgs) {
-    if (formMethod && formMethod !== "GET") {
-        return defaultShouldRevalidate;
-    }
-    return currentParams.language !== nextParams.language;
-}
-
-export default function LanguageLayout({ loaderData: { siteConfig, scope, messages, footer, header, topMenu } }: Route.ComponentProps) {
     return (
         <SiteConfigProvider siteConfig={siteConfig}>
-            <IntlProvider locale={scope.language} messages={messages}>
+            <IntlProvider locale={language} messages={messages}>
                 <OrganizationJsonLd siteConfig={siteConfig} />
                 <TopNavigation data={topMenu} />
                 <Header header={header} />

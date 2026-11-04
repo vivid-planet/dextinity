@@ -1,3 +1,4 @@
+"use client";
 import { ListBlock, type PropsWithData } from "@dextinity/site-react";
 import type { StageBlockData } from "@src/blocks.generated";
 

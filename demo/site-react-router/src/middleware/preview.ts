@@ -1,4 +1,4 @@
-import { getHostByHeaders } from "@src/util/siteConfig.server";
+import { getHostByHeaders } from "@src/util/siteConfig";
 import { hasSiteContext } from "@src/util/siteContext";
 import type { MiddlewareFunction } from "react-router";
 

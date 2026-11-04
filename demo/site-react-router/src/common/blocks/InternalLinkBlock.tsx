@@ -1,3 +1,4 @@
+"use client";
 import type { PropsWithData } from "@dextinity/site-react";
 import type { InternalLinkBlockData } from "@src/blocks.generated";
 import type { GQLPageTreeNodeScope } from "@src/graphql.generated";

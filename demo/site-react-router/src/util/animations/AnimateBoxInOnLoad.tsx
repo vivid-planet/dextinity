@@ -1,3 +1,5 @@
+"use client";
+
 import { usePreview } from "@dextinity/site-react";
 import clsx from "clsx";
 import type { PropsWithChildren } from "react";

@@ -1,3 +1,4 @@
+"use client";
 import { PreviewSkeleton, type PropsWithData, SvgImageBlock, withPreview } from "@dextinity/site-react";
 import { PixelImageBlock, type PixelImageBlockProps } from "@dextinity/site-react-router";
 import type { DamImageBlockData, PixelImageBlockData, SvgImageBlockData } from "@src/blocks.generated";

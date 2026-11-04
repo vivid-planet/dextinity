@@ -2,7 +2,7 @@ import { generateImageUrl, gql, JsonLd } from "@dextinity/site-react";
 import type { DamImageBlockData } from "@src/blocks.generated";
 import type { ContentScope } from "@src/site-configs";
 import { createSitePath } from "@src/util/createSitePath";
-import { useSiteConfig } from "@src/util/SiteConfigProvider";
+import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import type { Article, WithContext } from "schema-dts";
 
 import type { GQLNewsArticleJsonLdFragment } from "./NewsArticleJsonLd.generated";
@@ -43,7 +43,7 @@ function articleImageUrls(image: DamImageBlockData, siteUrl: string): string[] {
 }
 
 export function NewsArticleJsonLd({ news, scope }: Props) {
-    const siteConfig = useSiteConfig();
+    const siteConfig = getSiteConfigForDomain(scope.domain);
     const images = articleImageUrls(news.image, siteConfig.url);
 
     const data: WithContext<Article> = {

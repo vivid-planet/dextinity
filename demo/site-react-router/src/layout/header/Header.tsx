@@ -1,3 +1,5 @@
+"use client";
+
 import { SvgUse } from "@src/common/helpers/SvgUse";
 import { useIntl } from "react-intl";
 import { Link } from "react-router";

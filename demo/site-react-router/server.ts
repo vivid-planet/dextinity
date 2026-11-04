@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { createRequire } from "node:module";
 
-import { cdnOriginCheck, createStaticFileHandler } from "@dextinity/site-react-router/node";
+import { cdnOriginCheck, compressResponse, createStaticFileHandler } from "@dextinity/site-react-router/node";
 import { createRequestListener } from "@remix-run/node-fetch-server";
 
 import { withMetrics } from "./opentelemetry-metrics.ts";
@@ -41,7 +41,7 @@ async function createProductionRequestListener(): Promise<RequestListener> {
                 return rejection;
             }
         }
-        return (await serveStaticFile(request)) ?? rscEntry.fetch(request);
+        return compressResponse(request, (await serveStaticFile(request)) ?? (await rscEntry.fetch(request)));
     }) as RequestListener;
 }
 

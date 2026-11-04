@@ -1,5 +1,15 @@
 # @comet/cms-api
 
+## 10.13.1
+
+### Patch Changes
+
+- 795901f: Support `@kubernetes/client-node` v2
+
+    The peer dependency now allows `^1.0.0 || ^2.0.0`. Note that v2 requires Node.js 22.19.0 or later.
+
+- 94991f8: Update `jose` to v6
+
 ## 10.13.0
 
 ### Minor Changes

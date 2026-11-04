@@ -17,6 +17,8 @@ import { Outlet } from "react-router";
 import type { Route } from "./+types/LanguageLayout";
 import type { GQLLayoutQuery, GQLLayoutQueryVariables } from "./LanguageLayout.generated";
 
+export { shouldRevalidate } from "./languageLayoutRevalidation";
+
 const layoutQuery = gql`
     query Layout($domain: String!, $language: String!) {
         footer: footer(scope: { domain: $domain, language: $language }) {

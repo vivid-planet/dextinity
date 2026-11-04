@@ -1,5 +1,89 @@
 # @comet/cms-admin
 
+## 10.13.1
+
+### Patch Changes
+
+- Updated dependencies [b6fde8f]
+    - @dextinity/admin@10.13.1
+    - @dextinity/admin-rte@10.13.1
+    - @dextinity/admin-icons@10.13.1
+
+## 10.13.0
+
+### Minor Changes
+
+- ad3f6d5: Make blocking files with an invalid license opt-in with `blockFilesWithInvalidLicense`
+
+    A project decides whether files whose license has expired or isn't valid yet are blocked. While the option is off, which is the default, such files are delivered as before blocking was added: their URLs don't answer `410 Gone`, blocks don't hide them or replace them with the fallback image, and the DAM hides its "Settings" action, where the fallback image is chosen.
+
+    A project that blocks such files since blocking was added needs to enable the option in the API and in the Admin:
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            enableLicenseFeature: true,
+            blockFilesWithInvalidLicense: true,
+            // ...
+        },
+    });
+    ```
+
+    ```tsx
+    <DextinityConfigProvider dam={{ enableLicenseFeature: true, blockFilesWithInvalidLicense: true /* ... */ }}>
+    ```
+
+### Patch Changes
+
+- 46a1a08: Render list items in `createTipTapRichTextBlock` through the list's `element`
+
+    The editor ignored the `element` of `orderedList` and `unorderedList`. A list item was rendered through the style its text block kept from before it was turned into a list item, or as a plain `p` without a style.
+    A text block in a list item is now rendered through the list's style, then the list's `element`, then the text block's style, then the text block's `element`.
+
+- b16df0b: Update `react-hotkeys-hook` to v5
+    - @dextinity/admin@10.13.0
+    - @dextinity/admin-icons@10.13.0
+    - @dextinity/admin-rte@10.13.0
+
+## 10.12.0
+
+### Minor Changes
+
+- ffcbdd7: Keep the text block style select of `createTipTapRichTextBlock` in the toolbar where the selected node has no styles
+
+    Previously, the toolbar hid the select where the selected node had no styles, for instance in a list without styles, and the toolbar buttons to its right moved to the left.
+    Now the select stays in the toolbar and is disabled there.
+    Blocks without any text block styles still show no select.
+
+### Patch Changes
+
+- 1b288ab: Copy referenced DAM assets to the target scope when pasting blocks
+
+    Previously, only pasting pages in the page tree copied the referenced DAM assets. Blocks pasted into another scope kept referencing the assets of the source scope, so deleting an asset in the source scope broke the page it was pasted into.
+
+    Pasting blocks now behaves like pasting pages: assets that don't live in the target DAM scope are copied into an inbox folder of the target scope (reusing an existing copy if there is one) and the pasted blocks reference the copies. Pasting within the same scope is unchanged.
+
+    Like when pasting pages, dependencies that can't be carried over to another scope are removed when pasting blocks into another content scope, e.g., links to pages of the source scope.
+
+- 2735896: TipTap Rich Text Block: disable the horizontal rule
+
+    The schema contained StarterKit's `horizontalRule` node, so the editor inserted one when typing `---`, `___ ` or `*** ` at the start of a text block. Neither the site nor the mail renderer renders it, so it silently disappeared on the site. The API now rejects content containing a `horizontalRule`, and the editor no longer creates one.
+
+    Remove horizontal rules from existing content before saving it again, as saving fails otherwise.
+
+- eb77fc2: Clarify the error thrown by `createOneOfBlock` when `activeType` has no entry in `attachedBlocks`
+
+    The message now names the active type and the types that `attachedBlocks` holds.
+    A missing `x-include-invisible-content` HTTP header is mentioned only as one possible cause, since the state can also come from malformed input to `output2State`.
+
+- 3d1fb7c: Keep the target of links and the data of child blocks when copying and pasting in `createTipTapRichTextBlock`
+
+    The editor wrote the data of links and child blocks into the clipboard as `[object Object]`, so a pasted link had no target and a pasted child block lost its content.
+    Saving a rich text with such a link failed.
+    - @dextinity/admin@10.12.0
+    - @dextinity/admin-icons@10.12.0
+    - @dextinity/admin-rte@10.12.0
+
 ## 10.11.0
 
 ### Minor Changes

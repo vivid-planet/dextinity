@@ -1,5 +1,6 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
 import {
+    Alert,
     Field,
     FillSpace,
     FinalForm,
@@ -7,6 +8,7 @@ import {
     FinalFormSaveButton,
     type FinalFormSubmitEvent,
     Loading,
+    LocalErrorScopeApolloContext,
     MainContent,
     NumberField,
     TextField,
@@ -84,6 +86,7 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
         loading: senderLoading,
     } = useQuery<GQLSendersSelectQuery, GQLSendersSelectQueryVariables>(sendersSelectQuery, {
         variables: { scope },
+        context: LocalErrorScopeApolloContext,
     });
 
     const {
@@ -92,6 +95,7 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
         loading: doubleOptInTemplatesLoading,
     } = useQuery<GQLDoubleOptInTemplatesSelectQuery, GQLDoubleOptInTemplatesSelectQueryVariables>(doubleOptInTemplatesSelectQuery, {
         variables: { scope },
+        context: LocalErrorScopeApolloContext,
     });
 
     const senderOptions =
@@ -212,12 +216,27 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
         }
     };
 
-    if (error || senderError || doubleOptInTemplatesError) {
-        throw error ?? senderError ?? doubleOptInTemplatesError;
+    if (error) {
+        throw error;
     }
 
     if (loading || senderLoading || doubleOptInTemplatesLoading) {
         return <Loading behavior="fillPageHeight" />;
+    }
+
+    const brevoError = senderError ?? doubleOptInTemplatesError;
+
+    if (brevoError) {
+        return (
+            <MainContent>
+                <Alert
+                    severity="error"
+                    title={<FormattedMessage id="dextinity.brevoConfig.brevoRequestFailed" defaultMessage="Couldn't load data from Brevo" />}
+                >
+                    {brevoError.message}
+                </Alert>
+            </MainContent>
+        );
     }
 
     const validateUnsubscriptionPageId = (value: string) => {

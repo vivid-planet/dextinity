@@ -14,6 +14,7 @@
         "dextinity-demo-admin-server",
         "dextinity-demo-site",
         "dextinity-demo-site-vite-rsc",
+        "dextinity-demo-site-react-router",
         "dextinity-docs"
     ],
     "snapshot": {

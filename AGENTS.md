@@ -114,6 +114,12 @@ The same demo site built with `@dextinity/site-vite-rsc` (Vite, React Server Com
 - Start using `pnpm exec dev-pm start @demo-site-vite-rsc`
 - access at: http://localhost:3001/
 
+**Site (React Router):**
+The same demo site built with `@dextinity/site-react-router` (React Router framework mode with loaders and SSR, Hono) in `demo/site-react-router`, can run at the same time as the other sites. The routes are defined in `src/routes.ts`, `src/app.ts` is the server entry that passes the requests to React Router
+
+- Start using `pnpm exec dev-pm start @demo-site-react-router`
+- access at: http://localhost:3002/
+
 ### dev-pm
 
 Use dev-pm for managing demo processes:
@@ -160,11 +166,12 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 ### Site (`packages/site/`)
 
-| Package                    | Description                                                        |
-| -------------------------- | ------------------------------------------------------------------ |
-| `@dextinity/site-react`    | React components and utilities for the frontend/site layer         |
-| `@dextinity/site-nextjs`   | Next.js-specific site layer components (extends `site-react`)      |
-| `@dextinity/site-vite-rsc` | Vite and React Server Components site layer (extends `site-react`) |
+| Package                        | Description                                                        |
+| ------------------------------ | ------------------------------------------------------------------ |
+| `@dextinity/site-react`        | React components and utilities for the frontend/site layer         |
+| `@dextinity/site-nextjs`       | Next.js-specific site layer components (extends `site-react`)      |
+| `@dextinity/site-vite-rsc`     | Vite and React Server Components site layer (extends `site-react`) |
+| `@dextinity/site-react-router` | React Router framework mode site layer (extends `site-react`)      |
 
 ### Utilities
 

@@ -13,6 +13,7 @@ const packageFolderMapping = {
     "@dextinity/site-nextjs": "packages/site/site-nextjs",
     "@dextinity/site-react": "packages/site/site-react",
     "@dextinity/site-vite-rsc": "packages/site/site-vite-rsc",
+    "@dextinity/site-react-router": "packages/site/site-react-router",
 };
 
 const waitOnPackages = (...packages: (keyof typeof packageFolderMapping)[]) => {
@@ -122,6 +123,14 @@ export default defineConfig({
             name: "site-vite-rsc",
             script: "pnpm --filter @dextinity/site-vite-rsc run dev",
             group: ["site-vite-rsc", "cms"],
+            waitOn: [...waitOnPackages("@dextinity/site-react")],
+        },
+
+        //group site-react-router
+        {
+            name: "site-react-router",
+            script: "pnpm --filter @dextinity/site-react-router run dev",
+            group: ["site-react-router", "cms"],
             waitOn: [...waitOnPackages("@dextinity/site-react")],
         },
 
@@ -305,6 +314,31 @@ export default defineConfig({
             name: "demo-site-vite-rsc-css-types",
             script: "pnpm --filter dextinity-demo-site-vite-rsc run css:types:watch",
             group: ["demo-site-vite-rsc"],
+        },
+
+        //group demo site react router, not part of "demo", it runs next to the other demo sites on SITE_REACT_ROUTER_PORT
+        {
+            name: "demo-site-react-router",
+            script: "pnpm --filter dextinity-demo-site-react-router run dev",
+            group: ["demo-site-react-router"],
+            waitOn: [...waitOnPackages("@dextinity/site-react", "@dextinity/site-react-router"), "tcp:$API_PORT"],
+        },
+        {
+            name: "demo-site-react-router-codegen",
+            script: "pnpm --filter dextinity-demo-site-react-router run gql:watch",
+            group: ["demo-site-react-router"],
+            waitOn: ["tcp:$API_PORT"],
+        },
+        {
+            name: "demo-site-react-router-block-codegen",
+            script: "pnpm --filter dextinity-demo-site-react-router run generate-block-types:watch",
+            group: ["demo-site-react-router"],
+            waitOn: ["tcp:$API_PORT"],
+        },
+        {
+            name: "demo-site-react-router-css-types",
+            script: "pnpm --filter dextinity-demo-site-react-router run css:types:watch",
+            group: ["demo-site-react-router"],
         },
 
         // group docs

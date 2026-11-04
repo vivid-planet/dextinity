@@ -2,7 +2,7 @@
 title: Migration Guide
 ---
 
-This chapter contains instructions for migrating from one Dextinity (formerly COMET DXP) version to another.
+This chapter contains instructions for migrating from one Dextinity version to another.
 Each major version should be upgraded separately.
 
 How to perform a migration depends on the target version.

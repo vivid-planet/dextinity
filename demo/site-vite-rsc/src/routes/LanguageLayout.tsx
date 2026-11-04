@@ -11,6 +11,7 @@ import { graphQLFetch } from "@src/util/graphQLClient";
 import { IntlProvider } from "@src/util/IntlProvider";
 import { loadMessages } from "@src/util/loadMessages";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
+import { serverFetch } from "@src/util/serverFetch";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import { SiteConfigProvider } from "@src/util/SiteConfigProvider";
 import type { PropsWithChildren } from "react";
@@ -54,7 +55,7 @@ export async function LanguageLayout({ children, ...params }: PropsWithChildren<
             blockData: footer.content,
             blockType: "FooterContent",
             graphQLFetch,
-            fetch,
+            fetch: serverFetch,
             scope: { domain, language },
         });
     }

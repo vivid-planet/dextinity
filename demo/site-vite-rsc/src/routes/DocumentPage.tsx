@@ -40,17 +40,13 @@ async function fetchPageTreeNode({ domain, language, path: pathParam }: Params) 
 
     const path = `/${pathParam.join("/")}`;
     const { scope } = { scope: { domain, language } };
-    return graphQLFetch<GQLDocumentTypeQuery, GQLDocumentTypeQueryVariables>(
-        documentTypeQuery,
-        {
-            skipPage,
-            path,
-            scope,
-            redirectSource: `/${language}${path !== "/" ? path : ""}`,
-            redirectScope: { domain: scope.domain },
-        },
-        { method: "GET" }, //for request memoization
-    );
+    return graphQLFetch<GQLDocumentTypeQuery, GQLDocumentTypeQueryVariables>(documentTypeQuery, {
+        skipPage,
+        path,
+        scope,
+        redirectSource: `/${language}${path !== "/" ? path : ""}`,
+        redirectScope: { domain: scope.domain },
+    });
 }
 
 export async function DocumentPage(params: Params) {

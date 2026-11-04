@@ -1,6 +1,7 @@
 import type { WelcomeEmailContentBlockData } from "@src/blocks.generated";
 import { graphQLFetch } from "@src/util/graphQLClient";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
+import { serverFetch } from "@src/util/serverFetch";
 import type { Context } from "hono";
 import { z } from "zod";
 
@@ -45,7 +46,7 @@ export async function welcomeEmailRoute(c: Context) {
         blockType: "WelcomeEmailContent",
         blockData: welcomeEmail.content,
         graphQLFetch,
-        fetch,
+        fetch: serverFetch,
         scope,
     });
 

@@ -5,6 +5,7 @@ import { breadcrumbsFragment } from "@src/common/components/breadcrumbs/Breadcru
 import type { GQLPageTreeNodeScopeInput } from "@src/graphql.generated";
 import { graphQLFetch } from "@src/util/graphQLClient";
 import { recursivelyLoadBlockData } from "@src/util/recursivelyLoadBlockData";
+import { serverFetch } from "@src/util/serverFetch";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import type { Thing, WithContext } from "schema-dts";
 
@@ -35,13 +36,9 @@ const pageQuery = gql`
 type Props = { pageTreeNodeId: string; scope: GQLPageTreeNodeScopeInput };
 
 async function fetchData({ pageTreeNodeId, scope }: Props) {
-    const props = await graphQLFetch<GQLPageQuery, GQLPageQueryVariables>(
-        pageQuery,
-        {
-            pageTreeNodeId,
-        },
-        { method: "GET" },
-    );
+    const props = await graphQLFetch<GQLPageQuery, GQLPageQueryVariables>(pageQuery, {
+        pageTreeNodeId,
+    });
 
     if (!props.pageContent) {
         throw new Error("Could not load page content");
@@ -79,21 +76,21 @@ export async function Page({ pageTreeNodeId, scope }: { pageTreeNodeId: string; 
             blockType: "PageContent",
             blockData: document.content,
             graphQLFetch,
-            fetch,
+            fetch: serverFetch,
             scope,
         }),
         recursivelyLoadBlockData({
             blockType: "Seo",
             blockData: document.seo,
             graphQLFetch,
-            fetch,
+            fetch: serverFetch,
             scope,
         }),
         recursivelyLoadBlockData({
             blockType: "Stage",
             blockData: document.stage,
             graphQLFetch,
-            fetch,
+            fetch: serverFetch,
             scope,
         }),
     ]);

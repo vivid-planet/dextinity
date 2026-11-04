@@ -1,5 +1,5 @@
 import { Link, type Location, Navigate, Route, Routes, useNavigate } from "react-router";
-import { cleanup, fireEvent, LocationSpy, render, waitFor } from "test-utils";
+import { act, cleanup, fireEvent, LocationSpy, render, waitFor } from "test-utils";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import { StackPage } from "../stack/Page";
@@ -245,11 +245,12 @@ test("ForcePromptRoute", async () => {
 });
 
 describe("Blocking navigation", () => {
-    function DirtyPage({ saveAction }: { saveAction: SaveAction }) {
+    function DirtyPage({ saveAction, isDirty }: { saveAction: SaveAction; isDirty: () => boolean }) {
         const navigate = useNavigate();
         return (
-            <RouterPrompt message={() => "Unsaved changes"} saveAction={saveAction} subRoutePath="/form/sub">
+            <RouterPrompt message={() => (isDirty() ? "Unsaved changes" : true)} saveAction={saveAction} subRoutePath="/form/sub">
                 <Link to="/other">otherLink</Link>
+                <Link to="/elsewhere">elsewhereLink</Link>
                 <Link to="/form/sub/details">subLink</Link>
                 <button type="button" onClick={() => navigate("/other")}>
                     navigateButton
@@ -261,21 +262,22 @@ describe("Blocking navigation", () => {
         );
     }
 
-    function Story({ saveAction }: { saveAction: SaveAction }) {
+    function Story({ saveAction, isDirty }: { saveAction: SaveAction; isDirty: () => boolean }) {
         return (
             <Routes>
-                <Route path="/form/*" element={<DirtyPage saveAction={saveAction} />} />
+                <Route path="/form/*" element={<DirtyPage saveAction={saveAction} isDirty={isDirty} />} />
                 <Route path="/other/*" element={<div>other page</div>} />
+                <Route path="/elsewhere/*" element={<div>elsewhere page</div>} />
             </Routes>
         );
     }
 
-    function renderStory(options: { saveSucceeds?: boolean; saveAction?: SaveAction; initialEntries?: string[] } = {}) {
-        const { saveSucceeds = true, saveAction = () => saveSucceeds, initialEntries = ["/form"] } = options;
+    function renderStory(options: { saveSucceeds?: boolean; saveAction?: SaveAction; isDirty?: () => boolean; initialEntries?: string[] } = {}) {
+        const { saveSucceeds = true, saveAction = () => saveSucceeds, isDirty = () => true, initialEntries = ["/form"] } = options;
         let currentLocation: Location | undefined;
         const rendered = render(
             <>
-                <Story saveAction={saveAction} />
+                <Story saveAction={saveAction} isDirty={isDirty} />
                 <LocationSpy
                     onChange={(location) => {
                         currentLocation = location;
@@ -425,6 +427,42 @@ describe("Blocking navigation", () => {
 
             expect(saveAction).toHaveBeenCalledTimes(1);
             expect(getPathname()).toBe("/form/sub/details");
+            expect(unhandledRejections).toEqual([]);
+        });
+        test("doesn't proceed to a cancelled navigation when saving finishes while another navigation is blocked", async () => {
+            let dirty = true;
+            let finishSaving: () => void = () => {};
+            const saveAction = vi.fn(
+                () =>
+                    new Promise<boolean>((resolve) => {
+                        finishSaving = () => {
+                            dirty = false;
+                            resolve(true);
+                        };
+                    }),
+            );
+            const { rendered, getPathname } = renderStory({ saveAction, isDirty: () => dirty });
+
+            fireEvent.click(rendered.getByText("otherLink"));
+            expect(await rendered.findByText("Unsaved changes")).toBeInTheDocument();
+
+            fireEvent.click(rendered.getByText("Save"));
+            fireEvent.click(rendered.getByRole("button", { name: "" }));
+            await waitFor(() => {
+                expect(rendered.queryByText("Unsaved changes")).not.toBeInTheDocument();
+            });
+
+            fireEvent.click(rendered.getByText("elsewhereLink"));
+            expect(await rendered.findByText("Unsaved changes")).toBeInTheDocument();
+            await act(async () => {
+                finishSaving();
+            });
+            await new Promise((resolve) => setTimeout(resolve, 100));
+
+            expect(saveAction).toHaveBeenCalledTimes(1);
+            expect(rendered.queryByText("other page")).not.toBeInTheDocument();
+            expect(getPathname()).toBe("/form");
+            expect(rendered.queryByText("elsewhere page")).not.toBeInTheDocument();
             expect(unhandledRejections).toEqual([]);
         });
     });

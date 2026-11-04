@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/brevo-api",
-    "version": "10.12.0",
+    "version": "10.13.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -50,7 +50,7 @@
     },
     "devDependencies": {
         "@dextinity/eslint-config": "workspace:*",
-        "@kubernetes/client-node": "^1.4.0",
+        "@kubernetes/client-node": "^2.0.1",
         "@mikro-orm/cli": "^6.6.17",
         "@mikro-orm/core": "^6.6.17",
         "@mikro-orm/migrations": "^6.6.17",

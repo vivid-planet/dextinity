@@ -1,5 +1,46 @@
 # @comet/cms-api
 
+## 10.13.0
+
+### Minor Changes
+
+- 7d8cbff: Add `formatValidationErrors()` for readable validation errors
+
+    It turns the tree of class-validator errors into a list of `{ path, message }`, with paths like `content.blocks[3].props.height`, so that an API client, for instance an AI agent, can fix its input.
+    Use it, for instance, in a query that only validates an input:
+
+    ```ts
+    const errors = await validate(plainToInstance(PageInput, input), { whitelist: true, forbidNonWhitelisted: true });
+
+    return formatValidationErrors(errors);
+    // [{ path: "content.blocks[3].props.height", message: "height must be an integer number" }]
+    ```
+
+- ad3f6d5: Make blocking files with an invalid license opt-in with `blockFilesWithInvalidLicense`
+
+    A project decides whether files whose license has expired or isn't valid yet are blocked. While the option is off, which is the default, such files are delivered as before blocking was added: their URLs don't answer `410 Gone`, blocks don't hide them or replace them with the fallback image, and the DAM hides its "Settings" action, where the fallback image is chosen.
+
+    A project that blocks such files since blocking was added needs to enable the option in the API and in the Admin:
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            enableLicenseFeature: true,
+            blockFilesWithInvalidLicense: true,
+            // ...
+        },
+    });
+    ```
+
+    ```tsx
+    <DextinityConfigProvider dam={{ enableLicenseFeature: true, blockFilesWithInvalidLicense: true /* ... */ }}>
+    ```
+
+- a476170: Never treat a royalty-free license as expired or not valid yet
+
+    Switching a file's license from rights managed to royalty free keeps its duration. Such a file was still blocked once the duration ended: the DAM answered `410 Gone`, blocks replaced it with the invalid-license fallback image, and the warnings reported an expired license.
+    A royalty-free license now ignores its duration: `isLicenseValid` returns `true`, `expirationDate` is `null`, and no license warning is created.
+
 ## 10.12.0
 
 ### Minor Changes

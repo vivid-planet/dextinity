@@ -23,6 +23,19 @@ export default defineConfig({
         ],
     },
     envDir: false,
+    environments: {
+        client: {
+            // @dextinity/site-react is linked in the workspace, so Vite would find its dependencies late and reload the page during a test
+            optimizeDeps: {
+                include: [
+                    "jose",
+                    ...["clsx", "fast-equals", "scroll-into-view-if-needed", "usehooks-ts"].map(
+                        (dependency) => `@dextinity/site-react > ${dependency}`,
+                    ),
+                ],
+            },
+        },
+    },
     // The production build of the tests runs next to the development server
     server: { watch: { ignored: ["**/build/**"] } },
     build: { assetsDir: "_assets" },

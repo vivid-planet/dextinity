@@ -13,4 +13,5 @@ export {
     sitePreviewRoute,
     verifyJwt,
 } from "./sitePreview/previewParams";
+export { trailingSlashRedirect } from "./trailingSlashRedirect";
 export { persistedQueryRoute } from "@dextinity/site-react/server";

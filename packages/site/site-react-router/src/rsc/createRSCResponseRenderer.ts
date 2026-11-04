@@ -26,6 +26,7 @@ function isRSCDataRequest(request: Request): boolean {
  * - The payloads of client navigations (`.rsc` requests) get `no-store` instead of the `Cache-Control` of the route when they
  *   contain an error. Their status is 200 even then, so they are rendered completely before responding.
  *   Document requests get their error status from the server-side rendering, see `preventCachingOfErrorResponse()`.
+ * - The payloads of client navigations get `X-Robots-Tag: noindex`, so that search engines only index the documents.
  *
  * @example
  * const renderer = createRSCResponseRenderer({ renderToReadableStream, reportError });
@@ -80,6 +81,7 @@ export function createRSCResponseRenderer({
         }
         const body = await response.arrayBuffer();
         const headers = new Headers(response.headers);
+        headers.set("X-Robots-Tag", "noindex");
         if (hasError) {
             headers.set("Cache-Control", noStoreCacheControl);
         }

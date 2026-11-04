@@ -24,6 +24,7 @@ for (const path of ["/cached", "/cached.rsc"]) {
 
         expect(response.status()).toBe(200);
         expect(response.headers()["cache-control"]).toBe("public, s-maxage=60");
+        expect(response.headers()["x-robots-tag"]).toBe(path.endsWith(".rsc") ? "noindex" : undefined);
     });
 }
 
@@ -120,4 +121,11 @@ test.describe("production build", () => {
 
         expect(Object.values(persistedQueries)).toEqual([expect.stringContaining("query E2EPersisted")]);
     });
+});
+
+test("redirects paths with a trailing slash", async ({ request }) => {
+    const response = await request.get("/cached/?a=1", { maxRedirects: 0 });
+
+    expect(response.status()).toBe(308);
+    expect(response.headers()["location"]).toBe("/cached?a=1");
 });

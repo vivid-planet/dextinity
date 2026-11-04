@@ -12,7 +12,7 @@ It's the counterpart of `@dextinity/site-nextjs` for sites built with the RSC Fr
 - `createCachingFetch()` and `createMemoryFetchCacheStore()`, a fetch cache like the data cache of Next.js
 - `robotsResponse()` and `sitemapResponse()` for the `robots.txt` and `sitemap.xml` routes
 - `runWithRequestContext()` and `getRequestContext()`, which make the context of the middlewares available to server components
-- `createRSCResponseRenderer()` and `preventCachingOfErrorResponse()` for the error reporting and the caching of the responses in `entry.rsc.tsx`
+- `createRSCResponseRenderer()`, `preventCachingOfErrorResponse()` and `trailingSlashRedirect()` for the error reporting, the caching and the redirects of the responses in `entry.rsc.tsx`
 - `createStaticFileHandler()` and `cdnOriginCheck()` for the server in `@dextinity/site-react-router/node`
 - `persistedQueriesPlugin()` for Vite in `@dextinity/site-react-router/vite`
 

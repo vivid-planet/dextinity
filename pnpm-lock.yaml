@@ -177,7 +177,7 @@ importers:
         specifier: workspace:*
         version: link:packages/cli
       '@formatjs/cli':
-        specifier: ^6.16.36
+        specifier: ^6.18.0
         version: 6.18.0(@vue/compiler-core@3.5.43)
       '@types/node':
         specifier: ^24.19.2
@@ -328,7 +328,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config
       '@formatjs/cli':
-        specifier: ^6.16.36
+        specifier: ^6.18.0
         version: 6.18.0(@vue/compiler-core@3.5.43)
       '@graphql-codegen/add':
         specifier: ^5.0.3
@@ -579,7 +579,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config
       '@formatjs/cli':
-        specifier: ^6.16.36
+        specifier: ^6.18.0
         version: 6.18.0(@vue/compiler-core@3.5.43)
       '@nestjs/cli':
         specifier: ^11.0.24
@@ -678,7 +678,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/site/site-nextjs
       '@formatjs/cli':
-        specifier: ^6.16.36
+        specifier: ^6.18.0
         version: 6.18.0(@vue/compiler-core@3.5.43)
       '@google-cloud/recaptcha-enterprise':
         specifier: ^7.3.0

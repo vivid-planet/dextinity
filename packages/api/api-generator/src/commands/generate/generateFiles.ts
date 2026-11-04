@@ -1,6 +1,7 @@
 import console from "node:console";
 import { realpathSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
 
 import {
     CRUD_GENERATOR_METADATA_KEY,
@@ -53,7 +54,7 @@ export const generateFiles = async (
                 // Ignore e.g. relation entities that don't have a class
                 continue;
             }
-            if (file == null || entity.path === `./${file}`) {
+            if (file == null || (entity.path != null && resolve(entity.path) === resolve(file))) {
                 {
                     const generatorOptions = Reflect.getMetadata(CRUD_GENERATOR_METADATA_KEY, entity.class) as CrudGeneratorOptions | undefined;
                     if (generatorOptions) {

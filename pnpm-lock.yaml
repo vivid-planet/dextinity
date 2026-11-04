@@ -2246,8 +2246,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0(supports-color@8.1.1)
       mime:
-        specifier: ^3.0.0
-        version: 3.0.0
+        specifier: ^4.1.2
+        version: 4.1.2
       mime-db:
         specifier: ^1.54.0
         version: 1.54.0
@@ -2343,8 +2343,8 @@ importers:
         specifier: ^8.2.13
         version: 8.2.13
       '@types/mime':
-        specifier: ^2.0.3
-        version: 2.0.3
+        specifier: ^4.0.0
+        version: 4.0.0
       '@types/mime-db':
         specifier: ^1.43.6
         version: 1.43.6
@@ -9772,8 +9772,9 @@ packages:
   '@types/mime@1.3.5':
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
 
-  '@types/mime@2.0.3':
-    resolution: {integrity: sha512-Jus9s4CDbqwocc5pOAnh8ShfrnMcPHuJYzVcSUU7lrh8Ni5HuIqX3oilL86p3dlTrk0LzHRCgA/GQ7uNCw6l2Q==}
+  '@types/mime@4.0.0':
+    resolution: {integrity: sha512-5eEkJZ/BLvTE3vXGKkWlyTSUVZuzj23Wj8PoyOq2lt5I3CYbiLBOPb3XmCW6QcuOibIUE6emHXHt9E/F/rCa6w==}
+    deprecated: This is a stub types definition. mime provides its own type definitions, so you do not need this installed.
 
   '@types/mjml-browser@4.15.0':
     resolution: {integrity: sha512-WNmr7LB4XfSM4pe+ES3zCcF4NY3hfPQxLNPn8v3GgNYc3u2rJbiQ56Ahswn/WF9kpO+M5jKd2jlq8u2ZAV0g6A==}
@@ -14943,9 +14944,9 @@ packages:
     engines: {node: '>=4.0.0'}
     hasBin: true
 
-  mime@3.0.0:
-    resolution: {integrity: sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A==}
-    engines: {node: '>=10.0.0'}
+  mime@4.1.2:
+    resolution: {integrity: sha512-ikRzZ2RwbUVDyL9SsU0f2Phcmav4yq5r8faH5ZZKHtOZrMBLnrQOrj0uvqZ5R1uQnj+RO7Wcklw/lAf81mP9LQ==}
+    engines: {node: '>=16'}
     hasBin: true
 
   mimic-fn@2.1.0:
@@ -27599,7 +27600,9 @@ snapshots:
 
   '@types/mime@1.3.5': {}
 
-  '@types/mime@2.0.3': {}
+  '@types/mime@4.0.0':
+    dependencies:
+      mime: 4.1.2
 
   '@types/mjml-browser@4.15.0':
     dependencies:
@@ -33834,7 +33837,7 @@ snapshots:
 
   mime@2.6.0: {}
 
-  mime@3.0.0: {}
+  mime@4.1.2: {}
 
   mimic-fn@2.1.0: {}
 

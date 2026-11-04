@@ -45,9 +45,56 @@ jobs:
                       demo/*/junit-unit.xml
                   overwrite: true
 
-    test-storybook:
-        name: Test (storybook)
+    detect-storybook-packages:
+        name: Detect packages with Storybook tests
         runs-on: ubuntu-latest
+        outputs:
+            packages: ${{ steps.detect.outputs.packages }}
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+
+            - uses: pnpm/action-setup@v6
+
+            - name: Detect packages
+              id: detect
+              env:
+                  BASE_REF: ${{ github.event.pull_request.base.ref }}
+              run: |
+                  if [ "${{ github.event_name }}" = "pull_request" ]; then
+                      base="$(git merge-base "origin/$BASE_REF" HEAD)"
+                      # Changes outside of the workspace packages can affect every package
+                      if git diff --name-only "$base" HEAD | grep -qE '^(package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml|\.github/workflows/test\.yml|\.github/actions/)'; then
+                          filter="*"
+                      else
+                          filter="...[$base]"
+                      fi
+                  else
+                      filter="*"
+                  fi
+
+                  packages="$(pnpm --filter "$filter" ls --depth -1 --json | node -e '
+                      const fs = require("node:fs");
+                      const projects = JSON.parse(fs.readFileSync(0, "utf8"));
+                      const names = projects
+                          .filter(({ path }) => path !== process.cwd())
+                          .filter(({ path }) => JSON.parse(fs.readFileSync(`${path}/package.json`, "utf8")).scripts?.["test:storybook"])
+                          .map(({ name }) => name);
+                      console.log(JSON.stringify(names));
+                  ')"
+                  echo "Packages with Storybook tests to run: $packages"
+                  echo "packages=$packages" >> "$GITHUB_OUTPUT"
+
+    test-storybook:
+        name: Test (storybook, ${{ matrix.package }})
+        needs: detect-storybook-packages
+        if: needs.detect-storybook-packages.outputs.packages != '[]'
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                package: ${{ fromJSON(needs.detect-storybook-packages.outputs.packages) }}
         steps:
             - run: echo "${{ github.actor }}"
 
@@ -67,13 +114,20 @@ jobs:
               run: pnpm --filter dextinity-storybook exec playwright install chromium-headless-shell
 
             - name: Test (storybook)
-              run: pnpm run test:storybook
+              run: pnpm --filter "${{ matrix.package }}" run test:storybook
+
+            - name: Get artifact name
+              id: artifact-name
+              if: success() || failure()
+              env:
+                  PACKAGE: ${{ matrix.package }}
+              run: echo "name=test-results-storybook-$(echo "$PACKAGE" | sed 's/[@\/]/-/g; s/^-//')" >> "$GITHUB_OUTPUT"
 
             - name: Upload test results
               uses: actions/upload-artifact@v7
               if: success() || failure()
               with:
-                  name: test-results-storybook
+                  name: ${{ steps.artifact-name.outputs.name }}
                   path: |
                       packages/*/junit-storybook.xml
                       packages/*/*/junit-storybook.xml

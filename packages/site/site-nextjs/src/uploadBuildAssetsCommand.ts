@@ -8,6 +8,7 @@ type UploadBuildAssetsOptions = {
     storageKeyPrefix: string;
     directory?: string;
     cacheControl?: string;
+    keepBuilds: number;
     bucket?: string;
     region?: string;
     endpoint?: string;
@@ -51,6 +52,7 @@ new Command("dextinity-upload-build-assets")
     )
     .option("--directory <directory>", "directory holding the build assets", ".next/static")
     .option("--cache-control <value>", "cache header of the uploaded files", "public, max-age=31536000, immutable")
+    .option("--keep-builds <count>", "number of uploads whose build assets stay in the storage", (value) => Number(value), 10)
     .option("--bucket <bucket>", "s3: bucket")
     .option("--region <region>", "s3: region")
     .option("--endpoint <url>", "s3: endpoint")
@@ -65,6 +67,7 @@ new Command("dextinity-upload-build-assets")
             storageKeyPrefix: options.storageKeyPrefix,
             directory: options.directory,
             cacheControl: options.cacheControl,
+            keepBuilds: options.keepBuilds,
         });
     })
     .parseAsync()

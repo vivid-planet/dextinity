@@ -37,5 +37,17 @@ export function createAzureBuildAssetsStorage({
                 .getBlockBlobClient(key)
                 .uploadData(body, { blobHTTPHeaders: { blobContentType: contentType, blobCacheControl: cacheControl } });
         },
+        async listFiles(prefix) {
+            const keys: string[] = [];
+            for await (const blob of containerClient.listBlobsFlat({ prefix })) {
+                keys.push(blob.name);
+            }
+            return keys;
+        },
+        async deleteFiles(keys) {
+            for (const key of keys) {
+                await containerClient.deleteBlob(key, { deleteSnapshots: "include" });
+            }
+        },
     };
 }

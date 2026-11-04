@@ -1,0 +1,1 @@
+/home/user/dextinity/rules/coding-guidelines/git.instructions.md

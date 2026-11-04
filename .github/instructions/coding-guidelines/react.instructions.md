@@ -1,0 +1,1 @@
+/home/user/dextinity/rules/coding-guidelines/react.instructions.md

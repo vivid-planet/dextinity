@@ -1,0 +1,1 @@
+/home/user/dextinity/rules/coding-guidelines/typescript.instructions.md

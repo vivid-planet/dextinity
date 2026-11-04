@@ -1,0 +1,1 @@
+/home/user/dextinity/rules/coding-guidelines/api-nestjs.instructions.md

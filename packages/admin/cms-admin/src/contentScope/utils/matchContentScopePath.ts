@@ -35,9 +35,9 @@ export function matchContentScopePath(pattern: string, pathname: string): Curren
     }
 
     const params: Record<string, string> = {};
-    paramNames.forEach((paramName, index) => {
+    for (const [index, paramName] of paramNames.entries()) {
         params[paramName] = decodeURIComponent(match.groups?.[`param${index}`] ?? "");
-    });
+    }
 
     return { url: match[0] || "/", path: `/${reactRouterPatternSegments.join("/")}`, params };
 }

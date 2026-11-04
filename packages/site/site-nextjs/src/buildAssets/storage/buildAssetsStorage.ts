@@ -12,6 +12,11 @@ export interface BuildAssetsStorage {
      */
     getFile(key: string): Promise<BuildAsset | undefined>;
     putFile(key: string, file: { body: Buffer; contentType?: string; cacheControl?: string }): Promise<void>;
+    /**
+     * @returns the keys of all files whose key starts with the prefix
+     */
+    listFiles(prefix: string): Promise<string[]>;
+    deleteFiles(keys: string[]): Promise<void>;
 }
 
 // Not the SDK's S3ClientConfig, so the types don't require @aws-sdk/client-s3 when using another driver

@@ -57,8 +57,8 @@
         "react-dom": "^19.3.1",
         "react-final-form": "^6.5.9",
         "react-intl": "^7.1.14",
-        "react-router": "^5.3.4",
-        "react-router-dom": "^5.3.4",
+        "react-router": "^8.5.1",
+        "react-router-dom": "^7.18.5",
         "use-debounce": "^10.1.1",
         "uuid": "^14.0.3"
     },

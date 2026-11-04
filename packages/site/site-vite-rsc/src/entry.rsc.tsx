@@ -6,7 +6,7 @@ import { isAllowedRedirectTarget } from "./redirectTarget.js";
 import { renderRedirectPayload } from "./render.js";
 import { reportError, setErrorReporter } from "./reportError.js";
 import { runWithRequestContext } from "./requestContext.js";
-import { stripRscPrefix } from "./rscRequest.js";
+import { stripNotFoundMarker, stripRscPrefix } from "./rscRequest.js";
 
 setErrorReporter(reportErrorOfSite);
 
@@ -15,11 +15,12 @@ const redirectStatuses = [301, 302, 303, 307, 308];
 async function handler(request: Request): Promise<Response> {
     const strippedUrl = stripRscPrefix(new URL(request.url));
     const isRscRequest = strippedUrl !== null;
+    const isNotFoundRequest = strippedUrl !== null && stripNotFoundMarker(strippedUrl);
     if (strippedUrl) {
         request = new Request(strippedUrl, { method: request.method, headers: request.headers, signal: request.signal });
     }
 
-    const response = await runWithRequestContext({ request, isRscRequest }, () => app.fetch(request));
+    const response = await runWithRequestContext({ request, isRscRequest, isNotFoundRequest }, () => app.fetch(request));
 
     const location = response.headers.get("Location");
     if (isRscRequest && location !== null && redirectStatuses.includes(response.status)) {

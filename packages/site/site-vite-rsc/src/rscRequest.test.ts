@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { addRscPrefix, createRscUrl, getRedirectedPageUrl, stripRscPrefix } from "./rscRequest.js";
+import { addRscPrefix, createRscUrl, getRedirectedPageUrl, stripNotFoundMarker, stripRscPrefix } from "./rscRequest.js";
 
 describe("addRscPrefix", () => {
     it("prefixes the pathname", () => {
@@ -54,5 +54,21 @@ describe("getRedirectedPageUrl", () => {
 
     it("returns null for redirects without the prefix", () => {
         expect(getRedirectedPageUrl("https://other.example.com/en", new URL("https://example.com/en#details"))).toBeNull();
+    });
+});
+
+describe("stripNotFoundMarker", () => {
+    it("removes the marker of the not found request and keeps the rest of the search", () => {
+        const url = new URL("https://example.com/en/news?page=2&_rsc_not_found=");
+
+        expect(stripNotFoundMarker(url)).toBe(true);
+        expect(url.href).toBe("https://example.com/en/news?page=2");
+    });
+
+    it("leaves URLs without the marker unchanged", () => {
+        const url = new URL("https://example.com/en/news?page=2%20b");
+
+        expect(stripNotFoundMarker(url)).toBe(false);
+        expect(url.href).toBe("https://example.com/en/news?page=2%20b");
     });
 });

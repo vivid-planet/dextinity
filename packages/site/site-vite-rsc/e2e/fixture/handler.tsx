@@ -3,10 +3,10 @@ import { handleError, renderPage, setPreview, trailingSlashRedirectMiddleware } 
 import { type Context, Hono } from "hono";
 import { type ReactNode, Suspense } from "react";
 
-import { publicCacheControl } from "../helpers.js";
+import { noStoreCacheControl, publicCacheControl } from "../helpers.js";
 import { ClientComponentOfOtherBuild, ClientError, ClientNotFound, ClientRouterInfo } from "./clientComponents.js";
 import { Layout } from "./Layout.js";
-import { Nested, RequestInfo, ServerError, ServerNotFound, ServerRedirect } from "./serverComponents.js";
+import { Nested, RequestInfo, ServerError, ServerNotFound, ServerRedirect, Slow, SlowContent } from "./serverComponents.js";
 import { TestPage } from "./TestPage.js";
 
 type TestPageOptions = {
@@ -168,5 +168,54 @@ app.get("/error-in-handler", (c) => {
 });
 
 app.get("/reported-errors", (c) => c.json(globalThis.reportedErrors ?? []));
+
+/**
+ * Pages with slow content for the streaming tests, not cached unless `?cache=public`, `?streaming=true|false` overrides the default
+ */
+function renderStreamingTestPage(c: Context, { shell, slow }: { shell?: ReactNode; slow: ReactNode }) {
+    const streaming = c.req.query("streaming");
+    const delay = Number(c.req.query("delay") ?? 300);
+    return renderPage(c, {
+        root: (
+            <Layout>
+                <p>Shell content</p>
+                {shell}
+                <Suspense fallback={<p>Loading slow content</p>}>
+                    <Slow delay={delay}>{slow}</Slow>
+                </Suspense>
+            </Layout>
+        ),
+        notFound: () => (
+            <Layout>
+                <p>Not found page</p>
+            </Layout>
+        ),
+        error: () => (
+            <Layout>
+                <p>Error page</p>
+            </Layout>
+        ),
+        cacheControl: c.req.query("cache") === "public" ? publicCacheControl : noStoreCacheControl,
+        streaming: streaming === undefined ? undefined : streaming === "true",
+    });
+}
+
+app.get("/streaming/slow", (c) => renderStreamingTestPage(c, { slow: <SlowContent /> }));
+
+app.get("/streaming/not-found", (c) => renderStreamingTestPage(c, { slow: <ServerNotFound /> }));
+
+app.get("/streaming/not-found-in-client-component", (c) => renderStreamingTestPage(c, { slow: <ClientNotFound /> }));
+
+app.get("/streaming/not-found-in-shell", (c) => renderStreamingTestPage(c, { shell: <ServerNotFound />, slow: <SlowContent /> }));
+
+app.get("/streaming/redirect", (c) => renderStreamingTestPage(c, { slow: <ServerRedirect location={c.req.query("location") ?? "/request"} /> }));
+
+app.get("/streaming/redirect-in-shell", (c) => renderStreamingTestPage(c, { shell: <ServerRedirect location="/request" />, slow: <SlowContent /> }));
+
+app.get("/streaming/error", (c) => renderStreamingTestPage(c, { slow: <ServerError id={c.req.query("id")} /> }));
+
+app.get("/streaming/client-error", (c) => renderStreamingTestPage(c, { slow: <ClientError /> }));
+
+app.get("/streaming/error-in-shell", (c) => renderStreamingTestPage(c, { shell: <ServerError />, slow: <SlowContent /> }));
 
 app.onError(handleError);

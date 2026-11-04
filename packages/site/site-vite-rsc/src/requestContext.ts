@@ -25,6 +25,8 @@ type RequestContext = {
     /** The request as sent by the browser, before any middleware rewrites */
     request: Request;
     isRscRequest: boolean;
+    /** The browser requests the not found page of the route, as `notFound()` was called after the response started */
+    isNotFoundRequest: boolean;
     /** From the site preview or the block preview */
     visibility?: Visibility;
     /** Set while the site is opened in the site preview of the admin */
@@ -37,8 +39,11 @@ type RequestContext = {
 
 const requestContextStorage = new AsyncLocalStorage<RequestContext>();
 
-export function runWithRequestContext<T>({ request, isRscRequest }: { request: Request; isRscRequest: boolean }, callback: () => T): T {
-    return requestContextStorage.run({ request, isRscRequest, data: {} }, callback);
+export function runWithRequestContext<T>(
+    { request, isRscRequest, isNotFoundRequest = false }: { request: Request; isRscRequest: boolean; isNotFoundRequest?: boolean },
+    callback: () => T,
+): T {
+    return requestContextStorage.run({ request, isRscRequest, isNotFoundRequest, data: {} }, callback);
 }
 
 function getRequestContext() {
@@ -55,6 +60,10 @@ export function getRequest() {
 
 export function isRscRequest() {
     return getRequestContext().isRscRequest;
+}
+
+export function isNotFoundRequest() {
+    return getRequestContext().isNotFoundRequest;
 }
 
 export function getCookie(name: string): string | undefined {

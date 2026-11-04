@@ -1,10 +1,11 @@
 import type { Context } from "hono";
 import type { ReactNode } from "react";
 
-import { noStoreCacheControl } from "./cacheControl.js";
+import { isBotUserAgent } from "./bots.js";
+import { isSharedCacheable, noStoreCacheControl } from "./cacheControl.js";
 import { getNavigationErrorDigest, isNotFoundDigest, parseRedirectDigest } from "./navigation.js";
 import { reportError } from "./reportError.js";
-import { getRequest, getSitePreview, isRscRequest } from "./requestContext.js";
+import { getRequest, getSitePreview, isNotFoundRequest, isRscRequest } from "./requestContext.js";
 import { RouterProvider } from "./RouterProvider.js";
 import { SitePreviewProvider } from "./SitePreviewProvider.js";
 import { createTitleCountCheck } from "./titleCountCheck.js";
@@ -28,22 +29,40 @@ type RenderPageOptions = {
     /** Only used for successful responses, all others aren't cached */
     cacheControl: string;
     status?: number;
+    /**
+     * Responds as soon as the content outside of Suspense boundaries is rendered, then streams the rest.
+     * `notFound()`, `redirect()` and errors inside Suspense boundaries are handled by the browser then, with status 200
+     * and `cacheControl`.
+     *
+     * Defaults to streaming responses that CDNs don't cache, i.e. with `no-store` or `private` in `cacheControl`, so that
+     * failed pages are never cached. Bots always get the complete page.
+     */
+    streaming?: boolean;
 };
 
 export async function renderPage(c: Context, options: RenderPageOptions): Promise<Response> {
     const { root, notFound, error, status = 200 } = options;
+    if (isNotFoundRequest() && status === 200) {
+        return renderPage(c, { ...options, root: notFound(), status: 404 });
+    }
+
+    const streaming = (options.streaming ?? !isSharedCacheable(options.cacheControl)) && !isBotUserAgent(getRequest().headers.get("User-Agent"));
     const url = new URL(getRequest().url);
     const rscPayload = await renderRscPayload(
         <RouterProvider pathname={url.pathname} search={url.search} params={c.req.param()}>
             {getSitePreview() ? <SitePreviewProvider>{root}</SitePreviewProvider> : root}
         </RouterProvider>,
     );
+    // The payload is rendered completely before responding, so that notFound() and redirect() can set the status,
+    // no matter where in the tree they are called
+    const rscStream = streaming ? rscPayload.stream : createStream(await readChunks(rscPayload.stream));
     // Also when an error boundary in the browser handles the errors, they must not be cached
-    const cacheControl = status === 200 && !rscPayload.hasError ? options.cacheControl : noStoreCacheControl;
+    const getCacheControl = () => (status === 200 && !rscPayload.hasError ? options.cacheControl : noStoreCacheControl);
 
-    const result = rscPayload.navigationDigest
-        ? { navigationDigest: rscPayload.navigationDigest }
-        : await respond(rscPayload.chunks, { status, cacheControl });
+    const result =
+        !streaming && rscPayload.navigationDigest
+            ? { navigationDigest: rscPayload.navigationDigest }
+            : await respond(rscStream, { status, getCacheControl, streaming });
     if ("response" in result) {
         return result.response;
     }
@@ -57,7 +76,7 @@ export async function renderPage(c: Context, options: RenderPageOptions): Promis
 
     const redirect = parseRedirectDigest(result.navigationDigest);
     if (redirect) {
-        c.header("Cache-Control", cacheControl);
+        c.header("Cache-Control", getCacheControl());
         return c.redirect(redirect.location, redirect.status);
     }
     if (isNotFoundDigest(result.navigationDigest) && status !== 404) {
@@ -67,38 +86,34 @@ export async function renderPage(c: Context, options: RenderPageOptions): Promis
 }
 
 async function renderRscPayload(root: ReactNode) {
-    let navigationDigest: string | undefined;
-    let hasError = false;
     // Only works in Vite's RSC environment, loaded on use so that this package's other server code works anywhere, e.g. in unit tests
     const { renderToReadableStream } = await import("@vitejs/plugin-rsc/rsc/server");
+    const state: { navigationDigest?: string; hasError: boolean } = { hasError: false };
     const stream = renderToReadableStream<RscPayload>(
         { root },
         {
             onError(error: unknown) {
                 const digest = getNavigationErrorDigest(error);
                 if (digest) {
-                    navigationDigest ??= digest;
+                    state.navigationDigest ??= digest;
                     return digest;
                 }
-                hasError = true;
+                state.hasError = true;
                 reportError(error);
                 return undefined;
             },
         },
     );
+    return Object.assign(state, { stream });
+}
 
-    // The payload is rendered completely before responding, so that notFound() and redirect() can set the status,
-    // no matter where in the tree they are called
-    // TODO Stream the payload once pages use Suspense, like Next.js: decide the status only up to the shell, then render
-    // `<meta name="robots" content="noindex">` for notFound() and `<meta http-equiv="refresh">` for redirect() into the
-    // HTML, and catch both in error boundaries around the layouts (not found page in place, client-side redirect)
+async function readChunks(stream: ReadableStream<Uint8Array>) {
     const chunks: Uint8Array[] = [];
     const reader = stream.getReader();
     for (let result = await reader.read(); !result.done; result = await reader.read()) {
         chunks.push(result.value);
     }
-
-    return { chunks, navigationDigest, hasError };
+    return chunks;
 }
 
 export async function renderRedirectPayload(location: string) {
@@ -132,25 +147,28 @@ function checkTitleCount(html: ReadableStream<Uint8Array>) {
 }
 
 async function respond(
-    rscChunks: Uint8Array[],
-    { status, cacheControl }: { status: number; cacheControl: string },
+    rscStream: ReadableStream<Uint8Array>,
+    { status, getCacheControl, streaming }: { status: number; getCacheControl: () => string; streaming: boolean },
 ): Promise<{ response: Response } | { navigationDigest: string } | { hasFailed: true }> {
+    // Proxies like nginx would otherwise buffer the response
+    const streamingHeaders: Record<string, string> = streaming ? { "X-Accel-Buffering": "no" } : {};
     if (isRscRequest()) {
         return {
-            response: new Response(createStream(rscChunks), {
+            response: new Response(rscStream, {
                 status,
                 headers: {
                     "Content-Type": "text/x-component;charset=utf-8",
-                    "Cache-Control": cacheControl,
+                    "Cache-Control": getCacheControl(),
                     // Crawlers only need the HTML, the RSC payload for hydration is embedded in it
                     "X-Robots-Tag": "noindex",
+                    ...streamingHeaders,
                 },
             }),
         };
     }
 
     const ssrEntry = await import.meta.viteRsc.loadModule<typeof import("./entry.ssr.js")>("ssr", "index");
-    const html = await ssrEntry.renderHtml(createStream(rscChunks));
+    const html = await ssrEntry.renderHtml(rscStream, { streaming });
     if (!("stream" in html)) {
         return html;
     }
@@ -158,7 +176,11 @@ async function respond(
     return {
         response: new Response(import.meta.env.DEV ? checkTitleCount(html.stream) : html.stream, {
             status,
-            headers: { "Content-Type": "text/html;charset=utf-8", "Cache-Control": html.hasError ? noStoreCacheControl : cacheControl },
+            headers: {
+                "Content-Type": "text/html;charset=utf-8",
+                "Cache-Control": html.hasError ? noStoreCacheControl : getCacheControl(),
+                ...streamingHeaders,
+            },
         }),
     };
 }

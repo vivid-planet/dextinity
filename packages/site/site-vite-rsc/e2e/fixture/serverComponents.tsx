@@ -37,3 +37,16 @@ export async function ServerError({ id = "" }: { id?: string }): Promise<never> 
     await delay();
     throw new Error(`Server component failed${id}`);
 }
+
+export async function Slow({ delay, children }: PropsWithChildren<{ delay: number }>) {
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    return children;
+}
+
+/**
+ * Its text is only in the RSC payload once it's rendered, in development the payload contains the props and the source
+ * of components before
+ */
+export function SlowContent() {
+    return <p>{["Slow", "content"].join(" ")}</p>;
+}

@@ -43,6 +43,10 @@ export function TestPage({ name, imageDelay }: { name: string; imageDelay?: numb
                 <Link href={`/redirect?location=${encodeURIComponent("https://example.com/target")}`}>Redirect to other origin</Link>
                 <Link href="/redirect-loop">Redirect loop</Link>
                 <Link href="/server-error">Server error</Link>
+                <Link href="/streaming/slow">Streamed page</Link>
+                <Link href="/streaming/not-found">Streamed not found</Link>
+                <Link href="/streaming/redirect">Streamed redirect</Link>
+                <Link href="/streaming/error">Streamed error</Link>
                 <Link href="/client-error">Client error</Link>
                 <Link href="/client-component-of-other-build">Client component of other build</Link>
             </nav>

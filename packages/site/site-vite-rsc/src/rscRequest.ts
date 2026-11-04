@@ -5,11 +5,30 @@ export function addRscPrefix(pathname: string) {
     return `${rscPathnamePrefix}${pathname}`;
 }
 
-export function createRscUrl(href: string) {
+// Marks the request for the not found page of a route, when notFound() was called after the response started
+const notFoundSearchParam = "_rsc_not_found";
+
+export function createRscUrl(href: string, { notFound = false }: { notFound?: boolean } = {}) {
     const url = new URL(href, window.location.href);
     url.pathname = addRscPrefix(url.pathname);
     url.hash = "";
+    if (notFound) {
+        url.searchParams.set(notFoundSearchParam, "");
+    }
     return url;
+}
+
+/**
+ * Removes the marker of `createRscUrl(href, { notFound: true })` from the URL of an RSC request
+ *
+ * @returns Whether the URL had the marker
+ */
+export function stripNotFoundMarker(url: URL) {
+    if (!url.searchParams.has(notFoundSearchParam)) {
+        return false;
+    }
+    url.searchParams.delete(notFoundSearchParam);
+    return true;
 }
 
 export function stripRscPrefix(url: URL) {

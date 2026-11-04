@@ -7,6 +7,7 @@ import { reportError as reportErrorOfSite } from "virtual:dextinity-site/report-
 import { announceNavigation, setUpNavigationAnnouncer } from "./announceNavigation.js";
 import { getFragmentTarget } from "./fragmentTarget.js";
 import { GlobalErrorBoundary } from "./GlobalErrorBoundary.js";
+import { getNavigationErrorDigest, isNotFoundDigest, parseRedirectDigest } from "./navigation.js";
 import { resolveRedirectTarget } from "./redirectTarget.js";
 import type { NavigationPayload, RscPayload } from "./render.js";
 import { reportError, setErrorReporter } from "./reportError.js";
@@ -29,6 +30,8 @@ type ScrollTarget = "top" | "hash" | { scrollY: number } | undefined;
 const maxRedirects = 20; // Like browsers
 
 let setPayloadFromOutside: ((payload: RscPayload, scrollTarget: ScrollTarget) => void) | undefined;
+/** Of the displayed page, to stop following redirects of streamed pages too */
+let displayedPage: { redirectCount: number; isNotFoundPage: boolean } = { redirectCount: 0, isNotFoundPage: false };
 let startNavigationTransition: TransitionStartFunction = startTransition; // Replaced by BrowserRoot to track the pending state
 let pendingNavigation: AbortController | undefined;
 let currentHistoryKey: string;
@@ -77,18 +80,47 @@ function BrowserRoot({ initialPayload }: { initialPayload: RscPayload }) {
 
     return (
         <NavigationProvider router={browserRouter} isPending={isPending}>
-            <GlobalErrorBoundary resetKey={payload}>{payload.root}</GlobalErrorBoundary>
+            <GlobalErrorBoundary resetKey={payload} onNavigationError={handleNavigationError}>
+                {payload.root}
+            </GlobalErrorBoundary>
         </NavigationProvider>
     );
 }
 
-function navigate(href: string, { scrollTarget, redirectCount = 0 }: { scrollTarget: ScrollTarget; redirectCount?: number }) {
+/**
+ * `notFound()` or `redirect()` was called after the response started, so the page is already displayed with status 200
+ */
+function handleNavigationError(digest: string) {
+    const redirect = parseRedirectDigest(digest);
+    if (redirect) {
+        if (document.querySelector('meta[http-equiv="refresh"]')) {
+            return true; // Inserted by the server into the streamed HTML, the browser follows it already
+        }
+        followRedirect({
+            href: window.location.href,
+            location: redirect.location,
+            scrollTarget: "top",
+            redirectCount: displayedPage.redirectCount,
+        });
+        return true;
+    }
+    if (isNotFoundDigest(digest) && !displayedPage.isNotFoundPage) {
+        navigate(window.location.href, { scrollTarget: undefined, notFound: true });
+        return true;
+    }
+    return false;
+}
+
+function navigate(
+    href: string,
+    { scrollTarget, redirectCount = 0, notFound = false }: { scrollTarget: ScrollTarget; redirectCount?: number; notFound?: boolean },
+) {
     pendingNavigation?.abort();
     const navigation = new AbortController();
     pendingNavigation = navigation;
     startNavigationTransition(async () => {
         try {
-            const response = await fetch(createRscUrl(href), { signal: navigation.signal });
+            const response = await fetch(createRscUrl(href, { notFound }), { signal: navigation.signal });
             if (!response.headers.get("Content-Type")?.startsWith("text/x-component")) {
                 throw new Error(`Unexpected response for ${href}`);
             }
@@ -108,6 +140,7 @@ function navigate(href: string, { scrollTarget, redirectCount = 0 }: { scrollTar
                     currentDocumentPath = getDocumentPath(new URL(redirectedUrl, window.location.href));
                 }
             }
+            displayedPage = { redirectCount, isNotFoundPage: notFound || response.status === 404 };
             setPayloadFromOutside?.(payload, scrollTarget);
         } catch (error) {
             if (navigation.signal.aborted) {
@@ -231,6 +264,9 @@ async function main() {
     hydrateRoot(document, <BrowserRoot initialPayload={initialPayload} />, {
         // Called for the errors of all error boundaries, also of those that hide a failed block
         onCaughtError(error) {
+            if (getNavigationErrorDigest(error)) {
+                return; // Handled by GlobalErrorBoundary
+            }
             if (shouldReloadForUnknownClientReference(error)) {
                 window.location.reload();
                 return;

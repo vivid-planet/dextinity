@@ -1,4 +1,6 @@
 export { Button, type ButtonOwnerState, type ButtonProps } from "./components/button/Button";
+export { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "./components/field/Field";
+export { type FieldSize, type FieldState } from "./components/field/Field";
 export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Icon";
 export { type IconName, iconNames } from "./components/icon/iconNames";
 export { Kbd, type KbdOwnerState, type KbdProps } from "./components/kbd/Kbd";

@@ -1,0 +1,29 @@
+.control {
+    flex: 1;
+    min-inline-size: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+}
+
+.range {
+    flex: 1;
+    accent-color: var(--dextinity-color-accent);
+}
+
+.output {
+    min-inline-size: 3ch;
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-mono-size);
+    text-align: end;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+    max-inline-size: 420px;
+}

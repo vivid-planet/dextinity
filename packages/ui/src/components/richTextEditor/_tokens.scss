@@ -1,0 +1,18 @@
+@use "../../theme/scope";
+
+// The frame (label, box, message) comes from the Field tokens.
+@include scope.component-tokens {
+    --dextinity-rich-text-editor-radius: calc(12px * var(--dextinity-brand-radius-factor));
+    --dextinity-rich-text-editor-toolbar-padding: 5px;
+    --dextinity-rich-text-editor-toolbar-line: var(--dextinity-color-line);
+    --dextinity-rich-text-editor-toolbar-button-size: 30px;
+    // Formatting that applies at the cursor
+    --dextinity-rich-text-editor-toolbar-button-background-active: var(--dextinity-color-accent-soft);
+    --dextinity-rich-text-editor-toolbar-button-foreground-active: var(--dextinity-color-accent-text);
+    --dextinity-rich-text-editor-content-padding: 14px 16px;
+    --dextinity-rich-text-editor-line-height: 1.62;
+    --dextinity-rich-text-editor-heading-size: var(--dextinity-typography-section-size);
+    --dextinity-rich-text-editor-heading-weight: var(--dextinity-typography-section-font-weight);
+    --dextinity-rich-text-editor-link-color: var(--dextinity-color-accent-text);
+    --dextinity-rich-text-editor-placeholder-color: var(--dextinity-field-placeholder);
+}

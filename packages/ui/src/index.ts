@@ -11,6 +11,8 @@ export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./c
 export { type IconButtonSlotProps, type IconButtonSlots } from "./components/iconButton/IconButton";
 export { Input, type InputOwnerState, type InputProps } from "./components/input/Input";
 export { Kbd, type KbdOwnerState, type KbdProps } from "./components/kbd/Kbd";
+export { RichTextEditor, type RichTextEditorFormat, type RichTextEditorLabels } from "./components/richTextEditor/RichTextEditor";
+export { type RichTextEditorOwnerState, type RichTextEditorProps } from "./components/richTextEditor/RichTextEditor";
 export { Select, type SelectLabels, type SelectOption, type SelectOwnerState, type SelectProps } from "./components/select/Select";
 export { type SelectValue } from "./components/select/Select";
 export { Spinner, type SpinnerOwnerState, type SpinnerProps } from "./components/spinner/Spinner";

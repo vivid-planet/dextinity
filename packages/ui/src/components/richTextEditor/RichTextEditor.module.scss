@@ -1,0 +1,94 @@
+.root > :global(.dextinityField__box) {
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
+    border-radius: var(--dextinity-rich-text-editor-radius);
+    cursor: auto;
+}
+
+.root :global(.dextinityField__suffix) {
+    position: absolute;
+    inset-block-start: 12px;
+    inset-inline-end: 12px;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
+    padding: var(--dextinity-rich-text-editor-toolbar-padding);
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-rich-text-editor-toolbar-line);
+
+    --dextinity-icon-button-size: var(--dextinity-rich-text-editor-toolbar-button-size);
+    --dextinity-icon-button-icon-size: 16px;
+}
+
+.toolbarButton {
+    &[aria-pressed="true"] {
+        background: var(--dextinity-rich-text-editor-toolbar-button-background-active);
+        color: var(--dextinity-rich-text-editor-toolbar-button-foreground-active);
+    }
+
+    :global([data-dextinity-color-scheme="high-contrast"]) &[aria-pressed="true"] {
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) currentColor;
+    }
+}
+
+.separator {
+    align-self: stretch;
+    inline-size: var(--dextinity-line-width);
+    margin: 5px 4px;
+    background: var(--dextinity-color-line-strong);
+}
+
+.content {
+    box-sizing: border-box;
+    min-block-size: calc(var(--dextinity-rich-text-editor-min-rows) * 1lh + 28px);
+    padding: var(--dextinity-rich-text-editor-content-padding);
+    outline: none;
+    line-height: var(--dextinity-rich-text-editor-line-height);
+    overflow-wrap: anywhere;
+    cursor: text;
+
+    &[data-empty]::before {
+        content: attr(data-placeholder);
+        position: absolute;
+        color: var(--dextinity-rich-text-editor-placeholder-color);
+        pointer-events: none;
+    }
+
+    &[aria-disabled="true"] {
+        cursor: not-allowed;
+    }
+
+    p,
+    ul,
+    ol,
+    h3 {
+        margin: 0 0 10px;
+
+        &:last-child {
+            margin-block-end: 0;
+        }
+    }
+
+    ul,
+    ol {
+        padding-inline-start: 20px;
+    }
+
+    h3 {
+        font-size: var(--dextinity-rich-text-editor-heading-size);
+        font-weight: var(--dextinity-rich-text-editor-heading-weight);
+        line-height: var(--dextinity-typography-section-line-height);
+    }
+
+    a {
+        color: var(--dextinity-rich-text-editor-link-color);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+}

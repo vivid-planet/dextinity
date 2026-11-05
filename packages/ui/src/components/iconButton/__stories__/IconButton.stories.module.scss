@@ -1,0 +1,11 @@
+.stage {
+    display: flex;
+    justify-content: center;
+    min-block-size: 96px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-3);
+}

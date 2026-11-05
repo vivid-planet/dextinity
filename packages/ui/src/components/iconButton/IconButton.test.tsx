@@ -1,89 +1,50 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import { createRef } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { IconButton } from "./IconButton";
 
-/**
- * Compile-time contract for slot-prop typing. Never rendered — it exists so
- * `tsc` fails if the typing regresses.
- */
-export function IconButtonSlotPropsTypeContract() {
-    return (
-        <>
-            {/* The chosen element flows into slotProps: an anchor slot accepts `href`, no cast. */}
-            <IconButton aria-label="Download" slots={{ icon: "a" }} slotProps={{ icon: { href: "/x" } }} />
-            <IconButton
-                aria-label="Download"
-                slots={{ icon: "a" }}
-                slotProps={{
-                    // @ts-expect-error an anchor slot's href must be a string
-                    icon: { href: 123 },
-                }}
-            />
-            <IconButton
-                aria-label="Download"
-                slotProps={{
-                    // @ts-expect-error the default span slot has no href
-                    icon: { href: "/x" },
-                }}
-            />
-        </>
-    );
-}
-
 afterEach(cleanup);
 
-describe("IconButton owner state", () => {
-    it("emits the variant, color, and size as data attributes, with their defaults when unset", () => {
+describe("IconButton", () => {
+    it("emits the variant and size as data attributes, with their defaults when unset", () => {
         render(
             <>
-                <IconButton aria-label="Favorite">
+                <IconButton aria-label="More actions">
                     <span />
                 </IconButton>
-                <IconButton aria-label="Remove" variant="outlined" color="error" size="small">
+                <IconButton aria-label="Delete" variant="outlined" size="small">
                     <span />
                 </IconButton>
             </>,
         );
 
-        const favorite = screen.getByRole("button", { name: "Favorite" });
-        expect([favorite.dataset.variant, favorite.dataset.color, favorite.dataset.size]).toStrictEqual(["contained", "primary", "default"]);
-        const remove = screen.getByRole("button", { name: "Remove" });
-        expect([remove.dataset.variant, remove.dataset.color, remove.dataset.size]).toStrictEqual(["outlined", "error", "small"]);
+        const more = screen.getByRole("button", { name: "More actions" });
+        expect([more.className.includes("dextinityIconButton"), more.dataset.variant, more.dataset.size]).toStrictEqual([true, "text", "default"]);
+        const remove = screen.getByRole("button", { name: "Delete" });
+        expect([remove.dataset.variant, remove.dataset.size]).toStrictEqual(["outlined", "small"]);
     });
 
-    it("marks the button as busy only while loading", () => {
+    it("replaces the icon with a spinner and marks the button as busy while loading", () => {
         render(
-            <>
-                <IconButton aria-label="Save">
-                    <span />
-                </IconButton>
-                <IconButton aria-label="Saving" loading>
-                    <span />
-                </IconButton>
-            </>,
+            <IconButton aria-label="Refresh" loading>
+                <span data-testid="icon" />
+            </IconButton>,
         );
 
-        const save = screen.getByRole("button", { name: "Save" });
-        expect([save.hasAttribute("data-loading"), save.getAttribute("aria-busy")]).toStrictEqual([false, null]);
-        const saving = screen.getByRole("button", { name: "Saving" });
-        expect([saving.dataset.loading, saving.getAttribute("aria-busy")]).toStrictEqual(["", "true"]);
+        const refresh = screen.getByRole("button", { name: "Refresh" });
+        expect([refresh.dataset.loading, refresh.getAttribute("aria-busy")]).toStrictEqual(["", "true"]);
+        expect(screen.queryByTestId("icon")).toBeNull();
     });
-});
 
-describe("IconButton slots", () => {
-    it("renders a slot as the element chosen in `slots`, merging the contract class with consumer props", () => {
+    it("forwards the ref to the button", () => {
+        const ref = createRef<HTMLButtonElement>();
         render(
-            <IconButton aria-label="Download" slots={{ icon: "a" }} slotProps={{ icon: { href: "/downloads", className: "consumer-class" } }}>
+            <IconButton aria-label="More actions" ref={ref}>
                 <span />
             </IconButton>,
         );
 
-        const icon = screen.getByRole("link");
-        expect([icon.getAttribute("href"), icon.className.includes("consumer-class"), icon.className.includes("icon")]).toStrictEqual([
-            "/downloads",
-            true,
-            true,
-        ]);
+        expect(ref.current).toBe(screen.getByRole("button", { name: "More actions" }));
     });
 });

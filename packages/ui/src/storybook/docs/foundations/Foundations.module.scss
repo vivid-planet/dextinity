@@ -435,3 +435,33 @@
     outline: var(--dextinity-line-width) solid var(--dextinity-color-line);
     outline-offset: calc(var(--dextinity-line-width) * -1);
 }
+
+// Primitive scales
+
+.scales {
+    display: grid;
+    grid-template-columns: 80px repeat(11, minmax(0, 1fr));
+    gap: 4px;
+    font-size: 11px;
+}
+
+.scaleStep {
+    color: var(--dextinity-color-text-tertiary);
+    font-family: var(--dextinity-font-family-mono);
+    text-align: center;
+}
+
+.scaleRow {
+    display: contents;
+
+    code {
+        align-self: center;
+        color: var(--dextinity-color-text-secondary);
+    }
+
+    i {
+        block-size: 32px;
+        border-radius: var(--dextinity-radius-item);
+        background: var(--scale-color);
+    }
+}

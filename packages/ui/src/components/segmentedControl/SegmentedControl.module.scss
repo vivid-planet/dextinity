@@ -1,0 +1,84 @@
+.root {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-segmented-control-gap);
+    box-sizing: border-box;
+    max-inline-size: 100%;
+    padding: var(--dextinity-segmented-control-inset);
+    border-radius: var(--dextinity-segmented-control-radius);
+    background: var(--dextinity-segmented-control-background);
+    box-shadow: var(--dextinity-segmented-control-shadow);
+    font-family: var(--dextinity-font-family-text);
+
+    --_height: var(--dextinity-segmented-control-height);
+    --_padding: var(--dextinity-segmented-control-padding);
+
+    &[data-size="small"] {
+        --_height: var(--dextinity-segmented-control-height-small);
+        --_padding: var(--dextinity-segmented-control-padding-small);
+    }
+
+    &[data-disabled] {
+        opacity: var(--dextinity-segmented-control-disabled-opacity);
+    }
+}
+
+.option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--dextinity-space-2);
+    box-sizing: border-box;
+    block-size: var(--_height);
+    min-inline-size: var(--_height);
+    padding-inline: var(--_padding);
+    border: 0;
+    border-radius: var(--dextinity-segmented-control-option-radius);
+    background: transparent;
+    color: var(--dextinity-segmented-control-foreground);
+    font: inherit;
+    font-size: var(--dextinity-segmented-control-font-size);
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background var(--dextinity-motion-duration-short),
+        color var(--dextinity-motion-duration-short),
+        box-shadow var(--dextinity-motion-duration-medium);
+
+    &:hover:not([data-disabled]) {
+        color: var(--dextinity-segmented-control-foreground-hover);
+    }
+
+    &[data-pressed] {
+        background: var(--dextinity-segmented-control-selected-background);
+        color: var(--dextinity-segmented-control-selected-foreground);
+        font-weight: var(--dextinity-segmented-control-selected-font-weight);
+        box-shadow: var(--dextinity-segmented-control-selected-shadow);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+
+    &[data-disabled] {
+        cursor: not-allowed;
+    }
+
+    // The whole group dims instead when it is disabled
+    .root:not([data-disabled]) &[data-disabled] {
+        opacity: var(--dextinity-segmented-control-disabled-opacity);
+    }
+}
+
+.optionIcon {
+    display: inline-flex;
+    --dextinity-icon-size: var(--dextinity-segmented-control-icon-size);
+}
+
+// Applied by the high-contrast color scheme
+:global([data-dextinity-color-scheme="high-contrast"]) .root {
+    --dextinity-segmented-control-selected-background: var(--dextinity-color-text);
+    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-canvas);
+}

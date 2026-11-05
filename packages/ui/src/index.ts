@@ -14,6 +14,8 @@ export { Input, type InputOwnerState, type InputProps } from "./components/input
 export { Kbd, type KbdOwnerState, type KbdProps } from "./components/kbd/Kbd";
 export { RichTextEditor, type RichTextEditorFormat, type RichTextEditorLabels } from "./components/richTextEditor/RichTextEditor";
 export { type RichTextEditorOwnerState, type RichTextEditorProps } from "./components/richTextEditor/RichTextEditor";
+export { SegmentedControl, type SegmentedControlOption, type SegmentedControlOwnerState } from "./components/segmentedControl/SegmentedControl";
+export { type SegmentedControlProps, type SegmentedControlSlotProps } from "./components/segmentedControl/SegmentedControl";
 export { Select, type SelectLabels, type SelectOption, type SelectOwnerState, type SelectProps } from "./components/select/Select";
 export { type SelectValue } from "./components/select/Select";
 export { Spinner, type SpinnerOwnerState, type SpinnerProps } from "./components/spinner/Spinner";

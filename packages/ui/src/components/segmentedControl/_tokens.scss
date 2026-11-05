@@ -1,0 +1,28 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    --dextinity-segmented-control-height: var(--dextinity-density-segment-height);
+    --dextinity-segmented-control-height-small: calc(var(--dextinity-density-segment-height) - 4px);
+    --dextinity-segmented-control-padding: 12px;
+    --dextinity-segmented-control-padding-small: 9px;
+    // Space between the track's edge and the options
+    --dextinity-segmented-control-inset: 3px;
+    --dextinity-segmented-control-gap: 2px;
+    --dextinity-segmented-control-radius: calc(var(--dextinity-radius-item) + var(--dextinity-segmented-control-inset));
+    --dextinity-segmented-control-option-radius: var(--dextinity-radius-item);
+    --dextinity-segmented-control-font-size: 13px;
+    --dextinity-segmented-control-icon-size: 16px;
+    --dextinity-segmented-control-disabled-opacity: 0.42;
+
+    --dextinity-segmented-control-background: var(--dextinity-color-surface-sunken);
+    --dextinity-segmented-control-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+    --dextinity-segmented-control-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-segmented-control-foreground-hover: var(--dextinity-color-text);
+
+    // The chosen option
+    --dextinity-segmented-control-selected-background: var(--dextinity-color-surface);
+    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-text);
+    --dextinity-segmented-control-selected-font-weight: 500;
+    --dextinity-segmented-control-selected-shadow:
+        var(--dextinity-shadow-1), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+}

@@ -1,0 +1,89 @@
+.root {
+    font-family: var(--dextinity-font-family-text);
+}
+
+.list {
+    position: relative;
+    display: flex;
+    gap: var(--dextinity-tabs-gap);
+    overflow-x: auto;
+    box-shadow: inset 0 calc(-1 * var(--dextinity-line-width)) 0 var(--dextinity-tabs-line);
+    scrollbar-width: none;
+}
+
+.tab {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 6px;
+    box-sizing: border-box;
+    block-size: var(--dextinity-tabs-height);
+    padding-inline: var(--dextinity-tabs-padding);
+    border: 0;
+    border-radius: var(--dextinity-tabs-radius);
+    background: transparent;
+    color: var(--dextinity-tabs-foreground);
+    font: inherit;
+    font-size: var(--dextinity-tabs-font-size);
+    font-weight: var(--dextinity-tabs-font-weight);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--dextinity-motion-duration-short);
+
+    &:hover:not([data-disabled]) {
+        color: var(--dextinity-tabs-foreground-hover);
+    }
+
+    &[data-active] {
+        color: var(--dextinity-tabs-foreground-active);
+    }
+
+    // An inset outline, because the scrolling list would clip an outer focus ring
+    &:focus-visible {
+        outline: 2px solid var(--dextinity-color-focus);
+        outline-offset: -2px;
+    }
+
+    &[data-disabled] {
+        opacity: var(--dextinity-tabs-disabled-opacity);
+        cursor: not-allowed;
+    }
+}
+
+.count {
+    padding-inline: 5px;
+    border-radius: var(--dextinity-tabs-count-radius);
+    background: var(--dextinity-tabs-count-background);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-tabs-count-line);
+    color: var(--dextinity-tabs-count-foreground);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-tabs-count-font-size);
+    font-weight: 400;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+}
+
+.indicator {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: calc(var(--active-tab-left) + var(--dextinity-tabs-indicator-inset));
+    inline-size: calc(var(--active-tab-width) - 2 * var(--dextinity-tabs-indicator-inset));
+    block-size: var(--dextinity-tabs-indicator-height);
+    border-radius: var(--dextinity-tabs-indicator-height);
+    background: var(--dextinity-tabs-indicator-background);
+    transition:
+        inset-inline-start var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        inline-size var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+}
+
+.panel {
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+}
+
+// Applied by the high-contrast color scheme
+:global([data-dextinity-color-scheme="high-contrast"]) .root {
+    --dextinity-tabs-count-line: var(--dextinity-color-warning);
+}

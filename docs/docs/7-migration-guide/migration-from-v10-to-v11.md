@@ -633,6 +633,24 @@ npm install
 
 v2 drops support for `graphql` below v16 and for Node 20, which v11 doesn't support either. The scalars themselves are unchanged.
 
+### Add `@opentelemetry/api`
+
+`@dextinity/cms-api` now has `@opentelemetry/api` as a peer dependency, so its spans go to the tracer your OpenTelemetry SDK registers. Projects that set up OpenTelemetry usually depend on it already. Add it if `api/package.json` doesn't list it yet:
+
+```diff title="api/package.json"
+{
+    "dependencies": {
++       "@opentelemetry/api": "^1.10.0",
+    }
+}
+```
+
+```sh
+npm install
+```
+
+Without an OpenTelemetry SDK, the API does nothing, so projects that don't use tracing aren't affected otherwise.
+
 ### Replace deep imports into the API packages
 
 `@dextinity/cms-api`, `@dextinity/brevo-api` and `@dextinity/api-generator` only expose their package root through an `exports` map, so imports of their internals no longer resolve. Import from the package root instead:

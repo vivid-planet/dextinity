@@ -3,13 +3,5 @@
     "extends": ["github>vivid-planet/dextinity//renovate/default"],
     "toolSettings": {
         "nodeMaxMemory": 2048
-    },
-    "packageRules": [
-        {
-            "description": "Raising the minimum @opentelemetry/api version is breaking for consumers: an older globally registered API is rejected and cms-api falls back to a no-op tracer",
-            "matchFileNames": ["packages/api/cms-api/package.json"],
-            "matchPackageNames": ["@opentelemetry/api"],
-            "rangeStrategy": "in-range-only"
-        }
-    ]
+    }
 }

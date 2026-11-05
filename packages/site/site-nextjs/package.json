@@ -17,6 +17,10 @@
             "types": "./lib/index.d.ts",
             "import": "./lib/index.js"
         },
+        "./build-assets": {
+            "types": "./lib/buildAssets.d.ts",
+            "default": "./lib/buildAssets.js"
+        },
         "./css": "./lib/style.css",
         "./server": {
             "types": "./lib/server.d.ts",
@@ -24,7 +28,11 @@
         },
         "./webpackPersistedQueriesLoader": "./lib/persistedQueries/webpackPersistedQueriesLoader.js"
     },
+    "bin": {
+        "dextinity-upload-build-assets": "bin/upload-build-assets.mjs"
+    },
     "files": [
+        "bin/**/*.mjs",
         "lib/*"
     ],
     "scripts": {
@@ -48,18 +56,23 @@
     "dependencies": {
         "@dextinity/site-react": "workspace:*",
         "clsx": "^2.1.1",
+        "commander": "^15.0.0",
         "fast-equals": "^6.2.2",
         "jose": "^6.2.15",
+        "mime": "^4.1.2",
         "scroll-into-view-if-needed": "^3.1.0",
         "server-only": "^0.0.1",
         "usehooks-ts": "^3.1.1"
     },
     "devDependencies": {
+        "@aws-sdk/client-s3": "^3.1149.0",
+        "@azure/storage-blob": "^12.34.0",
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@vitejs/plugin-react": "^6.1.2",
+        "aws-sdk-client-mock": "^4.1.0",
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.5",
         "jsdom": "^28.1.0",
@@ -78,9 +91,19 @@
         "vitest": "^5.0.5"
     },
     "peerDependencies": {
+        "@aws-sdk/client-s3": "^3.0.0",
+        "@azure/storage-blob": "^12.0.0",
         "next": "^14.2.0 || ^15.0.0 || ^16.0.0",
         "react": "^18.0.0 || ^19.0.0",
         "react-dom": "^18.0.0 || ^19.0.0"
+    },
+    "peerDependenciesMeta": {
+        "@aws-sdk/client-s3": {
+            "optional": true
+        },
+        "@azure/storage-blob": {
+            "optional": true
+        }
     },
     "engines": {
         "node": ">=22.12.0"

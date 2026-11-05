@@ -327,6 +327,8 @@ export function createPageTreeResolver({
                 nodes.push(node);
             }
 
+            await this.pageTreeService.validateNodesMovableUnderParent({ nodes, parentId: input.parentId });
+
             let pos = input.pos;
             const modifiedPageTreeNodes: PageTreeNodeInterface[] = [];
             for (const node of nodes) {

@@ -1,0 +1,82 @@
+// Example consumer brands from the backlog. They live in Storybook only and show that a brand is a plain CSS block on
+// `[data-dextinity-brand="<name>"]`: hues and chromas, fonts, shape — and, for Nordwerk, its own icons.
+
+// Crimson Hotels: classic premium. Strong carmine and gold, serif headings, pill controls, warm neutrals.
+[data-dextinity-brand="crimson"] {
+    --dextinity-brand-primary-hue: 18;
+    --dextinity-brand-primary-chroma: 0.21;
+    --dextinity-brand-secondary-hue: 78;
+    --dextinity-brand-secondary-chroma: 0.15;
+    --dextinity-brand-neutral-hue: 40;
+    --dextinity-brand-neutral-chroma: 0.014;
+    --dextinity-brand-danger-hue: 42;
+    --dextinity-brand-font-family-text: "Source Sans 3", "Source Sans Pro", ui-sans-serif, system-ui, sans-serif;
+    --dextinity-brand-font-family-display: "Source Serif 4", georgia, serif;
+    --dextinity-brand-font-size: 15px;
+    --dextinity-brand-display-font-weight: 450;
+    --dextinity-brand-display-letter-spacing: -0.02em;
+    --dextinity-brand-radius-control: 999px;
+    --dextinity-brand-radius-factor: 1.15;
+}
+
+// Nordwerk Maschinenbau: Scandinavian and cool. Fjord blue and glacier, calm grotesque, tight radii, square icons.
+[data-dextinity-brand="nordwerk"] {
+    --dextinity-brand-primary-hue: 250;
+    --dextinity-brand-primary-chroma: 0.12;
+    --dextinity-brand-secondary-hue: 205;
+    --dextinity-brand-secondary-chroma: 0.07;
+    --dextinity-brand-neutral-hue: 235;
+    --dextinity-brand-neutral-chroma: 0.012;
+    --dextinity-brand-font-family-text: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    --dextinity-brand-font-family-display: "IBM Plex Sans", ui-sans-serif, sans-serif;
+    --dextinity-brand-font-family-mono: "IBM Plex Mono", ui-monospace, monospace;
+    --dextinity-brand-display-font-weight: 400;
+    --dextinity-brand-display-letter-spacing: -0.02em;
+    --dextinity-brand-radius-control: 6px;
+    --dextinity-brand-radius-factor: 0.5;
+
+    --dextinity-icon-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M5 12.5 9.5 17 19 7'/%3E%3C/svg%3E");
+    --dextinity-icon-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E");
+    --dextinity-icon-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+    --dextinity-icon-arrow-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M4 12h15M13 6l6 6-6 6'/%3E%3C/svg%3E");
+    --dextinity-icon-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    --dextinity-icon-search: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Crect x='4' y='4' width='13' height='13'/%3E%3Cpath d='m17 17 4 4'/%3E%3C/svg%3E");
+    --dextinity-icon-folder: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M3 5h7l2 3h9v11H3z'/%3E%3C/svg%3E");
+    --dextinity-icon-home: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M4 10 12 4l8 6v10H4z'/%3E%3Cpath d='M10 20v-6h4v6'/%3E%3C/svg%3E");
+}
+
+// Loden Naturkosmetik: natural and strong. Moss green and lime, rounded type, very round shapes.
+[data-dextinity-brand="loden"] {
+    --dextinity-brand-primary-hue: 148;
+    --dextinity-brand-primary-chroma: 0.16;
+    --dextinity-brand-secondary-hue: 112;
+    --dextinity-brand-secondary-chroma: 0.16;
+    --dextinity-brand-neutral-hue: 120;
+    --dextinity-brand-neutral-chroma: 0.014;
+    --dextinity-brand-success-hue: 190;
+    --dextinity-brand-font-family-text: "Nunito", ui-rounded, ui-sans-serif, system-ui, sans-serif;
+    --dextinity-brand-font-family-display: "Nunito", ui-rounded, ui-sans-serif, sans-serif;
+    --dextinity-brand-font-size: 14.5px;
+    --dextinity-brand-display-font-weight: 700;
+    --dextinity-brand-display-letter-spacing: -0.02em;
+    --dextinity-brand-radius-control: 999px;
+    --dextinity-brand-radius-factor: 1.4;
+}
+
+// Aqualis Thermen: warm and fresh. Petrol and apricot, friendly grotesque, soft shapes.
+[data-dextinity-brand="aqualis"] {
+    --dextinity-brand-primary-hue: 210;
+    --dextinity-brand-primary-chroma: 0.13;
+    --dextinity-brand-secondary-hue: 50;
+    --dextinity-brand-secondary-chroma: 0.13;
+    --dextinity-brand-gradient-hue: 190;
+    --dextinity-brand-neutral-hue: 215;
+    --dextinity-brand-neutral-chroma: 0.01;
+    --dextinity-brand-success-hue: 150;
+    --dextinity-brand-font-family-text: "Figtree", ui-sans-serif, system-ui, sans-serif;
+    --dextinity-brand-font-family-display: "Figtree", ui-sans-serif, sans-serif;
+    --dextinity-brand-display-font-weight: 600;
+    --dextinity-brand-display-letter-spacing: -0.025em;
+    --dextinity-brand-radius-control: 12px;
+    --dextinity-brand-radius-factor: 1.15;
+}

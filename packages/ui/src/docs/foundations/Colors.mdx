@@ -1,0 +1,170 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { ColorSwatches } from "../../storybook/docs/foundations/ColorSwatches";
+import { DoDont } from "../../storybook/docs/foundations/DoDont";
+
+<Meta title="Foundations/Colors" />
+
+# Colors
+
+Semantic colors derived from the brand and the color scheme. Values and contrast ratios are computed live — switch the color scheme and the brand in the toolbar.
+
+## Text
+
+Contrast per WCAG 2.2: body text needs 4.5 : 1 (AA), large text and icons 3 : 1.
+
+<ColorSwatches
+    swatches={[
+        {
+            token: "--dextinity-color-text",
+            name: "Text",
+            usage: "Headings, body text",
+            kind: "text",
+            contrast: [
+                { background: "--dextinity-color-canvas", label: "on canvas" },
+                { background: "--dextinity-material-glass", label: "on glass" },
+                { background: "--dextinity-color-surface", label: "on surface" },
+            ],
+        },
+        {
+            token: "--dextinity-color-text-secondary",
+            name: "Text secondary",
+            usage: "Descriptions, values",
+            kind: "text",
+            contrast: [
+                { background: "--dextinity-color-canvas", label: "on canvas" },
+                { background: "--dextinity-material-glass", label: "on glass" },
+                { background: "--dextinity-color-surface", label: "on surface" },
+            ],
+        },
+        {
+            token: "--dextinity-color-text-tertiary",
+            name: "Text tertiary",
+            usage: "Labels, metadata, help texts",
+            kind: "text",
+            contrast: [
+                { background: "--dextinity-color-canvas", label: "on canvas" },
+                { background: "--dextinity-material-glass", label: "on glass" },
+                { background: "--dextinity-color-surface", label: "on surface" },
+            ],
+        },
+        {
+            token: "--dextinity-color-text-subtle",
+            name: "Text subtle",
+            usage: "Only placeholders, icons, decoration — never for text to read",
+            kind: "text",
+            contrast: [
+                { background: "--dextinity-color-canvas", label: "on canvas" },
+                { background: "--dextinity-material-glass", label: "on glass" },
+                { background: "--dextinity-color-surface", label: "on surface" },
+            ],
+        },
+    ]}
+/>
+
+## Surfaces
+
+Back to front: canvas, surface, glass. Glass always lies over the light field.
+
+<ColorSwatches
+    swatches={[
+        { token: "--dextinity-color-canvas", name: "Canvas", usage: "Page background" },
+        { token: "--dextinity-color-surface", name: "Surface", usage: "Cards, menus, focused inputs" },
+        { token: "--dextinity-color-surface-raised", name: "Surface raised", usage: "Inputs" },
+        { token: "--dextinity-color-surface-sunken", name: "Surface sunken", usage: "Segments, wells" },
+        { token: "--dextinity-material-glass", name: "Glass", usage: "Panels", kind: "glass" },
+        { token: "--dextinity-material-glass-strong", name: "Glass strong", usage: "Inputs, row hover on glass", kind: "glass" },
+    ]}
+/>
+
+## Accent
+
+From the brand: primary hue and chroma. The gradient uses the secondary brand color.
+
+<ColorSwatches
+    swatches={[
+        { token: "--dextinity-color-accent", name: "Accent", usage: "Primary action, selection" },
+        {
+            token: "--dextinity-color-accent-foreground",
+            name: "Text on accent",
+            usage: "Labels on the primary action",
+            kind: "text",
+            contrast: [{ background: "--dextinity-color-accent", label: "on accent" }],
+        },
+        {
+            token: "--dextinity-color-accent-text",
+            name: "Accent as text",
+            usage: "Links, active navigation",
+            kind: "text",
+            contrast: [
+                { background: "--dextinity-color-canvas", label: "on canvas" },
+                { background: "--dextinity-material-glass", label: "on glass" },
+            ],
+        },
+        { token: "--dextinity-color-accent-soft", name: "Accent soft", usage: "Background of active elements" },
+        { token: "--dextinity-color-accent-secondary", name: "Secondary brand color", usage: "Light, gradient" },
+        { token: "--dextinity-gradient-brand", name: "Brand gradient", usage: "Active navigation", kind: "gradient" },
+        { token: "--dextinity-color-focus", name: "Focus ring", usage: "Keyboard focus" },
+    ]}
+/>
+
+## Status
+
+Success and danger hues can be shifted per brand, so they stand apart from the brand color.
+
+<ColorSwatches
+    swatches={[
+        { token: "--dextinity-color-success", name: "Success", usage: "Dot, icons" },
+        {
+            token: "--dextinity-color-success-text",
+            name: "Success as text",
+            usage: "Text on light backgrounds",
+            kind: "text",
+            contrast: [{ background: "--dextinity-color-canvas", label: "on canvas" }],
+        },
+        { token: "--dextinity-color-warning", name: "Warning", usage: "Dot, icons" },
+        {
+            token: "--dextinity-color-warning-text",
+            name: "Warning as text",
+            usage: "Notices",
+            kind: "text",
+            contrast: [{ background: "--dextinity-color-canvas", label: "on canvas" }],
+        },
+        { token: "--dextinity-color-danger", name: "Danger", usage: "Dot, outline" },
+        {
+            token: "--dextinity-color-danger-text",
+            name: "Danger as text",
+            usage: "Error messages",
+            kind: "text",
+            contrast: [{ background: "--dextinity-color-canvas", label: "on canvas" }],
+        },
+        { token: "--dextinity-color-info", name: "Info", usage: "Dot, icons" },
+        {
+            token: "--dextinity-color-info-text",
+            name: "Info as text",
+            usage: "Hints",
+            kind: "text",
+            contrast: [{ background: "--dextinity-color-canvas", label: "on canvas" }],
+        },
+    ]}
+/>
+
+## Lines
+
+<ColorSwatches
+    swatches={[
+        { token: "--dextinity-color-line", name: "Line", usage: "Dividers in lists" },
+        { token: "--dextinity-color-line-strong", name: "Line strong", usage: "Input outlines, table header" },
+    ]}
+/>
+
+## Rules
+
+<DoDont
+    dos={[
+        "Text people read only in text, text-secondary, or text-tertiary.",
+        "Status as a dot plus text.",
+        "Accent sparingly: one primary action per area.",
+    ]}
+    donts={["text-subtle for text people have to read.", "Color as the only distinguishing feature.", "Own hex values instead of tokens."]}
+/>

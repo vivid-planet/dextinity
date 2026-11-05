@@ -1,0 +1,42 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    --dextinity-status-indicator-gap: var(--dextinity-space-2);
+    --dextinity-status-indicator-font-size: 13px;
+    // Weight of the statuses that need attention: critical and running
+    --dextinity-status-indicator-font-weight-emphasized: 550;
+    --dextinity-status-indicator-dot-size: 7px;
+    // Soft ring around the dot; off in high contrast, where the soft colors are transparent
+    --dextinity-status-indicator-halo-width: 3px;
+    // Appended to the critical status so it doesn't rely on color alone
+    --dextinity-status-indicator-critical-mark: "";
+
+    --dextinity-status-indicator-published-dot: var(--dextinity-color-success);
+    --dextinity-status-indicator-published-halo: var(--dextinity-color-success-soft);
+    --dextinity-status-indicator-published-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-status-indicator-unpublished-dot: var(--dextinity-color-text-subtle);
+    --dextinity-status-indicator-unpublished-foreground: var(--dextinity-color-text-secondary);
+    // Archived shows a hollow ring in this color
+    --dextinity-status-indicator-archived-dot: var(--dextinity-color-text-subtle);
+    --dextinity-status-indicator-archived-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-status-indicator-warning-dot: var(--dextinity-color-warning);
+    --dextinity-status-indicator-warning-halo: var(--dextinity-color-warning-soft);
+    --dextinity-status-indicator-warning-foreground: var(--dextinity-color-text);
+    --dextinity-status-indicator-critical-dot: var(--dextinity-color-danger);
+    --dextinity-status-indicator-critical-halo: var(--dextinity-color-danger-soft);
+    --dextinity-status-indicator-critical-foreground: var(--dextinity-color-danger-text);
+    --dextinity-status-indicator-info-dot: var(--dextinity-color-info);
+    --dextinity-status-indicator-info-halo: var(--dextinity-color-info-soft);
+    --dextinity-status-indicator-info-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-status-indicator-running-dot: var(--dextinity-gradient-brand);
+    // Pulses out from the dot while running; still with reduced motion
+    --dextinity-status-indicator-running-pulse: var(--dextinity-color-accent-glow);
+    --dextinity-status-indicator-running-foreground: var(--dextinity-color-accent-text);
+}
+
+@layer dextinity {
+    [data-dextinity-color-scheme="high-contrast"] {
+        // In high contrast
+        --dextinity-status-indicator-critical-mark: "!";
+    }
+}

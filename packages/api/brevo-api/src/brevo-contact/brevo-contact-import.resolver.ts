@@ -1,11 +1,12 @@
 import { CurrentUser, FileUpload, FileUploadsService, GetCurrentUser, RequiredPermission } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
-import { Inject, Type } from "@nestjs/common";
+import { Inject, Type, UseFilters } from "@nestjs/common";
 import { Args, ArgsType, Mutation, Resolver } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 import { Readable } from "stream";
 
+import { BrevoApiKeyRejectedFilter } from "../brevo-api/brevo-api-key-rejected.filter";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { EmailCampaignScopeInterface } from "../types";
@@ -24,6 +25,7 @@ export function createBrevoContactImportResolver({
     class BrevoContactImportArgs extends BrevoContactImportArgsFactory.create({ Scope }) {}
 
     @Resolver(() => BrevoContact)
+    @UseFilters(BrevoApiKeyRejectedFilter)
     @RequiredPermission(["brevoNewsletter"], { skipScopeCheck: true })
     class BrevoContactImportResolver {
         constructor(

@@ -1,11 +1,12 @@
 import { AffectedEntity, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import { Type, UseFilters } from "@nestjs/common";
 import { Args, ArgsType, ID, Int, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { EmailCampaignScopeInterface } from "src/types";
 
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
+import { BrevoApiKeyRejectedFilter } from "../brevo-api/brevo-api-key-rejected.filter";
 import { DynamicDtoValidationPipe } from "../validation/dynamic-dto-validation.pipe";
 import { AddBrevoContactsInput } from "./dto/add-brevo-contacts.input";
 import { RemoveBrevoContactInput } from "./dto/remove-brevo-contact.input";
@@ -32,6 +33,7 @@ export function createTargetGroupsResolver({
     class TargetGroupsArgs extends TargetGroupArgsFactory.create({ Scope }) {}
 
     @Resolver(() => BrevoTargetGroup)
+    @UseFilters(BrevoApiKeyRejectedFilter)
     @RequiredPermission(["brevoNewsletter"])
     class TargetGroupResolver {
         constructor(

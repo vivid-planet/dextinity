@@ -1,0 +1,45 @@
+.wrapper {
+    overflow-x: auto;
+}
+
+.table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th,
+    td {
+        padding: 8px 10px;
+        border-block-end: 1px solid rgb(0 0 0 / 0.08);
+        text-align: start;
+        vertical-align: top;
+    }
+
+    code {
+        font-size: 12px;
+        word-break: break-word;
+    }
+}
+
+.description {
+    margin-block-start: 4px;
+    color: rgb(0 0 0 / 0.6);
+}
+
+.definition {
+    color: rgb(0 0 0 / 0.6);
+}
+
+.value {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.swatch {
+    flex: none;
+    inline-size: 16px;
+    block-size: 16px;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.15);
+}

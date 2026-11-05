@@ -1,16 +1,20 @@
 import "./colorSchemeBackground.scss";
+import "./exampleBrands.scss";
 
 import type { Decorator } from "@storybook/react-vite";
 import { type PropsWithChildren, useEffect } from "react";
 
+import { brandSetting } from "./brand";
 import { useAppliedColorScheme } from "./colorScheme";
 
 function ColorSchemeBackground({ children }: PropsWithChildren) {
     const colorScheme = useAppliedColorScheme();
+    const brand = brandSetting.useValue();
 
     useEffect(() => {
         document.body.dataset.dextinityColorScheme = colorScheme;
-    }, [colorScheme]);
+        document.body.dataset.dextinityBrand = brand;
+    }, [colorScheme, brand]);
 
     return children;
 }

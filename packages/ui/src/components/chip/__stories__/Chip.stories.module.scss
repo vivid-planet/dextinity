@@ -1,0 +1,12 @@
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(7, max-content);
+    gap: var(--dextinity-space-2);
+}

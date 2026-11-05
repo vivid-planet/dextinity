@@ -1,0 +1,53 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    --dextinity-chip-height: var(--dextinity-density-chip-height);
+    --dextinity-chip-height-small: 24px;
+    --dextinity-chip-padding: 11px;
+    --dextinity-chip-padding-small: 8px;
+    --dextinity-chip-gap: 6px;
+    --dextinity-chip-radius: var(--dextinity-radius-control);
+    --dextinity-chip-radius-small: var(--dextinity-radius-pill);
+    --dextinity-chip-font-size: 13px;
+    --dextinity-chip-font-size-small: 12px;
+    --dextinity-chip-icon-size: 15px;
+    --dextinity-chip-delete-size: 22px;
+    --dextinity-chip-delete-size-small: 18px;
+    --dextinity-chip-delete-background-hover: color-mix(in oklch, var(--dextinity-color-text) 8%, transparent);
+    --dextinity-chip-disabled-opacity: 0.42;
+    // How strongly a filled chip shows its line: off normally, on in high contrast, where soft fills are transparent
+    --dextinity-chip-filled-line-strength: 0%;
+
+    --dextinity-chip-default-soft: var(--dextinity-color-surface-sunken);
+    --dextinity-chip-default-foreground: var(--dextinity-color-text);
+    --dextinity-chip-default-line: var(--dextinity-color-line-strong);
+    --dextinity-chip-primary-soft: var(--dextinity-color-accent-soft);
+    --dextinity-chip-primary-foreground: var(--dextinity-color-accent-text);
+    --dextinity-chip-primary-line: var(--dextinity-color-accent);
+    --dextinity-chip-secondary-soft: color-mix(in oklch, var(--dextinity-color-text) 8%, transparent);
+    --dextinity-chip-secondary-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-chip-secondary-line: var(--dextinity-color-text-subtle);
+    --dextinity-chip-error-soft: var(--dextinity-color-danger-soft);
+    --dextinity-chip-error-foreground: var(--dextinity-color-danger-text);
+    --dextinity-chip-error-line: var(--dextinity-color-danger);
+    --dextinity-chip-info-soft: var(--dextinity-color-info-soft);
+    --dextinity-chip-info-foreground: var(--dextinity-color-info-text);
+    --dextinity-chip-info-line: var(--dextinity-color-info);
+    --dextinity-chip-success-soft: var(--dextinity-color-success-soft);
+    --dextinity-chip-success-foreground: var(--dextinity-color-success-text);
+    --dextinity-chip-success-line: var(--dextinity-color-success);
+    --dextinity-chip-warning-soft: var(--dextinity-color-warning-soft);
+    --dextinity-chip-warning-foreground: var(--dextinity-color-warning-text);
+    --dextinity-chip-warning-line: var(--dextinity-color-warning);
+
+    // A selected clickable chip, e.g. an active filter
+    --dextinity-chip-selected-background: var(--dextinity-color-accent);
+    --dextinity-chip-selected-foreground: var(--dextinity-color-accent-foreground);
+}
+
+@layer dextinity {
+    [data-dextinity-color-scheme="high-contrast"] {
+        // In high contrast
+        --dextinity-chip-filled-line-strength: 100%;
+    }
+}

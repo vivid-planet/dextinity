@@ -1,35 +1,31 @@
-import { render, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { render } from "@testing-library/react";
+import { expect, it } from "vitest";
 
 import { Icon } from "./Icon";
 
-describe("Icon", () => {
-    it("is hidden from assistive technology without a label", () => {
-        const { container } = render(<Icon name="favorite" />);
+it("reads its glyph from the icon's CSS variable, so brands can replace it", () => {
+    const { container } = render(<Icon name="search" />);
+    const icon = container.firstElementChild as HTMLElement;
 
-        expect(container.querySelector("span")?.getAttribute("aria-hidden")).toBe("true");
-    });
+    expect(icon).toHaveClass("dextinityIcon");
+    expect(icon.style.getPropertyValue("--dextinity-icon-glyph")).toBe("var(--dextinity-icon-search)");
+});
 
-    it("is an image named by its label", () => {
-        const { container } = render(<Icon name="favorite" aria-label="Favorite" />);
+it("is decorative without a label and an image with one", () => {
+    const { container, getByRole } = render(
+        <>
+            <Icon name="search" />
+            <Icon name="warning" label="Warning" />
+        </>,
+    );
 
-        expect(within(container).getByRole("img", { name: "Favorite" })).toBeInTheDocument();
-    });
+    expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
+    expect(getByRole("img")).toHaveAccessibleName("Warning");
+});
 
-    it("is an image named by the element its aria-labelledby refers to", () => {
-        const { container } = render(
-            <>
-                <span id="favorite-label">Favorite</span>
-                <Icon name="favorite" aria-labelledby="favorite-label" />
-            </>,
-        );
+it("emits size and duotone as data attributes", () => {
+    const { container } = render(<Icon name="recent" size="large" duotone />);
 
-        expect(within(container).getByRole("img", { name: "Favorite" })).toBeInTheDocument();
-    });
-
-    it("keeps its contract class next to the consumer's class", () => {
-        const { container } = render(<Icon name="favorite" className="consumer-class" />);
-
-        expect(container.querySelector("span")?.getAttribute("class")).toBe("dextinityIcon consumer-class");
-    });
+    expect(container.firstElementChild).toHaveAttribute("data-size", "large");
+    expect(container.firstElementChild).toHaveAttribute("data-duotone");
 });

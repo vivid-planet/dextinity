@@ -3,17 +3,20 @@ import { expect, fn, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
+import buttonTokens from "../_tokens.scss?raw";
 import { Button } from "../Button";
 
 const iconOptions = {
-    Favorite: <Icon name="favorite" />,
+    Check: <Icon name="check" />,
     ArrowRight: <Icon name="arrow-right" />,
+    Trash: <Icon name="trash" />,
 };
 
 const meta = {
     component: Button,
-    title: "Components/Button",
+    title: "Building blocks/Buttons/Button",
     decorators: [themeDecorator],
+    parameters: { tokens: buttonTokens },
     args: {
         children: "Button",
         onClick: fn(),
@@ -65,9 +68,25 @@ export const Text: Story = {
     },
 };
 
+/**
+ * Further actions: `outlined` with `color="secondary"`.
+ */
 export const Secondary: Story = {
     args: {
+        variant: "outlined",
         color: "secondary",
+    },
+};
+
+/**
+ * Destructive actions: `outlined` with `color="error"`.
+ */
+export const Danger: Story = {
+    args: {
+        variant: "outlined",
+        color: "error",
+        startIcon: <Icon name="trash" />,
+        children: "Delete",
     },
 };
 
@@ -111,11 +130,23 @@ export const Loading: Story = {
 export const WithIcons: Story = {
     render: () => (
         <div style={{ display: "flex", gap: "1rem" }}>
-            <Button startIcon={<Icon name="favorite" />}>Start only</Button>
+            <Button startIcon={<Icon name="check" />}>Start only</Button>
             <Button endIcon={<Icon name="arrow-right" />}>End only</Button>
-            <Button startIcon={<Icon name="favorite" />} endIcon={<Icon name="arrow-right" />}>
+            <Button startIcon={<Icon name="check" />} endIcon={<Icon name="arrow-right" />}>
                 Both
             </Button>
         </div>
     ),
+};
+
+/**
+ * With `href`, the button renders as a link.
+ */
+export const AsLink: Story = {
+    args: {
+        href: "#",
+        variant: "outlined",
+        color: "secondary",
+        endIcon: <Icon name="external-link" />,
+    },
 };

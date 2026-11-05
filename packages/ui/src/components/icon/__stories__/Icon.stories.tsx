@@ -1,22 +1,23 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Theme } from "../../theme/Theme";
+import iconTokens from "../_tokens.scss?raw";
 import { Icon } from "../Icon";
-import { defaultIconNames } from "../iconRegistry";
+import { iconNames } from "../iconNames";
+import styles from "./Icon.stories.module.scss";
 
 const meta = {
     component: Icon,
-    title: "Components/Icon",
+    title: "Foundations/Icons",
     decorators: [themeDecorator],
+    parameters: { tokens: iconTokens },
     args: {
-        name: "favorite",
+        name: "globe",
     },
     argTypes: {
-        name: {
-            control: "select",
-            options: Object.keys(defaultIconNames),
-        },
-        "aria-label": { control: "text" },
+        name: { control: "select", options: iconNames },
+        size: { control: "radio", options: ["small", "default", "large"] },
         className: { control: false },
     },
 } satisfies Meta<typeof Icon>;
@@ -28,54 +29,77 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 /**
- * Give an icon an `aria-label` when nothing else, such as a text or the label of its button, gives its meaning.
+ * The whole set: line width 1.5 on a 24px grid. The name is the prop value.
  */
-export const Label: Story = {
-    args: {
-        "aria-label": "Favorite",
-    },
-};
-
-/**
- * A colored icon keeps its own colors, for example a logo.
- */
-export const ColoredIcon: Story = {
-    args: {
-        name: "youtube-filled-color",
-    },
-};
-
-/**
- * Set `width` and `height` in CSS, through `className`.
- */
-export const Size: Story = {
-    render: (args) => (
-        <>
-            <style>{`
-                .largeIcon {
-                    width: 32px;
-                    height: 32px;
-                }
-            `}</style>
-            <Icon {...args} className="largeIcon" />
-        </>
+export const Set: Story = {
+    render: () => (
+        <div className={styles.grid}>
+            {iconNames.map((name) => (
+                <div key={name} className={styles.cell}>
+                    <Icon name={name} size="large" />
+                    <code>{name}</code>
+                </div>
+            ))}
+        </div>
     ),
 };
 
 /**
- * Set `color` in CSS, on the icon or on its parent.
+ * Icons inherit the text color. Next to text they center on the x-height.
  */
-export const Color: Story = {
-    render: (args) => (
-        <>
-            <style>{`
-                .blueText {
-                    color: royalblue;
-                }
-            `}</style>
-            <span className="blueText">
-                <Icon {...args} />
-            </span>
-        </>
+export const Sizes: Story = {
+    render: () => (
+        <div className={styles.row}>
+            <Icon name="folder" size="small" />
+            <Icon name="folder" size="default" />
+            <Icon name="folder" size="large" />
+        </div>
+    ),
+};
+
+/**
+ * A soft fill (16%) behind the line, only in card headers and empty states. Off in high contrast.
+ */
+export const Duotone: Story = {
+    render: () => (
+        <div className={styles.row}>
+            {(["recent", "live", "warning", "inbox", "palette", "component"] as const).map((name) => (
+                <Icon key={name} name={name} size="large" duotone />
+            ))}
+        </div>
+    ),
+};
+
+export const WithLabel: Story = {
+    args: {
+        name: "warning",
+        label: "Warning",
+    },
+};
+
+/**
+ * Every icon is a CSS variable, `--dextinity-icon-<name>`, so a brand swaps icons in CSS alone — no React context. Here the example
+ * brand Nordwerk replaces some icons with square, heavier variants:
+ *
+ * ```css
+ * [data-dextinity-brand="nordwerk"] {
+ *     --dextinity-icon-search: url("data:image/svg+xml,…");
+ * }
+ * ```
+ */
+export const PerBrand: Story = {
+    render: () => (
+        <div className={styles.brands}>
+            {(["dextinity", "nordwerk"] as const).map((brand) => (
+                <Theme key={brand} brand={brand}>
+                    <div className={styles.row}>
+                        <code className={styles.brandName}>{brand}</code>
+                        {(["search", "home", "folder", "check", "close", "plus", "arrow-right", "chevron-down"] as const).map((name) => (
+                            <Icon key={name} name={name} size="large" />
+                        ))}
+                    </div>
+                </Theme>
+            ))}
+        </div>
     ),
 };

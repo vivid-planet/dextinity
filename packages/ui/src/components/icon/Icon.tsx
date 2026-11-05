@@ -1,46 +1,71 @@
 import { clsx } from "clsx";
-import { type ComponentPropsWithoutRef, type CSSProperties, forwardRef } from "react";
+import { type CSSProperties, forwardRef, type HTMLAttributes } from "react";
 
 import styles from "./Icon.module.scss";
-import type { IconName } from "./iconRegistry";
+import type { IconName } from "./iconNames";
 
-export interface IconProps extends Omit<ComponentPropsWithoutRef<"span">, "children"> {
-    /** The name of the icon, one of the keys of `IconRegistry`. */
-    name: IconName;
+type IconSize = "small" | "default" | "large";
+
+/**
+ * The resolved configuration that influences the component's appearance or behavior.
+ */
+export type IconOwnerState = {
+    name: string;
+    size: IconSize | undefined;
+    duotone: boolean;
+};
+
+export interface IconProps extends Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children"> {
+    /**
+     * Name from the icon set, e.g. `globe`, `sparkle`, `folder`. The glyph is read from the CSS variable `--dextinity-icon-<name>`,
+     * so a brand or theme can replace any icon — or add a new one — in CSS alone.
+     */
+    name: IconName | (string & {});
+    /**
+     * `small` (16px) in buttons, fields, and tables, `default` (20px) in navigation and icon buttons, `large` (24px) in empty states and card
+     * headers. Without a size, the icon follows the surrounding component's `--dextinity-icon-size`.
+     */
+    size?: IconSize;
+    /** Makes the icon accessible as an image with this name. Without a label, the icon is decorative and hidden from assistive technology. */
+    label?: string;
+    /** Adds a soft fill behind the line, for card headers and empty states. Off in high contrast. */
+    duotone?: boolean;
     /** Added alongside the component's own classes. */
     className?: string;
-    /** Names the icon for assistive technology. Without it or `aria-labelledby`, the icon is hidden from assistive technology. */
-    "aria-label"?: string;
+}
+
+function toCssIdentifier(name: string) {
+    return name.replace(/[^a-z0-9-]/gi, "");
 }
 
 /**
- * Shows an icon of the icon set in the current text color, or in its own colors when it is a colored icon. It is 16×16 pixels.
- *
- * To use the default icons of `@dextinity/ui`, import `@dextinity/ui/css/icons` once in your application, see [Installation and setup](?path=/docs/intro--docs#installation-and-setup).
- *
- * For a list of all icons, see [All icons](?path=/docs/theme-all-icons--docs). To replace or add icons, see [Customize icon set](?path=/docs/theme-customize-icon-set--docs).
+ * An icon from the set. It inherits the text color.
  */
 export const Icon = forwardRef<HTMLSpanElement, IconProps>(function Icon(
-    { name, className, style, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, ...restProps },
+    { name, size, label, duotone = false, className, style, ...restProps },
     ref,
 ) {
-    const isLabeled = ariaLabel !== undefined || ariaLabelledBy !== undefined;
-    const iconStyle: CSSProperties & Record<`--${string}`, string> = {
-        "--dextinity-current-icon-mask": `var(--dextinity-icon-${name})`,
-        "--dextinity-current-icon-image": `var(--dextinity-colored-icon-${name})`,
-        ...style,
-    };
+    const ownerState: IconOwnerState = { name, size, duotone };
+    const identifier = toCssIdentifier(ownerState.name);
 
     return (
         <span
-            ref={ref}
-            aria-hidden={isLabeled ? undefined : true}
-            role={isLabeled ? "img" : undefined}
-            aria-label={ariaLabel}
-            aria-labelledby={ariaLabelledBy}
+            role={label != null ? "img" : undefined}
+            aria-label={label}
+            aria-hidden={label != null ? undefined : true}
             {...restProps}
+            ref={ref}
+            data-name={identifier}
+            data-size={ownerState.size}
+            data-duotone={ownerState.duotone ? "" : undefined}
             className={clsx(styles.root, className)}
-            style={iconStyle}
+            style={
+                {
+                    "--dextinity-icon-glyph": `var(--dextinity-icon-${identifier})`,
+                    "--dextinity-icon-glyph-duotone": `var(--dextinity-icon-${identifier}-duotone, linear-gradient(transparent, transparent))`,
+                    ...style,
+                } as CSSProperties
+            }
         />
     );
 });

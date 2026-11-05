@@ -8,6 +8,9 @@ export { type IconButtonSlotProps, type IconButtonSlots } from "./components/ico
 export { Input, type InputOwnerState, type InputProps } from "./components/input/Input";
 export { Kbd, type KbdOwnerState, type KbdProps } from "./components/kbd/Kbd";
 export { Spinner, type SpinnerOwnerState, type SpinnerProps } from "./components/spinner/Spinner";
+export { StatusIndicator, type StatusIndicatorOwnerState, type StatusIndicatorProps } from "./components/statusIndicator/StatusIndicator";
+export { defaultStatusIndicatorLabels, type StatusIndicatorStatus } from "./components/statusIndicator/StatusIndicator";
+export { type StatusIndicatorSlotProps, type StatusIndicatorSlots } from "./components/statusIndicator/StatusIndicator";
 export { Textarea, type TextareaOwnerState, type TextareaProps } from "./components/textarea/Textarea";
 export { Theme, type ThemeProps } from "./components/theme/Theme";
 export { Tooltip, type TooltipOwnerState, type TooltipProps, type TooltipSlotProps } from "./components/tooltip/Tooltip";

@@ -80,7 +80,8 @@ export const KeyboardFocus: Story = {
     play: async ({ canvas }) => {
         await userEvent.tab();
         await expect(canvas.getByRole("button")).toHaveFocus();
-        await expect(await screen.findByRole("tooltip")).toBeVisible();
+        const tooltip = await screen.findByRole("tooltip");
+        await waitFor(() => expect(tooltip).toBeVisible());
         await userEvent.keyboard("{Escape}");
         await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
     },

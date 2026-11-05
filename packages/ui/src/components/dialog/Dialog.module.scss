@@ -100,8 +100,14 @@
 }
 
 .body {
+    display: flex;
     flex: 1;
+    flex-direction: column;
+    gap: var(--dextinity-dialog-body-gap);
     min-block-size: 0;
+    // Room for the focus rings of the fields, which the scroll container would clip
+    margin: -4px;
+    padding: 4px;
     overflow-y: auto;
 }
 

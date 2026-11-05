@@ -19,5 +19,7 @@
     --dextinity-dialog-title-font-weight: 600;
     --dextinity-dialog-description-color: var(--dextinity-color-text-secondary);
     --dextinity-dialog-description-font-size: var(--dextinity-typography-body-size);
+    // Space between the fields of a form in the dialog
+    --dextinity-dialog-body-gap: var(--dextinity-density-form-gap);
     --dextinity-dialog-footer-gap: var(--dextinity-space-2);
 }

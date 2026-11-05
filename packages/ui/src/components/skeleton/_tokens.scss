@@ -1,0 +1,16 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    --dextinity-skeleton-color: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+    // The light band that moves across the shapes; it stands still with reduced motion
+    --dextinity-skeleton-highlight-color: color-mix(in oklch, var(--dextinity-color-text) 13%, transparent);
+    --dextinity-skeleton-shimmer-duration: 1.6s;
+    // Space between repetitions
+    --dextinity-skeleton-gap: 10px;
+    --dextinity-skeleton-text-height: 12px;
+    --dextinity-skeleton-text-radius: 6px;
+    --dextinity-skeleton-tile-height: 120px;
+    --dextinity-skeleton-tile-radius: var(--dextinity-radius-row);
+    --dextinity-skeleton-block-height: 200px;
+    --dextinity-skeleton-block-radius: var(--dextinity-radius-field);
+}

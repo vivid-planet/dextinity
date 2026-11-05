@@ -55,6 +55,7 @@ export { SegmentedControl, type SegmentedControlOption, type SegmentedControlOwn
 export { type SegmentedControlProps, type SegmentedControlSlotProps } from "./components/segmentedControl/SegmentedControl";
 export { Select, type SelectLabels, type SelectOption, type SelectOwnerState, type SelectProps } from "./components/select/Select";
 export { type SelectValue } from "./components/select/Select";
+export { Skeleton, type SkeletonOwnerState, type SkeletonProps } from "./components/skeleton/Skeleton";
 export { Slider, type SliderOwnerState, type SliderProps, type SliderSlotProps } from "./components/slider/Slider";
 export { Spinner, type SpinnerOwnerState, type SpinnerProps } from "./components/spinner/Spinner";
 export { StatTile, type StatTileLabels, type StatTileOwnerState, type StatTileProps, type StatTileSlotProps } from "./components/statTile/StatTile";

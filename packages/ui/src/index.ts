@@ -20,6 +20,8 @@ export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./c
 export { type IconButtonSlotProps, type IconButtonSlots } from "./components/iconButton/IconButton";
 export { Input, type InputOwnerState, type InputProps } from "./components/input/Input";
 export { Kbd, type KbdOwnerState, type KbdProps } from "./components/kbd/Kbd";
+export { KeyValueList, type KeyValueListItem, type KeyValueListOwnerState, type KeyValueListProps } from "./components/keyValueList/KeyValueList";
+export { type KeyValueListSlotProps } from "./components/keyValueList/KeyValueList";
 export { Link, type LinkLabels, type LinkOwnerState, type LinkProps, type LinkSlotProps } from "./components/link/Link";
 export { Menu, type MenuOwnerState, type MenuPlacement, type MenuProps, type MenuSlotProps } from "./components/menu/Menu";
 export { MenuGroup, type MenuGroupOwnerState, type MenuGroupProps, type MenuGroupSlotProps } from "./components/menu/MenuGroup";

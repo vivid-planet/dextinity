@@ -28,7 +28,7 @@ Any export may change or be removed at any time, without deprecation notice. Cha
 - **Component file**: `<ComponentName>.tsx` (PascalCase), one per component feature.
 - **Non-component code file**: `<featureName>.ts(x)` (camelCase) for utilities and hooks.
 - **Styles**: `<ComponentName>.module.scss` (CSS Modules with SCSS).
-- **Tokens**: `<ComponentName>.tokens.scss`, a `tokens` mixin with the component's CSS custom properties (see [Token layers](#token-layers)).
+- **Component tokens**: `_tokens.scss` in the feature folder (see [Component tokens](#component-tokens)).
 
 ## Component conventions
 
@@ -78,7 +78,15 @@ export interface ButtonProps {
 
 A change that makes a comment inaccurate updates it in the same change.
 
-### Root and primary element props
+### Controlled values
+
+Components are pure UI and always controlled: a value comes with its change handler (`value` + `onChange`, `checked` + `onChange`, `open` + `onOpenChange`), and there is no `defaultValue`. A controlled boolean is a required prop (`checked: boolean`), so a component never silently falls back to uncontrolled mode.
+
+### Text
+
+Component source contains no literal text (`react/jsx-no-literals`): every visible or accessible string comes from props, so the consuming application translates it. Where a component needs built-in strings (e.g. "Close"), it takes a `labels` prop with English defaults.
+
+### Root element props
 
 A component's primary element is the native element that does its job — the `<button>` of a button, the `<input>` of a text field, the `<img>` of an image. A component extends the props of its primary element and passes the ones it doesn't handle itself to that element, so a consumer can set any attribute or event handler it accepts without us maintaining a dedicated prop for each. By default it doesn't re-declare or document them; they stay as the element defines them. It may still re-declare one to support it as a documented feature.
 
@@ -128,7 +136,7 @@ The contract has two parts: **structural class names** for a component's element
 
 ### Stories
 
-Stories live under the "Components" section. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it.
+The Storybook sidebar mirrors the design system's areas — Foundations, Building blocks, Shell, Patterns, Page types — and each area's pages: a story title is `<Area>/<Page>/<Component>`, e.g. `Building blocks/Buttons/IconButton`. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it. `parameters.tokens`, set to the component's `_tokens.scss` imported with `?raw`, adds its token table with live values to the page.
 
 #### Main story
 
@@ -161,7 +169,7 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 
 #### Dev story
 
-`__stories__/<name>.dev.stories.tsx`, optional, shares the main story's title (`Components/<Component>`) and sets `tags: ["development", "!autodocs", "!manifest"]` in its meta. `!autodocs` and `!manifest` keep its stories out of the consumer docs and out of what the MCP server serves. `development` hides them from the sidebar by default — select the tag in the sidebar's tag filter to show them — and marks them with a "Dev" badge. Storybook merges files with the same title into one entry, so a dev story's export name must differ from the main story's and carry its context, e.g. `CustomizationViaSlotPropsClassName` in `customization.dev.stories.tsx`.
+`__stories__/<name>.dev.stories.tsx`, optional, shares the main story's title (e.g. `Building blocks/Buttons/Button`) and sets `tags: ["development", "!autodocs", "!manifest"]` in its meta. `!autodocs` and `!manifest` keep its stories out of the consumer docs and out of what the MCP server serves. `development` hides them from the sidebar by default — select the tag in the sidebar's tag filter to show them — and marks them with a "Dev" badge. Storybook merges files with the same title into one entry, so a dev story's export name must differ from the main story's and carry its context, e.g. `CustomizationViaSlotPropsClassName` in `customization.dev.stories.tsx`.
 
 The tag is `development` rather than `dev` because Storybook already uses `dev` as a built-in tag on every story.
 
@@ -188,24 +196,47 @@ Run from `packages/ui`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pn
 
 ## Theme
 
-Components read their colors, metrics, and font family from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-typography-…)`, `var(--dextinity-brand-font-family-sans)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object.
+Components read their colors, metrics, and font family from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-density-…)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object.
 
 ### Token layers
 
-The tokens are defined in five SCSS partials under [`src/theme/`](src/theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. `_components.scss` includes the `tokens` mixin of each component's `<ComponentName>.tokens.scss`. A token is defined in the folder of the component its name starts with, and other components can read it: `IconButton` uses the `--dextinity-button-…` colors from `Button.tokens.scss`. Tokens of components that don't exist yet stay in `_components.scss` until the component is added. The prop-value types live in [`src/theme/types.ts`](src/theme/types.ts).
+The tokens live in SCSS partials under [`src/theme/`](src/theme), composed into the `Theme` module with `@use` and wrapped in a single `@layer dextinity`. Each layer references only the layers before it:
 
-### Selecting a color scheme
+1. **Brand** (`_brand.scss`) — hues and chromas (primary, secondary, neutral tint, success, danger), font families, display weight and tracking, control radius, and the radius factor. The brands `dextinity`, `ai-hub`, and `cms` are built in.
+2. **Primitives** (`_primitives.scss`) — 11-stop OKLCH scales on a fixed lightness curve, computed from the brand's hue and chroma; spacing and radii.
+3. **Semantic** (`_semantic.scss`) — surfaces, text, lines, accent, status, material (glass, blur, grain, light fields), and shadows, per color scheme (light, dark, high contrast). High contrast turns light and glass off and lines on.
+4. **Typography, motion, density** (`_typography.scss`, `_motion.scss`, `_density.scss`) — text styles, one easing with three durations (reduced motion keeps only short fades), and fixed metrics per density level.
+5. **Component tokens** — see below.
+6. **Icons** (`_icons.scss`, generated) — one variable per icon.
 
-`Theme` selects the active color scheme. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code.
+Components use semantic, material, motion, density, and their own component tokens — never primitives. The prop-value types live in [`src/theme/types.ts`](src/theme/types.ts).
 
-## Icons
+Every derived token is declared on each theme boundary (`[data-dextinity-color-scheme]`), so a nested `Theme` with another brand, color scheme, or density resolves all tokens against its own values.
 
-`Icon` shows an SVG file from [`svg/`](svg) as a CSS mask, filled with the current text color. [`icons.css`](icons.css) defines one variable per icon, `--dextinity-icon-<name>`, and projects override these variables in their own stylesheet, like the other tokens. An icon that keeps its own colors, such as a logo, uses `--dextinity-colored-icon-<name>` instead, and `Icon` shows it as a background image. `Icon` reads no React context, so it also renders in React Server Components.
+### Component tokens
 
-`icons.css` ships as it is, outside the Vite build: Vite's library mode puts every file that a `url()` refers to into the CSS as a `data:` URL, so all icons would be in every application's CSS. The application's bundler resolves the URLs instead, and the browser loads only the icons that it shows. Each URL ends in `#icon`, because the application's Vite doesn't inline a file whose URL has a fragment either.
+Each component declares the decisions a theme may override — colors, radius, heights, paddings, shadows — in `src/components/<feature>/_tokens.scss` with the `scope.component-tokens` mixin, named `--dextinity-<component>-<property>`, and its module stylesheet reads only those plus generic tokens such as the focus ring and motion. The partial is registered in [`src/theme/_components.scss`](src/theme/_components.scss). A `//` comment directly above a token becomes its description in the docs.
 
-### Adding an icon
+### Brands
 
-1. Prepare the SVG file. Its root element is `<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 16 16" fill="none">`; for any other size, ask for a 16×16 version instead of scaling it.
-2. Save it as `svg/<name>.svg`, with the name in kebab case, for example `arrow-right.svg`.
-3. Add the name to `defaultIconNames` in [`iconRegistry.ts`](src/components/icon/iconRegistry.ts), and its variable to `icons.css`: `--dextinity-colored-icon-<name>` when the icon keeps its own colors, `--dextinity-icon-<name>` otherwise. [`iconSet.test.ts`](src/components/icon/iconSet.test.ts) fails when the SVG files, the variables, and the names don't match.
+A brand is a CSS block on `[data-dextinity-brand="<name>"]` that sets the `--dextinity-brand-*` tokens — and, optionally, replaces icons — selected through `Theme`'s `brand` prop:
+
+```css
+[data-dextinity-brand="acme"] {
+    --dextinity-brand-primary-hue: 18;
+    --dextinity-brand-primary-chroma: 0.21;
+    --dextinity-brand-font-family-text: "Source Sans 3", sans-serif;
+    --dextinity-brand-radius-control: 999px;
+    --dextinity-icon-search: url("data:image/svg+xml,…");
+}
+```
+
+Storybook ships example brands (Crimson, Nordwerk, Loden, Aqualis) in [`src/storybook/exampleBrands.scss`](src/storybook/exampleBrands.scss).
+
+### Icons
+
+`Icon` renders the glyph from the CSS variable `--dextinity-icon-<name>` as a mask, so it inherits the text color and every brand or theme can replace any icon — or add one — in CSS alone, without a React context. The default set's SVG sources are in [`src/icons/svg`](src/icons/svg) (24px grid, line width 1.5; an optional `<name>.duotone.svg` holds the soft fill); `pnpm run generate:icons` regenerates `_icons.scss` and the `IconName` type. Components size nested icons through `--dextinity-icon-size`.
+
+### Selecting a color scheme, brand, and density
+
+`Theme` selects the color scheme, brand, and density. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code.

@@ -1,3 +1,4 @@
+export { Badge, type BadgeOwnerState, type BadgeProps } from "./components/badge/Badge";
 export { Button, type ButtonOwnerState, type ButtonProps } from "./components/button/Button";
 export { Chip, type ChipLabels, type ChipOwnerState, type ChipProps, type ChipSlotProps } from "./components/chip/Chip";
 export { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "./components/field/Field";

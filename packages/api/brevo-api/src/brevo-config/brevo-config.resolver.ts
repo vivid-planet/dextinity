@@ -1,11 +1,10 @@
 import { AffectedEntity, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, wrap } from "@mikro-orm/postgresql";
-import { Type, UseFilters } from "@nestjs/common";
+import { Type } from "@nestjs/common";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
 
 import { BrevoApiFoldersService } from "../brevo-api/brevo-api-folders.service";
-import { BrevoApiKeyRejectedFilter } from "../brevo-api/brevo-api-key-rejected.filter";
 import { BrevoApiSenderService } from "../brevo-api/brevo-api-sender.service";
 import { BrevoTransactionalMailsService } from "../brevo-api/brevo-api-transactional-mails.service";
 import { BrevoApiEmailTemplate } from "../brevo-api/dto/brevo-api-email-templates-list";
@@ -23,7 +22,6 @@ export function createBrevoConfigResolver({
     BrevoConfig: Type<BrevoConfigInterface>;
 }): Type<unknown> {
     @Resolver(() => BrevoConfig)
-    @UseFilters(BrevoApiKeyRejectedFilter)
     @RequiredPermission("brevoNewsletterConfig")
     class BrevoConfigResolver {
         constructor(

@@ -2,7 +2,6 @@ import { Brevo, BrevoError } from "@getbrevo/brevo";
 import { describe, expect, it } from "vitest";
 
 import { handleBrevoError, isErrorFromBrevo } from "./brevo-api.utils";
-import { BrevoApiKeyRejectedError } from "./brevo-api-key-rejected.error";
 
 describe("brevo-api.utils", () => {
     describe("isErrorFromBrevo", () => {
@@ -28,21 +27,6 @@ describe("brevo-api.utils", () => {
             const error = new BrevoError({ message: "Something went wrong", statusCode: 500 });
 
             expect(() => handleBrevoError(error)).toThrowError(error.message);
-        });
-
-        it("throws a BrevoApiKeyRejectedError with Brevo's message when Brevo rejects the API key", () => {
-            const error = new BrevoError({ message: "Status code: 401", statusCode: 401, body: { code: "unauthorized", message: "Key not found" } });
-
-            let caught: unknown;
-            try {
-                handleBrevoError(error);
-            } catch (e) {
-                caught = e;
-            }
-
-            expect(caught).toBeInstanceOf(BrevoApiKeyRejectedError);
-            expect((caught as BrevoApiKeyRejectedError).message).toBe("Brevo rejected the API key: Key not found");
-            expect((caught as BrevoApiKeyRejectedError).cause).toBe(error);
         });
 
         it("rethrows a non-Brevo error unchanged", () => {

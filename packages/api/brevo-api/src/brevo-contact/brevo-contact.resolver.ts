@@ -1,12 +1,11 @@
 import { AffectedEntity, CurrentUser, GetCurrentUser, PaginatedResponseFactory, RequiredPermission } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityRepository, FilterQuery } from "@mikro-orm/postgresql";
-import { Inject, Type, UseFilters } from "@nestjs/common";
+import { Inject, Type } from "@nestjs/common";
 import { Args, ArgsType, Int, Mutation, ObjectType, Query, Resolver } from "@nestjs/graphql";
 import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
 
 import { BrevoApiContactsService } from "../brevo-api/brevo-api-contact.service";
-import { BrevoApiKeyRejectedFilter } from "../brevo-api/brevo-api-key-rejected.filter";
 import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
@@ -46,7 +45,6 @@ export function createBrevoContactResolver({
     class BrevoContactsArgs extends BrevoContactsArgsFactory.create({ Scope }) {}
 
     @Resolver(() => BrevoContact)
-    @UseFilters(BrevoApiKeyRejectedFilter)
     @RequiredPermission(["brevoNewsletter"], { skipScopeCheck: true })
     class BrevoContactResolver {
         constructor(

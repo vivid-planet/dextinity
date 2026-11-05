@@ -1,13 +1,12 @@
 import { AffectedEntity, extractGraphqlFields, PaginatedResponseFactory, RequiredPermission, validateNotModified } from "@dextinity/cms-api";
 import { InjectRepository } from "@mikro-orm/nestjs";
 import { EntityManager, EntityRepository, FindOptions, wrap } from "@mikro-orm/postgresql";
-import { Type, UseFilters } from "@nestjs/common";
+import { Type } from "@nestjs/common";
 import { Args, ArgsType, ID, Info, Mutation, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { GraphQLResolveInfo } from "graphql";
 import { TargetGroupInterface } from "src/target-group/entity/target-group-entity.factory";
 
 import { BrevoApiCampaignsService } from "../brevo-api/brevo-api-campaigns.service";
-import { BrevoApiKeyRejectedFilter } from "../brevo-api/brevo-api-key-rejected.filter";
 import { BrevoApiCampaignStatistics } from "../brevo-api/dto/brevo-api-campaign-statistics";
 import { EcgRtrListService } from "../brevo-contact/ecg-rtr-list/ecg-rtr-list.service";
 import { EmailCampaignScopeInterface } from "../types";
@@ -39,7 +38,6 @@ export function createEmailCampaignsResolver({
     class EmailCampaignsArgs extends EmailCampaignArgsFactory.create({ Scope }) {}
 
     @Resolver(() => BrevoEmailCampaign)
-    @UseFilters(BrevoApiKeyRejectedFilter)
     @RequiredPermission(["brevoNewsletter"])
     class EmailCampaignsResolver {
         constructor(

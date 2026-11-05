@@ -224,16 +224,17 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
         return <Loading behavior="fillPageHeight" />;
     }
 
-    const brevoError = senderError ?? doubleOptInTemplatesError;
-
-    if (brevoError) {
+    if (senderError || doubleOptInTemplatesError) {
         return (
             <MainContent>
                 <Alert
                     severity="error"
-                    title={<FormattedMessage id="dextinity.brevoConfig.brevoRequestFailed" defaultMessage="Couldn't load data from Brevo" />}
+                    title={<FormattedMessage id="dextinity.brevoConfig.brevoRequestFailed.title" defaultMessage="Couldn't load data from Brevo" />}
                 >
-                    {brevoError.message}
+                    <FormattedMessage
+                        id="dextinity.brevoConfig.brevoRequestFailed.description"
+                        defaultMessage="Make sure a valid Brevo API key is configured and the API's IP address is authorized in Brevo."
+                    />
                 </Alert>
             </MainContent>
         );

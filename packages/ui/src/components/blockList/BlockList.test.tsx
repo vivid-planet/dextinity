@@ -1,4 +1,4 @@
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Block } from "./Block";
@@ -44,5 +44,19 @@ describe("Block", () => {
             true,
             true,
         ]);
+    });
+
+    it("describes each grip by its block's title", () => {
+        render(
+            <BlockList aria-label="Blocks" onReorder={vi.fn()}>
+                <Block title="Hero" visible />
+                <Block title="Form" visible />
+            </BlockList>,
+        );
+
+        const descriptions = screen
+            .getAllByRole("button", { name: "Move" })
+            .map((grip) => document.getElementById(grip.getAttribute("aria-describedby") ?? "")?.textContent);
+        expect(descriptions).toStrictEqual(["Hero", "Form"]);
     });
 });

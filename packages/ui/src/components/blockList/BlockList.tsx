@@ -167,7 +167,7 @@ export const BlockList = forwardRef<HTMLUListElement, BlockListProps>(function B
             {blocks.map((block, index) => (
                 <BlockListItemContext.Provider key={block.key ?? index} value={createItemContext(index)}>
                     {ownerState.addable && index > 0 && (
-                        <li className={styles.insert}>
+                        <li role="none" className={styles.insert}>
                             <Tooltip content={labels.insert}>
                                 <button {...getInsertButtonProps(index)}>
                                     <Icon name="plus" />

@@ -1,6 +1,6 @@
 import { Collapsible } from "@base-ui/react/collapsible";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useRef } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useId, useRef } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -113,6 +113,7 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
     const labels = { ...defaultLabels, ...labelsProp };
     const listItem = useBlockListItem();
     const gripRef = useRef<HTMLButtonElement>(null);
+    const titleId = useId();
     const ownerState: BlockOwnerState = {
         visible,
         selected,
@@ -186,7 +187,8 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                             type="button"
                             className={styles.grip}
                             aria-label={labels.move}
-                            aria-keyshortcuts="ArrowUp ArrowDown"
+                            aria-describedby={titleId}
+                            aria-keyshortcuts="ArrowUp ArrowDown Home End"
                             draggable
                             onKeyDown={listItem.onGripKeyDown}
                             onDragStart={listItem.onDragStart}
@@ -199,7 +201,9 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                 <button {...mainProps}>
                     {icon != null && <span {...iconProps}>{icon}</span>}
                     <span className={styles.text}>
-                        <span className={styles.title}>{title}</span>
+                        <span id={titleId} className={styles.title}>
+                            {title}
+                        </span>
                         {summary != null && <span className={styles.summary}>{summary}</span>}
                     </span>
                 </button>

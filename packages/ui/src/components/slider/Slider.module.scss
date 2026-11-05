@@ -43,6 +43,7 @@
     block-size: var(--dextinity-slider-track-height);
     border-radius: var(--dextinity-radius-pill);
     background: var(--dextinity-slider-track-background);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-slider-track-line);
 }
 
 .indicator {
@@ -63,4 +64,10 @@
     &:has(:focus-visible) {
         box-shadow: var(--dextinity-focus-ring);
     }
+}
+
+// Applied by the high-contrast color scheme, where the track and the filled part would otherwise look alike
+:global([data-dextinity-color-scheme="high-contrast"]) .root {
+    --dextinity-slider-track-background: var(--dextinity-color-canvas);
+    --dextinity-slider-track-line: var(--dextinity-color-text);
 }

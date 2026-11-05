@@ -7,8 +7,11 @@ import styles from "./StatusIndicator.module.scss";
 
 export type StatusIndicatorStatus = "published" | "unpublished" | "archived" | "warning" | "critical" | "info" | "running";
 
-/** The text shown for each status when no `children` are given. */
-export const defaultStatusIndicatorLabels: Record<StatusIndicatorStatus, string> = {
+/** The system word of each status. */
+export type StatusIndicatorLabels = Record<StatusIndicatorStatus, string>;
+
+/** The English system words, shown when neither `children` nor `labels` give a text. */
+export const defaultStatusIndicatorLabels: StatusIndicatorLabels = {
     published: "Published",
     unpublished: "Unpublished",
     archived: "Archived",
@@ -44,9 +47,11 @@ export interface StatusIndicatorProps<Dot extends ElementType = "span"> extends 
     /** Sets the color, the shape of the dot, and the default text. */
     status: StatusIndicatorStatus;
     /**
-     * Custom text, e.g. "Active" for redirects. Without it, the status's system word is shown (see `defaultStatusIndicatorLabels`).
+     * Custom text, e.g. "Active" for redirects. Without it, the status's system word from `labels` is shown.
      */
     children?: ReactNode;
+    /** The system words, e.g. translated; missing ones fall back to `defaultStatusIndicatorLabels`. */
+    labels?: Partial<StatusIndicatorLabels>;
     /**
      * Shows only the dot, with the text as its tooltip and accessible name. Only for dense lists where the column already says what the
      * dot means. The text must then be a string; other content falls back to the system word.
@@ -67,11 +72,12 @@ export interface StatusIndicatorProps<Dot extends ElementType = "span"> extends 
  */
 export const StatusIndicator: <Dot extends ElementType = "span">(props: StatusIndicatorProps<Dot> & RefAttributes<HTMLSpanElement>) => ReactNode =
     forwardRef(function StatusIndicator<Dot extends ElementType = "span">(
-        { status, children, dotOnly = false, className, slots, slotProps, ...restProps }: StatusIndicatorProps<Dot>,
+        { status, children, dotOnly = false, labels: labelsProp, className, slots, slotProps, ...restProps }: StatusIndicatorProps<Dot>,
         ref: ForwardedRef<HTMLSpanElement>,
     ) {
         const ownerState: StatusIndicatorOwnerState = { status, dotOnly };
-        const label = children ?? defaultStatusIndicatorLabels[ownerState.status];
+        const systemWord = labelsProp?.[ownerState.status] ?? defaultStatusIndicatorLabels[ownerState.status];
+        const label = children ?? systemWord;
 
         const DotSlot: ElementType = slots?.dot ?? "span";
         const dotProps = resolveSlotProps<StatusIndicatorOwnerState, Dot, "span">({
@@ -89,7 +95,7 @@ export const StatusIndicator: <Dot extends ElementType = "span">(props: StatusIn
         };
 
         if (ownerState.dotOnly) {
-            const textLabel = typeof label === "string" ? label : defaultStatusIndicatorLabels[ownerState.status];
+            const textLabel = typeof label === "string" ? label : systemWord;
             return (
                 <Tooltip content={textLabel}>
                     <span role="img" aria-label={textLabel} {...rootProps}>

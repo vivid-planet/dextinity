@@ -23,7 +23,7 @@ import styles from "./SliderBlock.module.scss";
 type SliderBlockProps = PropsWithData<SliderBlockData>;
 
 export const SliderBlock = withPreview(
-    ({ data: { sliderList } }: SliderBlockProps) => {
+    ({ data: { blocks } }: SliderBlockProps) => {
         const intl = useIntl();
 
         return (
@@ -31,12 +31,12 @@ export const SliderBlock = withPreview(
                 <PageLayout>
                     <Carousel
                         label={intl.formatMessage({ id: "sliderBlock.ariaLabel", defaultMessage: "Slider" })}
-                        slideCount={sliderList.blocks.length}
+                        slideCount={blocks.length}
                         className={styles.carousel}
                     >
                         <CarouselPreviousButton className={clsx(styles.navigationButton, styles["navigationButton--previous"])} />
                         <CarouselViewport>
-                            {sliderList.blocks.map((block, index) => (
+                            {blocks.map((block, index) => (
                                 <CarouselSlide key={block.key}>
                                     <AnimateBoxInOnScroll direction="left" delay={100 * index}>
                                         <div className={styles.sliderItemBlockRoot}>

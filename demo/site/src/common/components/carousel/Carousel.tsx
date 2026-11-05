@@ -83,7 +83,7 @@ export const Carousel = ({ label, slideCount, className, children }: CarouselPro
         return () => {
             emblaApi.off("reinit", setUpControls);
         };
-    }, [emblaApi, hasNavigation]);
+    }, [emblaApi, hasNavigation, carouselState.snapCount]);
 
     const contextValue = useMemo<CarouselContextValue>(
         () => ({ ...carouselState, viewportRef, hasNavigation }),

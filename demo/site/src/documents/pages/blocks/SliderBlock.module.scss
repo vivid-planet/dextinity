@@ -1,6 +1,6 @@
 @use "@src/styles/variables" as *;
 
-$dot-size: 24px;
+$dot-size: var(--spacing-s500);
 
 .carousel {
     --grid-column-width: calc(min(100vw, 1920px) / 24);
@@ -116,8 +116,8 @@ $dot-size: 24px;
 
     &::after {
         content: "";
-        width: 8px;
-        height: 8px;
+        width: var(--spacing-s200);
+        height: var(--spacing-s200);
         border-radius: 50%;
         background-color: var(--media-gallery-dot-navigation-default);
     }

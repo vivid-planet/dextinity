@@ -1,5 +1,5 @@
 import { differenceInMinutes, isSameDay } from "date-fns";
-import { FormattedDate, FormattedMessage, FormattedTime } from "react-intl";
+import { FormattedDate, FormattedMessage, useIntl } from "react-intl";
 
 interface RuntimeProps {
     startTime?: Date;
@@ -8,6 +8,7 @@ interface RuntimeProps {
 
 export function JobRuntime(props: RuntimeProps) {
     const { startTime, completionTime } = props;
+    const intl = useIntl();
 
     if (startTime && completionTime) {
         const runtime = differenceInMinutes(completionTime, startTime);
@@ -17,13 +18,14 @@ export function JobRuntime(props: RuntimeProps) {
                 id="dextinity.jobRuntime.startCompletionTime"
                 defaultMessage="{start} - {completion} ({runtime} min)"
                 values={{
-                    start: <FormattedDate value={startTime} dateStyle="short" timeStyle="short" />,
-                    completion: isSameDay(new Date(), completionTime) ? (
-                        <FormattedTime value={completionTime} />
-                    ) : (
-                        <FormattedDate value={completionTime} dateStyle="short" timeStyle="short" />
-                    ),
-                    runtime: runtime <= 0 ? <FormattedMessage id="dextinity.jobRuntime.runtimeSmallerThanOneMinute" defaultMessage="< 1" /> : runtime,
+                    start: intl.formatDate(startTime, { dateStyle: "short", timeStyle: "short" }),
+                    completion: isSameDay(new Date(), completionTime)
+                        ? intl.formatTime(completionTime)
+                        : intl.formatDate(completionTime, { dateStyle: "short", timeStyle: "short" }),
+                    runtime:
+                        runtime <= 0
+                            ? intl.formatMessage({ id: "dextinity.jobRuntime.runtimeSmallerThanOneMinute", defaultMessage: "< 1" })
+                            : runtime,
                 }}
             />
         );

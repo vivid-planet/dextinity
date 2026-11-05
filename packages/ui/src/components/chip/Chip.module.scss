@@ -161,3 +161,8 @@
         cursor: not-allowed;
     }
 }
+
+// Applied by the high-contrast color scheme
+:global([data-dextinity-color-scheme="high-contrast"]) .root {
+    --dextinity-chip-filled-line-strength: 100%;
+}

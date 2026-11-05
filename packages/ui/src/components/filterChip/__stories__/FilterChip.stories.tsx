@@ -1,8 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Menu } from "../../menu/Menu";
+import { MenuRadioGroup } from "../../menu/MenuRadioGroup";
+import { MenuRadioItem } from "../../menu/MenuRadioItem";
 import type { StatusIndicatorStatus } from "../../statusIndicator/StatusIndicator";
 import filterChipTokens from "../_tokens.scss?raw";
 import { FilterChip, type FilterChipProps } from "../FilterChip";
@@ -50,6 +53,37 @@ function StatusFilterToolbar(props: Pick<FilterChipProps, "onClick">) {
                 </FilterChip>
             ))}
         </div>
+    );
+}
+
+const authors = ["Anna Berger", "Lukas Huber", "Sophie Wagner"];
+
+/** The chip is the menu's trigger; picking an author activates the filter and shows the name on the chip. */
+function AuthorFilter(props: Pick<FilterChipProps, "onClick">) {
+    const [open, setOpen] = useState(false);
+    const [author, setAuthor] = useState("");
+    return (
+        <Menu
+            open={open}
+            onOpenChange={setOpen}
+            trigger={
+                <FilterChip selected={author !== ""} hasMenu onClick={props.onClick}>
+                    {author === "" ? "Author" : author}
+                </FilterChip>
+            }
+        >
+            <MenuRadioGroup
+                value={author}
+                onChange={(nextAuthor) => {
+                    setAuthor(nextAuthor);
+                    setOpen(false);
+                }}
+            >
+                {authors.map((name) => (
+                    <MenuRadioItem key={name} value={name} label={name} />
+                ))}
+            </MenuRadioGroup>
+        </Menu>
     );
 }
 
@@ -112,6 +146,16 @@ export const WithStatus: Story = {
  */
 export const WithMenu: Story = {
     args: { children: "Author", hasMenu: true },
+    render: (args) => <AuthorFilter onClick={args.onClick} />,
+    play: async ({ args, canvas }) => {
+        const chip = canvas.getByRole("button", { name: "Author" });
+        await expect(chip).toHaveAttribute("aria-haspopup", "menu");
+        await userEvent.click(chip);
+        await expect(args.onClick).toHaveBeenCalledTimes(1);
+        await userEvent.click(await screen.findByRole("menuitemradio", { name: "Lukas Huber" }));
+        await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+        await expect(canvas.getByRole("button", { name: "Lukas Huber" })).toHaveAttribute("aria-pressed", "true");
+    },
 };
 
 export const Disabled: Story = {

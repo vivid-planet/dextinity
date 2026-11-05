@@ -47,7 +47,7 @@
     },
     "dependencies": {
         "@dextinity/site-react": "workspace:*",
-        "jose": "^6.2.14",
+        "jose": "^6.2.15",
         "server-only": "^0.0.1"
     },
     "devDependencies": {

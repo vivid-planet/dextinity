@@ -18,7 +18,7 @@ import {
     useStoredState,
 } from "@dextinity/admin";
 import { Add, Error } from "@dextinity/admin-icons";
-import { Box, DialogContent, Divider, FormControlLabel, LinearProgress, Paper, Switch } from "@mui/material";
+import { Box, Divider, FormControlLabel, LinearProgress, Paper, Switch } from "@mui/material";
 import { type ComponentType, type ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -227,15 +227,13 @@ export function PagesPage({
                             </MainContent>
                         </PageTreeContext.Provider>
 
-                        <EditDialog>
-                            <DialogContent>
-                                <EditPageNode
-                                    id={editDialogSelection.id || null}
-                                    mode={editDialogSelection.mode ?? "add"}
-                                    category={category}
-                                    documentTypes={documentTypes}
-                                />
-                            </DialogContent>
+                        <EditDialog disableDialogActions>
+                            <EditPageNode
+                                id={editDialogSelection.id || null}
+                                mode={editDialogSelection.mode ?? "add"}
+                                category={category}
+                                documentTypes={documentTypes}
+                            />
                         </EditDialog>
                     </StackPage>
                     <StackPage name="edit" title={intl.formatMessage({ id: "dextinity.pages.pages.editContent", defaultMessage: "Edit content" })}>

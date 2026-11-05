@@ -117,6 +117,7 @@ export { type TimeRange, TimeRangePicker, type TimeRangePickerClassKey, type Tim
 export { TimeRangePickerField, type TimeRangePickerFieldProps } from "./dateTime/timeRangePickerField/TimeRangePickerField";
 export { DeleteMutation } from "./DeleteMutation";
 export { EditDialog, useEditDialog } from "./editDialog/EditDialog";
+export { EditDialogActions } from "./editDialog/EditDialogActions";
 export { EditDialogApiContext, type IEditDialogApi, useEditDialogApi } from "./editDialog/EditDialogApiContext";
 export { ErrorBoundary, type ErrorBoundaryClassKey, type ErrorBoundaryProps } from "./error/errorboundary/ErrorBoundary";
 export { RouteWithErrorBoundary } from "./error/errorboundary/RouteWithErrorBoundary";

@@ -51,6 +51,8 @@ export { QuickLook, type QuickLookItem, type QuickLookOwnerState, type QuickLook
 export { type QuickLookSlotProps } from "./components/quickLook/QuickLook";
 export { RichTextEditor, type RichTextEditorFormat, type RichTextEditorLabels } from "./components/richTextEditor/RichTextEditor";
 export { type RichTextEditorOwnerState, type RichTextEditorProps } from "./components/richTextEditor/RichTextEditor";
+export { SaveState, type SaveStateLabels, type SaveStateOwnerState, type SaveStateProps } from "./components/saveState/SaveState";
+export { type SaveStateValue } from "./components/saveState/SaveState";
 export { SegmentedControl, type SegmentedControlOption, type SegmentedControlOwnerState } from "./components/segmentedControl/SegmentedControl";
 export { type SegmentedControlProps, type SegmentedControlSlotProps } from "./components/segmentedControl/SegmentedControl";
 export { Select, type SelectLabels, type SelectOption, type SelectOwnerState, type SelectProps } from "./components/select/Select";

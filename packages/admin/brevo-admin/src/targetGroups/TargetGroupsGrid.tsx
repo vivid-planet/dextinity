@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -185,6 +186,10 @@ export function TargetGroupsGrid({
                 },
             });
 
+            if (!newContactsData) {
+                throw new Error("Failed to load target group contacts");
+            }
+
             allContacts = allContacts.concat(newContactsData.brevoContacts.nodes as ContactWithAdditionalAttributes[]);
             shouldContinue = allContacts.length < newContactsData.brevoContacts.totalCount;
             offset += 100;
@@ -261,6 +266,7 @@ export function TargetGroupsGrid({
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(dataGridProps.sortModel),
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.brevoTargetGroups.totalCount);
     if (error) {

@@ -1,4 +1,5 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { downloadFile, RowActionsItem, RowActionsMenu, useEditDialog, useErrorDialog, useStackSwitchApi } from "@dextinity/admin";
 import { Archive, Delete, Download, Edit, Move, Restore } from "@dextinity/admin-icons";
 import { Divider } from "@mui/material";

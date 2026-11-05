@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { AutocompleteField, Table, TableFilterFinalForm, TableQuery, useTableQuery, useTableQueryFilter } from "@dextinity/admin";
 import { Grid } from "@mui/material";
 

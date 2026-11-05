@@ -1,4 +1,4 @@
-import { ApolloClient, ApolloLink, type FetchResult, gql, InMemoryCache, Observable } from "@apollo/client";
+import { ApolloClient, ApolloLink, gql, InMemoryCache, Observable, ServerError } from "@apollo/client";
 import { GraphQLError } from "graphql";
 import { beforeEach, describe, expect, it } from "vitest";
 
@@ -11,10 +11,13 @@ const testQuery = gql`
     }
 `;
 
-async function executeQueryWithError({ errors, networkError }: { errors?: GraphQLError[]; networkError?: Error }) {
+async function executeQueryWithError({ errors, networkError, response }: { errors?: GraphQLError[]; networkError?: Error; response?: Response }) {
     const responseLink = new ApolloLink(
-        () =>
-            new Observable<FetchResult>((observer) => {
+        (operation) =>
+            new Observable<ApolloLink.Result>((observer) => {
+                if (response) {
+                    operation.setContext({ response });
+                }
                 if (networkError) {
                     observer.error(networkError);
                 } else {
@@ -61,10 +64,10 @@ describe("createErrorDialogApolloLink", () => {
     });
 
     it("prioritizes GraphQL errors over the network error", async () => {
-        const serverError = Object.assign(new Error("Response not successful: Received status code 400"), {
-            name: "ServerError",
-            statusCode: 400,
-            result: { errors: [new GraphQLError("Validation failed", { extensions: { code: "BAD_REQUEST" } })] },
+        const bodyText = JSON.stringify({ errors: [new GraphQLError("Validation failed", { extensions: { code: "BAD_REQUEST" } })] });
+        const serverError = new ServerError("Response not successful: Received status code 400", {
+            response: new Response(bodyText, { status: 400 }),
+            bodyText,
         });
 
         await executeQueryWithError({ networkError: serverError });
@@ -72,5 +75,16 @@ describe("createErrorDialogApolloLink", () => {
         expect(errorDialogVar()?.error).toEqual(["Validation failed"]);
         expect(errorDialogVar()?.additionalInformation?.errorType).toBe("graphql");
         expect(errorDialogVar()?.additionalInformation?.httpStatus).toBe("400 Bad Request");
+    });
+
+    it("shows the HTTP status of a non-2xx response containing GraphQL errors", async () => {
+        await executeQueryWithError({
+            errors: [new GraphQLError("Not authenticated")],
+            response: new Response(null, { status: 401 }),
+        });
+
+        expect(errorDialogVar()?.error).toEqual(["Not authenticated"]);
+        expect(errorDialogVar()?.additionalInformation?.errorType).toBe("unauthenticated");
+        expect(errorDialogVar()?.additionalInformation?.httpStatus).toBe("401 Unauthorized");
     });
 });

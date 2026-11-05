@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import type { GridColDef } from "@dextinity/admin";
 import { parseISO } from "date-fns";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -10,7 +11,9 @@ import { DashboardWidgetRoot } from "./DashboardWidgetRoot";
 import type { GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables } from "./LatestBuildsDashboardWidget.generated";
 
 export const LatestBuildsDashboardWidget = () => {
-    const { data, loading, error } = useQuery<GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables>(latestBuildsQuery);
+    const { data, loading, error } = useQuery<GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables>(latestBuildsQuery, {
+        notifyOnNetworkStatusChange: false,
+    });
 
     const intl = useIntl();
 

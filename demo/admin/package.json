@@ -31,7 +31,7 @@
         "start": "pnpm check-node-version && run-s admin-generator intl:compile && run-p gql:types generate-block-types && dotenv -e .env.secrets -e .env.local -e .env -e .env.site-configs -- vite"
     },
     "dependencies": {
-        "@apollo/client": "^3.14.1",
+        "@apollo/client": "^4.3.5",
         "@dextinity/admin": "workspace:*",
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/brevo-admin": "workspace:*",
@@ -61,6 +61,7 @@
         "react-intl": "^12.1.4",
         "react-router": "^5.3.4",
         "react-router-dom": "^5.3.4",
+        "rxjs": "^7.8.2",
         "use-debounce": "^10.1.1",
         "uuid": "^14.0.3"
     },

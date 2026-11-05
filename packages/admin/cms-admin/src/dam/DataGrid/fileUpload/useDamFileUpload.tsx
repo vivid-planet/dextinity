@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { Alert, useSnackbarApi } from "@dextinity/admin";
 import { Snackbar } from "@mui/material";
 import { type ReactNode, useCallback, useMemo, useState } from "react";
@@ -198,7 +198,7 @@ export const useDamFileUpload = (options: UploadDamFileOptions): FileUploadApi =
                 fetchPolicy: "network-only",
             });
 
-            return data.damFolder?.id;
+            return data?.damFolder?.id;
         },
         [client, scope],
     );

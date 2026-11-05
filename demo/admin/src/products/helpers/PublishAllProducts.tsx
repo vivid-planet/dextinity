@@ -1,4 +1,5 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { Button, CancelButton, CrudMoreActionsMenuContext, Dialog } from "@dextinity/admin";
 import { Online } from "@dextinity/admin-icons";
 import { DialogActions, DialogContent, ListItemIcon, MenuItem } from "@mui/material";

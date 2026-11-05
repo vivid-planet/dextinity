@@ -109,7 +109,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
 
         // TODO consider throwing an error
         // TODO fix typing: generated GraphQL files use null, we use undefined, e.g. title: string | null vs title?: string
-        const damFile = data.damFile as unknown as PixelImageBlockData["damFile"];
+        const damFile = data?.damFile as unknown as PixelImageBlockData["damFile"];
 
         return { damFile, cropArea: output.cropArea };
     },

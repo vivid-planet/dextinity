@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { Button, DataGridToolbar, DeleteDialog, FieldSet, FillSpace, GridCellContent, type GridColDef } from "@dextinity/admin";
 import { Add, Delete, Edit, StateFilled } from "@dextinity/admin-icons";
 import { IconButton, Typography } from "@mui/material";
@@ -68,6 +69,7 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
             variables: {
                 userId,
             },
+            notifyOnNetworkStatusChange: false,
         },
     );
 

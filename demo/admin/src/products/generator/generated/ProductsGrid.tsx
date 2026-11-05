@@ -12,8 +12,8 @@ import { FormattedNumber } from "react-intl";
 import { useIntl } from "react-intl";
 import { ReactNode } from "react";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { CrudContextMenu } from "@dextinity/admin";
 import { CrudMoreActionsMenu } from "@dextinity/admin";
 import { DataGridToolbar } from "@dextinity/admin";
@@ -363,6 +363,7 @@ export function ProductsGrid({ filter, toolbarAction, rowAction, actionsColumnWi
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.products.totalCount);
     if (error) throw error;

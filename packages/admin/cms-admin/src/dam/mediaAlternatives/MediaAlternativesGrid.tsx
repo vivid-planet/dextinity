@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     DataGridToolbar,
@@ -182,6 +183,7 @@ export function MediaAlternativesGrid({ file, type, direction }: MediaAlternativ
             alternative: direction === "alternative" ? file.id : undefined,
             type: type,
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.damMediaAlternatives.totalCount);
     if (error) {

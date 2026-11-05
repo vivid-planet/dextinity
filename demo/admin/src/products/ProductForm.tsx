@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import {
     AsyncSelectField,
     CheckboxField,
@@ -103,7 +104,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
 
     const { data, error, loading, refetch } = useQuery<GQLProductQuery, GQLProductQueryVariables>(
         productQuery,
-        id ? { variables: { id } } : { skip: true },
+        id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
     );
 
     const initialValues = useMemo<InitialFormValues>(() => {
@@ -257,7 +258,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                                 `,
                             });
 
-                            return data.manufacturerCountries.nodes;
+                            return data?.manufacturerCountries.nodes ?? [];
                         }}
                         getOptionLabel={(option) => option.label}
                         label={<FormattedMessage id="product.manufacturerCountry" defaultMessage="Manufacturer Country" />}
@@ -286,7 +287,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                                 },
                             });
 
-                            return data.manufacturers.nodes;
+                            return data?.manufacturers.nodes ?? [];
                         }}
                         getOptionLabel={(option) => option.name}
                         label={<FormattedMessage id="product.manufacturer" defaultMessage="Manufacturer" />}
@@ -345,7 +346,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                                 `,
                             });
 
-                            return data.productCategories.nodes;
+                            return data?.productCategories.nodes ?? [];
                         }}
                         getOptionLabel={(option) => option.title}
                     />
@@ -368,7 +369,7 @@ export function ProductForm({ id, width, onCreate }: FormProps) {
                                 `,
                             });
 
-                            return data.productTags.nodes;
+                            return data?.productTags.nodes ?? [];
                         }}
                         getOptionLabel={(option) => option.title}
                     />

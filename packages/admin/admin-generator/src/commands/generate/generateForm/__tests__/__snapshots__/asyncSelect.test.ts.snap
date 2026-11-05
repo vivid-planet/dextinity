@@ -24,7 +24,7 @@ exports[`AsyncSelect filter > generates field without filter 1`] = `
                             
                         
                     });
-                    return data.categories.nodes;
+                    return data?.categories.nodes ?? [];
                 }}
                 getOptionLabel={(option) => option.name}
                 
@@ -55,7 +55,7 @@ exports[`AsyncSelect filter > generates filter with value dependent on other fie
                             
                          }
                     });
-                    return data.categories.nodes;
+                    return data?.categories.nodes ?? [];
                 }}
                 getOptionLabel={(option) => option.name}
                 disabled={!values?.title}
@@ -71,8 +71,9 @@ exports[`AsyncSelect filter > generates filter with value dependent on other fie
 exports[`AsyncSelect filter > generates formProp with enum filter as root query arg 1`] = `
 "
     import { FormattedMessage } from "react-intl";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
+import { skipToken } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import { CheckboxField } from "@dextinity/admin";
 import { Field } from "@dextinity/admin";
@@ -144,7 +145,7 @@ id?: string;
         
         const { data, error, loading, refetch } = useQuery<GQLProductQuery, GQLProductQueryVariables>(
             productQuery,
-            id ? { variables: { id } } : { skip: true },
+            id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
         );
         
 
@@ -251,7 +252,7 @@ id?: string;
                             
                          }
                     });
-                    return data.categories.nodes;
+                    return data?.categories.nodes ?? [];
                 }}
                 getOptionLabel={(option) => option.name}
                 
@@ -269,8 +270,9 @@ id?: string;
 exports[`AsyncSelect filter > generates formProp with string filter as root query arg 1`] = `
 "
     import { FormattedMessage } from "react-intl";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
+import { skipToken } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import { CheckboxField } from "@dextinity/admin";
 import { Field } from "@dextinity/admin";
@@ -341,7 +343,7 @@ id?: string;
         
         const { data, error, loading, refetch } = useQuery<GQLProductQuery, GQLProductQueryVariables>(
             productQuery,
-            id ? { variables: { id } } : { skip: true },
+            id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
         );
         
 
@@ -448,7 +450,7 @@ id?: string;
                             
                          }
                     });
-                    return data.categories.nodes;
+                    return data?.categories.nodes ?? [];
                 }}
                 getOptionLabel={(option) => option.name}
                 
@@ -466,8 +468,9 @@ id?: string;
 exports[`AsyncSelect filter > with formProp filter with filter arg > generates a string filter 1`] = `
 "
     import { FormattedMessage } from "react-intl";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
+import { skipToken } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import { CheckboxField } from "@dextinity/admin";
 import { Field } from "@dextinity/admin";
@@ -538,7 +541,7 @@ id?: string;
         
         const { data, error, loading, refetch } = useQuery<GQLProductQuery, GQLProductQueryVariables>(
             productQuery,
-            id ? { variables: { id } } : { skip: true },
+            id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
         );
         
 
@@ -645,7 +648,7 @@ id?: string;
                             
                          }
                     });
-                    return data.categories.nodes;
+                    return data?.categories.nodes ?? [];
                 }}
                 getOptionLabel={(option) => option.name}
                 
@@ -663,8 +666,9 @@ id?: string;
 exports[`AsyncSelect filter > with formProp filter with filter arg > generates an enum filter 1`] = `
 "
     import { FormattedMessage } from "react-intl";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
+import { skipToken } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import { CheckboxField } from "@dextinity/admin";
 import { Field } from "@dextinity/admin";
@@ -736,7 +740,7 @@ id?: string;
         
         const { data, error, loading, refetch } = useQuery<GQLProductQuery, GQLProductQueryVariables>(
             productQuery,
-            id ? { variables: { id } } : { skip: true },
+            id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
         );
         
 
@@ -843,7 +847,7 @@ id?: string;
                             
                          }
                     });
-                    return data.categories.nodes;
+                    return data?.categories.nodes ?? [];
                 }}
                 getOptionLabel={(option) => option.name}
                 

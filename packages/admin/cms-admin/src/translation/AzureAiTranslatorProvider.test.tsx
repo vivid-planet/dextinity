@@ -8,9 +8,9 @@ import { AzureAiTranslatorProvider } from "./AzureAiTranslatorProvider";
 
 const mockQuery = vi.fn().mockResolvedValue({ data: {} });
 
-vi.mock(import("@apollo/client"), async (importOriginal) => {
+vi.mock(import("@apollo/client/react"), async (importOriginal) => {
     const originalModule = await importOriginal();
-    return { ...originalModule, useApolloClient: () => ({ query: mockQuery }) as unknown as ApolloClient<object> };
+    return { ...originalModule, useApolloClient: () => ({ query: mockQuery }) as unknown as ApolloClient };
 });
 
 // A scope without a `language` dimension: the target language can only come from the contentLanguage config.

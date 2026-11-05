@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Field,
     FillSpace,
@@ -23,6 +24,7 @@ import type { FormApi } from "final-form";
 import { type ReactElement, type ReactNode, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
 
+import type { GQLBrevoConfig } from "../graphql.generated";
 import {
     brevoConfigFormQuery,
     createBrevoConfigMutation,
@@ -74,6 +76,7 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
 
     const { data, error, loading, refetch } = useQuery<GQLBrevoConfigFormQuery, GQLBrevoConfigFormQueryVariables>(brevoConfigFormQuery, {
         variables: { scope },
+        notifyOnNetworkStatusChange: false,
     });
 
     const mode = data?.brevoConfig?.id ? "edit" : "add";
@@ -151,13 +154,16 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
                     }
                 }
             `;
-            const { data } = await client.query({
+            const { data: updatedData } = await client.query<
+                { brevoConfig: Pick<GQLBrevoConfig, "updatedAt"> | null },
+                GQLBrevoConfigFormQueryVariables
+            >({
                 query,
                 variables: { scope },
                 fetchPolicy: "no-cache",
             });
 
-            return resolveHasSaveConflict(data?.brevoConfig?.updatedAt, data.updatedAt);
+            return resolveHasSaveConflict(data?.brevoConfig?.updatedAt, updatedData?.brevoConfig?.updatedAt);
         },
         formApiRef,
         loadLatestVersion: async () => {

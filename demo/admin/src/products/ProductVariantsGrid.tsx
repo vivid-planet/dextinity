@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import {
     Button,
     DataGridToolbar,
@@ -108,6 +109,7 @@ export function ProductVariantsGrid({ productId }: { productId: string }) {
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(sortModel),
         },
+        notifyOnNetworkStatusChange: false,
     });
     if (error) {
         throw error;

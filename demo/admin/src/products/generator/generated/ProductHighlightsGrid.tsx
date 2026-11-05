@@ -10,8 +10,8 @@ import {
 import { FormattedMessage } from "react-intl";
 import { useIntl } from "react-intl";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { Button } from "@dextinity/admin";
 import { CrudContextMenu } from "@dextinity/admin";
 import { DataGridToolbar } from "@dextinity/admin";
@@ -106,6 +106,7 @@ export function ProductHighlightsGrid() {
     );
     const { data, loading, error } = useQuery<GQLProductHighlightsGridQuery, GQLProductHighlightsGridQueryVariables>(productHighlightsQuery, {
         variables: {},
+        notifyOnNetworkStatusChange: false,
     });
     if (error) throw error;
     const rows = data?.productHighlights ?? [];

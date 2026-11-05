@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Alert,
     Field,
@@ -130,6 +131,10 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
             },
             fetchPolicy: "network-only",
         });
+
+        if (!data) {
+            throw new Error("Failed to check redirect source availability");
+        }
 
         return data.redirectSourceAvailable;
     };

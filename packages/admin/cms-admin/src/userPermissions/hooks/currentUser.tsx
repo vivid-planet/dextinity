@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Loading } from "@dextinity/admin";
 import { createContext, type PropsWithChildren, useContext } from "react";
 import { FormattedMessage } from "react-intl";

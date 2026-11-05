@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { FillSpace, MainContent, messages, SaveButton, Stack, StackToolbar, ToolbarActions, ToolbarTitleItem } from "@dextinity/admin";
 import {
     BlockAdminComponentRoot,
@@ -46,6 +47,7 @@ export function EditFooterPage(): JSX.Element | null {
         variables: {
             scope,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     const saveConflict = useSaveConflictQuery<GQLCheckForChangesFooterQuery, GQLCheckForChangesFooterQueryVariables>(

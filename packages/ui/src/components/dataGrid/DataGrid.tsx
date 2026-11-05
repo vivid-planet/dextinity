@@ -53,6 +53,7 @@ export interface DataGridColumn<Row> {
 export interface DataGridSort {
     /** The `key` of the sorted column. */
     key: string;
+    /** `asc` sorts from A to Z and from small to large numbers. */
     direction: "asc" | "desc";
 }
 

@@ -35,6 +35,7 @@ export { StatusIndicator, type StatusIndicatorOwnerState, type StatusIndicatorPr
 export { defaultStatusIndicatorLabels, type StatusIndicatorStatus } from "./components/statusIndicator/StatusIndicator";
 export { type StatusIndicatorSlotProps, type StatusIndicatorSlots } from "./components/statusIndicator/StatusIndicator";
 export { Switch, type SwitchOwnerState, type SwitchProps, type SwitchSlotProps } from "./components/switch/Switch";
+export { Tabs, type TabsItem, type TabsOwnerState, type TabsProps, type TabsSlotProps } from "./components/tabs/Tabs";
 export { Textarea, type TextareaOwnerState, type TextareaProps } from "./components/textarea/Textarea";
 export { Theme, type ThemeProps } from "./components/theme/Theme";
 export { Toast, type ToastAction, type ToastOwnerState, type ToastProps, type ToastSlotProps, type ToastTone } from "./components/toast/Toast";

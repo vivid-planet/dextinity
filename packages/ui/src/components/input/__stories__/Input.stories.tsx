@@ -5,6 +5,7 @@ import { expect, fn, userEvent } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/_tokens.scss?raw";
 import { Icon } from "../../icon/Icon";
+import { Kbd } from "../../kbd/Kbd";
 import inputTokens from "../_tokens.scss?raw";
 import { Input, type InputProps } from "../Input";
 import styles from "./Input.stories.module.scss";
@@ -142,7 +143,7 @@ export const Search: Story = {
         value: "",
         placeholder: "Search job ads",
         prefix: <Icon name="search" />,
-        suffix: <kbd className={styles.key}>/</kbd>,
+        suffix: <Kbd>/</Kbd>,
     },
 };
 

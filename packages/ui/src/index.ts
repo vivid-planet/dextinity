@@ -6,6 +6,7 @@ export { Chip, type ChipLabels, type ChipOwnerState, type ChipProps, type ChipSl
 export { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "./components/field/Field";
 export { type FieldSize, type FieldState } from "./components/field/Field";
 export { FieldActions, type FieldActionsLabels, type FieldActionsOwnerState, type FieldActionsProps } from "./components/fieldActions/FieldActions";
+export { FilterChip, type FilterChipOwnerState, type FilterChipProps, type FilterChipSlotProps } from "./components/filterChip/FilterChip";
 export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Icon";
 export { type IconName, iconNames } from "./components/icon/iconNames";
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";

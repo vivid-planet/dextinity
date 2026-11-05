@@ -1,0 +1,14 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    --dextinity-save-state-gap: 7px;
+    --dextinity-save-state-font-size: var(--dextinity-typography-small-size);
+    --dextinity-save-state-dot-size: 6px;
+    --dextinity-save-state-saved-color: var(--dextinity-color-text-tertiary);
+    --dextinity-save-state-saved-dot-color: var(--dextinity-color-success);
+    // Unsaved changes and saving in progress
+    --dextinity-save-state-pending-color: var(--dextinity-color-warning-text);
+    --dextinity-save-state-pending-dot-color: var(--dextinity-color-warning);
+    --dextinity-save-state-error-color: var(--dextinity-color-danger-text);
+    --dextinity-save-state-error-dot-color: var(--dextinity-color-danger);
+}

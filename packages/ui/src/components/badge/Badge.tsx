@@ -26,7 +26,7 @@ export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, "class
     children?: ReactNode;
     /**
      * The explanation, shown as a tooltip on hover and keyboard focus. Required for `ai`, `warning`, and `dot`; for `warning` and `dot` it
-     * is also the accessible name.
+     * is also the accessible name, and without it they are hidden from assistive technology.
      */
     tooltip?: string;
     /** Added alongside the component's own classes. */
@@ -43,8 +43,9 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge({ va
 
     const badge = (
         <span
-            role={hasText ? undefined : "img"}
+            role={hasText || tooltip == null ? undefined : "img"}
             aria-label={hasText ? undefined : tooltip}
+            aria-hidden={hasText || tooltip != null ? undefined : true}
             tabIndex={tooltip != null ? 0 : undefined}
             {...restProps}
             ref={ref}

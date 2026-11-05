@@ -1,0 +1,32 @@
+@use "../../theme/scope";
+
+// The frame (label, box, message) comes from the Field tokens.
+@include scope.component-tokens {
+    --dextinity-select-placeholder-color: var(--dextinity-field-placeholder);
+    --dextinity-select-chevron-color: var(--dextinity-color-text-tertiary);
+
+    --dextinity-select-popup-background: var(--dextinity-color-surface);
+    --dextinity-select-popup-radius: var(--dextinity-radius-field);
+    --dextinity-select-popup-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-3);
+    --dextinity-select-popup-padding: 6px;
+    --dextinity-select-popup-max-height: 320px;
+
+    --dextinity-select-item-height: var(--dextinity-density-menu-item-height);
+    --dextinity-select-item-radius: calc(9px * var(--dextinity-brand-radius-factor));
+    --dextinity-select-item-padding: 10px;
+    --dextinity-select-item-font-size: 13.5px;
+    // Keyboard or pointer highlight in the list
+    --dextinity-select-item-background-highlight: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+    --dextinity-select-item-icon-color: var(--dextinity-color-text-tertiary);
+    // Check mark of the selected option
+    --dextinity-select-item-indicator-color: var(--dextinity-color-accent-text);
+
+    // Selected options in a multiple select
+    --dextinity-select-chip-height: 24px;
+    --dextinity-select-chip-radius: var(--dextinity-radius-item);
+    --dextinity-select-chip-background: var(--dextinity-color-surface);
+    --dextinity-select-chip-line: var(--dextinity-color-line-strong);
+    --dextinity-select-chip-font-size: 12.5px;
+
+    --dextinity-select-search-line: var(--dextinity-color-line);
+}

@@ -11,8 +11,11 @@ export type DevicePreviewDevice = "desktop" | "tablet" | "mobile";
 export interface DevicePreviewLabels {
     /** The accessible name of the device switch. */
     device: string;
+    /** The accessible name of the desktop option. */
     desktop: string;
+    /** The accessible name of the tablet option. */
     tablet: string;
+    /** The accessible name of the phone option. */
     mobile: string;
 }
 

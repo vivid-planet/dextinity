@@ -1,5 +1,6 @@
 // Component tokens. Each component declares its own in `src/components/<feature>/_tokens.scss`.
 @use "../components/button/tokens" as button;
+@use "../components/field/tokens" as field;
 @use "../components/icon/tokens" as icon;
 @use "../components/kbd/tokens" as kbd;
 @use "../components/tooltip/tokens" as tooltip;

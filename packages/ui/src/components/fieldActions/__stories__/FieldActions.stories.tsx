@@ -78,10 +78,12 @@ export const Default: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "Improve with AI" }));
         await expect(canvas.getByRole("textbox")).toHaveAttribute("aria-busy", "true");
         const accept = await canvas.findByRole("button", { name: "Accept" });
+        await waitFor(() => expect(canvas.getByRole("group", { name: "AI suggestion" })).toHaveFocus());
         await userEvent.click(accept);
         await expect(args.onAiAccept).toHaveBeenCalledWith("Three colleagues discuss a design draft at a bright office table.");
         await expect(canvas.getByRole("textbox")).toHaveValue("Three colleagues discuss a design draft at a bright office table.");
         await expect(canvas.queryByRole("group", { name: "AI suggestion" })).toBeNull();
+        await expect(canvas.getByRole("textbox")).toHaveFocus();
     },
 };
 
@@ -98,13 +100,14 @@ export const AiOnly: Story = {
 };
 
 /**
- * Discarding removes the suggestion and keeps the value.
+ * Discarding removes the suggestion and keeps the value. Accepting or discarding returns focus to the field.
  */
 export const Discard: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Improve with AI" }));
         await userEvent.click(await canvas.findByRole("button", { name: "Discard" }));
         await expect(args.onAiAccept).not.toHaveBeenCalled();
+        await expect(canvas.getByRole("textbox")).toHaveFocus();
         await expect(canvas.getByRole("textbox")).toHaveValue("Three people at a table in the office.");
     },
 };
@@ -120,6 +123,7 @@ export const SuggestionFails: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "Improve with AI" }));
         await waitFor(() => expect(args.onAiError).toHaveBeenCalled());
         await expect(canvas.getByRole("textbox")).not.toHaveAttribute("aria-busy");
+        await expect(canvas.getByRole("button", { name: "Improve with AI" })).toHaveFocus();
     },
 };
 

@@ -56,7 +56,8 @@
         box-shadow: var(--dextinity-focus-ring);
     }
 
-    &[data-dragging] {
+    &[data-dragging],
+    &[data-cut] {
         opacity: 0.4;
     }
 

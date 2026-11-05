@@ -7,7 +7,9 @@ import {
     type KeyboardEvent,
     type MouseEvent,
     type ReactNode,
+    useEffect,
     useId,
+    useImperativeHandle,
     useRef,
     useState,
 } from "react";
@@ -113,14 +115,15 @@ export interface TreeViewProps extends Omit<HTMLAttributes<HTMLUListElement>, "c
      */
     filter?: (node: TreeNode) => boolean;
     /**
-     * Lets nodes be moved by dragging; shows a drag handle on hover.
+     * Lets nodes be moved by dragging, with a drag handle on hover, and by keyboard: Ctrl/⌘+X cuts the focused node, Ctrl/⌘+V
+     * moves it inside the focused node as its last child, Shift+Ctrl/⌘+V right after it, Escape cancels.
      *
      * @defaultValue `false`
      */
     draggable?: boolean;
-    /** Called when a dragged node is dropped. */
+    /** Called when a dragged node is dropped, or a cut node is pasted. */
     onMove?: (move: TreeViewMove) => void;
-    /** Whether a dragged node may be dropped there; by default anywhere except on itself and its descendants. */
+    /** Whether a dragged or cut node may be moved there; by default anywhere except on itself and its descendants. */
     canDrop?: (move: TreeViewMove) => boolean;
     /** Actions at the end of a row, shown on hover, focus, and on the active node. */
     renderActions?: (node: TreeNode) => ReactNode;
@@ -193,6 +196,29 @@ function stopPropagation(event: MouseEvent | KeyboardEvent) {
     event.stopPropagation();
 }
 
+const focusableSelector = "a[href], button, input, select, textarea, [tabindex]";
+const savedTabIndexAttribute = "data-dextinity-tree-view-tabindex";
+
+/** Keeps the actions of rows other than the tab stop out of the Tab order, so the tree stays a single tab stop with its actions. */
+function updateActionsTabOrder(actions: HTMLElement, isTabStop: boolean) {
+    for (const element of actions.querySelectorAll<HTMLElement>(focusableSelector)) {
+        const savedTabIndex = element.getAttribute(savedTabIndexAttribute);
+        if (isTabStop) {
+            if (savedTabIndex != null) {
+                if (savedTabIndex === "") {
+                    element.removeAttribute("tabindex");
+                } else {
+                    element.setAttribute("tabindex", savedTabIndex);
+                }
+                element.removeAttribute(savedTabIndexAttribute);
+            }
+        } else if (savedTabIndex == null) {
+            element.setAttribute(savedTabIndexAttribute, element.getAttribute("tabindex") ?? "");
+            element.setAttribute("tabindex", "-1");
+        }
+    }
+}
+
 /**
  * A hierarchy such as the page tree: expand, select, mark several nodes, and move them by dragging. Follows the WAI-ARIA tree
  * pattern for keyboard use.
@@ -225,10 +251,13 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
     const labels = { ...defaultTreeViewLabels, ...labelsProp };
     const ownerState: TreeViewOwnerState = { checkable, draggable, filtered: filter != null };
     const baseId = useId();
+    const rootRef = useRef<HTMLUListElement>(null);
+    useImperativeHandle(ref, () => rootRef.current as HTMLUListElement);
     const itemRefs = useRef(new Map<string, HTMLLIElement>());
     const [focusedId, setFocusedId] = useState<string>();
     const [draggedId, setDraggedId] = useState<string>();
     const [dropTarget, setDropTarget] = useState<Omit<TreeViewMove, "id">>();
+    const [cutId, setCutId] = useState<string>();
 
     const expanded = new Set(expandedIds);
     const checked = new Set(checkedIds);
@@ -264,6 +293,12 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
               ? selectedId
               : visibleIds[0];
 
+    useEffect(() => {
+        for (const actions of rootRef.current?.querySelectorAll<HTMLElement>("[data-actions-for]") ?? []) {
+            updateActionsTabOrder(actions, actions.dataset.actionsFor === tabStopId);
+        }
+    });
+
     const focusNode = (id: string) => {
         setFocusedId(id);
         itemRefs.current.get(id)?.focus();
@@ -276,6 +311,8 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
         const others = checkedIds.filter((checkedId) => !changed.has(checkedId));
         onCheckedChange?.(isChecked ? [...others, ...ids] : others);
     };
+
+    const isDropAllowed = (move: TreeViewMove) => !isDescendantOrSelf(parents, move.targetId, move.id) && (canDrop == null || canDrop(move));
 
     const handleKeyDown = (event: KeyboardEvent<HTMLUListElement>) => {
         onKeyDown?.(event);
@@ -296,6 +333,24 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
             }
             focusNode(next.node.id);
         };
+
+        if (draggable && (event.ctrlKey || event.metaKey) && !event.altKey) {
+            const key = event.key.toLowerCase();
+            if (key === "x") {
+                event.preventDefault();
+                setCutId(id);
+                return;
+            }
+            if (key === "v" && cutId != null) {
+                event.preventDefault();
+                const move: TreeViewMove = { id: cutId, targetId: id, position: event.shiftKey ? "after" : "inside" };
+                if (isDropAllowed(move)) {
+                    onMove?.(move);
+                    setCutId(undefined);
+                }
+                return;
+            }
+        }
 
         let handled = true;
         switch (event.key) {
@@ -336,6 +391,13 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                     onSelect?.(id);
                 }
                 break;
+            case "Escape":
+                if (cutId != null) {
+                    setCutId(undefined);
+                } else {
+                    handled = false;
+                }
+                break;
             case "*": {
                 const siblingIds = visibleNodes
                     .filter((visibleNode) => visibleNode.parentId === current.parentId && visibleNode.hasChildren && !visibleNode.expanded)
@@ -359,8 +421,6 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
             event.preventDefault();
         }
     };
-
-    const isDropAllowed = (move: TreeViewMove) => !isDescendantOrSelf(parents, move.targetId, move.id) && (canDrop == null || canDrop(move));
 
     const renderNodes = (levelNodes: TreeNode[], level: number): ReactNode =>
         levelNodes.map((node) => {
@@ -470,6 +530,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                         data-checked={isChecked ? "" : undefined}
                         data-context={isContext ? "" : undefined}
                         data-dragging={draggedId === node.id ? "" : undefined}
+                        data-cut={cutId === node.id ? "" : undefined}
                         data-drop={drop}
                     >
                         {draggable && (
@@ -518,7 +579,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                             {node.path}
                         </span>
                         {renderActions != null && (
-                            <span className={styles.actions} onClick={stopPropagation} onKeyDown={stopPropagation}>
+                            <span className={styles.actions} data-actions-for={node.id} onClick={stopPropagation} onKeyDown={stopPropagation}>
                                 {renderActions(node)}
                             </span>
                         )}
@@ -536,7 +597,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
     return (
         <ul
             {...restProps}
-            ref={ref}
+            ref={rootRef}
             role="tree"
             aria-label={ariaLabel}
             data-checkable={ownerState.checkable ? "" : undefined}

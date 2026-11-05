@@ -1,5 +1,7 @@
 export { Avatar, type AvatarOwnerState, type AvatarProps, type AvatarSlotProps, getInitials } from "./components/avatar/Avatar";
 export { Badge, type BadgeOwnerState, type BadgeProps } from "./components/badge/Badge";
+export { BulkActionBar, type BulkActionBarAction, type BulkActionBarLabels } from "./components/bulkActionBar/BulkActionBar";
+export { type BulkActionBarOwnerState, type BulkActionBarProps, defaultBulkActionBarLabels } from "./components/bulkActionBar/BulkActionBar";
 export { Button, type ButtonOwnerState, type ButtonProps } from "./components/button/Button";
 export { Card, type CardOwnerState, type CardProps, type CardSlotProps, type CardSlots } from "./components/card/Card";
 export { Checkbox, type CheckboxOwnerState, type CheckboxProps, type CheckboxSlotProps } from "./components/checkbox/Checkbox";

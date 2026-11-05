@@ -43,6 +43,14 @@
     font-size: inherit;
 }
 
+.linkButton {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    line-height: inherit;
+}
+
 .current {
     color: var(--dextinity-breadcrumbs-current-color);
     font-weight: var(--dextinity-breadcrumbs-current-font-weight);

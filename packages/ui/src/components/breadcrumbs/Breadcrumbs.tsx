@@ -17,7 +17,7 @@ export interface BreadcrumbsItem {
     label: string;
     /** The destination of the level. */
     href?: string;
-    /** Called when the level is chosen, e.g. to navigate with the router. */
+    /** Called when the level is chosen, e.g. to navigate with the router. Without `href` and `render`, the level renders as a button. */
     onClick?: () => void;
     /** Render the link as a custom element, e.g. the router's link component. Ignored for the current level. */
     render?: LinkProps["render"];
@@ -180,7 +180,10 @@ export const Breadcrumbs = forwardRef<HTMLElement, BreadcrumbsProps>(function Br
                                 className={styles.link}
                                 color={variant === "label" ? "secondary" : "accent"}
                                 href={item.href}
-                                render={item.render}
+                                render={
+                                    item.render ??
+                                    (item.href == null && item.onClick != null ? <button type="button" className={styles.linkButton} /> : undefined)
+                                }
                                 onClick={
                                     item.onClick == null
                                         ? undefined

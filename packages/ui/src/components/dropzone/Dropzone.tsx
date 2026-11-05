@@ -24,6 +24,7 @@ export interface DropzoneUpload {
 }
 
 export interface DropzoneRejection {
+    /** The file that was left out. */
     file: File;
     /** `type` when the file doesn't match `accept`, `size` when it exceeds `maxSize`. */
     reason: "type" | "size";

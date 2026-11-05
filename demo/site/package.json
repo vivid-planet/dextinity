@@ -95,7 +95,7 @@
         "typed-scss-modules": "^8.1.1",
         "typescript": "^5.9.3",
         "vite-tsconfig-paths": "^6.1.1",
-        "vitest": "^5.0.5"
+        "vitest": "^5.1.0"
     },
     "engines": {
         "node": "24"

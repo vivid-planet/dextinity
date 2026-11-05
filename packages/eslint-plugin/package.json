@@ -40,7 +40,7 @@
         "prettier": "^3.9.10",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.72.1",
-        "vitest": "^5.0.5"
+        "vitest": "^5.1.0"
     },
     "peerDependencies": {
         "eslint": ">=9",

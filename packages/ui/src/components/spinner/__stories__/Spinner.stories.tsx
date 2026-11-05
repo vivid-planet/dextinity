@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Button } from "../../button/Button";
 import spinnerTokens from "../_tokens.scss?raw";
 import { Spinner } from "../Spinner";
 
@@ -54,4 +55,15 @@ export const ExtraLarge: Story = {
     args: {
         size: "xl",
     },
+};
+
+/**
+ * In the button that started the action: the `Button` shows the spinner itself with `loading`, at the same width.
+ */
+export const InButton: Story = {
+    render: () => (
+        <Button variant="contained" loading>
+            Save
+        </Button>
+    ),
 };

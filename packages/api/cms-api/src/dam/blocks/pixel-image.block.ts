@@ -26,7 +26,7 @@ class PixelImageBlockData extends BlockData {
     damFileId?: string;
 
     @Type(() => ImageCropArea)
-    cropArea?: ImageCropArea;
+    cropArea?: ImageCropArea | null;
 
     async transformToPlain() {
         return PixelImageBlockTransformerService;
@@ -75,7 +75,7 @@ class PixelImageBlockInput extends BlockInput {
     @Type(() => ImageCropAreaInput)
     @IsOptional()
     @ValidateNested()
-    cropArea?: ImageCropAreaInput;
+    cropArea?: ImageCropAreaInput | null;
 
     transformToBlockData(): PixelImageBlockData {
         return blockInputToData(PixelImageBlockData, this);

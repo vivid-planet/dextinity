@@ -111,7 +111,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
         // TODO fix typing: generated GraphQL files use null, we use undefined, e.g. title: string | null vs title?: string
         const damFile = data.damFile as unknown as PixelImageBlockData["damFile"];
 
-        return { damFile, cropArea: output.cropArea };
+        return { damFile, cropArea: output.cropArea ?? undefined };
     },
 
     dependencies: (state) => {

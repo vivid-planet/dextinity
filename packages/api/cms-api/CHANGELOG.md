@@ -1,5 +1,84 @@
 # @comet/cms-api
 
+## 10.13.1
+
+### Patch Changes
+
+- 795901f: Support `@kubernetes/client-node` v2
+
+    The peer dependency now allows `^1.0.0 || ^2.0.0`. Note that v2 requires Node.js 22.19.0 or later.
+
+- 94991f8: Update `jose` to v6
+
+## 10.13.0
+
+### Minor Changes
+
+- 7d8cbff: Add `formatValidationErrors()` for readable validation errors
+
+    It turns the tree of class-validator errors into a list of `{ path, message }`, with paths like `content.blocks[3].props.height`, so that an API client, for instance an AI agent, can fix its input.
+    Use it, for instance, in a query that only validates an input:
+
+    ```ts
+    const errors = await validate(plainToInstance(PageInput, input), { whitelist: true, forbidNonWhitelisted: true });
+
+    return formatValidationErrors(errors);
+    // [{ path: "content.blocks[3].props.height", message: "height must be an integer number" }]
+    ```
+
+- ad3f6d5: Make blocking files with an invalid license opt-in with `blockFilesWithInvalidLicense`
+
+    A project decides whether files whose license has expired or isn't valid yet are blocked. While the option is off, which is the default, such files are delivered as before blocking was added: their URLs don't answer `410 Gone`, blocks don't hide them or replace them with the fallback image, and the DAM hides its "Settings" action, where the fallback image is chosen.
+
+    A project that blocks such files since blocking was added needs to enable the option in the API and in the Admin:
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            enableLicenseFeature: true,
+            blockFilesWithInvalidLicense: true,
+            // ...
+        },
+    });
+    ```
+
+    ```tsx
+    <DextinityConfigProvider dam={{ enableLicenseFeature: true, blockFilesWithInvalidLicense: true /* ... */ }}>
+    ```
+
+- a476170: Never treat a royalty-free license as expired or not valid yet
+
+    Switching a file's license from rights managed to royalty free keeps its duration. Such a file was still blocked once the duration ended: the DAM answered `410 Gone`, blocks replaced it with the invalid-license fallback image, and the warnings reported an expired license.
+    A royalty-free license now ignores its duration: `isLicenseValid` returns `true`, `expirationDate` is `null`, and no license warning is created.
+
+## 10.12.0
+
+### Minor Changes
+
+- 6d552f0: Add the TipTap editor schema of a `TipTapRichTextBlock` field to the block meta
+
+    The field's entry in `block-meta.json` now carries a `tipTap` description next to `childBlocks`: the node and mark types of the editor schema, the text blocks with their styles, the default text block, the ordered and unordered list (`null` when disabled), the inline styles, the placeholders, the link block (`null` when links are disabled), `maxTextBlocks` and `listLevelMax`.
+    This allows tools outside the editor, for instance an AI agent, to build content the API accepts instead of falling back to TipTap's defaults.
+    The block's default description explains how to build content from it.
+
+### Patch Changes
+
+- 2735896: TipTap Rich Text Block: disable the horizontal rule
+
+    The schema contained StarterKit's `horizontalRule` node, so the editor inserted one when typing `---`, `___ ` or `*** ` at the start of a text block. Neither the site nor the mail renderer renders it, so it silently disappeared on the site. The API now rejects content containing a `horizontalRule`, and the editor no longer creates one.
+
+    Remove horizontal rules from existing content before saving it again, as saving fails otherwise.
+
+- a3ba4c9: Fix combining multiple fields in a `RedirectFilter`
+
+    A filter like `{ sourceType: { equal: "domain" }, active: { equal: true } }` only applied its last field, so `paginatedRedirects` also returned redirects that didn't match the other fields. All fields of a filter now have to match.
+
+    If your site's domain redirect middleware (`redirectToMainHost.ts`) only filters on `sourceType`, add `active: { equal: true }` to the filter, so redirects that are deactivated in the admin no longer redirect:
+
+    ```ts
+    filter: { sourceType: { equal: "domain" }, active: { equal: true } },
+    ```
+
 ## 10.11.0
 
 ### Minor Changes

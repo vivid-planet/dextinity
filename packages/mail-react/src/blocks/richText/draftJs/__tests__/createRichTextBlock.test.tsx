@@ -88,6 +88,16 @@ describe("createRichTextBlock — base rendering", () => {
 
         expect(markup.match(/<mj-text/g)).toHaveLength(2);
     });
+
+    it("sets the textClassName on every text component, including the one holding a list", () => {
+        const data = createBlockData([
+            createDraftBlock({ key: "a", text: "Paragraph" }),
+            createDraftBlock({ key: "b", text: "Item", type: "unordered-list-item" }),
+        ]);
+        const markup = renderWithTheme(<MjmlRichTextBlock data={data} textClassName="blockClass" />);
+
+        expect(markup.match(/<mj-text[^>]*class="[^"]*blockClass/g)).toHaveLength(2);
+    });
 });
 
 describe("createRichTextBlock — block type configuration", () => {

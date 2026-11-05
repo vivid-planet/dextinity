@@ -90,6 +90,11 @@
         {
             "groupName": "OpenTelemetry",
             "matchPackageNames": ["@opentelemetry/**"]
+        },
+        {
+            "description": "The changesets GitHub action and the changesets CLI must be updated together to stay compatible",
+            "groupName": "Changesets",
+            "matchPackageNames": ["@changesets/cli", "changesets/action"]
         }
     ],
     "regexManagers": [

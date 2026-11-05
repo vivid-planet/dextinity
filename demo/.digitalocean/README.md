@@ -32,6 +32,7 @@ Like the Starter's, the components are built with App Platform's Node.js buildpa
 | `DEMO_S3_ACCESS_KEY_ID`, `DEMO_S3_SECRET_ACCESS_KEY`                                                                           | secrets  | The Spaces access key                                                                                                                   |
 | `DEMO_IMGPROXY_KEY`, `DEMO_IMGPROXY_SALT`                                                                                      | secrets  | `openssl rand -hex 32` each                                                                                                             |
 | `DEMO_API_BASIC_AUTH_SYSTEM_USER_PASSWORD`, `DEMO_DAM_SECRET`, `DEMO_FILE_UPLOADS_DOWNLOAD_SECRET`, `DEMO_SITE_PREVIEW_SECRET` | secrets  | At least 16 characters each, e.g. `openssl rand -hex 16`                                                                                |
+| `DEMO_MUI_LICENSE_KEY`                                                                                                         | secret   | MUI X license key, without it the admin's data grids show a "MUI X Missing license key" watermark                                       |
 
 ## Deploying
 

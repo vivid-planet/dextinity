@@ -45,7 +45,7 @@ export function createTipTapRichTextBlock<TLinkTypes extends Record<string, unkn
     const marks = options.marks ?? {};
     const inlineStyles = options.inlineStyles ?? {};
 
-    function MjmlTipTapRichTextBlock({ data }: TipTapRichTextBlockProps): ReactNode {
+    function MjmlTipTapRichTextBlock({ data, textClassName }: TipTapRichTextBlockProps): ReactNode {
         return renderTipTapRichTextContent({
             tipTapContent: data.tipTapContent,
             textBlocks,
@@ -54,10 +54,11 @@ export function createTipTapRichTextBlock<TLinkTypes extends Record<string, unkn
             marks,
             inlineStyles,
             blockTextComponent: MjmlBlockText,
+            textClassName,
         });
     }
 
-    function HtmlTipTapRichTextBlock({ data }: TipTapRichTextBlockProps): ReactNode {
+    function HtmlTipTapRichTextBlock({ data, textClassName }: TipTapRichTextBlockProps): ReactNode {
         return renderTipTapRichTextContent({
             tipTapContent: data.tipTapContent,
             textBlocks,
@@ -66,6 +67,7 @@ export function createTipTapRichTextBlock<TLinkTypes extends Record<string, unkn
             marks,
             inlineStyles,
             blockTextComponent: HtmlBlockText,
+            textClassName,
         });
     }
 

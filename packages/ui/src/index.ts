@@ -1,5 +1,7 @@
 export { Avatar, type AvatarOwnerState, type AvatarProps, type AvatarSlotProps, getInitials } from "./components/avatar/Avatar";
 export { Badge, type BadgeOwnerState, type BadgeProps } from "./components/badge/Badge";
+export { Breadcrumbs, type BreadcrumbsItem, type BreadcrumbsLabels } from "./components/breadcrumbs/Breadcrumbs";
+export { type BreadcrumbsOwnerState, type BreadcrumbsProps, type BreadcrumbsSeparator } from "./components/breadcrumbs/Breadcrumbs";
 export { BulkActionBar, type BulkActionBarAction, type BulkActionBarLabels } from "./components/bulkActionBar/BulkActionBar";
 export { type BulkActionBarOwnerState, type BulkActionBarProps, defaultBulkActionBarLabels } from "./components/bulkActionBar/BulkActionBar";
 export { Button, type ButtonOwnerState, type ButtonProps } from "./components/button/Button";

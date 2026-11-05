@@ -78,7 +78,8 @@
         },
         "packages/site/site-nextjs": {
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignore": ["./src/**/*.generated.ts"]
+            "ignore": ["./src/**/*.generated.ts"],
+            "ignoreDependencies": ["clsx", "fast-equals", "scroll-into-view-if-needed", "usehooks-ts"]
         },
         "packages/mail-react": {
             "project": ["./src/**/*.{ts,tsx}"],

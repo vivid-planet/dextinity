@@ -1,0 +1,39 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    --dextinity-side-nav-width: 300px;
+    --dextinity-side-nav-width-collapsed: 86px;
+    // Glass panel over the ambient light field; solid in high contrast
+    --dextinity-side-nav-background: var(--dextinity-material-glass);
+    --dextinity-side-nav-blur: var(--dextinity-material-blur);
+    --dextinity-side-nav-shadow:
+        inset 0 1px 0 var(--dextinity-material-highlight), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge),
+        var(--dextinity-shadow-2);
+    --dextinity-side-nav-radius: var(--dextinity-radius-panel);
+    // Between groups and above the footer
+    --dextinity-side-nav-separator-color: var(--dextinity-material-edge);
+
+    --dextinity-side-nav-header-padding: 22px 22px 14px;
+    --dextinity-side-nav-logo-height: 29px;
+    --dextinity-side-nav-title-color: var(--dextinity-color-text);
+    --dextinity-side-nav-title-font-size: 22px;
+    // Tenant and environment below the app name
+    --dextinity-side-nav-subtitle-color: var(--dextinity-color-text-tertiary);
+    --dextinity-side-nav-group-label-color: var(--dextinity-color-text-tertiary);
+
+    --dextinity-side-nav-item-height: var(--dextinity-density-nav-item-height);
+    --dextinity-side-nav-item-radius: var(--dextinity-radius-field);
+    --dextinity-side-nav-item-font-size: 13.5px;
+    --dextinity-side-nav-item-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-side-nav-item-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-side-nav-item-background-hover: var(--dextinity-material-glass-strong);
+    // Text of an entry above the active one
+    --dextinity-side-nav-item-ancestor-foreground: var(--dextinity-color-text);
+    --dextinity-side-nav-item-active-background: var(--dextinity-gradient-brand);
+    --dextinity-side-nav-item-active-foreground: var(--dextinity-color-accent-foreground);
+    --dextinity-side-nav-item-active-shadow: 0 10px 24px -12px var(--dextinity-color-accent-glow), inset 0 1px 0 oklch(1 0 0 / 0.2);
+    // Vertical line that leads the sub-entries
+    --dextinity-side-nav-guide-color: var(--dextinity-color-line-strong);
+    --dextinity-side-nav-chevron-color: var(--dextinity-color-text-subtle);
+    --dextinity-side-nav-collapse-foreground: var(--dextinity-color-text-tertiary);
+}

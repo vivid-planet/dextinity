@@ -1,0 +1,27 @@
+.root {
+    display: inline-flex;
+    block-size: 100%;
+}
+
+.positive,
+.negative {
+    block-size: 100%;
+}
+
+.negative {
+    display: none;
+}
+
+:where([data-dextinity-color-scheme="dark"], [data-dextinity-color-scheme="high-contrast"]) .root {
+    .positive {
+        display: none;
+    }
+
+    .negative {
+        display: block;
+    }
+}
+
+.sign {
+    block-size: 28px;
+}

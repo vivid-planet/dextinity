@@ -9,7 +9,9 @@ import styles from "./SegmentedControl.module.scss";
 
 type SegmentedControlSize = "default" | "small";
 
+/** One option of `SegmentedControl`. */
 export interface SegmentedControlOption<Value extends string = string> {
+    /** Identifies the option; `value` and `onChange` use it. */
     value: Value;
     /** The visible text. Leave it out for an icon-only option and set `aria-label` instead. */
     label?: ReactNode;

@@ -4,5 +4,7 @@ export { type IconName, iconNames } from "./components/icon/iconNames";
 export { Kbd, type KbdOwnerState, type KbdProps } from "./components/kbd/Kbd";
 export { Spinner, type SpinnerOwnerState, type SpinnerProps } from "./components/spinner/Spinner";
 export { Theme, type ThemeProps } from "./components/theme/Theme";
+export { Tooltip, type TooltipOwnerState, type TooltipProps, type TooltipSlotProps } from "./components/tooltip/Tooltip";
 export { Typography, type TypographyOwnerState, type TypographyProps } from "./components/typography/Typography";
 export type { ThemeBrand, ThemeColorScheme, ThemeDensity } from "./theme/types";
+export { useThemePortalContainer } from "./utils/themePortalContainer";

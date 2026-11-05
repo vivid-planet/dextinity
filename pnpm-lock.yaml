@@ -2243,8 +2243,8 @@ importers:
         specifier: ^10.0.1
         version: 10.0.1
       jose:
-        specifier: ^6.2.14
-        version: 6.2.14
+        specifier: ^6.2.15
+        version: 6.2.15
       jsdom:
         specifier: ^28.1.0
         version: 28.1.0(@noble/hashes@1.8.0)(supports-color@8.1.1)
@@ -2673,8 +2673,8 @@ importers:
         specifier: workspace:*
         version: link:../site-react
       jose:
-        specifier: ^6.2.14
-        version: 6.2.14
+        specifier: ^6.2.15
+        version: 6.2.15
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -2752,8 +2752,8 @@ importers:
         specifier: ^6.2.2
         version: 6.2.2
       jose:
-        specifier: ^6.2.14
-        version: 6.2.14
+        specifier: ^6.2.15
+        version: 6.2.15
       scroll-into-view-if-needed:
         specifier: ^3.1.0
         version: 3.1.0
@@ -13954,8 +13954,8 @@ packages:
   jose@5.10.0:
     resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
 
-  jose@6.2.14:
-    resolution: {integrity: sha512-3JasLuki1NRLQvY4wCoC37KZk4qxoBx2k2aFqLxT84IezqW0bkJKnNtxnZj/Fu1xsQivoc/lytxaRHJoGLjJ1A==}
+  jose@6.2.15:
+    resolution: {integrity: sha512-qdF6ewcZARtef63fJ9AKKZPgxw+t7USH6HLXYcD4CrdmSvDp79rpJSPFEKc90QBeGS63u1KQtN2MZQHC0yDIzA==}
 
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
@@ -32202,7 +32202,7 @@ snapshots:
 
   jose@5.10.0: {}
 
-  jose@6.2.14: {}
+  jose@6.2.15: {}
 
   joycon@3.1.1: {}
 
@@ -32372,7 +32372,7 @@ snapshots:
     dependencies:
       '@types/jsonwebtoken': 9.0.10
       debug: 4.4.3(supports-color@8.1.1)
-      jose: 6.2.14
+      jose: 6.2.15
       limiter: 1.1.5
       lru-cache: 11.5.3
       lru-memoizer: 3.0.0
@@ -34103,7 +34103,7 @@ snapshots:
   oidc-provider@9.12.2(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
-      jose: 6.2.14
+      jose: 6.2.15
       koa: 3.2.1
     transitivePeerDependencies:
       - supports-color
@@ -34170,7 +34170,7 @@ snapshots:
 
   openid-client@6.8.8:
     dependencies:
-      jose: 6.2.14
+      jose: 6.2.15
       oauth4webapi: 3.8.8
 
   optimism@0.18.1:

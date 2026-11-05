@@ -84,7 +84,8 @@
         box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-field-line-hover);
     }
 
-    &:focus-within {
+    &:focus-within,
+    &:has([aria-expanded="true"]) {
         background: var(--dextinity-field-background-focus);
         box-shadow:
             inset 0 0 0 var(--dextinity-field-line-width-focus) var(--dextinity-field-line-focus),
@@ -174,4 +175,9 @@
     .root[data-state="success"] > & {
         color: var(--dextinity-field-message-color-success);
     }
+}
+
+// Applied by the high-contrast color scheme: focus wins over the validation state, so the keyboard position stays visible
+:global([data-dextinity-color-scheme="high-contrast"]) .root:not([data-disabled]) > .box:is(:focus-within, :has([aria-expanded="true"])) {
+    box-shadow: inset 0 0 0 var(--dextinity-field-line-width-focus) var(--dextinity-color-focus);
 }

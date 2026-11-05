@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { type ChangeEvent, forwardRef, type TextareaHTMLAttributes, useCallback, useLayoutEffect, useRef } from "react";
+import { type ChangeEvent, forwardRef, type TextareaHTMLAttributes, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 import { Field, type FieldBaseProps, type FieldOwnerState, type FieldProps } from "../field/Field";
 import styles from "./Textarea.module.scss";
@@ -126,6 +126,28 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
             element.style.removeProperty("overflow-y");
         }
     }, [value, autoResize, rows, maxRows]);
+
+    useEffect(() => {
+        const element = elementRef.current;
+        if (element == null || !autoResize || typeof ResizeObserver === "undefined") {
+            return;
+        }
+        let width = element.clientWidth;
+        let frame = 0;
+        const observer = new ResizeObserver(() => {
+            if (element.clientWidth !== width) {
+                width = element.clientWidth;
+                cancelAnimationFrame(frame);
+                // Resizing inside the observer callback would trigger a ResizeObserver loop error
+                frame = requestAnimationFrame(() => fitHeight(element, rows, maxRows));
+            }
+        });
+        observer.observe(element);
+        return () => {
+            observer.disconnect();
+            cancelAnimationFrame(frame);
+        };
+    }, [autoResize, rows, maxRows]);
 
     return (
         <Field

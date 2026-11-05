@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/_tokens.scss?raw";
@@ -88,6 +88,22 @@ export const MaxRows: Story = {
     args: {
         maxRows: 4,
         value: "Research\nConcept\nWireframes\nPrototypes\nUser tests\nHandover",
+    },
+};
+
+/**
+ * The height follows the width too: a narrower field wraps the text onto more lines and grows.
+ */
+export const NarrowerWidth: Story = {
+    args: {
+        value: "Design interfaces for the admin, AI hub, and chatbot, together with research, concept, and user tests.",
+    },
+    play: async ({ canvas, canvasElement }) => {
+        const textarea = canvas.getByRole("textbox", { name: "Tasks" });
+        const root = canvasElement.querySelector<HTMLElement>(".dextinityTextarea");
+        const initialHeight = textarea.getBoundingClientRect().height;
+        root?.style.setProperty("inline-size", "160px");
+        await waitFor(() => expect(textarea.getBoundingClientRect().height).toBeGreaterThan(initialHeight));
     },
 };
 

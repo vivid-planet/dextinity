@@ -2675,12 +2675,18 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      commander:
+        specifier: ^15.0.0
+        version: 15.0.0
       fast-equals:
         specifier: ^6.2.2
         version: 6.2.2
       jose:
         specifier: ^6.2.15
         version: 6.2.15
+      mime:
+        specifier: ^4.1.2
+        version: 4.1.2
       scroll-into-view-if-needed:
         specifier: ^3.1.0
         version: 3.1.0
@@ -2691,6 +2697,12 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1(react@19.3.1)
     devDependencies:
+      '@aws-sdk/client-s3':
+        specifier: ^3.1149.0
+        version: 3.1161.0
+      '@azure/storage-blob':
+        specifier: ^12.34.0
+        version: 12.34.0(supports-color@8.1.1)
       '@dextinity/cli':
         specifier: workspace:*
         version: link:../../cli
@@ -2706,6 +2718,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^6.1.2
         version: 6.1.2(vite@8.3.5(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.107.1)(terser@5.51.2)(yaml@2.9.1))
+      aws-sdk-client-mock:
+        specifier: ^4.1.0
+        version: 4.1.0
       chokidar-cli:
         specifier: ^3.0.0
         version: 3.0.0

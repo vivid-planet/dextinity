@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -8,7 +8,7 @@ import { Icon } from "../../icon/Icon";
 import menuTokens from "../_tokens.scss?raw";
 import { Menu } from "../Menu";
 import { MenuItem } from "../MenuItem";
-import { MenuSubmenu } from "../MenuSubmenu";
+import { MenuSubmenu, type MenuSubmenuProps } from "../MenuSubmenu";
 import styles from "./Menu.stories.module.scss";
 
 function InOpenMenu({ children }: { children: ReactNode }) {
@@ -24,6 +24,20 @@ function InOpenMenu({ children }: { children: ReactNode }) {
         >
             {children}
         </Menu>
+    );
+}
+
+function ControlledSubmenu(props: MenuSubmenuProps) {
+    const [open, setOpen] = useState(props.open);
+    return (
+        <MenuSubmenu
+            {...props}
+            open={open}
+            onOpenChange={(nextOpen) => {
+                setOpen(nextOpen);
+                props.onOpenChange(nextOpen);
+            }}
+        />
     );
 }
 
@@ -45,8 +59,11 @@ const meta = {
         ),
     ],
     parameters: { tokens: menuTokens },
+    render: (args) => <ControlledSubmenu {...args} />,
     args: {
         label: "Move to",
+        open: false,
+        onOpenChange: fn(),
         icon: <Icon name="folder" />,
         children: (
             <>
@@ -75,19 +92,17 @@ type Story = StoryObj<typeof meta>;
  * - One level of nesting at most.
  */
 export const Default: Story = {
-    play: async () => {
+    play: async ({ args }) => {
         const trigger = await screen.findByRole("menuitem", { name: "Move to" });
         await userEvent.click(trigger);
         const nestedItem = await screen.findByRole("menuitem", { name: "Images" });
         await waitFor(() => expect(nestedItem).toBeVisible());
+        await expect(args.onOpenChange).toHaveBeenCalledWith(true);
     },
 };
 
-/**
- * With `open`, the consumer owns the open state.
- */
 export const Open: Story = {
-    args: { open: true, onOpenChange: fn() },
+    args: { open: true },
 };
 
 export const Disabled: Story = {

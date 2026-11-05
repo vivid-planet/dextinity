@@ -34,10 +34,10 @@ export interface MenuSubmenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "
     children: ReactNode;
     /** An icon before the label. */
     icon?: ReactNode;
-    /** Whether the submenu is open. Without it, hover, click, and the arrow keys open and close it. */
-    open?: boolean;
+    /** Whether the submenu is open. */
+    open: boolean;
     /** Called when hover, click, the arrow keys, or Escape request to open or close the submenu. */
-    onOpenChange?: (open: boolean) => void;
+    onOpenChange: (open: boolean) => void;
     /**
      * Keeps the submenu from opening.
      *
@@ -87,11 +87,7 @@ export const MenuSubmenu = forwardRef<HTMLDivElement, MenuSubmenuProps>(function
     });
 
     return (
-        <BaseMenu.SubmenuRoot
-            open={open}
-            onOpenChange={onOpenChange == null ? undefined : (nextOpen) => onOpenChange(nextOpen)}
-            disabled={ownerState.disabled}
-        >
+        <BaseMenu.SubmenuRoot open={open} onOpenChange={(nextOpen) => onOpenChange(nextOpen)} disabled={ownerState.disabled}>
             <BaseMenu.SubmenuTrigger
                 {...restProps}
                 ref={(element: HTMLDivElement | null) => {

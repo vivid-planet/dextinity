@@ -26,6 +26,17 @@ const rowMenuItems = (
     </MenuGroup>
 );
 
+function MoveToSubmenu() {
+    const [open, setOpen] = useState(false);
+    return (
+        <MenuSubmenu label="Move to" icon={<Icon name="folder" />} open={open} onOpenChange={setOpen}>
+            <MenuItem label="Images" icon={<Icon name="folder" />} onClick={fn()} />
+            <MenuItem label="Documents" icon={<Icon name="folder" />} onClick={fn()} />
+            <MenuItem label="Videos" icon={<Icon name="folder" />} onClick={fn()} />
+        </MenuSubmenu>
+    );
+}
+
 function ControlledMenu(props: MenuProps) {
     const [open, setOpen] = useState(props.open);
     return (
@@ -157,11 +168,7 @@ export const WithSubmenu: Story = {
         ),
         children: (
             <MenuGroup label="3 items">
-                <MenuSubmenu label="Move to" icon={<Icon name="folder" />}>
-                    <MenuItem label="Images" icon={<Icon name="folder" />} onClick={fn()} />
-                    <MenuItem label="Documents" icon={<Icon name="folder" />} onClick={fn()} />
-                    <MenuItem label="Videos" icon={<Icon name="folder" />} onClick={fn()} />
-                </MenuSubmenu>
+                <MoveToSubmenu />
                 <MenuItem label="Download" icon={<Icon name="download" />} onClick={fn()} />
                 <MenuSeparator />
                 <MenuItem label="Delete" icon={<Icon name="trash" />} shortcut="⌘⌫" color="error" onClick={fn()} />

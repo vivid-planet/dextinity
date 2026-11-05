@@ -24,9 +24,13 @@ export interface SaveStateSlotProps {
 }
 
 export interface SaveStateLabels {
+    /** Shown when everything is saved. */
     saved: string;
+    /** Shown when there are unsaved changes. */
     dirty: string;
+    /** Shown while saving is in progress. */
     saving: string;
+    /** Shown when saving failed. */
     error: string;
     /** The tooltip with the time of the last save. `{time}` is replaced with the relative time, e.g. "2 minutes ago". */
     savedAt: string;

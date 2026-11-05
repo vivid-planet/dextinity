@@ -1,0 +1,13 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    --dextinity-breadcrumbs-gap: 8px;
+    --dextinity-breadcrumbs-font-size: 13px;
+    --dextinity-breadcrumbs-current-color: var(--dextinity-color-text);
+    --dextinity-breadcrumbs-current-font-weight: 600;
+    --dextinity-breadcrumbs-separator-color: var(--dextinity-color-text-subtle);
+    --dextinity-breadcrumbs-more-button-radius: var(--dextinity-radius-item);
+    --dextinity-breadcrumbs-more-button-hover-background: var(--dextinity-color-surface-sunken);
+    // The text of the `label` variant: the mono label line above a page title
+    --dextinity-breadcrumbs-label-color: var(--dextinity-color-text-tertiary);
+}

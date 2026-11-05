@@ -5,6 +5,7 @@ const config: StorybookConfig = {
     stories: ["../src/**/*.mdx", "../src/**/__stories__/*.stories.tsx"],
     addons: ["@storybook/addon-docs", "@storybook/addon-mcp", "@storybook/addon-vitest", "storybook-addon-tag-badges"],
     framework: "@storybook/react-vite",
+    staticDirs: [{ from: "../src/docs/theme/__stories__/customization", to: "/customization" }],
     tags: {
         development: { defaultFilterSelection: "exclude" },
     },

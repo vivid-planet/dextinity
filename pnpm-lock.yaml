@@ -669,7 +669,7 @@ importers:
   demo/site:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.1149.0
+        specifier: ^3.1161.0
         version: 3.1161.0
       '@base-ui/react':
         specifier: ^1.9.0
@@ -2701,7 +2701,7 @@ importers:
         version: 3.1.1(react@19.3.1)
     devDependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.1149.0
+        specifier: ^3.1161.0
         version: 3.1161.0
       '@azure/storage-blob':
         specifier: ^12.34.0

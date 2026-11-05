@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import { FormattedMessage } from "react-intl";
 
 import type { PixelImageBlockData, PixelImageBlockInput } from "../blocks.generated";
+import { isUsableCropArea } from "../common/image/cropArea";
 import { useDextinityConfig } from "../config/DextinityConfigContext";
 import { useDamBasePath } from "../dam/config/damConfig";
 import { useDamAcceptedMimeTypes } from "../dam/config/useDamAcceptedMimeTypes";
@@ -111,7 +112,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
         // TODO fix typing: generated GraphQL files use null, we use undefined, e.g. title: string | null vs title?: string
         const damFile = data.damFile as unknown as PixelImageBlockData["damFile"];
 
-        return { damFile, cropArea: output.cropArea };
+        return { damFile, cropArea: output.cropArea && isUsableCropArea(output.cropArea) ? output.cropArea : undefined };
     },
 
     dependencies: (state) => {

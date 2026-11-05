@@ -5,7 +5,9 @@ import { type ComponentPropsWithoutRef, type ForwardedRef, forwardRef, type Reac
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./Tabs.module.scss";
 
+/** One tab of `Tabs`. */
 export interface TabsItem<Value extends string = string> {
+    /** Identifies the tab; `value` and `onChange` use it. */
     value: Value;
     /** The tab's label, one short word or two. */
     label: ReactNode;

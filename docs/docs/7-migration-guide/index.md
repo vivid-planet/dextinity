@@ -18,7 +18,7 @@ Each guide contains a sample prompt to get started.
 :::tip
 
 The `dextinity-major-migration` agent skill guides the agent through a major migration, including locating the guide and choosing the target version.
-Install it with [`install-agent-features`](../guides/installing-agent-features).
+Install it with [`install-agent-features`](../4-guides/5-installing-agent-features.md).
 
 :::
 

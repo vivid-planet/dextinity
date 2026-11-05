@@ -3,6 +3,8 @@ export { Badge, type BadgeOwnerState, type BadgeProps } from "./components/badge
 export { Button, type ButtonOwnerState, type ButtonProps } from "./components/button/Button";
 export { Checkbox, type CheckboxOwnerState, type CheckboxProps, type CheckboxSlotProps } from "./components/checkbox/Checkbox";
 export { Chip, type ChipLabels, type ChipOwnerState, type ChipProps, type ChipSlotProps } from "./components/chip/Chip";
+export { ConfirmDialog, type ConfirmDialogOwnerState, type ConfirmDialogProps } from "./components/confirmDialog/ConfirmDialog";
+export { type ConfirmDialogSlotProps } from "./components/confirmDialog/ConfirmDialog";
 export { Dialog, type DialogOwnerState, type DialogProps, type DialogSlotProps } from "./components/dialog/Dialog";
 export { EmptyState, type EmptyStateOwnerState, type EmptyStateProps } from "./components/emptyState/EmptyState";
 export { type EmptyStateSlotProps, type EmptyStateSlots } from "./components/emptyState/EmptyState";

@@ -172,30 +172,26 @@ export function createBrevoContactResolver({
             );
 
             const assignedListIds = contact.listIds;
-            const mainListIds = (await this.targetGroupRepository.find({ brevoId: { $in: assignedListIds }, isMainList: true })).map(
-                (targetGroup) => targetGroup.brevoId,
-            );
-            const updatedNonMainListIds = await this.brevoContactsService.getTargetGroupIdsForExistingContact({
-                contact,
-            });
 
-            const testTargetGroup = await this.targetGroupRepository.findOne({ scope, isMainList: false, isTestList: true });
-            const contactIncludesTestList = testTargetGroup?.brevoId ? contact.listIds.includes(testTargetGroup.brevoId) : false;
+            const mainTargetGroupsOfOtherScopes = await this.findMainTargetGroupsOfOtherScopesInSameBrevoAccount({ contact, scope });
+            const scopesOfContact = [scope, ...mainTargetGroupsOfOtherScopes.map((targetGroup) => targetGroup.scope)];
 
-            if (testTargetGroup && contactIncludesTestList) {
-                const testListId = testTargetGroup.brevoId;
-                if (!updatedNonMainListIds.includes(testListId)) {
-                    updatedNonMainListIds.push(testListId);
-                }
+            const updatedNonMainListIds: number[] = [];
+            const evaluatedListIds: number[] = [];
+            for (const scopeOfContact of scopesOfContact) {
+                const targetGroupsOfScope = await this.targetGroupRepository.find({ scope: scopeOfContact, isMainList: false, isTestList: false });
+                evaluatedListIds.push(...targetGroupsOfScope.map((targetGroup) => targetGroup.brevoId));
+                updatedNonMainListIds.push(
+                    ...(await this.brevoContactsService.getTargetGroupIdsForExistingContact({ contact, scope: scopeOfContact })),
+                );
             }
 
             // update contact again with updated list ids depending on new attributes
-
             const contactWithUpdatedLists = await this.brevoContactsApiService.updateContact(
                 id,
                 {
-                    listIds: updatedNonMainListIds.filter((listId) => !assignedListIds.includes(listId)),
-                    unlinkListIds: assignedListIds.filter((listId) => !updatedNonMainListIds.includes(listId) && !mainListIds.includes(listId)),
+                    listIds: [...new Set(updatedNonMainListIds.filter((listId) => !assignedListIds.includes(listId)))],
+                    unlinkListIds: assignedListIds.filter((listId) => evaluatedListIds.includes(listId) && !updatedNonMainListIds.includes(listId)),
                 },
                 scope,
             );
@@ -285,6 +281,23 @@ export function createBrevoContactResolver({
                 return false;
             }
 
+            const mainTargetGroupsOfOtherScopes = await this.findMainTargetGroupsOfOtherScopesInSameBrevoAccount({ contact, scope });
+
+            if (mainTargetGroupsOfOtherScopes.length > 0) {
+                const targetGroupsOfScope = await this.targetGroupRepository.find({ scope, isTestList: false });
+                const listIdsOfScope = targetGroupsOfScope.flatMap((targetGroup) =>
+                    targetGroup.assignedContactsTargetGroupBrevoId
+                        ? [targetGroup.brevoId, targetGroup.assignedContactsTargetGroupBrevoId]
+                        : [targetGroup.brevoId],
+                );
+
+                return this.brevoContactsApiService.removeContactFromLists({
+                    contact,
+                    unlinkListIds: contact.listIds.filter((listId) => listIdsOfScope.includes(listId)),
+                    scope,
+                });
+            }
+
             const where: FilterQuery<TargetGroupInterface> = { scope, isMainList: false, isTestList: true };
             const testTargetGroup = await this.targetGroupRepository.findOne(where);
             const contactIncludesTestList = testTargetGroup?.brevoId ? contact.listIds.includes(testTargetGroup.brevoId) : false;
@@ -350,6 +363,23 @@ export function createBrevoContactResolver({
             scope: typeof Scope,
         ): Promise<SubscribeResponse> {
             return this.brevoContactsService.subscribeBrevoContact(data, scope);
+        }
+
+        private async findMainTargetGroupsOfOtherScopesInSameBrevoAccount({
+            contact,
+            scope,
+        }: {
+            contact: BrevoContactInterface;
+            scope: EmailCampaignScopeInterface;
+        }): Promise<TargetGroupInterface[]> {
+            const mainTargetGroup = await this.targetGroupRepository.findOne({ scope, isMainList: true });
+            const mainTargetGroupsOfContact = await this.targetGroupRepository.find({
+                brevoId: { $in: contact.listIds.filter((listId) => listId !== mainTargetGroup?.brevoId) },
+                isMainList: true,
+            });
+
+            const { apiKey } = this.config.brevo.resolveConfig(scope);
+            return mainTargetGroupsOfContact.filter((targetGroup) => this.config.brevo.resolveConfig(targetGroup.scope).apiKey === apiKey);
         }
     }
 

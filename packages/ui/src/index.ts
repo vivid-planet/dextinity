@@ -1,3 +1,6 @@
+export type { AssetBrowserAsset, AssetBrowserFolder, AssetBrowserLabels } from "./components/assetBrowser/AssetBrowser";
+export type { AssetBrowserView } from "./components/assetBrowser/AssetBrowser";
+export { AssetBrowser, type AssetBrowserOwnerState, type AssetBrowserProps } from "./components/assetBrowser/AssetBrowser";
 export type { AssetThumbnailBadge, AssetThumbnailLabels, AssetThumbnailRatio } from "./components/assetThumbnail/AssetThumbnail";
 export type { AssetThumbnailType, FocalPoint } from "./components/assetThumbnail/AssetThumbnail";
 export { AssetThumbnail, type AssetThumbnailOwnerState, type AssetThumbnailProps } from "./components/assetThumbnail/AssetThumbnail";

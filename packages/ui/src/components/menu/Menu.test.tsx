@@ -25,7 +25,7 @@ describe("Menu", () => {
                     <MenuRadioGroup value="dark" onChange={vi.fn()}>
                         <MenuRadioItem value="dark" label="Dark" />
                     </MenuRadioGroup>
-                    <MenuSubmenu label="Move to">
+                    <MenuSubmenu label="Move to" open={false} onOpenChange={vi.fn()}>
                         <MenuItem label="Images" onClick={vi.fn()} />
                     </MenuSubmenu>
                 </Menu>

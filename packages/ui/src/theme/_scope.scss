@@ -1,0 +1,11 @@
+// Component tokens derive from semantic and density tokens, so they are declared on every theme boundary:
+// a nested `Theme` with another brand, color scheme, or density resolves them against its own values.
+@mixin component-tokens {
+    @layer dextinity {
+        :root,
+        [data-dextinity-color-scheme],
+        [data-dextinity-density] {
+            @content;
+        }
+    }
+}

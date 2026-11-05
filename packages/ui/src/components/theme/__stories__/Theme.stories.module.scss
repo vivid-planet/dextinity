@@ -1,0 +1,21 @@
+.example {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--dextinity-space-3);
+    padding: var(--dextinity-space-6);
+    border-radius: var(--dextinity-radius-panel);
+    background: var(--dextinity-color-canvas);
+    color: var(--dextinity-color-text);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-space-2);
+}
+
+.nested {
+    display: grid;
+    gap: var(--dextinity-space-4);
+}

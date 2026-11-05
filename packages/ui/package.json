@@ -34,6 +34,7 @@
         "dev": "pnpm run clean && run-p dev:vite dev:types",
         "dev:types": "tsc -p tsconfig.build.json --emitDeclarationOnly --watch --preserveWatchOutput",
         "dev:vite": "vite build --watch",
+        "generate:icons": "node scripts/generateIcons.ts && prettier --write src/components/icon/iconNames.ts",
         "lint": "run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",
         "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",

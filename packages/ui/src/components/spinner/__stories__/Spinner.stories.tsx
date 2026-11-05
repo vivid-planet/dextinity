@@ -5,7 +5,7 @@ import { Spinner } from "../Spinner";
 
 const meta = {
     component: Spinner,
-    title: "Components/Spinner",
+    title: "Building blocks/Loading & save state/Spinner",
     decorators: [themeDecorator],
     args: {
         "aria-label": "Loading",

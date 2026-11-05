@@ -1,0 +1,63 @@
+// Fixed metrics per density level. The font size stays the same; click targets never go below 24px.
+@layer dextinity {
+    :root,
+    [data-dextinity-density="standard"] {
+        --dextinity-density-field-height: 40px;
+        --dextinity-density-control-height: 34px;
+        --dextinity-density-control-height-small: 30px;
+        --dextinity-density-control-padding: 15px;
+        --dextinity-density-control-padding-small: 11px;
+        --dextinity-density-icon-button-size: 34px;
+        --dextinity-density-icon-button-size-small: 28px;
+        --dextinity-density-segment-height: 32px;
+        --dextinity-density-chip-height: 32px;
+        --dextinity-density-tab-height: 44px;
+        --dextinity-density-menu-item-height: 36px;
+        --dextinity-density-table-row-height: 58px;
+        --dextinity-density-tree-row-height: 44px;
+        --dextinity-density-nav-item-height: 40px;
+        --dextinity-density-form-gap: 20px;
+        --dextinity-density-panel-padding: 16px;
+        --dextinity-density-list-item-padding: 12px;
+    }
+
+    [data-dextinity-density="comfortable"] {
+        --dextinity-density-field-height: 46px;
+        --dextinity-density-control-height: 40px;
+        --dextinity-density-control-height-small: 34px;
+        --dextinity-density-control-padding: 18px;
+        --dextinity-density-control-padding-small: 13px;
+        --dextinity-density-icon-button-size: 40px;
+        --dextinity-density-icon-button-size-small: 32px;
+        --dextinity-density-segment-height: 38px;
+        --dextinity-density-chip-height: 38px;
+        --dextinity-density-tab-height: 50px;
+        --dextinity-density-menu-item-height: 42px;
+        --dextinity-density-table-row-height: 66px;
+        --dextinity-density-tree-row-height: 50px;
+        --dextinity-density-nav-item-height: 46px;
+        --dextinity-density-form-gap: 26px;
+        --dextinity-density-panel-padding: 20px;
+        --dextinity-density-list-item-padding: 16px;
+    }
+
+    [data-dextinity-density="compact"] {
+        --dextinity-density-field-height: 34px;
+        --dextinity-density-control-height: 30px;
+        --dextinity-density-control-height-small: 26px;
+        --dextinity-density-control-padding: 12px;
+        --dextinity-density-control-padding-small: 9px;
+        --dextinity-density-icon-button-size: 30px;
+        --dextinity-density-icon-button-size-small: 24px;
+        --dextinity-density-segment-height: 28px;
+        --dextinity-density-chip-height: 28px;
+        --dextinity-density-tab-height: 38px;
+        --dextinity-density-menu-item-height: 30px;
+        --dextinity-density-table-row-height: 44px;
+        --dextinity-density-tree-row-height: 34px;
+        --dextinity-density-nav-item-height: 32px;
+        --dextinity-density-form-gap: 14px;
+        --dextinity-density-panel-padding: 12px;
+        --dextinity-density-list-item-padding: 8px;
+    }
+}

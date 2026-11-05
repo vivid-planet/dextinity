@@ -1,0 +1,19 @@
+// One curve, three durations. With reduced motion, components keep only crossfades.
+@layer dextinity {
+    :root {
+        --dextinity-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+        --dextinity-motion-duration-short: 140ms;
+        --dextinity-motion-duration-medium: 260ms;
+        --dextinity-motion-duration-long: 520ms;
+        --dextinity-motion-tooltip-delay: 380ms;
+        --dextinity-motion-distance: 8px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        :root {
+            --dextinity-motion-distance: 0px;
+            --dextinity-motion-duration-medium: 140ms;
+            --dextinity-motion-duration-long: 140ms;
+        }
+    }
+}

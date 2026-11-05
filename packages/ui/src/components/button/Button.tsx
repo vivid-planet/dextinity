@@ -92,6 +92,8 @@ export interface ButtonProps<
     startIcon?: ReactNode;
     /** The icon to render after the button's text. */
     endIcon?: ReactNode;
+    /** Renders the button as a link to this URL, keeping the button's look. */
+    href?: string;
 }
 
 function preventDefault(event: SyntheticEvent) {
@@ -124,6 +126,7 @@ export const Button: <
         slotProps,
         startIcon,
         endIcon,
+        href,
         children,
         onClick,
         ...restProps
@@ -156,7 +159,9 @@ export const Button: <
         <BaseButton
             {...restProps}
             ref={ref}
-            type={type}
+            type={href == null ? type : undefined}
+            nativeButton={href == null}
+            render={href == null ? undefined : <a href={href} />}
             disabled={ownerState.disabled}
             data-variant={ownerState.variant}
             data-color={ownerState.color}

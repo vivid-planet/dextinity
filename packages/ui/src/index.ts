@@ -3,6 +3,8 @@ export type { AssetThumbnailType, FocalPoint } from "./components/assetThumbnail
 export { AssetThumbnail, type AssetThumbnailOwnerState, type AssetThumbnailProps } from "./components/assetThumbnail/AssetThumbnail";
 export { Avatar, type AvatarOwnerState, type AvatarProps, type AvatarSlotProps, getInitials } from "./components/avatar/Avatar";
 export { Badge, type BadgeOwnerState, type BadgeProps } from "./components/badge/Badge";
+export { Block, type BlockLabels, type BlockOwnerState, type BlockProps } from "./components/blockList/Block";
+export { BlockList, type BlockListLabels, type BlockListOwnerState, type BlockListProps } from "./components/blockList/BlockList";
 export { Breadcrumbs, type BreadcrumbsItem, type BreadcrumbsLabels } from "./components/breadcrumbs/Breadcrumbs";
 export { type BreadcrumbsOwnerState, type BreadcrumbsProps, type BreadcrumbsSeparator } from "./components/breadcrumbs/Breadcrumbs";
 export { BulkActionBar, type BulkActionBarAction, type BulkActionBarLabels } from "./components/bulkActionBar/BulkActionBar";

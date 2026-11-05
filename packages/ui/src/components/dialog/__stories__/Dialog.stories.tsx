@@ -83,6 +83,12 @@ export const Default: Story = {
         const dialog = await screen.findByRole("dialog", { name: "Unsaved changes" });
         await expect(dialog).toHaveAccessibleDescription("If you save, they go live right away.");
         await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
+        const firstFocused = document.activeElement;
+        for (let i = 0; i < 5; i++) {
+            await userEvent.tab();
+            await expect(dialog.contains(document.activeElement)).toBe(true);
+        }
+        (firstFocused as HTMLElement).focus();
         await userEvent.keyboard("{Escape}");
         await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
         await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());

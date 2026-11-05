@@ -11,7 +11,7 @@
     }
 
     :global([data-dextinity-color-scheme="high-contrast"]) & {
-        background: oklch(0 0 0 / 0.85);
+        background: var(--dextinity-dialog-backdrop-high-contrast);
     }
 }
 

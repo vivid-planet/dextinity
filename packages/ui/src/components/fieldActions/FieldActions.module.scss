@@ -17,6 +17,11 @@
     font-size: var(--dextinity-typography-body-size);
     line-height: var(--dextinity-typography-body-line-height);
     color: var(--dextinity-color-text);
+
+    &:focus-visible {
+        outline: 2px solid var(--dextinity-color-focus);
+        outline-offset: 2px;
+    }
 }
 
 .suggestionLabel {

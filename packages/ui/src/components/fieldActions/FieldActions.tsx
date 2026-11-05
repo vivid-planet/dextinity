@@ -95,8 +95,10 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
     const [pending, setPending] = useState(false);
     const [suggestion, setSuggestion] = useState<string | null>(null);
 
-    const latest = useRef({ onAiAccept, labels });
-    latest.current = { onAiAccept, labels };
+    const controlId = field?.control.id;
+    const latest = useRef({ onAiAccept, labels, controlId });
+    latest.current = { onAiAccept, labels, controlId };
+    const suggestionRef = useRef<HTMLDivElement | null>(null);
 
     const mounted = useRef(true);
     useEffect(() => {
@@ -119,8 +121,24 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
             return;
         }
         const { labels: currentLabels } = latest.current;
+        const close = () => {
+            setSuggestion(null);
+            const id = latest.current.controlId;
+            if (id != null) {
+                suggestionRef.current?.ownerDocument.getElementById(id)?.focus();
+            }
+        };
         setActionContent(
-            <div className={styles.suggestion} role="group" aria-label={currentLabels.suggestion}>
+            <div
+                ref={(element) => {
+                    suggestionRef.current = element;
+                    element?.focus();
+                }}
+                className={styles.suggestion}
+                role="group"
+                aria-label={currentLabels.suggestion}
+                tabIndex={-1}
+            >
                 <span className={styles.suggestionLabel} aria-hidden>
                     <Icon name="sparkle" />
                     {currentLabels.suggestion}
@@ -131,12 +149,12 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
                         size="small"
                         onClick={() => {
                             latest.current.onAiAccept?.(suggestion);
-                            setSuggestion(null);
+                            close();
                         }}
                     >
                         {currentLabels.accept}
                     </Button>
-                    <Button size="small" variant="text" color="secondary" onClick={() => setSuggestion(null)}>
+                    <Button size="small" variant="text" color="secondary" onClick={close}>
                         {currentLabels.discard}
                     </Button>
                 </span>
@@ -153,7 +171,7 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
     );
 
     async function requestSuggestion() {
-        if (onAiSuggest == null) {
+        if (onAiSuggest == null || pending) {
             return;
         }
         setSuggestion(null);
@@ -186,7 +204,7 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
                 </IconButton>
             )}
             {aiAssist && (
-                <IconButton size="small" aria-label={labels.aiAssist} disabled={disabled || pending} onClick={requestSuggestion}>
+                <IconButton size="small" aria-label={labels.aiAssist} disabled={disabled} loading={pending} onClick={requestSuggestion}>
                     <Icon name="sparkle" />
                 </IconButton>
             )}

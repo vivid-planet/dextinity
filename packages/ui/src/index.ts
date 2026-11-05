@@ -16,6 +16,8 @@ export { type ConfirmDialogSlotProps } from "./components/confirmDialog/ConfirmD
 export { CopyField, type CopyFieldLabels, type CopyFieldOwnerState, type CopyFieldProps } from "./components/copyField/CopyField";
 export { DataGrid, type DataGridColumn, type DataGridLabels, type DataGridOwnerState } from "./components/dataGrid/DataGrid";
 export { type DataGridProps, type DataGridSort, defaultDataGridLabels } from "./components/dataGrid/DataGrid";
+export type { DevicePreviewDevice, DevicePreviewLabels } from "./components/devicePreview/DevicePreview";
+export { DevicePreview, type DevicePreviewOwnerState, type DevicePreviewProps } from "./components/devicePreview/DevicePreview";
 export { Dialog, type DialogOwnerState, type DialogProps, type DialogSlotProps } from "./components/dialog/Dialog";
 export { Drawer, type DrawerOwnerState, type DrawerProps, type DrawerSlotProps } from "./components/drawer/Drawer";
 export type { DropzoneLabels, DropzoneRejection, DropzoneUpload } from "./components/dropzone/Dropzone";

@@ -1,4 +1,5 @@
 .root {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -28,6 +29,7 @@
 
     &:active:not([data-disabled], [data-loading]) {
         transform: scale(0.98);
+        filter: brightness(var(--dextinity-button-active-brightness));
     }
 
     &[data-disabled] {
@@ -131,6 +133,21 @@
 
     .loadingSpinner {
         color: inherit;
+    }
+
+    // Without a start icon, the spinner covers the hidden label, so the button keeps its width
+    &:has(> .loadingSpinnerOverlay) {
+        -webkit-text-fill-color: transparent;
+
+        .endIcon {
+            visibility: hidden;
+        }
+    }
+
+    .loadingSpinnerOverlay {
+        position: absolute;
+        inset: 0;
+        margin: auto;
     }
 }
 

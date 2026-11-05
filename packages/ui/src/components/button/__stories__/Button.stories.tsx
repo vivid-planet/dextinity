@@ -5,6 +5,7 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import buttonTokens from "../_tokens.scss?raw";
 import { Button } from "../Button";
+import styles from "./Button.stories.module.scss";
 
 const iconOptions = {
     Check: <Icon name="check" />,
@@ -54,6 +55,15 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+/**
+ * The primary action: one per area.
+ *
+ * **Rules**
+ *
+ * - Label with a verb: Save, Publish. Never "OK" or "Yes".
+ * - One primary button per area; everything else is secondary (`outlined` + `secondary`) or ghost (`text` + `secondary`).
+ * - Don't disable a button without saying why next to it; prefer showing the failed check.
+ */
 export const Default: Story = {};
 
 export const Outlined: Story = {
@@ -65,6 +75,17 @@ export const Outlined: Story = {
 export const Text: Story = {
     args: {
         variant: "text",
+    },
+};
+
+/**
+ * Quiet actions such as Cancel: `text` with `color="secondary"`.
+ */
+export const Ghost: Story = {
+    args: {
+        variant: "text",
+        color: "secondary",
+        children: "Cancel",
     },
 };
 
@@ -114,6 +135,13 @@ export const Disabled: Story = {
     },
 };
 
+/**
+ * The button stays in place and keeps its width: the spinner replaces the start icon, or covers the label when there is none.
+ *
+ * **Rules**
+ *
+ * - Show loading for long actions instead of disabling the button.
+ */
 export const Loading: Story = {
     args: {
         loading: true,
@@ -121,6 +149,31 @@ export const Loading: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button"));
         await expect(args.onClick).not.toHaveBeenCalled();
+    },
+};
+
+/**
+ * Each button next to its loading state, at the same width.
+ */
+export const LoadingKeepsWidth: Story = {
+    render: (args) => (
+        <div className={styles.grid}>
+            <Button {...args}>Save</Button>
+            <Button {...args} loading>
+                Save
+            </Button>
+            <Button {...args} variant="outlined" color="secondary" startIcon={<Icon name="eye" />}>
+                Preview
+            </Button>
+            <Button {...args} variant="outlined" color="secondary" startIcon={<Icon name="eye" />} loading>
+                Preview
+            </Button>
+        </div>
+    ),
+    play: async ({ canvas }) => {
+        const [save, saving, preview, previewing] = canvas.getAllByRole("button");
+        await expect(saving.getBoundingClientRect().width).toBe(save.getBoundingClientRect().width);
+        await expect(previewing.getBoundingClientRect().width).toBe(preview.getBoundingClientRect().width);
     },
 };
 

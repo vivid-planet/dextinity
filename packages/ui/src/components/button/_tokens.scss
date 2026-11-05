@@ -12,6 +12,8 @@
     --dextinity-button-font-weight: 500;
     --dextinity-button-icon-size: 16px;
     --dextinity-button-disabled-opacity: 0.42;
+    // Darkens the button while it is pressed
+    --dextinity-button-active-brightness: 0.93;
 
     --dextinity-button-primary-background: var(--dextinity-gradient-brand);
     --dextinity-button-primary-background-hover: var(--dextinity-color-accent);

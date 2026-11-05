@@ -1,0 +1,79 @@
+@use "@src/styles/variables" as *;
+
+.root {
+    position: relative;
+}
+
+.imageOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+}
+
+.absoluteGridRoot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.content {
+    grid-column: 3 / -3;
+    padding: var(--spacing-d200) 0;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    color: var(--text-primary);
+}
+
+.mediaPhone {
+    height: 800px;
+
+    @media (min-width: $breakpoint-sm) {
+        display: none;
+    }
+}
+
+.mediaTablet {
+    display: none;
+    height: 700px;
+
+    @media (min-width: $breakpoint-sm) {
+        display: block;
+    }
+
+    @media (min-width: $breakpoint-md) {
+        display: none;
+    }
+}
+
+.mediaTabletLandscape {
+    display: none;
+    height: 650px;
+
+    @media (min-width: $breakpoint-md) {
+        display: block;
+    }
+
+    @media (min-width: $breakpoint-lg) {
+        display: none;
+    }
+}
+
+.mediaDesktop {
+    display: none;
+    height: 750px;
+
+    @media (min-width: $breakpoint-lg) {
+        display: block;
+    }
+
+    @media (min-width: $breakpoint-xl) {
+        height: 800px;
+    }
+}

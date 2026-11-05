@@ -1,0 +1,68 @@
+@use "@src/styles/variables" as *;
+
+.topLevelNavigation {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    background-color: var(--brand-primary-main);
+}
+
+.subLevelNavigation {
+    display: none;
+    position: absolute;
+    min-width: 100px;
+    list-style-type: none;
+    padding: 5px;
+    background-color: var(--brand-primary-main);
+    box-shadow: 0 4px 4px rgb(0 0 0 / 10%);
+}
+
+.topLevelLinkContainer {
+    position: relative;
+
+    &:hover {
+        text-decoration: underline;
+
+        > .subLevelNavigation {
+            display: block;
+        }
+    }
+}
+
+.link {
+    text-decoration: none;
+    padding: 5px 10px;
+    color: var(--brand-grey-900);
+    font-size: 12px;
+
+    &:hover {
+        text-decoration: underline;
+    }
+
+    &Active {
+        color: var(--brand-primary-contrast);
+    }
+}
+
+.skipLink {
+    position: fixed;
+    top: 120px;
+    left: 20px;
+    z-index: 100;
+    opacity: 0;
+
+    /* Hide the skip link visually but keep it accessible for screen readers */
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
+
+    &:focus-visible {
+        opacity: 1;
+        height: auto;
+        width: auto;
+        clip-path: none;
+    }
+}

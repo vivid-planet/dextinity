@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "outDir": "lib/",
+        "types": ["node"]
+    },
+    "exclude": [],
+    "extends": "../tsconfig.base.json",
+    "include": ["src/**/*", "e2e/*.ts", "playwright.config.ts"]
+}

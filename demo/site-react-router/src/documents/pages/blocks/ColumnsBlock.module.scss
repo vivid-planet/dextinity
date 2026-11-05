@@ -1,0 +1,43 @@
+@use "@src/styles/variables" as *;
+
+.column {
+    grid-column: 3 / -3;
+}
+
+.layout-6-12-6 {
+    grid-column: 4 / -4;
+
+    @media (min-width: $breakpoint-sm) {
+        grid-column: 7 / -7;
+    }
+}
+
+@media (min-width: $breakpoint-md) {
+    .layout-4-16-4 {
+        grid-column: 5 / -5;
+    }
+
+    .layout-9-9 {
+        grid-column: 3 / 12;
+
+        &:nth-child(even) {
+            grid-column: 14 / 23;
+        }
+    }
+
+    .layout-12-6 {
+        grid-column: 3 / 15;
+
+        &:nth-child(even) {
+            grid-column: 17 / 23;
+        }
+    }
+
+    .layout-6-12 {
+        grid-column: 3 / 9;
+
+        &:nth-child(even) {
+            grid-column: 11 / 23;
+        }
+    }
+}

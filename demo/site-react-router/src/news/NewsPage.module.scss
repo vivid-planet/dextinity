@@ -1,0 +1,16 @@
+.cardList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    padding: 5px;
+    color: black;
+    text-decoration: none;
+    border: 1px solid var(--brand-grey-200);
+
+    &:hover {
+        border-color: var(--brand-primary-main);
+    }
+}

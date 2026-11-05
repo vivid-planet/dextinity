@@ -81,6 +81,20 @@
             "ignore": ["./src/**/*.generated.ts"],
             "ignoreDependencies": ["clsx", "fast-equals", "scroll-into-view-if-needed", "usehooks-ts"]
         },
+        "packages/site/site-react-router": {
+            "entry": [
+                "./e2e/*.ts",
+                "./e2e/fixture/app/entry.*.tsx",
+                "./e2e/fixture/app/root.tsx",
+                "./e2e/fixture/app/routes.ts",
+                "./e2e/fixture/app/routes/**/*.{ts,tsx}",
+                "./e2e/fixture/react-router.config.ts",
+                "./e2e/fixture/vite.config.ts"
+            ],
+            "project": ["./src/**/*.{ts,tsx}", "./e2e/**/*.{ts,tsx}"],
+            "ignore": ["./src/**/*.generated.ts", "./e2e/fixture/.react-router/**"],
+            "ignoreDependencies": ["@react-router/node", "isbot"]
+        },
         "packages/mail-react": {
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/*.generated.ts"]
@@ -113,6 +127,11 @@
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@babel/core", "@types/grecaptcha", "mjml"],
             "ignore": ["**/*.generated.ts"]
+        },
+        "demo/site-react-router": {
+            "entry": ["./src/entry.*.tsx", "./src/routes/**/*.{ts,tsx}", "tracing.dev.ts", "tracing.production.ts"],
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreDependencies": ["@react-router/node", "isbot", "mjml", "csso"]
         },
         "storybook": {
             "entry": ["./src/**/*.stories.tsx"],

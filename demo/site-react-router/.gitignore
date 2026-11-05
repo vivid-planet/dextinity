@@ -1,0 +1,15 @@
+/node_modules
+/build
+/.react-router
+.env
+.env.local
+.env.site-configs
+schema.gql
+block-meta.json
+src/**/*.generated.ts
+src/site-configs.d.ts
+src/dextinity-config.json
+src/**/*.scss.d.ts
+lang-extracted
+lang-compiled
+tsconfig.tsbuildinfo

@@ -7,11 +7,11 @@ const files = [
         : [
               {
                   file: ".env",
-                  targetDir: ["demo/admin", "demo/api", "demo/site"],
+                  targetDir: ["demo/admin", "demo/api", "demo/site", "demo/site-react-router"],
               },
               {
                   file: ".env.local",
-                  targetDir: ["demo/admin", "demo/api", "demo/site", "storybook"],
+                  targetDir: ["demo/admin", "demo/api", "demo/site", "demo/site-react-router", "storybook"],
               },
               {
                   file: "demo/.env.site-configs",
@@ -20,7 +20,7 @@ const files = [
           ]),
     {
         file: "packages/api/cms-api/block-meta.json",
-        targetDir: ["packages/admin/cms-admin", "packages/site/site-nextjs", "packages/site/site-react"],
+        targetDir: ["packages/admin/cms-admin", "packages/site/site-nextjs", "packages/site/site-react", "packages/site/site-react-router"],
     },
     {
         file: "packages/api/cms-api/schema.gql",
@@ -36,19 +36,19 @@ const files = [
     },
     {
         file: "demo/api/block-meta.json",
-        targetDir: ["demo/admin", "demo/site"],
+        targetDir: ["demo/admin", "demo/site", "demo/site-react-router"],
     },
     {
         file: "demo/api/schema.gql",
-        targetDir: ["demo/admin", "demo/site"],
+        targetDir: ["demo/admin", "demo/site", "demo/site-react-router"],
     },
     {
         file: "demo/api/src/dextinity-config.json",
-        targetDir: ["demo/admin/src", "demo/site/src"],
+        targetDir: ["demo/admin/src", "demo/site/src", "demo/site-react-router/src"],
     },
     {
         file: "demo/site-configs/site-configs.d.ts",
-        targetDir: ["demo/admin/src", "demo/api/src", "demo/site/src"],
+        targetDir: ["demo/admin/src", "demo/api/src", "demo/site/src", "demo/site-react-router/src"],
     },
 ];
 

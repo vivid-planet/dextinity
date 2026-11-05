@@ -66,10 +66,10 @@ pnpm run lint:fix
 
 Every package and demo service exposes these scripts:
 
-- `lint:fix` — runs `lint:fix:eslint` and `lint:fix:prettier` in parallel (plus `lint:fix:style` in `demo/site`)
+- `lint:fix` — runs `lint:fix:eslint` and `lint:fix:prettier` in parallel (plus `lint:fix:style` in `demo/site` and `demo/site-react-router`)
 - `lint:fix:eslint` — runs ESLint with `--fix` (also applies Prettier formatting via `eslint-plugin-prettier`)
 - `lint:fix:prettier` — runs Prettier with `--write` for any remaining formatting issues
-- `lint:fix:style` — runs Stylelint with `--fix` (`demo/site` only)
+- `lint:fix:style` — runs Stylelint with `--fix` (`demo/site` and `demo/site-react-router` only)
 
 The root-level `lint:fix` runs all workspace `lint:fix` scripts recursively, then formats root-level config files.
 
@@ -107,6 +107,14 @@ Demo frontend site (Next.js)
 
 - Start using `pnpm exec dev-pm start @demo-site`
 - access at: http://localhost:3000/
+
+**Site (React Router):**
+Demo frontend site (React Router with React Server Components, `demo/site-react-router`)
+
+- Start using `pnpm exec dev-pm start @demo-site-react-router`
+- access at: http://localhost:3002/ (`SITE_REACT_ROUTER_PORT` in `.env`)
+- Shares the API, the site configs and the translations (`demo/site/lang`) with the Next.js site
+- The admin's site preview opens `PREVIEW_URL`, the Next.js site by default. To preview in this site, set `PREVIEW_URL=http://localhost:${SITE_REACT_ROUTER_PORT}` in `.env.local` and restart the admin
 
 ### dev-pm
 
@@ -154,10 +162,11 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 ### Site (`packages/site/`)
 
-| Package                  | Description                                                   |
-| ------------------------ | ------------------------------------------------------------- |
-| `@dextinity/site-react`  | React components and utilities for the frontend/site layer    |
-| `@dextinity/site-nextjs` | Next.js-specific site layer components (extends `site-react`) |
+| Package                        | Description                                                                                    |
+| ------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `@dextinity/site-react`        | React components and utilities for the frontend/site layer                                     |
+| `@dextinity/site-nextjs`       | Next.js-specific site layer components (extends `site-react`)                                  |
+| `@dextinity/site-react-router` | React Router-specific site layer components for React Server Components (extends `site-react`) |
 
 ### Utilities
 

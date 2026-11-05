@@ -79,3 +79,33 @@ jobs:
                       packages/*/*/junit-storybook.xml
                       storybook/junit.xml
                   overwrite: true
+
+    test-e2e-site-react-router:
+        name: Test (e2e, site-react-router)
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo "${{ github.actor }}"
+
+            - uses: actions/checkout@v7
+            - run: |
+                  git config user.name github-actions
+                  git config user.email github-actions@github.com
+
+            - uses: ./.github/actions/setup
+
+            - name: Build @dextinity/site-react-router and its dependencies
+              run: pnpm --recursive --filter '@dextinity/site-react-router...' run build
+
+            - name: Install Playwright Browsers
+              run: pnpm --filter @dextinity/site-react-router exec playwright install chromium-headless-shell
+
+            - name: Test (e2e, site-react-router)
+              run: pnpm --filter @dextinity/site-react-router run test:e2e
+
+            - name: Upload test results
+              uses: actions/upload-artifact@v7
+              if: success() || failure()
+              with:
+                  name: test-results-e2e
+                  path: packages/site/site-react-router/junit-e2e.xml
+                  overwrite: true

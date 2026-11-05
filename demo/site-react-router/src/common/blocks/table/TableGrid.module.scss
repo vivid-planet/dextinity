@@ -1,0 +1,33 @@
+@use "./tableCellStyles" as *;
+@include table-cell-styles;
+
+.root {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.row:not(:last-child) {
+    border-bottom: 1px solid var(--table-border);
+}
+
+.cell {
+    &--minWidthExtraSmall {
+        min-width: 50px;
+    }
+
+    &--minWidthSmall {
+        min-width: 100px;
+    }
+
+    &--minWidthStandard {
+        min-width: 150px;
+    }
+
+    &--minWidthLarge {
+        min-width: 200px;
+    }
+
+    &--minWidthExtraLarge {
+        min-width: 250px;
+    }
+}

@@ -1,0 +1,107 @@
+{
+    "name": "@dextinity/site-react-router",
+    "version": "10.13.1",
+    "description": "Dextinity Site React Router package (React Server Components)",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vivid-planet/dextinity",
+        "directory": "packages/site/site-react-router"
+    },
+    "license": "BSD-2-Clause",
+    "sideEffects": [
+        "**/*.css"
+    ],
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./lib/index.d.ts",
+            "import": "./lib/index.js"
+        },
+        "./css": "./lib/style.css",
+        "./node": {
+            "types": "./lib/node.d.ts",
+            "import": "./lib/node.js"
+        },
+        "./server": {
+            "types": "./lib/server.d.ts",
+            "import": "./lib/server.js"
+        },
+        "./vite": {
+            "types": "./lib/vite.d.ts",
+            "import": "./lib/vite.js"
+        }
+    },
+    "files": [
+        "lib/*"
+    ],
+    "scripts": {
+        "build": "pnpm run clean && pnpm run generate-block-types && vite build",
+        "clean": "rimraf lib 'src/**/*.generated.ts'",
+        "dev": "pnpm run clean && pnpm run generate-block-types && vite build --watch",
+        "generate-block-types": "dextinity generate-block-types",
+        "generate-block-types:watch": "chokidar -s \"block-meta.json\" -c \"pnpm run generate-block-types\"",
+        "lint": "pnpm run generate-block-types && run-p lint:prettier lint:eslint lint:tsc",
+        "lint:ci": "pnpm run lint",
+        "lint:eslint": "eslint --max-warnings 0 src/ e2e/ playwright.config.ts '**/*.json' --no-warn-ignored",
+        "lint:fix": "run-p lint:fix:eslint lint:fix:prettier",
+        "lint:fix:eslint": "pnpm run lint:eslint --fix",
+        "lint:fix:prettier": "pnpm run lint:prettier --write",
+        "lint:prettier": "pnpm exec prettier --check '*.{ts,mts,js,json,md,yml,yaml,css,scss}'",
+        "lint:tsc": "pnpm run typegen:e2e && tsc --noEmit && tsc --noEmit --project e2e/fixture",
+        "test": "pnpm run test:unit",
+        "test:e2e": "playwright test",
+        "test:unit": "vitest --run",
+        "test:watch": "vitest --watch",
+        "typegen:e2e": "cd e2e/fixture && react-router typegen"
+    },
+    "dependencies": {
+        "@dextinity/site-react": "workspace:*",
+        "jose": "^6.2.14",
+        "lru-cache": "^11.5.3"
+    },
+    "devDependencies": {
+        "@dextinity/cli": "workspace:*",
+        "@dextinity/eslint-config": "workspace:*",
+        "@playwright/test": "^1.64.1",
+        "@react-router/dev": "8.5.1",
+        "@remix-run/node-fetch-server": "^0.14.1",
+        "@types/node": "^24.19.2",
+        "@types/react": "^19.3.0",
+        "@types/react-dom": "^19.3.0",
+        "@vitejs/plugin-react": "^6.1.2",
+        "@vitejs/plugin-rsc": "0.5.35",
+        "chokidar-cli": "^3.0.0",
+        "eslint": "^9.39.5",
+        "jsdom": "^28.1.0",
+        "npm-run-all2": "^9.0.4",
+        "prettier": "^3.9.10",
+        "react": "^19.3.1",
+        "react-dom": "^19.3.1",
+        "react-router": "8.5.1",
+        "react-server-dom-webpack": "19.3.1",
+        "rimraf": "^6.1.3",
+        "sass": "^1.107.1",
+        "typescript": "^5.9.3",
+        "unplugin-dts": "^1.1.2",
+        "vite": "^8.3.5",
+        "vitest": "^5.0.5"
+    },
+    "peerDependencies": {
+        "react": "^19.2.7",
+        "react-dom": "^19.2.7",
+        "react-router": "^8.5.1",
+        "vite": "^8.0.0"
+    },
+    "peerDependenciesMeta": {
+        "vite": {
+            "optional": true
+        }
+    },
+    "engines": {
+        "node": ">=22.12.0"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org"
+    }
+}

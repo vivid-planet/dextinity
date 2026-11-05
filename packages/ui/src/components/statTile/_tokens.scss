@@ -1,0 +1,15 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    --dextinity-stat-tile-gap: var(--dextinity-space-1);
+    --dextinity-stat-tile-value-font-size: 52px;
+    --dextinity-stat-tile-value-color: var(--dextinity-color-text);
+    --dextinity-stat-tile-unit-font-size: var(--dextinity-typography-title-size);
+    --dextinity-stat-tile-unit-color: var(--dextinity-color-text-tertiary);
+    --dextinity-stat-tile-trend-size: 18px;
+    // The trend stays quiet; the context line says whether the change is good or bad
+    --dextinity-stat-tile-trend-color: var(--dextinity-color-text-secondary);
+    --dextinity-stat-tile-label-color: var(--dextinity-color-text-tertiary);
+    --dextinity-stat-tile-context-color: var(--dextinity-color-text-secondary);
+    --dextinity-stat-tile-context-font-size: 13px;
+}

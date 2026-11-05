@@ -1,6 +1,6 @@
 import { reportError } from "@src/util/reportError";
 import { createFromReadableStream } from "@vitejs/plugin-rsc/ssr";
-import { renderToReadableStream } from "react-dom/server.edge";
+import { renderToReadableStream } from "react-dom/server";
 import { unstable_routeRSCServerRequest as routeRSCServerRequest, unstable_RSCStaticRouter as RSCStaticRouter } from "react-router";
 
 /**

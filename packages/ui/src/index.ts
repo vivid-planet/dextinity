@@ -75,6 +75,7 @@ export { StatTile, type StatTileLabels, type StatTileOwnerState, type StatTilePr
 export { type StatTileTrend } from "./components/statTile/StatTile";
 export { StatusIndicator, type StatusIndicatorOwnerState, type StatusIndicatorProps } from "./components/statusIndicator/StatusIndicator";
 export { defaultStatusIndicatorLabels, type StatusIndicatorStatus } from "./components/statusIndicator/StatusIndicator";
+export { type StatusIndicatorLabels } from "./components/statusIndicator/StatusIndicator";
 export { type StatusIndicatorSlotProps, type StatusIndicatorSlots } from "./components/statusIndicator/StatusIndicator";
 export { Switch, type SwitchOwnerState, type SwitchProps, type SwitchSlotProps } from "./components/switch/Switch";
 export { Tabs, type TabsItem, type TabsOwnerState, type TabsProps, type TabsSlotProps } from "./components/tabs/Tabs";

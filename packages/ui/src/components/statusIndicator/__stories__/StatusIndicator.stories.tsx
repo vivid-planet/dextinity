@@ -106,6 +106,24 @@ export const CustomText: Story = {
 };
 
 /**
+ * `labels` sets the system words, e.g. in the application's language.
+ */
+export const TranslatedLabels: Story = {
+    args: {
+        labels: {
+            published: "Veröffentlicht",
+            unpublished: "Unveröffentlicht",
+            archived: "Archiviert",
+            warning: "Warnung",
+            critical: "Kritisch",
+            info: "Hinweis",
+            running: "Läuft",
+        },
+    },
+    render: AllStatuses.render,
+};
+
+/**
  * Only in dense lists: the text becomes the dot's tooltip and accessible name.
  */
 export const DotOnly: Story = {

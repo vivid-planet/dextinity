@@ -21,6 +21,12 @@ describe("StatusIndicator", () => {
         expect(screen.queryByText("Published")).toBeNull();
     });
 
+    it("shows the system word from labels", () => {
+        render(<StatusIndicator status="running" labels={{ running: "Läuft" }} />);
+
+        expect(screen.getByText("Läuft").dataset.status).toBe("running");
+    });
+
     it("names the dot with the text when only the dot is shown", () => {
         render(<StatusIndicator status="critical" dotOnly />);
 

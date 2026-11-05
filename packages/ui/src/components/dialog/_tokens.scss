@@ -1,0 +1,23 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    // Glass over a dimmed page; solid in high contrast
+    --dextinity-dialog-background: var(--dextinity-material-glass-strong);
+    --dextinity-dialog-blur: var(--dextinity-material-blur);
+    --dextinity-dialog-radius: var(--dextinity-radius-row);
+    --dextinity-dialog-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge), var(--dextinity-shadow-3);
+    --dextinity-dialog-padding: 22px;
+    --dextinity-dialog-foreground: var(--dextinity-color-text);
+    --dextinity-dialog-width-small: 440px;
+    --dextinity-dialog-width-default: 640px;
+    --dextinity-dialog-width-large: 960px;
+    // Space between the dialog and the edge of the screen
+    --dextinity-dialog-viewport-padding: var(--dextinity-space-4);
+    --dextinity-dialog-backdrop: oklch(0 0 0 / 0.34);
+
+    --dextinity-dialog-title-font-size: 16px;
+    --dextinity-dialog-title-font-weight: 600;
+    --dextinity-dialog-description-color: var(--dextinity-color-text-secondary);
+    --dextinity-dialog-description-font-size: var(--dextinity-typography-body-size);
+    --dextinity-dialog-footer-gap: var(--dextinity-space-2);
+}

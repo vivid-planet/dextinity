@@ -37,6 +37,15 @@ export const Label: Story = {
 };
 
 /**
+ * A colored icon keeps its own colors, for example a logo.
+ */
+export const ColoredIcon: Story = {
+    args: {
+        name: "youtube-filled-color",
+    },
+};
+
+/**
  * Set `width` and `height` in CSS, through `className`.
  */
 export const Size: Story = {

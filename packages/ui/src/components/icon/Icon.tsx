@@ -14,7 +14,7 @@ export interface IconProps extends Omit<ComponentPropsWithoutRef<"span">, "child
 }
 
 /**
- * Shows an icon of the icon set in the current text color. It is 16×16 pixels.
+ * Shows an icon of the icon set in the current text color, or in its own colors when it is a colored icon. It is 16×16 pixels.
  *
  * To use the default icons of `@dextinity/ui`, import `@dextinity/ui/css/icons` once in your application, see [Installation and setup](?path=/docs/intro--docs#installation-and-setup).
  */
@@ -25,6 +25,7 @@ export const Icon = forwardRef<HTMLSpanElement, IconProps>(function Icon(
     const isLabeled = ariaLabel !== undefined || ariaLabelledBy !== undefined;
     const iconStyle: CSSProperties & Record<`--${string}`, string> = {
         "--dextinity-current-icon-mask": `var(--dextinity-icon-${name})`,
+        "--dextinity-current-icon-image": `var(--dextinity-colored-icon-${name})`,
         ...style,
     };
 

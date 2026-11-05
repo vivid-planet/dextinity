@@ -1,6 +1,7 @@
 export const defaultIconNames = {
     "arrow-right": true,
     favorite: true,
+    "youtube-filled-color": true,
 } satisfies Record<string, true>;
 
 /**

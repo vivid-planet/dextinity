@@ -2,5 +2,6 @@
     :root {
         --dextinity-icon-arrow-right: url("./svg/arrow-right.svg#icon");
         --dextinity-icon-favorite: url("./svg/favorite.svg#icon");
+        --dextinity-colored-icon-youtube-filled-color: url("./svg/youtube-filled-color.svg#icon");
     }
 }

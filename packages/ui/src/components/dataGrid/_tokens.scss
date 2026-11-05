@@ -1,0 +1,26 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    --dextinity-data-grid-font-size: var(--dextinity-typography-body-size);
+    --dextinity-data-grid-foreground: var(--dextinity-color-text);
+    --dextinity-data-grid-cell-padding: var(--dextinity-space-3);
+    --dextinity-data-grid-row-height: var(--dextinity-density-table-row-height);
+    --dextinity-data-grid-row-radius: var(--dextinity-radius-field);
+    --dextinity-data-grid-row-background-hover: color-mix(in oklch, var(--dextinity-color-text) 5%, transparent);
+    --dextinity-data-grid-row-background-selected: var(--dextinity-color-accent-soft);
+
+    --dextinity-data-grid-header-height: 40px;
+    --dextinity-data-grid-header-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-data-grid-header-foreground-active: var(--dextinity-color-text);
+    --dextinity-data-grid-header-font-size: var(--dextinity-typography-small-size);
+    --dextinity-data-grid-header-line: var(--dextinity-color-line-strong);
+    // Behind the sticky header, so rows scrolling underneath stay hidden
+    --dextinity-data-grid-header-background-sticky: var(--dextinity-material-glass-strong);
+
+    // Placeholder bars of the loading rows
+    --dextinity-data-grid-placeholder-background: color-mix(in oklch, var(--dextinity-color-text) 8%, transparent);
+    --dextinity-data-grid-placeholder-radius: var(--dextinity-radius-item);
+
+    --dextinity-data-grid-footer-gap: var(--dextinity-space-3);
+    --dextinity-data-grid-footer-foreground: var(--dextinity-color-text-tertiary);
+}

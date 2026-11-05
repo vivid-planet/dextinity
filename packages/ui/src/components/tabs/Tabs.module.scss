@@ -12,6 +12,7 @@
 }
 
 .tab {
+    position: relative;
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -38,10 +39,22 @@
         color: var(--dextinity-tabs-foreground-active);
     }
 
-    // An inset outline, because the scrolling list would clip an outer focus ring
+    // Drawn inside the tab and above the indicator: the scrolling list clips anything outside the tab
+    &::after {
+        content: "";
+        position: absolute;
+        inset-block: var(--dextinity-tabs-focus-inset) calc(var(--dextinity-tabs-indicator-height) + var(--dextinity-tabs-focus-inset));
+        inset-inline: 0;
+        border-radius: var(--dextinity-tabs-radius);
+        pointer-events: none;
+    }
+
     &:focus-visible {
-        outline: 2px solid var(--dextinity-color-focus);
-        outline-offset: -2px;
+        outline: none;
+
+        &::after {
+            box-shadow: inset 0 0 0 2px var(--dextinity-color-focus);
+        }
     }
 
     &[data-disabled] {

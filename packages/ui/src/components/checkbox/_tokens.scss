@@ -1,0 +1,20 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    --dextinity-checkbox-size: 17px;
+    --dextinity-checkbox-radius: calc(var(--dextinity-radius-item) * 0.625);
+    --dextinity-checkbox-icon-size: 14px;
+    --dextinity-checkbox-gap: var(--dextinity-space-2);
+    --dextinity-checkbox-line-width: 1.5px;
+    --dextinity-checkbox-disabled-opacity: 0.42;
+
+    --dextinity-checkbox-background: var(--dextinity-color-surface);
+    --dextinity-checkbox-line: var(--dextinity-color-text-subtle);
+    --dextinity-checkbox-line-hover: var(--dextinity-color-text-tertiary);
+    // Fill of a checked or indeterminate checkbox
+    --dextinity-checkbox-background-checked: var(--dextinity-color-accent);
+    --dextinity-checkbox-foreground-checked: var(--dextinity-color-accent-foreground);
+
+    --dextinity-checkbox-label-color: var(--dextinity-color-text);
+    --dextinity-checkbox-label-font-size: var(--dextinity-typography-body-size);
+}

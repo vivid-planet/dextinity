@@ -11,6 +11,7 @@ import type { ErrorHttpStatusCode } from "@nestjs/common/utils/http-error-by-cod
 import type { Response } from "express";
 
 import { DextinityException } from "./dextinity.exception.js";
+import { formatValidationErrors } from "./format-validation-errors.js";
 import { DextinityValidationException } from "./validation.exception.js";
 
 @Catch()
@@ -32,7 +33,7 @@ export class ExceptionFilter implements NestExceptionFilter {
             };
 
             if (exception instanceof DextinityValidationException) {
-                errorObject.validationErrors = exception.errors;
+                errorObject.validationErrors = formatValidationErrors(exception.errors ?? []);
             }
 
             statusCode = 400;

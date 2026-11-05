@@ -68,7 +68,7 @@ export const Default: Story = {
     },
 };
 
-const WithoutControlsBlock = createDamVideoBlock({ supports: ["previewImage"] });
+const WithoutControlsBlock = createDamVideoBlock({ controls: false });
 
 function WithoutControlsStory() {
     const [state, setState] = useState<DamVideoBlockState>(WithoutControlsBlock.defaultValues());
@@ -97,7 +97,7 @@ export const WithoutControls: StoryObj<typeof WithoutControlsStory> = {
     },
 };
 
-const FileOnlyBlock = createDamVideoBlock({ supports: [] });
+const FileOnlyBlock = createDamVideoBlock({ controls: false, previewImage: false });
 
 function FileOnlyStory() {
     const [state, setState] = useState<DamVideoBlockState>(FileOnlyBlock.defaultValues());

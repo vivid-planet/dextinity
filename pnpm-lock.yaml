@@ -233,6 +233,9 @@ importers:
       '@dextinity/cms-admin':
         specifier: workspace:*
         version: link:../../packages/admin/cms-admin
+      '@dextinity/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1)

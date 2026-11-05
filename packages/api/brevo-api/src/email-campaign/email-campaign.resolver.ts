@@ -109,7 +109,14 @@ export function createEmailCampaignsResolver({
             await this.entityManager.flush();
 
             if (input.scheduledAt) {
-                await this.campaignsService.saveEmailCampaignInBrevo(campaign.id, input.scheduledAt);
+                try {
+                    await this.campaignsService.saveEmailCampaignInBrevo(campaign.id, input.scheduledAt);
+                } catch (error) {
+                    await this.entityManager.remove(campaign).flush();
+                    throw error;
+                }
+
+                await this.entityManager.refresh(campaign);
             }
 
             return campaign;
@@ -179,6 +186,7 @@ export function createEmailCampaignsResolver({
             }
 
             await this.entityManager.flush();
+            await this.entityManager.refresh(campaign);
 
             return campaign;
         }

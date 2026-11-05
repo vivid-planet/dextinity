@@ -101,7 +101,8 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
                 title: brevoEmailCampaign?.title,
                 subject: brevoEmailCampaign?.subject,
                 content: EmailCampaignContentBlock.input2State(brevoEmailCampaign.content),
-                scheduledAt: brevoEmailCampaign?.scheduledAt ? new Date(brevoEmailCampaign.scheduledAt) : null,
+                scheduledAt:
+                    brevoEmailCampaign?.scheduledAt && brevoEmailCampaign.sendingState !== "FAILED" ? new Date(brevoEmailCampaign.scheduledAt) : null,
                 sendingState: brevoEmailCampaign?.sendingState,
                 brevoTargetGroups: brevoEmailCampaign?.brevoTargetGroups,
             };

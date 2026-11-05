@@ -25,9 +25,12 @@ export class BrevoApiCampaignsService {
             campaign.status === Brevo.GetEmailCampaignResponse.Status.InProcess
         ) {
             return SendingState.SCHEDULED;
+        } else if (campaign.status === Brevo.GetEmailCampaignResponse.Status.Draft) {
+            // A campaign sent via sendBrevoEmailCampaignNow is a draft in Brevo until the background send queues it
+            return undefined;
         }
 
-        return undefined;
+        return SendingState.DRAFT;
     }
 
     public async createBrevoCampaign({

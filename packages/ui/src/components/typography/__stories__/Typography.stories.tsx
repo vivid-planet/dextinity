@@ -4,10 +4,24 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Typography } from "../Typography";
 import styles from "./Typography.stories.module.scss";
 
+const fontTokens = `
+// UI and body text; from the brand
+--dextinity-font-family-text: var(--dextinity-brand-font-family-text);
+// Headings and display styles; from the brand
+--dextinity-font-family-display: var(--dextinity-brand-font-family-display);
+// Labels, paths, numbers; from the brand
+--dextinity-font-family-mono: var(--dextinity-brand-font-family-mono);
+// Weight of the display styles
+--dextinity-typography-display-font-weight: var(--dextinity-brand-display-font-weight);
+// Tracking of the display styles
+--dextinity-typography-display-letter-spacing: var(--dextinity-brand-display-letter-spacing);
+`;
+
 const meta = {
     component: Typography,
     title: "Foundations/Typography",
     decorators: [themeDecorator],
+    parameters: { tokens: fontTokens },
     args: {
         children: "The quick brown fox jumps over the lazy dog",
     },

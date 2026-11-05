@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Breadcrumbs } from "./Breadcrumbs";
 
@@ -36,5 +36,16 @@ describe("Breadcrumbs", () => {
         expect(screen.getAllByRole("link").map((link) => link.textContent)).toStrictEqual(["Page"]);
         expect(screen.getByRole("button", { name: "Show hidden levels" })).toBeTruthy();
         expect(screen.getByText("Text").getAttribute("aria-current")).toBe("page");
+    });
+
+    it("renders a level with only onClick as a focusable button", () => {
+        const onClick = vi.fn();
+        render(<Breadcrumbs items={[{ label: "Page", onClick }, { label: "Teaser 2" }]} />);
+
+        const level = screen.getByRole("button", { name: "Page" });
+        expect(level.className).toContain("dextinityLink");
+        expect(level.className).toContain("dextinityBreadcrumbs__linkButton");
+        fireEvent.click(level);
+        expect(onClick).toHaveBeenCalledTimes(1);
     });
 });

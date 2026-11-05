@@ -56,7 +56,7 @@ export function JobStatusCell({ job }: JobStatusCellProps) {
                 </>
             }
         >
-            {cellContent}
+            <TooltipAnchor>{cellContent}</TooltipAnchor>
         </Tooltip>
     );
 }
@@ -147,6 +147,12 @@ const failureReasonMessages = defineMessages<string>({
     BackoffLimitExceeded: { id: "dextinity.jobs.failureReason.backoffLimitExceeded", defaultMessage: "Retry limit exceeded" },
     DeadlineExceeded: { id: "dextinity.jobs.failureReason.deadlineExceeded", defaultMessage: "Deadline exceeded" },
 });
+
+// GridCellContent doesn't forward refs, which Tooltip needs to position itself before React 19
+const TooltipAnchor = styled("div")`
+    height: 100%;
+    min-width: 0;
+`;
 
 const ErrorText = styled("span")`
     color: ${({ theme }) => theme.palette.error.main};

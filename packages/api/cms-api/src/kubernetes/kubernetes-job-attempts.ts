@@ -45,6 +45,10 @@ export function getJobAttempts(pods: V1Pod[]): KubernetesJobAttempt[] {
     return sortPodsByCreationTimestamp(pods).map(getJobAttempt);
 }
 
+export function hasTrueCondition(job: V1Job, type: string): boolean {
+    return job.status?.conditions?.some((condition) => condition.type === type && condition.status === "True") ?? false;
+}
+
 export function getJobFailedCondition(job: V1Job): V1JobCondition | undefined {
     return job.status?.conditions?.find((condition) => condition.type === "Failed" && condition.status === "True");
 }

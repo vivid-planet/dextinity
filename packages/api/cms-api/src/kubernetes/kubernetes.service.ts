@@ -15,6 +15,7 @@ import {
     getJobAttempt,
     getJobFailedCondition,
     groupPodsByJobName,
+    hasTrueCondition,
     sortPodsByCreationTimestamp,
 } from "./kubernetes-job-attempts";
 import { getAnnotation, toLegacyLabelSelector } from "./kubernetes-metadata";
@@ -185,19 +186,21 @@ export class KubernetesService implements OnModuleInit {
     }
 
     getStatusForKubernetesJob(job: V1Job): KubernetesJobStatus {
-        let status = KubernetesJobStatus.pending;
         if ((job.status?.active ?? 0) > 0) {
-            status = KubernetesJobStatus.active;
+            return KubernetesJobStatus.active;
         }
         // A job can have both succeeded = 1 and failed = 1 states. This may happend due to a job's restart policy. For instance, a job may fail on
         // the first attempt (failed = 1) and succeed on the second attempt (succeeded = 1). We therefore check the succeeded status before the failed
         // status.
-        else if ((job.status?.succeeded ?? 0) > 0) {
-            status = KubernetesJobStatus.succeeded;
-        } else if ((job.status?.failed ?? 0) > 0) {
-            status = KubernetesJobStatus.failed;
+        if ((job.status?.succeeded ?? 0) > 0) {
+            return KubernetesJobStatus.succeeded;
         }
-        return status;
+        // A failed attempt alone doesn't mean the job failed: until the backoff limit is reached, Kubernetes retries it after a backoff delay
+        // in which no pod is active. Only the Failed condition (or FailureTarget, while the last pods are still terminating) is final.
+        if (getJobFailedCondition(job) || hasTrueCondition(job, "FailureTarget")) {
+            return KubernetesJobStatus.failed;
+        }
+        return KubernetesJobStatus.pending;
     }
 
     /**

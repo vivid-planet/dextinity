@@ -25,6 +25,12 @@ export const Succeeded: Story = {
     },
 };
 
+export const WaitingForRetryAfterOomKill: Story = {
+    args: {
+        job: { status: "pending", failureReason: null, failureMessage: null, attempts: [oomKilledAttempt] },
+    },
+};
+
 export const RetriedAfterOomKill: Story = {
     args: {
         job: { status: "active", failureReason: null, failureMessage: null, attempts: [oomKilledAttempt, retryAttempt] },

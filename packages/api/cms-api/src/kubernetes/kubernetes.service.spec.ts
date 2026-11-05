@@ -1,6 +1,7 @@
 import type { CoreV1Api, V1Pod } from "@kubernetes/client-node";
 import { describe, expect, it, vi } from "vitest";
 
+import { KubernetesJobStatus } from "./job-status.enum";
 import { KubernetesService } from "./kubernetes.service";
 
 vi.mock("@kubernetes/client-node", () => ({}));
@@ -16,6 +17,44 @@ function createService(pods: V1Pod[], logs: Record<string, string>) {
 }
 
 describe("KubernetesService", () => {
+    describe("getStatusForKubernetesJob", () => {
+        const service = new KubernetesService({ helmRelease: "test" });
+
+        it("should be pending before the first pod starts", () => {
+            expect(service.getStatusForKubernetesJob({ status: {} })).toBe(KubernetesJobStatus.pending);
+        });
+
+        it("should be active while a pod is running", () => {
+            expect(service.getStatusForKubernetesJob({ status: { active: 1, failed: 1 } })).toBe(KubernetesJobStatus.active);
+        });
+
+        it("should be pending while a failed attempt waits for its retry", () => {
+            expect(service.getStatusForKubernetesJob({ status: { failed: 1 } })).toBe(KubernetesJobStatus.pending);
+        });
+
+        it("should be succeeded if a retry succeeded", () => {
+            expect(
+                service.getStatusForKubernetesJob({ status: { failed: 1, succeeded: 1, conditions: [{ type: "Complete", status: "True" }] } }),
+            ).toBe(KubernetesJobStatus.succeeded);
+        });
+
+        it("should be failed once the job has the Failed condition", () => {
+            expect(
+                service.getStatusForKubernetesJob({
+                    status: { failed: 2, conditions: [{ type: "Failed", status: "True", reason: "BackoffLimitExceeded" }] },
+                }),
+            ).toBe(KubernetesJobStatus.failed);
+        });
+
+        it("should be failed while the pods of a failed job are still terminating", () => {
+            expect(
+                service.getStatusForKubernetesJob({
+                    status: { failed: 1, conditions: [{ type: "FailureTarget", status: "True", reason: "DeadlineExceeded" }] },
+                }),
+            ).toBe(KubernetesJobStatus.failed);
+        });
+    });
+
     describe("getJobLogs", () => {
         it("should separate the attempts and show why they ended", async () => {
             const retryPod: V1Pod = {

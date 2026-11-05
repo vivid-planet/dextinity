@@ -92,3 +92,8 @@
         box-shadow: 0 0 0 0 transparent;
     }
 }
+
+// Applied by the high-contrast color scheme
+:global([data-dextinity-color-scheme="high-contrast"]) .root {
+    --dextinity-status-indicator-critical-mark: "!";
+}

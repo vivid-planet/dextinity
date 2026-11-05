@@ -15,7 +15,7 @@
     --dextinity-chip-delete-size-small: 18px;
     --dextinity-chip-delete-background-hover: color-mix(in oklch, var(--dextinity-color-text) 8%, transparent);
     --dextinity-chip-disabled-opacity: 0.42;
-    // How strongly a filled chip shows its line: off normally, on in high contrast, where soft fills are transparent
+    // How strongly a filled chip shows its line: off normally, 100% in high contrast, where soft fills are transparent
     --dextinity-chip-filled-line-strength: 0%;
 
     --dextinity-chip-default-soft: var(--dextinity-color-surface-sunken);
@@ -43,11 +43,4 @@
     // A selected clickable chip, e.g. an active filter
     --dextinity-chip-selected-background: var(--dextinity-color-accent);
     --dextinity-chip-selected-foreground: var(--dextinity-color-accent-foreground);
-}
-
-@layer dextinity {
-    [data-dextinity-color-scheme="high-contrast"] {
-        // In high contrast
-        --dextinity-chip-filled-line-strength: 100%;
-    }
 }

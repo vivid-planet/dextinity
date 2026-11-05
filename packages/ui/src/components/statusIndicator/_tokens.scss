@@ -8,7 +8,7 @@
     --dextinity-status-indicator-dot-size: 7px;
     // Soft ring around the dot; off in high contrast, where the soft colors are transparent
     --dextinity-status-indicator-halo-width: 3px;
-    // Appended to the critical status so it doesn't rely on color alone
+    // Appended to the critical status so it doesn't rely on color alone; "!" in high contrast
     --dextinity-status-indicator-critical-mark: "";
 
     --dextinity-status-indicator-published-dot: var(--dextinity-color-success);
@@ -32,11 +32,4 @@
     // Pulses out from the dot while running; still with reduced motion
     --dextinity-status-indicator-running-pulse: var(--dextinity-color-accent-glow);
     --dextinity-status-indicator-running-foreground: var(--dextinity-color-accent-text);
-}
-
-@layer dextinity {
-    [data-dextinity-color-scheme="high-contrast"] {
-        // In high contrast
-        --dextinity-status-indicator-critical-mark: "!";
-    }
 }

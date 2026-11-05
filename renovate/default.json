@@ -72,11 +72,11 @@
         },
         {
             "matchDepTypes": ["dependencies", "devDependencies"],
-            "rangeStrategy": ["bump"]
+            "rangeStrategy": "bump"
         },
         {
             "matchDepTypes": ["peerDependencies"],
-            "rangeStrategy": ["widen"]
+            "rangeStrategy": "widen"
         },
         {
             "enabled": false,
@@ -97,9 +97,10 @@
             "matchPackageNames": ["@changesets/cli", "changesets/action"]
         }
     ],
-    "regexManagers": [
+    "customManagers": [
         {
-            "fileMatch": ["^\\.env$"],
+            "customType": "regex",
+            "managerFilePatterns": ["/^\\.env$/"],
             "matchStrings": ["OAUTH2_PROXY_VERSION=(?<currentValue>v?[0-9]+\\.[0-9]+\\.[0-9]+)"],
             "datasourceTemplate": "github-releases",
             "depNameTemplate": "oauth2-proxy/oauth2-proxy",
@@ -107,7 +108,7 @@
         }
     ],
     "labels": ["dependencies"],
-    "baseBranches": ["main"],
+    "baseBranchPatterns": ["main"],
     "nvm": {
         "enabled": false
     }

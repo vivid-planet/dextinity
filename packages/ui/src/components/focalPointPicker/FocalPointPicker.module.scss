@@ -106,6 +106,6 @@
 
 // Applied by the high-contrast color scheme
 :global([data-dextinity-color-scheme="high-contrast"]) .root {
-    --dextinity-focal-point-picker-marker-shadow: 0 0 0 2px oklch(0 0 0);
-    --dextinity-focal-point-picker-auto-background: oklch(0 0 0);
+    --dextinity-focal-point-picker-marker-shadow: var(--dextinity-focal-point-picker-marker-shadow-high-contrast);
+    --dextinity-focal-point-picker-auto-background: var(--dextinity-focal-point-picker-auto-background-high-contrast);
 }

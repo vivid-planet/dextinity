@@ -29,6 +29,7 @@ export { MenuRadioItem, type MenuRadioItemOwnerState, type MenuRadioItemProps } 
 export { type MenuRadioItemSlotProps, type MenuRadioItemSlots } from "./components/menu/MenuRadioItem";
 export { MenuSeparator, type MenuSeparatorOwnerState, type MenuSeparatorProps } from "./components/menu/MenuSeparator";
 export { MenuSubmenu, type MenuSubmenuOwnerState, type MenuSubmenuProps, type MenuSubmenuSlotProps } from "./components/menu/MenuSubmenu";
+export { Panel, type PanelOwnerState, type PanelProps, type PanelSlotProps, type PanelSlots } from "./components/panel/Panel";
 export { RichTextEditor, type RichTextEditorFormat, type RichTextEditorLabels } from "./components/richTextEditor/RichTextEditor";
 export { type RichTextEditorOwnerState, type RichTextEditorProps } from "./components/richTextEditor/RichTextEditor";
 export { SegmentedControl, type SegmentedControlOption, type SegmentedControlOwnerState } from "./components/segmentedControl/SegmentedControl";

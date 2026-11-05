@@ -1,0 +1,59 @@
+.root {
+    box-sizing: border-box;
+    min-inline-size: 0;
+    padding: var(--dextinity-card-padding);
+    border-radius: var(--dextinity-card-radius);
+    background: var(--dextinity-card-background);
+    box-shadow: var(--dextinity-card-shadow);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+    backdrop-filter: blur(var(--dextinity-card-blur)) saturate(1.6);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-card-header-gap);
+    padding: var(--dextinity-card-header-padding);
+}
+
+.orb {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--dextinity-card-orb-size);
+    block-size: var(--dextinity-card-orb-size);
+    border-radius: 50%;
+    background: var(--dextinity-card-orb-background);
+    box-shadow: var(--dextinity-card-orb-shadow);
+    color: var(--dextinity-card-orb-foreground);
+
+    --dextinity-icon-size: var(--dextinity-card-orb-icon-size);
+}
+
+.title {
+    min-inline-size: 0;
+    margin: 0;
+    font-size: var(--dextinity-card-title-font-size);
+    font-weight: var(--dextinity-card-title-font-weight);
+    line-height: var(--dextinity-typography-title-line-height);
+    letter-spacing: -0.02em;
+}
+
+.meta {
+    color: var(--dextinity-card-meta-color);
+    font-size: var(--dextinity-card-meta-font-size);
+    white-space: nowrap;
+}
+
+.link {
+    display: flex;
+    align-items: center;
+    margin-inline-start: auto;
+    padding-inline-end: 6px;
+}
+
+.body {
+    padding: var(--dextinity-card-body-padding);
+}

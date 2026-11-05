@@ -1,6 +1,7 @@
 export { Avatar, type AvatarOwnerState, type AvatarProps, type AvatarSlotProps, getInitials } from "./components/avatar/Avatar";
 export { Badge, type BadgeOwnerState, type BadgeProps } from "./components/badge/Badge";
 export { Button, type ButtonOwnerState, type ButtonProps } from "./components/button/Button";
+export { Card, type CardOwnerState, type CardProps, type CardSlotProps, type CardSlots } from "./components/card/Card";
 export { Checkbox, type CheckboxOwnerState, type CheckboxProps, type CheckboxSlotProps } from "./components/checkbox/Checkbox";
 export { Chip, type ChipLabels, type ChipOwnerState, type ChipProps, type ChipSlotProps } from "./components/chip/Chip";
 export { ConfirmDialog, type ConfirmDialogOwnerState, type ConfirmDialogProps } from "./components/confirmDialog/ConfirmDialog";

@@ -186,8 +186,9 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         --dextinity-material-blur: 0px;
         --dextinity-material-grain: 0;
 
-        --dextinity-shadow-1: none;
-        --dextinity-shadow-2: none;
-        --dextinity-shadow-3: none;
+        // A transparent shadow rather than `none`, so a component can list it after its own hairline
+        --dextinity-shadow-1: 0 0 transparent;
+        --dextinity-shadow-2: 0 0 transparent;
+        --dextinity-shadow-3: 0 0 transparent;
     }
 }

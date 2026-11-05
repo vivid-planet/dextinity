@@ -1,0 +1,17 @@
+.root {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    padding: 8px var(--dextinity-menu-item-padding) 6px;
+    color: var(--dextinity-menu-group-label-color);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-label-size);
+    letter-spacing: var(--dextinity-typography-label-letter-spacing);
+    line-height: 1.2;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

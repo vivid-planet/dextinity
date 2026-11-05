@@ -30,6 +30,15 @@ export const Default: Story = {};
 
 /**
  * The whole set: line width 1.5 on a 24px grid. The name is the prop value.
+ *
+ * **Rules**
+ *
+ * - Do: give icon buttons a tooltip and an accessible name.
+ * - Do: keep one icon per meaning — the globe always means scope or global.
+ * - Do: draw new icons on the 24px grid with the same line width.
+ * - Don't: use an icon as the only information for a status.
+ * - Don't: mix filled and line icons.
+ * - Don't: use emoji instead of icons.
  */
 export const Set: Story = {
     render: () => (
@@ -45,7 +54,8 @@ export const Set: Story = {
 };
 
 /**
- * Icons inherit the text color. Next to text they center on the x-height.
+ * Icons inherit the text color. Next to text they center on the x-height. `small` (16px) in buttons, fields, and tables; `default`
+ * (20px) in navigation and icon buttons; `large` (24px) in empty states and card headers.
  */
 export const Sizes: Story = {
     render: () => (

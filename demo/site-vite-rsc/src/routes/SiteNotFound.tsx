@@ -1,0 +1,12 @@
+import { Link } from "@dextinity/site-vite-rsc";
+import type { ContentScope } from "@src/site-configs";
+
+export function SiteNotFound({ scope }: { scope: ContentScope }) {
+    return (
+        <>
+            <title>Page not found</title>
+            <p>Page not found (Scope {JSON.stringify(scope)}).</p>
+            <Link href={`/${scope.language}`}>Return Home</Link>
+        </>
+    );
+}

@@ -10,9 +10,10 @@ lang/
 junit.xml
 junit-unit.xml
 junit-storybook.xml
+junit-e2e.xml
 .env.local
 .env.site-configs
-.env.site-configs.deploy-preview
+.env.site-configs.deploy-preview*
 **/.idea
 
 *storybook.log

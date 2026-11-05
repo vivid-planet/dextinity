@@ -26,6 +26,11 @@
 		reverse_proxy mailpit:8025
 	}
 
+	@siteViteRsc header_regexp Host ^site-vite-rsc--
+	handle @siteViteRsc {
+		reverse_proxy site-vite-rsc:3000
+	}
+
 	handle {
 		reverse_proxy site:3000
 	}

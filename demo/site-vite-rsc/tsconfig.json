@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "allowImportingTsExtensions": true,
+        "allowJs": true,
+        "baseUrl": "./",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "incremental": true,
+        "isolatedModules": true,
+        "jsx": "react-jsx",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "noEmit": true,
+        "paths": {
+            "@src/*": ["src/*"]
+        },
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "target": "es2022",
+        "types": ["node", "vite/client", "@vitejs/plugin-rsc/types"]
+    },
+    "exclude": ["node_modules"],
+    "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "vitest.config.ts"]
+}

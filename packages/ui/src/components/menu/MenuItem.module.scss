@@ -1,0 +1,29 @@
+@use "menuPopup";
+
+.root {
+    @include menuPopup.item;
+
+    &[data-color="error"] {
+        --dextinity-menu-item-foreground: var(--dextinity-menu-item-danger-foreground);
+        --dextinity-menu-item-icon-color: var(--dextinity-menu-item-danger-foreground);
+    }
+}
+
+.icon {
+    @include menuPopup.itemIcon;
+}
+
+.label {
+    @include menuPopup.itemLabel;
+}
+
+.shortcut {
+    --dextinity-kbd-background: transparent;
+    --dextinity-kbd-foreground: var(--dextinity-menu-item-shortcut-color);
+    --dextinity-kbd-shadow: none;
+    --dextinity-kbd-padding: 0;
+    --dextinity-kbd-height: auto;
+
+    margin-inline-start: auto;
+    padding-inline-start: var(--dextinity-space-4);
+}

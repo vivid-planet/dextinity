@@ -5,6 +5,7 @@ export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Ico
 export { type IconName, iconNames } from "./components/icon/iconNames";
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";
 export { type IconButtonSlotProps, type IconButtonSlots } from "./components/iconButton/IconButton";
+export { Input, type InputOwnerState, type InputProps } from "./components/input/Input";
 export { Kbd, type KbdOwnerState, type KbdProps } from "./components/kbd/Kbd";
 export { Spinner, type SpinnerOwnerState, type SpinnerProps } from "./components/spinner/Spinner";
 export { Theme, type ThemeProps } from "./components/theme/Theme";

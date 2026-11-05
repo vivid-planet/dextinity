@@ -1,12 +1,14 @@
 export const dynamic = "error";
 
 import { gql } from "@dextinity/site-nextjs";
+import { setServerIntl } from "@dextinity/site-nextjs/server";
 import type { ExternalLinkBlockData, InternalLinkBlockData, NewsLinkBlockData, RedirectsLinkBlockData } from "@src/blocks.generated";
 import { documentTypes } from "@src/documents";
 import type { GQLPageTreeNodeScope } from "@src/graphql.generated";
 import type { VisibilityParam } from "@src/middleware/domainRewrite";
 import { createSitePath } from "@src/util/createSitePath";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
+import { loadMessages } from "@src/util/loadMessages";
 import { setVisibilityParam } from "@src/util/ServerContext";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import type { Metadata, ResolvingMetadata } from "next";
@@ -98,6 +100,11 @@ export default async function Page({ params }: PageProps<"/[visibility]/[domain]
         }
         notFound();
     }
+
+    if (!getSiteConfigForDomain(domain).scope.languages.includes(language)) {
+        notFound();
+    }
+    setServerIntl(language, await loadMessages(language));
 
     const pageTreeNodeId = data.pageTreeNodeByPath.id;
 

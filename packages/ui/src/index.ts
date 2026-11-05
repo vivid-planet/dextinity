@@ -1,3 +1,6 @@
+export type { AssetThumbnailBadge, AssetThumbnailLabels, AssetThumbnailRatio } from "./components/assetThumbnail/AssetThumbnail";
+export type { AssetThumbnailType, FocalPoint } from "./components/assetThumbnail/AssetThumbnail";
+export { AssetThumbnail, type AssetThumbnailOwnerState, type AssetThumbnailProps } from "./components/assetThumbnail/AssetThumbnail";
 export { Avatar, type AvatarOwnerState, type AvatarProps, type AvatarSlotProps, getInitials } from "./components/avatar/Avatar";
 export { Badge, type BadgeOwnerState, type BadgeProps } from "./components/badge/Badge";
 export { Breadcrumbs, type BreadcrumbsItem, type BreadcrumbsLabels } from "./components/breadcrumbs/Breadcrumbs";

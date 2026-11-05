@@ -1,0 +1,21 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    --dextinity-drawer-background: var(--dextinity-material-glass-strong);
+    --dextinity-drawer-blur: var(--dextinity-material-blur);
+    --dextinity-drawer-radius: calc(24px * var(--dextinity-brand-radius-factor));
+    --dextinity-drawer-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge), var(--dextinity-shadow-3);
+    --dextinity-drawer-foreground: var(--dextinity-color-text);
+    --dextinity-drawer-width-default: 420px;
+    --dextinity-drawer-width-large: 560px;
+    // Gap between the drawer and the edges of the screen
+    --dextinity-drawer-inset: 10px;
+    // Dims the page behind a modal drawer only
+    --dextinity-drawer-backdrop: oklch(0 0 0 / 0.18);
+    --dextinity-drawer-padding: 20px;
+    --dextinity-drawer-title-font-size: 17px;
+    --dextinity-drawer-title-font-weight: 550;
+    --dextinity-drawer-description-color: var(--dextinity-color-text-secondary);
+    --dextinity-drawer-body-gap: var(--dextinity-space-3);
+    --dextinity-drawer-footer-line: var(--dextinity-color-line);
+}

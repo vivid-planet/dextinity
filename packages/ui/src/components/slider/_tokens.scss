@@ -14,6 +14,8 @@
 
     --dextinity-slider-icon-color: var(--dextinity-color-text-tertiary);
     --dextinity-slider-track-background: var(--dextinity-color-line-strong);
+    // Line around the track; transparent normally, a full line in high contrast
+    --dextinity-slider-track-line: transparent;
     --dextinity-slider-indicator-background: var(--dextinity-color-accent);
     --dextinity-slider-thumb-background: var(--dextinity-color-accent);
     --dextinity-slider-thumb-ring: var(--dextinity-color-surface);

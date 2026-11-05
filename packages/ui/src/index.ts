@@ -6,6 +6,7 @@ export { Chip, type ChipLabels, type ChipOwnerState, type ChipProps, type ChipSl
 export { ConfirmDialog, type ConfirmDialogOwnerState, type ConfirmDialogProps } from "./components/confirmDialog/ConfirmDialog";
 export { type ConfirmDialogSlotProps } from "./components/confirmDialog/ConfirmDialog";
 export { Dialog, type DialogOwnerState, type DialogProps, type DialogSlotProps } from "./components/dialog/Dialog";
+export { Drawer, type DrawerOwnerState, type DrawerProps, type DrawerSlotProps } from "./components/drawer/Drawer";
 export { EmptyState, type EmptyStateOwnerState, type EmptyStateProps } from "./components/emptyState/EmptyState";
 export { type EmptyStateSlotProps, type EmptyStateSlots } from "./components/emptyState/EmptyState";
 export { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "./components/field/Field";

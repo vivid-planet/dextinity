@@ -26,7 +26,7 @@ describe("IconButton", () => {
     });
 
     it("replaces the icon with a spinner and marks the button as busy while loading", () => {
-        render(
+        const { container } = render(
             <IconButton aria-label="Refresh" loading>
                 <span data-testid="icon" />
             </IconButton>,
@@ -35,6 +35,7 @@ describe("IconButton", () => {
         const refresh = screen.getByRole("button", { name: "Refresh" });
         expect([refresh.dataset.loading, refresh.getAttribute("aria-busy")]).toStrictEqual(["", "true"]);
         expect(screen.queryByTestId("icon")).toBeNull();
+        expect(container.querySelector(".dextinityIconButton__loadingSpinner")).not.toBeNull();
     });
 
     it("forwards the ref to the button", () => {

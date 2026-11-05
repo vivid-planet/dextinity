@@ -232,7 +232,7 @@ import { AzureAiTranslatorProvider } from "@dextinity/cms-admin";
 function App() {
     return (
         <ContentScopeProvider>
-            {({ match }) => (
+            {() => (
                 <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
                     {/* Your app routes */}
                 </AzureAiTranslatorProvider>

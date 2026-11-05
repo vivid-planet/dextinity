@@ -1,19 +1,16 @@
 import { Stack, StackToolbar } from "@dextinity/admin";
 import { useIntl } from "react-intl";
-import { useRouteMatch } from "react-router";
 
 import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
-import { useContentScope } from "../contentScope/Provider";
 import { useContentScopeConfig } from "../contentScope/useContentScopeConfig";
+import { useRoutePathBelowContentScope } from "../contentScope/useRoutePathBelowContentScope";
 import { WarningsGrid, type WarningsGridProps } from "./WarningsGrid";
 
 export type WarningsPageProps = WarningsGridProps;
 
 export function WarningsPage({ showAllScopes }: WarningsPageProps) {
     const intl = useIntl();
-    const { match } = useContentScope();
-    const routeMatch = useRouteMatch();
-    const location = routeMatch.url.replace(match.url, "");
+    const location = useRoutePathBelowContentScope();
     useContentScopeConfig({ redirectPathAfterChange: location });
 
     return (

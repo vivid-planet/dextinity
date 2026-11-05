@@ -1,7 +1,7 @@
 import { LevelUp } from "@dextinity/admin-icons";
-import { IconButton as MuiIconButton, type Link as MuiLink, Typography } from "@mui/material";
+import { IconButton as MuiIconButton, Typography } from "@mui/material";
 import { css } from "@mui/material/styles";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { BreadcrumbItem } from "../Stack";
@@ -19,7 +19,7 @@ const Link = createComponentSlot(RouterLink)<StackBreadcrumbsClassKey>({
         color: ${theme.palette.grey[600]};
         text-decoration-color: currentColor;
     `,
-) as typeof MuiLink;
+);
 
 const DisabledLink = createComponentSlot(Typography)<StackBreadcrumbsClassKey>({
     componentName: "StackBreadcrumbs",
@@ -66,7 +66,7 @@ export const BreadcrumbsEntry = ({ item, isLastItem, backButtonUrl, slotProps }:
                     {item.title}
                 </DisabledLink>
             ) : (
-                <Link to={item.url} component={BreadcrumbLink} variant="body2" {...slotProps?.link}>
+                <Link to={item.url} {...slotProps?.link}>
                     {item.title}
                 </Link>
             )}

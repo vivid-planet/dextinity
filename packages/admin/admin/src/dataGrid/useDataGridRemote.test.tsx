@@ -1,10 +1,11 @@
 import type { GridApi, GridFilterModel, GridSortDirection } from "@mui/x-data-grid";
-import { createMemoryHistory } from "history";
 import queryString from "query-string";
-import { Router } from "react-router";
-import { act, renderHook } from "test-utils";
+import type { PropsWithChildren } from "react";
+import type { Location } from "react-router";
+import { act, LocationSpy, renderHook, waitFor } from "test-utils";
 import { describe, expect, it } from "vitest";
 
+import { RouterMemoryRouter } from "../router/MemoryRouter";
 import { useDataGridRemote } from "./useDataGridRemote";
 
 const mockedSortField = "description";
@@ -19,103 +20,126 @@ const mockedPageSize = 42;
 const mockedApi: GridApi = {} as GridApi;
 const mockedCallbackDetails = { api: mockedApi, apiRef: { current: mockedApi } };
 
+function createRouter(initialEntries?: string[]) {
+    let currentLocation: Location | undefined;
+    function Wrapper({ children }: PropsWithChildren) {
+        return (
+            <RouterMemoryRouter initialEntries={initialEntries}>
+                {children}
+                <LocationSpy
+                    onChange={(location) => {
+                        currentLocation = location;
+                    }}
+                />
+            </RouterMemoryRouter>
+        );
+    }
+    return { wrapper: Wrapper, getLocation: () => currentLocation };
+}
+
 describe("useDataGridRemote", () => {
     it("reads sort param from URL and returns correct value", () => {
-        const history = createMemoryHistory({ initialEntries: [`?${queryString.stringify({ sort: `${mockedSortField}:${mockedSort}` })}`] });
+        const router = createRouter([`?${queryString.stringify({ sort: `${mockedSortField}:${mockedSort}` })}`]);
 
-        const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
+        const { result } = renderHook(() => useDataGridRemote(), { wrapper: router.wrapper });
 
         expect(result.current.sortModel).toEqual([{ field: mockedSortField, sort: mockedSort }]);
     });
 
     it("reads filter param from URL and returns correct value", () => {
-        const history = createMemoryHistory({ initialEntries: [`?${queryString.stringify({ filter: JSON.stringify(mockedFilterModel) })}`] });
+        const router = createRouter([`?${queryString.stringify({ filter: JSON.stringify(mockedFilterModel) })}`]);
 
-        const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
+        const { result } = renderHook(() => useDataGridRemote(), { wrapper: router.wrapper });
 
         expect(result.current.filterModel).toEqual(mockedFilterModel);
     });
 
     it("reads page param from URL and returns correct value", () => {
-        const history = createMemoryHistory({ initialEntries: [`?${queryString.stringify({ page: mockedPage })}`] });
+        const router = createRouter([`?${queryString.stringify({ page: mockedPage })}`]);
 
-        const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
+        const { result } = renderHook(() => useDataGridRemote(), { wrapper: router.wrapper });
 
         expect(result.current.paginationModel?.page).toEqual(mockedPage);
     });
 
     it("reads pageSize param from URL and returns correct value", () => {
-        const history = createMemoryHistory({ initialEntries: [`?${queryString.stringify({ pageSize: mockedPageSize })}`] });
+        const router = createRouter([`?${queryString.stringify({ pageSize: mockedPageSize })}`]);
 
-        const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
+        const { result } = renderHook(() => useDataGridRemote(), { wrapper: router.wrapper });
 
         expect(result.current.paginationModel?.pageSize).toEqual(mockedPageSize);
     });
 
-    it("writes sort param to URL", () => {
-        const history = createMemoryHistory();
+    it("writes sort param to URL", async () => {
+        const router = createRouter();
 
-        const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
+        const { result } = renderHook(() => useDataGridRemote(), { wrapper: router.wrapper });
 
-        act(() => {
+        await act(async () => {
             result.current.onSortModelChange?.([{ field: mockedSortField, sort: mockedSort }], mockedCallbackDetails);
         });
 
-        expect(history.location.search).toEqual(`?${queryString.stringify({ sort: `${mockedSortField}:${mockedSort}` })}`);
+        await waitFor(() => {
+            expect(router.getLocation()?.search).toEqual(`?${queryString.stringify({ sort: `${mockedSortField}:${mockedSort}` })}`);
+        });
     });
 
-    it("writes filter param to URL", () => {
-        const history = createMemoryHistory();
+    it("writes filter param to URL", async () => {
+        const router = createRouter();
 
-        const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
+        const { result } = renderHook(() => useDataGridRemote(), { wrapper: router.wrapper });
 
-        act(() => {
+        await act(async () => {
             result.current.onFilterModelChange?.(mockedFilterModel, mockedCallbackDetails);
         });
 
-        expect(history.location.search).toEqual(`?${queryString.stringify({ filter: JSON.stringify(mockedFilterModel) })}`);
+        await waitFor(() => {
+            expect(router.getLocation()?.search).toEqual(`?${queryString.stringify({ filter: JSON.stringify(mockedFilterModel) })}`);
+        });
     });
 
-    it("writes page param to URL", () => {
-        const history = createMemoryHistory();
+    it("writes page param to URL", async () => {
+        const router = createRouter();
 
-        const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
+        const { result } = renderHook(() => useDataGridRemote(), { wrapper: router.wrapper });
 
-        act(() => {
+        await act(async () => {
             result.current.onPaginationModelChange?.({ page: mockedPage, pageSize: 25 }, mockedCallbackDetails);
         });
 
-        expect(history.location.search).toEqual(`?${queryString.stringify({ page: mockedPage, pageSize: 25 })}`);
+        await waitFor(() => {
+            expect(router.getLocation()?.search).toEqual(`?${queryString.stringify({ page: mockedPage, pageSize: 25 })}`);
+        });
     });
 
-    it("writes pageSize param to URL", () => {
-        const history = createMemoryHistory();
+    it("writes pageSize param to URL", async () => {
+        const router = createRouter();
 
-        const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
+        const { result } = renderHook(() => useDataGridRemote(), { wrapper: router.wrapper });
 
-        act(() => {
+        await act(async () => {
             result.current.onPaginationModelChange?.({ page: 0, pageSize: mockedPageSize }, mockedCallbackDetails);
         });
 
-        expect(history.location.search).toEqual(`?${queryString.stringify({ pageSize: mockedPageSize, page: 0 })}`);
+        await waitFor(() => {
+            expect(router.getLocation()?.search).toEqual(`?${queryString.stringify({ pageSize: mockedPageSize, page: 0 })}`);
+        });
     });
 
     it("uses queryParamsPrefix when reading params from URL", () => {
         const prefix = "mocked";
 
-        const history = createMemoryHistory({
-            initialEntries: [
-                `?${queryString.stringify({
-                    [`${prefix}sort`]: `${mockedSortField}:${mockedSort}`,
-                    [`${prefix}filter`]: JSON.stringify(mockedFilterModel),
-                    [`${prefix}page`]: mockedPage,
-                    [`${prefix}pageSize`]: mockedPageSize,
-                })}`,
-            ],
-        });
+        const router = createRouter([
+            `?${queryString.stringify({
+                [`${prefix}sort`]: `${mockedSortField}:${mockedSort}`,
+                [`${prefix}filter`]: JSON.stringify(mockedFilterModel),
+                [`${prefix}page`]: mockedPage,
+                [`${prefix}pageSize`]: mockedPageSize,
+            })}`,
+        ]);
 
         const { result } = renderHook(() => useDataGridRemote({ queryParamsPrefix: prefix }), {
-            wrapper: ({ children }) => <Router history={history}>{children}</Router>,
+            wrapper: router.wrapper,
         });
 
         expect(result.current.sortModel).toEqual([{ field: mockedSortField, sort: mockedSort }]);
@@ -124,39 +148,47 @@ describe("useDataGridRemote", () => {
         expect(result.current.paginationModel?.pageSize).toEqual(mockedPageSize);
     });
 
-    it("adds queryParamsPrefix when writing to URL if queryParamsPrefix is set", () => {
+    it("adds queryParamsPrefix when writing to URL if queryParamsPrefix is set", async () => {
         const prefix = "mocked";
-        const history = createMemoryHistory();
+        const router = createRouter();
 
         const { result } = renderHook(() => useDataGridRemote({ queryParamsPrefix: prefix }), {
-            wrapper: ({ children }) => <Router history={history}>{children}</Router>,
+            wrapper: router.wrapper,
         });
 
-        act(() => {
+        await act(async () => {
             result.current.onSortModelChange?.([{ field: mockedSortField, sort: mockedSort }], mockedCallbackDetails);
         });
 
-        expect(history.location.search).toContain(`${prefix}sort`);
+        await waitFor(() => {
+            expect(router.getLocation()?.search).toContain(`${prefix}sort`);
+        });
 
-        act(() => {
+        await act(async () => {
             result.current.onFilterModelChange?.(mockedFilterModel, mockedCallbackDetails);
         });
-        expect(history.location.search).toContain(`${prefix}filter`);
+        await waitFor(() => {
+            expect(router.getLocation()?.search).toContain(`${prefix}filter`);
+        });
 
-        act(() => {
+        await act(async () => {
             result.current.onPaginationModelChange?.({ page: mockedPage, pageSize: mockedPage }, mockedCallbackDetails);
         });
-        expect(history.location.search).toContain(`${prefix}page`);
-        expect(history.location.search).toContain(`${prefix}pageSize`);
+        await waitFor(() => {
+            expect(router.getLocation()?.search).toContain(`${prefix}page`);
+        });
+        await waitFor(() => {
+            expect(router.getLocation()?.search).toContain(`${prefix}pageSize`);
+        });
     });
 
     it("uses initial default pageSize if no pageSize is set in the URL", () => {
         const mockedInitialPageSize = 37;
 
-        const history = createMemoryHistory();
+        const router = createRouter();
 
         const { result } = renderHook(() => useDataGridRemote({ pageSize: mockedInitialPageSize }), {
-            wrapper: ({ children }) => <Router history={history}>{children}</Router>,
+            wrapper: router.wrapper,
         });
 
         expect(result.current.paginationModel?.pageSize).toEqual(mockedInitialPageSize);
@@ -166,10 +198,10 @@ describe("useDataGridRemote", () => {
         const mockedInitialPageSize = 37;
         const mockedUrlPageSize = mockedPageSize;
 
-        const history = createMemoryHistory({ initialEntries: [`?${queryString.stringify({ pageSize: mockedPageSize })}`] });
+        const router = createRouter([`?${queryString.stringify({ pageSize: mockedPageSize })}`]);
 
         const { result } = renderHook(() => useDataGridRemote({ pageSize: mockedInitialPageSize }), {
-            wrapper: ({ children }) => <Router history={history}>{children}</Router>,
+            wrapper: router.wrapper,
         });
 
         expect(result.current.paginationModel?.pageSize).toEqual(mockedUrlPageSize);
@@ -178,10 +210,10 @@ describe("useDataGridRemote", () => {
     it("uses initial sort if no sort is set in the URL", () => {
         const mockedInitialSort: Array<{ field: string; sort: GridSortDirection }> = [{ field: "initial", sort: "desc" }];
 
-        const history = createMemoryHistory();
+        const router = createRouter();
 
         const { result } = renderHook(() => useDataGridRemote({ initialSort: mockedInitialSort }), {
-            wrapper: ({ children }) => <Router history={history}>{children}</Router>,
+            wrapper: router.wrapper,
         });
 
         expect(result.current.sortModel).toEqual(mockedInitialSort);
@@ -193,28 +225,28 @@ describe("useDataGridRemote", () => {
         const mockedUrlSort = mockedSort;
         const mockedUrlSortModel = [{ field: mockedUrlField, sort: mockedUrlSort }];
 
-        const history = createMemoryHistory({ initialEntries: [`?${queryString.stringify({ sort: `${mockedUrlField}:${mockedUrlSort}` })}`] });
+        const router = createRouter([`?${queryString.stringify({ sort: `${mockedUrlField}:${mockedUrlSort}` })}`]);
 
         const { result } = renderHook(() => useDataGridRemote({ initialSort: mockedInitialSortModel }), {
-            wrapper: ({ children }) => <Router history={history}>{children}</Router>,
+            wrapper: router.wrapper,
         });
 
         expect(result.current.sortModel).toEqual(mockedUrlSortModel);
     });
 
     it("should set empty initial filter if not provided", () => {
-        const history = createMemoryHistory();
+        const router = createRouter();
 
-        const { result } = renderHook(() => useDataGridRemote(), { wrapper: ({ children }) => <Router history={history}>{children}</Router> });
+        const { result } = renderHook(() => useDataGridRemote(), { wrapper: router.wrapper });
 
         expect(result.current.filterModel).toEqual({ items: [] });
     });
 
     it("uses initial filter if no filter is set in the URL", () => {
-        const history = createMemoryHistory();
+        const router = createRouter();
 
         const { result } = renderHook(() => useDataGridRemote({ initialFilter: mockedFilterModel }), {
-            wrapper: ({ children }) => <Router history={history}>{children}</Router>,
+            wrapper: router.wrapper,
         });
 
         expect(result.current.filterModel).toEqual(mockedFilterModel);
@@ -223,14 +255,12 @@ describe("useDataGridRemote", () => {
     it("doesn't use initial default filter if filter is set in the URL", () => {
         const mockedUrlFilterModel = { items: [{ columnField: "description", id: 1, operatorValue: "equal", value: "Test" }] };
 
-        const history = createMemoryHistory({
-            initialEntries: [
-                `?${queryString.stringify({ filter: '{"items":[{"columnField":"description","id":1,"operatorValue":"equal","value":"Test"}]}' })}`,
-            ],
-        });
+        const router = createRouter([
+            `?${queryString.stringify({ filter: '{"items":[{"columnField":"description","id":1,"operatorValue":"equal","value":"Test"}]}' })}`,
+        ]);
 
         const { result } = renderHook(() => useDataGridRemote({ initialFilter: mockedFilterModel }), {
-            wrapper: ({ children }) => <Router history={history}>{children}</Router>,
+            wrapper: router.wrapper,
         });
 
         expect(result.current.filterModel).toEqual(mockedUrlFilterModel);

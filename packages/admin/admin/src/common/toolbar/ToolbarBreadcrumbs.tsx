@@ -2,7 +2,7 @@ import { ChevronDown, ChevronRight, ChevronUp } from "@dextinity/admin-icons";
 import { ButtonBase, type ComponentsOverrides, css, ListItemText, Menu, MenuItem, type Theme, Typography, useThemeProps } from "@mui/material";
 import { mergeSlotProps } from "@mui/material/utils";
 import { Fragment, type ReactNode, useRef, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import { createComponentSlot } from "../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";

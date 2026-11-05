@@ -2,7 +2,7 @@ import { ArrowLeft } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, IconButton as MuiIconButton, type Theme } from "@mui/material";
 import { css, useThemeProps } from "@mui/material/styles";
 import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import { createComponentSlot } from "../../../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../../../helpers/ThemedComponentBaseProps";

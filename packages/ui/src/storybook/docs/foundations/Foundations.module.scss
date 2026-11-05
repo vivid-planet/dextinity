@@ -465,3 +465,100 @@
         background: var(--scale-color);
     }
 }
+
+// Motion
+
+.motionControls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-block-end: 12px;
+
+    > :last-child {
+        margin-inline-start: 10px;
+    }
+}
+
+.motionStage {
+    --motion-distance: var(--dextinity-motion-distance);
+    --exit-x: 0px;
+    --exit-y: 0px;
+    --enter-x: 0px;
+    --enter-y: 0px;
+
+    position: relative;
+    overflow: hidden;
+    block-size: 190px;
+    border-radius: var(--dextinity-radius-row);
+    background: var(--dextinity-color-surface-sunken);
+
+    @include hairline(var(--dextinity-color-line));
+
+    &[data-reduced-motion] {
+        --motion-distance: 0px;
+    }
+
+    &[data-kind="forward"] {
+        --enter-y: calc(var(--motion-distance) * 1.75);
+    }
+
+    &[data-kind="back"] {
+        --enter-y: calc(var(--motion-distance) * -1.25);
+    }
+
+    &[data-kind="lateral"] {
+        --enter-x: calc(var(--motion-distance) * 2.5);
+    }
+
+    &[data-kind="panelForward"] {
+        --exit-x: calc(var(--motion-distance) * -2);
+        --enter-x: calc(var(--motion-distance) * 3);
+    }
+
+    &[data-kind="panelBack"] {
+        --exit-x: calc(var(--motion-distance) * 2);
+        --enter-x: calc(var(--motion-distance) * -3);
+    }
+}
+
+.motionView {
+    position: absolute;
+    inset: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 0 24px;
+    border-radius: var(--dextinity-radius-field);
+    background: var(--dextinity-material-glass-strong);
+    box-shadow:
+        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge),
+        var(--dextinity-shadow-1);
+
+    > span:last-child {
+        color: var(--dextinity-color-text-secondary);
+    }
+
+    &[data-phase="exit"] {
+        animation: motion-exit var(--dextinity-motion-duration-short) var(--dextinity-motion-easing) both;
+    }
+
+    &[data-phase="enter"] {
+        animation: motion-enter var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing) both;
+    }
+}
+
+@keyframes motion-exit {
+    to {
+        opacity: 0;
+        transform: translate(var(--exit-x), var(--exit-y));
+    }
+}
+
+@keyframes motion-enter {
+    from {
+        opacity: 0;
+        transform: translate(var(--enter-x), var(--enter-y));
+    }
+}

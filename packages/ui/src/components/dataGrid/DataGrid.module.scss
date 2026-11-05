@@ -1,4 +1,7 @@
 .root {
+    --dextinity-data-grid-bulk-action-bar-offset: var(--dextinity-space-3);
+    --dextinity-data-grid-bulk-action-bar-height: calc(var(--dextinity-bulk-action-bar-action-height) + 2 * var(--dextinity-bulk-action-bar-padding));
+
     container-type: inline-size;
     display: flex;
     flex-direction: column;
@@ -248,9 +251,6 @@ th.actionsCell {
 // Takes no space, so the closed bar leaves no gap. The open bar hangs below it, in room the root reserves, and sticks to the
 // bottom of the viewport while the grid is taller than the viewport.
 .bulkActionBarAnchor {
-    --dextinity-data-grid-bulk-action-bar-offset: var(--dextinity-space-3);
-    --dextinity-data-grid-bulk-action-bar-height: calc(var(--dextinity-bulk-action-bar-action-height) + 2 * var(--dextinity-bulk-action-bar-padding));
-
     position: sticky;
     inset-block-end: calc(
         var(--dextinity-space-panel-gap) + var(--dextinity-data-grid-bulk-action-bar-height) + var(--dextinity-data-grid-bulk-action-bar-offset)
@@ -267,7 +267,7 @@ th.actionsCell {
 }
 
 .root:has(> .bulkActionBarAnchor > [data-open]) {
-    padding-block-end: calc(var(--dextinity-density-control-height-small) + var(--dextinity-space-2) * 2 + var(--dextinity-space-3));
+    padding-block-end: calc(var(--dextinity-data-grid-bulk-action-bar-height) + var(--dextinity-data-grid-bulk-action-bar-offset));
 }
 
 .visuallyHidden {

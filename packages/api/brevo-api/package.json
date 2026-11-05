@@ -74,7 +74,7 @@
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3",
         "unplugin-swc": "^2.0.0",
-        "vitest": "^5.0.5"
+        "vitest": "^5.1.0"
     },
     "peerDependencies": {
         "@mikro-orm/cli": "^6.0.0",

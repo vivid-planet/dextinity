@@ -1,0 +1,149 @@
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    background: var(--dextinity-quick-look-backdrop);
+    backdrop-filter: blur(var(--dextinity-quick-look-backdrop-blur));
+    transition: opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    &[data-starting-style],
+    &[data-ending-style] {
+        opacity: 0;
+    }
+}
+
+.viewport {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    padding: var(--dextinity-quick-look-padding);
+}
+
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-quick-look-gap);
+    box-sizing: border-box;
+    inline-size: min(100%, var(--dextinity-quick-look-max-width));
+    max-block-size: 100%;
+    color: var(--dextinity-quick-look-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+    line-height: 1.4;
+    outline: none;
+    transition:
+        opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    &[data-starting-style],
+    &[data-ending-style] {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &[data-starting-style],
+        &[data-ending-style] {
+            transform: none;
+        }
+    }
+
+    --dextinity-icon-button-foreground: var(--dextinity-quick-look-foreground);
+    --dextinity-icon-button-foreground-hover: var(--dextinity-quick-look-foreground);
+    --dextinity-icon-button-background-hover: var(--dextinity-quick-look-control-background);
+    --dextinity-button-secondary-background: var(--dextinity-quick-look-control-background);
+    --dextinity-button-secondary-foreground: var(--dextinity-quick-look-foreground);
+    --dextinity-button-secondary-shadow: none;
+    --dextinity-button-secondary-shadow-hover: none;
+    --dextinity-button-text-foreground: var(--dextinity-quick-look-foreground);
+    --dextinity-button-text-foreground-hover: var(--dextinity-quick-look-foreground);
+    --dextinity-button-text-background-hover: var(--dextinity-quick-look-control-background);
+    --dextinity-kbd-background: transparent;
+    --dextinity-kbd-foreground: var(--dextinity-quick-look-foreground);
+    --dextinity-kbd-shadow: inset 0 0 0 1px var(--dextinity-quick-look-line);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-quick-look-gap);
+    min-inline-size: 0;
+}
+
+.headings {
+    display: flex;
+    flex: 1;
+    align-items: baseline;
+    gap: var(--dextinity-quick-look-gap);
+    min-inline-size: 0;
+}
+
+.title {
+    margin: 0;
+    overflow: hidden;
+    font-size: inherit;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.description {
+    margin: 0;
+    overflow: hidden;
+    color: var(--dextinity-quick-look-foreground-secondary);
+    font-size: 12.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.actions {
+    display: flex;
+    flex: none;
+    gap: var(--dextinity-space-2);
+}
+
+.body {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: var(--dextinity-quick-look-gap);
+    min-block-size: 0;
+}
+
+.preview {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    min-inline-size: 0;
+
+    > img {
+        max-inline-size: 100%;
+        max-block-size: var(--dextinity-quick-look-preview-max-height);
+        border-radius: var(--dextinity-quick-look-preview-radius);
+        background: var(--dextinity-quick-look-preview-background);
+        object-fit: contain;
+    }
+}
+
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-space-2) var(--dextinity-space-4);
+    color: var(--dextinity-quick-look-foreground-secondary);
+    font-size: 12.5px;
+}
+
+.position {
+    flex: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.hint {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-1);
+}

@@ -33,6 +33,8 @@ export { MenuSubmenu, type MenuSubmenuOwnerState, type MenuSubmenuProps, type Me
 export { Panel, type PanelOwnerState, type PanelProps, type PanelSlotProps, type PanelSlots } from "./components/panel/Panel";
 export { Popover, type PopoverOwnerState, type PopoverPlacement, type PopoverProps } from "./components/popover/Popover";
 export { type PopoverSlotProps } from "./components/popover/Popover";
+export { QuickLook, type QuickLookItem, type QuickLookOwnerState, type QuickLookProps } from "./components/quickLook/QuickLook";
+export { type QuickLookSlotProps } from "./components/quickLook/QuickLook";
 export { RichTextEditor, type RichTextEditorFormat, type RichTextEditorLabels } from "./components/richTextEditor/RichTextEditor";
 export { type RichTextEditorOwnerState, type RichTextEditorProps } from "./components/richTextEditor/RichTextEditor";
 export { SegmentedControl, type SegmentedControlOption, type SegmentedControlOwnerState } from "./components/segmentedControl/SegmentedControl";

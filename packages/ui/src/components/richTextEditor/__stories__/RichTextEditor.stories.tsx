@@ -56,7 +56,7 @@ type Story = StoryObj<typeof meta>;
  *
  * **Limitations**
  * - Built on the browser's editing commands: one heading level, no nested lists, tables, or images.
- * - Pasting inserts plain text; incoming HTML is reduced to the toolbar's formatting.
+ * - Pasting and dropping insert plain text; incoming HTML is reduced to the toolbar's formatting.
  * - Without `onRequestLink`, the browser's prompt asks for the link target.
  */
 export const Default: Story = {
@@ -81,6 +81,34 @@ export const Link: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "Link" }));
         await expect(args.onRequestLink).toHaveBeenCalled();
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringContaining('<a href="https://example.com">')));
+    },
+};
+
+/**
+ * Pasted and dropped content arrives as plain text, so formatting from other sources never reaches the value.
+ */
+export const PasteAndDrop: Story = {
+    args: {
+        value: "",
+    },
+    play: async ({ args, canvas }) => {
+        const editor = canvas.getByRole("textbox");
+        const pasted = new DataTransfer();
+        pasted.setData("text/html", "<b>Bold</b><img src=x>");
+        pasted.setData("text/plain", "Pasted");
+        await userEvent.click(editor);
+        editor.dispatchEvent(new ClipboardEvent("paste", { clipboardData: pasted, bubbles: true, cancelable: true }));
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("Pasted"));
+
+        const dropped = new DataTransfer();
+        dropped.setData("text/html", "<em>Dropped</em><img src=x>");
+        dropped.setData("text/plain", " and dropped");
+        const box = editor.getBoundingClientRect();
+        editor.dispatchEvent(
+            new DragEvent("drop", { dataTransfer: dropped, clientX: box.right - 2, clientY: box.top + 2, bubbles: true, cancelable: true }),
+        );
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringContaining("dropped")));
+        await expect(editor.querySelector("img, em, b")).toBeNull();
     },
 };
 

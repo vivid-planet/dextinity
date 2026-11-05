@@ -3,6 +3,7 @@ import { clsx } from "clsx";
 import {
     type ClipboardEvent,
     type CSSProperties,
+    type DragEvent,
     forwardRef,
     type HTMLAttributes,
     type KeyboardEvent,
@@ -302,6 +303,24 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
         runCommand("insertText", event.clipboardData.getData("text/plain"));
     };
 
+    const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        const editor = editorRef.current;
+        const text = event.dataTransfer.getData("text/plain");
+        if (editor == null || !editable || text === "") {
+            return;
+        }
+        const document = editor.ownerDocument;
+        const range = document.caretRangeFromPoint?.(event.clientX, event.clientY);
+        editor.focus();
+        if (range != null && editor.contains(range.startContainer)) {
+            const selection = document.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+        }
+        runCommand("insertText", text);
+    };
+
     const groups = formatGroups.map((group) => group.filter((format) => toolbar.includes(format))).filter((group) => group.length > 0);
 
     return (
@@ -370,6 +389,7 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
                         onInput={emit}
                         onKeyDown={handleKeyDown}
                         onPaste={handlePaste}
+                        onDrop={handleDrop}
                     />
                     <input type="hidden" name={name} value={value} />
                 </>

@@ -1,0 +1,41 @@
+.root > :global(.dextinityField__box) {
+    align-items: flex-start;
+}
+
+.control {
+    flex: 1;
+    box-sizing: border-box;
+    min-inline-size: 0;
+    margin: 0;
+    padding-block: var(--dextinity-textarea-padding-block);
+    padding-inline: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: var(--dextinity-textarea-line-height);
+    white-space: pre-wrap;
+    resize: vertical;
+    caret-color: var(--dextinity-textarea-caret-color);
+
+    &::placeholder {
+        color: var(--dextinity-textarea-placeholder-color);
+        opacity: 1;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+
+    .root[data-autoresize] & {
+        resize: none;
+    }
+}
+
+.root :global(.dextinityField__prefix),
+.root :global(.dextinityField__suffix) {
+    align-self: flex-start;
+    padding-block: var(--dextinity-textarea-padding-block);
+    line-height: var(--dextinity-textarea-line-height);
+}

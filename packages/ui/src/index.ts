@@ -19,6 +19,7 @@ export { Spinner, type SpinnerOwnerState, type SpinnerProps } from "./components
 export { StatusIndicator, type StatusIndicatorOwnerState, type StatusIndicatorProps } from "./components/statusIndicator/StatusIndicator";
 export { defaultStatusIndicatorLabels, type StatusIndicatorStatus } from "./components/statusIndicator/StatusIndicator";
 export { type StatusIndicatorSlotProps, type StatusIndicatorSlots } from "./components/statusIndicator/StatusIndicator";
+export { Switch, type SwitchOwnerState, type SwitchProps, type SwitchSlotProps } from "./components/switch/Switch";
 export { Textarea, type TextareaOwnerState, type TextareaProps } from "./components/textarea/Textarea";
 export { Theme, type ThemeProps } from "./components/theme/Theme";
 export { Tooltip, type TooltipOwnerState, type TooltipProps, type TooltipSlotProps } from "./components/tooltip/Tooltip";

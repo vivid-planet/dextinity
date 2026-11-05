@@ -26,6 +26,8 @@ export { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerStat
 export { type FieldSize, type FieldState } from "./components/field/Field";
 export { FieldActions, type FieldActionsLabels, type FieldActionsOwnerState, type FieldActionsProps } from "./components/fieldActions/FieldActions";
 export { FilterChip, type FilterChipOwnerState, type FilterChipProps, type FilterChipSlotProps } from "./components/filterChip/FilterChip";
+export type { FocalPointPickerLabels } from "./components/focalPointPicker/FocalPointPicker";
+export { FocalPointPicker, type FocalPointPickerOwnerState, type FocalPointPickerProps } from "./components/focalPointPicker/FocalPointPicker";
 export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Icon";
 export { type IconName, iconNames } from "./components/icon/iconNames";
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";

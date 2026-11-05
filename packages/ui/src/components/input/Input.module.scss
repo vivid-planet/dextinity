@@ -1,125 +1,30 @@
 .root {
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    gap: var(--dextinity-input-gap);
-    block-size: var(--dextinity-input-height);
-    padding-block: calc(var(--dextinity-input-padding-vertical) - var(--dextinity-input-border-width));
-    padding-inline: calc(var(--dextinity-input-padding-horizontal) - var(--dextinity-input-border-width));
-    border: var(--dextinity-input-border-width) solid var(--dextinity-input-state-default-border);
-    border-radius: var(--dextinity-input-radius);
-    background: var(--dextinity-input-state-default-background);
-    color: var(--dextinity-input-state-default-foreground);
-    font-family: var(--dextinity-brand-font-family-sans);
-    font-size: var(--dextinity-input-font-size);
-    font-weight: var(--dextinity-input-font-weight);
-    line-height: var(--dextinity-input-font-line-height);
-    letter-spacing: var(--dextinity-font-letter-spacing-normal);
-    cursor: text;
-
-    --placeholder-color: var(--dextinity-input-state-default-foreground-placeholder);
-
-    &:hover {
-        border-color: var(--dextinity-input-state-hover-border);
-        background: var(--dextinity-input-state-hover-background);
-        color: var(--dextinity-input-state-hover-foreground);
-
-        --placeholder-color: var(--dextinity-input-state-hover-foreground-placeholder);
-    }
-
-    &:has(> :focus) {
-        border-color: var(--dextinity-input-state-focus-border);
-        background: var(--dextinity-input-state-focus-background);
-        color: var(--dextinity-input-state-focus-foreground);
-        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
-        outline-offset: var(--dextinity-focus-ring-offset);
-
-        --placeholder-color: var(--dextinity-input-state-focus-foreground-placeholder);
-    }
-
-    &[data-loading] {
-        border-color: var(--dextinity-input-state-loading-border);
-        background: var(--dextinity-input-state-loading-background);
-        color: var(--dextinity-input-state-loading-foreground);
-
-        --placeholder-color: var(--dextinity-input-state-loading-foreground-placeholder);
-    }
-
-    &[data-readonly] {
-        border-color: var(--dextinity-input-state-read-only-border);
-        background: var(--dextinity-input-state-read-only-background);
-        color: var(--dextinity-input-state-read-only-foreground);
-
-        --placeholder-color: var(--dextinity-input-state-read-only-foreground-placeholder);
-    }
-
-    &[data-status="error"] {
-        border-color: var(--dextinity-input-state-error-border);
-    }
-
-    &[data-status="success"] {
-        border-color: var(--dextinity-input-state-success-border);
-    }
-
-    &[data-status="warning"] {
-        border-color: var(--dextinity-input-state-warning-border);
-    }
-
-    &[data-disabled] {
-        border-color: var(--dextinity-input-state-disabled-border);
-        background: var(--dextinity-input-state-disabled-background);
-        color: var(--dextinity-input-state-disabled-foreground);
-        cursor: not-allowed;
-
-        --placeholder-color: var(--dextinity-input-state-disabled-foreground-placeholder);
-
-        .startAdornment,
-        .endAdornment {
-            color: var(--dextinity-input-state-disabled-foreground);
-        }
-    }
+    min-inline-size: 0;
 }
 
-.input {
-    flex-grow: 1;
+.control {
+    flex: 1;
+    align-self: stretch;
     min-inline-size: 0;
+    margin: 0;
     padding: 0;
-    border: none;
+    border: 0;
+    outline: none;
     background: transparent;
     color: inherit;
     font: inherit;
-    letter-spacing: inherit;
-    outline: none;
-    appearance: none;
+    caret-color: var(--dextinity-input-caret-color);
 
     &::placeholder {
-        color: var(--placeholder-color);
+        color: var(--dextinity-input-placeholder-color);
         opacity: 1;
-    }
-
-    &::-webkit-search-cancel-button,
-    &::-webkit-search-decoration {
-        appearance: none;
     }
 
     &:disabled {
         cursor: not-allowed;
     }
-}
 
-.startAdornment,
-.endAdornment {
-    display: inline-flex;
-    flex-shrink: 0;
-    align-items: center;
-    color: var(--dextinity-input-adornment-foreground);
-
-    > :is(svg, :global(.dextinityIcon)) {
-        inline-size: var(--dextinity-input-icon-size);
-        block-size: var(--dextinity-input-icon-size);
+    &::-webkit-search-cancel-button {
+        appearance: none;
     }
-}
-
-.loadingSpinner {
-    color: var(--dextinity-input-state-loading-spinner);
 }

@@ -1,76 +1,43 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import type { InputHTMLAttributes } from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Input } from "./Input";
-
-function CustomInput(props: InputHTMLAttributes<HTMLInputElement>) {
-    return <input {...props} />;
-}
-
-/**
- * Compile-time contract for the input slot. Never rendered — it exists so
- * `tsc` fails if the typing regresses.
- */
-export function InputSlotTypeContract() {
-    return (
-        <>
-            <Input aria-label="Title" slotProps={{ input: { className: "consumer-input" } }} />
-            {/* @ts-expect-error a slot className is a string, like the top-level one */}
-            <Input aria-label="Title" slotProps={{ input: { className: () => "consumer-input" } }} />
-            <Input aria-label="Title" slots={{ input: CustomInput }} />
-            {/* @ts-expect-error the slot takes the native input or a component that accepts input props */}
-            <Input aria-label="Title" slots={{ input: "div" }} />
-        </>
-    );
-}
 
 afterEach(cleanup);
 
 describe("Input", () => {
-    it("passes native input props to the input and keeps the contract on the field around it", () => {
-        render(<Input aria-label="Title" className="consumer-class" defaultValue="Hello" status="error" readOnly />);
+    it("composes the field root with its own root class and emits the type", () => {
+        const { container } = render(<Input name="email" label="Email" type="email" value="" onChange={vi.fn()} state="error" />);
 
-        const input = screen.getByRole("textbox", { name: "Title" });
-        expect([input.getAttribute("value"), input.hasAttribute("readonly"), input.getAttribute("aria-invalid")]).toStrictEqual([
-            "Hello",
-            true,
-            "true",
-        ]);
-        const field = input.parentElement;
-        expect(field?.className).toContain("consumer-class");
-        expect([field?.dataset.status, field?.dataset.readonly]).toStrictEqual(["error", ""]);
+        const root = container.firstElementChild as HTMLElement;
+        expect(root.className).toContain("dextinityField");
+        expect(root.className).toContain("dextinityInput");
+        expect([root.dataset.type, root.dataset.state]).toStrictEqual(["email", "error"]);
+        expect(screen.getByRole("textbox").className).toContain("dextinityInput__control");
     });
 
-    it("keeps an aria-invalid that the caller sets without a status", () => {
-        render(<Input aria-label="Title" aria-invalid />);
-
-        expect(screen.getByRole("textbox", { name: "Title" }).getAttribute("aria-invalid")).toBe("true");
-    });
-
-    it("puts `style` on the field and merges `slotProps.input` into the input", () => {
+    it("passes unknown props and the ref to the input, keeping a consumer description next to its own", () => {
+        const ref = { current: null as HTMLInputElement | null };
         render(
-            <Input aria-label="Title" style={{ inlineSize: "200px" }} defaultValue="Hello" slotProps={{ input: { className: "consumer-input" } }} />,
+            <>
+                <span id="extra">Extra</span>
+                <Input
+                    ref={ref}
+                    name="title"
+                    label="Title"
+                    value=""
+                    onChange={vi.fn()}
+                    helperText="Help"
+                    aria-describedby="extra"
+                    placeholder="Title"
+                />
+            </>,
         );
 
         const input = screen.getByRole("textbox", { name: "Title" });
-        expect([
-            input.parentElement?.style.inlineSize,
-            input.style.inlineSize,
-            input.className.includes("consumer-input"),
-            input.className.includes("input"),
-        ]).toStrictEqual(["200px", "", true, true]);
-    });
-
-    it("merges `slotProps.root` into the field around the input without dropping its classes", () => {
-        render(<Input aria-label="Title" className="consumer-class" slotProps={{ root: { title: "Field", className: "slot-class" } }} />);
-
-        const field = screen.getByRole("textbox", { name: "Title" }).parentElement;
-        expect([
-            field?.title,
-            field?.className.includes("consumer-class"),
-            field?.className.includes("slot-class"),
-            field?.className.includes("dextinityInput"),
-        ]).toStrictEqual(["Field", true, true, true]);
+        expect(ref.current).toBe(input);
+        expect(input.getAttribute("name")).toBe("title");
+        expect(input.getAttribute("aria-describedby")?.split(" ")).toContain("extra");
+        expect(input.getAttribute("aria-describedby")?.split(" ")).toHaveLength(2);
     });
 });

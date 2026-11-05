@@ -1,0 +1,77 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    min-block-size: var(--dextinity-device-preview-min-height);
+    overflow: hidden;
+    border-radius: var(--dextinity-device-preview-radius);
+    background: var(--dextinity-device-preview-background);
+    box-shadow: var(--dextinity-device-preview-shadow);
+    font-family: var(--dextinity-font-family-text);
+    color: var(--dextinity-color-text);
+}
+
+.toolbar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    box-sizing: border-box;
+    min-block-size: var(--dextinity-device-preview-toolbar-height);
+    padding: var(--dextinity-space-2) var(--dextinity-space-2) var(--dextinity-space-2) 10px;
+}
+
+.url {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    color: var(--dextinity-device-preview-url-foreground);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: 12px;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.actions {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--dextinity-space-1);
+}
+
+.viewport {
+    position: relative;
+    flex: 1;
+    min-block-size: 0;
+    overflow: hidden;
+}
+
+.stage {
+    position: absolute;
+    inset: var(--dextinity-device-preview-viewport-padding);
+}
+
+.frame {
+    position: absolute;
+    inset-block: 0;
+    inset-inline: 0;
+    max-inline-size: 100%;
+    margin-inline: auto;
+    overflow: hidden;
+    border-radius: var(--dextinity-device-preview-frame-radius);
+    background: var(--dextinity-device-preview-frame-background);
+    box-shadow: var(--dextinity-device-preview-frame-shadow);
+    transition: inline-size var(--dextinity-motion-duration-long) var(--dextinity-motion-easing);
+}
+
+.content {
+    overflow: auto;
+    transform-origin: 0 0;
+    scrollbar-width: thin;
+}
+
+// Applied by the high-contrast color scheme
+:global([data-dextinity-color-scheme="high-contrast"]) .root {
+    --dextinity-device-preview-frame-shadow: 0 0 0 1px var(--dextinity-color-text);
+}

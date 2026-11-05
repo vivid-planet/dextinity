@@ -262,3 +262,176 @@
 
     @include hairline(var(--dextinity-color-line));
 }
+
+.note {
+    margin: 12px 0 0;
+    color: var(--dextinity-color-text-secondary);
+    font-size: 12.5px;
+}
+
+// Spacing
+
+.spacingScale {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.spacingRow {
+    display: grid;
+    grid-template-columns: 40px auto minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    color: var(--dextinity-color-text-secondary);
+    font-size: 13px;
+
+    i {
+        display: block;
+        inline-size: calc(var(--space) * 4);
+        block-size: 14px;
+        border-radius: 4px;
+        background: var(--dextinity-color-accent);
+        opacity: 0.8;
+    }
+}
+
+.spacingToken {
+    color: var(--dextinity-color-text-tertiary);
+    font-size: 11.5px;
+}
+
+// Specs
+
+.specGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 12px;
+}
+
+.spec {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 14px;
+    border-radius: var(--dextinity-radius-field);
+    background: var(--dextinity-color-surface-raised);
+    color: var(--dextinity-color-text-secondary);
+    font-size: 12px;
+
+    @include hairline(var(--dextinity-color-line));
+
+    b {
+        color: var(--dextinity-color-text);
+        font-size: 13px;
+        font-weight: 550;
+    }
+
+    code {
+        color: var(--dextinity-color-text-tertiary);
+        font-size: 11px;
+        word-break: break-all;
+    }
+}
+
+.specSample {
+    display: grid;
+    place-items: center;
+    min-block-size: 84px;
+    margin-block-end: 10px;
+}
+
+.radiusSample {
+    display: block;
+    inline-size: 72px;
+    block-size: 52px;
+    border-radius: var(--radius);
+    background: var(--dextinity-color-accent-soft);
+    box-shadow: inset 0 0 0 1.5px var(--dextinity-color-accent);
+}
+
+.shadowSample {
+    display: block;
+    inline-size: 84px;
+    block-size: 56px;
+    border-radius: 12px;
+    background: var(--dextinity-color-surface);
+    box-shadow:
+        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line),
+        var(--shadow);
+}
+
+.glassSample {
+    display: flex;
+    gap: 6px;
+    inline-size: 100%;
+    max-inline-size: 160px;
+    block-size: 74px;
+    padding: 8px;
+    border-radius: 14px;
+
+    @include light-field;
+
+    > div {
+        display: grid;
+        flex: 1;
+        place-items: center;
+        border-radius: 10px;
+        color: var(--dextinity-color-text-secondary);
+        font: 10.5px var(--dextinity-font-family-mono);
+        text-align: center;
+        backdrop-filter: blur(var(--dextinity-material-blur));
+        box-shadow:
+            inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge),
+            inset 0 1px 0 var(--dextinity-material-highlight);
+    }
+
+    [data-material="glass"] {
+        background: var(--dextinity-material-glass);
+    }
+
+    [data-material="glass-strong"] {
+        background: var(--dextinity-material-glass-strong);
+    }
+}
+
+// Tables
+
+.table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th,
+    td {
+        padding: 12px 10px;
+        box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-line);
+        text-align: start;
+        vertical-align: top;
+    }
+
+    th {
+        color: var(--dextinity-color-text-secondary);
+        font-size: 12px;
+        font-weight: 500;
+        box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-line-strong);
+    }
+
+    code {
+        color: var(--dextinity-color-text-secondary);
+        font-size: 11.5px;
+    }
+}
+
+.numeric {
+    font-variant-numeric: tabular-nums;
+}
+
+.current {
+    background: var(--dextinity-color-accent-soft);
+    color: var(--dextinity-color-text);
+    font-weight: 600;
+
+    // Soft fills are off in high contrast
+    outline: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    outline-offset: calc(var(--dextinity-line-width) * -1);
+}

@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import { contrastGrade, contrastRatio, parseColor } from "./contrast";
 import { DocsDemo } from "./DocsDemo";
 import styles from "./Foundations.module.scss";
-import { useResolvedColors } from "./useResolvedColors";
+import { useResolvedColors } from "./useComputedTokens";
 
 export type ColorSwatch = {
     /** The custom property, e.g. `--dextinity-color-text`. */

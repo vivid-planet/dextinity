@@ -3833,56 +3833,6 @@
     },
     {
         "name": "Slider",
-        "fields": [
-            {
-                "name": "sliderList",
-                "kind": "Block",
-                "block": "SliderList",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "sliderList",
-                "kind": "Block",
-                "block": "SliderList",
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "SliderItem",
-        "fields": [
-            {
-                "name": "media",
-                "kind": "Block",
-                "block": "Media",
-                "nullable": false
-            },
-            {
-                "name": "text",
-                "kind": "Block",
-                "block": "RichText",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "media",
-                "kind": "Block",
-                "block": "Media",
-                "nullable": false
-            },
-            {
-                "name": "text",
-                "kind": "Block",
-                "block": "RichText",
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "SliderList",
         "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
@@ -3935,6 +3885,37 @@
                         }
                     ]
                 },
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "SliderItem",
+        "fields": [
+            {
+                "name": "media",
+                "kind": "Block",
+                "block": "Media",
+                "nullable": false
+            },
+            {
+                "name": "text",
+                "kind": "Block",
+                "block": "RichText",
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "media",
+                "kind": "Block",
+                "block": "Media",
+                "nullable": false
+            },
+            {
+                "name": "text",
+                "kind": "Block",
+                "block": "RichText",
                 "nullable": false
             }
         ]

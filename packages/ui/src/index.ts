@@ -28,6 +28,7 @@ export { Kbd, type KbdOwnerState, type KbdProps } from "./components/kbd/Kbd";
 export { KeyValueList, type KeyValueListItem, type KeyValueListOwnerState, type KeyValueListProps } from "./components/keyValueList/KeyValueList";
 export { type KeyValueListSlotProps } from "./components/keyValueList/KeyValueList";
 export { Link, type LinkLabels, type LinkOwnerState, type LinkProps, type LinkSlotProps } from "./components/link/Link";
+export { LinkedContent, type LinkedContentOwnerState, type LinkedContentProps } from "./components/linkedContent/LinkedContent";
 export { Menu, type MenuOwnerState, type MenuPlacement, type MenuProps, type MenuSlotProps } from "./components/menu/Menu";
 export { MenuGroup, type MenuGroupOwnerState, type MenuGroupProps, type MenuGroupSlotProps } from "./components/menu/MenuGroup";
 export { MenuItem, type MenuItemOwnerState, type MenuItemProps } from "./components/menu/MenuItem";

@@ -163,6 +163,6 @@
 }
 
 // Applied by the high-contrast color scheme
-:global([data-dextinity-color-scheme="high-contrast"]) .root {
+:global([data-dextinity-color-scheme="high-contrast"]) .root[data-variant="filled"] {
     --dextinity-chip-filled-line-strength: 100%;
 }

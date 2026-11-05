@@ -14,13 +14,16 @@
             "types": "./lib/index.d.ts",
             "import": "./lib/index.js"
         },
-        "./css": "./lib/style.css"
+        "./css": "./lib/style.css",
+        "./css/icons": "./icons.css"
     },
     "sideEffects": [
         "**/*.css"
     ],
     "files": [
-        "lib/*"
+        "lib/*",
+        "icons.css",
+        "svg/*"
     ],
     "scripts": {
         "build": "pnpm run clean && run-p build:vite build:types",

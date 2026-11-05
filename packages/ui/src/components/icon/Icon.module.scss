@@ -1,0 +1,11 @@
+.root {
+    display: inline-block;
+    flex-shrink: 0;
+    inline-size: var(--dextinity-unit-4);
+    block-size: var(--dextinity-unit-4);
+    background-color: currentColor;
+    mask: var(--dextinity-current-icon-mask, none) center / contain no-repeat;
+
+    // In high-contrast mode, Chromium replaces background colors, which would hide the icon
+    forced-color-adjust: preserve-parent-color;
+}

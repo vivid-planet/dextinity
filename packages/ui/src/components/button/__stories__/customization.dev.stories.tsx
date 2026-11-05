@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { ArrowRightIcon } from "../../../icons/ArrowRightIcon";
-import { FavoriteIcon } from "../../../icons/FavoriteIcon";
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Icon } from "../../icon/Icon";
 import { Button } from "../Button";
 import styles from "./customization.dev.module.scss";
 
@@ -20,8 +19,8 @@ type Story = StoryObj<typeof meta>;
 export const CustomizationViaSlotPropsClassName: Story = {
     args: {
         children: "Slot-level override",
-        startIcon: <FavoriteIcon />,
-        endIcon: <ArrowRightIcon />,
+        startIcon: <Icon name="favorite" />,
+        endIcon: <Icon name="arrow-right" />,
         className: styles.customRoot,
         slotProps: {
             startIcon: { className: styles.customStartIcon },
@@ -32,8 +31,8 @@ export const CustomizationViaSlotPropsClassName: Story = {
 export const CustomizationViaWrapperGlobalSelectors: Story = {
     render: () => (
         <div className={styles.wrapper}>
-            <Button startIcon={<FavoriteIcon />}>Themed via wrapper</Button>
-            <Button color="secondary" endIcon={<ArrowRightIcon />}>
+            <Button startIcon={<Icon name="favorite" />}>Themed via wrapper</Button>
+            <Button color="secondary" endIcon={<Icon name="arrow-right" />}>
                 Secondary in the same wrapper
             </Button>
         </div>

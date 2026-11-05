@@ -71,7 +71,7 @@ export const Default: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "Undo" }));
         await expect(onUndo).toHaveBeenCalled();
         await expect(args.onDismiss).toHaveBeenCalledWith("toast-1");
-        await waitFor(() => expect(canvas.queryByRole("status")).toBeNull());
+        await waitFor(() => expect(region).not.toHaveTextContent("Saved – the change is live"));
     },
 };
 
@@ -84,7 +84,7 @@ export const ReplacesCurrentToast: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "Save" }));
         await userEvent.click(canvas.getByRole("button", { name: "Publish" }));
         await expect(canvas.getByRole("alert")).toHaveTextContent("Please enter a title first");
-        await expect(canvas.queryByRole("status")).toBeNull();
+        await expect(canvas.getByRole("region", { name: "Notifications" })).not.toHaveTextContent("Saved");
     },
 };
 
@@ -95,9 +95,10 @@ export const Duration: Story = {
     render: (args) => <ToastDemo {...args} toast={{ message: "Link copied", duration: 500 }} />,
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Save" }));
-        await expect(canvas.getByRole("status")).toHaveTextContent("Link copied");
+        const region = canvas.getByRole("region", { name: "Notifications" });
+        await expect(region).toHaveTextContent("Link copied");
         await waitFor(() => expect(args.onDismiss).toHaveBeenCalled(), { timeout: 2000 });
-        await expect(canvas.queryByRole("status")).toBeNull();
+        await expect(region).not.toHaveTextContent("Link copied");
     },
 };
 

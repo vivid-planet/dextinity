@@ -77,7 +77,8 @@ export interface ButtonProps<
      */
     disabled?: boolean;
     /**
-     * Shows a spinner in place of the start icon and ignores clicks.
+     * Shows a spinner in place of the start icon and ignores clicks. Without a start icon, the spinner covers the label, so the
+     * button keeps its width.
      *
      * @defaultValue `false`
      */
@@ -150,7 +151,7 @@ export const Button: <
         ownerState,
     });
     const loadingSpinnerProps = resolveSlotProps<ButtonOwnerState, LoadingSpinner, typeof Spinner>({
-        ownProps: { className: styles.loadingSpinner },
+        ownProps: { className: clsx(styles.loadingSpinner, startIcon == null && styles.loadingSpinnerOverlay) },
         slotProps: slotProps?.loadingSpinner,
         ownerState,
     });

@@ -199,10 +199,19 @@ export const List: Story = {
 
 /**
  * Each column shows a folder on the path; clicking a folder opens it in the next column. A single selected asset shows its
- * preview at the end.
+ * preview at the end. As in the Finder, → opens the focused folder and ← goes back to the enclosing one.
  */
 export const Columns: Story = {
     args: { view: "columns", folderId: "spring", selectedIds: ["a6"] },
+    play: async ({ args, canvas }) => {
+        canvas.getByRole("option", { name: /spring-hero\.jpg/ }).focus();
+        await userEvent.keyboard("{ArrowLeft}");
+        await expect(args.onFolderChange).toHaveBeenLastCalledWith("campaigns");
+        await expect(args.onSelectionChange).toHaveBeenLastCalledWith(["spring"]);
+        await expect(canvas.getByRole("option", { name: /Spring 2026/ })).toHaveFocus();
+        await userEvent.keyboard("{ArrowRight}");
+        await expect(args.onFolderChange).toHaveBeenLastCalledWith("spring");
+    },
 };
 
 export const Gallery: Story = {

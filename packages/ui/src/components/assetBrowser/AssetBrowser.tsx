@@ -26,6 +26,7 @@ export type AssetBrowserView = "icons" | "list" | "columns" | "gallery";
 export interface AssetBrowserFolder {
     /** A stable id, unique across folders and assets. */
     id: string;
+    /** The folder name, shown in the tree, the path bar, and the content. */
     name: string;
     /** The parent folder's id, `null` for the root folder. */
     parentId: string | null;
@@ -34,15 +35,19 @@ export interface AssetBrowserFolder {
 export interface AssetBrowserAsset {
     /** A stable id, unique across folders and assets. */
     id: string;
+    /** The file name. */
     name: string;
     /** The id of the folder the asset is in. */
     folderId: string;
+    /** What the asset is; decides how its thumbnail looks. */
     type: "image" | "video" | "document";
     /** The URL of the preview picture. */
     src?: string;
     /** The picture's text alternative. */
     alt?: string;
+    /** The point the thumbnail crop is centered on. */
     focalPoint?: FocalPoint;
+    /** Exceptions shown on the thumbnail, e.g. `ai` or `missingAlt`. */
     badges?: ReadonlyArray<AssetThumbnailBadge>;
     /** The file format shown on documents, e.g. "PDF". */
     fileType?: string;
@@ -61,15 +66,21 @@ export interface AssetBrowserLabels {
     items: string;
     /** The accessible name of the view switch. */
     view: string;
+    /** The view option showing the items as icons. */
     icons: string;
+    /** The view option showing the items as a list. */
     list: string;
+    /** The view option showing the folder path as columns. */
     columns: string;
+    /** The view option showing one item large above a strip. */
     gallery: string;
     /** The button that goes to the parent folder. */
     up: string;
-    /** The column headings of the list view. */
+    /** The heading of the list view's name column. */
     name: string;
+    /** The heading of the list view's details column. */
     details: string;
+    /** The heading of the list view's last-changed column. */
     modified: string;
     /** Shown in a folder without items. */
     empty: string;
@@ -337,6 +348,21 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
             ? { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -columnCount(), ArrowDown: columnCount() }
             : { ArrowUp: -1, ArrowDown: 1 };
 
+        if (ownerState.view === "columns" && !modifier && !event.shiftKey) {
+            const current = items[index];
+            if (event.key === "ArrowRight" && current.kind === "folder") {
+                event.preventDefault();
+                openFolder(current.folder.id);
+                return;
+            }
+            if (event.key === "ArrowLeft" && currentFolder?.parentId != null) {
+                event.preventDefault();
+                focusContentAfterNavigation.current = true;
+                onFolderChange(currentFolder.parentId);
+                onSelectionChange([currentFolder.id]);
+                return;
+            }
+        }
         if ((modifier && event.key === "ArrowDown") || event.key === "Enter") {
             event.preventDefault();
             openItem(items[index]);
@@ -480,6 +506,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                 alt={item.asset.alt}
                 focalPoint={item.asset.focalPoint}
                 badges={compact ? undefined : item.asset.badges}
+                slotProps={{ badge: { tabIndex: -1 } }}
                 fileType={compact ? undefined : item.asset.fileType}
                 duration={compact ? undefined : item.asset.duration}
             />

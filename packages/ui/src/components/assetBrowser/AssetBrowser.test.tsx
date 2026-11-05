@@ -46,4 +46,14 @@ describe("AssetBrowser", () => {
         expect(options.map((option) => option.textContent?.split(/\d/)[0].trim())).toStrictEqual(["Team", "a.jpg", "b.jpg"]);
         expect(options.map((option) => option.getAttribute("aria-selected"))).toStrictEqual(["false", "true", "false"]);
     });
+
+    it("keeps the badges inside options out of the tab order", () => {
+        renderBrowser({
+            view: "icons",
+            assets: [{ id: "a", name: "a.jpg", folderId: "root", type: "image", src: "a.jpg", badges: ["ai", "missingAlt"] }],
+        });
+
+        const option = screen.getByRole("option", { name: /a\.jpg/ });
+        expect(option.querySelectorAll("[tabindex='0'], button, a[href], input")).toHaveLength(0);
+    });
 });

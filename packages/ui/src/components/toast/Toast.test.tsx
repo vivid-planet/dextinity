@@ -28,6 +28,7 @@ describe("ToastViewport", () => {
         const region = screen.getByRole("region", { name: "Messages" });
         expect(region.className).toContain("dextinityToastViewport");
         expect(screen.getByRole("list").className).toContain("dextinityToastViewport__list");
+        expect(screen.getByRole("list").getAttribute("aria-live")).toBe("polite");
     });
 });
 

@@ -70,6 +70,7 @@ function ToastViewportItem({ toast, onDismiss, toastProps }: ToastViewportItemPr
         >
             <Toast
                 {...toastProps}
+                role={toast.tone === "error" ? "alert" : undefined}
                 message={toast.message}
                 tone={toast.tone}
                 icon={toast.icon}
@@ -100,7 +101,7 @@ export const ToastViewport = forwardRef<HTMLElement, ToastViewportProps>(functio
     const ownerState: ToastViewportOwnerState = {};
     const labels = { ...defaultLabels, ...labelsProp };
     const listProps = resolveSlotProps<ToastViewportOwnerState, "ol", "ol">({
-        ownProps: { className: styles.list },
+        ownProps: { className: styles.list, "aria-live": "polite" },
         slotProps: slotProps?.list,
         ownerState,
     });

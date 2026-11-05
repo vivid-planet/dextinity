@@ -171,6 +171,21 @@ export const Default: Story = {
             </IconButton>
         ),
     },
+    play: async ({ canvas }) => {
+        const tree = canvas.getByRole("tree");
+        await userEvent.tab();
+        await expect(canvas.getByRole("treeitem", { name: "Open positions" })).toHaveFocus();
+        await userEvent.tab();
+        await expect(canvas.getByRole("button", { name: "Add page below Open positions" })).toHaveFocus();
+        await userEvent.tab();
+        await expect(tree).not.toContainElement(document.activeElement as HTMLElement | null);
+
+        await userEvent.tab({ shift: true });
+        await userEvent.tab({ shift: true });
+        await userEvent.keyboard("{ArrowDown}");
+        await userEvent.tab();
+        await expect(canvas.getByRole("button", { name: "Add page below Benefits" })).toHaveFocus();
+    },
 };
 
 /**
@@ -262,5 +277,30 @@ export const DragAndDrop: Story = {
         const careers = canvas.getByRole("treeitem", { name: "Careers" });
         const childNames = [...careers.querySelectorAll('[role="group"] > [role="treeitem"]')].map((item) => item.getAttribute("data-id"));
         await expect(childNames).toStrictEqual(["apply", "jobs", "benefits"]);
+    },
+};
+
+/**
+ * Dragging is never the only way: with `draggable`, Ctrl/⌘+X cuts the focused node, Ctrl/⌘+V moves it inside the focused node as
+ * its last child, Shift+Ctrl/⌘+V right after it. Escape cancels; invalid targets don't react.
+ */
+export const KeyboardMove: Story = {
+    args: {
+        draggable: true,
+    },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByText("Imprint"));
+        await userEvent.keyboard("{Control>}x{/Control}");
+        await expect(canvas.getByText("Imprint").closest("[data-cut]")).not.toBeNull();
+
+        await userEvent.keyboard("{Home}{ArrowDown}");
+        await userEvent.keyboard("{Shift>}{Control>}v{/Control}{/Shift}");
+        await expect(args.onMove).toHaveBeenLastCalledWith({ id: "imprint", targetId: "careers", position: "after" });
+
+        await userEvent.keyboard("{Control>}x{/Control}");
+        await userEvent.keyboard("{ArrowDown}{Control>}v{/Control}");
+        await expect(args.onMove).toHaveBeenCalledTimes(1);
+        await userEvent.keyboard("{Escape}");
+        await expect(canvas.getByText("Careers").closest("[data-cut]")).toBeNull();
     },
 };

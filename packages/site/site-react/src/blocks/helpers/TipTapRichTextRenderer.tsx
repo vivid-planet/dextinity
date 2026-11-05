@@ -105,13 +105,21 @@ export function renderTipTapRichText({ content, nodeMapping, markMapping }: Rend
     return renderNode(content, undefined);
 }
 
-// A block starts out with one empty text block, so a document holding nothing else counts as empty -
-// whichever text block that is.
-const isEmptyableTextBlock = (node: TipTapNode): boolean => node.type === "textBlock";
+const emptyableContainerNodeTypes = new Set(["textBlock", "bulletList", "orderedList", "listItem"]);
+
+const hasNodeContent = (node: TipTapNode): boolean => {
+    if (!node.type || node.type === "text") {
+        return Boolean(node.text);
+    }
+    if (emptyableContainerNodeTypes.has(node.type)) {
+        return Array.isArray(node.content) && node.content.some(hasNodeContent);
+    }
+    return true;
+};
 
 export function hasTipTapRichTextContent(content: TipTapNode | null | undefined): boolean {
     if (!content?.content || !Array.isArray(content.content)) {
         return false;
     }
-    return content.content.some((node) => !isEmptyableTextBlock(node) || (Array.isArray(node.content) && node.content.length > 0));
+    return content.content.some(hasNodeContent);
 }

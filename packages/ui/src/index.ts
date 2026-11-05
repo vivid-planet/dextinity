@@ -41,6 +41,8 @@ export { Select, type SelectLabels, type SelectOption, type SelectOwnerState, ty
 export { type SelectValue } from "./components/select/Select";
 export { Slider, type SliderOwnerState, type SliderProps, type SliderSlotProps } from "./components/slider/Slider";
 export { Spinner, type SpinnerOwnerState, type SpinnerProps } from "./components/spinner/Spinner";
+export { StatTile, type StatTileLabels, type StatTileOwnerState, type StatTileProps, type StatTileSlotProps } from "./components/statTile/StatTile";
+export { type StatTileTrend } from "./components/statTile/StatTile";
 export { StatusIndicator, type StatusIndicatorOwnerState, type StatusIndicatorProps } from "./components/statusIndicator/StatusIndicator";
 export { defaultStatusIndicatorLabels, type StatusIndicatorStatus } from "./components/statusIndicator/StatusIndicator";
 export { type StatusIndicatorSlotProps, type StatusIndicatorSlots } from "./components/statusIndicator/StatusIndicator";

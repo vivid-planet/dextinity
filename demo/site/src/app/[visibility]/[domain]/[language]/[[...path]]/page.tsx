@@ -10,7 +10,7 @@ import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { setVisibilityParam } from "@src/util/ServerContext";
 import { getSiteConfigForDomain } from "@src/util/siteConfig";
 import type { Metadata, ResolvingMetadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect, redirect } from "next/navigation";
 
 import type { GQLDocumentTypeQuery, GQLDocumentTypeQueryVariables } from "./page.generated";
 
@@ -28,6 +28,7 @@ const documentTypeQuery = gql`
         }
         redirectBySource(source: $redirectSource, sourceType: path, scope: $redirectScope) {
             target
+            redirectType
         }
     }
 `;
@@ -92,7 +93,11 @@ export default async function Page({ params }: PageProps<"/[visibility]/[domain]
                     }
                 }
                 if (destination) {
-                    redirect(destination);
+                    if (data.redirectBySource.redirectType === "permanent") {
+                        permanentRedirect(destination);
+                    } else {
+                        redirect(destination);
+                    }
                 }
             }
         }

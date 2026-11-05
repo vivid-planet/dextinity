@@ -43,6 +43,8 @@ export { Input, type InputOwnerState, type InputProps } from "./components/input
 export { Kbd, type KbdOwnerState, type KbdProps } from "./components/kbd/Kbd";
 export { KeyValueList, type KeyValueListItem, type KeyValueListOwnerState, type KeyValueListProps } from "./components/keyValueList/KeyValueList";
 export { type KeyValueListSlotProps } from "./components/keyValueList/KeyValueList";
+export { formatShortcut, isApplePlatform, type KeyboardShortcutOptions } from "./components/keyboardShortcut/useKeyboardShortcut";
+export { matchesShortcut, useKeyboardShortcut } from "./components/keyboardShortcut/useKeyboardShortcut";
 export { Link, type LinkLabels, type LinkOwnerState, type LinkProps, type LinkSlotProps } from "./components/link/Link";
 export { LinkedContent, type LinkedContentOwnerState, type LinkedContentProps } from "./components/linkedContent/LinkedContent";
 export { Menu, type MenuOwnerState, type MenuPlacement, type MenuProps, type MenuSlotProps } from "./components/menu/Menu";

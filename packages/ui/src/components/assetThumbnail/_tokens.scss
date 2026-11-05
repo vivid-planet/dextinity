@@ -11,11 +11,15 @@
 
     // Behind the first page of a document
     --dextinity-asset-thumbnail-document-background: color-mix(in oklch, var(--dextinity-color-text) 6%, var(--dextinity-color-surface));
+    // The shadow under a document's first page
+    --dextinity-asset-thumbnail-document-page-shadow: 0 4px 10px oklch(0 0 0 / 0.18);
     --dextinity-asset-thumbnail-placeholder-foreground: var(--dextinity-color-text-subtle);
 
     --dextinity-asset-thumbnail-folder-back: color-mix(in srgb, var(--dextinity-color-accent) 50%, var(--dextinity-color-surface));
     --dextinity-asset-thumbnail-folder-front: color-mix(in srgb, var(--dextinity-color-accent) 36%, var(--dextinity-color-surface));
     --dextinity-asset-thumbnail-folder-line: transparent;
+    // The light edge along the top of the folder's front
+    --dextinity-asset-thumbnail-folder-highlight: oklch(1 0 0 / 0.35);
 
     // The play mark of videos and the file format of documents
     --dextinity-asset-thumbnail-mark-background: oklch(0 0 0 / 0.62);

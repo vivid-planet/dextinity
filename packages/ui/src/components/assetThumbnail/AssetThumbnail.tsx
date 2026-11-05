@@ -12,7 +12,9 @@ export type AssetThumbnailBadge = "ai" | "missingAlt";
 
 /** A point in an image, as fractions of its width and height: `{ x: 0, y: 0 }` is the top left corner, `{ x: 1, y: 1 }` the bottom right. */
 export interface FocalPoint {
+    /** The horizontal position, from 0 (left) to 1 (right). */
     x: number;
+    /** The vertical position, from 0 (top) to 1 (bottom). */
     y: number;
 }
 
@@ -44,6 +46,8 @@ export interface AssetThumbnailSlotProps {
     image?: SlotPropsValue<AssetThumbnailOwnerState, "img">;
     /** Props for the `badges` slot, the badges in the top right corner. */
     badges?: SlotPropsValue<AssetThumbnailOwnerState, "span">;
+    /** Props for the `badge` slot, applied to each badge. Pass `tabIndex: -1` when the thumbnail sits inside a focusable item. */
+    badge?: SlotPropsValue<AssetThumbnailOwnerState, "span">;
     /** Props for the `caption` slot, which holds the name and the meta line. */
     caption?: SlotPropsValue<AssetThumbnailOwnerState, "div">;
 }
@@ -143,6 +147,11 @@ export const AssetThumbnail = forwardRef<HTMLDivElement, AssetThumbnailProps>(fu
         slotProps: slotProps?.badges,
         ownerState,
     });
+    const badgeProps = resolveSlotProps<AssetThumbnailOwnerState, "span", "span">({
+        ownProps: {},
+        slotProps: slotProps?.badge,
+        ownerState,
+    });
     const captionProps = resolveSlotProps<AssetThumbnailOwnerState, "div", "div">({
         ownProps: { className: styles.caption },
         slotProps: slotProps?.caption,
@@ -179,9 +188,9 @@ export const AssetThumbnail = forwardRef<HTMLDivElement, AssetThumbnailProps>(fu
                     <span {...badgesProps}>
                         {badges.map((badge) =>
                             badge === "ai" ? (
-                                <Badge key={badge} variant="ai" tooltip={labels.ai} />
+                                <Badge {...badgeProps} key={badge} variant="ai" tooltip={labels.ai} />
                             ) : (
-                                <Badge key={badge} variant="warning" tooltip={labels.missingAlt} />
+                                <Badge {...badgeProps} key={badge} variant="warning" tooltip={labels.missingAlt} />
                             ),
                         )}
                     </span>

@@ -1,0 +1,264 @@
+@mixin hairline($color: var(--dextinity-color-line-strong)) {
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) $color;
+}
+
+@mixin light-field {
+    background:
+        radial-gradient(90% 140% at 15% 0%, var(--dextinity-material-field-1), transparent 70%),
+        radial-gradient(80% 120% at 100% 100%, var(--dextinity-material-field-2), transparent 70%), var(--dextinity-color-canvas);
+}
+
+.demo {
+    margin-block: 16px 24px;
+    padding: 20px;
+    border-radius: var(--dextinity-radius-row);
+    background: var(--dextinity-color-canvas);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+    line-height: var(--dextinity-typography-body-line-height);
+
+    @include hairline(var(--dextinity-color-line));
+
+    code {
+        font-family: var(--dextinity-font-family-mono);
+        background: none;
+        border: 0;
+        padding: 0;
+    }
+}
+
+.lightField {
+    @include light-field;
+}
+
+.mono {
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-mono-size);
+}
+
+// Swatches
+
+.swatchGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.swatch {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--dextinity-radius-field);
+    background: var(--dextinity-color-surface);
+
+    // Drawn above the sample, so the outline stays visible over it
+    &::after {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        content: "";
+        pointer-events: none;
+
+        @include hairline;
+    }
+}
+
+.swatchSample {
+    display: grid;
+    place-items: center;
+    block-size: 84px;
+    background: var(--swatch-color);
+    font-size: 30px;
+    font-weight: 600;
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-line);
+
+    &[data-kind="text"] {
+        background: var(--swatch-background);
+        color: var(--swatch-color);
+    }
+
+    &[data-kind="gradient"] {
+        background: var(--swatch-color);
+    }
+}
+
+.onLightField {
+    background:
+        linear-gradient(var(--swatch-color), var(--swatch-color)),
+        radial-gradient(90% 140% at 15% 0%, var(--dextinity-material-field-1), transparent 70%),
+        radial-gradient(80% 120% at 100% 100%, var(--dextinity-material-field-2), transparent 70%), var(--dextinity-color-canvas);
+}
+
+.swatchMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 14px;
+    color: var(--dextinity-color-text-tertiary);
+    font-size: 12px;
+
+    b {
+        color: var(--dextinity-color-text);
+        font-size: 13px;
+        font-weight: 550;
+    }
+
+    code {
+        color: var(--dextinity-color-text-secondary);
+        font-size: 11.5px;
+        word-break: break-all;
+    }
+}
+
+.swatchValue {
+    font-size: 10.5px;
+}
+
+.contrast {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-block-start: 3px;
+    padding: 4px 8px;
+    border-radius: var(--dextinity-radius-item);
+    font-size: 11.5px;
+
+    i {
+        color: var(--dextinity-color-text-secondary);
+        font-style: normal;
+    }
+
+    em {
+        font-family: var(--dextinity-font-family-mono);
+        font-size: 11px;
+        font-style: normal;
+        font-weight: 600;
+    }
+
+    &[data-grade="AAA"],
+    &[data-grade="AA"] {
+        background: var(--dextinity-color-success-soft);
+
+        em {
+            color: var(--dextinity-color-success-text);
+        }
+    }
+
+    &[data-grade="AA large"] {
+        background: var(--dextinity-color-warning-soft);
+
+        em {
+            color: var(--dextinity-color-warning-text);
+        }
+    }
+
+    &[data-grade="fail"] {
+        background: var(--dextinity-color-danger-soft);
+
+        em {
+            color: var(--dextinity-color-danger-text);
+        }
+    }
+
+    // Soft fills are off in high contrast; a line keeps the badge readable
+    @include hairline(var(--dextinity-color-line));
+}
+
+// Rules
+
+.doDont {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+
+    > div {
+        padding: 14px 16px;
+        border-radius: var(--dextinity-radius-field);
+    }
+
+    b {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        font-weight: 600;
+    }
+
+    ul {
+        margin: 8px 0 0;
+        padding-inline-start: 18px;
+        color: var(--dextinity-color-text-secondary);
+        font-size: 13.5px;
+        line-height: 1.5;
+    }
+}
+
+.do {
+    background: var(--dextinity-color-success-soft);
+    box-shadow:
+        inset 3px 0 0 var(--dextinity-color-success),
+        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+
+    b {
+        color: var(--dextinity-color-success-text);
+    }
+}
+
+.dont {
+    background: var(--dextinity-color-danger-soft);
+    box-shadow:
+        inset 3px 0 0 var(--dextinity-color-danger),
+        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+
+    b {
+        color: var(--dextinity-color-danger-text);
+    }
+}
+
+// Numbered list
+
+.numberedList {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 11px 4px;
+        box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-color-line);
+
+        &:first-child {
+            box-shadow: none;
+        }
+
+        > div {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        span:not(.number) {
+            color: var(--dextinity-color-text-secondary);
+            font-size: 13px;
+        }
+    }
+}
+
+.number {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 24px;
+    block-size: 24px;
+    border-radius: 50%;
+    background: var(--dextinity-color-accent-soft);
+    color: var(--dextinity-color-accent-text);
+    font: 600 11.5px var(--dextinity-font-family-mono);
+
+    @include hairline(var(--dextinity-color-line));
+}

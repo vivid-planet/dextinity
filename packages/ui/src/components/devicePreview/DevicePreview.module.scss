@@ -27,7 +27,7 @@
     overflow: hidden;
     color: var(--dextinity-device-preview-url-foreground);
     font-family: var(--dextinity-font-family-mono);
-    font-size: 12px;
+    font-size: var(--dextinity-typography-mono-size);
     text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;

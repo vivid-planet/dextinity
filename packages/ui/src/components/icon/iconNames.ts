@@ -50,6 +50,7 @@ export const iconNames = [
     "layout",
     "link",
     "list",
+    "list-ordered",
     "live",
     "lock",
     "logout",

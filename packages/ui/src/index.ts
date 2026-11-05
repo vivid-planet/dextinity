@@ -3,6 +3,8 @@ export { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerStat
 export { type FieldSize, type FieldState } from "./components/field/Field";
 export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Icon";
 export { type IconName, iconNames } from "./components/icon/iconNames";
+export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";
+export { type IconButtonSlotProps, type IconButtonSlots } from "./components/iconButton/IconButton";
 export { Kbd, type KbdOwnerState, type KbdProps } from "./components/kbd/Kbd";
 export { Spinner, type SpinnerOwnerState, type SpinnerProps } from "./components/spinner/Spinner";
 export { Theme, type ThemeProps } from "./components/theme/Theme";

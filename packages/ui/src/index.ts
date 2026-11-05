@@ -1,3 +1,4 @@
+export { Avatar, type AvatarOwnerState, type AvatarProps, type AvatarSlotProps, getInitials } from "./components/avatar/Avatar";
 export { Badge, type BadgeOwnerState, type BadgeProps } from "./components/badge/Badge";
 export { Button, type ButtonOwnerState, type ButtonProps } from "./components/button/Button";
 export { Chip, type ChipLabels, type ChipOwnerState, type ChipProps, type ChipSlotProps } from "./components/chip/Chip";

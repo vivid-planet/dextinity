@@ -1,0 +1,49 @@
+.root {
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: var(--dextinity-avatar-size);
+    block-size: var(--dextinity-avatar-size);
+    overflow: hidden;
+    border-radius: var(--dextinity-avatar-radius);
+    background: var(--dextinity-avatar-background);
+    color: var(--dextinity-avatar-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-avatar-font-size);
+    font-weight: var(--dextinity-avatar-font-weight);
+    letter-spacing: 0.02em;
+    line-height: 1;
+    user-select: none;
+
+    // The hairline sits above the image
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        box-shadow: var(--dextinity-avatar-shadow);
+        pointer-events: none;
+    }
+
+    &[data-size="small"] {
+        inline-size: var(--dextinity-avatar-size-small);
+        block-size: var(--dextinity-avatar-size-small);
+        font-size: var(--dextinity-avatar-font-size-small);
+    }
+
+    &[data-size="large"] {
+        inline-size: var(--dextinity-avatar-size-large);
+        block-size: var(--dextinity-avatar-size-large);
+        font-size: var(--dextinity-avatar-font-size-large);
+    }
+}
+
+.image {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+}

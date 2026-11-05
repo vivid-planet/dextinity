@@ -22,5 +22,7 @@
     // The folders on the open path in the columns view
     --dextinity-asset-browser-path-background: color-mix(in oklch, var(--dextinity-color-text) 9%, transparent);
     --dextinity-asset-browser-drop-background: color-mix(in oklch, var(--dextinity-color-accent) 16%, transparent);
+    // The shadow under the large picture in the gallery view
+    --dextinity-asset-browser-gallery-image-shadow: 0 12px 24px oklch(0 0 0 / 0.22);
     --dextinity-asset-browser-drop-shadow: inset 0 0 0 2px var(--dextinity-color-accent);
 }

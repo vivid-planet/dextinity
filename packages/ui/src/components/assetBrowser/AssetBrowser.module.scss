@@ -361,7 +361,7 @@
     inline-size: calc(100% - 36px);
     block-size: calc(100% - 36px);
     object-fit: contain;
-    filter: drop-shadow(0 12px 24px oklch(0 0 0 / 0.22));
+    filter: drop-shadow(var(--dextinity-asset-browser-gallery-image-shadow));
 }
 
 .galleryFallback {

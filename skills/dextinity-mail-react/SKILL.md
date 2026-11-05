@@ -267,6 +267,7 @@ In dark mode, Gmail iOS, Yahoo Mail on the web, classic Outlook, Outlook on the 
 
 - Keep a background color: set `background-color` and a `background-image` of a `100×100` px solid PNG in the same color. Use this technique behind images only, not behind text: some clients keep the background but still change the text color, so the text disappears.
 - Keep a logo readable: put a light background into the image file of the logo, not behind it. Some Gmail Android phones invert only the logo or only a separate background; in one image, both change together. On a dark section, put a background image in the section color behind the logo only, not behind the whole section (Gmail iOS, Outlook on the web).
+- Keep a line visible: draw it as a border on a cell with a light background, not as a dark background like `MjmlDivider` and `HtmlDivider` do.
 - Classic Outlook ignores CSS background images; use a VML shape with `fillcolor` there.
 
 → For per-client behavior, placement rules and size limits, read [`references/dark-mode.md`](references/dark-mode.md).

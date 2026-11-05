@@ -1,0 +1,6 @@
+@use "../../theme/scope";
+
+// The surface comes from the Dialog tokens.
+@include scope.component-tokens {
+    --dextinity-confirm-dialog-width: 440px;
+}

@@ -75,6 +75,9 @@ export { Select, type SelectLabels, type SelectOption, type SelectOwnerState, ty
 export { type SelectValue } from "./components/select/Select";
 export { ShortcutList, type ShortcutListItem, type ShortcutListLabels } from "./components/shortcutList/ShortcutList";
 export { type ShortcutListOwnerState, type ShortcutListProps } from "./components/shortcutList/ShortcutList";
+export { getSideNavAncestorIds, SideNav, type SideNavGroup, type SideNavItem } from "./components/sideNav/SideNav";
+export { type SideNavLabels, type SideNavOwnerState, type SideNavProps } from "./components/sideNav/SideNav";
+export { type SideNavSlotProps, type SideNavSlots } from "./components/sideNav/SideNav";
 export { Skeleton, type SkeletonOwnerState, type SkeletonProps } from "./components/skeleton/Skeleton";
 export { Slider, type SliderOwnerState, type SliderProps, type SliderSlotProps } from "./components/slider/Slider";
 export { Spinner, type SpinnerOwnerState, type SpinnerProps } from "./components/spinner/Spinner";

@@ -1,4 +1,3 @@
-"use client";
 import type { PropsWithData } from "@dextinity/site-react";
 import Link from "next/link";
 import type { PropsWithChildren } from "react";

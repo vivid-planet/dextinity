@@ -96,6 +96,9 @@
         "packages/ui-react-final-form": {
             "project": ["./src/**/*.{ts,tsx}"]
         },
+        "packages/ui-react-hook-form": {
+            "project": ["./src/**/*.{ts,tsx}"]
+        },
         "demo/admin": {
             "entry": ["./src/loader.ts", "./src/**/*.dextinityGen.{ts,tsx}"],
             "project": ["./src/**/*.{ts,tsx}"],

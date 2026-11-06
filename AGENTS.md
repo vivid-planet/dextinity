@@ -171,6 +171,7 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 | `@dextinity/oxlint-config`       | Shared oxlint configurations, an alternative to `eslint-config`  |
 | `@dextinity/ui`                  | UI-only React component library (Base UI, CSS Modules)           |
 | `@dextinity/ui-react-final-form` | React Final Form adapters for the fields of `@dextinity/ui`      |
+| `@dextinity/ui-react-hook-form`  | React Hook Form adapters for the fields of `@dextinity/ui`       |
 
 ### Docs & Storybook
 

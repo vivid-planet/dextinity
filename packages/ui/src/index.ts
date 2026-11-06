@@ -35,6 +35,8 @@ export { Dialog, type DialogOwnerState, type DialogProps, type DialogSlotProps }
 export { Drawer, type DrawerOwnerState, type DrawerProps, type DrawerSlotProps } from "./components/drawer/Drawer";
 export type { DropzoneLabels, DropzoneRejection, DropzoneUpload } from "./components/dropzone/Dropzone";
 export { Dropzone, type DropzoneOwnerState, type DropzoneProps } from "./components/dropzone/Dropzone";
+export { EditLayout, type EditLayoutOwnerState, type EditLayoutProps } from "./components/editLayout/EditLayout";
+export { type EditLayoutSlotProps } from "./components/editLayout/EditLayout";
 export { EmptyState, type EmptyStateOwnerState, type EmptyStateProps } from "./components/emptyState/EmptyState";
 export { type EmptyStateSlotProps, type EmptyStateSlots } from "./components/emptyState/EmptyState";
 export { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "./components/field/Field";

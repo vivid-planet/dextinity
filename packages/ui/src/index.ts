@@ -56,6 +56,7 @@ export {
 } from "./components/copyField/CopyField";
 export { DataGrid, type DataGridColumn, type DataGridLabels, type DataGridOwnerState, type DataGridSlotProps } from "./components/dataGrid/DataGrid";
 export { type DataGridProps, type DataGridSort, defaultDataGridLabels } from "./components/dataGrid/DataGrid";
+export { type DataGridVariant } from "./components/dataGrid/DataGrid";
 export type { DevicePreviewDevice, DevicePreviewLabels } from "./components/devicePreview/DevicePreview";
 export {
     DevicePreview,

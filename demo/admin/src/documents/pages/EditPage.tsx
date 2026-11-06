@@ -141,10 +141,10 @@ const usePage = createUsePage({
 
 export const EditPage = ({ id }: Props) => {
     const intl = useIntl();
-    const { pageState, rootBlocksApi, hasChanges, loading, dialogs, pageSaveButton, handleSavePage, translateContent } = usePage({
+    const { pageState, rootBlocksApi, hasChanges, saving, loading, dialogs, pageSaveButton, handleSavePage, translateContent } = usePage({
         pageId: id,
     });
-    useSavePageShortcut(handleSavePage);
+    useSavePageShortcut(handleSavePage, { hasChanges, saving });
 
     const match = useRouteMatch();
     const stackApi = useStackApi();

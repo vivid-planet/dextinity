@@ -1,5 +1,5 @@
 import { useApolloClient, useQuery } from "@apollo/client";
-import { RouterPrompt, Stack } from "@dextinity/admin";
+import { LocalErrorScopeApolloContext, RouterPrompt, Stack } from "@dextinity/admin";
 import { type BlockState, DamImageBlock, useContentScope } from "@dextinity/cms-admin";
 import {
     Button,
@@ -230,12 +230,14 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
                 const { data } = await client.mutate<GQLNewsUiUpdateMutation, GQLNewsUiUpdateMutationVariables>({
                     mutation: updateNewsMutation,
                     variables: { id: savedNews.id, input },
+                    context: LocalErrorScopeApolloContext,
                 });
                 result = data?.updateNews;
             } else {
                 const { data } = await client.mutate<GQLNewsUiCreateMutation, GQLNewsUiCreateMutationVariables>({
                     mutation: createNewsMutation,
                     variables: { scope, input },
+                    context: LocalErrorScopeApolloContext,
                 });
                 result = data?.createNews;
                 if (result) {
@@ -253,11 +255,14 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
                         : intl.formatMessage({ id: "uiDemo.news.edit.saved", defaultMessage: "Saved" }),
             });
             return true;
-        } catch {
+        } catch (error) {
             setSaveState("error");
             addToast({
                 tone: "error",
-                message: intl.formatMessage({ id: "uiDemo.news.edit.saveFailed", defaultMessage: "Saving failed · check the fields and try again" }),
+                message: intl.formatMessage(
+                    { id: "uiDemo.news.edit.saveFailed", defaultMessage: "Saving failed: {reason}" },
+                    { reason: error instanceof Error ? error.message : String(error) },
+                ),
             });
             return false;
         }
@@ -274,6 +279,7 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
             await client.mutate<GQLNewsUiEditDeleteMutation, GQLNewsUiEditDeleteMutationVariables>({
                 mutation: deleteNewsMutation,
                 variables: { id: savedNews.id },
+                context: LocalErrorScopeApolloContext,
                 update: (cache) => cache.evict({ id: cache.identify({ __typename: "News", id: savedNews.id }) }),
             });
             setValues(savedValues);

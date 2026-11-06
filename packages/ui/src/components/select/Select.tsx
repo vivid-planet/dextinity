@@ -71,7 +71,7 @@ export interface SelectProps<Multiple extends boolean = false, Value = string>
      *
      * @defaultValue compares the values' keys (see `getKey`)
      */
-    isEqual?: (optionValue: Value, value: Value) => boolean;
+    isOptionEqualToValue?: (optionValue: Value, value: Value) => boolean;
     /**
      * A unique string for a value, used as the value submitted with a native form.
      *
@@ -148,7 +148,7 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
         options,
         value,
         onChange,
-        isEqual,
+        isOptionEqualToValue,
         getKey = defaultGetKey,
         multiple,
         searchable = false,
@@ -178,7 +178,7 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
         [anchorRef, ref],
     );
 
-    const matches = isEqual ?? ((optionValue: Value, selected: Value) => getKey(optionValue) === getKey(selected));
+    const matches = isOptionEqualToValue ?? ((optionValue: Value, selected: Value) => getKey(optionValue) === getKey(selected));
     const optionsByKey = new Map(options.map((option) => [getKey(option.value), option]));
     const selectedOptions = toList(value as Value | Value[] | null)
         .map((selected) => options.find((option) => matches(option.value, selected)))

@@ -86,4 +86,19 @@ describe("Select", () => {
 
         expect(screen.getByRole("combobox", { name: "Manufacturer Danube" })).toBeTruthy();
     });
+
+    it("matches a value by isOptionEqualToValue", () => {
+        render(
+            <Select<false, { id: string; version: number }>
+                name="manufacturer"
+                label="Manufacturer"
+                options={[{ value: { id: "1", version: 1 }, label: "Alpine" }]}
+                value={{ id: "1", version: 2 }}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={vi.fn()}
+            />,
+        );
+
+        expect(screen.getByRole("combobox", { name: "Manufacturer Alpine" })).toBeTruthy();
+    });
 });

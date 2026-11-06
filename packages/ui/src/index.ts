@@ -56,10 +56,10 @@ export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./c
 export { type IconButtonSlotProps, type IconButtonSlots } from "./components/iconButton/IconButton";
 export { Input, type InputOwnerState, type InputProps } from "./components/input/Input";
 export { Kbd, type KbdOwnerState, type KbdProps } from "./components/kbd/Kbd";
-export { KeyValueList, type KeyValueListItem, type KeyValueListOwnerState, type KeyValueListProps } from "./components/keyValueList/KeyValueList";
-export { type KeyValueListSlotProps } from "./components/keyValueList/KeyValueList";
 export { formatShortcut, isApplePlatform, type KeyboardShortcutOptions } from "./components/keyboardShortcut/useKeyboardShortcut";
 export { matchesShortcut, useKeyboardShortcut } from "./components/keyboardShortcut/useKeyboardShortcut";
+export { KeyValueList, type KeyValueListItem, type KeyValueListOwnerState, type KeyValueListProps } from "./components/keyValueList/KeyValueList";
+export { type KeyValueListSlotProps } from "./components/keyValueList/KeyValueList";
 export { Link, type LinkLabels, type LinkOwnerState, type LinkProps, type LinkSlotProps } from "./components/link/Link";
 export { LinkedContent, type LinkedContentOwnerState, type LinkedContentProps } from "./components/linkedContent/LinkedContent";
 export { ListDetailLayout, type ListDetailLayoutOwnerState, type ListDetailLayoutProps } from "./components/listDetailLayout/ListDetailLayout";
@@ -124,7 +124,7 @@ export { TopBar, type TopBarBack, type TopBarLabels, type TopBarOwnerState, type
 export { TreeDetailLayout, type TreeDetailLayoutOwnerState, type TreeDetailLayoutProps } from "./components/treeDetailLayout/TreeDetailLayout";
 export { type TreeDetailLayoutSlotProps } from "./components/treeDetailLayout/TreeDetailLayout";
 export { type TreeNode, TreeView, type TreeViewLabels, type TreeViewMove } from "./components/treeView/TreeView";
-export { type TreeViewOwnerState, type TreeViewProps, defaultTreeViewLabels } from "./components/treeView/TreeView";
+export { defaultTreeViewLabels, type TreeViewOwnerState, type TreeViewProps } from "./components/treeView/TreeView";
 export { Typography, type TypographyOwnerState, type TypographyProps } from "./components/typography/Typography";
 export { type UndoableAction, type UndoToastLabels, type UndoToastOptions, useUndoToast } from "./components/undoToast/useUndoToast";
 export { UserMenu, type UserMenuLabels, type UserMenuOwnerState, type UserMenuProps } from "./components/userMenu/UserMenu";

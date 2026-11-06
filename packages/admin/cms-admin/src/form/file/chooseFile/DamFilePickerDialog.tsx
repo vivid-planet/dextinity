@@ -1,8 +1,8 @@
-import { useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client";
 import { useStoredState } from "@dextinity/admin";
 import { AssetBrowser, type AssetBrowserView, Button, Dialog, EmptyState, Icon, Spinner } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
 import { useIntl } from "react-intl";
 
@@ -15,8 +15,13 @@ import { useDamFileUpload } from "../../../dam/DataGrid/fileUpload/useDamFileUpl
 import { createAssetBrowserLabels } from "../../../dam/finder/createAssetBrowserLabels";
 import { damFinderRootFolderId, toAssetBrowserAsset, toAssetBrowserFolder } from "../../../dam/finder/damFinderItems";
 import { useDamFinderFiles } from "../../../dam/finder/useDamFinderFiles";
-import { damFilePickerFoldersQuery } from "./DamFilePickerDialog.gql";
-import type { GQLDamFilePickerFoldersQuery, GQLDamFilePickerFoldersQueryVariables } from "./DamFilePickerDialog.gql.generated";
+import { damFilePickerFoldersQuery, damFilePickerInitialFileFolderQuery } from "./DamFilePickerDialog.gql";
+import type {
+    GQLDamFilePickerFoldersQuery,
+    GQLDamFilePickerFoldersQueryVariables,
+    GQLDamFilePickerInitialFileFolderQuery,
+    GQLDamFilePickerInitialFileFolderQueryVariables,
+} from "./DamFilePickerDialog.gql.generated";
 
 export interface DamFilePickerDialogProps {
     open: boolean;
@@ -27,6 +32,11 @@ export interface DamFilePickerDialogProps {
     multiple?: boolean;
     /** The files selected when the dialog opens, e.g. the field's current value. */
     initialFileIds?: string[];
+    /**
+     * The folder shown when the dialog opens, `null` for the root, e.g. the folder of the field's current file. Without it, the dialog
+     * opens the folder of the first of `initialFileIds`, or else the folder shown last.
+     */
+    initialFolderId?: string | null;
     /** Offers only files of these MIME types, and only accepts them for upload. */
     allowedMimetypes?: string[];
     /** The title; by default "Select file" or "Select files". */
@@ -49,8 +59,18 @@ export function DamFilePickerDialog(props: DamFilePickerDialogProps) {
     );
 }
 
-function DamFilePickerDialogContent({ open, onClose, onChoose, multiple, initialFileIds, allowedMimetypes, title }: DamFilePickerDialogProps) {
+function DamFilePickerDialogContent({
+    open,
+    onClose,
+    onChoose,
+    multiple,
+    initialFileIds,
+    initialFolderId,
+    allowedMimetypes,
+    title,
+}: DamFilePickerDialogProps) {
     const intl = useIntl();
+    const client = useApolloClient();
     const scope = useDamScope();
     const { allAcceptedMimeTypes } = useDamAcceptedMimeTypes();
     const scopeKey = Object.values(scope).join("-");
@@ -60,11 +80,34 @@ function DamFilePickerDialogContent({ open, onClose, onChoose, multiple, initial
     const [selectedFileIds, setSelectedFileIds] = useState<string[]>(initialFileIds ?? []);
     const [isChoosing, setIsChoosing] = useState(false);
 
-    useEffect(() => {
-        if (open) {
-            setSelectedFileIds(initialFileIds ?? []);
+    const openCountRef = useRef(0);
+    const openFolderOfFile = async (fileId: string, openCount: number) => {
+        try {
+            const { data } = await client.query<GQLDamFilePickerInitialFileFolderQuery, GQLDamFilePickerInitialFileFolderQueryVariables>({
+                query: damFilePickerInitialFileFolderQuery,
+                variables: { id: fileId },
+            });
+            if (openCountRef.current === openCount) {
+                setStoredFolderId(data.damFile.folder?.id ?? damFinderRootFolderId);
+            }
+        } catch {
+            // The folder shown last stays open when the file's folder can't be looked up
         }
-        // Only reset the selection when the dialog opens, not when the caller passes a new array for the same files
+    };
+    useEffect(() => {
+        if (!open) {
+            return;
+        }
+        openCountRef.current += 1;
+        const openCount = openCountRef.current;
+        setSelectedFileIds(initialFileIds ?? []);
+
+        if (initialFolderId !== undefined) {
+            setStoredFolderId(initialFolderId ?? damFinderRootFolderId);
+        } else if (initialFileIds != null && initialFileIds.length > 0) {
+            openFolderOfFile(initialFileIds[0], openCount);
+        }
+        // Only reset the selection and the folder when the dialog opens, not when the caller passes a new array for the same files
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 

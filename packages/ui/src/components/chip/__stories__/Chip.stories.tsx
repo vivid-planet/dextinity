@@ -9,9 +9,9 @@ import { Chip, type ChipProps } from "../Chip";
 import styles from "./Chip.stories.module.scss";
 
 const iconOptions = {
-    Globe: <Icon name="globe" />,
-    Sparkle: <Icon name="sparkle" />,
-    Clock: <Icon name="clock" />,
+    Globe: <Icon name="domain" />,
+    Sparkle: <Icon name="artificial-intelligence" />,
+    Clock: <Icon name="time" />,
 };
 
 const colors = ["default", "primary", "secondary", "error", "info", "success", "warning"] as const;
@@ -105,7 +105,7 @@ export const Small: Story = {
 
 export const WithIcon: Story = {
     args: {
-        icon: <Icon name="globe" />,
+        icon: <Icon name="domain" />,
         children: "Austria",
     },
 };

@@ -37,10 +37,10 @@ const countries: SelectOption[] = [
 ].map((country) => ({ value: country.toLowerCase(), label: country }));
 
 const channels: SelectOption[] = [
-    { value: "web", label: "Website", icon: <Icon name="globe" /> },
-    { value: "mail", label: "Newsletter", icon: <Icon name="mail" /> },
-    { value: "phone", label: "App", icon: <Icon name="phone" /> },
-    { value: "print", label: "Print", icon: <Icon name="page" />, disabled: true },
+    { value: "web", label: "Website", icon: <Icon name="domain" /> },
+    { value: "mail", label: "Newsletter", icon: <Icon name="letter" /> },
+    { value: "phone", label: "App", icon: <Icon name="device-phone" /> },
+    { value: "print", label: "Print", icon: <Icon name="file" />, disabled: true },
 ];
 
 /** Keeps the story controlled: choosing updates the local value; changing the `value` control starts over from it. */

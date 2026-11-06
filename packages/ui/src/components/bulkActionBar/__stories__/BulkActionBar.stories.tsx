@@ -40,7 +40,7 @@ const meta = {
         actions: [
             { label: "Publish", icon: <Icon name="check" />, onClick: fn() },
             { label: "Archive", icon: <Icon name="archive" />, onClick: fn() },
-            { label: "Delete", icon: <Icon name="trash" />, color: "error", onClick: fn() },
+            { label: "Delete", icon: <Icon name="delete" />, color: "error", onClick: fn() },
         ],
         onClear: fn(),
     },

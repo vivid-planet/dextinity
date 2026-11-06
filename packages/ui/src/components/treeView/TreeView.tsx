@@ -143,7 +143,7 @@ interface VisibleNode {
     expanded: boolean;
 }
 
-const typeIcons = { page: "page", link: "link", folder: "folder" } as const;
+const typeIcons = { page: "file", link: "link", folder: "folder" } as const;
 
 function collectParents(nodes: TreeNode[], parentId: string | undefined, parents: Map<string, string | undefined>) {
     for (const node of nodes) {
@@ -537,7 +537,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                     >
                         {draggable && (
                             <span className={styles.dragHandle} aria-hidden>
-                                <Icon name="grip" />
+                                <Icon name="drag-indicator" />
                             </span>
                         )}
                         <span
@@ -574,7 +574,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                         </span>
                         {node.hiddenInMenu && (
                             <span id={partId("hidden")} className={styles.hiddenInMenu} role="img" aria-label={labels.hiddenInMenu}>
-                                <Icon name="eye-off" />
+                                <Icon name="invisible" />
                             </span>
                         )}
                         <span className={styles.path} aria-hidden>

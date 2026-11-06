@@ -37,7 +37,7 @@ const meta = {
         themeDecorator,
     ],
     parameters: { tokens: toolbarTokens },
-    args: { "aria-label": "Bold", children: <Icon name="bold" />, onClick: fn() },
+    args: { "aria-label": "Bold", children: <Icon name="rte-bold" />, onClick: fn() },
     argTypes: {
         pressed: { control: "boolean" },
         disabled: { control: "boolean" },

@@ -11,7 +11,10 @@ Load the Inter font and import the styles once, in the application's entry file:
 ```ts
 import "@fontsource-variable/inter";
 import "@dextinity/ui/css";
+import "@dextinity/ui/css/icons";
 ```
+
+`@dextinity/ui/css/icons` holds the default icon set (see [Icons](#icons)); a project with its own full icon set skips it.
 
 ### Forms
 
@@ -222,7 +225,8 @@ The tokens live in SCSS partials under [`src/theme/`](src/theme), composed into 
 3. **Semantic** (`_semantic.scss`) — surfaces, text, lines, accent, status, material (glass, blur, grain, light fields), and shadows, per color scheme (light, dark, high contrast). High contrast turns light and glass off and lines on.
 4. **Typography, motion, density** (`_typography.scss`, `_motion.scss`, `_density.scss`) — text styles, one easing with three durations (reduced motion keeps only short fades), and fixed metrics per density level.
 5. **Component tokens** — see below.
-6. **Icons** (`_icons.scss`, generated) — one variable per icon.
+
+The icon variables aren't part of these layers: they ship as a separate stylesheet, see [Icons](#icons).
 
 Components use semantic, material, motion, density, and their own component tokens — never primitives. The prop-value types live in [`src/theme/types.ts`](src/theme/types.ts).
 
@@ -242,14 +246,25 @@ A brand is a CSS block on `[data-dextinity-brand="<name>"]` that sets the `--dex
     --dextinity-brand-primary-chroma: 0.21;
     --dextinity-brand-font-family-text: "Source Sans 3", sans-serif;
     --dextinity-brand-radius-control: 999px;
-    --dextinity-icon-search: url("data:image/svg+xml,…");
+    --dextinity-icon-search: url("./icons/acme-search.svg#icon");
 }
 ```
-
-### Icons
-
-`Icon` renders the glyph from the CSS variable `--dextinity-icon-<name>` as a mask, so it inherits the text color and every brand or theme can replace any icon — or add one — in CSS alone, without a React context. The default set's SVG sources are in [`src/icons/svg`](src/icons/svg) (24px grid, line width 1.5; an optional `<name>.duotone.svg` holds the soft fill); `pnpm run generate:icons` regenerates `_icons.scss` and the `IconName` type. Components size nested icons through `--dextinity-icon-size`.
 
 ### Selecting a color scheme, brand, and density
 
 `Theme` selects the color scheme, brand, and density. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code.
+
+## Icons
+
+`Icon` shows an SVG file from [`svg/`](svg) as a CSS mask, filled with the current text color. [`icons.css`](icons.css) defines one variable per icon, `--dextinity-icon-<name>`, and projects override these variables in their own stylesheet, like the other tokens — for the whole application, for a brand, or for one part of the page. An icon that keeps its own colors, such as a logo, uses `--dextinity-colored-icon-<name>` instead, and `Icon` shows it as a background image. `Icon` reads no React context, so it also renders in React Server Components.
+
+`icons.css` ships as it is, outside the Vite build: Vite's library mode puts every file that a `url()` refers to into the CSS as a `data:` URL, so all icons would be in every application's CSS. The application's bundler resolves the URLs instead, and the browser loads only the icons that it shows. Each URL ends in `#icon`, because the application's Vite doesn't inline a file whose URL has a fragment either.
+
+An icon is 16px. Components size their nested icons through `--dextinity-icon-size`, and `Icon`'s `size` prop picks one of the sizes `small` (16px), `default` (20px), and `large` (24px). With `duotone`, `Icon` adds a soft fill behind the line from `--dextinity-duotone-icon-<name>` (SVG files in [`svg/duotone/`](svg/duotone)); an icon without one shows only its line.
+
+### Adding an icon
+
+1. Prepare the SVG file. Its root element is `<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 16 16" fill="none">`; for any other size, ask for a 16×16 version instead of scaling it.
+2. Save it as `svg/<name>.svg`, with the name in kebab case, for example `arrow-right.svg`. Icons from the Figma library keep their Figma name; an icon that the library doesn't have yet follows the same naming, for example the `rte-` prefix for the rich text editor.
+3. Add the name to `defaultIconNames` in [`iconRegistry.ts`](src/components/icon/iconRegistry.ts), its search terms to [`iconSearchTerms.ts`](src/docs/theme/__stories__/iconSearchTerms.ts), and its variable to `icons.css`: `--dextinity-colored-icon-<name>` when the icon keeps its own colors, `--dextinity-icon-<name>` otherwise. [`iconSet.test.ts`](src/components/icon/iconSet.test.ts) fails when the SVG files, the variables, and the names don't match.
+4. Optionally, add a soft fill for `duotone` as `svg/duotone/<name>.svg` and its variable `--dextinity-duotone-icon-<name>` to `icons.css`.

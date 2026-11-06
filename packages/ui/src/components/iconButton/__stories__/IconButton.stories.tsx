@@ -8,9 +8,9 @@ import { IconButton } from "../IconButton";
 import styles from "./IconButton.stories.module.scss";
 
 const iconOptions = {
-    More: <Icon name="more" />,
+    More: <Icon name="more-horizontal" />,
     Edit: <Icon name="edit" />,
-    Trash: <Icon name="trash" />,
+    Trash: <Icon name="delete" />,
     Close: <Icon name="close" />,
 };
 
@@ -27,7 +27,7 @@ const meta = {
     ],
     parameters: { tokens: iconButtonTokens },
     args: {
-        children: <Icon name="more" />,
+        children: <Icon name="more-horizontal" />,
         "aria-label": "More actions",
         onClick: fn(),
     },

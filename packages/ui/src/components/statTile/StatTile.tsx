@@ -3,6 +3,7 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
+import type { IconName } from "../icon/iconRegistry";
 import styles from "./StatTile.module.scss";
 
 export type StatTileTrend = "up" | "down" | "flat";
@@ -44,9 +45,9 @@ const defaultLabels: StatTileLabels = {
     trendFlat: "Steady",
 };
 
-const trendIcon: Record<StatTileTrend, string> = {
-    up: "arrow-up",
-    down: "arrow-down",
+const trendIcon: Record<StatTileTrend, IconName> = {
+    up: "trend-arrow-up",
+    down: "trend-arrow-down",
     flat: "arrow-right",
 };
 
@@ -123,7 +124,7 @@ export const StatTile = forwardRef<HTMLDivElement, StatTileProps>(function StatT
                 {unit != null && <span {...unitProps}>{unit}</span>}
                 {trend != null && (
                     <span {...trendProps}>
-                        <Icon name={trendIcon[trend]} label={labels[trendLabelKey[trend]]} />
+                        <Icon name={trendIcon[trend]} aria-label={labels[trendLabelKey[trend]]} />
                     </span>
                 )}
             </div>

@@ -58,7 +58,7 @@ function OverviewCards() {
         <>
             <Card
                 title="Recently edited"
-                icon={<Icon name="recent" duotone />}
+                icon={<Icon name="time" duotone />}
                 link={
                     <Link href="#page-tree" endIcon={<Icon name="arrow-right" />}>
                         Page tree
@@ -79,7 +79,7 @@ function OverviewCards() {
                     />
                 ))}
             </Card>
-            <Card title="Published" icon={<Icon name="live" duotone />} meta="30 days">
+            <Card title="Published" icon={<Icon name="online" duotone />} meta="30 days">
                 <div className={styles.published}>
                     <div className={styles.publishedHead}>
                         <div>
@@ -116,11 +116,11 @@ function OverviewCards() {
             </Card>
             <Card title="New form submissions" icon={<Icon name="inbox" duotone />}>
                 <EmptyState
-                    icon={<Icon name="alert" />}
+                    icon={<Icon name="error" />}
                     title="Couldn't load"
                     description="The server didn't answer in time. Your content is not affected."
                     actions={
-                        <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="refresh" />}>
+                        <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="reload" />}>
                             Load again
                         </Button>
                     }

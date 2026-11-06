@@ -17,7 +17,7 @@ const actionOptions = {
     ),
     IconButton: (
         <IconButton aria-label="More actions" size="small">
-            <Icon name="more" />
+            <Icon name="more-horizontal" />
         </IconButton>
     ),
 };

@@ -9,7 +9,7 @@ export const sideNavGroups: SideNavGroup[] = [
             {
                 id: "website",
                 label: "Website",
-                icon: <Icon name="page" />,
+                icon: <Icon name="file" />,
                 children: [
                     { id: "page-tree", label: "Page tree", href: "#page-tree" },
                     {
@@ -45,7 +45,7 @@ export const sideNavGroups: SideNavGroup[] = [
     {
         label: "Administration",
         items: [
-            { id: "users", label: "Users", icon: <Icon name="user" />, href: "#users" },
+            { id: "users", label: "Users", icon: <Icon name="account" />, href: "#users" },
             { id: "settings", label: "Settings", icon: <Icon name="settings" />, href: "#settings" },
         ],
     },

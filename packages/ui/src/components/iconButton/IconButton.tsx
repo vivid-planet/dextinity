@@ -48,7 +48,7 @@ export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinn
     BaseButton.Props,
     "className" | "ref" | "children"
 > {
-    /** The icon, e.g. `<Icon name="more" />`. */
+    /** The icon, e.g. `<Icon name="more-horizontal" />`. */
     children: ReactNode;
     /** The accessible name of the button, also shown as its tooltip. Name the action, e.g. "More actions". */
     "aria-label": string;

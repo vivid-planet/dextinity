@@ -10,9 +10,9 @@ import { Card } from "../Card";
 import styles from "./Card.stories.module.scss";
 
 const iconOptions = {
-    Recent: <Icon name="recent" duotone />,
-    Page: <Icon name="page" duotone />,
-    Live: <Icon name="live" duotone />,
+    Recent: <Icon name="time" duotone />,
+    Page: <Icon name="file" duotone />,
+    Live: <Icon name="online" duotone />,
 };
 
 const linkOptions = {

@@ -42,7 +42,7 @@ function EditorControl(control: FieldControlProps) {
         <>
             <Toolbar aria-label="Formatting" className={styles.editorToolbar} disabled={control.disabled || control.readOnly}>
                 <ToolbarButton aria-label="Bold" shortcut="⌘B" pressed={bold} keepFocus onClick={() => setBold(!bold)}>
-                    <Icon name="bold" />
+                    <Icon name="rte-bold" />
                 </ToolbarButton>
                 <ToolbarButton aria-label="Link" shortcut="⌘K" keepFocus>
                     <Icon name="link" />

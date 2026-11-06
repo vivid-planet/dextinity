@@ -24,7 +24,7 @@ const meta = {
     },
     argTypes: {
         tone: { control: "radio", options: ["warning", "error", "info"] },
-        icon: { control: "select", options: ["Info", "Globe"], mapping: { Info: <Icon name="info" />, Globe: <Icon name="globe" /> } },
+        icon: { control: "select", options: ["Info", "Globe"], mapping: { Info: <Icon name="info" />, Globe: <Icon name="domain" /> } },
         action: { control: false },
         className: { control: false },
         slotProps: { control: false },

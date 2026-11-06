@@ -114,10 +114,10 @@ export const WithActions: Story = {
         actions: (
             <>
                 <IconButton size="small" aria-label="Show hidden blocks">
-                    <Icon name="eye-off" />
+                    <Icon name="invisible" />
                 </IconButton>
                 <IconButton size="small" aria-label="Open in new tab">
-                    <Icon name="external-link" />
+                    <Icon name="open-new-tab" />
                 </IconButton>
             </>
         ),

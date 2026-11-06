@@ -3,14 +3,14 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
-import type { IconName } from "../icon/iconNames";
+import type { IconName } from "../icon/iconRegistry";
 import styles from "./Banner.module.scss";
 
 type BannerTone = "warning" | "error" | "info";
 
 const toneIcons: Record<BannerTone, IconName> = {
-    warning: "alert",
-    error: "alert",
+    warning: "warning",
+    error: "error",
     info: "info",
 };
 

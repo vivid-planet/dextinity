@@ -55,7 +55,7 @@ function Addresses() {
                                     )
                                 }
                             >
-                                <Icon name="trash" />
+                                <Icon name="delete" />
                             </IconButton>
                         </div>
                     </div>

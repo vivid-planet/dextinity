@@ -1,25 +1,3 @@
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: var(--dextinity-space-2);
-}
-
-.cell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--dextinity-space-2);
-    padding: var(--dextinity-space-3);
-    border-radius: var(--dextinity-radius-item);
-    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
-    color: var(--dextinity-color-text);
-
-    code {
-        color: var(--dextinity-color-text-tertiary);
-        font-size: 11px;
-    }
-}
-
 .row {
     display: flex;
     align-items: center;

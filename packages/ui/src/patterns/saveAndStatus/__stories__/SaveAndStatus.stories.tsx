@@ -89,7 +89,7 @@ function EditPageExample() {
                             variant="outlined"
                             color="secondary"
                             size="small"
-                            startIcon={<Icon name="refresh" />}
+                            startIcon={<Icon name="reload" />}
                             onClick={() => setStatus("unpublished")}
                         >
                             Restore

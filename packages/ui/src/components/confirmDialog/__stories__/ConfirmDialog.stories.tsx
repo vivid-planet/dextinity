@@ -41,7 +41,7 @@ function ControlledConfirmDialog(props: ConfirmDialogProps) {
 }
 
 const iconOptions = {
-    Trash: <Icon name="trash" />,
+    Trash: <Icon name="delete" />,
     Check: <Icon name="check" />,
 };
 
@@ -136,7 +136,7 @@ export const Danger: Story = {
         title: "Delete “Careers” and 3 subpages?",
         description: "Redirects to these pages stop working.",
         confirmLabel: "Delete",
-        confirmIcon: <Icon name="trash" />,
+        confirmIcon: <Icon name="delete" />,
     },
 };
 

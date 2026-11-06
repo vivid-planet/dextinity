@@ -295,7 +295,7 @@ export const Dropzone = forwardRef<HTMLDivElement, DropzoneProps>(function Dropz
                         const status = upload.status ?? "uploading";
                         return (
                             <li key={upload.id} className={styles.upload} data-status={status}>
-                                <Icon name={status === "done" ? "check" : status === "error" ? "alert" : "page"} className={styles.uploadIcon} />
+                                <Icon name={status === "done" ? "check" : status === "error" ? "error" : "file"} className={styles.uploadIcon} />
                                 <span className={styles.uploadName}>{upload.name}</span>
                                 {status === "error" ? (
                                     <span className={styles.uploadError}>{upload.error}</span>

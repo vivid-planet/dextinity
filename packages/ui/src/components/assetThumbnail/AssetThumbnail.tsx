@@ -174,7 +174,7 @@ export const AssetThumbnail = forwardRef<HTMLDivElement, AssetThumbnailProps>(fu
                     <img {...imageProps} />
                 ) : (
                     <span className={styles.placeholder} aria-hidden="true">
-                        <Icon name={ownerState.type === "image" ? "image" : ownerState.type === "video" ? "play" : "page"} />
+                        <Icon name={ownerState.type === "image" ? "image" : ownerState.type === "video" ? "play" : "file"} />
                     </span>
                 )}
                 {ownerState.type === "video" && (

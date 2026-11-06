@@ -9,7 +9,7 @@ import { Slider, type SliderProps } from "../Slider";
 
 const iconOptions = {
     Image: <Icon name="image" />,
-    Gallery: <Icon name="gallery" />,
+    Gallery: <Icon name="assets" />,
 };
 
 /** Keeps the story controlled: moving updates the local value; the `value` arg sets the initial one. */

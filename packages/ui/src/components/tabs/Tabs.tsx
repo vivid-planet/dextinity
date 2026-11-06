@@ -183,7 +183,7 @@ export const Tabs = forwardRef(function Tabs<Value extends string = string>(
                             <>
                                 {" "}
                                 <span {...errorMarkerProps}>
-                                    <Icon name="alert" />
+                                    <Icon name="error" />
                                     <span className={styles.visuallyHidden}>{labels.error}</span>
                                 </span>
                             </>

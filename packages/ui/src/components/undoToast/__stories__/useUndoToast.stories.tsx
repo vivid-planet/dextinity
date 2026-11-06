@@ -31,7 +31,7 @@ function ArchiveDemo() {
                         message: "“Benefits” archived",
                         icon: <Icon name="archive" />,
                         undoneMessage: "“Benefits” restored",
-                        undoneIcon: <Icon name="refresh" />,
+                        undoneIcon: <Icon name="reload" />,
                     })
                 }
             >
@@ -40,7 +40,7 @@ function ArchiveDemo() {
             <Button
                 variant="outlined"
                 color="error"
-                startIcon={<Icon name="trash" />}
+                startIcon={<Icon name="delete" />}
                 onClick={() => block("“logo.svg” is still in use · nothing deleted")}
             >
                 Delete “logo.svg”

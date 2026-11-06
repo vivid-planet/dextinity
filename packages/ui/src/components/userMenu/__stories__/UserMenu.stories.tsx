@@ -20,10 +20,10 @@ function UserSettings() {
         <>
             <MenuGroup label="Theme">
                 <MenuRadioGroup value={theme} onChange={setTheme}>
-                    <MenuRadioItem closeOnClick={false} value="light" label="Light" icon={<Icon name="sun" />} />
-                    <MenuRadioItem closeOnClick={false} value="dark" label="Dark" icon={<Icon name="moon" />} />
-                    <MenuRadioItem closeOnClick={false} value="high-contrast" label="High contrast" icon={<Icon name="contrast" />} />
-                    <MenuRadioItem closeOnClick={false} value="auto" label="Time of day" icon={<Icon name="clock" />} />
+                    <MenuRadioItem closeOnClick={false} value="light" label="Light" icon={<Icon name="light-mode" />} />
+                    <MenuRadioItem closeOnClick={false} value="dark" label="Dark" icon={<Icon name="dark-mode" />} />
+                    <MenuRadioItem closeOnClick={false} value="high-contrast" label="High contrast" icon={<Icon name="high-contrast-mode" />} />
+                    <MenuRadioItem closeOnClick={false} value="auto" label="Time of day" icon={<Icon name="time" />} />
                 </MenuRadioGroup>
             </MenuGroup>
             <MenuSeparator />

@@ -340,7 +340,7 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
                                         entry.kind === "retry" ? (
                                             <BaseCombobox.Item key={entry.key} value={entry} className={styles.item}>
                                                 <span className={styles.itemIcon}>
-                                                    <Icon name="refresh" />
+                                                    <Icon name="reload" />
                                                 </span>
                                                 <span className={styles.itemText}>{labels.retry}</span>
                                             </BaseCombobox.Item>

@@ -74,7 +74,7 @@ function PagePicker({ onChange, initialPageId = null, ...props }: StoryArgs & { 
                 value={page}
                 renderValue={(value) => (
                     <>
-                        <Icon name="page" />
+                        <Icon name="file" />
                         {value.label}
                         <span className={styles.path}>{value.path}</span>
                     </>
@@ -84,7 +84,7 @@ function PagePicker({ onChange, initialPageId = null, ...props }: StoryArgs & { 
                     setOpen(true);
                 }}
                 onClear={props.required ? undefined : () => choose(null)}
-                icon={<Icon name="page" />}
+                icon={<Icon name="file" />}
             />
             <Dialog
                 open={open}

@@ -53,7 +53,7 @@ function LoadingExample() {
                 variant="outlined"
                 color="secondary"
                 size="small"
-                startIcon={<Icon name="refresh" />}
+                startIcon={<Icon name="reload" />}
                 loading={loading}
                 onClick={() => setLoading(true)}
             >
@@ -102,7 +102,7 @@ function EmptyLoadingErrorPage() {
                     <PatternSpec label="First use">
                         <EmptyState
                             className={styles.emptyState}
-                            icon={<Icon name="page" />}
+                            icon={<Icon name="file" />}
                             title="No redirects yet"
                             description="Redirects are created automatically when a path changes."
                             actions={

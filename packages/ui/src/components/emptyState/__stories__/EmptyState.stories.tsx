@@ -88,7 +88,7 @@ export const NoResults: Story = {
 export const NothingYet: Story = {
     args: {
         title: "No pages yet",
-        icon: <Icon name="page" duotone />,
+        icon: <Icon name="file" duotone />,
         description: "Pages you create appear here.",
         actions: actionOptions.Create,
     },

@@ -40,7 +40,7 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLElement>, "className"
     title: string;
     /** The content, e.g. rows that bring their own padding. */
     children: ReactNode;
-    /** An icon in the orb before the title, e.g. `<Icon name="recent" duotone />`. */
+    /** An icon in the orb before the title, e.g. `<Icon name="time" duotone />`. */
     icon?: ReactNode;
     /** An addition after the title, e.g. "30 days". */
     meta?: ReactNode;

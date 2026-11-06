@@ -79,7 +79,7 @@ export const Picker = forwardRef(function Picker<Value>(
         onOpen,
         onClear,
         placeholder,
-        icon = <Icon name="more" />,
+        icon = <Icon name="more-horizontal" />,
         labels: labelsProp,
         id,
         className,

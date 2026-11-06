@@ -157,7 +157,7 @@ export function DamFinderFileDetails({ file, editUrl, onQuickLook, onChange, onE
                     ratio={type === "image" ? "original" : "4:3"}
                 />
                 <DetailActions>
-                    <Button size="small" variant="outlined" color="secondary" startIcon={<Icon name="eye" />} onClick={onQuickLook}>
+                    <Button size="small" variant="outlined" color="secondary" startIcon={<Icon name="visible" />} onClick={onQuickLook}>
                         {intl.formatMessage({ id: "dextinity.damFinder.details.quickLook", defaultMessage: "Quick look" })}
                     </Button>
                     <Button

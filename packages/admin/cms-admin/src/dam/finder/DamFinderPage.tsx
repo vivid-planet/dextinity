@@ -639,7 +639,7 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                     .filter((part) => part != null)
                     .join(" ")}
                 confirmLabel={intl.formatMessage({ id: "dextinity.damFinder.delete.confirm", defaultMessage: "Delete" })}
-                confirmIcon={<Icon name="trash" />}
+                confirmIcon={<Icon name="delete" />}
                 onConfirm={handleDelete}
                 secondaryLabel={
                     pendingDeleteFolderIds.length === 0

@@ -1,6 +1,14 @@
 import { useApolloClient, useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext, RouterPrompt, Stack } from "@dextinity/admin";
-import { type BlockState, createFinalFormBlock, DamImageBlock, queryUpdatedAt, resolveHasSaveConflict, useContentScope } from "@dextinity/cms-admin";
+import {
+    type BlockState,
+    createFinalFormBlock,
+    DamImageBlock,
+    queryUpdatedAt,
+    resolveHasSaveConflict,
+    useContentScope,
+    useRouterLinkClick,
+} from "@dextinity/cms-admin";
 import {
     Button,
     ConfirmDialog,
@@ -46,7 +54,6 @@ import type {
 } from "./NewsEditPage.gql.generated";
 import styles from "./NewsEditPage.module.css";
 import { getNewsCategoryLabel, getNewsStatusIndicator, getNewsStatusLabel, newsCategories } from "./newsLabels";
-import { useRouterLinkClick } from "./useRouterLinkClick";
 
 interface NewsFormValues {
     title: string;

@@ -133,7 +133,8 @@ export const Loading: Story = {
 };
 
 /**
- * When loading fails, the menu says so and offers to try again. Here, only the first attempt fails.
+ * When loading fails, the menu says so and offers to try again as its option, reachable with the arrow keys and Enter. Here, only the first
+ * attempt fails.
  */
 export const LoadingError: Story = {
     render: (args) => {
@@ -158,7 +159,7 @@ export const LoadingError: Story = {
     play: async ({ canvas }) => {
         await userEvent.click(canvas.getByRole("combobox", { name: "Category" }));
         await expect(await screen.findByText("The options couldn't be loaded.")).toBeVisible();
-        await expect(screen.getByRole("button", { name: "Retry" })).toBeVisible();
+        await expect(screen.getByRole("option", { name: "Retry" })).toBeVisible();
     },
 };
 
@@ -166,8 +167,12 @@ export const RetryAfterError: Story = {
     render: LoadingError.render,
     play: async (context) => {
         await LoadingError.play?.(context);
-        await userEvent.click(screen.getByRole("button", { name: "Retry" }));
+        await userEvent.keyboard("{ArrowDown}");
+        await waitFor(() => expect(screen.getByRole("option", { name: "Retry" })).toHaveAttribute("data-highlighted"));
+        await userEvent.keyboard("{Enter}");
         await expect(await screen.findByRole("option", { name: "Backpacks" })).toBeVisible();
+        await expect(context.canvas.getByRole("combobox", { name: "Category" })).toHaveValue("");
+        await expect(context.args.onChange).not.toHaveBeenCalled();
     },
 };
 

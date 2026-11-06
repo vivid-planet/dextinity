@@ -11,4 +11,10 @@
     // Space between the title and the subtitle
     --dextinity-page-header-subtitle-spacing: 12px;
     --dextinity-page-header-actions-gap: 8px;
+
+    // The compact variant, for editors
+    --dextinity-page-header-compact-gap: 12px 20px;
+    --dextinity-page-header-compact-label-spacing: 6px;
+    --dextinity-page-header-compact-title-font-size: clamp(22px, 2.2vw, 28px);
+    --dextinity-page-header-compact-subtitle-spacing: 6px;
 }

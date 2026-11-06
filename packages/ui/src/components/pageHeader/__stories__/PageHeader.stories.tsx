@@ -6,6 +6,7 @@ import { Breadcrumbs } from "../../breadcrumbs/Breadcrumbs";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
+import { SaveState } from "../../saveState/SaveState";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import pageHeaderTokens from "../_tokens.scss?raw";
 import { PageHeader } from "../PageHeader";
@@ -112,4 +113,20 @@ export const Narrow: Story = {
             </div>
         ),
     ],
+};
+
+/**
+ * `variant="compact"` for editors, where the preview and the fields need the room: a smaller title, with the actions next to it.
+ */
+export const Compact: Story = {
+    args: {
+        ...WithBack.args,
+        variant: "compact",
+        actions: (
+            <>
+                <SaveState state="saved" />
+                <Button>Publish</Button>
+            </>
+        ),
+    },
 };

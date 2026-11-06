@@ -6,6 +6,8 @@ import { Icon } from "../icon/Icon";
 import { Link, type LinkProps } from "../link/Link";
 import styles from "./PageHeader.module.scss";
 
+type PageHeaderVariant = "default" | "compact";
+
 export interface PageHeaderBack {
     /** Where the link leads, e.g. "Page tree". Use the same destination as the breadcrumbs. */
     label: string;
@@ -21,6 +23,7 @@ export interface PageHeaderBack {
  * The resolved configuration that influences the component's appearance or behavior.
  */
 export type PageHeaderOwnerState = {
+    variant: PageHeaderVariant;
     hasBack: boolean;
     hasActions: boolean;
 };
@@ -43,6 +46,13 @@ export interface PageHeaderSlotProps {
 export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children" | "title"> {
     /** The display title. Exactly one per page. */
     title: string;
+    /**
+     * `compact` for editors, where the content needs the room: a smaller title, a tighter label line, and the actions centered next to
+     * the title.
+     *
+     * @defaultValue `"default"`
+     */
+    variant?: PageHeaderVariant;
     /** The label above the title, e.g. the scope or the area: "Austria · German · 23 pages". */
     eyebrow?: ReactNode;
     /** Numbers or status below the title, e.g. "3 unpublished · 1 archived". */
@@ -65,10 +75,10 @@ const labelSeparator = "·";
  * The head of every page: a mono label line for context, the display title, numbers or status, and the page's actions.
  */
 export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function PageHeader(
-    { title, eyebrow, subtitle, actions, back, breadcrumbs, className, slotProps, ...restProps },
+    { title, variant = "default", eyebrow, subtitle, actions, back, breadcrumbs, className, slotProps, ...restProps },
     ref,
 ) {
-    const ownerState: PageHeaderOwnerState = { hasBack: back != null, hasActions: actions != null };
+    const ownerState: PageHeaderOwnerState = { variant, hasBack: back != null, hasActions: actions != null };
 
     const headingProps = resolveSlotProps<PageHeaderOwnerState, "div", "div">({
         ownProps: { className: styles.heading },
@@ -129,6 +139,7 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
         <header
             {...restProps}
             ref={ref}
+            data-variant={ownerState.variant}
             data-has-back={ownerState.hasBack ? "" : undefined}
             data-has-actions={ownerState.hasActions ? "" : undefined}
             className={clsx(styles.root, className)}

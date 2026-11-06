@@ -14,7 +14,7 @@ import {
     type DocumentType,
     type MasterMenuData,
     MasterMenuRoutes,
-    PagesPage,
+    PageTreeDetailPage,
     PublisherPage,
     UserPermissionsPage,
     WarningsPage,
@@ -44,8 +44,8 @@ import { ProductTagsPage } from "@src/products/generator/ProductTagsPage";
 import { ProductHighlightsPage as ProductHighlightsHandmadePage } from "@src/products/highlights/ProductHighlightsPage";
 import { ManufacturersPage as ManufacturersHandmadePage } from "@src/products/ManufacturersPage";
 import { ProductCategoriesPage as ProductCategoriesHandmadePage } from "@src/products/ProductCategoriesPage";
-import ProductsHandmadePage from "@src/products/ProductsPage";
 import { ProductTagsPage as ProductTagsHandmadePage } from "@src/products/tags/ProductTagsPage";
+import { ProductsUiPage } from "@src/products/ui/ProductsUiPage";
 import { RedirectsPage } from "@src/redirects/RedirectsPage";
 import type { ContentScope } from "@src/site-configs";
 import { EditWelcomeEmailPage } from "@src/welcomeEmail/EditWelcomeEmailPage";
@@ -120,8 +120,9 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     }
 
                     return (
-                        <PagesPage
+                        <PageTreeDetailPage
                             path={`/pages/pagetree/${match.params.category}`}
+                            eyebrow={pageTreeCategories.find((pageTreeCategory) => pageTreeCategory.category === category)?.label}
                             documentTypes={(category): Record<DocumentType, DocumentInterface> => {
                                 if (category === "TopMenu") {
                                     return {
@@ -385,7 +386,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             primary: <FormattedMessage id="menu.productsHandmade" defaultMessage="Products Handmade" />,
                             route: {
                                 path: "/products-handmade",
-                                component: ProductsHandmadePage,
+                                component: ProductsUiPage,
                             },
                         },
                         {

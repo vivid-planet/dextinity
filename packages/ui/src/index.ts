@@ -4,18 +4,39 @@ export { AppShell, type AppShellLabels, type AppShellOwnerState, type AppShellPr
 export { type AppShellSlotProps } from "./components/appShell/AppShell";
 export type { AssetBrowserAsset, AssetBrowserFolder, AssetBrowserLabels } from "./components/assetBrowser/AssetBrowser";
 export type { AssetBrowserView } from "./components/assetBrowser/AssetBrowser";
-export { AssetBrowser, type AssetBrowserOwnerState, type AssetBrowserProps } from "./components/assetBrowser/AssetBrowser";
+export {
+    AssetBrowser,
+    type AssetBrowserOwnerState,
+    type AssetBrowserProps,
+    type AssetBrowserSlotProps,
+} from "./components/assetBrowser/AssetBrowser";
 export type { AssetThumbnailBadge, AssetThumbnailLabels, AssetThumbnailRatio } from "./components/assetThumbnail/AssetThumbnail";
 export type { AssetThumbnailType, FocalPoint } from "./components/assetThumbnail/AssetThumbnail";
-export { AssetThumbnail, type AssetThumbnailOwnerState, type AssetThumbnailProps } from "./components/assetThumbnail/AssetThumbnail";
+export {
+    AssetThumbnail,
+    type AssetThumbnailOwnerState,
+    type AssetThumbnailProps,
+    type AssetThumbnailSlotProps,
+} from "./components/assetThumbnail/AssetThumbnail";
 export { Avatar, type AvatarOwnerState, type AvatarProps, type AvatarSlotProps, getInitials } from "./components/avatar/Avatar";
 export { Badge, type BadgeOwnerState, type BadgeProps } from "./components/badge/Badge";
 export { Banner, type BannerOwnerState, type BannerProps, type BannerSlotProps } from "./components/banner/Banner";
-export { Block, type BlockLabels, type BlockOwnerState, type BlockProps } from "./components/blockList/Block";
-export { BlockList, type BlockListLabels, type BlockListOwnerState, type BlockListProps } from "./components/blockList/BlockList";
-export { Breadcrumbs, type BreadcrumbsItem, type BreadcrumbsLabels } from "./components/breadcrumbs/Breadcrumbs";
+export { Block, type BlockLabels, type BlockOwnerState, type BlockProps, type BlockSlotProps } from "./components/blockList/Block";
+export {
+    BlockList,
+    type BlockListLabels,
+    type BlockListOwnerState,
+    type BlockListProps,
+    type BlockListSlotProps,
+} from "./components/blockList/BlockList";
+export { Breadcrumbs, type BreadcrumbsItem, type BreadcrumbsLabels, type BreadcrumbsSlotProps } from "./components/breadcrumbs/Breadcrumbs";
 export { type BreadcrumbsOwnerState, type BreadcrumbsProps, type BreadcrumbsSeparator } from "./components/breadcrumbs/Breadcrumbs";
-export { BulkActionBar, type BulkActionBarAction, type BulkActionBarLabels } from "./components/bulkActionBar/BulkActionBar";
+export {
+    BulkActionBar,
+    type BulkActionBarAction,
+    type BulkActionBarLabels,
+    type BulkActionBarSlotProps,
+} from "./components/bulkActionBar/BulkActionBar";
 export { type BulkActionBarOwnerState, type BulkActionBarProps, defaultBulkActionBarLabels } from "./components/bulkActionBar/BulkActionBar";
 export { Button, type ButtonOwnerState, type ButtonProps } from "./components/button/Button";
 export { Card, type CardOwnerState, type CardProps, type CardSlotProps, type CardSlots } from "./components/card/Card";
@@ -26,15 +47,26 @@ export { type CommandPaletteLabels, type CommandPaletteOwnerState } from "./comp
 export { type CommandPaletteProps, type CommandPaletteSlotProps } from "./components/commandPalette/CommandPalette";
 export { ConfirmDialog, type ConfirmDialogOwnerState, type ConfirmDialogProps } from "./components/confirmDialog/ConfirmDialog";
 export { type ConfirmDialogSlotProps } from "./components/confirmDialog/ConfirmDialog";
-export { CopyField, type CopyFieldLabels, type CopyFieldOwnerState, type CopyFieldProps } from "./components/copyField/CopyField";
-export { DataGrid, type DataGridColumn, type DataGridLabels, type DataGridOwnerState } from "./components/dataGrid/DataGrid";
+export {
+    CopyField,
+    type CopyFieldLabels,
+    type CopyFieldOwnerState,
+    type CopyFieldProps,
+    type CopyFieldSlotProps,
+} from "./components/copyField/CopyField";
+export { DataGrid, type DataGridColumn, type DataGridLabels, type DataGridOwnerState, type DataGridSlotProps } from "./components/dataGrid/DataGrid";
 export { type DataGridProps, type DataGridSort, defaultDataGridLabels } from "./components/dataGrid/DataGrid";
 export type { DevicePreviewDevice, DevicePreviewLabels } from "./components/devicePreview/DevicePreview";
-export { DevicePreview, type DevicePreviewOwnerState, type DevicePreviewProps } from "./components/devicePreview/DevicePreview";
+export {
+    DevicePreview,
+    type DevicePreviewOwnerState,
+    type DevicePreviewProps,
+    type DevicePreviewSlotProps,
+} from "./components/devicePreview/DevicePreview";
 export { Dialog, type DialogOwnerState, type DialogProps, type DialogSlotProps } from "./components/dialog/Dialog";
 export { Drawer, type DrawerOwnerState, type DrawerProps, type DrawerSlotProps } from "./components/drawer/Drawer";
 export type { DropzoneLabels, DropzoneRejection, DropzoneUpload } from "./components/dropzone/Dropzone";
-export { Dropzone, type DropzoneOwnerState, type DropzoneProps } from "./components/dropzone/Dropzone";
+export { Dropzone, type DropzoneOwnerState, type DropzoneProps, type DropzoneSlotProps } from "./components/dropzone/Dropzone";
 export { EditLayout, type EditLayoutOwnerState, type EditLayoutProps } from "./components/editLayout/EditLayout";
 export { type EditLayoutPane, type EditLayoutVariant } from "./components/editLayout/EditLayout";
 export { type EditLayoutSlotProps } from "./components/editLayout/EditLayout";
@@ -49,7 +81,12 @@ export { FilterChip, type FilterChipOwnerState, type FilterChipProps, type Filte
 export { FinderLayout, type FinderLayoutOwnerState, type FinderLayoutProps } from "./components/finderLayout/FinderLayout";
 export { type FinderLayoutSlotProps } from "./components/finderLayout/FinderLayout";
 export type { FocalPointPickerLabels } from "./components/focalPointPicker/FocalPointPicker";
-export { FocalPointPicker, type FocalPointPickerOwnerState, type FocalPointPickerProps } from "./components/focalPointPicker/FocalPointPicker";
+export {
+    FocalPointPicker,
+    type FocalPointPickerOwnerState,
+    type FocalPointPickerProps,
+    type FocalPointPickerSlotProps,
+} from "./components/focalPointPicker/FocalPointPicker";
 export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Icon";
 export { type IconName, iconNames } from "./components/icon/iconNames";
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";
@@ -61,7 +98,12 @@ export { matchesShortcut, useKeyboardShortcut } from "./components/keyboardShort
 export { KeyValueList, type KeyValueListItem, type KeyValueListOwnerState, type KeyValueListProps } from "./components/keyValueList/KeyValueList";
 export { type KeyValueListSlotProps } from "./components/keyValueList/KeyValueList";
 export { Link, type LinkLabels, type LinkOwnerState, type LinkProps, type LinkSlotProps } from "./components/link/Link";
-export { LinkedContent, type LinkedContentOwnerState, type LinkedContentProps } from "./components/linkedContent/LinkedContent";
+export {
+    LinkedContent,
+    type LinkedContentOwnerState,
+    type LinkedContentProps,
+    type LinkedContentSlotProps,
+} from "./components/linkedContent/LinkedContent";
 export { ListDetailLayout, type ListDetailLayoutOwnerState, type ListDetailLayoutProps } from "./components/listDetailLayout/ListDetailLayout";
 export { type ListDetailLayoutSlotProps } from "./components/listDetailLayout/ListDetailLayout";
 export { ListLayout, type ListLayoutOwnerState, type ListLayoutProps } from "./components/listLayout/ListLayout";
@@ -78,8 +120,14 @@ export { MenuSubmenu, type MenuSubmenuOwnerState, type MenuSubmenuProps, type Me
 export { MiniChart, type MiniChartOwnerState, type MiniChartProps, type MiniChartSlotProps } from "./components/miniChart/MiniChart";
 export { OverviewLayout, type OverviewLayoutOwnerState, type OverviewLayoutProps } from "./components/overviewLayout/OverviewLayout";
 export { type OverviewLayoutSlotProps } from "./components/overviewLayout/OverviewLayout";
-export { PageHeader, type PageHeaderBack, type PageHeaderOwnerState, type PageHeaderProps } from "./components/pageHeader/PageHeader";
-export { defaultPaginationLabels, Pagination, type PaginationLabels } from "./components/pagination/Pagination";
+export {
+    PageHeader,
+    type PageHeaderBack,
+    type PageHeaderOwnerState,
+    type PageHeaderProps,
+    type PageHeaderSlotProps,
+} from "./components/pageHeader/PageHeader";
+export { defaultPaginationLabels, Pagination, type PaginationLabels, type PaginationSlotProps } from "./components/pagination/Pagination";
 export { type PaginationOwnerState, type PaginationProps } from "./components/pagination/Pagination";
 export { Panel, type PanelOwnerState, type PanelProps, type PanelSlotProps, type PanelSlots } from "./components/panel/Panel";
 export { Popover, type PopoverOwnerState, type PopoverPlacement, type PopoverProps } from "./components/popover/Popover";
@@ -88,7 +136,13 @@ export { QuickLook, type QuickLookItem, type QuickLookOwnerState, type QuickLook
 export { type QuickLookSlotProps } from "./components/quickLook/QuickLook";
 export { RichTextEditor, type RichTextEditorFormat, type RichTextEditorLabels } from "./components/richTextEditor/RichTextEditor";
 export { type RichTextEditorOwnerState, type RichTextEditorProps } from "./components/richTextEditor/RichTextEditor";
-export { SaveState, type SaveStateLabels, type SaveStateOwnerState, type SaveStateProps } from "./components/saveState/SaveState";
+export {
+    SaveState,
+    type SaveStateLabels,
+    type SaveStateOwnerState,
+    type SaveStateProps,
+    type SaveStateSlotProps,
+} from "./components/saveState/SaveState";
 export { type SaveStateValue } from "./components/saveState/SaveState";
 export { ScopeSwitcher, type ScopeSwitcherDimension, type ScopeSwitcherLabels } from "./components/scopeSwitcher/ScopeSwitcher";
 export { type ScopeSwitcherOption, type ScopeSwitcherOwnerState, type ScopeSwitcherProps } from "./components/scopeSwitcher/ScopeSwitcher";
@@ -97,12 +151,12 @@ export { type SegmentedControlProps, type SegmentedControlSlotProps } from "./co
 export { Select, type SelectLabels, type SelectOption, type SelectOwnerState, type SelectProps } from "./components/select/Select";
 export { type SelectValue } from "./components/select/Select";
 export { type Selection, type SelectionOptions, type SelectionToggleOptions, useSelection } from "./components/selection/useSelection";
-export { ShortcutList, type ShortcutListItem, type ShortcutListLabels } from "./components/shortcutList/ShortcutList";
+export { ShortcutList, type ShortcutListItem, type ShortcutListLabels, type ShortcutListSlotProps } from "./components/shortcutList/ShortcutList";
 export { type ShortcutListOwnerState, type ShortcutListProps } from "./components/shortcutList/ShortcutList";
 export { getSideNavAncestorIds, SideNav, type SideNavGroup, type SideNavItem } from "./components/sideNav/SideNav";
 export { type SideNavLabels, type SideNavOwnerState, type SideNavProps } from "./components/sideNav/SideNav";
 export { type SideNavSlotProps, type SideNavSlots } from "./components/sideNav/SideNav";
-export { Skeleton, type SkeletonOwnerState, type SkeletonProps } from "./components/skeleton/Skeleton";
+export { Skeleton, type SkeletonOwnerState, type SkeletonProps, type SkeletonSlotProps } from "./components/skeleton/Skeleton";
 export { Slider, type SliderOwnerState, type SliderProps, type SliderSlotProps } from "./components/slider/Slider";
 export { Spinner, type SpinnerOwnerState, type SpinnerProps } from "./components/spinner/Spinner";
 export { StatTile, type StatTileLabels, type StatTileOwnerState, type StatTileProps, type StatTileSlotProps } from "./components/statTile/StatTile";
@@ -123,7 +177,7 @@ export { Tooltip, type TooltipOwnerState, type TooltipProps, type TooltipSlotPro
 export { TopBar, type TopBarBack, type TopBarLabels, type TopBarOwnerState, type TopBarProps } from "./components/topBar/TopBar";
 export { TreeDetailLayout, type TreeDetailLayoutOwnerState, type TreeDetailLayoutProps } from "./components/treeDetailLayout/TreeDetailLayout";
 export { type TreeDetailLayoutSlotProps } from "./components/treeDetailLayout/TreeDetailLayout";
-export { type TreeNode, TreeView, type TreeViewLabels, type TreeViewMove } from "./components/treeView/TreeView";
+export { type TreeNode, TreeView, type TreeViewLabels, type TreeViewMove, type TreeViewSlotProps } from "./components/treeView/TreeView";
 export { defaultTreeViewLabels, type TreeViewOwnerState, type TreeViewProps } from "./components/treeView/TreeView";
 export { Typography, type TypographyOwnerState, type TypographyProps } from "./components/typography/Typography";
 export { type UndoableAction, type UndoToastLabels, type UndoToastOptions, useUndoToast } from "./components/undoToast/useUndoToast";

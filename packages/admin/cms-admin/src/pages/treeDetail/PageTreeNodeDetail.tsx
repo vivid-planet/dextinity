@@ -110,6 +110,53 @@ export function PageTreeNodeDetail({
     return (
         <Panel
             title={page.name}
+            actions={
+                <Menu
+                    open={isMoreMenuOpen}
+                    onOpenChange={setIsMoreMenuOpen}
+                    placement="bottom-end"
+                    trigger={
+                        <IconButton
+                            variant="text"
+                            aria-label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.moreActions", defaultMessage: "More actions" })}
+                        >
+                            <Icon name="more" />
+                        </IconButton>
+                    }
+                >
+                    <MenuItem
+                        icon={<Icon name="settings" />}
+                        label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.properties", defaultMessage: "Page properties" })}
+                        disabled={isArchived}
+                        onClick={onPropertiesClick}
+                    />
+                    <MenuItem
+                        icon={<Icon name="plus" />}
+                        label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.addSubpage", defaultMessage: "New subpage" })}
+                        disabled={isArchived}
+                        onClick={onAddSubpageClick}
+                    />
+                    <MenuSeparator />
+                    {isArchived ? (
+                        <MenuItem
+                            icon={<Icon name="refresh" />}
+                            label={intl.formatMessage({
+                                id: "dextinity.pageTreeDetail.detail.restore",
+                                defaultMessage: "Restore as unpublished",
+                            })}
+                            onClick={() => onVisibilityChange("Unpublished")}
+                        />
+                    ) : (
+                        <MenuItem
+                            icon={<Icon name="archive" />}
+                            label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.archive", defaultMessage: "Archive with subpages" })}
+                            color="error"
+                            disabled={!canChangeVisibility(page, "Archived")}
+                            onClick={() => onVisibilityChange("Archived")}
+                        />
+                    )}
+                </Menu>
+            }
             description={
                 <CopyField
                     value={`${siteUrl}${page.path}`}
@@ -134,51 +181,6 @@ export function PageTreeNodeDetail({
                     >
                         {intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.openPreview", defaultMessage: "Open preview" })}
                     </Button>
-                    <Menu
-                        open={isMoreMenuOpen}
-                        onOpenChange={setIsMoreMenuOpen}
-                        placement="bottom-end"
-                        trigger={
-                            <IconButton
-                                variant="text"
-                                aria-label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.moreActions", defaultMessage: "More actions" })}
-                            >
-                                <Icon name="more" />
-                            </IconButton>
-                        }
-                    >
-                        <MenuItem
-                            icon={<Icon name="settings" />}
-                            label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.properties", defaultMessage: "Page properties" })}
-                            disabled={isArchived}
-                            onClick={onPropertiesClick}
-                        />
-                        <MenuItem
-                            icon={<Icon name="plus" />}
-                            label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.addSubpage", defaultMessage: "New subpage" })}
-                            disabled={isArchived}
-                            onClick={onAddSubpageClick}
-                        />
-                        <MenuSeparator />
-                        {isArchived ? (
-                            <MenuItem
-                                icon={<Icon name="refresh" />}
-                                label={intl.formatMessage({
-                                    id: "dextinity.pageTreeDetail.detail.restore",
-                                    defaultMessage: "Restore as unpublished",
-                                })}
-                                onClick={() => onVisibilityChange("Unpublished")}
-                            />
-                        ) : (
-                            <MenuItem
-                                icon={<Icon name="archive" />}
-                                label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.archive", defaultMessage: "Archive with subpages" })}
-                                color="error"
-                                disabled={!canChangeVisibility(page, "Archived")}
-                                onClick={() => onVisibilityChange("Archived")}
-                            />
-                        )}
-                    </Menu>
                 </DetailActions>
                 <Switch
                     checked={page.visibility === "Published"}

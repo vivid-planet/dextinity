@@ -1,4 +1,3 @@
-
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
@@ -123,7 +122,7 @@ export const Search: Story = {
         await userEvent.click(canvas.getByRole("button", { name: /Change scope/ }));
         const search = await screen.findByRole("searchbox", { name: "Search scopes" });
         await userEvent.type(search, "ch fr");
-        await expect(screen.getByRole("button", { name: "Switzerland · French" })).toBeVisible();
+        await waitFor(() => expect(screen.getByRole("button", { name: "Switzerland · French" })).toBeVisible());
         await userEvent.keyboard("{Enter}");
         await expect(args.onChange).toHaveBeenLastCalledWith(["ch", "fr"]);
         await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);

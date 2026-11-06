@@ -374,7 +374,7 @@ function PageTreeDetailView({
             : matchesShortcut(event, pageTreeShortcuts.pasteAfter)
               ? "after"
               : undefined;
-        if (pastePosition != null) {
+        if (pastePosition != null && !(pastePosition === "inside" && focusedPage.visibility === "Archived")) {
             // The TreeView handles the same keys after this handler to paste a cut page; it marks the event as handled when it does.
             queueMicrotask(() => {
                 if (!event.defaultPrevented) {

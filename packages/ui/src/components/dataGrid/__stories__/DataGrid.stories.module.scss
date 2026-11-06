@@ -11,3 +11,21 @@
 .fixedHeight {
     block-size: 360px;
 }
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-3);
+}
+
+.toolbar {
+    display: flex;
+    gap: var(--dextinity-space-2);
+    justify-content: flex-end;
+}
+
+.detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-1);
+}

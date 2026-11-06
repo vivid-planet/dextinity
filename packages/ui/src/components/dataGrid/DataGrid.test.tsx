@@ -80,4 +80,50 @@ describe("DataGrid", () => {
         expect((container.firstElementChild as HTMLElement).hasAttribute("data-empty")).toBe(true);
         expect(screen.getByText("Nothing here").className).toContain("dextinityDataGrid__emptyCell");
     });
+
+    it("emits the owner state and part classes of editing, reordering, and expanding", () => {
+        const { container } = render(
+            <DataGrid
+                aria-label="Items"
+                columns={[{ ...columns[0], editable: true }, columns[1]]}
+                rows={rows}
+                getRowId={getRowId}
+                onRowReorder={() => {}}
+                renderRowDetail={(row) => `Details of ${row.name}`}
+                expandedRowIds={["a"]}
+            />,
+        );
+
+        const root = container.firstElementChild as HTMLElement;
+        expect([root.hasAttribute("data-editable"), root.hasAttribute("data-reorderable"), root.hasAttribute("data-expandable")]).toStrictEqual([
+            true,
+            true,
+            true,
+        ]);
+        expect(screen.getByRole("grid", { name: "Items" })).toBeTruthy();
+        const editableCell = screen.getByText("Alpha").closest("td") as HTMLElement;
+        expect([editableCell.hasAttribute("data-editable"), editableCell.dataset.editor, editableCell.tabIndex]).toStrictEqual([true, "text", 0]);
+        expect((screen.getByText("Beta").closest("td") as HTMLElement).tabIndex).toBe(-1);
+        expect(screen.getByRole("button", { name: "Move Alpha" }).className).toContain("dextinityDataGrid__grip");
+        expect(screen.getByRole("button", { name: "Expand Alpha" }).getAttribute("aria-expanded")).toBe("true");
+        expect(screen.getByText("Details of Alpha").className).toContain("dextinityDataGrid__detailCell");
+    });
+
+    it("leaves out hidden columns and shows sub rows of expanded rows only", () => {
+        render(
+            <DataGrid
+                aria-label="Items"
+                columns={columns}
+                rows={[{ id: "p", name: "Parent", count: 3, children: rows }]}
+                getRowId={getRowId}
+                getSubRows={(row: Row & { children?: Row[] }) => row.children}
+                expandedRowIds={[]}
+                columnVisibility={{ count: false }}
+            />,
+        );
+
+        expect(screen.queryByRole("columnheader", { name: "Count" })).toBeNull();
+        expect(screen.queryByText("Alpha")).toBeNull();
+        expect(screen.getByRole("button", { name: "Expand Parent" }).getAttribute("aria-expanded")).toBe("false");
+    });
 });

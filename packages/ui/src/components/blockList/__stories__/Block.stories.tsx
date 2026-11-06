@@ -175,6 +175,13 @@ export const Invalid: Story = {
 };
 
 /**
+ * A selected block that is invalid keeps the selection ring, with the error ring inside it.
+ */
+export const SelectedAndInvalid: Story = {
+    args: { selected: true, onSelect: fn(), invalid: true, invalidReason: "Image is required" },
+};
+
+/**
  * With `checked` and `onCheckedChange`, the block has a checkbox to select it for bulk actions, independent of `selected`, which
  * follows the preview.
  */

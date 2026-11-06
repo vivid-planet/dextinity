@@ -1,20 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import {
-    Button,
-    CopyField,
-    Icon,
-    IconButton,
-    KeyValueList,
-    type KeyValueListItem,
-    Menu,
-    MenuItem,
-    MenuSeparator,
-    Panel,
-    Skeleton,
-    StatusIndicator,
-    Switch,
-} from "@dextinity/ui";
-import { type MouseEvent, useState } from "react";
+import { Button, CopyField, Icon, KeyValueList, type KeyValueListItem, Panel, Skeleton, StatusIndicator, Switch } from "@dextinity/ui";
+import type { MouseEvent, ReactNode } from "react";
 import { useIntl } from "react-intl";
 
 import type { DocumentInterface } from "../../documents/types";
@@ -43,8 +29,8 @@ interface PageTreeNodeDetailProps {
     onEditClick: (event: MouseEvent<HTMLElement>) => void;
     onPreviewClick: () => void;
     onVisibilityChange: (visibility: GQLPageTreeNodeVisibility) => void;
-    onPropertiesClick: () => void;
-    onAddSubpageClick: () => void;
+    /** The menu with the page's other actions, e.g. `PageTreeNodeMenu`. */
+    menu: ReactNode;
 }
 
 export function PageTreeNodeDetail({
@@ -55,12 +41,10 @@ export function PageTreeNodeDetail({
     onEditClick,
     onPreviewClick,
     onVisibilityChange,
-    onPropertiesClick,
-    onAddSubpageClick,
+    menu,
 }: PageTreeNodeDetailProps) {
     const intl = useIntl();
     const statusLabels = usePageTreeStatusLabels();
-    const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
     const { data, loading } = useQuery<GQLPageTreeNodeDetailQuery, GQLPageTreeNodeDetailQueryVariables>(pageTreeNodeDetailQuery, {
         variables: { id: page.id },
         fetchPolicy: "cache-and-network",
@@ -110,54 +94,7 @@ export function PageTreeNodeDetail({
     return (
         <Panel
             title={page.name}
-            actions={
-                <Menu
-                    open={isMoreMenuOpen}
-                    onOpenChange={setIsMoreMenuOpen}
-                    placement="bottom-end"
-                    trigger={
-                        <IconButton
-                            variant="text"
-                            color="secondary"
-                            aria-label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.moreActions", defaultMessage: "More actions" })}
-                        >
-                            <Icon name="more-horizontal" />
-                        </IconButton>
-                    }
-                >
-                    <MenuItem
-                        icon={<Icon name="settings" />}
-                        label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.properties", defaultMessage: "Page properties" })}
-                        disabled={isArchived}
-                        onClick={onPropertiesClick}
-                    />
-                    <MenuItem
-                        icon={<Icon name="plus" />}
-                        label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.addSubpage", defaultMessage: "New subpage" })}
-                        disabled={isArchived}
-                        onClick={onAddSubpageClick}
-                    />
-                    <MenuSeparator />
-                    {isArchived ? (
-                        <MenuItem
-                            icon={<Icon name="reload" />}
-                            label={intl.formatMessage({
-                                id: "dextinity.pageTreeDetail.detail.restore",
-                                defaultMessage: "Restore as unpublished",
-                            })}
-                            onClick={() => onVisibilityChange("Unpublished")}
-                        />
-                    ) : (
-                        <MenuItem
-                            icon={<Icon name="archive" />}
-                            label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.archive", defaultMessage: "Archive with subpages" })}
-                            color="error"
-                            disabled={!canChangeVisibility(page, "Archived")}
-                            onClick={() => onVisibilityChange("Archived")}
-                        />
-                    )}
-                </Menu>
-            }
+            actions={menu}
             description={
                 <CopyField
                     value={`${siteUrl}${page.path}`}

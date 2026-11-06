@@ -3,9 +3,9 @@ import { RowActionsItem, RowActionsMenu } from "@dextinity/admin";
 import { MovePage } from "@dextinity/admin-icons";
 import { FormattedMessage } from "react-intl";
 
-import type { DocumentInterface, DocumentType } from "../../documents/types";
 import { usePageTreeScope } from "../config/usePageTreeScope";
 import { usePageTreeConfig } from "../pageTreeConfig";
+import { categorySupportsDocumentType } from "./categorySupportsDocumentType";
 import type { GQLUpdatePageTreeNodeCategoryMutation, GQLUpdatePageTreeNodeCategoryMutationVariables } from "./MovePageMenuItem.generated";
 import type { PageTreePage } from "./usePageTree";
 import { usePageTreeContext } from "./usePageTreeContext";
@@ -68,17 +68,3 @@ export function MovePageMenuItem({ page }: Props) {
         </RowActionsMenu>
     );
 }
-
-const categorySupportsDocumentType = (
-    category: string,
-    documentType: string,
-    getDocumentTypesByCategory?: (category: string) => Record<DocumentType, DocumentInterface>,
-) => {
-    if (getDocumentTypesByCategory === undefined) {
-        // fallback if no category->documentTypes mapping function was passed
-        return true;
-    }
-
-    const supportedDocumentTypes = Object.keys(getDocumentTypesByCategory(category));
-    return supportedDocumentTypes.includes(documentType);
-};

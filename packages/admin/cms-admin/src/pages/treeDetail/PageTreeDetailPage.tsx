@@ -2,6 +2,7 @@ import { useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext, useFocusAwarePolling, useStoredState } from "@dextinity/admin";
 import {
     BulkActionBar,
+    type BulkActionBarAction,
     Button,
     Checkbox,
     EmptyState,
@@ -9,6 +10,7 @@ import {
     FilterChip,
     Icon,
     IconButton,
+    matchesShortcut,
     PageHeader,
     Panel,
     Skeleton,
@@ -19,7 +21,7 @@ import {
     useToasts,
     useUndoToast,
 } from "@dextinity/ui";
-import { type ComponentType, type MouseEvent, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ComponentType, type KeyboardEvent, type MouseEvent, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { Route, useHistory, useLocation, useRouteMatch } from "react-router-dom";
 
@@ -33,15 +35,23 @@ import { useSiteConfig } from "../../siteConfigs/useSiteConfig";
 import { usePageTreeScope } from "../config/usePageTreeScope";
 import { createEditPageNode, type EditPageNodeInitialValues, type EditPageNodeProps } from "../createEditPageNode";
 import { createPagesQuery, type GQLPagesQuery, type GQLPagesQueryVariables, type GQLPageTreePageFragment } from "../pagesPage/createPagesQuery";
+import { categorySupportsDocumentType } from "../pageTree/categorySupportsDocumentType";
 import { PageTreeContext } from "../pageTree/PageTreeContext";
+import { PageTreeProgressDialog } from "../pageTree/PageTreeProgressDialog";
 import { arrayToTreeMap } from "../pageTree/treemap/TreeMapUtils";
+import { useTranslatePagesAction } from "../pageTree/useTranslatePagesAction";
 import { usePageTreeConfig } from "../pageTreeConfig";
+import { getCategoryLabelText } from "./getCategoryLabelText";
+import { PageDeleteConfirmDialog } from "./PageDeleteConfirmDialog";
 import { PageEditorRoute } from "./PageEditorRoute";
 import { PageTreeNodeDetail } from "./PageTreeNodeDetail";
+import { PageTreeNodeMenu, type PageTreeNodeMenuCategory } from "./PageTreeNodeMenu";
+import { pageTreeShortcuts } from "./pageTreeShortcuts";
 import { usePageTreeStatusLabels, visibilityStatus } from "./pageTreeStatus";
 import { createPageTreeStructure, getAncestorIds, isHomePage, type PageTreeStructure } from "./pageTreeStructure";
 import { selectedPageParam } from "./selectedPageParam";
-import { usePageTreeDetailActions } from "./usePageTreeDetailActions";
+import { type PastePosition, usePageTreeCopyPaste } from "./usePageTreeCopyPaste";
+import { areSubtreesComplete, getPagesToDelete, usePageTreeDetailActions } from "./usePageTreeDetailActions";
 
 type StatusFilter = GQLPageTreeNodeVisibility | "all";
 
@@ -50,6 +60,12 @@ const statusFilters: StatusFilter[] = ["all", "Published", "Unpublished", "Archi
 const DefaultEditPageNode = createEditPageNode({});
 
 type PageNodeDialogTarget = { mode: "add"; initialValues?: EditPageNodeInitialValues } | { mode: "edit"; id: string };
+
+interface DeleteTarget {
+    pageIds: string[];
+    /** The page the deletion started from in its menu, as opposed to the checked pages. */
+    page?: GQLPageTreePageFragment;
+}
 
 export interface PageTreeDetailPageProps {
     /** The page tree category, e.g. `"mainNavigation"`. */
@@ -66,6 +82,11 @@ export interface PageTreeDetailPageProps {
     title?: string;
     /** The label above the title, e.g. the category. */
     eyebrow?: ReactNode;
+    /**
+     * The URL path of another category's page tree within the content scope, like `path`. With it, the message after moving a page to
+     * another category links there.
+     */
+    getCategoryUrl?: (category: string) => string;
 }
 
 /**
@@ -138,6 +159,7 @@ function PageTreeDetailView({
     title,
     eyebrow,
     url,
+    getCategoryUrl,
 }: PageTreeDetailViewProps) {
     const intl = useIntl();
     const history = useHistory();
@@ -145,7 +167,7 @@ function PageTreeDetailView({
     const { scope, match: contentScopeMatch } = useContentScope();
     const pageTreeScope = usePageTreeScope();
     const siteConfig = useSiteConfig({ scope });
-    const { additionalPageTreeNodeFragment } = usePageTreeConfig();
+    const { additionalPageTreeNodeFragment, categories, allowPageDelete = true } = usePageTreeConfig();
     const statusLabels = usePageTreeStatusLabels();
     const documentTypes = typeof passedDocumentTypes === "function" ? passedDocumentTypes(category) : passedDocumentTypes;
     const pagesQuery = useMemo(() => createPagesQuery({ additionalPageTreeNodeFragment }), [additionalPageTreeNodeFragment]);
@@ -177,7 +199,16 @@ function PageTreeDetailView({
         addToast,
         labels: { undo: intl.formatMessage({ id: "dextinity.pageTreeDetail.undo", defaultMessage: "Undo" }) },
     });
-    const { changeVisibility, movePages, canMove } = usePageTreeDetailActions({ structure, perform, block });
+    const { changeVisibility, movePages, canMove, deletePages, moveToCategory } = usePageTreeDetailActions({ structure, perform, block });
+    const showError = (message: string) => addToast({ message, tone: "error" });
+    const copyPaste = usePageTreeCopyPaste({
+        structure,
+        category,
+        onPasteError: () =>
+            showError(intl.formatMessage({ id: "dextinity.pageTreeDetail.pasteFailed", defaultMessage: "The pages could not be pasted" })),
+    });
+    const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>();
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const selectedIdParam = new URLSearchParams(location.search).get(selectedPageParam);
     const selectedPage =
@@ -191,6 +222,167 @@ function PageTreeDetailView({
         },
         [history, location],
     );
+
+    const selectedPageTranslation = useTranslatePagesAction({ pages: selectedPage != null ? [selectedPage] : [], documentTypes });
+    const checkedPages = checkedIds.flatMap((id) => structure.pagesById.get(id) ?? []);
+    const checkedPagesTranslation = useTranslatePagesAction({ pages: checkedPages, documentTypes });
+
+    const copyPages = async (pageIds: string[]) => {
+        try {
+            const count = await copyPaste.copyPages(pageIds);
+            addToast({
+                message: intl.formatMessage(
+                    { id: "dextinity.pageTreeDetail.copied", defaultMessage: "{count, plural, one {# page} other {# pages}} copied" },
+                    { count },
+                ),
+            });
+        } catch {
+            showError(intl.formatMessage({ id: "dextinity.pageTreeDetail.copyFailed", defaultMessage: "The pages could not be copied" }));
+        }
+    };
+
+    const pastePages = async (target: GQLPageTreePageFragment, position: PastePosition) => {
+        const count = await copyPaste.pastePages(target, position);
+        if (count === 0) {
+            return;
+        }
+        if (position === "inside") {
+            setExpandedIds((ids) => (ids.includes(target.id) ? ids : [...ids, target.id]));
+        }
+        addToast({
+            message: intl.formatMessage(
+                { id: "dextinity.pageTreeDetail.pasted", defaultMessage: "{count, plural, one {# page} other {# pages}} pasted" },
+                { count },
+            ),
+        });
+    };
+
+    const duplicatePage = async (page: GQLPageTreePageFragment) => {
+        try {
+            if (await copyPaste.duplicatePage(page)) {
+                addToast({
+                    message: intl.formatMessage(
+                        { id: "dextinity.pageTreeDetail.duplicated", defaultMessage: "“{name}” duplicated" },
+                        { name: page.name },
+                    ),
+                });
+            }
+        } catch {
+            showError(intl.formatMessage({ id: "dextinity.pageTreeDetail.duplicateFailed", defaultMessage: "The page could not be duplicated" }));
+        }
+    };
+
+    const getMoveCategories = (page: GQLPageTreePageFragment): PageTreeNodeMenuCategory[] =>
+        categories.length > 1
+            ? categories
+                  .filter((otherCategory) => otherCategory.category !== category)
+                  .map((otherCategory) => ({
+                      category: otherCategory.category,
+                      label: getCategoryLabelText(otherCategory, intl),
+                      disabledReason: categorySupportsDocumentType(
+                          otherCategory.category,
+                          page.documentType,
+                          typeof passedDocumentTypes === "function" ? passedDocumentTypes : undefined,
+                      )
+                          ? undefined
+                          : intl.formatMessage({
+                                id: "dextinity.pageTreeDetail.categoryUnsupported",
+                                defaultMessage: "This category has no pages of this type",
+                            }),
+                  }))
+            : [];
+
+    const movePageToCategory = async (page: GQLPageTreePageFragment, targetCategory: string) => {
+        const targetCategoryConfig = categories.find((otherCategory) => otherCategory.category === targetCategory);
+        try {
+            await moveToCategory(page, targetCategory);
+        } catch {
+            showError(intl.formatMessage({ id: "dextinity.pageTreeDetail.moveCategoryFailed", defaultMessage: "The page could not be moved" }));
+            return;
+        }
+        addToast({
+            message: intl.formatMessage(
+                { id: "dextinity.pageTreeDetail.movedToCategory", defaultMessage: "“{name}” moved to {category}" },
+                { name: page.name, category: targetCategoryConfig != null ? getCategoryLabelText(targetCategoryConfig, intl) : targetCategory },
+            ),
+            action:
+                getCategoryUrl != null
+                    ? {
+                          label: intl.formatMessage({ id: "dextinity.pageTreeDetail.showMovedPage", defaultMessage: "Show" }),
+                          onClick: () => history.push(`${contentScopeMatch.url}${getCategoryUrl(targetCategory)}?${selectedPageParam}=${page.id}`),
+                      }
+                    : undefined,
+        });
+    };
+
+    const notFullySelectedReason = intl.formatMessage({
+        id: "dextinity.pageTreeDetail.deleteNeedsSubpages",
+        defaultMessage: "Select the subpages too, to delete pages with them",
+    });
+    const homePageReason = intl.formatMessage({ id: "dextinity.pageTreeDetail.deleteHomePage", defaultMessage: "The home page can't be deleted" });
+    const getDeleteDisabledReason = (pageIds: string[]) => {
+        if (getPagesToDelete(structure, pageIds).some(isHomePage)) {
+            return homePageReason;
+        }
+        return areSubtreesComplete(structure, pageIds) ? undefined : notFullySelectedReason;
+    };
+    const pagesToDelete = deleteTarget != null ? getPagesToDelete(structure, deleteTarget.pageIds) : [];
+
+    const confirmDelete = async () => {
+        if (deleteTarget == null) {
+            return;
+        }
+        const deletedIds = new Set(pagesToDelete.map((page) => page.id));
+        const parentToSelect =
+            selectedPage != null && deletedIds.has(selectedPage.id)
+                ? getAncestorIds(structure, selectedPage.id).find((ancestorId) => !deletedIds.has(ancestorId))
+                : undefined;
+        setIsDeleting(true);
+        try {
+            await deletePages(pagesToDelete);
+            addToast({
+                message: intl.formatMessage(
+                    { id: "dextinity.pageTreeDetail.deleted", defaultMessage: "{count, plural, one {# page} other {# pages}} deleted" },
+                    { count: pagesToDelete.length },
+                ),
+            });
+        } catch {
+            showError(intl.formatMessage({ id: "dextinity.pageTreeDetail.deleteFailed", defaultMessage: "Not all pages could be deleted" }));
+        } finally {
+            setIsDeleting(false);
+            setDeleteTarget(undefined);
+            setCheckedIds((ids) => ids.filter((id) => !deletedIds.has(id)));
+            if (parentToSelect != null) {
+                selectPage(parentToSelect);
+            }
+        }
+    };
+
+    const handleTreeKeyDown = (event: KeyboardEvent<HTMLUListElement>) => {
+        const focusedId = (event.target as HTMLElement).dataset.id;
+        const focusedPage = focusedId != null ? structure.pagesById.get(focusedId) : undefined;
+        if (focusedPage == null) {
+            return;
+        }
+        if (matchesShortcut(event, pageTreeShortcuts.copy)) {
+            event.preventDefault();
+            void copyPages(checkedIds.length > 0 ? checkedIds : [focusedPage.id]);
+            return;
+        }
+        const pastePosition = matchesShortcut(event, pageTreeShortcuts.pasteInside)
+            ? "inside"
+            : matchesShortcut(event, pageTreeShortcuts.pasteAfter)
+              ? "after"
+              : undefined;
+        if (pastePosition != null) {
+            // The TreeView handles the same keys after this handler to paste a cut page; it marks the event as handled when it does.
+            queueMicrotask(() => {
+                if (!event.defaultPrevented) {
+                    void pastePages(focusedPage, pastePosition);
+                }
+            });
+        }
+    };
 
     const revealedPageIdRef = useRef<string | undefined>(undefined);
     useEffect(() => {
@@ -241,6 +433,55 @@ function PageTreeDetailView({
     if (error != null && data == null) {
         throw error;
     }
+
+    const checkedDeleteDisabledReason = getDeleteDisabledReason(checkedIds);
+    const bulkActions: BulkActionBarAction[] = [
+        ...(["Published", "Unpublished", "Archived"] as const).map((visibility) => ({
+            label: intl.formatMessage(
+                {
+                    id: "dextinity.pageTreeDetail.bulk.changeVisibility",
+                    defaultMessage: "{visibility, select, Published {Publish} Unpublished {Unpublish} other {Archive}}",
+                },
+                { visibility },
+            ),
+            icon: <Icon name={visibility === "Published" ? "visible" : visibility === "Unpublished" ? "invisible" : "archive"} />,
+            onClick: () => {
+                changeVisibility(checkedIds, visibility);
+                setCheckedIds([]);
+            },
+        })),
+        {
+            label: intl.formatMessage({ id: "dextinity.pageTreeDetail.bulk.copy", defaultMessage: "Copy" }),
+            icon: <Icon name="copy" />,
+            onClick: () => void copyPages(checkedIds),
+        },
+        ...(checkedPagesTranslation.enabled
+            ? [
+                  {
+                      label: intl.formatMessage({ id: "dextinity.pageTreeDetail.bulk.translate", defaultMessage: "Translate" }),
+                      icon: <Icon name="translate" />,
+                      disabled: checkedPagesTranslation.translating || !checkedPagesTranslation.hasTranslatableContent,
+                      onClick: checkedPagesTranslation.openDialog,
+                  },
+              ]
+            : []),
+        ...(allowPageDelete
+            ? [
+                  {
+                      label: intl.formatMessage({ id: "dextinity.pageTreeDetail.bulk.delete", defaultMessage: "Delete" }),
+                      icon: <Icon name="delete" />,
+                      color: "error" as const,
+                      onClick: () => {
+                          if (checkedDeleteDisabledReason != null) {
+                              showError(checkedDeleteDisabledReason);
+                          } else {
+                              setDeleteTarget({ pageIds: checkedIds });
+                          }
+                      },
+                  },
+              ]
+            : []),
+    ];
 
     const newPageButton = (
         <Button startIcon={<Icon name="plus" />} onClick={() => openPageNodeDialog({ mode: "add" })}>
@@ -310,6 +551,7 @@ function PageTreeDetailView({
                           }
                         : undefined
                 }
+                onKeyDown={handleTreeKeyDown}
                 draggable
                 onMove={(move) => movePages(move, checkedIds)}
                 canDrop={(move) => canMove(move, checkedIds)}
@@ -419,8 +661,37 @@ function PageTreeDetailView({
                             onEditClick={handleEditClick}
                             onPreviewClick={() => openSitePreviewWindow(selectedPage.path, contentScopeMatch.url)}
                             onVisibilityChange={(visibility) => changeVisibility([selectedPage.id], visibility)}
-                            onPropertiesClick={() => openPageNodeDialog({ mode: "edit", id: selectedPage.id })}
-                            onAddSubpageClick={() => openPageNodeDialog({ mode: "add", initialValues: { parent: selectedPage.id } })}
+                            menu={
+                                <PageTreeNodeMenu
+                                    page={selectedPage}
+                                    onPropertiesClick={() => openPageNodeDialog({ mode: "edit", id: selectedPage.id })}
+                                    onAddSubpageClick={() => openPageNodeDialog({ mode: "add", initialValues: { parent: selectedPage.id } })}
+                                    onVisibilityChange={(visibility) => changeVisibility([selectedPage.id], visibility)}
+                                    onCopyClick={() => void copyPages([selectedPage.id])}
+                                    onPasteClick={(position) => void pastePages(selectedPage, position)}
+                                    onOpen={() => void copyPaste.readClipboard()}
+                                    hasClipboardPages={copyPaste.hasClipboardPages}
+                                    onDuplicateClick={() => void duplicatePage(selectedPage)}
+                                    categories={getMoveCategories(selectedPage)}
+                                    onMoveToCategoryClick={(targetCategory) => void movePageToCategory(selectedPage, targetCategory)}
+                                    translate={
+                                        selectedPageTranslation.enabled
+                                            ? {
+                                                  disabled: selectedPageTranslation.translating || !selectedPageTranslation.hasTranslatableContent,
+                                                  onClick: selectedPageTranslation.openDialog,
+                                              }
+                                            : undefined
+                                    }
+                                    delete={
+                                        allowPageDelete
+                                            ? {
+                                                  disabledReason: isHomePage(selectedPage) ? homePageReason : undefined,
+                                                  onClick: () => setDeleteTarget({ pageIds: [selectedPage.id], page: selectedPage }),
+                                              }
+                                            : undefined
+                                    }
+                                />
+                            }
                         />
                     ) : isInitialLoad ? (
                         <Panel>
@@ -441,20 +712,25 @@ function PageTreeDetailView({
                     clear: intl.formatMessage({ id: "dextinity.pageTreeDetail.bulk.clear", defaultMessage: "Clear selection" }),
                     toolbar: intl.formatMessage({ id: "dextinity.pageTreeDetail.bulk.toolbar", defaultMessage: "Bulk actions" }),
                 }}
-                actions={(["Published", "Unpublished", "Archived"] as const).map((visibility) => ({
-                    label: intl.formatMessage(
-                        {
-                            id: "dextinity.pageTreeDetail.bulk.changeVisibility",
-                            defaultMessage: "{visibility, select, Published {Publish} Unpublished {Unpublish} other {Archive}}",
-                        },
-                        { visibility },
-                    ),
-                    icon: <Icon name={visibility === "Published" ? "visible" : visibility === "Unpublished" ? "invisible" : "archive"} />,
-                    onClick: () => {
-                        changeVisibility(checkedIds, visibility);
-                        setCheckedIds([]);
-                    },
-                }))}
+                actions={bulkActions}
+            />
+            {selectedPageTranslation.dialogs}
+            {checkedPagesTranslation.dialogs}
+            <PageDeleteConfirmDialog
+                open={deleteTarget != null}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setDeleteTarget(undefined);
+                    }
+                }}
+                pages={pagesToDelete}
+                page={deleteTarget?.page}
+                onConfirm={() => void confirmDelete()}
+                loading={isDeleting}
+            />
+            <PageTreeProgressDialog
+                title={intl.formatMessage({ id: "dextinity.pageTreeDetail.pasting", defaultMessage: "Pasting pages" })}
+                progress={copyPaste.progress}
             />
             <ToastViewport
                 toasts={toasts}

@@ -23,6 +23,25 @@ describe("BulkActionBar", () => {
         expect(screen.getByRole("button", { name: "Delete" }).dataset.color).toBe("error");
     });
 
+    it("explains a disabled action and keeps it reachable", () => {
+        render(
+            <BulkActionBar
+                count={1}
+                actions={[
+                    { label: "Delete", disabled: true, disabledReason: "Select the subpages too", onClick: noop },
+                    { label: "Archive", disabledReason: "Not shown while enabled", onClick: noop },
+                ]}
+                onClear={noop}
+            />,
+        );
+
+        const deleteButton = screen.getByRole("button", { name: "Delete" });
+        const description = document.getElementById(deleteButton.getAttribute("aria-describedby") ?? "");
+        expect(description?.textContent).toBe("Select the subpages too");
+        expect(deleteButton.getAttribute("aria-disabled")).toBe("true");
+        expect(screen.getByRole("button", { name: "Archive" }).hasAttribute("aria-describedby")).toBe(false);
+    });
+
     it("is closed and inert without a selection", () => {
         const { container } = render(<BulkActionBar count={0} actions={[]} onClear={noop} />);
 

@@ -60,7 +60,7 @@
         block-size: var(--dextinity-button-type-button-small-icon-size);
     }
 
-    svg {
+    > :is(svg, :global(.dextinityIcon)) {
         inline-size: 100%;
         block-size: 100%;
     }

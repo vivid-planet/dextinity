@@ -113,8 +113,8 @@ export const Button: <
     LoadingSpinner extends ElementType = typeof Spinner,
 >(
     {
-        disabled = false,
-        loading = false,
+        disabled,
+        loading,
         type = "button",
         variant = "contained",
         color = "primary",
@@ -130,7 +130,7 @@ export const Button: <
     }: ButtonProps<StartIcon, EndIcon, LoadingSpinner>,
     ref: ForwardedRef<HTMLButtonElement>,
 ) {
-    const ownerState: ButtonOwnerState = { variant, color, size, disabled, loading };
+    const ownerState: ButtonOwnerState = { variant, color, size, disabled: disabled === true, loading: loading === true };
 
     const StartIconSlot: ElementType = slots?.startIcon ?? "span";
     const EndIconSlot: ElementType = slots?.endIcon ?? "span";

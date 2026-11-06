@@ -26,14 +26,6 @@
         }
 
         .control,
-        .row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: var(--dextinity-switch-gap);
-            cursor: pointer;
-        }
-
         .text {
             opacity: var(--dextinity-switch-disabled-opacity);
         }

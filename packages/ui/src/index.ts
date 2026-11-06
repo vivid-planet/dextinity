@@ -69,6 +69,8 @@ export { RichTextEditor, type RichTextEditorFormat, type RichTextEditorLabels } 
 export { type RichTextEditorOwnerState, type RichTextEditorProps } from "./components/richTextEditor/RichTextEditor";
 export { SaveState, type SaveStateLabels, type SaveStateOwnerState, type SaveStateProps } from "./components/saveState/SaveState";
 export { type SaveStateValue } from "./components/saveState/SaveState";
+export { ScopeSwitcher, type ScopeSwitcherDimension, type ScopeSwitcherLabels } from "./components/scopeSwitcher/ScopeSwitcher";
+export { type ScopeSwitcherOption, type ScopeSwitcherOwnerState, type ScopeSwitcherProps } from "./components/scopeSwitcher/ScopeSwitcher";
 export { SegmentedControl, type SegmentedControlOption, type SegmentedControlOwnerState } from "./components/segmentedControl/SegmentedControl";
 export { type SegmentedControlProps, type SegmentedControlSlotProps } from "./components/segmentedControl/SegmentedControl";
 export { Select, type SelectLabels, type SelectOption, type SelectOwnerState, type SelectProps } from "./components/select/Select";

@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { Form } from "react-final-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { focusOnError } from "../focusOnError/focusOnError";
-import { NumberField, toNumberValue } from "./NumberField";
+import { focusOnError } from "../../focusOnError/focusOnError";
+import { NumberField, toNumberValue } from "../NumberField";
 
 describe("NumberField", () => {
     it("maps a missing or non-numeric value to an empty field", () => {

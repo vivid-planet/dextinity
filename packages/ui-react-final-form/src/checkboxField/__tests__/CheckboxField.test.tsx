@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { Form } from "react-final-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { focusOnError } from "../focusOnError/focusOnError";
-import { CheckboxField, isCheckboxChecked, toggleCheckboxValue } from "./CheckboxField";
+import { focusOnError } from "../../focusOnError/focusOnError";
+import { CheckboxField, isCheckboxChecked, toggleCheckboxValue } from "../CheckboxField";
 
 describe("CheckboxField", () => {
     it("maps a boolean field to checked", () => {

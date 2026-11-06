@@ -4,8 +4,8 @@ import { FORM_ERROR, type SubmissionErrors } from "final-form";
 import { Form } from "react-final-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { focusOnError } from "../focusOnError/focusOnError";
-import { InputField } from "./InputField";
+import { focusOnError } from "../../focusOnError/focusOnError";
+import { InputField } from "../InputField";
 
 function renderForm(
     onSubmit: (values: Record<string, unknown>) => SubmissionErrors | void = () => undefined,

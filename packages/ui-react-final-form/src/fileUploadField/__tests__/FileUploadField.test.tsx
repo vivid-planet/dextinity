@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { Form } from "react-final-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { focusOnError } from "../focusOnError/focusOnError";
-import { FileUploadField, toFileUploadValue } from "./FileUploadField";
+import { focusOnError } from "../../focusOnError/focusOnError";
+import { FileUploadField, toFileUploadValue } from "../FileUploadField";
 
 describe("FileUploadField", () => {
     it("maps the field value to a list", () => {

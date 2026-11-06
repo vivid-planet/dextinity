@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isEmptyRichText } from "./RichTextEditorField";
+import { isEmptyRichText } from "../RichTextEditorField";
 
 describe("isEmptyRichText", () => {
     it("treats markup without visible text as empty", () => {

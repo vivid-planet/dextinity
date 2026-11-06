@@ -4,9 +4,9 @@ import { act, type ReactNode } from "react";
 import { Form } from "react-final-form";
 import { describe, expect, it } from "vitest";
 
-import { ComboboxField } from "../comboboxField/ComboboxField";
-import { SelectField } from "../selectField/SelectField";
-import { defaultOptionKey, defaultValueKey, isEqualByKey } from "./isEqualByKey";
+import { ComboboxField } from "../../comboboxField/ComboboxField";
+import { SelectField } from "../../selectField/SelectField";
+import { defaultOptionKey, defaultValueKey, isEqualByKey } from "../isEqualByKey";
 
 interface Category {
     id: string;

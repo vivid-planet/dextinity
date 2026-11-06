@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { toFocalPoint } from "./FocalPointPickerField";
+import { toFocalPoint } from "../FocalPointPickerField";
 
 describe("toFocalPoint", () => {
     it("rests in the center without a value", () => {

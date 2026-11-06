@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { toSliderValue } from "./SliderField";
+import { toSliderValue } from "../SliderField";
 
 describe("toSliderValue", () => {
     it("rests at min without a numeric value", () => {

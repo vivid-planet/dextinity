@@ -86,6 +86,8 @@ Shared by both adapter packages:
 
 An empty form value (`undefined`, or `""` from React Final Form's default `format`) maps to the control's empty state: `""` for text, `null` (or `[]` with `multiple`) for `SelectField` and `ComboboxField`, `null` for `PickerField`, `null` for `NumberField`, `DateField`, `DateTimeField`, and `DateRangeField`, unchecked for `CheckboxField` and `SwitchField`, no chosen option for `RadioGroupField`, `[]` for `CheckboxGroupField`, no pressed option for `SegmentedControlField`, `min` for `SliderField`, and the center for `FocalPointPickerField`. The adapters write the control's value back unchanged; use `parse` and `format` to convert, e.g. a number entered in an `InputField`.
 
+`SelectField` and `ComboboxField` compare values by key for the dirty check (`getKey`, `getOptionKey`; an option's `id` by default for `ComboboxField`), so options chosen again as new objects or in a new list don't make the form dirty. Pass `isEqual` to compare differently; with `parse` or `format`, React Final Form's default `===` applies unless you pass one.
+
 ### Validation
 
 By default, a field shows its error once it was touched (blurred) or the form was submitted (see [When messages show](#when-messages-show)): `state="error"` with the message as `validationMessage`. A submit error for the field (returned from `onSubmit`) shows the same way until the field changes. Controls without a field frame – `CheckboxField`, `SwitchField`, `RadioGroupField`, `CheckboxGroupField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` – show it below the control, the same way.

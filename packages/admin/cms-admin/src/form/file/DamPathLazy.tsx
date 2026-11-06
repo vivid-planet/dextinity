@@ -5,6 +5,7 @@ import type { GQLDamPathLazyQuery, GQLDamPathLazyQueryVariables } from "./DamPat
 const damPathLazyQuery = gql`
     query DamPathLazy($id: ID!) {
         damFile(id: $id) {
+            id
             damPath
         }
     }

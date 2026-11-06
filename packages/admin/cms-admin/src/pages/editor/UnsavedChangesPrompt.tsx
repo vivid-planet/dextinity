@@ -57,8 +57,14 @@ export function UnsavedChangesPrompt({ hasChanges, onSave, onDiscard, allowWithi
             return;
         }
         setSaving(true);
-        const saved = await onSave();
-        setSaving(false);
+        let saved = false;
+        try {
+            saved = await onSave();
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setSaving(false);
+        }
         if (saved) {
             leave(pendingNavigation);
         } else {

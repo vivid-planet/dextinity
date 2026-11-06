@@ -93,4 +93,20 @@ describe("UnsavedChangesPrompt", () => {
         await waitFor(() => expect(screen.queryByText("Save your changes?")).toBeNull());
         expect(history.location.pathname).toBe("/pages/page-id/edit");
     });
+
+    it("stays on the page when saving throws", async () => {
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+        const onSave = vi.fn(async (): Promise<boolean> => {
+            throw new Error("No page state");
+        });
+        const { history } = renderPrompt({ hasChanges: true, onSave });
+
+        act(() => history.push("/pages"));
+        fireEvent.click(screen.getByRole("button", { name: "Save and leave" }));
+
+        await waitFor(() => expect(screen.queryByText("Save your changes?")).toBeNull());
+        expect(history.location.pathname).toBe("/pages/page-id/edit");
+        expect(consoleError).toHaveBeenCalled();
+        consoleError.mockRestore();
+    });
 });

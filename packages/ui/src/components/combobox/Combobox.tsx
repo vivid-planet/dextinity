@@ -32,7 +32,7 @@ export interface ComboboxLabels {
     noResults: string;
     /** Shown when loading the options failed. */
     error: string;
-    /** Button that loads the options again after an error. */
+    /** The option that loads the options again after an error. */
     retry: string;
     /** The option that creates a new option from the input. */
     create: (query: string) => string;
@@ -107,7 +107,7 @@ export interface ComboboxProps<Option, Multiple extends boolean = false>
 }
 
 type OptionEntry<Option> = { kind: "option"; key: string; option: Option };
-type Entry<Option> = OptionEntry<Option> | { kind: "create"; key: string; query: string };
+type Entry<Option> = OptionEntry<Option> | { kind: "create"; key: string; query: string } | { kind: "retry"; key: string };
 
 function toList<Value>(value: Value | Value[] | null): Value[] {
     if (value == null) {
@@ -200,7 +200,7 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
     const query = showsChosenLabel ? "" : inputValue.trim();
     const { status, options, retry } = useAsyncOptions({ loadOptions, query, enabled: open, debounce });
 
-    const optionEntries = status === "error" ? [] : options.map(toEntry);
+    const optionEntries: Entry<Option>[] = status === "error" ? [{ kind: "retry", key: "retry" }] : options.map(toEntry);
     const canCreate =
         onCreate != null &&
         query !== "" &&
@@ -227,8 +227,14 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
         }
     };
 
-    const handleValueChange = (next: Entry<Option> | Entry<Option>[] | null) => {
+    const handleValueChange = (next: Entry<Option> | Entry<Option>[] | null, eventDetails: { cancel: () => void }) => {
         const nextEntries = toList(next);
+        if (nextEntries.some((entry) => entry.kind === "retry")) {
+            // Keeps the value and the open menu, which shows the options once they are loaded
+            eventDetails.cancel();
+            retry();
+            return;
+        }
         const chosen = nextEntries.flatMap((entry) => (entry.kind === "option" ? [entry.option] : []));
         const createEntry = nextEntries.find((entry) => entry.kind === "create");
         if (createEntry != null) {
@@ -238,7 +244,8 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
         emit(chosen);
     };
 
-    const entryLabel = (entry: Entry<Option>) => (entry.kind === "option" ? getOptionLabel(entry.option) : entry.query);
+    const entryLabel = (entry: Entry<Option>) =>
+        entry.kind === "option" ? getOptionLabel(entry.option) : entry.kind === "create" ? entry.query : labels.retry;
     const hasValue = selectedEntries.length > 0;
     const showsClear = !isMultiple && hasValue && !required && !disabled && !readOnly;
 
@@ -249,18 +256,7 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
                 {labels.loading}
             </>
         ) : status === "error" ? (
-            <>
-                {labels.error}
-                <button
-                    type="button"
-                    className={styles.retry}
-                    // Keeps the focus in the input, so the menu stays open
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={retry}
-                >
-                    {labels.retry}
-                </button>
-            </>
+            labels.error
         ) : entries.length === 0 ? (
             labels.noResults
         ) : null;
@@ -341,7 +337,14 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
                                 <BaseCombobox.Status className={styles.status}>{statusContent}</BaseCombobox.Status>
                                 <BaseCombobox.List className={styles.list}>
                                     {(entry: Entry<Option>) =>
-                                        entry.kind === "create" ? (
+                                        entry.kind === "retry" ? (
+                                            <BaseCombobox.Item key={entry.key} value={entry} className={styles.item}>
+                                                <span className={styles.itemIcon}>
+                                                    <Icon name="refresh" />
+                                                </span>
+                                                <span className={styles.itemText}>{labels.retry}</span>
+                                            </BaseCombobox.Item>
+                                        ) : entry.kind === "create" ? (
                                             <BaseCombobox.Item key={entry.key} value={entry} className={styles.item}>
                                                 <span className={styles.itemIcon}>
                                                     <Icon name="plus" />

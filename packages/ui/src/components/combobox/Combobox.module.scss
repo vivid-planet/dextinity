@@ -118,27 +118,6 @@
     }
 }
 
-.retry {
-    margin: 0 0 0 auto;
-    padding: 2px 6px;
-    border: 0;
-    border-radius: var(--dextinity-radius-item);
-    background: transparent;
-    color: var(--dextinity-color-accent-text);
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-
-    &:hover {
-        background: var(--dextinity-select-item-background-highlight);
-    }
-
-    &:focus-visible {
-        outline: none;
-        box-shadow: var(--dextinity-focus-ring);
-    }
-}
-
 .list {
     @include menu.list;
 

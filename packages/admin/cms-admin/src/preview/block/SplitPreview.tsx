@@ -5,7 +5,7 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 
 import { BlockPreview } from "./BlockPreview";
-import { Column, FirstColumnContainer, MaximizeButton, PreviewContainer, Root, ScrollableColumn, Split } from "./SplitPreview.sc";
+import { Column, FirstColumnContainer, MaximizeButton, PreviewContainer, PreviewContent, Root, ScrollableColumn, Split } from "./SplitPreview.sc";
 import type { BlockPreviewApi } from "./useBlockPreview";
 
 interface Props {
@@ -61,7 +61,9 @@ function SplitPreview({ url, previewState, children, previewApi, siteUrl }: Prop
                         </Box>
                     </FirstColumnContainer>
                     <PreviewContainer data-minimized={minimized ? "" : undefined}>
-                        <BlockPreview url={url} siteUrl={siteUrl} previewState={previewState} previewApi={previewApi} />
+                        <PreviewContent inert={minimized}>
+                            <BlockPreview url={url} siteUrl={siteUrl} previewState={previewState} previewApi={previewApi} />
+                        </PreviewContent>
                         {minimized && (
                             <MaximizeButton
                                 onClick={handleMaximizeClick}

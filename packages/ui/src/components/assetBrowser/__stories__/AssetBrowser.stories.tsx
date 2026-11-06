@@ -298,6 +298,12 @@ export const ResizableSidebar: Story = {
         await userEvent.keyboard("{ArrowLeft}");
         await waitFor(() => expect(args.onSidebarWidthChange).toHaveBeenLastCalledWith(startWidth + 104));
         await waitFor(() => expect(separator).toHaveAttribute("aria-valuenow", String(startWidth + 104)));
+        await userEvent.keyboard("{Shift>}{ArrowRight}{/Shift}");
+        await waitFor(() => expect(args.onSidebarWidthChange).toHaveBeenLastCalledWith(startWidth + 168));
+        await userEvent.keyboard("{Home}");
+        await waitFor(() => expect(separator).toHaveAttribute("aria-valuenow", separator.getAttribute("aria-valuemin")));
+        await userEvent.keyboard("{End}");
+        await waitFor(() => expect(separator).toHaveAttribute("aria-valuenow", separator.getAttribute("aria-valuemax")));
 
         await userEvent.dblClick(separator);
         await waitFor(() => expect(args.onSidebarWidthChange).toHaveBeenLastCalledWith(undefined));

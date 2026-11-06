@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { AssetBrowser, type AssetBrowserAsset, type AssetBrowserFolder } from "./AssetBrowser";
@@ -76,20 +76,6 @@ describe("AssetBrowser", () => {
             "560",
         ]);
         expect((container.firstElementChild as HTMLElement).style.getPropertyValue("--dextinity-asset-browser-sidebar-width")).toBe("240px");
-    });
-
-    it("resizes with the arrow keys, Home, and End within the bounds, and resets on double-click", () => {
-        const onSidebarWidthChange = vi.fn();
-        renderBrowser({ sidebarWidth: 240, onSidebarWidthChange, sidebarMinWidth: 200, sidebarMaxWidth: 400 });
-        const separator = screen.getByRole("separator");
-
-        fireEvent.keyDown(separator, { key: "ArrowRight" });
-        fireEvent.keyDown(separator, { key: "ArrowLeft", shiftKey: true });
-        fireEvent.keyDown(separator, { key: "Home" });
-        fireEvent.keyDown(separator, { key: "End" });
-        fireEvent.doubleClick(separator);
-
-        expect(onSidebarWidthChange.mock.calls).toStrictEqual([[256], [200], [200], [400], [undefined]]);
     });
 
     it("keeps a remembered width within the bounds", () => {

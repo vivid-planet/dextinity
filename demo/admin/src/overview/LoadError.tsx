@@ -10,14 +10,14 @@ export function LoadError({ onRetry }: LoadErrorProps) {
 
     return (
         <EmptyState
-            icon={<Icon name="alert" />}
+            icon={<Icon name="error" />}
             title={intl.formatMessage({ id: "overview.loadError.title", defaultMessage: "Couldn't load" })}
             description={intl.formatMessage({
                 id: "overview.loadError.description",
                 defaultMessage: "The server didn't answer. Your content is not affected.",
             })}
             actions={
-                <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="refresh" />} onClick={onRetry}>
+                <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="reload" />} onClick={onRetry}>
                     <FormattedMessage id="overview.loadError.retry" defaultMessage="Load again" />
                 </Button>
             }

@@ -72,7 +72,7 @@ export function parseColor(value: string): LinearColor | null {
 /**
  * Blends a translucent color over an opaque one, in linear light.
  */
-export function composite(top: LinearColor, base: LinearColor): LinearColor {
+function composite(top: LinearColor, base: LinearColor): LinearColor {
     return {
         channels: top.channels.map((channel, index) => channel * top.alpha + base.channels[index] * (1 - top.alpha)) as [number, number, number],
         alpha: 1,

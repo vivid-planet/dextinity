@@ -11,7 +11,7 @@ const meta = {
     title: "Foundations/Theme",
     argTypes: {
         colorScheme: { control: "radio", options: ["light", "dark", "high-contrast"] },
-        brand: { control: "select", options: ["dextinity", "ai-hub", "cms", "crimson", "nordwerk", "loden", "aqualis"] },
+        brand: { control: "select", options: ["dextinity", "ai-hub", "cms"] },
         density: { control: "radio", options: ["comfortable", "standard", "compact"] },
         className: { control: false },
     },
@@ -60,13 +60,6 @@ export const AiHub: Story = {
     args: { brand: "ai-hub" },
 };
 
-/**
- * A brand is a CSS block on `[data-dextinity-brand]` — this example brand from Storybook also replaces icons.
- */
-export const CustomBrand: Story = {
-    args: { brand: "nordwerk" },
-};
-
 export const Compact: Story = {
     args: { density: "compact" },
 };
@@ -82,7 +75,7 @@ export const Nested: Story = {
                 <Theme colorScheme="dark" brand="ai-hub">
                     <ExampleContent />
                 </Theme>
-                <Theme brand="loden" density="comfortable">
+                <Theme brand="cms" density="comfortable">
                     <ExampleContent />
                 </Theme>
             </div>

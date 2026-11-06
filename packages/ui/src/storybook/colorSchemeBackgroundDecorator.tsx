@@ -1,5 +1,4 @@
 import "./colorSchemeBackground.scss";
-import "./exampleBrands.scss";
 
 import type { Decorator } from "@storybook/react-vite";
 import { type PropsWithChildren, useEffect } from "react";

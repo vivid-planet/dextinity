@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { clsx } from "clsx";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import { Theme } from "../../theme/Theme";
 import iconTokens from "../_tokens.scss?raw";
 import { Icon } from "../Icon";
 import { iconNames } from "../iconNames";
@@ -88,27 +88,25 @@ export const WithLabel: Story = {
 };
 
 /**
- * Every icon is a CSS variable, `--dextinity-icon-<name>`, so a brand swaps icons in CSS alone — no React context. Here the example
- * brand Nordwerk replaces some icons with square, heavier variants:
+ * Every icon is a CSS variable, `--dextinity-icon-<name>`, so a theme swaps icons in CSS alone — no React context. Here a class
+ * replaces some icons with square, heavier variants:
  *
  * ```css
- * [data-dextinity-brand="nordwerk"] {
+ * [data-dextinity-brand="acme"] {
  *     --dextinity-icon-search: url("data:image/svg+xml,…");
  * }
  * ```
  */
-export const PerBrand: Story = {
+export const CustomIcons: Story = {
     render: () => (
-        <div className={styles.brands}>
-            {(["dextinity", "nordwerk"] as const).map((brand) => (
-                <Theme key={brand} brand={brand}>
-                    <div className={styles.row}>
-                        <code className={styles.brandName}>{brand}</code>
-                        {(["search", "home", "folder", "check", "close", "plus", "arrow-right", "chevron-down"] as const).map((name) => (
-                            <Icon key={name} name={name} size="large" />
-                        ))}
-                    </div>
-                </Theme>
+        <div className={styles.variants}>
+            {(["default", "custom"] as const).map((variant) => (
+                <div key={variant} className={clsx(styles.row, variant === "custom" && styles.customIcons)}>
+                    <code className={styles.variantName}>{variant}</code>
+                    {(["search", "home", "folder", "check", "close", "plus", "arrow-right", "chevron-down"] as const).map((name) => (
+                        <Icon key={name} name={name} size="large" />
+                    ))}
+                </div>
             ))}
         </div>
     ),

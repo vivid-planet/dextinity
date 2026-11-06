@@ -3,7 +3,7 @@ import { Loading, MainContent, Toolbar, ToolbarFillSpace, ToolbarItem, ToolbarTi
 import { ArrowLeft } from "@dextinity/admin-icons";
 import {
     type BlockInterface,
-    BlockPreview,
+    BlockPreviewPane,
     ContentScopeIndicator,
     IFrameBridgeProvider,
     useBlockContext,
@@ -74,7 +74,7 @@ export function EmailCampaignView({ id, EmailCampaignContentBlock }: EmailCampai
             </Toolbar>
             <MainContent fullHeight>
                 <IFrameBridgeProvider key={previewUrl}>
-                    <BlockPreview url={previewUrl} previewState={previewState} previewApi={previewApi} />
+                    <BlockPreviewPane url={previewUrl} previewState={previewState} previewApi={previewApi} />
                 </IFrameBridgeProvider>
             </MainContent>
         </>

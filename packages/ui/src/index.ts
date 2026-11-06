@@ -135,6 +135,8 @@ export { type ListLayoutSlotProps } from "./components/listLayout/ListLayout";
 export { LogViewer, type LogViewerLabels, type LogViewerLineTone, type LogViewerOwnerState } from "./components/logViewer/LogViewer";
 export { type LogViewerProps, type LogViewerSlotProps } from "./components/logViewer/LogViewer";
 export { Menu, type MenuOwnerState, type MenuPlacement, type MenuProps, type MenuSlotProps } from "./components/menu/Menu";
+export { MenuCheckboxItem, type MenuCheckboxItemOwnerState, type MenuCheckboxItemProps } from "./components/menu/MenuCheckboxItem";
+export { type MenuCheckboxItemSlotProps, type MenuCheckboxItemSlots } from "./components/menu/MenuCheckboxItem";
 export { MenuGroup, type MenuGroupOwnerState, type MenuGroupProps, type MenuGroupSlotProps } from "./components/menu/MenuGroup";
 export { MenuItem, type MenuItemOwnerState, type MenuItemProps } from "./components/menu/MenuItem";
 export { type MenuItemSlotProps, type MenuItemSlots } from "./components/menu/MenuItem";

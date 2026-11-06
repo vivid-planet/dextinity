@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Theme } from "../theme/Theme";
 import { Menu } from "./Menu";
+import { MenuCheckboxItem } from "./MenuCheckboxItem";
 import { MenuGroup } from "./MenuGroup";
 import { MenuItem } from "./MenuItem";
 import { MenuRadioGroup } from "./MenuRadioGroup";
@@ -25,6 +26,7 @@ describe("Menu", () => {
                     <MenuRadioGroup value="dark" onChange={vi.fn()}>
                         <MenuRadioItem value="dark" label="Dark" />
                     </MenuRadioGroup>
+                    <MenuCheckboxItem label="Location" checked={false} onChange={vi.fn()} />
                     <MenuSubmenu label="Move to" open={false} onOpenChange={vi.fn()}>
                         <MenuItem label="Images" onClick={vi.fn()} />
                     </MenuSubmenu>
@@ -52,6 +54,9 @@ describe("Menu", () => {
         expect(screen.getByRole("group", { name: "Row" }).className).toContain("dextinityMenuGroup");
         expect(screen.getByText("Row").className).toContain("dextinityMenuGroup__label");
         expect(screen.getByRole("menuitemradio", { name: "Dark" }).className).toContain("dextinityMenuRadioItem");
+        const location = screen.getByRole("menuitemcheckbox", { name: "Location" });
+        expect(location.className).toContain("dextinityMenuCheckboxItem");
+        expect(location).toHaveProperty("dataset.unchecked", "");
         expect(screen.getByRole("menuitem", { name: "Move to" }).className).toContain("dextinityMenuSubmenu");
     });
 });

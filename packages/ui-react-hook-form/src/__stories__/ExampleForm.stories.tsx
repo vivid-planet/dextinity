@@ -223,7 +223,7 @@ function ExamplePageForm() {
 const meta = {
     title: "Forms/React Hook Form/Example form",
     parameters: {
-        layout: "fullscreen",
+        layout: "padded",
         docs: {
             description: {
                 component:

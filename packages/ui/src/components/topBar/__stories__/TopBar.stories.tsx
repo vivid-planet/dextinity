@@ -69,6 +69,7 @@ const meta = {
         userMenu: { control: false },
         actions: { control: false },
         back: { control: false },
+        title: { control: "text" },
         labels: { control: false },
         className: { control: false },
     },
@@ -105,12 +106,14 @@ export const AiOpen: Story = {
 };
 
 /**
- * While editing, back and the editing actions replace search and toggles. Save is the bar's only primary action.
+ * While editing, back, what is edited, and the editing actions replace search and toggles. Save is the bar's only primary action. A
+ * page sets them with `useTopBarEdit`, see the `AppShell`'s `EditingPage` story.
  */
 export const Edit: Story = {
     args: {
         mode: "edit",
         back: { label: "Back to job ads", onClick: fn() },
+        title: "Frontend developer",
         actions: editActions,
     },
 };

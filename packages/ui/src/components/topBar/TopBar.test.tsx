@@ -1,8 +1,10 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen } from "@testing-library/react";
+import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { AppShellContext } from "../appShell/appShellContext";
 import { TopBar } from "./TopBar";
+import { type TopBarEdit, TopBarEditProvider, useTopBarEdit } from "./topBarEdit";
 
 afterEach(cleanup);
 
@@ -33,5 +35,37 @@ describe("TopBar render contract", () => {
 
         screen.getByRole("button", { name: "Open navigation" }).click();
         expect(onNavDrawerOpen).toHaveBeenCalled();
+    });
+
+    it("switches to the edit mode a page sets, and back when the page unmounts", () => {
+        function Editor(props: TopBarEdit) {
+            useTopBarEdit(props);
+            return null;
+        }
+        let showEditor: (show: boolean) => void = () => undefined;
+        function App() {
+            const [editing, setEditing] = useState(true);
+            showEditor = setEditing;
+            return (
+                <TopBarEditProvider>
+                    <TopBar onSearchClick={vi.fn()} />
+                    {editing && (
+                        <Editor back={{ label: "Back to pages", onClick: vi.fn() }} title="Home" actions={<button type="button">Save</button>} />
+                    )}
+                </TopBarEditProvider>
+            );
+        }
+        render(<App />);
+
+        const bar = screen.getByRole("banner");
+        expect(bar.dataset.mode).toBe("edit");
+        expect(bar.querySelector(".dextinityTopBar__title")?.textContent).toBe("Home");
+        expect(screen.getByRole("button", { name: "Back to pages" })).toBeTruthy();
+        expect(screen.getByRole("button", { name: "Save" })).toBeTruthy();
+
+        act(() => showEditor(false));
+
+        expect(bar.dataset.mode).toBe("browse");
+        expect(screen.getByRole("button", { name: "Search, jump, create …" })).toBeTruthy();
     });
 });

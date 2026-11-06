@@ -4,6 +4,7 @@ import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useState } 
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { TopBarEditProvider } from "../topBar/topBarEdit";
 import styles from "./AppShell.module.scss";
 import { AppShellContext, type AppShellContextValue } from "./appShellContext";
 import { useMediaQuery } from "./useMediaQuery";
@@ -43,7 +44,10 @@ export interface AppShellSlotProps {
 export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
     /** The navigation, usually a `SideNav` without `collapsed` and `onCollapsedChange`, which then follows the shell. */
     nav: ReactNode;
-    /** The top bar, usually a `TopBar`; it sticks to the top. Without `onMenuClick`, its menu button opens the navigation drawer. */
+    /**
+     * The top bar, usually a `TopBar`; it sticks to the top. Without `onMenuClick`, its menu button opens the navigation drawer. Without
+     * `mode`, it switches to its edit mode while a page in the content calls `useTopBarEdit`.
+     */
     topBar: ReactNode;
     /** The page: page header, then panels. */
     children: ReactNode;
@@ -147,45 +151,47 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
             data-aiopen={ownerState.aiOpen ? "" : undefined}
             className={clsx(styles.root, className)}
         >
-            <span ref={anchorRef} hidden />
-            <div className={styles.lightField} aria-hidden>
-                <span />
-            </div>
-            {layout === "narrow" ? (
-                <AppShellContext.Provider value={drawerContext}>
-                    <BaseDialog.Root open={navDrawerOpen} onOpenChange={setNavDrawerOpen}>
-                        <BaseDialog.Portal container={container}>
-                            <BaseDialog.Backdrop className={styles.backdrop} />
-                            <BaseDialog.Popup aria-label={labels.navigation} className={styles.navDrawer}>
-                                {nav}
-                            </BaseDialog.Popup>
-                        </BaseDialog.Portal>
-                    </BaseDialog.Root>
-                </AppShellContext.Provider>
-            ) : (
-                <AppShellContext.Provider value={columnContext}>
-                    <div className={styles.nav}>{nav}</div>
-                </AppShellContext.Provider>
-            )}
-            <AppShellContext.Provider value={mainContext}>
-                <main {...mainProps}>
-                    <div className={styles.topBar}>{topBar}</div>
-                    <div className={styles.content}>{children}</div>
-                </main>
-            </AppShellContext.Provider>
-            {aiPanel != null &&
-                (layout === "narrow" ? (
-                    <BaseDialog.Root open={ownerState.aiOpen} onOpenChange={(nextOpen) => onAiOpenChange?.(nextOpen)}>
-                        <BaseDialog.Portal container={container}>
-                            <BaseDialog.Backdrop className={styles.backdrop} />
-                            <BaseDialog.Popup aria-label={labels.ai} className={styles.aiSheet}>
-                                {aiPanel}
-                            </BaseDialog.Popup>
-                        </BaseDialog.Portal>
-                    </BaseDialog.Root>
+            <TopBarEditProvider>
+                <span ref={anchorRef} hidden />
+                <div className={styles.lightField} aria-hidden>
+                    <span />
+                </div>
+                {layout === "narrow" ? (
+                    <AppShellContext.Provider value={drawerContext}>
+                        <BaseDialog.Root open={navDrawerOpen} onOpenChange={setNavDrawerOpen}>
+                            <BaseDialog.Portal container={container}>
+                                <BaseDialog.Backdrop className={styles.backdrop} />
+                                <BaseDialog.Popup aria-label={labels.navigation} className={styles.navDrawer}>
+                                    {nav}
+                                </BaseDialog.Popup>
+                            </BaseDialog.Portal>
+                        </BaseDialog.Root>
+                    </AppShellContext.Provider>
                 ) : (
-                    ownerState.aiOpen && <div className={styles.ai}>{aiPanel}</div>
-                ))}
+                    <AppShellContext.Provider value={columnContext}>
+                        <div className={styles.nav}>{nav}</div>
+                    </AppShellContext.Provider>
+                )}
+                <AppShellContext.Provider value={mainContext}>
+                    <main {...mainProps}>
+                        <div className={styles.topBar}>{topBar}</div>
+                        <div className={styles.content}>{children}</div>
+                    </main>
+                </AppShellContext.Provider>
+                {aiPanel != null &&
+                    (layout === "narrow" ? (
+                        <BaseDialog.Root open={ownerState.aiOpen} onOpenChange={(nextOpen) => onAiOpenChange?.(nextOpen)}>
+                            <BaseDialog.Portal container={container}>
+                                <BaseDialog.Backdrop className={styles.backdrop} />
+                                <BaseDialog.Popup aria-label={labels.ai} className={styles.aiSheet}>
+                                    {aiPanel}
+                                </BaseDialog.Popup>
+                            </BaseDialog.Portal>
+                        </BaseDialog.Root>
+                    ) : (
+                        ownerState.aiOpen && <div className={styles.ai}>{aiPanel}</div>
+                    ))}
+            </TopBarEditProvider>
             <div className={styles.grain} aria-hidden />
         </div>
     );

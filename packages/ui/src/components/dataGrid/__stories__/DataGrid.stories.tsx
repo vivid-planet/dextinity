@@ -574,7 +574,7 @@ const departmentRows: Job[] = ["Design", "Engineering", "Content"].map((departme
 
 /**
  * Sub rows (`getSubRows`) show below their parent, indented, while it is expanded (`expandedRowIds`). The chevron toggles a row;
- * on a focused row, ArrowRight expands and ArrowLeft collapses it.
+ * on the chevron or a focused row, ArrowRight expands and ArrowLeft collapses it.
  */
 export const SubRows: Story = {
     args: {
@@ -598,6 +598,13 @@ export const SubRows: Story = {
         await expect(canvas.queryByText("Senior UX Designer")).toBeNull();
         await userEvent.keyboard("{ArrowRight}");
         await waitFor(() => expect(canvas.getByText("Senior UX Designer")).toBeInTheDocument());
+
+        canvas.getByRole("button", { name: "Expand Engineering" }).focus();
+        await userEvent.keyboard("{ArrowLeft}");
+        await waitFor(() => expect(canvas.queryByText("Frontend Developer")).toBeNull());
+        await expect(canvas.getByRole("button", { name: "Expand Engineering" })).toHaveFocus();
+        await userEvent.keyboard("{ArrowRight}");
+        await waitFor(() => expect(canvas.getByText("Frontend Developer")).toBeInTheDocument());
     },
 };
 

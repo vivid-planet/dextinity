@@ -287,7 +287,10 @@ export interface DataGridProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>,
      * @defaultValue `[]`
      */
     expandedRowIds?: string[];
-    /** Called with the new expanded rows when a row's expand button is pressed, or ArrowRight and ArrowLeft on a focused row. */
+    /**
+     * Called with the new expanded rows when a row's expand button is pressed, or on ArrowRight and ArrowLeft while the button or
+     * the row has the focus.
+     */
     onExpandedRowIdsChange?: (ids: string[]) => void;
     /** Paging below the table. */
     pagination?: PaginationProps;
@@ -786,6 +789,13 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                     onClick={(event) => {
                         event.stopPropagation();
                         setRowExpanded(entry.rowId, !entry.expanded);
+                    }}
+                    onKeyDown={(event) => {
+                        if ((event.key === "ArrowRight" || event.key === "ArrowLeft") && (event.key === "ArrowRight") !== entry.expanded) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            setRowExpanded(entry.rowId, event.key === "ArrowRight");
+                        }
                     }}
                 >
                     <Icon name="chevron-right" />

@@ -11,7 +11,7 @@ What mail clients change in dark mode, and the techniques tested against them. A
 | Outlook iOS               | Background and text colors; dark backgrounds get lighter; leaves background images                                    |
 | Outlook Mac               | Background and text colors; leaves borders of table cells and background images                                       |
 | Yahoo Mail on the web     | Light background colors; leaves background images                                                                     |
-| Gmail Android             | Light background colors on some phones; inverts images with few colors that it shows at about `64px` or less per side |
+| Gmail Android             | Light background colors on some phones; inverts images with few colors that phones show about `55px` or less per side |
 | Classic Outlook (Windows) | Inverts background and text colors, dark backgrounds included; ignores CSS background images; leaves VML fills        |
 
 ## Keep a Background Color
@@ -19,9 +19,10 @@ What mail clients change in dark mode, and the techniques tested against them. A
 Set the color twice: as `background-color`, and as a `background-image` of a solid PNG in that color. Then the color stays in Gmail iOS, Outlook on the web, Outlook Mac, Outlook iOS and Yahoo Mail on the web. It does not stay in classic Outlook, or on some Gmail Android phones.
 
 - Use a `100×100` px PNG. Gmail Android inverts a solid background image whose file is `8px` or less on one side, such as a `1×1` px PNG.
+- Gmail Android also inverts the background image of a thin element, such as a `2px` high line, when the element is narrower than the image. Set a `background-size` smaller than the element, such as `40px 40px` on a `60px` wide line.
 - Set both properties on every element that paints the background, such as the inner `<table>` of a section too. Otherwise Gmail iOS, Outlook iOS and Outlook on the web paint the dark color of that element over the image.
 - On an MJML section, set `background-color` and `background-image` with `!important` in an inlined style. Otherwise the `background` shorthand that MJML writes comes after the image and removes it.
-- Gmail Android also inverts the background image, whatever its file size, of a box that it shows at about `64px` or less per side. For a small box, put the color into the content image instead (see [Keep a Logo Readable](#keep-a-logo-readable)).
+- Gmail Android also inverts the background image, whatever its file size, of a box that phones show at about `55px` or less per side. For a small box, put the color into the content image instead (see [Keep a Logo Readable](#keep-a-logo-readable)).
 - Use this technique behind images only, not behind text. Outlook iOS turns dark text on a light background light, and Gmail iOS and Outlook on the web turn light text on a dark background dark. In both cases the text disappears.
 - Name the PNG after its color, such as `001e50-100x100.png` for `#001e50`. When the theme color changes, replace the image too.
 
@@ -33,7 +34,7 @@ Set the color twice: as `background-color`, and as a `background-image` of a sol
 
 - Put the light background of a dark logo into the image file. When the logo and its background are separate, some Gmail Android phones invert only one of them, even with the solid PNG from [Keep a Background Color](#keep-a-background-color). These phones may also invert the whole image. Then the logo and its background change together, so they keep their contrast.
 - On a dark section, put a background image in the section color behind the logo only, not behind the whole section. Gmail iOS and Outlook on the web lighten the section and darken its text, so a background image behind the whole section leaves dark text on a dark background.
-- Gmail Android still inverts a logo with few colors that it shows at about `64px` or less per side. Widening the logo image avoids this, but it also widens a background image behind the logo whose size comes from the logo. No solution for both is known.
+- Gmail Android still inverts a logo with few colors that phones show at about `55px` or less per side. If possible, add transparent space to the left and/or right inside the image file, so that the image is wider while the visible logo keeps its size and position: for example, a `96×96` px logo in a `144×96` px file, with the spacing around the image `24px` smaller. On wider screens, such as tablets, Gmail Android can still invert it.
 
 ## Keep a Line Visible
 

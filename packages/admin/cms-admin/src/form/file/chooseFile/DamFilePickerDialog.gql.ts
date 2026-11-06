@@ -13,3 +13,14 @@ export const damFilePickerFoldersQuery = gql`
         }
     }
 `;
+
+export const damFilePickerInitialFileFolderQuery = gql`
+    query DamFilePickerInitialFileFolder($id: ID!) {
+        damFile(id: $id) {
+            id
+            folder {
+                id
+            }
+        }
+    }
+`;

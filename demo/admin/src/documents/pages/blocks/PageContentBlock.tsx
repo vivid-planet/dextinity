@@ -60,8 +60,8 @@ export const PageContentBlock = createBlocksBlock({
     additionalItemFields: {
         ...userGroupAdditionalItemFields,
     },
-    AdditionalItemContextMenuItems: ({ item, onChange, onMenuClose }) => {
-        return <UserGroupContextMenuItem item={item} onChange={onChange} onMenuClose={onMenuClose} />;
+    AdditionalItemContextMenuItems: ({ item, onChange, openDialog }) => {
+        return <UserGroupContextMenuItem item={item} onChange={onChange} openDialog={openDialog} />;
     },
     AdditionalItemContent: ({ item }) => {
         return <UserGroupChip item={item} />;

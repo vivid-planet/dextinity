@@ -73,6 +73,39 @@ export const WithClickHandlers: Story = {
 };
 
 /**
+ * A click with ⌘/Ctrl, Shift, or the middle button follows `href` instead of calling `onClick`, so a level opens in a new tab.
+ */
+export const ModifierClick: Story = {
+    args: {
+        items: [
+            { label: "Page", href: "#page", onClick: fn() },
+            { label: "Teaser grid", href: "#teaser-grid", onClick: fn() },
+            { label: "Teaser 2" },
+        ],
+    },
+    play: async ({ args, canvas }) => {
+        const link = canvas.getByRole("link", { name: "Teaser grid" });
+        let defaultPrevented: boolean | undefined;
+        // Keeps the test page where it is, after the component has decided whether to cancel the click
+        const keepPage = (event: MouseEvent) => {
+            defaultPrevented = event.defaultPrevented;
+            event.preventDefault();
+        };
+        link.ownerDocument.addEventListener("click", keepPage);
+        try {
+            link.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, ctrlKey: true }));
+        } finally {
+            link.ownerDocument.removeEventListener("click", keepPage);
+        }
+        await expect(defaultPrevented).toBe(false);
+        await expect(args.items[1].onClick).not.toHaveBeenCalled();
+
+        await userEvent.click(link);
+        await waitFor(() => expect(args.items[1].onClick).toHaveBeenCalledTimes(1));
+    },
+};
+
+/**
  * Deep paths keep the first level and the last ones; the levels in between move into a menu.
  */
 export const Collapsed: Story = {

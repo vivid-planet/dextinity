@@ -11,6 +11,7 @@ import {
     type RefAttributes,
 } from "react";
 
+import { isModifiedClick } from "../../utils/modifiedClick";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
 import styles from "./Tabs.module.scss";
@@ -171,7 +172,7 @@ export const Tabs = forwardRef(function Tabs<Value extends string = string>(
                                 tabProps.onClick?.(event as BaseUIEvent<MouseEvent<HTMLButtonElement>>);
                                 if (item.disabled) {
                                     event.preventDefault();
-                                } else if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+                                } else if (isModifiedClick(event)) {
                                     // The browser opens the link elsewhere, so the tab stays where it is
                                     event.preventBaseUIHandler();
                                 }

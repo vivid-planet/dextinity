@@ -29,6 +29,10 @@
         --dextinity-toast-icon-color: var(--dextinity-toast-error-icon-color);
     }
 
+    &[data-tone="warning"] {
+        --dextinity-toast-icon-color: var(--dextinity-toast-warning-icon-color);
+    }
+
     &[data-tone="info"] {
         --dextinity-toast-icon-color: var(--dextinity-toast-info-icon-color);
     }

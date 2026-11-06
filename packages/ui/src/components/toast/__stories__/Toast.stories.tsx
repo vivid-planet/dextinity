@@ -32,7 +32,7 @@ const meta = {
     argTypes: {
         tone: {
             control: "radio",
-            options: ["success", "error", "info"],
+            options: ["success", "error", "warning", "info"],
         },
         icon: {
             control: "select",
@@ -84,6 +84,19 @@ export const ErrorTone: Story = {
     },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("alert")).toHaveTextContent("Please enter a title first");
+    },
+};
+
+/**
+ * `tone="warning"` points out something to look at although the action went through.
+ */
+export const Warning: Story = {
+    args: {
+        message: "Uploaded – the video is large and may load slowly",
+        tone: "warning",
+    },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("status")).toHaveAttribute("data-tone", "warning");
     },
 };
 

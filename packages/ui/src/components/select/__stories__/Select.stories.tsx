@@ -143,8 +143,12 @@ export const Keyboard: Story = {
         const trigger = canvas.getByRole("combobox");
         trigger.focus();
         await userEvent.keyboard("{ArrowDown}");
-        await screen.findByRole("listbox");
-        await userEvent.keyboard("{ArrowDown}{Enter}");
+        const listbox = await screen.findByRole("listbox");
+        // Opening highlights the first option asynchronously; moving on before that would highlight it instead of the next one
+        await waitFor(() => expect(within(listbox).getByRole("option", { name: "Vienna" })).toHaveAttribute("data-highlighted"));
+        await userEvent.keyboard("{ArrowDown}");
+        await waitFor(() => expect(within(listbox).getByRole("option", { name: "Graz" })).toHaveAttribute("data-highlighted"));
+        await userEvent.keyboard("{Enter}");
         await expect(args.onChange).toHaveBeenCalledWith("graz");
     },
 };

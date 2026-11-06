@@ -130,6 +130,7 @@ export function PageTreeNodeMenu({
                     label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.moveToCategory", defaultMessage: "Move to" })}
                     open={isMoveSubmenuOpen}
                     onOpenChange={setIsMoveSubmenuOpen}
+                    disabled={isArchived}
                 >
                     {categories.map(({ category, label, disabledReason }) => (
                         <MenuItem

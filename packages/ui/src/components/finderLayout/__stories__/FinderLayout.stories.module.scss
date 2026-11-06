@@ -1,0 +1,39 @@
+.structure {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    align-items: start;
+}
+
+.structureLayout {
+    --dextinity-finder-layout-header-spacing: 0;
+    --dextinity-finder-layout-window-height: 300px;
+}
+
+.structureWindow {
+    display: grid;
+    grid-template-columns: 30% minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        "sidebar toolbar"
+        "sidebar content"
+        "sidebar path";
+    gap: 8px;
+}
+
+.structureSidebar {
+    grid-area: sidebar;
+}
+
+.structureToolbar {
+    grid-area: toolbar;
+}
+
+.structureContent {
+    grid-area: content;
+}
+
+.structurePath {
+    grid-area: path;
+    min-block-size: 0;
+}

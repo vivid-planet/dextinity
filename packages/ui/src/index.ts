@@ -45,6 +45,8 @@ export { FieldActions, type FieldActionsLabels, type FieldActionsOwnerState, typ
 export { FilterBar, type FilterBarLabels, type FilterBarOwnerState } from "./components/filterBar/FilterBar";
 export { type FilterBarProps, type FilterBarSlotProps } from "./components/filterBar/FilterBar";
 export { FilterChip, type FilterChipOwnerState, type FilterChipProps, type FilterChipSlotProps } from "./components/filterChip/FilterChip";
+export { FinderLayout, type FinderLayoutOwnerState, type FinderLayoutProps } from "./components/finderLayout/FinderLayout";
+export { type FinderLayoutSlotProps } from "./components/finderLayout/FinderLayout";
 export type { FocalPointPickerLabels } from "./components/focalPointPicker/FocalPointPicker";
 export { FocalPointPicker, type FocalPointPickerOwnerState, type FocalPointPickerProps } from "./components/focalPointPicker/FocalPointPicker";
 export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Icon";

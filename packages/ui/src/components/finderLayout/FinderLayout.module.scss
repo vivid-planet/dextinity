@@ -1,0 +1,23 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-finder-layout-header-spacing);
+    min-inline-size: 0;
+}
+
+.header {
+    min-inline-size: 0;
+}
+
+.window {
+    display: flex;
+    flex-direction: column;
+    block-size: var(--dextinity-finder-layout-window-height);
+    min-inline-size: 0;
+
+    // The finder fills the window, whatever height it declares itself
+    > * {
+        flex: 1 1 0;
+        min-block-size: 0;
+    }
+}

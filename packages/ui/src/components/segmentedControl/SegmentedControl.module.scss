@@ -1,13 +1,11 @@
+@use "../field/controlMessage";
+
 .root {
     display: inline-flex;
-    flex-wrap: wrap;
-    gap: var(--dextinity-segmented-control-gap);
-    box-sizing: border-box;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--dextinity-segmented-control-message-gap);
     max-inline-size: 100%;
-    padding: var(--dextinity-segmented-control-inset);
-    border-radius: var(--dextinity-segmented-control-radius);
-    background: var(--dextinity-segmented-control-background);
-    box-shadow: var(--dextinity-segmented-control-shadow);
     font-family: var(--dextinity-font-family-text);
 
     --_height: var(--dextinity-segmented-control-height);
@@ -18,8 +16,24 @@
         --_padding: var(--dextinity-segmented-control-padding-small);
     }
 
-    &[data-disabled] {
+    &[data-disabled] .group {
         opacity: var(--dextinity-segmented-control-disabled-opacity);
+    }
+}
+
+.group {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-segmented-control-gap);
+    box-sizing: border-box;
+    max-inline-size: 100%;
+    padding: var(--dextinity-segmented-control-inset);
+    border-radius: var(--dextinity-segmented-control-radius);
+    background: var(--dextinity-segmented-control-background);
+    box-shadow: var(--dextinity-segmented-control-shadow);
+
+    .root[data-state="error"] > & {
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-segmented-control-line-error);
     }
 }
 
@@ -75,6 +89,10 @@
 .optionIcon {
     display: inline-flex;
     --dextinity-icon-size: var(--dextinity-segmented-control-icon-size);
+}
+
+.message {
+    @include controlMessage.message(segmented-control);
 }
 
 // Applied by the high-contrast color scheme

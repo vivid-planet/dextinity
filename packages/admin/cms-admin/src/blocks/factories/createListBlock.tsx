@@ -1,20 +1,13 @@
-import { StackPage, StackSwitch, StackSwitchApiContext, Tooltip } from "@dextinity/admin";
-import { Add, Copy, Delete, Invisible, Paste, Visible } from "@dextinity/admin-icons";
-import { Box, Checkbox, FormControlLabel, IconButton, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { StackPage, StackSwitch, StackSwitchApiContext } from "@dextinity/admin";
 import { Fragment, type FunctionComponent, type ReactNode } from "react";
-import { FormattedMessage, type MessageDescriptor } from "react-intl";
+import { FormattedMessage, type MessageDescriptor, useIntl } from "react-intl";
 import { v4 as uuid } from "uuid";
 
-import { AdminComponentStickyFooter } from "../common/AdminComponentStickyFooter";
-import { AdminComponentStickyHeader } from "../common/AdminComponentStickyHeader";
-import { BlockAdminComponentButton } from "../common/BlockAdminComponentButton";
-import { BlockAdminComponentPaper } from "../common/BlockAdminComponentPaper";
-import { BlockPreviewContent } from "../common/blockRow/BlockPreviewContent";
-import { BlockRow } from "../common/blockRow/BlockRow";
+import { BlockRow, type BlockRowMenuApi, type BlockRowVisibilityRestriction } from "../common/blockRow/BlockRow";
+import { BlockRowList } from "../common/blockRow/BlockRowList";
+import { messageText } from "../form/messageText";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { deduplicateBlockDependencies } from "../helpers/deduplicateBlockDependencies";
-import { HoverPreviewComponent } from "../iframebridge/HoverPreviewComponent";
 import { SelectPreviewComponent } from "../iframebridge/SelectPreviewComponent";
 import type { BlockDependency, BlockInterface, BlockState, PreviewContent } from "../types";
 import { parallelAsyncEvery } from "../utils/parallelAsyncEvery";
@@ -81,6 +74,7 @@ interface CreateListBlockOptions<T extends BlockInterface, AdditionalItemFields 
         item: ListBlockItem<T, AdditionalItemFields>;
         onChange: (item: ListBlockItem<T, AdditionalItemFields>) => void;
         onMenuClose: () => void;
+        openDialog: BlockRowMenuApi["openDialog"];
     }>;
     AdditionalItemContent?: FunctionComponent<{ item: ListBlockItem<T, AdditionalItemFields> }>;
     tags?: Array<MessageDescriptor | string>;
@@ -269,232 +263,124 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
         definesOwnPadding: true,
 
         AdminComponent: ({ state, updateState }) => {
+            const intl = useIntl();
             const {
                 cannotPasteBlockErrorDialog,
                 clipboardProgressDialog,
+                toasts,
+                dismissToast,
                 createUpdateSubBlocksFn,
                 totalVisibleBlocks,
-                updateClipboardContent,
                 addNewBlock,
+                moveBlock,
+                duplicateBlock,
+                copyBlock,
                 copySelectedBlocks,
                 deleteAllSelectedBlocks,
                 selectBlock,
-                handleToggleSelectAll,
+                selectAllBlocks,
                 pasteBlock,
                 selectedCount,
                 toggleVisible,
+                setVisibleOfSelectedBlocks,
                 deleteBlocks,
                 // @ts-expect-error missing AdditionalItemFields generic in createUseAdminComponent
             } = useAdminComponent({ state, updateState });
+
+            const isMinVisibleBlocksMet = !!minVisibleBlocks && totalVisibleBlocks >= minVisibleBlocks;
+            const isMaxVisibleBlocksReached = !!maxVisibleBlocks && totalVisibleBlocks >= maxVisibleBlocks;
+
+            const visibilityRestrictionFor = (item: ListBlockItem<T, AdditionalItemFields>): BlockRowVisibilityRestriction | undefined => {
+                if (isMaxVisibleBlocksReached && !item.visible) {
+                    return {
+                        reason: intl.formatMessage(
+                            { id: "dextinity.blocks.list.maxVisibleBlocks", defaultMessage: "Max. visible blocks allowed: {maxVisibleBlocks}" },
+                            { maxVisibleBlocks },
+                        ),
+                        canToggle: false,
+                    };
+                }
+                if ((!!minVisibleBlocks && !isMinVisibleBlocksMet) || (minVisibleBlocks === totalVisibleBlocks && item.visible)) {
+                    return {
+                        reason: intl.formatMessage(
+                            { id: "dextinity.blocks.list.minVisibleBlocks", defaultMessage: "Min. visible blocks required: {minVisibleBlocks}" },
+                            { minVisibleBlocks },
+                        ),
+                        canToggle: true,
+                    };
+                }
+                return undefined;
+            };
 
             return (
                 <SelectPreviewComponent>
                     <StackSwitch disableForcePromptRoute>
                         <StackPage name="table">
                             <StackSwitchApiContext.Consumer>
-                                {(stackApi) => {
-                                    return (
-                                        <SelectPreviewComponent>
-                                            <BlockAdminComponentPaper disablePadding>
-                                                <AdminComponentStickyHeader>
-                                                    <BlockListHeader>
-                                                        {state.blocks.length ? (
-                                                            <SelectAllFromControlLabel
-                                                                control={
-                                                                    <Checkbox
-                                                                        checked={selectedCount === state.blocks.length && selectedCount > 0}
-                                                                        indeterminate={selectedCount > 0 && selectedCount !== state.blocks.length}
-                                                                        onChange={handleToggleSelectAll}
-                                                                    />
-                                                                }
-                                                                label={
-                                                                    <FormattedMessage
-                                                                        id="dextinity.blocks.list.selectAll"
-                                                                        defaultMessage="Select all"
-                                                                    />
-                                                                }
-                                                            />
-                                                        ) : (
-                                                            <div />
-                                                        )}
-                                                        <BlockListHeaderActionContainer>
-                                                            {selectedCount > 0 && (
-                                                                <>
-                                                                    <IconButton onClick={deleteAllSelectedBlocks} size="large">
-                                                                        <Delete />
-                                                                    </IconButton>
-                                                                    <IconButton onClick={copySelectedBlocks} size="large">
-                                                                        <Copy />
-                                                                    </IconButton>
-                                                                </>
-                                                            )}
-                                                            <IconButton onClick={() => pasteBlock(0)} size="large">
-                                                                <Paste />
-                                                            </IconButton>
-                                                        </BlockListHeaderActionContainer>
-                                                    </BlockListHeader>
-                                                </AdminComponentStickyHeader>
-                                                <div>
-                                                    {state.blocks.map((data, blockIndex) => {
-                                                        const isMinVisibleBlocksMet = !!minVisibleBlocks && totalVisibleBlocks >= minVisibleBlocks;
-                                                        const isMaxVisibleBlocksReached =
-                                                            !!maxVisibleBlocks && totalVisibleBlocks >= maxVisibleBlocks;
-
-                                                        const canToggleVisibility = isMaxVisibleBlocksReached ? data.visible : true;
-
-                                                        const showMaxBlocksAllowedMessage = isMaxVisibleBlocksReached && !data.visible;
-                                                        const showMinBlocksRequiredMessage =
-                                                            (!!minVisibleBlocks && !isMinVisibleBlocksMet) ||
-                                                            (minVisibleBlocks === totalVisibleBlocks && data.visible);
-
-                                                        return (
-                                                            <HoverPreviewComponent key={data.key} componentSlug={`${data.key}/edit`}>
-                                                                <BlockRow
-                                                                    id={data.key}
-                                                                    renderPreviewContent={() => (
-                                                                        <BlockPreviewContent block={block} state={data.props} />
-                                                                    )}
-                                                                    index={blockIndex}
-                                                                    onContentClick={() => {
-                                                                        stackApi.activatePage("edit", data.key);
-                                                                    }}
-                                                                    onDeleteClick={() => {
-                                                                        deleteBlocks([data.key]);
-                                                                    }}
-                                                                    moveBlock={(from, to) => {
-                                                                        updateState((prevState) => {
-                                                                            const blocks = [...prevState.blocks];
-                                                                            const blockToMove = blocks.splice(from, 1)[0];
-                                                                            blocks.splice(to, 0, blockToMove);
-                                                                            return { ...prevState, blocks };
-                                                                        });
-                                                                    }}
-                                                                    visibilityButton={
-                                                                        <Tooltip
-                                                                            title={
-                                                                                showMaxBlocksAllowedMessage ? (
-                                                                                    <FormattedMessage
-                                                                                        id="dextinity.blocks.list.maxVisibleBlocks"
-                                                                                        defaultMessage="Max. visible blocks allowed: {maxVisibleBlocks}"
-                                                                                        values={{ maxVisibleBlocks }}
-                                                                                    />
-                                                                                ) : showMinBlocksRequiredMessage ? (
-                                                                                    <FormattedMessage
-                                                                                        id="dextinity.blocks.list.minVisibleBlocks"
-                                                                                        defaultMessage="Min. visible blocks required: {minVisibleBlocks}"
-                                                                                        values={{ minVisibleBlocks }}
-                                                                                    />
-                                                                                ) : null
-                                                                            }
-                                                                        >
-                                                                            <Box component="span">
-                                                                                <IconButton
-                                                                                    onClick={() => canToggleVisibility && toggleVisible(data.key)}
-                                                                                    size="small"
-                                                                                    disabled={!canToggleVisibility}
-                                                                                >
-                                                                                    {data.visible ? (
-                                                                                        <Visible color="success" />
-                                                                                    ) : (
-                                                                                        <Invisible color="action" />
-                                                                                    )}
-                                                                                </IconButton>
-                                                                            </Box>
-                                                                        </Tooltip>
-                                                                    }
-                                                                    onAddNewBlock={(beforeIndex) => {
-                                                                        const key = addNewBlock(beforeIndex);
-                                                                        stackApi.activatePage("edit", key);
-                                                                    }}
-                                                                    onCopyClick={() => {
-                                                                        updateClipboardContent([
-                                                                            {
-                                                                                name: block.name,
-                                                                                visible: data.visible,
-                                                                                state: data.props,
-                                                                                additionalFields: Object.keys(additionalItemFields ?? {}).reduce(
-                                                                                    (fields, field) => ({ ...fields, [field]: data[field] }),
-                                                                                    {},
-                                                                                ),
-                                                                            },
-                                                                        ]);
-                                                                    }}
-                                                                    onPasteClick={() => {
-                                                                        pasteBlock(blockIndex + 1);
-                                                                    }}
-                                                                    selected={data.selected}
-                                                                    onSelectedClick={(selected) => {
-                                                                        selectBlock(data, selected);
-                                                                    }}
-                                                                    isValidFn={() => block.isValid(data.props)}
-                                                                    slideIn={data.slideIn}
-                                                                    hideBottomInsertBetweenButton={blockIndex >= state.blocks.length - 1}
-                                                                    additionalMenuItems={(onMenuClose) =>
-                                                                        AdditionalItemContextMenuItems ? (
-                                                                            <AdditionalItemContextMenuItems
-                                                                                item={data}
-                                                                                onChange={(updatedItem) => {
-                                                                                    updateState((previousState) => ({
-                                                                                        blocks: previousState.blocks.map((block) =>
-                                                                                            block.key === data.key ? updatedItem : block,
-                                                                                        ),
-                                                                                    }));
-                                                                                }}
-                                                                                onMenuClose={onMenuClose}
-                                                                            />
-                                                                        ) : undefined
-                                                                    }
-                                                                    additionalContent={
-                                                                        AdditionalItemContent ? <AdditionalItemContent item={data} /> : undefined
-                                                                    }
-                                                                />
-                                                            </HoverPreviewComponent>
-                                                        );
-                                                    })}
-                                                </div>
-                                                {state.blocks.length === 0 ? (
-                                                    <BlockAdminComponentButton
-                                                        variant="primary"
-                                                        onClick={() => {
-                                                            const key = addNewBlock();
-                                                            stackApi.activatePage("edit", key);
-                                                        }}
-                                                        size="large"
-                                                    >
-                                                        <LargeAddButtonContent>
-                                                            <LargeAddButtonIcon />
-                                                            <Typography>
-                                                                <FormattedMessage
-                                                                    id="dextinity.blocks.list.add"
-                                                                    defaultMessage="Add {itemName}"
-                                                                    values={{ itemName: <Fragment key="itemName">{itemName}</Fragment> }}
-                                                                />
-                                                            </Typography>
-                                                        </LargeAddButtonContent>
-                                                    </BlockAdminComponentButton>
-                                                ) : (
-                                                    <AdminComponentStickyFooter>
-                                                        <BlockAdminComponentButton
-                                                            variant="primary"
-                                                            onClick={() => {
-                                                                const key = addNewBlock();
-                                                                stackApi.activatePage("edit", key);
-                                                            }}
-                                                            size="large"
-                                                            startIcon={<Add />}
-                                                        >
-                                                            <FormattedMessage
-                                                                id="dextinity.blocks.list.add"
-                                                                defaultMessage="Add {itemName}"
-                                                                values={{ itemName: <Fragment key="itemName">{itemName}</Fragment> }}
-                                                            />
-                                                        </BlockAdminComponentButton>
-                                                    </AdminComponentStickyFooter>
-                                                )}
-                                            </BlockAdminComponentPaper>
-                                        </SelectPreviewComponent>
-                                    );
-                                }}
+                                {(stackApi) => (
+                                    <BlockRowList
+                                        aria-label={messageText(intl, displayName) ?? name}
+                                        addLabel={intl.formatMessage(
+                                            { id: "dextinity.blocks.list.add", defaultMessage: "Add {itemName}" },
+                                            { itemName: messageText(intl, itemName) ?? "" },
+                                        )}
+                                        count={state.blocks.length}
+                                        selectedCount={selectedCount}
+                                        onSelectAllChange={selectAllBlocks}
+                                        onAdd={(index) => {
+                                            const key = addNewBlock(index);
+                                            stackApi.activatePage("edit", key);
+                                        }}
+                                        onReorder={moveBlock}
+                                        bulkActions={{
+                                            onShow: maxVisibleBlocks ? undefined : () => setVisibleOfSelectedBlocks(true),
+                                            onHide: minVisibleBlocks ? undefined : () => setVisibleOfSelectedBlocks(false),
+                                            onCopy: copySelectedBlocks,
+                                            onPaste: () => pasteBlock(0),
+                                            onDelete: deleteAllSelectedBlocks,
+                                        }}
+                                        toasts={toasts}
+                                        onDismissToast={dismissToast}
+                                    >
+                                        {state.blocks.map((data, blockIndex) => (
+                                            <BlockRow
+                                                key={data.key}
+                                                block={block}
+                                                state={data.props}
+                                                previewSlug={`${data.key}/edit`}
+                                                visible={data.visible}
+                                                onVisibleChange={() => toggleVisible(data.key)}
+                                                visibilityRestriction={visibilityRestrictionFor(data)}
+                                                checked={data.selected}
+                                                onCheckedChange={(checked) => selectBlock(data.key, checked)}
+                                                onOpen={() => stackApi.activatePage("edit", data.key)}
+                                                onCopy={() => copyBlock(data.key)}
+                                                onPaste={() => pasteBlock(blockIndex + 1)}
+                                                onDuplicate={() => duplicateBlock(data.key)}
+                                                onDelete={() => deleteBlocks([data.key])}
+                                                renderAdditionalMenuItems={
+                                                    AdditionalItemContextMenuItems
+                                                        ? ({ closeMenu, openDialog }) => (
+                                                              <AdditionalItemContextMenuItems
+                                                                  item={data}
+                                                                  onChange={(updatedItem) => {
+                                                                      updateState((previousState) => ({
+                                                                          blocks: previousState.blocks.map((block) =>
+                                                                              block.key === data.key ? updatedItem : block,
+                                                                          ),
+                                                                      }));
+                                                                  }}
+                                                                  onMenuClose={closeMenu}
+                                                                  openDialog={openDialog}
+                                                              />
+                                                          )
+                                                        : undefined
+                                                }
+                                                additionalContent={AdditionalItemContent ? <AdditionalItemContent item={data} /> : undefined}
+                                            />
+                                        ))}
+                                    </BlockRowList>
+                                )}
                             </StackSwitchApiContext.Consumer>
                         </StackPage>
                         <StackPage name="edit" title={block.displayName}>
@@ -503,7 +389,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                     {(stackApi) => {
                                         const match = state.blocks.find((c) => c.key === itemId);
                                         if (!match) {
-                                            stackApi.activatePage("main", "");
+                                            stackApi.activatePage("table", "");
                                             return;
                                         }
 
@@ -580,29 +466,3 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
     }
     return BlockListBlock;
 }
-
-const BlockListHeader = styled("div")`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`;
-
-const BlockListHeaderActionContainer = styled("div")`
-    padding: 12px 0;
-`;
-
-const SelectAllFromControlLabel = styled(FormControlLabel)`
-    padding: 15px 10px 15px 7px;
-`;
-
-const LargeAddButtonContent = styled("span")`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 4px 0;
-`;
-
-const LargeAddButtonIcon = styled(Add)`
-    font-size: 24px;
-    margin-bottom: 8px;
-`;

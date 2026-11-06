@@ -1,32 +1,10 @@
 import { useStoredState } from "@dextinity/admin";
-import { Close, Search } from "@dextinity/admin-icons";
-import {
-    Checkbox,
-    DialogContent,
-    DialogTitle,
-    Drawer,
-    FormControlLabel,
-    IconButton,
-    InputAdornment,
-    InputBase,
-    List,
-    ListItemButton,
-    Paper,
-    Typography,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { type ChangeEventHandler, isValidElement, type KeyboardEventHandler, type ReactElement, type ReactNode, useMemo, useState } from "react";
-import { FormattedMessage, type MessageDescriptor, useIntl } from "react-intl";
+import { BlockPicker, type BlockPickerCategory, type BlockPickerItem, Checkbox, Drawer } from "@dextinity/ui";
+import { useMemo, useState } from "react";
+import { useIntl } from "react-intl";
 
+import { messageText } from "../form/messageText";
 import { BlockCategory, blockCategoryLabels, type BlockInterface, type CustomBlockCategory } from "../types";
-
-type BlockType = string;
-
-interface Category {
-    id: string;
-    label: ReactNode;
-    blocks: Array<[BlockType, BlockInterface]>;
-}
 
 interface Props {
     open: boolean;
@@ -35,46 +13,29 @@ interface Props {
     onAddNewBlock: (type: string, addAndEdit: boolean) => void;
 }
 
+const maxRecentBlockTypes = 4;
+
 export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) {
     const intl = useIntl();
-    const [searchValue, setSearchValue] = useState("");
+    const [query, setQuery] = useState("");
+    const [category, setCategory] = useState<string | null>(null);
     const [addAndEdit, setAddAndEdit] = useStoredState<boolean>("addAndEdit", true);
+    const [recentBlockTypes, setRecentBlockTypes] = useStoredState<string[]>("addBlockDrawerRecentBlockTypes", []);
 
-    const categories = useMemo(() => {
-        const categories: Category[] = [];
-        const categoriesOrder = Object.keys(BlockCategory);
+    const { items, categories } = useMemo(() => {
+        const items: BlockPickerItem[] = [];
+        const categories: BlockPickerCategory[] = [];
+        const categoriesOrder: string[] = Object.keys(BlockCategory);
 
         for (const [type, block] of Object.entries(blocks)) {
-            let blockName: string;
+            const label = messageText(intl, block.displayName);
 
-            if (typeof block.displayName === "string") {
-                blockName = block.displayName;
-            } else if (isFormattedMessage(block.displayName)) {
-                blockName = intl.formatMessage(block.displayName.props);
-            } else {
+            if (label === undefined) {
                 throw new TypeError("Block displayName must be either a string or a FormattedMessage");
             }
 
-            const searchValueLower = searchValue.toLocaleLowerCase();
-
-            let blockTags: string[] = [];
-            if (block.tags) {
-                blockTags = block.tags.map((tag) => {
-                    if (typeof tag === "string") {
-                        return tag.toLocaleLowerCase();
-                    } else {
-                        return intl.formatMessage(tag).toLocaleLowerCase();
-                    }
-                });
-            }
-            const tagMatches = blockTags.some((tag) => tag.includes(searchValueLower));
-
-            if (!blockName.toLocaleLowerCase().includes(searchValueLower) && !tagMatches) {
-                continue;
-            }
-
             let id: string;
-            let label: ReactNode;
+            let categoryLabel: string;
 
             if (isCustomBlockCategory(block.category)) {
                 if (block.category.id in BlockCategory) {
@@ -84,7 +45,7 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) 
                 }
 
                 id = block.category.id;
-                label = block.category.label;
+                categoryLabel = messageText(intl, block.category.label) ?? id;
 
                 if (block.category.insertBefore) {
                     const insertBeforeIndex = categoriesOrder.indexOf(block.category.insertBefore);
@@ -98,115 +59,79 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) 
                     } else {
                         categoriesOrder.splice(insertBeforeIndex, 0, id);
                     }
-                } else {
-                    if (!categoriesOrder.includes(id)) {
-                        categoriesOrder.push(id);
-                    }
+                } else if (!categoriesOrder.includes(id)) {
+                    categoriesOrder.push(id);
                 }
             } else {
                 id = block.category;
-                label = blockCategoryLabels[block.category];
+                categoryLabel = messageText(intl, blockCategoryLabels[block.category]) ?? id;
             }
 
-            let category = categories.find((category) => category.id === id);
-
-            if (!category) {
-                category = { id, label, blocks: [] };
-                categories.push(category);
+            if (!categories.some((category) => category.value === id)) {
+                categories.push({ value: id, label: categoryLabel });
             }
 
-            category.blocks.push([type, block]);
+            items.push({
+                value: type,
+                label,
+                category: id,
+                keywords: block.tags?.map((tag) => (typeof tag === "string" ? tag : intl.formatMessage(tag))),
+            });
         }
 
-        categories.sort((a, b) => categoriesOrder.indexOf(a.id) - categoriesOrder.indexOf(b.id));
+        categories.sort((a, b) => categoriesOrder.indexOf(a.value) - categoriesOrder.indexOf(b.value));
+        items.sort((a, b) => categoriesOrder.indexOf(a.category ?? "") - categoriesOrder.indexOf(b.category ?? ""));
 
-        return categories;
-    }, [intl, blocks, searchValue]);
+        return { items, categories };
+    }, [intl, blocks]);
 
-    const handleListItemClick = (type: string) => {
-        onAddNewBlock(type, addAndEdit);
+    const close = () => {
+        setQuery("");
+        setCategory(null);
         onClose();
     };
 
-    const handleSearchFieldChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-        setSearchValue(event.target.value);
-    };
-
-    const handleSearchFieldKeyDown: KeyboardEventHandler<HTMLInputElement> = (event) => {
-        const hasSearchResults = categories.length > 0 && categories[0].blocks.length > 0;
-
-        if (event.key === "Enter" && hasSearchResults) {
-            const firstBlockInList = categories[0].blocks[0];
-            const [blockType] = firstBlockInList;
-            handleListItemClick(blockType);
-        }
-    };
-
-    const handleAddAndEditChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-        setAddAndEdit(event.target.checked);
+    const handleSelect = (type: string) => {
+        setRecentBlockTypes([type, ...recentBlockTypes.filter((recentType) => recentType !== type)].slice(0, maxRecentBlockTypes));
+        onAddNewBlock(type, addAndEdit);
+        close();
     };
 
     return (
-        <Drawer open={open} onClose={onClose} anchor="right">
-            <Header>
-                <FormattedMessage id="dextinity.blocks.drawer.header" defaultMessage="Add new block" />
-                <IconButton
-                    onClick={onClose}
-                    sx={(theme) => ({
-                        color: theme.palette.common.white,
-                    })}
-                    size="large"
-                >
-                    <Close />
-                </IconButton>
-            </Header>
-            <Content>
-                <ContentItem>
-                    <InputItem>
-                        <InputBase
-                            fullWidth
-                            autoFocus
-                            placeholder={intl.formatMessage({ id: "dextinity.blocks.drawer.searchField.placeholder", defaultMessage: "Search..." })}
-                            startAdornment={
-                                <InputAdornment position="start">
-                                    <Search />
-                                </InputAdornment>
-                            }
-                            onChange={handleSearchFieldChange}
-                            onKeyDown={handleSearchFieldKeyDown}
-                            value={searchValue}
-                        />
-                    </InputItem>
-                    <InputItem>
-                        <FormControlLabel
-                            control={<Checkbox checked={addAndEdit} onChange={handleAddAndEditChange} color="primary" />}
-                            label={<FormattedMessage id="dextinity.blocks.drawer.addAndEdit" defaultMessage="add + edit" />}
-                        />
-                    </InputItem>
-                </ContentItem>
-                {categories.map((category) => {
-                    if (category.blocks.length === 0) {
-                        return null;
-                    }
-
-                    return (
-                        <ContentItem key={category.id}>
-                            <Typography variant="h4" gutterBottom>
-                                {category.label}
-                            </Typography>
-                            <Paper elevation={0}>
-                                <List disablePadding>
-                                    {category.blocks.map(([type, block]) => (
-                                        <ListItemButton key={type} divider onClick={() => handleListItemClick(type)}>
-                                            {block.displayName}
-                                        </ListItemButton>
-                                    ))}
-                                </List>
-                            </Paper>
-                        </ContentItem>
-                    );
-                })}
-            </Content>
+        <Drawer
+            open={open}
+            onOpenChange={(nextOpen) => {
+                if (!nextOpen) {
+                    close();
+                }
+            }}
+            modal
+            title={intl.formatMessage({ id: "dextinity.blocks.drawer.header", defaultMessage: "Add new block" })}
+            footer={
+                <Checkbox checked={addAndEdit} onChange={setAddAndEdit}>
+                    {intl.formatMessage({ id: "dextinity.blocks.drawer.editAfterAdding", defaultMessage: "Edit the block after adding it" })}
+                </Checkbox>
+            }
+        >
+            <BlockPicker
+                items={items}
+                onSelect={handleSelect}
+                query={query}
+                onQueryChange={setQuery}
+                categories={categories.length > 1 ? categories : undefined}
+                category={category}
+                onCategoryChange={setCategory}
+                recent={recentBlockTypes}
+                slotProps={{ search: { autoFocus: true } }}
+                labels={{
+                    search: intl.formatMessage({ id: "dextinity.blocks.drawer.search", defaultMessage: "Search blocks" }),
+                    categories: intl.formatMessage({ id: "dextinity.blocks.drawer.categories", defaultMessage: "Categories" }),
+                    all: intl.formatMessage({ id: "dextinity.blocks.drawer.allCategories", defaultMessage: "All" }),
+                    recent: intl.formatMessage({ id: "dextinity.blocks.drawer.recent", defaultMessage: "Recently used" }),
+                    other: intl.formatMessage({ id: "dextinity.blocks.category.other", defaultMessage: "Other" }),
+                    empty: intl.formatMessage({ id: "dextinity.blocks.drawer.noResults", defaultMessage: "No block matches your search." }),
+                }}
+            />
         </Drawer>
     );
 }
@@ -214,29 +139,3 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) 
 function isCustomBlockCategory(category: BlockCategory | CustomBlockCategory): category is CustomBlockCategory {
     return typeof category === "object";
 }
-
-function isFormattedMessage(node: ReactNode): node is ReactElement<MessageDescriptor> {
-    return isValidElement(node) && node.type === FormattedMessage;
-}
-
-const Content = styled(DialogContent)`
-    width: 380px;
-`;
-
-const Header = styled(DialogTitle)`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    padding-left: 20px;
-`;
-
-const ContentItem = styled("div")`
-    &:not(:last-child) {
-        margin-bottom: 40px;
-    }
-`;
-
-const InputItem = styled("div")`
-    margin-bottom: 10px;
-`;

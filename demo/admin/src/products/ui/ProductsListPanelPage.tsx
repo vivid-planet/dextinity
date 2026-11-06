@@ -82,6 +82,14 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
         },
     });
 
+    const lastPage = Math.max(1, Math.ceil((data?.products.totalCount ?? 0) / pageSize));
+
+    useEffect(() => {
+        if (data != null && page > lastPage) {
+            update({ page: lastPage });
+        }
+    }, [data, page, lastPage, update]);
+
     if (error) {
         throw error;
     }

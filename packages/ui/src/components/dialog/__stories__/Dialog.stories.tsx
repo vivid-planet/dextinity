@@ -9,6 +9,7 @@ import { Input } from "../../input/Input";
 import { Dialog, type DialogProps } from "../Dialog";
 import dialogTokens from "../Dialog.tokens.scss?raw";
 import { DialogFormActions } from "../DialogFormActions";
+import styles from "./Dialog.stories.module.scss";
 
 function ControlledDialog(props: DialogProps) {
     const [open, setOpen] = useState(props.open);
@@ -155,6 +156,34 @@ export const Small: Story = {
  */
 export const Large: Story = {
     args: { open: true, size: "large" },
+};
+
+function BrightPage() {
+    return (
+        <div className={styles.brightPage}>
+            <h2>Site preview</h2>
+            <p>A bright page, e.g. a site preview, stays behind the dialog in every color scheme.</p>
+        </div>
+    );
+}
+
+/**
+ * Over a bright page, e.g. the site preview, the dialog surface stays nearly opaque in dark mode, so the page doesn't shine
+ * through and the content stays readable.
+ */
+export const OverBrightPage: Story = {
+    args: { open: true, title: "Choose a page", description: "The page the link points to." },
+    render: (args) => (
+        <>
+            <BrightPage />
+            <ControlledDialog key={String(args.open)} {...args} />
+        </>
+    ),
+    play: async () => {
+        const dialog = await screen.findByRole("dialog", { name: "Choose a page" });
+        const alpha = Number(/\/\s*([\d.]+)\s*\)$/.exec(getComputedStyle(dialog).backgroundColor)?.[1] ?? 1);
+        await expect(alpha).toBeGreaterThanOrEqual(0.95);
+    },
 };
 
 /**

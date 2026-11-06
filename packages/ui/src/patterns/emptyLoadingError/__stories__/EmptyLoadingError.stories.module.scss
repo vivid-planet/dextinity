@@ -1,0 +1,19 @@
+.loading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-3);
+    align-items: flex-start;
+    align-self: stretch;
+    max-inline-size: 640px;
+}
+
+.field {
+    align-self: stretch;
+}
+
+.rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-2);
+    align-self: stretch;
+}

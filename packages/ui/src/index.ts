@@ -101,6 +101,7 @@ export { ToastViewport, type ToastViewportOwnerState, type ToastViewportProps } 
 export { type ToastViewportSlotProps } from "./components/toast/ToastViewport";
 export { type NewToast, type ToastData, useToasts } from "./components/toast/useToasts";
 export { Tooltip, type TooltipOwnerState, type TooltipProps, type TooltipSlotProps } from "./components/tooltip/Tooltip";
+export { TopBar, type TopBarBack, type TopBarLabels, type TopBarOwnerState, type TopBarProps } from "./components/topBar/TopBar";
 export { type TreeNode, TreeView, type TreeViewLabels, type TreeViewMove } from "./components/treeView/TreeView";
 export { type TreeViewOwnerState, type TreeViewProps, defaultTreeViewLabels } from "./components/treeView/TreeView";
 export { Typography, type TypographyOwnerState, type TypographyProps } from "./components/typography/Typography";

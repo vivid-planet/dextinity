@@ -68,6 +68,10 @@ export const PreviewContainer = styled("div")`
     }
 `;
 
+export const PreviewContent = styled("div")`
+    height: 100%;
+`;
+
 export const MaximizeButton = styled("button")`
     position: absolute;
     inset: 0;

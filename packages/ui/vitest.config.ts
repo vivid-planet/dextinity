@@ -43,6 +43,25 @@ export default defineConfig({
                     },
                 },
             },
+            {
+                extends: "./vite.config.mts",
+                // Runs the stories tagged `forced-colors` again with forced colors emulated, e.g. a Windows contrast theme
+                plugins: [storybookTest({ configDir: ".storybook", tags: { include: ["forced-colors"] } })],
+                optimizeDeps: {
+                    include: ["storybook/internal/csf", "@storybook/react-vite"],
+                },
+                test: {
+                    name: "storybook-forced-colors",
+                    setupFiles: ["./vitest.storybook.setup.ts"],
+                    css: contractClassNames,
+                    browser: {
+                        enabled: true,
+                        headless: true,
+                        provider: playwright({ contextOptions: { forcedColors: "active" } }),
+                        instances: [{ browser: "chromium", launch: { channel: "chromium-headless-shell" } }],
+                    },
+                },
+            },
         ],
     },
 });

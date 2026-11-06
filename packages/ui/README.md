@@ -208,7 +208,7 @@ What to test, and with which kind of test:
 Not worth a test:
 
 - **That a component renders** — every story already runs as a browser test, so a rendering story is the coverage.
-- **Appearance** — colors, sizes, spacing — reviewed visually in the stories, never asserted.
+- **Appearance** — colors, sizes, spacing — reviewed visually in the stories, never asserted, except in forced colors (see [Forced colors](#forced-colors)): nobody reviews the stories in a Windows contrast theme, so the stories tagged `forced-colors` run again in the `storybook-forced-colors` project with forced colors emulated and assert that edges, focus rings, and selected states stay visible.
 - **Dev-local tooling** — story-only helpers — a failure is loud and local. Exception: code whose regression is silent or reaches consumers, such as the class-name mapping in `src/cssModules/`.
 
 Run from `packages/ui`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pnpm run test:watch`.
@@ -236,6 +236,10 @@ Every derived token is declared on each theme boundary (`[data-dextinity-color-s
 ### Component tokens
 
 Each component declares the decisions a theme may override — colors, radius, heights, paddings, shadows — in a `tokens` mixin in `src/components/<feature>/<ComponentName>.tokens.scss`, next to its `<ComponentName>.module.scss`, named `--dextinity-<component>-<property>`, and its module stylesheet reads only those plus generic tokens such as the focus ring and motion. [`src/theme/_components.scss`](src/theme/_components.scss) `@use`s each tokens file and includes its mixin in the `scope.component-tokens` block. A token is defined in the folder of the component its name starts with, and other components can read it: `IconButton` uses the `--dextinity-button-…` colors from `Button.tokens.scss`. A `//` comment directly above a token becomes its description in the docs.
+
+### Forced colors
+
+Forced colors (e.g. a Windows contrast theme) replace every color with the user's system colors, drop box shadows, and turn background colors into the canvas, so edges, focus rings, selected states, and shapes drawn with box shadows or backgrounds disappear. Every component brings them back with the mixins in [`src/theme/_forcedColors.scss`](src/theme/_forcedColors.scss): `edge` for an edge drawn with a box shadow, `separator` for a dividing line, `focus-ring` next to every `--dextinity-focus-ring`, `selected` for a selected, checked, or current item, and `fill` for a shape such as a dot, a bar, or a thumb. They use system colors (`CanvasText`, `Highlight`, `HighlightText`, `GrayText`), which forced colors keep. Check a new component with forced colors emulated (Chrome DevTools: Rendering → Emulate CSS media feature `forced-colors`).
 
 ### Brands
 

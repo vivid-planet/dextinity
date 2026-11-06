@@ -44,7 +44,7 @@
         "lint:tsc": "tsc --noEmit",
         "storybook": "storybook dev -p 26648 --no-open",
         "test": "pnpm run test:unit && pnpm run test:storybook",
-        "test:storybook": "vitest --run --project storybook --outputFile.junit=./junit-storybook.xml",
+        "test:storybook": "vitest --run --project storybook --project storybook-forced-colors --outputFile.junit=./junit-storybook.xml",
         "test:unit": "vitest --run --project unit --outputFile.junit=./junit-unit.xml",
         "test:watch": "vitest --watch"
     },

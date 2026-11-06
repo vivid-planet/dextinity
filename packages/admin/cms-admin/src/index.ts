@@ -154,7 +154,6 @@ export type { ContentScope, ContentScopeProviderProps, ContentScopeValues, UseCo
 export { ContentScopeProvider, useContentScope } from "./contentScope/Provider";
 export type { ContentScopeConfigProps } from "./contentScope/useContentScopeConfig";
 export { useContentScopeConfig } from "./contentScope/useContentScopeConfig";
-export { getContentScopeLabel } from "./contentScope/utils/getContentScopeLabel";
 export { CronJobsPage } from "./cronJobs/CronJobsPage";
 export { JobRuntime } from "./cronJobs/JobRuntime";
 export { DamFileDownloadLinkBlock } from "./dam/blocks/DamFileDownloadLinkBlock";
@@ -238,6 +237,7 @@ export {
 } from "./pages/editor/PageContentEditor";
 export { PageEditorHeader, type PageEditorHeaderProps } from "./pages/editor/PageEditorHeader";
 export { UnsavedChangesPrompt, type UnsavedChangesPromptProps } from "./pages/editor/UnsavedChangesPrompt";
+export { type PageEditorHeaderPage, type PageEditorHeaderPageProps, usePageEditorHeader } from "./pages/editor/usePageEditorHeader";
 export { PagesPage } from "./pages/pagesPage/PagesPage";
 export type { AllCategories } from "./pages/pageTree/PageTreeContext";
 export { useCopyPastePages } from "./pages/pageTree/useCopyPastePages";

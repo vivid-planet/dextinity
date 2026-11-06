@@ -27,6 +27,8 @@
     // Days between the start and end of a range
     --dextinity-date-picker-day-background-range: var(--dextinity-color-accent-soft);
     --dextinity-date-picker-day-foreground-range: var(--dextinity-color-accent-text);
+    // The lines above and below the days of a range in the high-contrast color scheme
+    --dextinity-date-picker-range-outline-high-contrast: var(--dextinity-color-text);
     // The mark below today's number
     --dextinity-date-picker-today-color: var(--dextinity-color-accent);
 }

@@ -130,8 +130,11 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
             undo: () => void setStatus(product.id, previousStatus),
             icon: <Icon name={nextStatus === "Deleted" ? "archive" : nextStatus === "Published" ? "eye" : "eye-off"} />,
             message: intl.formatMessage(
-                { id: "uiDemo.products.statusChanged", defaultMessage: "“{title}” is now {status}" },
-                { title: product.title, status: getProductStatusLabel(intl, nextStatus).toLowerCase() },
+                {
+                    id: "uiDemo.products.statusChanged",
+                    defaultMessage: "“{title}” {status, select, Published {published} Unpublished {unpublished} other {marked as deleted}}",
+                },
+                { title: product.title, status: nextStatus },
             ),
             undoneMessage: intl.formatMessage({ id: "uiDemo.products.statusUndone", defaultMessage: "Status change undone" }),
         });

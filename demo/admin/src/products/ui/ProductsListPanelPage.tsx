@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client";
+import { useRouterLinkClick } from "@dextinity/cms-admin";
 import {
     Button,
     Chip,
@@ -17,7 +18,6 @@ import {
     StatusIndicator,
 } from "@dextinity/ui";
 import type { GQLProductFilter, GQLProductSortField, GQLProductType } from "@src/graphql.generated";
-import { useRouterLinkClick } from "@src/news/ui/useRouterLinkClick";
 import { useEffect, useState } from "react";
 import { FormattedDate, FormattedNumber, useIntl } from "react-intl";
 

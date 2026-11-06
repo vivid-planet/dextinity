@@ -1,8 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
-import { useDextinityConfig } from "@dextinity/cms-admin";
+import { useDextinityConfig, useRouterLinkClick } from "@dextinity/cms-admin";
 import { AssetThumbnail, Button, Chip, EmptyState, Icon, IconButton, KeyValueList, type KeyValueListItem, Panel, Skeleton } from "@dextinity/ui";
-import { useRouterLinkClick } from "@src/news/ui/useRouterLinkClick";
 import { FormattedDate, useIntl } from "react-intl";
 
 import { productDetailsQuery } from "./ProductDetailsPanel.gql";

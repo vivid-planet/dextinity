@@ -7,6 +7,7 @@ import {
     useRemoteListCsvExport,
     useRemoteListPagination,
     useRemoteListState,
+    useRouterLinkClick,
 } from "@dextinity/cms-admin";
 import {
     Button,
@@ -48,7 +49,6 @@ import type {
     GQLNewsUiUpdateStatusMutationVariables,
 } from "./NewsListPage.gql.generated";
 import styles from "./NewsListPage.module.css";
-import { useRouterLinkClick } from "./useRouterLinkClick";
 
 type NewsRow = GQLNewsUiListQuery["newsList"]["nodes"][number];
 

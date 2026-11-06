@@ -5,8 +5,8 @@ import { useIntl } from "react-intl";
 import { useDextinityConfig } from "../../config/DextinityConfigContext";
 import { useDamBasePath } from "../config/damConfig";
 import { getDamFinderAssetType, getDamFinderQuickLookImageUrl, getFileExtension } from "./damFinderItems";
+import type { GQLDamFinderFileFragment } from "./damFinderItems.fragment.generated";
 import { PlaceholderFrame, PreviewFrame, PreviewImage, PreviewVideo } from "./DamFinderQuickLookPreview.sc";
-import type { GQLDamFinderFileFragment } from "./useDamFinderFiles.gql.generated";
 
 interface Dimensions {
     width: number;

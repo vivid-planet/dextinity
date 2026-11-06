@@ -3,8 +3,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useDamScope } from "../config/useDamScope";
 import { damFinderRootFolderId } from "./damFinderItems";
+import type { GQLDamFinderFileFragment } from "./damFinderItems.fragment.generated";
 import { damFinderFilesQuery } from "./useDamFinderFiles.gql";
-import type { GQLDamFinderFileFragment, GQLDamFinderFilesQuery, GQLDamFinderFilesQueryVariables } from "./useDamFinderFiles.gql.generated";
+import type { GQLDamFinderFilesQuery, GQLDamFinderFilesQueryVariables } from "./useDamFinderFiles.gql.generated";
 
 const pageSize = 100;
 

@@ -1,26 +1,6 @@
 import { gql } from "@apollo/client";
 
-const damFinderFileFragment = gql`
-    fragment DamFinderFile on DamFile {
-        id
-        name
-        title
-        altText
-        aiContentType
-        size
-        mimetype
-        fileUrl
-        updatedAt
-        image {
-            width
-            height
-            cropArea {
-                focalPoint
-            }
-            thumbnailUrl: url(width: 320, height: 320)
-        }
-    }
-`;
+import { damFinderFileFragment } from "./damFinderItems.fragment";
 
 export const damFinderFilesQuery = gql`
     query DamFinderFiles($folderId: ID, $scope: DamScopeInput!, $offset: Int!, $limit: Int!) {

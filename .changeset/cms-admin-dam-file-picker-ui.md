@@ -4,12 +4,12 @@
 
 Choose files from the assets in a dialog built with `@dextinity/ui`
 
-The new `DamFilePickerDialog` shows the folder tree and the files as in the asset finder (`DamFinderPage`), for one file or, with `multiple`, several files from different folders, filtered by `allowedMimetypes`. Files can be uploaded into the open folder and are then selected. It doesn't depend on the old asset manager (`DamPage`) anymore.
+The new `DamFilePickerDialog` shows the folder tree and the files as in the asset finder (`DamFinderPage`), for one file or, with `multiple`, several files from different folders, filtered by `allowedMimetypes`. A search finds files across all folders and shows where each one is; its path opens the folder. The folder tree can be resized, and the width is remembered. Files can be uploaded into the open folder and are then selected. It doesn't depend on the old asset manager (`DamPage`) anymore.
 
 `ChooseDamFileDialog` and `ChooseDamFilesDialog` render it and are deprecated:
 
 - Their `onClose` is called without arguments; the `event` and `reason` of the MUI dialog are gone.
-- The dialog remembers the last folder per scope instead of the route of the old asset manager; there's no search in the picker yet.
+- The dialog remembers the last folder per scope instead of the route of the old asset manager. The search shows the first 100 matching files.
 - `FileField` (MUI) keeps working and opens the new dialog.
 
 **New**

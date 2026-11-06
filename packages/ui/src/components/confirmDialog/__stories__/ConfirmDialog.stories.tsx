@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { expectPopupStaysOpen } from "../../../storybook/expectPopupStaysOpen";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
@@ -151,7 +152,7 @@ export const Loading: Story = {
         await expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
         await expect(screen.getByRole("button", { name: "Discard" })).toBeDisabled();
         await userEvent.keyboard("{Escape}");
+        await expectPopupStaysOpen(dialog);
         await expect(args.onOpenChange).not.toHaveBeenCalled();
-        await expect(dialog).toBeInTheDocument();
     },
 };

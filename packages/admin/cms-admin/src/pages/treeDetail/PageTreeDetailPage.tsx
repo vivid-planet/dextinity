@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { LocalErrorScopeApolloContext, useEditDialog, useFocusAwarePolling, useStoredState } from "@dextinity/admin";
+import { LocalErrorScopeApolloContext, useFocusAwarePolling, useStoredState } from "@dextinity/admin";
 import {
     BulkActionBar,
     Button,
@@ -19,7 +19,6 @@ import {
     useToasts,
     useUndoToast,
 } from "@dextinity/ui";
-import { DialogContent } from "@mui/material";
 import { type ComponentType, type MouseEvent, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import { Route, useHistory, useLocation, useRouteMatch } from "react-router-dom";
@@ -28,12 +27,11 @@ import { type ContentScope, useContentScope } from "../../contentScope/Provider"
 import { useContentScopeConfig } from "../../contentScope/useContentScopeConfig";
 import { DamScopeProvider } from "../../dam/config/DamScopeProvider";
 import type { DocumentInterface, DocumentType } from "../../documents/types";
-import { serializeInitialValues } from "../../form/serializeInitialValues";
 import type { GQLPageTreeNodeVisibility } from "../../graphql.generated";
 import { openSitePreviewWindow } from "../../preview/openSitePreviewWindow";
 import { useSiteConfig } from "../../siteConfigs/useSiteConfig";
 import { usePageTreeScope } from "../config/usePageTreeScope";
-import { createEditPageNode, type EditPageNodeProps } from "../createEditPageNode";
+import { createEditPageNode, type EditPageNodeInitialValues, type EditPageNodeProps } from "../createEditPageNode";
 import { createPagesQuery, type GQLPagesQuery, type GQLPagesQueryVariables, type GQLPageTreePageFragment } from "../pagesPage/createPagesQuery";
 import { PageTreeContext } from "../pageTree/PageTreeContext";
 import { arrayToTreeMap } from "../pageTree/treemap/TreeMapUtils";
@@ -50,6 +48,8 @@ type StatusFilter = GQLPageTreeNodeVisibility | "all";
 const statusFilters: StatusFilter[] = ["all", "Published", "Unpublished", "Archived"];
 
 const DefaultEditPageNode = createEditPageNode({});
+
+type PageNodeDialogTarget = { mode: "add"; initialValues?: EditPageNodeInitialValues } | { mode: "edit"; id: string };
 
 export interface PageTreeDetailPageProps {
     /** The page tree category, e.g. `"mainNavigation"`. */
@@ -165,7 +165,12 @@ function PageTreeDetailView({
     const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
     const [expandedIds, setExpandedIds] = useStoredState<string[]>("pageTreeExpandedIds", [], window.sessionStorage);
     const [checkedIds, setCheckedIds] = useState<string[]>([]);
-    const [EditDialog, editDialogSelection, editDialogApi] = useEditDialog();
+    const [isPageNodeDialogOpen, setIsPageNodeDialogOpen] = useState(false);
+    const [pageNodeDialogTarget, setPageNodeDialogTarget] = useState<PageNodeDialogTarget>({ mode: "add" });
+    const openPageNodeDialog = (target: PageNodeDialogTarget) => {
+        setPageNodeDialogTarget(target);
+        setIsPageNodeDialogOpen(true);
+    };
 
     const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
     const { perform, block } = useUndoToast({
@@ -238,7 +243,7 @@ function PageTreeDetailView({
     }
 
     const newPageButton = (
-        <Button startIcon={<Icon name="plus" />} onClick={() => editDialogApi.openAddDialog()}>
+        <Button startIcon={<Icon name="plus" />} onClick={() => openPageNodeDialog({ mode: "add" })}>
             {intl.formatMessage({ id: "dextinity.pageTreeDetail.newPage", defaultMessage: "New page" })}
         </Button>
     );
@@ -414,8 +419,8 @@ function PageTreeDetailView({
                             onEditClick={handleEditClick}
                             onPreviewClick={() => openSitePreviewWindow(selectedPage.path, contentScopeMatch.url)}
                             onVisibilityChange={(visibility) => changeVisibility([selectedPage.id], visibility)}
-                            onPropertiesClick={() => editDialogApi.openEditDialog(selectedPage.id)}
-                            onAddSubpageClick={() => editDialogApi.openAddDialog(serializeInitialValues({ parent: selectedPage.id }))}
+                            onPropertiesClick={() => openPageNodeDialog({ mode: "edit", id: selectedPage.id })}
+                            onAddSubpageClick={() => openPageNodeDialog({ mode: "add", initialValues: { parent: selectedPage.id } })}
                         />
                     ) : isInitialLoad ? (
                         <Panel>
@@ -456,16 +461,30 @@ function PageTreeDetailView({
                 onDismiss={dismissToast}
                 labels={{ region: intl.formatMessage({ id: "dextinity.pageTreeDetail.notifications", defaultMessage: "Notifications" }) }}
             />
-            <EditDialog>
-                <DialogContent>
-                    <EditPageNode
-                        id={editDialogSelection.id || null}
-                        mode={editDialogSelection.mode ?? "add"}
-                        category={category}
-                        documentTypes={documentTypes}
-                    />
-                </DialogContent>
-            </EditDialog>
+            <EditPageNode
+                open={isPageNodeDialogOpen}
+                onOpenChange={setIsPageNodeDialogOpen}
+                mode={pageNodeDialogTarget.mode}
+                id={pageNodeDialogTarget.mode === "edit" ? pageNodeDialogTarget.id : undefined}
+                initialValues={pageNodeDialogTarget.mode === "add" ? pageNodeDialogTarget.initialValues : undefined}
+                category={category}
+                documentTypes={documentTypes}
+                onSaved={(page) => {
+                    if (pageNodeDialogTarget.mode === "add") {
+                        selectPage(page.id);
+                        addToast({
+                            message: intl.formatMessage({ id: "dextinity.pageTreeDetail.pageCreated", defaultMessage: "Page created" }),
+                        });
+                    } else {
+                        addToast({
+                            message: intl.formatMessage({
+                                id: "dextinity.pageTreeDetail.propertiesSaved",
+                                defaultMessage: "Page properties saved",
+                            }),
+                        });
+                    }
+                }}
+            />
         </PageTreeContext.Provider>
     );
 }

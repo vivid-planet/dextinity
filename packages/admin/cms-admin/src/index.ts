@@ -225,7 +225,7 @@ export { queryUpdatedAt } from "./form/queryUpdatedAt";
 export { serializeInitialValues } from "./form/serializeInitialValues";
 export { SyncFields } from "./form/SyncFields";
 export { useFormSaveConflict } from "./form/useFormSaveConflict";
-export { createEditPageNode } from "./pages/createEditPageNode";
+export { createEditPageNode, type EditPageNodeInitialValues, type EditPageNodeProps } from "./pages/createEditPageNode";
 export { createUsePage, type PageState } from "./pages/createUsePage";
 export { PagesPage } from "./pages/pagesPage/PagesPage";
 export type { AllCategories } from "./pages/pageTree/PageTreeContext";

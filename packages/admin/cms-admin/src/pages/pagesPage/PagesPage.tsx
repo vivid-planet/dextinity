@@ -17,7 +17,7 @@ import {
     useStoredState,
 } from "@dextinity/admin";
 import { Add } from "@dextinity/admin-icons";
-import { Box, DialogContent, Divider, FormControlLabel, LinearProgress, Paper, Switch } from "@mui/material";
+import { Box, Divider, FormControlLabel, LinearProgress, Paper, Switch } from "@mui/material";
 import { type ComponentType, type ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -27,7 +27,7 @@ import { useContentScopeConfig } from "../../contentScope/useContentScopeConfig"
 import { DamScopeProvider } from "../../dam/config/DamScopeProvider";
 import type { DocumentInterface, DocumentType } from "../../documents/types";
 import { usePageTreeScope } from "../config/usePageTreeScope";
-import type { EditPageNodeProps } from "../createEditPageNode";
+import { type EditPageNodeProps, parseSerializedEditPageNodeInitialValues } from "../createEditPageNode";
 import { PageSearch } from "../pageSearch/PageSearch";
 import { usePageSearch } from "../pageSearch/usePageSearch";
 import { PageTree, type PageTreeRefApi } from "../pageTree/PageTree";
@@ -103,7 +103,7 @@ export function PagesPage({
         isInitialLoad.current = false;
     }
 
-    const [EditDialog, editDialogSelection, editDialogApi] = useEditDialog();
+    const [, editDialogSelection, editDialogApi] = useEditDialog();
 
     const refPageTree = useRef<PageTreeRefApi>(null);
     const [showArchive, setShowArchive] = useStoredState<boolean>("pageTreeShowArchive", false, window.sessionStorage);
@@ -217,16 +217,21 @@ export function PagesPage({
                             </MainContent>
                         </PageTreeContext.Provider>
 
-                        <EditDialog>
-                            <DialogContent>
-                                <EditPageNode
-                                    id={editDialogSelection.id || null}
-                                    mode={editDialogSelection.mode ?? "add"}
-                                    category={category}
-                                    documentTypes={documentTypes}
-                                />
-                            </DialogContent>
-                        </EditDialog>
+                        <EditPageNode
+                            open={editDialogSelection.mode != null}
+                            onOpenChange={(open) => {
+                                if (!open) {
+                                    editDialogApi.closeDialog();
+                                }
+                            }}
+                            mode={editDialogSelection.mode ?? "add"}
+                            id={editDialogSelection.mode === "edit" ? editDialogSelection.id : undefined}
+                            initialValues={
+                                editDialogSelection.mode === "add" ? parseSerializedEditPageNodeInitialValues(editDialogSelection.id) : undefined
+                            }
+                            category={category}
+                            documentTypes={documentTypes}
+                        />
                     </StackPage>
                     <StackPage name="edit" title={intl.formatMessage({ id: "dextinity.pages.pages.editContent", defaultMessage: "Edit content" })}>
                         {(selectedId) => {

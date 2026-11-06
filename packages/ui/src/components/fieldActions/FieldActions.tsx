@@ -263,7 +263,7 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
                 <IconButton
                     size="small"
                     aria-label={labels.translate}
-                    disabled={disabled}
+                    disabled={disabled || (pending && pendingAction !== "translate")}
                     loading={pendingAction === "translate"}
                     onClick={translateContent}
                 >
@@ -274,7 +274,7 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
                 <IconButton
                     size="small"
                     aria-label={labels.aiAssist}
-                    disabled={disabled}
+                    disabled={disabled || (pending && pendingAction !== "aiAssist")}
                     loading={pendingAction === "aiAssist"}
                     onClick={requestSuggestion}
                 >

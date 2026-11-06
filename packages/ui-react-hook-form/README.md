@@ -42,23 +42,25 @@ function PageForm({ page }: { page: PageFormValues }) {
 
 One adapter per value-holding control of `@dextinity/ui`. Each takes `name`, the props of its ui component except the ones it controls, and the field configuration of the form library.
 
-| Adapter                 | ui component       | Form value                                               | Controlled props it takes over                                        |
-| ----------------------- | ------------------ | -------------------------------------------------------- | --------------------------------------------------------------------- |
-| `InputField`            | `Input`            | `string`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
-| `TextareaField`         | `Textarea`         | `string`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
-| `SelectField`           | `Select`           | `string \| null`, `string[]` with `multiple`             | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
-| `NumberField`           | `NumberInput`      | `number \| null`                                         | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
-| `DateField`             | `DatePicker`       | a day as `YYYY-MM-DD`, `null` for none                   | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
-| `DateTimeField`         | `DateTimePicker`   | an ISO 8601 date-time, `null` for none                   | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
-| `DateRangeField`        | `DateRangePicker`  | `{ start, end }` of days, `null` for none                | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
-| `RichTextEditorField`   | `RichTextEditor`   | `string` (HTML)                                          | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
-| `CheckboxField`         | `Checkbox`         | `boolean`, or `string[]` when the checkbox has a `value` | `name`, `checked`, `onChange`, `onBlur`, `state`, `validationMessage` |
-| `SwitchField`           | `Switch`           | `boolean`                                                | `name`, `checked`, `onChange`, `onBlur`, `state`, `validationMessage` |
-| `RadioGroupField`       | `RadioGroup`       | one of the options' values, `null` for none              | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
-| `CheckboxGroupField`    | `CheckboxGroup`    | the checked options' values (`string[]`)                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
-| `SegmentedControlField` | `SegmentedControl` | one of the options' values                               | `value`, `onChange`, `onBlur`, `state`, `validationMessage`           |
-| `SliderField`           | `Slider`           | `number`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
-| `FocalPointPickerField` | `FocalPointPicker` | `FocalPoint` (`{ x, y }`)                                | `value`, `onChange`, `onBlur`, `state`, `validationMessage`           |
+| Adapter                 | ui component       | Form value                                                                | Controlled props it takes over                                        |
+| ----------------------- | ------------------ | ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `InputField`            | `Input`            | `string`                                                                  | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `TextareaField`         | `Textarea`         | `string`                                                                  | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `SelectField`           | `Select`           | an option's value (`string` by default) or `null`, a list with `multiple` | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `ComboboxField`         | `Combobox`         | the chosen option itself or `null`, a list with `multiple`                | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `PickerField`           | `Picker`           | the value set by the application's picker, `null` for none                | `value`, `onOpen`, `onClear`, `onBlur`, `state`, `validationMessage`  |
+| `NumberField`           | `NumberInput`      | `number \| null`                                                          | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `DateField`             | `DatePicker`       | a day as `YYYY-MM-DD`, `null` for none                                    | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `DateTimeField`         | `DateTimePicker`   | an ISO 8601 date-time, `null` for none                                    | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `DateRangeField`        | `DateRangePicker`  | `{ start, end }` of days, `null` for none                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `RichTextEditorField`   | `RichTextEditor`   | `string` (HTML)                                                           | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `CheckboxField`         | `Checkbox`         | `boolean`, or `string[]` when the checkbox has a `value`                  | `name`, `checked`, `onChange`, `onBlur`, `state`, `validationMessage` |
+| `SwitchField`           | `Switch`           | `boolean`                                                                 | `name`, `checked`, `onChange`, `onBlur`, `state`, `validationMessage` |
+| `RadioGroupField`       | `RadioGroup`       | one of the options' values, `null` for none                               | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `CheckboxGroupField`    | `CheckboxGroup`    | the checked options' values (`string[]`)                                  | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `SegmentedControlField` | `SegmentedControl` | one of the options' values                                                | `value`, `onChange`, `onBlur`, `state`, `validationMessage`           |
+| `SliderField`           | `Slider`           | `number`                                                                  | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `FocalPointPickerField` | `FocalPointPicker` | `FocalPoint` (`{ x, y }`)                                                 | `value`, `onChange`, `onBlur`, `state`, `validationMessage`           |
 
 `Dropzone` (uploads, no value), `ScopeSwitcher` (navigation), and `CopyField` (read-only) have no adapter.
 
@@ -69,16 +71,27 @@ Shared by both adapter packages:
 - **`name`** — the field's path in the form values, e.g. `title` or `seo.description`. It is also passed to the ui component where it takes one.
 - **`required`** — marks the field where the ui component supports it (star and `aria-required` on the framed fields, `CheckboxField`, `SwitchField`, `RadioGroupField`, and `CheckboxGroupField`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing; for `DateRangeField`, a range without both ends is missing. A custom validation still runs on a non-empty value.
 - **`requiredMessage`** — the message for a missing required value. Defaults to `"Required"`; pass a translated text.
-- **`actions`** (`InputField`, `TextareaField`, `SelectField`, `RichTextEditorField`) — content at the label as in the ui component, or a function `({ value, setValue }) => ReactNode` to connect `FieldActions`, e.g. `actions={({ setValue }) => <FieldActions aiAssist onAiSuggest={suggest} onAiAccept={setValue} />}`.
+- **`actions`** (`InputField`, `TextareaField`, `SelectField`, `ComboboxField`, `PickerField`, `RichTextEditorField`) — content at the label as in the ui component, or a function `({ value, setValue }) => ReactNode` to connect `FieldActions`, e.g. `actions={({ setValue }) => <FieldActions aiAssist onAiSuggest={suggest} onAiAccept={setValue} />}`.
 - **`ref`** — forwarded to the ui component, so it reaches the same element as on the component itself.
 - **`onFocus`** — still passed through.
 - Every other prop of the ui component passes through unchanged. `value`/`checked`, `onChange`, `onBlur`, `state`, and `validationMessage` are not available: the adapter sets them from the field.
 
 `CheckboxField` with a `value` is one box of a group: the field holds the list of the checked boxes' values.
 
+`PickerField` opens the picker the application provides: `renderPicker({ open, value, onChange, onClose })` renders it, e.g. a dialog with the page tree, and `onChange` sets the field's value and closes it. `onOpen({ value, setValue })` is called as well, for a picker opened elsewhere. The field counts as touched once the picker closes. `clearable` (default: unless `required`) shows the clear button, which sets `null` (`[]` for a list).
+
+```tsx
+<PickerField
+    name="target"
+    label="Link target"
+    renderValue={(page) => page.name}
+    renderPicker={({ open, value, onChange, onClose }) => <PagePickerDialog open={open} value={value} onChange={onChange} onClose={onClose} />}
+/>
+```
+
 ### Value mapping
 
-An empty form value (`undefined` or `null`, e.g. a field without a default value) maps to the control's empty state: `""` for text, `null` (or `[]` with `multiple`) for `SelectField`, `null` for `NumberField`, `DateField`, `DateTimeField`, and `DateRangeField`, unchecked for `CheckboxField` and `SwitchField`, no chosen option for `RadioGroupField`, `[]` for `CheckboxGroupField`, no pressed option for `SegmentedControlField`, `min` for `SliderField`, and the center for `FocalPointPickerField`. The adapters write the control's value back unchanged; convert other types in the form's `defaultValues` and submit handler.
+An empty form value (`undefined` or `null`, e.g. a field without a default value) maps to the control's empty state: `""` for text, `null` (or `[]` with `multiple`) for `SelectField` and `ComboboxField`, `null` for `PickerField`, `null` for `NumberField`, `DateField`, `DateTimeField`, and `DateRangeField`, unchecked for `CheckboxField` and `SwitchField`, no chosen option for `RadioGroupField`, `[]` for `CheckboxGroupField`, no pressed option for `SegmentedControlField`, `min` for `SliderField`, and the center for `FocalPointPickerField`. The adapters write the control's value back unchanged; convert other types in the form's `defaultValues` and submit handler.
 
 ### Validation
 

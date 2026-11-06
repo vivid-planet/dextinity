@@ -22,6 +22,7 @@ function createLinkBlock(
         name = "Link",
         displayName = <FormattedMessage id="dextinity.blocks.link" defaultMessage="Link" />,
         supportedBlocks = { internal: InternalLinkBlock, external: ExternalLinkBlock },
+        label = <FormattedMessage id="dextinity.blocks.link.linkType" defaultMessage="Link type" />,
         allowEmpty = false,
         tags,
         ...oneOfBlockOptions
@@ -33,6 +34,7 @@ function createLinkBlock(
             name,
             displayName,
             supportedBlocks,
+            label,
             allowEmpty,
             tags,
             ...oneOfBlockOptions,

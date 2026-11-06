@@ -47,6 +47,7 @@ Any export may change or be removed at any time, without deprecation notice. Cha
 - **Non-component code file**: `<featureName>.ts(x)` (camelCase) for utilities and hooks.
 - **Styles**: `<ComponentName>.module.scss` (CSS Modules with SCSS).
 - **Tokens**: `<ComponentName>.tokens.scss`, a `tokens` mixin with the component's CSS custom properties (see [Component tokens](#component-tokens)).
+- **Unit tests**: `__tests__/<ComponentName>.test.tsx` or `__tests__/<featureName>.test.ts`, in a `__tests__/` folder next to the code they test (see [Testing](#testing)).
 
 ## Component conventions
 
@@ -199,8 +200,8 @@ Test the behavior and contracts a consumer depends on, not the implementation. E
 
 What to test, and with which kind of test:
 
-- **Utility logic** — a unit test (`unit` project, `jsdom`) next to the utility, exercising it directly in isolation.
-- **A component's render contract** — the class names and `data-*` attributes consumers style and target — a unit test next to the component. Assert the contract, not the styles it produces.
+- **Utility logic** — a unit test (`unit` project, `jsdom`) in the `__tests__/` folder next to the utility, exercising it directly in isolation.
+- **A component's render contract** — the class names and `data-*` attributes consumers style and target — a unit test in the `__tests__/` folder next to the component. Assert the contract, not the styles it produces.
 - **A type-only contract** — typing with no runtime behavior, such as slot-prop inference — a compile-time test (`@ts-expect-error` on what must not compile), caught by `tsc`.
 - **Component behavior** — click, keyboard, focus, disabled — a Storybook interaction test (a story's `play` function), run in a real browser.
 
@@ -266,5 +267,5 @@ An icon is 16px. Components size their nested icons through `--dextinity-icon-si
 
 1. Prepare the SVG file. Its root element is `<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 16 16" fill="none">`; for any other size, ask for a 16×16 version instead of scaling it.
 2. Save it as `svg/<name>.svg`, with the name in kebab case, for example `arrow-right.svg`. Icons from the Figma library keep their Figma name; an icon that the library doesn't have yet follows the same naming, for example the `rte-` prefix for the rich text editor.
-3. Add the name to `defaultIconNames` in [`iconRegistry.ts`](src/components/icon/iconRegistry.ts), its search terms to [`iconSearchTerms.ts`](src/docs/theme/__stories__/iconSearchTerms.ts), and its variable to `icons.css`: `--dextinity-colored-icon-<name>` when the icon keeps its own colors, `--dextinity-icon-<name>` otherwise. [`iconSet.test.ts`](src/components/icon/iconSet.test.ts) fails when the SVG files, the variables, and the names don't match.
+3. Add the name to `defaultIconNames` in [`iconRegistry.ts`](src/components/icon/iconRegistry.ts), its search terms to [`iconSearchTerms.ts`](src/docs/theme/__stories__/iconSearchTerms.ts), and its variable to `icons.css`: `--dextinity-colored-icon-<name>` when the icon keeps its own colors, `--dextinity-icon-<name>` otherwise. [`iconSet.test.ts`](src/components/icon/__tests__/iconSet.test.ts) fails when the SVG files, the variables, and the names don't match.
 4. Optionally, add a soft fill for `duotone` as `svg/duotone/<name>.svg` and its variable `--dextinity-duotone-icon-<name>` to `icons.css`.

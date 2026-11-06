@@ -522,7 +522,14 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                             onQuickLook={(asset) => openQuickLook(asset.id)}
                             onMove={handleMove}
                             onDelete={setPendingDeleteIds}
-                            toolbar={isCurrentFolderLoading ? <Spinner size="small" /> : undefined}
+                            toolbar={
+                                isCurrentFolderLoading ? (
+                                    <Spinner
+                                        size="small"
+                                        aria-label={intl.formatMessage({ id: "dextinity.damFinder.loading", defaultMessage: "Loading" })}
+                                    />
+                                ) : undefined
+                            }
                             labels={createAssetBrowserLabels(intl)}
                         />
                         <DetailsColumn>{renderDetails()}</DetailsColumn>

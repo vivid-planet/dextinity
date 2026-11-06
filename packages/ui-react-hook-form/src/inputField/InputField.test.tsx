@@ -84,6 +84,20 @@ describe("InputField", () => {
         await waitFor(() => expect(screen.queryByText("Taken")).not.toBeInTheDocument());
     });
 
+    it("marks a field invalid for a rule without a message", async () => {
+        function MaxLengthForm() {
+            const { control } = useForm<{ code: string }>({ defaultValues: { code: "" }, mode: "onTouched" });
+            return <InputField control={control} name="code" label="Code" rules={{ maxLength: 3 }} />;
+        }
+        render(<MaxLengthForm />);
+        const code = screen.getByLabelText("Code");
+
+        await userEvent.type(code, "ABCD");
+        await userEvent.tab();
+
+        await waitFor(() => expect(code).toHaveAttribute("aria-invalid", "true"));
+    });
+
     it("takes the control from the surrounding FormProvider", () => {
         function ContextForm() {
             const form = useForm({ defaultValues: { title: "From context" } });

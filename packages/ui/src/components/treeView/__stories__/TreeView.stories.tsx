@@ -252,6 +252,8 @@ export const Filtered: Story = {
     },
 };
 
+const escapeOutsideTree = fn();
+
 const longNameTree: TreeNode[] = [
     {
         id: "news",
@@ -280,11 +282,12 @@ export const LongNames: Story = {
         expandedIds: ["news"],
     },
     render: (args) => (
-        <div className={styles.narrow}>
+        <div className={styles.narrow} onKeyDown={(event) => event.key === "Escape" && escapeOutsideTree()}>
             <ControlledTreeView {...args} />
         </div>
     ),
     play: async ({ canvas }) => {
+        escapeOutsideTree.mockClear();
         const fullName = "Annual report 2026: results, outlook, and the new sustainability strategy";
         await userEvent.tab();
         await userEvent.keyboard("{ArrowDown}");
@@ -295,6 +298,10 @@ export const LongNames: Story = {
         await userEvent.keyboard("{Escape}");
         await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
         await expect(canvas.getByRole("treeitem", { name: fullName })).toHaveFocus();
+        // Hiding the tooltip must not also close a dialog around the tree; the next Escape reaches it
+        await expect(escapeOutsideTree).not.toHaveBeenCalled();
+        await userEvent.keyboard("{Escape}");
+        await expect(escapeOutsideTree).toHaveBeenCalledOnce();
 
         await userEvent.keyboard("{ArrowDown}");
         await expect(canvas.getByRole("treeitem", { name: "Open day" })).toHaveFocus();

@@ -1,5 +1,5 @@
 import { createElement } from "react";
-import { createIntl, FormattedMessage } from "react-intl";
+import { createIntl, FormattedMessage, FormattedNumber } from "react-intl";
 import { describe, expect, it } from "vitest";
 
 import { messageText } from "./messageText";
@@ -19,6 +19,10 @@ describe("messageText", () => {
     it("formats a FormattedMessage element with its values", () => {
         const label = createElement(FormattedMessage, { id: "test.headline", defaultMessage: "Headline {level}", values: { level: 3 } });
         expect(messageText(intl, label)).toBe("Headline 3");
+    });
+
+    it("formats a FormattedNumber element with its options", () => {
+        expect(messageText(intl, createElement(FormattedNumber, { value: 0.5, style: "percent" }))).toBe("50%");
     });
 
     it("returns undefined for other elements", () => {

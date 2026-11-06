@@ -88,6 +88,9 @@ export { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerStat
 export { type FieldSize, type FieldState } from "./components/field/Field";
 export { type FieldLayout } from "./components/field/Field";
 export { FieldActions, type FieldActionsLabels, type FieldActionsOwnerState, type FieldActionsProps } from "./components/fieldActions/FieldActions";
+export { formatFileSize } from "./components/fileUpload/fileSize";
+export type { FileUploadContext, FileUploadFile, FileUploadLabels } from "./components/fileUpload/FileUpload";
+export { FileUpload, type FileUploadOwnerState, type FileUploadProps, type FileUploadSlotProps } from "./components/fileUpload/FileUpload";
 export { FilterBar, type FilterBarLabels, type FilterBarOwnerState } from "./components/filterBar/FilterBar";
 export { type FilterBarProps, type FilterBarSlotProps } from "./components/filterBar/FilterBar";
 export { FilterChip, type FilterChipOwnerState, type FilterChipProps, type FilterChipSlotProps } from "./components/filterChip/FilterChip";

@@ -5,7 +5,7 @@
 Build the save conflict dialog and the page save button of `createUsePage` with `@dextinity/ui`
 
 The hook returned by `createUsePage` now also returns `saveState` and `savedAt` for `SaveState` and `rootBlocksValidity` to mark invalid root blocks, e.g. in the editor's tabs.
-`useSavePageShortcut(handleSavePage)` saves the page with ⌘S / Ctrl+S.
+`useSavePageShortcut(handleSavePage, { hasChanges, saving })` saves the page with ⌘S / Ctrl+S when it has unsaved changes.
 
 **Breaking changes**
 

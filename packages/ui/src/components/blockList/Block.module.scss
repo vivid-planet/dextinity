@@ -22,6 +22,11 @@
         box-shadow: var(--dextinity-block-invalid-shadow);
     }
 
+    // The red ring alone would hide that the block is the one selected in the preview
+    &[data-selected][data-invalid] {
+        box-shadow: var(--dextinity-block-selected-invalid-shadow);
+    }
+
     &[data-checked] {
         background: var(--dextinity-block-checked-background);
     }

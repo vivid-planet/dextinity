@@ -36,6 +36,9 @@
     // Invalid blocks, e.g. a required field is empty
     --dextinity-block-invalid-shadow: inset 0 0 0 1.5px var(--dextinity-color-danger), var(--dextinity-shadow-1);
     --dextinity-block-invalid-marker-color: var(--dextinity-color-danger);
+    // Selected and invalid: the selection ring with the error ring inside it
+    --dextinity-block-selected-invalid-shadow:
+        inset 0 0 0 1.5px var(--dextinity-color-accent), inset 0 0 0 3px var(--dextinity-color-danger), var(--dextinity-shadow-1);
     // Blocks selected for bulk actions
     --dextinity-block-checked-background: var(--dextinity-color-accent-soft);
 

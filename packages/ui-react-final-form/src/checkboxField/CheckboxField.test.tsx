@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { Form } from "react-final-form";
 import { describe, expect, it, vi } from "vitest";
 
+import { focusOnError } from "../focusOnError/focusOnError";
 import { CheckboxField, isCheckboxChecked, toggleCheckboxValue } from "./CheckboxField";
 
 describe("CheckboxField", () => {
@@ -43,5 +44,33 @@ describe("CheckboxField", () => {
         expect(screen.queryByText("Accept the terms to continue")).not.toBeInTheDocument();
         await userEvent.click(screen.getByRole("button", { name: "Save" }));
         expect(onSubmit).toHaveBeenCalledWith({ terms: true }, expect.anything(), expect.anything());
+    });
+
+    it("focuses the first box of an invalid group", async () => {
+        render(
+            <Form onSubmit={vi.fn()} decorators={[focusOnError]}>
+                {({ handleSubmit, values }) => (
+                    <form onSubmit={handleSubmit} noValidate>
+                        <CheckboxField name="channels" value="news" required>
+                            News
+                        </CheckboxField>
+                        {!values.hideBlog && (
+                            <CheckboxField name="channels" value="blog" required>
+                                Blog
+                            </CheckboxField>
+                        )}
+                        <CheckboxField name="hideBlog">Hide blog</CheckboxField>
+                        <button type="submit">Save</button>
+                    </form>
+                )}
+            </Form>,
+        );
+
+        await userEvent.click(screen.getByRole("button", { name: "Save" }));
+        expect(screen.getByRole("checkbox", { name: "News" })).toHaveFocus();
+
+        await userEvent.click(screen.getByRole("checkbox", { name: "Hide blog" }));
+        await userEvent.click(screen.getByRole("button", { name: "Save" }));
+        expect(screen.getByRole("checkbox", { name: "News" })).toHaveFocus();
     });
 });

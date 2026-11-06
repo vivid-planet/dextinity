@@ -3,6 +3,7 @@ import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } fro
 
 import type { FieldAdapterActions, FieldAdapterBaseProps } from "../field/fieldAdapterProps";
 import type { FinalFormFieldConfig } from "../field/finalFormFieldConfig";
+import { defaultValueKey, isEqualByKey } from "../field/isEqualByKey";
 import { renderActions } from "../field/renderActions";
 import { splitFieldAdapterProps } from "../field/splitFieldAdapterProps";
 import { useFieldAdapter } from "../field/useFieldAdapter";
@@ -25,7 +26,8 @@ export function toSelectValue<Multiple extends boolean, Value = string>(value: u
 
 /**
  * A `Select` connected to a React Final Form field: a value of any type or `null` for nothing chosen, a list with `multiple`. Shows the field's error
- * once it was touched or the form was submitted.
+ * once it was touched or the form was submitted. Without `isEqual`, `parse`, and `format`, the field compares values by `getKey`, so choosing
+ * the same values again, e.g. as a new list, doesn't make it dirty.
  */
 export const SelectField = forwardRef(function SelectField<
     Multiple extends boolean = false,
@@ -33,13 +35,15 @@ export const SelectField = forwardRef(function SelectField<
     FieldValue = SelectValue<Multiple, Value>,
 >({ name, actions, onFocus, ...props }: SelectFieldProps<Multiple, Value, FieldValue>, forwardedRef: ForwardedRef<HTMLButtonElement>) {
     const [options, selectProps] = splitFieldAdapterProps(props);
+    const isEqual =
+        options.isEqual ?? (options.parse == null && options.format == null ? isEqualByKey(selectProps.getKey ?? defaultValueKey) : undefined);
     const {
         input,
         validationProps,
         ref,
         onBlur,
         onFocus: onFieldFocus,
-    } = useFieldAdapter<FieldValue, SelectValue<Multiple, Value>, HTMLButtonElement>(name, options, forwardedRef);
+    } = useFieldAdapter<FieldValue, SelectValue<Multiple, Value>, HTMLButtonElement>(name, { ...options, isEqual }, forwardedRef);
     const value = toSelectValue<Multiple, Value>(input.value, selectProps.multiple === true);
 
     return (

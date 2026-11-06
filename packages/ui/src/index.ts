@@ -82,6 +82,8 @@ export {
     type DevicePreviewSlotProps,
 } from "./components/devicePreview/DevicePreview";
 export { Dialog, type DialogOwnerState, type DialogProps, type DialogSlotProps } from "./components/dialog/Dialog";
+export { DialogFormActions, type DialogFormActionsLabels, type DialogFormActionsOwnerState } from "./components/dialog/DialogFormActions";
+export { type DialogFormActionsProps, type DialogFormActionsSlotProps } from "./components/dialog/DialogFormActions";
 export { Drawer, type DrawerOwnerState, type DrawerProps, type DrawerSlotProps } from "./components/drawer/Drawer";
 export type { DropzoneLabels, DropzoneRejection, DropzoneUpload } from "./components/dropzone/Dropzone";
 export { Dropzone, type DropzoneOwnerState, type DropzoneProps, type DropzoneSlotProps } from "./components/dropzone/Dropzone";

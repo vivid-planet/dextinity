@@ -55,7 +55,7 @@ export interface ConfirmDialogProps {
      */
     tone?: ConfirmDialogTone;
     /**
-     * Shows a spinner in the confirming action while it runs.
+     * Shows a spinner in the confirming action while it runs; meanwhile, the other actions are disabled and the dialog can't be closed.
      *
      * @defaultValue `false`
      */
@@ -106,15 +106,16 @@ export const ConfirmDialog = forwardRef<HTMLDivElement, ConfirmDialogProps>(func
             role="alertdialog"
             size="small"
             hideCloseButton
+            dismissible={!loading}
             data-tone={ownerState.tone}
             className={clsx(styles.root, className)}
             footer={
                 <>
-                    <Button variant="text" color="secondary" {...slotProps?.cancelButton} onClick={() => onOpenChange(false)}>
+                    <Button variant="text" color="secondary" disabled={loading} {...slotProps?.cancelButton} onClick={() => onOpenChange(false)}>
                         {labels.cancel}
                     </Button>
                     {secondaryLabel != null && (
-                        <Button variant="outlined" color="secondary" {...slotProps?.secondaryButton} onClick={onSecondary}>
+                        <Button variant="outlined" color="secondary" disabled={loading} {...slotProps?.secondaryButton} onClick={onSecondary}>
                             {secondaryLabel}
                         </Button>
                     )}

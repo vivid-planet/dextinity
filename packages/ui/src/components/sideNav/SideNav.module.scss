@@ -275,6 +275,12 @@ $children-room-end: 12px;
         margin: (-$children-room) (-$children-room) (-$children-room-end);
         padding: $children-room $children-room $children-room-end;
         overflow: hidden;
+        // The room overlaps the entries around the list and would take their clicks
+        pointer-events: none;
+
+        > * {
+            pointer-events: auto;
+        }
 
         &::before {
             content: "";

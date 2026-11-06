@@ -1,34 +1,7 @@
-import { PrettyBytes } from "@dextinity/admin";
-import { BallTriangle } from "@dextinity/admin-icons";
-import {
-    // eslint-disable-next-line no-restricted-imports
-    Dialog,
-    LinearProgress,
-    Typography,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { FormattedMessage } from "react-intl";
+import { Dialog, ProgressBar } from "@dextinity/ui";
+import { useIntl } from "react-intl";
 
-const ProgressDialogContent = styled("div")`
-    min-width: 300px;
-    min-height: 165px;
-    padding: 30px 20px;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-`;
-
-const StyledBallTriangle = styled(BallTriangle)`
-    font-size: 55px;
-    margin-bottom: 30px;
-`;
-
-const StyledLinearProgress = styled(LinearProgress)`
-    width: 100%;
-    margin-top: 30px;
-`;
+import { formatFileSize } from "../../finder/damFinderItems";
 
 interface ProgressDialogProps {
     open: boolean;
@@ -37,29 +10,32 @@ interface ProgressDialogProps {
 }
 
 export const ProgressDialog = ({ open, totalSize, loadedSize }: ProgressDialogProps) => {
-    return (
-        <Dialog open={open}>
-            <ProgressDialogContent>
-                <StyledBallTriangle />
+    const intl = useIntl();
+    const isSizeKnown = totalSize !== undefined && totalSize > 0;
 
-                {totalSize === undefined ? (
-                    <Typography>
-                        <FormattedMessage id="dextinity.dam.file.loading" defaultMessage="Loading ..." />
-                    </Typography>
-                ) : (
-                    <Typography>
-                        <FormattedMessage
-                            id="dextinity.dam.file.totalLoadedUpload"
-                            defaultMessage="{loaded} / {total}"
-                            values={{
-                                loaded: loadedSize ? <PrettyBytes value={loadedSize > totalSize ? totalSize : loadedSize} /> : 0,
-                                total: <PrettyBytes value={totalSize} />,
-                            }}
-                        />
-                    </Typography>
-                )}
-                <StyledLinearProgress variant="determinate" value={loadedSize && totalSize ? (loadedSize / totalSize) * 100 : 0} />
-            </ProgressDialogContent>
+    return (
+        <Dialog
+            open={open}
+            onOpenChange={() => undefined}
+            dismissible={false}
+            hideCloseButton
+            size="small"
+            title={intl.formatMessage({ id: "dextinity.dam.file.uploading", defaultMessage: "Uploading" })}
+        >
+            <ProgressBar
+                value={isSizeKnown ? Math.min(loadedSize ?? 0, totalSize) : null}
+                max={isSizeKnown ? totalSize : undefined}
+                label={
+                    isSizeKnown
+                        ? intl.formatMessage(
+                              { id: "dextinity.dam.file.totalLoadedUpload", defaultMessage: "{loaded} / {total}" },
+                              { loaded: formatFileSize(intl, Math.min(loadedSize ?? 0, totalSize)), total: formatFileSize(intl, totalSize) },
+                          )
+                        : intl.formatMessage({ id: "dextinity.dam.file.loading", defaultMessage: "Loading ..." })
+                }
+                showValue={isSizeKnown}
+                locale={intl.locale}
+            />
         </Dialog>
     );
 };

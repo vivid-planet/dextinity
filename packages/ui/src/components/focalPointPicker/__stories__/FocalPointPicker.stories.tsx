@@ -41,6 +41,7 @@ const meta = {
     argTypes: {
         auto: { control: "boolean" },
         disabled: { control: "boolean" },
+        state: { control: "select", options: ["default", "success", "warning", "error"] },
         ratios: { control: "object" },
         labels: { control: false },
         className: { control: false },
@@ -102,4 +103,25 @@ export const Disabled: Story = {
         await userEvent.keyboard("{ArrowRight}");
         await expect(args.onChange).not.toHaveBeenCalled();
     },
+};
+
+/**
+ * **Rules**
+ * - Say what is missing and how to fix it.
+ */
+export const Error: Story = {
+    args: { state: "error", validationMessage: "Set the point on the main subject." },
+    play: async ({ canvas }) => {
+        const marker = canvas.getByRole("slider");
+        await expect(marker).toHaveAttribute("aria-invalid", "true");
+        await expect(marker).toHaveAccessibleDescription("Set the point on the main subject.");
+    },
+};
+
+export const Warning: Story = {
+    args: { state: "warning", validationMessage: "The point is close to the edge; narrow crops may cut off the subject." },
+};
+
+export const Success: Story = {
+    args: { state: "success", validationMessage: "Matches the detected face." },
 };

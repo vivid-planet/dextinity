@@ -1,18 +1,11 @@
 import { useApolloClient, useQuery } from "@apollo/client";
-import { useStackApi } from "@dextinity/admin";
 import {
-    getContentScopeLabel,
-    openSitePreviewWindow,
     PageEditorHeader,
-    type PageEditorHeaderProps,
     queryUpdatedAt,
     resolveHasSaveConflict,
     UnsavedChangesPrompt,
-    useContentScope,
     useFormSaveConflict,
-    usePageEditorContext,
-    usePageName,
-    useRouterLinkClick,
+    usePageEditorHeader,
     useSavePageShortcut,
 } from "@dextinity/cms-admin";
 import { EditLayout, Icon, MenuItem, Panel } from "@dextinity/ui";
@@ -22,7 +15,7 @@ import { FORM_ERROR, type FormApi, type SubmissionErrors } from "final-form";
 import { type MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { Form, useForm, useFormState } from "react-final-form";
 import { useIntl } from "react-intl";
-import { useHistory, useRouteMatch } from "react-router";
+import { useRouteMatch } from "react-router";
 import { v4 as uuid } from "uuid";
 
 import { predefinedPageQuery, savePredefinedPageMutation } from "./EditPredefinedPage.gql";
@@ -126,7 +119,7 @@ function PredefinedPageEditor({ pageTreeNodeId, loading, hasSaveConflict, formAp
     const hasChanges = useHasUnsavedChanges();
     const saveState = useFormSaveState();
     const match = useRouteMatch();
-    const header = usePredefinedPageHeader(pageTreeNodeId);
+    const { headerProps, openSitePreview } = usePageEditorHeader(pageTreeNodeId);
 
     useEffect(() => {
         formApiRef.current = form;
@@ -148,13 +141,22 @@ function PredefinedPageEditor({ pageTreeNodeId, loading, hasSaveConflict, formAp
                 loading={loading}
                 header={
                     <PageEditorHeader
-                        {...header}
+                        {...headerProps}
                         saveState={saveState.state}
                         savedAt={saveState.savedAt}
                         hasChanges={hasChanges}
                         saving={submitting}
                         saveError={hasSaveConflict ? "conflict" : saveState.state === "error" ? "error" : undefined}
                         onSave={() => void save()}
+                        menuItems={
+                            openSitePreview && (
+                                <MenuItem
+                                    label={intl.formatMessage({ id: "predefinedPages.edit.sitePreview", defaultMessage: "Site preview" })}
+                                    icon={<Icon name="preview" />}
+                                    onClick={openSitePreview}
+                                />
+                            )
+                        }
                     />
                 }
             >
@@ -177,56 +179,3 @@ function PredefinedPageEditor({ pageTreeNodeId, loading, hasSaveConflict, formAp
         </>
     );
 }
-
-type PredefinedPageHeader = Pick<PageEditorHeaderProps, "title" | "back" | "onBackClick" | "eyebrow" | "visibility" | "path" | "menuItems">;
-
-function usePredefinedPageHeader(pageTreeNodeId: string): PredefinedPageHeader {
-    const intl = useIntl();
-    const history = useHistory();
-    const stackApi = useStackApi();
-    const editorContext = usePageEditorContext();
-    const loadedPage = usePageName(pageTreeNodeId, { skip: editorContext != null });
-    const contentScope = useContentScope();
-    const navigateWithRouter = useRouterLinkClick();
-
-    const path = editorContext?.page.path ?? loadedPage?.path;
-    const scopeLabel = getContentScopeLabel({ scope: contentScope.scope, values: contentScope.values });
-
-    let back: PageEditorHeaderProps["back"];
-    if (editorContext != null) {
-        back = {
-            label: intl.formatMessage({ id: "predefinedPages.edit.back", defaultMessage: "Page tree" }),
-            href: history.createHref({ pathname: editorContext.backUrl }),
-        };
-    } else if (stackApi != null) {
-        back = { label: intl.formatMessage({ id: "predefinedPages.edit.backGeneric", defaultMessage: "Back" }), href: "#", onClick: stackApi.goBack };
-    }
-
-    return {
-        title: editorContext?.page.name ?? loadedPage?.name,
-        back,
-        onBackClick: editorContext != null ? navigateWithRouter : undefined,
-        eyebrow:
-            editorContext != null ? (
-                <>
-                    {editorContext.documentType.displayName}
-                    {eyebrowSeparator}
-                    {scopeLabel}
-                </>
-            ) : (
-                scopeLabel
-            ),
-        visibility: editorContext?.page.visibility,
-        path,
-        menuItems:
-            path != null ? (
-                <MenuItem
-                    label={intl.formatMessage({ id: "predefinedPages.edit.sitePreview", defaultMessage: "Site preview" })}
-                    icon={<Icon name="preview" />}
-                    onClick={() => openSitePreviewWindow(path, contentScope.match.url)}
-                />
-            ) : undefined,
-    };
-}
-
-const eyebrowSeparator = " · ";

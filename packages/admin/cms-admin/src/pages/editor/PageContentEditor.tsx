@@ -1,10 +1,9 @@
-import { RouteWithErrorBoundary, useContentTranslationService, useErrorDialog, useStackApi } from "@dextinity/admin";
+import { RouteWithErrorBoundary, useContentTranslationService, useErrorDialog } from "@dextinity/admin";
 import {
     EditLayout,
     type EditLayoutPane,
     Icon,
     MenuItem,
-    type PageHeaderBack,
     Panel,
     type SaveStateValue,
     SegmentedControl,
@@ -15,24 +14,19 @@ import {
 import { styled } from "@mui/material/styles";
 import { type ReactNode, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Switch, useHistory } from "react-router";
+import { Switch } from "react-router";
 
 import { useScrollRestoration } from "../../blocks/common/useScrollRestoration";
 import { IFrameBridgeProvider } from "../../blocks/iframebridge/IFrameBridge";
-import { usePageName } from "../../common/PageName";
 import { RouterTabLink } from "../../common/RouterTabLink";
-import { useRouterLinkClick } from "../../common/useRouterLinkClick";
-import { useContentScope } from "../../contentScope/Provider";
-import { getContentScopeLabel } from "../../contentScope/utils/getContentScopeLabel";
 import { BlockPreviewPane } from "../../preview/block/BlockPreviewPane";
 import { normalizeSiteAddress } from "../../preview/block/normalizeSiteAddress";
 import { type BlockPreviewApi, useBlockPreview } from "../../preview/block/useBlockPreview";
-import { openSitePreviewWindow } from "../../preview/openSitePreviewWindow";
-import { usePageEditorContext } from "../treeDetail/PageEditorContext";
 import { useSavePageShortcut } from "../useSavePageShortcut";
 import { PageEditorHeader } from "./PageEditorHeader";
 import { UnsavedChangesPrompt } from "./UnsavedChangesPrompt";
 import { useEditorTabRoute } from "./useEditorTabRoute";
+import { usePageEditorHeader } from "./usePageEditorHeader";
 
 /** What the preview of a page editor shows: the site's block preview page and the unsaved state of the root block shown there. */
 export interface PageContentEditorPreview {
@@ -93,14 +87,9 @@ export interface PageContentEditorProps {
  */
 export function PageContentEditor({ pageId, pageApi, tabs, preview, previewApi: previewApiProp, moreActions }: PageContentEditorProps) {
     const intl = useIntl();
-    const history = useHistory();
-    const stackApi = useStackApi();
-    const editorContext = usePageEditorContext();
-    const loadedPage = usePageName(pageId, { skip: editorContext != null });
-    const contentScope = useContentScope();
+    const { headerProps, openSitePreview } = usePageEditorHeader(pageId);
     const fallbackPreviewApi = useBlockPreview();
     const previewApi = previewApiProp ?? fallbackPreviewApi;
-    const navigateWithRouter = useRouterLinkClick();
     const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
     const translationService = useContentTranslationService();
     const errorDialog = useErrorDialog();
@@ -114,34 +103,6 @@ export function PageContentEditor({ pageId, pageApi, tabs, preview, previewApi: 
     const selectedTab = tabs.find((tab) => tab.key === selectedKey);
     const activePreview = selectedTab?.preview ?? preview;
     const scrollRestoration = useScrollRestoration<HTMLDivElement>(`pageContentEditor-${selectedKey}`);
-
-    const name = editorContext?.page.name ?? loadedPage?.name;
-    const path = editorContext?.page.path ?? loadedPage?.path;
-    const scopeLabel = getContentScopeLabel({ scope: contentScope.scope, values: contentScope.values });
-    const eyebrow =
-        editorContext != null ? (
-            <>
-                {editorContext.documentType.displayName}
-                {eyebrowSeparator}
-                {scopeLabel}
-            </>
-        ) : (
-            scopeLabel
-        );
-
-    let back: PageHeaderBack | undefined;
-    if (editorContext != null) {
-        back = {
-            label: intl.formatMessage({ id: "dextinity.pageEditor.back", defaultMessage: "Page tree" }),
-            href: history.createHref({ pathname: editorContext.backUrl }),
-        };
-    } else if (stackApi != null) {
-        back = {
-            label: intl.formatMessage({ id: "dextinity.pageEditor.backGeneric", defaultMessage: "Back" }),
-            href: "#",
-            onClick: stackApi.goBack,
-        };
-    }
 
     const saveAndReportSuccess = async () => {
         const saved = await handleSavePage();
@@ -187,7 +148,6 @@ export function PageContentEditor({ pageId, pageApi, tabs, preview, previewApi: 
         }
     };
 
-    const openSitePreview = path != null ? () => openSitePreviewWindow(path, contentScope.match.url) : undefined;
     const isLoaded = pageApi.pageState?.document != null;
 
     const menuItems = (
@@ -220,12 +180,7 @@ export function PageContentEditor({ pageId, pageApi, tabs, preview, previewApi: 
 
     const header = (
         <PageEditorHeader
-            title={name}
-            back={back}
-            onBackClick={editorContext != null ? navigateWithRouter : undefined}
-            eyebrow={eyebrow}
-            visibility={editorContext?.page.visibility}
-            path={path}
+            {...headerProps}
             saveState={pageApi.saveState}
             savedAt={pageApi.savedAt}
             hasChanges={hasChanges}
@@ -324,8 +279,6 @@ export function PageContentEditor({ pageId, pageApi, tabs, preview, previewApi: 
         </IFrameBridgeProvider>
     );
 }
-
-const eyebrowSeparator = " · ";
 
 const EditorPanel = styled(Panel)`
     display: flex;

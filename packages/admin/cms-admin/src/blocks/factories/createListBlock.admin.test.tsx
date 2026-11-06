@@ -78,6 +78,25 @@ describe("createListBlock admin component", () => {
         await waitFor(() => expect(rowTitles()).toEqual(["First teaserTeaser", "Second teaserTeaser"]));
     });
 
+    it("restores bulk-deleted items unselected with undo", async () => {
+        render(
+            <RouterMemoryRouter>
+                <Stack topLevelTitle="Page">
+                    <TeaserList />
+                </Stack>
+            </RouterMemoryRouter>,
+        );
+        const user = userEvent.setup();
+
+        await user.click(screen.getByRole("checkbox", { name: "Select all" }));
+        await user.click(screen.getByRole("button", { name: "Delete" }));
+        expect(await screen.findByText("2 blocks deleted")).toBeTruthy();
+
+        await user.click(screen.getByRole("button", { name: "Undo" }));
+        await waitFor(() => expect(rowTitles()).toEqual(["First teaserTeaser", "Second teaserTeaser"]));
+        expect(screen.getByRole("checkbox", { name: "Select all" }).getAttribute("aria-checked")).toBe("false");
+    });
+
     it("keeps the dialog of an additional menu item open after the menu closes", async () => {
         render(
             <RouterMemoryRouter>

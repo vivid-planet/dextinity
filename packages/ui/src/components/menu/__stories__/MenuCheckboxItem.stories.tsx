@@ -95,7 +95,7 @@ export const Default: Story = {
         await userEvent.click(item);
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(false));
         await expect(item).toHaveAttribute("aria-checked", "false");
-        await expect(screen.getByRole("menu")).toBeVisible();
+        await waitFor(() => expect(screen.getByRole("menu")).toBeVisible());
     },
 };
 

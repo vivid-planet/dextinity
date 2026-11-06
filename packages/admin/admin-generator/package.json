@@ -44,7 +44,7 @@
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",
         "@graphql-tools/graphql-file-loader": "^9.1.1",
-        "@graphql-tools/load": "^9.1.1",
+        "@graphql-tools/load": "^9.1.2",
         "@mui/material": "^7.3.11",
         "@mui/x-data-grid": "^8.29.5",
         "change-case": "^5.4.4",

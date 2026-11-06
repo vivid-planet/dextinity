@@ -17,4 +17,14 @@
 
     --dextinity-checkbox-label-color: var(--dextinity-color-text);
     --dextinity-checkbox-label-font-size: var(--dextinity-typography-body-size);
+    --dextinity-checkbox-required-color: var(--dextinity-color-danger-text);
+    // Line of an unchecked checkbox in the error state
+    --dextinity-checkbox-line-error: var(--dextinity-color-danger);
+
+    // Space between the checkbox and its validation message
+    --dextinity-checkbox-message-gap: var(--dextinity-space-1);
+    --dextinity-checkbox-message-font-size: var(--dextinity-typography-small-size);
+    --dextinity-checkbox-message-color-error: var(--dextinity-color-danger-text);
+    --dextinity-checkbox-message-color-warning: var(--dextinity-color-warning-text);
+    --dextinity-checkbox-message-color-success: var(--dextinity-color-success-text);
 }

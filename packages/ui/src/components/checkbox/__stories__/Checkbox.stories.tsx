@@ -66,6 +66,7 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
+        state: { control: "select", options: ["default", "success", "warning", "error"] },
         className: { control: false },
         slotProps: { control: false },
     },
@@ -167,4 +168,35 @@ export const SelectAll: Story = {
         await expect(selectAll).toHaveAttribute("aria-checked", "true");
         await expect(canvas.getByRole("checkbox", { name: "Home" })).toHaveAttribute("aria-checked", "true");
     },
+};
+
+/**
+ * A checkbox that must be checked, e.g. to accept terms, shows a star after the label.
+ */
+export const Required: Story = {
+    args: { required: true, children: "I accept the terms" },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("checkbox", { name: "I accept the terms" })).toBeRequired();
+    },
+};
+
+/**
+ * **Rules**
+ * - Say what is missing and how to fix it.
+ */
+export const Error: Story = {
+    args: { required: true, children: "I accept the terms", state: "error", validationMessage: "Accept the terms to continue." },
+    play: async ({ canvas }) => {
+        const control = canvas.getByRole("checkbox");
+        await expect(control).toBeInvalid();
+        await expect(control).toHaveAccessibleDescription("Accept the terms to continue.");
+    },
+};
+
+export const Warning: Story = {
+    args: { children: "Notify subscribers", state: "warning", validationMessage: "This sends an email to 2,400 subscribers." },
+};
+
+export const Success: Story = {
+    args: { checked: true, children: "Index in search engines", state: "success", validationMessage: "The page is in the sitemap." },
 };

@@ -25,8 +25,8 @@ type DamFinderFolder = GQLDamFinderFoldersQuery["damFoldersFlat"][number];
 
 interface FileDetailsFormValues {
     name: string;
-    title?: string;
-    altText?: string;
+    title: string;
+    altText: string;
 }
 
 interface FolderDetailsFormValues {
@@ -36,6 +36,11 @@ interface FolderDetailsFormValues {
 // The API reports a duplicate file name only through the message of a generic error
 function isDuplicateFileNameError(error: unknown) {
     return error instanceof Error && isApolloError(error) && error.graphQLErrors.some(({ message }) => message.startsWith("Entity with name"));
+}
+
+// Trimming in the form instead of the mutation keeps the submitted values equal to the saved ones the form is reinitialized with
+function trimOnBlur(value: string | undefined) {
+    return value?.trim() ?? "";
 }
 
 function useBlankNameValidator() {
@@ -86,15 +91,14 @@ export function DamFinderFileDetails({ file, editUrl, onQuickLook, onChange, onE
     const type = getDamFinderAssetType(file.mimetype);
 
     const save = async ({ name, title, altText }: FileDetailsFormValues) => {
-        const trimmedName = name.trim();
         try {
             await updateFile({
                 variables: {
                     id: file.id,
                     input: {
-                        name: trimmedName !== file.name ? trimmedName : undefined,
-                        title: title?.trim() || null,
-                        altText: altText?.trim() || null,
+                        name: name !== file.name ? name : undefined,
+                        title: title || null,
+                        altText: altText || null,
                     },
                 },
                 context: LocalErrorScopeApolloContext,
@@ -198,10 +202,14 @@ export function DamFinderFileDetails({ file, editUrl, onQuickLook, onChange, onE
                                     defaultMessage: "Enter a file name",
                                 })}
                                 validate={validateBlankName}
+                                format={trimOnBlur}
+                                formatOnBlur
                             />
                             <InputField
                                 name="title"
                                 label={intl.formatMessage({ id: "dextinity.damFinder.details.title", defaultMessage: "Title" })}
+                                format={trimOnBlur}
+                                formatOnBlur
                             />
                             {type === "image" && (
                                 <TextareaField
@@ -212,6 +220,8 @@ export function DamFinderFileDetails({ file, editUrl, onQuickLook, onChange, onE
                                         defaultMessage: "Describes the image for people who can't see it.",
                                     })}
                                     rows={3}
+                                    format={trimOnBlur}
+                                    formatOnBlur
                                 />
                             )}
                             <DetailFormFooterActions
@@ -241,7 +251,7 @@ export function DamFinderFolderDetails({ folder, onOpen, onChange, onError, onUn
 
     const rename = async ({ name }: FolderDetailsFormValues) => {
         try {
-            await updateFolder({ variables: { id: folder.id, input: { name: name.trim() } }, context: LocalErrorScopeApolloContext });
+            await updateFolder({ variables: { id: folder.id, input: { name } }, context: LocalErrorScopeApolloContext });
         } catch {
             const message = intl.formatMessage({ id: "dextinity.damFinder.details.renameFailed", defaultMessage: "The folder couldn't be renamed" });
             onError(message);
@@ -285,6 +295,8 @@ export function DamFinderFolderDetails({ folder, onOpen, onChange, onError, onUn
                                     defaultMessage: "Enter a folder name",
                                 })}
                                 validate={validateBlankName}
+                                format={trimOnBlur}
+                                formatOnBlur
                             />
                             <DetailFormFooterActions
                                 submitLabel={intl.formatMessage({ id: "dextinity.damFinder.details.rename", defaultMessage: "Rename" })}

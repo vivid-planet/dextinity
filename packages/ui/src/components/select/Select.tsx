@@ -1,27 +1,34 @@
 import { Combobox } from "@base-ui/react/combobox";
 import { Select as BaseSelect } from "@base-ui/react/select";
 import { clsx } from "clsx";
-import { type ForwardedRef, forwardRef, type HTMLAttributes, type ReactNode, type RefAttributes, useCallback, useId } from "react";
+import { type ForwardedRef, forwardRef, Fragment, type HTMLAttributes, type ReactNode, type RefAttributes, useCallback, useId } from "react";
 
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "../field/Field";
 import { Icon } from "../icon/Icon";
+import { defaultGetKey } from "./optionKey";
 import styles from "./Select.module.scss";
 
 /**
  * An option of a `Select`.
  */
-export interface SelectOption {
-    value: string;
-    label: string;
+export interface SelectOption<Value = string> {
+    /** What the option stands for, e.g. an id, a number, or an object. */
+    value: Value;
+    /** What the option shows, in the menu and in the field. */
+    label: ReactNode;
+    /** The option as plain text, for the search, typeahead, and the accessible names of chips. Required when `label` isn't a string. */
+    textValue?: string;
+    /** Shown before the label in the menu. */
     icon?: ReactNode;
+    /** Shows the option without allowing to choose it. */
     disabled?: boolean;
 }
 
 /**
  * The value of a `Select`: a list with `multiple`, otherwise one value or `null` for nothing chosen.
  */
-export type SelectValue<Multiple extends boolean> = Multiple extends true ? string[] : string | null;
+export type SelectValue<Multiple extends boolean, Value = string> = Multiple extends true ? Value[] : Value | null;
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -49,16 +56,28 @@ const defaultLabels: SelectLabels = {
     remove: (optionLabel) => `Remove ${optionLabel}`,
 };
 
-export interface SelectProps<Multiple extends boolean = false>
+export interface SelectProps<Multiple extends boolean = false, Value = string>
     extends FieldBaseProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "prefix" | "onChange" | "defaultValue"> {
     /** Field name. Describes the data, not the UI. */
     name: string;
     /** The options to choose from. */
-    options: SelectOption[];
+    options: SelectOption<Value>[];
     /** The chosen option's value, a list of values with `multiple`, or `null` when nothing is chosen. Always controlled. */
-    value: SelectValue<Multiple>;
+    value: SelectValue<Multiple, Value>;
     /** Called with the new selection; set `value` from it. */
-    onChange: (value: SelectValue<Multiple>) => void;
+    onChange: (value: SelectValue<Multiple, Value>) => void;
+    /**
+     * Whether an option's value is the chosen value, e.g. comparing objects by their id.
+     *
+     * @defaultValue compares the values' keys (see `getKey`)
+     */
+    isEqual?: (optionValue: Value, value: Value) => boolean;
+    /**
+     * A unique string for a value, used as the value submitted with a native form.
+     *
+     * @defaultValue the value itself for strings, `String(value)` for numbers and booleans, `JSON.stringify(value)` otherwise
+     */
+    getKey?: (value: Value) => string;
     /**
      * Allows choosing several options, shown as chips in the field.
      *
@@ -83,11 +102,18 @@ export interface SelectProps<Multiple extends boolean = false>
     slotProps?: FieldProps["slotProps"];
 }
 
-function toList(value: string | string[] | null): string[] {
+function toList<Value>(value: Value | Value[] | null): Value[] {
     if (value == null) {
         return [];
     }
     return Array.isArray(value) ? value : [value];
+}
+
+function optionText(option: { label: ReactNode; textValue?: string }): string {
+    if (option.textValue != null) {
+        return option.textValue;
+    }
+    return typeof option.label === "string" || typeof option.label === "number" ? String(option.label) : "";
 }
 
 function triggerProps(control: FieldControlProps, valueId: string) {
@@ -104,7 +130,7 @@ function triggerProps(control: FieldControlProps, valueId: string) {
 /**
  * Choosing from a list of options, one or several, with an optional search in the menu.
  */
-export const Select = forwardRef(function Select<Multiple extends boolean = false>(
+export const Select = forwardRef(function Select<Multiple extends boolean = false, Value = string>(
     {
         label,
         required,
@@ -122,6 +148,8 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
         options,
         value,
         onChange,
+        isEqual,
+        getKey = defaultGetKey,
         multiple,
         searchable = false,
         placeholder,
@@ -130,7 +158,7 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
         className,
         slotProps,
         ...restProps
-    }: SelectProps<Multiple>,
+    }: SelectProps<Multiple, Value>,
     ref: ForwardedRef<HTMLButtonElement>,
 ) {
     const labels = { ...defaultLabels, ...labelsProp };
@@ -150,21 +178,30 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
         [anchorRef, ref],
     );
 
-    const selectedValues = toList(value);
-    const selectedOptions = selectedValues
-        .map((selected) => options.find((option) => option.value === selected))
-        .filter((option): option is SelectOption => option != null);
-    const selectedText = selectedOptions.map((option) => option.label).join(", ");
+    const matches = isEqual ?? ((optionValue: Value, selected: Value) => getKey(optionValue) === getKey(selected));
+    const optionsByKey = new Map(options.map((option) => [getKey(option.value), option]));
+    const selectedOptions = toList(value as Value | Value[] | null)
+        .map((selected) => options.find((option) => matches(option.value, selected)))
+        .filter((option): option is SelectOption<Value> => option != null);
+    const selectedKeys = selectedOptions.map((option) => getKey(option.value));
 
-    const emit = (next: string[]) => {
-        onChange((isMultiple ? next : (next[0] ?? null)) as SelectValue<Multiple>);
+    const emit = (next: SelectOption<Value>[]) => {
+        const values = next.map((option) => option.value);
+        onChange((isMultiple ? values : (values[0] ?? null)) as SelectValue<Multiple, Value>);
     };
+    const emitKeys = (keys: string[]) =>
+        emit(keys.map((key) => optionsByKey.get(key)).filter((option): option is SelectOption<Value> => option != null));
 
     const triggerContent = (
         <>
             {isMultiple ? (
                 <span id={valueId} className={styles.visuallyHidden}>
-                    {selectedText}
+                    {selectedOptions.map((option, index) => (
+                        <Fragment key={selectedKeys[index]}>
+                            {index > 0 && ", "}
+                            {option.label}
+                        </Fragment>
+                    ))}
                 </span>
             ) : (
                 selectedOptions.length > 0 && (
@@ -178,15 +215,15 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
     );
 
     const chips = isMultiple
-        ? selectedOptions.map((option) => (
-              <span key={option.value} className={styles.chip}>
+        ? selectedOptions.map((option, index) => (
+              <span key={selectedKeys[index]} className={styles.chip}>
                   {option.label}
                   <button
                       type="button"
                       className={styles.chipRemove}
-                      aria-label={labels.remove(option.label)}
+                      aria-label={labels.remove(optionText(option))}
                       disabled={disabled || readOnly}
-                      onClick={() => emit(selectedValues.filter((selected) => selected !== option.value))}
+                      onClick={() => emit(selectedOptions.filter((selected) => selected !== option))}
                   >
                       <Icon name="close" />
                   </button>
@@ -194,7 +231,7 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
           ))
         : null;
 
-    const itemContent = (option: SelectOption, ItemIndicator: typeof BaseSelect.ItemIndicator | typeof Combobox.ItemIndicator) => (
+    const itemContent = (option: SelectOption<Value>, ItemIndicator: typeof BaseSelect.ItemIndicator | typeof Combobox.ItemIndicator) => (
         <>
             {option.icon != null && <span className={styles.itemIcon}>{option.icon}</span>}
             <span className={styles.itemText}>{option.label}</span>
@@ -231,17 +268,17 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                         items={options}
                         multiple={isMultiple}
                         value={isMultiple ? selectedOptions : (selectedOptions[0] ?? null)}
-                        onValueChange={(next: SelectOption | SelectOption[] | null) =>
-                            emit(toList(Array.isArray(next) ? next.map((option) => option.value) : (next?.value ?? null)))
-                        }
+                        onValueChange={(next: SelectOption<Value> | SelectOption<Value>[] | null) => emit(toList(next))}
                         onInputValueChange={(_inputValue, eventDetails) => {
                             if (eventDetails.isItemPress) {
                                 eventDetails.cancel();
                             }
                         }}
-                        itemToStringLabel={(option: SelectOption) => option.label}
-                        itemToStringValue={(option: SelectOption) => option.value}
-                        isItemEqualToValue={(option: SelectOption, selected: SelectOption) => option.value === selected.value}
+                        itemToStringLabel={(option: SelectOption<Value>) => optionText(option)}
+                        itemToStringValue={(option: SelectOption<Value>) => getKey(option.value)}
+                        isItemEqualToValue={(option: SelectOption<Value>, selected: SelectOption<Value>) =>
+                            getKey(option.value) === getKey(selected.value)
+                        }
                         name={name}
                         disabled={disabled}
                         readOnly={readOnly}
@@ -263,8 +300,13 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                                     </div>
                                     <Combobox.Empty className={styles.empty}>{labels.noResults}</Combobox.Empty>
                                     <Combobox.List className={styles.list}>
-                                        {(option: SelectOption) => (
-                                            <Combobox.Item key={option.value} value={option} disabled={option.disabled} className={styles.item}>
+                                        {(option: SelectOption<Value>) => (
+                                            <Combobox.Item
+                                                key={getKey(option.value)}
+                                                value={option}
+                                                disabled={option.disabled}
+                                                className={styles.item}
+                                            >
                                                 {itemContent(option, Combobox.ItemIndicator)}
                                             </Combobox.Item>
                                         )}
@@ -275,10 +317,9 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                     </Combobox.Root>
                 ) : (
                     <BaseSelect.Root
-                        items={options}
                         multiple={isMultiple}
-                        value={isMultiple ? selectedValues : (selectedValues[0] ?? null)}
-                        onValueChange={(next: string | string[] | null) => emit(toList(next))}
+                        value={isMultiple ? selectedKeys : (selectedKeys[0] ?? null)}
+                        onValueChange={(next: string | string[] | null) => emitKeys(toList(next))}
                         name={name}
                         disabled={disabled}
                         readOnly={readOnly}
@@ -303,9 +344,9 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                                     <BaseSelect.List className={styles.list}>
                                         {options.map((option) => (
                                             <BaseSelect.Item
-                                                key={option.value}
-                                                value={option.value}
-                                                label={option.label}
+                                                key={getKey(option.value)}
+                                                value={getKey(option.value)}
+                                                label={optionText(option)}
                                                 disabled={option.disabled}
                                                 className={styles.item}
                                             >
@@ -321,4 +362,4 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
             }
         </Field>
     );
-}) as <Multiple extends boolean = false>(props: SelectProps<Multiple> & RefAttributes<HTMLButtonElement>) => ReactNode;
+}) as <Multiple extends boolean = false, Value = string>(props: SelectProps<Multiple, Value> & RefAttributes<HTMLButtonElement>) => ReactNode;

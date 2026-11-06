@@ -36,4 +36,54 @@ describe("Select", () => {
             "Remove Graz",
         ]);
     });
+
+    it("uses textValue for the chips of options with rich labels", () => {
+        render(
+            <Select
+                name="sites"
+                label="Sites"
+                options={[{ value: "main", label: <strong>Main</strong>, textValue: "Main website" }]}
+                value={["main"]}
+                onChange={vi.fn()}
+                multiple
+            />,
+        );
+
+        expect(screen.getByRole("button", { name: "Remove Main website" })).toBeTruthy();
+    });
+
+    it("shows a number value", () => {
+        render(
+            <Select<false, number>
+                name="size"
+                label="Size"
+                options={[
+                    { value: 10, label: "10" },
+                    { value: 25, label: "25" },
+                ]}
+                value={25}
+                onChange={vi.fn()}
+            />,
+        );
+
+        expect(screen.getByRole("combobox", { name: "Size 25" })).toBeTruthy();
+    });
+
+    it("matches an object value by getKey", () => {
+        render(
+            <Select<false, { id: string }>
+                name="manufacturer"
+                label="Manufacturer"
+                options={[
+                    { value: { id: "1" }, label: "Alpine" },
+                    { value: { id: "2" }, label: "Danube" },
+                ]}
+                value={{ id: "2" }}
+                getKey={(value) => value.id}
+                onChange={vi.fn()}
+            />,
+        );
+
+        expect(screen.getByRole("combobox", { name: "Manufacturer Danube" })).toBeTruthy();
+    });
 });

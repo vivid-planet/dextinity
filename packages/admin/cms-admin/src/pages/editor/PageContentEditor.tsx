@@ -243,7 +243,9 @@ export function PageContentEditor({ pageId, pageApi, tabs, preview, previewApi: 
                 <TabBar
                     aria-label={intl.formatMessage({ id: "dextinity.pageEditor.tabs", defaultMessage: "Editor" })}
                     value={selectedKey ?? ""}
-                    onChange={(key) => history.push(getTabUrl(key))}
+                    onChange={() => {
+                        // The tabs are router links, which navigate themselves; the route decides the selected tab
+                    }}
                     items={tabs.map((tab) => ({
                         value: tab.key,
                         label: tab.label,
@@ -355,7 +357,4 @@ const TabContent = styled("div")`
     min-block-size: 0;
     overflow: hidden auto;
     padding: var(--dextinity-panel-padding);
-
-    [data-preview] > * > & {
-    }
 `;

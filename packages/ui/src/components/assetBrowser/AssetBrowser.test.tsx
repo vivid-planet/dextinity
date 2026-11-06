@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { AssetBrowser, type AssetBrowserAsset, type AssetBrowserFolder } from "./AssetBrowser";
@@ -82,5 +82,31 @@ describe("AssetBrowser", () => {
         const { container } = renderBrowser({ sidebarWidth: 900, onSidebarWidthChange: vi.fn() });
 
         expect((container.firstElementChild as HTMLElement).style.getPropertyValue("--dextinity-asset-browser-sidebar-width")).toBe("560px");
+    });
+
+    it("collapses the root folder and reveals a folder opened inside a collapsed one", () => {
+        const nestedFolders: AssetBrowserFolder[] = [...folders, { id: "portraits", name: "Portraits", parentId: "team" }];
+        const { rerender } = renderBrowser({ folders: nestedFolders });
+        const treeItem = (name: string) => screen.getByRole("treeitem", { name: new RegExp(`^${name}`) });
+
+        expect(treeItem("All assets").getAttribute("aria-expanded")).toBe("true");
+        fireEvent.keyDown(treeItem("All assets"), { key: "ArrowLeft" });
+        expect(treeItem("All assets").getAttribute("aria-expanded")).toBe("false");
+        expect(screen.queryByRole("treeitem", { name: /^Team/ })).toBeNull();
+
+        rerender(
+            <AssetBrowser
+                folders={nestedFolders}
+                assets={assets}
+                folderId="portraits"
+                onFolderChange={vi.fn()}
+                view="list"
+                onViewChange={vi.fn()}
+                selectedIds={[]}
+                onSelectionChange={vi.fn()}
+            />,
+        );
+        expect(treeItem("All assets").getAttribute("aria-expanded")).toBe("true");
+        expect(treeItem("Team").getAttribute("aria-expanded")).toBe("true");
     });
 });

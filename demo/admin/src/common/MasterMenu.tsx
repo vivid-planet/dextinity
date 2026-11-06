@@ -137,6 +137,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                                 };
                             }}
                             editPageNode={EditPageNode}
+                            getCategoryUrl={(targetCategory) => `/pages/pagetree/${categoryToUrlParam(targetCategory)}`}
                             category={category}
                         />
                     );

@@ -5,14 +5,14 @@ import type { GQLFocalPoint } from "../../graphql.generated";
 
 export const ImageContainer = styled("div")`
     .ReactCrop__crop-selection {
-        border: 2px solid ${({ theme }) => theme.palette.primary.main};
+        border: 2px solid var(--dextinity-color-accent);
     }
 
     .ReactCrop__drag-handle {
         &::after {
             width: 6px;
             height: 6px;
-            background-color: ${({ theme }) => theme.palette.primary.main};
+            background-color: var(--dextinity-color-accent);
             border: none;
         }
 
@@ -48,7 +48,7 @@ export const ImageContainer = styled("div")`
     .ReactCrop__rule-of-thirds-vt::after,
     .ReactCrop__rule-of-thirds-hz::before,
     .ReactCrop__rule-of-thirds-hz::after {
-        background-color: ${({ theme }) => theme.palette.primary.main};
+        background-color: var(--dextinity-color-accent);
     }
 `;
 
@@ -75,7 +75,7 @@ export const FocalPointHandle = styled("button")<FocalPointHandleProps>`
             width: 16px;
             height: 16px;
             margin: 3px;
-            border: 2px solid ${({ theme }) => theme.palette.common.white};
+            border: 2px solid var(--dextinity-color-accent-foreground);
         }
     }
 
@@ -85,20 +85,20 @@ export const FocalPointHandle = styled("button")<FocalPointHandleProps>`
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background-color: ${({ theme }) => theme.palette.primary.main};
+        background-color: var(--dextinity-color-accent);
         margin: 9px;
         transition-property: width, height, border, margin;
         transition-duration: 0.5s;
         transition-timing-function: ease;
 
-        ${({ selected, theme }) =>
+        ${({ selected }) =>
             selected &&
             css`
                 width: 16px;
                 height: 16px;
                 margin: 3px;
-                background-color: ${theme.palette.success.main};
-                border: 2px solid ${theme.palette.common.white};
+                background-color: var(--dextinity-color-success);
+                border: 2px solid var(--dextinity-color-accent-foreground);
             `}
     }
 

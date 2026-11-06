@@ -36,7 +36,7 @@ export const ImageCrop = (props: ImageCropProps) => {
                 <sc.ImageContainer>
                     <ReactCrop
                         {...props}
-                        crop={disabled ? {} : { ...value, unit: "%" }}
+                        crop={disabled ? undefined : { ...value, unit: "%" }}
                         ruleOfThirds={true}
                         disabled={disabled}
                         style={{ width: "auto", height: "auto" }}

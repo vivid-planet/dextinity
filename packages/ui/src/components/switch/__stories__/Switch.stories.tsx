@@ -34,6 +34,7 @@ const meta = {
     },
     argTypes: {
         size: { control: "radio", options: ["default", "small"] },
+        state: { control: "select", options: ["default", "success", "warning", "error"] },
         className: { control: false },
         slotProps: { control: false },
     },
@@ -137,4 +138,35 @@ export const SettingsList: Story = {
             </ControlledSwitch>
         </div>
     ),
+};
+
+/**
+ * A switch that must be on, e.g. to accept terms, shows a star after the label.
+ */
+export const Required: Story = {
+    args: { required: true, children: "Accept the terms" },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("switch", { name: "Accept the terms" })).toHaveAttribute("aria-required", "true");
+    },
+};
+
+/**
+ * **Rules**
+ * - Say what is missing and how to fix it.
+ */
+export const Error: Story = {
+    args: { required: true, children: "Accept the terms", state: "error", validationMessage: "Accept the terms to publish." },
+    play: async ({ canvas }) => {
+        const control = canvas.getByRole("switch");
+        await expect(control).toBeInvalid();
+        await expect(control).toHaveAccessibleDescription("Accept the terms to publish.");
+    },
+};
+
+export const Warning: Story = {
+    args: { checked: true, state: "warning", validationMessage: "Visitors can only reach the page by its URL." },
+};
+
+export const Success: Story = {
+    args: { checked: true, children: "Index in search engines", state: "success", validationMessage: "The page is in the sitemap." },
 };

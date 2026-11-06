@@ -1,10 +1,10 @@
+@use "../field/controlMessage";
+
 .root {
     display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--dextinity-switch-gap);
+    flex-direction: column;
+    gap: var(--dextinity-switch-message-gap);
     font-family: var(--dextinity-font-family-text);
-    cursor: pointer;
 
     --_track-width: var(--dextinity-switch-track-width);
     --_track-height: var(--dextinity-switch-track-height);
@@ -21,13 +21,31 @@
     }
 
     &[data-disabled] {
-        cursor: not-allowed;
+        .row {
+            cursor: not-allowed;
+        }
 
         .control,
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--dextinity-switch-gap);
+            cursor: pointer;
+        }
+
         .text {
             opacity: var(--dextinity-switch-disabled-opacity);
         }
     }
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--dextinity-switch-gap);
+    cursor: pointer;
 }
 
 .text {
@@ -90,6 +108,14 @@
     &:dir(rtl)[data-checked] {
         transform: translateX(calc(var(--_track-height) - var(--_track-width)));
     }
+}
+
+.required {
+    @include controlMessage.required(switch);
+}
+
+.message {
+    @include controlMessage.message(switch);
 }
 
 // Applied by the high-contrast color scheme

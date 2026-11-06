@@ -160,6 +160,11 @@
     text-align: center;
 }
 
+// Stays in the page while empty so screen readers announce the text when it appears
+.empty:empty {
+    padding: 0;
+}
+
 // Applied by the high-contrast color scheme
 :global([data-dextinity-color-scheme="high-contrast"]) .root {
     --dextinity-block-picker-item-highlight-shadow: inset 0 0 0 1px var(--dextinity-color-accent);

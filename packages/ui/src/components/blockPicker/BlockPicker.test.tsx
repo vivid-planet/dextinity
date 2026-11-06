@@ -49,6 +49,17 @@ describe("BlockPicker", () => {
         expect(onSelect).toHaveBeenCalledWith("stage");
     });
 
+    it("adds the first match shown, in the order of the categories, with Enter", () => {
+        const onSelect = vi.fn();
+        render(<BlockPicker items={items} categories={[...categories].reverse()} query="e" onQueryChange={vi.fn()} onSelect={onSelect} />);
+
+        expect(sectionTitles()).toStrictEqual(["Media", "Content", "Other"]);
+        expect(screen.getByRole("button", { name: /^Image/ }).dataset.highlighted).toBe("");
+
+        fireEvent.keyDown(screen.getByRole("searchbox", { name: "Search blocks" }), { key: "Enter" });
+        expect(onSelect).toHaveBeenCalledWith("image");
+    });
+
     it("shows only the chosen category and says when nothing matches", () => {
         const { container, rerender } = render(
             <BlockPicker items={items} categories={categories} category="content" query="" onQueryChange={vi.fn()} onSelect={vi.fn()} />,

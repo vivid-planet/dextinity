@@ -160,7 +160,8 @@ export const BlockPicker = forwardRef<HTMLDivElement, BlockPickerProps>(function
     } else if (visibleItems.length > 0) {
         sections.push({ key: "all", items: visibleItems });
     }
-    const firstMatch = trimmedQuery !== "" ? visibleItems[0] : undefined;
+    // The first one shown, which follows the order of the categories rather than of `items`
+    const firstMatch = trimmedQuery !== "" ? sections[0]?.items[0] : undefined;
     const ownerState: BlockPickerOwnerState = { filtered, empty: visibleItems.length === 0 };
 
     const focusItem = (from: HTMLElement | null, offset: number | "first" | "last") => {
@@ -283,11 +284,9 @@ export const BlockPicker = forwardRef<HTMLDivElement, BlockPickerProps>(function
                         </ul>
                     </section>
                 ))}
-                {ownerState.empty && (
-                    <p className={styles.empty} role="status">
-                        {labels.empty}
-                    </p>
-                )}
+                <p className={styles.empty} role="status">
+                    {ownerState.empty ? labels.empty : null}
+                </p>
             </div>
         </div>
     );

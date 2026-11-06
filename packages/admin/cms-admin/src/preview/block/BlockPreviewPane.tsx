@@ -6,6 +6,7 @@ import { useIntl } from "react-intl";
 import { previewDevices } from "../common/previewDevice";
 import { usePreviewLabels } from "../common/usePreviewLabels";
 import { VisibilityToggle } from "../common/VisibilityToggle";
+import { normalizeSiteAddress } from "./normalizeSiteAddress";
 import type { BlockPreviewApi } from "./useBlockPreview";
 import { useBlockPreviewBridge } from "./useBlockPreviewBridge";
 
@@ -36,7 +37,7 @@ export function BlockPreviewPane({ url, previewState, previewApi, siteUrl, onOpe
     return (
         <Root
             className={className}
-            url={siteUrl ?? url}
+            url={normalizeSiteAddress(siteUrl ?? url)}
             src={url}
             device={previewApi.device}
             onDeviceChange={previewApi.setDevice}

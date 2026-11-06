@@ -66,9 +66,37 @@
 }
 
 .content {
+    position: relative;
     overflow: auto;
     transform-origin: 0 0;
     scrollbar-width: thin;
+
+    // The page in the iframe scrolls itself
+    .root[data-iframe] & {
+        overflow: hidden;
+    }
+}
+
+.iframe {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    border: 0;
+    background: var(--dextinity-device-preview-frame-background);
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.loadingOverlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: var(--dextinity-device-preview-loading-background);
 }
 
 // Applied by the high-contrast color scheme

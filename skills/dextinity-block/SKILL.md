@@ -156,7 +156,7 @@ File: `{BlockName}Block.tsx` (PascalCase). Place in the blocks directory found i
 
 - Use `createCompositeBlock` with a `blocks` object mapping property names to block configs.
 - Helper functions: `createCompositeBlockTextField`, `createCompositeBlockSelectField`, `createCompositeBlockSwitchField`.
-- `fullWidth` defaults to `true` in text and select helpers — omit it explicitly.
+- The helpers require a `label` and always fill their container — don't pass `fullWidth`.
 - All user-facing strings use `FormattedMessage` from `react-intl`. Follow ID convention: `{blockName}Block.{field}`.
 - Set `BlockCategory` when the block is used inside a blocks block.
 - Set `previewContent` in the override callback for meaningful block list previews.

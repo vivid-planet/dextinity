@@ -141,6 +141,12 @@ describe("AssetBrowser", () => {
             expect(screen.getByText("Location")).toBeTruthy();
         });
 
+        it("announces the number of results", () => {
+            renderBrowser({ search: "team", onSearchChange: vi.fn(), searchResults: [teamAsset] });
+
+            expect(screen.getByRole("status").textContent).toBe("1 result");
+        });
+
         it("shows the loading and the empty state", () => {
             const { rerender } = renderBrowser({ search: "x", onSearchChange: vi.fn(), searchResults: [], searchLoading: true });
             expect(screen.getByRole("status").textContent).toBe("Searching…");

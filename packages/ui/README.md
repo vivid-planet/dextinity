@@ -246,8 +246,6 @@ A brand is a CSS block on `[data-dextinity-brand="<name>"]` that sets the `--dex
 }
 ```
 
-Storybook ships example brands (Crimson, Nordwerk, Loden, Aqualis) in [`src/storybook/exampleBrands.scss`](src/storybook/exampleBrands.scss).
-
 ### Icons
 
 `Icon` renders the glyph from the CSS variable `--dextinity-icon-<name>` as a mask, so it inherits the text color and every brand or theme can replace any icon — or add one — in CSS alone, without a React context. The default set's SVG sources are in [`src/icons/svg`](src/icons/svg) (24px grid, line width 1.5; an optional `<name>.duotone.svg` holds the soft fill); `pnpm run generate:icons` regenerates `_icons.scss` and the `IconName` type. Components size nested icons through `--dextinity-icon-size`.

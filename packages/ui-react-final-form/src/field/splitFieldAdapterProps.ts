@@ -13,6 +13,7 @@ const fieldAdapterOptionKeys = [
     "parse",
     "validate",
     "validateFields",
+    "warn",
 ] as const;
 
 type FieldAdapterOptionKey = (typeof fieldAdapterOptionKeys)[number];

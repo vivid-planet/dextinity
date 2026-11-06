@@ -6,6 +6,12 @@ export { DateRangeField, type DateRangeFieldProps } from "./dateRangeField/DateR
 export { DateTimeField, type DateTimeFieldProps } from "./dateTimeField/DateTimeField";
 export type { FieldAdapterActions, FieldAdapterActionsContext, FieldAdapterBaseProps } from "./field/fieldAdapterProps";
 export type { FinalFormFieldConfig } from "./field/finalFormFieldConfig";
+export {
+    type FieldAdapterConfig,
+    FieldAdapterConfigProvider,
+    type FieldAdapterConfigProviderProps,
+    type FieldMessageTiming,
+} from "./fieldAdapterConfig/FieldAdapterConfigProvider";
 export { FileUploadField, type FileUploadFieldProps } from "./fileUploadField/FileUploadField";
 export { FocalPointPickerField, type FocalPointPickerFieldProps } from "./focalPointPickerField/FocalPointPickerField";
 export { focusOnError } from "./focusOnError/focusOnError";

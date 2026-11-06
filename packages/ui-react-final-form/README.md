@@ -53,7 +53,7 @@ One adapter per value-holding control of `@dextinity/ui`. Each takes `name`, the
 Shared by both adapter packages:
 
 - **`name`** — the field's path in the form values, e.g. `title` or `seo.description`. It is also passed to the ui component where it takes one.
-- **`required`** — marks the field (star, `aria-required`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing. A custom validation still runs on a non-empty value.
+- **`required`** — marks the field where the ui component supports it (star and `aria-required` on the framed fields, `required` on `CheckboxField`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing. A custom validation still runs on a non-empty value.
 - **`requiredMessage`** — the message for a missing required value. Defaults to `"Required"`; pass a translated text.
 - **`actions`** (`InputField`, `TextareaField`, `SelectField`, `RichTextEditorField`) — content at the label as in the ui component, or a function `({ value, setValue }) => ReactNode` to connect `FieldActions`, e.g. `actions={({ setValue }) => <FieldActions aiAssist onAiSuggest={suggest} onAiAccept={setValue} />}`.
 - **`ref`** — forwarded to the ui component, so it reaches the same element as on the component itself.
@@ -83,6 +83,8 @@ Shared by both adapter packages, for the content of a form:
 | `useFormSaveState()`     | `{ state, savedAt }` for `SaveState`: `saving` while submitting, `error` after a failed submit, `dirty` with unsaved changes, else `saved` |
 | `useHasUnsavedChanges()` | Whether the form has changes that are not saved, e.g. to ask with a `ConfirmDialog` before leaving                                         |
 
+Shared types: `FieldAdapterBaseProps` (`name`, `required`, `requiredMessage`), `FieldAdapterActions<Value>` and `FieldAdapterActionsContext<Value>` (the `actions` prop), and `<Adapter>Props` for each adapter.
+
 Specific to React Final Form:
 
 | Export                 | Purpose                                                                                         |
@@ -100,4 +102,4 @@ The package follows the [component conventions of `@dextinity/ui`](../ui/README.
 
 ## Stories and tests
 
-The stories live in `src/**/__stories__/` and are shown in the Storybook of `@dextinity/ui`, under `Forms/Final Form`; run them with `pnpm run test:storybook` in `packages/ui`. Unit tests (`pnpm run test:unit`, `jsdom`) cover the value and error mapping.
+The stories live in `src/**/__stories__/` and are shown in the Storybook of `@dextinity/ui`, under `Forms/Final Form`, with a complete edit page as `Example form`; run them with `pnpm run test:storybook` in `packages/ui`. Unit tests (`pnpm run test:unit`, `jsdom`) cover the value and error mapping.

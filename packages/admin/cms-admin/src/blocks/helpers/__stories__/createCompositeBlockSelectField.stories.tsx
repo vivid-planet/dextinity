@@ -1,6 +1,5 @@
 import { Stack } from "@dextinity/admin";
-import { DensityComfortable, DensityCompact, DensityStandard } from "@dextinity/admin-icons";
-import { ListItemIcon, ListItemText } from "@mui/material";
+import { Icon } from "@dextinity/ui";
 import { useState } from "react";
 
 import { createCompositeBlock } from "../../factories/createCompositeBlock";
@@ -16,15 +15,14 @@ export const Basic = () => {
         displayName: "Composite",
         blocks: {
             variant: {
-                title: "Variant",
                 block: createCompositeBlockSelectField<"primary" | "secondary" | "tertiary">({
+                    label: "Variant",
                     defaultValue: "primary",
                     options: [
                         { value: "primary", label: "Primary" },
                         { value: "secondary", label: "Secondary" },
                         { value: "tertiary", label: "Tertiary" },
                     ],
-                    fullWidth: true,
                 }),
             },
         },
@@ -45,45 +43,14 @@ export const WithIcon = () => {
         displayName: "Composite",
         blocks: {
             density: {
-                title: "Density",
                 block: createCompositeBlockSelectField<"compact" | "standard" | "comfortable">({
+                    label: "Density",
                     defaultValue: "compact",
                     options: [
-                        {
-                            value: "compact",
-                            label: (
-                                <>
-                                    <ListItemIcon>
-                                        <DensityCompact />
-                                    </ListItemIcon>
-                                    <ListItemText>Compact</ListItemText>
-                                </>
-                            ),
-                        },
-                        {
-                            value: "standard",
-                            label: (
-                                <>
-                                    <ListItemIcon>
-                                        <DensityStandard />
-                                    </ListItemIcon>
-                                    <ListItemText>Standard</ListItemText>
-                                </>
-                            ),
-                        },
-                        {
-                            value: "comfortable",
-                            label: (
-                                <>
-                                    <ListItemIcon>
-                                        <DensityComfortable />
-                                    </ListItemIcon>
-                                    <ListItemText>Comfortable</ListItemText>
-                                </>
-                            ),
-                        },
+                        { value: "compact", label: "Compact", icon: <Icon name="density-compact" /> },
+                        { value: "standard", label: "Standard", icon: <Icon name="density-standard" /> },
+                        { value: "comfortable", label: "Comfortable", icon: <Icon name="density-comfortable" /> },
                     ],
-                    fullWidth: true,
                 }),
             },
         },

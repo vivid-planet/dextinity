@@ -1,5 +1,13 @@
 # @comet/admin
 
+## 10.14.0
+
+### Patch Changes
+
+- Updated dependencies [1595266]
+- Updated dependencies [45cb8e2]
+    - @dextinity/admin-icons@10.14.0
+
 ## 10.13.1
 
 ### Patch Changes

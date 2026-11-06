@@ -9,6 +9,7 @@ import {
 import {
     ContentScopeIndicator,
     CronJobsPage,
+    DamFinderPage,
     DamPage,
     type DocumentInterface,
     type DocumentType,
@@ -163,13 +164,29 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             requiredPermission: "news",
         },
         {
-            type: "route",
+            type: "collapsible",
             primary: <FormattedMessage id="menu.dam" defaultMessage="Assets" />,
             icon: <Assets />,
-            route: {
-                path: "/assets",
-                render: () => <DamPage additionalToolbarItems={<ImportFromPicsum />} />,
-            },
+            items: [
+                {
+                    type: "route",
+                    primary: <FormattedMessage id="menu.dam.finder" defaultMessage="Finder" />,
+                    route: {
+                        path: "/asset-finder",
+                        render: ({ match }: RouteComponentProps) => (
+                            <DamFinderPage editFileUrl={(fileId) => `${match.url.replace(/\/asset-finder$/, "/assets")}/${fileId}/edit`} />
+                        ),
+                    },
+                },
+                {
+                    type: "route",
+                    primary: <FormattedMessage id="menu.dam.assetManager" defaultMessage="Asset manager" />,
+                    route: {
+                        path: "/assets",
+                        render: () => <DamPage additionalToolbarItems={<ImportFromPicsum />} />,
+                    },
+                },
+            ],
             requiredPermission: "dam",
         },
         {

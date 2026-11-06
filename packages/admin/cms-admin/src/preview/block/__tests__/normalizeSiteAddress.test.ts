@@ -10,6 +10,7 @@ describe("normalizeSiteAddress", () => {
 
     it("keeps the query and the fragment", () => {
         expect(normalizeSiteAddress("https://example.com/en/?preview=1#top")).toBe("https://example.com/en?preview=1#top");
+        expect(normalizeSiteAddress("https://example.com/en?redirect=/news/#top")).toBe("https://example.com/en?redirect=/news/#top");
     });
 
     it("keeps the slash of the site root and addresses without one", () => {

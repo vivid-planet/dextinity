@@ -289,13 +289,12 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
                         </Menu>
                         {type !== null && (
                             <Chip
-                                onDelete={() => update({ type: null })}
-                                labels={{
-                                    delete: intl.formatMessage(
-                                        { id: "uiDemo.products.filter.removeType", defaultMessage: "Remove filter Type: {type}" },
-                                        { type: getProductTypeLabel(intl, type) },
-                                    ),
-                                }}
+                                color="secondary"
+                                onClear={() => update({ type: null })}
+                                clearLabel={intl.formatMessage(
+                                    { id: "uiDemo.products.filter.removeType", defaultMessage: "Remove filter Type: {type}" },
+                                    { type: getProductTypeLabel(intl, type) },
+                                )}
                             >
                                 {intl.formatMessage(
                                     { id: "uiDemo.products.filter.typeChip", defaultMessage: "Type: {type}" },

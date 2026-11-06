@@ -32,6 +32,7 @@ export function ProductDetailsPanel({ productId, editUrl, onClose, onUnsavedChan
         <IconButton
             aria-label={intl.formatMessage({ id: "uiDemo.products.panel.close", defaultMessage: "Close details" })}
             variant="text"
+            color="secondary"
             size="small"
             onClick={onClose}
         >
@@ -66,13 +67,13 @@ export function ProductDetailsPanel({ productId, editUrl, onClose, onUnsavedChan
             key: intl.formatMessage({ id: "uiDemo.products.type", defaultMessage: "Type" }),
             value: (
                 <span className={styles.chips}>
-                    <Chip size="small" color="primary">
+                    <Chip size="small" variant="outlined">
                         {getProductTypeLabel(intl, product.type)}
                     </Chip>
                     {product.additionalTypes
                         .filter((additionalType) => additionalType !== product.type)
                         .map((additionalType) => (
-                            <Chip key={additionalType} size="small" variant="outlined">
+                            <Chip key={additionalType} size="small" variant="outlined" color="secondary">
                                 {getProductTypeLabel(intl, additionalType)}
                             </Chip>
                         ))}
@@ -82,7 +83,7 @@ export function ProductDetailsPanel({ productId, editUrl, onClose, onUnsavedChan
         {
             key: intl.formatMessage({ id: "uiDemo.products.category", defaultMessage: "Category" }),
             value: product.category ? (
-                <Chip size="small" color="info">
+                <Chip size="small" variant="outlined" color="info">
                     {product.category.title}
                 </Chip>
             ) : (
@@ -95,7 +96,7 @@ export function ProductDetailsPanel({ productId, editUrl, onClose, onUnsavedChan
                 product.tags.length > 0 ? (
                     <span className={styles.chips}>
                         {product.tags.map((tag) => (
-                            <Chip key={tag.id} size="small" variant="outlined">
+                            <Chip key={tag.id} size="small" variant="outlined" color="secondary">
                                 {tag.title}
                             </Chip>
                         ))}

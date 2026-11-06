@@ -91,6 +91,24 @@ describe("InternalLinkBlock AdminComponent", () => {
         );
     });
 
+    it("shows the saved anchor and clears it when another page is chosen", async () => {
+        anchors.current = ["team", "contact"];
+        const targetPage = { id: "home", name: "Home", path: "/", documentType: "Page" };
+        const onUpdate = renderBlock(InternalLinkBlock.AdminComponent, { targetPage, targetPageAnchor: "team" });
+
+        expect(screen.getByRole("combobox", { name: "Anchor team" })).toBeTruthy();
+
+        fireEvent.click(screen.getByRole("button", { name: /^Page/ }));
+        fireEvent.click(screen.getByRole("button", { name: "Choose About us" }));
+
+        await waitFor(() =>
+            expect(onUpdate).toHaveBeenLastCalledWith({
+                targetPage: expect.objectContaining({ id: "about" }),
+                targetPageAnchor: undefined,
+            }),
+        );
+    });
+
     it("keeps the anchor while the anchors load and clears it when the page is removed", async () => {
         const targetPage = { id: "about", name: "About us", path: "/about", documentType: "Page" };
         const onUpdate = renderBlock(InternalLinkBlock.AdminComponent, { targetPage, targetPageAnchor: "team" });

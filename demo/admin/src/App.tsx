@@ -13,7 +13,6 @@ import {
     createDamFileDependency,
     CurrentUserProvider,
     DextinityConfigProvider,
-    SitePreview,
 } from "@dextinity/cms-admin";
 import { css, Global } from "@emotion/react";
 import { DataGridPro } from "@mui/x-data-grid-pro";
@@ -34,6 +33,7 @@ import { Route, Switch } from "react-router";
 import { AppFrameLayout } from "./common/AppFrameLayout";
 import { additionalPageTreeNodeFieldsFragment } from "./common/EditPageNode";
 import { AppMasterMenuRoutes, pageTreeDocumentTypes } from "./common/MasterMenu";
+import { SitePreviewPage } from "./common/SitePreviewPage";
 import { ImportFromPicsum } from "./dam/ImportFromPicsum";
 import { Link } from "./documents/links/Link";
 import { Page } from "./documents/pages/Page";
@@ -177,14 +177,7 @@ export function App() {
                                                             <Switch>
                                                                 <Route
                                                                     path={`${match.path}/preview`}
-                                                                    render={(props) => (
-                                                                        <SitePreview
-                                                                            resolvePath={(path: string, scope) => {
-                                                                                return `/${scope.language}${path}`;
-                                                                            }}
-                                                                            {...props}
-                                                                        />
-                                                                    )}
+                                                                    render={(props) => <SitePreviewPage {...props} />}
                                                                 />
                                                                 <Route
                                                                     render={() => (

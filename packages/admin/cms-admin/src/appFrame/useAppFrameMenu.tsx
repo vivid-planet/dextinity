@@ -22,7 +22,7 @@ interface AppFrameMenu {
     activeAncestorIds: string[];
 }
 
-export function textOfNode(node: ReactNode, intl: IntlShape): string {
+function textOfNode(node: ReactNode, intl: IntlShape): string {
     if (node == null || typeof node === "boolean") {
         return "";
     }

@@ -147,6 +147,7 @@ export { Panel, type PanelOwnerState, type PanelProps, type PanelSlotProps, type
 export { Picker, type PickerLabels, type PickerOwnerState, type PickerProps } from "./components/picker/Picker";
 export { Popover, type PopoverOwnerState, type PopoverPlacement, type PopoverProps } from "./components/popover/Popover";
 export { type PopoverSlotProps } from "./components/popover/Popover";
+export { ProgressBar, type ProgressBarOwnerState, type ProgressBarProps, type ProgressBarSlotProps } from "./components/progressBar/ProgressBar";
 export { QuickLook, type QuickLookItem, type QuickLookOwnerState, type QuickLookProps } from "./components/quickLook/QuickLook";
 export { type QuickLookSlotProps } from "./components/quickLook/QuickLook";
 export { RadioGroup, type RadioGroupOption, type RadioGroupOwnerState } from "./components/radioGroup/RadioGroup";

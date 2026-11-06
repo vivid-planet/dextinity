@@ -1,0 +1,47 @@
+.example {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--dextinity-space-6);
+    align-items: start;
+    align-self: stretch;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-2);
+    min-inline-size: 0;
+}
+
+.columnTitle {
+    margin: 0;
+    color: var(--dextinity-color-text-tertiary);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-label-size);
+    font-weight: 400;
+    letter-spacing: var(--dextinity-typography-label-letter-spacing);
+    text-transform: uppercase;
+}
+
+.thumbnail {
+    inline-size: 140px;
+}
+
+.dragged {
+    opacity: 0.45;
+}
+
+.counter {
+    padding: 5px 11px;
+    border-radius: var(--dextinity-radius-pill);
+    background: var(--dextinity-color-accent);
+    color: var(--dextinity-color-accent-foreground);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.target {
+    border-radius: var(--dextinity-radius-field);
+    background: var(--dextinity-color-accent-soft);
+    box-shadow: inset 0 0 0 calc(var(--dextinity-line-width) * 2) var(--dextinity-color-accent);
+}

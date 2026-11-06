@@ -141,6 +141,16 @@
             inset 0 0 0 calc(var(--dextinity-line-width) * 2) var(--dextinity-asset-browser-search-line-focus),
             0 0 0 3px var(--dextinity-asset-browser-search-halo-focus);
     }
+
+    // Forced colors remove box shadows, which would leave the field without an edge and without a focus ring
+    @media (forced-colors: active) {
+        border: 1px solid;
+
+        &:focus-within {
+            outline: 2px solid;
+            outline-offset: 2px;
+        }
+    }
 }
 
 .searchInput {

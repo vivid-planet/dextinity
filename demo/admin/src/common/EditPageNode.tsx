@@ -1,25 +1,11 @@
 import { gql } from "@apollo/client";
-import { SelectField } from "@dextinity/admin";
 import { createEditPageNode } from "@dextinity/cms-admin";
-import { Box, Divider, MenuItem } from "@mui/material";
-import { FormattedMessage } from "react-intl";
+import { SelectField } from "@dextinity/ui-react-final-form";
+import type { GQLUserGroup } from "@src/graphql.generated";
+import { userGroupOptions } from "@src/userGroups/userGroupOptions";
+import { useIntl } from "react-intl";
 
 export type { GQLPageTreeNodeAdditionalFieldsFragment } from "./EditPageNode.generated"; //re-export
-
-const userGroupOptions = [
-    {
-        label: "Show for all",
-        value: "all",
-    },
-    {
-        label: "Show only for Group: User",
-        value: "user",
-    },
-    {
-        label: "Show only for Group: Admin",
-        value: "admin",
-    },
-];
 
 export const additionalPageTreeNodeFieldsFragment = {
     fragment: gql`
@@ -30,35 +16,31 @@ export const additionalPageTreeNodeFieldsFragment = {
     name: "PageTreeNodeAdditionalFields",
 };
 
+function UserGroupField() {
+    const intl = useIntl();
+    const options = userGroupOptions.map((option) => {
+        const label = intl.formatMessage(option.label);
+        return { value: option.value, label, textValue: label };
+    });
+
+    return (
+        <SelectField<false, GQLUserGroup>
+            name="userGroup"
+            label={intl.formatMessage({ id: "pageTreeNode.fields.userGroup", defaultMessage: "User group" })}
+            options={options}
+            defaultValue="all"
+            required
+        />
+    );
+}
+
 export const EditPageNode = createEditPageNode({
     disableHideInMenu: false,
-    valuesToInput: ({ values }: { values: { userGroup: string } }) => {
+    valuesToInput: ({ values }: { values: { userGroup: GQLUserGroup } }) => {
         return {
             userGroup: values.userGroup,
         };
     },
     nodeFragment: additionalPageTreeNodeFieldsFragment,
-    additionalFormFields: (
-        <>
-            <Box
-                sx={{
-                    marginY: 6,
-                }}
-            >
-                <Divider />
-            </Box>
-            <SelectField
-                label={<FormattedMessage id="pageTreeNode.fields.userGroup" defaultMessage="User-Group" />}
-                name="userGroup"
-                variant="horizontal"
-                fullWidth
-            >
-                {userGroupOptions.map((option) => (
-                    <MenuItem value={option.value} key={option.value}>
-                        {option.label}
-                    </MenuItem>
-                ))}
-            </SelectField>
-        </>
-    ),
+    additionalFormFields: <UserGroupField />,
 });

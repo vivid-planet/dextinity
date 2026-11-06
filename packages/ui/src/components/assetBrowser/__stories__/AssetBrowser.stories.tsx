@@ -442,9 +442,13 @@ export const SearchLoading: Story = {
     },
 };
 
+/**
+ * When nothing matches, the content says so; screen readers announce it, like the number of results.
+ */
 export const SearchWithoutResults: Story = {
     args: { view: "list", search: "invoice", onSearchChange: fn(), searchResults: [] },
     play: async ({ canvas }) => {
-        await expect(canvas.getByText("No results for “invoice”")).toBeInTheDocument();
+        await expect(canvas.getByText("No results for “invoice”", { selector: "p" })).toBeVisible();
+        await expect(canvas.getByRole("status")).toHaveTextContent("No results for “invoice”");
     },
 };

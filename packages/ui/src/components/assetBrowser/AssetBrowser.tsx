@@ -765,15 +765,24 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
 
     const emptyState =
         isSearching && searchLoading ? (
-            <p className={styles.empty} role="status">
+            <p className={styles.empty}>
                 <Spinner size="small" />
                 {labels.searching}
             </p>
         ) : (
-            <p className={styles.empty} role={isSearching ? "status" : undefined}>
-                {isSearching ? labels.noResults(search.trim()) : labels.empty}
-            </p>
+            <p className={styles.empty}>{isSearching ? labels.noResults(search.trim()) : labels.empty}</p>
         );
+
+    let searchStatus = "";
+    if (isSearching) {
+        if (searchLoading) {
+            searchStatus = labels.searching;
+        } else if (items.length === 0) {
+            searchStatus = labels.noResults(search.trim());
+        } else {
+            searchStatus = labels.resultCount(items.length);
+        }
+    }
 
     const renderIcons = () =>
         items.length === 0 ? (
@@ -1128,6 +1137,12 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                         </span>
                     </span>
                     <span className={styles.spacer} />
+                    {onSearchChange != null && (
+                        // Stays rendered while the search is empty, so screen readers announce the first results too
+                        <span className={styles.visuallyHidden} role="status">
+                            {searchStatus}
+                        </span>
+                    )}
                     {onSearchChange != null && (
                         <label {...searchProps}>
                             <Icon name="search" />

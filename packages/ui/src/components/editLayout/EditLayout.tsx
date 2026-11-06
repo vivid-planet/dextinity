@@ -4,13 +4,16 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./EditLayout.module.scss";
 
-type EditLayoutVariant = "page" | "form" | "formWithPreview" | "formWithBlocks";
-type EditLayoutPane = "editor" | "preview";
+/** How the editor and the preview share an edit page. */
+export type EditLayoutVariant = "page" | "form" | "formWithPreview" | "formWithBlocks";
+/** The pane of an edit page shown in narrow layouts. */
+export type EditLayoutPane = "editor" | "preview";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
  */
 export type EditLayoutOwnerState = {
+    /** How the editor and the preview share the page. */
     variant: EditLayoutVariant;
     /** The pane shown in narrow layouts, where the preview and the editor don't fit next to each other. */
     pane: EditLayoutPane;

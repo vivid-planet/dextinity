@@ -36,6 +36,7 @@ export { Drawer, type DrawerOwnerState, type DrawerProps, type DrawerSlotProps }
 export type { DropzoneLabels, DropzoneRejection, DropzoneUpload } from "./components/dropzone/Dropzone";
 export { Dropzone, type DropzoneOwnerState, type DropzoneProps } from "./components/dropzone/Dropzone";
 export { EditLayout, type EditLayoutOwnerState, type EditLayoutProps } from "./components/editLayout/EditLayout";
+export { type EditLayoutPane, type EditLayoutVariant } from "./components/editLayout/EditLayout";
 export { type EditLayoutSlotProps } from "./components/editLayout/EditLayout";
 export { EmptyState, type EmptyStateOwnerState, type EmptyStateProps } from "./components/emptyState/EmptyState";
 export { type EmptyStateSlotProps, type EmptyStateSlots } from "./components/emptyState/EmptyState";

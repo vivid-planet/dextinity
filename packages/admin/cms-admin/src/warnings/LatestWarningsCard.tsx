@@ -1,27 +1,41 @@
-import { useQuery } from "@apollo/client";
-import { Button, Card, CardRow, EmptyState, Icon, Link, Skeleton, StatusIndicator, type StatusIndicatorStatus } from "@dextinity/ui";
+import { gql, useQuery } from "@apollo/client";
+import { Button, Card, CardRow, EmptyState, Icon, Link, Skeleton } from "@dextinity/ui";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 
 import { useContentScope } from "../contentScope/Provider";
 import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
-import type { GQLWarningSeverity } from "../graphql.generated";
-import { latestWarningsQuery } from "./LatestWarningsDashboardWidget";
-import type {
-    GQLLatestWarningsListFragment,
-    GQLLatestWarningsQuery,
-    GQLLatestWarningsQueryVariables,
-} from "./LatestWarningsDashboardWidget.generated";
+import type { GQLLatestWarningsListFragment, GQLLatestWarningsQuery, GQLLatestWarningsQueryVariables } from "./LatestWarningsCard.generated";
 import { useWarningSourceUrl } from "./useWarningSourceUrl";
 import { WarningMessage } from "./WarningMessage";
 import { useWarningsConfig } from "./warningsConfig";
-import { warningSeverityLabels } from "./WarningSeverity";
+import { WarningSeverity } from "./WarningSeverity";
 
-const severityStatus: Record<GQLWarningSeverity, StatusIndicatorStatus> = {
-    high: "critical",
-    medium: "warning",
-    low: "info",
-};
+const latestWarningsListFragment = gql`
+    fragment LatestWarningsList on Warning {
+        id
+        createdAt
+        message
+        severity
+        sourceInfo {
+            rootEntityName
+            jsonPath
+            rootColumnName
+            targetId
+        }
+    }
+`;
+
+const latestWarningsQuery = gql`
+    query LatestWarnings($scopes: [JSONObject!]!) {
+        warnings(limit: 5, scopes: $scopes, sort: { field: createdAt, direction: DESC }) {
+            nodes {
+                ...LatestWarningsList
+            }
+        }
+    }
+    ${latestWarningsListFragment}
+`;
 
 export interface LatestWarningsCardProps {
     /** The URL of the full list of warnings, linked from the card's header and from warnings without a resolvable source. */
@@ -101,9 +115,7 @@ function LatestWarningRow({ warning, warningsUrl }: { warning: GQLLatestWarnings
                 values={{ source, createdAt }}
             />
         ),
-        end: (
-            <StatusIndicator status={severityStatus[warning.severity]}>{intl.formatMessage(warningSeverityLabels[warning.severity])}</StatusIndicator>
-        ),
+        end: <WarningSeverity severity={warning.severity} />,
     };
 
     if (loadSourceUrl) {

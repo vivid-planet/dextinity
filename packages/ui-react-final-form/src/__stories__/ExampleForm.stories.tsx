@@ -201,7 +201,7 @@ function ExamplePageForm() {
                                     ]}
                                 />
                                 <FocalPointPickerField name="imageFocalPoint" src={sampleImage} alt="Landscape with a sun" />
-                                <SliderField name="imageZoom" aria-label="Zoom" min={100} max={200} />
+                                <SliderField name="imageZoom" label="Zoom" min={100} max={200} />
                             </Fields>
                         </Panel>
                     </EditLayout>

@@ -5,13 +5,12 @@ import type { FieldAdapterBaseProps } from "../field/fieldAdapterProps";
 import type { FinalFormFieldConfig } from "../field/finalFormFieldConfig";
 import { splitFieldAdapterProps } from "../field/splitFieldAdapterProps";
 import { useFieldAdapter } from "../field/useFieldAdapter";
-import { useValidationMessage } from "../field/useValidationMessage";
 
 export interface FocalPointPickerFieldProps<FieldValue = FocalPoint>
     extends
         FieldAdapterBaseProps,
         FinalFormFieldConfig<FieldValue, FocalPoint>,
-        Omit<FocalPointPickerProps, "value" | "onChange" | "onBlur" | "defaultValue"> {}
+        Omit<FocalPointPickerProps, "value" | "onChange" | "onBlur" | "defaultValue" | "state" | "validationMessage"> {}
 
 const center: FocalPoint = { x: 0.5, y: 0.5 };
 
@@ -27,7 +26,7 @@ export function toFocalPoint(value: unknown): FocalPoint {
  * Shows the field's error below the picker once it was touched or the form was submitted.
  */
 export const FocalPointPickerField = forwardRef(function FocalPointPickerField<FieldValue = FocalPoint>(
-    { name, onFocus, "aria-describedby": ariaDescribedBy, ...props }: FocalPointPickerFieldProps<FieldValue>,
+    { name, onFocus, ...props }: FocalPointPickerFieldProps<FieldValue>,
     forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
     const [options, pickerProps] = splitFieldAdapterProps(props);
@@ -38,23 +37,19 @@ export const FocalPointPickerField = forwardRef(function FocalPointPickerField<F
         onBlur,
         onFocus: onFieldFocus,
     } = useFieldAdapter<FieldValue, FocalPoint, HTMLDivElement>(name, options, forwardedRef);
-    const { message, describedBy } = useValidationMessage(validationProps, ariaDescribedBy);
 
     return (
-        <>
-            <FocalPointPicker
-                {...pickerProps}
-                ref={ref}
-                value={toFocalPoint(input.value)}
-                aria-describedby={describedBy}
-                onChange={input.onChange}
-                onBlur={onBlur}
-                onFocus={(event) => {
-                    onFieldFocus();
-                    onFocus?.(event);
-                }}
-            />
-            {message}
-        </>
+        <FocalPointPicker
+            {...pickerProps}
+            ref={ref}
+            value={toFocalPoint(input.value)}
+            {...validationProps}
+            onChange={input.onChange}
+            onBlur={onBlur}
+            onFocus={(event) => {
+                onFieldFocus();
+                onFocus?.(event);
+            }}
+        />
     );
 }) as <FieldValue = FocalPoint>(props: FocalPointPickerFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;

@@ -9,7 +9,7 @@ const meta = {
     component: SliderField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { opacity: 40 } },
-    args: { name: "opacity", "aria-label": "Opacity" },
+    args: { name: "opacity", label: "Opacity" },
 } satisfies Meta<typeof SliderField>;
 
 export default meta;
@@ -35,5 +35,6 @@ export const Validation: Story = {
         await userEvent.keyboard("{End}");
         await userEvent.tab();
         await expect(canvas.getByText("Keep the opacity at 80 or below")).toBeVisible();
+        await expect(canvas.getByRole("slider", { name: "Opacity" })).toHaveAccessibleDescription("Keep the opacity at 80 or below");
     },
 };

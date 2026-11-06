@@ -1,6 +1,6 @@
 import type { QueryResult } from "@apollo/client";
 import { Card, Icon, Link, MiniChart, Skeleton, StatTile } from "@dextinity/ui";
-import { differenceInCalendarDays } from "date-fns";
+import { differenceInCalendarDays, startOfDay, subDays } from "date-fns";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -9,6 +9,17 @@ import type { GQLOverviewPageActivityQuery, GQLOverviewPageActivityQueryVariable
 import styles from "./OverviewPage.module.css";
 
 const periodInDays = 30;
+
+/**
+ * The query only loads the latest pages, so when the oldest loaded page still falls into the period, more pages may have been edited.
+ */
+export function countPagesEditedSince(data: GQLOverviewPageActivityQuery, since: Date) {
+    const { nodes, totalCount } = data.paginatedPageTreeNodes;
+    const count = nodes.filter((node) => new Date(node.updatedAt) >= since).length;
+    const oldestLoadedNode = nodes.at(-1);
+    const isLowerBound = nodes.length < totalCount && oldestLoadedNode !== undefined && new Date(oldestLoadedNode.updatedAt) >= since;
+    return { count, isLowerBound };
+}
 
 interface PageActivityCardProps {
     query: QueryResult<GQLOverviewPageActivityQuery, GQLOverviewPageActivityQueryVariables>;
@@ -28,6 +39,7 @@ export function PageActivityCard({ query, now, pageTreeUrl }: PageActivityCardPr
         }
     }
     const editedPages = pagesPerDay.reduce((sum, count) => sum + count, 0);
+    const isLowerBound = query.data !== undefined && countPagesEditedSince(query.data, subDays(startOfDay(now), periodInDays - 1)).isLowerBound;
 
     return (
         <Card
@@ -47,7 +59,14 @@ export function PageActivityCard({ query, now, pageTreeUrl }: PageActivityCardPr
             ) : (
                 <div className={styles.activity}>
                     <StatTile
-                        value={intl.formatNumber(editedPages)}
+                        value={
+                            isLowerBound
+                                ? intl.formatMessage(
+                                      { id: "overview.pageActivity.editedPagesLowerBound", defaultMessage: "{count}+" },
+                                      { count: intl.formatNumber(editedPages) },
+                                  )
+                                : intl.formatNumber(editedPages)
+                        }
                         label={intl.formatMessage({ id: "overview.pageActivity.editedPages", defaultMessage: "Pages edited" })}
                         context={intl.formatMessage({
                             id: "overview.pageActivity.context",

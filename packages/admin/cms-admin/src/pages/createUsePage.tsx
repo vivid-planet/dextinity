@@ -209,7 +209,7 @@ export const createUsePage: CreateUsePage =
 
             try {
                 if (pageState) {
-                    hasChanges = !deepEqual(referenceOutput, generateOutput(pageState));
+                    hasChanges = !deepEqual(asSentToApi(referenceOutput), asSentToApi(generateOutput(pageState)));
                 }
             } catch {
                 // Can't generate the output. This is likely to be caused by adding new blocks which have an invalid output upon creation (for instance
@@ -535,6 +535,12 @@ export const createUsePage: CreateUsePage =
             };
         };
     };
+
+// Compares the output as the API receives it: a new document's default values contain keys set to `undefined`, e.g. the link block's
+// `title`, which the document loaded after its first save doesn't have, so it would otherwise still count as changed.
+function asSentToApi(output: unknown): unknown {
+    return output === undefined ? undefined : JSON.parse(JSON.stringify(output));
+}
 
 const checkForChangesQuery = gql`
     query CheckForChanges($id: ID!) {

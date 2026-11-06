@@ -401,7 +401,8 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
     };
 
     const changeSelection = (ids: string[]) => {
-        if (detailsUnsavedChanges != null) {
+        const keepsDetailsItem = ids.length === 1 && selectedIds.length === 1 && ids[0] === selectedIds[0];
+        if (detailsUnsavedChanges != null && !keepsDetailsItem) {
             setPendingSelectedIds(ids);
         } else {
             setSelectedIds(ids);

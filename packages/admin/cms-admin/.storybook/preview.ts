@@ -1,3 +1,6 @@
+import "@dextinity/ui/css";
+import "@dextinity/ui/css/icons";
+
 import type { Preview } from "@storybook/react-vite";
 import { type GlobalTypes } from "storybook/internal/csf";
 

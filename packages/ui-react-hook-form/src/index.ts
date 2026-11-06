@@ -1,5 +1,6 @@
 export { CheckboxField, type CheckboxFieldProps } from "./checkboxField/CheckboxField";
 export { CheckboxGroupField, type CheckboxGroupFieldProps } from "./checkboxGroupField/CheckboxGroupField";
+export { ComboboxField, type ComboboxFieldProps } from "./comboboxField/ComboboxField";
 export { DateField, type DateFieldProps } from "./dateField/DateField";
 export { DateRangeField, type DateRangeFieldProps } from "./dateRangeField/DateRangeField";
 export { DateTimeField, type DateTimeFieldProps } from "./dateTimeField/DateTimeField";
@@ -9,6 +10,7 @@ export { FocalPointPickerField, type FocalPointPickerFieldProps } from "./focalP
 export { type FormSaveState, type FormStateHookOptions, useFormSaveState, useHasUnsavedChanges } from "./formState/useFormSaveState";
 export { InputField, type InputFieldProps } from "./inputField/InputField";
 export { NumberField, type NumberFieldProps } from "./numberField/NumberField";
+export { PickerField, type PickerFieldPickerContext, type PickerFieldProps } from "./pickerField/PickerField";
 export { RadioGroupField, type RadioGroupFieldProps } from "./radioGroupField/RadioGroupField";
 export { RichTextEditorField, type RichTextEditorFieldProps } from "./richTextEditorField/RichTextEditorField";
 export { SegmentedControlField, type SegmentedControlFieldProps } from "./segmentedControlField/SegmentedControlField";

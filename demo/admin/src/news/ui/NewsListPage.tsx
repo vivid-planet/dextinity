@@ -24,7 +24,7 @@ import {
     useUndoToast,
 } from "@dextinity/ui";
 import type { GQLNewsCategory, GQLNewsFilter, GQLNewsSortField, GQLNewsStatus } from "@src/graphql.generated";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FormattedDate, useIntl } from "react-intl";
 import { useHistory } from "react-router-dom";
 
@@ -56,13 +56,20 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
     const navigateWithRouter = useRouterLinkClick();
     const client = useApolloClient();
     const { scope } = useContentScope();
-    const { search, status, category, sort, page, pageSize, setPageSize, update } = useNewsListUrlState();
+    const { search, status, category, sort, page, pageSize, setPageSize, update: updateUrlState } = useNewsListUrlState();
     const [searchInput, setSearchInput] = useState(search);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
     const [newsToDelete, setNewsToDelete] = useState<NewsRow[]>([]);
     const [deleting, setDeleting] = useState(false);
     const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
+    const update = useCallback(
+        (changes: Parameters<typeof updateUrlState>[0]) => {
+            setSelectedIds([]);
+            updateUrlState(changes);
+        },
+        [updateUrlState],
+    );
     const { perform } = useUndoToast({
         addToast,
         labels: { undo: intl.formatMessage({ id: "uiDemo.news.list.undo", defaultMessage: "Undo" }) },

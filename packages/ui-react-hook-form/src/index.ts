@@ -1,6 +1,11 @@
+export { CheckboxField, type CheckboxFieldProps } from "./checkboxField/CheckboxField";
 export type { FieldAdapterActions, FieldAdapterActionsContext, FieldAdapterBaseProps } from "./field/fieldAdapterProps";
 export type { ReactHookFormFieldConfig } from "./field/reactHookFormFieldConfig";
+export { FocalPointPickerField, type FocalPointPickerFieldProps } from "./focalPointPickerField/FocalPointPickerField";
 export { InputField, type InputFieldProps } from "./inputField/InputField";
 export { RichTextEditorField, type RichTextEditorFieldProps } from "./richTextEditorField/RichTextEditorField";
+export { SegmentedControlField, type SegmentedControlFieldProps } from "./segmentedControlField/SegmentedControlField";
 export { SelectField, type SelectFieldProps } from "./selectField/SelectField";
+export { SliderField, type SliderFieldProps } from "./sliderField/SliderField";
+export { SwitchField, type SwitchFieldProps } from "./switchField/SwitchField";
 export { TextareaField, type TextareaFieldProps } from "./textareaField/TextareaField";

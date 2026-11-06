@@ -7,16 +7,22 @@ import { Icon } from "../icon/Icon";
 import styles from "./NumberInput.module.scss";
 
 /**
- * Accessible names of the step buttons.
+ * Texts for assistive technology.
  */
 export interface NumberInputLabels {
     /** @defaultValue `"Increase"` */
     increment: string;
     /** @defaultValue `"Decrease"` */
     decrement: string;
+    /**
+     * What screen readers announce the input as.
+     *
+     * @defaultValue `"Number field"`
+     */
+    roleDescription: string;
 }
 
-const defaultLabels: NumberInputLabels = { increment: "Increase", decrement: "Decrease" };
+const defaultLabels: NumberInputLabels = { increment: "Increase", decrement: "Decrease", roleDescription: "Number field" };
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -82,7 +88,7 @@ export interface NumberInputProps
      * @defaultValue `true`
      */
     steppers?: boolean;
-    /** Accessible names of the step buttons, in English by default. */
+    /** Accessible names of the step buttons and the input's announced role, in English by default. */
     labels?: Partial<NumberInputLabels>;
     /** Added alongside the component's own classes, on the root. */
     className?: string;
@@ -176,6 +182,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
                         {...restProps}
                         {...control}
                         ref={ref}
+                        aria-roledescription={labels.roleDescription}
                         aria-describedby={clsx(control["aria-describedby"], ariaDescribedBy) || undefined}
                         className={styles.control}
                     />

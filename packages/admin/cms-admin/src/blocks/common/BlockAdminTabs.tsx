@@ -13,6 +13,11 @@ export interface BlockAdminTabsProps {
     children: BlockAdminComponentPart[];
 }
 
+/**
+ * The parts of a block's admin component as tabs, each a route.
+ *
+ * @deprecated Pass the parts as `tabs` to `PageContentEditor`, or use `Tabs` of `@dextinity/ui`.
+ */
 export function BlockAdminTabs({ children }: BlockAdminTabsProps): JSX.Element | null {
     const intl = useIntl();
     const match = useRouteMatch();

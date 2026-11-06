@@ -1,6 +1,6 @@
 import { useApolloClient, useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext, RouterPrompt, Stack } from "@dextinity/admin";
-import { type BlockState, DamImageBlock, queryUpdatedAt, resolveHasSaveConflict, useContentScope } from "@dextinity/cms-admin";
+import { type BlockState, createFinalFormBlock, DamImageBlock, queryUpdatedAt, resolveHasSaveConflict, useContentScope } from "@dextinity/cms-admin";
 import {
     Button,
     ConfirmDialog,
@@ -8,26 +8,26 @@ import {
     EmptyState,
     formatShortcut,
     Icon,
-    Input,
     isApplePlatform,
     KeyValueList,
     Link,
+    type NewToast,
     PageHeader,
     Panel,
     SaveState,
-    type SaveStateValue,
-    Select,
     Skeleton,
     StatusIndicator,
-    Switch,
     ToastViewport,
     Tooltip,
     useKeyboardShortcut,
     useToasts,
 } from "@dextinity/ui";
+import { focusOnError, InputField, SelectField, SwitchField, useFormSaveState, useHasUnsavedChanges } from "@dextinity/ui-react-final-form";
 import type { GQLNewsCategory, GQLNewsStatus } from "@src/graphql.generated";
 import { deepEqual } from "fast-equals";
-import { useEffect, useState } from "react";
+import { FORM_ERROR, type FormApi, type SubmissionErrors } from "final-form";
+import { useEffect, useRef, useState } from "react";
+import { Field, Form, useField } from "react-final-form";
 import { FormattedDate, useIntl } from "react-intl";
 import { useHistory, useRouteMatch } from "react-router";
 
@@ -57,8 +57,6 @@ interface NewsFormValues {
     image: BlockState<typeof DamImageBlock>;
     content: BlockState<typeof NewsContentBlock>;
 }
-
-type NewsFormErrors = Partial<Record<"title" | "slug" | "date" | "category", string>>;
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -159,6 +157,10 @@ function NewsEditSkeleton() {
     );
 }
 
+const FinalFormDamImageBlock = createFinalFormBlock(DamImageBlock);
+const FinalFormNewsContentBlock = createFinalFormBlock(NewsContentBlock);
+const formDecorators = [focusOnError];
+
 interface NewsEditFormProps {
     baseUrl: string;
     news?: GQLNewsUiEditFragment;
@@ -166,89 +168,20 @@ interface NewsEditFormProps {
 
 function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
     const intl = useIntl();
-    const history = useHistory();
     const client = useApolloClient();
-    const navigateWithRouter = useRouterLinkClick();
-    const formMatch = useRouteMatch();
     const { scope } = useContentScope();
     const [savedNews, setSavedNews] = useState(news);
     const [savedValues, setSavedValues] = useState<NewsFormValues>(() => (news ? toFormValues(news) : createEmptyFormValues()));
-    const [values, setValues] = useState<NewsFormValues>(savedValues);
-    const [errors, setErrors] = useState<NewsFormErrors>({});
-    const [saveState, setSaveState] = useState<SaveStateValue>("saved");
-    const [savedAt, setSavedAt] = useState<Date | undefined>(news ? new Date(news.updatedAt) : undefined);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [deleting, setDeleting] = useState(false);
     const [createdId, setCreatedId] = useState<string>();
-    const [isDeleted, setIsDeleted] = useState(false);
+    const shouldOverwriteNewerVersion = useRef(false);
     const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
 
-    const isDirty = !deepEqual(values, savedValues);
-    const shownSaveState: SaveStateValue = saveState === "saving" || saveState === "error" ? saveState : isDirty ? "dirty" : "saved";
-    const listUrl = baseUrl;
-
-    useEffect(() => {
-        if (createdId && !isDirty) {
-            history.replace(`${baseUrl}/${createdId}/edit`);
-        }
-    }, [createdId, isDirty, history, baseUrl]);
-
-    useEffect(() => {
-        if (isDeleted && !isDirty) {
-            history.push(listUrl);
-        }
-    }, [isDeleted, isDirty, history, listUrl]);
-
-    useEffect(() => {
-        if (!isDirty) {
-            return;
-        }
-        const warnBeforeUnload = (event: BeforeUnloadEvent) => event.preventDefault();
-        window.addEventListener("beforeunload", warnBeforeUnload);
-        return () => window.removeEventListener("beforeunload", warnBeforeUnload);
-    }, [isDirty]);
-
-    const setValue = <Key extends keyof NewsFormValues>(key: Key, value: NewsFormValues[Key]) => {
-        setValues((current) => ({ ...current, [key]: value }));
-        if (key in errors) {
-            setErrors((current) => ({ ...current, [key]: undefined }));
-        }
-        if (saveState === "error") {
-            setSaveState("saved");
-        }
-    };
-
-    const validate = (): NewsFormErrors => {
-        const requiredMessage = intl.formatMessage({ id: "uiDemo.news.edit.required", defaultMessage: "Required" });
-        const nextErrors: NewsFormErrors = {};
-        if (values.title.trim() === "") {
-            nextErrors.title = requiredMessage;
-        }
-        if (values.slug.trim() === "") {
-            nextErrors.slug = requiredMessage;
-        } else if (!slugPattern.test(values.slug)) {
-            nextErrors.slug = intl.formatMessage({
-                id: "uiDemo.news.edit.slugInvalid",
-                defaultMessage: "Use lowercase letters, digits, and hyphens, e.g. “company-anniversary”.",
-            });
-        }
-        if (values.date === "") {
-            nextErrors.date = requiredMessage;
-        }
+    const save = async (values: NewsFormValues, form: FormApi<NewsFormValues>): Promise<SubmissionErrors | undefined> => {
+        const overwriteNewerVersion = shouldOverwriteNewerVersion.current;
+        shouldOverwriteNewerVersion.current = false;
         if (values.category === null) {
-            nextErrors.category = requiredMessage;
+            return { category: intl.formatMessage({ id: "uiDemo.news.edit.required", defaultMessage: "Required" }) };
         }
-        return nextErrors;
-    };
-
-    const saveValues = async ({ overwriteNewerVersion }: { overwriteNewerVersion: boolean }): Promise<boolean> => {
-        const nextErrors = validate();
-        setErrors(nextErrors);
-        if (Object.keys(nextErrors).length > 0 || values.category === null) {
-            setSaveState("error");
-            return false;
-        }
-        setSaveState("saving");
         const input = {
             title: values.title,
             slug: values.slug,
@@ -262,19 +195,22 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
             if (savedNews && !overwriteNewerVersion) {
                 const currentUpdatedAt = await queryUpdatedAt(client, "news", savedNews.id);
                 if (resolveHasSaveConflict(savedNews.updatedAt, currentUpdatedAt)) {
-                    setSaveState("error");
+                    const conflictMessage = intl.formatMessage({
+                        id: "uiDemo.news.edit.saveConflict",
+                        defaultMessage: "Not saved: someone else saved this news in the meantime",
+                    });
                     addToast({
                         tone: "error",
-                        message: intl.formatMessage({
-                            id: "uiDemo.news.edit.saveConflict",
-                            defaultMessage: "Not saved: someone else saved this news in the meantime",
-                        }),
+                        message: conflictMessage,
                         action: {
                             label: intl.formatMessage({ id: "uiDemo.news.edit.overwrite", defaultMessage: "Overwrite" }),
-                            onClick: () => void saveValues({ overwriteNewerVersion: true }),
+                            onClick: () => {
+                                shouldOverwriteNewerVersion.current = true;
+                                void form.submit();
+                            },
                         },
                     });
-                    return false;
+                    return { [FORM_ERROR]: conflictMessage };
                 }
             }
             let result: GQLNewsUiEditFragment | undefined;
@@ -298,31 +234,93 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
             }
             setSavedNews(result);
             setSavedValues(values);
-            setSavedAt(result ? new Date(result.updatedAt) : new Date());
-            setSaveState("saved");
             addToast({
                 message:
                     values.status === "active"
                         ? intl.formatMessage({ id: "uiDemo.news.edit.savedLive", defaultMessage: "Saved – the change is live" })
                         : intl.formatMessage({ id: "uiDemo.news.edit.saved", defaultMessage: "Saved" }),
             });
-            return true;
+            return undefined;
         } catch (error) {
-            setSaveState("error");
-            addToast({
-                tone: "error",
-                message: intl.formatMessage(
-                    { id: "uiDemo.news.edit.saveFailed", defaultMessage: "Saving failed: {reason}" },
-                    { reason: error instanceof Error ? error.message : String(error) },
-                ),
-            });
-            return false;
+            const failureMessage = intl.formatMessage(
+                { id: "uiDemo.news.edit.saveFailed", defaultMessage: "Saving failed: {reason}" },
+                { reason: error instanceof Error ? error.message : String(error) },
+            );
+            addToast({ tone: "error", message: failureMessage });
+            return { [FORM_ERROR]: failureMessage };
         }
     };
 
-    const save = () => saveValues({ overwriteNewerVersion: false });
+    return (
+        <>
+            <Form<NewsFormValues> onSubmit={save} initialValues={savedValues} decorators={formDecorators}>
+                {({ handleSubmit, form }) => (
+                    <form onSubmit={handleSubmit} noValidate>
+                        <NewsEditFormContent baseUrl={baseUrl} savedNews={savedNews} createdId={createdId} form={form} addToast={addToast} />
+                    </form>
+                )}
+            </Form>
+            <ToastViewport
+                toasts={toasts}
+                onDismiss={dismissToast}
+                labels={{ region: intl.formatMessage({ id: "uiDemo.news.notifications", defaultMessage: "Notifications" }) }}
+            />
+        </>
+    );
+}
 
-    useKeyboardShortcut("mod+s", () => void save(), { allowInEditable: true });
+interface NewsEditFormContentProps {
+    baseUrl: string;
+    savedNews?: GQLNewsUiEditFragment;
+    createdId?: string;
+    form: FormApi<NewsFormValues>;
+    addToast: (toast: NewToast) => void;
+}
+
+function NewsEditFormContent({ baseUrl, savedNews, createdId, form, addToast }: NewsEditFormContentProps) {
+    const intl = useIntl();
+    const history = useHistory();
+    const client = useApolloClient();
+    const navigateWithRouter = useRouterLinkClick();
+    const formMatch = useRouteMatch();
+    const { state: saveState } = useFormSaveState();
+    const hasUnsavedChanges = useHasUnsavedChanges();
+    const {
+        input: { value: status },
+    } = useField<GQLNewsStatus>("status", { subscription: { value: true } });
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [isDeleted, setIsDeleted] = useState(false);
+    const listUrl = baseUrl;
+
+    useEffect(() => {
+        if (createdId && !hasUnsavedChanges) {
+            history.replace(`${baseUrl}/${createdId}/edit`);
+        }
+    }, [createdId, hasUnsavedChanges, history, baseUrl]);
+
+    useEffect(() => {
+        if (isDeleted && !hasUnsavedChanges) {
+            history.push(listUrl);
+        }
+    }, [isDeleted, hasUnsavedChanges, history, listUrl]);
+
+    useEffect(() => {
+        if (!hasUnsavedChanges) {
+            return;
+        }
+        const warnBeforeUnload = (event: BeforeUnloadEvent) => event.preventDefault();
+        window.addEventListener("beforeunload", warnBeforeUnload);
+        return () => window.removeEventListener("beforeunload", warnBeforeUnload);
+    }, [hasUnsavedChanges]);
+
+    const submitAndReportSuccess = async () => {
+        await form.submit();
+        const { hasValidationErrors, hasSubmitErrors } = form.getState();
+        return !hasValidationErrors && !hasSubmitErrors;
+    };
+
+    useKeyboardShortcut("mod+s", () => void form.submit(), { allowInEditable: true });
 
     const deletePermanently = async () => {
         if (!savedNews) {
@@ -336,7 +334,7 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
                 context: LocalErrorScopeApolloContext,
                 update: (cache) => cache.evict({ id: cache.identify({ __typename: "News", id: savedNews.id }) }),
             });
-            setValues(savedValues);
+            form.reset();
             setDeleteDialogOpen(false);
             setIsDeleted(true);
         } catch {
@@ -348,17 +346,29 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
         }
     };
 
+    const requiredMessage = intl.formatMessage({ id: "uiDemo.news.edit.required", defaultMessage: "Required" });
+    const validateTitle = (title: string) => (title.trim() === "" ? requiredMessage : undefined);
+    const validateSlug = (slug: string) =>
+        slugPattern.test(slug)
+            ? undefined
+            : intl.formatMessage({
+                  id: "uiDemo.news.edit.slugInvalid",
+                  defaultMessage: "Use lowercase letters, digits, and hyphens, e.g. “company-anniversary”.",
+              });
+
     const title = savedNews?.title ?? intl.formatMessage({ id: "uiDemo.news.edit.newTitle", defaultMessage: "New news" });
     const saveShortcut = formatShortcut("mod+s").join(isApplePlatform() ? "" : "+");
-    const isActive = values.status === "active";
+    const isActive = status === "active";
 
     return (
         <RouterPrompt
             message={() =>
-                isDirty ? intl.formatMessage({ id: "uiDemo.news.edit.unsavedChanges", defaultMessage: "Do you want to save your changes?" }) : true
+                hasUnsavedChanges
+                    ? intl.formatMessage({ id: "uiDemo.news.edit.unsavedChanges", defaultMessage: "Do you want to save your changes?" })
+                    : true
             }
-            saveAction={save}
-            resetAction={() => setValues(savedValues)}
+            saveAction={submitAndReportSuccess}
+            resetAction={() => form.reset()}
             subRoutePath="./form"
         >
             <EditLayout
@@ -384,8 +394,8 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
                         actions={
                             <>
                                 <SaveState
-                                    state={shownSaveState}
-                                    savedAt={savedAt}
+                                    state={saveState}
+                                    savedAt={savedNews ? new Date(savedNews.updatedAt) : undefined}
                                     locale={intl.locale}
                                     labels={{
                                         saved: intl.formatMessage({ id: "uiDemo.news.edit.saveState.saved", defaultMessage: "Saved" }),
@@ -407,10 +417,10 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
                                     shortcut={saveShortcut}
                                 >
                                     <Button
+                                        type="submit"
                                         startIcon={<Icon name="check" />}
                                         loading={saveState === "saving"}
-                                        disabled={!isDirty && savedNews != null}
-                                        onClick={() => void save()}
+                                        disabled={!hasUnsavedChanges && savedNews != null}
                                     >
                                         {intl.formatMessage({ id: "uiDemo.news.edit.save", defaultMessage: "Save" })}
                                     </Button>
@@ -423,9 +433,10 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
                     <div className={styles.aside}>
                         <Panel title={intl.formatMessage({ id: "uiDemo.news.edit.statusPanel", defaultMessage: "Status" })}>
                             <div className={styles.asideBody}>
-                                <Switch
-                                    checked={isActive}
-                                    onChange={(checked) => setValue("status", checked ? "active" : "deleted")}
+                                <SwitchField<GQLNewsStatus>
+                                    name="status"
+                                    format={(fieldStatus) => fieldStatus === "active"}
+                                    parse={(checked) => (checked ? "active" : "deleted")}
                                     description={
                                         isActive
                                             ? intl.formatMessage({
@@ -439,7 +450,7 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
                                     }
                                 >
                                     {intl.formatMessage({ id: "uiDemo.news.status.active", defaultMessage: "Active" })}
-                                </Switch>
+                                </SwitchField>
                                 {savedNews && (
                                     <KeyValueList
                                         items={[
@@ -500,54 +511,44 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
                                 </p>
                             </div>
                             <div className={styles.fields}>
-                                <Input
+                                <InputField
                                     className={styles.fullWidth}
                                     name="title"
                                     label={intl.formatMessage({ id: "uiDemo.news.title", defaultMessage: "Title" })}
                                     required
-                                    value={values.title}
-                                    onChange={(event) => setValue("title", event.target.value)}
-                                    state={errors.title ? "error" : "default"}
-                                    validationMessage={errors.title}
+                                    requiredMessage={requiredMessage}
+                                    validate={validateTitle}
                                 />
-                                <Input
+                                <InputField
                                     className={styles.fullWidth}
                                     name="slug"
                                     label={intl.formatMessage({ id: "uiDemo.news.slug", defaultMessage: "Slug" })}
                                     required
+                                    requiredMessage={requiredMessage}
+                                    validate={validateSlug}
                                     prefix="/"
-                                    value={values.slug}
-                                    onChange={(event) => setValue("slug", event.target.value)}
-                                    state={errors.slug ? "error" : "default"}
-                                    validationMessage={errors.slug}
                                     helperText={intl.formatMessage({
                                         id: "uiDemo.news.edit.slugHelper",
                                         defaultMessage: "Part of the news URL; changing it breaks existing links.",
                                     })}
                                 />
-                                <Input
+                                <InputField
                                     name="date"
                                     type="date"
                                     label={intl.formatMessage({ id: "uiDemo.news.date", defaultMessage: "Date" })}
                                     required
-                                    value={values.date}
-                                    onChange={(event) => setValue("date", event.target.value)}
-                                    state={errors.date ? "error" : "default"}
-                                    validationMessage={errors.date}
+                                    requiredMessage={requiredMessage}
                                 />
-                                <Select
+                                <SelectField
                                     name="category"
                                     label={intl.formatMessage({ id: "uiDemo.news.category", defaultMessage: "Category" })}
                                     required
+                                    requiredMessage={requiredMessage}
                                     placeholder={intl.formatMessage({
                                         id: "uiDemo.news.edit.categoryPlaceholder",
                                         defaultMessage: "Choose a category",
                                     })}
-                                    value={values.category}
-                                    onChange={(category) => setValue("category", category as GQLNewsCategory | null)}
                                     options={newsCategories.map((category) => ({ value: category, label: getNewsCategoryLabel(intl, category) }))}
-                                    state={errors.category ? "error" : "default"}
-                                    validationMessage={errors.category}
                                 />
                             </div>
                         </section>
@@ -556,10 +557,7 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
                                 <h3>{intl.formatMessage({ id: "uiDemo.news.edit.image", defaultMessage: "Image" })}</h3>
                             </div>
                             <div className={styles.block}>
-                                <DamImageBlock.AdminComponent
-                                    state={values.image}
-                                    updateState={(image) => setValues(applyBlockUpdate("image", image))}
-                                />
+                                <Field name="image" component={FinalFormDamImageBlock} isEqual={deepEqual} />
                             </div>
                         </section>
                         <section className={styles.section}>
@@ -578,10 +576,7 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
                                 )}
                             </div>
                             <div className={styles.block}>
-                                <NewsContentBlock.AdminComponent
-                                    state={values.content}
-                                    updateState={(content) => setValues(applyBlockUpdate("content", content))}
-                                />
+                                <Field name="content" component={FinalFormNewsContentBlock} isEqual={deepEqual} />
                             </div>
                         </section>
                     </div>
@@ -606,20 +601,6 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
                 loading={deleting}
                 labels={{ cancel: intl.formatMessage({ id: "uiDemo.news.list.deleteDialog.cancel", defaultMessage: "Cancel" }) }}
             />
-            <ToastViewport
-                toasts={toasts}
-                onDismiss={dismissToast}
-                labels={{ region: intl.formatMessage({ id: "uiDemo.news.notifications", defaultMessage: "Notifications" }) }}
-            />
         </RouterPrompt>
     );
-}
-
-type BlockUpdate<State> = State | ((previous: State) => State);
-
-function applyBlockUpdate<Key extends "image" | "content">(key: Key, update: BlockUpdate<NewsFormValues[Key]>) {
-    return (current: NewsFormValues): NewsFormValues => ({
-        ...current,
-        [key]: typeof update === "function" ? (update as (previous: NewsFormValues[Key]) => NewsFormValues[Key])(current[key]) : update,
-    });
 }

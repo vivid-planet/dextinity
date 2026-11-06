@@ -10,6 +10,7 @@ import {
     useCallback,
     useEffect,
     useId,
+    useLayoutEffect,
     useRef,
     useState,
 } from "react";
@@ -333,15 +334,16 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         });
     }, [dropFolderId]);
 
-    useEffect(() => {
+    // Measured before the first paint, so the separator never announces a width the sidebar doesn't have
+    useLayoutEffect(() => {
         const root = rootRef.current;
         const sidebar = sidebarRef.current;
         if (!isResizable || root == null || sidebar == null || typeof ResizeObserver === "undefined") {
             return;
         }
-        const observer = new ResizeObserver(() => {
-            setMeasured({ sidebar: sidebar.getBoundingClientRect().width, root: root.getBoundingClientRect().width });
-        });
+        const measure = () => setMeasured({ sidebar: sidebar.getBoundingClientRect().width, root: root.getBoundingClientRect().width });
+        measure();
+        const observer = new ResizeObserver(measure);
         observer.observe(root);
         observer.observe(sidebar);
         return () => observer.disconnect();

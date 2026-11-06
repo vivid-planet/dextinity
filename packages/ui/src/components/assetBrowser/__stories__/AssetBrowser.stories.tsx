@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../../storybook/sampleImages";
@@ -84,7 +84,23 @@ const assets: AssetBrowserAsset[] = [
     },
 ];
 
-/** Keeps the story controlled: folder, view, selection, moves, and deletions live in local state. */
+/** Simulates searching on a server: the assets whose name contains the search, after a short delay. */
+function useSimulatedSearch(search: string, allAssets: ReadonlyArray<AssetBrowserAsset>) {
+    const [result, setResult] = useState<{ search: string; assets: AssetBrowserAsset[] }>();
+    useEffect(() => {
+        const query = search.trim().toLowerCase();
+        if (query === "") {
+            return;
+        }
+        const timeout = setTimeout(() => {
+            setResult({ search, assets: allAssets.filter((asset) => asset.name.toLowerCase().includes(query)) });
+        }, 400);
+        return () => clearTimeout(timeout);
+    }, [search, allAssets]);
+    return { searchResults: result?.assets, searchLoading: result?.search !== search };
+}
+
+/** Keeps the story controlled: folder, view, selection, search, moves, and deletions live in local state. */
 function ControlledAssetBrowser(props: AssetBrowserProps) {
     const [folderId, setFolderId] = useState(props.folderId);
     const [view, setView] = useState(props.view);
@@ -92,9 +108,20 @@ function ControlledAssetBrowser(props: AssetBrowserProps) {
     const [currentFolders, setCurrentFolders] = useState(props.folders);
     const [currentAssets, setCurrentAssets] = useState(props.assets);
     const [sidebarWidth, setSidebarWidth] = useState(props.sidebarWidth);
+    const [search, setSearch] = useState(props.search ?? "");
+    const simulatedSearch = useSimulatedSearch(search, currentAssets);
     return (
         <AssetBrowser
             {...props}
+            {...(props.onSearchChange != null &&
+                props.searchResults == null && {
+                    search,
+                    onSearchChange: (next: string) => {
+                        props.onSearchChange?.(next);
+                        setSearch(next);
+                    },
+                    ...simulatedSearch,
+                })}
             sidebarWidth={sidebarWidth}
             onSidebarWidthChange={
                 props.onSidebarWidthChange &&
@@ -170,6 +197,7 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
         sidebarWidth: { control: false },
+        searchResults: { control: false },
     },
     render: (args) => <ControlledAssetBrowser {...args} />,
 } satisfies Meta<typeof AssetBrowser>;
@@ -335,5 +363,88 @@ export const FolderMeta: Story = {
     },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("option", { name: /Documents/ })).toHaveTextContent("48 items");
+    },
+};
+
+/**
+ * With `onSearchChange`, the toolbar has a search field (⌘/Ctrl+F). The application searches across all folders and passes the
+ * matching assets as `searchResults`; each shows with its folder path. The path bar shows where the selected result is: choose a folder
+ * there, or press ⌘/Ctrl+↑, to open it with the result selected. Escape in the search field, or opening a folder, ends the search.
+ *
+ * **Rules**
+ *
+ * - Search all folders, not only the open one.
+ * - Set `searchLoading` while the results load; keep showing the previous results meanwhile.
+ */
+export const Search: Story = {
+    args: { view: "list", onSearchChange: fn() },
+    play: async ({ args, canvas }) => {
+        const searchField = canvas.getByRole("searchbox", { name: "Search" });
+        await userEvent.click(canvas.getByRole("option", { name: /lobby\.jpg/ }));
+        await userEvent.keyboard("{Control>}f{/Control}");
+        await expect(searchField).toHaveFocus();
+        await userEvent.type(searchField, "spring");
+        await waitFor(() => expect(args.onSearchChange).toHaveBeenLastCalledWith("spring"));
+        const results = await canvas.findByRole("listbox", { name: "Search results" });
+        await waitFor(() => expect(within(results).getAllByRole("option")).toHaveLength(2));
+        await expect(within(results).getByRole("option", { name: /spring-hero\.jpg/ })).toHaveTextContent("All assets › Campaigns › Spring 2026");
+
+        await userEvent.keyboard("{ArrowDown}");
+        await expect(within(results).getByRole("option", { name: /spring-hero\.jpg/ })).toHaveFocus();
+        await userEvent.keyboard("{ArrowDown}");
+        await waitFor(() => expect(args.onSelectionChange).toHaveBeenLastCalledWith(["a7"]));
+        const pathBar = canvas.getByRole("navigation", { name: "Breadcrumbs" });
+        await expect(within(pathBar).getByText("spring-teaser.jpg")).toHaveAttribute("aria-current", "page");
+
+        await userEvent.click(within(pathBar).getByRole("button", { name: "Campaigns" }));
+        await waitFor(() => expect(args.onFolderChange).toHaveBeenLastCalledWith("campaigns"));
+        await expect(args.onSearchChange).toHaveBeenLastCalledWith("");
+        await expect(args.onSelectionChange).toHaveBeenLastCalledWith(["spring"]);
+        await waitFor(() => expect(canvas.getByRole("option", { name: /Spring 2026/ })).toHaveFocus());
+        await expect(searchField).toHaveValue("");
+    },
+};
+
+/**
+ * ⌘/Ctrl+↑ on a result opens its folder with the result selected. Escape in the search field clears it.
+ */
+export const SearchRevealWithKeyboard: Story = {
+    args: { view: "icons", onSearchChange: fn() },
+    play: async ({ args, canvas }) => {
+        const searchField = canvas.getByRole("searchbox", { name: "Search" });
+        await userEvent.type(searchField, "pdf");
+        const results = await canvas.findByRole("listbox", { name: "Search results" });
+        await waitFor(() => expect(within(results).getAllByRole("option")).toHaveLength(2));
+        await expect(within(results).getByRole("option", { name: /terms\.pdf/ })).toHaveTextContent("Documents");
+
+        await userEvent.keyboard("{Escape}");
+        await expect(searchField).toHaveValue("");
+        await expect(canvas.getByRole("listbox", { name: "Items" })).toBeInTheDocument();
+
+        await userEvent.type(searchField, "terms");
+        await waitFor(() => expect(canvas.getAllByRole("option")).toHaveLength(1));
+        await userEvent.keyboard("{ArrowDown}");
+        await userEvent.keyboard("{Control>}{ArrowUp}{/Control}");
+        await waitFor(() => expect(args.onFolderChange).toHaveBeenLastCalledWith("documents"));
+        await expect(args.onSelectionChange).toHaveBeenLastCalledWith(["a9"]);
+        await waitFor(() => expect(canvas.getByRole("option", { name: /terms\.pdf/ })).toHaveFocus());
+        await expect(canvas.getByRole("option", { name: /terms\.pdf/ })).toHaveAttribute("aria-selected", "true");
+    },
+};
+
+/**
+ * While the first results load, the content says so.
+ */
+export const SearchLoading: Story = {
+    args: { view: "list", search: "team", onSearchChange: fn(), searchResults: [], searchLoading: true },
+    play: async ({ canvas }) => {
+        await expect(canvas.getAllByRole("status").some((status) => status.textContent === "Searching…")).toBe(true);
+    },
+};
+
+export const SearchWithoutResults: Story = {
+    args: { view: "list", search: "invoice", onSearchChange: fn(), searchResults: [] },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByText("No results for “invoice”")).toBeInTheDocument();
     },
 };

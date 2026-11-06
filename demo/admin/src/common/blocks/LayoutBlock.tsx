@@ -1,4 +1,3 @@
-import { Field } from "@dextinity/admin";
 import { Hamburger, Image } from "@dextinity/admin-icons";
 import {
     BlockCategory,
@@ -9,7 +8,7 @@ import {
     ColumnsLayoutPreviewSpacing,
     createCompositeBlock,
     createCompositeBlockField,
-    FinalFormLayoutSelect,
+    LayoutSelectField,
 } from "@dextinity/cms-admin";
 import type { LayoutBlockData } from "@src/blocks.generated";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
@@ -131,12 +130,15 @@ export const LayoutBlock = createCompositeBlock(
                             onSubmit={({ layout }) => updateState(layout.name as LayoutBlockData["layout"])}
                             initialValues={{ layout: layoutOptions.find((layout) => layout.name === state) }}
                         >
-                            <Field name="layout" component={FinalFormLayoutSelect} layouts={layoutOptions} fullWidth />
+                            <LayoutSelectField
+                                name="layout"
+                                label={<FormattedMessage id="layoutBlock.layout" defaultMessage="Layout" />}
+                                layouts={layoutOptions}
+                            />
                         </BlocksFinalForm>
                     ),
                     extractTextContents: () => [],
                 }),
-                title: <FormattedMessage id="layoutBlock.layout" defaultMessage="Layout" />,
             },
             media1: {
                 block: MediaBlock,

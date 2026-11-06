@@ -1,33 +1,9 @@
-import { Button, messages } from "@dextinity/admin";
-import {
-    // eslint-disable-next-line no-restricted-imports
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    List,
-    ListItem,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
-    Typography,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { FormattedMessage } from "react-intl";
+import { messages } from "@dextinity/admin";
+import { Button, Dialog } from "@dextinity/ui";
+import { useIntl } from "react-intl";
 
+import { ErrorMessages, FileErrors, FileName, FilePath, Files } from "./FileUploadErrorDialog.sc";
 import type { FileUploadValidationError } from "./useDamFileUpload";
-
-const Path = styled(Typography)`
-    color: ${({ theme }) => theme.palette.grey[300]};
-`;
-
-const TableHeadCell = styled(TableCell)`
-    &.MuiTableCell-head:not(:first-of-type):not(:empty):before {
-        background-color: transparent;
-    }
-`;
 
 interface FileUploadErrorDialogProps {
     open?: boolean;
@@ -35,74 +11,56 @@ interface FileUploadErrorDialogProps {
     validationErrors?: FileUploadValidationError[];
 }
 
+function hasFolderPath(file: FileUploadValidationError["file"]) {
+    return file.path != null && file.path.replace(/^\.?\//, "") !== file.name;
+}
+
 export const FileUploadErrorDialog = ({ open = false, onClose, validationErrors }: FileUploadErrorDialogProps) => {
+    const intl = useIntl();
     if (validationErrors === undefined) {
         return null;
     }
 
-    const errorsPerFile = validationErrors.reduce<{ [key: string]: FileUploadValidationError[] }>((acc, error) => {
+    const errorsPerFile = new Map<string, FileUploadValidationError[]>();
+    for (const error of validationErrors) {
         const fileId = error.file.path ?? error.file.name;
-        const existingErrorsOfSameFile = acc[fileId] ?? [];
-
-        return {
-            ...acc,
-            [fileId]: [...existingErrorsOfSameFile, error],
-        };
-    }, {});
+        errorsPerFile.set(fileId, [...(errorsPerFile.get(fileId) ?? []), error]);
+    }
 
     return (
-        <Dialog maxWidth="lg" fullWidth open={open}>
-            <DialogTitle>
-                <FormattedMessage id="dextinity.pages.dam.uploadErrors" defaultMessage="Upload errors" />
-            </DialogTitle>
-            <DialogContent>
-                <Typography style={{ paddingBottom: "16px" }} variant="subtitle1">
-                    <FormattedMessage
-                        id="dextinity.pages.dam.followingFilesCouldNotBeUploaded"
-                        defaultMessage="Following files could not be uploaded:"
-                    />
-                </Typography>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableHeadCell>
-                                <FormattedMessage id="dextinity.pages.dam.file" defaultMessage="File" />
-                            </TableHeadCell>
-                            <TableHeadCell>
-                                <FormattedMessage id="dextinity.pages.dam.errors" defaultMessage="Errors" />
-                            </TableHeadCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {Object.values(errorsPerFile).map((errorsOfFile) => {
-                            return (
-                                <TableRow key={errorsOfFile[0].file.path ?? errorsOfFile[0].file.name}>
-                                    <TableCell>
-                                        <Typography variant="subtitle1">{errorsOfFile[0].file.name}</Typography>
-                                        <Path variant="body2">{errorsOfFile[0].file.path}</Path>
-                                    </TableCell>
-                                    <TableCell>
-                                        <List>
-                                            {errorsOfFile.map((error, index) => {
-                                                return (
-                                                    <ListItem key={index}>
-                                                        <Typography variant="body1">{error.message}</Typography>
-                                                    </ListItem>
-                                                );
-                                            })}
-                                        </List>
-                                    </TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose}>
-                    <FormattedMessage {...messages.ok} />
-                </Button>
-            </DialogActions>
+        <Dialog
+            open={open}
+            onOpenChange={(nextOpen) => {
+                if (!nextOpen) {
+                    onClose();
+                }
+            }}
+            size="large"
+            title={intl.formatMessage({ id: "dextinity.pages.dam.uploadErrors", defaultMessage: "Upload errors" })}
+            description={intl.formatMessage({
+                id: "dextinity.pages.dam.followingFilesCouldNotBeUploaded",
+                defaultMessage: "Following files could not be uploaded:",
+            })}
+            labels={{ close: intl.formatMessage(messages.close) }}
+            footer={<Button onClick={onClose}>{intl.formatMessage(messages.ok)}</Button>}
+        >
+            <Files>
+                {Array.from(errorsPerFile.entries()).map(([fileId, errorsOfFile]) => (
+                    <FileErrors key={fileId}>
+                        <div>
+                            <FileName>{errorsOfFile[0].file.name}</FileName>
+                            {hasFolderPath(errorsOfFile[0].file) && <FilePath>{errorsOfFile[0].file.path}</FilePath>}
+                        </div>
+                        <ErrorMessages>
+                            {errorsOfFile.map((error, index) => (
+                                // The messages of a file have no id and never change order
+
+                                <li key={index}>{error.message}</li>
+                            ))}
+                        </ErrorMessages>
+                    </FileErrors>
+                ))}
+            </Files>
         </Dialog>
     );
 };

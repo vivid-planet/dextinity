@@ -5,6 +5,19 @@
     justify-content: space-between;
     gap: var(--dextinity-page-header-gap);
     font-family: var(--dextinity-font-family-text);
+
+    &[data-variant="compact"] {
+        --dextinity-page-header-gap: var(--dextinity-page-header-compact-gap);
+        --dextinity-page-header-label-spacing: var(--dextinity-page-header-compact-label-spacing);
+        --dextinity-page-header-title-font-size: var(--dextinity-page-header-compact-title-font-size);
+        --dextinity-page-header-subtitle-spacing: var(--dextinity-page-header-compact-subtitle-spacing);
+
+        align-items: center;
+
+        .title {
+            line-height: 1.15;
+        }
+    }
 }
 
 .heading {

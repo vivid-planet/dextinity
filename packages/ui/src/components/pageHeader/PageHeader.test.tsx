@@ -38,4 +38,15 @@ describe("PageHeader", () => {
         expect(container.querySelector(".dextinityPageHeader__actions")).toBeNull();
         expect((container.firstElementChild as HTMLElement).hasAttribute("data-has-back")).toBe(false);
     });
+
+    it("emits the variant", () => {
+        const { container } = render(
+            <>
+                <PageHeader title="Page tree" />
+                <PageHeader title="Open positions" variant="compact" />
+            </>,
+        );
+
+        expect(Array.from(container.children).map((header) => (header as HTMLElement).dataset.variant)).toStrictEqual(["default", "compact"]);
+    });
 });

@@ -18,15 +18,15 @@ function UserGroupChip({ item }: Props): JSX.Element | null {
         return null;
     }
 
-    const label = userGroupOptions.find((option) => option.value === item.userGroup)?.label;
+    const option = userGroupOptions.find((option) => option.value === item.userGroup);
 
-    if (!label) {
+    if (!option?.shortLabel) {
         return null;
     }
 
     return (
-        <Chip variant="outlined" color="secondary" size="small" startIcon={<Icon name="visibility-rules" />}>
-            {intl.formatMessage(label)}
+        <Chip variant="outlined" color="secondary" size="small" startIcon={<Icon name="visibility-rules" />} title={intl.formatMessage(option.label)}>
+            {intl.formatMessage(option.shortLabel)}
         </Chip>
     );
 }

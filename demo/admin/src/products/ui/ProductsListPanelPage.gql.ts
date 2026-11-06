@@ -36,13 +36,3 @@ export const productsListQuery = gql`
         }
     }
 `;
-
-export const updateProductStatusMutation = gql`
-    mutation ProductsUiUpdateStatus($id: ID!, $status: ProductStatus!) {
-        updateProduct(id: $id, input: { status: $status }) {
-            id
-            status
-            updatedAt
-        }
-    }
-`;

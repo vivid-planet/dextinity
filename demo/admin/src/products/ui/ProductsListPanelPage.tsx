@@ -1,8 +1,8 @@
-import { useApolloClient, useQuery } from "@apollo/client";
-import { LocalErrorScopeApolloContext } from "@dextinity/admin";
+import { useQuery } from "@apollo/client";
 import {
     Button,
     Chip,
+    ConfirmDialog,
     DataGrid,
     type DataGridColumn,
     EmptyState,
@@ -15,24 +15,17 @@ import {
     MenuRadioItem,
     PageHeader,
     StatusIndicator,
-    ToastViewport,
-    useToasts,
-    useUndoToast,
 } from "@dextinity/ui";
-import type { GQLProductFilter, GQLProductSortField, GQLProductStatus, GQLProductType } from "@src/graphql.generated";
+import type { GQLProductFilter, GQLProductSortField, GQLProductType } from "@src/graphql.generated";
 import { useRouterLinkClick } from "@src/news/ui/useRouterLinkClick";
 import { useEffect, useState } from "react";
 import { FormattedDate, FormattedNumber, useIntl } from "react-intl";
 
 import { ProductDetailsPanel } from "./ProductDetailsPanel";
 import { getProductStatusIndicator, getProductStatusLabel, getProductTypeLabel, productTypes } from "./productLabels";
-import { productsListQuery, updateProductStatusMutation } from "./ProductsListPanelPage.gql";
-import type {
-    GQLProductsUiListQuery,
-    GQLProductsUiListQueryVariables,
-    GQLProductsUiUpdateStatusMutation,
-    GQLProductsUiUpdateStatusMutationVariables,
-} from "./ProductsListPanelPage.gql.generated";
+import type { ProductUnsavedChanges } from "./ProductQuickEditForm";
+import { productsListQuery } from "./ProductsListPanelPage.gql";
+import type { GQLProductsUiListQuery, GQLProductsUiListQueryVariables } from "./ProductsListPanelPage.gql.generated";
 import styles from "./ProductsListPanelPage.module.css";
 import { type ProductStatusFilter, useProductsListUrlState } from "./useProductsListUrlState";
 
@@ -48,16 +41,12 @@ interface ProductsListPanelPageProps {
 
 export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
     const intl = useIntl();
-    const client = useApolloClient();
     const navigateWithRouter = useRouterLinkClick();
     const { search, status, type, sort, page, pageSize, setPageSize, selectedProductId, update, selectProduct } = useProductsListUrlState();
     const [searchInput, setSearchInput] = useState(search);
     const [typeMenuOpen, setTypeMenuOpen] = useState(false);
-    const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
-    const { perform } = useUndoToast({
-        addToast,
-        labels: { undo: intl.formatMessage({ id: "uiDemo.products.undo", defaultMessage: "Undo" }) },
-    });
+    const [panelUnsavedChanges, setPanelUnsavedChanges] = useState<ProductUnsavedChanges>();
+    const [pendingSelection, setPendingSelection] = useState<{ productId: string | null }>();
 
     useEffect(() => {
         if (searchInput === search) {
@@ -101,43 +90,30 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
 
     const editUrl = (id: string) => `${baseUrl}/${id}/edit`;
 
-    const setStatus = async (id: string, nextStatus: GQLProductStatus) => {
-        try {
-            await client.mutate<GQLProductsUiUpdateStatusMutation, GQLProductsUiUpdateStatusMutationVariables>({
-                mutation: updateProductStatusMutation,
-                variables: { id, status: nextStatus },
-                refetchQueries: ["ProductsUiList"],
-                context: LocalErrorScopeApolloContext,
-            });
-        } catch {
-            addToast({
-                tone: "error",
-                message: intl.formatMessage({
-                    id: "uiDemo.products.statusFailed",
-                    defaultMessage: "Changing the status failed · nothing was changed",
-                }),
-            });
-        }
-    };
-
-    const changeStatus = (product: Pick<ProductRow, "id" | "title" | "status">, nextStatus: GQLProductStatus) => {
-        if (product.status === nextStatus) {
+    const changeSelection = (productId: string | null) => {
+        if (productId === selectedProductId) {
             return;
         }
-        const previousStatus = product.status;
-        perform({
-            run: () => void setStatus(product.id, nextStatus),
-            undo: () => void setStatus(product.id, previousStatus),
-            icon: <Icon name={nextStatus === "Deleted" ? "archive" : nextStatus === "Published" ? "eye" : "eye-off"} />,
-            message: intl.formatMessage(
-                {
-                    id: "uiDemo.products.statusChanged",
-                    defaultMessage: "“{title}” {status, select, Published {published} Unpublished {unpublished} other {marked as deleted}}",
-                },
-                { title: product.title, status: nextStatus },
-            ),
-            undoneMessage: intl.formatMessage({ id: "uiDemo.products.statusUndone", defaultMessage: "Status change undone" }),
-        });
+        if (panelUnsavedChanges != null) {
+            setPendingSelection({ productId });
+        } else {
+            selectProduct(productId);
+        }
+    };
+    const discardAndApplyPendingSelection = () => {
+        panelUnsavedChanges?.discard();
+        if (pendingSelection != null) {
+            selectProduct(pendingSelection.productId);
+        }
+        setPendingSelection(undefined);
+    };
+    const saveAndApplyPendingSelection = async () => {
+        const nextSelection = pendingSelection;
+        setPendingSelection(undefined);
+        const isSaved = (await panelUnsavedChanges?.save()) ?? true;
+        if (isSaved && nextSelection != null) {
+            selectProduct(nextSelection.productId);
+        }
     };
 
     const columns: DataGridColumn<ProductRow>[] = [
@@ -223,7 +199,7 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
         <>
             <ListDetailLayout
                 open={isPanelOpen}
-                onOpenChange={(open) => !open && selectProduct(null)}
+                onOpenChange={(open) => !open && changeSelection(null)}
                 sidePanelLabel={
                     selectedProduct
                         ? intl.formatMessage(
@@ -335,9 +311,8 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
                             key={selectedProductId}
                             productId={selectedProductId}
                             editUrl={editUrl(selectedProductId)}
-                            onClose={() => selectProduct(null)}
-                            onChangeStatus={changeStatus}
-                            onError={(message) => addToast({ tone: "error", message })}
+                            onClose={() => changeSelection(null)}
+                            onUnsavedChangesChange={setPanelUnsavedChanges}
                         />
                     )
                 }
@@ -350,7 +325,7 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
                     loading={loading && !shownData}
                     sort={sort}
                     onSortChange={(nextSort) => update({ sort: nextSort, page })}
-                    onRowClick={(product) => selectProduct(product.id)}
+                    onRowClick={(product) => changeSelection(product.id)}
                     activeRowId={selectedProductId ?? undefined}
                     pagination={
                         total === 0
@@ -403,10 +378,23 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
                     }
                 />
             </ListDetailLayout>
-            <ToastViewport
-                toasts={toasts}
-                onDismiss={dismissToast}
-                labels={{ region: intl.formatMessage({ id: "uiDemo.products.notifications", defaultMessage: "Notifications" }) }}
+            <ConfirmDialog
+                open={pendingSelection != null}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setPendingSelection(undefined);
+                    }
+                }}
+                title={intl.formatMessage({ id: "uiDemo.products.unsavedChanges.title", defaultMessage: "Unsaved changes" })}
+                description={intl.formatMessage({
+                    id: "uiDemo.products.unsavedChanges.description",
+                    defaultMessage: "Save the changes to this product before you continue?",
+                })}
+                secondaryLabel={intl.formatMessage({ id: "uiDemo.products.unsavedChanges.discard", defaultMessage: "Discard" })}
+                onSecondary={discardAndApplyPendingSelection}
+                confirmLabel={intl.formatMessage({ id: "uiDemo.products.unsavedChanges.save", defaultMessage: "Save and continue" })}
+                onConfirm={() => void saveAndApplyPendingSelection()}
+                labels={{ cancel: intl.formatMessage({ id: "uiDemo.products.unsavedChanges.cancel", defaultMessage: "Cancel" }) }}
             />
         </>
     );

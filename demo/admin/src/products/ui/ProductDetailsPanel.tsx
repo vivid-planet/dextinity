@@ -1,46 +1,25 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import { useDextinityConfig } from "@dextinity/cms-admin";
-import {
-    AssetThumbnail,
-    Button,
-    Chip,
-    EmptyState,
-    Icon,
-    IconButton,
-    KeyValueList,
-    type KeyValueListItem,
-    Panel,
-    Skeleton,
-    StatusIndicator,
-    Switch,
-} from "@dextinity/ui";
-import type { GQLProductStatus } from "@src/graphql.generated";
+import { AssetThumbnail, Button, Chip, EmptyState, Icon, IconButton, KeyValueList, type KeyValueListItem, Panel, Skeleton } from "@dextinity/ui";
 import { useRouterLinkClick } from "@src/news/ui/useRouterLinkClick";
-import { FormattedDate, FormattedNumber, useIntl } from "react-intl";
+import { FormattedDate, useIntl } from "react-intl";
 
-import { productDetailsQuery, updateProductInStockMutation } from "./ProductDetailsPanel.gql";
-import type {
-    GQLProductsUiDetailsQuery,
-    GQLProductsUiDetailsQueryVariables,
-    GQLProductsUiUpdateInStockMutation,
-    GQLProductsUiUpdateInStockMutationVariables,
-} from "./ProductDetailsPanel.gql.generated";
+import { productDetailsQuery } from "./ProductDetailsPanel.gql";
+import type { GQLProductsUiDetailsQuery, GQLProductsUiDetailsQueryVariables } from "./ProductDetailsPanel.gql.generated";
 import styles from "./ProductDetailsPanel.module.css";
 import { getProductImageUrl } from "./productImageUrl";
-import { getProductStatusIndicator, getProductStatusLabel, getProductTypeLabel } from "./productLabels";
-
-type ProductDetails = GQLProductsUiDetailsQuery["product"];
+import { getProductTypeLabel } from "./productLabels";
+import { ProductQuickEditForm, type ProductUnsavedChanges } from "./ProductQuickEditForm";
 
 interface ProductDetailsPanelProps {
     productId: string;
     editUrl: string;
     onClose: () => void;
-    onChangeStatus: (product: Pick<ProductDetails, "id" | "title" | "status">, status: GQLProductStatus) => void;
-    onError: (message: string) => void;
+    onUnsavedChangesChange: (unsavedChanges: ProductUnsavedChanges | undefined) => void;
 }
 
-export function ProductDetailsPanel({ productId, editUrl, onClose, onChangeStatus, onError }: ProductDetailsPanelProps) {
+export function ProductDetailsPanel({ productId, editUrl, onClose, onUnsavedChangesChange }: ProductDetailsPanelProps) {
     const intl = useIntl();
     const { apiUrl } = useDextinityConfig();
     const navigateWithRouter = useRouterLinkClick();
@@ -48,11 +27,6 @@ export function ProductDetailsPanel({ productId, editUrl, onClose, onChangeStatu
         variables: { id: productId },
         context: LocalErrorScopeApolloContext,
     });
-    const [updateInStock, { loading: updatingInStock }] = useMutation<
-        GQLProductsUiUpdateInStockMutation,
-        GQLProductsUiUpdateInStockMutationVariables
-    >(updateProductInStockMutation);
-
     const product = data?.product;
     const closeButton = (
         <IconButton
@@ -88,16 +62,6 @@ export function ProductDetailsPanel({ productId, editUrl, onClose, onChangeStatu
     const noValue = <span className={styles.muted}>–</span>;
 
     const items: KeyValueListItem[] = [
-        {
-            key: intl.formatMessage({ id: "uiDemo.products.status", defaultMessage: "Status" }),
-            value: (
-                <StatusIndicator status={getProductStatusIndicator(product.status)}>{getProductStatusLabel(intl, product.status)}</StatusIndicator>
-            ),
-        },
-        {
-            key: intl.formatMessage({ id: "uiDemo.products.price", defaultMessage: "Price" }),
-            value: product.price != null ? <FormattedNumber value={product.price} style="currency" currency="EUR" /> : noValue,
-        },
         {
             key: intl.formatMessage({ id: "uiDemo.products.type", defaultMessage: "Type" }),
             value: (
@@ -182,69 +146,11 @@ export function ProductDetailsPanel({ productId, editUrl, onClose, onChangeStatu
             : []),
     ];
 
-    const toggleInStock = async (inStock: boolean) => {
-        try {
-            await updateInStock({
-                variables: { id: product.id, inStock },
-                refetchQueries: ["ProductsUiList"],
-                context: LocalErrorScopeApolloContext,
-            });
-        } catch {
-            onError(intl.formatMessage({ id: "uiDemo.products.inStockFailed", defaultMessage: "Changing the stock failed · nothing was changed" }));
-        }
-    };
-
     return (
         <Panel title={product.title} description={<span className={styles.mono}>{`/${product.slug}`}</span>} actions={closeButton}>
             <div className={styles.panelBody}>
                 {imageUrl != null && <AssetThumbnail type="image" src={imageUrl} alt={product.title} ratio="4:3" />}
-                {product.description && <p className={styles.description}>{product.description}</p>}
-                <div
-                    className={styles.quickActions}
-                    role="group"
-                    aria-label={intl.formatMessage({ id: "uiDemo.products.panel.quickActions", defaultMessage: "Quick actions" })}
-                >
-                    {product.status === "Published" && (
-                        <Button
-                            size="small"
-                            variant="outlined"
-                            color="secondary"
-                            startIcon={<Icon name="eye-off" />}
-                            onClick={() => onChangeStatus(product, "Unpublished")}
-                        >
-                            {intl.formatMessage({ id: "uiDemo.products.unpublish", defaultMessage: "Unpublish" })}
-                        </Button>
-                    )}
-                    {product.status === "Unpublished" && (
-                        <Button size="small" startIcon={<Icon name="eye" />} onClick={() => onChangeStatus(product, "Published")}>
-                            {intl.formatMessage({ id: "uiDemo.products.publish", defaultMessage: "Publish" })}
-                        </Button>
-                    )}
-                    {product.status === "Deleted" ? (
-                        <Button
-                            size="small"
-                            variant="outlined"
-                            color="secondary"
-                            startIcon={<Icon name="refresh" />}
-                            onClick={() => onChangeStatus(product, "Unpublished")}
-                        >
-                            {intl.formatMessage({ id: "uiDemo.products.restore", defaultMessage: "Restore" })}
-                        </Button>
-                    ) : (
-                        <Button
-                            size="small"
-                            variant="text"
-                            color="secondary"
-                            startIcon={<Icon name="archive" />}
-                            onClick={() => onChangeStatus(product, "Deleted")}
-                        >
-                            {intl.formatMessage({ id: "uiDemo.products.markDeleted", defaultMessage: "Mark as deleted" })}
-                        </Button>
-                    )}
-                </div>
-                <Switch checked={product.inStock} disabled={updatingInStock} onChange={(inStock) => void toggleInStock(inStock)}>
-                    {intl.formatMessage({ id: "uiDemo.products.inStock", defaultMessage: "In stock" })}
-                </Switch>
+                <ProductQuickEditForm product={product} onUnsavedChangesChange={onUnsavedChangesChange} />
                 <KeyValueList items={items} />
                 <div className={styles.panelFooter}>
                     <Button startIcon={<Icon name="edit" />} href={editUrl} onClick={navigateWithRouter}>

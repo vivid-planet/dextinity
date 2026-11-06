@@ -291,7 +291,7 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
                                             >
                                                 {item.icon != null && <span className={styles.itemIcon}>{item.icon}</span>}
                                                 <span className={styles.itemLabel}>
-                                                    {ownerState.filter ? <HighlightedLabel label={item.label} terms={terms} /> : item.label}
+                                                    <HighlightedLabel label={item.label} terms={terms} />
                                                 </span>
                                                 {item.shortcut != null && <Kbd className={styles.itemShortcut}>{item.shortcut}</Kbd>}
                                             </div>

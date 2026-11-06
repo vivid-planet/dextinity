@@ -1,9 +1,11 @@
-import type { FieldValidator } from "final-form";
+import { type FieldValidator, getIn } from "final-form";
 import { type ReactNode, type Ref, useMemo } from "react";
 import { useField, useForm } from "react-final-form";
 
+import { useFieldAdapterConfig } from "../fieldAdapterConfig/FieldAdapterConfigProvider";
 import { useFieldElementRef } from "../focusOnError/fieldElements";
 import { mergeRefs } from "../utils/mergeRefs";
+import { fieldValidationProps } from "./fieldValidationProps";
 import type { FinalFormFieldConfig } from "./finalFormFieldConfig";
 
 const defaultRequiredMessage = "Required";
@@ -18,9 +20,8 @@ export interface UseFieldAdapterOptions<FieldValue, ControlValue> extends FinalF
     isEmpty?: (value: FieldValue) => boolean;
 }
 
-interface FieldAdapterValidationProps {
-    state?: "error";
-    validationMessage?: ReactNode;
+function warningFromData(data: unknown): ReactNode {
+    return typeof data === "object" && data !== null && "warning" in data ? (data.warning as ReactNode) : undefined;
 }
 
 export function useFieldAdapter<FieldValue, ControlValue, Element extends HTMLElement>(
@@ -30,19 +31,27 @@ export function useFieldAdapter<FieldValue, ControlValue, Element extends HTMLEl
         requiredMessage = defaultRequiredMessage,
         isEmpty = isEmptyValue,
         validate,
+        warn,
         ...config
     }: UseFieldAdapterOptions<FieldValue, ControlValue>,
     forwardedRef: Ref<Element> | undefined,
 ) {
     const form = useForm("useFieldAdapter");
+    const adapterConfig = useFieldAdapterConfig();
     const validateWithRequired: FieldValidator<FieldValue> | undefined = required
         ? (value, allValues, meta) => (isEmpty(value) ? requiredMessage : validate?.(value, allValues, meta))
         : validate;
     const { input, meta } = useField<FieldValue, Element, ControlValue>(name, { ...config, validate: validateWithRequired });
 
     const error: ReactNode = meta.error || (meta.dirtySinceLastSubmit ? undefined : meta.submitError);
-    const showsError = Boolean(error) && (meta.touched || meta.submitFailed);
-    const validationProps: FieldAdapterValidationProps = showsError ? { state: "error", validationMessage: error } : {};
+    const warning: ReactNode = warningFromData(meta.data) ?? warn?.(getIn(form.getState().values, name) as FieldValue);
+    const validationProps = fieldValidationProps({
+        hasError: Boolean(error),
+        error,
+        warning,
+        touchedOrSubmitted: Boolean(meta.touched || meta.submitFailed),
+        config: adapterConfig,
+    });
 
     const elementRef = useFieldElementRef(form, name);
     const ref = useMemo(() => mergeRefs<Element>(forwardedRef, elementRef), [forwardedRef, elementRef]);

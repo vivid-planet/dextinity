@@ -64,6 +64,7 @@ Shared by both adapter packages:
 - **`required`** — marks the field where the ui component supports it (star and `aria-required` on the framed fields, `CheckboxField`, `SwitchField`, `RadioGroupField`, and `CheckboxGroupField`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing; for `DateRangeField`, a range without both ends is missing. A custom validation still runs on a non-empty value.
 - **`requiredMessage`** — the message for a missing required value. Defaults to `"Required"`; pass a translated text.
 - **`actions`** (`InputField`, `TextareaField`, `SelectField`, `ComboboxField`, `PickerField`, `RichTextEditorField`) — content at the label as in the ui component, or a function `({ value, setValue }) => ReactNode` to connect `FieldActions`, e.g. `actions={({ setValue }) => <FieldActions aiAssist onAiSuggest={suggest} onAiAccept={setValue} />}`.
+- **`warn`** — `(value) => ReactNode`: a warning for the field's value, shown as `state="warning"` with the message as `validationMessage`. It never blocks submitting, and an error wins over it. See [Validation](#validation).
 - **`ref`** — forwarded to the ui component, so it reaches the same element as on the component itself.
 - **`onFocus`** — still passed through, called after the adapter's own handler.
 - Every other prop of the ui component passes through unchanged. `value`/`checked`, `onChange`, `onBlur`, `state`, and `validationMessage` are not available: the adapter sets them from the field.
@@ -87,9 +88,40 @@ An empty form value (`undefined`, or `""` from React Final Form's default `forma
 
 ### Validation
 
-A field shows its error once it was touched (blurred) or the form was submitted: `state="error"` with the message as `validationMessage`. A submit error for the field (returned from `onSubmit`) shows the same way until the field changes. Controls without a field frame – `CheckboxField`, `SwitchField`, `RadioGroupField`, `CheckboxGroupField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` – show it below the control, the same way.
+By default, a field shows its error once it was touched (blurred) or the form was submitted (see [When messages show](#when-messages-show)): `state="error"` with the message as `validationMessage`. A submit error for the field (returned from `onSubmit`) shows the same way until the field changes. Controls without a field frame – `CheckboxField`, `SwitchField`, `RadioGroupField`, `CheckboxGroupField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` – show it below the control, the same way.
 
 To focus the first field with an error when submitting fails, in document order, add the `focusOnError` decorator to the `<Form>`: `decorators={[focusOnError]}`. React Final Form has no focus on error of its own. The boxes of a checkbox group count as one field, focused at the first box.
+
+#### Warnings
+
+A warning points out something to check without blocking submitting, e.g. a title longer than recommended. The field shows it as `state="warning"`; an error shown at the same time wins. Two sources:
+
+- **`warn`** on the adapter, for a rule on the field's own value: `<InputField name="title" label="Title" warn={(title) => (title?.length > 60 ? "Longer than recommended" : undefined)} />`.
+- **`meta.data.warning`**, React Final Form's convention for warnings, for anything else: a rule across fields or a hint from the server. Set it with a mutator, e.g. `setFieldData` of `final-form-set-field-data`, from a decorator or an effect. It takes precedence over `warn`.
+
+#### When messages show
+
+By default, errors and warnings show once the field was touched or the form was submitted. Wrap forms or a part of one in `FieldAdapterConfigProvider` to change that:
+
+```tsx
+<FieldAdapterConfigProvider showErrors="always" showWarnings="always">
+    <BlockForm />
+</FieldAdapterConfigProvider>
+```
+
+- **`showErrors`** — `"touched-or-submitted"` (default) or `"always"`. Use `"always"` for forms that save on every change, e.g. block forms in an editor, where no submit reveals the errors.
+- **`showWarnings`** — the same, for warnings.
+
+A nested provider overrides the settings it sets and inherits the others.
+
+### Field arrays and conditional groups
+
+The adapters take any path as `name`, so rows of fields and groups shown on a condition need nothing special:
+
+- **Rows**, e.g. a list of addresses: render one set of adapters per item with names like `addresses[1].street`, keyed by a stable id, not the index. Add and remove items with `form.change`, or with `FieldArray` and the `push`/`remove` mutators of `react-final-form-arrays`, which also move the touched and error states with the rows.
+- **Conditional groups**: an unmounted adapter stops validating, so a hidden required field doesn't block submitting. Its value stays in the form values; remove it in `onSubmit` (or with `form.change(name, undefined)`) when hidden values must not be saved.
+
+The story `Forms/Final Form/Field arrays` shows both.
 
 ### React Final Form configuration
 
@@ -99,14 +131,15 @@ Each adapter takes the field configuration of `useField`, typed as `FinalFormFie
 
 Shared by both adapter packages, for the content of a form:
 
-| Export                   | Purpose                                                                                                                                    |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `useFormSaveState()`     | `{ state, savedAt }` for `SaveState`: `saving` while submitting, `error` after a failed submit, `dirty` with unsaved changes, else `saved` |
-| `useHasUnsavedChanges()` | Whether the form has changes that are not saved, e.g. to ask with a `ConfirmDialog` before leaving                                         |
+| Export                       | Purpose                                                                                                                                    |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `FieldAdapterConfigProvider` | When the adapters inside it show errors and warnings (`showErrors`, `showWarnings`): once touched or submitted, or always                  |
+| `useFormSaveState()`         | `{ state, savedAt }` for `SaveState`: `saving` while submitting, `error` after a failed submit, `dirty` with unsaved changes, else `saved` |
+| `useHasUnsavedChanges()`     | Whether the form has changes that are not saved, e.g. to ask with a `ConfirmDialog` before leaving                                         |
 
 A successful submit counts as saved even if the form keeps its initial values. Changes made while a save is running count as unsaved. A submit counts as failed when `onSubmit` returns submit errors, and reports `error` until the next change; a submit blocked by validation errors doesn't change the state.
 
-Shared types: `FieldAdapterBaseProps` (`name`, `required`, `requiredMessage`), `FieldAdapterActions<Value>` and `FieldAdapterActionsContext<Value>` (the `actions` prop), and `<Adapter>Props` for each adapter.
+Shared types: `FieldAdapterBaseProps` (`name`, `required`, `requiredMessage`), `FieldAdapterConfig`, `FieldAdapterConfigProviderProps`, and `FieldMessageTiming` (the provider), `FieldAdapterActions<Value>` and `FieldAdapterActionsContext<Value>` (the `actions` prop), and `<Adapter>Props` for each adapter.
 
 Specific to React Final Form:
 

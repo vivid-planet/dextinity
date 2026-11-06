@@ -23,7 +23,7 @@ export interface MenuSlotProps {
 export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
     /** The element that opens the menu, e.g. an `IconButton`. It must accept a ref and event handlers; it gets `aria-haspopup` and `aria-expanded`. */
     trigger: ReactElement;
-    /** The entries: `MenuItem`, `MenuRadioGroup`, `MenuGroup`, `MenuSeparator`, and `MenuSubmenu`. */
+    /** The entries: `MenuItem`, `MenuCheckboxItem`, `MenuRadioGroup`, `MenuGroup`, `MenuSeparator`, and `MenuSubmenu`. */
     children: ReactNode;
     /** Whether the menu is open. */
     open: boolean;

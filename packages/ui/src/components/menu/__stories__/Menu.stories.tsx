@@ -105,6 +105,8 @@ export const Default: Story = {
         await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(true));
         const menu = await screen.findByRole("menu");
         await waitFor(() => expect(menu).toBeVisible());
+        // The menu takes the focus a frame after opening; the arrow keys only move through it from there
+        await waitFor(() => expect(menu).toHaveFocus());
         await userEvent.keyboard("{ArrowDown}");
         await waitFor(() => expect(screen.getByRole("menuitem", { name: /Edit/ })).toHaveFocus());
         await userEvent.keyboard("{ArrowDown}");

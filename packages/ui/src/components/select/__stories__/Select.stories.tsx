@@ -144,8 +144,10 @@ export const Keyboard: Story = {
         trigger.focus();
         await userEvent.keyboard("{ArrowDown}");
         const listbox = await screen.findByRole("listbox");
-        // Opening highlights the first option asynchronously; moving on before that would highlight it instead of the next one
-        await waitFor(() => expect(within(listbox).getByRole("option", { name: "Vienna" })).toHaveAttribute("data-highlighted"));
+        const vienna = within(listbox).getByRole("option", { name: "Vienna" });
+        // The chosen option is highlighted on opening but only takes the focus a frame later; until then, the arrow keys go nowhere
+        await waitFor(() => expect(vienna).toHaveAttribute("data-highlighted"));
+        await waitFor(() => expect(vienna).toHaveFocus());
         await userEvent.keyboard("{ArrowDown}");
         await waitFor(() => expect(within(listbox).getByRole("option", { name: "Graz" })).toHaveAttribute("data-highlighted"));
         await userEvent.keyboard("{Enter}");

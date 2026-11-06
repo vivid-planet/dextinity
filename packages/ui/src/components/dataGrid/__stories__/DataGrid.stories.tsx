@@ -445,6 +445,15 @@ export const InlineEditing: Story = {
         await userEvent.click(await screen.findByRole("option", { name: "Remote" }));
         await waitFor(() => expect(args.onCellChange).toHaveBeenLastCalledWith(expect.objectContaining({ columnKey: "location", value: "Remote" })));
         await waitFor(() => expect(closestOf(secondRow.getByText("Remote"), "td")).toHaveFocus());
+
+        await userEvent.keyboard("{Enter}");
+        await screen.findByRole("option", { name: "Remote" });
+        await userEvent.keyboard("{Tab}");
+        const applicationsEditor = within(canvasElement).getByRole("textbox", { name: "Applications" });
+        await waitFor(() => expect(applicationsEditor).toHaveFocus());
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(closestOf(secondRow.getByRole("checkbox", { name: "Featured" }), "tr").querySelector("td:focus")).not.toBeNull());
+        await expect(screen.queryByRole("listbox")).toBeNull();
     },
 };
 

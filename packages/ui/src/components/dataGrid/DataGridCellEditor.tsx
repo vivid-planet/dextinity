@@ -66,12 +66,14 @@ function SelectEditor({
     label,
     onCommit,
     onCancel,
+    onKeyDown,
 }: {
     options: DataGridEditorOption[];
     draft: unknown;
     label: string;
     onCommit: (value: unknown) => void;
     onCancel: () => void;
+    onKeyDown: (event: KeyboardEvent<HTMLElement>) => void;
 }) {
     const { anchor, anchorRef, container } = useThemePortalContainer<HTMLButtonElement>();
     const optionsByKey = new Map(options.map((option) => [optionKey(option.value), option]));
@@ -103,7 +105,17 @@ function SelectEditor({
                     align="start"
                     alignItemWithTrigger={false}
                 >
-                    <BaseSelect.Popup className={styles.editorPopup}>
+                    <BaseSelect.Popup
+                        className={styles.editorPopup}
+                        // The grid moves the focus itself after the select closes, e.g. into the next cell's editor on Tab
+                        finalFocus={false}
+                        onKeyDown={(event) => {
+                            // The select handles Enter and Escape itself; Tab moves on like in the other editors
+                            if (event.key === "Tab") {
+                                onKeyDown(event);
+                            }
+                        }}
+                    >
                         <BaseSelect.List className={styles.editorList}>
                             {options.map((option) => (
                                 <BaseSelect.Item
@@ -141,7 +153,9 @@ export function DataGridCellEditor<Row>({
 }: DataGridCellEditorProps<Row>): ReactNode {
     switch (editor.type) {
         case "select":
-            return <SelectEditor options={editor.options} draft={draft} label={label} onCommit={onCommit} onCancel={onCancel} />;
+            return (
+                <SelectEditor options={editor.options} draft={draft} label={label} onCommit={onCommit} onCancel={onCancel} onKeyDown={onKeyDown} />
+            );
         case "custom":
             return (
                 <div className={styles.editorCustom} onKeyDown={onKeyDown}>

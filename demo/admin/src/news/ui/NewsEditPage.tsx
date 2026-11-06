@@ -487,7 +487,7 @@ function NewsEditFormContent({ baseUrl, savedNews, createdId, form, addToast }: 
                                     variant="outlined"
                                     color="error"
                                     size="small"
-                                    startIcon={<Icon name="trash" />}
+                                    startIcon={<Icon name="delete" />}
                                     onClick={() => setDeleteDialogOpen(true)}
                                 >
                                     {intl.formatMessage({ id: "uiDemo.news.edit.delete", defaultMessage: "Delete permanently" })}
@@ -596,7 +596,7 @@ function NewsEditFormContent({ baseUrl, savedNews, createdId, form, addToast }: 
                     defaultMessage: "This can't be undone. To hide the news from the site and keep it, switch off “Active” instead.",
                 })}
                 confirmLabel={intl.formatMessage({ id: "uiDemo.news.edit.delete", defaultMessage: "Delete permanently" })}
-                confirmIcon={<Icon name="trash" />}
+                confirmIcon={<Icon name="delete" />}
                 onConfirm={() => void deletePermanently()}
                 loading={deleting}
                 labels={{ cancel: intl.formatMessage({ id: "uiDemo.news.list.deleteDialog.cancel", defaultMessage: "Cancel" }) }}

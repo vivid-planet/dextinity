@@ -25,7 +25,7 @@ export function RecentlyEditedCard({ pageTreeUrl }: RecentlyEditedCardProps) {
     return (
         <Card
             title={intl.formatMessage({ id: "overview.recentlyEdited.title", defaultMessage: "Recently edited" })}
-            icon={<Icon name="recent" duotone />}
+            icon={<Icon name="time" duotone />}
             link={
                 <Link render={<RouterLink to={pageTreeUrl} />} endIcon={<Icon name="arrow-right" />}>
                     <FormattedMessage id="overview.recentlyEdited.pageTree" defaultMessage="Page tree" />
@@ -38,7 +38,7 @@ export function RecentlyEditedCard({ pageTreeUrl }: RecentlyEditedCardProps) {
                 <LoadError onRetry={() => refetch()} />
             ) : nodes.length === 0 ? (
                 <EmptyState
-                    icon={<Icon name="page" />}
+                    icon={<Icon name="file" />}
                     title={intl.formatMessage({ id: "overview.recentlyEdited.empty", defaultMessage: "No pages yet" })}
                 />
             ) : (

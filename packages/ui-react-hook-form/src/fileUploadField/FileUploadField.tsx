@@ -40,7 +40,13 @@ export const FileUploadField = forwardRef(function FileUploadField<TFieldValues 
             value={toFileUploadValue(field.value)}
             required={options.required}
             onChange={field.onChange}
-            onBlur={field.onBlur}
+            onBlur={(event) => {
+                // Moving between the field's own buttons, or to the file dialog, isn't leaving the field, so it isn't touched yet
+                const leavesField = event.relatedTarget == null ? document.hasFocus() : !event.currentTarget.contains(event.relatedTarget as Node);
+                if (leavesField) {
+                    field.onBlur();
+                }
+            }}
         />
     );
 }) as <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(

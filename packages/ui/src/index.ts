@@ -32,6 +32,9 @@ export {
 export { BlockListHeader, type BlockListHeaderLabels, type BlockListHeaderOwnerState } from "./components/blockList/BlockListHeader";
 export { type BlockListHeaderProps, type BlockListHeaderSlotProps } from "./components/blockList/BlockListHeader";
 export { defaultBlockListHeaderLabels } from "./components/blockList/BlockListHeader";
+export { BlockPicker, type BlockPickerCategory, type BlockPickerItem, type BlockPickerLabels } from "./components/blockPicker/BlockPicker";
+export { type BlockPickerOwnerState, type BlockPickerProps, type BlockPickerSlotProps } from "./components/blockPicker/BlockPicker";
+export { defaultBlockPickerLabels } from "./components/blockPicker/BlockPicker";
 export { Breadcrumbs, type BreadcrumbsItem, type BreadcrumbsLabels, type BreadcrumbsSlotProps } from "./components/breadcrumbs/Breadcrumbs";
 export { type BreadcrumbsOwnerState, type BreadcrumbsProps, type BreadcrumbsSeparator } from "./components/breadcrumbs/Breadcrumbs";
 export {

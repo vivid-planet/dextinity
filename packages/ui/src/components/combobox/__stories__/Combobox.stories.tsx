@@ -128,7 +128,7 @@ export const Loading: Story = {
     ),
     play: async ({ canvas }) => {
         await userEvent.click(canvas.getByRole("combobox", { name: "Category" }));
-        await expect(await screen.findByText("Loading…")).toBeVisible();
+        await waitFor(() => expect(screen.getByText("Loading…")).toBeVisible());
     },
 };
 
@@ -158,7 +158,7 @@ export const LoadingError: Story = {
     },
     play: async ({ canvas }) => {
         await userEvent.click(canvas.getByRole("combobox", { name: "Category" }));
-        await expect(await screen.findByText("The options couldn't be loaded.")).toBeVisible();
+        await waitFor(() => expect(screen.getByText("The options couldn't be loaded.")).toBeVisible());
         await expect(screen.getByRole("option", { name: "Retry" })).toBeVisible();
     },
 };
@@ -170,7 +170,7 @@ export const RetryAfterError: Story = {
         await userEvent.keyboard("{ArrowDown}");
         await waitFor(() => expect(screen.getByRole("option", { name: "Retry" })).toHaveAttribute("data-highlighted"));
         await userEvent.keyboard("{Enter}");
-        await expect(await screen.findByRole("option", { name: "Backpacks" })).toBeVisible();
+        await waitFor(() => expect(screen.getByRole("option", { name: "Backpacks" })).toBeVisible());
         await expect(context.canvas.getByRole("combobox", { name: "Category" })).toHaveValue("");
         await expect(context.args.onChange).not.toHaveBeenCalled();
     },
@@ -182,7 +182,7 @@ export const NoResults: Story = {
         const input = canvas.getByRole("combobox", { name: "Category" });
         await userEvent.click(input);
         await userEvent.type(input, "zzz");
-        await expect(await screen.findByText("No results")).toBeVisible();
+        await waitFor(() => expect(screen.getByText("No results")).toBeVisible());
     },
 };
 

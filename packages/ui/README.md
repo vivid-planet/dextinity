@@ -13,13 +13,28 @@ import "@fontsource-variable/inter";
 import "@dextinity/ui/css";
 ```
 
+### Forms
+
+Every form uses a form library. The fields here are plain controlled components; an adapter package binds them to the library, with the same adapter names and props in both:
+
+- [`@dextinity/ui-react-final-form`](../ui-react-final-form/README.md) for React Final Form
+- [`@dextinity/ui-react-hook-form`](../ui-react-hook-form/README.md) for React Hook Form
+
+```tsx
+import { InputField } from "@dextinity/ui-react-final-form";
+
+<InputField name="title" label="Title" required />;
+```
+
+The adapters' stories are part of this package's Storybook, under `Forms`.
+
 ## Experimental
 
 Any export may change or be removed at any time, without deprecation notice. Changesets are not created for changes within this package.
 
 ## Non-goals
 
-- **No non-UI logic.** Forms (`final-form`, `react-hook-form`), routing (`react-router`), data fetching (Apollo), and similar concerns stay out.
+- **No non-UI logic.** Forms (`final-form`, `react-hook-form`), routing (`react-router`), data fetching (Apollo), and similar concerns stay out. Forms connect the controlled fields to a form library through an adapter package (see [Forms](#forms)).
 - **No dependency on `@mui/material`, `@mui/system`, Emotion, or any other part of the existing `@dextinity/admin` styling stack.** This package is a fresh foundation; cross-imports reintroduce the competing system it removes.
 
 ## Folder and file names

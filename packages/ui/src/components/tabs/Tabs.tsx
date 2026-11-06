@@ -168,6 +168,7 @@ export const Tabs = forwardRef(function Tabs<Value extends string = string>(
                             nativeButton: false,
                             render: <TabSlot href={item.href} />,
                             onClick: (event: BaseUIEvent<MouseEvent<HTMLElement>>) => {
+                                tabProps.onClick?.(event as BaseUIEvent<MouseEvent<HTMLButtonElement>>);
                                 if (item.disabled) {
                                     event.preventDefault();
                                 } else if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {

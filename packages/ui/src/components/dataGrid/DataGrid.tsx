@@ -1049,6 +1049,8 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                 onKeyDown?.(event);
                 if (event.key === "Escape" && !event.defaultPrevented && clearSelectionOnEscape && selectable && selectedIds.length > 0) {
                     event.preventDefault();
+                    // Escape only clears the selection; it must not also close a dialog the grid sits in
+                    event.stopPropagation();
                     onSelectionChange?.([]);
                 }
             }}

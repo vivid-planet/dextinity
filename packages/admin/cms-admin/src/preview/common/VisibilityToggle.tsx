@@ -1,7 +1,5 @@
-import { InvisibleItemHide, InvisibleItemShow } from "@dextinity/admin-icons";
+import { Icon, IconButton } from "@dextinity/ui";
 import { useIntl } from "react-intl";
-
-import { ToggleButton } from "./ToggleButton";
 
 interface Props {
     showOnlyVisible: boolean;
@@ -11,22 +9,20 @@ interface Props {
 function VisibilityToggle({ showOnlyVisible, onChange }: Props) {
     const intl = useIntl();
 
-    const handleToggleVisibilityClick = () => {
-        onChange(!showOnlyVisible);
-    };
-
     return (
-        <ToggleButton
-            value="showOnlyVisbile"
-            onClick={handleToggleVisibilityClick}
-            selected={!showOnlyVisible}
-            title={intl.formatMessage({
-                id: "dextinity.preview.showOnlyVisible",
-                defaultMessage: "Show only visible blocks",
-            })}
+        <IconButton
+            variant="text"
+            color="secondary"
+            size="small"
+            aria-label={
+                showOnlyVisible
+                    ? intl.formatMessage({ id: "dextinity.preview.showInvisible", defaultMessage: "Show invisible blocks" })
+                    : intl.formatMessage({ id: "dextinity.preview.showOnlyVisible", defaultMessage: "Show only visible blocks" })
+            }
+            onClick={() => onChange(!showOnlyVisible)}
         >
-            {showOnlyVisible ? <InvisibleItemHide /> : <InvisibleItemShow />}
-        </ToggleButton>
+            <Icon name={showOnlyVisible ? "invisible-item-show" : "invisible-item-hide"} />
+        </IconButton>
     );
 }
 

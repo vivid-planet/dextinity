@@ -1,37 +1,32 @@
-import { Link } from "@mui/material";
+import { DevicePreview } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 
 export const Root = styled("div")`
+    position: fixed;
+    inset: 0;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    box-sizing: border-box;
+    gap: var(--dextinity-space-2);
+    padding: var(--dextinity-space-2) var(--dextinity-space-3) var(--dextinity-space-3);
+    background: var(--dextinity-color-surface);
+    color: var(--dextinity-color-text);
+`;
+
+export const Header = styled("header")`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-block-size: 40px;
 `;
 
 export const SiteInformation = styled("div")`
-    display: flex;
-    align-items: center;
-    color: ${({ theme }) => theme.palette.common.white};
-    padding: 0 6px;
-    gap: 20px;
-`;
-
-export const LogoWrapper = styled("div")`
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--dextinity-space-2);
 `;
 
-export const SiteLinkWrapper = styled("div")`
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-`;
-
-export const SiteLink = styled(Link)`
-    color: ${({ theme }) => theme.palette.common.white};
-    text-decoration-color: currentColor;
-`;
-
-export const ActionsContainer = styled("div")`
-    background-color: ${({ theme }) => theme.palette.grey["A400"]};
+export const PreviewArea = styled(DevicePreview)`
+    flex: 1;
+    min-block-size: 0;
 `;

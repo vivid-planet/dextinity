@@ -1776,9 +1776,6 @@ importers:
       p-debounce:
         specifier: ^6.0.0
         version: 6.0.0
-      react-cool-dimensions:
-        specifier: ^3.0.1
-        version: 3.0.1(react@19.3.1)
       react-dropzone:
         specifier: ^20.1.4
         version: 20.1.4(@types/react@19.3.0)(react@19.3.1)
@@ -17578,11 +17575,6 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
-
-  react-cool-dimensions@3.0.1:
-    resolution: {integrity: sha512-DUsDB5WUN1Qh6fJJlBtqFKCktrZCPRYcVn8NTeM6hP/5AhZNjDOa2sC2Dg0EM3WUObPDNV5nFLA34vHQfahUeg==}
-    peerDependencies:
-      react: '>= 16.8.0'
 
   react-date-range@2.0.1:
     resolution: {integrity: sha512-jwKYc9zcjYMg2hWbPht+6BF2wjGG5DkRVNJLRXn2Y0B/QCOOnvQX6YXziZVujVADWmgsBaoQnILdmzYw+Bwh0g==}
@@ -37412,10 +37404,6 @@ snapshots:
     dependencies:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
-
-  react-cool-dimensions@3.0.1(react@19.3.1):
-    dependencies:
-      react: 19.3.1
 
   react-date-range@2.0.1(date-fns@4.4.0)(react@19.3.1):
     dependencies:

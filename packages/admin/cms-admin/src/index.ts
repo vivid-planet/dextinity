@@ -154,6 +154,7 @@ export type { ContentScope, ContentScopeProviderProps, ContentScopeValues, UseCo
 export { ContentScopeProvider, useContentScope } from "./contentScope/Provider";
 export type { ContentScopeConfigProps } from "./contentScope/useContentScopeConfig";
 export { useContentScopeConfig } from "./contentScope/useContentScopeConfig";
+export { getContentScopeLabel } from "./contentScope/utils/getContentScopeLabel";
 export { CronJobsPage } from "./cronJobs/CronJobsPage";
 export { JobRuntime } from "./cronJobs/JobRuntime";
 export { DamFileDownloadLinkBlock } from "./dam/blocks/DamFileDownloadLinkBlock";
@@ -235,6 +236,7 @@ export {
     type PageContentEditorProps,
     type PageContentEditorTab,
 } from "./pages/editor/PageContentEditor";
+export { PageEditorHeader, type PageEditorHeaderProps } from "./pages/editor/PageEditorHeader";
 export { UnsavedChangesPrompt, type UnsavedChangesPromptProps } from "./pages/editor/UnsavedChangesPrompt";
 export { PagesPage } from "./pages/pagesPage/PagesPage";
 export type { AllCategories } from "./pages/pageTree/PageTreeContext";

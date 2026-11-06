@@ -9,7 +9,7 @@ What mail clients change in dark mode, and the techniques tested against them. A
 | Gmail iOS                 | Background and text colors; leaves background images                                                                  |
 | Outlook on the web        | Background and text colors; dark backgrounds get lighter; leaves background images                                    |
 | Outlook iOS               | Background and text colors; dark backgrounds get lighter; leaves background images                                    |
-| Outlook Mac               | Background colors; leaves background images                                                                           |
+| Outlook Mac               | Background and text colors; leaves borders of table cells and background images                                       |
 | Yahoo Mail on the web     | Light background colors; leaves background images                                                                     |
 | Gmail Android             | Light background colors on some phones; inverts images with few colors that it shows at about `64px` or less per side |
 | Classic Outlook (Windows) | Inverts background and text colors, dark backgrounds included; ignores CSS background images; leaves VML fills        |
@@ -63,3 +63,12 @@ In dark mode, several clients make a light content background dark, but leave a 
 ## Classic Outlook
 
 Classic Outlook for Windows ignores CSS background images, so the background-image techniques above fail there. The `background-url` attribute of an MJML section draws a VML background, but that VML moves the content of the section. Draw the background behind the logo as a VML shape with `fillcolor` (a `v:roundrect` for rounded corners), and declare the shape `1px` smaller in width and height than the size it must have (see "No CSS `border-radius` in Outlook" in `SKILL.md`). Put the image in a `v:textbox`, wrap the shape in one `<!--[if mso]>…<![endif]-->` comment, and hide the HTML version with `<!--[if !mso]><!-->…<!--<![endif]-->`. Classic Outlook does not change VML fills in dark mode. Do not set `line-height: 0` on the element that holds the image in the `v:textbox`: classic Outlook then cuts off the top of the image.
+
+## Outlook Selectors
+
+In dark mode, Outlook on the web and Outlook Mac add `data-ogsc` and `data-ogsb` attributes to the mail. A rule such as `[data-ogsc] .x, [data-ogsb] .x { … }` therefore applies to these two Outlook clients only:
+
+- Outlook on the web ignores a rule with the child combinator `>`, such as `[data-ogsb] .x > table`. Use a descendant selector. Attribute selectors such as `[attr="v"]` work.
+- A `background-color` in such a rule has no effect: Outlook on the web darkens it again. A `background-image` of a solid PNG stays.
+- These clients always turn dark text light, and Outlook iOS does too. No CSS kept it dark: not `-webkit-text-fill-color`, `mix-blend-mode`, `filter`, `text-shadow`, or a `color` on an inner `<span>`. Give a light element with dark text, such as a white button, a `background-image` of a solid PNG in a dark color with `!important` in such a rule, so that the light text stays readable.
+- `@media (prefers-color-scheme: dark)` also matches in Outlook on the web and Outlook Mac, but not in the Gmail apps.

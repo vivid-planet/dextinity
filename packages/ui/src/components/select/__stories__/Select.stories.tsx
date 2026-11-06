@@ -84,7 +84,7 @@ const meta = {
     title: "Building blocks/Form fields/Select",
     decorators: [themeDecorator],
     parameters: { tokens: `${selectTokens}\n${fieldTokens}` },
-    render: (args) => <ControlledSelect key={String(args.value)} {...args} />,
+    render: (args) => <ControlledSelect key={String(args.value)} {...(args as SelectProps<boolean>)} />,
     args: {
         name: "location",
         label: "Location",
@@ -252,5 +252,139 @@ export const ReadOnly: Story = {
 export const Small: Story = {
     args: {
         size: "small",
+    },
+};
+
+const sites: SelectOption[] = [
+    {
+        value: "main",
+        textValue: "Main website",
+        label: (
+            <span className={styles.richLabel}>
+                Main website <span className={styles.secondary}>example.com</span>
+            </span>
+        ),
+    },
+    {
+        value: "shop",
+        textValue: "Shop",
+        label: (
+            <span className={styles.richLabel}>
+                Shop <span className={styles.secondary}>shop.example.com</span>
+            </span>
+        ),
+    },
+    {
+        value: "careers",
+        textValue: "Careers",
+        label: (
+            <span className={styles.richLabel}>
+                Careers <span className={styles.secondary}>jobs.example.com</span>
+            </span>
+        ),
+    },
+];
+
+/**
+ * A `label` can be any content, e.g. a translated message. `textValue` then gives the option as plain text, for the search, typeahead,
+ * and the chips' remove buttons.
+ */
+export const RichLabels: Story = {
+    render: (args) => (
+        <ControlledMultipleSelect
+            name="sites"
+            label="Sites"
+            options={sites}
+            initialValue={["main"]}
+            onChange={args.onChange as (value: string[]) => void}
+            multiple
+            searchable
+        />
+    ),
+    play: async ({ args, canvas }) => {
+        await expect(canvas.getByRole("button", { name: "Remove Main website" })).toBeInTheDocument();
+        await userEvent.click(canvas.getByRole("combobox", { name: /Sites/ }));
+        const popup = await screen.findByRole("dialog");
+        await userEvent.type(within(popup).getByRole("combobox"), "car");
+        await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(1));
+        await userEvent.click(screen.getByRole("option", { name: /Careers/ }));
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(["main", "careers"]));
+    },
+};
+
+const pageSizes: SelectOption<number>[] = [10, 25, 50, 100].map((size) => ({ value: size, label: String(size) }));
+
+function NumberSelect({ onChange }: { onChange: (value: number | null) => void }) {
+    const [value, setValue] = useState<number | null>(25);
+    return (
+        <div className={styles.narrow}>
+            <Select<false, number>
+                name="pageSize"
+                label="Rows per page"
+                options={pageSizes}
+                value={value}
+                onChange={(next) => {
+                    onChange(next);
+                    setValue(next);
+                }}
+            />
+        </div>
+    );
+}
+
+/**
+ * Values can be of any type, e.g. numbers.
+ */
+export const NumberValues: Story = {
+    render: (args) => <NumberSelect onChange={args.onChange as (value: number | null) => void} />,
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("combobox", { name: /Rows per page/ }));
+        await userEvent.click(await screen.findByRole("option", { name: "50" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith(50));
+    },
+};
+
+interface Manufacturer {
+    id: string;
+    name: string;
+}
+
+const manufacturers: Manufacturer[] = [
+    { id: "1", name: "Alpine Tools" },
+    { id: "2", name: "Danube Works" },
+    { id: "3", name: "Tyrol Gear" },
+];
+
+function ObjectSelect({ onChange }: { onChange: (value: Manufacturer | null) => void }) {
+    // A copy, as an API response would return it: equal by id, not by reference
+    const [value, setValue] = useState<Manufacturer | null>({ id: "2", name: "Danube Works" });
+    return (
+        <div className={styles.narrow}>
+            <Select<false, Manufacturer>
+                name="manufacturer"
+                label="Manufacturer"
+                options={manufacturers.map((manufacturer) => ({ value: manufacturer, label: manufacturer.name }))}
+                value={value}
+                onChange={(next) => {
+                    onChange(next);
+                    setValue(next);
+                }}
+                getKey={(manufacturer) => manufacturer.id}
+            />
+        </div>
+    );
+}
+
+/**
+ * Objects as values are matched by `getKey` (or `isEqual`), so a value equal to an option's, but not the same object, still shows as chosen.
+ */
+export const ObjectValues: Story = {
+    render: (args) => <ObjectSelect onChange={args.onChange as (value: Manufacturer | null) => void} />,
+    play: async ({ args, canvas }) => {
+        const trigger = canvas.getByRole("combobox", { name: /Manufacturer/ });
+        await expect(trigger).toHaveTextContent("Danube Works");
+        await userEvent.click(trigger);
+        await userEvent.click(await screen.findByRole("option", { name: "Tyrol Gear" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith({ id: "3", name: "Tyrol Gear" }));
     },
 };

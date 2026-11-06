@@ -1,3 +1,14 @@
 .narrow {
     max-inline-size: 420px;
 }
+
+.richLabel {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--dextinity-space-2);
+}
+
+.secondary {
+    color: var(--dextinity-color-text-tertiary);
+    font-size: var(--dextinity-typography-small-size);
+}

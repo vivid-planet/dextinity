@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Typography } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import type { PropsWithChildren, ReactNode } from "react";
 
@@ -13,9 +13,9 @@ export const BlockAdminComponentSectionGroup = ({ children, title }: PropsWithCh
         <Root>
             {title && (
                 <HiddenInSubroute>
-                    <Typography variant="h4" gutterBottom>
+                    <Title variant="title" element="h3">
                         {title}
-                    </Typography>
+                    </Title>
                 </HiddenInSubroute>
             )}
             {children}
@@ -25,6 +25,10 @@ export const BlockAdminComponentSectionGroup = ({ children, title }: PropsWithCh
 
 const Root = styled("div")`
     &:not(:last-child) {
-        margin-bottom: ${({ theme }) => theme.spacing(4)};
+        margin-block-end: var(--dextinity-space-8);
     }
+`;
+
+const Title = styled(Typography)`
+    margin-block-end: var(--dextinity-space-3);
 `;

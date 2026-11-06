@@ -1,4 +1,4 @@
-import { css, Typography } from "@mui/material";
+import { Typography } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import type { PropsWithChildren, ReactNode } from "react";
 
@@ -10,31 +10,31 @@ interface Props {
     disableBottomMargin?: boolean;
 }
 
-export const BlockAdminComponentSection = ({ children, title, disableBottomMargin }: PropsWithChildren<Props>) => {
-    if (title) {
-        return (
-            <Root disableBottomMargin={disableBottomMargin}>
+export const BlockAdminComponentSection = ({ children, title, variant = "normal", disableBottomMargin }: PropsWithChildren<Props>) => {
+    return (
+        <Root data-variant={variant} data-bottom-margin={disableBottomMargin ? "none" : "default"}>
+            {title && (
                 <HiddenInSubroute>
-                    <Title variant="subtitle1">{title}</Title>
+                    <Title variant="section" element="h4">
+                        {title}
+                    </Title>
                 </HiddenInSubroute>
-                {children}
-            </Root>
-        );
-    }
-
-    return <Root disableBottomMargin={disableBottomMargin}>{children}</Root>;
+            )}
+            {children}
+        </Root>
+    );
 };
 
-const Root = styled("div", { shouldForwardProp: (prop) => prop !== "disableBottomMargin" })<Pick<Props, "variant" | "disableBottomMargin">>`
-    ${({ disableBottomMargin, variant, theme }) =>
-        !disableBottomMargin &&
-        css`
-            &:not(:last-child) {
-                margin-bottom: ${theme.spacing(variant === "dense" ? 3 : 4)};
-            }
-        `}
+const Root = styled("div")`
+    &[data-bottom-margin="default"]:not(:last-child) {
+        margin-block-end: var(--dextinity-density-form-gap);
+    }
+
+    &[data-bottom-margin="default"][data-variant="dense"]:not(:last-child) {
+        margin-block-end: var(--dextinity-space-3);
+    }
 `;
 
 const Title = styled(Typography)`
-    margin-bottom: ${({ theme }) => theme.spacing(2)};
+    margin-block-end: var(--dextinity-space-2);
 `;

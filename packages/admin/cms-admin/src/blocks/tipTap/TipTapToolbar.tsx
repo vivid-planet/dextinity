@@ -43,6 +43,7 @@ import { type Editor, useEditorState } from "@tiptap/react";
 import { type ForwardRefExoticComponent, type MouseEvent, type ReactNode, type RefAttributes, useState } from "react";
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
+import { stickyTopVariable } from "../common/stickyTopVariable";
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
 import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions } from "./createTipTapRichTextBlock";
 import type { TipTapTextAlign } from "./extensions/textBlockAttributes";
@@ -428,7 +429,7 @@ export const TipTapToolbar = ({
                 display: "flex",
                 flexWrap: "wrap",
                 position: "sticky",
-                top: 0,
+                top: `var(${stickyTopVariable}, 0px)`,
                 zIndex: 2,
                 borderTop: `1px solid ${greyPalette[100]}`,
                 backgroundColor: muiGreyPalette[100],

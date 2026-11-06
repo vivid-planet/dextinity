@@ -1,9 +1,11 @@
-import { CheckboxField, Field, FinalFormInput } from "@dextinity/admin";
+import { SwitchField } from "@dextinity/ui-react-final-form";
+import { styled } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 
 import type { ExternalLinkBlockData, ExternalLinkBlockInput } from "../blocks.generated";
 import { isLinkTarget } from "../validation/isLinkTarget";
 import { validateLinkTarget } from "../validation/validateLinkTarget";
+import { BlockInputField } from "./form/BlockInputField";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
@@ -118,32 +120,33 @@ export function createExternalLinkBlock<const Options extends ExternalLinkBlockF
                         }}
                         initialValues={state}
                     >
-                        <Field
-                            label={<FormattedMessage id="dextinity.blocks.link.external.targetUrl" defaultMessage="URL" />}
-                            name="targetUrl"
-                            component={FinalFormInput}
-                            fullWidth
-                            validate={(url) => validateLinkTarget(url)}
-                            disableContentTranslation
-                        />
-                        {openInNewWindow && (
-                            <CheckboxField
-                                label={<FormattedMessage id="dextinity.blocks.link.external.openInNewWindow" defaultMessage="Open in new window" />}
-                                name="openInNewWindow"
+                        <Fields>
+                            <BlockInputField
+                                label={<FormattedMessage id="dextinity.blocks.link.external.targetUrl" defaultMessage="URL" />}
+                                name="targetUrl"
+                                type="url"
+                                validate={(url) => validateLinkTarget(url)}
+                                disableContentTranslation
                             />
-                        )}
-                        {noFollow && (
-                            <CheckboxField
-                                label={<FormattedMessage id="dextinity.blocks.link.external.noFollow" defaultMessage="No follow" />}
-                                name="noFollow"
-                                helperText={
-                                    <FormattedMessage
-                                        id="dextinity.blocks.link.external.noFollow.helperText"
-                                        defaultMessage='Adds rel="nofollow" to the link, telling search engines not to follow it. Use for sponsored, paid, user-generated or untrusted links so that no SEO authority is passed to the target.'
-                                    />
-                                }
-                            />
-                        )}
+                            {openInNewWindow && (
+                                <SwitchField name="openInNewWindow">
+                                    <FormattedMessage id="dextinity.blocks.link.external.openInNewWindow" defaultMessage="Open in new window" />
+                                </SwitchField>
+                            )}
+                            {noFollow && (
+                                <SwitchField
+                                    name="noFollow"
+                                    description={
+                                        <FormattedMessage
+                                            id="dextinity.blocks.link.external.noFollow.helperText"
+                                            defaultMessage='Adds rel="nofollow" to the link, telling search engines not to follow it. Use for sponsored, paid, user-generated or untrusted links so that no SEO authority is passed to the target.'
+                                        />
+                                    }
+                                >
+                                    <FormattedMessage id="dextinity.blocks.link.external.noFollow" defaultMessage="No follow" />
+                                </SwitchField>
+                            )}
+                        </Fields>
                     </BlocksFinalForm>
                 </SelectPreviewComponent>
             );
@@ -164,3 +167,9 @@ export function createExternalLinkBlock<const Options extends ExternalLinkBlockF
 
     return block;
 }
+
+const Fields = styled("div")`
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+`;

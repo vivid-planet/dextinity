@@ -1,12 +1,11 @@
-import { Field, FinalFormInput } from "@dextinity/admin";
-import { Box } from "@mui/system";
+import { styled } from "@mui/material/styles";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
 import type { LinkBlockData } from "../blocks.generated";
 import { useBlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
-import { BlockAdminComponentSection } from "./common/BlockAdminComponentSection";
 import { ExternalLinkBlock } from "./ExternalLinkBlock";
 import { createOneOfBlock, type CreateOneOfBlockOptions } from "./factories/createOneOfBlock";
+import { BlockInputField } from "./form/BlockInputField";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { InternalLinkBlock } from "./InternalLinkBlock";
 import type { BlockInterface, LinkBlockInterface } from "./types";
@@ -58,28 +57,16 @@ function createLinkBlock(
             return (
                 <>
                     <OneOfBlock.AdminComponent state={state} updateState={updateState} />
-                    <Box
-                        sx={{
-                            padding: isInPaper ? 3 : 0,
-                            paddingTop: isInPaper ? 0 : 3,
-                        }}
-                    >
-                        <BlockAdminComponentSection>
-                            <BlocksFinalForm<Pick<LinkBlockData, "title">>
-                                onSubmit={({ title }) => {
-                                    updateState({ ...state, title });
-                                }}
-                                initialValues={{ title: state.title }}
-                            >
-                                <Field
-                                    name="title"
-                                    component={FinalFormInput}
-                                    label={<FormattedMessage id="dextinity.blocks.link.title" defaultMessage="Title" />}
-                                    fullWidth
-                                />
-                            </BlocksFinalForm>
-                        </BlockAdminComponentSection>
-                    </Box>
+                    <TitleSection data-in-paper={isInPaper ? "" : undefined}>
+                        <BlocksFinalForm<Pick<LinkBlockData, "title">>
+                            onSubmit={({ title }) => {
+                                updateState({ ...state, title });
+                            }}
+                            initialValues={{ title: state.title }}
+                        >
+                            <BlockInputField name="title" label={<FormattedMessage id="dextinity.blocks.link.title" defaultMessage="Title" />} />
+                        </BlocksFinalForm>
+                    </TitleSection>
                 </>
             );
         },
@@ -105,3 +92,11 @@ function createLinkBlock(
 }
 
 export { createLinkBlock };
+
+const TitleSection = styled("div")`
+    padding-block-start: var(--dextinity-space-4);
+
+    &[data-in-paper] {
+        padding: 0 var(--dextinity-space-4) var(--dextinity-space-4);
+    }
+`;

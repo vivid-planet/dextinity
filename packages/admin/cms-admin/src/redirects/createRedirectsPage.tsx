@@ -1,5 +1,5 @@
 import { Stack, StackPage, StackSwitch, StackToolbar } from "@dextinity/admin";
-import { Document, LinkExternal } from "@dextinity/admin-icons";
+import { Icon } from "@dextinity/ui";
 import type { ComponentType, JSX } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -16,14 +16,14 @@ import { RedirectsGrid } from "./RedirectsGrid";
 const RedirectsInternalLinkBlock: typeof InternalLinkBlock = {
     ...InternalLinkBlock,
     previewContent: (state) => [...(state.targetPage?.path ? [{ type: "text" as const, content: state.targetPage.path }] : [])],
-    icon: (state) => state.targetPage && <Document color="primary" />,
+    icon: (state) => state.targetPage && <Icon name="file" />,
     dynamicDisplayName: (state) => state.targetPage?.name ?? InternalLinkBlock.displayName,
 };
 
 const RedirectsExternalLinkBlock = createExternalLinkBlock({ name: "RedirectsExternalLink", openInNewWindow: false, noFollow: false }, (block) => ({
     ...block,
     previewContent: (state) => [...(state.targetUrl ? [{ type: "text" as const, content: block.displayName }] : [])],
-    icon: (state) => state.targetUrl && <LinkExternal color="primary" />,
+    icon: (state) => state.targetUrl && <Icon name="open-new-tab" />,
     dynamicDisplayName: (state) => state.targetUrl ?? block.displayName,
 }));
 

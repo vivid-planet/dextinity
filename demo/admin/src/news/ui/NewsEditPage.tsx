@@ -5,6 +5,7 @@ import {
     Button,
     ConfirmDialog,
     EditLayout,
+    EmptyState,
     formatShortcut,
     Icon,
     Input,
@@ -101,17 +102,50 @@ export function NewsEditPage({ baseUrl, id }: NewsEditPageProps) {
     const intl = useIntl();
     const { data, error, loading } = useQuery<GQLNewsUiEditQuery, GQLNewsUiEditQueryVariables>(
         newsEditQuery,
-        id ? { variables: { id } } : { skip: true },
+        id ? { variables: { id }, context: LocalErrorScopeApolloContext } : { skip: true },
     );
 
     if (error) {
-        throw error;
+        return <NewsLoadError baseUrl={baseUrl} reason={error.message} />;
     }
 
     return (
         <Stack topLevelTitle={intl.formatMessage({ id: "uiDemo.news.list.title", defaultMessage: "News" })}>
             {loading || (id && !data) ? <NewsEditSkeleton /> : <NewsEditForm baseUrl={baseUrl} news={data?.news} />}
         </Stack>
+    );
+}
+
+interface NewsLoadErrorProps {
+    baseUrl: string;
+    reason: string;
+}
+
+function NewsLoadError({ baseUrl, reason }: NewsLoadErrorProps) {
+    const intl = useIntl();
+    const navigateWithRouter = useRouterLinkClick();
+    return (
+        <EditLayout
+            header={
+                <PageHeader
+                    back={{ label: intl.formatMessage({ id: "uiDemo.news.list.title", defaultMessage: "News" }), href: baseUrl }}
+                    slotProps={{ back: { onClick: navigateWithRouter } }}
+                    title={intl.formatMessage({ id: "uiDemo.news.edit.loadFailed", defaultMessage: "This news can't be opened" })}
+                />
+            }
+        >
+            <Panel>
+                <EmptyState
+                    icon={<Icon name="warning" />}
+                    title={reason}
+                    actions={
+                        <Button variant="outlined" color="secondary" size="small" href={baseUrl} onClick={navigateWithRouter}>
+                            {intl.formatMessage({ id: "uiDemo.news.edit.backToList", defaultMessage: "Back to the news" })}
+                        </Button>
+                    }
+                />
+            </Panel>
+        </EditLayout>
     );
 }
 

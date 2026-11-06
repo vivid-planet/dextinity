@@ -118,7 +118,7 @@ export const ResultCount: Story = {
 export const WithActions: Story = {
     args: {
         actions: (
-            <Button variant="outlined" size="small" startIcon={<Icon name="download" />}>
+            <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="download" />}>
                 Export
             </Button>
         ),

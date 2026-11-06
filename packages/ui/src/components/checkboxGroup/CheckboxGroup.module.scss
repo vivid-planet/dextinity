@@ -45,13 +45,13 @@
     flex-direction: column;
     gap: var(--dextinity-checkbox-group-option-gap);
     margin-inline-start: calc(var(--dextinity-checkbox-size) / 2);
-    padding-inline-start: calc(var(--dextinity-checkbox-group-indent) - var(--dextinity-checkbox-size) / 2);
-    box-shadow: inset var(--dextinity-line-width) 0 0 var(--dextinity-checkbox-group-guide-color);
+    padding-inline-start: calc(var(--dextinity-checkbox-group-indent) - var(--dextinity-checkbox-size) / 2 - var(--dextinity-line-width));
+    border-inline-start: var(--dextinity-line-width) solid var(--dextinity-checkbox-group-guide-color);
 
     .root:not([data-selectablegroups]) & {
         margin-inline-start: 0;
         padding-inline-start: 0;
-        box-shadow: none;
+        border-inline-start: 0;
     }
 }
 

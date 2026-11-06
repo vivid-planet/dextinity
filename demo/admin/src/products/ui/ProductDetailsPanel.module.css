@@ -4,17 +4,6 @@
     gap: var(--dextinity-density-form-gap);
 }
 
-.description {
-    margin: 0;
-    color: var(--dextinity-color-text-secondary);
-}
-
-.quickActions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
 .chips {
     display: inline-flex;
     flex-wrap: wrap;

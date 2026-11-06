@@ -1,5 +1,7 @@
 import { gql } from "@apollo/client";
 
+import { productQuickEditFragment } from "./ProductQuickEditForm";
+
 export const productDetailsQuery = gql`
     query ProductsUiDetails($id: ID!) {
         product(id: $id) {
@@ -10,8 +12,8 @@ export const productDetailsQuery = gql`
             type
             additionalTypes
             price
-            inStock
             status
+            ...ProductsUiQuickEdit
             image
             availableSince
             soldCount
@@ -39,14 +41,5 @@ export const productDetailsQuery = gql`
             }
         }
     }
-`;
-
-export const updateProductInStockMutation = gql`
-    mutation ProductsUiUpdateInStock($id: ID!, $inStock: Boolean!) {
-        updateProduct(id: $id, input: { inStock: $inStock }) {
-            id
-            inStock
-            updatedAt
-        }
-    }
+    ${productQuickEditFragment}
 `;

@@ -4,14 +4,18 @@ import "@fontsource/source-sans-pro/600.css";
 import "@fontsource/source-sans-pro/700.css";
 import "../icons.css";
 
-import type { Preview } from "@storybook/react-vite";
+import type { Decorator, Preview } from "@storybook/react-vite";
 
 import { colorSchemeBackgroundDecorator } from "../src/storybook/colorSchemeBackgroundDecorator";
 import { DocsPage } from "../src/storybook/docs/DocsPage";
+import { themeDecorator } from "../src/storybook/themeDecorator";
+
+// The stories of the form adapter packages can't import this package's story helpers, so they get the toolbar theme here
+const formsThemeDecorator: Decorator = (Story, context) => (context.title.startsWith("Forms/") ? themeDecorator(Story, context) : Story());
 
 const preview: Preview = {
     tags: ["autodocs"],
-    decorators: [colorSchemeBackgroundDecorator],
+    decorators: [colorSchemeBackgroundDecorator, formsThemeDecorator],
     parameters: {
         options: {
             storySort: {
@@ -60,6 +64,8 @@ const preview: Preview = {
                     ],
                     "Page types",
                     ["Overview", "List", "Tree + detail", "Edit", "Finder", "List + side panel"],
+                    "Forms",
+                    ["Final Form", ["Example form"], "React Hook Form", ["Example form"]],
                 ],
             },
         },

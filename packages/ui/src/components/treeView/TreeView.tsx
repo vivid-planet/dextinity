@@ -426,6 +426,10 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                 } else if (fullLabelId == null) {
                     handled = false;
                 }
+                if (handled) {
+                    // Escape only ends the cut or hides the full name; it must not also close a dialog the tree sits in
+                    event.stopPropagation();
+                }
                 break;
             case "*": {
                 const siblingIds = visibleNodes

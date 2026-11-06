@@ -17,6 +17,11 @@ interface Props {
     siteUrl?: string;
 }
 
+/**
+ * The editor next to the block preview, built with MUI.
+ *
+ * @deprecated Use `PageContentEditor` for pages, or `BlockPreviewPane` next to your own editor.
+ */
 function SplitPreview({ url, previewState, children, previewApi, siteUrl }: Props) {
     const intl = useIntl();
     const { minimized, setMinimized } = previewApi;

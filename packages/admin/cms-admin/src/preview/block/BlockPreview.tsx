@@ -13,7 +13,9 @@ interface Props {
 }
 
 /**
- * The block preview of `SplitPreview`, which can be minimized. Editors built with `@dextinity/ui` use `BlockPreviewPane` instead.
+ * The block preview of `SplitPreview`, which can be minimized.
+ *
+ * @deprecated Use `BlockPreviewPane`, built with `@dextinity/ui`.
  */
 function BlockPreview({ url, previewState, previewApi, siteUrl }: Props) {
     const intl = useIntl();

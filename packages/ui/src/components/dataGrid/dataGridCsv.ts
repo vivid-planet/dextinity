@@ -77,5 +77,6 @@ export function downloadDataGridCsv<Row>(fileName: string, options: DataGridCsvO
     document.body.append(link);
     link.click();
     link.remove();
-    URL.revokeObjectURL(url);
+    // Revoked right after the click, some browsers cancel the download before it starts
+    setTimeout(() => URL.revokeObjectURL(url), 0);
 }

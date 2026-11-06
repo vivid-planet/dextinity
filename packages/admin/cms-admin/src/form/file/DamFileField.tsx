@@ -5,7 +5,7 @@ import { styled } from "@mui/material/styles";
 import { type ReactNode, useState } from "react";
 import { type IntlShape, useIntl } from "react-intl";
 
-import { useDamScope } from "../../dam/config/useDamScope";
+import { useDamScopeFromContentScope } from "../../dam/config/useDamScope";
 import { formatFileSize, getDamFinderAssetType, getFileExtension } from "../../dam/finder/damFinderItems";
 import { DamFilePickerDialog } from "./chooseFile/DamFilePickerDialog";
 import { damFileFieldValueQuery, damFileFieldValuesQuery } from "./DamFileField.gql";
@@ -105,7 +105,7 @@ function SingleDamFileField({ allowedMimetypes, placeholder, labels, multiple: _
 function MultipleDamFileField({ allowedMimetypes, placeholder, labels, multiple: _multiple, ...props }: MultipleDamFileFieldProps) {
     const intl = useIntl();
     const client = useApolloClient();
-    const damScope = useDamScope();
+    const damScope = useDamScopeFromContentScope();
     const [loadError, setLoadError] = useState<string>();
 
     return (

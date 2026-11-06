@@ -1,3 +1,5 @@
+export { AppFrame, type AppFrameAiAssistant, type AppFrameProps } from "./appFrame/AppFrame";
+export type { AppFrameScopeDimensionLabels } from "./appFrame/AppFrameScopeSwitcher";
 export { AnchorBlock } from "./blocks/AnchorBlock";
 export { BlockAdminComponentButton } from "./blocks/common/BlockAdminComponentButton";
 export { BlockAdminComponentNestedButton } from "./blocks/common/BlockAdminComponentNestedButton";

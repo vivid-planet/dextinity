@@ -246,6 +246,17 @@ export const Default: Story = {
             <JobAdsPage />
         </PageTypeShell>
     ),
+};
+
+/**
+ * Filtering the list and selecting a row: the bulk action bar appears above the paging.
+ */
+export const FilterAndSelect: Story = {
+    render: () => (
+        <PageTypeShell activeId="job-ads">
+            <JobAdsPage />
+        </PageTypeShell>
+    ),
     play: async ({ canvas }) => {
         const grid = canvas.getByRole("table", { name: "Job ads" });
         await userEvent.click(canvas.getByRole("button", { name: /^Archived/ }));

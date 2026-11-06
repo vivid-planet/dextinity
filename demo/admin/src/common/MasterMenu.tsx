@@ -24,7 +24,6 @@ import { type BrevoContactConfig, getBrevoContactConfig } from "@src/brevo/brevo
 import { additionalFormConfig } from "@src/brevo/brevoModuleConfig/targetGroupFormConfig";
 import { EmailCampaignContentBlock } from "@src/brevo/emailCampaigns/blocks/EmailCampaignContentBlock";
 import { ImportFromPicsum } from "@src/dam/ImportFromPicsum";
-import { DashboardPage } from "@src/dashboard/DashboardPage";
 import { DextinityUiPage } from "@src/dextinityUi/DextinityUiPage";
 import { Link } from "@src/documents/links/Link";
 import { Page } from "@src/documents/pages/Page";
@@ -32,7 +31,8 @@ import { PredefinedPage } from "@src/documents/predefinedPages/PredefinedPage";
 import { EditFooterPage } from "@src/footer/EditFooterPage";
 import type { GQLPageTreeNodeCategory } from "@src/graphql.generated";
 import MainMenu from "@src/mainMenu/MainMenu";
-import { NewsPage } from "@src/news/NewsPage";
+import { NewsUiPage } from "@src/news/ui/NewsUiPage";
+import { OverviewPage } from "@src/overview/OverviewPage";
 import { categoryToUrlParam, pageTreeCategories, urlParamToCategory } from "@src/pageTree/pageTreeCategories";
 import { CreateCapProductPage } from "@src/products/generator/CreateCapProductPage";
 import { ManufacturersPage } from "@src/products/generator/ManufacturersPage";
@@ -98,7 +98,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             icon: <Dashboard />,
             route: {
                 path: "/dashboard",
-                component: DashboardPage,
+                component: OverviewPage,
             },
         },
         {
@@ -155,7 +155,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.news" defaultMessage="News" />,
                     route: {
                         path: "/structured-content/news",
-                        component: NewsPage,
+                        component: NewsUiPage,
                     },
                 },
             ],

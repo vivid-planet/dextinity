@@ -52,4 +52,18 @@ describe("TableBlock: Edit a cell", () => {
         fireEvent.keyDown(editable, { key: "Escape" });
         await waitFor(() => expect(rendered.queryByRole("dialog", { name: "Column 1" })).toBeNull());
     });
+
+    it("should stop editing on Ctrl+Enter in the editor", async () => {
+        const rendered = renderTableBlock(mockStates.default);
+
+        fireEvent.keyDown(getFirstCell(rendered), { key: "Enter" });
+        const editor = await rendered.findByRole("dialog", { name: "Column 1" });
+        const editable = editor.querySelector<HTMLElement>('[contenteditable="true"]');
+        if (!editable) {
+            throw new Error("The cell editor has no editable text");
+        }
+
+        fireEvent.keyDown(editable, { key: "Enter", ctrlKey: true });
+        await waitFor(() => expect(rendered.queryByRole("dialog", { name: "Column 1" })).toBeNull());
+    });
 });

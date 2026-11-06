@@ -50,7 +50,7 @@ function toIsoDate({ year, month, day }: DateParts): IsoDate {
 /**
  * The parts of a `YYYY-MM-DD` value, or `null` when it is not a valid calendar day.
  */
-export function parseIsoDate(value: string | null | undefined): DateParts | null {
+function parseIsoDate(value: string | null | undefined): DateParts | null {
     const match = value?.match(isoDatePattern);
     if (!match) {
         return null;
@@ -103,7 +103,7 @@ export function endOfMonth(date: IsoDate): IsoDate {
 /**
  * The day of the week, 0 for Sunday to 6 for Saturday.
  */
-export function dayOfWeek(date: IsoDate): number {
+function dayOfWeek(date: IsoDate): number {
     return toUtcDate(partsOf(date)).getUTCDay();
 }
 

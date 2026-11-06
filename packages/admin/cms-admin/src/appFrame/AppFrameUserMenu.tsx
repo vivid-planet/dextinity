@@ -14,6 +14,7 @@ import { type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
 
 import { useCurrentUser } from "../userPermissions/hooks/currentUser";
+import { stopImpersonation } from "../userPermissions/utils/handleImpersonation";
 import type { GQLAppFrameSignOutMutation, GQLAppFrameSignOutMutationVariables } from "./AppFrameUserMenu.generated";
 
 const signOutMutation = gql`
@@ -73,6 +74,23 @@ export function AppFrameUserMenu({ colorScheme, onColorSchemeChange, density, on
                 logout: intl.formatMessage({ id: "dextinity.appFrame.userMenu.logout", defaultMessage: "Log out" }),
             }}
         >
+            {user.impersonated && (
+                <>
+                    <MenuGroup
+                        label={intl.formatMessage(
+                            { id: "dextinity.appFrame.userMenu.impersonating", defaultMessage: "Impersonating {name}" },
+                            { name: user.name },
+                        )}
+                    >
+                        <MenuItem
+                            label={intl.formatMessage({ id: "dextinity.generic.stopImpersonation", defaultMessage: "Regain original identity" })}
+                            icon={<Icon name="refresh" />}
+                            onClick={() => void stopImpersonation()}
+                        />
+                    </MenuGroup>
+                    <MenuSeparator />
+                </>
+            )}
             {user.accountUrl && (
                 <>
                     <MenuItem

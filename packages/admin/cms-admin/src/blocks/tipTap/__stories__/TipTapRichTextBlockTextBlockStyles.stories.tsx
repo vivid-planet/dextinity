@@ -388,9 +388,13 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
             await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
             await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Heading 2" }));
 
-            // "Large Heading" is offered by both, so switching keeps it instead of resetting.
+            // "Large Heading" is offered by both, so switching keeps it instead of resetting. The switch is applied once the menu has
+            // closed and moves the focus into the editor, which would close a menu opened before it.
             await waitFor(
                 () => {
+                    expect(canvas.getByRole("button", { name: "Text type" })).toHaveTextContent("Heading 2");
+                    expect(within(document.body).queryByRole("menu")).toBeNull();
+                    expect(canvas.getByRole("textbox")).toHaveFocus();
                     expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Large Heading");
                 },
                 { timeout: 3000 },

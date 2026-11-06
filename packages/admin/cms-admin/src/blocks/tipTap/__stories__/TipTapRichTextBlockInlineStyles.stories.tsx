@@ -241,6 +241,9 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
                     expect(styledEl).toBeTruthy();
                     expect(styledEl).toHaveTextContent("hello");
                     expect(styledEl).toHaveStyle({ backgroundColor: "rgb(255, 243, 205)" });
+                    // The menu applies its choice once it has closed and hands the focus back to the editor
+                    expect(within(document.body).queryByRole("menu")).toBeNull();
+                    expect(canvas.getByRole("textbox")).toHaveFocus();
                 },
                 { timeout: 3000 },
             );
@@ -265,6 +268,8 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
                     expect(tagEl).toBeTruthy();
                     expect(tagEl).toHaveTextContent("hello");
                     expect(tagEl).toHaveStyle({ backgroundColor: "rgb(224, 240, 255)", color: "rgb(0, 102, 204)" });
+                    expect(within(document.body).queryByRole("menu")).toBeNull();
+                    expect(canvas.getByRole("textbox")).toHaveFocus();
                 },
                 { timeout: 3000 },
             );

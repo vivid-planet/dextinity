@@ -37,6 +37,7 @@ function UndoExample() {
                 ) : (
                     <Button
                         variant="outlined"
+                        color="secondary"
                         startIcon={<Icon name="archive" />}
                         onClick={() =>
                             perform({
@@ -52,7 +53,12 @@ function UndoExample() {
                         Archive “Benefits”
                     </Button>
                 )}
-                <Button variant="outlined" startIcon={<Icon name="trash" />} onClick={() => block("“logo.svg” is still in use · nothing deleted")}>
+                <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<Icon name="trash" />}
+                    onClick={() => block("“logo.svg” is still in use · nothing deleted")}
+                >
                     Delete “logo.svg”
                 </Button>
             </div>

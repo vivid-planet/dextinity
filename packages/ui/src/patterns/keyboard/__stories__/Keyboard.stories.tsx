@@ -74,7 +74,7 @@ function ShortcutOverview() {
                 <div className={styles.hint}>
                     <Kbd>?</Kbd>
                     <span>Show keyboard shortcuts</span>
-                    <Button variant="outlined" size="small" onClick={() => setOpen(true)}>
+                    <Button variant="outlined" color="secondary" size="small" onClick={() => setOpen(true)}>
                         Show shortcuts
                     </Button>
                 </div>

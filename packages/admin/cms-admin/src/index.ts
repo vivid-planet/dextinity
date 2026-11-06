@@ -56,7 +56,7 @@ export { composeBlocks } from "./blocks/helpers/composeBlocks/composeBlocks";
 export { createCompositeBlockField } from "./blocks/helpers/composeBlocks/createCompositeBlockField";
 export { createCompositeBlockFields } from "./blocks/helpers/composeBlocks/createCompositeBlockFields";
 export { createBlockSkeleton } from "./blocks/helpers/createBlockSkeleton";
-export { createCompositeBlockSelectField } from "./blocks/helpers/createCompositeBlockSelectField";
+export { type CompositeBlockSelectFieldOption, createCompositeBlockSelectField } from "./blocks/helpers/createCompositeBlockSelectField";
 export { createCompositeBlockSwitchField } from "./blocks/helpers/createCompositeBlockSwitchField";
 export { createCompositeBlockTextField } from "./blocks/helpers/createCompositeBlockTextField";
 export { decomposeUpdateStateAction } from "./blocks/helpers/decomposeUpdateStateAction";

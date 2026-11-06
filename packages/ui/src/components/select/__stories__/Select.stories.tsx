@@ -376,7 +376,7 @@ function ObjectSelect({ onChange }: { onChange: (value: Manufacturer | null) => 
 }
 
 /**
- * Objects as values are matched by `getKey` (or `isEqual`), so a value equal to an option's, but not the same object, still shows as chosen.
+ * Objects as values are matched by `getKey` (or `isOptionEqualToValue`), so a value equal to an option's, but not the same object, still shows as chosen.
  */
 export const ObjectValues: Story = {
     render: (args) => <ObjectSelect onChange={args.onChange as (value: Manufacturer | null) => void} />,

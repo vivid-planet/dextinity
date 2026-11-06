@@ -271,6 +271,7 @@ export const DragAndDrop: Story = {
         fireEvent.dragStart(source, { dataTransfer });
         fireEvent.dragOver(target, { dataTransfer, clientY: rect.top + 2 });
         await waitFor(() => expect(target).toHaveAttribute("data-drop", "before"));
+        await expect(canvas.getByRole("treeitem", { name: "Open positions" })).toHaveAttribute("data-drop", "before");
         fireEvent.drop(target, { dataTransfer, clientY: rect.top + 2 });
         await waitFor(() => expect(args.onMove).toHaveBeenCalledWith({ id: "apply", targetId: "jobs", position: "before" }));
 

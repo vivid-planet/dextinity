@@ -510,7 +510,9 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                     }}
                     role="treeitem"
                     className={styles.item}
+                    style={{ "--dextinity-tree-view-node-level": level - 1 } as CSSProperties}
                     data-id={node.id}
+                    data-drop={drop === "before" || drop === "after" ? drop : undefined}
                     aria-labelledby={node.hiddenInMenu ? `${partId("label")} ${partId("hidden")}` : partId("label")}
                     aria-describedby={node.status != null ? partId("status") : undefined}
                     aria-level={level}

@@ -5,11 +5,11 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    block-size: var(--dextinity-button-type-icon-button-default-height);
-    padding-block: calc(var(--dextinity-button-type-icon-button-default-padding-vertical) - var(--dextinity-button-border-width));
-    padding-inline: calc(var(--dextinity-button-type-icon-button-default-padding-horizontal) - var(--dextinity-button-border-width));
+    block-size: var(--dextinity-icon-button-default-height);
+    padding-block: calc(var(--dextinity-icon-button-default-padding-vertical) - var(--dextinity-button-border-width));
+    padding-inline: calc(var(--dextinity-icon-button-default-padding-horizontal) - var(--dextinity-button-border-width));
     border: var(--dextinity-button-border-width) solid;
-    border-radius: var(--dextinity-button-type-icon-button-default-radius);
+    border-radius: var(--dextinity-icon-button-default-radius);
     cursor: pointer;
 
     &:focus-visible {
@@ -30,10 +30,10 @@
     }
 
     &[data-size="small"] {
-        block-size: var(--dextinity-button-type-icon-button-small-height);
-        padding-block: calc(var(--dextinity-button-type-icon-button-small-padding-vertical) - var(--dextinity-button-border-width));
-        padding-inline: calc(var(--dextinity-button-type-icon-button-small-padding-horizontal) - var(--dextinity-button-border-width));
-        border-radius: var(--dextinity-button-type-icon-button-small-radius);
+        block-size: var(--dextinity-icon-button-small-height);
+        padding-block: calc(var(--dextinity-icon-button-small-padding-vertical) - var(--dextinity-button-border-width));
+        padding-inline: calc(var(--dextinity-icon-button-small-padding-horizontal) - var(--dextinity-button-border-width));
+        border-radius: var(--dextinity-icon-button-small-radius);
     }
 
     @include buttonColors.colors;
@@ -43,12 +43,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: var(--dextinity-button-type-icon-button-default-icon-size);
-    block-size: var(--dextinity-button-type-icon-button-default-icon-size);
+    inline-size: var(--dextinity-icon-button-default-icon-size);
+    block-size: var(--dextinity-icon-button-default-icon-size);
 
     .root[data-size="small"] & {
-        inline-size: var(--dextinity-button-type-icon-button-small-icon-size);
-        block-size: var(--dextinity-button-type-icon-button-small-icon-size);
+        inline-size: var(--dextinity-icon-button-small-icon-size);
+        block-size: var(--dextinity-icon-button-small-icon-size);
     }
 
     > :is(svg, :global(.dextinityIcon)) {

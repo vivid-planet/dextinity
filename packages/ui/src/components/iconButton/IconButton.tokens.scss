@@ -1,0 +1,13 @@
+@mixin tokens {
+    --dextinity-icon-button-default-height: var(--dextinity-unit-10);
+    --dextinity-icon-button-default-radius: var(--dextinity-brand-radius-control);
+    --dextinity-icon-button-default-padding-horizontal: var(--dextinity-unit-3);
+    --dextinity-icon-button-default-padding-vertical: var(--dextinity-unit-3);
+    --dextinity-icon-button-default-icon-size: 16px;
+
+    --dextinity-icon-button-small-height: var(--dextinity-unit-8);
+    --dextinity-icon-button-small-radius: var(--dextinity-brand-radius-control-small);
+    --dextinity-icon-button-small-padding-horizontal: var(--dextinity-unit-2);
+    --dextinity-icon-button-small-padding-vertical: var(--dextinity-unit-2);
+    --dextinity-icon-button-small-icon-size: 16px;
+}

@@ -5,16 +5,16 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    gap: var(--dextinity-button-type-button-default-gap);
-    block-size: var(--dextinity-button-type-button-default-height);
-    padding-block: calc(var(--dextinity-button-type-button-default-padding-vertical) - var(--dextinity-button-border-width));
-    padding-inline: calc(var(--dextinity-button-type-button-default-padding-horizontal) - var(--dextinity-button-border-width));
+    gap: var(--dextinity-button-default-gap);
+    block-size: var(--dextinity-button-default-height);
+    padding-block: calc(var(--dextinity-button-default-padding-vertical) - var(--dextinity-button-border-width));
+    padding-inline: calc(var(--dextinity-button-default-padding-horizontal) - var(--dextinity-button-border-width));
     border: var(--dextinity-button-border-width) solid;
-    border-radius: var(--dextinity-button-type-button-default-radius);
+    border-radius: var(--dextinity-button-default-radius);
     font-family: var(--dextinity-brand-font-family-sans);
-    font-size: var(--dextinity-button-type-button-default-font-size);
-    font-weight: var(--dextinity-button-type-button-default-font-weight);
-    line-height: var(--dextinity-button-type-button-default-font-line-height);
+    font-size: var(--dextinity-button-default-font-size);
+    font-weight: var(--dextinity-button-default-font-weight);
+    line-height: var(--dextinity-button-default-font-line-height);
     letter-spacing: var(--dextinity-font-letter-spacing-normal);
     white-space: nowrap;
     cursor: pointer;
@@ -37,11 +37,11 @@
     }
 
     &[data-size="small"] {
-        gap: var(--dextinity-button-type-button-small-gap);
-        block-size: var(--dextinity-button-type-button-small-height);
-        padding-block: calc(var(--dextinity-button-type-button-small-padding-vertical) - var(--dextinity-button-border-width));
-        padding-inline: calc(var(--dextinity-button-type-button-small-padding-horizontal) - var(--dextinity-button-border-width));
-        border-radius: var(--dextinity-button-type-button-small-radius);
+        gap: var(--dextinity-button-small-gap);
+        block-size: var(--dextinity-button-small-height);
+        padding-block: calc(var(--dextinity-button-small-padding-vertical) - var(--dextinity-button-border-width));
+        padding-inline: calc(var(--dextinity-button-small-padding-horizontal) - var(--dextinity-button-border-width));
+        border-radius: var(--dextinity-button-small-radius);
     }
 
     @include buttonColors.colors;
@@ -52,12 +52,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: var(--dextinity-button-type-button-default-icon-size);
-    block-size: var(--dextinity-button-type-button-default-icon-size);
+    inline-size: var(--dextinity-button-default-icon-size);
+    block-size: var(--dextinity-button-default-icon-size);
 
     .root[data-size="small"] & {
-        inline-size: var(--dextinity-button-type-button-small-icon-size);
-        block-size: var(--dextinity-button-type-button-small-icon-size);
+        inline-size: var(--dextinity-button-small-icon-size);
+        block-size: var(--dextinity-button-small-icon-size);
     }
 
     > :is(svg, :global(.dextinityIcon)) {

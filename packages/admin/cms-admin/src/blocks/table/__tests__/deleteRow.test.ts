@@ -24,10 +24,10 @@ describe("TableBlock: Delete row", () => {
         expect(rowsAfterDeleting).toHaveLength(rowsBeforeDeleting.length - 1);
 
         const valuesOfRowBelowRowToBeDeleted = within(rowsBeforeDeleting[targetRowIndex + 1])
-            .getAllByRole("gridcell")
+            .getAllByRole("cell")
             .map((cell) => cell.textContent);
         const valuesOfRowAtIndexOfDeletedRow = within(rowsAfterDeleting[targetRowIndex])
-            .getAllByRole("gridcell")
+            .getAllByRole("cell")
             .map((cell) => cell.textContent);
         expect(valuesOfRowAtIndexOfDeletedRow).toEqual(valuesOfRowBelowRowToBeDeleted);
     });

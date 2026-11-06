@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-restricted-imports
-import { DataGridPro } from "@mui/x-data-grid-pro";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, screen, within } from "storybook/test";
@@ -34,9 +32,6 @@ const config: Meta<typeof TableBlockStory> = {
     component: TableBlockStory,
     title: "Debug/blocks/TableBlock",
     tags: ["!autodocs"],
-    parameters: {
-        dataGrid: { component: DataGridPro },
-    },
 };
 
 export default config;
@@ -45,11 +40,23 @@ type Story = StoryObj<typeof config>;
 
 export const ToolbarStaysAtTopOfCellEditor: Story = {
     play: async ({ userEvent }) => {
-        await userEvent.dblClick(await screen.findByRole("gridcell", { name: /^Line/ }, { timeout: 5000 }));
-        const cellEditor = await screen.findByRole("tooltip");
+        await userEvent.dblClick(await screen.findByRole("cell", { name: /^Line/ }, { timeout: 5000 }));
+        const cellEditor = await screen.findByRole("dialog", { name: "Column 1" });
 
         within(cellEditor).getByRole("textbox").scrollIntoView({ block: "end" });
 
-        expect(cellEditor.querySelector(".DextinityAdminRteToolbar-root")?.getBoundingClientRect().top).toBe(cellEditor.getBoundingClientRect().top);
+        const toolbar = cellEditor.querySelector<HTMLElement>(".DextinityAdminRteToolbar-root");
+        expect(toolbar?.getBoundingClientRect().top).toBe(getScrollArea(toolbar).getBoundingClientRect().top);
     },
 };
+
+function getScrollArea(element: HTMLElement | null) {
+    let ancestor = element?.parentElement;
+    while (ancestor) {
+        if (getComputedStyle(ancestor).overflowY === "auto") {
+            return ancestor;
+        }
+        ancestor = ancestor.parentElement;
+    }
+    throw new Error("The element has no scroll area");
+}

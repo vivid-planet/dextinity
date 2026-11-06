@@ -24,7 +24,7 @@ describe("TableBlock: Insert a new row", () => {
         expect(rows).toHaveLength(numberOfRowsAfterInserting);
 
         rows.forEach((row, rowIndex) => {
-            const cells = within(row).getAllByRole("gridcell");
+            const cells = within(row).getAllByRole("cell");
             const cellsExcludingTheDragHandleAndActionsCells = cells.slice(1, cells.length - 1);
 
             cellsExcludingTheDragHandleAndActionsCells.forEach((cell, cellIndex) => {
@@ -53,7 +53,7 @@ describe("TableBlock: Insert a new row", () => {
         expect(rows).toHaveLength(numberOfRowsAfterInserting);
 
         rows.forEach((row, rowIndex) => {
-            const cells = within(row).getAllByRole("gridcell");
+            const cells = within(row).getAllByRole("cell");
             const cellsExcludingTheDragHandleAndActionsCells = cells.slice(1, cells.length - 1);
 
             cellsExcludingTheDragHandleAndActionsCells.forEach((cell, cellIndex) => {
@@ -81,7 +81,7 @@ describe("TableBlock: Insert a new row", () => {
         expect(rows).toHaveLength(numberOfRowsAfterInserting);
 
         rows.forEach((row, rowIndex) => {
-            const cells = within(row).getAllByRole("gridcell");
+            const cells = within(row).getAllByRole("cell");
             const cellsExcludingTheDragHandleAndActionsCells = cells.slice(1, cells.length - 1);
 
             cellsExcludingTheDragHandleAndActionsCells.forEach((cell, cellIndex) => {

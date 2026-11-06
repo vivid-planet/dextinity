@@ -21,10 +21,10 @@ describe("TableBlock: Duplicate a row", () => {
         const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
         const sourceRowElement = rows[sourceRowIndex];
-        const sourceRowCells = within(sourceRowElement).getAllByRole("gridcell");
+        const sourceRowCells = within(sourceRowElement).getAllByRole("cell");
 
         const newRowElement = rows[sourceRowIndex + 1];
-        const newRowCells = within(newRowElement).getAllByRole("gridcell");
+        const newRowCells = within(newRowElement).getAllByRole("cell");
 
         const numberOfRowsAfterInsertingOne = initialBlockData.rows.length + 1;
         expect(rows).toHaveLength(numberOfRowsAfterInsertingOne);

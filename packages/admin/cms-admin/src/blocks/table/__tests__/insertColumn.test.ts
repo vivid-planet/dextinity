@@ -15,12 +15,12 @@ describe("TableBlock: Insert a new column", () => {
         const rendered = renderTableBlock(mockStates.default);
         const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
-        const originalNumberOfCellsInRow = within(rows[0]).getAllByRole("gridcell").length;
+        const originalNumberOfCellsInRow = within(rows[0]).getAllByRole("cell").length;
         const targetColumnIndex = 0;
 
         const originalCellValuesPerRow = rows.map((rowElement) =>
             within(rowElement)
-                .getAllByRole("gridcell")
+                .getAllByRole("cell")
                 .map((cell) => cell.textContent),
         );
 
@@ -28,7 +28,7 @@ describe("TableBlock: Insert a new column", () => {
 
         const newCellValuesPerRow = rows.map((rowElement) =>
             within(rowElement)
-                .getAllByRole("gridcell")
+                .getAllByRole("cell")
                 .map((cell) => cell.textContent),
         );
 
@@ -57,12 +57,12 @@ describe("TableBlock: Insert a new column", () => {
         const rendered = renderTableBlock(initialBlockData);
         const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
-        const originalNumberOfCellsInRow = within(rows[0]).getAllByRole("gridcell").length;
+        const originalNumberOfCellsInRow = within(rows[0]).getAllByRole("cell").length;
         const targetColumnIndex = initialBlockData.columns.length - 1;
 
         const originalCellValuesPerRow = rows.map((rowElement) =>
             within(rowElement)
-                .getAllByRole("gridcell")
+                .getAllByRole("cell")
                 .map((cell) => cell.textContent),
         );
 
@@ -70,7 +70,7 @@ describe("TableBlock: Insert a new column", () => {
 
         const newCellValuesPerRow = rows.map((rowElement) =>
             within(rowElement)
-                .getAllByRole("gridcell")
+                .getAllByRole("cell")
                 .map((cell) => cell.textContent),
         );
 
@@ -98,12 +98,12 @@ describe("TableBlock: Insert a new column", () => {
         const rendered = renderTableBlock(mockStates.default);
         const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
-        const originalNumberOfCellsInRow = within(rows[0]).getAllByRole("gridcell").length;
+        const originalNumberOfCellsInRow = within(rows[0]).getAllByRole("cell").length;
         const targetColumnIndex = 2;
 
         const originalCellValuesPerRow = rows.map((rowElement) =>
             within(rowElement)
-                .getAllByRole("gridcell")
+                .getAllByRole("cell")
                 .map((cell) => cell.textContent),
         );
 
@@ -111,7 +111,7 @@ describe("TableBlock: Insert a new column", () => {
 
         const newCellValuesPerRow = rows.map((rowElement) =>
             within(rowElement)
-                .getAllByRole("gridcell")
+                .getAllByRole("cell")
                 .map((cell) => cell.textContent),
         );
 

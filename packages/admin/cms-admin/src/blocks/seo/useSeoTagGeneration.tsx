@@ -1,4 +1,4 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { type FetchResult, gql, useApolloClient } from "@apollo/client";
 import { LocalErrorScopeApolloContext, useErrorDialog } from "@dextinity/admin";
 import { useCallback, useRef } from "react";
 import { FormattedMessage } from "react-intl";
@@ -26,14 +26,7 @@ export function useSeoTagGeneration() {
 
     const getSeoTags = useCallback(
         async (content: string): Promise<GQLGenerateSeoTagsMutation["generateSeoTags"]> => {
-            const { data, errors } = await apolloClient.mutate<GQLGenerateSeoTagsMutation, GQLGenerateSeoTagsMutationVariables>({
-                mutation: generateSeoTagsMutation,
-                variables: { content, language },
-                context: LocalErrorScopeApolloContext,
-                errorPolicy: "all",
-            });
-
-            if (errors || !data?.generateSeoTags) {
+            const showGenerationFailedError = (error: string) =>
                 errorDialog?.showError({
                     title: (
                         <FormattedMessage
@@ -47,8 +40,26 @@ export function useSeoTagGeneration() {
                             defaultMessage="An error occurred while generating SEO tags. Please try again."
                         />
                     ),
-                    error: errors ? errors[0].message : "Failed to generate SEO tags",
+                    error,
                 });
+
+            let result: FetchResult<GQLGenerateSeoTagsMutation>;
+            try {
+                result = await apolloClient.mutate<GQLGenerateSeoTagsMutation, GQLGenerateSeoTagsMutationVariables>({
+                    mutation: generateSeoTagsMutation,
+                    variables: { content, language },
+                    context: LocalErrorScopeApolloContext,
+                    errorPolicy: "all",
+                });
+            } catch (error) {
+                // Network errors, e.g. a failed request, reject despite errorPolicy "all"
+                showGenerationFailedError(error instanceof Error ? error.message : "Failed to generate SEO tags");
+                throw error;
+            }
+
+            const { data, errors } = result;
+            if (errors || !data?.generateSeoTags) {
+                showGenerationFailedError(errors ? errors[0].message : "Failed to generate SEO tags");
                 throw new Error("Failed to generate SEO tags");
             }
 

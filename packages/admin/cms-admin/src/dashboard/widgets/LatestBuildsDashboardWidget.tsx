@@ -60,7 +60,7 @@ const disableFieldOptions = {
     hideable: false,
 };
 
-const latestBuildsQuery = gql`
+export const latestBuildsQuery = gql`
     query LatestBuilds {
         builds(limit: 5) {
             id

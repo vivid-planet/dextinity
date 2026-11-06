@@ -257,7 +257,10 @@ function DamFilePickerDialogContent({
     });
 
     const isCurrentFolderLoading = loadingFolderIds.includes(folderId) || foldersQuery.loading;
-    const error = foldersQuery.error ?? filesError ?? searchQuery.error;
+    const error = foldersQuery.error ?? filesError;
+    const searchError = isSearching ? searchQuery.error : undefined;
+    const searchTotalCount = searchQuery.data?.damFilesList.totalCount ?? 0;
+    const assetBrowserLabels = createAssetBrowserLabels(intl);
 
     const renderContent = (): ReactNode => {
         if (error) {
@@ -266,6 +269,20 @@ function DamFilePickerDialogContent({
                     icon={<Icon name="warning" />}
                     title={intl.formatMessage({ id: "dextinity.form.file.picker.error", defaultMessage: "The assets couldn't be loaded" })}
                     description={error.message}
+                />
+            );
+        }
+        if (searchError) {
+            return (
+                <EmptyState
+                    icon={<Icon name="warning" />}
+                    title={intl.formatMessage({ id: "dextinity.form.file.picker.searchError", defaultMessage: "The search failed" })}
+                    description={searchError.message}
+                    actions={
+                        <Button variant="outlined" color="secondary" onClick={() => setSearch("")}>
+                            {assetBrowserLabels.clearSearch}
+                        </Button>
+                    }
                 />
             );
         }
@@ -309,7 +326,19 @@ function DamFilePickerDialogContent({
                         </Button>
                     </>
                 }
-                labels={createAssetBrowserLabels(intl)}
+                labels={{
+                    ...assetBrowserLabels,
+                    resultCount: (count) =>
+                        searchTotalCount > count
+                            ? intl.formatMessage(
+                                  {
+                                      id: "dextinity.form.file.picker.limitedResultCount",
+                                      defaultMessage: "First {count} of {total} results",
+                                  },
+                                  { count, total: searchTotalCount },
+                              )
+                            : (assetBrowserLabels.resultCount?.(count) ?? ""),
+                }}
             />
         );
     };

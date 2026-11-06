@@ -38,6 +38,7 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
+        state: { control: "select", options: ["default", "success", "warning", "error"] },
         startIcon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },
         endIcon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },
         className: { control: false },
@@ -83,4 +84,41 @@ export const Keyboard: Story = {
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(100));
         await expect(slider).toHaveAttribute("aria-valuenow", "100");
     },
+};
+
+/**
+ * A visible label above the slider, e.g. in a form.
+ */
+export const WithLabel: Story = {
+    args: { "aria-label": undefined, label: "Opacity" },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("slider", { name: "Opacity" })).toBeInTheDocument();
+    },
+};
+
+/**
+ * **Rules**
+ * - Say what is missing and how to fix it.
+ */
+export const Error: Story = {
+    args: {
+        "aria-label": undefined,
+        label: "Opacity",
+        value: 10,
+        state: "error",
+        validationMessage: "Use at least 20 % so the text stays readable.",
+    },
+    play: async ({ canvas }) => {
+        const slider = canvas.getByRole("slider", { name: "Opacity" });
+        await expect(slider).toBeInvalid();
+        await expect(slider).toHaveAccessibleDescription("Use at least 20 % so the text stays readable.");
+    },
+};
+
+export const Warning: Story = {
+    args: { "aria-label": undefined, label: "Opacity", value: 30, state: "warning", validationMessage: "Low contrast with light images." },
+};
+
+export const Success: Story = {
+    args: { "aria-label": undefined, label: "Opacity", value: 80, state: "success", validationMessage: "Readable on all images." },
 };

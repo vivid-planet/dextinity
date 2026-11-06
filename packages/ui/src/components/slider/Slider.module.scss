@@ -1,7 +1,12 @@
+@use "../field/controlMessage";
+
+// Label and message span all columns; the icons take their columns only when present
 .root {
-    display: inline-flex;
+    display: inline-grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: var(--dextinity-slider-gap);
+    row-gap: var(--dextinity-slider-row-gap);
+    font-family: var(--dextinity-font-family-text);
     color: var(--dextinity-slider-icon-color);
 
     &[data-disabled] {
@@ -9,23 +14,39 @@
     }
 }
 
+.label {
+    grid-column: 1 / -1;
+    font-size: var(--dextinity-slider-label-font-size);
+    font-weight: var(--dextinity-slider-label-font-weight);
+    line-height: 1.3;
+    color: var(--dextinity-slider-label-color);
+}
+
 .startIcon,
 .endIcon {
     display: inline-flex;
-    flex: none;
 }
 
 .startIcon {
+    grid-column: 1;
+    margin-inline-end: var(--dextinity-slider-gap);
     --dextinity-icon-size: var(--dextinity-slider-start-icon-size);
 }
 
 .endIcon {
+    grid-column: 3;
+    margin-inline-start: var(--dextinity-slider-gap);
     --dextinity-icon-size: var(--dextinity-slider-end-icon-size);
 }
 
+.message {
+    grid-column: 1 / -1;
+    @include controlMessage.message(slider);
+}
+
 .control {
+    grid-column: 2;
     display: flex;
-    flex: 1;
     align-items: center;
     min-inline-size: var(--dextinity-slider-width);
     block-size: var(--dextinity-slider-thumb-size);

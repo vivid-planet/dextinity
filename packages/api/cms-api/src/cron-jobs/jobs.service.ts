@@ -1,9 +1,10 @@
-import { V1Job } from "@kubernetes/client-node";
+import { V1Job, V1Pod } from "@kubernetes/client-node";
 import { Injectable } from "@nestjs/common";
 import { format } from "date-fns";
 
 import { LABEL_ANNOTATION } from "../kubernetes/kubernetes.constants";
 import { KubernetesService } from "../kubernetes/kubernetes.service";
+import { getJobAttempts, getJobFailedCondition } from "../kubernetes/kubernetes-job-attempts";
 import { getAnnotation } from "../kubernetes/kubernetes-metadata";
 import { Job } from "./dto/job.object";
 
@@ -11,7 +12,9 @@ import { Job } from "./dto/job.object";
 export class JobsService {
     constructor(private readonly kubernetesService: KubernetesService) {}
 
-    convertKuberneteJobToJobObjectType(job: V1Job): Job {
+    convertKuberneteJobToJobObjectType(job: V1Job, pods?: V1Pod[]): Job {
+        const failedCondition = getJobFailedCondition(job);
+
         return {
             id: job.metadata?.uid as string,
             name: job.metadata?.name as string,
@@ -19,6 +22,9 @@ export class JobsService {
             startTime: job.status?.startTime,
             completionTime: job.status?.completionTime,
             status: this.kubernetesService.getStatusForKubernetesJob(job),
+            attempts: pods ? getJobAttempts(pods) : undefined,
+            failureReason: failedCondition?.reason,
+            failureMessage: failedCondition?.message,
         };
     }
 

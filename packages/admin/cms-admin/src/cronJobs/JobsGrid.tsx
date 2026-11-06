@@ -14,7 +14,7 @@ import type {
     GQLKubernetesJobsQuery,
     GQLKubernetesJobsQueryVariables,
 } from "./JobsGrid.generated";
-import { JobStatus } from "./JobStatus";
+import { JobStatusCell, jobStatusCellFragment } from "./JobStatusCell";
 
 const disableFieldOptions = {
     filterable: false,
@@ -39,9 +39,10 @@ const jobsQuery = gql`
             name
             startTime
             completionTime
-            status
+            ...JobStatusCell
         }
     }
+    ${jobStatusCellFragment}
 `;
 
 function JobsToolbar(props: { cronJobName: string }) {
@@ -105,9 +106,9 @@ export function JobsGrid(props: JobsGridProps) {
                         {
                             field: "status",
                             headerName: intl.formatMessage({ id: "dextinity.pages.publisher.status", defaultMessage: "Status" }),
-                            flex: 1,
+                            flex: 2,
                             ...disableFieldOptions,
-                            renderCell: ({ row }) => <JobStatus status={row.status}>{row.status}</JobStatus>,
+                            renderCell: ({ row }) => <JobStatusCell job={row} />,
                         },
                         {
                             field: "runtime",

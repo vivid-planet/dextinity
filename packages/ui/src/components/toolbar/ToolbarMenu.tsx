@@ -1,6 +1,6 @@
 import { Toolbar as BaseToolbar } from "@base-ui/react/toolbar";
 import { clsx } from "clsx";
-import { forwardRef, type ReactNode } from "react";
+import { type ButtonHTMLAttributes, forwardRef, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -24,7 +24,7 @@ export interface ToolbarMenuSlotProps {
     menu?: Partial<Omit<MenuProps, "trigger" | "children" | "open" | "onOpenChange" | "placement">>;
 }
 
-export interface ToolbarMenuProps {
+export interface ToolbarMenuProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className" | "children" | "disabled" | "aria-label"> {
     /** The entries: `MenuItem`, `MenuRadioGroup`, `MenuGroup`, `MenuSeparator`, and `MenuSubmenu`. */
     children: ReactNode;
     /** The trigger's visible text, usually the current choice, e.g. "Paragraph". */
@@ -59,7 +59,7 @@ export interface ToolbarMenuProps {
  * A trigger in a `Toolbar` that opens a menu, e.g. the text style of an editor or an insert menu.
  */
 export const ToolbarMenu = forwardRef<HTMLButtonElement, ToolbarMenuProps>(function ToolbarMenu(
-    { children, label, icon, "aria-label": ariaLabel, open, onOpenChange, placement, disabled = false, className, slotProps },
+    { children, label, icon, "aria-label": ariaLabel, open, onOpenChange, placement, disabled = false, className, slotProps, ...restProps },
     ref,
 ) {
     const ownerState: ToolbarMenuOwnerState = { open, disabled };
@@ -83,6 +83,7 @@ export const ToolbarMenu = forwardRef<HTMLButtonElement, ToolbarMenuProps>(funct
             placement={placement}
             trigger={
                 <BaseToolbar.Button
+                    {...restProps}
                     ref={ref}
                     type="button"
                     disabled={ownerState.disabled}

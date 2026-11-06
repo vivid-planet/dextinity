@@ -310,7 +310,17 @@ const editActions = (
     </>
 );
 
-function EditPage({ variant, pane: initialPane, inShell = true }: { variant: Variant; pane?: Pane; inShell?: boolean }) {
+function EditPage({
+    variant,
+    pane: initialPane,
+    inShell = true,
+    loading = false,
+}: {
+    variant: Variant;
+    pane?: Pane;
+    inShell?: boolean;
+    loading?: boolean;
+}) {
     const [pane, setPane] = useState<Pane>(initialPane ?? "editor");
     const kind = variant === "page" ? "page" : "jobAd";
     const layout = (
@@ -321,6 +331,7 @@ function EditPage({ variant, pane: initialPane, inShell = true }: { variant: Var
             aside={<StatusAside />}
             asideLabel="Status"
             pane={pane}
+            loading={loading}
             paneSwitch={
                 <SegmentedControl
                     aria-label="View"
@@ -391,6 +402,7 @@ const meta = {
     argTypes: {
         variant: { control: "select", options: ["page", "form", "formWithPreview", "formWithBlocks"] },
         pane: { control: "radio", options: ["editor", "preview"] },
+        loading: { control: "boolean" },
         asideLabel: { control: "text" },
         header: { control: false },
         children: { control: false },
@@ -400,7 +412,7 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <EditPage variant={args.variant ?? "form"} pane={args.pane} />,
+    render: (args) => <EditPage variant={args.variant ?? "form"} pane={args.pane} loading={args.loading} />,
 } satisfies Meta<typeof EditLayout>;
 
 export default meta;
@@ -448,6 +460,21 @@ export const FormWithPreview: Story = {
  */
 export const FormWithBlocks: Story = {
     args: { variant: "formWithBlocks" },
+};
+
+/**
+ * `loading` shows placeholders in the shape of the variant, e.g. the preview and the block panel of a page, while the edited item loads.
+ * The header stays.
+ */
+export const Loading: Story = {
+    args: { variant: "page", loading: true },
+    play: async ({ canvasElement }) => {
+        await expect(canvasElement.querySelector(".dextinityEditLayout__body")).toHaveAttribute("aria-busy", "true");
+    },
+};
+
+export const LoadingForm: Story = {
+    args: { variant: "form", loading: true },
 };
 
 /**

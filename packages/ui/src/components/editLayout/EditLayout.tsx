@@ -2,6 +2,8 @@ import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
+import { Panel } from "../panel/Panel";
+import { Skeleton } from "../skeleton/Skeleton";
 import styles from "./EditLayout.module.scss";
 
 /** How the editor and the preview share an edit page. */
@@ -21,6 +23,8 @@ export type EditLayoutOwnerState = {
     preview: boolean;
     /** Whether the form has a side column. */
     aside: boolean;
+    /** Placeholders stand in for the editor, the preview, and the side column while their content loads. */
+    loading: boolean;
 };
 
 export interface EditLayoutSlotProps {
@@ -68,6 +72,13 @@ export interface EditLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
      * @defaultValue `"editor"`
      */
     pane?: EditLayoutPane;
+    /**
+     * Shows placeholders in the shape of the variant instead of the editor, the preview, and the side column, e.g. while the edited
+     * item loads. The header stays, so it can show what is known already.
+     *
+     * @defaultValue `false`
+     */
+    loading?: boolean;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -79,12 +90,25 @@ export interface EditLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
  * the blocks on the right; structured content uses one of the three form variants.
  */
 export const EditLayout = forwardRef<HTMLDivElement, EditLayoutProps>(function EditLayout(
-    { variant = "form", header, children, preview, aside, asideLabel, paneSwitch, pane = "editor", className, slotProps, ...restProps },
+    {
+        variant = "form",
+        header,
+        children,
+        preview,
+        aside,
+        asideLabel,
+        paneSwitch,
+        pane = "editor",
+        loading = false,
+        className,
+        slotProps,
+        ...restProps
+    },
     ref,
 ) {
-    const showsPreview = variant !== "form" && preview != null;
+    const showsPreview = variant !== "form" && (preview != null || loading);
     const showsAside = variant === "form" && aside != null;
-    const ownerState: EditLayoutOwnerState = { variant, pane, preview: showsPreview, aside: showsAside };
+    const ownerState: EditLayoutOwnerState = { variant, pane, preview: showsPreview, aside: showsAside, loading };
 
     const headerProps = resolveSlotProps<EditLayoutOwnerState, "div", "div">({
         ownProps: { className: styles.header },
@@ -97,7 +121,7 @@ export const EditLayout = forwardRef<HTMLDivElement, EditLayoutProps>(function E
         ownerState,
     });
     const bodyProps = resolveSlotProps<EditLayoutOwnerState, "div", "div">({
-        ownProps: { className: styles.body },
+        ownProps: { className: styles.body, "aria-busy": loading || undefined },
         slotProps: slotProps?.body,
         ownerState,
     });
@@ -125,16 +149,59 @@ export const EditLayout = forwardRef<HTMLDivElement, EditLayoutProps>(function E
             data-pane={ownerState.pane}
             data-preview={ownerState.preview ? "" : undefined}
             data-aside={ownerState.aside ? "" : undefined}
+            data-loading={ownerState.loading ? "" : undefined}
             className={clsx(styles.root, className)}
         >
             <div {...headerProps}>{header}</div>
             {showsPreview && paneSwitch != null && <div {...paneSwitchProps}>{paneSwitch}</div>}
             <div {...bodyProps}>
-                {showsPreview && variant !== "formWithPreview" && <div {...previewProps}>{preview}</div>}
-                <div {...editorProps}>{children}</div>
-                {showsPreview && variant === "formWithPreview" && <div {...previewProps}>{preview}</div>}
-                {showsAside && <aside {...asideProps}>{aside}</aside>}
+                {showsPreview && variant !== "formWithPreview" && <div {...previewProps}>{loading ? <PreviewPlaceholder /> : preview}</div>}
+                <div {...editorProps}>{loading ? <EditorPlaceholder variant={variant} /> : children}</div>
+                {showsPreview && variant === "formWithPreview" && <div {...previewProps}>{loading ? <PreviewPlaceholder /> : preview}</div>}
+                {showsAside && <aside {...asideProps}>{loading ? <AsidePlaceholder /> : aside}</aside>}
             </div>
         </div>
     );
 });
+
+function PreviewPlaceholder() {
+    return (
+        <div className={styles.previewPlaceholder}>
+            <Skeleton variant="block" />
+        </div>
+    );
+}
+
+function EditorPlaceholder({ variant }: { variant: EditLayoutVariant }) {
+    const blocks = variant === "page";
+    return (
+        <Panel>
+            <div className={styles.editorPlaceholder}>
+                <Skeleton width="45%" />
+                <div className={styles.tabsPlaceholder}>
+                    <Skeleton width={56} />
+                    <Skeleton width={40} />
+                    <Skeleton width={64} />
+                </div>
+                {blocks ? (
+                    <Skeleton variant="tile" count={5} className={styles.blocksPlaceholder} />
+                ) : (
+                    Array.from({ length: 4 }, (_, index) => (
+                        <div key={index} className={styles.fieldPlaceholder}>
+                            <Skeleton width="28%" />
+                            <Skeleton variant="tile" />
+                        </div>
+                    ))
+                )}
+            </div>
+        </Panel>
+    );
+}
+
+function AsidePlaceholder() {
+    return (
+        <Panel>
+            <Skeleton count={4} />
+        </Panel>
+    );
+}

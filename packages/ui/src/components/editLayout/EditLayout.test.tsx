@@ -57,4 +57,20 @@ describe("EditLayout", () => {
         expect(screen.queryByText("Status")).toBeNull();
         expect(screen.getByText("Preview").className).toContain("dextinityEditLayout__preview");
     });
+
+    it("shows placeholders instead of the panes while loading, keeping the header", () => {
+        const { container } = render(
+            <EditLayout variant="page" header="Header" loading>
+                Blocks
+            </EditLayout>,
+        );
+
+        const root = rootOf(container);
+        expect([root.dataset.loading, root.dataset.preview]).toStrictEqual(["", ""]);
+        expect(screen.getByText("Header")).toBeTruthy();
+        expect(screen.queryByText("Blocks")).toBeNull();
+        expect(container.querySelector(".dextinityEditLayout__body")?.getAttribute("aria-busy")).toBe("true");
+        expect(container.querySelector(".dextinityEditLayout__preview .dextinitySkeleton")).toBeTruthy();
+        expect(container.querySelector(".dextinityEditLayout__editor .dextinitySkeleton")).toBeTruthy();
+    });
 });

@@ -74,6 +74,46 @@
     grid-area: aside;
 }
 
+.previewPlaceholder {
+    display: flex;
+    flex-direction: column;
+
+    // Stretches the skeleton's shape to the preview's height, which the sticky preview sets
+    > *,
+    :global(.dextinitySkeleton__item) {
+        flex: 1;
+        align-items: stretch;
+    }
+
+    --dextinity-skeleton-block-height: auto;
+}
+
+.editorPlaceholder {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+}
+
+.tabsPlaceholder {
+    display: flex;
+    gap: var(--dextinity-space-4);
+}
+
+.blocksPlaceholder {
+    --dextinity-skeleton-gap: 6px;
+    --dextinity-skeleton-tile-height: 52px;
+    --dextinity-skeleton-tile-radius: var(--dextinity-radius-field);
+}
+
+.fieldPlaceholder {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    --dextinity-skeleton-tile-height: var(--dextinity-density-field-height);
+    --dextinity-skeleton-tile-radius: var(--dextinity-radius-control);
+}
+
 @container (max-width: 980px) {
     .paneSwitch {
         display: flex;

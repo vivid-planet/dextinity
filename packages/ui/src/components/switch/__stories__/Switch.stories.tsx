@@ -3,8 +3,8 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import switchTokens from "../_tokens.scss?raw";
 import { Switch, type SwitchProps } from "../Switch";
+import switchTokens from "../Switch.tokens.scss?raw";
 import styles from "./Switch.stories.module.scss";
 
 /** Keeps the story controlled: toggling updates the local state; the `checked` arg sets the initial state. */

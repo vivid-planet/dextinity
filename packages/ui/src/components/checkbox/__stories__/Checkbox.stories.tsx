@@ -3,8 +3,8 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import checkboxTokens from "../_tokens.scss?raw";
 import { Checkbox, type CheckboxProps } from "../Checkbox";
+import checkboxTokens from "../Checkbox.tokens.scss?raw";
 import styles from "./Checkbox.stories.module.scss";
 
 /** Keeps the story controlled: toggling updates the local state; the `checked` arg sets the initial state. */

@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import copyFieldTokens from "../_tokens.scss?raw";
 import { CopyField } from "../CopyField";
+import copyFieldTokens from "../CopyField.tokens.scss?raw";
 import styles from "./CopyField.stories.module.scss";
 
 const meta = {

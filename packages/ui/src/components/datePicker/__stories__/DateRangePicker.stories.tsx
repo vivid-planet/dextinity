@@ -3,8 +3,8 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import fieldTokens from "../../field/_tokens.scss?raw";
-import datePickerTokens from "../_tokens.scss?raw";
+import fieldTokens from "../../field/Field.tokens.scss?raw";
+import datePickerTokens from "../DatePicker.tokens.scss?raw";
 import { DateRangePicker, type DateRangePickerProps } from "../DateRangePicker";
 import styles from "./DatePicker.stories.module.scss";
 

@@ -5,8 +5,8 @@ import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
-import logViewerTokens from "../_tokens.scss?raw";
 import { LogViewer, type LogViewerLineTone, type LogViewerProps } from "../LogViewer";
+import logViewerTokens from "../LogViewer.tokens.scss?raw";
 import styles from "./LogViewer.stories.module.scss";
 
 const jobLog = [

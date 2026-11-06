@@ -6,8 +6,8 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Drawer } from "../../drawer/Drawer";
 import { Icon } from "../../icon/Icon";
-import blockPickerTokens from "../_tokens.scss?raw";
 import { BlockPicker, type BlockPickerCategory, type BlockPickerItem, type BlockPickerProps } from "../BlockPicker";
+import blockPickerTokens from "../BlockPicker.tokens.scss?raw";
 import styles from "./BlockPicker.stories.module.scss";
 
 const categories: BlockPickerCategory[] = [

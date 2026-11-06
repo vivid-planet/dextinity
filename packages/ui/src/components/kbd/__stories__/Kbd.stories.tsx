@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import kbdTokens from "../_tokens.scss?raw";
 import { Kbd } from "../Kbd";
+import kbdTokens from "../Kbd.tokens.scss?raw";
 import styles from "./Kbd.stories.module.scss";
 
 const meta = {

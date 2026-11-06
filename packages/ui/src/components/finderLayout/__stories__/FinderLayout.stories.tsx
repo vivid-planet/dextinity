@@ -10,8 +10,8 @@ import { AssetBrowser, type AssetBrowserAsset, type AssetBrowserFolder, type Ass
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { PageHeader } from "../../pageHeader/PageHeader";
-import finderLayoutTokens from "../_tokens.scss?raw";
 import { FinderLayout } from "../FinderLayout";
+import finderLayoutTokens from "../FinderLayout.tokens.scss?raw";
 import styles from "./FinderLayout.stories.module.scss";
 
 const folders: AssetBrowserFolder[] = [

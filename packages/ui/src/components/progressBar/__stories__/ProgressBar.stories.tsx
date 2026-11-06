@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import progressBarTokens from "../_tokens.scss?raw";
 import { ProgressBar } from "../ProgressBar";
+import progressBarTokens from "../ProgressBar.tokens.scss?raw";
 import styles from "./ProgressBar.stories.module.scss";
 
 const meta = {

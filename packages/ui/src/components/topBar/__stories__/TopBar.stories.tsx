@@ -7,8 +7,8 @@ import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { SaveState } from "../../saveState/SaveState";
-import topBarTokens from "../_tokens.scss?raw";
 import { TopBar, type TopBarProps } from "../TopBar";
+import topBarTokens from "../TopBar.tokens.scss?raw";
 import styles from "./TopBar.stories.module.scss";
 import { StoryScopeSwitcher, StoryUserMenu } from "./topBarStoryParts";
 

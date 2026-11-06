@@ -5,8 +5,8 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
-import confirmDialogTokens from "../_tokens.scss?raw";
 import { ConfirmDialog, type ConfirmDialogProps } from "../ConfirmDialog";
+import confirmDialogTokens from "../ConfirmDialog.tokens.scss?raw";
 
 function ControlledConfirmDialog(props: ConfirmDialogProps) {
     const [open, setOpen] = useState(props.open);

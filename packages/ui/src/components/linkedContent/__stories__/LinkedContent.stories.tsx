@@ -3,8 +3,8 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
-import linkedContentTokens from "../_tokens.scss?raw";
 import { LinkedContent } from "../LinkedContent";
+import linkedContentTokens from "../LinkedContent.tokens.scss?raw";
 import styles from "./LinkedContent.stories.module.scss";
 
 const iconOptions = {

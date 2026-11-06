@@ -4,8 +4,8 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
-import tooltipTokens from "../_tokens.scss?raw";
 import { Tooltip, type TooltipProps } from "../Tooltip";
+import tooltipTokens from "../Tooltip.tokens.scss?raw";
 import styles from "./Tooltip.stories.module.scss";
 
 const meta = {

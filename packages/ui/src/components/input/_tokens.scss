@@ -1,7 +1,0 @@
-@use "../../theme/scope";
-
-// The frame (label, box, message) comes from the Field tokens.
-@include scope.component-tokens {
-    --dextinity-input-placeholder-color: var(--dextinity-field-placeholder);
-    --dextinity-input-caret-color: var(--dextinity-color-accent);
-}

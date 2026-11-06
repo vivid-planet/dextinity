@@ -4,8 +4,8 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { landscapeImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import focalPointPickerTokens from "../_tokens.scss?raw";
 import { FocalPointPicker, type FocalPointPickerProps } from "../FocalPointPicker";
+import focalPointPickerTokens from "../FocalPointPicker.tokens.scss?raw";
 import styles from "./FocalPointPicker.stories.module.scss";
 
 /** Keeps the story controlled: moving the point updates the local value and clears `auto`. */

@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import miniChartTokens from "../_tokens.scss?raw";
 import { MiniChart } from "../MiniChart";
+import miniChartTokens from "../MiniChart.tokens.scss?raw";
 import styles from "./MiniChart.stories.module.scss";
 
 const changesPerDay = [4, 6, 3, 0, 5, 7, 4, 2, 0, 3, 6, 8, 5, 3, 7, 4, 0, 2, 6, 5, 9, 4, 3, 5, 7, 6, 2, 4, 8, 10];

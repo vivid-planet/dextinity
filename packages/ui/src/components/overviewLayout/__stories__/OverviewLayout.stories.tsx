@@ -13,8 +13,8 @@ import { Icon } from "../../icon/Icon";
 import { Link } from "../../link/Link";
 import { MiniChart } from "../../miniChart/MiniChart";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
-import overviewLayoutTokens from "../_tokens.scss?raw";
 import { OverviewLayout } from "../OverviewLayout";
+import overviewLayoutTokens from "../OverviewLayout.tokens.scss?raw";
 import styles from "./OverviewLayout.stories.module.scss";
 
 const recentlyEdited = [

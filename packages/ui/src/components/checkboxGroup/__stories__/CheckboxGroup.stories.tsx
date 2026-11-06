@@ -3,8 +3,8 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import checkboxGroupTokens from "../_tokens.scss?raw";
 import { CheckboxGroup, type CheckboxGroupOption, type CheckboxGroupProps } from "../CheckboxGroup";
+import checkboxGroupTokens from "../CheckboxGroup.tokens.scss?raw";
 
 /** Keeps the story controlled: toggling updates the local value; changing the `value` control starts over from it. */
 function ControlledCheckboxGroup(props: CheckboxGroupProps) {

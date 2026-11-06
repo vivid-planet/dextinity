@@ -3,8 +3,8 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import paginationTokens from "../_tokens.scss?raw";
 import { Pagination, type PaginationProps } from "../Pagination";
+import paginationTokens from "../Pagination.tokens.scss?raw";
 
 /** Keeps the story controlled: page and page size update the local state; the args set the initial values. */
 function ControlledPagination(props: PaginationProps) {

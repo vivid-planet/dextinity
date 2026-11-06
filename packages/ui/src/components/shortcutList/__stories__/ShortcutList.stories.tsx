@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import shortcutListTokens from "../_tokens.scss?raw";
 import { ShortcutList } from "../ShortcutList";
+import shortcutListTokens from "../ShortcutList.tokens.scss?raw";
 
 const meta = {
     component: ShortcutList,

@@ -3,8 +3,8 @@ import { expect, userEvent } from "storybook/test";
 
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import assetThumbnailTokens from "../_tokens.scss?raw";
 import { AssetThumbnail } from "../AssetThumbnail";
+import assetThumbnailTokens from "../AssetThumbnail.tokens.scss?raw";
 import styles from "./AssetThumbnail.stories.module.scss";
 
 const meta = {

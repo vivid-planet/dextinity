@@ -5,8 +5,8 @@ import { expect, fireEvent, fn, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
-import treeViewTokens from "../_tokens.scss?raw";
 import { type TreeNode, TreeView, type TreeViewMove, type TreeViewProps } from "../TreeView";
+import treeViewTokens from "../TreeView.tokens.scss?raw";
 import styles from "./TreeView.stories.module.scss";
 
 const pageTree: TreeNode[] = [

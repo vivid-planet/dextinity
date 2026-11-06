@@ -6,8 +6,8 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Toolbar } from "../../toolbar/Toolbar";
 import { ToolbarButton } from "../../toolbar/ToolbarButton";
-import fieldTokens from "../_tokens.scss?raw";
 import { Field, type FieldControlProps } from "../Field";
+import fieldTokens from "../Field.tokens.scss?raw";
 import styles from "./Field.stories.module.scss";
 
 function TextControl({ initialValue = "", ...control }: FieldControlProps & { initialValue?: string }) {

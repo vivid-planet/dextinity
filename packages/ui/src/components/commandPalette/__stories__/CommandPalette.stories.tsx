@@ -5,8 +5,8 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
-import commandPaletteTokens from "../_tokens.scss?raw";
 import { CommandPalette, type CommandPaletteGroup, type CommandPaletteProps } from "../CommandPalette";
+import commandPaletteTokens from "../CommandPalette.tokens.scss?raw";
 import styles from "./CommandPalette.stories.module.scss";
 
 const openJobAds = fn();

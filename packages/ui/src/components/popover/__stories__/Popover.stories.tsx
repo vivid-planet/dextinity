@@ -7,8 +7,8 @@ import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Slider } from "../../slider/Slider";
-import popoverTokens from "../_tokens.scss?raw";
 import { Popover, type PopoverProps } from "../Popover";
+import popoverTokens from "../Popover.tokens.scss?raw";
 import styles from "./Popover.stories.module.scss";
 
 function TimeOfDay() {

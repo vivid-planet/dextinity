@@ -5,8 +5,8 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Input } from "../../input/Input";
-import dialogTokens from "../_tokens.scss?raw";
 import { Dialog, type DialogProps } from "../Dialog";
+import dialogTokens from "../Dialog.tokens.scss?raw";
 import { DialogFormActions } from "../DialogFormActions";
 
 function ControlledDialog(props: DialogProps) {

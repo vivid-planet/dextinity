@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
-import spinnerTokens from "../_tokens.scss?raw";
 import { Spinner } from "../Spinner";
+import spinnerTokens from "../Spinner.tokens.scss?raw";
 
 const meta = {
     component: Spinner,

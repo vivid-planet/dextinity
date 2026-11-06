@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import breadcrumbsTokens from "../_tokens.scss?raw";
 import { Breadcrumbs } from "../Breadcrumbs";
+import breadcrumbsTokens from "../Breadcrumbs.tokens.scss?raw";
 
 const meta = {
     component: Breadcrumbs,

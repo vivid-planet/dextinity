@@ -4,8 +4,8 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
-import segmentedControlTokens from "../_tokens.scss?raw";
 import { SegmentedControl, type SegmentedControlOption, type SegmentedControlProps } from "../SegmentedControl";
+import segmentedControlTokens from "../SegmentedControl.tokens.scss?raw";
 
 const employment: SegmentedControlOption[] = [
     { value: "full", label: "Full-time" },

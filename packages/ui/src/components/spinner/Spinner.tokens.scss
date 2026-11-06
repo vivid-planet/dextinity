@@ -1,0 +1,5 @@
+@mixin tokens {
+    --dextinity-spinner-color: var(--dextinity-color-accent);
+    // One full turn
+    --dextinity-spinner-duration: 1s;
+}

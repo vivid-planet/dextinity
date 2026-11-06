@@ -1,0 +1,31 @@
+@mixin tokens {
+    // The track's minimum width; the slider grows with its container
+    --dextinity-slider-width: 96px;
+    --dextinity-slider-gap: 6px;
+    --dextinity-slider-track-height: 4px;
+    --dextinity-slider-thumb-size: 14px;
+    // The thumb's outline against the track
+    --dextinity-slider-thumb-ring-width: 2px;
+    --dextinity-slider-start-icon-size: 12px;
+    --dextinity-slider-end-icon-size: 16px;
+    --dextinity-slider-disabled-opacity: 0.42;
+
+    --dextinity-slider-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-slider-track-background: var(--dextinity-color-line-strong);
+    // Line around the track; transparent normally, a full line in high contrast
+    --dextinity-slider-track-line: transparent;
+    --dextinity-slider-indicator-background: var(--dextinity-color-accent);
+    --dextinity-slider-thumb-background: var(--dextinity-color-accent);
+    --dextinity-slider-thumb-ring: var(--dextinity-color-surface);
+    --dextinity-slider-thumb-shadow: var(--dextinity-shadow-1);
+
+    // Space between the label, the slider, and the validation message
+    --dextinity-slider-row-gap: 7px;
+    --dextinity-slider-label-font-size: 13px;
+    --dextinity-slider-label-font-weight: 500;
+    --dextinity-slider-label-color: var(--dextinity-color-text-secondary);
+    --dextinity-slider-message-font-size: var(--dextinity-typography-small-size);
+    --dextinity-slider-message-color-error: var(--dextinity-color-danger-text);
+    --dextinity-slider-message-color-warning: var(--dextinity-color-warning-text);
+    --dextinity-slider-message-color-success: var(--dextinity-color-success-text);
+}

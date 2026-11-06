@@ -1,0 +1,26 @@
+@mixin tokens {
+    --dextinity-tree-view-row-height: var(--dextinity-density-tree-row-height);
+    --dextinity-tree-view-row-radius: var(--dextinity-radius-field);
+    // Indentation per level
+    --dextinity-tree-view-indent: 24px;
+    --dextinity-tree-view-font-size: var(--dextinity-typography-body-size);
+    --dextinity-tree-view-foreground: var(--dextinity-color-text);
+    --dextinity-tree-view-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-tree-view-meta-color: var(--dextinity-color-text-subtle);
+
+    --dextinity-tree-view-row-background-hover: color-mix(in oklch, var(--dextinity-color-text) 5%, transparent);
+    // The active node, e.g. the one shown in the detail panel
+    --dextinity-tree-view-row-background-selected: var(--dextinity-material-glass-strong);
+    --dextinity-tree-view-row-shadow-selected:
+        inset 0 0 0 1px color-mix(in oklch, var(--dextinity-color-accent) 55%, transparent), var(--dextinity-shadow-1);
+    // Marked nodes (checkboxes)
+    --dextinity-tree-view-row-background-checked: color-mix(in oklch, var(--dextinity-color-accent) 12%, transparent);
+    // Ancestors shown as context while filtering
+    --dextinity-tree-view-context-opacity: 0.5;
+
+    --dextinity-tree-view-drop-color: var(--dextinity-color-accent);
+    --dextinity-tree-view-drop-background: var(--dextinity-color-accent-soft);
+    --dextinity-tree-view-drop-color-high-contrast: var(--dextinity-color-focus);
+    --dextinity-tree-view-drop-line-width: 2px;
+    --dextinity-tree-view-drop-cap-size: 6px;
+}

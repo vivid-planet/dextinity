@@ -5,8 +5,8 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
-import quickLookTokens from "../_tokens.scss?raw";
 import { QuickLook, type QuickLookItem, type QuickLookProps } from "../QuickLook";
+import quickLookTokens from "../QuickLook.tokens.scss?raw";
 import styles from "./QuickLook.stories.module.scss";
 
 function placeholderImage(hue: number, label: string) {

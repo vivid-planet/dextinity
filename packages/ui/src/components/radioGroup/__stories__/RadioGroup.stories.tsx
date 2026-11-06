@@ -3,8 +3,8 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import radioGroupTokens from "../_tokens.scss?raw";
 import { RadioGroup, type RadioGroupProps } from "../RadioGroup";
+import radioGroupTokens from "../RadioGroup.tokens.scss?raw";
 
 /** Keeps the story controlled: choosing updates the local value; changing the `value` control starts over from it. */
 function ControlledRadioGroup(props: RadioGroupProps) {

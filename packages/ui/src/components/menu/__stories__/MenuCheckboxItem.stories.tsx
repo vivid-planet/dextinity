@@ -5,8 +5,8 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
-import menuTokens from "../_tokens.scss?raw";
 import { Menu } from "../Menu";
+import menuTokens from "../Menu.tokens.scss?raw";
 import { MenuCheckboxItem, type MenuCheckboxItemProps } from "../MenuCheckboxItem";
 import styles from "./Menu.stories.module.scss";
 

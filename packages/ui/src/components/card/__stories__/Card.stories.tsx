@@ -5,8 +5,8 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Avatar } from "../../avatar/Avatar";
 import { Icon } from "../../icon/Icon";
 import { Link } from "../../link/Link";
-import cardTokens from "../_tokens.scss?raw";
 import { Card } from "../Card";
+import cardTokens from "../Card.tokens.scss?raw";
 import styles from "./Card.stories.module.scss";
 
 const iconOptions = {

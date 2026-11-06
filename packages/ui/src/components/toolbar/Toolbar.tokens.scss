@@ -1,0 +1,19 @@
+// The buttons come from the IconButton tokens.
+@mixin tokens {
+    --dextinity-toolbar-gap: 2px;
+    --dextinity-toolbar-padding: 5px;
+    --dextinity-toolbar-button-size: 30px;
+    --dextinity-toolbar-button-icon-size: 16px;
+    // A toggle that is on, e.g. bold at the cursor
+    --dextinity-toolbar-button-background-pressed: var(--dextinity-color-accent-soft);
+    --dextinity-toolbar-button-foreground-pressed: var(--dextinity-color-accent-text);
+    --dextinity-toolbar-separator-color: var(--dextinity-color-line-strong);
+    // Space between a separator and the controls next to it
+    --dextinity-toolbar-separator-space: 4px;
+    // How far a separator stays away from the toolbar's edges
+    --dextinity-toolbar-separator-inset: 5px;
+    // Horizontal padding of a menu trigger
+    --dextinity-toolbar-menu-padding: var(--dextinity-space-2);
+    --dextinity-toolbar-menu-font-size: 13px;
+    --dextinity-toolbar-menu-foreground: var(--dextinity-color-text-secondary);
+}

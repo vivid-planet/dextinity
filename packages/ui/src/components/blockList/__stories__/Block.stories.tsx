@@ -6,9 +6,9 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Input } from "../../input/Input";
-import blockListTokens from "../_tokens.scss?raw";
 import { Block, type BlockProps } from "../Block";
 import { BlockList } from "../BlockList";
+import blockListTokens from "../BlockList.tokens.scss?raw";
 import styles from "./BlockList.stories.module.scss";
 
 function HeroFields() {

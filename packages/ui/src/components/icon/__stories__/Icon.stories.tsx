@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { clsx } from "clsx";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import iconTokens from "../_tokens.scss?raw";
 import { Icon } from "../Icon";
+import iconTokens from "../Icon.tokens.scss?raw";
 import { defaultIconNames } from "../iconRegistry";
 import styles from "./Icon.stories.module.scss";
 

@@ -1,0 +1,30 @@
+@mixin tokens {
+    // Glass behind menus and submenus; solid in high contrast
+    --dextinity-menu-background: var(--dextinity-material-glass-strong);
+    --dextinity-menu-blur: var(--dextinity-material-blur);
+    --dextinity-menu-radius: var(--dextinity-radius-row);
+    --dextinity-menu-padding: 6px;
+    --dextinity-menu-min-width: 228px;
+    --dextinity-menu-max-width: 300px;
+    --dextinity-menu-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-3);
+
+    --dextinity-menu-item-height: var(--dextinity-density-menu-item-height);
+    --dextinity-menu-item-padding: 10px;
+    --dextinity-menu-item-gap: 10px;
+    --dextinity-menu-item-radius: var(--dextinity-radius-field);
+    --dextinity-menu-item-font-size: 13.5px;
+    --dextinity-menu-item-foreground: var(--dextinity-color-text);
+    // Keyboard or pointer highlight
+    --dextinity-menu-item-background-highlight: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+    --dextinity-menu-item-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-menu-item-icon-size: 16px;
+    --dextinity-menu-item-shortcut-color: var(--dextinity-color-text-tertiary);
+    // Destructive items, e.g. Delete
+    --dextinity-menu-item-danger-foreground: var(--dextinity-color-danger-text);
+    --dextinity-menu-item-disabled-opacity: 0.42;
+    // Check mark of the selected radio item
+    --dextinity-menu-item-indicator-color: var(--dextinity-color-accent-text);
+
+    --dextinity-menu-separator-color: var(--dextinity-color-line-strong);
+    --dextinity-menu-group-label-color: var(--dextinity-color-text-tertiary);
+}

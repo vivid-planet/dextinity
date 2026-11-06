@@ -5,8 +5,8 @@ import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { MenuItem } from "../../menu/MenuItem";
-import toolbarTokens from "../_tokens.scss?raw";
 import { Toolbar } from "../Toolbar";
+import toolbarTokens from "../Toolbar.tokens.scss?raw";
 import { ToolbarMenu, type ToolbarMenuProps } from "../ToolbarMenu";
 import styles from "./Toolbar.stories.module.scss";
 

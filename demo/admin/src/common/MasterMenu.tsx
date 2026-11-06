@@ -12,7 +12,6 @@ import {
     DamPage,
     type DocumentInterface,
     type DocumentType,
-    MasterMenu,
     type MasterMenuData,
     MasterMenuRoutes,
     PagesPage,
@@ -445,18 +444,14 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
     ];
 };
 
-export const AppMasterMenu = () => {
+export const useAppMasterMenuData = (): MasterMenuData => {
     const intl = useIntl();
 
-    const masterMenuData = useMemo(() => getMasterMenuData({ brevoContactConfig: getBrevoContactConfig(intl) }), [intl]);
-
-    return <MasterMenu menu={masterMenuData} />;
+    return useMemo(() => getMasterMenuData({ brevoContactConfig: getBrevoContactConfig(intl) }), [intl]);
 };
 
 export const AppMasterMenuRoutes = () => {
-    const intl = useIntl();
-
-    const masterMenuData = useMemo(() => getMasterMenuData({ brevoContactConfig: getBrevoContactConfig(intl) }), [intl]);
+    const masterMenuData = useAppMasterMenuData();
 
     return <MasterMenuRoutes menu={masterMenuData} />;
 };

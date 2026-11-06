@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Picker } from "./Picker";
@@ -30,5 +31,19 @@ describe("Picker", () => {
 
         fireEvent.click(screen.getByRole("button", { name: "Link target About us" }));
         expect(onOpen).not.toHaveBeenCalled();
+    });
+
+    it("keeps the focus in the field once the value is cleared", () => {
+        function ClearablePicker() {
+            const [value, setValue] = useState<string | null>("About us");
+            return <Picker label="Link target" value={value} renderValue={(page) => page} onOpen={vi.fn()} onClear={() => setValue(null)} />;
+        }
+        render(<ClearablePicker />);
+
+        const clear = screen.getByRole("button", { name: "Clear" });
+        clear.focus();
+        fireEvent.click(clear);
+        expect(screen.queryByRole("button", { name: "Clear" })).toBeNull();
+        expect(screen.getByRole("button", { name: "Link target" })).toHaveFocus();
     });
 });

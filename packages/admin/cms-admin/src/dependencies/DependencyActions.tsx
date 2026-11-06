@@ -1,18 +1,22 @@
 import { messages } from "@dextinity/admin";
-import { Icon, IconButton } from "@dextinity/ui";
-import { useEffect, useState } from "react";
+import { Icon, IconButton, Tooltip } from "@dextinity/ui";
+import { type ReactNode, useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useHistory } from "react-router";
 
-import { DependencyActionsRoot, DependencyActionsUnavailable } from "./DependencyActions.sc";
+import { DependencyActionsRoot, DependencyActionsUnavailable, DependencyActionsUnavailableWrapper } from "./DependencyActions.sc";
 import { type DependencyTarget, useDependencyUrlResolver } from "./useDependencyUrlResolver";
 
 const copiedFeedbackMs = 2000;
 
-export const DependencyActions = (props: DependencyTarget) => {
+interface DependencyActionsProps extends DependencyTarget {
+    onCopyLinkError: () => void;
+}
+
+export const DependencyActions = ({ onCopyLinkError, ...target }: DependencyActionsProps) => {
     const intl = useIntl();
     const history = useHistory();
-    const dependencyUrl = useDependencyUrlResolver()(props);
+    const dependencyUrl = useDependencyUrlResolver()(target);
     const [isCopied, setIsCopied] = useState(false);
 
     useEffect(() => {
@@ -37,7 +41,7 @@ export const DependencyActions = (props: DependencyTarget) => {
         defaultMessage: "You don't have access to the scope of this item.",
     });
 
-    return (
+    const actions = (
         <DependencyActionsRoot>
             <IconButton
                 aria-label={
@@ -52,10 +56,14 @@ export const DependencyActions = (props: DependencyTarget) => {
                 size="small"
                 disabled={!isScopeAllowed}
                 onClick={async () => {
-                    const url = await dependencyUrl.loadUrl?.();
-                    if (url !== undefined) {
-                        await navigator.clipboard.writeText(new URL(url, window.location.origin).toString());
-                        setIsCopied(true);
+                    try {
+                        const url = await dependencyUrl.loadUrl?.();
+                        if (url !== undefined) {
+                            await navigator.clipboard.writeText(new URL(url, window.location.origin).toString());
+                            setIsCopied(true);
+                        }
+                    } catch {
+                        onCopyLinkError();
                     }
                 }}
             >
@@ -93,4 +101,17 @@ export const DependencyActions = (props: DependencyTarget) => {
             </IconButton>
         </DependencyActionsRoot>
     );
+
+    return isScopeAllowed ? actions : <ScopeNotAllowedReason reason={scopeNotAllowedLabel}>{actions}</ScopeNotAllowedReason>;
 };
+
+// Disabled buttons receive neither hover nor focus, so the reason is shown on a focusable wrapper around them
+function ScopeNotAllowedReason({ reason, children }: { reason: string; children: ReactNode }) {
+    return (
+        <Tooltip content={reason}>
+            <DependencyActionsUnavailableWrapper tabIndex={0} role="note" aria-label={reason}>
+                {children}
+            </DependencyActionsUnavailableWrapper>
+        </Tooltip>
+    );
+}

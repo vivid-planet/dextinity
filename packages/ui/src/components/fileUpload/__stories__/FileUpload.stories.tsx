@@ -150,7 +150,7 @@ export const Errors: Story = {
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
         await userEvent.upload(fileInput(canvasElement), createFile("huge.pdf", "application/pdf", 9_000_000), { applyAccept: false });
-        await expect(await canvas.findByText("This file is too large.")).toBeVisible();
+        await expect(await canvas.findByRole("alert")).toHaveTextContent("This file is too large.");
 
         await userEvent.upload(fileInput(canvasElement), createFile("upload-fail.pdf", "application/pdf"));
         await expect(await canvas.findByText("The upload failed.", {}, { timeout: 3000 })).toBeVisible();

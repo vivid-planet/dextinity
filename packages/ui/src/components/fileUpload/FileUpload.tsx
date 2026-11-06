@@ -462,7 +462,9 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                                         aria-label={entry.file.name}
                                     />
                                 ) : (
-                                    <span className={styles.error}>{entry.error}</span>
+                                    <span className={styles.error} role="alert">
+                                        {entry.error}
+                                    </span>
                                 )}
                             </span>
                             <span className={styles.actions}>

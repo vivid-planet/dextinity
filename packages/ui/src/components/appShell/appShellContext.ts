@@ -10,6 +10,8 @@ export interface AppShellContextValue {
     onNavCollapsedChange?: (collapsed: boolean) => void;
     /** Opens the navigation as a drawer; set only on narrow windows, where the navigation is hidden. */
     onNavDrawerOpen?: () => void;
+    /** Called after a navigation entry was chosen, e.g. to close the drawer. */
+    onNavigate?: () => void;
 }
 
 export const AppShellContext = createContext<AppShellContextValue | null>(null);

@@ -1,4 +1,4 @@
-const fieldAdapterOptionKeys = ["required", "requiredMessage", "control", "rules", "defaultValue", "shouldUnregister"] as const;
+const fieldAdapterOptionKeys = ["required", "requiredMessage", "control", "rules", "defaultValue", "shouldUnregister", "warn"] as const;
 
 type FieldAdapterOptionKey = (typeof fieldAdapterOptionKeys)[number];
 

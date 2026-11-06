@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { Control, FieldPath, FieldPathValue, FieldValues, UseControllerProps } from "react-hook-form";
 
 /**
@@ -16,4 +17,10 @@ export interface ReactHookFormFieldConfig<
     defaultValue?: FieldPathValue<TFieldValues, TName>;
     /** Removes the field's value from the form values when the adapter unmounts. */
     shouldUnregister?: boolean;
+    /**
+     * Returns a warning for the field's value, shown as `state="warning"` without blocking submitting, e.g. a text longer than
+     * recommended. React Hook Form has no warnings of its own: compute cross-field warnings in the form, e.g. with `useWatch`, and
+     * return them here.
+     */
+    warn?: (value: FieldPathValue<TFieldValues, TName>) => ReactNode;
 }

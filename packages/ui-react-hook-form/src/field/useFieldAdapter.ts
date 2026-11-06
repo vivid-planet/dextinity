@@ -1,7 +1,9 @@
 import { type ReactNode, type Ref, useMemo } from "react";
 import { type FieldPath, type FieldValues, useController, type UseControllerProps, type Validate } from "react-hook-form";
 
+import { useFieldAdapterConfig } from "../fieldAdapterConfig/FieldAdapterConfigProvider";
 import { mergeRefs } from "../utils/mergeRefs";
+import { fieldValidationProps } from "./fieldValidationProps";
 import { focusTarget } from "./focusTarget";
 import type { ReactHookFormFieldConfig } from "./reactHookFormFieldConfig";
 
@@ -49,11 +51,6 @@ export interface UseFieldAdapterOptions<TFieldValues extends FieldValues, TName 
     isEmpty?: (value: unknown) => boolean;
 }
 
-interface FieldAdapterValidationProps {
-    state?: "error";
-    validationMessage?: ReactNode;
-}
-
 export function useFieldAdapter<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>, Element extends HTMLElement>(
     {
         name,
@@ -61,12 +58,14 @@ export function useFieldAdapter<TFieldValues extends FieldValues, TName extends 
         rules,
         defaultValue,
         shouldUnregister,
+        warn,
         required = false,
         requiredMessage = defaultRequiredMessage,
         isEmpty = isEmptyValue,
     }: UseFieldAdapterOptions<TFieldValues, TName>,
     forwardedRef: Ref<Element> | undefined,
 ) {
+    const adapterConfig = useFieldAdapterConfig();
     const { field, fieldState, formState } = useController<TFieldValues, TName>({
         name,
         control,
@@ -76,10 +75,13 @@ export function useFieldAdapter<TFieldValues extends FieldValues, TName extends 
     });
 
     // A rule without a message, e.g. `{ maxLength: 10 }`, still blocks submitting, so the field shows as invalid even without a text
-    const showsError = fieldState.error != null && (fieldState.isTouched || formState.isSubmitted);
-    const validationProps: FieldAdapterValidationProps = showsError
-        ? { state: "error", validationMessage: toErrorMessage(fieldState.error, requiredMessage) }
-        : {};
+    const validationProps = fieldValidationProps({
+        hasError: fieldState.error != null,
+        error: toErrorMessage(fieldState.error, requiredMessage),
+        warning: warn?.(field.value),
+        touchedOrSubmitted: fieldState.isTouched || formState.isSubmitted,
+        config: adapterConfig,
+    });
 
     const fieldRef = field.ref;
     const ref = useMemo(

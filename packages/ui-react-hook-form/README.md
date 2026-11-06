@@ -72,6 +72,7 @@ Shared by both adapter packages:
 - **`required`** — marks the field where the ui component supports it (star and `aria-required` on the framed fields, `CheckboxField`, `SwitchField`, `RadioGroupField`, and `CheckboxGroupField`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing; for `DateRangeField`, a range without both ends is missing. A custom validation still runs on a non-empty value.
 - **`requiredMessage`** — the message for a missing required value. Defaults to `"Required"`; pass a translated text.
 - **`actions`** (`InputField`, `TextareaField`, `SelectField`, `ComboboxField`, `PickerField`, `RichTextEditorField`) — content at the label as in the ui component, or a function `({ value, setValue }) => ReactNode` to connect `FieldActions`, e.g. `actions={({ setValue }) => <FieldActions aiAssist onAiSuggest={suggest} onAiAccept={setValue} />}`.
+- **`warn`** — `(value) => ReactNode`: a warning for the field's value, shown as `state="warning"` with the message as `validationMessage`. It never blocks submitting, and an error wins over it. See [Validation](#validation).
 - **`ref`** — forwarded to the ui component, so it reaches the same element as on the component itself.
 - **`onFocus`** — still passed through.
 - Every other prop of the ui component passes through unchanged. `value`/`checked`, `onChange`, `onBlur`, `state`, and `validationMessage` are not available: the adapter sets them from the field.
@@ -95,9 +96,42 @@ An empty form value (`undefined` or `null`, e.g. a field without a default value
 
 ### Validation
 
-A field shows its error once it was touched (blurred) or the form was submitted: `state="error"` with the message as `validationMessage`. An error set with `setError` after submitting (e.g. from the server) shows the same way until the field changes and validates again. Controls without a field frame – `CheckboxField`, `SwitchField`, `RadioGroupField`, `CheckboxGroupField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` – show it below the control, the same way.
+By default, a field shows its error once it was touched (blurred) or the form was submitted (see [When messages show](#when-messages-show)): `state="error"` with the message as `validationMessage`. An error set with `setError` after submitting (e.g. from the server) shows the same way until the field changes and validates again. Controls without a field frame – `CheckboxField`, `SwitchField`, `RadioGroupField`, `CheckboxGroupField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` – show it below the control, the same way.
 
 When submitting fails validation, React Hook Form focuses the first invalid field (`shouldFocusError`, on by default). The adapters register the element to focus inside the ui component – the input, the select trigger, the editor, or the checkbox – since not every ui component's root takes focus. Pass `{ shouldFocus: true }` to `setError` to focus a field with a server error.
+
+#### Warnings
+
+A warning points out something to check without blocking submitting, e.g. a title longer than recommended. The field shows it as `state="warning"`; an error shown at the same time wins. React Hook Form has no warnings of its own (an error set with `setError` blocks submitting), so the convention is the adapters' `warn` prop:
+
+- For a rule on the field's own value: `<InputField name="title" label="Title" warn={(title) => (title?.length > 60 ? "Longer than recommended" : undefined)} />`.
+- For anything else, e.g. a rule across fields or a hint from the server, derive the warning in the form, e.g. with `useWatch` or `useFormState`, and return it: `warn={() => slugWarning}`.
+
+#### When messages show
+
+By default, errors and warnings show once the field was touched or the form was submitted. Wrap forms or a part of one in `FieldAdapterConfigProvider` to change that:
+
+```tsx
+<FieldAdapterConfigProvider showErrors="always" showWarnings="always">
+    <BlockForm />
+</FieldAdapterConfigProvider>
+```
+
+- **`showErrors`** — `"touched-or-submitted"` (default) or `"always"`. Use `"always"` for forms that save on every change, e.g. block forms in an editor, where no submit reveals the errors.
+- **`showWarnings`** — the same, for warnings.
+
+A nested provider overrides the settings it sets and inherits the others.
+
+With `showErrors="always"`, an error shows as soon as React Hook Form has it, which depends on the form's `mode`: use `mode: "all"` and call `trigger()` after mounting to validate the initial values too.
+
+### Field arrays and conditional groups
+
+The adapters take any path as `name`, checked against the form values' type, so rows of fields and groups shown on a condition need nothing special:
+
+- **Rows**, e.g. a list of addresses: use React Hook Form's `useFieldArray`, render one set of adapters per row with names like `addresses.1.street`, and key the rows by the `id` it provides, not the index. `append`, `remove`, and `move` keep the touched and error states with the rows.
+- **Conditional groups**: an unmounted adapter keeps its value and its rules don't run. Pass `shouldUnregister` to the adapters of a group to remove their values while it's hidden.
+
+The story `Forms/React Hook Form/Field arrays` shows both.
 
 ### React Hook Form configuration
 
@@ -113,14 +147,15 @@ The adapters are generic in the form values and the field's path, `<TFieldValues
 
 Shared by both adapter packages, for the content of a form:
 
-| Export                   | Purpose                                                                                                                                    |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `useFormSaveState()`     | `{ state, savedAt }` for `SaveState`: `saving` while submitting, `error` after a failed submit, `dirty` with unsaved changes, else `saved` |
-| `useHasUnsavedChanges()` | Whether the form has changes that are not saved, e.g. to ask with a `ConfirmDialog` before leaving                                         |
+| Export                       | Purpose                                                                                                                                    |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `FieldAdapterConfigProvider` | When the adapters inside it show errors and warnings (`showErrors`, `showWarnings`): once touched or submitted, or always                  |
+| `useFormSaveState()`         | `{ state, savedAt }` for `SaveState`: `saving` while submitting, `error` after a failed submit, `dirty` with unsaved changes, else `saved` |
+| `useHasUnsavedChanges()`     | Whether the form has changes that are not saved, e.g. to ask with a `ConfirmDialog` before leaving                                         |
 
-Both take an optional `{ control }` (`FormStateHookOptions`) and use the surrounding `FormProvider` without it. A successful submit counts as saved even if the form keeps its default values; calling `reset(values)` after saving is still the usual way to make the saved values the new baseline, with `{ keepDirtyValues: true }` to keep what was typed while saving. Changes made while a save is running count as unsaved. React Hook Form doesn't tell a submit blocked by validation from one whose handler failed or called `setError`, so both report `error` until the next change.
+The hooks take an optional `{ control }` (`FormStateHookOptions`) and use the surrounding `FormProvider` without it. A successful submit counts as saved even if the form keeps its default values; calling `reset(values)` after saving is still the usual way to make the saved values the new baseline, with `{ keepDirtyValues: true }` to keep what was typed while saving. Changes made while a save is running count as unsaved. React Hook Form doesn't tell a submit blocked by validation from one whose handler failed or called `setError`, so both report `error` until the next change.
 
-Shared types: `FieldAdapterBaseProps` (`name`, `required`, `requiredMessage`), `FieldAdapterActions<Value>` and `FieldAdapterActionsContext<Value>` (the `actions` prop), and `<Adapter>Props` for each adapter.
+Shared types: `FieldAdapterBaseProps` (`name`, `required`, `requiredMessage`), `FieldAdapterConfig`, `FieldAdapterConfigProviderProps`, and `FieldMessageTiming` (the provider), `FieldAdapterActions<Value>` and `FieldAdapterActionsContext<Value>` (the `actions` prop), and `<Adapter>Props` for each adapter.
 
 Specific to React Hook Form:
 

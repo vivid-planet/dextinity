@@ -65,7 +65,12 @@ const preview: Preview = {
                     "Page types",
                     ["Overview", "List", "Tree + detail", "Edit", "Finder", "List + side panel"],
                     "Forms",
-                    ["Final Form", ["Example form"], "React Hook Form", ["Example form"]],
+                    [
+                        "Final Form",
+                        ["Example form", "Field arrays", "FieldAdapterConfigProvider"],
+                        "React Hook Form",
+                        ["Example form", "Field arrays", "FieldAdapterConfigProvider"],
+                    ],
                 ],
             },
         },

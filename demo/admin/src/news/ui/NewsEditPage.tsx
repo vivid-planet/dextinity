@@ -1,6 +1,6 @@
 import { useApolloClient, useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext, RouterPrompt, Stack } from "@dextinity/admin";
-import { type BlockState, DamImageBlock, useContentScope } from "@dextinity/cms-admin";
+import { type BlockState, DamImageBlock, queryUpdatedAt, resolveHasSaveConflict, useContentScope } from "@dextinity/cms-admin";
 import {
     Button,
     ConfirmDialog,
@@ -241,7 +241,7 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
         return nextErrors;
     };
 
-    const save = async (): Promise<boolean> => {
+    const saveValues = async ({ overwriteNewerVersion }: { overwriteNewerVersion: boolean }): Promise<boolean> => {
         const nextErrors = validate();
         setErrors(nextErrors);
         if (Object.keys(nextErrors).length > 0 || values.category === null) {
@@ -259,6 +259,24 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
             content: NewsContentBlock.state2Output(values.content),
         };
         try {
+            if (savedNews && !overwriteNewerVersion) {
+                const currentUpdatedAt = await queryUpdatedAt(client, "news", savedNews.id);
+                if (resolveHasSaveConflict(savedNews.updatedAt, currentUpdatedAt)) {
+                    setSaveState("error");
+                    addToast({
+                        tone: "error",
+                        message: intl.formatMessage({
+                            id: "uiDemo.news.edit.saveConflict",
+                            defaultMessage: "Not saved: someone else saved this news in the meantime",
+                        }),
+                        action: {
+                            label: intl.formatMessage({ id: "uiDemo.news.edit.overwrite", defaultMessage: "Overwrite" }),
+                            onClick: () => void saveValues({ overwriteNewerVersion: true }),
+                        },
+                    });
+                    return false;
+                }
+            }
             let result: GQLNewsUiEditFragment | undefined;
             if (savedNews) {
                 const { data } = await client.mutate<GQLNewsUiUpdateMutation, GQLNewsUiUpdateMutationVariables>({
@@ -301,6 +319,8 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
             return false;
         }
     };
+
+    const save = () => saveValues({ overwriteNewerVersion: false });
 
     useKeyboardShortcut("mod+s", () => void save(), { allowInEditable: true });
 

@@ -15,7 +15,6 @@ import {
     DextinityConfigProvider,
 } from "@dextinity/cms-admin";
 import { css, Global } from "@emotion/react";
-import { DataGridPro } from "@mui/x-data-grid-pro";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LicenseInfo } from "@mui/x-license";
@@ -88,9 +87,6 @@ export function App() {
             }}
             redirects={{
                 scopeParts: ["domain"],
-            }}
-            dataGrid={{
-                component: DataGridPro,
             }}
             dam={{
                 ...config.dam,

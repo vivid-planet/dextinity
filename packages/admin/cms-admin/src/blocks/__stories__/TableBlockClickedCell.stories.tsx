@@ -1,6 +1,3 @@
-import { gridClasses } from "@mui/x-data-grid";
-// eslint-disable-next-line no-restricted-imports
-import { DataGridPro } from "@mui/x-data-grid-pro";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { MemoryRouter } from "react-router";
@@ -46,9 +43,6 @@ const config: Meta<typeof TableBlockOpenedFromCellH25InThePreview> = {
     component: TableBlockOpenedFromCellH25InThePreview,
     title: "Debug/blocks/TableBlock/Clicked cell",
     tags: ["!autodocs"],
-    parameters: {
-        dataGrid: { component: DataGridPro },
-    },
 };
 
 export default config;
@@ -59,7 +53,7 @@ export const ScrollsToAndHighlightsTheClickedCell: Story = {
     play: async () => {
         await waitFor(
             () => {
-                const cell = screen.getByRole("gridcell", { name: "H25" });
+                const cell = screen.getByRole("cell", { name: "H25" });
                 const cellBounds = cell.getBoundingClientRect();
                 const visibleBounds = getVisibleArea(cell).getBoundingClientRect();
                 expect(cellBounds.top).toBeGreaterThanOrEqual(visibleBounds.top);
@@ -70,20 +64,23 @@ export const ScrollsToAndHighlightsTheClickedCell: Story = {
             { timeout: 10000 },
         );
 
-        await waitFor(() => expect(getHighlightOpacity(screen.getByRole("gridcell", { name: "H25" }))).toBe("1"), { timeout: 10000 });
+        await waitFor(() => expect(getHighlightOpacity(screen.getByRole("cell", { name: "H25" }))).toBe("1"), { timeout: 10000 });
     },
 };
 
 function getVisibleArea(cell: HTMLElement) {
-    const visibleArea = cell.closest(`.${gridClasses.virtualScroller}`);
-    if (!visibleArea) {
-        throw new Error("The cell is not inside the data grid");
+    let visibleArea = cell.parentElement;
+    while (visibleArea) {
+        if (getComputedStyle(visibleArea).overflowY === "auto") {
+            return visibleArea;
+        }
+        visibleArea = visibleArea.parentElement;
     }
-    return visibleArea;
+    throw new Error("The cell is not inside a scroll area");
 }
 
 function getHighlightOpacity(cell: HTMLElement) {
-    const cellValue = cell.firstElementChild;
+    const cellValue = cell.querySelector("[data-table-cell-key]");
     if (!cellValue) {
         throw new Error("The cell has no value");
     }

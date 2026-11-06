@@ -1,4 +1,4 @@
-import { cleanup, within } from "test-utils";
+import { cleanup, fireEvent, within } from "test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../context/useBlockContext", () => ({
@@ -57,5 +57,17 @@ describe("TableBlock: Move a row", () => {
         openRowOptionsAtIndex(rendered, lastRowIndex);
 
         expect(rendered.getByRole("menuitem", { name: /move down/i }).getAttribute("aria-disabled")).toBe("true");
+    });
+});
+
+describe("TableBlock: Drag a row", () => {
+    it("should move a row down with the arrow keys on its grip", async () => {
+        const rendered = renderTableBlock(mockStates.default);
+        const rowgroup = getBodyRowgroup(rendered);
+        const [firstRowBefore, secondRowBefore, ...otherRowsBefore] = getCellValuesPerRow(rowgroup);
+
+        fireEvent.keyDown(rendered.getAllByRole("button", { name: /move row/i })[0], { key: "ArrowDown" });
+
+        expect(getCellValuesPerRow(rowgroup)).toEqual([secondRowBefore, firstRowBefore, ...otherRowsBefore]);
     });
 });

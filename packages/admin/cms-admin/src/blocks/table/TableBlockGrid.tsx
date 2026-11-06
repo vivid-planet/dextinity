@@ -1,48 +1,22 @@
-import { DragIndicator } from "@dextinity/admin-icons";
-/* eslint-disable no-restricted-imports */
-import {
-    DataGrid as MuiDataGrid,
-    type DataGridProps,
-    type GridColDef,
-    type GridColumnHeaderParams,
-    type GridEventListener,
-    type GridRenderCellParams,
-    type GridRenderEditCellParams,
-    type GridValidRowModel,
-} from "@mui/x-data-grid";
-/* eslint-enable no-restricted-imports */
-import type { DataGridProProps, GridApiPro } from "@mui/x-data-grid-pro";
-import { type ComponentType, type Dispatch, type SetStateAction, useCallback, useEffect, useRef } from "react";
+import { DataGrid, type DataGridColumn, ToastViewport, useToasts } from "@dextinity/ui";
+import { styled } from "@mui/material/styles";
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef } from "react";
+import { useIntl } from "react-intl";
 
 import type { TableBlockData } from "../../blocks.generated";
-import { type DextinityConfig, useDextinityConfig } from "../../config/DextinityConfigContext";
-import type { TableBlockState } from "../createTableBlock";
+import type { TableBlockRowState, TableBlockState } from "../createTableBlock";
 import { CellValue } from "./CellValue";
-import { ColumnHeader } from "./ColumnHeader";
-import { dataGridStyles, freeDataGridStyles, lastContentColumnClassName } from "./dataGridStyles";
-import { EditCell } from "./EditCell";
-import { RowActionsCell } from "./RowActionsCell";
+import { ColumnActionsMenu } from "./ColumnActionsMenu";
+import { RichTextCellEditor } from "./RichTextCellEditor";
+import { RowActionsMenu } from "./RowActionsMenu";
 import { useTableBlockContext } from "./TableBlockContext";
 import { useScrollToAndHighlightCell } from "./useScrollToAndHighlightCell";
 import { type CellPosition, createCellKey } from "./utils/cellRoute";
-import { moveColumnToIndex } from "./utils/column";
 import { ensureMinimumTableState } from "./utils/ensureMinimumTableState";
 import { moveRowToIndex } from "./utils/row";
 import { useTemporarilyHighlightedIds } from "./utils/useTemporarilyHighlightedIds";
 
 type ColumnSize = TableBlockData["columns"][number]["size"];
-type TableBlockColumn = TableBlockData["columns"][number];
-
-type ConfiguredDataGrid = NonNullable<DextinityConfig["dataGrid"]>["component"];
-
-const reorderColumnField = "__reorder__";
-const maximumPageSizeOfFreeDataGrid = 100;
-
-const isProOrPremiumDataGrid = (dataGrid: ConfiguredDataGrid): dataGrid is ComponentType<DataGridProProps> =>
-    dataGrid !== undefined && dataGrid !== MuiDataGrid;
-
-const getLastContentColumnClassName = (columnIndex: number, numberOfColumns: number) =>
-    columnIndex === numberOfColumns - 1 ? lastContentColumnClassName : undefined;
 
 const widthForColumnSize: Record<ColumnSize, number> = {
     extraSmall: 100,
@@ -52,13 +26,13 @@ const widthForColumnSize: Record<ColumnSize, number> = {
     extraLarge: 500,
 };
 
-const flexForColumnSize: Record<ColumnSize, number> = {
-    extraSmall: 1,
-    small: 2,
-    standard: 3,
-    large: 4,
-    extraLarge: 5,
-};
+const getCellValue = (row: TableBlockRowState, columnId: string): unknown =>
+    row.cellValues.find((cellValue) => cellValue.columnId === columnId)?.value;
+
+const setCellValue = (row: TableBlockRowState, columnId: string, value: unknown): TableBlockRowState => ({
+    ...row,
+    cellValues: row.cellValues.map((cellValue) => (cellValue.columnId === columnId ? { ...cellValue, value } : cellValue)),
+});
 
 type Props = {
     state: TableBlockState;
@@ -67,16 +41,16 @@ type Props = {
 };
 
 export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
+    const intl = useIntl();
     const { RichTextBlock } = useTableBlockContext();
-    const { dataGrid: { component: ConfiguredDataGrid } = {} } = useDextinityConfig();
-    const hasDragAndDrop = isProOrPremiumDataGrid(ConfiguredDataGrid);
-    const apiRef = useRef<GridApiPro | null>(null);
+    const gridRef = useRef<HTMLDivElement>(null);
+    const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
     const { highlightedIds: recentlyPastedRowIds, highlightTemporarily: addToRecentlyPastedRowIds } = useTemporarilyHighlightedIds();
     const { highlightedIds: recentlyPastedColumnIds, highlightTemporarily: addToRecentlyPastedColumnIds } = useTemporarilyHighlightedIds();
     const { highlightedIds: recentlyClickedCellKeys, highlightTemporarily: highlightCellKey } = useTemporarilyHighlightedIds();
 
     const highlightCell = useCallback((cell: CellPosition) => highlightCellKey(createCellKey(cell)), [highlightCellKey]);
-    useScrollToAndHighlightCell({ apiRef, cell: clickedCell, highlightCell });
+    useScrollToAndHighlightCell({ gridRef, cell: clickedCell, highlightCell });
 
     useEffect(() => {
         if (state.columns.length === 0 || state.rows.length === 0) {
@@ -84,146 +58,99 @@ export const TableBlockGrid = ({ state, updateState, clickedCell }: Props) => {
         }
     }, [state.columns.length, state.rows.length, updateState, RichTextBlock]);
 
-    const setRowData: Dispatch<SetStateAction<TableBlockState["rows"]>> = (newRows) => {
-        updateState((state) => {
-            return { ...state, rows: typeof newRows === "function" ? newRows(state.rows) : newRows };
-        });
-    };
+    const showError = (message: string) => addToast({ message, tone: "error" });
 
-    const processRowUpdate: DataGridProps["processRowUpdate"] = (newRow) => {
-        const { id: newRowId, ...newRowValuesRecord } = newRow;
-
-        setRowData((previousRowData) => {
-            return previousRowData.map((existingRow) => {
-                if (existingRow.id === newRowId) {
-                    return {
-                        ...existingRow,
-                        cellValues: Object.entries(newRowValuesRecord).map(([columnId, value]) => ({
-                            columnId,
-                            value,
-                        })),
-                    };
+    const columns: DataGridColumn<TableBlockRowState>[] = state.columns.map(({ id: columnId, highlighted, size }, columnIndex) => ({
+        key: columnId,
+        header: intl.formatMessage({ id: "dextinity.tableBlock.columnHeader", defaultMessage: "Column {number}" }, { number: columnIndex + 1 }),
+        width: widthForColumnSize[size],
+        hideable: false,
+        editable: true,
+        editor: { type: "custom", render: (params) => <RichTextCellEditor {...params} /> },
+        getValue: (row) => getCellValue(row, columnId),
+        setValue: (row, value) => setCellValue(row, columnId, value),
+        render: (row) => (
+            <CellValue
+                value={getCellValue(row, columnId)}
+                highlighted={row.highlighted || highlighted}
+                isTemporarilyHighlighted={
+                    recentlyPastedRowIds.includes(row.id) ||
+                    recentlyPastedColumnIds.includes(columnId) ||
+                    recentlyClickedCellKeys.includes(createCellKey({ columnId, rowId: row.id }))
                 }
-                return existingRow;
-            });
-        });
-
-        return newRow;
-    };
-
-    useEffect(() => {
-        const handleMoveColumn: GridEventListener<"columnHeaderDragEnd"> = ({ field: columnId }) => {
-            if (!apiRef.current) {
-                return;
-            }
-            const targetIndex = apiRef.current.getColumnIndex(columnId) - 1;
-
-            updateState((state) => moveColumnToIndex({ state, columnId, targetIndex }));
-        };
-
-        return apiRef.current?.subscribeEvent("columnHeaderDragEnd", handleMoveColumn);
-    }, [apiRef, updateState]);
-
-    const dataGridColumns: GridColDef[] = [
-        ...state.columns.map(({ id: columnId, highlighted, size }: TableBlockColumn, index: number) => ({
-            field: columnId,
-            editable: true,
-            sortable: false,
-            flex: flexForColumnSize[size],
-            minWidth: widthForColumnSize[size],
-            headerClassName: getLastContentColumnClassName(index, state.columns.length),
-            cellClassName: getLastContentColumnClassName(index, state.columns.length),
-            renderHeader: (params: GridColumnHeaderParams) => (
-                <ColumnHeader
-                    {...params}
-                    state={state}
-                    columnSize={size}
-                    highlighted={highlighted}
-                    updateState={updateState}
-                    columnIndex={index}
-                    isDraggable={hasDragAndDrop}
-                    addToRecentlyPastedIds={addToRecentlyPastedColumnIds}
-                />
-            ),
-            renderCell: ({ value, row, field: columnId }: GridRenderCellParams) => {
-                const rowFromState = state.rows.find((rowInState) => rowInState.id === row.id);
-                const rowWasRecentlyPasted = recentlyPastedRowIds.includes(row.id);
-                const columnWasRecentlyPasted = recentlyPastedColumnIds.includes(columnId);
-                const cellWasRecentlyClicked = recentlyClickedCellKeys.includes(createCellKey({ columnId, rowId: row.id }));
-
-                return (
-                    <CellValue
-                        value={value}
-                        highlighted={rowFromState?.highlighted || highlighted}
-                        isTemporarilyHighlighted={rowWasRecentlyPasted || columnWasRecentlyPasted || cellWasRecentlyClicked}
-                    />
-                );
-            },
-            renderEditCell: (params: GridRenderEditCellParams) => {
-                return <EditCell {...params} />;
-            },
-        })),
-        {
-            field: "actions",
-            sortable: false,
-            headerName: "",
-            minWidth: 36,
-            maxWidth: 36,
-            disableReorder: true,
-            renderCell: ({ row }) => (
-                <RowActionsCell row={row} updateState={updateState} state={state} addToRecentlyPastedIds={addToRecentlyPastedRowIds} />
-            ),
-        },
-    ];
-
-    const rowsInDataGridFormat = state.rows.map(({ id, cellValues }) => {
-        const dataGridRow: GridValidRowModel = { id };
-        cellValues.forEach(({ columnId, value }) => {
-            dataGridRow[columnId] = value;
-        });
-        return dataGridRow;
-    });
-
-    const commonDataGridProps = {
-        apiRef,
-        rows: rowsInDataGridFormat,
-        rowHeight: 55,
-        disableColumnResize: true,
-        disableColumnMenu: true,
-        disableRowSelectionOnClick: true,
-        processRowUpdate,
-    } satisfies Partial<DataGridProps>;
-
-    if (isProOrPremiumDataGrid(ConfiguredDataGrid)) {
-        return (
-            <ConfiguredDataGrid
-                {...commonDataGridProps}
-                sx={dataGridStyles}
-                columns={[{ field: reorderColumnField, minWidth: 36, maxWidth: 36 }, ...dataGridColumns]}
-                rowReordering
-                hideFooter
-                pinnedColumns={{
-                    left: [reorderColumnField],
-                    right: ["actions"],
-                }}
-                slots={{
-                    rowReorderIcon: ({ color, ...restProps }) => <DragIndicator {...restProps} htmlColor={color} />,
-                }}
-                onRowOrderChange={({ targetIndex, row }) => {
-                    updateState((state) => moveRowToIndex({ state, rowId: row.id, targetIndex }));
-                }}
+                cellKey={createCellKey({ columnId, rowId: row.id })}
             />
-        );
-    }
+        ),
+        headerActions: (
+            <ColumnActionsMenu
+                columnId={columnId}
+                columnIndex={columnIndex}
+                columnSize={size}
+                highlighted={highlighted}
+                state={state}
+                updateState={updateState}
+                addToRecentlyPastedIds={addToRecentlyPastedColumnIds}
+                showError={showError}
+            />
+        ),
+    }));
 
     return (
-        <MuiDataGrid
-            {...commonDataGridProps}
-            sx={freeDataGridStyles}
-            disableVirtualization
-            pageSizeOptions={[maximumPageSizeOfFreeDataGrid]}
-            columns={dataGridColumns}
-            hideFooter={state.rows.length <= maximumPageSizeOfFreeDataGrid}
-        />
+        <Root>
+            <Grid<TableBlockRowState>
+                ref={gridRef}
+                aria-label={intl.formatMessage({ id: "dextinity.blocks.table.displayName", defaultMessage: "Table" })}
+                variant="plain"
+                stickyHeader
+                columns={columns}
+                rows={state.rows}
+                getRowId={(row) => row.id}
+                onRowChange={(changedRow) => {
+                    updateState((state) => ({ ...state, rows: state.rows.map((row) => (row.id === changedRow.id ? changedRow : row)) }));
+                }}
+                onRowReorder={(fromIndex, toIndex) => {
+                    const movedRow = state.rows[fromIndex];
+                    if (movedRow) {
+                        updateState((state) => moveRowToIndex({ state, rowId: movedRow.id, targetIndex: toIndex }));
+                    }
+                }}
+                rowActions={(row) => (
+                    <RowActionsMenu
+                        rowId={row.id}
+                        state={state}
+                        updateState={updateState}
+                        addToRecentlyPastedIds={addToRecentlyPastedRowIds}
+                        showError={showError}
+                    />
+                )}
+                labels={{
+                    moveRow: intl.formatMessage({ id: "dextinity.tableBlock.moveRow", defaultMessage: "Move row" }),
+                    actions: intl.formatMessage({ id: "dextinity.tableBlock.rowActions", defaultMessage: "Row actions" }),
+                }}
+            />
+            <ToastViewport toasts={toasts} onDismiss={dismissToast} />
+        </Root>
     );
 };
+
+const Root = styled("div")`
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-block-size: 0;
+`;
+
+// Lines between the cells, like in a spreadsheet, so empty cells stay visible. The first and the last cell of a row hold the grip and
+// the row actions.
+const Grid = styled(DataGrid)`
+    flex: 1;
+
+    tbody td:not(:first-of-type, :last-of-type) {
+        border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    }
+
+    tbody td:not(:first-of-type, :last-of-type, :nth-last-of-type(2)),
+    thead th:not(:first-of-type, :last-of-type, :nth-last-of-type(2)) {
+        border-inline-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    }
+` as typeof DataGrid;

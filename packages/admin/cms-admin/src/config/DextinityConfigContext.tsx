@@ -31,6 +31,10 @@ export interface DextinityConfig<SiteConfigs = unknown> {
         context?: Omit<BlockContext, "apiUrl" | "apolloClient">;
     };
     warnings?: WarningsConfig;
+    /**
+     * @deprecated No longer used: the table block edits on the `DataGrid` of `@dextinity/ui`, which needs no MUI X license. Remove the
+     * option.
+     */
     dataGrid?: {
         component?: ComponentType<DataGridProps> | ComponentType<DataGridProProps> | ComponentType<DataGridPremiumProps>;
     };

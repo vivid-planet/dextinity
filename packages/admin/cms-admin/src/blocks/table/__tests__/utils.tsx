@@ -1,27 +1,22 @@
-import { gridClasses } from "@mui/x-data-grid";
-// eslint-disable-next-line no-restricted-imports
-import { DataGridPro } from "@mui/x-data-grid-pro";
-import { type ComponentProps, useState } from "react";
+import { useState } from "react";
+import { MemoryRouter } from "react-router";
 import { fireEvent, render, type RenderResult, waitFor, within } from "test-utils";
 import { expect } from "vitest";
 
-import { DextinityConfigProvider } from "../../../config/DextinityConfigContext";
 import type { TableBlockState } from "../../createTableBlock";
 import { MockRichTextBlock } from "../__mocks__/TableBlockData.mocks";
 import { TableBlockContextProvider } from "../TableBlockContext";
 import { TableBlockGrid } from "../TableBlockGrid";
 
-type DataGridConfig = ComponentProps<typeof DextinityConfigProvider>["dataGrid"];
-
-export const renderTableBlock = (initialState: TableBlockState, dataGrid: DataGridConfig = { component: DataGridPro }) => {
+export const renderTableBlock = (initialState: TableBlockState) => {
     const Component = () => {
         const [state, setState] = useState<TableBlockState>(initialState);
         return (
-            <DextinityConfigProvider apiUrl="" graphQLApiUrl="" adminUrl="" dataGrid={dataGrid}>
+            <MemoryRouter>
                 <TableBlockContextProvider RichTextBlock={MockRichTextBlock}>
                     <TableBlockGrid state={state} updateState={setState} />
                 </TableBlockContextProvider>
-            </DextinityConfigProvider>
+            </MemoryRouter>
         );
     };
     return render(<Component />);
@@ -50,7 +45,7 @@ export const clickButtonOfColumnAtIndex = (rendered: RenderResult, index: number
 };
 
 export const getBodyRowgroup = (rendered: RenderResult) => {
-    const bodyRowgroup = rendered.getAllByRole("rowgroup").find((rowgroup) => !rowgroup.classList.contains(gridClasses.columnHeaders));
+    const bodyRowgroup = rendered.getAllByRole("rowgroup").find((rowgroup) => rowgroup.tagName === "TBODY");
     if (!bodyRowgroup) {
         throw new Error("The body rowgroup of the data grid was not found");
     }
@@ -67,7 +62,7 @@ export const getCellValuesPerColumn = (rendered: RenderResult) => {
     const rowgroup = getBodyRowgroup(rendered);
     const rows = within(rowgroup).getAllByRole("row");
 
-    const rowCells = rows.map((row) => within(row).getAllByRole("gridcell"));
+    const rowCells = rows.map((row) => within(row).getAllByRole("cell"));
     const firstRowCells = rowCells[0];
     const cellValuesPerColumn: string[][] = [];
 
@@ -91,5 +86,5 @@ export const getCellValuesPerColumn = (rendered: RenderResult) => {
 };
 
 export const getCellsExcludingTheDragHandleAndActionsCells = (rowElement: HTMLElement): HTMLElement[] => {
-    return within(rowElement).queryAllByRole("gridcell").slice(1, -1);
+    return within(rowElement).queryAllByRole("cell").slice(1, -1);
 };

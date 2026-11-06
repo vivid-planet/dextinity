@@ -180,3 +180,12 @@ export function PatternUses({ pages, title = "Components used" }: { pages: Patte
         </PatternSection>
     );
 }
+
+/**
+ * The live example of a pattern, stacked.
+ */
+export function PatternExample({ children }: PropsWithChildren) {
+    return <div className={styles.example}>{children}</div>;
+}
+
+export const patternListClassNames = { list: styles.list, row: styles.row, rowTitle: styles.rowTitle };

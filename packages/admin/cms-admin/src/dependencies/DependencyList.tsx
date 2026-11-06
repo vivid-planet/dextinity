@@ -308,7 +308,7 @@ export function DependencyList<Query>({ query, variables, getPage, listKey, type
                 pagination={pagination}
                 labels={dataGridLabels}
                 emptyState={
-                    listState.isFiltered || filterValues.visibleOnly ? (
+                    search !== "" || filterValues.type !== "" || filterValues.visibleOnly ? (
                         <EmptyState
                             icon={<Icon name="search" />}
                             title={intl.formatMessage({

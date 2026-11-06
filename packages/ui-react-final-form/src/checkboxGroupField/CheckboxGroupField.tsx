@@ -45,7 +45,12 @@ export const CheckboxGroupField = forwardRef(function CheckboxGroupField<Value e
             value={toCheckboxGroupValue<Value>(input.value)}
             required={options.required}
             onChange={input.onChange}
-            onBlur={onBlur}
+            onBlur={(event) => {
+                // Moving between the group's own controls isn't leaving the field, so it isn't touched yet
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                    onBlur();
+                }
+            }}
             onFocus={(event) => {
                 onFieldFocus();
                 onFocus?.(event);

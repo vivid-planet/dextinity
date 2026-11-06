@@ -169,6 +169,11 @@
         box-shadow:
             inset 0 0 0 2px var(--dextinity-data-grid-editor-line),
             0 0 0 3px var(--dextinity-data-grid-editor-halo);
+
+        // Like a focused field: the keyboard position stays as visible as on a focused cell
+        :global([data-dextinity-color-scheme="high-contrast"]) & {
+            box-shadow: inset 0 0 0 2px var(--dextinity-data-grid-cell-focus-line);
+        }
     }
 }
 

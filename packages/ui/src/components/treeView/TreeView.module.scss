@@ -11,10 +11,64 @@
     color: var(--dextinity-tree-view-foreground);
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-tree-view-font-size);
+
+    :global([data-dextinity-color-scheme="high-contrast"]) & {
+        --dextinity-tree-view-drop-color: var(--dextinity-tree-view-drop-color-high-contrast);
+        --dextinity-tree-view-drop-line-width: 3px;
+        --dextinity-tree-view-drop-cap-size: 8px;
+    }
 }
 
 .item {
+    position: relative;
     outline: none;
+
+    // The line showing where a dragged node lands as a sibling. It sits on the item, not the row, so "after" an expanded
+    // node is drawn below its subtree, where the node really lands. It is a straight line starting at the target level's
+    // toggle with a cap, inset from the row's rounded corners.
+    &[data-drop] {
+        // Center of the target level's expand toggle
+        --dextinity-tree-view-drop-line-start: calc(22px + var(--dextinity-tree-view-node-level) * var(--dextinity-tree-view-indent) + 11px);
+    }
+
+    &[data-drop]::before,
+    &[data-drop]::after {
+        position: absolute;
+        z-index: 1;
+        content: "";
+        pointer-events: none;
+    }
+
+    &[data-drop]::before {
+        inset-inline: var(--dextinity-tree-view-drop-line-start) var(--dextinity-tree-view-row-radius);
+        block-size: var(--dextinity-tree-view-drop-line-width);
+        border-radius: var(--dextinity-tree-view-drop-line-width);
+        background: var(--dextinity-tree-view-drop-color);
+    }
+
+    &[data-drop]::after {
+        inset-inline-start: calc(var(--dextinity-tree-view-drop-line-start) - var(--dextinity-tree-view-drop-cap-size) / 2);
+        inline-size: var(--dextinity-tree-view-drop-cap-size);
+        block-size: var(--dextinity-tree-view-drop-cap-size);
+        border-radius: 50%;
+        background: var(--dextinity-tree-view-drop-color);
+    }
+
+    &[data-drop="before"]::before {
+        inset-block-start: calc(var(--dextinity-tree-view-drop-line-width) / -2);
+    }
+
+    &[data-drop="after"]::before {
+        inset-block-end: calc(var(--dextinity-tree-view-drop-line-width) / -2);
+    }
+
+    &[data-drop="before"]::after {
+        inset-block-start: calc(var(--dextinity-tree-view-drop-cap-size) / -2);
+    }
+
+    &[data-drop="after"]::after {
+        inset-block-end: calc(var(--dextinity-tree-view-drop-cap-size) / -2);
+    }
 }
 
 .row {
@@ -61,14 +115,6 @@
         opacity: 0.4;
     }
 
-    &[data-drop="before"] {
-        box-shadow: inset 0 2px 0 var(--dextinity-tree-view-drop-color);
-    }
-
-    &[data-drop="after"] {
-        box-shadow: inset 0 -2px 0 var(--dextinity-tree-view-drop-color);
-    }
-
     &[data-drop="inside"] {
         background: var(--dextinity-tree-view-drop-background);
         box-shadow: inset 0 0 0 1.5px var(--dextinity-tree-view-drop-color);
@@ -90,6 +136,10 @@
 
     :global([data-dextinity-color-scheme="high-contrast"]) .item:focus-visible > & {
         box-shadow: var(--dextinity-focus-ring);
+    }
+
+    :global([data-dextinity-color-scheme="high-contrast"]) &[data-drop="inside"] {
+        box-shadow: inset 0 0 0 2px var(--dextinity-tree-view-drop-color);
     }
 }
 

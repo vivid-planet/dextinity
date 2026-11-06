@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { Form } from "react-final-form";
 import { describe, expect, it } from "vitest";
 
-import { InputField } from "../../inputField/InputField";
+import { InputField } from "../../fields/inputField/InputField";
 import { FieldAdapterConfigProvider, type FieldAdapterConfigProviderProps } from "../FieldAdapterConfigProvider";
 
 const setWarning: Mutator = ([name, warning]: [string, ReactNode], state) => {

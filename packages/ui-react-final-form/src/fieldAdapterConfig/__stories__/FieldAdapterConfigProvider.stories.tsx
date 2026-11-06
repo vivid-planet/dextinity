@@ -4,10 +4,10 @@ import { type ReactNode, useEffect } from "react";
 import { useField, useForm } from "react-final-form";
 import { expect, userEvent, within } from "storybook/test";
 
-import { InputField } from "../../inputField/InputField";
-import { SelectField } from "../../selectField/SelectField";
+import { InputField } from "../../fields/inputField/InputField";
+import { SelectField } from "../../fields/selectField/SelectField";
+import { TextareaField } from "../../fields/textareaField/TextareaField";
 import { finalFormDecorator } from "../../storybook/FinalFormStoryFrame";
-import { TextareaField } from "../../textareaField/TextareaField";
 import { FieldAdapterConfigProvider } from "../FieldAdapterConfigProvider";
 
 const setWarning: Mutator = ([name, warning]: [string, ReactNode], state) => {

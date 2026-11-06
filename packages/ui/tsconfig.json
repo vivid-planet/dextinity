@@ -14,5 +14,5 @@
     },
     "exclude": ["node_modules", "lib"],
     "extends": "../../tsconfig.core.json",
-    "include": ["./src", "./.storybook", "./vite.config.mts", "./vitest.setup.ts"]
+    "include": ["./src", "./.storybook", "./vite.config.mts", "./vitest.setup.ts", "./vitest.storybook.setup.ts"]
 }

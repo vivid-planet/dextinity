@@ -161,17 +161,23 @@ const pageDocs = {
 
 export type PatternUsedPage = keyof typeof pageDocs;
 
+export interface PatternLink {
+    label: string;
+    /** The Storybook docs id, e.g. `building-blocks-tree-treeview--docs`. */
+    docsId: string;
+}
+
 /**
- * Links to the building-block pages a pattern is made of.
+ * Links to other Storybook pages, as chips with an arrow.
  */
-export function PatternUses({ pages, title = "Components used" }: { pages: PatternUsedPage[]; title?: string }) {
+export function PatternLinks({ title, links }: { title: string; links: PatternLink[] }) {
     return (
         <PatternSection title={title}>
             <ul className={styles.uses}>
-                {pages.map((page) => (
-                    <li key={page}>
-                        <a href={`/?path=/docs/${pageDocs[page]}`} target="_top">
-                            {page}
+                {links.map((link) => (
+                    <li key={link.label}>
+                        <a href={`/?path=/docs/${link.docsId}`} target="_top">
+                            {link.label}
                             <Icon name="arrow-right" />
                         </a>
                     </li>
@@ -179,6 +185,13 @@ export function PatternUses({ pages, title = "Components used" }: { pages: Patte
             </ul>
         </PatternSection>
     );
+}
+
+/**
+ * Links to the building-block pages a pattern is made of.
+ */
+export function PatternUses({ pages }: { pages: PatternUsedPage[] }) {
+    return <PatternLinks title="Components used" links={pages.map((page) => ({ label: page, docsId: pageDocs[page] }))} />;
 }
 
 /**

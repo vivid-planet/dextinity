@@ -13,7 +13,7 @@ export interface SelectionOptions {
 
 export interface SelectionToggleOptions {
     /**
-     * Selects every item from the previously toggled one to this one. Defaults to whether Shift is held, so a Shift-click on a
+     * Selects every item from the previously toggled one (or else the last selected one) to this one. Defaults to whether Shift is held, so a Shift-click on a
      * checkbox selects a range.
      */
     range?: boolean;
@@ -69,7 +69,7 @@ export function useSelection({ ids, selectedIds, onSelectionChange }: SelectionO
 
     const toggle = (id: string, options: SelectionToggleOptions = {}) => {
         const range = options.range ?? shiftHeldRef.current;
-        const anchor = anchorRef.current;
+        const anchor = anchorRef.current ?? selectedIds.findLast((selectedId) => ids.includes(selectedId)) ?? null;
         const anchorIndex = anchor == null ? -1 : ids.indexOf(anchor);
         const index = ids.indexOf(id);
 

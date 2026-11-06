@@ -1,0 +1,15 @@
+@use "../../theme/scope";
+
+// The frame (label, box, message) comes from the Field tokens.
+@include scope.component-tokens {
+    --dextinity-number-input-placeholder-color: var(--dextinity-field-placeholder);
+    --dextinity-number-input-caret-color: var(--dextinity-color-accent);
+    // The increase and decrease buttons at the end of the field
+    --dextinity-number-input-stepper-width: 22px;
+    --dextinity-number-input-stepper-icon-size: 14px;
+    --dextinity-number-input-stepper-radius: calc(var(--dextinity-radius-item) * 0.625);
+    --dextinity-number-input-stepper-color: var(--dextinity-color-text-tertiary);
+    --dextinity-number-input-stepper-color-hover: var(--dextinity-color-text);
+    --dextinity-number-input-stepper-background-hover: var(--dextinity-color-surface-sunken);
+    --dextinity-number-input-stepper-disabled-opacity: 0.42;
+}

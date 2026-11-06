@@ -58,6 +58,16 @@
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
     }
+
+    // Forced colors remove backgrounds and box shadows, which would leave the box without an edge and without a focus ring
+    @media (forced-colors: active) {
+        border: 1px solid;
+
+        &:focus-visible {
+            outline: 2px solid;
+            outline-offset: 2px;
+        }
+    }
 }
 
 .indicator {
@@ -70,6 +80,11 @@
     block-size: 2px;
     border-radius: 1px;
     background: currentColor;
+
+    @media (forced-colors: active) {
+        forced-color-adjust: none;
+        background: CanvasText;
+    }
 }
 
 .label {

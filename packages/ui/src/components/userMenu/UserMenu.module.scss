@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: inline-grid;
     flex: none;
@@ -19,6 +21,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 }
 

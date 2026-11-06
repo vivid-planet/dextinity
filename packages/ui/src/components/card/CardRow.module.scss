@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto var(--dextinity-card-row-arrow-size);
@@ -22,6 +24,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 }
 

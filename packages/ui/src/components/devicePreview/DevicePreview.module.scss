@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     flex-direction: column;
@@ -9,6 +11,8 @@
     box-shadow: var(--dextinity-device-preview-shadow);
     font-family: var(--dextinity-font-family-text);
     color: var(--dextinity-color-text);
+
+    @include forced-colors.edge;
 }
 
 .toolbar {
@@ -63,6 +67,8 @@
     background: var(--dextinity-device-preview-frame-background);
     box-shadow: var(--dextinity-device-preview-frame-shadow);
     transition: inline-size var(--dextinity-motion-duration-long) var(--dextinity-motion-easing);
+
+    @include forced-colors.edge;
 }
 
 .content {

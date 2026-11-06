@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     position: relative;
     border-radius: var(--dextinity-block-radius);
@@ -31,6 +33,25 @@
         background: var(--dextinity-block-checked-background);
     }
 
+    @include forced-colors.edge;
+
+    // Forced colors: the selected block has a highlight-colored ring, an invalid one a dashed ring
+    @media (forced-colors: active) {
+        &[data-selected] {
+            outline: 2px solid Highlight;
+            outline-offset: -2px;
+        }
+
+        &[data-invalid] {
+            outline: 2px dashed CanvasText;
+            outline-offset: -2px;
+        }
+
+        &[data-selected][data-invalid] {
+            outline-color: Highlight;
+        }
+    }
+
     &[data-dragging] {
         opacity: 0.4;
     }
@@ -44,6 +65,8 @@
         background: var(--dextinity-block-list-drop-indicator);
         content: "";
         pointer-events: none;
+
+        @include forced-colors.fill(Highlight);
     }
 
     &[data-drop="before"]::after {
@@ -106,6 +129,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     @media (hover: none) {
@@ -143,6 +167,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 }
 
@@ -197,6 +222,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 }
 
@@ -210,6 +236,8 @@
     font-size: 10.5px;
     font-weight: 500;
     line-height: 1.5;
+
+    @include forced-colors.edge;
 }
 
 .actions {

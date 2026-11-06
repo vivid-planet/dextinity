@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     --dextinity-field-radius-stacked: var(--dextinity-rich-text-editor-radius);
 }
@@ -9,6 +11,8 @@
     --dextinity-toolbar-button-size: var(--dextinity-rich-text-editor-toolbar-button-size);
     --dextinity-toolbar-button-background-pressed: var(--dextinity-rich-text-editor-toolbar-button-background-active);
     --dextinity-toolbar-button-foreground-pressed: var(--dextinity-rich-text-editor-toolbar-button-foreground-active);
+
+    @include forced-colors.separator;
 }
 
 .content {

@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     flex-wrap: wrap;
@@ -28,6 +30,8 @@
         pointer-events: auto;
         transform: none;
     }
+
+    @include forced-colors.edge;
 }
 
 .count {
@@ -60,6 +64,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-bulk-action-bar-focus-ring);
+        @include forced-colors.focus-ring(-2px);
     }
 
     &[data-disabled] {

@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 // The surface shared by the menu and its submenus.
 @mixin popup {
     box-sizing: border-box;
@@ -43,6 +45,8 @@
             transform: none;
         }
     }
+
+    @include forced-colors.edge;
 }
 
 @mixin positioner {
@@ -72,6 +76,7 @@
     &[data-highlighted],
     &[data-popup-open] {
         background: var(--dextinity-menu-item-background-highlight);
+        @include forced-colors.selected;
     }
 
     :global([data-dextinity-color-scheme="high-contrast"]) &[data-highlighted] {

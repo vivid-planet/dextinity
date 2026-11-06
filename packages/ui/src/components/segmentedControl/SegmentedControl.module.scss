@@ -1,4 +1,5 @@
 @use "../field/controlMessage";
+@use "../../theme/forcedColors" as forced-colors;
 
 .root {
     display: inline-flex;
@@ -35,6 +36,8 @@
     .root[data-state="error"] > & {
         box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-segmented-control-line-error);
     }
+
+    @include forced-colors.edge;
 }
 
 .option {
@@ -69,11 +72,13 @@
         color: var(--dextinity-segmented-control-selected-foreground);
         font-weight: var(--dextinity-segmented-control-selected-font-weight);
         box-shadow: var(--dextinity-segmented-control-selected-shadow);
+        @include forced-colors.selected;
     }
 
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     &[data-disabled] {

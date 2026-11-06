@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     flex-wrap: wrap;
@@ -41,7 +43,10 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
+
+    @include forced-colors.edge;
 }
 
 .range {
@@ -76,6 +81,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     &[aria-current] {
@@ -83,9 +89,11 @@
         color: var(--dextinity-pagination-page-foreground-current);
         box-shadow: var(--dextinity-pagination-page-shadow-current);
         cursor: default;
+        @include forced-colors.selected;
 
         &:focus-visible {
             box-shadow: var(--dextinity-focus-ring);
+            @include forced-colors.focus-ring;
         }
     }
 }

@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: inline-flex;
     align-items: center;
@@ -15,4 +17,6 @@
     font-weight: 400;
     line-height: 1;
     white-space: nowrap;
+
+    @include forced-colors.edge;
 }

@@ -1,4 +1,5 @@
 @use "../select/menu";
+@use "../../theme/forcedColors" as forced-colors;
 
 // The popup, options, and chips share the Select tokens, so both menus look alike.
 .root[data-multiple] > :global(.dextinityField__box) {
@@ -22,6 +23,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 }
 
@@ -73,6 +75,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     &[data-disabled] {

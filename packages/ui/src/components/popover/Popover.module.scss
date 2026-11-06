@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .positioner {
     z-index: 1000;
     outline: none;
@@ -46,6 +48,8 @@
             transform: none;
         }
     }
+
+    @include forced-colors.edge;
 }
 
 .title {

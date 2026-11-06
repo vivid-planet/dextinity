@@ -1,4 +1,5 @@
 @use "menu";
+@use "../../theme/forcedColors" as forced-colors;
 
 .root[data-multiple] > :global(.dextinityField__box) {
     flex-wrap: wrap;
@@ -97,6 +98,8 @@
     color: var(--dextinity-select-item-icon-color);
 
     --dextinity-icon-size: 16px;
+
+    @include forced-colors.separator;
 }
 
 .searchInput {

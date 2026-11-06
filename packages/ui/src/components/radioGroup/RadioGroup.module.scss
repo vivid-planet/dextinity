@@ -1,4 +1,5 @@
 @use "../field/groupFrame";
+@use "../../theme/forcedColors" as forced-colors;
 
 .root {
     @include groupFrame.root(radio-group);
@@ -82,6 +83,16 @@
         &:has(.control:focus-visible) {
             box-shadow: var(--dextinity-focus-ring);
         }
+
+        @include forced-colors.edge;
+
+        &:has(.control[data-checked]) {
+            @include forced-colors.edge(2px);
+        }
+
+        &:has(.control:focus-visible) {
+            @include forced-colors.focus-ring;
+        }
     }
 }
 
@@ -119,6 +130,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     // The card shows the focus around itself
@@ -129,6 +141,12 @@
     .root[data-variant="card"] &[data-checked]:focus-visible {
         box-shadow: none;
     }
+
+    .root[data-variant="card"] &:focus-visible {
+        @include forced-colors.edge;
+    }
+
+    @include forced-colors.edge;
 }
 
 .indicator {
@@ -136,6 +154,8 @@
     block-size: var(--dextinity-radio-group-dot-size);
     border-radius: 50%;
     background: var(--dextinity-radio-group-dot-color);
+
+    @include forced-colors.fill;
 }
 
 .text {

@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     flex-direction: column;
@@ -39,6 +41,8 @@
         background: var(--dextinity-skeleton-color);
         animation: none;
     }
+
+    @include forced-colors.fill(GrayText);
 }
 
 .lastLine {

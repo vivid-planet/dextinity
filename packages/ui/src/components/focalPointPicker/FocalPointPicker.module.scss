@@ -1,4 +1,5 @@
 @use "../field/controlMessage";
+@use "../../theme/forcedColors" as forced-colors;
 
 .root {
     display: flex;
@@ -27,6 +28,8 @@
     .root[data-state="error"] > & {
         outline: calc(var(--dextinity-line-width) * 2) solid var(--dextinity-focal-point-picker-line-error);
     }
+
+    @include forced-colors.edge;
 }
 
 .image {
@@ -54,6 +57,7 @@
         outline: none;
         box-shadow: var(--dextinity-focal-point-picker-marker-shadow), var(--dextinity-focus-ring);
         transform: scale(1.12);
+        @include forced-colors.focus-ring;
     }
 
     .root[data-auto] & {
@@ -102,6 +106,8 @@
     object-fit: cover;
     border-radius: var(--dextinity-focal-point-picker-preview-radius);
     box-shadow: var(--dextinity-focal-point-picker-shadow);
+
+    @include forced-colors.edge;
 }
 
 .previewCaption {

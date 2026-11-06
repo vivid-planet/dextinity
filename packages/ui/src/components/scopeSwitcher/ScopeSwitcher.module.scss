@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: inline-flex;
     align-items: center;
@@ -28,7 +30,10 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
+
+    @include forced-colors.edge;
 }
 
 .icon,
@@ -98,6 +103,8 @@
     & + & {
         padding-inline-start: 6px;
         box-shadow: inset var(--dextinity-line-width) 0 0 var(--dextinity-scope-switcher-separator-color);
+
+        @include forced-colors.separator(inline-start);
     }
 }
 
@@ -145,6 +152,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     &[data-checked],
@@ -152,6 +160,7 @@
         background: var(--dextinity-scope-switcher-option-selected-background);
         color: var(--dextinity-scope-switcher-option-selected-foreground);
         font-weight: 550;
+        @include forced-colors.selected;
 
         :global([data-dextinity-color-scheme="high-contrast"]) & {
             box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-scope-switcher-option-selected-outline-high-contrast);
@@ -161,6 +170,7 @@
     &[data-checked]:focus-visible,
     &[aria-current="true"]:focus-visible {
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 }
 
@@ -190,6 +200,8 @@
     gap: 6px;
     padding-block-start: 10px;
     box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-scope-switcher-separator-color);
+
+    @include forced-colors.separator(block-start);
 }
 
 .recentLabel {
@@ -215,5 +227,8 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
+
+    @include forced-colors.edge;
 }

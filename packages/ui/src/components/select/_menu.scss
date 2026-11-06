@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 // The menu of choices shared by `Select` and `Combobox`: its popup, options, and the chips of chosen options. Both use the Select tokens.
 
 @mixin chip {
@@ -16,6 +18,8 @@
     cursor: default;
 
     --dextinity-icon-size: 12px;
+
+    @include forced-colors.edge;
 }
 
 @mixin chipRemove {
@@ -39,6 +43,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     &:disabled {
@@ -75,6 +80,8 @@
         opacity: 0;
         transform: scale(0.96) translateY(calc(var(--dextinity-motion-distance) * -1));
     }
+
+    @include forced-colors.edge;
 }
 
 @mixin list {
@@ -111,6 +118,7 @@
 
     &[data-highlighted] {
         background: var(--dextinity-select-item-background-highlight);
+        @include forced-colors.selected;
     }
 
     :global([data-dextinity-color-scheme="high-contrast"]) &[data-highlighted] {

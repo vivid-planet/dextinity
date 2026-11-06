@@ -1,4 +1,5 @@
 @use "../field/groupFrame";
+@use "../../theme/forcedColors" as forced-colors;
 
 .root {
     @include groupFrame.root(checkbox-group);
@@ -31,6 +32,8 @@
     flex-basis: 100%;
     padding-block-end: var(--dextinity-checkbox-group-option-gap);
     box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-checkbox-group-divider-color);
+
+    @include forced-colors.separator;
 }
 
 .branch {

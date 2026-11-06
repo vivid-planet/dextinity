@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     inline-size: 100%;
     border-collapse: separate;
@@ -16,6 +18,8 @@
         font-weight: 500;
         text-align: start;
         white-space: nowrap;
+
+        @include forced-colors.separator;
     }
 
     td {

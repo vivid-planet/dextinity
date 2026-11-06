@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: inline-flex;
     align-items: center;
@@ -25,6 +27,8 @@
         .dot {
             background: transparent;
             box-shadow: inset 0 0 0 1.5px var(--dextinity-status-indicator-archived-dot);
+
+            @include forced-colors.edge(1.5px);
         }
     }
 
@@ -77,6 +81,8 @@
     border-radius: 50%;
     background: var(--_status-dot);
     box-shadow: 0 0 0 var(--dextinity-status-indicator-halo-width) var(--_status-halo, transparent);
+
+    @include forced-colors.fill;
 }
 
 @keyframes pulse {
@@ -93,7 +99,13 @@
     }
 }
 
-// Applied by the high-contrast color scheme
+// Applied by the high-contrast color scheme and in forced colors, where all dots look alike
 :global([data-dextinity-color-scheme="high-contrast"]) .root {
     --dextinity-status-indicator-critical-mark: "!";
+}
+
+@media (forced-colors: active) {
+    .root {
+        --dextinity-status-indicator-critical-mark: "!";
+    }
 }

@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .backdrop {
     position: fixed;
     inset: 0;
@@ -44,6 +46,8 @@
         opacity: 0;
         transform: translateX(-50%) translateY(calc(var(--dextinity-motion-distance) * -1)) scale(0.98);
     }
+
+    @include forced-colors.edge;
 }
 
 .searchRow {
@@ -54,6 +58,8 @@
     block-size: var(--dextinity-command-palette-input-height);
     padding-inline: 18px;
     box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-command-palette-separator-color);
+
+    @include forced-colors.separator;
 }
 
 .searchIcon {
@@ -112,6 +118,7 @@
     &[aria-selected="true"] {
         background: var(--dextinity-command-palette-item-active-background);
         color: var(--dextinity-command-palette-item-active-foreground);
+        @include forced-colors.selected;
 
         .itemIcon {
             color: var(--dextinity-command-palette-item-active-icon-color);
@@ -163,6 +170,8 @@
     box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-command-palette-separator-color);
     color: var(--dextinity-command-palette-hint-color);
     font-size: 12px;
+
+    @include forced-colors.separator(block-start);
 }
 
 .hint {

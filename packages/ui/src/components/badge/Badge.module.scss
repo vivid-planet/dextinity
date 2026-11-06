@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: inline-flex;
     flex: none;
@@ -21,6 +23,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     &[data-variant="ai"] {
@@ -55,6 +58,12 @@
         padding: 0;
         border-radius: 50%;
         background: var(--dextinity-badge-dot-background);
+
+        @include forced-colors.fill;
+    }
+
+    &:not([data-variant="dot"]) {
+        @include forced-colors.edge;
     }
 }
 

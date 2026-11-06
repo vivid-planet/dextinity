@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     flex-direction: column;
@@ -28,6 +30,12 @@
     &[data-last] {
         background: var(--dextinity-mini-chart-color-last);
     }
+
+    @include forced-colors.fill;
+
+    &:is([data-highlighted], [data-last]) {
+        @include forced-colors.fill(Highlight);
+    }
 }
 
 .line {
@@ -43,6 +51,10 @@
         stroke-width: var(--dextinity-mini-chart-line-width);
         stroke-linejoin: round;
         stroke-linecap: round;
+
+        @media (forced-colors: active) {
+            stroke: CanvasText;
+        }
     }
 }
 
@@ -59,6 +71,10 @@
 
     &[data-last] {
         background: var(--dextinity-mini-chart-color-last);
+    }
+
+    &:is([data-highlighted], [data-last]) {
+        @include forced-colors.fill(Highlight);
     }
 }
 

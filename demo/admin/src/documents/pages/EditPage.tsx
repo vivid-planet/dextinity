@@ -244,7 +244,12 @@ export const EditPage = ({ id }: Props) => {
                 </ToolbarActions>
             </Toolbar>
             <MainContent disablePaddingBottom>
-                <BlockPreviewWithTabs previewUrl={previewUrl} previewState={previewState} previewApi={previewApi}>
+                <BlockPreviewWithTabs
+                    previewUrl={previewUrl}
+                    siteUrl={`${siteConfig.url}/${scope.language}${pageState.path}`}
+                    previewState={previewState}
+                    previewApi={previewApi}
+                >
                     {[
                         {
                             key: "content",

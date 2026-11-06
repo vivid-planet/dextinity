@@ -1,6 +1,6 @@
 @mixin tokens {
-    // Glass over a dimmed page; solid in high contrast
-    --dextinity-dialog-background: var(--dextinity-material-glass-strong);
+    // Nearly opaque glass, so a bright page behind it does not shine through in dark mode; solid in high contrast
+    --dextinity-dialog-background: var(--dextinity-material-glass-overlay);
     --dextinity-dialog-blur: var(--dextinity-material-blur);
     --dextinity-dialog-radius: var(--dextinity-radius-row);
     --dextinity-dialog-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge), var(--dextinity-shadow-3);

@@ -1,5 +1,5 @@
 @mixin tokens {
-    --dextinity-drawer-background: var(--dextinity-material-glass-strong);
+    --dextinity-drawer-background: var(--dextinity-material-glass-overlay);
     --dextinity-drawer-blur: var(--dextinity-material-blur);
     --dextinity-drawer-radius: calc(24px * var(--dextinity-brand-radius-factor));
     --dextinity-drawer-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge), var(--dextinity-shadow-3);

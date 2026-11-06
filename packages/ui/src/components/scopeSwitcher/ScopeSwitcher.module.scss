@@ -70,7 +70,12 @@
     padding: 10px;
 }
 
-.visuallyHidden {
+.search {
+    gap: 0;
+}
+
+// The label stays for screen readers; the placeholder says enough visually
+.search > :global(.dextinityField__labelRow) {
     position: absolute;
     inline-size: 1px;
     block-size: 1px;

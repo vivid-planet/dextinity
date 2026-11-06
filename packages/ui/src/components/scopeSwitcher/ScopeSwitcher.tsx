@@ -202,7 +202,6 @@ export const ScopeSwitcher = forwardRef<HTMLButtonElement, ScopeSwitcherProps>(f
                     size="small"
                     autoComplete="off"
                     className={styles.search}
-                    slotProps={{ label: { className: styles.visuallyHidden } }}
                 />
             )}
             {terms.length > 0 ? (

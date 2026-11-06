@@ -1,3 +1,4 @@
+@use "../../theme/forcedColors" as forced-colors;
 .root {
     display: inline-flex;
     align-items: center;
@@ -126,6 +127,8 @@
         --dextinity-current-chip-line: var(--dextinity-chip-outlined-success-line);
         --dextinity-current-chip-foreground: var(--dextinity-chip-outlined-success-foreground);
     }
+
+    @include forced-colors.surface;
 
     // Forced colors remove backgrounds and box shadows, which would leave the chip without an edge and without a focus ring
     @media (forced-colors: active) {

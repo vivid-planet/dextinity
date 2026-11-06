@@ -3,10 +3,29 @@
 // colors disappear. These mixins put them back with system colors, which forced colors keep. Use them instead of
 // `forced-color-adjust: none`, so the user's colors still apply.
 
+@use "sass:map";
+
+// A selected item draws its parts on the highlight color instead of the canvas, so it swaps the system colors its parts use
+// through these custom properties.
+$-swappable: (
+    Canvas: --dextinity-forced-colors-canvas,
+    CanvasText: --dextinity-forced-colors-canvas-text,
+    Highlight: --dextinity-forced-colors-highlight,
+    HighlightText: --dextinity-forced-colors-highlight-text,
+);
+
+@function -system-color($color) {
+    $property: map.get($-swappable, $color);
+    @if $property == null {
+        @return $color;
+    }
+    @return var(#{$property}, #{$color});
+}
+
 /// A 1 px edge that doesn't change the layout, for an element whose edge is a box shadow or a background.
 @mixin edge($width: 1px, $color: CanvasText) {
     @media (forced-colors: active) {
-        outline: $width solid $color;
+        outline: $width solid -system-color($color);
         outline-offset: -$width;
     }
 }
@@ -14,7 +33,7 @@
 /// A dividing line on one side, e.g. `block-end` under a header, for a line drawn with an inset box shadow.
 @mixin separator($side: block-end) {
     @media (forced-colors: active) {
-        border-#{$side}: 1px solid CanvasText;
+        border-#{$side}: 1px solid -system-color(CanvasText);
     }
 }
 
@@ -32,6 +51,11 @@
         // Forced colors would draw a canvas-colored backplate behind the text, hiding the highlight text color, and turn the text
         // of the item's parts back to the canvas text color. The item keeps its colors instead and passes them on.
         forced-color-adjust: none;
+        --dextinity-forced-colors-canvas: Highlight;
+        --dextinity-forced-colors-canvas-text: HighlightText;
+        --dextinity-forced-colors-highlight: HighlightText;
+        --dextinity-forced-colors-highlight-text: Highlight;
+
         background: Highlight;
         color: HighlightText;
 
@@ -48,6 +72,14 @@
 /// A shape drawn only with its background, e.g. a dot, a bar, or a thumb. Takes a system color: forced colors replace any other.
 @mixin fill($color: CanvasText) {
     @media (forced-colors: active) {
-        background: $color;
+        background: -system-color($color);
+    }
+}
+
+/// The canvas behind a part with its own background, e.g. a badge or a checkbox, so it follows a selected item it sits in.
+@mixin surface {
+    @media (forced-colors: active) {
+        background: -system-color(Canvas);
+        color: -system-color(CanvasText);
     }
 }

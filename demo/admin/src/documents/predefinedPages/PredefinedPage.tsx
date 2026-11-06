@@ -1,7 +1,7 @@
 import { gql, useQuery } from "@apollo/client";
 import { FileData, FileDataNotMenu } from "@dextinity/admin-icons";
 import type { DocumentInterface } from "@dextinity/cms-admin";
-import { Chip } from "@mui/material";
+import { Chip } from "@dextinity/ui";
 import type { GQLPredefinedPage, GQLPredefinedPageInput } from "@src/graphql.generated";
 import { FormattedMessage } from "react-intl";
 
@@ -65,7 +65,11 @@ export const PredefinedPage: DocumentInterface<Pick<GQLPredefinedPage, "type">, 
 
         if (data?.page?.document != null) {
             const { type } = data.page.document as GQLPredefinedPage;
-            return type ? <Chip label={predefinedPageLabels[type]} /> : null;
+            return type ? (
+                <Chip size="small" color="secondary">
+                    <FormattedMessage {...predefinedPageLabels[type]} />
+                </Chip>
+            ) : null;
         } else {
             return null;
         }

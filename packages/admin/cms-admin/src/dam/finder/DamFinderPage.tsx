@@ -4,7 +4,6 @@ import {
     AssetBrowser,
     type AssetBrowserLabels,
     type AssetBrowserView,
-    AssetThumbnail,
     Button,
     ConfirmDialog,
     FinderLayout,
@@ -16,7 +15,7 @@ import {
     ToastViewport,
     useToasts,
 } from "@dextinity/ui";
-import { type ReactNode, useCallback, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useMemo, useRef, useState } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
 import { type IntlShape, useIntl } from "react-intl";
 import { useHistory, useLocation, useRouteMatch } from "react-router";
@@ -38,7 +37,7 @@ import type {
 } from "../DataGrid/FolderDataGrid.gql.generated";
 import { DamFinderFileDetails, DamFinderFolderDetails, DamFinderSelectionDetails } from "./DamFinderDetails";
 import type { DamFinderUnsavedChanges } from "./DamFinderFormState";
-import { damFinderRootFolderId, getDamFinderAssetType, getFileExtension, toAssetBrowserAsset, toAssetBrowserFolder } from "./damFinderItems";
+import { damFinderRootFolderId, getFileExtension, toAssetBrowserAsset, toAssetBrowserFolder } from "./damFinderItems";
 import { DamFinderNewFolderDialog } from "./DamFinderNewFolderDialog";
 import {
     archiveDamFinderFilesMutation,
@@ -66,7 +65,9 @@ import type {
     GQLRestoreDamFinderFilesMutationVariables,
 } from "./DamFinderPage.gql.generated";
 import { DetailsColumn, FinderBody, FinderDropzone } from "./DamFinderPage.sc";
+import { DamFinderQuickLookPreview } from "./DamFinderQuickLookPreview";
 import { useDamFinderFiles } from "./useDamFinderFiles";
+import { useDamFinderWindowHeight } from "./useDamFinderWindowHeight";
 
 const folderParam = "folder";
 
@@ -139,6 +140,9 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
     const [isNewFolderDialogOpen, setIsNewFolderDialogOpen] = useState(false);
     const [detailsUnsavedChanges, setDetailsUnsavedChanges] = useState<DamFinderUnsavedChanges>();
     const [pendingSelectedIds, setPendingSelectedIds] = useState<string[]>();
+    const layoutRef = useRef<HTMLDivElement>(null);
+    const windowContentRef = useRef<HTMLDivElement>(null);
+    const layoutStyle = useDamFinderWindowHeight({ layoutRef, windowContentRef });
 
     const foldersQuery = useQuery<GQLDamFinderFoldersQuery, GQLDamFinderFoldersQueryVariables>(damFinderFoldersQuery, { variables: { scope } });
     const [createFolder] = useMutation<GQLCreateDamFinderFolderMutation, GQLCreateDamFinderFolderMutationVariables>(createDamFinderFolderMutation);
@@ -444,11 +448,10 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
     }));
     const renderQuickLookPreview = (item: QuickLookItem) => {
         const file = quickLookIndex != null ? currentFiles[quickLookIndex] : undefined;
-        const type = file != null ? getDamFinderAssetType(file.mimetype) : "image";
-        if (file == null || type === "image") {
+        if (file == null) {
             return <img src={item.src} alt={item.alt ?? item.title} />;
         }
-        return <AssetThumbnail type={type} fileType={type === "document" ? getFileExtension(file.name) : undefined} />;
+        return <DamFinderQuickLookPreview key={file.id} file={file} />;
     };
 
     if (foldersQuery.error != null) {
@@ -492,6 +495,8 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
     return (
         <>
             <FinderLayout
+                ref={layoutRef}
+                style={layoutStyle}
                 header={
                     <PageHeader
                         eyebrow={eyebrow}
@@ -534,6 +539,7 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                 }
             >
                 <FinderDropzone
+                    ref={windowContentRef}
                     overlay
                     onFiles={handleDroppedFiles}
                     labels={{

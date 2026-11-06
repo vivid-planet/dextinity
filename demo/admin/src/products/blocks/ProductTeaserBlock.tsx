@@ -1,8 +1,9 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { AsyncSelectField } from "@dextinity/admin";
-import { Image } from "@dextinity/admin-icons";
 import { type BlockInterface, BlocksFinalForm, createBlockSkeleton } from "@dextinity/cms-admin";
+import { Icon } from "@dextinity/ui";
+import { ComboboxField } from "@dextinity/ui-react-final-form";
 import type { ProductTeaserBlockData, ProductTeaserBlockInput } from "@src/blocks.generated";
+import { useComboboxLabels } from "@src/common/useComboboxLabels";
 import { FormattedMessage } from "react-intl";
 
 import type {
@@ -19,8 +20,8 @@ type State = {
 };
 
 const productTeaserSelectQuery = gql`
-    query ProductTeaserSelect {
-        products {
+    query ProductTeaserSelect($search: String) {
+        products(search: $search) {
             nodes {
                 id
                 title
@@ -68,20 +69,26 @@ const ProductTeaserBlock: BlockInterface<ProductTeaserBlockData, State, ProductT
 
     AdminComponent: ({ state, updateState }) => {
         const client = useApolloClient();
+        const comboboxLabels = useComboboxLabels();
 
         return (
-            <BlocksFinalForm onSubmit={updateState} initialValues={state}>
-                <AsyncSelectField
+            <BlocksFinalForm<State> onSubmit={updateState} initialValues={state}>
+                <ComboboxField<ProductOption, false, ProductOption | undefined>
                     name="product"
-                    fullWidth
                     label={<FormattedMessage id="blocks.productTeaser.product" defaultMessage="Product" />}
-                    loadOptions={async () => {
+                    loadOptions={async (search, { signal }) => {
                         const { data } = await client.query<GQLProductTeaserSelectQuery, GQLProductTeaserSelectQueryVariables>({
                             query: productTeaserSelectQuery,
+                            variables: { search: search || undefined },
+                            context: { fetchOptions: { signal } },
                         });
                         return data.products.nodes.map((node) => ({ id: node.id, title: node.title }));
                     }}
-                    getOptionLabel={(option: ProductOption) => option.title}
+                    getOptionLabel={(option) => option.title}
+                    format={(product) => product ?? null}
+                    parse={(product) => product ?? undefined}
+                    isEqual={(productA, productB) => productA?.id === productB?.id}
+                    labels={comboboxLabels}
                 />
             </BlocksFinalForm>
         );
@@ -89,7 +96,7 @@ const ProductTeaserBlock: BlockInterface<ProductTeaserBlockData, State, ProductT
 
     previewContent: (state) => (state.product ? [{ type: "text", content: state.product.title }] : []),
 
-    icon: () => <Image color="primary" />,
+    icon: () => <Icon name="image" />,
 };
 
 export { ProductTeaserBlock };

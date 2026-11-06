@@ -1,16 +1,31 @@
-import { CopyToClipboardButton } from "@dextinity/admin";
 import { BlockAdminComponentPaper, BlockAdminComponentSection, type BlockInterface, type BlockState } from "@dextinity/cms-admin";
-import { Box, List, ListItem, ListItemText } from "@mui/material";
+import { CopyField, KeyValueList } from "@dextinity/ui";
 import type { RichTextBlockData } from "@src/blocks.generated";
 import { MailRichTextBlock } from "@src/mail/blocks/MailRichTextBlock";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
-const placeholders = [
-    {
-        placeholder: "{{SALUTATION}}",
-        helper: <FormattedMessage id="richText.placeholder.salutation" defaultMessage="Dear Mr./Ms. LASTNAME" />,
-    },
-];
+function PlaceholderList() {
+    const intl = useIntl();
+    const placeholders = [
+        {
+            placeholder: "{{SALUTATION}}",
+            description: intl.formatMessage({ id: "richText.placeholder.salutation", defaultMessage: "Dear Mr./Ms. LASTNAME" }),
+        },
+    ];
+    const copyFieldLabels = {
+        copy: intl.formatMessage({ id: "richText.placeholder.copy", defaultMessage: "Copy placeholder" }),
+        copied: intl.formatMessage({ id: "richText.placeholder.copied", defaultMessage: "Copied" }),
+    };
+
+    return (
+        <KeyValueList
+            items={placeholders.map(({ placeholder, description }) => ({
+                key: description,
+                value: <CopyField value={placeholder} labels={copyFieldLabels} />,
+            }))}
+        />
+    );
+}
 
 export const EmailCampaignRichTextBlock: BlockInterface<RichTextBlockData, BlockState<typeof MailRichTextBlock>> = {
     ...MailRichTextBlock,
@@ -22,17 +37,8 @@ export const EmailCampaignRichTextBlock: BlockInterface<RichTextBlockData, Block
             <BlockAdminComponentSection
                 title={<FormattedMessage id="richText.placeholder.info" defaultMessage="Placeholders available in the text" />}
             >
-                <BlockAdminComponentPaper disablePadding>
-                    <List>
-                        {placeholders.map(({ placeholder, helper }) => {
-                            const placeholderText = <Box sx={{ fontFamily: "monospace", fontWeight: "bold" }}>{placeholder}</Box>;
-                            return (
-                                <ListItem key={placeholder} secondaryAction={<CopyToClipboardButton copyText={placeholder} />}>
-                                    <ListItemText primary={placeholderText} secondary={helper} />
-                                </ListItem>
-                            );
-                        })}
-                    </List>
+                <BlockAdminComponentPaper>
+                    <PlaceholderList />
                 </BlockAdminComponentPaper>
             </BlockAdminComponentSection>
         </>

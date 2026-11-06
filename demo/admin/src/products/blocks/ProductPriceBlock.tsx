@@ -1,8 +1,9 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { AsyncSelectField } from "@dextinity/admin";
-import { Tag } from "@dextinity/admin-icons";
 import { type BlockInterface, BlocksFinalForm, createBlockSkeleton } from "@dextinity/cms-admin";
+import { Icon } from "@dextinity/ui";
+import { ComboboxField } from "@dextinity/ui-react-final-form";
 import type { ProductPriceBlockData, ProductPriceBlockInput } from "@src/blocks.generated";
+import { useComboboxLabels } from "@src/common/useComboboxLabels";
 import { FormattedMessage } from "react-intl";
 
 import type {
@@ -19,8 +20,8 @@ type State = {
 };
 
 const productPriceSelectQuery = gql`
-    query ProductPriceSelect {
-        products {
+    query ProductPriceSelect($search: String) {
+        products(search: $search) {
             nodes {
                 id
                 title
@@ -74,20 +75,26 @@ const ProductPriceBlock: BlockInterface<ProductPriceBlockData, State, ProductPri
 
     AdminComponent: ({ state, updateState }) => {
         const client = useApolloClient();
+        const comboboxLabels = useComboboxLabels();
 
         return (
-            <BlocksFinalForm onSubmit={updateState} initialValues={state}>
-                <AsyncSelectField
+            <BlocksFinalForm<State> onSubmit={updateState} initialValues={state}>
+                <ComboboxField<ProductOption, false, ProductOption | undefined>
                     name="product"
-                    fullWidth
                     label={<FormattedMessage id="blocks.productPrice.product" defaultMessage="Product" />}
-                    loadOptions={async () => {
+                    loadOptions={async (search, { signal }) => {
                         const { data } = await client.query<GQLProductPriceSelectQuery, GQLProductPriceSelectQueryVariables>({
                             query: productPriceSelectQuery,
+                            variables: { search: search || undefined },
+                            context: { fetchOptions: { signal } },
                         });
                         return data.products.nodes.map((node) => ({ id: node.id, title: node.title, price: node.price ?? undefined }));
                     }}
-                    getOptionLabel={(option: ProductOption) => option.title}
+                    getOptionLabel={(option) => option.title}
+                    format={(product) => product ?? null}
+                    parse={(product) => product ?? undefined}
+                    isEqual={(productA, productB) => productA?.id === productB?.id}
+                    labels={comboboxLabels}
                 />
             </BlocksFinalForm>
         );
@@ -103,7 +110,7 @@ const ProductPriceBlock: BlockInterface<ProductPriceBlockData, State, ProductPri
               ]
             : [],
 
-    icon: () => <Tag color="primary" />,
+    icon: () => <Icon name="tag" />,
 };
 
 export { ProductPriceBlock };

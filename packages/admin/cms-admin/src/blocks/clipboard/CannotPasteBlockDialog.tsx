@@ -1,15 +1,7 @@
 import { messages } from "@dextinity/admin";
-import {
-    // eslint-disable-next-line no-restricted-imports
-    Button,
-    // eslint-disable-next-line no-restricted-imports
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-} from "@mui/material";
+import { Button, Dialog } from "@dextinity/ui";
 import type { ReactNode } from "react";
-import { FormattedMessage } from "react-intl";
+import { useIntl } from "react-intl";
 
 interface Props {
     open: boolean;
@@ -18,17 +10,26 @@ interface Props {
 }
 
 const CannotPasteBlockDialog = ({ open, onClose, error }: Props) => {
+    const intl = useIntl();
+
     return (
-        <Dialog open={open} onClose={onClose}>
-            <DialogTitle>
-                <FormattedMessage id="dextinity.blocks.cannotPasteBlock.title" defaultMessage="Can't paste block" />
-            </DialogTitle>
-            <DialogContent>{error}</DialogContent>
-            <DialogActions>
-                <Button onClick={onClose} color="info">
-                    <FormattedMessage {...messages.ok} />
+        <Dialog
+            open={open}
+            onOpenChange={(nextOpen) => {
+                if (!nextOpen) {
+                    onClose();
+                }
+            }}
+            role="alertdialog"
+            size="small"
+            title={intl.formatMessage({ id: "dextinity.blocks.cannotPasteBlock.title", defaultMessage: "Can't paste block" })}
+            footer={
+                <Button variant="contained" color="primary" onClick={onClose}>
+                    {intl.formatMessage(messages.ok)}
                 </Button>
-            </DialogActions>
+            }
+        >
+            {error}
         </Dialog>
     );
 };

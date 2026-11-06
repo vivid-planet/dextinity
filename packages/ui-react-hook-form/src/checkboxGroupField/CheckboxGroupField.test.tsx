@@ -45,4 +45,29 @@ describe("CheckboxGroupField", () => {
         await userEvent.click(screen.getByRole("button", { name: "Save" }));
         await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ scopes: ["main-de", "main-en"] }, expect.anything()));
     });
+
+    it("validates on blur only once focus leaves the group", async () => {
+        function TestForm() {
+            const { control } = useForm<{ scopes: string[] }>({ defaultValues: { scopes: [] }, mode: "onTouched" });
+            return (
+                <form noValidate>
+                    <CheckboxGroupField control={control} name="scopes" label="Scopes" options={options} required requiredMessage="Select a scope" />
+                    <button type="submit">Save</button>
+                </form>
+            );
+        }
+        render(<TestForm />);
+        const group = screen.getByRole("group", { name: "Scopes" });
+
+        screen.getByRole("checkbox", { name: "Main" }).focus();
+        await userEvent.tab();
+        expect(screen.getByRole("checkbox", { name: "German" })).toHaveFocus();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        expect(group).not.toHaveAccessibleDescription("Select a scope");
+
+        await userEvent.tab();
+        await userEvent.tab();
+        expect(screen.getByRole("button", { name: "Save" })).toHaveFocus();
+        await waitFor(() => expect(group).toHaveAccessibleDescription("Select a scope"));
+    });
 });

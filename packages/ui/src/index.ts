@@ -77,6 +77,7 @@ export { SegmentedControl, type SegmentedControlOption, type SegmentedControlOwn
 export { type SegmentedControlProps, type SegmentedControlSlotProps } from "./components/segmentedControl/SegmentedControl";
 export { Select, type SelectLabels, type SelectOption, type SelectOwnerState, type SelectProps } from "./components/select/Select";
 export { type SelectValue } from "./components/select/Select";
+export { type Selection, type SelectionOptions, type SelectionToggleOptions, useSelection } from "./components/selection/useSelection";
 export { ShortcutList, type ShortcutListItem, type ShortcutListLabels } from "./components/shortcutList/ShortcutList";
 export { type ShortcutListOwnerState, type ShortcutListProps } from "./components/shortcutList/ShortcutList";
 export { getSideNavAncestorIds, SideNav, type SideNavGroup, type SideNavItem } from "./components/sideNav/SideNav";

@@ -205,5 +205,9 @@ export const FocusRing: Story = {
         const locations = canvas.getByRole("link", { name: "Locations" });
         locations.focus();
         await expect(ancestorsClippingFocusRing(locations)).toStrictEqual({ ringWidth: 4, clipping: [] });
+
+        const structure = canvas.getByRole("button", { name: "Structure" });
+        const structureBox = structure.getBoundingClientRect();
+        await expect(document.elementFromPoint(structureBox.left + structureBox.width / 2, structureBox.bottom - 1)).toBe(structure);
     },
 };

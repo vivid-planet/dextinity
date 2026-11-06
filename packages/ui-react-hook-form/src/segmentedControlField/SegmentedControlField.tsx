@@ -6,7 +6,6 @@ import type { FieldAdapterBaseProps } from "../field/fieldAdapterProps";
 import type { ReactHookFormFieldConfig } from "../field/reactHookFormFieldConfig";
 import { splitFieldAdapterProps } from "../field/splitFieldAdapterProps";
 import { useFieldAdapter } from "../field/useFieldAdapter";
-import { useValidationMessage } from "../field/useValidationMessage";
 
 export interface SegmentedControlFieldProps<
     Value extends string = string,
@@ -16,7 +15,7 @@ export interface SegmentedControlFieldProps<
     extends
         FieldAdapterBaseProps<TFieldValues, TName>,
         ReactHookFormFieldConfig<TFieldValues, TName>,
-        Omit<SegmentedControlProps<Value>, "value" | "onChange" | "onBlur"> {}
+        Omit<SegmentedControlProps<Value>, "value" | "onChange" | "onBlur" | "state" | "validationMessage"> {}
 
 /**
  * A `SegmentedControl` connected to a React Hook Form field holding one of the options' values. Without a value, no option is pressed.
@@ -26,26 +25,19 @@ export const SegmentedControlField = forwardRef(function SegmentedControlField<
     Value extends string,
     TFieldValues extends FieldValues,
     TName extends FieldPath<TFieldValues>,
->(
-    { name, "aria-describedby": ariaDescribedBy, ...props }: SegmentedControlFieldProps<Value, TFieldValues, TName>,
-    forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
+>({ name, ...props }: SegmentedControlFieldProps<Value, TFieldValues, TName>, forwardedRef: ForwardedRef<HTMLDivElement>) {
     const [options, controlProps] = splitFieldAdapterProps(props);
     const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLDivElement>({ name, ...options }, forwardedRef);
-    const { message, describedBy } = useValidationMessage(validationProps, ariaDescribedBy);
 
     return (
-        <>
-            <SegmentedControl<Value>
-                {...controlProps}
-                ref={ref}
-                value={field.value ?? ("" as Value)}
-                aria-describedby={describedBy}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-            />
-            {message}
-        </>
+        <SegmentedControl<Value>
+            {...controlProps}
+            ref={ref}
+            value={field.value ?? ("" as Value)}
+            {...validationProps}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+        />
     );
 }) as <
     Value extends string = string,

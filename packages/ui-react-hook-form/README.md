@@ -42,17 +42,17 @@ function PageForm({ page }: { page: PageFormValues }) {
 
 One adapter per value-holding control of `@dextinity/ui`. Each takes `name`, the props of its ui component except the ones it controls, and the field configuration of the form library.
 
-| Adapter                 | ui component       | Form value                                               | Controlled props it takes over                                      |
-| ----------------------- | ------------------ | -------------------------------------------------------- | ------------------------------------------------------------------- |
-| `InputField`            | `Input`            | `string`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage` |
-| `TextareaField`         | `Textarea`         | `string`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage` |
-| `SelectField`           | `Select`           | `string \| null`, `string[]` with `multiple`             | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage` |
-| `RichTextEditorField`   | `RichTextEditor`   | `string` (HTML)                                          | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage` |
-| `CheckboxField`         | `Checkbox`         | `boolean`, or `string[]` when the checkbox has a `value` | `name`, `checked`, `onChange`, `onBlur`                             |
-| `SwitchField`           | `Switch`           | `boolean`                                                | `name`, `checked`, `onChange`, `onBlur`                             |
-| `SegmentedControlField` | `SegmentedControl` | one of the options' values                               | `value`, `onChange`, `onBlur`                                       |
-| `SliderField`           | `Slider`           | `number`                                                 | `name`, `value`, `onChange`, `onBlur`                               |
-| `FocalPointPickerField` | `FocalPointPicker` | `FocalPoint` (`{ x, y }`)                                | `value`, `onChange`, `onBlur`                                       |
+| Adapter                 | ui component       | Form value                                               | Controlled props it takes over                                        |
+| ----------------------- | ------------------ | -------------------------------------------------------- | --------------------------------------------------------------------- |
+| `InputField`            | `Input`            | `string`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `TextareaField`         | `Textarea`         | `string`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `SelectField`           | `Select`           | `string \| null`, `string[]` with `multiple`             | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `RichTextEditorField`   | `RichTextEditor`   | `string` (HTML)                                          | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `CheckboxField`         | `Checkbox`         | `boolean`, or `string[]` when the checkbox has a `value` | `name`, `checked`, `onChange`, `onBlur`, `state`, `validationMessage` |
+| `SwitchField`           | `Switch`           | `boolean`                                                | `name`, `checked`, `onChange`, `onBlur`, `state`, `validationMessage` |
+| `SegmentedControlField` | `SegmentedControl` | one of the options' values                               | `value`, `onChange`, `onBlur`, `state`, `validationMessage`           |
+| `SliderField`           | `Slider`           | `number`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `FocalPointPickerField` | `FocalPointPicker` | `FocalPoint` (`{ x, y }`)                                | `value`, `onChange`, `onBlur`, `state`, `validationMessage`           |
 
 `Dropzone` (uploads, no value), `ScopeSwitcher` (navigation), and `CopyField` (read-only) have no adapter.
 
@@ -61,7 +61,7 @@ One adapter per value-holding control of `@dextinity/ui`. Each takes `name`, the
 Shared by both adapter packages:
 
 - **`name`** — the field's path in the form values, e.g. `title` or `seo.description`. It is also passed to the ui component where it takes one.
-- **`required`** — marks the field where the ui component supports it (star and `aria-required` on the framed fields, `required` on `CheckboxField`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing. A custom validation still runs on a non-empty value.
+- **`required`** — marks the field where the ui component supports it (star and `aria-required` on the framed fields, `CheckboxField`, and `SwitchField`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing. A custom validation still runs on a non-empty value.
 - **`requiredMessage`** — the message for a missing required value. Defaults to `"Required"`; pass a translated text.
 - **`actions`** (`InputField`, `TextareaField`, `SelectField`, `RichTextEditorField`) — content at the label as in the ui component, or a function `({ value, setValue }) => ReactNode` to connect `FieldActions`, e.g. `actions={({ setValue }) => <FieldActions aiAssist onAiSuggest={suggest} onAiAccept={setValue} />}`.
 - **`ref`** — forwarded to the ui component, so it reaches the same element as on the component itself.
@@ -76,7 +76,7 @@ An empty form value (`undefined` or `null`, e.g. a field without a default value
 
 ### Validation
 
-A field shows its error once it was touched (blurred) or the form was submitted: `state="error"` with the message as `validationMessage`. An error set with `setError` after submitting (e.g. from the server) shows the same way until the field changes and validates again. `CheckboxField`, `SwitchField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` have no field frame in `@dextinity/ui`, so the adapter shows the message below the control, connected through `aria-describedby`.
+A field shows its error once it was touched (blurred) or the form was submitted: `state="error"` with the message as `validationMessage`. An error set with `setError` after submitting (e.g. from the server) shows the same way until the field changes and validates again. Controls without a field frame – `CheckboxField`, `SwitchField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` – show it below the control, the same way.
 
 When submitting fails validation, React Hook Form focuses the first invalid field (`shouldFocusError`, on by default). The adapters register the element to focus inside the ui component – the input, the select trigger, the editor, or the checkbox – since not every ui component's root takes focus. Pass `{ shouldFocus: true }` to `setError` to focus a field with a server error.
 
@@ -116,7 +116,7 @@ Like `@dextinity/ui`, any export may change or be removed at any time, without d
 
 ## Conventions
 
-The package follows the [component conventions of `@dextinity/ui`](../ui/README.md#component-conventions) where they apply: TSDoc on every export and prop, props as `<Name>Props` interfaces, named exports, components wrapped in `forwardRef`. The adapters render no elements of their own beyond the validation message of frameless controls, so they have no styles, slots, or owner state.
+The package follows the [component conventions of `@dextinity/ui`](../ui/README.md#component-conventions) where they apply: TSDoc on every export and prop, props as `<Name>Props` interfaces, named exports, components wrapped in `forwardRef`. The adapters render no elements of their own, so they have no styles, slots, or owner state.
 
 ## Stories and tests
 

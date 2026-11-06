@@ -6,13 +6,12 @@ import type { FieldAdapterBaseProps } from "../field/fieldAdapterProps";
 import type { ReactHookFormFieldConfig } from "../field/reactHookFormFieldConfig";
 import { splitFieldAdapterProps } from "../field/splitFieldAdapterProps";
 import { useFieldAdapter } from "../field/useFieldAdapter";
-import { useValidationMessage } from "../field/useValidationMessage";
 
 export interface SliderFieldProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>
     extends
         FieldAdapterBaseProps<TFieldValues, TName>,
         ReactHookFormFieldConfig<TFieldValues, TName>,
-        Omit<SliderProps, "name" | "value" | "onChange" | "onBlur" | "required"> {}
+        Omit<SliderProps, "name" | "value" | "onChange" | "onBlur" | "required" | "state" | "validationMessage"> {}
 
 export function toSliderValue(value: unknown, min = 0) {
     return typeof value === "number" && !Number.isNaN(value) ? value : min;
@@ -23,26 +22,22 @@ export function toSliderValue(value: unknown, min = 0) {
  * slider once it was touched or the form was submitted.
  */
 export const SliderField = forwardRef(function SliderField<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
-    { name, "aria-describedby": ariaDescribedBy, ...props }: SliderFieldProps<TFieldValues, TName>,
+    { name, ...props }: SliderFieldProps<TFieldValues, TName>,
     forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
     const [options, sliderProps] = splitFieldAdapterProps(props);
     const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLDivElement>({ name, ...options }, forwardedRef);
-    const { message, describedBy } = useValidationMessage(validationProps, ariaDescribedBy);
 
     return (
-        <>
-            <Slider
-                {...sliderProps}
-                ref={ref}
-                name={field.name}
-                value={toSliderValue(field.value, sliderProps.min)}
-                aria-describedby={describedBy}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-            />
-            {message}
-        </>
+        <Slider
+            {...sliderProps}
+            ref={ref}
+            name={field.name}
+            value={toSliderValue(field.value, sliderProps.min)}
+            {...validationProps}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+        />
     );
 }) as <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(
     props: SliderFieldProps<TFieldValues, TName> & RefAttributes<HTMLDivElement>,

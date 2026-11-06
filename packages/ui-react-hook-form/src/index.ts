@@ -6,6 +6,7 @@ export { DateRangeField, type DateRangeFieldProps } from "./dateRangeField/DateR
 export { DateTimeField, type DateTimeFieldProps } from "./dateTimeField/DateTimeField";
 export type { FieldAdapterActions, FieldAdapterActionsContext, FieldAdapterBaseProps } from "./field/fieldAdapterProps";
 export type { ReactHookFormFieldConfig } from "./field/reactHookFormFieldConfig";
+export { FileUploadField, type FileUploadFieldProps } from "./fileUploadField/FileUploadField";
 export { FocalPointPickerField, type FocalPointPickerFieldProps } from "./focalPointPickerField/FocalPointPickerField";
 export { type FormSaveState, type FormStateHookOptions, useFormSaveState, useHasUnsavedChanges } from "./formState/useFormSaveState";
 export { InputField, type InputFieldProps } from "./inputField/InputField";

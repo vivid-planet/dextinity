@@ -1,5 +1,8 @@
 export { CheckboxField, type CheckboxFieldProps } from "./checkboxField/CheckboxField";
 export { CheckboxGroupField, type CheckboxGroupFieldProps } from "./checkboxGroupField/CheckboxGroupField";
+export { DateField, type DateFieldProps } from "./dateField/DateField";
+export { DateRangeField, type DateRangeFieldProps } from "./dateRangeField/DateRangeField";
+export { DateTimeField, type DateTimeFieldProps } from "./dateTimeField/DateTimeField";
 export type { FieldAdapterActions, FieldAdapterActionsContext, FieldAdapterBaseProps } from "./field/fieldAdapterProps";
 export type { FinalFormFieldConfig } from "./field/finalFormFieldConfig";
 export { FocalPointPickerField, type FocalPointPickerFieldProps } from "./focalPointPickerField/FocalPointPickerField";

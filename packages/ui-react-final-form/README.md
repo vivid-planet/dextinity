@@ -40,6 +40,9 @@ One adapter per value-holding control of `@dextinity/ui`. Each takes `name`, the
 | `TextareaField`         | `Textarea`         | `string`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `SelectField`           | `Select`           | `string \| null`, `string[]` with `multiple`             | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `NumberField`           | `NumberInput`      | `number \| null`                                         | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `DateField`             | `DatePicker`       | a day as `YYYY-MM-DD`, `null` for none                   | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `DateTimeField`         | `DateTimePicker`   | an ISO 8601 date-time, `null` for none                   | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `DateRangeField`        | `DateRangePicker`  | `{ start, end }` of days, `null` for none                | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `RichTextEditorField`   | `RichTextEditor`   | `string` (HTML)                                          | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `CheckboxField`         | `Checkbox`         | `boolean`, or `string[]` when the checkbox has a `value` | `name`, `checked`, `onChange`, `onBlur`, `state`, `validationMessage` |
 | `SwitchField`           | `Switch`           | `boolean`                                                | `name`, `checked`, `onChange`, `onBlur`, `state`, `validationMessage` |
@@ -56,7 +59,7 @@ One adapter per value-holding control of `@dextinity/ui`. Each takes `name`, the
 Shared by both adapter packages:
 
 - **`name`** — the field's path in the form values, e.g. `title` or `seo.description`. It is also passed to the ui component where it takes one.
-- **`required`** — marks the field where the ui component supports it (star and `aria-required` on the framed fields, `CheckboxField`, `SwitchField`, `RadioGroupField`, and `CheckboxGroupField`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing. A custom validation still runs on a non-empty value.
+- **`required`** — marks the field where the ui component supports it (star and `aria-required` on the framed fields, `CheckboxField`, `SwitchField`, `RadioGroupField`, and `CheckboxGroupField`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing; for `DateRangeField`, a range without both ends is missing. A custom validation still runs on a non-empty value.
 - **`requiredMessage`** — the message for a missing required value. Defaults to `"Required"`; pass a translated text.
 - **`actions`** (`InputField`, `TextareaField`, `SelectField`, `RichTextEditorField`) — content at the label as in the ui component, or a function `({ value, setValue }) => ReactNode` to connect `FieldActions`, e.g. `actions={({ setValue }) => <FieldActions aiAssist onAiSuggest={suggest} onAiAccept={setValue} />}`.
 - **`ref`** — forwarded to the ui component, so it reaches the same element as on the component itself.
@@ -67,7 +70,7 @@ Shared by both adapter packages:
 
 ### Value mapping
 
-An empty form value (`undefined`, or `""` from React Final Form's default `format`) maps to the control's empty state: `""` for text, `null` (or `[]` with `multiple`) for `SelectField`, `null` for `NumberField`, unchecked for `CheckboxField` and `SwitchField`, no chosen option for `RadioGroupField`, `[]` for `CheckboxGroupField`, no pressed option for `SegmentedControlField`, `min` for `SliderField`, and the center for `FocalPointPickerField`. The adapters write the control's value back unchanged; use `parse` and `format` to convert, e.g. a number entered in an `InputField`.
+An empty form value (`undefined`, or `""` from React Final Form's default `format`) maps to the control's empty state: `""` for text, `null` (or `[]` with `multiple`) for `SelectField`, `null` for `NumberField`, `DateField`, `DateTimeField`, and `DateRangeField`, unchecked for `CheckboxField` and `SwitchField`, no chosen option for `RadioGroupField`, `[]` for `CheckboxGroupField`, no pressed option for `SegmentedControlField`, `min` for `SliderField`, and the center for `FocalPointPickerField`. The adapters write the control's value back unchanged; use `parse` and `format` to convert, e.g. a number entered in an `InputField`.
 
 ### Validation
 

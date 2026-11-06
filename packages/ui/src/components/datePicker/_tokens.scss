@@ -1,0 +1,32 @@
+@use "../../theme/scope";
+
+// The frame (label, box, message) comes from the Field tokens.
+@include scope.component-tokens {
+    --dextinity-date-picker-placeholder-color: var(--dextinity-field-placeholder);
+    // The calendar and clear buttons in the field
+    --dextinity-date-picker-button-color: var(--dextinity-color-text-tertiary);
+    --dextinity-date-picker-button-color-hover: var(--dextinity-color-text);
+    --dextinity-date-picker-button-background-hover: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+    // Between the start and end of a range, and the date and time
+    --dextinity-date-picker-separator-color: var(--dextinity-color-text-tertiary);
+
+    --dextinity-date-picker-popup-background: var(--dextinity-color-surface);
+    --dextinity-date-picker-popup-radius: var(--dextinity-radius-field);
+    --dextinity-date-picker-popup-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-3);
+    --dextinity-date-picker-popup-padding: 12px;
+
+    --dextinity-date-picker-heading-font-size: 13.5px;
+    --dextinity-date-picker-weekday-color: var(--dextinity-color-text-tertiary);
+
+    --dextinity-date-picker-day-size: 34px;
+    --dextinity-date-picker-day-radius: calc(9px * var(--dextinity-brand-radius-factor));
+    --dextinity-date-picker-day-font-size: 13px;
+    --dextinity-date-picker-day-background-hover: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+    --dextinity-date-picker-day-background-selected: var(--dextinity-color-accent);
+    --dextinity-date-picker-day-foreground-selected: var(--dextinity-color-accent-foreground);
+    // Days between the start and end of a range
+    --dextinity-date-picker-day-background-range: var(--dextinity-color-accent-soft);
+    --dextinity-date-picker-day-foreground-range: var(--dextinity-color-accent-text);
+    // The mark below today's number
+    --dextinity-date-picker-today-color: var(--dextinity-color-accent);
+}

@@ -1,0 +1,60 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as CustomizeIconSetStories from "./__stories__/CustomizeIconSet.stories";
+
+<Meta title="Theme/Customize icon set" />
+
+# Customize icon set
+
+`@dextinity/ui/css/icons` defines one CSS variable per icon, which holds the URL of its SVG file. You customize the icon set like the other tokens: set these variables in your own stylesheet.
+
+## Replace icons
+
+Create a global stylesheet and import it once in your application:
+
+```css
+:root {
+    --dextinity-icon-favorite: url("./icons/favorite.svg#icon");
+}
+```
+
+Your bundler resolves the URL relative to your stylesheet. Keep `#icon` at the end: without it, Vite puts each small SVG file into your CSS as a `data:` URL, so the browser loads all icons before it shows the page.
+
+To replace icons in one part of the application only, set the variables on an element of that part:
+
+<Canvas of={CustomizeIconSetStories.ReplaceIconsInPart} />
+
+## Replace all icons
+
+Don't import `@dextinity/ui/css/icons`, and set a variable for every icon. Your bundler then copies none of the SVG files of `@dextinity/ui`.
+
+There is a risk: `@dextinity/ui` may add new icons in a minor version and use them in its components. Until you add your own version of a new icon, it doesn't show correctly.
+
+## Add icons
+
+Add the name to `IconRegistry` through module augmentation, and set its CSS variable:
+
+```ts
+declare module "@dextinity/ui" {
+    interface IconRegistry {
+        "my-icon": true;
+    }
+}
+```
+
+```css
+:root {
+    --dextinity-icon-my-icon: url("./icons/my-icon.svg#icon");
+}
+```
+
+Every icon that you add needs both, otherwise it doesn't show correctly. If you add many icons, a unit test that checks both is worth it.
+
+## Icons with their own colors
+
+`Icon` shows an icon in the text color: it uses only the shape of the SVG file. For an icon that keeps its own colors, such as a logo, set `--dextinity-colored-icon-<name>` instead. `Icon` then shows the SVG file as an image.
+
+## Prepare an SVG file
+
+- The root element is `<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 16 16" fill="none">`. For any other size, ask for a 16×16 version instead of scaling it.
+- In an icon in the text color, the colors of the file don't matter, only its shape.

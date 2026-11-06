@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/admin-rte",
-    "version": "10.13.1",
+    "version": "10.14.0",
     "description": "Dextinity Admin Rich Text Editor component",
     "repository": {
         "directory": "packages/admin/admin-rte",

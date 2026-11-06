@@ -1,5 +1,87 @@
 # @comet/cms-admin
 
+## 10.14.0
+
+### Minor Changes
+
+- da2f8e6: Show a "No pages yet" message in `PagesPage` when the page tree is empty
+- 5db7734: Add an optional redirect type to choose between temporary and permanent redirects
+
+    Redirects have a new `redirectType` field (`temporary` or `permanent`), which defaults to `temporary` for new and existing redirects.
+    The site must handle the redirect type, so the setting is hidden in the admin by default. To enable it, first respect the redirect type in the site:
+
+    ```tsx
+    const { redirectBySource } = await graphQLFetch(/* query including redirectBySource { target redirectType } */);
+
+    if (redirectBySource.redirectType === "permanent") {
+        permanentRedirect(destination); // 308
+    } else {
+        redirect(destination); // 307
+    }
+    ```
+
+    Then enable the setting in the admin:
+
+    ```tsx title="App.tsx"
+    <DextinityConfigProvider
+        redirects={{
+            scopeParts: ["domain"],
+            enableRedirectType: true,
+        }}
+    >
+    ```
+
+    The redirect type only applies to path redirects.
+
+- 1595266: Add a `textAlign` option to `createTipTapRichTextBlock`
+
+    Editors can align paragraphs and headings left, center, right, or justified, using the toolbar or the shortcuts `Mod-Shift-L`, `Mod-Shift-E`, `Mod-Shift-R`, and `Mod-Shift-J`.
+    The alignment is stored in the text block's `textAlign` attribute.
+    The option is disabled by default and must be enabled in both the API and the Admin:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: true });
+    ```
+
+    To enable only some of the alignments, pass an object:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: { left: true, center: true } });
+    ```
+
+    `renderTipTapRichText` renders the alignment as the text block's `text-align` style.
+    A custom `textBlock` handler has to apply `node.attrs.textAlign` itself.
+
+### Patch Changes
+
+- de4cc90: Prevent lost updates when several forms in a block change before the next render
+
+    `createFinalFormBlock` resolved each update against the field value of the render that created the handler.
+    When two forms in the block saved one after the other before the next render, for instance after a text edit and a link type change in a `createTextLinkBlock`, the second update overwrote the first one, and both changes could be lost.
+    The preview image of `createDamVideoBlock`, `YouTubeVideoBlock` and `VimeoVideoBlock` had the same problem together with the video options form.
+
+- de4cc90: Prevent an endless autosave loop in `BlocksFinalForm`
+
+    `BlocksFinalForm` scheduled an autosave on every render while the form was dirty, and each autosave called the `onSubmit` of the render that scheduled it.
+    In large blocks, these outdated autosaves wrote old block states, which made other forms dirty again, and the admin stopped responding.
+    Now each form has at most one pending autosave, which calls the latest `onSubmit` and only runs when the form values changed since the last autosave.
+
+- c586a3d: Fix page tree crashing when switching the category while a search without matches is active
+- def6e3e: Fix the page select dialog crashing when it opens with a selected page that isn't in the list yet
+- e6909e2: Prevent the runtime of a job from being truncated in the jobs grid of the CronJobs module
+
+    The runtime column is now as wide as in the CronJobs grid and the publisher, so start time, completion time and duration fit without being cut off.
+
+- e131e00: Show an error inside `LatestBuildsDashboardWidget` when the builds can't be loaded
+
+    Previously, a failing `builds` query replaced the whole dashboard with an error and opened the global error dialog. On deployments without Kubernetes, where the query is always forbidden, the dialog wrongly reported an expired login session.
+
+- Updated dependencies [1595266]
+- Updated dependencies [45cb8e2]
+    - @dextinity/admin-icons@10.14.0
+    - @dextinity/admin@10.14.0
+    - @dextinity/admin-rte@10.14.0
+
 ## 10.13.1
 
 ### Patch Changes

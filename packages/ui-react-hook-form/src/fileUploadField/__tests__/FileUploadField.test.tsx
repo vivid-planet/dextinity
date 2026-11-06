@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { FileUploadField, toFileUploadValue } from "./FileUploadField";
+import { FileUploadField, toFileUploadValue } from "../FileUploadField";
 
 describe("FileUploadField", () => {
     it("maps the field value to a list", () => {

@@ -4,8 +4,8 @@ import type { PropsWithChildren } from "react";
 import { FormProvider, useForm, type UseFormProps } from "react-hook-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { InputField } from "../inputField/InputField";
-import { FieldAdapterConfigProvider, type FieldAdapterConfigProviderProps } from "./FieldAdapterConfigProvider";
+import { InputField } from "../../inputField/InputField";
+import { FieldAdapterConfigProvider, type FieldAdapterConfigProviderProps } from "../FieldAdapterConfigProvider";
 
 interface Values {
     title: string;

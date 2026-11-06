@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { toDateTimeValue } from "./DateTimeField";
+import { toDateTimeValue } from "../DateTimeField";
 
 describe("toDateTimeValue", () => {
     it("maps an empty form value to no instant and keeps a date-time", () => {

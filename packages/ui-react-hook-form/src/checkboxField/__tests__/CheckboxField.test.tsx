@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { CheckboxField, isCheckboxChecked, toggleCheckboxValue } from "./CheckboxField";
+import { CheckboxField, isCheckboxChecked, toggleCheckboxValue } from "../CheckboxField";
 
 describe("CheckboxField", () => {
     it("maps a boolean field to checked", () => {

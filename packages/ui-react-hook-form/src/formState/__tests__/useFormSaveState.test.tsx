@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { describe, expect, it } from "vitest";
 
-import { InputField } from "../inputField/InputField";
-import { hasUnsavedChanges, toSaveState, useFormSaveState, useHasUnsavedChanges } from "./useFormSaveState";
+import { InputField } from "../../inputField/InputField";
+import { hasUnsavedChanges, toSaveState, useFormSaveState, useHasUnsavedChanges } from "../useFormSaveState";
 
 const pristine = { isSubmitting: false, isDirty: false, isSubmitted: false, isSubmitSuccessful: false, changedSinceLastSubmit: false };
 

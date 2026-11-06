@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { CheckboxGroupField, toCheckboxGroupValue } from "./CheckboxGroupField";
+import { CheckboxGroupField, toCheckboxGroupValue } from "../CheckboxGroupField";
 
 const options = [
     {

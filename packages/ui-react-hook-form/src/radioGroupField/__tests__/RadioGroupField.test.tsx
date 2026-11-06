@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { RadioGroupField, toRadioGroupValue } from "./RadioGroupField";
+import { RadioGroupField, toRadioGroupValue } from "../RadioGroupField";
 
 const options = [
     { value: "full-time", label: "Full-time" },

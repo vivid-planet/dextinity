@@ -174,4 +174,4 @@ The package follows the [component conventions of `@dextinity/ui`](../ui/README.
 
 ## Stories and tests
 
-The stories live in `src/**/__stories__/` and are shown in the Storybook of `@dextinity/ui`, under `Forms/React Hook Form`, with a complete edit page as `Example form`; run them with `pnpm run test:storybook` in `packages/ui`. Unit tests (`pnpm run test:unit`, `jsdom`) cover the value and error mapping.
+The stories live in `src/**/__stories__/` and are shown in the Storybook of `@dextinity/ui`, under `Forms/React Hook Form`, with a complete edit page as `Example form`; run them with `pnpm run test:storybook` in `packages/ui`. Unit tests (`pnpm run test:unit`, `jsdom`) in each adapter's `__tests__/` folder cover the value and error mapping.

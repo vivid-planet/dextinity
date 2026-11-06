@@ -1,9 +1,8 @@
 import { useApolloClient } from "@apollo/client";
-import { Alert, useSnackbarApi } from "@dextinity/admin";
-import { Snackbar } from "@mui/material";
+import { Icon, ToastViewport, useToasts } from "@dextinity/ui";
 import { type ReactNode, useCallback, useMemo, useState } from "react";
 import type { Accept, DropzoneOptions, FileRejection } from "react-dropzone";
-import { FormattedMessage } from "react-intl";
+import { useIntl } from "react-intl";
 
 import { NetworkError, UnknownError } from "../../../common/errors/errorMessages";
 import { useDextinityConfig } from "../../../config/DextinityConfigContext";
@@ -137,7 +136,8 @@ export const useDamFileUpload = (options: UploadDamFileOptions): FileUploadApi =
     const client = useApolloClient();
     const manualDuplicatedFilenamesHandler = useManualDuplicatedFilenamesHandler();
     const scope = useDamScope();
-    const snackbarApi = useSnackbarApi();
+    const intl = useIntl();
+    const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
     const { isVideoTooLarge } = useVideoPerformanceWarning();
 
     const { allAcceptedMimeTypes } = useDamAcceptedMimeTypes();
@@ -487,17 +487,18 @@ export const useDamFileUpload = (options: UploadDamFileOptions): FileUploadApi =
         ).length;
 
         if (tooLargeVideoCount > 0) {
-            snackbarApi.showSnackbar(
-                <Snackbar autoHideDuration={5000}>
-                    <Alert severity="warning">
-                        <FormattedMessage
-                            id="dextinity.dam.videoPerformanceWarning.snackbar"
-                            defaultMessage="{count, plural, one {A very large video was uploaded} other {# very large videos were uploaded}}. Videos are delivered without optimization, which can lead to poor loading performance."
-                            values={{ count: tooLargeVideoCount }}
-                        />
-                    </Alert>
-                </Snackbar>,
-            );
+            addToast({
+                tone: "info",
+                icon: <Icon name="warning" />,
+                message: intl.formatMessage(
+                    {
+                        id: "dextinity.dam.videoPerformanceWarning.snackbar",
+                        defaultMessage:
+                            "{count, plural, one {A very large video was uploaded} other {# very large videos were uploaded}}. Videos are delivered without optimization, which can lead to poor loading performance.",
+                    },
+                    { count: tooLargeVideoCount },
+                ),
+            });
         }
 
         return { hasError: errorOccurred, rejectedFiles: rejectedFiles, uploadedItems: [...uploadedFolders, ...uploadedFiles] };
@@ -518,6 +519,11 @@ export const useDamFileUpload = (options: UploadDamFileOptions): FileUploadApi =
                     }}
                 />
                 <ProgressDialog open={progressDialogOpen} totalSize={totalSize} loadedSize={uploadedSize} />
+                <ToastViewport
+                    toasts={toasts}
+                    onDismiss={dismissToast}
+                    labels={{ region: intl.formatMessage({ id: "dextinity.dam.upload.notifications", defaultMessage: "Upload notifications" }) }}
+                />
             </>
         ),
         dropzoneConfig: {

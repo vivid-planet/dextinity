@@ -29,6 +29,15 @@ export const archiveDamFinderFilesMutation = gql`
     }
 `;
 
+export const restoreDamFinderFilesMutation = gql`
+    mutation RestoreDamFinderFiles($ids: [ID!]!) {
+        restoreDamFiles(ids: $ids) {
+            id
+            archived
+        }
+    }
+`;
+
 export const createDamFinderFolderMutation = gql`
     mutation CreateDamFinderFolder($input: CreateDamFolderInput!, $scope: DamScopeInput!) {
         createDamFolder(input: $input, scope: $scope) {

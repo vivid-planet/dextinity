@@ -46,6 +46,7 @@ import {
     damFinderFoldersQuery,
     deleteDamFinderFileMutation,
     deleteDamFinderFolderMutation,
+    restoreDamFinderFilesMutation,
 } from "./DamFinderPage.gql";
 import type {
     GQLArchiveDamFinderFilesMutation,
@@ -58,6 +59,8 @@ import type {
     GQLDeleteDamFinderFileMutationVariables,
     GQLDeleteDamFinderFolderMutation,
     GQLDeleteDamFinderFolderMutationVariables,
+    GQLRestoreDamFinderFilesMutation,
+    GQLRestoreDamFinderFilesMutationVariables,
 } from "./DamFinderPage.gql.generated";
 import { DetailsColumn, FinderBody, FinderDropzone } from "./DamFinderPage.sc";
 import { useDamFinderFiles } from "./useDamFinderFiles";
@@ -142,6 +145,7 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
     const [deleteFile] = useMutation<GQLDeleteDamFinderFileMutation, GQLDeleteDamFinderFileMutationVariables>(deleteDamFinderFileMutation);
     const [deleteFolder] = useMutation<GQLDeleteDamFinderFolderMutation, GQLDeleteDamFinderFolderMutationVariables>(deleteDamFinderFolderMutation);
     const [archiveFiles] = useMutation<GQLArchiveDamFinderFilesMutation, GQLArchiveDamFinderFilesMutationVariables>(archiveDamFinderFilesMutation);
+    const [restoreFiles] = useMutation<GQLRestoreDamFinderFilesMutation, GQLRestoreDamFinderFilesMutationVariables>(restoreDamFinderFilesMutation);
 
     const damFolders = useMemo(() => foldersQuery.data?.damFoldersFlat ?? [], [foldersQuery.data]);
     const damFolderById = useMemo(() => new Map(damFolders.map((folder) => [folder.id, folder])), [damFolders]);
@@ -186,6 +190,7 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
     const selectedFile = selectedIds.length === 1 ? fileById.get(selectedIds[0]) : undefined;
     const selectedFolder = selectedIds.length === 1 ? damFolderById.get(selectedIds[0]) : undefined;
 
+    const undoLabel = intl.formatMessage({ id: "dextinity.damFinder.undo", defaultMessage: "Undo" });
     const showError = useCallback((message: string) => addToast({ message, tone: "error" }), [addToast]);
 
     const changeFolder = (id: string) => {
@@ -227,24 +232,63 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
         upload(files.filter(isAccepted), files.filter((file) => !isAccepted(file)).map(toRejection));
     };
 
+    const moveItems = async ({ fileIds, folderIds, targetFolderId }: { fileIds: string[]; folderIds: string[]; targetFolderId: string }) => {
+        const targetId = targetFolderId === damFinderRootFolderId ? null : targetFolderId;
+        if (fileIds.length > 0) {
+            await moveFiles({ variables: { fileIds, targetFolderId: targetId } });
+        }
+        if (folderIds.length > 0) {
+            await moveFolders({ variables: { folderIds, targetFolderId: targetId, scope } });
+        }
+    };
+
+    const getSourceFolderId = (id: string) =>
+        damFolderById.get(id)?.parent?.id ??
+        Object.entries(filesByFolderId).find(([, files]) => files.some((file) => file.id === id))?.[0] ??
+        damFinderRootFolderId;
+
+    const undoMove = async (ids: string[], sourceFolderIds: Map<string, string>, targetFolderId: string) => {
+        const idsBySourceFolderId = new Map<string, string[]>();
+        for (const id of ids) {
+            const sourceFolderId = sourceFolderIds.get(id) ?? damFinderRootFolderId;
+            idsBySourceFolderId.set(sourceFolderId, [...(idsBySourceFolderId.get(sourceFolderId) ?? []), id]);
+        }
+        try {
+            for (const [sourceFolderId, sourceIds] of idsBySourceFolderId) {
+                await moveItems({
+                    fileIds: sourceIds.filter((id) => !damFolderById.has(id)),
+                    folderIds: sourceIds.filter((id) => damFolderById.has(id)),
+                    targetFolderId: sourceFolderId,
+                });
+            }
+            addToast({
+                message: intl.formatMessage(
+                    { id: "dextinity.damFinder.moveUndone", defaultMessage: "Moved {count, plural, one {# item} other {# items}} back" },
+                    { count: ids.length },
+                ),
+                tone: "success",
+            });
+        } catch {
+            showError(intl.formatMessage({ id: "dextinity.damFinder.moveUndoFailed", defaultMessage: "The items couldn't be moved back" }));
+        }
+        await refresh([folderId, targetFolderId, ...idsBySourceFolderId.keys()]);
+    };
+
     const handleMove = async (ids: string[], targetFolderId: string) => {
         const fileIds = ids.filter((id) => fileById.has(id));
         const folderIds = ids.filter((id) => damFolderById.has(id));
-        const targetId = targetFolderId === damFinderRootFolderId ? null : targetFolderId;
+        const movedIds = [...fileIds, ...folderIds];
+        const sourceFolderIds = new Map(movedIds.map((id) => [id, getSourceFolderId(id)]));
         try {
-            if (fileIds.length > 0) {
-                await moveFiles({ variables: { fileIds, targetFolderId: targetId } });
-            }
-            if (folderIds.length > 0) {
-                await moveFolders({ variables: { folderIds, targetFolderId: targetId, scope } });
-            }
+            await moveItems({ fileIds, folderIds, targetFolderId });
             setSelectedIds([]);
             addToast({
                 message: intl.formatMessage(
                     { id: "dextinity.damFinder.moved", defaultMessage: "Moved {count, plural, one {# item} other {# items}}" },
-                    { count: ids.length },
+                    { count: movedIds.length },
                 ),
                 tone: "success",
+                action: { label: undoLabel, onClick: () => undoMove(movedIds, sourceFolderIds, targetFolderId) },
             });
         } catch {
             showError(intl.formatMessage({ id: "dextinity.damFinder.moveFailed", defaultMessage: "The items couldn't be moved" }));
@@ -288,17 +332,35 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
         await refresh([folderId]);
     };
 
+    const undoArchive = async (fileIds: string[]) => {
+        try {
+            await restoreFiles({ variables: { ids: fileIds } });
+            addToast({
+                message: intl.formatMessage(
+                    { id: "dextinity.damFinder.restored", defaultMessage: "Restored {count, plural, one {# file} other {# files}}" },
+                    { count: fileIds.length },
+                ),
+                tone: "success",
+            });
+        } catch {
+            showError(intl.formatMessage({ id: "dextinity.damFinder.restoreFailed", defaultMessage: "The files couldn't be restored" }));
+        }
+        await refresh([folderId]);
+    };
+
     const handleArchive = async () => {
+        const archivedFileIds = pendingDeleteFileIds;
         setPendingDeleteIds(undefined);
         try {
-            await archiveFiles({ variables: { ids: pendingDeleteFileIds } });
+            await archiveFiles({ variables: { ids: archivedFileIds } });
             setSelectedIds([]);
             addToast({
                 message: intl.formatMessage(
                     { id: "dextinity.damFinder.archived", defaultMessage: "Archived {count, plural, one {# file} other {# files}}" },
-                    { count: pendingDeleteFileIds.length },
+                    { count: archivedFileIds.length },
                 ),
                 tone: "success",
+                action: { label: undoLabel, onClick: () => undoArchive(archivedFileIds) },
             });
         } catch {
             showError(intl.formatMessage({ id: "dextinity.damFinder.archiveFailed", defaultMessage: "The files couldn't be archived" }));

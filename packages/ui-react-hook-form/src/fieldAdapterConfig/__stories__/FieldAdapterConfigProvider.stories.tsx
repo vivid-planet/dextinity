@@ -3,10 +3,10 @@ import type { ReactNode } from "react";
 import { useFormState } from "react-hook-form";
 import { expect, userEvent, within } from "storybook/test";
 
-import { InputField } from "../../inputField/InputField";
-import { SelectField } from "../../selectField/SelectField";
+import { InputField } from "../../fields/inputField/InputField";
+import { SelectField } from "../../fields/selectField/SelectField";
+import { TextareaField } from "../../fields/textareaField/TextareaField";
 import { reactHookFormDecorator } from "../../storybook/ReactHookFormStoryFrame";
-import { TextareaField } from "../../textareaField/TextareaField";
 import { FieldAdapterConfigProvider } from "../FieldAdapterConfigProvider";
 
 function warnAboutLongTitle(value: string | undefined) {

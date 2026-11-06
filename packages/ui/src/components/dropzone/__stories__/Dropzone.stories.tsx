@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useEffect, useState } from "react";
-import { expect, fn, userEvent, waitFor } from "storybook/test";
+import { expect, fn, spyOn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import dropzoneTokens from "../_tokens.scss?raw";
@@ -114,6 +114,12 @@ export const Default: Story = {
         await userEvent.upload(input, createFile("team.jpg", "image/jpeg"));
         await waitFor(() => expect(args.onFiles).toHaveBeenCalledWith([expect.objectContaining({ name: "team.jpg" })]));
         await expect(await canvas.findByRole("progressbar", { name: "team.jpg" })).toBeVisible();
+
+        const openFileDialog = spyOn(input, "click").mockImplementation(() => undefined);
+        await userEvent.click(canvas.getByRole("button", { name: "choose files" }));
+        await userEvent.keyboard("{Enter}");
+        await expect(openFileDialog).toHaveBeenCalledTimes(2);
+        openFileDialog.mockRestore();
     },
 };
 

@@ -7,7 +7,7 @@ import { Icon } from "../icon/Icon";
 import type { IconName } from "../icon/iconRegistry";
 import styles from "./Toast.module.scss";
 
-export type ToastTone = "success" | "error" | "info";
+export type ToastTone = "success" | "error" | "warning" | "info";
 
 export interface ToastAction {
     /** The action, as a verb, e.g. "Undo". */
@@ -36,7 +36,7 @@ export interface ToastProps extends Omit<HTMLAttributes<HTMLDivElement>, "classN
     /** The result, not the process: "Saved – the change is live", not "Saving …". */
     message: string;
     /**
-     * Sets the icon and its color: `success` confirms, `error` reports a failure, `info` informs.
+     * Sets the icon and its color: `success` confirms, `error` reports a failure, `warning` points out something to look at although the action went through, `info` informs.
      *
      * @defaultValue `"success"`
      */
@@ -54,6 +54,7 @@ export interface ToastProps extends Omit<HTMLAttributes<HTMLDivElement>, "classN
 const toneIcons: Record<ToastTone, IconName> = {
     success: "check",
     error: "error",
+    warning: "warning",
     info: "info",
 };
 

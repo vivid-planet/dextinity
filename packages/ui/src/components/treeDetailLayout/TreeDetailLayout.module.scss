@@ -1,0 +1,43 @@
+.root {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-tree-detail-layout-header-spacing);
+    min-inline-size: 0;
+}
+
+.body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--dextinity-tree-detail-layout-detail-width);
+    gap: var(--dextinity-tree-detail-layout-gap);
+    align-items: start;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-tree-detail-layout-gap);
+    min-inline-size: 0;
+}
+
+.header,
+.toolbar,
+.tree {
+    min-inline-size: 0;
+}
+
+.detail {
+    position: sticky;
+    inset-block-start: var(--dextinity-tree-detail-layout-sticky-offset);
+    min-inline-size: 0;
+}
+
+@container (max-width: 860px) {
+    .body {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .detail {
+        position: static;
+    }
+}

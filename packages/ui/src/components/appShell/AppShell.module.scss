@@ -116,7 +116,7 @@
 
     .root[data-layout="narrow"] & {
         grid-column: 1;
-        padding: 12px 12px 48px;
+        padding: var(--dextinity-app-shell-content-padding-narrow);
     }
 }
 
@@ -135,7 +135,7 @@
     padding: var(--dextinity-app-shell-content-offset) 12px 0;
 
     .root[data-layout="narrow"] & {
-        padding: 32px 4px 0;
+        padding: var(--dextinity-app-shell-content-offset-narrow) 4px 0;
     }
 }
 

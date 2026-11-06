@@ -1,20 +1,24 @@
+import { useRender } from "@base-ui/react/use-render";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type KeyboardEvent, type MouseEvent, type ReactNode, useId } from "react";
+import {
+    type ElementType,
+    type ForwardedRef,
+    forwardRef,
+    type HTMLAttributes,
+    type MouseEvent,
+    type ReactNode,
+    type RefAttributes,
+    type SyntheticEvent,
+} from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
 import styles from "./Chip.module.scss";
 
-type ChipVariant = "filled" | "outlined";
-type ChipColor = "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning";
+type ChipVariant = "contained" | "outlined";
+type ChipColor = "primary" | "secondary" | "info" | "warning" | "error" | "success";
 type ChipSize = "default" | "small";
-
-export interface ChipLabels {
-    /** Accessible name of the delete button; the chip's text is added as its description. */
-    delete: string;
-}
-
-const defaultLabels: ChipLabels = { delete: "Remove" };
+type ClearButtonElement = ElementType<{ type?: "button"; disabled?: boolean }>;
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -24,179 +28,178 @@ export type ChipOwnerState = {
     color: ChipColor;
     size: ChipSize;
     disabled: boolean;
-    clickable: boolean;
-    deletable: boolean;
-    selected: boolean;
 };
 
-export interface ChipSlotProps {
-    /** Props for the `action` slot, the button that covers the chip when it is clickable. */
-    action?: SlotPropsValue<ChipOwnerState, "button">;
-    /** Props for the `delete` slot. */
-    delete?: SlotPropsValue<ChipOwnerState, "button">;
-    /** Props for the `label` slot. */
-    label?: SlotPropsValue<ChipOwnerState, "span">;
-    /** Props for the `icon` slot. */
-    icon?: SlotPropsValue<ChipOwnerState, "span">;
-    /** Props for the `avatar` slot. */
-    avatar?: SlotPropsValue<ChipOwnerState, "span">;
+interface ChipSlots<StartIcon extends ElementType, EndIcon extends ElementType, ClearButton extends ClearButtonElement> {
+    /**
+     * Element for the `startIcon` slot.
+     *
+     * @defaultValue `span`
+     */
+    startIcon?: StartIcon;
+    /**
+     * Element for the `endIcon` slot.
+     *
+     * @defaultValue `span`
+     */
+    endIcon?: EndIcon;
+    /**
+     * Element for the `clearButton` slot.
+     *
+     * @defaultValue `button`
+     */
+    clearButton?: ClearButton;
 }
 
-export interface ChipProps extends Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children" | "onClick"> {
-    /** The label, one line. */
-    children: ReactNode;
+interface ChipSlotProps<StartIcon extends ElementType, EndIcon extends ElementType, ClearButton extends ClearButtonElement> {
+    /** Props for the `startIcon` slot. */
+    startIcon?: SlotPropsValue<ChipOwnerState, StartIcon>;
+    /** Props for the `endIcon` slot. */
+    endIcon?: SlotPropsValue<ChipOwnerState, EndIcon>;
+    /** Props for the `clearButton` slot. */
+    clearButton?: SlotPropsValue<ChipOwnerState, ClearButton>;
+}
+
+interface ChipOwnProps<StartIcon extends ElementType, EndIcon extends ElementType, ClearButton extends ClearButtonElement> extends Omit<
+    HTMLAttributes<HTMLElement>,
+    "className" | "color"
+> {
     /**
-     * Visual style: `filled` with a soft background, `outlined` with a line only.
+     * Visual emphasis: `contained` for chips that need attention, `outlined` for quieter ones, for example in a long list of filters.
      *
-     * @defaultValue `"filled"`
+     * @defaultValue `"contained"`
      */
     variant?: ChipVariant;
     /**
-     * The color channel. `default` is neutral; use the others only where the color carries meaning, e.g. `info` for automatic values.
+     * Use `info`, `success`, `warning` and `error` for a status, `primary` and `secondary` for other values and filters.
      *
-     * @defaultValue `"default"`
+     * @defaultValue `"primary"`
      */
     color?: ChipColor;
-    /**
-     * `small` (24px) for labels in rows and cards.
-     *
-     * @defaultValue `"default"`
-     */
+    /** @defaultValue `"default"` */
     size?: ChipSize;
     /**
-     * Prevents interaction with the chip.
+     * Shows the chip as unavailable and disables its clear button.
      *
      * @defaultValue `false`
      */
     disabled?: boolean;
-    /**
-     * Makes a clickable chip a toggle and sets whether it is on, e.g. an active filter. Requires `onClick`; leave it unset for a chip
-     * that only triggers an action.
-     */
-    selected?: boolean;
-    /** An icon before the label. Don't combine with `avatar`. */
-    icon?: ReactNode;
-    /** An avatar before the label. Don't combine with `icon`. */
-    avatar?: ReactNode;
-    /** Makes the chip clickable: the whole chip becomes a button. */
-    onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
-    /** Makes the chip removable: shows a delete button, and Backspace or Delete on the focused chip removes it too. */
-    onDelete?: (event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>) => void;
-    /** Texts for assistive technology. */
-    labels?: Partial<ChipLabels>;
+    /** The icon to render before the label. */
+    startIcon?: ReactNode;
+    /** The icon to render after the label. */
+    endIcon?: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
+    /** Sets which element a named inner part renders as. */
+    slots?: ChipSlots<StartIcon, EndIcon, ClearButton>;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
-    slotProps?: ChipSlotProps;
+    slotProps?: ChipSlotProps<StartIcon, EndIcon, ClearButton>;
+    /**
+     * Render a custom root element, for example a `<button>` for a chip that toggles a filter.
+     *
+     * @example
+     * ```tsx
+     * <Chip render={<button type="button" />}>Published</Chip>
+     * ```
+     */
+    render?: useRender.RenderProp<ChipOwnerState>;
+}
+
+type ChipClearProps =
+    | {
+          onClear?: undefined;
+          clearLabel?: undefined;
+      }
+    | {
+          /** Shows a clear button that calls this function. Don't combine it with a `render` element that is itself interactive. */
+          onClear: (event: MouseEvent<HTMLButtonElement>) => void;
+          /** Names the clear button for assistive technology, for example "Remove filter: Published". */
+          clearLabel: string;
+      };
+
+export type ChipProps<
+    StartIcon extends ElementType = "span",
+    EndIcon extends ElementType = "span",
+    ClearButton extends ClearButtonElement = "button",
+> = ChipOwnProps<StartIcon, EndIcon, ClearButton> & ChipClearProps;
+
+function preventDefault(event: SyntheticEvent) {
+    event.preventDefault();
 }
 
 /**
- * A compact label for tags, filters, and selected values. It can be clickable, removable, or both.
+ * A compact element for a value, a status, or a filter.
  */
-export const Chip = forwardRef<HTMLSpanElement, ChipProps>(function Chip(
+export const Chip: <StartIcon extends ElementType = "span", EndIcon extends ElementType = "span", ClearButton extends ClearButtonElement = "button">(
+    props: ChipProps<StartIcon, EndIcon, ClearButton> & RefAttributes<HTMLElement>,
+) => ReactNode = forwardRef(function Chip<
+    StartIcon extends ElementType = "span",
+    EndIcon extends ElementType = "span",
+    ClearButton extends ClearButtonElement = "button",
+>(
     {
-        children,
-        variant = "filled",
-        color = "default",
+        variant = "contained",
+        color = "primary",
         size = "default",
-        disabled = false,
-        selected,
-        icon,
-        avatar,
-        onClick,
-        onDelete,
-        labels: labelsProp,
-        className,
-        slotProps,
-        ...restProps
-    },
-    ref,
-) {
-    const ownerState: ChipOwnerState = {
-        variant,
-        color,
-        size,
         disabled,
-        clickable: onClick != null,
-        deletable: onDelete != null,
-        selected: onClick != null && selected === true,
-    };
-    const labels = { ...defaultLabels, ...labelsProp };
-    const labelId = useId();
+        startIcon,
+        endIcon,
+        onClear,
+        clearLabel,
+        className,
+        slots,
+        slotProps,
+        children,
+        render,
+        onClick,
+        ...restProps
+    }: ChipProps<StartIcon, EndIcon, ClearButton>,
+    ref: ForwardedRef<HTMLElement>,
+) {
+    const ownerState: ChipOwnerState = { variant, color, size, disabled: disabled === true };
 
-    const labelProps = resolveSlotProps<ChipOwnerState, "span", "span">({
-        ownProps: { id: labelId, className: styles.label },
-        slotProps: slotProps?.label,
+    const StartIconSlot: ElementType = slots?.startIcon ?? "span";
+    const EndIconSlot: ElementType = slots?.endIcon ?? "span";
+    const ClearButtonSlot: ElementType = slots?.clearButton ?? "button";
+
+    const startIconProps = resolveSlotProps<ChipOwnerState, StartIcon, "span">({
+        ownProps: { className: styles.startIcon },
+        slotProps: slotProps?.startIcon,
         ownerState,
     });
-    const actionProps = resolveSlotProps<ChipOwnerState, "button", "button">({
-        ownProps: {
-            type: "button",
-            className: styles.action,
-            disabled: ownerState.disabled,
-            "aria-pressed": selected,
-            onClick,
-            onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => {
-                if (onDelete != null && (event.key === "Backspace" || event.key === "Delete")) {
-                    event.preventDefault();
-                    onDelete(event);
-                }
-            },
+    const endIconProps = resolveSlotProps<ChipOwnerState, EndIcon, "span">({
+        ownProps: { className: styles.endIcon },
+        slotProps: slotProps?.endIcon,
+        ownerState,
+    });
+    const clearButtonProps = resolveSlotProps<ChipOwnerState, ClearButton, "button">({
+        ownProps: { type: "button", "aria-label": clearLabel, disabled: ownerState.disabled, onClick: onClear, className: styles.clearButton },
+        slotProps: slotProps?.clearButton,
+        ownerState,
+    });
+
+    return useRender({
+        render,
+        ref,
+        state: ownerState,
+        defaultTagName: "span",
+        props: {
+            ...restProps,
+            "aria-disabled": (render !== undefined && ownerState.disabled) || undefined,
+            onClick: ownerState.disabled ? preventDefault : onClick,
+            className: clsx(styles.root, className),
+            children: (
+                <>
+                    {startIcon != null && <StartIconSlot {...startIconProps}>{startIcon}</StartIconSlot>}
+                    {children}
+                    {endIcon != null && <EndIconSlot {...endIconProps}>{endIcon}</EndIconSlot>}
+                    {onClear !== undefined && (
+                        <ClearButtonSlot {...clearButtonProps}>
+                            <Icon name="clear" />
+                        </ClearButtonSlot>
+                    )}
+                </>
+            ),
         },
-        slotProps: slotProps?.action,
-        ownerState,
     });
-    const deleteProps = resolveSlotProps<ChipOwnerState, "button", "button">({
-        ownProps: {
-            type: "button",
-            className: styles.delete,
-            disabled: ownerState.disabled,
-            "aria-label": labels.delete,
-            "aria-describedby": labelId,
-            onClick: onDelete,
-        },
-        slotProps: slotProps?.delete,
-        ownerState,
-    });
-
-    const iconProps = resolveSlotProps<ChipOwnerState, "span", "span">({
-        ownProps: { className: styles.icon },
-        slotProps: slotProps?.icon,
-        ownerState,
-    });
-    const avatarProps = resolveSlotProps<ChipOwnerState, "span", "span">({
-        ownProps: { className: styles.avatar },
-        slotProps: slotProps?.avatar,
-        ownerState,
-    });
-
-    const content = (
-        <>
-            {icon != null && <span {...iconProps}>{icon}</span>}
-            {avatar != null && <span {...avatarProps}>{avatar}</span>}
-            <span {...labelProps}>{children}</span>
-        </>
-    );
-
-    return (
-        <span
-            {...restProps}
-            ref={ref}
-            data-variant={ownerState.variant}
-            data-color={ownerState.color}
-            data-size={ownerState.size}
-            data-disabled={ownerState.disabled ? "" : undefined}
-            data-clickable={ownerState.clickable ? "" : undefined}
-            data-deletable={ownerState.deletable ? "" : undefined}
-            data-selected={ownerState.selected ? "" : undefined}
-            className={clsx(styles.root, className)}
-        >
-            {ownerState.clickable ? <button {...actionProps}>{content}</button> : content}
-            {ownerState.deletable && (
-                <button {...deleteProps}>
-                    <Icon name="close" />
-                </button>
-            )}
-        </span>
-    );
 });

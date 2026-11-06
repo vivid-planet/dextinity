@@ -5,16 +5,13 @@ import { expect, fn, userEvent } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import chipTokens from "../_tokens.scss?raw";
-import { Chip, type ChipProps } from "../Chip";
+import { Chip } from "../Chip";
 import styles from "./Chip.stories.module.scss";
 
 const iconOptions = {
-    Globe: <Icon name="domain" />,
-    Sparkle: <Icon name="artificial-intelligence" />,
-    Clock: <Icon name="time" />,
+    Calendar: <Icon name="calendar" />,
+    ChevronDown: <Icon name="chevron-down" />,
 };
-
-const colors = ["default", "primary", "secondary", "error", "info", "success", "warning"] as const;
 
 const meta = {
     component: Chip,
@@ -22,30 +19,36 @@ const meta = {
     decorators: [themeDecorator],
     parameters: { tokens: chipTokens },
     args: {
-        children: "Flextime",
+        children: "Label",
     },
     argTypes: {
         variant: {
             control: "radio",
-            options: ["filled", "outlined"],
+            options: ["contained", "outlined"],
         },
         color: {
             control: "select",
-            options: colors,
+            options: ["primary", "secondary", "info", "warning", "error", "success"],
         },
         size: {
             control: "radio",
             options: ["default", "small"],
         },
-        icon: {
+        startIcon: {
             control: "select",
             options: Object.keys(iconOptions),
             mapping: iconOptions,
         },
-        avatar: { control: false },
-        labels: { control: false },
+        endIcon: {
+            control: "select",
+            options: Object.keys(iconOptions),
+            mapping: iconOptions,
+        },
         className: { control: false },
+        slots: { control: false },
         slotProps: { control: false },
+        ref: { control: false },
+        render: { control: false },
     },
 } satisfies Meta<typeof Chip>;
 
@@ -53,12 +56,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/**
- * **Rules**
- *
- * - One line of text; keep labels short.
- * - Use color only where it carries meaning, e.g. `info` for values set automatically.
- */
 export const Default: Story = {};
 
 export const Outlined: Story = {
@@ -67,139 +64,113 @@ export const Outlined: Story = {
     },
 };
 
-/**
- * Every color channel, filled and outlined.
- */
-export const Colors: Story = {
-    render: (args) => (
-        <div className={styles.grid}>
-            {colors.map((color) => (
-                <Chip key={color} {...args} color={color}>
-                    {color}
-                </Chip>
-            ))}
-            {colors.map((color) => (
-                <Chip key={color} {...args} variant="outlined" color={color}>
-                    {color}
-                </Chip>
-            ))}
-        </div>
-    ),
+export const Secondary: Story = {
+    args: {
+        color: "secondary",
+    },
 };
 
-/**
- * In rows and cards, e.g. to tell manual from automatic values.
- */
+export const Info: Story = {
+    args: {
+        color: "info",
+    },
+};
+
+export const Warning: Story = {
+    args: {
+        color: "warning",
+    },
+};
+
+export const Error: Story = {
+    args: {
+        color: "error",
+    },
+};
+
+export const Success: Story = {
+    args: {
+        color: "success",
+    },
+};
+
 export const Small: Story = {
-    render: (args) => (
-        <div className={styles.row}>
-            <Chip {...args} size="small" variant="outlined">
-                Manual
-            </Chip>
-            <Chip {...args} size="small" color="info">
-                Automatic
-            </Chip>
-        </div>
-    ),
-};
-
-export const WithIcon: Story = {
     args: {
-        icon: <Icon name="domain" />,
-        children: "Austria",
-    },
-};
-
-/**
- * With `onDelete`, a delete button removes the tag; Backspace or Delete on the focused chip works too.
- */
-export const Removable: Story = {
-    args: {
-        onDelete: fn(),
-    },
-    play: async ({ args, canvas }) => {
-        await userEvent.click(canvas.getByRole("button", { name: "Remove" }));
-        await expect(args.onDelete).toHaveBeenCalledOnce();
-    },
-};
-
-/**
- * With `onClick`, the whole chip is a button.
- */
-export const Clickable: Story = {
-    args: {
-        onClick: fn(),
-        variant: "outlined",
-    },
-    play: async ({ args, canvas }) => {
-        await userEvent.click(canvas.getByRole("button", { name: "Flextime" }));
-        await expect(args.onClick).toHaveBeenCalledOnce();
-    },
-};
-
-function FilterChips(args: ChipProps) {
-    const [selected, setSelected] = useState<string[]>(["Published"]);
-    return (
-        <div className={styles.row}>
-            {["Published", "Unpublished", "Archived"].map((filter) => (
-                <Chip
-                    key={filter}
-                    {...args}
-                    variant="outlined"
-                    selected={selected.includes(filter)}
-                    onClick={() =>
-                        setSelected((current) => (current.includes(filter) ? current.filter((item) => item !== filter) : [...current, filter]))
-                    }
-                >
-                    {filter}
-                </Chip>
-            ))}
-        </div>
-    );
-}
-
-/**
- * With `selected`, a clickable chip is a toggle, e.g. a quick filter above a list.
- */
-export const Selectable: Story = {
-    render: (args) => <FilterChips {...args} />,
-    play: async ({ canvas }) => {
-        const archived = canvas.getByRole("button", { name: "Archived" });
-        await expect(archived).toHaveAttribute("aria-pressed", "false");
-        await userEvent.click(archived);
-        await expect(archived).toHaveAttribute("aria-pressed", "true");
-    },
-};
-
-function RemovableTags(args: ChipProps) {
-    const [tags, setTags] = useState(["Flextime", "Remote", "Part-time"]);
-    return (
-        <div className={styles.row}>
-            {tags.map((tag) => (
-                <Chip key={tag} {...args} onDelete={() => setTags((current) => current.filter((item) => item !== tag))}>
-                    {tag}
-                </Chip>
-            ))}
-        </div>
-    );
-}
-
-/**
- * Clickable and removable at once: Backspace on the focused chip removes it.
- */
-export const KeyboardRemove: Story = {
-    render: (args) => <RemovableTags {...args} onClick={fn()} />,
-    play: async ({ canvas }) => {
-        await userEvent.tab();
-        await expect(canvas.getByRole("button", { name: "Flextime" })).toHaveFocus();
-        await userEvent.keyboard("{Backspace}");
-        await expect(canvas.queryByText("Flextime")).toBeNull();
+        size: "small",
     },
 };
 
 export const Disabled: Story = {
     args: {
         disabled: true,
-        onDelete: fn(),
+        onClear: fn(),
+        clearLabel: "Remove filter: Label",
+    },
+};
+
+export const WithIcons: Story = {
+    args: {
+        startIcon: <Icon name="calendar" />,
+        endIcon: <Icon name="chevron-down" />,
+    },
+};
+
+export const WithClearButton: Story = {
+    args: {
+        onClear: fn(),
+        clearLabel: "Remove filter: Label",
+    },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Remove filter: Label" }));
+        await expect(args.onClear).toHaveBeenCalledOnce();
+    },
+};
+
+const variants = ["contained", "outlined"] as const;
+const colors = ["primary", "secondary", "info", "warning", "error", "success"] as const;
+
+/**
+ * Every variant in every color.
+ *
+ * **Rules**
+ *
+ * - Use `info`, `success`, `warning`, and `error` only where the color carries meaning, e.g. a status.
+ * - Use `secondary` for neutral values such as tags.
+ */
+export const Colors: Story = {
+    render: (args) => (
+        <div className={styles.grid}>
+            {variants.map((variant) =>
+                colors.map((color) => (
+                    <Chip key={`${variant}-${color}`} {...args} variant={variant} color={color}>
+                        {color}
+                    </Chip>
+                )),
+            )}
+        </div>
+    ),
+};
+
+/**
+ * A chip that toggles a filter renders as a button through `render`, with `aria-pressed`.
+ */
+export const AsToggle: Story = {
+    render: function Render(args) {
+        const [pressed, setPressed] = useState(false);
+        return (
+            <Chip
+                {...args}
+                variant={pressed ? "contained" : "outlined"}
+                color="secondary"
+                render={<button type="button" aria-pressed={pressed} onClick={() => setPressed(!pressed)} />}
+            >
+                Published
+            </Chip>
+        );
+    },
+    play: async ({ canvas }) => {
+        const chip = canvas.getByRole("button", { name: "Published" });
+        await userEvent.click(chip);
+        await expect(chip).toHaveAttribute("aria-pressed", "true");
     },
 };

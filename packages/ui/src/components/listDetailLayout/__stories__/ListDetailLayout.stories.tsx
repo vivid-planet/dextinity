@@ -112,7 +112,7 @@ const columns: DataGridColumn<Redirect>[] = [
         width: 120,
         priority: "low",
         render: (redirect) => (
-            <Chip size="small" color={redirect.automatic ? "info" : "default"} variant={redirect.automatic ? "filled" : "outlined"}>
+            <Chip size="small" color={redirect.automatic ? "info" : "secondary"} variant={redirect.automatic ? "contained" : "outlined"}>
                 {redirect.automatic ? "Automatic" : "Manual"}
             </Chip>
         ),

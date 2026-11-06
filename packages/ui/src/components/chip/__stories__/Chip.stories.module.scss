@@ -7,6 +7,6 @@
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(7, max-content);
+    grid-template-columns: repeat(6, max-content);
     gap: var(--dextinity-space-2);
 }

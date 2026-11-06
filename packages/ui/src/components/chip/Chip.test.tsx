@@ -1,60 +1,91 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { Theme } from "../theme/Theme";
 import { Chip } from "./Chip";
+
+/**
+ * Compile-time contract for the clear button. Never rendered — it exists so
+ * `tsc` fails if the typing regresses.
+ */
+export function ChipClearButtonTypeContract() {
+    return (
+        <>
+            <Chip onClear={() => {}} clearLabel="Remove" slots={{ clearButton: "button" }}>
+                Label
+            </Chip>
+            {/* @ts-expect-error the slot receives `type` and `disabled`, which a span does not accept */}
+            <Chip onClear={() => {}} clearLabel="Remove" slots={{ clearButton: "span" }}>
+                Label
+            </Chip>
+            {/* @ts-expect-error a clear button needs a `clearLabel` */}
+            <Chip onClear={() => {}}>Label</Chip>
+        </>
+    );
+}
 
 afterEach(cleanup);
 
-describe("Chip", () => {
-    it("emits the variant, color, and size as data attributes, with their defaults when unset", () => {
+describe("Chip owner state", () => {
+    it("emits the variant, color, size, and disabled state as data attributes, with their defaults when unset", () => {
         render(
             <>
-                <Chip data-testid="plain">Flextime</Chip>
-                <Chip data-testid="styled" variant="outlined" color="info" size="small">
-                    Automatic
+                <Chip>Draft</Chip>
+                <Chip variant="outlined" color="error" size="small" disabled>
+                    Archived
                 </Chip>
             </>,
         );
 
-        const plain = screen.getByTestId("plain");
-        expect([plain.className.includes("dextinityChip"), plain.dataset.variant, plain.dataset.color, plain.dataset.size]).toStrictEqual([
-            true,
-            "filled",
+        const draft = screen.getByText("Draft");
+        expect([draft.dataset.variant, draft.dataset.color, draft.dataset.size, draft.hasAttribute("data-disabled")]).toStrictEqual([
+            "contained",
+            "primary",
             "default",
-            "default",
+            false,
         ]);
-        const styled = screen.getByTestId("styled");
-        expect([styled.dataset.variant, styled.dataset.color, styled.dataset.size]).toStrictEqual(["outlined", "info", "small"]);
+        const archived = screen.getByText("Archived");
+        expect([archived.dataset.variant, archived.dataset.color, archived.dataset.size, archived.dataset.disabled]).toStrictEqual([
+            "outlined",
+            "error",
+            "small",
+            "",
+        ]);
     });
+});
 
-    it("renders a static chip without buttons", () => {
-        render(<Chip data-testid="chip">Flextime</Chip>);
-
-        expect(screen.queryAllByRole("button")).toHaveLength(0);
-        expect(screen.getByTestId("chip").hasAttribute("data-clickable")).toBe(false);
-    });
-
-    it("marks a clickable chip as a toggle only when `selected` is set", () => {
+describe("Chip slots", () => {
+    it("keeps the clear handler and label when `slotProps` add props to the clear button", () => {
+        const handleClear = vi.fn();
         render(
-            <>
-                <Chip onClick={() => {}}>Action</Chip>
-                <Chip onClick={() => {}} selected>
+            <Theme>
+                <Chip onClear={handleClear} clearLabel="Remove filter" slotProps={{ clearButton: { className: "consumer-class" } }}>
                     Published
                 </Chip>
-            </>,
+            </Theme>,
         );
 
-        expect(screen.getByRole("button", { name: "Action" }).hasAttribute("aria-pressed")).toBe(false);
-        const toggle = screen.getByRole("button", { name: "Published" });
-        expect(toggle.getAttribute("aria-pressed")).toBe("true");
-        expect(toggle.closest(".dextinityChip")?.hasAttribute("data-selected")).toBe(true);
+        const clearButton = screen.getByRole("button", { name: "Remove filter" });
+        fireEvent.click(clearButton);
+        expect([
+            clearButton.className.includes("consumer-class"),
+            clearButton.className.includes("clearButton"),
+            handleClear.mock.calls.length,
+        ]).toStrictEqual([true, true, 1]);
     });
+});
 
-    it("describes the delete button with the chip's text", () => {
-        render(<Chip onDelete={() => {}}>Flextime</Chip>);
+describe("Chip as an interactive element", () => {
+    it("ignores clicks and marks itself as disabled when it renders as a button", () => {
+        const handleClick = vi.fn();
+        render(
+            <Chip render={<button type="button" />} disabled onClick={handleClick}>
+                Published
+            </Chip>,
+        );
 
-        const remove = screen.getByRole("button", { name: "Remove" });
-        expect(remove.className).toContain("dextinityChip__delete");
-        expect(document.getElementById(remove.getAttribute("aria-describedby") ?? "")?.textContent).toBe("Flextime");
+        const chip = screen.getByRole("button", { name: "Published" });
+        fireEvent.click(chip);
+        expect([handleClick.mock.calls.length, chip.getAttribute("aria-disabled")]).toStrictEqual([0, "true"]);
     });
 });

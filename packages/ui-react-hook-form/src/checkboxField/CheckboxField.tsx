@@ -6,13 +6,15 @@ import type { FieldAdapterBaseProps } from "../field/fieldAdapterProps";
 import type { ReactHookFormFieldConfig } from "../field/reactHookFormFieldConfig";
 import { splitFieldAdapterProps } from "../field/splitFieldAdapterProps";
 import { useFieldAdapter } from "../field/useFieldAdapter";
-import { useValidationMessage } from "../field/useValidationMessage";
 
 export interface CheckboxFieldProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>
     extends
         FieldAdapterBaseProps<TFieldValues, TName>,
         ReactHookFormFieldConfig<TFieldValues, TName>,
-        Omit<CheckboxProps, "name" | "checked" | "onChange" | "onBlur" | "required" | "defaultValue" | "defaultChecked"> {
+        Omit<
+            CheckboxProps,
+            "name" | "checked" | "onChange" | "onBlur" | "required" | "defaultValue" | "defaultChecked" | "state" | "validationMessage"
+        > {
     /** Makes the checkbox one of a group: the field holds the list of the checked boxes' values, and this box adds or removes its own. */
     value?: string;
 }
@@ -34,29 +36,25 @@ export function toggleCheckboxValue(fieldValue: unknown, value: string | undefin
  * checked. Shows the field's error below the checkbox once it was touched or the form was submitted.
  */
 export const CheckboxField = forwardRef(function CheckboxField<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
-    { name, value, "aria-describedby": ariaDescribedBy, ...props }: CheckboxFieldProps<TFieldValues, TName>,
-    forwardedRef: ForwardedRef<HTMLLabelElement>,
+    { name, value, ...props }: CheckboxFieldProps<TFieldValues, TName>,
+    forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
     const [options, checkboxProps] = splitFieldAdapterProps(props);
-    const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLLabelElement>({ name, ...options }, forwardedRef);
-    const { message, describedBy } = useValidationMessage(validationProps, ariaDescribedBy);
+    const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLDivElement>({ name, ...options }, forwardedRef);
 
     return (
-        <>
-            <Checkbox
-                {...checkboxProps}
-                ref={ref}
-                name={field.name}
-                value={value}
-                checked={isCheckboxChecked(field.value, value)}
-                required={options.required}
-                aria-describedby={describedBy}
-                onChange={(checked) => field.onChange(toggleCheckboxValue(field.value, value, checked))}
-                onBlur={field.onBlur}
-            />
-            {message}
-        </>
+        <Checkbox
+            {...checkboxProps}
+            ref={ref}
+            name={field.name}
+            value={value}
+            checked={isCheckboxChecked(field.value, value)}
+            required={options.required}
+            {...validationProps}
+            onChange={(checked) => field.onChange(toggleCheckboxValue(field.value, value, checked))}
+            onBlur={field.onBlur}
+        />
     );
 }) as <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(
-    props: CheckboxFieldProps<TFieldValues, TName> & RefAttributes<HTMLLabelElement>,
+    props: CheckboxFieldProps<TFieldValues, TName> & RefAttributes<HTMLDivElement>,
 ) => ReactNode;

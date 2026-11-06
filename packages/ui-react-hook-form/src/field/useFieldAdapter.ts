@@ -49,7 +49,7 @@ export interface UseFieldAdapterOptions<TFieldValues extends FieldValues, TName 
     isEmpty?: (value: unknown) => boolean;
 }
 
-export interface FieldAdapterValidationProps {
+interface FieldAdapterValidationProps {
     state?: "error";
     validationMessage?: ReactNode;
 }

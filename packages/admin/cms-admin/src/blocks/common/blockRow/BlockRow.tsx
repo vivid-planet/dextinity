@@ -124,6 +124,7 @@ export function BlockRow({
             aria-label={visibilityRestriction.reason}
             aria-pressed={!visible}
             disabled={!visibilityRestriction.canToggle}
+            focusableWhenDisabled
             onClick={() => onVisibleChange(!visible)}
         >
             <Icon name={visible ? "visible" : "invisible"} />

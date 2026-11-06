@@ -72,6 +72,14 @@ describe("DataGrid", () => {
         expect(screen.getByRole("columnheader", { name: "Name" }).getAttribute("aria-sort")).toBe("descending");
     });
 
+    it("marks the active row as current", () => {
+        render(<DataGrid aria-label="Items" columns={columns} rows={rows} getRowId={getRowId} onRowClick={() => {}} activeRowId="a" />);
+
+        const activeRow = screen.getByRole("row", { name: /Alpha/ });
+        expect([activeRow.getAttribute("aria-current"), activeRow.hasAttribute("data-active")]).toStrictEqual(["true", true]);
+        expect(screen.getByRole("row", { name: /Beta/ }).hasAttribute("aria-current")).toBe(false);
+    });
+
     it("marks the table busy while loading, and empty without rows", () => {
         const { container, rerender } = render(<DataGrid aria-label="Items" columns={columns} rows={[]} getRowId={getRowId} loading />);
         expect(screen.getByRole("table").getAttribute("aria-busy")).toBe("true");

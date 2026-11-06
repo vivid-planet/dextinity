@@ -249,6 +249,8 @@ export interface DataGridProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>,
     onSortChange?: (sort: DataGridSort) => void;
     /** Called on a click on a row, or Enter on a focused row; usually opens the edit view. Makes the rows focusable. */
     onRowClick?: (row: Row) => void;
+    /** The id of the row whose details are open next to the grid, e.g. in a side panel; the row is marked as current. */
+    activeRowId?: string;
     /**
      * Actions at the end of a row, shown on hover and focus, e.g. a `Menu` with an `IconButton` trigger. Every action must also
      * be reachable by keyboard.
@@ -426,6 +428,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
         sort,
         onSortChange,
         onRowClick,
+        activeRowId,
         rowActions,
         bulkActions,
         bulkActionLabels,
@@ -873,6 +876,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
     const renderRow = (entry: RowEntry<Row>) => {
         const { row, rowId, topLevelIndex } = entry;
         const isSelected = selected.has(rowId);
+        const isActive = activeRowId === rowId;
         const firstCellId = `${id}-row-${entry.index}`;
         const firstCellTextId = `${firstCellId}-text`;
         const detailId = `${id}-detail-${entry.index}`;
@@ -883,6 +887,8 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                 key={rowId}
                 className={styles.row}
                 data-selected={isSelected ? "" : undefined}
+                data-active={isActive ? "" : undefined}
+                aria-current={isActive || undefined}
                 data-depth={ownerState.expandable ? entry.depth : undefined}
                 data-dragging={draggedIndex != null && draggedIndex === topLevelIndex ? "" : undefined}
                 data-drop={dropPosition}

@@ -435,8 +435,13 @@ th.actionsCell {
         background: var(--dextinity-data-grid-row-background-hover);
     }
 
-    &[data-selected] > td {
+    &[data-selected] > td,
+    &[data-active] > td {
         background: var(--dextinity-data-grid-row-background-selected);
+    }
+
+    &[data-active] > td:first-child {
+        box-shadow: inset var(--dextinity-data-grid-row-active-indicator-width) 0 0 var(--dextinity-data-grid-row-active-indicator);
     }
 
     &[data-dragging] {
@@ -494,7 +499,8 @@ th.actionsCell {
             inset 0 -1px 0 var(--dextinity-color-text);
     }
 
-    :global([data-dextinity-color-scheme="high-contrast"]) &[data-selected] > td {
+    :global([data-dextinity-color-scheme="high-contrast"]) &[data-selected] > td,
+    :global([data-dextinity-color-scheme="high-contrast"]) &[data-active] > td {
         background: var(--dextinity-color-surface-raised);
         box-shadow:
             inset 0 2px 0 var(--dextinity-color-focus),
@@ -580,7 +586,8 @@ th.actionsCell {
 
 .root:has(> .bulkActionBarAnchor > [data-open]) {
     padding-block-end: calc(
-        var(--dextinity-data-grid-bulk-action-bar-height) + var(--dextinity-data-grid-bulk-action-bar-offset) + var(--dextinity-data-grid-padding-block-end, 0px)
+        var(--dextinity-data-grid-bulk-action-bar-height) + var(--dextinity-data-grid-bulk-action-bar-offset) +
+            var(--dextinity-data-grid-padding-block-end, 0px)
     );
 }
 

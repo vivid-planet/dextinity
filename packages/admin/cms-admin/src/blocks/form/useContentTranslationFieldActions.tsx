@@ -1,13 +1,30 @@
 import { useContentTranslationService, useErrorDialog } from "@dextinity/admin";
-import { FieldActions } from "@dextinity/ui";
-import type { FieldAdapterActions } from "@dextinity/ui-react-final-form";
+import { FieldActions, type FieldActionsProps } from "@dextinity/ui";
+import type { FieldAdapterActions, FieldAdapterActionsContext } from "@dextinity/ui-react-final-form";
 import { FormattedMessage, useIntl } from "react-intl";
+
+type ContentTranslationFieldActionsProps = (context: FieldAdapterActionsContext<string>) => FieldActionsProps;
 
 /**
  * The `actions` of a text field adapter that translate its content with the content translation service: in place, or offered to accept
  * or discard when the service asks to review translations. `undefined` while the service is disabled.
  */
 export function useContentTranslationFieldActions({ disabled = false }: { disabled?: boolean } = {}): FieldAdapterActions<string> | undefined {
+    const getFieldActionsProps = useContentTranslationFieldActionsProps({ disabled });
+
+    if (!getFieldActionsProps) {
+        return undefined;
+    }
+
+    return (context) => <FieldActions {...getFieldActionsProps(context)} />;
+}
+
+/**
+ * The `FieldActions` props that translate a text field's content with the content translation service, for fields that combine
+ * translating with other actions. `undefined` while the service is disabled.
+ */
+export function useContentTranslationFieldActionsProps({ disabled = false }: { disabled?: boolean } = {}):
+    ContentTranslationFieldActionsProps | undefined {
     const intl = useIntl();
     const { enabled, showApplyTranslationDialog, translate } = useContentTranslationService();
     const errorDialog = useErrorDialog();
@@ -37,20 +54,18 @@ export function useContentTranslationFieldActions({ disabled = false }: { disabl
     }
 
     return ({ value, setValue }) =>
-        showApplyTranslationDialog ? (
-            <FieldActions
-                translate
-                labels={labels}
-                onTranslateSuggest={() => translate(value)}
-                onTranslateAccept={setValue}
-                onTranslateError={showTranslationError}
-            />
-        ) : (
-            <FieldActions
-                translate
-                labels={labels}
-                onTranslate={async () => setValue(await translate(value))}
-                onTranslateError={showTranslationError}
-            />
-        );
+        showApplyTranslationDialog
+            ? {
+                  translate: true,
+                  labels,
+                  onTranslateSuggest: () => translate(value),
+                  onTranslateAccept: setValue,
+                  onTranslateError: showTranslationError,
+              }
+            : {
+                  translate: true,
+                  labels,
+                  onTranslate: async () => setValue(await translate(value)),
+                  onTranslateError: showTranslationError,
+              };
 }

@@ -32,6 +32,8 @@ export interface AssetBrowserFolder {
     name: string;
     /** The parent folder's id, `null` for the root folder. */
     parentId: string | null;
+    /** Details below the folder's name, e.g. the number of items when its assets aren't loaded. Without it, the loaded items are counted. */
+    meta?: string;
 }
 
 export interface AssetBrowserAsset {
@@ -163,6 +165,8 @@ export interface AssetBrowserProps extends Omit<HTMLAttributes<HTMLDivElement>, 
     mode?: "manage" | "pick";
     /** Called when an asset is opened by double-click or Enter. */
     onOpen?: (asset: AssetBrowserAsset) => void;
+    /** Called with the focused asset on Space, which then selects it and opens a quick look instead of toggling the selection. */
+    onQuickLook?: (asset: AssetBrowserAsset) => void;
     /** Called when items are dragged onto a folder, in the content or the tree. Only in `manage` mode. */
     onMove?: (ids: string[], folderId: string) => void;
     /** Called with the selected ids on Delete or Backspace. Only in `manage` mode. */
@@ -226,6 +230,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         onSelectionChange,
         mode = "manage",
         onOpen,
+        onQuickLook,
         onMove,
         onDelete,
         toolbar,
@@ -523,6 +528,16 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
             onDelete([...selectedIds]);
             return;
         }
+        const focusedItem = items[index];
+        if (event.key === " " && !modifier && onQuickLook != null && focusedItem.kind === "asset") {
+            event.preventDefault();
+            if (!selected.has(currentId)) {
+                onSelectionChange([currentId]);
+            }
+            setAnchorId(currentId);
+            onQuickLook(focusedItem.asset);
+            return;
+        }
         if (event.key === " ") {
             event.preventDefault();
             onSelectionChange(
@@ -653,7 +668,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
             />
         );
 
-    const itemMeta = (item: Item) => (item.kind === "folder" ? labels.itemCount(countOf(item.folder.id)) : item.asset.meta);
+    const itemMeta = (item: Item) => (item.kind === "folder" ? (item.folder.meta ?? labels.itemCount(countOf(item.folder.id))) : item.asset.meta);
 
     const listboxProps = {
         role: "listbox",

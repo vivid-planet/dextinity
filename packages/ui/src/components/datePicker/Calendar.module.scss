@@ -127,6 +127,13 @@
 .cellRangeStart,
 .cellRangeEnd {
     background: var(--dextinity-date-picker-day-background-range);
+
+    // The soft range fill is black in high contrast, so lines above and below mark the range instead
+    :global([data-dextinity-color-scheme="high-contrast"]) & {
+        box-shadow:
+            inset 0 var(--dextinity-line-width) 0 var(--dextinity-date-picker-range-outline-high-contrast),
+            inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-date-picker-range-outline-high-contrast);
+    }
 }
 
 .cellRangeStart {

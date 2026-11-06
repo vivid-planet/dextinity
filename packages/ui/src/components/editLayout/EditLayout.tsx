@@ -173,7 +173,8 @@ function PreviewPlaceholder() {
 }
 
 function EditorPlaceholder({ variant }: { variant: EditLayoutVariant }) {
-    const blocks = variant === "page";
+    const fieldCount = variant === "page" ? 0 : variant === "formWithBlocks" ? 2 : 4;
+    const blocks = variant === "page" || variant === "formWithBlocks";
     return (
         <Panel>
             <div className={styles.editorPlaceholder}>
@@ -183,16 +184,13 @@ function EditorPlaceholder({ variant }: { variant: EditLayoutVariant }) {
                     <Skeleton width={40} />
                     <Skeleton width={64} />
                 </div>
-                {blocks ? (
-                    <Skeleton variant="tile" count={5} className={styles.blocksPlaceholder} />
-                ) : (
-                    Array.from({ length: 4 }, (_, index) => (
-                        <div key={index} className={styles.fieldPlaceholder}>
-                            <Skeleton width="28%" />
-                            <Skeleton variant="tile" />
-                        </div>
-                    ))
-                )}
+                {Array.from({ length: fieldCount }, (_, index) => (
+                    <div key={index} className={styles.fieldPlaceholder}>
+                        <Skeleton width="28%" />
+                        <Skeleton variant="tile" />
+                    </div>
+                ))}
+                {blocks && <Skeleton variant="tile" count={variant === "page" ? 5 : 3} className={styles.blocksPlaceholder} />}
             </div>
         </Panel>
     );

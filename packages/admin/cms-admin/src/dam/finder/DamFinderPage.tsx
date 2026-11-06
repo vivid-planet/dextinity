@@ -118,6 +118,7 @@ function createAssetBrowserLabels(intl: IntlShape): Partial<AssetBrowserLabels> 
             intl.formatMessage({ id: "dextinity.damFinder.itemCount", defaultMessage: "{count, plural, one {# item} other {# items}}" }, { count }),
         selectedCount: (selected, total) =>
             intl.formatMessage({ id: "dextinity.damFinder.selectedCount", defaultMessage: "{selected} of {total} selected" }, { selected, total }),
+        resizeSidebar: intl.formatMessage({ id: "dextinity.damFinder.resizeSidebar", defaultMessage: "Resize folders" }),
     };
 }
 
@@ -134,6 +135,7 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
     const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
 
     const [view, setView] = useStoredState<AssetBrowserView>("damFinderView", "icons");
+    const [sidebarWidth, setSidebarWidth] = useStoredState<number | null>("damFinderSidebarWidth", null);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [quickLookIndex, setQuickLookIndex] = useState<number>();
     const [pendingDeleteIds, setPendingDeleteIds] = useState<string[]>();
@@ -560,6 +562,8 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                             onFolderChange={changeFolder}
                             view={view}
                             onViewChange={setView}
+                            sidebarWidth={typeof sidebarWidth === "number" ? sidebarWidth : undefined}
+                            onSidebarWidthChange={(width) => setSidebarWidth(width ?? null)}
                             selectedIds={selectedIds}
                             onSelectionChange={changeSelection}
                             onOpen={(asset) => openQuickLook(asset.id)}

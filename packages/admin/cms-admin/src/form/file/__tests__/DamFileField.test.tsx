@@ -3,11 +3,16 @@ import { MockedProvider } from "@apollo/client/testing";
 import { useEffect } from "react";
 import { Form } from "react-final-form";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "test-utils";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 
+import { useDextinityConfig } from "../../../config/DextinityConfigContext";
+import { useContentScope } from "../../../contentScope/Provider";
 import type { DamFilePickerDialogProps } from "../chooseFile/DamFilePickerDialog";
 import { DamFileField } from "../DamFileField";
 import type { GQLDamFileFieldFileFragment } from "../FileField.fragment.generated";
+
+vi.mock("../../../config/DextinityConfigContext", () => ({ useDextinityConfig: vi.fn() }));
+vi.mock("../../../contentScope/Provider", () => ({ useContentScope: vi.fn() }));
 
 const pickerDialogProps = vi.hoisted(() => ({ current: undefined as DamFilePickerDialogProps | undefined }));
 
@@ -46,12 +51,13 @@ function withTypenames(file: GQLDamFileFieldFileFragment) {
     };
 }
 
-function createClientReturning(data: Record<string, unknown>) {
+function createClientReturning(data: Record<string, unknown>, onRequest?: (variables: Record<string, unknown>) => void) {
     return new ApolloClient({
         cache: new InMemoryCache(),
         link: new ApolloLink(
-            () =>
+            (operation) =>
                 new Observable((observer) => {
+                    onRequest?.(operation.variables);
                     observer.next({ data });
                     observer.complete();
                 }),
@@ -89,6 +95,11 @@ function ValueSpy({ value, onValueChange }: { value: unknown; onValueChange: (va
 }
 
 describe("DamFileField", () => {
+    beforeEach(() => {
+        (useDextinityConfig as Mock).mockReturnValue({ dam: { scopeParts: ["domain"] } });
+        (useContentScope as Mock).mockReturnValue({ scope: { domain: "main", language: "en" } });
+    });
+
     afterEach(() => {
         cleanup();
         pickerDialogProps.current = undefined;
@@ -146,5 +157,28 @@ describe("DamFileField", () => {
 
         expect(pickerDialogProps.current?.multiple).toBe(true);
         expect(pickerDialogProps.current?.initialFileIds).toEqual(["lake", "forest"]);
+    });
+
+    it("loads the files chosen with multiple in the DAM scope of the content scope", async () => {
+        const onValueChange = vi.fn();
+        const onRequest = vi.fn();
+        render(
+            <ApolloProvider
+                client={createClientReturning(
+                    { damFilesList: { __typename: "PaginatedDamFiles", nodes: [withTypenames(forest), withTypenames(lake)] } },
+                    onRequest,
+                )}
+            >
+                <TestForm initialValue={[]} multiple onValueChange={onValueChange} />
+            </ApolloProvider>,
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: /^Images/ }));
+        await act(() => pickerDialogProps.current?.onChoose(["lake", "forest"]));
+
+        expect(onRequest).toHaveBeenCalledWith(expect.objectContaining({ ids: ["lake", "forest"], scope: { domain: "main" } }));
+        await waitFor(() =>
+            expect(onValueChange).toHaveBeenLastCalledWith([expect.objectContaining({ id: "lake" }), expect.objectContaining({ id: "forest" })]),
+        );
     });
 });

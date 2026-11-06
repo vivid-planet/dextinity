@@ -1,39 +1,8 @@
-import { type QueryResult, type TypedDocumentNode, useQuery } from "@apollo/client";
-import {
-    Alert,
-    DataGridToolbar,
-    FillSpace,
-    type GqlFilter,
-    GridCellContent,
-    type GridColDef,
-    GridFilterButton,
-    messages,
-    muiGridFilterToGql,
-    muiGridSortToGql,
-    Tooltip,
-    useBufferedRowCount,
-    useDataGridRemote,
-    usePersistentColumnState,
-} from "@dextinity/admin";
-import { Reload, ThreeDotSaving } from "@dextinity/admin-icons";
-import { Chip, IconButton } from "@mui/material";
-import type { GridSlotsComponent, GridToolbarProps } from "@mui/x-data-grid";
-import { useMemo, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import type { TypedDocumentNode } from "@apollo/client";
+import { useIntl } from "react-intl";
 
-import { useContentScope } from "../contentScope/Provider";
-import { getContentScopeLabel } from "../contentScope/utils/getContentScopeLabel";
-import { DataGrid } from "../dataGrid/DataGrid";
 import type { GQLDependency } from "../graphql.generated";
-import { useDependenciesConfig } from "./dependenciesConfig";
-import { DependencyActions } from "./DependencyActions";
-import { getDisplayNameString } from "./getDisplayNameString";
-
-type DependencyItem = Pick<GQLDependency, "name" | "secondaryInformation" | "visible" | "rootColumnName" | "jsonPath"> &
-    Partial<Pick<GQLDependency, "scope">> & {
-        id: string;
-        targetGraphqlObjectType: string;
-    };
+import { DependencyList, type DependencyListQueryVariables } from "./DependencyList";
 
 type Dependency = Pick<
     GQLDependency,
@@ -49,195 +18,52 @@ interface DependenciesListQuery {
     };
 }
 
-type QueryVariables = {
-    offset: number;
-    limit: number;
-    forceRefresh?: boolean;
-    filter?: GqlFilter;
-    sort?: Array<{ field: string; direction: "ASC" | "DESC" }>;
-};
-
-interface DependenciesListGridToolbarProps extends GridToolbarProps {
-    refetch: QueryResult<DependenciesListQuery, QueryVariables>["refetch"];
-}
-function DependenciesListGridToolbar({ refetch }: DependenciesListGridToolbarProps) {
-    const [isRefetching, setIsRefetching] = useState<boolean>(false);
-
-    return (
-        <DataGridToolbar>
-            <GridFilterButton />
-            <FillSpace />
-            <Tooltip title={<FormattedMessage id="dextinity.dependencies.dataGrid.reloadTooltip" defaultMessage="Reload" />}>
-                <IconButton
-                    onClick={async () => {
-                        setIsRefetching(true);
-                        try {
-                            await refetch({ forceRefresh: true });
-                        } finally {
-                            setIsRefetching(false);
-                        }
-                    }}
-                    disabled={isRefetching}
-                >
-                    {isRefetching ? <ThreeDotSaving /> : <Reload />}
-                </IconButton>
-            </Tooltip>
-        </DataGridToolbar>
-    );
-}
-
-const pageSize = 10;
-
 export interface DependenciesListProps {
-    query: TypedDocumentNode<DependenciesListQuery, QueryVariables>;
+    query: TypedDocumentNode<DependenciesListQuery, DependencyListQueryVariables>;
     variables: Record<string, unknown>;
 }
 
 export const DependenciesList = ({ query, variables }: DependenciesListProps) => {
     const intl = useIntl();
-    const { entityDependencyMap } = useDependenciesConfig();
-    const contentScope = useContentScope();
-
-    const dataGridProps = {
-        ...useDataGridRemote({
-            queryParamsPrefix: "dependencies",
-            pageSize,
-            initialFilter: {
-                items: [{ field: "visible", operator: "is", value: true }],
-            },
-        }),
-        ...usePersistentColumnState("DependenciesList"),
-    };
-
-    // Scopes are only worth showing when the entries can actually originate from different scopes.
-    const shouldShowScopeColumn = contentScope.values.length > 1;
-
-    const columns: GridColDef<DependencyItem>[] = useMemo(
-        () => [
-            {
-                field: "name",
-                headerName: intl.formatMessage({ id: "dextinity.dependencies.dataGrid.nameAndInfo", defaultMessage: "Name/Info" }),
-                flex: 1,
-                sortBy: "name",
-                renderCell: ({ row }) => (
-                    <GridCellContent primaryText={row.name ?? <FormattedMessage {...messages.unknown} />} secondaryText={row.secondaryInformation} />
-                ),
-            },
-            {
-                field: "secondaryInformation",
-                headerName: intl.formatMessage({
-                    id: "dextinity.dependencies.dataGrid.secondaryInformation",
-                    defaultMessage: "Secondary information",
-                }),
-                sortBy: "secondaryInformation",
-                visible: false,
-            },
-            {
-                field: "targetGraphqlObjectType",
-                headerName: intl.formatMessage({ id: "dextinity.dependencies.dataGrid.type", defaultMessage: "Type" }),
-                type: "singleSelect",
-                sortBy: "graphqlObjectType",
-                valueOptions: Object.entries(entityDependencyMap).map(([value, dep]) => ({
-                    value,
-                    label: getDisplayNameString(dep.displayName, intl, value),
-                })),
-                renderCell: ({ row }) => (
-                    <Chip label={entityDependencyMap[row.targetGraphqlObjectType]?.displayName ?? row.targetGraphqlObjectType} />
-                ),
-            },
-            {
-                field: "visible",
-                headerName: intl.formatMessage({ id: "dextinity.dependencies.dataGrid.visible", defaultMessage: "Visible" }),
-                type: "boolean",
-                visible: false,
-                sortBy: "visible",
-            },
-            ...(shouldShowScopeColumn
-                ? [
-                      {
-                          field: "scope",
-                          headerName: intl.formatMessage({ id: "dextinity.dependencies.dataGrid.scope", defaultMessage: "Scope" }),
-                          width: 160,
-                          filterable: false,
-                          sortable: false,
-                          valueGetter: (params, row) => (row.scope ? getContentScopeLabel({ scope: row.scope, values: contentScope.values }) : null),
-                      } satisfies GridColDef<DependencyItem>,
-                  ]
-                : []),
-            {
-                field: "actions",
-                type: "actions",
-                headerName: "",
-                filterable: false,
-                sortable: false,
-                renderCell: ({ row }) => (
-                    <DependencyActions
-                        graphqlObjectType={row.targetGraphqlObjectType}
-                        id={row.id}
-                        rootColumnName={row.rootColumnName}
-                        jsonPath={row.jsonPath}
-                        scope={row.scope ?? undefined}
-                    />
-                ),
-            },
-        ],
-        [intl, entityDependencyMap, shouldShowScopeColumn, contentScope.values],
-    );
-
-    const { filter: gqlFilter } = muiGridFilterToGql(columns, dataGridProps.filterModel);
-    const sort = muiGridSortToGql(dataGridProps.sortModel, columns);
-
-    const { data, loading, error, refetch } = useQuery<DependenciesListQuery, QueryVariables>(query, {
-        variables: {
-            offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
-            limit: dataGridProps.paginationModel.pageSize,
-            filter: gqlFilter,
-            sort,
-            ...variables,
-        },
-    });
-
-    if (error) {
-        throw error;
-    }
-
-    const rowCount = useBufferedRowCount(data?.item.dependencies?.totalCount);
-    const rows =
-        data?.item.dependencies?.nodes.map((node) => {
-            return {
-                ...node,
-                id: node.targetId,
-            };
-        }) ?? [];
-
     return (
-        <>
-            <DataGrid
-                {...dataGridProps}
-                rows={rows}
-                rowCount={rowCount}
-                columns={columns}
-                loading={loading}
-                getRowId={(row) => {
-                    return `${row.id}_${row.rootColumnName}_${row.jsonPath}`;
-                }}
-                slots={{
-                    toolbar: DependenciesListGridToolbar as GridSlotsComponent["toolbar"],
-                }}
-                slotProps={{
-                    toolbar: { refetch } as DependenciesListGridToolbarProps,
-                }}
-                showToolbar
-            />
-            <Alert
-                title={<FormattedMessage id="dextinity.dependencies.dependencies.info.title" defaultMessage="What are dependencies?" />}
-                sx={{ marginTop: 4 }}
-            >
-                <FormattedMessage
-                    id="dextinity.dependencies.dependencies.info.content"
-                    defaultMessage="Dependencies are all items that this content references or uses — such as linked pages, embedded files, or other content. Use this list to review what this item depends on."
-                />
-            </Alert>
-        </>
+        <DependencyList
+            query={query}
+            variables={variables}
+            listKey="dependencies"
+            typeFilterField="targetGraphqlObjectType"
+            getPage={(data) =>
+                data.item.dependencies && {
+                    totalCount: data.item.dependencies.totalCount,
+                    nodes: data.item.dependencies.nodes.map((node) => ({
+                        rowId: `${node.targetId}_${node.rootColumnName}_${node.jsonPath}`,
+                        id: node.targetId,
+                        graphqlObjectType: node.targetGraphqlObjectType,
+                        rootColumnName: node.rootColumnName,
+                        jsonPath: node.jsonPath,
+                        scope: node.scope ?? undefined,
+                        name: node.name,
+                        secondaryInformation: node.secondaryInformation,
+                        visible: node.visible,
+                    })),
+                }
+            }
+            labels={{
+                list: intl.formatMessage({ id: "dextinity.dependencies.dependencies.list", defaultMessage: "Dependencies" }),
+                emptyTitle: intl.formatMessage({ id: "dextinity.dependencies.dependencies.empty", defaultMessage: "No dependencies" }),
+                emptyDescription: intl.formatMessage({
+                    id: "dextinity.dependencies.dependencies.emptyDescription",
+                    defaultMessage: "This item doesn't link to or embed other pages, files or content.",
+                }),
+                infoTitle: intl.formatMessage({
+                    id: "dextinity.dependencies.dependencies.info.title",
+                    defaultMessage: "What are dependencies?",
+                }),
+                infoDescription: intl.formatMessage({
+                    id: "dextinity.dependencies.dependencies.info.content",
+                    defaultMessage:
+                        "Dependencies are all items that this content references or uses — such as linked pages, embedded files, or other content. Use this list to review what this item depends on.",
+                }),
+            }}
+        />
     );
 };

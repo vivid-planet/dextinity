@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type FormEvent, useId, useRef, useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { expectPopupStaysOpen } from "../../../storybook/expectPopupStaysOpen";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Input } from "../../input/Input";
@@ -209,8 +210,8 @@ export const NotDismissible: Story = {
         const dialog = await screen.findByRole("dialog");
         await expect(screen.getByRole("button", { name: "Close" })).toBeDisabled();
         await userEvent.keyboard("{Escape}");
+        await expectPopupStaysOpen(dialog);
         await expect(args.onOpenChange).not.toHaveBeenCalled();
-        await expect(dialog).toBeInTheDocument();
     },
 };
 
@@ -269,7 +270,8 @@ export const WithFormActions: Story = {
         await userEvent.click(screen.getByRole("button", { name: "Create" }));
         await waitFor(() => expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled());
         await userEvent.keyboard("{Escape}");
-        await expect(dialog).toBeInTheDocument();
+        await expectPopupStaysOpen(dialog);
+        await expect(args.onOpenChange).not.toHaveBeenCalled();
         await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false), { timeout: 3000 });
     },
 };

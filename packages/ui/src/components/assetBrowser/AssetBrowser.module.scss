@@ -1,5 +1,7 @@
 .root {
+    position: relative;
     display: grid;
+    grid-template-rows: minmax(0, 1fr);
     grid-template-columns: var(--dextinity-asset-browser-sidebar-width) minmax(0, 1fr);
     block-size: var(--dextinity-asset-browser-height);
     overflow: hidden;
@@ -11,7 +13,19 @@
     font-size: 13px;
 }
 
+// A width remembered on a wide screen must not squeeze the content on a narrow one
+.root[data-resizable] {
+    grid-template-columns: minmax(0, min(var(--dextinity-asset-browser-sidebar-width), calc(100% - 320px))) minmax(0, 1fr);
+}
+
+.root[data-resizing] {
+    cursor: col-resize;
+    user-select: none;
+}
+
 .sidebar {
+    grid-row: 1;
+    grid-column: 1;
     min-block-size: 0;
     padding: 14px var(--dextinity-space-2);
     overflow-y: auto;
@@ -26,7 +40,41 @@
     }
 }
 
+.resizeHandle {
+    position: relative;
+    z-index: 1;
+    grid-row: 1;
+    grid-column: 1;
+    justify-self: end;
+    inline-size: var(--dextinity-asset-browser-resize-handle-size);
+    margin-inline-end: calc(var(--dextinity-asset-browser-resize-handle-size) / -2);
+    cursor: col-resize;
+    outline: none;
+    touch-action: none;
+
+    &::after {
+        position: absolute;
+        inset-block: 0;
+        inset-inline-start: calc(50% - var(--dextinity-asset-browser-resize-line-width) / 2);
+        inline-size: var(--dextinity-asset-browser-resize-line-width);
+        background: transparent;
+        content: "";
+        transition: background-color var(--dextinity-motion-duration-short);
+    }
+
+    &:hover::after,
+    .root[data-resizing] > &::after {
+        background: var(--dextinity-asset-browser-resize-line-color);
+    }
+
+    &:focus-visible::after {
+        background: var(--dextinity-color-focus);
+    }
+}
+
 .main {
+    grid-row: 1;
+    grid-column: 2;
     display: flex;
     flex-direction: column;
     min-block-size: 0;

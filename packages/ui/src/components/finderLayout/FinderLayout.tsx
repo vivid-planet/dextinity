@@ -21,7 +21,8 @@ export interface FinderLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, 
     header: ReactNode;
     /**
      * The finder, e.g. an `AssetBrowser` with its sidebar of places and folders, toolbar, views, and path bar. It fills the window, which
-     * takes the height of the viewport below the header.
+     * takes the height of the viewport below the header. Let users resize the sidebar with the finder's own width props, e.g.
+     * `AssetBrowser`'s `sidebarWidth`, and remember the width per user.
      */
     children: ReactNode;
     /** Added alongside the component's own classes. */

@@ -1,8 +1,10 @@
+import { SegmentedControlField } from "@dextinity/ui-react-final-form";
 import { styled } from "@mui/material/styles";
 import { type ReactNode, useId } from "react";
-import { useField } from "react-final-form";
+import { useIntl } from "react-intl";
 
-import { ColumnsSelect } from "./ColumnsSelect";
+import { messageText } from "../../form/messageText";
+import { useColumnsSelectOptions } from "./useColumnsSelectOptions";
 
 export interface ColumnsSelectFieldProps {
     /** The field's path in the form values. The field holds the number of columns. */
@@ -16,13 +18,21 @@ export interface ColumnsSelectFieldProps {
  * Chooses the number of columns of a columns block in a React Final Form form.
  */
 export function ColumnsSelectField({ name, label, columns }: ColumnsSelectFieldProps) {
+    const intl = useIntl();
     const labelId = useId();
-    const { input } = useField<number>(name);
+    const options = useColumnsSelectOptions(columns);
 
     return (
         <Root>
             <Label id={labelId}>{label}</Label>
-            <ColumnsSelect columns={columns} value={input.value} onChange={input.onChange} aria-labelledby={labelId} />
+            <SegmentedControlField<string, number>
+                name={name}
+                aria-label={messageText(intl, label) ?? intl.formatMessage({ id: "dextinity.blocks.columns.columns", defaultMessage: "Columns" })}
+                aria-labelledby={labelId}
+                options={options}
+                format={(value) => (value === undefined ? "" : String(value))}
+                parse={(value) => Number(value)}
+            />
         </Root>
     );
 }

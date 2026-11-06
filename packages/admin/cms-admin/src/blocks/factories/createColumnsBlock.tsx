@@ -1,4 +1,5 @@
-import { Field, StackPage, StackPageTitle, StackSwitch, StackSwitchApiContext } from "@dextinity/admin";
+import { StackPage, StackPageTitle, StackSwitch, StackSwitchApiContext } from "@dextinity/admin";
+import { styled } from "@mui/material/styles";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { FormattedMessage, type IntlShape, type MessageDescriptor, useIntl } from "react-intl";
 import { v4 as uuid } from "uuid";
@@ -20,8 +21,8 @@ import {
 } from "../types";
 import { resolveNewState } from "../utils";
 import { parallelAsyncEvery } from "../utils/parallelAsyncEvery";
-import { FinalFormColumnsSelect } from "./columnsBlock/FinalFormColumnsSelect";
-import { FinalFormLayoutSelect } from "./columnsBlock/FinalFormLayoutSelect";
+import { ColumnsSelectField } from "./columnsBlock/ColumnsSelectField";
+import { LayoutSelectField } from "./columnsBlock/LayoutSelectField";
 import type { ListBlockItem, ListBlockState } from "./createListBlock";
 import { createUseAdminComponent as createUseListBlockAdminComponent } from "./listBlock/createUseAdminComponent";
 
@@ -265,20 +266,18 @@ export function createColumnsBlock<T extends BlockInterface>(
                                 }}
                                 initialValues={{ layout: state.layout, columns: state.layout.columns }}
                             >
-                                <Field
-                                    name="columns"
-                                    label={<FormattedMessage id="dextinity.blocks.columns.columns" defaultMessage="Columns" />}
-                                    component={FinalFormColumnsSelect}
-                                    columns={groupLayoutsByColumnsApi.columns}
-                                    fullWidth
-                                />
-                                <Field
-                                    name="layout"
-                                    label={<FormattedMessage id="dextinity.blocks.columns.layout" defaultMessage="Layout" />}
-                                    component={FinalFormLayoutSelect}
-                                    layouts={groupLayoutsByColumnsApi.getLayouts(state.layout.columns)}
-                                    fullWidth
-                                />
+                                <Fields>
+                                    <ColumnsSelectField
+                                        name="columns"
+                                        label={<FormattedMessage id="dextinity.blocks.columns.columns" defaultMessage="Columns" />}
+                                        columns={groupLayoutsByColumnsApi.columns}
+                                    />
+                                    <LayoutSelectField
+                                        name="layout"
+                                        label={<FormattedMessage id="dextinity.blocks.columns.layout" defaultMessage="Layout" />}
+                                        layouts={groupLayoutsByColumnsApi.getLayouts(state.layout.columns)}
+                                    />
+                                </Fields>
                             </BlocksFinalForm>
                             <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.columns.items" defaultMessage="Items" />}>
                                 <StackSwitchApiContext.Consumer>
@@ -449,3 +448,10 @@ function createGroupLayoutsByColumnsApi(layouts: ColumnsBlockLayout[]): GroupedL
         },
     };
 }
+
+const Fields = styled("div")`
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+    padding-block-end: var(--dextinity-space-4);
+`;

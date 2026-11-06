@@ -50,6 +50,7 @@
         "@dextinity/admin": "workspace:*",
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/admin-rte": "workspace:*",
+        "@dextinity/ui": "workspace:*",
         "@tiptap/core": "^3.33.0",
         "@tiptap/extension-subscript": "^3.33.0",
         "@tiptap/extension-superscript": "^3.33.0",
@@ -86,6 +87,7 @@
         "@apollo/client": "^3.14.1",
         "@babel/cli": "^8.0.6",
         "@babel/core": "^8.0.10",
+        "@base-ui/react": "^1.5.0",
         "@dextinity/admin-babel-preset": "workspace:*",
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
@@ -150,6 +152,7 @@
     },
     "peerDependencies": {
         "@apollo/client": "^3.7.0",
+        "@base-ui/react": "^1.5.0",
         "@emotion/react": "^11.5.0",
         "@emotion/styled": "^11.3.0",
         "@mui/material": "^9.0.0",

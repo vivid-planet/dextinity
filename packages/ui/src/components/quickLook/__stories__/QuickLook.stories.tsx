@@ -108,7 +108,9 @@ export const Default: Story = {
         const tile = canvas.getByRole("button", { name: "team.jpg" });
         tile.focus();
         await userEvent.keyboard(" ");
-        await screen.findByRole("dialog", { name: "team.jpg" });
+        const dialog = await screen.findByRole("dialog", { name: "team.jpg" });
+        // The arrow keys belong to the open quick look, which takes the focus a frame after it opens
+        await waitFor(() => expect(dialog).toHaveFocus());
         await userEvent.keyboard("{ArrowRight}");
         await waitFor(() => expect(args.onIndexChange).toHaveBeenLastCalledWith(1));
         await expect(await screen.findByRole("dialog", { name: "office.jpg" })).toBeInTheDocument();

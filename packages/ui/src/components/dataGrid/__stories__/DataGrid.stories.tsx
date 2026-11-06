@@ -461,7 +461,8 @@ export const InlineEditing: Story = {
         await waitFor(() => expect(closestOf(secondRow.getByText("Remote"), "td")).toHaveFocus());
 
         await userEvent.keyboard("{Enter}");
-        await screen.findByRole("option", { name: "Remote" });
+        // The select moves the focus to the chosen option a frame after opening; until then, Tab would leave the cell instead
+        await waitFor(() => expect(screen.getByRole("option", { name: "Remote" })).toHaveFocus());
         await userEvent.keyboard("{Tab}");
         const applicationsEditor = within(canvasElement).getByRole("textbox", { name: "Applications" });
         await waitFor(() => expect(applicationsEditor).toHaveFocus());

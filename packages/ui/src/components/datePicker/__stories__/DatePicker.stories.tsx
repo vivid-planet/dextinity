@@ -99,11 +99,13 @@ export const Keyboard: Story = {
         await waitFor(() => expect(screen.getByRole("button", { name: "Saturday, 20 December 2025" })).toHaveFocus());
         await userEvent.keyboard("{Enter}");
         await waitFor(() => expect(args.onChange).toHaveBeenCalledWith("2025-12-20"));
+        // The calendar hands the focus back to the input once it has closed; Alt + Arrow Down only opens it from there
+        await waitFor(() => expect(input).toHaveFocus());
         await userEvent.keyboard("{Alt>}{ArrowDown}{/Alt}");
         await screen.findByRole("grid");
         await userEvent.keyboard("{Escape}");
         await waitFor(() => expect(screen.queryByRole("grid")).not.toBeInTheDocument());
-        await expect(input).toHaveFocus();
+        await waitFor(() => expect(input).toHaveFocus());
     },
 };
 

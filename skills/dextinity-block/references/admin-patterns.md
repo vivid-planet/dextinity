@@ -57,9 +57,9 @@ Each key in `blocks` maps to a property from the API. The value is a configurati
 
 ### `label` vs `title` — mutually exclusive
 
-- Field helpers (`createCompositeBlockTextField`, `createCompositeBlockSelectField`, `createCompositeBlockSwitchField`) accept a `label` prop that renders inline with the field.
-- The block configuration entry has a `title` prop that renders as a section heading above the block.
-- **Never set both.** When the helper has a `label`, omit `title` on the entry. When the helper has no `label`, provide `title` on the entry.
+- Field helpers (`createCompositeBlockTextField`, `createCompositeBlockSelectField`, `createCompositeBlockSwitchField`) require a `label`, which renders with the field. Their entries never get a `title`.
+- The block configuration entry has a `title` prop that renders as a section heading above the block. Use it for blocks without their own label, e.g. images or rich text.
+- **Never set both.**
 
 ```tsx
 // Correct: label on the helper, no title on the entry
@@ -69,16 +69,16 @@ title: {
     }),
 },
 
-// Correct: no label on the helper, title on the entry
+// Correct: a block without a label, title on the entry
 image: {
     block: DamImageBlock,
     title: <FormattedMessage id="myBlock.image" defaultMessage="Image" />,
 },
 ```
 
-### `fullWidth` default
+### `fullWidth`
 
-`createCompositeBlockTextField`, `createCompositeBlockSelectField`, and `createCompositeBlockSwitchField` all default `fullWidth` to `true`. Do not pass it explicitly unless overriding to `false`.
+The fields of `createCompositeBlockTextField`, `createCompositeBlockSelectField`, and `createCompositeBlockSwitchField` always fill their container. Don't pass `fullWidth`; it's deprecated and has no effect.
 
 ---
 

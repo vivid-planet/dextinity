@@ -1,6 +1,6 @@
 import { useApolloClient } from "@apollo/client";
 import { Icon, IconButton, Menu, MenuItem, type MenuItemProps } from "@dextinity/ui";
-import { isValidElement, type ReactElement, useState } from "react";
+import { Fragment, isValidElement, type ReactElement, useState } from "react";
 import { useIntl } from "react-intl";
 
 import { useContentScope } from "../../contentScope/Provider";
@@ -50,12 +50,12 @@ export const FileFieldMenu = ({ fileId, menuActions }: FileFieldMenuProps) => {
                     }}
                 />
             )}
-            {menuActions?.map((item) => {
+            {menuActions?.map((item, index) => {
                 if (!item) {
                     return null;
                 }
                 if (isValidElement(item)) {
-                    return item;
+                    return <Fragment key={item.key ?? index}>{item}</Fragment>;
                 }
                 const actionItem = item as ActionItem;
                 return <MenuItem key={actionItem.label} {...actionItem} />;

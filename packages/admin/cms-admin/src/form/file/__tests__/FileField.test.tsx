@@ -1,4 +1,5 @@
 import { ApolloClient, ApolloLink, ApolloProvider, InMemoryCache, Observable } from "@apollo/client";
+import { MenuItem } from "@dextinity/ui";
 import { useEffect } from "react";
 import { Field, Form } from "react-final-form";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "test-utils";
@@ -136,6 +137,19 @@ describe("FileField", () => {
         fireEvent.click(await screen.findByRole("menuitem", { name: "Crop image" }));
 
         expect(onCrop).toHaveBeenCalled();
+    });
+
+    it("offers menu actions given as elements", async () => {
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+        const onCrop = vi.fn();
+        render(<TestForm initialValue={lake} onValueChange={vi.fn()} menuActions={[<MenuItem label="Crop image" onClick={onCrop} />]} />);
+
+        fireEvent.click(screen.getByRole("button", { name: "More actions" }));
+        fireEvent.click(await screen.findByRole("menuitem", { name: "Crop image" }));
+
+        expect(onCrop).toHaveBeenCalled();
+        expect(consoleError.mock.calls.flat().join(" ")).not.toContain('unique "key"');
+        consoleError.mockRestore();
     });
 
     it("has no menu without actions or a DAM dependency", () => {

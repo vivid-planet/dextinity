@@ -105,6 +105,7 @@ export { TopBar, type TopBarBack, type TopBarLabels, type TopBarOwnerState, type
 export { type TreeNode, TreeView, type TreeViewLabels, type TreeViewMove } from "./components/treeView/TreeView";
 export { type TreeViewOwnerState, type TreeViewProps, defaultTreeViewLabels } from "./components/treeView/TreeView";
 export { Typography, type TypographyOwnerState, type TypographyProps } from "./components/typography/Typography";
+export { type UndoableAction, type UndoToastLabels, type UndoToastOptions, useUndoToast } from "./components/undoToast/useUndoToast";
 export { UserMenu, type UserMenuLabels, type UserMenuOwnerState, type UserMenuProps } from "./components/userMenu/UserMenu";
 export type { ThemeBrand, ThemeColorScheme, ThemeDensity } from "./theme/types";
 export { useThemePortalContainer } from "./utils/themePortalContainer";

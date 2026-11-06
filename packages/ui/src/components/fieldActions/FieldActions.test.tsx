@@ -25,6 +25,26 @@ describe("FieldActions", () => {
         }
     });
 
+    it("disables the other action while one is running, as it would be ignored", async () => {
+        let finish: () => void = () => undefined;
+        const onTranslate = vi.fn(() => new Promise<void>((resolve) => (finish = resolve)));
+        render(
+            <Input
+                name="title"
+                label="Title"
+                value="Vorteile"
+                onChange={vi.fn()}
+                actions={<FieldActions translate aiAssist onTranslate={onTranslate} onAiSuggest={vi.fn(async () => "Benefits")} />}
+            />,
+        );
+
+        await userEvent.click(screen.getByRole("button", { name: "Translate" }));
+
+        expect(screen.getByRole("button", { name: "Improve with AI" })).toHaveProperty("disabled", true);
+        await act(async () => finish());
+        await waitFor(() => expect(screen.getByRole("button", { name: "Improve with AI" })).toHaveProperty("disabled", false));
+    });
+
     it("translates with a single click without target locales and shows the field as loading while it runs", async () => {
         let finish: () => void = () => undefined;
         const onTranslate = vi.fn(() => new Promise<void>((resolve) => (finish = resolve)));

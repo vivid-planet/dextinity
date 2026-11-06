@@ -49,7 +49,7 @@ const meta = {
             <>
                 <MenuItem label="Image" icon={<Icon name="image" />} onClick={fn()} />
                 <MenuItem label="Table" icon={<Icon name="grid" />} onClick={fn()} />
-                <MenuItem label="Code" icon={<Icon name="code" />} onClick={fn()} />
+                <MenuItem label="Code" icon={<Icon name="html" />} onClick={fn()} />
             </>
         ),
     },

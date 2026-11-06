@@ -57,7 +57,7 @@ function Addresses() {
                                 options={countries}
                             />
                             <IconButton aria-label={`Remove address ${index + 1}`} disabled={fields.length === 1} onClick={() => remove(index)}>
-                                <Icon name="trash" />
+                                <Icon name="delete" />
                             </IconButton>
                         </div>
                     </div>

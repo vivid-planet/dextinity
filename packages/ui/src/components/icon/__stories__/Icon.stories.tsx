@@ -4,20 +4,24 @@ import { clsx } from "clsx";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import iconTokens from "../_tokens.scss?raw";
 import { Icon } from "../Icon";
-import { iconNames } from "../iconNames";
+import { defaultIconNames } from "../iconRegistry";
 import styles from "./Icon.stories.module.scss";
 
 const meta = {
     component: Icon,
-    title: "Foundations/Icons",
+    title: "Foundations/Icons/Icon",
     decorators: [themeDecorator],
     parameters: { tokens: iconTokens },
     args: {
-        name: "globe",
+        name: "favorite",
     },
     argTypes: {
-        name: { control: "select", options: iconNames },
+        name: {
+            control: "select",
+            options: Object.keys(defaultIconNames),
+        },
         size: { control: "radio", options: ["small", "default", "large"] },
+        "aria-label": { control: "text" },
         className: { control: false },
     },
 } satisfies Meta<typeof Icon>;
@@ -26,65 +30,95 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
-
 /**
- * The whole set: line width 1.5 on a 24px grid. The name is the prop value.
- *
  * **Rules**
  *
  * - Do: give icon buttons a tooltip and an accessible name.
- * - Do: keep one icon per meaning — the globe always means scope or global.
- * - Do: draw new icons on the 24px grid with the same line width.
+ * - Do: keep one icon per meaning — `domain` always means scope or global.
  * - Don't: use an icon as the only information for a status.
- * - Don't: mix filled and line icons.
  * - Don't: use emoji instead of icons.
  */
-export const Set: Story = {
-    render: () => (
-        <div className={styles.grid}>
-            {iconNames.map((name) => (
-                <div key={name} className={styles.cell}>
-                    <Icon name={name} size="large" />
-                    <code>{name}</code>
-                </div>
-            ))}
-        </div>
-    ),
+export const Default: Story = {};
+
+/**
+ * Give an icon an `aria-label` when nothing else, such as a text or the label of its button, gives its meaning.
+ */
+export const Label: Story = {
+    args: {
+        "aria-label": "Favorite",
+    },
 };
 
 /**
- * Icons inherit the text color. Next to text they center on the x-height. `small` (16px) in buttons, fields, and tables; `default`
- * (20px) in navigation and icon buttons; `large` (24px) in empty states and card headers.
+ * A colored icon keeps its own colors, for example a logo.
+ */
+export const ColoredIcon: Story = {
+    args: {
+        name: "youtube-filled-color",
+    },
+};
+
+/**
+ * Icons inherit the text color. `small` (16px) in buttons, fields, and tables; `default` (20px) in navigation; `large` (24px) in empty
+ * states and card headers. Without a size, an icon follows the surrounding component's `--dextinity-icon-size`.
  */
 export const Sizes: Story = {
-    render: () => (
+    render: (args) => (
         <div className={styles.row}>
-            <Icon name="folder" size="small" />
-            <Icon name="folder" size="default" />
-            <Icon name="folder" size="large" />
+            <Icon {...args} size="small" />
+            <Icon {...args} size="default" />
+            <Icon {...args} size="large" />
         </div>
     ),
 };
 
 /**
- * A soft fill (16%) behind the line, only in card headers and empty states. Off in high contrast.
+ * For any other size, set `width` and `height` in CSS, through `className`.
+ */
+export const CustomSize: Story = {
+    render: (args) => (
+        <>
+            <style>{`
+                .largeIcon {
+                    width: 32px;
+                    height: 32px;
+                }
+            `}</style>
+            <Icon {...args} className="largeIcon" />
+        </>
+    ),
+};
+
+/**
+ * Set `color` in CSS, on the icon or on its parent.
+ */
+export const Color: Story = {
+    render: (args) => (
+        <>
+            <style>{`
+                .blueText {
+                    color: royalblue;
+                }
+            `}</style>
+            <span className="blueText">
+                <Icon {...args} />
+            </span>
+        </>
+    ),
+};
+
+/**
+ * A soft fill (16%) behind the line, only in card headers and empty states. Off in high contrast. The fill is the variable
+ * `--dextinity-duotone-icon-<name>`; an icon without one shows only its line.
  */
 export const Duotone: Story = {
     render: () => (
         <div className={styles.row}>
-            {(["recent", "live", "warning", "inbox", "palette", "component"] as const).map((name) => (
+            {(["time", "online", "warning", "inbox", "palette", "blocks", "layout", "history"] as const).map((name) => (
                 <Icon key={name} name={name} size="large" duotone />
             ))}
         </div>
     ),
-};
-
-export const WithLabel: Story = {
-    args: {
-        name: "warning",
-        label: "Warning",
-    },
 };
 
 /**
@@ -92,10 +126,12 @@ export const WithLabel: Story = {
  * replaces some icons with square, heavier variants:
  *
  * ```css
- * [data-dextinity-brand="acme"] {
- *     --dextinity-icon-search: url("data:image/svg+xml,…");
+ * .acme {
+ *     --dextinity-icon-search: url("./icons/search.svg#icon");
  * }
  * ```
+ *
+ * See [Customize icon set](?path=/docs/foundations-icons-customize-icon-set--docs).
  */
 export const CustomIcons: Story = {
     render: () => (

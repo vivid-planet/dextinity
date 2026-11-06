@@ -32,14 +32,14 @@ function InRadioGroup({ children }: { children: ReactNode }) {
     return (
         <MenuRadioGroup value={value} onChange={setValue}>
             {children}
-            <MenuRadioItem value="light" label="Light" icon={<Icon name="sun" />} />
+            <MenuRadioItem value="light" label="Light" icon={<Icon name="light-mode" />} />
         </MenuRadioGroup>
     );
 }
 
 const iconOptions = {
-    Sun: <Icon name="sun" />,
-    Moon: <Icon name="moon" />,
+    Sun: <Icon name="light-mode" />,
+    Moon: <Icon name="dark-mode" />,
 };
 
 const meta = {
@@ -91,9 +91,9 @@ export const Default: Story = {
 };
 
 export const WithIcon: Story = {
-    args: { icon: <Icon name="moon" /> },
+    args: { icon: <Icon name="dark-mode" /> },
 };
 
 export const Disabled: Story = {
-    args: { icon: <Icon name="moon" />, disabled: true },
+    args: { icon: <Icon name="dark-mode" />, disabled: true },
 };

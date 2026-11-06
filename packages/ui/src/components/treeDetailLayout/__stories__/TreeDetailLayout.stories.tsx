@@ -85,7 +85,7 @@ function PageDetail({ node, published, onPublishedChange }: { node: TreeNode; pu
             <div className={styles.detail}>
                 <div className={styles.detailActions}>
                     <Button startIcon={<Icon name="edit" />}>Edit</Button>
-                    <Button variant="outlined" color="secondary" startIcon={<Icon name="external-link" />}>
+                    <Button variant="outlined" color="secondary" startIcon={<Icon name="open-new-tab" />}>
                         Open
                     </Button>
                 </div>
@@ -145,10 +145,10 @@ function PageTreePage() {
                         actions={
                             <>
                                 <IconButton aria-label="Expand all" variant="text" onClick={() => setExpandedIds(folderIds)}>
-                                    <Icon name="expand" />
+                                    <Icon name="maximize" />
                                 </IconButton>
                                 <IconButton aria-label="Collapse all" variant="text" onClick={() => setExpandedIds([])}>
-                                    <Icon name="collapse" />
+                                    <Icon name="minimize" />
                                 </IconButton>
                             </>
                         }

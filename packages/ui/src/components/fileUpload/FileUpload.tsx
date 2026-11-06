@@ -435,7 +435,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                             {file.thumbnailUrl != null ? (
                                 <img className={styles.thumbnail} src={file.thumbnailUrl} alt="" />
                             ) : (
-                                <Icon name="page" className={styles.fileIcon} />
+                                <Icon name="file" className={styles.fileIcon} />
                             )}
                             <span className={styles.details}>
                                 {renderName(file)}
@@ -451,7 +451,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                     ))}
                     {pending.map((entry) => (
                         <li key={entry.key} className={styles.file} data-status={entry.status}>
-                            <Icon name={entry.status === "uploading" ? "upload" : "alert"} className={styles.fileIcon} />
+                            <Icon name={entry.status === "uploading" ? "upload" : "error"} className={styles.fileIcon} />
                             <span className={styles.details}>
                                 {renderName(entry.file)}
                                 {entry.status === "uploading" ? (
@@ -470,7 +470,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                             <span className={styles.actions}>
                                 {entry.status === "failed" && !disabled && (
                                     <IconButton size="small" aria-label={labels.retry} onClick={() => retry(entry)}>
-                                        <Icon name="refresh" />
+                                        <Icon name="reload" />
                                     </IconButton>
                                 )}
                                 <IconButton

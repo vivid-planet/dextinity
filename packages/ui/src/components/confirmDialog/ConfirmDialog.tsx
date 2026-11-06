@@ -42,7 +42,7 @@ export interface ConfirmDialogProps {
     confirmLabel: string;
     /** Called when the confirming action is clicked. Close the dialog through `open` once the action is done. */
     onConfirm: () => void;
-    /** An icon before the confirming action's label, e.g. `<Icon name="trash" />`. */
+    /** An icon before the confirming action's label, e.g. `<Icon name="delete" />`. */
     confirmIcon?: ReactNode;
     /** A third option between Cancel and the confirming action, e.g. "Discard". */
     secondaryLabel?: string;

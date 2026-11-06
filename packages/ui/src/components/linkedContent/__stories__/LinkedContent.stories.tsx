@@ -9,7 +9,7 @@ import styles from "./LinkedContent.stories.module.scss";
 
 const iconOptions = {
     Blocks: <Icon name="blocks" />,
-    Page: <Icon name="page" />,
+    Page: <Icon name="file" />,
     Image: <Icon name="image" />,
     Folder: <Icon name="folder" />,
 };
@@ -72,7 +72,7 @@ export const List: Story = {
     render: (args) => (
         <div className={styles.list}>
             <LinkedContent {...args} />
-            <LinkedContent {...args} title="News" description="The 3 latest articles" icon={<Icon name="page" />} />
+            <LinkedContent {...args} title="News" description="The 3 latest articles" icon={<Icon name="file" />} />
             <LinkedContent {...args} title="Gallery" description="8 images from the folder Campus" icon={<Icon name="image" />} />
         </div>
     ),

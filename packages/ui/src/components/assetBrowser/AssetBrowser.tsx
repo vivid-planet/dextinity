@@ -962,8 +962,8 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                         options={[
                             { value: "icons", icon: <Icon name="grid" />, "aria-label": labels.icons },
                             { value: "list", icon: <Icon name="list" />, "aria-label": labels.list },
-                            { value: "columns", icon: <Icon name="columns" />, "aria-label": labels.columns },
-                            { value: "gallery", icon: <Icon name="gallery" />, "aria-label": labels.gallery },
+                            { value: "columns", icon: <Icon name="columns-3" />, "aria-label": labels.columns },
+                            { value: "gallery", icon: <Icon name="assets" />, "aria-label": labels.gallery },
                         ]}
                     />
                 </div>

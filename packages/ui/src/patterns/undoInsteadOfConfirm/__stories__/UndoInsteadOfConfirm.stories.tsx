@@ -28,7 +28,7 @@ function UndoExample() {
                     <Button
                         variant="outlined"
                         color="error"
-                        startIcon={<Icon name="trash" />}
+                        startIcon={<Icon name="delete" />}
                         disabled={deleted}
                         onClick={() => setDeleteDialogOpen(true)}
                     >
@@ -46,7 +46,7 @@ function UndoExample() {
                                 message: "“Benefits” archived",
                                 icon: <Icon name="archive" />,
                                 undoneMessage: "“Benefits” restored",
-                                undoneIcon: <Icon name="refresh" />,
+                                undoneIcon: <Icon name="reload" />,
                             })
                         }
                     >
@@ -56,7 +56,7 @@ function UndoExample() {
                 <Button
                     variant="outlined"
                     color="error"
-                    startIcon={<Icon name="trash" />}
+                    startIcon={<Icon name="delete" />}
                     onClick={() => block("“logo.svg” is still in use · nothing deleted")}
                 >
                     Delete “logo.svg”
@@ -69,7 +69,7 @@ function UndoExample() {
                 title="Delete “Benefits” permanently?"
                 description="The page and its content are gone for good. This can't be undone."
                 confirmLabel="Delete permanently"
-                confirmIcon={<Icon name="trash" />}
+                confirmIcon={<Icon name="delete" />}
                 onConfirm={() => {
                     setDeleted(true);
                     setDeleteDialogOpen(false);

@@ -22,7 +22,7 @@ const rowMenuItems = (
         <MenuItem label="Duplicate" icon={<Icon name="copy" />} shortcut="⌘D" onClick={fn()} />
         <MenuSeparator />
         <MenuItem label="Archive" icon={<Icon name="archive" />} onClick={fn()} />
-        <MenuItem label="Delete" icon={<Icon name="trash" />} shortcut="⌫" color="error" onClick={fn()} />
+        <MenuItem label="Delete" icon={<Icon name="delete" />} shortcut="⌫" color="error" onClick={fn()} />
     </MenuGroup>
 );
 
@@ -67,7 +67,7 @@ const meta = {
     args: {
         trigger: (
             <IconButton aria-label="More actions" variant="outlined">
-                <Icon name="more" />
+                <Icon name="more-horizontal" />
             </IconButton>
         ),
         children: rowMenuItems,
@@ -127,9 +127,9 @@ function ThemeItems() {
     return (
         <MenuGroup label="Theme">
             <MenuRadioGroup value={value} onChange={setValue}>
-                <MenuRadioItem value="light" label="Light" icon={<Icon name="sun" />} />
-                <MenuRadioItem value="dark" label="Dark" icon={<Icon name="moon" />} />
-                <MenuRadioItem value="high-contrast" label="High contrast" icon={<Icon name="contrast" />} />
+                <MenuRadioItem value="light" label="Light" icon={<Icon name="light-mode" />} />
+                <MenuRadioItem value="dark" label="Dark" icon={<Icon name="dark-mode" />} />
+                <MenuRadioItem value="high-contrast" label="High contrast" icon={<Icon name="high-contrast-mode" />} />
             </MenuRadioGroup>
         </MenuGroup>
     );
@@ -173,7 +173,7 @@ export const WithSubmenu: Story = {
                 <MoveToSubmenu />
                 <MenuItem label="Download" icon={<Icon name="download" />} onClick={fn()} />
                 <MenuSeparator />
-                <MenuItem label="Delete" icon={<Icon name="trash" />} shortcut="⌘⌫" color="error" onClick={fn()} />
+                <MenuItem label="Delete" icon={<Icon name="delete" />} shortcut="⌘⌫" color="error" onClick={fn()} />
             </MenuGroup>
         ),
     },
@@ -195,7 +195,7 @@ export const DisabledItem: Story = {
         children: (
             <>
                 <MenuItem label="Edit" icon={<Icon name="edit" />} onClick={fn()} />
-                <MenuItem label="Publish" icon={<Icon name="live" />} disabled onClick={fn()} />
+                <MenuItem label="Publish" icon={<Icon name="online" />} disabled onClick={fn()} />
             </>
         ),
     },

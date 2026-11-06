@@ -31,7 +31,7 @@ const meta = {
                     <Icon name="list" />
                 </ToolbarButton>
                 <ToolbarButton aria-label="Numbered list" onClick={fn()}>
-                    <Icon name="list-ordered" />
+                    <Icon name="rte-ol" />
                 </ToolbarButton>
             </>
         ),

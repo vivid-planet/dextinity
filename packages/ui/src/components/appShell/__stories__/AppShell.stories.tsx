@@ -132,14 +132,14 @@ function ControlledAppShell(props: AppShellProps) {
                             {
                                 id: "ai",
                                 label: "Toggle AI assistant",
-                                icon: <Icon name="sparkle" />,
+                                icon: <Icon name="artificial-intelligence" />,
                                 shortcut: "⌘J",
                                 onSelect: () => changeAiOpen(!aiOpen),
                             },
                             {
                                 id: "nav",
                                 label: "Collapse navigation",
-                                icon: <Icon name="sidebar-close" />,
+                                icon: <Icon name="pin-left" />,
                                 shortcut: "⌘\\",
                                 onSelect: () => setNavCollapsed(!navCollapsed),
                             },

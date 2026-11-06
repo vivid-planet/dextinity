@@ -22,6 +22,7 @@
         --dextinity-icon-audio: url("./svg/audio.svg#icon");
         --dextinity-icon-automation: url("./svg/automation.svg#icon");
         --dextinity-icon-backward: url("./svg/backward.svg#icon");
+        --dextinity-icon-blocks: url("./svg/blocks.svg#icon");
         --dextinity-icon-book: url("./svg/book.svg#icon");
         --dextinity-icon-branch: url("./svg/branch.svg#icon");
         --dextinity-icon-button: url("./svg/button.svg#icon");
@@ -120,6 +121,7 @@
         --dextinity-icon-hamburger-open: url("./svg/hamburger-open.svg#icon");
         --dextinity-icon-help: url("./svg/help.svg#icon");
         --dextinity-icon-high-contrast-mode: url("./svg/high-contrast-mode.svg#icon");
+        --dextinity-icon-history: url("./svg/history.svg#icon");
         --dextinity-icon-home: url("./svg/home.svg#icon");
         --dextinity-icon-home-not-menu: url("./svg/home-not-menu.svg#icon");
         --dextinity-icon-hourglass: url("./svg/hourglass.svg#icon");
@@ -129,6 +131,7 @@
         --dextinity-icon-image-raster: url("./svg/image-raster.svg#icon");
         --dextinity-icon-image-vector: url("./svg/image-vector.svg#icon");
         --dextinity-icon-impersonate-user: url("./svg/impersonate-user.svg#icon");
+        --dextinity-icon-inbox: url("./svg/inbox.svg#icon");
         --dextinity-icon-info: url("./svg/info.svg#icon");
         --dextinity-icon-info-filled: url("./svg/info-filled.svg#icon");
         --dextinity-icon-invisible: url("./svg/invisible.svg#icon");
@@ -137,7 +140,9 @@
         --dextinity-icon-items-grouping: url("./svg/items-grouping.svg#icon");
         --dextinity-icon-json: url("./svg/json.svg#icon");
         --dextinity-icon-junction: url("./svg/junction.svg#icon");
+        --dextinity-icon-keyboard: url("./svg/keyboard.svg#icon");
         --dextinity-icon-language: url("./svg/language.svg#icon");
+        --dextinity-icon-layout: url("./svg/layout.svg#icon");
         --dextinity-icon-leader: url("./svg/leader.svg#icon");
         --dextinity-icon-legal-paragraph: url("./svg/legal-paragraph.svg#icon");
         --dextinity-icon-letter: url("./svg/letter.svg#icon");
@@ -179,6 +184,7 @@
         --dextinity-icon-open-new-tab: url("./svg/open-new-tab.svg#icon");
         --dextinity-icon-open-new-tab-alternative: url("./svg/open-new-tab-alternative.svg#icon");
         --dextinity-icon-page-tree: url("./svg/page-tree.svg#icon");
+        --dextinity-icon-palette: url("./svg/palette.svg#icon");
         --dextinity-icon-paste: url("./svg/paste.svg#icon");
         --dextinity-icon-pause: url("./svg/pause.svg#icon");
         --dextinity-icon-pdf: url("./svg/pdf.svg#icon");
@@ -205,6 +211,7 @@
         --dextinity-icon-rte-clear-format: url("./svg/rte-clear-format.svg#icon");
         --dextinity-icon-rte-clear-link: url("./svg/rte-clear-link.svg#icon");
         --dextinity-icon-rte-emoji: url("./svg/rte-emoji.svg#icon");
+        --dextinity-icon-rte-heading: url("./svg/rte-heading.svg#icon");
         --dextinity-icon-rte-highlight: url("./svg/rte-highlight.svg#icon");
         --dextinity-icon-rte-indent-decrease: url("./svg/rte-indent-decrease.svg#icon");
         --dextinity-icon-rte-indent-increase: url("./svg/rte-indent-increase.svg#icon");
@@ -282,5 +289,15 @@
         --dextinity-icon-youtube-filled: url("./svg/youtube-filled.svg#icon");
         --dextinity-colored-icon-youtube-filled-color: url("./svg/youtube-filled-color.svg#icon");
         --dextinity-icon-zip-file: url("./svg/zip-file.svg#icon");
+
+        /* The soft fill that `Icon` with `duotone` shows behind the line */
+        --dextinity-duotone-icon-blocks: url("./svg/duotone/blocks.svg#icon");
+        --dextinity-duotone-icon-history: url("./svg/duotone/history.svg#icon");
+        --dextinity-duotone-icon-inbox: url("./svg/duotone/inbox.svg#icon");
+        --dextinity-duotone-icon-layout: url("./svg/duotone/layout.svg#icon");
+        --dextinity-duotone-icon-online: url("./svg/duotone/online.svg#icon");
+        --dextinity-duotone-icon-palette: url("./svg/duotone/palette.svg#icon");
+        --dextinity-duotone-icon-time: url("./svg/duotone/time.svg#icon");
+        --dextinity-duotone-icon-warning: url("./svg/duotone/warning.svg#icon");
     }
 }

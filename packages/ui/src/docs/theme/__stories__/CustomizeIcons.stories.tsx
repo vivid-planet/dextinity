@@ -6,7 +6,7 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import styles from "./replaceIconsInPart.module.scss";
 
 const meta = {
-    title: "Theme/Customize icons",
+    title: "Foundations/Icons/Customize icon set",
     tags: ["!dev", "!autodocs", "!manifest"],
     decorators: [themeDecorator],
 } satisfies Meta;

@@ -256,7 +256,7 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                             onDragStart={listItem.onDragStart}
                             onDragEnd={listItem.onDragEnd}
                         >
-                            <Icon name="grip" />
+                            <Icon name="drag-indicator" />
                         </button>
                     </Tooltip>
                 )}
@@ -285,7 +285,7 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                         aria-pressed={!ownerState.visible}
                         onClick={() => onVisibleChange(!ownerState.visible)}
                     >
-                        <Icon name={ownerState.visible ? "eye" : "eye-off"} />
+                        <Icon name={ownerState.visible ? "visible" : "invisible"} />
                     </IconButton>
                 )}
                 {actions != null && <span className={styles.actions}>{actions}</span>}

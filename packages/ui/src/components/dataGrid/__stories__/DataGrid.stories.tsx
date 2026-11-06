@@ -6,7 +6,7 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { EmptyState } from "../../emptyState/EmptyState";
 import { Icon } from "../../icon/Icon";
-import type { IconName } from "../../icon/iconNames";
+import type { IconName } from "../../icon/iconRegistry";
 import { IconButton } from "../../iconButton/IconButton";
 import { Menu } from "../../menu/Menu";
 import { MenuItem } from "../../menu/MenuItem";
@@ -58,14 +58,14 @@ function RowMenu({ job }: { job: Job }) {
             placement="bottom-end"
             trigger={
                 <IconButton aria-label={`Actions for ${job.title}`} size="small" variant="text">
-                    <Icon name="more" />
+                    <Icon name="more-horizontal" />
                 </IconButton>
             }
         >
             <MenuItem label="Edit" icon={<Icon name="edit" />} />
             <MenuItem label="Duplicate" icon={<Icon name="copy" />} />
             <MenuSeparator />
-            <MenuItem label="Delete" icon={<Icon name="trash" />} color="error" />
+            <MenuItem label="Delete" icon={<Icon name="delete" />} color="error" />
         </Menu>
     );
 }
@@ -230,7 +230,7 @@ export const Default: Story = {
         bulkActions: [
             { label: "Publish", icon: <Icon name="check" />, onClick: fn() },
             { label: "Archive", icon: <Icon name="archive" />, onClick: fn() },
-            { label: "Delete", icon: <Icon name="trash" />, color: "error", onClick: fn() },
+            { label: "Delete", icon: <Icon name="delete" />, color: "error", onClick: fn() },
         ],
         pagination: { page: 1, pageSize: 10, total: 47, onPageChange: fn() },
     },
@@ -519,7 +519,7 @@ function ExportToolbar(args: DataGridProps<Job>) {
                     columnVisibility={columnVisibility}
                     onColumnVisibilityChange={setColumnVisibility}
                     trigger={
-                        <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="columns" />}>
+                        <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="columns-3" />}>
                             Columns
                         </Button>
                     }
@@ -688,7 +688,7 @@ function ActionsMenu({ label, actions }: { label: string; actions: SheetAction[]
             placement="bottom-end"
             trigger={
                 <IconButton aria-label={label} size="small" variant="text">
-                    <Icon name="more" />
+                    <Icon name="more-horizontal" />
                 </IconButton>
             }
         >
@@ -755,7 +755,7 @@ function SpreadsheetExample() {
                     },
                     {
                         label: "Delete column",
-                        icon: "trash",
+                        icon: "delete",
                         color: "error",
                         disabled: sheetColumns.length === 1,
                         onClick: () => setSheetColumns((current) => current.filter((candidate) => candidate.id !== sheetColumn.id)),
@@ -783,7 +783,7 @@ function SpreadsheetExample() {
                             { label: "Insert row below", icon: "arrow-down", onClick: () => insertRow(index + 1) },
                             {
                                 label: "Delete row",
-                                icon: "trash",
+                                icon: "delete",
                                 color: "error",
                                 disabled: sheetRows.length === 1,
                                 onClick: () => setSheetRows((current) => current.filter((candidate) => candidate.id !== row.id)),

@@ -1,30 +1,14 @@
 .root {
-    position: relative;
     display: inline-block;
-    flex: none;
-    inline-size: var(--dextinity-icon-size);
-    block-size: var(--dextinity-icon-size);
+    flex-shrink: 0;
+    inline-size: var(--dextinity-icon-size, var(--dextinity-icon-size-small));
+    block-size: var(--dextinity-icon-size, var(--dextinity-icon-size-small));
     vertical-align: middle;
+    background: var(--dextinity-current-icon-image, currentColor) center / contain no-repeat;
+    mask: var(--dextinity-current-icon-mask, none) center / contain no-repeat;
 
-    &::after,
-    &[data-duotone]::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background-color: currentColor;
-        mask-position: center;
-        mask-repeat: no-repeat;
-        mask-size: contain;
-    }
-
-    &::after {
-        mask-image: var(--dextinity-icon-glyph);
-    }
-
-    &[data-duotone]::before {
-        opacity: var(--dextinity-icon-duotone-opacity);
-        mask-image: var(--dextinity-icon-glyph-duotone);
-    }
+    // In high-contrast mode, Chromium replaces background colors, which would hide the icon
+    forced-color-adjust: preserve-parent-color;
 
     &[data-size="small"] {
         --dextinity-icon-size: var(--dextinity-icon-size-small);
@@ -36,5 +20,30 @@
 
     &[data-size="large"] {
         --dextinity-icon-size: var(--dextinity-icon-size-large);
+    }
+
+    // The root's mask would clip the fill, so a duotone icon draws the line and the fill on two layers
+    &[data-duotone] {
+        position: relative;
+        background: none;
+        mask: none;
+
+        &::before,
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+        }
+
+        &::before {
+            background: currentColor;
+            opacity: var(--dextinity-icon-duotone-opacity);
+            mask: var(--dextinity-current-duotone-icon-mask, none) center / contain no-repeat;
+        }
+
+        &::after {
+            background: var(--dextinity-current-icon-image, currentColor) center / contain no-repeat;
+            mask: var(--dextinity-current-icon-mask, none) center / contain no-repeat;
+        }
     }
 }

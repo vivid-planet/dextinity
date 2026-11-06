@@ -10,7 +10,7 @@ import styles from "./Button.stories.module.scss";
 const iconOptions = {
     Check: <Icon name="check" />,
     ArrowRight: <Icon name="arrow-right" />,
-    Trash: <Icon name="trash" />,
+    Trash: <Icon name="delete" />,
 };
 
 const meta = {
@@ -106,7 +106,7 @@ export const Danger: Story = {
     args: {
         variant: "outlined",
         color: "error",
-        startIcon: <Icon name="trash" />,
+        startIcon: <Icon name="delete" />,
         children: "Delete",
     },
 };
@@ -162,10 +162,10 @@ export const LoadingKeepsWidth: Story = {
             <Button {...args} loading>
                 Save
             </Button>
-            <Button {...args} variant="outlined" color="secondary" startIcon={<Icon name="eye" />}>
+            <Button {...args} variant="outlined" color="secondary" startIcon={<Icon name="visible" />}>
                 Preview
             </Button>
-            <Button {...args} variant="outlined" color="secondary" startIcon={<Icon name="eye" />} loading>
+            <Button {...args} variant="outlined" color="secondary" startIcon={<Icon name="visible" />} loading>
                 Preview
             </Button>
         </div>
@@ -200,6 +200,6 @@ export const AsLink: Story = {
         href: "#",
         variant: "outlined",
         color: "secondary",
-        endIcon: <Icon name="external-link" />,
+        endIcon: <Icon name="open-new-tab" />,
     },
 };

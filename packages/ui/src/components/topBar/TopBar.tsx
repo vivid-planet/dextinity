@@ -124,7 +124,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
         >
             {onMenuClick != null && (
                 <IconButton aria-label={labels.menu} onClick={onMenuClick} className={styles.menuButton}>
-                    <Icon name="menu" />
+                    <Icon name="hamburger" />
                 </IconButton>
             )}
             {ownerState.mode === "edit" ? (
@@ -157,7 +157,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
                                 onClick={() => onAiOpenChange(!ownerState.aiOpen)}
                                 className={styles.aiToggle}
                             >
-                                <Icon name="sparkle" className={styles.aiIcon} />
+                                <Icon name="artificial-intelligence" className={styles.aiIcon} />
                                 <span className={styles.aiLabel}>{labels.ai}</span>
                                 <span className={styles.aiTrack} />
                             </button>

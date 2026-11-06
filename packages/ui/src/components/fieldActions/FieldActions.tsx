@@ -179,7 +179,7 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
                 data-action={suggestion.action}
             >
                 <span className={styles.suggestionLabel} aria-hidden>
-                    <Icon name={isTranslation ? "translate" : "sparkle"} />
+                    <Icon name={isTranslation ? "translate" : "artificial-intelligence"} />
                     {isTranslation ? currentLabels.translation : currentLabels.suggestion}
                 </span>
                 <p className={styles.suggestionText}>{suggestion.text}</p>
@@ -278,7 +278,7 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
                     loading={pendingAction === "aiAssist"}
                     onClick={requestSuggestion}
                 >
-                    <Icon name="sparkle" />
+                    <Icon name="artificial-intelligence" />
                 </IconButton>
             )}
         </span>

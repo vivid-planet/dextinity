@@ -97,7 +97,7 @@ const columns: DataGridColumn<Redirect>[] = [
         header: "Target",
         render: (redirect) => (
             <span className={styles.target}>
-                <Icon name={redirect.targetTitle == null ? "external-link" : "page"} size="small" />
+                <Icon name={redirect.targetTitle == null ? "open-new-tab" : "file"} size="small" />
                 <span>
                     <b>{redirect.targetTitle ?? "External URL"}</b>
                     <span className={styles.mono}>{redirect.target}</span>

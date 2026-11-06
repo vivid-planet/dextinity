@@ -80,15 +80,15 @@ function Preview({ kind }: { kind: "page" | "jobAd" }) {
 
 const pageBlocks = [
     { id: "stage", title: "Stage", summary: "Image + heading", icon: <Icon name="image" /> },
-    { id: "text", title: "Text", summary: "Body text", icon: <Icon name="heading" /> },
+    { id: "text", title: "Text", summary: "Body text", icon: <Icon name="rte-heading" /> },
     { id: "jobs", title: "Job list", summary: "Linked content · 12 entries", icon: <Icon name="blocks" /> },
     { id: "cta", title: "Call to action", summary: "Button", icon: <Icon name="arrow-right" /> },
 ];
 
 const jobAdBlocks = [
     { id: "tasks", title: "Tasks", summary: "List · 4 items", icon: <Icon name="list" /> },
-    { id: "benefits", title: "Benefits", summary: "Tags · 5", icon: <Icon name="sparkle" /> },
-    { id: "contact", title: "Contact", summary: "Contact person", icon: <Icon name="user" /> },
+    { id: "benefits", title: "Benefits", summary: "Tags · 5", icon: <Icon name="artificial-intelligence" /> },
+    { id: "contact", title: "Contact", summary: "Contact person", icon: <Icon name="account" /> },
 ];
 
 function Blocks({ blocks, label }: { blocks: typeof pageBlocks; label: string }) {
@@ -272,7 +272,7 @@ function StatusAside() {
                     <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="archive" />}>
                         Archive
                     </Button>
-                    <Button variant="outlined" color="error" size="small" startIcon={<Icon name="trash" />}>
+                    <Button variant="outlined" color="error" size="small" startIcon={<Icon name="delete" />}>
                         Delete
                     </Button>
                 </div>
@@ -304,7 +304,7 @@ const editActions = (
     <>
         <SaveState state="dirty" />
         <IconButton aria-label="More actions">
-            <Icon name="more" />
+            <Icon name="more-horizontal" />
         </IconButton>
         <Button startIcon={<Icon name="check" />}>Save</Button>
     </>
@@ -338,7 +338,7 @@ function EditPage({
                     value={pane}
                     onChange={setPane}
                     options={[
-                        { value: "preview", label: "Preview", icon: <Icon name="eye" /> },
+                        { value: "preview", label: "Preview", icon: <Icon name="visible" /> },
                         { value: "editor", label: "Edit", icon: <Icon name="edit" /> },
                     ]}
                 />

@@ -25,7 +25,7 @@ const initialBlocks: SampleBlock[] = [
     { id: "hero", title: "Shape what's next", summary: "Hero · Image · Title · Text", icon: <Icon name="image" />, visible: true },
     { id: "teasers", title: "Why join us", summary: "Teaser grid · 3 teasers", icon: <Icon name="blocks" />, visible: true },
     { id: "jobs", title: "Open positions", summary: "Job list · 12 jobs", icon: <Icon name="list" />, visible: true },
-    { id: "contact", title: "Get in touch", summary: "Contact form", icon: <Icon name="form" />, visible: false },
+    { id: "contact", title: "Get in touch", summary: "Contact form", icon: <Icon name="edit-record" />, visible: false },
 ];
 
 function moveItem<Item>(items: Item[], fromIndex: number, toIndex: number) {
@@ -57,7 +57,7 @@ function ControlledBlockList(props: BlockListProps) {
                         const id = `text-${Date.now()}`;
                         setBlocks((current) => [
                             ...current.slice(0, index),
-                            { id, title: "New text", summary: "Text", icon: <Icon name="heading" />, visible: true },
+                            { id, title: "New text", summary: "Text", icon: <Icon name="rte-heading" />, visible: true },
                             ...current.slice(index),
                         ]);
                         setSelectedId(id);
@@ -78,7 +78,7 @@ function ControlledBlockList(props: BlockListProps) {
                         onSelect={() => setSelectedId(block.id)}
                         actions={
                             <IconButton size="small" aria-label="More actions">
-                                <Icon name="more" />
+                                <Icon name="more-horizontal" />
                             </IconButton>
                         }
                     />
@@ -182,11 +182,11 @@ function BulkActionsBlockList(props: BlockListProps) {
                         onSelectAllChange={(selected) => setCheckedIds(selected ? blocks.map((block) => block.id) : [])}
                         actions={
                             <>
-                                {action("Show", <Icon name="eye" />, () => setVisible(true))}
-                                {action("Hide", <Icon name="eye-off" />, () => setVisible(false))}
+                                {action("Show", <Icon name="visible" />, () => setVisible(true))}
+                                {action("Hide", <Icon name="invisible" />, () => setVisible(false))}
                                 {action("Copy", <Icon name="copy" />, () => undefined)}
                                 {action("Paste", <Icon name="paste" />, () => undefined, false)}
-                                {action("Delete", <Icon name="trash" />, () => {
+                                {action("Delete", <Icon name="delete" />, () => {
                                     setBlocks((current) => current.filter((block) => !checkedIds.includes(block.id)));
                                     setCheckedIds([]);
                                 })}
@@ -275,7 +275,7 @@ function PreviewSyncBlockList(props: BlockListProps) {
                             data-block-key={block.id}
                             title={block.title}
                             summary={block.summary}
-                            icon={<Icon name="page" />}
+                            icon={<Icon name="file" />}
                             visible
                             selected={block.id === selectedId}
                             onSelect={() => setSelectedId(block.id)}

@@ -14,7 +14,7 @@ const meta = {
         name: "target",
         label: "Link target",
         placeholder: "Choose a page",
-        icon: <Icon name="page" />,
+        icon: <Icon name="file" />,
         renderValue: (page: Page) => `${page.name} (${page.path})`,
         renderPicker: (context) => <PagePickerDialog {...context} />,
     },

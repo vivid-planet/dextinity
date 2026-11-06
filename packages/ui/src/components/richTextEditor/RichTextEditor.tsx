@@ -15,7 +15,7 @@ import {
 
 import { Field, type FieldBaseProps, type FieldOwnerState, type FieldProps } from "../field/Field";
 import { Icon } from "../icon/Icon";
-import type { IconName } from "../icon/iconNames";
+import type { IconName } from "../icon/iconRegistry";
 import { Toolbar } from "../toolbar/Toolbar";
 import { ToolbarButton } from "../toolbar/ToolbarButton";
 import { ToolbarGroup } from "../toolbar/ToolbarGroup";
@@ -59,11 +59,11 @@ const defaultLabels: RichTextEditorLabels = {
 const allFormats: RichTextEditorFormat[] = ["heading", "bold", "italic", "bulletList", "orderedList", "link"];
 
 const formatIcons: Record<RichTextEditorFormat, IconName> = {
-    heading: "heading",
-    bold: "bold",
-    italic: "italic",
-    bulletList: "list",
-    orderedList: "list-ordered",
+    heading: "rte-heading",
+    bold: "rte-bold",
+    italic: "rte-italic",
+    bulletList: "rte-ul-bullet-point",
+    orderedList: "rte-ol",
     link: "link",
 };
 

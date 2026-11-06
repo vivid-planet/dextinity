@@ -1,12 +1,12 @@
 import { Canvas, Meta } from "@storybook/addon-docs/blocks";
 
-import * as CustomizeIconsStories from "./__stories__/CustomizeIcons.stories";
+import * as CustomizeIconSetStories from "./__stories__/CustomizeIconSet.stories";
 
-<Meta title="Theme/Customize icons" />
+<Meta title="Foundations/Icons/Customize icon set" />
 
-# Customize icons
+# Customize icon set
 
-`@dextinity/ui/css/icons` defines one CSS variable per icon, which holds the URL of its SVG file. You customize the icons like the tokens: set these variables in your own stylesheet.
+`@dextinity/ui/css/icons` defines one CSS variable per icon, which holds the URL of its SVG file. You customize the icon set like the other tokens: set these variables in your own stylesheet.
 
 ## Replace icons
 
@@ -22,7 +22,7 @@ Your bundler resolves the URL relative to your stylesheet. Keep `#icon` at the e
 
 To replace icons in one part of the application only, set the variables on an element of that part:
 
-<Canvas of={CustomizeIconsStories.ReplaceIconsInPart} />
+<Canvas of={CustomizeIconSetStories.ReplaceIconsInPart} />
 
 ## Replace all icons
 

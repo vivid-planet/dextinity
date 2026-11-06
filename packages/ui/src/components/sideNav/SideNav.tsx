@@ -417,7 +417,7 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
                             aria-expanded={!ownerState.collapsed}
                             onClick={() => onCollapsedChange(!ownerState.collapsed)}
                         >
-                            <Icon name={ownerState.collapsed ? "sidebar-open" : "sidebar-close"} />
+                            <Icon name={ownerState.collapsed ? "pin-right" : "pin-left"} />
                             {!ownerState.collapsed && <span>{labels.collapse}</span>}
                         </button>
                     </Tooltip>

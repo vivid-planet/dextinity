@@ -65,7 +65,7 @@ export const WithBack: Story = {
         actions: (
             <>
                 <IconButton aria-label="More actions" variant="text">
-                    <Icon name="more" />
+                    <Icon name="more-horizontal" />
                 </IconButton>
                 <Button>Publish</Button>
             </>

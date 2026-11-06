@@ -4,6 +4,7 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
+import type { IconName } from "../icon/iconRegistry";
 import styles from "./Toast.module.scss";
 
 export type ToastTone = "success" | "error" | "info";
@@ -50,9 +51,9 @@ export interface ToastProps extends Omit<HTMLAttributes<HTMLDivElement>, "classN
     slotProps?: ToastSlotProps;
 }
 
-const toneIcons: Record<ToastTone, string> = {
+const toneIcons: Record<ToastTone, IconName> = {
     success: "check",
-    error: "alert",
+    error: "error",
     info: "info",
 };
 

@@ -46,7 +46,7 @@ const defaultDeviceWidths: Record<DevicePreviewDevice, number | "fill"> = {
     mobile: 375,
 };
 
-const deviceIcons = { responsive: "fit-width", desktop: "desktop", tablet: "tablet", mobile: "phone" } as const;
+const deviceIcons = { responsive: "device-responsive", desktop: "device-desktop", tablet: "device-tablet", mobile: "device-phone" } as const;
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.

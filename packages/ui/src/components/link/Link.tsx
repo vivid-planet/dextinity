@@ -81,7 +81,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
 ) {
     const ownerState: LinkOwnerState = { color, external };
     const labels = { ...defaultLabels, ...labelsProp };
-    const resolvedEndIcon = endIcon ?? (external ? <Icon name="external-link" /> : undefined);
+    const resolvedEndIcon = endIcon ?? (external ? <Icon name="open-new-tab" /> : undefined);
 
     const startIconProps = resolveSlotProps<LinkOwnerState, "span", "span">({
         ownProps: { className: styles.startIcon, "aria-hidden": true },

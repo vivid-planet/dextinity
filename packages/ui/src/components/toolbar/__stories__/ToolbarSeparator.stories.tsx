@@ -17,7 +17,7 @@ const meta = {
             <div className={styles.surface}>
                 <Toolbar aria-label="Formatting">
                     <ToolbarButton aria-label="Bold" onClick={fn()}>
-                        <Icon name="bold" />
+                        <Icon name="rte-bold" />
                     </ToolbarButton>
                     <Story />
                     <ToolbarButton aria-label="Link" onClick={fn()}>

@@ -7,8 +7,8 @@ import { Menu } from "../../menu/Menu";
 import { MenuRadioGroup } from "../../menu/MenuRadioGroup";
 import { MenuRadioItem } from "../../menu/MenuRadioItem";
 import type { StatusIndicatorStatus } from "../../statusIndicator/StatusIndicator";
-import filterChipTokens from "../_tokens.scss?raw";
 import { FilterChip, type FilterChipProps } from "../FilterChip";
+import filterChipTokens from "../FilterChip.tokens.scss?raw";
 import styles from "./FilterChip.stories.module.scss";
 
 /** Keeps the story controlled: clicking toggles the local state; the `selected` arg sets the initial state. */

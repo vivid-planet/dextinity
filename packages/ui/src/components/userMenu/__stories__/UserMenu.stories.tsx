@@ -9,8 +9,8 @@ import { MenuItem } from "../../menu/MenuItem";
 import { MenuRadioGroup } from "../../menu/MenuRadioGroup";
 import { MenuRadioItem } from "../../menu/MenuRadioItem";
 import { MenuSeparator } from "../../menu/MenuSeparator";
-import userMenuTokens from "../_tokens.scss?raw";
 import { UserMenu, type UserMenuProps } from "../UserMenu";
+import userMenuTokens from "../UserMenu.tokens.scss?raw";
 import styles from "./UserMenu.stories.module.scss";
 
 function UserSettings() {

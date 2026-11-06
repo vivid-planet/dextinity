@@ -4,8 +4,8 @@ import { expect, fn, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
-import chipTokens from "../_tokens.scss?raw";
 import { Chip } from "../Chip";
+import chipTokens from "../Chip.tokens.scss?raw";
 import styles from "./Chip.stories.module.scss";
 
 const iconOptions = {

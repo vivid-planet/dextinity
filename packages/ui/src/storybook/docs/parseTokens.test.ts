@@ -3,7 +3,7 @@ import { expect, it } from "vitest";
 import { parseTokens } from "./parseTokens";
 
 it("reads declarations with the comment directly above as description", () => {
-    const source = `@include scope.component-tokens {
+    const source = `@mixin tokens {
     // Height of the field
     --dextinity-input-height: var(--dextinity-density-field-height);
 

@@ -46,7 +46,7 @@ Any export may change or be removed at any time, without deprecation notice. Cha
 - **Component file**: `<ComponentName>.tsx` (PascalCase), one per component feature.
 - **Non-component code file**: `<featureName>.ts(x)` (camelCase) for utilities and hooks.
 - **Styles**: `<ComponentName>.module.scss` (CSS Modules with SCSS).
-- **Component tokens**: `_tokens.scss` in the feature folder (see [Component tokens](#component-tokens)).
+- **Tokens**: `<ComponentName>.tokens.scss`, a `tokens` mixin with the component's CSS custom properties (see [Component tokens](#component-tokens)).
 
 ## Component conventions
 
@@ -154,7 +154,7 @@ The contract has two parts: **structural class names** for a component's element
 
 ### Stories
 
-The Storybook sidebar mirrors the design system's areas — Foundations, Building blocks, Shell, Patterns, Page types — and each area's pages: a story title is `<Area>/<Page>/<Component>`, e.g. `Building blocks/Buttons/IconButton`. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it. `parameters.tokens`, set to the component's `_tokens.scss` imported with `?raw`, adds its token table with live values to the page.
+The Storybook sidebar mirrors the design system's areas — Foundations, Building blocks, Shell, Patterns, Page types — and each area's pages: a story title is `<Area>/<Page>/<Component>`, e.g. `Building blocks/Buttons/IconButton`. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it. `parameters.tokens`, set to the component's `<ComponentName>.tokens.scss` imported with `?raw`, adds its token table with live values to the page.
 
 #### Main story
 
@@ -234,7 +234,7 @@ Every derived token is declared on each theme boundary (`[data-dextinity-color-s
 
 ### Component tokens
 
-Each component declares the decisions a theme may override — colors, radius, heights, paddings, shadows — in `src/components/<feature>/_tokens.scss` with the `scope.component-tokens` mixin, named `--dextinity-<component>-<property>`, and its module stylesheet reads only those plus generic tokens such as the focus ring and motion. The partial is registered in [`src/theme/_components.scss`](src/theme/_components.scss). A `//` comment directly above a token becomes its description in the docs.
+Each component declares the decisions a theme may override — colors, radius, heights, paddings, shadows — in a `tokens` mixin in `src/components/<feature>/<ComponentName>.tokens.scss`, next to its `<ComponentName>.module.scss`, named `--dextinity-<component>-<property>`, and its module stylesheet reads only those plus generic tokens such as the focus ring and motion. [`src/theme/_components.scss`](src/theme/_components.scss) `@use`s each tokens file and includes its mixin in the `scope.component-tokens` block. A token is defined in the folder of the component its name starts with, and other components can read it: `IconButton` uses the `--dextinity-button-…` colors from `Button.tokens.scss`. A `//` comment directly above a token becomes its description in the docs.
 
 ### Brands
 

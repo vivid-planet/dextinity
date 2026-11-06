@@ -4,8 +4,8 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
-import bannerTokens from "../_tokens.scss?raw";
 import { Banner } from "../Banner";
+import bannerTokens from "../Banner.tokens.scss?raw";
 
 const retry = fn();
 

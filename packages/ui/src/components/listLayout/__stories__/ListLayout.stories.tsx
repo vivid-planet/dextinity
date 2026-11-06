@@ -17,8 +17,8 @@ import { MenuItem } from "../../menu/MenuItem";
 import { MenuSeparator } from "../../menu/MenuSeparator";
 import { PageHeader } from "../../pageHeader/PageHeader";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
-import listLayoutTokens from "../_tokens.scss?raw";
 import { ListLayout } from "../ListLayout";
+import listLayoutTokens from "../ListLayout.tokens.scss?raw";
 import styles from "./ListLayout.stories.module.scss";
 
 type JobStatus = "published" | "unpublished" | "archived";

@@ -5,8 +5,8 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
-import bulkActionBarTokens from "../_tokens.scss?raw";
 import { BulkActionBar, type BulkActionBarProps } from "../BulkActionBar";
+import bulkActionBarTokens from "../BulkActionBar.tokens.scss?raw";
 
 /** Keeps the story controlled: clearing sets the count to 0, "Select 3" brings the bar back. */
 function ControlledBulkActionBar(props: BulkActionBarProps) {

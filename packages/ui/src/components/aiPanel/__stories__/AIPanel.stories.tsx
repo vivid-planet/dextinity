@@ -3,8 +3,8 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import aiPanelTokens from "../_tokens.scss?raw";
 import { AIPanel, type AIPanelMessage, type AIPanelProps } from "../AIPanel";
+import aiPanelTokens from "../AIPanel.tokens.scss?raw";
 import styles from "./AIPanel.stories.module.scss";
 
 const greeting: AIPanelMessage = {

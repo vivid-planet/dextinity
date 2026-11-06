@@ -1,0 +1,52 @@
+@mixin tokens {
+    --dextinity-data-grid-font-size: var(--dextinity-typography-body-size);
+    --dextinity-data-grid-foreground: var(--dextinity-color-text);
+    --dextinity-data-grid-cell-padding: var(--dextinity-space-3);
+    --dextinity-data-grid-row-height: var(--dextinity-density-table-row-height);
+    --dextinity-data-grid-row-radius: var(--dextinity-radius-field);
+    --dextinity-data-grid-row-background-hover: color-mix(in oklch, var(--dextinity-color-text) 5%, transparent);
+    --dextinity-data-grid-row-background-selected: var(--dextinity-color-accent-soft);
+
+    // The panel the `surface` variant sits on, like a glass `Panel`
+    --dextinity-data-grid-surface-background: var(--dextinity-material-glass);
+    --dextinity-data-grid-surface-blur: var(--dextinity-material-blur);
+    --dextinity-data-grid-surface-shadow:
+        inset 0 1px 0 var(--dextinity-material-highlight), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge),
+        var(--dextinity-shadow-2);
+    --dextinity-data-grid-surface-radius: var(--dextinity-radius-panel);
+    --dextinity-data-grid-surface-padding-block-start: var(--dextinity-space-2);
+    --dextinity-data-grid-surface-padding-block-end: var(--dextinity-space-3);
+    --dextinity-data-grid-surface-padding-inline: var(--dextinity-space-3);
+
+    --dextinity-data-grid-header-height: 40px;
+    --dextinity-data-grid-header-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-data-grid-header-foreground-active: var(--dextinity-color-text);
+    --dextinity-data-grid-header-font-size: var(--dextinity-typography-small-size);
+    --dextinity-data-grid-header-line: var(--dextinity-color-line-strong);
+    // Behind the sticky header, so rows scrolling underneath stay hidden
+    --dextinity-data-grid-header-background-sticky: var(--dextinity-material-glass-strong);
+
+    // Placeholder bars of the loading rows
+    --dextinity-data-grid-placeholder-background: color-mix(in oklch, var(--dextinity-color-text) 8%, transparent);
+    --dextinity-data-grid-placeholder-radius: var(--dextinity-radius-item);
+
+    --dextinity-data-grid-footer-gap: var(--dextinity-space-3);
+    --dextinity-data-grid-footer-foreground: var(--dextinity-color-text-tertiary);
+
+    // Inline editing
+    --dextinity-data-grid-cell-focus-line: var(--dextinity-color-focus);
+    --dextinity-data-grid-cell-radius: var(--dextinity-radius-item);
+    --dextinity-data-grid-editor-background: var(--dextinity-field-background-focus);
+    --dextinity-data-grid-editor-line: var(--dextinity-field-line-focus);
+    --dextinity-data-grid-editor-halo: var(--dextinity-field-halo-focus);
+    --dextinity-data-grid-editable-background-hover: color-mix(in oklch, var(--dextinity-color-text) 9%, transparent);
+
+    // Reordering
+    --dextinity-data-grid-grip-foreground: var(--dextinity-color-text-subtle);
+    --dextinity-data-grid-drop-indicator: var(--dextinity-color-accent);
+
+    // Expandable rows
+    --dextinity-data-grid-indent: 20px;
+    --dextinity-data-grid-expand-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-data-grid-detail-background: color-mix(in oklch, var(--dextinity-color-text) 3%, transparent);
+}

@@ -8,8 +8,8 @@ import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { SaveState } from "../../saveState/SaveState";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
-import pageHeaderTokens from "../_tokens.scss?raw";
 import { PageHeader } from "../PageHeader";
+import pageHeaderTokens from "../PageHeader.tokens.scss?raw";
 import styles from "./PageHeader.stories.module.scss";
 
 const meta = {

@@ -22,8 +22,8 @@ import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { Switch } from "../../switch/Switch";
 import { Tabs } from "../../tabs/Tabs";
 import { Textarea } from "../../textarea/Textarea";
-import editLayoutTokens from "../_tokens.scss?raw";
 import { EditLayout, type EditLayoutProps } from "../EditLayout";
+import editLayoutTokens from "../EditLayout.tokens.scss?raw";
 import styles from "./EditLayout.stories.module.scss";
 
 type Variant = NonNullable<EditLayoutProps["variant"]>;

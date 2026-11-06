@@ -3,8 +3,8 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
-import toastTokens from "../_tokens.scss?raw";
 import { Toast } from "../Toast";
+import toastTokens from "../Toast.tokens.scss?raw";
 import styles from "./Toast.stories.module.scss";
 
 const iconOptions = {

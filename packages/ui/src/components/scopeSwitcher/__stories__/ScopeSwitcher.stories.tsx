@@ -3,8 +3,8 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import scopeSwitcherTokens from "../_tokens.scss?raw";
 import { ScopeSwitcher, type ScopeSwitcherDimension, type ScopeSwitcherProps } from "../ScopeSwitcher";
+import scopeSwitcherTokens from "../ScopeSwitcher.tokens.scss?raw";
 import styles from "./ScopeSwitcher.stories.module.scss";
 
 const countries: ScopeSwitcherDimension = {

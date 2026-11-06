@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, screen, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import avatarTokens from "../_tokens.scss?raw";
 import { Avatar } from "../Avatar";
+import avatarTokens from "../Avatar.tokens.scss?raw";
 import styles from "./Avatar.stories.module.scss";
 
 const pictureUrl = `data:image/svg+xml;utf8,${encodeURIComponent(

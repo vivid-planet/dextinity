@@ -19,8 +19,8 @@ import { Panel } from "../../panel/Panel";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { Switch } from "../../switch/Switch";
 import { type TreeNode, TreeView } from "../../treeView/TreeView";
-import treeDetailLayoutTokens from "../_tokens.scss?raw";
 import { TreeDetailLayout } from "../TreeDetailLayout";
+import treeDetailLayoutTokens from "../TreeDetailLayout.tokens.scss?raw";
 import styles from "./TreeDetailLayout.stories.module.scss";
 
 type PageStatus = "published" | "unpublished" | "archived";

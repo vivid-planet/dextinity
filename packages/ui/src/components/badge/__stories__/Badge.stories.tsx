@@ -3,8 +3,8 @@ import { expect, screen, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Typography } from "../../typography/Typography";
-import badgeTokens from "../_tokens.scss?raw";
 import { Badge } from "../Badge";
+import badgeTokens from "../Badge.tokens.scss?raw";
 import styles from "./Badge.stories.module.scss";
 
 const meta = {

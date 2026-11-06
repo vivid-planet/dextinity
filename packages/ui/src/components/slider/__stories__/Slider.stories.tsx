@@ -4,8 +4,8 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
-import sliderTokens from "../_tokens.scss?raw";
 import { Slider, type SliderProps } from "../Slider";
+import sliderTokens from "../Slider.tokens.scss?raw";
 
 const iconOptions = {
     Image: <Icon name="image" />,

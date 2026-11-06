@@ -16,8 +16,8 @@ import { getSideNavAncestorIds, SideNav } from "../../sideNav/SideNav";
 import { StoryScopeSwitcher, StoryUserMenu } from "../../topBar/__stories__/topBarStoryParts";
 import { TopBar } from "../../topBar/TopBar";
 import { useTopBarEdit } from "../../topBar/topBarEdit";
-import appShellTokens from "../_tokens.scss?raw";
 import { AppShell, type AppShellProps } from "../AppShell";
+import appShellTokens from "../AppShell.tokens.scss?raw";
 import styles from "./AppShell.stories.module.scss";
 
 const greeting: AIPanelMessage = {

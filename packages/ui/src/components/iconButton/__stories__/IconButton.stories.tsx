@@ -3,8 +3,8 @@ import { expect, fn, screen, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
-import iconButtonTokens from "../_tokens.scss?raw";
 import { IconButton } from "../IconButton";
+import iconButtonTokens from "../IconButton.tokens.scss?raw";
 import styles from "./IconButton.stories.module.scss";
 
 const iconOptions = {

@@ -3,8 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Link } from "../../link/Link";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
-import keyValueListTokens from "../_tokens.scss?raw";
 import { KeyValueList } from "../KeyValueList";
+import keyValueListTokens from "../KeyValueList.tokens.scss?raw";
 import styles from "./KeyValueList.stories.module.scss";
 
 const meta = {

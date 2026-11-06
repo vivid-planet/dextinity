@@ -3,8 +3,8 @@ import { expect, fn, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
-import toolbarTokens from "../_tokens.scss?raw";
 import { Toolbar } from "../Toolbar";
+import toolbarTokens from "../Toolbar.tokens.scss?raw";
 import { ToolbarButton } from "../ToolbarButton";
 import { ToolbarGroup } from "../ToolbarGroup";
 import styles from "./Toolbar.stories.module.scss";

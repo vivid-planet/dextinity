@@ -1,0 +1,53 @@
+@mixin tokens {
+    --dextinity-field-gap: 7px;
+    --dextinity-field-height: var(--dextinity-density-field-height);
+    --dextinity-field-height-small: var(--dextinity-density-control-height);
+    --dextinity-field-height-large: calc(var(--dextinity-density-field-height) + var(--dextinity-space-2));
+    --dextinity-field-padding: var(--dextinity-space-3);
+    --dextinity-field-padding-small: 10px;
+    --dextinity-field-radius: var(--dextinity-radius-control);
+    // The box of a multi-line control with `layout="stacked"`, e.g. a text editor
+    --dextinity-field-radius-stacked: calc(12px * var(--dextinity-brand-radius-factor));
+    --dextinity-field-font-size: var(--dextinity-typography-body-size);
+    --dextinity-field-font-size-small: 13px;
+    --dextinity-field-font-size-large: 15px;
+
+    --dextinity-field-background: var(--dextinity-color-surface-raised);
+    --dextinity-field-background-focus: var(--dextinity-color-surface);
+    --dextinity-field-background-read-only: transparent;
+    --dextinity-field-foreground: var(--dextinity-color-text);
+    --dextinity-field-placeholder: var(--dextinity-color-text-subtle);
+    --dextinity-field-line: var(--dextinity-color-line-strong);
+    --dextinity-field-line-hover: var(--dextinity-color-text-subtle);
+    // Twice the hairline: 1px normally, 2px in high contrast
+    --dextinity-field-line-width-focus: calc(var(--dextinity-line-width) * 2);
+    --dextinity-field-line-focus: var(--dextinity-color-accent);
+    // Soft halo around the focused field
+    --dextinity-field-halo-focus: var(--dextinity-color-accent-soft);
+    --dextinity-field-line-error: var(--dextinity-color-danger);
+    --dextinity-field-halo-error: var(--dextinity-color-danger-soft);
+    --dextinity-field-line-warning: var(--dextinity-color-warning);
+    --dextinity-field-halo-warning: var(--dextinity-color-warning-soft);
+    --dextinity-field-line-success: var(--dextinity-color-success);
+    --dextinity-field-halo-success: var(--dextinity-color-success-soft);
+    --dextinity-field-disabled-opacity: 0.55;
+
+    --dextinity-field-label-font-size: 13px;
+    --dextinity-field-label-font-weight: 500;
+    --dextinity-field-label-color: var(--dextinity-color-text-secondary);
+    --dextinity-field-required-color: var(--dextinity-color-danger-text);
+    // Character count and other details at the end of the label
+    --dextinity-field-counter-color: var(--dextinity-color-text-tertiary);
+    --dextinity-field-message-font-size: var(--dextinity-typography-small-size);
+    --dextinity-field-message-color: var(--dextinity-color-text-tertiary);
+    --dextinity-field-message-color-error: var(--dextinity-color-danger-text);
+    --dextinity-field-message-color-warning: var(--dextinity-color-warning-text);
+    --dextinity-field-message-color-success: var(--dextinity-color-success-text);
+    // Prefix and suffix, e.g. a domain or a unit
+    --dextinity-field-adornment-color: var(--dextinity-color-text-tertiary);
+    --dextinity-field-adornment-font-family: var(--dextinity-font-family-mono);
+    --dextinity-field-adornment-font-size: var(--dextinity-typography-mono-size);
+    --dextinity-field-icon-size: 16px;
+    // Translate and AI at the label stay muted until the field is hovered or focused
+    --dextinity-field-actions-idle-opacity: 0.55;
+}

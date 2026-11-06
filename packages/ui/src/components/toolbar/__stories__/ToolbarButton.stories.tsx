@@ -4,8 +4,8 @@ import { expect, fn, userEvent, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
-import toolbarTokens from "../_tokens.scss?raw";
 import { Toolbar } from "../Toolbar";
+import toolbarTokens from "../Toolbar.tokens.scss?raw";
 import { ToolbarButton, type ToolbarButtonProps } from "../ToolbarButton";
 import styles from "./Toolbar.stories.module.scss";
 

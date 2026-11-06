@@ -1,7 +1,0 @@
-@use "../../theme/scope";
-
-@include scope.component-tokens {
-    --dextinity-icon-size-small: 16px;
-    --dextinity-icon-size-default: 20px;
-    --dextinity-icon-size-large: 24px;
-}

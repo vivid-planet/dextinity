@@ -4,8 +4,8 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { ProductLogo, ProductSign } from "../../../storybook/ProductLogo";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import sideNavTokens from "../_tokens.scss?raw";
 import { getSideNavAncestorIds, SideNav, type SideNavProps } from "../SideNav";
+import sideNavTokens from "../SideNav.tokens.scss?raw";
 import styles from "./SideNav.stories.module.scss";
 import { sideNavGroups } from "./sideNavStoryData";
 

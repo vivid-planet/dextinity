@@ -3,8 +3,8 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import fieldTokens from "../../field/_tokens.scss?raw";
-import selectTokens from "../../select/_tokens.scss?raw";
+import fieldTokens from "../../field/Field.tokens.scss?raw";
+import selectTokens from "../../select/Select.tokens.scss?raw";
 import { Combobox, type ComboboxProps } from "../Combobox";
 import styles from "./Combobox.stories.module.scss";
 

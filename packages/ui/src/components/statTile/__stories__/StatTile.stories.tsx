@@ -3,8 +3,8 @@ import { expect } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
-import statTileTokens from "../_tokens.scss?raw";
 import { StatTile } from "../StatTile";
+import statTileTokens from "../StatTile.tokens.scss?raw";
 import styles from "./StatTile.stories.module.scss";
 
 const contextOptions = {

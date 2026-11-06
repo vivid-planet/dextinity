@@ -7,9 +7,9 @@ import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { SegmentedControl } from "../../segmentedControl/SegmentedControl";
 import { Tooltip } from "../../tooltip/Tooltip";
-import blockListTokens from "../_tokens.scss?raw";
 import { Block } from "../Block";
 import { BlockList, type BlockListProps } from "../BlockList";
+import blockListTokens from "../BlockList.tokens.scss?raw";
 import { BlockListHeader } from "../BlockListHeader";
 import styles from "./BlockList.stories.module.scss";
 

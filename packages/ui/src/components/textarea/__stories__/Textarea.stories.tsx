@@ -3,9 +3,9 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import fieldTokens from "../../field/_tokens.scss?raw";
-import textareaTokens from "../_tokens.scss?raw";
+import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Textarea, type TextareaProps } from "../Textarea";
+import textareaTokens from "../Textarea.tokens.scss?raw";
 
 /** Keeps the story controlled: typing updates the local value; changing the `value` control starts over from it. */
 function ControlledTextarea(props: TextareaProps) {

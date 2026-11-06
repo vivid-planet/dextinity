@@ -5,8 +5,8 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
-import devicePreviewTokens from "../_tokens.scss?raw";
 import { DevicePreview, type DevicePreviewProps } from "../DevicePreview";
+import devicePreviewTokens from "../DevicePreview.tokens.scss?raw";
 import styles from "./DevicePreview.stories.module.scss";
 
 function SamplePage() {

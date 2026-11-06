@@ -6,11 +6,11 @@ import { landscapeImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Dialog } from "../../dialog/Dialog";
-import fieldTokens from "../../field/_tokens.scss?raw";
+import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Icon } from "../../icon/Icon";
 import { type TreeNode, TreeView } from "../../treeView/TreeView";
-import pickerTokens from "../_tokens.scss?raw";
 import { Picker } from "../Picker";
+import pickerTokens from "../Picker.tokens.scss?raw";
 import styles from "./Picker.stories.module.scss";
 
 const pages: TreeNode[] = [

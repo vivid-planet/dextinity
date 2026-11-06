@@ -4,8 +4,8 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
-import emptyStateTokens from "../_tokens.scss?raw";
 import { EmptyState } from "../EmptyState";
+import emptyStateTokens from "../EmptyState.tokens.scss?raw";
 
 const onResetFilters = fn();
 

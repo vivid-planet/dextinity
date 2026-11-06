@@ -5,8 +5,8 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Link } from "../../link/Link";
-import panelTokens from "../_tokens.scss?raw";
 import { Panel } from "../Panel";
+import panelTokens from "../Panel.tokens.scss?raw";
 import styles from "./Panel.stories.module.scss";
 
 const actionOptions = {

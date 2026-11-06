@@ -19,8 +19,8 @@ import { SegmentedControl } from "../../segmentedControl/SegmentedControl";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { Switch } from "../../switch/Switch";
 import { Textarea } from "../../textarea/Textarea";
-import listDetailLayoutTokens from "../_tokens.scss?raw";
 import { ListDetailLayout } from "../ListDetailLayout";
+import listDetailLayoutTokens from "../ListDetailLayout.tokens.scss?raw";
 import styles from "./ListDetailLayout.stories.module.scss";
 
 type RedirectType = "301" | "302";

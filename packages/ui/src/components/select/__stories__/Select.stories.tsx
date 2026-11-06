@@ -3,10 +3,10 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import fieldTokens from "../../field/_tokens.scss?raw";
+import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Icon } from "../../icon/Icon";
-import selectTokens from "../_tokens.scss?raw";
 import { Select, type SelectOption, type SelectProps } from "../Select";
+import selectTokens from "../Select.tokens.scss?raw";
 import styles from "./Select.stories.module.scss";
 
 const locations: SelectOption[] = [

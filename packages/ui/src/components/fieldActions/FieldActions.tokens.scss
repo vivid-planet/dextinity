@@ -1,0 +1,10 @@
+@mixin tokens {
+    --dextinity-field-actions-button-size: 24px;
+    --dextinity-field-actions-icon-size: 14px;
+    --dextinity-field-actions-suggestion-background: var(--dextinity-color-accent-soft);
+    --dextinity-field-actions-suggestion-line: color-mix(in oklch, var(--dextinity-color-accent) 30%, transparent);
+    --dextinity-field-actions-suggestion-radius: var(--dextinity-radius-control);
+    --dextinity-field-actions-suggestion-padding: var(--dextinity-space-3);
+    // Mono uppercase caption above the suggestion
+    --dextinity-field-actions-suggestion-label-color: var(--dextinity-color-accent-text);
+}

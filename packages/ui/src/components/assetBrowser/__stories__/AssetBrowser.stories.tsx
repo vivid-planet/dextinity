@@ -6,8 +6,8 @@ import { documentImage, interiorImage, landscapeImage, portraitImage } from "../
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
-import assetBrowserTokens from "../_tokens.scss?raw";
 import { AssetBrowser, type AssetBrowserAsset, type AssetBrowserFolder, type AssetBrowserProps } from "../AssetBrowser";
+import assetBrowserTokens from "../AssetBrowser.tokens.scss?raw";
 
 const folders: AssetBrowserFolder[] = [
     { id: "root", name: "All assets", parentId: null },

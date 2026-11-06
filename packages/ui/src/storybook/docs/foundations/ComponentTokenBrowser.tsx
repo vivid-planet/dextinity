@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { TokenTable } from "../TokenTable";
 
-const sources = import.meta.glob<string>("../../../components/*/_tokens.scss", { query: "?raw", import: "default", eager: true });
+const sources = import.meta.glob<string>("../../../components/*/*.tokens.scss", { query: "?raw", import: "default", eager: true });
 
 const components = Object.entries(sources)
     .map(([path, source]) => ({ feature: path.split("/").at(-2) ?? path, source }))

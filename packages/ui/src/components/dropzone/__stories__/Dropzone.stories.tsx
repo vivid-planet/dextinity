@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { expect, fn, spyOn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import dropzoneTokens from "../_tokens.scss?raw";
 import { Dropzone, type DropzoneProps, type DropzoneRejection, type DropzoneUpload } from "../Dropzone";
+import dropzoneTokens from "../Dropzone.tokens.scss?raw";
 import styles from "./Dropzone.stories.module.scss";
 
 function describeRejections(rejections: DropzoneRejection[]) {

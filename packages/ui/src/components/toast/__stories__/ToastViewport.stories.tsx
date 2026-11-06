@@ -3,7 +3,7 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
-import toastTokens from "../_tokens.scss?raw";
+import toastTokens from "../Toast.tokens.scss?raw";
 import { ToastViewport, type ToastViewportProps } from "../ToastViewport";
 import { type NewToast, useToasts } from "../useToasts";
 import styles from "./Toast.stories.module.scss";

@@ -5,8 +5,8 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Input } from "../../input/Input";
 import { Textarea } from "../../textarea/Textarea";
-import fieldActionsTokens from "../_tokens.scss?raw";
 import { FieldActions, type FieldActionsProps } from "../FieldActions";
+import fieldActionsTokens from "../FieldActions.tokens.scss?raw";
 import styles from "./FieldActions.stories.module.scss";
 
 function suggest(text: string) {

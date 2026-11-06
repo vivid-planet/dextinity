@@ -7,8 +7,8 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { FilterChip } from "../../filterChip/FilterChip";
 import { Icon } from "../../icon/Icon";
-import filterBarTokens from "../_tokens.scss?raw";
 import { FilterBar, type FilterBarProps } from "../FilterBar";
+import filterBarTokens from "../FilterBar.tokens.scss?raw";
 
 const statusFilters: { value: JobAdStatus | "all"; label: string }[] = [
     { value: "all", label: "All" },

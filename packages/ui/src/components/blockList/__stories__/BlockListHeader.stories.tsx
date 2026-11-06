@@ -6,7 +6,7 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Tooltip } from "../../tooltip/Tooltip";
-import blockListTokens from "../_tokens.scss?raw";
+import blockListTokens from "../BlockList.tokens.scss?raw";
 import { BlockListHeader, type BlockListHeaderProps } from "../BlockListHeader";
 import styles from "./BlockList.stories.module.scss";
 

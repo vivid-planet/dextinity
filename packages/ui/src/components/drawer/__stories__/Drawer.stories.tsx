@@ -6,8 +6,8 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { Input } from "../../input/Input";
-import drawerTokens from "../_tokens.scss?raw";
 import { Drawer, type DrawerProps } from "../Drawer";
+import drawerTokens from "../Drawer.tokens.scss?raw";
 import styles from "./Drawer.stories.module.scss";
 
 const redirects = ["/alt-1", "/alt-2", "/alt-3", "/alt-4"];

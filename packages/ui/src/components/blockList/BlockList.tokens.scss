@@ -1,0 +1,46 @@
+@mixin tokens {
+    --dextinity-block-list-gap: 6px;
+    // The height of the hover area between two blocks that holds the insert button
+    --dextinity-block-list-insert-height: 10px;
+    --dextinity-block-list-insert-button-size: 22px;
+    --dextinity-block-list-drop-indicator: var(--dextinity-color-accent);
+    --dextinity-block-list-add-height: 42px;
+    --dextinity-block-list-add-radius: var(--dextinity-radius-field);
+    --dextinity-block-list-add-border: 1px dashed var(--dextinity-color-line-strong);
+    --dextinity-block-list-add-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-block-list-add-foreground-hover: var(--dextinity-color-accent-text);
+
+    --dextinity-block-radius: var(--dextinity-radius-field);
+    --dextinity-block-background: var(--dextinity-color-surface);
+    --dextinity-block-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-1);
+    --dextinity-block-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle), var(--dextinity-shadow-2);
+    --dextinity-block-selected-shadow: inset 0 0 0 1.5px var(--dextinity-color-accent), var(--dextinity-shadow-1);
+    --dextinity-block-padding: 10px 10px 10px 6px;
+    --dextinity-block-fields-padding: var(--dextinity-space-1) var(--dextinity-space-4) var(--dextinity-space-4) 58px;
+    --dextinity-block-icon-size: 32px;
+    --dextinity-block-icon-radius: calc(var(--dextinity-radius-item) * 1.1);
+    --dextinity-block-icon-background: var(--dextinity-color-accent-soft);
+    --dextinity-block-icon-foreground: var(--dextinity-color-accent-text);
+    --dextinity-block-summary-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-block-grip-foreground: var(--dextinity-color-text-subtle);
+
+    // Hidden blocks: saved, but never live
+    --dextinity-block-hidden-icon-background: var(--dextinity-color-surface-sunken);
+    --dextinity-block-hidden-icon-foreground: var(--dextinity-color-text-subtle);
+    --dextinity-block-hidden-tag-background: var(--dextinity-color-warning-soft);
+    --dextinity-block-hidden-tag-foreground: var(--dextinity-color-warning-text);
+    --dextinity-block-hidden-tag-shadow: none;
+
+    // Invalid blocks, e.g. a required field is empty
+    --dextinity-block-invalid-shadow: inset 0 0 0 1.5px var(--dextinity-color-danger), var(--dextinity-shadow-1);
+    --dextinity-block-invalid-marker-color: var(--dextinity-color-danger);
+    // Selected and invalid: the selection ring with the error ring inside it
+    --dextinity-block-selected-invalid-shadow:
+        inset 0 0 0 1.5px var(--dextinity-color-accent), inset 0 0 0 3px var(--dextinity-color-danger), var(--dextinity-shadow-1);
+    // Blocks selected for bulk actions
+    --dextinity-block-checked-background: var(--dextinity-color-accent-soft);
+
+    // The header above the blocks with the select-all checkbox and the bulk actions
+    --dextinity-block-list-header-height: 40px;
+    --dextinity-block-list-header-foreground: var(--dextinity-color-text-tertiary);
+}

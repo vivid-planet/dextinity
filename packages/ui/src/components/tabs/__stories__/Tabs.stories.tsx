@@ -3,8 +3,8 @@ import { type ComponentPropsWithRef, useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import tabsTokens from "../_tokens.scss?raw";
 import { Tabs, type TabsItem, type TabsProps } from "../Tabs";
+import tabsTokens from "../Tabs.tokens.scss?raw";
 import styles from "./Tabs.stories.module.scss";
 
 const pageSections: TabsItem[] = [

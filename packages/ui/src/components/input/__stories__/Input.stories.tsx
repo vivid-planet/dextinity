@@ -3,11 +3,11 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import fieldTokens from "../../field/_tokens.scss?raw";
+import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Icon } from "../../icon/Icon";
 import { Kbd } from "../../kbd/Kbd";
-import inputTokens from "../_tokens.scss?raw";
 import { Input, type InputProps } from "../Input";
+import inputTokens from "../Input.tokens.scss?raw";
 import styles from "./Input.stories.module.scss";
 
 /** Keeps the story controlled: typing updates the local value; changing the `value` control starts over from it. */

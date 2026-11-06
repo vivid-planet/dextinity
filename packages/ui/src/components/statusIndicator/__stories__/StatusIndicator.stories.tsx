@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, screen, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import statusIndicatorTokens from "../_tokens.scss?raw";
 import { StatusIndicator, type StatusIndicatorStatus } from "../StatusIndicator";
+import statusIndicatorTokens from "../StatusIndicator.tokens.scss?raw";
 import styles from "./StatusIndicator.stories.module.scss";
 
 const statuses: StatusIndicatorStatus[] = ["published", "unpublished", "archived", "warning", "critical", "info", "running"];

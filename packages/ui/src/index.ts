@@ -61,6 +61,8 @@ export { formatShortcut, isApplePlatform, type KeyboardShortcutOptions } from ".
 export { matchesShortcut, useKeyboardShortcut } from "./components/keyboardShortcut/useKeyboardShortcut";
 export { Link, type LinkLabels, type LinkOwnerState, type LinkProps, type LinkSlotProps } from "./components/link/Link";
 export { LinkedContent, type LinkedContentOwnerState, type LinkedContentProps } from "./components/linkedContent/LinkedContent";
+export { ListDetailLayout, type ListDetailLayoutOwnerState, type ListDetailLayoutProps } from "./components/listDetailLayout/ListDetailLayout";
+export { type ListDetailLayoutSlotProps } from "./components/listDetailLayout/ListDetailLayout";
 export { ListLayout, type ListLayoutOwnerState, type ListLayoutProps } from "./components/listLayout/ListLayout";
 export { type ListLayoutSlotProps } from "./components/listLayout/ListLayout";
 export { Menu, type MenuOwnerState, type MenuPlacement, type MenuProps, type MenuSlotProps } from "./components/menu/Menu";

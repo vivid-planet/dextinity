@@ -1,3 +1,5 @@
+export { AIPanel, type AIPanelAction, type AIPanelLabels, type AIPanelMessage } from "./components/aiPanel/AIPanel";
+export { type AIPanelOwnerState, type AIPanelProps, type AIPanelSlotProps, type AIPanelSuggestion } from "./components/aiPanel/AIPanel";
 export type { AssetBrowserAsset, AssetBrowserFolder, AssetBrowserLabels } from "./components/assetBrowser/AssetBrowser";
 export type { AssetBrowserView } from "./components/assetBrowser/AssetBrowser";
 export { AssetBrowser, type AssetBrowserOwnerState, type AssetBrowserProps } from "./components/assetBrowser/AssetBrowser";

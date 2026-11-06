@@ -86,7 +86,7 @@ export const InlineChildBlocks: StoryObj<typeof ChildBlocksStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.click(within(document.body).getByRole("menuitem", { name: "Example Child" }));
+            await userEvent.click(await within(document.body).findByRole("menuitem", { name: "Example Child" }));
 
             await waitFor(
                 () => {
@@ -145,7 +145,7 @@ export const BlockChildBlocks: StoryObj<typeof ChildBlocksStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.click(within(document.body).getByRole("menuitem", { name: "Example Child" }));
+            await userEvent.click(await within(document.body).findByRole("menuitem", { name: "Example Child" }));
 
             await waitFor(
                 () => {

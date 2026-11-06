@@ -1,4 +1,4 @@
-import { Box, chipClasses } from "@mui/material";
+import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type PropsWithChildren, useState } from "react";
@@ -69,9 +69,8 @@ export const Default: Story = {
                 { timeout: 5000 },
             );
 
-            // Block type select shows "Paragraph"
-            expect(canvas.getByRole("combobox")).toBeInTheDocument();
-            expect(canvas.getByText("Paragraph")).toBeInTheDocument();
+            // Text type menu shows "Paragraph"
+            expect(canvas.getByRole("button", { name: "Text type" })).toHaveTextContent("Paragraph");
 
             // Toolbar has buttons (undo, redo, bold, italic, strike, more, ol, ul, indent, dedent, nbsp, shy)
             const buttons = canvas.getAllByRole("button");
@@ -79,10 +78,8 @@ export const Default: Story = {
         });
 
         await step("Undo/redo are disabled initially", async () => {
-            const buttons = canvas.getAllByRole("button");
-            // First two buttons are undo and redo
-            expect(buttons[0]).toBeDisabled();
-            expect(buttons[1]).toBeDisabled();
+            expect(canvas.getByRole("button", { name: "Undo" })).toHaveAttribute("aria-disabled", "true");
+            expect(canvas.getByRole("button", { name: "Redo" })).toHaveAttribute("aria-disabled", "true");
         });
     },
 };
@@ -158,7 +155,7 @@ export const ReadOnly: Story = {
 
         await step("No editing toolbar is rendered", async () => {
             // The editor keeps its textbox role when read-only, so the toolbar's absence is the tell.
-            expect(canvas.queryByRole("combobox")).not.toBeInTheDocument();
+            expect(canvas.queryByRole("toolbar")).not.toBeInTheDocument();
             expect(canvas.queryAllByRole("button")).toHaveLength(0);
         });
     },
@@ -198,8 +195,8 @@ export const BoldOnly: StoryObj<typeof BoldOnlyStory> = {
                 { timeout: 5000 },
             );
 
-            // Only bold button, no heading select
-            expect(canvas.queryByRole("combobox")).not.toBeInTheDocument();
+            // Only bold button, no text type menu
+            expect(canvas.queryByRole("button", { name: "Text type" })).not.toBeInTheDocument();
             expect(canvas.queryByText("Default")).not.toBeInTheDocument();
 
             // Exactly 1 button (bold only — no undo/redo, no lists, no special chars)
@@ -254,7 +251,7 @@ export const Placeholders: StoryObj<typeof PlaceholdersStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.click(within(document.body).getByRole("menuitem", { name: "First Name" }));
+            await userEvent.click(await within(document.body).findByRole("menuitem", { name: "First Name" }));
         });
 
         await step("Inserted placeholder is rendered as a chip in the editor", async () => {
@@ -348,10 +345,10 @@ export const PlaceholdersWithContent: StoryObj<typeof PlaceholdersWithContentSto
 
             await waitFor(
                 () => {
-                    // Each placeholder is rendered as a chip labelled `{{name}}` (not as plain text)
+                    // Each placeholder is rendered as a chip labelled `{{name}}` by its node view (not as plain text)
                     for (const name of ["firstName", "lastName", "email"]) {
                         const chipLabel = within(editor).getByText(`{{${name}}}`);
-                        expect(chipLabel.closest(`.${chipClasses.root}`)).toBeInTheDocument();
+                        expect(chipLabel.closest("[data-node-view-wrapper]")).toBeInTheDocument();
                     }
                 },
                 { timeout: 3000 },
@@ -481,7 +478,7 @@ export const StickyToolbar: StoryObj<typeof StickyToolbarStory> = {
         });
 
         const scrollContainer = getScrollContainer()!;
-        const undoButton = canvas.getAllByRole("button")[0];
+        const undoButton = canvas.getByRole("button", { name: "Undo" });
         const toolbar = findStickyAncestor(undoButton);
         const firstParagraph = canvas.getByText("Paragraph 1: enough text to make the container scroll past the toolbar.");
 

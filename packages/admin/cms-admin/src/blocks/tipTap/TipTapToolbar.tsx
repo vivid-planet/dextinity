@@ -1,49 +1,25 @@
-import { greyPalette, Tooltip } from "@dextinity/admin";
+import { RteAlignCenter, RteAlignJustify, RteAlignLeft, RteAlignRight } from "@dextinity/admin-icons";
 import {
-    Add,
-    MoreHorizontal,
-    RteAlignCenter,
-    RteAlignJustify,
-    RteAlignLeft,
-    RteAlignRight,
-    RteBold,
-    RteClearLink,
-    RteIndentDecrease,
-    RteIndentIncrease,
-    RteItalic,
-    RteLink,
-    RteNonBreakingSpace,
-    RteOl,
-    RteRedo,
-    RteSoftHyphen,
-    RteStrikethrough,
-    RteSub,
-    RteSup,
-    RteTextPlaceholder,
-    RteUl,
-    RteUnderlined,
-    RteUndo,
-    Translate,
-} from "@dextinity/admin-icons";
-import {
-    Box,
-    FormControl,
-    inputBaseClasses,
-    ListItemIcon,
-    ListItemText,
-    Menu,
+    formatShortcut,
+    Icon,
+    isApplePlatform,
+    MenuCheckboxItem,
     MenuItem,
-    Select,
-    type SelectChangeEvent,
-    selectClasses,
-    type SvgIconProps,
-} from "@mui/material";
-import { grey as muiGreyPalette } from "@mui/material/colors";
+    MenuRadioGroup,
+    MenuRadioItem,
+    Toolbar,
+    ToolbarButton,
+    ToolbarGroup,
+    ToolbarMenu,
+    ToolbarSeparator,
+} from "@dextinity/ui";
+import { styled } from "@mui/material/styles";
 import { type Editor, useEditorState } from "@tiptap/react";
-import { type ForwardRefExoticComponent, type MouseEvent, type ReactNode, type RefAttributes, useState } from "react";
-import { defineMessages, FormattedMessage, useIntl } from "react-intl";
+import { type ComponentType, Fragment, type ReactElement, type ReactNode, useState } from "react";
+import { defineMessages, useIntl } from "react-intl";
 
 import { stickyTopVariable } from "../common/stickyTopVariable";
+import { messageText } from "../form/messageText";
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
 import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions } from "./createTipTapRichTextBlock";
 import type { TipTapTextAlign } from "./extensions/textBlockAttributes";
@@ -64,94 +40,19 @@ import { TipTapBlockDialog } from "./TipTapBlockDialog";
 import { TipTapLinkDialog } from "./TipTapLinkDialog";
 import { updateTextBlockStyles } from "./updateTextBlockStyles";
 
-const toolbarButtonSx = {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: 24,
-    width: 24,
-    padding: 0,
-    backgroundColor: "transparent",
-    border: "1px solid transparent",
-    boxSizing: "border-box",
-    transition: "background-color 200ms, border-color 200ms, color 200ms",
-    color: muiGreyPalette[600],
-    "&:hover": {
-        backgroundColor: muiGreyPalette[200],
-        borderColor: muiGreyPalette[400],
-    },
-    "&:disabled": {
-        color: muiGreyPalette[300],
-        "&, &:hover": {
-            backgroundColor: "transparent",
-            borderColor: "transparent",
-        },
-    },
-} as const;
+type ToolbarMenuName = "textBlock" | "textBlockStyle" | "moreOptions" | "placeholder" | "childBlock";
 
-const toolbarButtonSelectedSx = {
-    "&:not(:disabled), &:not(:disabled):hover": {
-        borderColor: muiGreyPalette[400],
-        backgroundColor: "white",
-    },
-} as const;
-
-const ToolbarButton = ({
-    editor,
-    icon: Icon,
-    tooltip,
-    ariaLabel,
-    isActive,
-    disabled,
-    onToggle,
-}: {
-    editor: Editor;
-    icon: ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>;
-    tooltip: ReactNode;
-    ariaLabel?: string;
-    isActive?: string | boolean;
-    disabled?: boolean;
+interface MoreOptionsItem {
+    key: string;
+    icon?: ReactNode;
+    label: string;
+    isActive: boolean;
     onToggle: () => void;
-}) => (
-    <Tooltip title={tooltip}>
-        <Box
-            component="button"
-            type="button"
-            aria-label={ariaLabel}
-            disabled={disabled}
-            onMouseDown={(e: MouseEvent) => {
-                e.preventDefault();
-                onToggle();
-            }}
-            sx={{
-                ...toolbarButtonSx,
-                ...((typeof isActive === "string" ? editor.isActive(isActive) : isActive) ? toolbarButtonSelectedSx : {}),
-            }}
-        >
-            <Icon sx={{ fontSize: 15 }} color="inherit" />
-        </Box>
-    </Tooltip>
-);
+}
 
-const toolbarSlotSx = {
-    display: "flex",
-    alignItems: "center",
-    flexShrink: 0,
-    flexGrow: 0,
-    height: 34,
-    boxSizing: "border-box",
-    py: "5px",
-    pr: "6px",
-    mr: "5px",
-    borderRight: `1px solid ${greyPalette[100]}`,
-    "&:last-child": {
-        mr: 0,
-        pr: 0,
-        borderRight: "none",
-    },
-} as const;
-
-const ToolbarGroup = ({ children }: { children: ReactNode }) => <Box sx={toolbarSlotSx}>{children}</Box>;
+function shortcutLabel(shortcut: string) {
+    return formatShortcut(shortcut).join(isApplePlatform() ? "" : "+");
+}
 
 const textAlignMessages = defineMessages({
     left: { id: "dextinity.blocks.tipTapRichText.alignLeft.tooltip", defaultMessage: "Align left" },
@@ -160,12 +61,32 @@ const textAlignMessages = defineMessages({
     justify: { id: "dextinity.blocks.tipTapRichText.alignJustify.tooltip", defaultMessage: "Justify" },
 });
 
-const textAlignIcons: Record<TipTapTextAlign, ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>> = {
+const textAlignShortcuts: Record<TipTapTextAlign, string> = {
+    left: "shift+mod+L",
+    center: "shift+mod+E",
+    right: "shift+mod+R",
+    justify: "shift+mod+J",
+};
+
+// The icon set of @dextinity/ui has no text alignment icons yet, so these come from @dextinity/admin-icons, sized like an `Icon`
+const textAlignIcons: Record<TipTapTextAlign, ComponentType<{ className?: string }>> = {
     left: RteAlignLeft,
     center: RteAlignCenter,
     right: RteAlignRight,
     justify: RteAlignJustify,
 };
+
+const TextAlignIcon = ({ textAlign }: { textAlign: TipTapTextAlign }) => {
+    const SvgIcon = textAlignIcons[textAlign];
+    return <TextAlignSvgIconRoot as={SvgIcon} />;
+};
+
+const TextAlignSvgIconRoot = styled("svg")`
+    inline-size: var(--dextinity-icon-size, var(--dextinity-icon-size-small));
+    block-size: var(--dextinity-icon-size, var(--dextinity-icon-size-small));
+    font-size: inherit;
+    vertical-align: middle;
+`;
 
 const textAlignOf = (attrs: Record<string, unknown>): TipTapTextAlign => (attrs.textAlign as TipTapTextAlign | null) ?? "left";
 
@@ -179,27 +100,6 @@ function isSelectionAligned(editor: Editor, textAlign: TipTapTextAlign) {
     });
     return isAligned;
 }
-
-const selectFormControlSx = {
-    [`& .${inputBaseClasses.root}`]: {
-        backgroundColor: "transparent",
-        height: "auto",
-        border: "none",
-        "&, &:hover": { "&:before, &:after": { borderBottomWidth: 0 } },
-    },
-    [`& .${selectClasses.icon}`]: { top: "auto", color: "inherit" },
-} as const;
-
-const selectSx = {
-    [`& .${selectClasses.select}.${inputBaseClasses.input}`]: {
-        minHeight: 0,
-        color: muiGreyPalette[600],
-        minWidth: 180,
-        lineHeight: "24px",
-        fontSize: 14,
-        p: 0,
-    },
-} as const;
 
 export const TipTapToolbar = ({
     editor,
@@ -223,9 +123,7 @@ export const TipTapToolbar = ({
     onTranslateClick?: () => void;
 }) => {
     const intl = useIntl();
-    const [moreAnchorEl, setMoreAnchorEl] = useState<null | HTMLElement>(null);
-    const [placeholderAnchorEl, setPlaceholderAnchorEl] = useState<null | HTMLElement>(null);
-    const [childBlockAnchorEl, setChildBlockAnchorEl] = useState<null | HTMLElement>(null);
+    const [openMenu, setOpenMenu] = useState<ToolbarMenuName | null>(null);
     const [insertChildBlock, setInsertChildBlock] = useState<({ key: string } & TipTapChildBlock) | null>(null);
     const [linkDialogOpen, setLinkDialogOpen] = useState(false);
     const hasInlineFormatButtons = resolvedOptions.bold || resolvedOptions.italic || resolvedOptions.underline || resolvedOptions.strike;
@@ -256,7 +154,6 @@ export const TipTapToolbar = ({
                 }
                 return activeTextBlock.name;
             })();
-            // Calculate current list nesting depth for listLevelMax enforcement.
             // The list item node only exists in the schema when lists are enabled.
             let canIndent = lists && e.can().sinkListItem("listItem");
             if (canIndent && listLevelMax !== undefined) {
@@ -297,37 +194,20 @@ export const TipTapToolbar = ({
         },
     });
 
-    const handleMoreClose = () => {
-        setMoreAnchorEl(null);
-        setTimeout(() => editor.commands.focus(), 0);
-    };
+    const label = (descriptor: { id: string; defaultMessage: string }) => intl.formatMessage(descriptor);
+    const textOf = (node: ReactNode, fallback: string) => messageText(intl, node) ?? fallback;
 
-    // Menu items run their action via onMouseDown (before the browser's default focus change collapses the
-    // editor selection) and via onClick guarded to keyboard activation (MouseEvent.detail is 0 there, unlike
-    // for a real pointer click), so both mouse and keyboard users can toggle a menu item.
-    const runMenuItemAction = (action: () => void) => {
-        handleMoreClose();
+    const handleMenuOpenChange = (menu: ToolbarMenuName) => (open: boolean) => setOpenMenu(open ? menu : null);
+
+    // The menu hands the focus back to its trigger as it closes, so the editor is focused - with its selection - afterwards.
+    const runAfterMenuCloses = (action: () => void) => {
+        setOpenMenu(null);
         setTimeout(action, 0);
-    };
-    const handleMenuItemKeyboardActivate = (e: MouseEvent, action: () => void) => {
-        if (e.detail === 0) {
-            runMenuItemAction(action);
-        }
-    };
-
-    const handlePlaceholderClose = () => {
-        setPlaceholderAnchorEl(null);
-        setTimeout(() => editor.commands.focus(), 0);
-    };
-
-    const handleChildBlockClose = () => {
-        setChildBlockAnchorEl(null);
-        setTimeout(() => editor.commands.focus(), 0);
     };
 
     const activeStyledNode = styledNodes.find((styledNode) => styledNode.name === editorState.activeStyledNode);
     const applicableTextBlockStyles = activeStyledNode?.styles ?? [];
-    // A configured default style means every text block of that type has one, so the styling select
+    // A configured default style means every text block of that type has one, so the styling menu
     // drops its "Default" entry and the choice becomes mandatory.
     const activeDefaultStyle = activeStyledNode?.defaultStyle ?? null;
     const applicableInlineStyles = inlineStyles.filter((style) => !style.appliesTo || style.appliesTo.includes(editorState.activeStyledNode));
@@ -335,19 +215,17 @@ export const TipTapToolbar = ({
     // styles adds an extra click for no space savings, so show them as individual buttons instead
     const showMoreOptionsAsButtons = !hasInlineFormatButtons && inlineStyles.every((style) => style.icon);
 
-    const moreOptionsItems: {
-        key: string;
-        icon?: ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>;
-        label: ReactNode;
-        isActive: boolean;
-        onToggle: () => void;
-    }[] = [
+    const defaultStyleLabel = label({ id: "dextinity.blocks.tipTapRichText.textBlockStyle.default", defaultMessage: "Default" });
+    const activeTextBlock = textBlocks.find((textBlock) => textBlock.name === editorState.activeTextBlock);
+    const activeTextBlockStyle = applicableTextBlockStyles.find((style) => style.name === editorState.activeTextBlockStyle);
+
+    const moreOptionsItems: MoreOptionsItem[] = [
         ...(resolvedOptions.sup
             ? [
                   {
                       key: "superscript",
-                      icon: RteSup,
-                      label: <FormattedMessage id="dextinity.blocks.tipTapRichText.superscript.label" defaultMessage="Superscript" />,
+                      icon: <Icon name="rte-sup" />,
+                      label: label({ id: "dextinity.blocks.tipTapRichText.superscript.label", defaultMessage: "Superscript" }),
                       isActive: editorState.isSuperscriptActive,
                       onToggle: () => editor.chain().focus().toggleSuperscript().run(),
                   },
@@ -357,8 +235,8 @@ export const TipTapToolbar = ({
             ? [
                   {
                       key: "subscript",
-                      icon: RteSub,
-                      label: <FormattedMessage id="dextinity.blocks.tipTapRichText.subscript.label" defaultMessage="Subscript" />,
+                      icon: <Icon name="rte-sub" />,
+                      label: label({ id: "dextinity.blocks.tipTapRichText.subscript.label", defaultMessage: "Subscript" }),
                       isActive: editorState.isSubscriptActive,
                       onToggle: () => editor.chain().focus().toggleSubscript().run(),
                   },
@@ -367,7 +245,7 @@ export const TipTapToolbar = ({
         ...applicableInlineStyles.map((style) => ({
             key: style.name,
             icon: style.icon,
-            label: style.label,
+            label: textOf(style.label, style.name),
             isActive: editorState.activeInlineStyles[style.name],
             onToggle: () => {
                 if (editorState.activeInlineStyles[style.name]) {
@@ -379,8 +257,8 @@ export const TipTapToolbar = ({
         })),
     ];
 
-    const handleTextBlockChange = (e: SelectChangeEvent) => {
-        const textBlock = textBlocks.find((candidate: TipTapResolvedTextBlock) => candidate.name === e.target.value);
+    const handleTextBlockChange = (name: string) => {
+        const textBlock = textBlocks.find((candidate: TipTapResolvedTextBlock) => candidate.name === name);
         if (!textBlock) {
             return;
         }
@@ -414,380 +292,375 @@ export const TipTapToolbar = ({
         });
     };
 
-    const handleTextBlockStyleChange = (e: SelectChangeEvent) => {
+    const handleTextBlockStyleChange = (styleName: string) => {
         editor
             .chain()
             .focus()
-            .updateAttributes("textBlock", { textBlockStyle: e.target.value || null })
+            .updateAttributes("textBlock", { textBlockStyle: styleName || null })
             .run();
     };
 
-    return (
-        <Box
-            className="DextinityAdminTipTapToolbar-root"
-            sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                position: "sticky",
-                top: `var(${stickyTopVariable}, 0px)`,
-                zIndex: 2,
-                borderTop: `1px solid ${greyPalette[100]}`,
-                backgroundColor: muiGreyPalette[100],
-                px: "6px",
-            }}
-        >
-            {resolvedOptions.undoRedoButtons && (
-                <ToolbarGroup>
+    const groups: { key: string; content: ReactElement }[] = [];
+
+    if (resolvedOptions.undoRedoButtons) {
+        groups.push({
+            key: "history",
+            content: (
+                <ToolbarGroup aria-label={label({ id: "dextinity.blocks.tipTapRichText.history", defaultMessage: "History" })}>
                     <ToolbarButton
-                        editor={editor}
-                        icon={RteUndo}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.undo.tooltip" defaultMessage="Undo" />}
+                        aria-label={label({ id: "dextinity.blocks.tipTapRichText.undo.tooltip", defaultMessage: "Undo" })}
+                        shortcut={shortcutLabel("mod+z")}
                         disabled={!editorState.canUndo}
-                        onToggle={() => editor.chain().focus().undo().run()}
-                    />
+                        keepFocus
+                        onClick={() => editor.chain().focus().undo().run()}
+                    >
+                        <Icon name="rte-undo" />
+                    </ToolbarButton>
                     <ToolbarButton
-                        editor={editor}
-                        icon={RteRedo}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.redo.tooltip" defaultMessage="Redo" />}
+                        aria-label={label({ id: "dextinity.blocks.tipTapRichText.redo.tooltip", defaultMessage: "Redo" })}
+                        shortcut={shortcutLabel("shift+mod+z")}
                         disabled={!editorState.canRedo}
-                        onToggle={() => editor.chain().focus().redo().run()}
-                    />
+                        keepFocus
+                        onClick={() => editor.chain().focus().redo().run()}
+                    >
+                        <Icon name="rte-redo" />
+                    </ToolbarButton>
                 </ToolbarGroup>
-            )}
-            {textBlocks.length > 1 && (
-                <ToolbarGroup>
-                    <FormControl sx={selectFormControlSx}>
-                        <Select
-                            value={editorState.activeTextBlock}
-                            onChange={handleTextBlockChange}
-                            displayEmpty
-                            variant="filled"
-                            MenuProps={{ elevation: 1 }}
-                            sx={selectSx}
-                        >
-                            {textBlocks.map((textBlock) => (
-                                <MenuItem key={textBlock.name} value={textBlock.name} dense>
-                                    {textBlock.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </ToolbarGroup>
-            )}
-            {hasTextBlockStyles(styledNodes) && (
-                <ToolbarGroup>
-                    <FormControl sx={selectFormControlSx}>
-                        <Select
-                            value={editorState.activeTextBlockStyle}
-                            disabled={applicableTextBlockStyles.length === 0}
-                            onChange={handleTextBlockStyleChange}
-                            displayEmpty
-                            variant="filled"
-                            MenuProps={{ elevation: 1 }}
-                            sx={selectSx}
-                        >
-                            {activeDefaultStyle === null && (
-                                <MenuItem value="" dense>
-                                    <FormattedMessage id="dextinity.blocks.tipTapRichText.textBlockStyle.default" defaultMessage="Default" />
-                                </MenuItem>
-                            )}
-                            {applicableTextBlockStyles.map((style) => (
-                                <MenuItem key={style.name} value={style.name} dense>
-                                    {style.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </ToolbarGroup>
-            )}
-            {canTranslate && (
-                <ToolbarGroup>
-                    <ToolbarButton
-                        editor={editor}
-                        icon={Translate}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.translate.tooltip" defaultMessage="Translate" />}
-                        onToggle={() => onTranslateClick?.()}
-                    />
-                </ToolbarGroup>
-            )}
-            {(hasInlineFormatButtons || moreOptions || applicableInlineStyles.length > 0) && (
-                <ToolbarGroup>
+            ),
+        });
+    }
+
+    if (textBlocks.length > 1) {
+        groups.push({
+            key: "textBlock",
+            content: (
+                <ToolbarMenu
+                    label={activeTextBlock?.label}
+                    aria-label={label({ id: "dextinity.blocks.tipTapRichText.textBlock", defaultMessage: "Text type" })}
+                    open={openMenu === "textBlock"}
+                    onOpenChange={handleMenuOpenChange("textBlock")}
+                >
+                    <MenuRadioGroup value={editorState.activeTextBlock} onChange={(name) => runAfterMenuCloses(() => handleTextBlockChange(name))}>
+                        {textBlocks.map((textBlock) => (
+                            <MenuRadioItem key={textBlock.name} value={textBlock.name} label={textOf(textBlock.label, textBlock.name)} />
+                        ))}
+                    </MenuRadioGroup>
+                </ToolbarMenu>
+            ),
+        });
+    }
+
+    if (hasTextBlockStyles(styledNodes)) {
+        groups.push({
+            key: "textBlockStyle",
+            content: (
+                <ToolbarMenu
+                    label={activeTextBlockStyle?.label ?? defaultStyleLabel}
+                    aria-label={label({ id: "dextinity.blocks.tipTapRichText.textBlockStyle", defaultMessage: "Text style" })}
+                    disabled={applicableTextBlockStyles.length === 0}
+                    open={openMenu === "textBlockStyle"}
+                    onOpenChange={handleMenuOpenChange("textBlockStyle")}
+                >
+                    <MenuRadioGroup
+                        value={editorState.activeTextBlockStyle}
+                        onChange={(styleName) => runAfterMenuCloses(() => handleTextBlockStyleChange(styleName))}
+                    >
+                        {activeDefaultStyle === null && <MenuRadioItem value="" label={defaultStyleLabel} />}
+                        {applicableTextBlockStyles.map((style) => (
+                            <MenuRadioItem key={style.name} value={style.name} label={textOf(style.label, style.name)} />
+                        ))}
+                    </MenuRadioGroup>
+                </ToolbarMenu>
+            ),
+        });
+    }
+
+    if (canTranslate) {
+        groups.push({
+            key: "translate",
+            content: (
+                <ToolbarButton
+                    aria-label={label({ id: "dextinity.blocks.tipTapRichText.translate.tooltip", defaultMessage: "Translate" })}
+                    onClick={() => onTranslateClick?.()}
+                >
+                    <Icon name="translate" />
+                </ToolbarButton>
+            ),
+        });
+    }
+
+    if (hasInlineFormatButtons || moreOptions || applicableInlineStyles.length > 0) {
+        groups.push({
+            key: "formatting",
+            content: (
+                <ToolbarGroup aria-label={label({ id: "dextinity.blocks.tipTapRichText.formatting", defaultMessage: "Formatting" })}>
                     {resolvedOptions.bold && (
                         <ToolbarButton
-                            editor={editor}
-                            icon={RteBold}
-                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.bold.tooltip" defaultMessage="Bold" />}
-                            isActive="bold"
-                            onToggle={() => editor.chain().focus().toggleBold().run()}
-                        />
+                            aria-label={label({ id: "dextinity.blocks.tipTapRichText.bold.tooltip", defaultMessage: "Bold" })}
+                            shortcut={shortcutLabel("mod+b")}
+                            pressed={editorState.isBoldActive}
+                            keepFocus
+                            onClick={() => editor.chain().focus().toggleBold().run()}
+                        >
+                            <Icon name="rte-bold" />
+                        </ToolbarButton>
                     )}
                     {resolvedOptions.italic && (
                         <ToolbarButton
-                            editor={editor}
-                            icon={RteItalic}
-                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.italic.tooltip" defaultMessage="Italic" />}
-                            isActive="italic"
-                            onToggle={() => editor.chain().focus().toggleItalic().run()}
-                        />
+                            aria-label={label({ id: "dextinity.blocks.tipTapRichText.italic.tooltip", defaultMessage: "Italic" })}
+                            shortcut={shortcutLabel("mod+i")}
+                            pressed={editorState.isItalicActive}
+                            keepFocus
+                            onClick={() => editor.chain().focus().toggleItalic().run()}
+                        >
+                            <Icon name="rte-italic" />
+                        </ToolbarButton>
                     )}
                     {resolvedOptions.underline && (
                         <ToolbarButton
-                            editor={editor}
-                            icon={RteUnderlined}
-                            tooltip={<FormattedMessage id="dextintiy.blocks.tipTapRichText.underline.tooltip" defaultMessage="Underline" />}
-                            isActive="underline"
-                            onToggle={() => editor.chain().focus().toggleUnderline().run()}
-                        />
+                            aria-label={label({ id: "dextinity.blocks.tipTapRichText.underline.tooltip", defaultMessage: "Underline" })}
+                            shortcut={shortcutLabel("mod+u")}
+                            pressed={editorState.isUnderlineActive}
+                            keepFocus
+                            onClick={() => editor.chain().focus().toggleUnderline().run()}
+                        >
+                            <Icon name="rte-underlined" />
+                        </ToolbarButton>
                     )}
                     {resolvedOptions.strike && (
                         <ToolbarButton
-                            editor={editor}
-                            icon={RteStrikethrough}
-                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.strike.tooltip" defaultMessage="Strikethrough" />}
-                            isActive="strike"
-                            onToggle={() => editor.chain().focus().toggleStrike().run()}
-                        />
+                            aria-label={label({ id: "dextinity.blocks.tipTapRichText.strike.tooltip", defaultMessage: "Strikethrough" })}
+                            shortcut={shortcutLabel("shift+mod+s")}
+                            pressed={editorState.isStrikeActive}
+                            keepFocus
+                            onClick={() => editor.chain().focus().toggleStrike().run()}
+                        >
+                            <Icon name="rte-strikethrough" />
+                        </ToolbarButton>
                     )}
-                    {(moreOptions || applicableInlineStyles.length > 0) &&
+                    {moreOptionsItems.length > 0 &&
                         (showMoreOptionsAsButtons ? (
-                            <>
+                            moreOptionsItems.map((item) => (
+                                <ToolbarButton key={item.key} aria-label={item.label} pressed={item.isActive} keepFocus onClick={item.onToggle}>
+                                    {item.icon}
+                                </ToolbarButton>
+                            ))
+                        ) : (
+                            <ToolbarMenu
+                                icon={<Icon name="more-horizontal" />}
+                                aria-label={label({ id: "dextinity.blocks.tipTapRichText.moreOptions.tooltip", defaultMessage: "More options" })}
+                                open={openMenu === "moreOptions"}
+                                onOpenChange={handleMenuOpenChange("moreOptions")}
+                            >
                                 {moreOptionsItems.map((item) => (
-                                    <ToolbarButton
+                                    <MenuCheckboxItem
                                         key={item.key}
-                                        editor={editor}
-                                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- guaranteed by showMoreOptionsAsButtons
-                                        icon={item.icon!}
-                                        tooltip={item.label}
-                                        isActive={item.isActive}
-                                        onToggle={item.onToggle}
+                                        icon={item.icon}
+                                        label={item.label}
+                                        checked={item.isActive}
+                                        closeOnClick
+                                        onChange={() => runAfterMenuCloses(item.onToggle)}
                                     />
                                 ))}
-                            </>
-                        ) : (
-                            <>
-                                <Tooltip
-                                    title={
-                                        <FormattedMessage id="dextinity.blocks.tipTapRichText.moreOptions.tooltip" defaultMessage="More options" />
-                                    }
-                                >
-                                    <Box
-                                        component="button"
-                                        type="button"
-                                        aria-label={intl.formatMessage({
-                                            id: "dextinity.blocks.tipTapRichText.moreOptions.tooltip",
-                                            defaultMessage: "More options",
-                                        })}
-                                        onMouseDown={(e: MouseEvent) => {
-                                            e.preventDefault();
-                                            setMoreAnchorEl(e.currentTarget as HTMLElement);
-                                        }}
-                                        onClick={(e: MouseEvent) => {
-                                            if (e.detail === 0) {
-                                                setMoreAnchorEl(e.currentTarget as HTMLElement);
-                                            }
-                                        }}
-                                        sx={toolbarButtonSx}
-                                    >
-                                        <MoreHorizontal sx={{ fontSize: 15 }} color="inherit" />
-                                    </Box>
-                                </Tooltip>
-                                <Menu open={Boolean(moreAnchorEl)} anchorEl={moreAnchorEl} onClose={handleMoreClose}>
-                                    {moreOptionsItems.map((item) => {
-                                        const Icon = item.icon;
-                                        return (
-                                            <MenuItem
-                                                key={item.key}
-                                                selected={item.isActive}
-                                                onMouseDown={() => runMenuItemAction(item.onToggle)}
-                                                onClick={(e) => handleMenuItemKeyboardActivate(e, item.onToggle)}
-                                            >
-                                                {Icon && (
-                                                    <ListItemIcon>
-                                                        <Icon />
-                                                    </ListItemIcon>
-                                                )}
-                                                <ListItemText>{item.label}</ListItemText>
-                                            </MenuItem>
-                                        );
-                                    })}
-                                </Menu>
-                            </>
+                            </ToolbarMenu>
                         ))}
                 </ToolbarGroup>
-            )}
-            {resolvedOptions.textAlign.length > 0 && (
-                <ToolbarGroup>
+            ),
+        });
+    }
+
+    if (resolvedOptions.textAlign.length > 0) {
+        groups.push({
+            key: "textAlign",
+            content: (
+                <ToolbarGroup aria-label={label({ id: "dextinity.blocks.tipTapRichText.textAlign", defaultMessage: "Text alignment" })}>
                     {resolvedOptions.textAlign.map((textAlign) => (
                         <ToolbarButton
                             key={textAlign}
-                            editor={editor}
-                            icon={textAlignIcons[textAlign]}
-                            tooltip={<FormattedMessage {...textAlignMessages[textAlign]} />}
-                            ariaLabel={intl.formatMessage(textAlignMessages[textAlign])}
-                            isActive={editorState.activeTextAlign === textAlign}
-                            onToggle={() => {
+                            aria-label={label(textAlignMessages[textAlign])}
+                            shortcut={shortcutLabel(textAlignShortcuts[textAlign])}
+                            pressed={editorState.activeTextAlign === textAlign}
+                            keepFocus
+                            onClick={() => {
                                 if (!isSelectionAligned(editor, textAlign)) {
                                     editor.chain().focus().updateAttributes("textBlock", { textAlign }).run();
                                 }
                             }}
-                        />
+                        >
+                            <TextAlignIcon textAlign={textAlign} />
+                        </ToolbarButton>
                     ))}
                 </ToolbarGroup>
-            )}
-            {lists && (
-                <ToolbarGroup>
+            ),
+        });
+    }
+
+    if (lists) {
+        groups.push({
+            key: "lists",
+            content: (
+                <ToolbarGroup aria-label={label({ id: "dextinity.blocks.tipTapRichText.lists", defaultMessage: "Lists" })}>
                     {resolvedOptions.orderedList && (
                         <ToolbarButton
-                            editor={editor}
-                            icon={RteOl}
-                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.orderedList.tooltip" defaultMessage="Ordered list" />}
-                            isActive="orderedList"
-                            onToggle={() => handleListToggle(resolvedOptions.orderedList as TipTapResolvedList)}
-                        />
+                            aria-label={label({ id: "dextinity.blocks.tipTapRichText.orderedList.tooltip", defaultMessage: "Ordered list" })}
+                            shortcut={shortcutLabel("shift+mod+7")}
+                            pressed={editorState.isOrderedListActive}
+                            keepFocus
+                            onClick={() => handleListToggle(resolvedOptions.orderedList as TipTapResolvedList)}
+                        >
+                            <Icon name="rte-ol" />
+                        </ToolbarButton>
                     )}
                     {resolvedOptions.unorderedList && (
                         <ToolbarButton
-                            editor={editor}
-                            icon={RteUl}
-                            tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.bulletList.tooltip" defaultMessage="Bullet list" />}
-                            isActive="bulletList"
-                            onToggle={() => handleListToggle(resolvedOptions.unorderedList as TipTapResolvedList)}
-                        />
+                            aria-label={label({ id: "dextinity.blocks.tipTapRichText.bulletList.tooltip", defaultMessage: "Bullet list" })}
+                            shortcut={shortcutLabel("shift+mod+8")}
+                            pressed={editorState.isBulletListActive}
+                            keepFocus
+                            onClick={() => handleListToggle(resolvedOptions.unorderedList as TipTapResolvedList)}
+                        >
+                            <Icon name="rte-ul-bullet-point" />
+                        </ToolbarButton>
                     )}
                     <ToolbarButton
-                        editor={editor}
-                        icon={RteIndentIncrease}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.indent.tooltip" defaultMessage="Increase indent" />}
+                        aria-label={label({ id: "dextinity.blocks.tipTapRichText.indent.tooltip", defaultMessage: "Increase indent" })}
+                        shortcut={shortcutLabel("Tab")}
                         disabled={!editorState.canIndent}
-                        onToggle={() => editor.chain().focus().sinkListItem("listItem").run()}
-                    />
-                    <ToolbarButton
-                        editor={editor}
-                        icon={RteIndentDecrease}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.dedent.tooltip" defaultMessage="Decrease indent" />}
-                        disabled={!editorState.canDedent}
-                        onToggle={() => editor.chain().focus().liftListItem("listItem").run()}
-                    />
-                </ToolbarGroup>
-            )}
-            {hasLink && linkBlock && (
-                <ToolbarGroup>
-                    <ToolbarButton
-                        editor={editor}
-                        icon={RteLink}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.link.tooltip" defaultMessage="Link" />}
-                        isActive="link"
-                        disabled={editorState.selectionEmpty && !editorState.isLinkActive}
-                        onToggle={() => setLinkDialogOpen(true)}
-                    />
-                    <ToolbarButton
-                        editor={editor}
-                        icon={RteClearLink}
-                        tooltip={<FormattedMessage id="dextinity.blocks.tipTapRichText.removeLink.tooltip" defaultMessage="Remove link" />}
-                        disabled={!editorState.isLinkActive}
-                        onToggle={() => editor.chain().focus().extendMarkRange("link").unsetCmsLink().run()}
-                    />
-                </ToolbarGroup>
-            )}
-            {hasPlaceholders && (
-                <ToolbarGroup>
-                    <Tooltip
-                        title={<FormattedMessage id="dextinity.blocks.tipTapRichText.placeholder.tooltip" defaultMessage="Insert placeholder" />}
+                        keepFocus
+                        onClick={() => editor.chain().focus().sinkListItem("listItem").run()}
                     >
-                        <Box
-                            component="button"
-                            type="button"
-                            aria-label={intl.formatMessage({
-                                id: "dextinity.blocks.tipTapRichText.placeholder.tooltip",
-                                defaultMessage: "Insert placeholder",
-                            })}
-                            onMouseDown={(e: MouseEvent) => {
-                                e.preventDefault();
-                                setPlaceholderAnchorEl(e.currentTarget as HTMLElement);
-                            }}
-                            sx={toolbarButtonSx}
-                        >
-                            <RteTextPlaceholder sx={{ fontSize: 15 }} color="inherit" />
-                        </Box>
-                    </Tooltip>
-                    <Menu open={Boolean(placeholderAnchorEl)} anchorEl={placeholderAnchorEl} onClose={handlePlaceholderClose}>
-                        {placeholders.map((placeholder) => (
-                            <MenuItem
-                                key={placeholder.name}
-                                onMouseDown={(e) => {
-                                    handlePlaceholderClose();
-                                    e.persist();
-                                    setTimeout(() => editor.chain().focus().insertPlaceholder(placeholder.name).run(), 0);
-                                }}
-                            >
-                                {placeholder.label}
-                            </MenuItem>
-                        ))}
-                    </Menu>
+                        <Icon name="rte-indent-increase" />
+                    </ToolbarButton>
+                    <ToolbarButton
+                        aria-label={label({ id: "dextinity.blocks.tipTapRichText.dedent.tooltip", defaultMessage: "Decrease indent" })}
+                        shortcut={shortcutLabel("shift+Tab")}
+                        disabled={!editorState.canDedent}
+                        keepFocus
+                        onClick={() => editor.chain().focus().liftListItem("listItem").run()}
+                    >
+                        <Icon name="rte-indent-decrease" />
+                    </ToolbarButton>
                 </ToolbarGroup>
-            )}
-            {specialChars && (
-                <ToolbarGroup>
+            ),
+        });
+    }
+
+    if (hasLink) {
+        groups.push({
+            key: "link",
+            content: (
+                <ToolbarGroup aria-label={label({ id: "dextinity.blocks.tipTapRichText.links", defaultMessage: "Links" })}>
+                    <ToolbarButton
+                        aria-label={label({ id: "dextinity.blocks.tipTapRichText.link.tooltip", defaultMessage: "Link" })}
+                        pressed={editorState.isLinkActive}
+                        disabled={editorState.selectionEmpty && !editorState.isLinkActive}
+                        keepFocus
+                        onClick={() => setLinkDialogOpen(true)}
+                    >
+                        <Icon name="rte-link" />
+                    </ToolbarButton>
+                    <ToolbarButton
+                        aria-label={label({ id: "dextinity.blocks.tipTapRichText.removeLink.tooltip", defaultMessage: "Remove link" })}
+                        disabled={!editorState.isLinkActive}
+                        keepFocus
+                        onClick={() => editor.chain().focus().extendMarkRange("link").unsetCmsLink().run()}
+                    >
+                        <Icon name="rte-clear-link" />
+                    </ToolbarButton>
+                </ToolbarGroup>
+            ),
+        });
+    }
+
+    if (hasPlaceholders) {
+        groups.push({
+            key: "placeholder",
+            content: (
+                <ToolbarMenu
+                    icon={<Icon name="rte-text-placeholder" />}
+                    aria-label={label({ id: "dextinity.blocks.tipTapRichText.placeholder.tooltip", defaultMessage: "Insert placeholder" })}
+                    open={openMenu === "placeholder"}
+                    onOpenChange={handleMenuOpenChange("placeholder")}
+                >
+                    {placeholders.map((placeholder) => (
+                        <MenuItem
+                            key={placeholder.name}
+                            label={textOf(placeholder.label, placeholder.name)}
+                            onClick={() => runAfterMenuCloses(() => editor.chain().focus().insertPlaceholder(placeholder.name).run())}
+                        />
+                    ))}
+                </ToolbarMenu>
+            ),
+        });
+    }
+
+    if (specialChars) {
+        groups.push({
+            key: "specialCharacters",
+            content: (
+                <ToolbarGroup aria-label={label({ id: "dextinity.blocks.tipTapRichText.specialCharacters", defaultMessage: "Special characters" })}>
                     {resolvedOptions.nonBreakingSpace && (
                         <ToolbarButton
-                            editor={editor}
-                            icon={RteNonBreakingSpace}
-                            tooltip={
-                                <FormattedMessage
-                                    id="dextinity.blocks.tipTapRichText.nonBreakingSpace.tooltip"
-                                    defaultMessage="Insert a non-breaking space"
-                                />
-                            }
-                            onToggle={() => editor.chain().focus().insertNonBreakingSpace().run()}
-                        />
+                            aria-label={label({
+                                id: "dextinity.blocks.tipTapRichText.nonBreakingSpace.tooltip",
+                                defaultMessage: "Insert a non-breaking space",
+                            })}
+                            keepFocus
+                            onClick={() => editor.chain().focus().insertNonBreakingSpace().run()}
+                        >
+                            <Icon name="rte-non-breaking-space" />
+                        </ToolbarButton>
                     )}
                     {resolvedOptions.softHyphen && (
                         <ToolbarButton
-                            editor={editor}
-                            icon={RteSoftHyphen}
-                            tooltip={
-                                <FormattedMessage id="dextinity.blocks.tipTapRichText.softHyphen.tooltip" defaultMessage="Insert a soft hyphen" />
-                            }
-                            onToggle={() => editor.chain().focus().insertSoftHyphen().run()}
-                        />
+                            aria-label={label({ id: "dextinity.blocks.tipTapRichText.softHyphen.tooltip", defaultMessage: "Insert a soft hyphen" })}
+                            keepFocus
+                            onClick={() => editor.chain().focus().insertSoftHyphen().run()}
+                        >
+                            <Icon name="rte-soft-hyphen" />
+                        </ToolbarButton>
                     )}
                 </ToolbarGroup>
-            )}
-            {hasChildBlocks && (
-                <ToolbarGroup>
-                    <Tooltip title={<FormattedMessage id="dextinity.blocks.tipTapRichText.insertBlock.tooltip" defaultMessage="Insert block" />}>
-                        <Box
-                            component="button"
-                            type="button"
-                            aria-label={intl.formatMessage({
-                                id: "dextinity.blocks.tipTapRichText.insertBlock.tooltip",
-                                defaultMessage: "Insert block",
-                            })}
-                            onMouseDown={(e: MouseEvent) => {
-                                e.preventDefault();
-                                setChildBlockAnchorEl(e.currentTarget as HTMLElement);
+            ),
+        });
+    }
+
+    if (hasChildBlocks) {
+        groups.push({
+            key: "childBlock",
+            content: (
+                <ToolbarMenu
+                    icon={<Icon name="plus" />}
+                    aria-label={label({ id: "dextinity.blocks.tipTapRichText.insertBlock.tooltip", defaultMessage: "Insert block" })}
+                    open={openMenu === "childBlock"}
+                    onOpenChange={handleMenuOpenChange("childBlock")}
+                >
+                    {Object.entries(childBlocks).map(([key, childBlock]) => (
+                        <MenuItem
+                            key={key}
+                            label={textOf(childBlock.block.displayName, key)}
+                            onClick={() => {
+                                // The dialog takes the focus; refocusing the editor would steal it back
+                                setOpenMenu(null);
+                                setInsertChildBlock({ key, ...childBlock });
                             }}
-                            sx={toolbarButtonSx}
-                        >
-                            <Add sx={{ fontSize: 15 }} color="inherit" />
-                        </Box>
-                    </Tooltip>
-                    <Menu open={Boolean(childBlockAnchorEl)} anchorEl={childBlockAnchorEl} onClose={handleChildBlockClose}>
-                        {Object.entries(childBlocks).map(([key, childBlock]) => (
-                            <MenuItem
-                                key={key}
-                                onClick={() => {
-                                    // Refocusing the editor here would steal focus from the dialog after it has opened
-                                    setChildBlockAnchorEl(null);
-                                    setInsertChildBlock({ key, ...childBlock });
-                                }}
-                            >
-                                {childBlock.block.displayName}
-                            </MenuItem>
-                        ))}
-                    </Menu>
-                </ToolbarGroup>
-            )}
+                        />
+                    ))}
+                </ToolbarMenu>
+            ),
+        });
+    }
+
+    return (
+        <>
+            <StickyToolbar aria-label={label({ id: "dextinity.blocks.tipTapRichText.toolbar", defaultMessage: "Rich text formatting" })}>
+                {groups.map((group, index) => (
+                    <Fragment key={group.key}>
+                        {index > 0 && <ToolbarSeparator />}
+                        {group.content}
+                    </Fragment>
+                ))}
+            </StickyToolbar>
             {linkDialogOpen && linkBlock && <TipTapLinkDialog editor={editor} linkBlock={linkBlock} onClose={() => setLinkDialogOpen(false)} />}
             {insertChildBlock && (
                 <TipTapBlockDialog
@@ -805,6 +678,16 @@ export const TipTapToolbar = ({
                     onClose={() => setInsertChildBlock(null)}
                 />
             )}
-        </Box>
+        </>
     );
 };
+
+const StickyToolbar = styled(Toolbar)`
+    position: sticky;
+    top: var(${stickyTopVariable}, 0px);
+    z-index: 2;
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+    background: inherit;
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-line);
+`;

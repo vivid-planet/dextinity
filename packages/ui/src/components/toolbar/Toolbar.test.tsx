@@ -19,7 +19,7 @@ describe("Toolbar", () => {
                     </ToolbarButton>
                 </ToolbarGroup>
                 <ToolbarSeparator data-testid="separator" />
-                <ToolbarMenu label="Paragraph" open={false} onOpenChange={vi.fn()}>
+                <ToolbarMenu label="Paragraph" open={false} onOpenChange={vi.fn()} data-testid="menu">
                     {null}
                 </ToolbarMenu>
             </Toolbar>,
@@ -34,6 +34,7 @@ describe("Toolbar", () => {
         );
         expect(screen.getByTestId("separator").className).toContain("dextinityToolbarSeparator");
         expect(screen.getByRole("button", { name: "Paragraph" }).className).toContain("dextinityToolbarMenu");
+        expect(screen.getByTestId("menu")).toBe(screen.getByRole("button", { name: "Paragraph" }));
     });
 });
 

@@ -10,7 +10,7 @@ import {
     type InfoTagProps,
     type TranslatableInterface,
 } from "@dextinity/cms-admin";
-import { Chip } from "@mui/material";
+import { Chip } from "@dextinity/ui";
 import type { GQLPageTreeNodeAdditionalFieldsFragment } from "@src/common/EditPageNode";
 import type { GQLPage, GQLPageInput } from "@src/graphql.generated";
 import { categoryToUrlParam } from "@src/pageTree/pageTreeCategories";
@@ -68,7 +68,11 @@ export const Page: DocumentInterface<Pick<GQLPage, "content" | "seo">, GQLPageIn
     `,
     InfoTag: ({ page }: InfoTagProps<GQLPageTreeNodeAdditionalFieldsFragment>) => {
         if (page.userGroup !== "all") {
-            return <Chip size="small" label={page.userGroup} />;
+            return (
+                <Chip size="small" color="secondary">
+                    {page.userGroup}
+                </Chip>
+            );
         }
         return null;
     },

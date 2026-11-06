@@ -216,6 +216,9 @@ function PageTreeDetailView({
     const countFor = (status: StatusFilter) => pages.filter((page) => matchesFilters(page, status)).length;
     const isFiltered = search.trim() !== "" || statusFilter !== "all";
     const filteredCount = isFiltered ? countFor(statusFilter) : undefined;
+    const visiblePageIds = pages.filter((page) => matchesFilters(page, statusFilter)).map((page) => page.id);
+    const areAllVisiblePagesChecked =
+        visiblePageIds.length > 0 && checkedIds.length === visiblePageIds.length && visiblePageIds.every((id) => checkedIds.includes(id));
     const folderIds = pages.filter((page) => structure.childrenByParentId.has(page.id)).map((page) => page.id);
     const unpublishedCount = pages.filter((page) => page.visibility === "Unpublished").length;
     const archivedCount = pages.filter((page) => page.visibility === "Archived").length;
@@ -379,10 +382,10 @@ function PageTreeDetailView({
                     >
                         <Checkbox
                             aria-label={intl.formatMessage({ id: "dextinity.pageTreeDetail.selectAll", defaultMessage: "Select all pages" })}
-                            checked={pages.length > 0 && checkedIds.length === pages.length}
-                            indeterminate={checkedIds.length > 0 && checkedIds.length < pages.length}
-                            onChange={(checked) => setCheckedIds(checked ? pages.map((page) => page.id) : [])}
-                            disabled={pages.length === 0}
+                            checked={areAllVisiblePagesChecked}
+                            indeterminate={checkedIds.length > 0 && !areAllVisiblePagesChecked}
+                            onChange={(checked) => setCheckedIds(checked ? visiblePageIds : [])}
+                            disabled={visiblePageIds.length === 0}
                         />
                         {statusFilters.map((status) => (
                             <FilterChip

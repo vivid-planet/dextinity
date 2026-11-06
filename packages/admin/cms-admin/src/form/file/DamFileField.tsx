@@ -69,10 +69,12 @@ export function DamFileField(props: DamFileFieldProps): ReactNode {
 function SingleDamFileField({ allowedMimetypes, placeholder, labels, multiple: _multiple, ...props }: SingleDamFileFieldProps) {
     const intl = useIntl();
     const client = useApolloClient();
+    const [loadError, setLoadError] = useState<string>();
 
     return (
         <PickerField<DamFile, DamFile | null>
             {...props}
+            helperText={loadError ?? props.helperText}
             placeholder={placeholder ?? intl.formatMessage({ id: "dextinity.form.file.chooseFile", defaultMessage: "Choose file" })}
             labels={{ clear: intl.formatMessage({ id: "dextinity.form.file.empty", defaultMessage: "Empty" }), ...labels }}
             icon={<Icon name="assets" />}
@@ -90,11 +92,22 @@ function SingleDamFileField({ allowedMimetypes, placeholder, labels, multiple: _
                     initialFileIds={value != null ? [value.id] : []}
                     allowedMimetypes={allowedMimetypes}
                     onChoose={async ([fileId]) => {
-                        const { data } = await client.query<GQLDamFileFieldValueQuery, GQLDamFileFieldValueQueryVariables>({
-                            query: damFileFieldValueQuery,
-                            variables: { id: fileId },
-                        });
-                        onChange(data.damFile);
+                        try {
+                            const { data } = await client.query<GQLDamFileFieldValueQuery, GQLDamFileFieldValueQueryVariables>({
+                                query: damFileFieldValueQuery,
+                                variables: { id: fileId },
+                            });
+                            setLoadError(undefined);
+                            onChange(data.damFile);
+                        } catch {
+                            setLoadError(
+                                intl.formatMessage({
+                                    id: "dextinity.form.file.failedToLoadSelectedFile",
+                                    defaultMessage: "Failed to load the selected file. Please try again.",
+                                }),
+                            );
+                            onClose();
+                        }
                     }}
                 />
             )}

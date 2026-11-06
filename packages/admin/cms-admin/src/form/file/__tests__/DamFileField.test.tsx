@@ -65,6 +65,13 @@ function createClientReturning(data: Record<string, unknown>, onRequest?: (varia
     });
 }
 
+function createFailingClient() {
+    return new ApolloClient({
+        cache: new InMemoryCache(),
+        link: new ApolloLink(() => new Observable((observer) => observer.error(new Error("Network error")))),
+    });
+}
+
 const lake = createFile("lake", "lake.jpg");
 const forest = createFile("forest", "forest.jpg");
 
@@ -180,5 +187,21 @@ describe("DamFileField", () => {
         await waitFor(() =>
             expect(onValueChange).toHaveBeenLastCalledWith([expect.objectContaining({ id: "lake" }), expect.objectContaining({ id: "forest" })]),
         );
+    });
+
+    it("keeps the value and shows an error when the chosen file can't be loaded", async () => {
+        const onValueChange = vi.fn();
+        render(
+            <ApolloProvider client={createFailingClient()}>
+                <TestForm initialValue={lake} onValueChange={onValueChange} />
+            </ApolloProvider>,
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: /^Image/ }));
+        await act(() => pickerDialogProps.current?.onChoose(["forest"]));
+
+        expect(screen.getByText("Failed to load the selected file. Please try again.")).toBeTruthy();
+        expect(screen.queryByRole("dialog", { name: "Picker" })).toBeNull();
+        expect(onValueChange).toHaveBeenLastCalledWith(expect.objectContaining({ id: "lake" }));
     });
 });

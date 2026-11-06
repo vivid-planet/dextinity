@@ -1,0 +1,82 @@
+.root {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+}
+
+.hero {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: var(--dextinity-overview-layout-hero-padding);
+}
+
+.heading {
+    flex: 1 1 28em;
+    min-inline-size: 0;
+}
+
+.label {
+    margin-block-end: 18px;
+    color: var(--dextinity-overview-layout-label-color);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-label-size);
+    letter-spacing: var(--dextinity-typography-label-letter-spacing);
+    text-transform: uppercase;
+}
+
+.title {
+    margin: 0;
+    color: var(--dextinity-overview-layout-title-color);
+    font-family: var(--dextinity-font-family-display);
+    font-size: var(--dextinity-overview-layout-title-font-size);
+    font-weight: var(--dextinity-typography-display-font-weight);
+    line-height: var(--dextinity-typography-display-xl-line-height);
+    letter-spacing: var(--dextinity-typography-display-letter-spacing);
+    text-transform: var(--dextinity-typography-display-text-transform);
+}
+
+.summary {
+    max-inline-size: 40em;
+    margin: 18px 0 0;
+    color: var(--dextinity-overview-layout-summary-color);
+    font-size: var(--dextinity-overview-layout-summary-font-size);
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+
+    a {
+        color: var(--dextinity-overview-layout-title-color);
+        font-weight: 500;
+        text-decoration: none;
+        box-shadow: inset 0 -1.5px 0 var(--dextinity-overview-layout-link-underline);
+    }
+}
+
+.aside {
+    flex: none;
+    text-align: end;
+}
+
+.cards {
+    display: grid;
+    // Two columns at most; one when a column would get narrower than the minimum
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(min(100%, max(var(--dextinity-overview-layout-card-min-width), (100% - var(--dextinity-overview-layout-gap)) / 2)), 1fr)
+    );
+    gap: var(--dextinity-overview-layout-gap);
+}
+
+@container (max-width: 560px) {
+    .hero {
+        padding-inline: 4px;
+        padding-block-end: 28px;
+    }
+
+    .aside {
+        display: none;
+    }
+}

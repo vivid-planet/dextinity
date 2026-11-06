@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { type ForwardedRef, forwardRef, type HTMLAttributes, type ReactNode, type RefAttributes, useId } from "react";
+import { type ForwardedRef, forwardRef, type HTMLAttributes, type ReactNode, type RefAttributes, useCallback, useId, useRef } from "react";
 
 import { Field, type FieldBaseProps, type FieldOwnerState, type FieldProps } from "../field/Field";
 import { Icon } from "../icon/Icon";
@@ -92,6 +92,18 @@ export const Picker = forwardRef(function Picker<Value>(
     const valueId = `${useId()}value`;
     const empty = isEmpty(value);
     const showsClear = onClear != null && !empty && !disabled && !readOnly;
+    const triggerRef = useRef<HTMLButtonElement | null>(null);
+    const setTriggerRef = useCallback(
+        (element: HTMLButtonElement | null) => {
+            triggerRef.current = element;
+            if (typeof ref === "function") {
+                ref(element);
+            } else if (ref) {
+                ref.current = element;
+            }
+        },
+        [ref],
+    );
 
     return (
         <Field
@@ -116,7 +128,7 @@ export const Picker = forwardRef(function Picker<Value>(
             {(control) => (
                 <>
                     <button
-                        ref={ref}
+                        ref={setTriggerRef}
                         type="button"
                         id={control.id}
                         className={styles.trigger}
@@ -140,7 +152,16 @@ export const Picker = forwardRef(function Picker<Value>(
                         )}
                     </button>
                     {showsClear && (
-                        <button type="button" className={styles.clear} aria-label={labels.clear} onClick={onClear}>
+                        <button
+                            type="button"
+                            className={styles.clear}
+                            aria-label={labels.clear}
+                            onClick={() => {
+                                onClear();
+                                // The clear button disappears with the value; the focus stays in the field rather than falling back to the page
+                                triggerRef.current?.focus();
+                            }}
+                        >
                             <Icon name="close" />
                         </button>
                     )}

@@ -317,14 +317,33 @@ export const Default: Story = {
             <RedirectsPage initialOpenId="r2" />
         </PageTypeShell>
     ),
+};
+
+/**
+ * Escape in the side panel closes it, and the focus returns to the row that opened it, so keyboard users continue in the list.
+ */
+export const CloseWithEscape: Story = {
+    render: () => (
+        <PageTypeShell activeId="redirects">
+            <RedirectsPage initialOpenId="r2" />
+        </PageTypeShell>
+    ),
     play: async ({ canvas }) => {
         const panel = canvas.getByRole("complementary", { name: "Edit redirect /karriere" });
         await userEvent.click(within(panel).getByRole("textbox", { name: /Comment/ }));
         await userEvent.keyboard("{Escape}");
         await waitFor(() => expect(canvas.queryByRole("complementary", { name: /redirect/ })).toBeNull());
 
+        const row = within(canvas.getByRole("table", { name: "Redirects" }))
+            .getByText("/karriere")
+            .closest("tr");
         await userEvent.click(within(canvas.getByRole("table", { name: "Redirects" })).getByText("/karriere"));
-        await expect(canvas.getByRole("complementary", { name: "Edit redirect /karriere" })).toBeVisible();
+        const reopened = canvas.getByRole("complementary", { name: "Edit redirect /karriere" });
+        await expect(reopened).toBeVisible();
+
+        await userEvent.click(within(reopened).getByRole("textbox", { name: /Comment/ }));
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(row).toContainElement(document.activeElement as HTMLElement));
     },
 };
 

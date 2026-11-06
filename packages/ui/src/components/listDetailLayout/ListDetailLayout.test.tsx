@@ -49,4 +49,28 @@ describe("ListDetailLayout", () => {
         fireEvent.keyDown(screen.getByRole("textbox", { name: "Source" }), { key: "Escape" });
         expect(onOpenChange).toHaveBeenCalledWith(false);
     });
+
+    it("returns the focus to the element that had it before the side panel when the panel closes", () => {
+        function renderLayout(open: boolean) {
+            return (
+                <ListDetailLayout
+                    header="Header"
+                    sidePanel={<input aria-label="Source" />}
+                    sidePanelLabel="Edit redirect"
+                    open={open}
+                    onOpenChange={() => {}}
+                >
+                    <button type="button">Row</button>
+                </ListDetailLayout>
+            );
+        }
+        const { rerender } = render(renderLayout(false));
+
+        screen.getByRole("button", { name: "Row" }).focus();
+        rerender(renderLayout(true));
+        screen.getByRole("textbox", { name: "Source" }).focus();
+        rerender(renderLayout(false));
+
+        expect(document.activeElement).toBe(screen.getByRole("button", { name: "Row" }));
+    });
 });

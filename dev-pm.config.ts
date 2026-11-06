@@ -154,6 +154,12 @@ export default defineConfig({
             waitOn: waitOnPackages("@dextinity/ui"),
         },
         {
+            name: "dextinity-ui-react-hook-form",
+            script: "pnpm --filter @dextinity/ui-react-hook-form run dev",
+            group: ["dextinity-ui"],
+            waitOn: waitOnPackages("@dextinity/ui"),
+        },
+        {
             name: "storybook-dextinity-ui",
             script: "pnpm --filter @dextinity/ui run storybook",
             group: ["storybook", "docs"],

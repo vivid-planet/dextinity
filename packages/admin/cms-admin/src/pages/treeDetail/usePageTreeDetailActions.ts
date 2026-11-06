@@ -4,6 +4,7 @@ import type { TreeViewMove, UndoableAction } from "@dextinity/ui";
 import { useIntl } from "react-intl";
 
 import type { GQLPageTreeNodeVisibility } from "../../graphql.generated";
+import { deletePageMutation, type GQLDeletePageTreeNodeMutation, type GQLDeletePageTreeNodeMutationVariables } from "../pageTree/Page";
 import { updatePageVisibilityMutation } from "../pageTree/PageVisibility";
 import type { GQLUpdatePageVisibilityMutation, GQLUpdatePageVisibilityMutationVariables } from "../pageTree/PageVisibility.generated";
 import type { GQLPageTreePageFragment } from "../pageTree/usePageTree";
@@ -13,6 +14,8 @@ import type {
     GQLPageTreeDetailMovePagesMutationVariables,
     GQLPageTreeDetailResetSlugMutation,
     GQLPageTreeDetailResetSlugMutationVariables,
+    GQLPageTreeDetailUpdateCategoryMutation,
+    GQLPageTreeDetailUpdateCategoryMutationVariables,
 } from "./usePageTreeDetailActions.generated";
 
 const movePagesMutation = gql`
@@ -23,6 +26,15 @@ const movePagesMutation = gql`
             pos
             slug
             path
+        }
+    }
+`;
+
+const updateCategoryMutation = gql`
+    mutation PageTreeDetailUpdateCategory($id: ID!, $category: String!) {
+        updatePageTreeNodeCategory(id: $id, category: $category) {
+            id
+            category
         }
     }
 `;
@@ -47,6 +59,22 @@ interface UsePageTreeDetailActionsOptions {
     structure: PageTreeStructure;
     perform: (action: UndoableAction) => void;
     block: (reason: string) => void;
+}
+
+/** The pages to delete, children before their parents, since a page can only be deleted without subpages. */
+export function getPagesToDelete(structure: PageTreeStructure, pageIds: string[]): GQLPageTreePageFragment[] {
+    return getTopmostPageIds(structure, pageIds)
+        .flatMap((id) => {
+            const page = structure.pagesById.get(id);
+            return page != null ? getSubtree(structure, page) : [];
+        })
+        .reverse();
+}
+
+/** Whether every subpage of the pages is among them too, so deleting them leaves no page without its parent. */
+export function areSubtreesComplete(structure: PageTreeStructure, pageIds: string[]): boolean {
+    const ids = new Set(pageIds);
+    return getPagesToDelete(structure, pageIds).every((page) => ids.has(page.id));
 }
 
 export function canChangeVisibility(page: GQLPageTreePageFragment, visibility: GQLPageTreeNodeVisibility) {
@@ -217,5 +245,28 @@ export function usePageTreeDetailActions({ structure, perform, block }: UsePageT
         });
     };
 
-    return { changeVisibility, movePages, canMove };
+    const deletePages = async (pages: GQLPageTreePageFragment[]) => {
+        try {
+            for (const page of pages) {
+                await client.mutate<GQLDeletePageTreeNodeMutation, GQLDeletePageTreeNodeMutationVariables>({
+                    mutation: deletePageMutation,
+                    variables: { id: page.id },
+                    context: LocalErrorScopeApolloContext,
+                });
+            }
+        } finally {
+            await client.refetchQueries({ include: ["Pages"] });
+        }
+    };
+
+    const moveToCategory = async (page: GQLPageTreePageFragment, category: string) => {
+        await client.mutate<GQLPageTreeDetailUpdateCategoryMutation, GQLPageTreeDetailUpdateCategoryMutationVariables>({
+            mutation: updateCategoryMutation,
+            variables: { id: page.id, category },
+            context: LocalErrorScopeApolloContext,
+        });
+        await client.refetchQueries({ include: ["Pages"] });
+    };
+
+    return { changeVisibility, movePages, canMove, deletePages, moveToCategory };
 }

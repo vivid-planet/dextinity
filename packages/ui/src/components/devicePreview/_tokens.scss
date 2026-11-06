@@ -14,4 +14,6 @@
     // The page has its own design, so the frame sits on a fixed white background
     --dextinity-device-preview-frame-background: oklch(1 0 0);
     --dextinity-device-preview-frame-shadow: 0 0 0 1px oklch(0 0 0 / 0.08), 0 18px 40px -24px oklch(0 0 0 / 0.45);
+    // Covers the frame while the page loads; the frame stays white, so the overlay does too
+    --dextinity-device-preview-loading-background: oklch(1 0 0 / 0.72);
 }

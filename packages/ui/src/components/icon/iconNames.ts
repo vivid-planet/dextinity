@@ -32,6 +32,7 @@ export const iconNames = [
     "eye",
     "eye-off",
     "filter",
+    "fit-width",
     "folder",
     "form",
     "gallery",

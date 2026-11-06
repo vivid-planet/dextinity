@@ -64,8 +64,11 @@ const meta = {
         children: <SamplePage />,
     },
     argTypes: {
-        device: { control: "radio", options: ["desktop", "tablet", "mobile"] },
+        device: { control: "select", options: ["responsive", "desktop", "tablet", "mobile"] },
+        devices: { control: "check", options: ["responsive", "desktop", "tablet", "mobile"] },
         children: { control: false },
+        overlay: { control: false },
+        loadingIndicator: { control: false },
         actions: { control: false },
         deviceWidths: { control: "object" },
         labels: { control: false },
@@ -132,6 +135,64 @@ export const WithIframe: Story = {
                 title="Preview"
                 srcDoc="<body style='margin:0;font:16px Georgia,serif;background:#fbfaf7'><div style='padding:40px'><h1>Rendered in an iframe</h1><p>The frame lays the page out at the device's width.</p></div></body>"
             />
+        ),
+    },
+};
+
+/**
+ * `responsive` lays the page out at the available width instead of a fixed one; offer it with `devices`.
+ */
+export const Responsive: Story = {
+    args: { device: "responsive", devices: ["responsive", "desktop", "tablet", "mobile"] },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Tablet" }));
+        await waitFor(() => expect(args.onDeviceChange).toHaveBeenLastCalledWith("tablet"));
+        await userEvent.click(canvas.getByRole("button", { name: "Full width" }));
+        await waitFor(() => expect(args.onDeviceChange).toHaveBeenLastCalledWith("responsive"));
+    },
+};
+
+const samplePageSource = `data:text/html,${encodeURIComponent(
+    `<body style='margin:0;font:16px Georgia,serif;background:#fbfaf7;color:#222'>${Array.from(
+        { length: 8 },
+        (_, index) =>
+            `<section style='padding:40px;border-bottom:1px solid #e5e2da'><h2>Section ${index + 1}</h2><p>The page scrolls inside the frame.</p></section>`,
+    ).join("")}</body>`,
+)}`;
+
+/**
+ * With `src`, the preview shows the page in its own `iframe`: it fills the frame and scrolls itself, and a spinner covers it until the
+ * page has loaded. Reach the `iframe` through `slotProps.iframe`, e.g. with a `ref` to talk to the page.
+ */
+export const WithSrc: Story = {
+    args: { children: undefined, src: samplePageSource },
+    play: async ({ canvas, canvasElement }) => {
+        const iframe = canvas.getByTitle("Page preview");
+        await expect(iframe.tagName).toBe("IFRAME");
+        await waitFor(() => expect(canvasElement.querySelector(".dextinityDevicePreview")).not.toHaveAttribute("data-loading"));
+    },
+};
+
+/**
+ * `loading` keeps the spinner up, e.g. until the page in the `iframe` reports that it's ready for content.
+ */
+export const Loading: Story = {
+    args: { children: undefined, src: samplePageSource, loading: true },
+};
+
+/**
+ * `overlay` draws above the page at its size and scale, e.g. outlines of the hovered and the selected block at the positions the page
+ * reports. Clicks go through to the page.
+ */
+export const WithOverlay: Story = {
+    args: {
+        overlay: (
+            <>
+                <div className={styles.highlightHovered} style={{ top: 72, left: 0, width: "100%", height: 220 }} />
+                <div className={styles.highlightSelected} style={{ top: 330, left: 32, width: "calc(100% - 64px)", height: 150 }}>
+                    <span className={styles.highlightLabel}>Teaser list</span>
+                </div>
+            </>
         ),
     },
 };

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useRef, useState } from "react";
+import { type FormEvent, useId, useRef, useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -7,6 +7,7 @@ import { Button } from "../../button/Button";
 import { Input } from "../../input/Input";
 import dialogTokens from "../_tokens.scss?raw";
 import { Dialog, type DialogProps } from "../Dialog";
+import { DialogFormActions } from "../DialogFormActions";
 
 function ControlledDialog(props: DialogProps) {
     const [open, setOpen] = useState(props.open);
@@ -54,6 +55,7 @@ const meta = {
         children: { control: false },
         footer: { control: false },
         initialFocus: { control: false },
+        dismissible: { control: "boolean" },
         labels: { control: false },
         className: { control: false },
         slotProps: { control: false },
@@ -195,5 +197,79 @@ export const AlertDialog: Story = {
     args: { open: true, role: "alertdialog" },
     play: async () => {
         await expect(await screen.findByRole("alertdialog")).toBeInTheDocument();
+    },
+};
+
+/**
+ * `dismissible={false}` keeps Escape, the backdrop, and the close button from closing the dialog, e.g. while it saves.
+ */
+export const NotDismissible: Story = {
+    args: { open: true, dismissible: false },
+    play: async ({ args }) => {
+        const dialog = await screen.findByRole("dialog");
+        await expect(screen.getByRole("button", { name: "Close" })).toBeDisabled();
+        await userEvent.keyboard("{Escape}");
+        await expect(args.onOpenChange).not.toHaveBeenCalled();
+        await expect(dialog).toBeInTheDocument();
+    },
+};
+
+/** A dialog with a form: the form element is in the content, the footer's submit button submits it by its id. */
+function FormDialog(props: DialogProps) {
+    const formId = useId();
+    const [open, setOpen] = useState(props.open);
+    const [name, setName] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+    const close = () => {
+        setOpen(false);
+        props.onOpenChange(false);
+    };
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setSubmitting(true);
+        setTimeout(() => {
+            setSubmitting(false);
+            close();
+        }, 800);
+    };
+
+    return (
+        <>
+            <Button variant="outlined" color="secondary" onClick={() => setOpen(true)}>
+                New folder
+            </Button>
+            <Dialog
+                {...props}
+                open={open}
+                onOpenChange={(nextOpen) => (nextOpen ? setOpen(true) : close())}
+                dismissible={!submitting}
+                footer={
+                    <DialogFormActions formId={formId} submitLabel="Create" onCancel={close} submitting={submitting} submitDisabled={name === ""} />
+                }
+            >
+                <form id={formId} onSubmit={handleSubmit}>
+                    <Input name="name" label="Name" required value={name} onChange={(event) => setName(event.target.value)} />
+                </form>
+            </Dialog>
+        </>
+    );
+}
+
+/**
+ * `DialogFormActions` fills the footer of a dialog with a form: Cancel and a submit button wired to the form's `id`. While the form
+ * submits, the buttons are disabled; turn `dismissible` off meanwhile.
+ */
+export const WithFormActions: Story = {
+    args: { open: true, title: "New folder", description: undefined, footer: undefined },
+    render: (args) => <FormDialog {...args} />,
+    play: async ({ args }) => {
+        const dialog = await screen.findByRole("dialog", { name: "New folder" });
+        await expect(screen.getByRole("button", { name: "Create" })).toBeDisabled();
+        await userEvent.type(screen.getByRole("textbox", { name: "Name" }), "Press kit");
+        await userEvent.click(screen.getByRole("button", { name: "Create" }));
+        await waitFor(() => expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled());
+        await userEvent.keyboard("{Escape}");
+        await expect(dialog).toBeInTheDocument();
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false), { timeout: 3000 });
     },
 };

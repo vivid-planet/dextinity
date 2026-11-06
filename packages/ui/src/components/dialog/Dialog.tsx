@@ -22,6 +22,7 @@ const defaultLabels = {
 export type DialogOwnerState = {
     size: DialogSize;
     role: DialogRole;
+    dismissible: boolean;
 };
 
 export interface DialogSlotProps {
@@ -46,7 +47,7 @@ export interface DialogSlotProps {
 export interface DialogProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title" | "role"> {
     /** Whether the dialog is open. */
     open: boolean;
-    /** Called when the close button, Escape, or a click on the backdrop requests to close the dialog. */
+    /** Called when the close button, Escape, or a click on the backdrop requests to close the dialog, unless it isn't `dismissible`. */
     onOpenChange: (open: boolean) => void;
     /** What the dialog is about, as its heading. */
     title: string;
@@ -74,6 +75,13 @@ export interface DialogProps extends Omit<HTMLAttributes<HTMLDivElement>, "class
      * @defaultValue `false`
      */
     hideCloseButton?: boolean;
+    /**
+     * Whether Escape, a click on the backdrop, and the close button close the dialog. Turn it off while the dialog's task runs, e.g.
+     * while saving, so it can't be closed halfway; the footer's actions still can.
+     *
+     * @defaultValue `true`
+     */
+    dismissible?: boolean;
     /** The element focused when the dialog opens. Without it, the first focusable element gets focus. */
     initialFocus?: RefObject<HTMLElement | null>;
     /** Built-in texts, e.g. the close button's accessible name. */
@@ -99,6 +107,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
         size = "default",
         role = "dialog",
         hideCloseButton = false,
+        dismissible = true,
         initialFocus,
         labels: labelsProp,
         className,
@@ -107,7 +116,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
     },
     ref,
 ) {
-    const ownerState: DialogOwnerState = { size, role };
+    const ownerState: DialogOwnerState = { size, role, dismissible };
     const labels = { ...defaultLabels, ...labelsProp };
     const { anchorRef, container } = useThemePortalContainer<HTMLSpanElement>();
     const Root = ownerState.role === "alertdialog" ? BaseAlertDialog.Root : BaseDialog.Root;
@@ -151,7 +160,15 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
     return (
         <>
             <span ref={anchorRef} hidden />
-            <Root open={open} onOpenChange={(nextOpen) => onOpenChange(nextOpen)}>
+            <Root
+                open={open}
+                disablePointerDismissal={!ownerState.dismissible}
+                onOpenChange={(nextOpen) => {
+                    if (nextOpen || ownerState.dismissible) {
+                        onOpenChange(nextOpen);
+                    }
+                }}
+            >
                 <BaseDialog.Portal container={container}>
                     <BaseDialog.Backdrop {...backdropProps} />
                     <BaseDialog.Viewport {...viewportProps}>
@@ -160,6 +177,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
                             ref={ref}
                             initialFocus={initialFocus}
                             data-size={ownerState.size}
+                            data-dismissible={ownerState.dismissible ? "" : undefined}
                             className={clsx(styles.root, className)}
                         >
                             <div {...headerProps}>
@@ -174,6 +192,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
                                         <IconButton
                                             size="small"
                                             {...slotProps?.closeButton}
+                                            disabled={!ownerState.dismissible || slotProps?.closeButton?.disabled}
                                             aria-label={labels.close}
                                             className={clsx(styles.closeButton, slotProps?.closeButton?.className)}
                                         >

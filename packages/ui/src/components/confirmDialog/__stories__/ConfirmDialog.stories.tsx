@@ -112,7 +112,7 @@ export const Cancel: Story = {
 };
 
 /**
- * `secondaryLabel` adds a third option, e.g. leaving without saving.
+ * `secondaryLabel` adds a third option, e.g. leaving without saving: Save, Discard, or Cancel for unsaved changes.
  */
 export const WithSecondaryAction: Story = {
     args: {
@@ -141,8 +141,17 @@ export const Danger: Story = {
 };
 
 /**
- * `loading` shows a spinner in the confirming action while it runs.
+ * `loading` shows a spinner in the confirming action while it runs. Meanwhile, the other actions are disabled and Escape doesn't close
+ * the dialog.
  */
 export const Loading: Story = {
-    args: { open: true, loading: true },
+    args: { open: true, loading: true, secondaryLabel: "Discard", onSecondary: fn() },
+    play: async ({ args }) => {
+        const dialog = await screen.findByRole("alertdialog");
+        await expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
+        await expect(screen.getByRole("button", { name: "Discard" })).toBeDisabled();
+        await userEvent.keyboard("{Escape}");
+        await expect(args.onOpenChange).not.toHaveBeenCalled();
+        await expect(dialog).toBeInTheDocument();
+    },
 };

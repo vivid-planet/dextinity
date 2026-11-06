@@ -34,4 +34,21 @@
 
     --dextinity-data-grid-footer-gap: var(--dextinity-space-3);
     --dextinity-data-grid-footer-foreground: var(--dextinity-color-text-tertiary);
+
+    // Inline editing
+    --dextinity-data-grid-cell-focus-line: var(--dextinity-color-focus);
+    --dextinity-data-grid-cell-radius: var(--dextinity-radius-item);
+    --dextinity-data-grid-editor-background: var(--dextinity-field-background-focus);
+    --dextinity-data-grid-editor-line: var(--dextinity-field-line-focus);
+    --dextinity-data-grid-editor-halo: var(--dextinity-field-halo-focus);
+    --dextinity-data-grid-editable-background-hover: color-mix(in oklch, var(--dextinity-color-text) 9%, transparent);
+
+    // Reordering
+    --dextinity-data-grid-grip-foreground: var(--dextinity-color-text-subtle);
+    --dextinity-data-grid-drop-indicator: var(--dextinity-color-accent);
+
+    // Expandable rows
+    --dextinity-data-grid-indent: 20px;
+    --dextinity-data-grid-expand-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-data-grid-detail-background: color-mix(in oklch, var(--dextinity-color-text) 3%, transparent);
 }

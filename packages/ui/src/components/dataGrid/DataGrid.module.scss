@@ -1,3 +1,5 @@
+@use "../select/menu";
+
 .root {
     --dextinity-data-grid-bulk-action-bar-offset: var(--dextinity-space-3);
     --dextinity-data-grid-bulk-action-bar-height: calc(var(--dextinity-bulk-action-bar-action-height) + 2 * var(--dextinity-bulk-action-bar-padding));
@@ -56,6 +58,37 @@
     }
 }
 
+.headerContent {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-1);
+    max-inline-size: 100%;
+
+    [data-align="end"] > & {
+        flex-direction: row-reverse;
+    }
+}
+
+.headerActions {
+    display: inline-flex;
+    opacity: 0;
+    transition: opacity var(--dextinity-motion-duration-short);
+
+    .header:hover &,
+    .header:focus-within &,
+    &:has([aria-expanded="true"]) {
+        opacity: 1;
+    }
+
+    @media (hover: none) {
+        opacity: 1;
+    }
+
+    :global([data-dextinity-color-scheme="high-contrast"]) & {
+        opacity: 1;
+    }
+}
+
 .sortButton {
     display: inline-flex;
     align-items: center;
@@ -100,6 +133,7 @@
 
 .cell,
 .checkboxCell,
+.gripCell,
 .actionsCell {
     box-sizing: border-box;
     padding-block: 0;
@@ -113,6 +147,118 @@
         text-align: end;
         font-variant-numeric: tabular-nums;
     }
+
+    &[data-editable] {
+        cursor: default;
+
+        &:focus {
+            border-radius: var(--dextinity-data-grid-cell-radius);
+            outline: 2px solid var(--dextinity-data-grid-cell-focus-line);
+            outline-offset: -2px;
+        }
+
+        .row > &:hover:not([data-editing]) {
+            background: var(--dextinity-data-grid-editable-background-hover);
+        }
+    }
+
+    // Wins over the row's hover and selection background
+    .row > &[data-editing] {
+        border-radius: var(--dextinity-data-grid-cell-radius);
+        background: var(--dextinity-data-grid-editor-background);
+        box-shadow:
+            inset 0 0 0 2px var(--dextinity-data-grid-editor-line),
+            0 0 0 3px var(--dextinity-data-grid-editor-halo);
+    }
+}
+
+.cellContent {
+    display: flex;
+    align-items: center;
+    min-inline-size: 0;
+}
+
+.cellText {
+    min-inline-size: 0;
+
+    .cellContent > & {
+        flex: 1 1 auto;
+    }
+}
+
+// The editor takes the place of the text without moving it
+.editorInput {
+    box-sizing: border-box;
+    inline-size: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+}
+
+.editorSelect {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-1);
+    box-sizing: border-box;
+    inline-size: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+
+    --dextinity-icon-size: 14px;
+
+    > :last-child {
+        flex: none;
+        margin-inline-start: auto;
+        color: var(--dextinity-color-text-tertiary);
+    }
+}
+
+.editorSelectValue {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.editorPositioner {
+    @include menu.positioner;
+}
+
+.editorPopup {
+    @include menu.popup;
+
+    min-inline-size: var(--anchor-width);
+}
+
+.editorList {
+    @include menu.list;
+}
+
+.editorItem {
+    @include menu.item;
+}
+
+.editorItemText {
+    @include menu.itemText;
+}
+
+.editorItemIndicator {
+    @include menu.itemIndicator;
+}
+
+.editorCustom {
+    min-inline-size: 0;
 }
 
 .checkboxCell {
@@ -122,7 +268,116 @@
     text-align: start;
 }
 
+.gripCell {
+    inline-size: 28px;
+    padding-inline: var(--dextinity-space-1) 0;
+    line-height: 0;
+}
+
+.grip {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 20px;
+    block-size: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--dextinity-radius-item);
+    background: transparent;
+    color: var(--dextinity-data-grid-grip-foreground);
+    opacity: 0;
+    cursor: grab;
+    transition: opacity var(--dextinity-motion-duration-short);
+
+    --dextinity-icon-size: 16px;
+
+    .row:hover &,
+    .row:focus-within &,
+    &:focus-visible {
+        opacity: 1;
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+
+    @media (hover: none) {
+        opacity: 1;
+    }
+
+    :global([data-dextinity-color-scheme="high-contrast"]) & {
+        opacity: 1;
+    }
+}
+
+.indent {
+    flex: none;
+}
+
+.expandButton,
+.expandSpacer {
+    flex: none;
+    inline-size: 24px;
+    block-size: 24px;
+    margin-inline: calc(var(--dextinity-space-1) * -1) var(--dextinity-space-1);
+}
+
+.expandButton {
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: var(--dextinity-radius-item);
+    background: transparent;
+    color: var(--dextinity-data-grid-expand-foreground);
+    cursor: pointer;
+    transition:
+        color var(--dextinity-motion-duration-short),
+        background var(--dextinity-motion-duration-short);
+
+    --dextinity-icon-size: 16px;
+
+    > * {
+        transition: transform var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
+    }
+
+    &[aria-expanded="true"] > * {
+        transform: rotate(90deg);
+    }
+
+    :dir(rtl) &:not([aria-expanded="true"]) > * {
+        transform: scaleX(-1);
+    }
+
+    &:hover {
+        background: var(--dextinity-data-grid-row-background-hover);
+        color: var(--dextinity-color-text);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        > * {
+            transition: none;
+        }
+    }
+}
+
+.detailRow > td {
+    padding: var(--dextinity-space-3) var(--dextinity-data-grid-cell-padding) var(--dextinity-space-4);
+    border-radius: var(--dextinity-data-grid-row-radius);
+    background: var(--dextinity-data-grid-detail-background);
+}
+
+.detailCell {
+    box-sizing: border-box;
+}
+
 th.checkboxCell,
+th.gripCell,
 th.actionsCell {
     block-size: var(--dextinity-data-grid-header-height);
     border-block-end: var(--dextinity-line-width) solid var(--dextinity-data-grid-header-line);
@@ -177,6 +432,45 @@ th.actionsCell {
 
     &[data-selected] > td {
         background: var(--dextinity-data-grid-row-background-selected);
+    }
+
+    &[data-dragging] {
+        opacity: 0.4;
+    }
+
+    // The line showing where a dragged row lands. Drawn per cell, and the outer cells start and end it at the row's corner
+    // radius, so it never runs over the rounded corners.
+    &[data-drop] > td {
+        position: relative;
+
+        &::after {
+            position: absolute;
+            inset-inline: 0;
+            block-size: 2px;
+            background: var(--dextinity-data-grid-drop-indicator);
+            content: "";
+            pointer-events: none;
+        }
+
+        &:first-child::after {
+            inset-inline-start: var(--dextinity-data-grid-row-radius);
+            border-start-start-radius: 1px;
+            border-end-start-radius: 1px;
+        }
+
+        &:last-child::after {
+            inset-inline-end: var(--dextinity-data-grid-row-radius);
+            border-start-end-radius: 1px;
+            border-end-end-radius: 1px;
+        }
+    }
+
+    &[data-drop="before"] > td::after {
+        inset-block-start: -1px;
+    }
+
+    &[data-drop="after"] > td::after {
+        inset-block-end: -1px;
     }
 
     &:focus-visible {

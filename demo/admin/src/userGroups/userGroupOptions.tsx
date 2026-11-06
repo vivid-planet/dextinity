@@ -1,18 +1,16 @@
-import { FormattedMessage } from "react-intl";
+import type { GQLUserGroup } from "@src/graphql.generated";
+import { defineMessages, type MessageDescriptor } from "react-intl";
 
-const userGroupOptions = [
-    {
-        label: <FormattedMessage id="userGroupOptions.All" defaultMessage="Show for all" />,
-        value: "all",
-    },
-    {
-        label: <FormattedMessage id="userGroupOptions.User" defaultMessage="Show only for group: User" />,
-        value: "user",
-    },
-    {
-        label: <FormattedMessage id="userGroupOptions.Admin" defaultMessage="Show only for group: Admin" />,
-        value: "admin",
-    },
+const userGroupMessages = defineMessages({
+    all: { id: "userGroupOptions.All", defaultMessage: "Show for all" },
+    editor: { id: "userGroupOptions.Editor", defaultMessage: "Show only for group: Editor" },
+    admin: { id: "userGroupOptions.Admin", defaultMessage: "Show only for group: Admin" },
+});
+
+const userGroupOptions: Array<{ value: GQLUserGroup; label: MessageDescriptor }> = [
+    { value: "all", label: userGroupMessages.all },
+    { value: "editor", label: userGroupMessages.editor },
+    { value: "admin", label: userGroupMessages.admin },
 ];
 
 export { userGroupOptions };

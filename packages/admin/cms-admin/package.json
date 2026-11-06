@@ -51,6 +51,7 @@
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/admin-rte": "workspace:*",
         "@dextinity/ui": "workspace:*",
+        "@dextinity/ui-react-final-form": "workspace:*",
         "@tiptap/core": "^3.33.0",
         "@tiptap/extension-subscript": "^3.33.0",
         "@tiptap/extension-superscript": "^3.33.0",

@@ -133,12 +133,13 @@ export function createEditPageNode({
         const formId = useId();
         const [submitting, setSubmitting] = useState(false);
 
-        const { data, loading, error } = useQuery<GQLEditPageNodeQuery, GQLEditPageNodeQueryVariables>(editPageNodeQuery, {
+        const { data, previousData, loading, error } = useQuery<GQLEditPageNodeQuery, GQLEditPageNodeQueryVariables>(editPageNodeQuery, {
             variables: { id: id ?? "" },
             fetchPolicy: "network-only", // The path could have changed (due to reordering of pages), so it's safe to have fresh data
             skip: !open || mode === "add" || id == null,
         });
-        const page = mode === "edit" ? data?.page : undefined;
+        // The skipped query has no data while the dialog animates out, so the closing dialog keeps showing the page it was opened with
+        const page = mode === "edit" ? (open ? data : previousData)?.page : undefined;
         const isSubmitting = open && submitting;
 
         const close = () => onOpenChange(false);

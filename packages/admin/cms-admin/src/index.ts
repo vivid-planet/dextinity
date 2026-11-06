@@ -163,6 +163,7 @@ export type { FileWithDamUploadMetadata } from "./dam/DataGrid/fileUpload/useDam
 export { useDamFileUpload } from "./dam/DataGrid/fileUpload/useDamFileUpload";
 export { createDamFileDependency } from "./dam/dependencies/createDamFileDependency";
 export { DashboardHeader, type DashboardHeaderProps } from "./dashboard/DashboardHeader";
+export { LatestBuildsCard, type LatestBuildsCardProps } from "./dashboard/LatestBuildsCard";
 export { DashboardWidgetRoot, type DashboardWidgetRootProps } from "./dashboard/widgets/DashboardWidgetRoot";
 export { LatestBuildsDashboardWidget } from "./dashboard/widgets/LatestBuildsDashboardWidget";
 export {
@@ -241,6 +242,7 @@ export { UserPermissionsUserGrid } from "./userPermissions/UserGrid";
 export { UserPermissionsPage } from "./userPermissions/UserPermissionsPage";
 export { isLinkTarget } from "./validation/isLinkTarget";
 export { validateLinkTarget } from "./validation/validateLinkTarget";
+export { LatestWarningsCard, type LatestWarningsCardProps } from "./warnings/LatestWarningsCard";
 export { LatestWarningsDashboardWidget, type LatestWarningsDashboardWidgetProps } from "./warnings/LatestWarningsDashboardWidget";
 export { WarningsPage, type WarningsPageProps } from "./warnings/WarningsPage";
 import packageJson from "../package.json";

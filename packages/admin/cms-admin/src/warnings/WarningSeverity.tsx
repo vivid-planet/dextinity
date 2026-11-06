@@ -24,7 +24,7 @@ export function WarningSeverity({ severity }: Props) {
     );
 }
 
-const warningSeverityLabels = defineMessages({
+export const warningSeverityLabels = defineMessages({
     high: { id: "dextinity.warnings.warningSeverity.high", defaultMessage: "High" },
     medium: { id: "dextinity.warnings.warningSeverity.medium", defaultMessage: "Medium" },
     low: { id: "dextinity.warnings.warningSeverity.low", defaultMessage: "Low" },

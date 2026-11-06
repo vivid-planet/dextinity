@@ -46,6 +46,7 @@ export {
 export { type BulkActionBarOwnerState, type BulkActionBarProps, defaultBulkActionBarLabels } from "./components/bulkActionBar/BulkActionBar";
 export { Button, type ButtonOwnerState, type ButtonProps } from "./components/button/Button";
 export { Card, type CardOwnerState, type CardProps, type CardSlotProps, type CardSlots } from "./components/card/Card";
+export { CardRow, type CardRowOwnerState, type CardRowProps, type CardRowSlotProps } from "./components/card/CardRow";
 export { Checkbox, type CheckboxOwnerState, type CheckboxProps, type CheckboxSlotProps } from "./components/checkbox/Checkbox";
 export { CheckboxGroup, type CheckboxGroupOption, type CheckboxGroupOwnerState } from "./components/checkboxGroup/CheckboxGroup";
 export { type CheckboxGroupProps, type CheckboxGroupSlotProps } from "./components/checkboxGroup/CheckboxGroup";

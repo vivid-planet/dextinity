@@ -354,13 +354,11 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         if (event.button !== 0 || rootRef.current == null) {
             return;
         }
-        event.preventDefault();
         try {
             event.currentTarget.setPointerCapture(event.pointerId);
         } catch {
             // Synthetic pointers, e.g. from testing tools, can't be captured; the drag then follows the handle only
         }
-        event.currentTarget.focus({ preventScroll: true });
         resizeStart.current = {
             pointerX: event.clientX,
             width: currentSidebarWidth(),

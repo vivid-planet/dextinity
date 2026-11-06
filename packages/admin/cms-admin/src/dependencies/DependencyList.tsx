@@ -14,7 +14,6 @@ import {
     Menu,
     MenuRadioGroup,
     MenuRadioItem,
-    Spinner,
     StatusIndicator,
 } from "@dextinity/ui";
 import { type ReactNode, useState } from "react";
@@ -237,10 +236,10 @@ export function DependencyList<Query>({ query, variables, getPage, listKey, type
                         aria-label={intl.formatMessage({ id: "dextinity.dependencies.dataGrid.reloadTooltip", defaultMessage: "Reload" })}
                         variant="outlined"
                         color="secondary"
-                        disabled={isRefreshing}
+                        loading={isRefreshing}
                         onClick={() => void refresh()}
                     >
-                        {isRefreshing ? <Spinner size="small" /> : <Icon name="reload" />}
+                        <Icon name="reload" />
                     </IconButton>
                 }
             >

@@ -458,8 +458,8 @@ importers:
         specifier: ^10.6.0
         version: 10.6.0
       '@kubernetes/client-node':
-        specifier: ^2.0.1
-        version: 2.0.1(supports-color@8.1.1)
+        specifier: ^2.0.2
+        version: 2.0.2(supports-color@8.1.1)
       '@mikro-orm/cli':
         specifier: ^6.6.17
         version: 6.6.17(pg@8.20.0)(supports-color@8.1.1)
@@ -2093,8 +2093,8 @@ importers:
         specifier: workspace:*
         version: link:../../eslint-config
       '@kubernetes/client-node':
-        specifier: ^2.0.1
-        version: 2.0.1(supports-color@8.1.1)
+        specifier: ^2.0.2
+        version: 2.0.2(supports-color@8.1.1)
       '@mikro-orm/cli':
         specifier: ^6.6.17
         version: 6.6.17(pg@8.20.0)(supports-color@8.1.1)
@@ -2301,8 +2301,8 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1(vitest@5.1.0)
       '@kubernetes/client-node':
-        specifier: ^2.0.1
-        version: 2.0.1(supports-color@8.1.1)
+        specifier: ^2.0.2
+        version: 2.0.2(supports-color@8.1.1)
       '@mikro-orm/core':
         specifier: ^6.6.17
         version: 6.6.17
@@ -6517,8 +6517,8 @@ packages:
     peerDependencies:
       koa: ^2.0.0 || ^3.0.0
 
-  '@kubernetes/client-node@2.0.1':
-    resolution: {integrity: sha512-evJgmEtgArEYlj6DNkMGjK41IrFK/hEwb5lWVxx0VRBWybQpnvi+2TtA19mLgVfRHfqX5yjHObX6e9W7LEZBjw==}
+  '@kubernetes/client-node@2.0.2':
+    resolution: {integrity: sha512-AvVq87luFXIoo95dkBsNnzU6pIwKGJM5CZD/iLfxMPXPzVa4w8isIMvXmYly+4TkodQFf3fQzX3KDysVy1OYng==}
 
   '@leichtgewicht/ip-codec@2.0.5':
     resolution: {integrity: sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==}
@@ -24010,7 +24010,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@kubernetes/client-node@2.0.1(supports-color@8.1.1)':
+  '@kubernetes/client-node@2.0.2(supports-color@8.1.1)':
     dependencies:
       '@types/js-yaml': 4.0.9
       '@types/node': 26.6.6

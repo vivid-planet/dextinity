@@ -17,3 +17,11 @@ export const DetailActions = styled("div")`
     flex-wrap: wrap;
     gap: var(--dextinity-space-2);
 `;
+
+export const DetailFormFooter = styled("div")`
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--dextinity-space-2);
+`;

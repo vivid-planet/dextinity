@@ -1,6 +1,10 @@
-import { useMutation } from "@apollo/client";
-import { AssetThumbnail, Button, EmptyState, Icon, Input, KeyValueList, type KeyValueListItem, Panel, Textarea } from "@dextinity/ui";
-import { type FormEvent, type MouseEvent, useState } from "react";
+import { isApolloError, useMutation } from "@apollo/client";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
+import { AssetThumbnail, Button, EmptyState, Icon, KeyValueList, type KeyValueListItem, Panel } from "@dextinity/ui";
+import { focusOnError, InputField, TextareaField, useHasUnsavedChanges } from "@dextinity/ui-react-final-form";
+import { FORM_ERROR } from "final-form";
+import { type MouseEvent, useMemo } from "react";
+import { Form, useForm, useFormState } from "react-final-form";
 import { useIntl } from "react-intl";
 import { useHistory } from "react-router";
 
@@ -11,44 +15,105 @@ import type {
     GQLUpdateDamFinderFolderMutation,
     GQLUpdateDamFinderFolderMutationVariables,
 } from "./DamFinderDetails.gql.generated";
-import { DetailActions, DetailContent, DetailForm } from "./DamFinderDetails.sc";
+import { DetailActions, DetailContent, DetailForm, DetailFormFooter } from "./DamFinderDetails.sc";
+import { DamFinderFormSaveState, type DamFinderUnsavedChanges, DamFinderUnsavedChangesGuard } from "./DamFinderFormState";
 import { formatFileSize, getDamFinderAssetType, getFileExtension, getThumbnailUrl } from "./damFinderItems";
 import type { GQLDamFinderFoldersQuery } from "./DamFinderPage.gql.generated";
 import type { GQLDamFinderFileFragment } from "./useDamFinderFiles.gql.generated";
 
 type DamFinderFolder = GQLDamFinderFoldersQuery["damFoldersFlat"][number];
 
+interface FileDetailsFormValues {
+    name: string;
+    title?: string;
+    altText?: string;
+}
+
+interface FolderDetailsFormValues {
+    name: string;
+}
+
+// The API reports a duplicate file name only through the message of a generic error
+function isDuplicateFileNameError(error: unknown) {
+    return error instanceof Error && isApolloError(error) && error.graphQLErrors.some(({ message }) => message.startsWith("Entity with name"));
+}
+
+function useBlankNameValidator() {
+    const intl = useIntl();
+    const message = intl.formatMessage({ id: "dextinity.damFinder.details.nameBlank", defaultMessage: "Enter a name" });
+    return (value: string | undefined) => (value != null && value !== "" && value.trim() === "" ? message : undefined);
+}
+
+function DetailFormFooterActions({ submitLabel }: { submitLabel: string }) {
+    const intl = useIntl();
+    const form = useForm();
+    const hasUnsavedChanges = useHasUnsavedChanges();
+    const { submitting } = useFormState({ subscription: { submitting: true } });
+    return (
+        <DetailFormFooter>
+            <DamFinderFormSaveState />
+            <DetailActions>
+                <Button size="small" variant="text" color="secondary" disabled={!hasUnsavedChanges || submitting} onClick={() => form.reset()}>
+                    {intl.formatMessage({ id: "dextinity.damFinder.details.reset", defaultMessage: "Reset" })}
+                </Button>
+                <Button type="submit" size="small" disabled={!hasUnsavedChanges} loading={submitting}>
+                    {submitLabel}
+                </Button>
+            </DetailActions>
+        </DetailFormFooter>
+    );
+}
+
 interface DamFinderFileDetailsProps {
     file: GQLDamFinderFileFragment;
     editUrl?: string;
     onQuickLook: () => void;
-    onChange: () => void;
+    onChange: () => Promise<unknown>;
     onError: (message: string) => void;
+    onUnsavedChangesChange: (unsavedChanges: DamFinderUnsavedChanges | undefined) => void;
 }
 
-export function DamFinderFileDetails({ file, editUrl, onQuickLook, onChange, onError }: DamFinderFileDetailsProps) {
+export function DamFinderFileDetails({ file, editUrl, onQuickLook, onChange, onError, onUnsavedChangesChange }: DamFinderFileDetailsProps) {
     const intl = useIntl();
     const history = useHistory();
-    const [name, setName] = useState(file.name);
-    const [title, setTitle] = useState(file.title ?? "");
-    const [altText, setAltText] = useState(file.altText ?? "");
-    const [updateFile, { loading }] = useMutation<GQLUpdateDamFinderFileMutation, GQLUpdateDamFinderFileMutationVariables>(
-        updateDamFinderFileMutation,
+    const validateBlankName = useBlankNameValidator();
+    const initialValues = useMemo<FileDetailsFormValues>(
+        () => ({ name: file.name, title: file.title ?? "", altText: file.altText ?? "" }),
+        [file.name, file.title, file.altText],
     );
+    const [updateFile] = useMutation<GQLUpdateDamFinderFileMutation, GQLUpdateDamFinderFileMutationVariables>(updateDamFinderFileMutation);
 
     const type = getDamFinderAssetType(file.mimetype);
-    const isDirty = name !== file.name || title !== (file.title ?? "") || altText !== (file.altText ?? "");
 
-    const handleSubmit = async (event: FormEvent) => {
-        event.preventDefault();
+    const save = async ({ name, title, altText }: FileDetailsFormValues) => {
+        const trimmedName = name.trim();
         try {
             await updateFile({
-                variables: { id: file.id, input: { name: name.trim(), title: title.trim() || null, altText: altText.trim() || null } },
+                variables: {
+                    id: file.id,
+                    input: {
+                        name: trimmedName !== file.name ? trimmedName : undefined,
+                        title: title?.trim() || null,
+                        altText: altText?.trim() || null,
+                    },
+                },
+                context: LocalErrorScopeApolloContext,
             });
-            onChange();
-        } catch {
-            onError(intl.formatMessage({ id: "dextinity.damFinder.details.saveFailed", defaultMessage: "The file couldn't be saved" }));
+        } catch (error) {
+            if (isDuplicateFileNameError(error)) {
+                return {
+                    name: intl.formatMessage({
+                        id: "dextinity.damFinder.details.nameTaken",
+                        defaultMessage: "Another file in this folder already has this name",
+                    }),
+                };
+            }
+            const message = intl.formatMessage({ id: "dextinity.damFinder.details.saveFailed", defaultMessage: "The file couldn't be saved" });
+            onError(message);
+            return { [FORM_ERROR]: message };
         }
+        await onChange();
+        return undefined;
     };
 
     const items: KeyValueListItem[] = [
@@ -120,39 +185,41 @@ export function DamFinderFileDetails({ file, editUrl, onQuickLook, onChange, onE
                     )}
                 </DetailActions>
                 <KeyValueList items={items} />
-                <DetailForm onSubmit={handleSubmit}>
-                    <Input
-                        name="name"
-                        label={intl.formatMessage({ id: "dextinity.damFinder.details.name", defaultMessage: "File name" })}
-                        required
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                    />
-                    <Input
-                        name="title"
-                        label={intl.formatMessage({ id: "dextinity.damFinder.details.title", defaultMessage: "Title" })}
-                        value={title}
-                        onChange={(event) => setTitle(event.target.value)}
-                    />
-                    {type === "image" && (
-                        <Textarea
-                            name="altText"
-                            label={intl.formatMessage({ id: "dextinity.damFinder.details.altText", defaultMessage: "Alt text" })}
-                            helperText={intl.formatMessage({
-                                id: "dextinity.damFinder.details.altTextHelper",
-                                defaultMessage: "Describes the image for people who can't see it.",
-                            })}
-                            rows={3}
-                            value={altText}
-                            onChange={(event) => setAltText(event.target.value)}
-                        />
+                <Form<FileDetailsFormValues> onSubmit={save} initialValues={initialValues} decorators={[focusOnError]}>
+                    {({ handleSubmit }) => (
+                        <DetailForm onSubmit={handleSubmit} noValidate>
+                            <DamFinderUnsavedChangesGuard onUnsavedChangesChange={onUnsavedChangesChange} />
+                            <InputField
+                                name="name"
+                                label={intl.formatMessage({ id: "dextinity.damFinder.details.name", defaultMessage: "File name" })}
+                                required
+                                requiredMessage={intl.formatMessage({
+                                    id: "dextinity.damFinder.details.nameRequired",
+                                    defaultMessage: "Enter a file name",
+                                })}
+                                validate={validateBlankName}
+                            />
+                            <InputField
+                                name="title"
+                                label={intl.formatMessage({ id: "dextinity.damFinder.details.title", defaultMessage: "Title" })}
+                            />
+                            {type === "image" && (
+                                <TextareaField
+                                    name="altText"
+                                    label={intl.formatMessage({ id: "dextinity.damFinder.details.altText", defaultMessage: "Alt text" })}
+                                    helperText={intl.formatMessage({
+                                        id: "dextinity.damFinder.details.altTextHelper",
+                                        defaultMessage: "Describes the image for people who can't see it.",
+                                    })}
+                                    rows={3}
+                                />
+                            )}
+                            <DetailFormFooterActions
+                                submitLabel={intl.formatMessage({ id: "dextinity.damFinder.details.save", defaultMessage: "Save" })}
+                            />
+                        </DetailForm>
                     )}
-                    <DetailActions>
-                        <Button type="submit" size="small" disabled={!isDirty || name.trim() === ""} loading={loading}>
-                            {intl.formatMessage({ id: "dextinity.damFinder.details.save", defaultMessage: "Save" })}
-                        </Button>
-                    </DetailActions>
-                </DetailForm>
+                </Form>
             </DetailContent>
         </Panel>
     );
@@ -161,25 +228,27 @@ export function DamFinderFileDetails({ file, editUrl, onQuickLook, onChange, onE
 interface DamFinderFolderDetailsProps {
     folder: DamFinderFolder;
     onOpen: () => void;
-    onChange: () => void;
+    onChange: () => Promise<unknown>;
     onError: (message: string) => void;
+    onUnsavedChangesChange: (unsavedChanges: DamFinderUnsavedChanges | undefined) => void;
 }
 
-export function DamFinderFolderDetails({ folder, onOpen, onChange, onError }: DamFinderFolderDetailsProps) {
+export function DamFinderFolderDetails({ folder, onOpen, onChange, onError, onUnsavedChangesChange }: DamFinderFolderDetailsProps) {
     const intl = useIntl();
-    const [name, setName] = useState(folder.name);
-    const [updateFolder, { loading }] = useMutation<GQLUpdateDamFinderFolderMutation, GQLUpdateDamFinderFolderMutationVariables>(
-        updateDamFinderFolderMutation,
-    );
+    const validateBlankName = useBlankNameValidator();
+    const initialValues = useMemo<FolderDetailsFormValues>(() => ({ name: folder.name }), [folder.name]);
+    const [updateFolder] = useMutation<GQLUpdateDamFinderFolderMutation, GQLUpdateDamFinderFolderMutationVariables>(updateDamFinderFolderMutation);
 
-    const handleSubmit = async (event: FormEvent) => {
-        event.preventDefault();
+    const rename = async ({ name }: FolderDetailsFormValues) => {
         try {
-            await updateFolder({ variables: { id: folder.id, input: { name: name.trim() } } });
-            onChange();
+            await updateFolder({ variables: { id: folder.id, input: { name: name.trim() } }, context: LocalErrorScopeApolloContext });
         } catch {
-            onError(intl.formatMessage({ id: "dextinity.damFinder.details.renameFailed", defaultMessage: "The folder couldn't be renamed" }));
+            const message = intl.formatMessage({ id: "dextinity.damFinder.details.renameFailed", defaultMessage: "The folder couldn't be renamed" });
+            onError(message);
+            return { [FORM_ERROR]: message };
         }
+        await onChange();
+        return undefined;
     };
 
     return (
@@ -203,20 +272,26 @@ export function DamFinderFolderDetails({ folder, onOpen, onChange, onError }: Da
                         },
                     ]}
                 />
-                <DetailForm onSubmit={handleSubmit}>
-                    <Input
-                        name="name"
-                        label={intl.formatMessage({ id: "dextinity.damFinder.details.folderName", defaultMessage: "Folder name" })}
-                        required
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                    />
-                    <DetailActions>
-                        <Button type="submit" size="small" disabled={name === folder.name || name.trim() === ""} loading={loading}>
-                            {intl.formatMessage({ id: "dextinity.damFinder.details.rename", defaultMessage: "Rename" })}
-                        </Button>
-                    </DetailActions>
-                </DetailForm>
+                <Form<FolderDetailsFormValues> onSubmit={rename} initialValues={initialValues} decorators={[focusOnError]}>
+                    {({ handleSubmit }) => (
+                        <DetailForm onSubmit={handleSubmit} noValidate>
+                            <DamFinderUnsavedChangesGuard onUnsavedChangesChange={onUnsavedChangesChange} />
+                            <InputField
+                                name="name"
+                                label={intl.formatMessage({ id: "dextinity.damFinder.details.folderName", defaultMessage: "Folder name" })}
+                                required
+                                requiredMessage={intl.formatMessage({
+                                    id: "dextinity.damFinder.details.folderNameRequired",
+                                    defaultMessage: "Enter a folder name",
+                                })}
+                                validate={validateBlankName}
+                            />
+                            <DetailFormFooterActions
+                                submitLabel={intl.formatMessage({ id: "dextinity.damFinder.details.rename", defaultMessage: "Rename" })}
+                            />
+                        </DetailForm>
+                    )}
+                </Form>
             </DetailContent>
         </Panel>
     );

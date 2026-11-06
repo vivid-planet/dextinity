@@ -1,8 +1,10 @@
 import { Slider as BaseSlider } from "@base-ui/react/slider";
 import { clsx } from "clsx";
-import { type ComponentPropsWithoutRef, forwardRef, type ReactNode } from "react";
+import { type ComponentPropsWithoutRef, forwardRef, type ReactNode, useCallback, useId } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
+import { type ControlValidationProps, useControlValidation } from "../field/controlValidation";
+import type { FieldState } from "../field/Field";
 import styles from "./Slider.module.scss";
 
 /**
@@ -10,9 +12,12 @@ import styles from "./Slider.module.scss";
  */
 export type SliderOwnerState = {
     disabled: boolean;
+    state: FieldState;
 };
 
 export interface SliderSlotProps {
+    /** Props for the `label` slot. */
+    label?: SlotPropsValue<SliderOwnerState, "span">;
     /** Props for the `startIcon` slot. */
     startIcon?: SlotPropsValue<SliderOwnerState, "span">;
     /** Props for the `endIcon` slot. */
@@ -25,12 +30,14 @@ export interface SliderSlotProps {
     indicator?: SlotPropsValue<SliderOwnerState, typeof BaseSlider.Indicator>;
     /** Props for the `thumb` slot. */
     thumb?: SlotPropsValue<SliderOwnerState, typeof BaseSlider.Thumb>;
+    /** Props for the `message` slot, the validation message below the slider. */
+    message?: SlotPropsValue<SliderOwnerState, "div">;
 }
 
-export interface SliderProps extends Omit<
-    ComponentPropsWithoutRef<typeof BaseSlider.Root>,
-    "className" | "children" | "value" | "defaultValue" | "onValueChange" | "onChange"
-> {
+export interface SliderProps
+    extends
+        ControlValidationProps,
+        Omit<ComponentPropsWithoutRef<typeof BaseSlider.Root>, "className" | "children" | "value" | "defaultValue" | "onValueChange" | "onChange"> {
     /** The current value. */
     value: number;
     /** Called with the new value while the thumb moves. */
@@ -41,8 +48,10 @@ export interface SliderProps extends Omit<
     max?: number;
     /** @defaultValue `1` */
     step?: number;
-    /** The accessible name; there is no visible label. */
-    "aria-label": string;
+    /** Visible label above the slider. */
+    label?: ReactNode;
+    /** The accessible name when there is no visible label. Required without `label`. */
+    "aria-label"?: string;
     /** An icon before the track for the low end, e.g. a small image for a size. */
     startIcon?: ReactNode;
     /** An icon after the track for the high end, e.g. a large image for a size. */
@@ -69,17 +78,47 @@ export const Slider = forwardRef<HTMLDivElement, SliderProps>(function Slider(
         min = 0,
         max = 100,
         step = 1,
+        label,
         "aria-label": ariaLabel,
+        "aria-describedby": ariaDescribedBy,
         startIcon,
         endIcon,
         disabled = false,
+        state = "default",
+        validationMessage,
         className,
         slotProps,
         ...restProps
     },
     ref,
 ) {
-    const ownerState: SliderOwnerState = { disabled };
+    const ownerState: SliderOwnerState = { disabled, state };
+    const labelId = `${useId()}label`;
+    const hasLabel = label != null;
+    const validation = useControlValidation(state, validationMessage, ariaDescribedBy);
+    const invalid = validation["aria-invalid"];
+    // The thumb passes no aria-invalid to its input, so it is set on the input directly
+    const inputRef = useCallback(
+        (input: HTMLInputElement | null) => {
+            if (invalid) {
+                input?.setAttribute("aria-invalid", "true");
+            } else {
+                input?.removeAttribute("aria-invalid");
+            }
+        },
+        [invalid],
+    );
+
+    const labelProps = resolveSlotProps<SliderOwnerState, "span", "span">({
+        ownProps: { className: styles.label, id: labelId },
+        slotProps: slotProps?.label,
+        ownerState,
+    });
+    const messageProps = resolveSlotProps<SliderOwnerState, "div", "div">({
+        ownProps: { className: styles.message, id: validation.messageId },
+        slotProps: slotProps?.message,
+        ownerState,
+    });
 
     const startIconProps = resolveSlotProps<SliderOwnerState, "span", "span">({
         ownProps: { className: styles.startIcon, "aria-hidden": true },
@@ -107,7 +146,13 @@ export const Slider = forwardRef<HTMLDivElement, SliderProps>(function Slider(
         ownerState,
     });
     const thumbProps = resolveSlotProps<SliderOwnerState, typeof BaseSlider.Thumb, typeof BaseSlider.Thumb>({
-        ownProps: { className: styles.thumb, "aria-label": ariaLabel },
+        ownProps: {
+            className: styles.thumb,
+            "aria-label": hasLabel ? undefined : ariaLabel,
+            "aria-labelledby": hasLabel ? labelId : undefined,
+            "aria-describedby": validation["aria-describedby"],
+            inputRef,
+        },
         slotProps: slotProps?.thumb,
         ownerState,
     });
@@ -122,8 +167,11 @@ export const Slider = forwardRef<HTMLDivElement, SliderProps>(function Slider(
             max={max}
             step={step}
             disabled={ownerState.disabled}
+            aria-labelledby={hasLabel ? labelId : undefined}
+            data-state={ownerState.state}
             className={clsx(styles.root, className)}
         >
+            {hasLabel && <span {...labelProps}>{label}</span>}
             {startIcon != null && <span {...startIconProps}>{startIcon}</span>}
             <BaseSlider.Control {...controlProps}>
                 <BaseSlider.Track {...trackProps}>
@@ -132,6 +180,7 @@ export const Slider = forwardRef<HTMLDivElement, SliderProps>(function Slider(
                 </BaseSlider.Track>
             </BaseSlider.Control>
             {endIcon != null && <span {...endIconProps}>{endIcon}</span>}
+            {validation.showsMessage && <div {...messageProps}>{validationMessage}</div>}
         </BaseSlider.Root>
     );
 });

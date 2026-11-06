@@ -20,4 +20,14 @@
     --dextinity-slider-thumb-background: var(--dextinity-color-accent);
     --dextinity-slider-thumb-ring: var(--dextinity-color-surface);
     --dextinity-slider-thumb-shadow: var(--dextinity-shadow-1);
+
+    // Space between the label, the slider, and the validation message
+    --dextinity-slider-row-gap: 7px;
+    --dextinity-slider-label-font-size: 13px;
+    --dextinity-slider-label-font-weight: 500;
+    --dextinity-slider-label-color: var(--dextinity-color-text-secondary);
+    --dextinity-slider-message-font-size: var(--dextinity-typography-small-size);
+    --dextinity-slider-message-color-error: var(--dextinity-color-danger-text);
+    --dextinity-slider-message-color-warning: var(--dextinity-color-warning-text);
+    --dextinity-slider-message-color-success: var(--dextinity-color-success-text);
 }

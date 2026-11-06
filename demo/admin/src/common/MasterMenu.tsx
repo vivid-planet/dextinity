@@ -7,7 +7,6 @@ import {
     createTargetGroupsPage,
 } from "@dextinity/brevo-admin";
 import {
-    ContentScopeIndicator,
     CronJobsPage,
     DamFinderPage,
     DamPage,
@@ -48,7 +47,6 @@ import { ProductCategoriesPage as ProductCategoriesHandmadePage } from "@src/pro
 import { ProductTagsPage as ProductTagsHandmadePage } from "@src/products/tags/ProductTagsPage";
 import { ProductsUiPage } from "@src/products/ui/ProductsUiPage";
 import { RedirectsPage } from "@src/redirects/RedirectsPage";
-import type { ContentScope } from "@src/site-configs";
 import { EditWelcomeEmailPage } from "@src/welcomeEmail/EditWelcomeEmailPage";
 import { useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -140,7 +138,6 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                             }}
                             editPageNode={EditPageNode}
                             category={category}
-                            renderContentScopeIndicator={(scope: ContentScope) => <ContentScopeIndicator scope={scope} />}
                         />
                     );
                 },

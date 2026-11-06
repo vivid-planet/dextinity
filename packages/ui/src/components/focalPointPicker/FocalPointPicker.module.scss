@@ -1,3 +1,5 @@
+@use "../field/controlMessage";
+
 .root {
     display: flex;
     flex-wrap: wrap;
@@ -20,6 +22,11 @@
     cursor: crosshair;
     touch-action: none;
     user-select: none;
+
+    // An outline, since the image covers an inset shadow
+    .root[data-state="error"] > & {
+        outline: calc(var(--dextinity-line-width) * 2) solid var(--dextinity-focal-point-picker-line-error);
+    }
 }
 
 .image {
@@ -102,6 +109,11 @@
     font-family: var(--dextinity-font-family-mono);
     font-size: 10.5px;
     text-align: center;
+}
+
+.message {
+    flex-basis: 100%;
+    @include controlMessage.message(focal-point-picker);
 }
 
 // Applied by the high-contrast color scheme

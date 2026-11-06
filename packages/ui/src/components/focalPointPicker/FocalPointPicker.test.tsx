@@ -22,4 +22,22 @@ describe("FocalPointPicker", () => {
         const previews = Array.from(container.querySelectorAll<HTMLImageElement>(".dextinityFocalPointPicker__previewImage"));
         expect(previews.map((image) => image.style.objectPosition)).toStrictEqual(["25% 75%", "25% 75%"]);
     });
+
+    it("connects the validation message to the point", () => {
+        const { container } = render(
+            <FocalPointPicker
+                src="a.jpg"
+                value={{ x: 0.5, y: 0.5 }}
+                onChange={vi.fn()}
+                state="error"
+                validationMessage="Set the point on the face."
+            />,
+        );
+
+        expect((container.firstElementChild as HTMLElement).dataset.state).toBe("error");
+        const marker = screen.getByRole("slider");
+        expect(marker.getAttribute("aria-invalid")).toBe("true");
+        const message = document.getElementById(marker.getAttribute("aria-describedby") ?? "");
+        expect([message?.className, message?.textContent]).toStrictEqual(["dextinityFocalPointPicker__message", "Set the point on the face."]);
+    });
 });

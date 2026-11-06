@@ -15,6 +15,8 @@ import {
     MenuRadioGroup,
     MenuRadioItem,
     StatusIndicator,
+    ToastViewport,
+    useToasts,
 } from "@dextinity/ui";
 import { type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
@@ -111,6 +113,7 @@ export function DependencyList<Query>({ query, variables, getPage, listKey, type
     const { search, filters: filterValues } = listState;
     const [isTypeMenuOpen, setIsTypeMenuOpen] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
 
     const queryVariables: DependencyListQueryVariables = {
         offset: listState.offset,
@@ -303,7 +306,20 @@ export function DependencyList<Query>({ query, variables, getPage, listKey, type
                 sort={listState.sort}
                 onSortChange={listState.setSort}
                 onRowClick={(item) => void openInThisTab(item)}
-                rowActions={(item) => <DependencyActions {...item} />}
+                rowActions={(item) => (
+                    <DependencyActions
+                        {...item}
+                        onCopyLinkError={() =>
+                            addToast({
+                                tone: "error",
+                                message: intl.formatMessage({
+                                    id: "dextinity.dependencies.dataGrid.copyLinkFailed",
+                                    defaultMessage: "The link couldn't be copied",
+                                }),
+                            })
+                        }
+                    />
+                )}
                 pagination={pagination}
                 labels={dataGridLabels}
                 emptyState={
@@ -338,6 +354,11 @@ export function DependencyList<Query>({ query, variables, getPage, listKey, type
                 <InfoTitle>{labels.infoTitle}</InfoTitle>
                 {labels.infoDescription}
             </Banner>
+            <ToastViewport
+                toasts={toasts}
+                onDismiss={dismissToast}
+                labels={{ region: intl.formatMessage({ id: "dextinity.dependencies.notifications", defaultMessage: "Notifications" }) }}
+            />
         </DependencyListRoot>
     );
 }

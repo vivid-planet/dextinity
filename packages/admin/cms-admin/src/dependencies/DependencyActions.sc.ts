@@ -8,3 +8,14 @@ export const DependencyActionsRoot = styled("div")`
 export const DependencyActionsUnavailable = styled("span")`
     color: var(--dextinity-color-text-secondary);
 `;
+
+export const DependencyActionsUnavailableWrapper = styled("span")`
+    display: inline-flex;
+    border-radius: var(--dextinity-radius-control);
+    cursor: not-allowed;
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+`;

@@ -1,0 +1,24 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+}
+
+.priceAndStatus {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--dextinity-density-form-gap);
+}
+
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+}

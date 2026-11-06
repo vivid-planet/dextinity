@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { useStoredState } from "@dextinity/admin";
+import { LocalErrorScopeApolloContext, useStoredState } from "@dextinity/admin";
 import {
     AssetBrowser,
     type AssetBrowserLabels,
@@ -7,10 +7,8 @@ import {
     AssetThumbnail,
     Button,
     ConfirmDialog,
-    Dialog,
     FinderLayout,
     Icon,
-    Input,
     PageHeader,
     QuickLook,
     type QuickLookItem,
@@ -18,7 +16,7 @@ import {
     ToastViewport,
     useToasts,
 } from "@dextinity/ui";
-import { type FormEvent, type ReactNode, useCallback, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useMemo, useState } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
 import { type IntlShape, useIntl } from "react-intl";
 import { useHistory, useLocation, useRouteMatch } from "react-router";
@@ -39,7 +37,9 @@ import type {
     GQLMoveDamFoldersMutationVariables,
 } from "../DataGrid/FolderDataGrid.gql.generated";
 import { DamFinderFileDetails, DamFinderFolderDetails, DamFinderSelectionDetails } from "./DamFinderDetails";
+import type { DamFinderUnsavedChanges } from "./DamFinderFormState";
 import { damFinderRootFolderId, getDamFinderAssetType, getFileExtension, toAssetBrowserAsset, toAssetBrowserFolder } from "./damFinderItems";
+import { DamFinderNewFolderDialog } from "./DamFinderNewFolderDialog";
 import {
     archiveDamFinderFilesMutation,
     createDamFinderFolderMutation,
@@ -137,12 +137,11 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
     const [quickLookIndex, setQuickLookIndex] = useState<number>();
     const [pendingDeleteIds, setPendingDeleteIds] = useState<string[]>();
     const [isNewFolderDialogOpen, setIsNewFolderDialogOpen] = useState(false);
-    const [newFolderName, setNewFolderName] = useState("");
+    const [detailsUnsavedChanges, setDetailsUnsavedChanges] = useState<DamFinderUnsavedChanges>();
+    const [pendingSelectedIds, setPendingSelectedIds] = useState<string[]>();
 
     const foldersQuery = useQuery<GQLDamFinderFoldersQuery, GQLDamFinderFoldersQueryVariables>(damFinderFoldersQuery, { variables: { scope } });
-    const [createFolder, { loading: isCreatingFolder }] = useMutation<GQLCreateDamFinderFolderMutation, GQLCreateDamFinderFolderMutationVariables>(
-        createDamFinderFolderMutation,
-    );
+    const [createFolder] = useMutation<GQLCreateDamFinderFolderMutation, GQLCreateDamFinderFolderMutationVariables>(createDamFinderFolderMutation);
     const [moveFiles] = useMutation<GQLMoveDamFilesMutation, GQLMoveDamFilesMutationVariables>(moveDamFilesMutation);
     const [moveFolders] = useMutation<GQLMoveDamFoldersMutation, GQLMoveDamFoldersMutationVariables>(moveDamFoldersMutation);
     const [deleteFile] = useMutation<GQLDeleteDamFinderFileMutation, GQLDeleteDamFinderFileMutationVariables>(deleteDamFinderFileMutation);
@@ -379,23 +378,48 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
         await refresh([folderId]);
     };
 
-    const handleCreateFolder = async (event: FormEvent) => {
-        event.preventDefault();
+    const handleCreateFolder = async (name: string) => {
         try {
             const { data } = await createFolder({
                 variables: {
-                    input: { name: newFolderName.trim(), parentId: folderId === damFinderRootFolderId ? undefined : folderId },
+                    input: { name, parentId: folderId === damFinderRootFolderId ? undefined : folderId },
                     scope,
                 },
+                context: LocalErrorScopeApolloContext,
             });
             setIsNewFolderDialogOpen(false);
-            setNewFolderName("");
             await foldersQuery.refetch();
             if (data != null) {
                 setSelectedIds([data.createDamFolder.id]);
             }
+            return undefined;
         } catch {
-            showError(intl.formatMessage({ id: "dextinity.damFinder.createFolderFailed", defaultMessage: "The folder couldn't be created" }));
+            const message = intl.formatMessage({ id: "dextinity.damFinder.createFolderFailed", defaultMessage: "The folder couldn't be created" });
+            showError(message);
+            return message;
+        }
+    };
+
+    const changeSelection = (ids: string[]) => {
+        if (detailsUnsavedChanges != null) {
+            setPendingSelectedIds(ids);
+        } else {
+            setSelectedIds(ids);
+        }
+    };
+    const discardAndApplyPendingSelection = () => {
+        detailsUnsavedChanges?.discard();
+        if (pendingSelectedIds != null) {
+            setSelectedIds(pendingSelectedIds);
+        }
+        setPendingSelectedIds(undefined);
+    };
+    const saveAndApplyPendingSelection = async () => {
+        const nextSelectedIds = pendingSelectedIds;
+        setPendingSelectedIds(undefined);
+        const isSaved = (await detailsUnsavedChanges?.save()) ?? true;
+        if (isSaved && nextSelectedIds != null) {
+            setSelectedIds(nextSelectedIds);
         }
     };
 
@@ -439,23 +463,25 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
         if (selectedFile != null) {
             return (
                 <DamFinderFileDetails
-                    key={`${selectedFile.id}-${selectedFile.name}-${selectedFile.title}-${selectedFile.altText}`}
+                    key={selectedFile.id}
                     file={selectedFile}
                     editUrl={editFileUrl?.(selectedFile.id)}
                     onQuickLook={() => openQuickLook(selectedFile.id)}
                     onChange={() => reload([folderId])}
                     onError={showError}
+                    onUnsavedChangesChange={setDetailsUnsavedChanges}
                 />
             );
         }
         if (selectedFolder != null) {
             return (
                 <DamFinderFolderDetails
-                    key={`${selectedFolder.id}-${selectedFolder.name}`}
+                    key={selectedFolder.id}
                     folder={selectedFolder}
                     onOpen={() => changeFolder(selectedFolder.id)}
                     onChange={() => foldersQuery.refetch()}
                     onError={showError}
+                    onUnsavedChangesChange={setDetailsUnsavedChanges}
                 />
             );
         }
@@ -528,7 +554,7 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                             view={view}
                             onViewChange={setView}
                             selectedIds={selectedIds}
-                            onSelectionChange={setSelectedIds}
+                            onSelectionChange={changeSelection}
                             onOpen={(asset) => openQuickLook(asset.id)}
                             onQuickLook={(asset) => openQuickLook(asset.id)}
                             onMove={handleMove}
@@ -558,7 +584,7 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                 index={quickLookIndex ?? 0}
                 onIndexChange={(index) => {
                     setQuickLookIndex(index);
-                    setSelectedIds([currentFiles[index].id]);
+                    changeSelection([currentFiles[index].id]);
                 }}
                 renderPreview={renderQuickLookPreview}
                 labels={{
@@ -616,33 +642,25 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                 onSecondary={pendingDeleteFolderIds.length === 0 ? handleArchive : undefined}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.damFinder.delete.cancel", defaultMessage: "Cancel" }) }}
             />
-            <Dialog
-                open={isNewFolderDialogOpen}
-                onOpenChange={setIsNewFolderDialogOpen}
-                title={intl.formatMessage({ id: "dextinity.damFinder.newFolder.title", defaultMessage: "New folder" })}
-                size="small"
-                footer={
-                    <>
-                        <Button variant="outlined" color="secondary" onClick={() => setIsNewFolderDialogOpen(false)}>
-                            {intl.formatMessage({ id: "dextinity.damFinder.newFolder.cancel", defaultMessage: "Cancel" })}
-                        </Button>
-                        <Button type="submit" form="dam-finder-new-folder" disabled={newFolderName.trim() === ""} loading={isCreatingFolder}>
-                            {intl.formatMessage({ id: "dextinity.damFinder.newFolder.create", defaultMessage: "Create" })}
-                        </Button>
-                    </>
-                }
-                labels={{ close: intl.formatMessage({ id: "dextinity.damFinder.newFolder.close", defaultMessage: "Close" }) }}
-            >
-                <form id="dam-finder-new-folder" onSubmit={handleCreateFolder}>
-                    <Input
-                        name="name"
-                        label={intl.formatMessage({ id: "dextinity.damFinder.newFolder.name", defaultMessage: "Name" })}
-                        required
-                        value={newFolderName}
-                        onChange={(event) => setNewFolderName(event.target.value)}
-                    />
-                </form>
-            </Dialog>
+            <DamFinderNewFolderDialog open={isNewFolderDialogOpen} onOpenChange={setIsNewFolderDialogOpen} onCreate={handleCreateFolder} />
+            <ConfirmDialog
+                open={pendingSelectedIds != null}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setPendingSelectedIds(undefined);
+                    }
+                }}
+                title={intl.formatMessage({ id: "dextinity.damFinder.unsavedChanges.title", defaultMessage: "Unsaved changes" })}
+                description={intl.formatMessage({
+                    id: "dextinity.damFinder.unsavedChanges.description",
+                    defaultMessage: "Save them before you select something else?",
+                })}
+                secondaryLabel={intl.formatMessage({ id: "dextinity.damFinder.unsavedChanges.discard", defaultMessage: "Discard" })}
+                onSecondary={discardAndApplyPendingSelection}
+                confirmLabel={intl.formatMessage({ id: "dextinity.damFinder.unsavedChanges.save", defaultMessage: "Save and continue" })}
+                onConfirm={saveAndApplyPendingSelection}
+                labels={{ cancel: intl.formatMessage({ id: "dextinity.damFinder.unsavedChanges.cancel", defaultMessage: "Cancel" }) }}
+            />
             <ToastViewport
                 toasts={toasts}
                 onDismiss={dismissToast}

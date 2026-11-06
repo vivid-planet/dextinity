@@ -214,7 +214,7 @@ function ExamplePageForm() {
 const meta = {
     title: "Forms/Final Form/Example form",
     parameters: {
-        layout: "fullscreen",
+        layout: "padded",
         docs: {
             description: {
                 component:

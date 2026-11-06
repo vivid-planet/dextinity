@@ -8,6 +8,7 @@ import { Button } from "../Button";
 import styles from "./Button.stories.module.scss";
 
 const iconOptions = {
+    Favorite: <Icon name="favorite" />,
     Check: <Icon name="check" />,
     ArrowRight: <Icon name="arrow-right" />,
     Trash: <Icon name="delete" />,
@@ -89,10 +90,16 @@ export const Ghost: Story = {
     },
 };
 
+export const Secondary: Story = {
+    args: {
+        color: "secondary",
+    },
+};
+
 /**
  * Further actions: `outlined` with `color="secondary"`.
  */
-export const Secondary: Story = {
+export const OutlinedSecondary: Story = {
     args: {
         variant: "outlined",
         color: "secondary",
@@ -183,9 +190,9 @@ export const LoadingKeepsWidth: Story = {
 export const WithIcons: Story = {
     render: () => (
         <div style={{ display: "flex", gap: "1rem" }}>
-            <Button startIcon={<Icon name="check" />}>Start only</Button>
+            <Button startIcon={<Icon name="favorite" />}>Start only</Button>
             <Button endIcon={<Icon name="arrow-right" />}>End only</Button>
-            <Button startIcon={<Icon name="check" />} endIcon={<Icon name="arrow-right" />}>
+            <Button startIcon={<Icon name="favorite" />} endIcon={<Icon name="arrow-right" />}>
                 Both
             </Button>
         </div>

@@ -38,6 +38,8 @@ export interface ConfirmDialogProps {
     title: string;
     /** The consequence, in one sentence. */
     description?: string;
+    /** Details that help decide, between the description and the actions, e.g. what a deletion takes along. */
+    children?: ReactNode;
     /** The confirming action, as a verb, e.g. "Save and continue" or "Delete". */
     confirmLabel: string;
     /** Called when the confirming action is clicked. Close the dialog through `open` once the action is done. */
@@ -78,6 +80,7 @@ export const ConfirmDialog = forwardRef<HTMLDivElement, ConfirmDialogProps>(func
         onOpenChange,
         title,
         description,
+        children,
         confirmLabel,
         onConfirm,
         confirmIcon,
@@ -131,6 +134,8 @@ export const ConfirmDialog = forwardRef<HTMLDivElement, ConfirmDialogProps>(func
                     </Button>
                 </>
             }
-        />
+        >
+            {children}
+        </Dialog>
     );
 });

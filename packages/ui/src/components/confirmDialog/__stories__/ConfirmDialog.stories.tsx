@@ -142,6 +142,29 @@ export const Danger: Story = {
 };
 
 /**
+ * `children` add details that help decide, e.g. what a deletion takes along.
+ */
+export const WithDetails: Story = {
+    args: {
+        open: true,
+        tone: "danger",
+        title: "Delete 4 pages?",
+        description: "Deleted pages can't be restored.",
+        confirmLabel: "Delete",
+        confirmIcon: <Icon name="delete" />,
+        children: (
+            <ul>
+                <li>3 published</li>
+                <li>1 unpublished</li>
+            </ul>
+        ),
+    },
+    play: async () => {
+        await expect(await screen.findByRole("alertdialog")).toHaveTextContent("3 published");
+    },
+};
+
+/**
  * `loading` shows a spinner in the confirming action while it runs. Meanwhile, the other actions are disabled and Escape doesn't close
  * the dialog.
  */

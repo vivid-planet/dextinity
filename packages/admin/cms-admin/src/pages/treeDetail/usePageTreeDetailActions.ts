@@ -1,4 +1,5 @@
 import { gql, useApolloClient } from "@apollo/client";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import type { TreeViewMove, UndoableAction } from "@dextinity/ui";
 import { useIntl } from "react-intl";
 
@@ -72,6 +73,7 @@ export function usePageTreeDetailActions({ structure, perform, block }: UsePageT
         client.mutate<GQLUpdatePageVisibilityMutation, GQLUpdatePageVisibilityMutationVariables>({
             mutation: updatePageVisibilityMutation,
             variables: { id: page.id, input: { visibility } },
+            context: LocalErrorScopeApolloContext,
             optimisticResponse: {
                 updatePageTreeNodeVisibility: { __typename: "PageTreeNode", id: page.id, visibility, path: page.path, slug: page.slug },
             },
@@ -171,6 +173,7 @@ export function usePageTreeDetailActions({ structure, perform, block }: UsePageT
             client.mutate<GQLPageTreeDetailMovePagesMutation, GQLPageTreeDetailMovePagesMutationVariables>({
                 mutation: movePagesMutation,
                 variables: { ids, input },
+                context: LocalErrorScopeApolloContext,
             });
 
         const run = async () => {
@@ -187,13 +190,18 @@ export function usePageTreeDetailActions({ structure, perform, block }: UsePageT
 
         const undo = async () => {
             const pagesNotInPlace = new Set(idsToMove);
-            for (const page of pagesToMove) {
-                await moveTo([page.id], getOriginalPosition(page, pagesNotInPlace));
-                await client.mutate<GQLPageTreeDetailResetSlugMutation, GQLPageTreeDetailResetSlugMutationVariables>({
-                    mutation: resetSlugMutation,
-                    variables: { id: page.id, slug: page.slug },
-                });
-                pagesNotInPlace.delete(page.id);
+            try {
+                for (const page of pagesToMove) {
+                    await moveTo([page.id], getOriginalPosition(page, pagesNotInPlace));
+                    await client.mutate<GQLPageTreeDetailResetSlugMutation, GQLPageTreeDetailResetSlugMutationVariables>({
+                        mutation: resetSlugMutation,
+                        variables: { id: page.id, slug: page.slug },
+                        context: LocalErrorScopeApolloContext,
+                    });
+                    pagesNotInPlace.delete(page.id);
+                }
+            } catch {
+                block(intl.formatMessage({ id: "dextinity.pageTreeDetail.moveUndoFailed", defaultMessage: "The move could not be undone" }));
             }
             await client.refetchQueries({ include: ["Pages"] });
         };

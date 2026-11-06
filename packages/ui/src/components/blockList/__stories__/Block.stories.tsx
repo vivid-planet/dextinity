@@ -26,6 +26,7 @@ function HeroFields() {
 function ControlledBlock(props: BlockProps) {
     const [visible, setVisible] = useState(props.visible);
     const [expanded, setExpanded] = useState(props.expanded);
+    const [checked, setChecked] = useState(props.checked);
     return (
         <div className={styles.container}>
             <BlockList aria-label="Blocks">
@@ -37,6 +38,14 @@ function ControlledBlock(props: BlockProps) {
                         ((next) => {
                             props.onVisibleChange?.(next);
                             setVisible(next);
+                        })
+                    }
+                    checked={checked}
+                    onCheckedChange={
+                        props.onCheckedChange &&
+                        ((next) => {
+                            props.onCheckedChange?.(next);
+                            setChecked(next);
                         })
                     }
                     expanded={expanded}
@@ -66,6 +75,8 @@ const meta = {
     argTypes: {
         selected: { control: "boolean" },
         expanded: { control: "boolean" },
+        invalid: { control: "boolean" },
+        checked: { control: "boolean" },
         icon: { control: false },
         actions: { control: false },
         children: { control: false },
@@ -148,4 +159,32 @@ export const Selected: Story = {
  */
 export const ReadOnly: Story = {
     args: { onVisibleChange: undefined },
+};
+
+/**
+ * `invalid` marks a block with errors, e.g. a required field is empty; `invalidReason` says which, in the marker's tooltip.
+ */
+export const Invalid: Story = {
+    args: { invalid: true, invalidReason: "Image is required", expanded: false, children: <HeroFields /> },
+    play: async ({ canvas }) => {
+        const marker = canvas.getByRole("img", { name: "Image is required" });
+        await userEvent.tab();
+        marker.focus();
+        await expect(marker).toHaveFocus();
+    },
+};
+
+/**
+ * With `checked` and `onCheckedChange`, the block has a checkbox to select it for bulk actions, independent of `selected`, which
+ * follows the preview.
+ */
+export const Checkable: Story = {
+    args: { checked: false, onCheckedChange: fn() },
+    play: async ({ args, canvas }) => {
+        const checkbox = canvas.getByRole("checkbox", { name: "Select" });
+        await expect(checkbox).toHaveAccessibleDescription("Shape what's next");
+        await userEvent.click(checkbox);
+        await waitFor(() => expect(args.onCheckedChange).toHaveBeenLastCalledWith(true));
+        await expect(checkbox).toBeChecked();
+    },
 };

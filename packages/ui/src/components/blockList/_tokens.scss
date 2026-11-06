@@ -32,4 +32,14 @@
     --dextinity-block-hidden-tag-background: var(--dextinity-color-warning-soft);
     --dextinity-block-hidden-tag-foreground: var(--dextinity-color-warning-text);
     --dextinity-block-hidden-tag-shadow: none;
+
+    // Invalid blocks, e.g. a required field is empty
+    --dextinity-block-invalid-shadow: inset 0 0 0 1.5px var(--dextinity-color-danger), var(--dextinity-shadow-1);
+    --dextinity-block-invalid-marker-color: var(--dextinity-color-danger);
+    // Blocks selected for bulk actions
+    --dextinity-block-checked-background: var(--dextinity-color-accent-soft);
+
+    // The header above the blocks with the select-all checkbox and the bulk actions
+    --dextinity-block-list-header-height: 40px;
+    --dextinity-block-list-header-foreground: var(--dextinity-color-text-tertiary);
 }

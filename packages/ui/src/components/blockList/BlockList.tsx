@@ -28,6 +28,8 @@ export type BlockListOwnerState = {
 };
 
 export interface BlockListSlotProps {
+    /** Props for the `header` slot, the row that holds `header`. */
+    header?: SlotPropsValue<BlockListOwnerState, "li">;
     /** Props for the `insertButton` slot, the button between two blocks. */
     insertButton?: SlotPropsValue<BlockListOwnerState, "button">;
     /** Props for the `addButton` slot, the button at the end of the list. */
@@ -37,6 +39,8 @@ export interface BlockListSlotProps {
 export interface BlockListProps extends Omit<HTMLAttributes<HTMLUListElement>, "className"> {
     /** The blocks, as `Block` elements in their order. */
     children?: ReactNode;
+    /** A row above the blocks, e.g. a `BlockListHeader` with the select-all checkbox and the bulk actions. */
+    header?: ReactNode;
     /** The accessible name of the list, e.g. "Blocks". */
     "aria-label": string;
     /**
@@ -63,7 +67,7 @@ interface DropTarget {
  * The blocks of a page in their order: move them by dragging or with the keyboard, and add new ones between them or at the end.
  */
 export const BlockList = forwardRef<HTMLUListElement, BlockListProps>(function BlockList(
-    { children, onReorder, onAdd, labels: labelsProp, className, slotProps, ...restProps },
+    { children, header, onReorder, onAdd, labels: labelsProp, className, slotProps, ...restProps },
     ref,
 ) {
     const labels = { ...defaultLabels, ...labelsProp };
@@ -144,6 +148,11 @@ export const BlockList = forwardRef<HTMLUListElement, BlockListProps>(function B
             slotProps: slotProps?.insertButton,
             ownerState,
         });
+    const headerProps = resolveSlotProps<BlockListOwnerState, "li", "li">({
+        ownProps: { className: styles.header, role: "none" },
+        slotProps: slotProps?.header,
+        ownerState,
+    });
     const addButtonProps = resolveSlotProps<BlockListOwnerState, "button", "button">({
         ownProps: { className: styles.addButton, type: "button", onClick: () => onAdd?.(count) },
         slotProps: slotProps?.addButton,
@@ -164,6 +173,7 @@ export const BlockList = forwardRef<HTMLUListElement, BlockListProps>(function B
                 }
             }}
         >
+            {header != null && <li {...headerProps}>{header}</li>}
             {blocks.map((block, index) => (
                 <BlockListItemContext.Provider key={block.key ?? index} value={createItemContext(index)}>
                     {ownerState.addable && index > 0 && (

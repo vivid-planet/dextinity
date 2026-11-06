@@ -12,6 +12,12 @@
     }
 }
 
+.header {
+    .root[data-addable] > & {
+        margin-block-end: var(--dextinity-block-list-insert-height);
+    }
+}
+
 .insert {
     position: relative;
     display: grid;

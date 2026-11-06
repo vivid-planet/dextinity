@@ -15,5 +15,5 @@ export function getProductImageUrl(imageBlockData: unknown, apiUrl: string, { wi
     if (props.urlTemplate != null) {
         return `${apiUrl}${props.urlTemplate.replace("$resizeWidth", String(width)).replace("$resizeHeight", String(height))}`;
     }
-    return props.damFile?.fileUrl;
+    return props.damFile?.fileUrl != null ? `${apiUrl}${props.damFile.fileUrl}` : undefined;
 }

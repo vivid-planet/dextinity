@@ -112,7 +112,7 @@ export const Default: Story = {
             throw new Error("missing file input");
         }
         await userEvent.upload(input, createFile("team.jpg", "image/jpeg"));
-        await expect(args.onFiles).toHaveBeenCalledWith([expect.objectContaining({ name: "team.jpg" })]);
+        await waitFor(() => expect(args.onFiles).toHaveBeenCalledWith([expect.objectContaining({ name: "team.jpg" })]));
         await expect(await canvas.findByRole("progressbar", { name: "team.jpg" })).toBeVisible();
     },
 };
@@ -131,8 +131,8 @@ export const AcceptAndMaxSize: Story = {
         dispatchDrag(zone, "dragenter", ...files);
         await waitFor(() => expect(canvasElement.querySelector(".dextinityDropzone")).toHaveAttribute("data-dragging"));
         dispatchDrag(zone, "drop", ...files);
-        await expect(args.onFiles).toHaveBeenCalledWith([expect.objectContaining({ name: "photo.png" })]);
-        await expect(args.onReject).toHaveBeenCalledWith([expect.objectContaining({ reason: "type" })]);
+        await waitFor(() => expect(args.onFiles).toHaveBeenCalledWith([expect.objectContaining({ name: "photo.png" })]));
+        await waitFor(() => expect(args.onReject).toHaveBeenCalledWith([expect.objectContaining({ reason: "type" })]));
         await expect(await canvas.findByRole("alert")).toHaveTextContent("notes.txt is not an image, PDF, or video.");
     },
 };

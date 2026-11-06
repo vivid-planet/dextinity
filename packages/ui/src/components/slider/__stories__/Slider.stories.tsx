@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
@@ -78,9 +78,9 @@ export const Keyboard: Story = {
         const slider = canvas.getByRole("slider", { name: "Icon size" });
         await expect(slider).toHaveFocus();
         await userEvent.keyboard("{ArrowRight}");
-        await expect(args.onChange).toHaveBeenLastCalledWith(41);
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(41));
         await userEvent.keyboard("{End}");
-        await expect(args.onChange).toHaveBeenLastCalledWith(100);
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(100));
         await expect(slider).toHaveAttribute("aria-valuenow", "100");
     },
 };

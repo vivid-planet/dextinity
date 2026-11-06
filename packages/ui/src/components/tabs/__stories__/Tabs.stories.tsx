@@ -67,7 +67,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("tab", { name: "Settings" }));
-        await expect(args.onChange).toHaveBeenLastCalledWith("settings");
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("settings"));
         await expect(canvas.getByRole("tab", { name: "Settings" })).toHaveAttribute("aria-selected", "true");
     },
 };
@@ -101,6 +101,6 @@ export const Keyboard: Story = {
         await userEvent.keyboard("{ArrowRight}");
         await expect(canvas.getByRole("tab", { name: "SEO 1" })).toHaveFocus();
         await userEvent.keyboard("{Enter}");
-        await expect(args.onChange).toHaveBeenLastCalledWith("seo");
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("seo"));
     },
 };

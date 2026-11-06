@@ -81,16 +81,16 @@ export const Default: Story = {
         const trigger = canvas.getByRole("button", { name: "Open dialog" });
         await userEvent.click(trigger);
         const dialog = await screen.findByRole("dialog", { name: "Unsaved changes" });
-        await expect(dialog).toHaveAccessibleDescription("If you save, they go live right away.");
+        await waitFor(() => expect(dialog).toHaveAccessibleDescription("If you save, they go live right away."));
         await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
         const firstFocused = document.activeElement;
         for (let i = 0; i < 5; i++) {
             await userEvent.tab();
-            await expect(dialog.contains(document.activeElement)).toBe(true);
+            await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
         }
         (firstFocused as HTMLElement).focus();
         await userEvent.keyboard("{Escape}");
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
         await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
         await waitFor(() => expect(trigger).toHaveFocus());
     },
@@ -107,7 +107,7 @@ export const CloseButton: Story = {
     args: { open: true },
     play: async ({ args }) => {
         await userEvent.click(await screen.findByRole("button", { name: "Close" }));
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
     },
 };
 

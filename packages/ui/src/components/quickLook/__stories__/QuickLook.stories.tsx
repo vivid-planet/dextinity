@@ -110,12 +110,12 @@ export const Default: Story = {
         await userEvent.keyboard(" ");
         await screen.findByRole("dialog", { name: "team.jpg" });
         await userEvent.keyboard("{ArrowRight}");
-        await expect(args.onIndexChange).toHaveBeenLastCalledWith(1);
+        await waitFor(() => expect(args.onIndexChange).toHaveBeenLastCalledWith(1));
         await expect(await screen.findByRole("dialog", { name: "office.jpg" })).toBeInTheDocument();
         await userEvent.keyboard("{ArrowLeft}");
-        await expect(args.onIndexChange).toHaveBeenLastCalledWith(0);
+        await waitFor(() => expect(args.onIndexChange).toHaveBeenLastCalledWith(0));
         await userEvent.keyboard(" ");
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
         await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     },
 };
@@ -151,6 +151,6 @@ export const Buttons: Story = {
     play: async ({ args }) => {
         await expect(await screen.findByRole("button", { name: "Next" })).toBeDisabled();
         await userEvent.click(screen.getByRole("button", { name: "Previous" }));
-        await expect(args.onIndexChange).toHaveBeenLastCalledWith(1);
+        await waitFor(() => expect(args.onIndexChange).toHaveBeenLastCalledWith(1));
     },
 };

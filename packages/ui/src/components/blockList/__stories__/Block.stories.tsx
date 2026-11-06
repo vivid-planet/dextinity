@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
@@ -93,10 +93,10 @@ export const Default: Story = {
     args: { expanded: false, children: <HeroFields /> },
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Fields" }));
-        await expect(args.onExpandedChange).toHaveBeenLastCalledWith(true);
+        await waitFor(() => expect(args.onExpandedChange).toHaveBeenLastCalledWith(true));
         await expect(await canvas.findByRole("textbox", { name: "Title" })).toBeVisible();
         await userEvent.click(canvas.getByRole("button", { name: "Hide" }));
-        await expect(args.onVisibleChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onVisibleChange).toHaveBeenLastCalledWith(false));
         await expect(canvas.getByRole("button", { name: "Hide" })).toHaveAttribute("aria-pressed", "true");
         await expect(canvas.getByText("Hidden")).toBeVisible();
     },

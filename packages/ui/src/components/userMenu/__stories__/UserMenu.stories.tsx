@@ -95,14 +95,14 @@ export const Default: Story = {
     play: async ({ args, canvas }) => {
         canvas.getByRole("button", { name: "Account: Max Mustermann" }).focus();
         await userEvent.keyboard("{Enter}");
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(true);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(true));
         const dark = await screen.findByRole("menuitemradio", { name: /Dark/ });
         await waitFor(() => expect(dark).toBeVisible());
         await userEvent.click(dark);
         await waitFor(() => expect(dark).toHaveAttribute("aria-checked", "true"));
         await waitFor(() => expect(screen.getByRole("menuitem", { name: /Log out/ })).toBeVisible());
         await userEvent.click(screen.getByRole("menuitem", { name: /Log out/ }));
-        await expect(args.onLogout).toHaveBeenCalled();
+        await waitFor(() => expect(args.onLogout).toHaveBeenCalled());
     },
 };
 

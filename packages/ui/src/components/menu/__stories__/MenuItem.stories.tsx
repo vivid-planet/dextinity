@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ReactNode } from "react";
-import { expect, fn, screen, userEvent } from "storybook/test";
+import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
@@ -79,7 +79,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ args }) => {
         await userEvent.click(await screen.findByRole("menuitem", { name: "Duplicate" }));
-        await expect(args.onClick).toHaveBeenCalled();
+        await waitFor(() => expect(args.onClick).toHaveBeenCalled());
     },
 };
 

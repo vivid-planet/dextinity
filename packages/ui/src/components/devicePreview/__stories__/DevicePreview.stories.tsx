@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
@@ -90,7 +90,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Phone" }));
-        await expect(args.onDeviceChange).toHaveBeenLastCalledWith("mobile");
+        await waitFor(() => expect(args.onDeviceChange).toHaveBeenLastCalledWith("mobile"));
         await expect(canvas.getByRole("button", { name: "Phone" })).toHaveAttribute("aria-pressed", "true");
     },
 };

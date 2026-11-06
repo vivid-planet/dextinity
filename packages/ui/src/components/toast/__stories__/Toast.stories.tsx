@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
@@ -70,7 +70,7 @@ export const WithUndo: Story = {
     },
     play: async ({ canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Undo" }));
-        await expect(onUndo).toHaveBeenCalled();
+        await waitFor(() => expect(onUndo).toHaveBeenCalled());
     },
 };
 

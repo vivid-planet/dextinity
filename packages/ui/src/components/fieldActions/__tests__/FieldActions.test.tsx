@@ -78,7 +78,7 @@ describe("FieldActions", () => {
 
         expect(onTranslate).toHaveBeenCalledWith(["en", "fr"]);
         await waitFor(() => expect(onTranslateError).toHaveBeenCalledWith(failure));
-        expect(screen.getByRole("textbox")).not.toHaveAttribute("aria-busy");
+        await waitFor(() => expect(screen.getByRole("textbox")).not.toHaveAttribute("aria-busy"));
     });
 
     it("offers a translation from onTranslateSuggest to accept", async () => {

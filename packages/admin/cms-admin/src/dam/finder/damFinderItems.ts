@@ -2,8 +2,8 @@ import type { AssetBrowserAsset, AssetBrowserFolder, FocalPoint } from "@dextini
 import type { IntlShape } from "react-intl";
 
 import type { GQLFocalPoint } from "../../graphql.generated";
+import type { GQLDamFinderFileFragment } from "./damFinderItems.fragment.generated";
 import type { GQLDamFinderFoldersQuery } from "./DamFinderPage.gql.generated";
-import type { GQLDamFinderFileFragment } from "./useDamFinderFiles.gql.generated";
 
 export const damFinderRootFolderId = "root";
 

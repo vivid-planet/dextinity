@@ -5,6 +5,7 @@ import { styled } from "@mui/material/styles";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
 import { useIntl } from "react-intl";
+import { useDebounce } from "use-debounce";
 
 import { DamScopeProvider } from "../../../dam/config/DamScopeProvider";
 import { useDamAcceptedMimeTypes } from "../../../dam/config/useDamAcceptedMimeTypes";
@@ -15,13 +16,19 @@ import { useDamFileUpload } from "../../../dam/DataGrid/fileUpload/useDamFileUpl
 import { createAssetBrowserLabels } from "../../../dam/finder/createAssetBrowserLabels";
 import { damFinderRootFolderId, toAssetBrowserAsset, toAssetBrowserFolder } from "../../../dam/finder/damFinderItems";
 import { useDamFinderFiles } from "../../../dam/finder/useDamFinderFiles";
-import { damFilePickerFoldersQuery, damFilePickerInitialFileFolderQuery } from "./DamFilePickerDialog.gql";
+import { damFilePickerFoldersQuery, damFilePickerInitialFileFolderQuery, damFilePickerSearchQuery } from "./DamFilePickerDialog.gql";
 import type {
     GQLDamFilePickerFoldersQuery,
     GQLDamFilePickerFoldersQueryVariables,
     GQLDamFilePickerInitialFileFolderQuery,
     GQLDamFilePickerInitialFileFolderQueryVariables,
+    GQLDamFilePickerSearchQuery,
+    GQLDamFilePickerSearchQueryVariables,
 } from "./DamFilePickerDialog.gql.generated";
+
+const searchResultLimit = 100;
+// Nested folder names need more room than the theme's default width of the folder tree
+const defaultSidebarWidth = 280;
 
 export interface DamFilePickerDialogProps {
     open: boolean;
@@ -76,6 +83,10 @@ function DamFilePickerDialogContent({
     const scopeKey = Object.values(scope).join("-");
 
     const [view, setView] = useStoredState<AssetBrowserView>("damFilePickerView", "icons");
+    const [sidebarWidth, setSidebarWidth] = useStoredState<number | null>("damFilePickerSidebarWidth", null);
+    const [search, setSearch] = useState("");
+    const [debouncedSearch] = useDebounce(search.trim(), 300);
+    const isClosingSearchRef = useRef(false);
     const [storedFolderId, setStoredFolderId] = useStoredState<string>(`damFilePickerFolder-${scopeKey}`, damFinderRootFolderId);
     const [selectedFileIds, setSelectedFileIds] = useState<string[]>(initialFileIds ?? []);
     const [isChoosing, setIsChoosing] = useState(false);
@@ -101,6 +112,7 @@ function DamFilePickerDialogContent({
         openCountRef.current += 1;
         const openCount = openCountRef.current;
         setSelectedFileIds(initialFileIds ?? []);
+        setSearch("");
 
         if (initialFolderId !== undefined) {
             setStoredFolderId(initialFolderId ?? damFinderRootFolderId);
@@ -131,6 +143,23 @@ function DamFilePickerDialogContent({
     const pathFolderIds = useMemo(() => (open ? pathFolderIdsKey.split("/") : []), [open, pathFolderIdsKey]);
     const { filesByFolderId, loadingFolderIds, error: filesError, reload } = useDamFinderFiles(pathFolderIds);
 
+    const searchQuery = useQuery<GQLDamFilePickerSearchQuery, GQLDamFilePickerSearchQueryVariables>(damFilePickerSearchQuery, {
+        variables: { scope, searchText: debouncedSearch, mimetypes: allowedMimetypes, limit: searchResultLimit },
+        skip: !open || debouncedSearch === "",
+        fetchPolicy: "network-only",
+    });
+    const isSearching = search.trim() !== "";
+    const isSearchLoading = isSearching && (debouncedSearch !== search.trim() || searchQuery.loading);
+    const searchResults = useMemo(
+        () =>
+            isSearching && debouncedSearch !== ""
+                ? (searchQuery.data?.damFilesList.nodes ?? []).map((file) =>
+                      toAssetBrowserAsset(intl, file, file.folder?.id ?? damFinderRootFolderId),
+                  )
+                : [],
+        [isSearching, debouncedSearch, searchQuery.data, intl],
+    );
+
     const isAllowed = (mimetype: string) => allowedMimetypes == null || allowedMimetypes.includes(mimetype);
     const folders = useMemo(
         () => [
@@ -153,20 +182,36 @@ function DamFilePickerDialogContent({
             ),
         [filesByFolderId, intl, allowedMimetypesKey],
     );
-    const currentFolderAssetIds = useMemo(
-        () => new Set(assets.filter((asset) => asset.folderId === folderId).map((asset) => asset.id)),
-        [assets, folderId],
+    const visibleAssetIds = useMemo(
+        () => new Set((isSearching ? searchResults : assets.filter((asset) => asset.folderId === folderId)).map((asset) => asset.id)),
+        [isSearching, searchResults, assets, folderId],
     );
-    const allAssetIds = useMemo(() => new Set(assets.map((asset) => asset.id)), [assets]);
+    const knownAssetIds = useMemo(() => new Set([...assets, ...searchResults].map((asset) => asset.id)), [assets, searchResults]);
+
+    useEffect(() => {
+        isClosingSearchRef.current = false;
+    }, [search]);
+    const changeSearch = (nextSearch: string) => {
+        isClosingSearchRef.current = isSearching && nextSearch.trim() === "";
+        setSearch(nextSearch);
+    };
 
     const changeSelection = (ids: string[]) => {
-        const fileIds = ids.filter((id) => allAssetIds.has(id));
+        const fileIds = ids.filter((id) => knownAssetIds.has(id));
+        // Opening a folder from the search results selects only what leads to the result; the files chosen in the search stay selected
+        if (isClosingSearchRef.current) {
+            isClosingSearchRef.current = false;
+            if (fileIds.length > 0) {
+                setSelectedFileIds(multiple ? [...selectedFileIds.filter((id) => !fileIds.includes(id)), ...fileIds] : [fileIds[0]]);
+            }
+            return;
+        }
         if (!multiple) {
             const addedFileId = fileIds.find((id) => !selectedFileIds.includes(id)) ?? fileIds[fileIds.length - 1];
             setSelectedFileIds(addedFileId != null ? [addedFileId] : []);
             return;
         }
-        const keptFromOtherFolders = selectedFileIds.filter((id) => !currentFolderAssetIds.has(id));
+        const keptFromOtherFolders = selectedFileIds.filter((id) => !visibleAssetIds.has(id));
         const keptInFolder = selectedFileIds.filter((id) => fileIds.includes(id));
         const added = fileIds.filter((id) => !selectedFileIds.includes(id));
         setSelectedFileIds([...keptFromOtherFolders, ...keptInFolder, ...added]);
@@ -194,6 +239,7 @@ function DamFilePickerDialogContent({
             await Promise.all([reload([folderId]), foldersQuery.refetch()]);
             const uploadedFileIds = uploadedItems.filter((item) => item.type === "file").map((item) => item.id);
             if (uploadedFileIds.length > 0) {
+                setSearch("");
                 setSelectedFileIds((ids) =>
                     multiple ? [...ids.filter((id) => !uploadedFileIds.includes(id)), ...uploadedFileIds] : [uploadedFileIds[0]],
                 );
@@ -211,7 +257,7 @@ function DamFilePickerDialogContent({
     });
 
     const isCurrentFolderLoading = loadingFolderIds.includes(folderId) || foldersQuery.loading;
-    const error = foldersQuery.error ?? filesError;
+    const error = foldersQuery.error ?? filesError ?? searchQuery.error;
 
     const renderContent = (): ReactNode => {
         if (error) {
@@ -232,6 +278,12 @@ function DamFilePickerDialogContent({
                 onFolderChange={setStoredFolderId}
                 view={view}
                 onViewChange={setView}
+                search={search}
+                onSearchChange={changeSearch}
+                searchResults={searchResults}
+                searchLoading={isSearchLoading}
+                sidebarWidth={typeof sidebarWidth === "number" ? sidebarWidth : defaultSidebarWidth}
+                onSidebarWidthChange={(width) => setSidebarWidth(width ?? null)}
                 selectedIds={selectedFileIds}
                 onSelectionChange={changeSelection}
                 onOpen={(asset) => {
@@ -241,7 +293,7 @@ function DamFilePickerDialogContent({
                 }}
                 toolbar={
                     <>
-                        {(isCurrentFolderLoading || isUploading) && (
+                        {((!isSearching && isCurrentFolderLoading) || isUploading) && (
                             <Spinner size="small" aria-label={intl.formatMessage({ id: "dextinity.damFinder.loading", defaultMessage: "Loading" })} />
                         )}
                         <input {...getInputProps()} />

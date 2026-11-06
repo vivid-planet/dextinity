@@ -18,8 +18,8 @@ import type {
 import { DetailActions, DetailContent, DetailForm, DetailFormFooter } from "./DamFinderDetails.sc";
 import { DamFinderFormSaveState, type DamFinderUnsavedChanges, DamFinderUnsavedChangesGuard } from "./DamFinderFormState";
 import { formatFileSize, getDamFinderAssetType, getFileExtension, getThumbnailUrl } from "./damFinderItems";
+import type { GQLDamFinderFileFragment } from "./damFinderItems.fragment.generated";
 import type { GQLDamFinderFoldersQuery } from "./DamFinderPage.gql.generated";
-import type { GQLDamFinderFileFragment } from "./useDamFinderFiles.gql.generated";
 
 type DamFinderFolder = GQLDamFinderFoldersQuery["damFoldersFlat"][number];
 

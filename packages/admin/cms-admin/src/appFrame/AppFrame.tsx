@@ -12,7 +12,7 @@ import {
     type ThemeDensity,
     TopBar,
 } from "@dextinity/ui";
-import { CssBaseline } from "@mui/material";
+import { CssBaseline, GlobalStyles } from "@mui/material";
 import { type AnchorHTMLAttributes, forwardRef, type MouseEvent, type PropsWithChildren, type ReactNode, useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 import { useHistory } from "react-router";
@@ -25,6 +25,8 @@ import { useAppFrameMenu } from "./useAppFrameMenu";
 
 // Where sticky MUI toolbars of existing pages stop: below the floating top bar
 const topBarBottomOffset = 84;
+// Full-height MUI pages fill the viewport below their top offset, which leaves out the shell's padding below the content
+const shellContentBottomPadding = 48;
 
 export interface AppFrameAiAssistant {
     /** The assistant, usually an `AIPanel` from `@dextinity/ui`. */
@@ -138,6 +140,7 @@ export function AppFrame({
     return (
         <MasterLayoutContext.Provider value={{ headerHeight: topBarBottomOffset }}>
             <CssBaseline />
+            <GlobalStyles styles={{ ".DextinityAdminMainContent-fullHeight": { marginBottom: -shellContentBottomPadding } }} />
             <Theme colorScheme={colorScheme} brand={brand} density={density}>
                 <AppShell
                     navCollapsed={navCollapsed}

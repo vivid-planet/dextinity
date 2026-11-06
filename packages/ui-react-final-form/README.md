@@ -39,9 +39,12 @@ One adapter per value-holding control of `@dextinity/ui`. Each takes `name`, the
 | `InputField`            | `Input`            | `string`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `TextareaField`         | `Textarea`         | `string`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `SelectField`           | `Select`           | `string \| null`, `string[]` with `multiple`             | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `NumberField`           | `NumberInput`      | `number \| null`                                         | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `RichTextEditorField`   | `RichTextEditor`   | `string` (HTML)                                          | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `CheckboxField`         | `Checkbox`         | `boolean`, or `string[]` when the checkbox has a `value` | `name`, `checked`, `onChange`, `onBlur`, `state`, `validationMessage` |
 | `SwitchField`           | `Switch`           | `boolean`                                                | `name`, `checked`, `onChange`, `onBlur`, `state`, `validationMessage` |
+| `RadioGroupField`       | `RadioGroup`       | one of the options' values, `null` for none              | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `CheckboxGroupField`    | `CheckboxGroup`    | the checked options' values (`string[]`)                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `SegmentedControlField` | `SegmentedControl` | one of the options' values                               | `value`, `onChange`, `onBlur`, `state`, `validationMessage`           |
 | `SliderField`           | `Slider`           | `number`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `FocalPointPickerField` | `FocalPointPicker` | `FocalPoint` (`{ x, y }`)                                | `value`, `onChange`, `onBlur`, `state`, `validationMessage`           |
@@ -53,7 +56,7 @@ One adapter per value-holding control of `@dextinity/ui`. Each takes `name`, the
 Shared by both adapter packages:
 
 - **`name`** — the field's path in the form values, e.g. `title` or `seo.description`. It is also passed to the ui component where it takes one.
-- **`required`** — marks the field where the ui component supports it (star and `aria-required` on the framed fields, `CheckboxField`, and `SwitchField`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing. A custom validation still runs on a non-empty value.
+- **`required`** — marks the field where the ui component supports it (star and `aria-required` on the framed fields, `CheckboxField`, `SwitchField`, `RadioGroupField`, and `CheckboxGroupField`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing. A custom validation still runs on a non-empty value.
 - **`requiredMessage`** — the message for a missing required value. Defaults to `"Required"`; pass a translated text.
 - **`actions`** (`InputField`, `TextareaField`, `SelectField`, `RichTextEditorField`) — content at the label as in the ui component, or a function `({ value, setValue }) => ReactNode` to connect `FieldActions`, e.g. `actions={({ setValue }) => <FieldActions aiAssist onAiSuggest={suggest} onAiAccept={setValue} />}`.
 - **`ref`** — forwarded to the ui component, so it reaches the same element as on the component itself.
@@ -64,17 +67,17 @@ Shared by both adapter packages:
 
 ### Value mapping
 
-An empty form value (`undefined`, or `""` from React Final Form's default `format`) maps to the control's empty state: `""` for text, `null` (or `[]` with `multiple`) for `SelectField`, unchecked for `CheckboxField` and `SwitchField`, no pressed option for `SegmentedControlField`, `min` for `SliderField`, and the center for `FocalPointPickerField`. The adapters write the control's value back unchanged; use `parse` and `format` to convert, e.g. a number entered in an `InputField`.
+An empty form value (`undefined`, or `""` from React Final Form's default `format`) maps to the control's empty state: `""` for text, `null` (or `[]` with `multiple`) for `SelectField`, `null` for `NumberField`, unchecked for `CheckboxField` and `SwitchField`, no chosen option for `RadioGroupField`, `[]` for `CheckboxGroupField`, no pressed option for `SegmentedControlField`, `min` for `SliderField`, and the center for `FocalPointPickerField`. The adapters write the control's value back unchanged; use `parse` and `format` to convert, e.g. a number entered in an `InputField`.
 
 ### Validation
 
-A field shows its error once it was touched (blurred) or the form was submitted: `state="error"` with the message as `validationMessage`. A submit error for the field (returned from `onSubmit`) shows the same way until the field changes. Controls without a field frame – `CheckboxField`, `SwitchField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` – show it below the control, the same way.
+A field shows its error once it was touched (blurred) or the form was submitted: `state="error"` with the message as `validationMessage`. A submit error for the field (returned from `onSubmit`) shows the same way until the field changes. Controls without a field frame – `CheckboxField`, `SwitchField`, `RadioGroupField`, `CheckboxGroupField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` – show it below the control, the same way.
 
 To focus the first field with an error when submitting fails, in document order, add the `focusOnError` decorator to the `<Form>`: `decorators={[focusOnError]}`. React Final Form has no focus on error of its own. The boxes of a checkbox group count as one field, focused at the first box.
 
 ### React Final Form configuration
 
-Each adapter takes the field configuration of `useField`, typed as `FinalFormFieldConfig<FieldValue, ControlValue>`: `validate`, `validateFields`, `parse`, `format`, `formatOnBlur`, `initialValue`, `defaultValue`, `isEqual`, `allowNull`, `data`, `beforeSubmit`, and `afterSubmit`. The adapters are generic in the form value, `FieldValue`, which defaults to the control's value; `parse` and `format` convert between the two. `SliderField` keeps the `Slider`'s own `format` (number formatting) and leaves out React Final Form's.
+Each adapter takes the field configuration of `useField`, typed as `FinalFormFieldConfig<FieldValue, ControlValue>`: `validate`, `validateFields`, `parse`, `format`, `formatOnBlur`, `initialValue`, `defaultValue`, `isEqual`, `allowNull`, `data`, `beforeSubmit`, and `afterSubmit`. The adapters are generic in the form value, `FieldValue`, which defaults to the control's value; `parse` and `format` convert between the two. `SliderField` and `NumberField` keep the ui component's own `format` (number formatting) and leave out React Final Form's.
 
 ## Form helpers
 

@@ -308,6 +308,20 @@ export const RowClick: Story = {
 };
 
 /**
+ * With `activeRowId`, the row whose details are open next to the grid, e.g. in a side panel, stays marked while the list is used.
+ */
+export const ActiveRow: Story = {
+    args: {
+        rows: allJobs.slice(0, 5),
+        activeRowId: allJobs[1].id,
+    },
+    play: async ({ canvas }) => {
+        const activeRow = canvas.getByText(allJobs[1].title).closest("tr");
+        await expect(activeRow).toHaveAttribute("aria-current", "true");
+    },
+};
+
+/**
  * Placeholder rows hold the layout while the rows load; the table is marked busy.
  */
 export const Loading: Story = {

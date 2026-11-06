@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import { type ComponentPropsWithRef, useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -48,6 +48,7 @@ const meta = {
     argTypes: {
         items: { control: false },
         className: { control: false },
+        slots: { control: false },
         slotProps: { control: false },
     },
     render: (args) => <ControlledTabs {...args} />,
@@ -102,5 +103,58 @@ export const Keyboard: Story = {
         await expect(canvas.getByRole("tab", { name: "SEO 1" })).toHaveFocus();
         await userEvent.keyboard("{Enter}");
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("seo"));
+    },
+};
+
+/**
+ * `tone="error"` marks the sections with invalid fields, e.g. after a failed save.
+ */
+export const WithErrors: Story = {
+    args: {
+        items: [
+            { value: "blocks", label: "Blocks" },
+            { value: "seo", label: "SEO", tone: "error" },
+            { value: "settings", label: "Settings", tone: "error", count: 2 },
+        ],
+    },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("tab", { name: "SEO Contains errors" })).toHaveAttribute("data-tone", "error");
+    },
+};
+
+/** Stands in for a router's link component: navigates on the client instead of loading the page. */
+function StoryRouterLink({ onClick, ...props }: ComponentPropsWithRef<"a">) {
+    return (
+        <a
+            {...props}
+            onClick={(event) => {
+                onClick?.(event);
+                if (!event.defaultPrevented && !event.metaKey && !event.ctrlKey && !event.shiftKey) {
+                    event.preventDefault();
+                }
+            }}
+        />
+    );
+}
+
+/**
+ * With `href` on each item, the tabs are links: each section has its own address and opens in a new browser tab with a middle click
+ * or ⌘-click. `slots.tab` renders them as the router's link component.
+ */
+export const AsLinks: Story = {
+    args: {
+        items: [
+            { value: "blocks", label: "Blocks", href: "#blocks" },
+            { value: "seo", label: "SEO", href: "#seo" },
+            { value: "settings", label: "Settings", href: "#settings" },
+        ],
+        slots: { tab: StoryRouterLink },
+    },
+    play: async ({ args, canvas }) => {
+        const seo = canvas.getByRole("tab", { name: "SEO" });
+        await expect(seo).toHaveAttribute("href", "#seo");
+        await userEvent.click(seo);
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("seo"));
+        await expect(seo).toHaveAttribute("aria-selected", "true");
     },
 };

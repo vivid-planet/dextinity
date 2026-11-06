@@ -41,4 +41,46 @@ describe("Tabs", () => {
         expect(screen.getByRole("tablist", { name: "Page" })).toBeTruthy();
         expect(screen.getByRole("tab", { name: "SEO 1" }).getAttribute("aria-selected")).toBe("true");
     });
+
+    it("marks a tab with errors and names the errors", () => {
+        render(
+            <Tabs
+                aria-label="Page"
+                items={[
+                    { value: "blocks", label: "Blocks" },
+                    { value: "seo", label: "SEO", tone: "error" },
+                ]}
+                value="blocks"
+                onChange={vi.fn()}
+                labels={{ error: "Has errors" }}
+            />,
+        );
+
+        const tab = screen.getByRole("tab", { name: "SEO Has errors" });
+        expect(tab.dataset.tone).toBe("error");
+        expect(tab.querySelector(".dextinityTabs__errorMarker")).toBeTruthy();
+    });
+
+    it("renders tabs with an href as links through the tab slot", () => {
+        function RouterLink(props: { href: string }) {
+            return <a {...props} data-router="" />;
+        }
+        render(
+            <Tabs
+                aria-label="Page"
+                items={[
+                    { value: "blocks", label: "Blocks", href: "/page/blocks" },
+                    { value: "seo", label: "SEO", href: "/page/seo" },
+                ]}
+                value="blocks"
+                onChange={vi.fn()}
+                slots={{ tab: RouterLink }}
+            />,
+        );
+
+        const tab = screen.getByRole("tab", { name: "SEO" });
+        expect(tab.tagName).toBe("A");
+        expect(tab.getAttribute("href")).toBe("/page/seo");
+        expect(tab.dataset.router).toBe("");
+    });
 });

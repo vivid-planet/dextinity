@@ -41,6 +41,8 @@ export { type BulkActionBarOwnerState, type BulkActionBarProps, defaultBulkActio
 export { Button, type ButtonOwnerState, type ButtonProps } from "./components/button/Button";
 export { Card, type CardOwnerState, type CardProps, type CardSlotProps, type CardSlots } from "./components/card/Card";
 export { Checkbox, type CheckboxOwnerState, type CheckboxProps, type CheckboxSlotProps } from "./components/checkbox/Checkbox";
+export { CheckboxGroup, type CheckboxGroupOption, type CheckboxGroupOwnerState } from "./components/checkboxGroup/CheckboxGroup";
+export { type CheckboxGroupProps, type CheckboxGroupSlotProps } from "./components/checkboxGroup/CheckboxGroup";
 export { Chip, type ChipLabels, type ChipOwnerState, type ChipProps, type ChipSlotProps } from "./components/chip/Chip";
 export { CommandPalette, type CommandPaletteGroup, type CommandPaletteItem } from "./components/commandPalette/CommandPalette";
 export { type CommandPaletteLabels, type CommandPaletteOwnerState } from "./components/commandPalette/CommandPalette";

@@ -1,0 +1,33 @@
+@use "../../theme/scope";
+
+// The checkboxes come from the Checkbox tokens.
+@include scope.component-tokens {
+    // Space between the label, the options, and the message
+    --dextinity-checkbox-group-gap: var(--dextinity-field-gap);
+    // Space between the options
+    --dextinity-checkbox-group-option-gap: var(--dextinity-space-2);
+    --dextinity-checkbox-group-option-gap-horizontal: var(--dextinity-space-4);
+    // Indent of the options inside a group
+    --dextinity-checkbox-group-indent: calc(var(--dextinity-checkbox-size) + var(--dextinity-checkbox-gap));
+    // Line along the options inside a group
+    --dextinity-checkbox-group-guide-color: var(--dextinity-color-line);
+
+    --dextinity-checkbox-group-label-font-size: var(--dextinity-field-label-font-size);
+    --dextinity-checkbox-group-label-font-weight: var(--dextinity-field-label-font-weight);
+    --dextinity-checkbox-group-label-color: var(--dextinity-field-label-color);
+    --dextinity-checkbox-group-required-color: var(--dextinity-field-required-color);
+    // A group's label while groups have no checkbox
+    --dextinity-checkbox-group-heading-color: var(--dextinity-color-text-secondary);
+    --dextinity-checkbox-group-heading-font-size: var(--dextinity-typography-small-size);
+    --dextinity-checkbox-group-heading-font-weight: 600;
+    --dextinity-checkbox-group-description-color: var(--dextinity-color-text-tertiary);
+    --dextinity-checkbox-group-description-font-size: 12.5px;
+    // Line below the "Select all" checkbox
+    --dextinity-checkbox-group-divider-color: var(--dextinity-color-line);
+
+    --dextinity-checkbox-group-message-font-size: var(--dextinity-field-message-font-size);
+    --dextinity-checkbox-group-message-color: var(--dextinity-field-message-color);
+    --dextinity-checkbox-group-message-color-error: var(--dextinity-field-message-color-error);
+    --dextinity-checkbox-group-message-color-warning: var(--dextinity-field-message-color-warning);
+    --dextinity-checkbox-group-message-color-success: var(--dextinity-field-message-color-success);
+}

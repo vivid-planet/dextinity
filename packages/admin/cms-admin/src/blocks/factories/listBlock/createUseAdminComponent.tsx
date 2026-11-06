@@ -94,7 +94,7 @@ export function createUseAdminComponent<T extends BlockInterface>({
                     const blocks = [...prevState.blocks];
                     for (const removedBlock of removedBlocks) {
                         const { removedAt, ...block } = removedBlock;
-                        blocks.splice(removedAt, 0, block);
+                        blocks.splice(removedAt, 0, { ...block, selected: false });
                     }
 
                     return { ...prevState, blocks };

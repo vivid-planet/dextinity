@@ -341,7 +341,7 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                     const blocks = [...prevState.blocks];
                     for (const removedBlock of removedBlocks) {
                         const { removedAt } = removedBlock;
-                        const block: BlocksBlockItem<BlockInterface, AdditionalItemFields> = { ...removedBlock };
+                        const block: BlocksBlockItem<BlockInterface, AdditionalItemFields> = { ...removedBlock, selected: false };
                         delete block.removedAt;
                         blocks.splice(removedAt, 0, block);
                     }

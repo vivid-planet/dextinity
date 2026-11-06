@@ -26,6 +26,7 @@ import {
     useBlockContext,
     useBlockPreview,
     useContentScope,
+    useSavePageShortcut,
     useSiteConfig,
 } from "@dextinity/cms-admin";
 import { IconButton, Stack } from "@mui/material";
@@ -143,6 +144,7 @@ export const EditPage = ({ id }: Props) => {
     const { pageState, rootBlocksApi, hasChanges, loading, dialogs, pageSaveButton, handleSavePage, translateContent } = usePage({
         pageId: id,
     });
+    useSavePageShortcut(handleSavePage);
 
     const match = useRouteMatch();
     const stackApi = useStackApi();

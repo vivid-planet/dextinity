@@ -1,19 +1,9 @@
 import { type ApolloError, gql, type TypedDocumentNode, useApolloClient, useQuery } from "@apollo/client";
-import { messages, SaveButton } from "@dextinity/admin";
+import { messages } from "@dextinity/admin";
+import { Button, Icon, type SaveStateValue, Tooltip } from "@dextinity/ui";
 import { deepEqual } from "fast-equals";
-import {
-    type ComponentProps,
-    createElement,
-    type Dispatch,
-    type JSX,
-    type ReactNode,
-    type SetStateAction,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from "react";
-import { FormattedMessage } from "react-intl";
+import { createElement, type Dispatch, type JSX, type ReactNode, type SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
 import { v4 as uuid } from "uuid";
 
 import type { BlockInterface, BlockState } from "../blocks/types";
@@ -123,6 +113,19 @@ interface UsePageApi<PageState, RootBlocks extends RootBlocksInterface> {
     error: ApolloError | undefined;
     saving: boolean;
     saveError: "invalid" | "conflict" | "error" | undefined;
+    /** The page's save state for `SaveState` of `@dextinity/ui`. */
+    saveState: SaveStateValue;
+    /** When the loaded version of the document was saved, for `SaveState`'s `savedAt`. */
+    savedAt?: Date;
+    /**
+     * Whether each root block is valid, e.g. to mark the tab of an invalid root block. `undefined` until the validation of the current
+     * state has finished.
+     */
+    rootBlocksValidity: Partial<Record<keyof RootBlocks, boolean>>;
+    /**
+     * @deprecated Build the save action from `handleSavePage`, `hasChanges` and `saving`, e.g. with `Button` and `SaveState` of
+     * `@dextinity/ui`.
+     */
     pageSaveButton: JSX.Element;
     dialogs: ReactNode;
     resetPageStateToLatest: () => Promise<void>;
@@ -485,9 +488,37 @@ export const createUsePage: CreateUsePage =
                 [pageState],
             );
 
+            const [rootBlocksValidity, setRootBlocksValidity] = useState<Partial<Record<keyof RootBlocks, boolean>>>({});
+            useEffect(() => {
+                const document = pageState?.document;
+                if (document == null) {
+                    return;
+                }
+                let isCurrent = true;
+                const validateRootBlocks = async () => {
+                    const entries = await Promise.all(
+                        Object.entries(rootBlocks).map(async ([key, block]) => [key, await block.isValid(document[key])] as const),
+                    );
+                    if (isCurrent) {
+                        setRootBlocksValidity(Object.fromEntries(entries) as Partial<Record<keyof RootBlocks, boolean>>);
+                    }
+                };
+                validateRootBlocks();
+                return () => {
+                    isCurrent = false;
+                };
+            }, [pageState?.document]);
+
+            const saveState: SaveStateValue = saving ? "saving" : saveError != null || hasConflict ? "error" : hasChanges ? "dirty" : "saved";
+            const loadedUpdatedAt = data?.page?.document?.updatedAt;
+            const savedAt = useMemo(() => (loadedUpdatedAt != null ? new Date(loadedUpdatedAt) : undefined), [loadedUpdatedAt]);
+
             return {
                 hasChanges,
                 handleSavePage,
+                saveState,
+                savedAt,
+                rootBlocksValidity,
                 pageState,
                 setPageState,
                 rootBlocksApi,
@@ -524,16 +555,28 @@ interface PageSaveButtonProps {
 }
 
 function PageSaveButton({ handleSavePage, hasChanges, hasConflict, saving, saveError }: PageSaveButtonProps): JSX.Element {
-    const saveButtonProps: Omit<ComponentProps<typeof SaveButton>, "children" | "onClick"> = {
-        loading: saving,
-        hasErrors: !!saveError || hasConflict,
-        tooltipErrorMessage:
-            saveError == "invalid" ? (
-                <FormattedMessage {...messages.invalidData} />
-            ) : saveError == "conflict" ? (
-                <FormattedMessage {...messages.saveConflict} />
-            ) : undefined,
-    };
+    const intl = useIntl();
+    const hasErrors = saveError != null || hasConflict;
+    const errorMessage =
+        saveError === "invalid"
+            ? intl.formatMessage(messages.invalidData)
+            : saveError === "conflict" || hasConflict
+              ? intl.formatMessage(messages.saveConflict)
+              : saveError === "error"
+                ? intl.formatMessage(messages.error)
+                : undefined;
 
-    return <SaveButton disabled={!hasChanges} onClick={handleSavePage} {...saveButtonProps} />;
+    const button = (
+        <Button
+            color={hasErrors ? "error" : "primary"}
+            startIcon={<Icon name={hasErrors ? "error" : "check"} />}
+            disabled={!hasChanges}
+            loading={saving}
+            onClick={handleSavePage}
+        >
+            <FormattedMessage {...messages.save} />
+        </Button>
+    );
+
+    return errorMessage != null ? <Tooltip content={errorMessage}>{button}</Tooltip> : button;
 }

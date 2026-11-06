@@ -71,8 +71,8 @@ export interface TabsSlots {
 export interface TabsSlotProps {
     /** Props for the `list` slot, which holds the tabs and the indicator. */
     list?: SlotPropsValue<TabsOwnerState, typeof BaseTabs.List>;
-    /** Props for the `tab` slot, each tab's button. */
-    tab?: SlotPropsValue<TabsOwnerState, typeof BaseTabs.Tab>;
+    /** Props for the `tab` slot, each tab's button, or its link with an `href`. */
+    tab?: SlotPropsValue<TabsOwnerState, "button">;
     /** Props for the `errorMarker` slot, the icon on a tab with `tone="error"`. */
     errorMarker?: SlotPropsValue<TabsOwnerState, "span">;
     /** Props for the `count` slot. */
@@ -121,7 +121,7 @@ export const Tabs = forwardRef(function Tabs<Value extends string = string>(
         slotProps: slotProps?.list,
         ownerState,
     });
-    const tabProps = resolveSlotProps<TabsOwnerState, typeof BaseTabs.Tab, "button">({
+    const tabProps = resolveSlotProps<TabsOwnerState, "button", "button">({
         ownProps: { className: styles.tab },
         slotProps: slotProps?.tab,
         ownerState,

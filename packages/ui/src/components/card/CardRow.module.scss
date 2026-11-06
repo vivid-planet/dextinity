@@ -1,0 +1,63 @@
+.root {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto var(--dextinity-card-row-arrow-size);
+    gap: var(--dextinity-card-row-gap);
+    align-items: center;
+    box-sizing: border-box;
+    inline-size: 100%;
+    padding: var(--dextinity-card-row-padding);
+    border: 0;
+    border-radius: var(--dextinity-card-row-radius);
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+        background: var(--dextinity-card-row-hover-background);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+}
+
+.text {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+}
+
+.title {
+    overflow: hidden;
+    font-weight: var(--dextinity-card-row-title-font-weight);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.subtitle {
+    overflow: hidden;
+    margin-block-start: 2px;
+    color: var(--dextinity-card-row-subtitle-color);
+    font-size: var(--dextinity-card-row-subtitle-font-size);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.end {
+    display: flex;
+    gap: var(--dextinity-card-row-end-gap);
+    align-items: center;
+    color: var(--dextinity-card-row-end-color);
+    font-size: var(--dextinity-card-row-end-font-size);
+    white-space: nowrap;
+}
+
+.arrow {
+    display: grid;
+    place-items: center;
+    color: var(--dextinity-card-row-arrow-color);
+}

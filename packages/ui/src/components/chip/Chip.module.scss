@@ -1,168 +1,178 @@
 .root {
-    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: var(--dextinity-chip-gap);
     box-sizing: border-box;
-    max-inline-size: 100%;
-    block-size: var(--dextinity-chip-height);
+    gap: var(--dextinity-chip-gap);
+    min-block-size: var(--dextinity-chip-height);
+    padding-block: 0;
     padding-inline: var(--dextinity-chip-padding);
+    border: 0;
     border-radius: var(--dextinity-chip-radius);
-    color: var(--_chip-foreground);
+    background: var(--dextinity-current-chip-background, transparent);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-current-chip-line);
+    color: var(--dextinity-current-chip-foreground);
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-chip-font-size);
+    font-weight: var(--dextinity-chip-font-weight);
     line-height: 1;
     white-space: nowrap;
+    text-decoration: none;
     transition:
         background var(--dextinity-motion-duration-short),
-        color var(--dextinity-motion-duration-short),
         box-shadow var(--dextinity-motion-duration-short);
 
     --dextinity-icon-size: var(--dextinity-chip-icon-size);
 
-    @each $color in default, primary, secondary, error, info, success, warning {
-        &[data-color="#{$color}"] {
-            --_chip-soft: var(--dextinity-chip-#{$color}-soft);
-            --_chip-foreground: var(--dextinity-chip-#{$color}-foreground);
-            --_chip-line: var(--dextinity-chip-#{$color}-line);
+    &:where(a[href], button) {
+        cursor: pointer;
+
+        &:hover:not([data-disabled], [aria-disabled="true"]) {
+            background-image: linear-gradient(var(--dextinity-chip-hover-overlay), var(--dextinity-chip-hover-overlay));
         }
-    }
-
-    &[data-color="default"][data-variant="filled"] {
-        --dextinity-chip-filled-line-strength: 55%;
-    }
-
-    &[data-variant="filled"] {
-        background: var(--_chip-soft);
-        box-shadow: inset 0 0 0 var(--dextinity-line-width)
-            color-mix(in oklch, var(--_chip-line) var(--dextinity-chip-filled-line-strength), transparent);
-    }
-
-    &[data-variant="outlined"] {
-        background: transparent;
-        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--_chip-line);
-    }
-
-    &[data-size="small"] {
-        block-size: var(--dextinity-chip-height-small);
-        padding-inline: var(--dextinity-chip-padding-small);
-        border-radius: var(--dextinity-chip-radius-small);
-        font-size: var(--dextinity-chip-font-size-small);
-
-        .delete {
-            inline-size: var(--dextinity-chip-delete-size-small);
-            block-size: var(--dextinity-chip-delete-size-small);
-        }
-    }
-
-    &[data-deletable] {
-        padding-inline-end: calc((var(--dextinity-chip-height) - var(--dextinity-chip-delete-size)) / 2);
-        gap: 2px;
-
-        &[data-size="small"] {
-            padding-inline-end: calc((var(--dextinity-chip-height-small) - var(--dextinity-chip-delete-size-small)) / 2);
-        }
-    }
-
-    &[data-clickable] {
-        &:has(.action:hover):not([data-disabled]) {
-            box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle);
-        }
-
-        &:has(.action:focus-visible) {
-            box-shadow: var(--dextinity-focus-ring);
-        }
-    }
-
-    &[data-selected] {
-        background: var(--dextinity-chip-selected-background);
-        color: var(--dextinity-chip-selected-foreground);
-        box-shadow: none;
-    }
-
-    &[data-disabled] {
-        opacity: var(--dextinity-chip-disabled-opacity);
-    }
-}
-
-.icon,
-.avatar {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-}
-
-.label {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.action {
-    display: inline-flex;
-    align-items: center;
-    gap: inherit;
-    min-inline-size: 0;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: inherit;
-    font: inherit;
-    cursor: pointer;
-
-    // Makes the whole chip the click target, under the delete button
-    &::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: inherit;
     }
 
     &:focus-visible {
         outline: none;
+        box-shadow:
+            inset 0 0 0 var(--dextinity-line-width) var(--dextinity-current-chip-line),
+            var(--dextinity-focus-ring);
     }
 
-    &:disabled {
+    &[data-disabled] {
+        opacity: var(--dextinity-chip-disabled-opacity);
         cursor: not-allowed;
+    }
+
+    &[data-size="small"] {
+        gap: var(--dextinity-chip-gap-small);
+        min-block-size: var(--dextinity-chip-height-small);
+        padding-inline: var(--dextinity-chip-padding-small);
+        font-size: var(--dextinity-chip-font-size-small);
+
+        --dextinity-icon-size: var(--dextinity-chip-icon-size-small);
+    }
+
+    // A clear button replaces the end padding, so the chip stays balanced
+    &:has(> .clearButton) {
+        padding-inline-end: calc((var(--dextinity-chip-height) - var(--dextinity-chip-clear-button-size)) / 2);
+    }
+
+    &[data-size="small"]:has(> .clearButton) {
+        padding-inline-end: calc((var(--dextinity-chip-height-small) - var(--dextinity-chip-clear-button-size-small)) / 2);
+    }
+
+    &[data-variant="contained"][data-color="primary"] {
+        --dextinity-current-chip-background: var(--dextinity-chip-contained-primary-background);
+        --dextinity-current-chip-line: var(--dextinity-chip-contained-primary-background);
+        --dextinity-current-chip-foreground: var(--dextinity-chip-contained-primary-foreground);
+    }
+
+    &[data-variant="contained"][data-color="secondary"] {
+        --dextinity-current-chip-background: var(--dextinity-chip-contained-secondary-background);
+        --dextinity-current-chip-line: var(--dextinity-chip-contained-secondary-background);
+        --dextinity-current-chip-foreground: var(--dextinity-chip-contained-secondary-foreground);
+    }
+
+    &[data-variant="contained"][data-color="info"] {
+        --dextinity-current-chip-background: var(--dextinity-chip-contained-info-background);
+        --dextinity-current-chip-line: var(--dextinity-chip-contained-info-background);
+        --dextinity-current-chip-foreground: var(--dextinity-chip-contained-info-foreground);
+    }
+
+    &[data-variant="contained"][data-color="warning"] {
+        --dextinity-current-chip-background: var(--dextinity-chip-contained-warning-background);
+        --dextinity-current-chip-line: var(--dextinity-chip-contained-warning-background);
+        --dextinity-current-chip-foreground: var(--dextinity-chip-contained-warning-foreground);
+    }
+
+    &[data-variant="contained"][data-color="error"] {
+        --dextinity-current-chip-background: var(--dextinity-chip-contained-error-background);
+        --dextinity-current-chip-line: var(--dextinity-chip-contained-error-background);
+        --dextinity-current-chip-foreground: var(--dextinity-chip-contained-error-foreground);
+    }
+
+    &[data-variant="contained"][data-color="success"] {
+        --dextinity-current-chip-background: var(--dextinity-chip-contained-success-background);
+        --dextinity-current-chip-line: var(--dextinity-chip-contained-success-background);
+        --dextinity-current-chip-foreground: var(--dextinity-chip-contained-success-foreground);
+    }
+
+    &[data-variant="outlined"][data-color="primary"] {
+        --dextinity-current-chip-line: var(--dextinity-chip-outlined-primary-line);
+        --dextinity-current-chip-foreground: var(--dextinity-chip-outlined-primary-foreground);
+    }
+
+    &[data-variant="outlined"][data-color="secondary"] {
+        --dextinity-current-chip-line: var(--dextinity-chip-outlined-secondary-line);
+        --dextinity-current-chip-foreground: var(--dextinity-chip-outlined-secondary-foreground);
+    }
+
+    &[data-variant="outlined"][data-color="info"] {
+        --dextinity-current-chip-line: var(--dextinity-chip-outlined-info-line);
+        --dextinity-current-chip-foreground: var(--dextinity-chip-outlined-info-foreground);
+    }
+
+    &[data-variant="outlined"][data-color="warning"] {
+        --dextinity-current-chip-line: var(--dextinity-chip-outlined-warning-line);
+        --dextinity-current-chip-foreground: var(--dextinity-chip-outlined-warning-foreground);
+    }
+
+    &[data-variant="outlined"][data-color="error"] {
+        --dextinity-current-chip-line: var(--dextinity-chip-outlined-error-line);
+        --dextinity-current-chip-foreground: var(--dextinity-chip-outlined-error-foreground);
+    }
+
+    &[data-variant="outlined"][data-color="success"] {
+        --dextinity-current-chip-line: var(--dextinity-chip-outlined-success-line);
+        --dextinity-current-chip-foreground: var(--dextinity-chip-outlined-success-foreground);
     }
 }
 
-.delete {
-    position: relative;
-    display: inline-grid;
-    flex: none;
-    place-items: center;
-    inline-size: var(--dextinity-chip-delete-size);
-    block-size: var(--dextinity-chip-delete-size);
+.startIcon,
+.endIcon {
+    display: inline-flex;
+    flex-shrink: 0;
+
+    > svg {
+        inline-size: var(--dextinity-icon-size);
+        block-size: var(--dextinity-icon-size);
+    }
+}
+
+.clearButton {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--dextinity-chip-clear-button-size);
+    block-size: var(--dextinity-chip-clear-button-size);
     padding: 0;
-    border: 0;
-    border-radius: 50%;
+    border: none;
+    border-radius: var(--dextinity-radius-pill);
     background: transparent;
     color: inherit;
-    opacity: 0.7;
     cursor: pointer;
-    transition:
-        background var(--dextinity-motion-duration-short),
-        opacity var(--dextinity-motion-duration-short);
 
-    --dextinity-icon-size: 14px;
+    .root[data-size="small"] & {
+        inline-size: var(--dextinity-chip-clear-button-size-small);
+        block-size: var(--dextinity-chip-clear-button-size-small);
+    }
 
     &:hover:not(:disabled) {
-        background: var(--dextinity-chip-delete-background-hover);
-        opacity: 1;
+        background: var(--dextinity-chip-clear-button-background-hover);
     }
 
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
-        opacity: 1;
     }
 
     &:disabled {
         cursor: not-allowed;
     }
-}
 
-// Applied by the high-contrast color scheme
-:global([data-dextinity-color-scheme="high-contrast"]) .root[data-variant="filled"] {
-    --dextinity-chip-filled-line-strength: 100%;
+    > svg {
+        inline-size: var(--dextinity-icon-size);
+        block-size: var(--dextinity-icon-size);
+    }
 }

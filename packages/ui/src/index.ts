@@ -49,7 +49,7 @@ export { Card, type CardOwnerState, type CardProps, type CardSlotProps, type Car
 export { Checkbox, type CheckboxOwnerState, type CheckboxProps, type CheckboxSlotProps } from "./components/checkbox/Checkbox";
 export { CheckboxGroup, type CheckboxGroupOption, type CheckboxGroupOwnerState } from "./components/checkboxGroup/CheckboxGroup";
 export { type CheckboxGroupProps, type CheckboxGroupSlotProps } from "./components/checkboxGroup/CheckboxGroup";
-export { Chip, type ChipLabels, type ChipOwnerState, type ChipProps, type ChipSlotProps } from "./components/chip/Chip";
+export { Chip, type ChipOwnerState, type ChipProps } from "./components/chip/Chip";
 export { Combobox, type ComboboxLabels, type ComboboxOwnerState, type ComboboxProps } from "./components/combobox/Combobox";
 export { type ComboboxValue } from "./components/combobox/Combobox";
 export { CommandPalette, type CommandPaletteGroup, type CommandPaletteItem } from "./components/commandPalette/CommandPalette";

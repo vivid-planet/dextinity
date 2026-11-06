@@ -100,7 +100,7 @@ function SearchAndFilterExample() {
                     </MenuRadioGroup>
                 </Menu>
                 {location !== "" && (
-                    <Chip onDelete={() => setLocation("")} labels={{ delete: `Remove filter Location: ${location}` }}>
+                    <Chip color="secondary" onClear={() => setLocation("")} clearLabel={`Remove filter Location: ${location}`}>
                         {`Location: ${location}`}
                     </Chip>
                 )}

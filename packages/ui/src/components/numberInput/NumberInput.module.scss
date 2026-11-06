@@ -1,0 +1,89 @@
+.root {
+    min-inline-size: 0;
+
+    // The steppers sit at the end, against the field's edge
+    &[data-steppers] > :global(.dextinityField__box) {
+        padding-inline-end: 3px;
+    }
+}
+
+// Lets the input and the steppers take part in the field's row, so the steppers can come after the suffix
+.number {
+    display: contents;
+}
+
+.control {
+    flex: 1;
+    align-self: stretch;
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    caret-color: var(--dextinity-number-input-caret-color);
+
+    &::placeholder {
+        color: var(--dextinity-number-input-placeholder-color);
+        opacity: 1;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}
+
+.steppers {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    order: 1;
+    align-self: stretch;
+    justify-content: center;
+    gap: 1px;
+    padding-block: 3px;
+}
+
+.increment,
+.decrement {
+    display: inline-grid;
+    flex: 1;
+    place-items: center;
+    box-sizing: border-box;
+    inline-size: var(--dextinity-number-input-stepper-width);
+    max-block-size: 18px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--dextinity-number-input-stepper-radius);
+    background: transparent;
+    color: var(--dextinity-number-input-stepper-color);
+    cursor: pointer;
+    transition:
+        background var(--dextinity-motion-duration-short),
+        color var(--dextinity-motion-duration-short);
+
+    --dextinity-icon-size: var(--dextinity-number-input-stepper-icon-size);
+
+    &:hover:not(:disabled) {
+        background: var(--dextinity-number-input-stepper-background-hover);
+        color: var(--dextinity-number-input-stepper-color-hover);
+    }
+
+    &:disabled {
+        opacity: var(--dextinity-number-input-stepper-disabled-opacity);
+        cursor: not-allowed;
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+}
+
+.increment :global(.dextinityIcon) {
+    transform: rotate(180deg);
+}

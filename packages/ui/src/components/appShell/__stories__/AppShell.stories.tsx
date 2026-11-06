@@ -5,14 +5,17 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 import { ProductLogo, ProductSign } from "../../../storybook/ProductLogo";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { AIPanel, type AIPanelMessage } from "../../aiPanel/AIPanel";
+import { Button } from "../../button/Button";
 import { CommandPalette } from "../../commandPalette/CommandPalette";
 import { Icon } from "../../icon/Icon";
 import { PageHeader } from "../../pageHeader/PageHeader";
 import { Panel } from "../../panel/Panel";
+import { SaveState } from "../../saveState/SaveState";
 import { sideNavGroups } from "../../sideNav/__stories__/sideNavStoryData";
 import { getSideNavAncestorIds, SideNav } from "../../sideNav/SideNav";
 import { StoryScopeSwitcher, StoryUserMenu } from "../../topBar/__stories__/topBarStoryParts";
 import { TopBar } from "../../topBar/TopBar";
+import { useTopBarEdit } from "../../topBar/topBarEdit";
 import appShellTokens from "../_tokens.scss?raw";
 import { AppShell, type AppShellProps } from "../AppShell";
 import styles from "./AppShell.stories.module.scss";
@@ -115,7 +118,7 @@ function ControlledAppShell(props: AppShellProps) {
                     props.onNavCollapsedChange(collapsed);
                 }}
             >
-                <StoryPage />
+                {props.children ?? <StoryPage />}
             </AppShell>
             <CommandPalette
                 open={commandPaletteOpen}
@@ -210,5 +213,54 @@ export const AiOpen: Story = {
 export const NavCollapsed: Story = {
     args: {
         navCollapsed: true,
+    },
+};
+
+/** An editor: while it's shown, the top bar shows its back button, title, and actions. */
+function StoryEditPage({ onBack }: { onBack: () => void }) {
+    const [saved, setSaved] = useState(false);
+    useTopBarEdit({
+        back: { label: "Back to job ads", onClick: onBack },
+        title: "Frontend developer",
+        actions: (
+            <>
+                <SaveState state={saved ? "saved" : "dirty"} />
+                <Button startIcon={<Icon name="check" />} disabled={saved} onClick={() => setSaved(true)}>
+                    Save
+                </Button>
+            </>
+        ),
+    });
+    return (
+        <Panel title="Job ad">
+            <p className={styles.placeholder}>The fields of the job ad</p>
+        </Panel>
+    );
+}
+
+function StoryEditFlow() {
+    const [editing, setEditing] = useState(false);
+    return editing ? (
+        <StoryEditPage onBack={() => setEditing(false)} />
+    ) : (
+        <PageHeader title="Job ads" actions={<Button onClick={() => setEditing(true)}>Edit “Frontend developer”</Button>} />
+    );
+}
+
+/**
+ * A page switches the top bar to its edit mode with `useTopBarEdit`: back, what is edited, and the editing actions replace search
+ * and toggles while the page is shown. Leave the `TopBar`'s `mode` unset.
+ */
+export const EditingPage: Story = {
+    args: { children: <StoryEditFlow /> },
+    play: async ({ canvasElement }) => {
+        await userEvent.click(screen.getByRole("button", { name: "Edit “Frontend developer”" }));
+        const bar = canvasElement.querySelector(".dextinityTopBar");
+        await waitFor(() => expect(bar).toHaveAttribute("data-mode", "edit"));
+        await expect(bar).toHaveTextContent("Frontend developer");
+        await userEvent.click(screen.getByRole("button", { name: "Save" }));
+        await expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+        await userEvent.click(screen.getByRole("button", { name: "Back to job ads" }));
+        await waitFor(() => expect(bar).toHaveAttribute("data-mode", "browse"));
     },
 };

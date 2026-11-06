@@ -6,6 +6,7 @@ import { Icon } from "../icon/Icon";
 import { IconButton } from "../iconButton/IconButton";
 import { Kbd } from "../kbd/Kbd";
 import styles from "./TopBar.module.scss";
+import { useTopBarEditState } from "./topBarEdit";
 
 type TopBarMode = "browse" | "edit";
 
@@ -45,11 +46,10 @@ export type TopBarOwnerState = {
     aiOpen: boolean;
 };
 
-export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children"> {
+export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children" | "title"> {
     /**
-     * `browse` shows search, scope, AI toggle, and user menu; `edit` replaces them with the back button and the editing actions.
-     *
-     * @defaultValue `"browse"`
+     * `browse` shows search, scope, AI toggle, and user menu; `edit` replaces them with the back button, the title, and the editing
+     * actions. Leave it unset to follow the page: `edit` while a page sets it with `useTopBarEdit`, `browse` otherwise.
      */
     mode?: TopBarMode;
     /** Opens the command palette; shows the search trigger at the start of the bar. */
@@ -66,9 +66,14 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
     onAiOpenChange?: (open: boolean) => void;
     /** The user menu, usually a `UserMenu`. */
     userMenu?: ReactNode;
-    /** Only in `edit`: the back button at the start. */
+    /** Only in `edit`: the back button at the start. Without it, the one set with `useTopBarEdit` shows. */
     back?: TopBarBack;
-    /** Only in `edit`: save state, preview, more actions, and Save, the bar's only primary action. */
+    /** Only in `edit`: what is edited, e.g. the page's name, after the back button. Without it, the one set with `useTopBarEdit` shows. */
+    title?: ReactNode;
+    /**
+     * Only in `edit`: save state, preview, more actions, and Save, the bar's only primary action. Without them, the ones set with
+     * `useTopBarEdit` show.
+     */
     actions?: ReactNode;
     /** Shows the menu button on narrow windows. Inside `AppShell`, leave it unset: the button opens the navigation drawer. */
     onMenuClick?: () => void;
@@ -84,14 +89,15 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
  */
 export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
     {
-        mode = "browse",
+        mode: modeProp,
         onSearchClick,
         scope,
         aiOpen = false,
         onAiOpenChange,
         userMenu,
-        back,
-        actions,
+        back: backProp,
+        title: titleProp,
+        actions: actionsProp,
         onMenuClick: onMenuClickProp,
         labels: labelsProp,
         className,
@@ -100,8 +106,12 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
     ref,
 ) {
     const shell = useAppShellContext();
+    const edit = useTopBarEditState();
     const labels = { ...defaultLabels, ...labelsProp };
-    const ownerState: TopBarOwnerState = { mode, aiOpen };
+    const ownerState: TopBarOwnerState = { mode: modeProp ?? (edit != null ? "edit" : "browse"), aiOpen };
+    const back = backProp ?? edit?.back;
+    const title = titleProp ?? edit?.title;
+    const actions = actionsProp ?? edit?.actions;
     const onMenuClick = onMenuClickProp ?? shell?.onNavDrawerOpen;
 
     return (
@@ -124,6 +134,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
                             <Icon name="arrow-left" />
                         </IconButton>
                     )}
+                    {title != null && <div className={styles.title}>{title}</div>}
                     <div className={styles.actions}>{actions}</div>
                 </>
             ) : (

@@ -74,6 +74,21 @@
     }
 }
 
+.title {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    color: var(--dextinity-top-bar-title-color);
+    font-size: var(--dextinity-top-bar-title-font-size);
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    + .actions {
+        flex: 0 1 auto;
+    }
+}
+
 .aiToggle {
     display: inline-flex;
     flex: none;

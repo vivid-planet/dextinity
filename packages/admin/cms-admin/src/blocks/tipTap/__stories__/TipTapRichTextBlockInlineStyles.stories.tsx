@@ -1,4 +1,4 @@
-import { RteHighlight, Tag } from "@dextinity/admin-icons";
+import { Icon } from "@dextinity/ui";
 import { Box } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type HTMLAttributes, useState } from "react";
@@ -46,13 +46,13 @@ const InlineStylesBlock = createTipTapRichTextBlock({
         {
             name: "highlight",
             label: "Highlight",
-            icon: RteHighlight,
+            icon: <Icon name="rte-highlight" />,
             element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
         },
         {
             name: "tag",
             label: "Tag",
-            icon: Tag,
+            icon: <Icon name="tag" />,
             element: (props: HTMLAttributes<HTMLElement>) => (
                 <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
             ),
@@ -74,17 +74,18 @@ export const InlineStyles: StoryObj<typeof InlineStylesBlockStory> = {
                 );
 
                 expect(canvas.queryByRole("button", { name: "More options" })).not.toBeInTheDocument();
-                expect(canvas.getAllByRole("button")).toHaveLength(4);
+                expect(within(canvas.getByRole("group", { name: "Formatting" })).getAllByRole("button")).toHaveLength(4);
             },
         );
 
-        const [superscriptButton, subscriptButton, highlightButton, tagButton] = canvas.getAllByRole("button");
+        const [superscriptButton, subscriptButton, highlightButton, tagButton] = within(
+            canvas.getByRole("group", { name: "Formatting" }),
+        ).getAllByRole("button");
 
         await step("Highlight and tag buttons are enabled even without a selection, like superscript/subscript", async () => {
-            expect(superscriptButton).toBeEnabled();
-            expect(subscriptButton).toBeEnabled();
-            expect(highlightButton).toBeEnabled();
-            expect(tagButton).toBeEnabled();
+            for (const button of [superscriptButton, subscriptButton, highlightButton, tagButton]) {
+                expect(button).not.toHaveAttribute("aria-disabled", "true");
+            }
         });
 
         await step("Type text and select it", async () => {
@@ -178,13 +179,13 @@ const InlineStylesMoreOptionsBlock = createTipTapRichTextBlock({
         {
             name: "highlight",
             label: "Highlight",
-            icon: RteHighlight,
+            icon: <Icon name="rte-highlight" />,
             element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
         },
         {
             name: "tag",
             label: "Tag",
-            icon: Tag,
+            icon: <Icon name="tag" />,
             element: (props: HTMLAttributes<HTMLElement>) => (
                 <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
             ),
@@ -203,9 +204,9 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
                 { timeout: 5000 },
             );
 
-            // Heading select only — custom inline styles live in the "More options" menu, not a dropdown.
-            const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes).toHaveLength(1);
+            // Text type menu only — custom inline styles live in the "More options" menu, not a menu of their own.
+            expect(canvas.getByRole("button", { name: "Text type" })).toBeInTheDocument();
+            expect(canvas.queryByRole("button", { name: "Text style" })).not.toBeInTheDocument();
         });
 
         await step("Type text and select it", async () => {
@@ -230,7 +231,7 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
 
         await step("Apply 'Highlight' inline style from the More options menu", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "More options" }));
-            await userEvent.click(within(document.body).getByRole("menuitem", { name: "Highlight" }));
+            await userEvent.click(await within(document.body).findByRole("menuitemcheckbox", { name: "Highlight" }));
         });
 
         await step("Verify highlight element (from `element` prop) is rendered with its styling", async () => {
@@ -248,14 +249,12 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
         await step("'Highlight' menu item is now shown as selected", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "More options" }));
             await waitFor(() => {
-                // MenuItem's `selected` prop is exposed as the `Mui-selected` state class, not an ARIA attribute
-                // (role="menuitem" has no `aria-selected` in the ARIA spec — that's only valid on option/tab/etc.).
-                expect(within(document.body).getByRole("menuitem", { name: "Highlight" })).toHaveClass("Mui-selected");
+                expect(within(document.body).getByRole("menuitemcheckbox", { name: "Highlight" })).toHaveAttribute("aria-checked", "true");
             });
         });
 
         await step("Switch to 'Tag' inline style", async () => {
-            await userEvent.click(within(document.body).getByRole("menuitem", { name: "Tag" }));
+            await userEvent.click(await within(document.body).findByRole("menuitemcheckbox", { name: "Tag" }));
         });
 
         await step("Verify tag element replaces the highlight element", async () => {
@@ -273,7 +272,7 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
 
         await step("Clicking the active 'Tag' item again clears the inline style", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "More options" }));
-            await userEvent.click(within(document.body).getByRole("menuitem", { name: "Tag" }));
+            await userEvent.click(await within(document.body).findByRole("menuitemcheckbox", { name: "Tag" }));
 
             await waitFor(
                 () => {
@@ -306,13 +305,13 @@ const CombinedStylesBlock = createTipTapRichTextBlock({
         {
             name: "highlight",
             label: "Highlight",
-            icon: RteHighlight,
+            icon: <Icon name="rte-highlight" />,
             element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
         },
         {
             name: "tag",
             label: "Tag",
-            icon: Tag,
+            icon: <Icon name="tag" />,
             element: (props: HTMLAttributes<HTMLElement>) => (
                 <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
             ),
@@ -331,14 +330,14 @@ export const CombinedTextBlockAndInlineStyles: StoryObj<typeof InlineStylesBlock
                 { timeout: 5000 },
             );
 
-            // Heading select + text block style select — inline styles live in the "More options" menu, not a dropdown.
-            const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes.length).toBeGreaterThanOrEqual(2);
+            // Text type and text style menus — inline styles live in the "More options" menu, not a menu of their own.
+            expect(canvas.getByRole("button", { name: "Text type" })).toBeInTheDocument();
+            expect(canvas.getByRole("button", { name: "Text style" })).toBeInTheDocument();
 
             await userEvent.click(canvas.getByRole("button", { name: "More options" }));
             await waitFor(() => {
-                expect(within(document.body).getByRole("menuitem", { name: "Highlight" })).toBeInTheDocument();
-                expect(within(document.body).getByRole("menuitem", { name: "Tag" })).toBeInTheDocument();
+                expect(within(document.body).getByRole("menuitemcheckbox", { name: "Highlight" })).toBeInTheDocument();
+                expect(within(document.body).getByRole("menuitemcheckbox", { name: "Tag" })).toBeInTheDocument();
             });
         });
     },

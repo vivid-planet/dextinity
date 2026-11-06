@@ -74,7 +74,7 @@ export const TypingAfterDoubleClickAppendsToLastLine: Story = {
 };
 
 function getScrollArea(cellEditor: HTMLElement) {
-    let element = cellEditor.querySelector(".DextinityAdminTipTapToolbar-root")?.parentElement;
+    let element = cellEditor.querySelector("[role='toolbar']")?.parentElement;
     while (element && element !== cellEditor) {
         if (getComputedStyle(element).overflowY === "auto") {
             return element;

@@ -1,12 +1,20 @@
 import { useApolloClient, useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
-import { useContentScope } from "@dextinity/cms-admin";
+import {
+    remoteListFilterParam,
+    toGqlSort,
+    useContentScope,
+    useRemoteListCsvExport,
+    useRemoteListPagination,
+    useRemoteListState,
+} from "@dextinity/cms-admin";
 import {
     Button,
     Chip,
     ConfirmDialog,
     DataGrid,
     type DataGridColumn,
+    type DataGridSort,
     EmptyState,
     FilterBar,
     FilterChip,
@@ -25,7 +33,7 @@ import {
     useUndoToast,
 } from "@dextinity/ui";
 import type { GQLNewsCategory, GQLNewsFilter, GQLNewsSortField, GQLNewsStatus } from "@src/graphql.generated";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FormattedDate, useIntl } from "react-intl";
 import { useHistory } from "react-router-dom";
 
@@ -40,12 +48,20 @@ import type {
     GQLNewsUiUpdateStatusMutationVariables,
 } from "./NewsListPage.gql.generated";
 import styles from "./NewsListPage.module.css";
-import { type NewsStatusFilter, useNewsListUrlState } from "./useNewsListUrlState";
 import { useRouterLinkClick } from "./useRouterLinkClick";
 
 type NewsRow = GQLNewsUiListQuery["newsList"]["nodes"][number];
 
-const searchDebounceMs = 300;
+type NewsStatusFilter = GQLNewsStatus | "all";
+
+const newsListFilters = {
+    status: remoteListFilterParam.oneOf<GQLNewsStatus>(["active", "deleted"]),
+    category: remoteListFilterParam.oneOf<GQLNewsCategory>(newsCategories),
+};
+
+const sortableNewsColumns: GQLNewsSortField[] = ["title", "date", "category", "status", "updatedAt"];
+
+const defaultNewsSort: DataGridSort = { key: "date", direction: "desc" };
 
 interface NewsListPageProps {
     baseUrl: string;
@@ -57,47 +73,49 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
     const navigateWithRouter = useRouterLinkClick();
     const client = useApolloClient();
     const { scope } = useContentScope();
-    const { search, status, category, sort, page, pageSize, setPageSize, update: updateUrlState } = useNewsListUrlState();
-    const [searchInput, setSearchInput] = useState(search);
+    const listState = useRemoteListState({
+        filters: newsListFilters,
+        sortableColumns: sortableNewsColumns,
+        defaultSort: defaultNewsSort,
+        pageSizeStorageKey: "demo-admin-news-ui-page-size",
+    });
+    const {
+        search,
+        filters: { status: statusFilter, category },
+        sort,
+        page,
+        pageSize,
+    } = listState;
+    const status: NewsStatusFilter = statusFilter ?? "all";
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
     const [newsToDelete, setNewsToDelete] = useState<NewsRow[]>([]);
     const [deleting, setDeleting] = useState(false);
     const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
-    const update = useCallback(
-        (changes: Parameters<typeof updateUrlState>[0]) => {
-            setSelectedIds([]);
-            updateUrlState(changes);
-        },
-        [updateUrlState],
-    );
     const { perform } = useUndoToast({
         addToast,
         labels: { undo: intl.formatMessage({ id: "uiDemo.news.list.undo", defaultMessage: "Undo" }) },
     });
 
     useEffect(() => {
-        if (searchInput === search) {
-            return;
-        }
-        const timeout = window.setTimeout(() => update({ search: searchInput }), searchDebounceMs);
-        return () => window.clearTimeout(timeout);
-    }, [searchInput, search, update]);
+        setSelectedIds([]);
+    }, [search, status, category, sort, page, pageSize]);
 
     const countFilter: GQLNewsFilter = category ? { category: { equal: category } } : {};
     const filter: GQLNewsFilter = status === "all" ? countFilter : { and: [countFilter, { status: { equal: status } }] };
 
+    const variables: GQLNewsUiListQueryVariables = {
+        scope,
+        offset: listState.offset,
+        limit: listState.limit,
+        sort: toGqlSort<GQLNewsSortField>(sort),
+        search: search || undefined,
+        filter,
+        countFilter,
+    };
     const { data, previousData, loading, error, refetch } = useQuery<GQLNewsUiListQuery, GQLNewsUiListQueryVariables>(newsListQuery, {
         fetchPolicy: "cache-and-network",
-        variables: {
-            scope,
-            offset: (page - 1) * pageSize,
-            limit: pageSize,
-            sort: [{ field: sort.key as GQLNewsSortField, direction: sort.direction === "asc" ? "ASC" : "DESC" }],
-            search: search || undefined,
-            filter,
-            countFilter,
-        },
+        variables,
     });
 
     if (error) {
@@ -107,7 +125,8 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
     const shownData = data ?? previousData;
     const rows = shownData?.newsList.nodes ?? [];
     const total = shownData?.newsList.totalCount ?? 0;
-    const isFiltered = search !== "" || status !== "all" || category !== null;
+    const isFiltered = listState.isFiltered;
+    const pagination = useRemoteListPagination(listState, total);
 
     const newsUrl = (id: string) => `${baseUrl}/${id}/edit`;
 
@@ -234,6 +253,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
             width: 140,
             priority: "low",
             render: (news) => <span className={styles.muted}>{getNewsCategoryLabel(intl, news.category)}</span>,
+            exportValue: (news) => getNewsCategoryLabel(intl, news.category),
         },
         {
             key: "date",
@@ -260,6 +280,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
             sortable: true,
             width: 130,
             render: (news) => <StatusIndicator status={getNewsStatusIndicator(news.status)}>{getNewsStatusLabel(intl, news.status)}</StatusIndicator>,
+            exportValue: (news) => getNewsStatusLabel(intl, news.status),
         },
     ];
 
@@ -273,10 +294,18 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
         { value: "deleted", label: getNewsStatusLabel(intl, "deleted"), count: shownData?.deletedNews.totalCount },
     ];
 
-    const resetFilters = () => {
-        setSearchInput("");
-        update({ search: "", status: "all", category: null });
-    };
+    const { exportCsv, exporting } = useRemoteListCsvExport<NewsRow>({
+        fetchPage: async ({ offset, limit }) => {
+            const { data: exportData } = await client.query<GQLNewsUiListQuery, GQLNewsUiListQueryVariables>({
+                query: newsListQuery,
+                variables: { ...variables, offset, limit },
+                fetchPolicy: "network-only",
+            });
+            return exportData.newsList;
+        },
+        columns,
+        fileName: "news.csv",
+    });
 
     const newNewsButton = (
         <Button startIcon={<Icon name="plus" />} href={`${baseUrl}/add`} onClick={navigateWithRouter}>
@@ -304,9 +333,22 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                 }
                 toolbar={
                     <FilterBar
-                        searchValue={searchInput}
-                        onSearchChange={setSearchInput}
+                        searchValue={listState.searchInput}
+                        onSearchChange={listState.setSearchInput}
                         resultCount={shownData ? total : undefined}
+                        actions={
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                size="small"
+                                startIcon={<Icon name="csv" />}
+                                loading={exporting}
+                                disabled={total === 0}
+                                onClick={() => void exportCsv()}
+                            >
+                                {intl.formatMessage({ id: "uiDemo.news.list.exportCsv", defaultMessage: "Export CSV" })}
+                            </Button>
+                        }
                         labels={{
                             search: intl.formatMessage({ id: "uiDemo.news.list.search", defaultMessage: "Search news" }),
                             searchPlaceholder: intl.formatMessage({
@@ -325,7 +367,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                             <FilterChip
                                 key={filterOption.value}
                                 selected={status === filterOption.value}
-                                onClick={() => update({ status: filterOption.value })}
+                                onClick={() => listState.setFilter("status", filterOption.value === "all" ? null : filterOption.value)}
                                 count={filterOption.count}
                                 status={filterOption.value === "all" ? undefined : getNewsStatusIndicator(filterOption.value)}
                             >
@@ -344,7 +386,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                             <MenuRadioGroup
                                 value={category ?? ""}
                                 onChange={(nextCategory) => {
-                                    update({ category: nextCategory === "" ? null : (nextCategory as GQLNewsCategory) });
+                                    listState.setFilter("category", nextCategory === "" ? null : (nextCategory as GQLNewsCategory));
                                     setCategoryMenuOpen(false);
                                 }}
                             >
@@ -360,7 +402,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                         {category !== null && (
                             <Chip
                                 color="secondary"
-                                onClear={() => update({ category: null })}
+                                onClear={() => listState.setFilter("category", null)}
                                 clearLabel={intl.formatMessage(
                                     { id: "uiDemo.news.list.filter.removeCategory", defaultMessage: "Remove filter Category: {category}" },
                                     { category: getNewsCategoryLabel(intl, category) },
@@ -385,7 +427,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                     selectedIds={selectedIds}
                     onSelectionChange={setSelectedIds}
                     sort={sort}
-                    onSortChange={(nextSort) => update({ sort: nextSort, page })}
+                    onSortChange={listState.setSort}
                     onRowClick={(news) => history.push(newsUrl(news.id))}
                     rowActions={(news) => (
                         <NewsRowMenu
@@ -420,33 +462,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                         clear: intl.formatMessage({ id: "uiDemo.news.list.bulk.clear", defaultMessage: "Clear selection" }),
                         toolbar: intl.formatMessage({ id: "uiDemo.news.list.bulk.toolbar", defaultMessage: "Bulk actions" }),
                     }}
-                    pagination={
-                        total === 0
-                            ? undefined
-                            : {
-                                  page,
-                                  pageSize,
-                                  total,
-                                  onPageChange: (nextPage) => update({ page: nextPage }),
-                                  onPageSizeChange: (nextPageSize) => {
-                                      setPageSize(nextPageSize);
-                                      update({ page: 1 });
-                                  },
-                                  labels: {
-                                      navigation: intl.formatMessage({ id: "uiDemo.news.list.pagination", defaultMessage: "Pagination" }),
-                                      pageSize: intl.formatMessage({ id: "uiDemo.news.list.pageSize", defaultMessage: "Per page" }),
-                                      range: (from, to, count) =>
-                                          intl.formatMessage(
-                                              { id: "uiDemo.news.list.range", defaultMessage: "{from}–{to} of {count}" },
-                                              { from, to, count },
-                                          ),
-                                      previous: intl.formatMessage({ id: "uiDemo.news.list.previousPage", defaultMessage: "Previous page" }),
-                                      next: intl.formatMessage({ id: "uiDemo.news.list.nextPage", defaultMessage: "Next page" }),
-                                      page: (pageNumber) =>
-                                          intl.formatMessage({ id: "uiDemo.news.list.page", defaultMessage: "Page {page}" }, { page: pageNumber }),
-                                  },
-                              }
-                    }
+                    pagination={pagination}
                     labels={{
                         selectAll: intl.formatMessage({ id: "uiDemo.news.list.selectAll", defaultMessage: "Select all" }),
                         selectRow: intl.formatMessage({ id: "uiDemo.news.list.selectRow", defaultMessage: "Select" }),
@@ -462,7 +478,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                                     defaultMessage: "Check the spelling or reset the filters.",
                                 })}
                                 actions={
-                                    <Button variant="outlined" color="secondary" size="small" onClick={resetFilters}>
+                                    <Button variant="outlined" color="secondary" size="small" onClick={listState.resetFilters}>
                                         {intl.formatMessage({ id: "uiDemo.news.list.resetFilters", defaultMessage: "Reset filters" })}
                                     </Button>
                                 }

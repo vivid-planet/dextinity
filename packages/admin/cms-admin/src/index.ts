@@ -139,9 +139,10 @@ export type { MasterMenuRoutesProps } from "./common/MasterMenuRoutes";
 export { MasterMenuRoutes, useRoutePropsFromMasterMenuData } from "./common/MasterMenuRoutes";
 export type { PageListItem } from "./common/PageList";
 export { PageList } from "./common/PageList";
-export { PageName } from "./common/PageName";
+export { PageName, usePageName } from "./common/PageName";
 export { SignOutButton } from "./common/signOutButton/SignOutButton";
 export { useEditState } from "./common/useEditState";
+export { useRouterLinkClick } from "./common/useRouterLinkClick";
 export { useSaveState } from "./common/useSaveState";
 export type { DextinityConfig } from "./config/DextinityConfigContext";
 export { DextinityConfigProvider, useDextinityConfig } from "./config/DextinityConfigContext";
@@ -228,6 +229,14 @@ export { SyncFields } from "./form/SyncFields";
 export { useFormSaveConflict } from "./form/useFormSaveConflict";
 export { createEditPageNode, type EditPageNodeInitialValues, type EditPageNodeProps } from "./pages/createEditPageNode";
 export { createUsePage, type PageState } from "./pages/createUsePage";
+export {
+    PageContentEditor,
+    type PageContentEditorPageApi,
+    type PageContentEditorPreview,
+    type PageContentEditorProps,
+    type PageContentEditorTab,
+} from "./pages/editor/PageContentEditor";
+export { UnsavedChangesPrompt, type UnsavedChangesPromptProps } from "./pages/editor/UnsavedChangesPrompt";
 export { PagesPage } from "./pages/pagesPage/PagesPage";
 export type { AllCategories } from "./pages/pageTree/PageTreeContext";
 export { useCopyPastePages } from "./pages/pageTree/useCopyPastePages";

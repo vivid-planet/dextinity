@@ -1,11 +1,11 @@
 import { RouteWithErrorBoundary } from "@dextinity/admin";
 import { Tabs } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
-import { type AnchorHTMLAttributes, forwardRef, type JSX } from "react";
+import type { JSX } from "react";
 import { useIntl } from "react-intl";
 import { Switch, useRouteMatch } from "react-router";
-import { Link } from "react-router-dom";
 
+import { RouterTabLink } from "../../common/RouterTabLink";
 import type { BlockAdminComponentPart } from "../types";
 import { TabContent } from "./AdminTabsTabContent";
 
@@ -53,13 +53,6 @@ export function BlockAdminTabs({ children }: BlockAdminTabsProps): JSX.Element |
         </Root>
     );
 }
-
-const RouterTabLink = forwardRef<HTMLAnchorElement, AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }>(function RouterTabLink(
-    { href, ...props },
-    ref,
-) {
-    return <Link {...props} ref={ref} to={href} />;
-});
 
 const Root = styled("div")`
     display: flex;

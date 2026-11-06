@@ -18,16 +18,23 @@ interface PageNameProps {
     pageId: string;
 }
 
-export function PageName({ pageId }: PageNameProps): JSX.Element {
-    const { data: pageLoaded } = useQuery<GQLPageQuery, GQLPageQueryVariables>(pageQuery, {
+/** The name and path of a page in the page tree, e.g. for the header of an editor. `undefined` while loading. */
+export function usePageName(pageId: string, { skip = false }: { skip?: boolean } = {}): { name: string; path: string } | undefined {
+    const { data } = useQuery<GQLPageQuery, GQLPageQueryVariables>(pageQuery, {
         variables: { id: pageId },
         context: LocalErrorScopeApolloContext,
+        skip,
     });
+    return data?.page ?? undefined;
+}
+
+export function PageName({ pageId }: PageNameProps): JSX.Element {
+    const page = usePageName(pageId);
 
     return (
         <FixedWidthList>
             <ListItem>
-                <ListItemText primary={pageLoaded?.page?.name} secondary={pageLoaded?.page?.path} />
+                <ListItemText primary={page?.name} secondary={page?.path} />
             </ListItem>
         </FixedWidthList>
     );

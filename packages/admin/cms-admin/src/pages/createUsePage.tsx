@@ -107,7 +107,8 @@ interface UsePageApi<PageState, RootBlocks extends RootBlocksInterface> {
      */
     setPageState: Dispatch<SetStateAction<PageState | undefined>>;
     rootBlocksApi: BlockNodeApi<RootBlocks>;
-    handleSavePage: () => Promise<void>;
+    /** Saves the page. Resolves `false` when the page wasn't saved, e.g. because it is invalid, has a save conflict, or saving failed. */
+    handleSavePage: () => Promise<boolean>;
     hasChanges?: boolean;
     loading: boolean;
     error: ApolloError | undefined;
@@ -292,14 +293,14 @@ export const createUsePage: CreateUsePage =
                         onValidationFailed?.();
                         setSaving(false);
                         setSaveError("invalid");
-                        return;
+                        return false;
                     }
 
                     const hasSaveConflict = await checkForSaveConflict();
                     if (hasSaveConflict) {
                         setSaving(false);
                         setSaveError("conflict");
-                        return; // dialogs open for the user to handle the conflict
+                        return false; // dialogs open for the user to handle the conflict
                     }
 
                     try {
@@ -345,12 +346,13 @@ export const createUsePage: CreateUsePage =
                     } catch (error) {
                         console.error(error);
                         setSaveError("error");
-                    } finally {
                         setSaving(false);
+                        return false;
                     }
 
                     setReferenceOutput(generateOutput(pageState));
                     setSaving(false);
+                    return true;
                 } else if (pageState && pageState.document) {
                     throw new Error(`saving this type of document (type == ${pageState.document.__typename}) is currently not implemented`);
                 } else {
@@ -547,7 +549,7 @@ const checkForChangesQuery = gql`
 `;
 
 interface PageSaveButtonProps {
-    handleSavePage: () => Promise<void>;
+    handleSavePage: () => Promise<unknown>;
     hasChanges?: boolean;
     hasConflict: boolean;
     saving: boolean;

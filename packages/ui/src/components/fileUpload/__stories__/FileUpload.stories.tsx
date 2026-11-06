@@ -110,16 +110,19 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ args, canvasElement }) => {
         const canvas = within(canvasElement);
+        canvas.getByRole("button", { name: "choose files" }).focus();
         await userEvent.upload(fileInput(canvasElement), createFile("contract.pdf", "application/pdf"));
         await expect(await canvas.findByRole("progressbar", { name: "contract.pdf" })).toBeVisible();
+        await expect(canvas.getByRole("button", { name: "Cancel upload" })).toHaveFocus();
         await waitFor(() => expect(canvas.getByRole("link", { name: "contract.pdf" })).toBeVisible(), { timeout: 3000 });
+        await expect(canvas.getByRole("button", { name: "Remove" })).toHaveFocus();
         await expect(args.onChange).toHaveBeenLastCalledWith([expect.objectContaining({ name: "contract.pdf", size: 120_000 })]);
         await expect(args.onUploadingChange).toHaveBeenLastCalledWith(false);
         await expect(canvas.queryByRole("button", { name: "choose files" })).toBeNull();
 
         await userEvent.click(canvas.getByRole("button", { name: "Remove" }));
         await expect(args.onChange).toHaveBeenLastCalledWith([]);
-        await expect(canvas.getByRole("button", { name: "choose files" })).toBeVisible();
+        await expect(canvas.getByRole("button", { name: "choose files" })).toHaveFocus();
     },
 };
 

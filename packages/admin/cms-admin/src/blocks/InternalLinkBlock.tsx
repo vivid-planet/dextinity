@@ -1,11 +1,11 @@
 import { gql } from "@apollo/client";
-import { Field, FinalFormSelect } from "@dextinity/admin";
-import { Box, Divider, MenuItem } from "@mui/material";
-import { deepClone } from "@mui/x-data-grid/internals";
-import { FormattedMessage } from "react-intl";
+import { SelectField } from "@dextinity/ui-react-final-form";
+import { styled } from "@mui/material/styles";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import type { InternalLinkBlockData, InternalLinkBlockInput } from "../blocks.generated";
-import FinalFormPageTreeSelect from "../pages/pageTreeSelect/FinalFormPageTreeSelect";
+import type { PageTreeSelectValue } from "../pages/pageTreeSelect/PageTreeSelectDialog";
+import { PageTreeSelectField } from "../pages/pageTreeSelect/PageTreeSelectField";
 import { usePageTreeNodeDocumentAnchors } from "../pages/usePageTreeDocumentAnchors";
 import { BlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
@@ -82,7 +82,7 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
     },
 
     replaceDependenciesInOutput: (output, replacements) => {
-        const clonedOutput: InternalLinkBlockInput = deepClone(output);
+        const clonedOutput: InternalLinkBlockInput = { ...output };
         const replacement = replacements.find((replacement) => replacement.type === "PageTreeNode" && replacement.originalId === output.targetPageId);
 
         if (replacement) {
@@ -95,13 +95,15 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
     definesOwnPadding: true,
 
     AdminComponent: ({ state, updateState }) => {
+        const intl = useIntl();
         const anchors = usePageTreeNodeDocumentAnchors(state.targetPage);
-        const anchorsLoading = anchors === undefined;
+        const anchorsLoading = state.targetPage != null && anchors === undefined;
+        const noAnchor = "none";
 
         return (
             <SelectPreviewComponent>
-                <BlockAdminComponentPaper disablePadding>
-                    <BlocksFinalForm
+                <BlockAdminComponentPaper>
+                    <BlocksFinalForm<{ targetPage: PageTreeSelectValue | null; targetPageAnchor: string | null }>
                         onSubmit={(newState) => {
                             updateState((previousState) => {
                                 if (newState.targetPage == null) {
@@ -118,7 +120,7 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
                                     return {
                                         targetPage: newState.targetPage,
                                         targetPageAnchor:
-                                            newState.targetPageAnchor === "none" || newState.targetPageAnchor === ""
+                                            newState.targetPageAnchor == null || newState.targetPageAnchor === noAnchor
                                                 ? undefined
                                                 : newState.targetPageAnchor,
                                     };
@@ -126,37 +128,29 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
                             });
                         }}
                         initialValues={{
-                            targetPage: state.targetPage,
-                            targetPageAnchor: anchorsLoading ? "" : (state.targetPageAnchor ?? "none"),
+                            targetPage: (state.targetPage as PageTreeSelectValue | undefined) ?? null,
+                            // Unset while the anchors load, as the select can only show an anchor that is one of its options
+                            targetPageAnchor: anchorsLoading ? null : (state.targetPageAnchor ?? noAnchor),
                         }}
                     >
-                        <Field name="targetPage" component={FinalFormPageTreeSelect} fullWidth fieldContainerProps={{ fieldMargin: "never" }} />
-                        <Divider />
-                        <Box
-                            sx={{
-                                padding: 3,
-                            }}
-                        >
-                            <Field
+                        <Fields>
+                            <PageTreeSelectField
+                                name="targetPage"
+                                label={intl.formatMessage({ id: "dextinity.blocks.internalLink.targetPage.label", defaultMessage: "Page" })}
+                            />
+                            <SelectField
                                 name="targetPageAnchor"
                                 label={<FormattedMessage id="dextinity.blocks.internalLink.anchor.label" defaultMessage="Anchor" />}
-                                fullWidth
                                 disabled={state.targetPage == null || anchorsLoading}
-                            >
-                                {(props) => (
-                                    <FinalFormSelect {...props} disabled={state.targetPage == null || anchorsLoading}>
-                                        <MenuItem value="none">
-                                            <FormattedMessage id="dextinity.blocks.internalLink.anchor.none" defaultMessage="None" />
-                                        </MenuItem>
-                                        {anchors?.map((anchor) => (
-                                            <MenuItem key={anchor} value={anchor}>
-                                                {anchor}
-                                            </MenuItem>
-                                        ))}
-                                    </FinalFormSelect>
-                                )}
-                            </Field>
-                        </Box>
+                                options={[
+                                    {
+                                        value: noAnchor,
+                                        label: intl.formatMessage({ id: "dextinity.blocks.internalLink.anchor.none", defaultMessage: "None" }),
+                                    },
+                                    ...(anchors ?? []).map((anchor) => ({ value: anchor, label: anchor })),
+                                ]}
+                            />
+                        </Fields>
                     </BlocksFinalForm>
                 </BlockAdminComponentPaper>
             </SelectPreviewComponent>
@@ -180,3 +174,9 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
         return state.targetPage?.name ? [state.targetPage.name] : [];
     },
 };
+
+const Fields = styled("div")`
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+`;

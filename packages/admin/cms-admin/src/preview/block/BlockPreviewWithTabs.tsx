@@ -9,9 +9,11 @@ interface Props {
     children: BlockAdminComponentPart[];
     previewState: unknown;
     previewUrl: string;
+    /** The public address of the edited page, shown above the preview. Defaults to `previewUrl`. */
+    siteUrl?: string;
 }
 
-function BlockPreviewWithTabs({ children, previewApi, previewState, previewUrl }: Props) {
+function BlockPreviewWithTabs({ children, previewApi, previewState, previewUrl, siteUrl }: Props) {
     let pageContent = null;
 
     if (previewApi.minimized) {
@@ -24,7 +26,7 @@ function BlockPreviewWithTabs({ children, previewApi, previewState, previewUrl }
 
     return (
         <IFrameBridgeProvider key={previewUrl}>
-            <SplitPreview url={previewUrl} previewState={previewState} previewApi={previewApi}>
+            <SplitPreview url={previewUrl} siteUrl={siteUrl} previewState={previewState} previewApi={previewApi}>
                 {pageContent}
             </SplitPreview>
         </IFrameBridgeProvider>

@@ -8,17 +8,20 @@ interface Props {
     previewApi: BlockPreviewApi;
     url: string;
     previewState: unknown;
+    /** The public address of the edited page, shown above the preview. Defaults to `url`. */
+    siteUrl?: string;
 }
 
 /**
  * The block preview of `SplitPreview`, which can be minimized. Editors built with `@dextinity/ui` use `BlockPreviewPane` instead.
  */
-function BlockPreview({ url, previewState, previewApi }: Props) {
+function BlockPreview({ url, previewState, previewApi, siteUrl }: Props) {
     const intl = useIntl();
 
     return (
         <BlockPreviewPane
             url={url}
+            siteUrl={siteUrl}
             previewState={previewState}
             previewApi={previewApi}
             actions={

@@ -13,9 +13,11 @@ interface Props {
     previewApi: BlockPreviewApi;
     previewState: unknown;
     children: ReactNode | [ReactNode, ReactNode];
+    /** The public address of the edited page, shown above the preview. Defaults to `url`. */
+    siteUrl?: string;
 }
 
-function SplitPreview({ url, previewState, children, previewApi }: Props) {
+function SplitPreview({ url, previewState, children, previewApi, siteUrl }: Props) {
     const intl = useIntl();
     const { minimized, setMinimized } = previewApi;
     const rootRef = useRef<HTMLDivElement>(null);
@@ -59,7 +61,7 @@ function SplitPreview({ url, previewState, children, previewApi }: Props) {
                         </Box>
                     </FirstColumnContainer>
                     <PreviewContainer data-minimized={minimized ? "" : undefined}>
-                        <BlockPreview url={url} previewState={previewState} previewApi={previewApi} />
+                        <BlockPreview url={url} siteUrl={siteUrl} previewState={previewState} previewApi={previewApi} />
                         {minimized && (
                             <MaximizeButton
                                 onClick={handleMaximizeClick}

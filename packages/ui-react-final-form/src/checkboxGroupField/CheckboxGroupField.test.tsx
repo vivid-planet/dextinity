@@ -46,4 +46,28 @@ describe("CheckboxGroupField", () => {
         await userEvent.click(screen.getByRole("button", { name: "Save" }));
         expect(onSubmit).toHaveBeenCalledWith({ scopes: ["main-de", "main-en"] }, expect.anything(), expect.anything());
     });
+
+    it("shows the required error only once focus leaves the group", async () => {
+        render(
+            <Form onSubmit={vi.fn()}>
+                {({ handleSubmit }) => (
+                    <form onSubmit={handleSubmit} noValidate>
+                        <CheckboxGroupField name="scopes" label="Scopes" options={options} required requiredMessage="Select a scope" />
+                        <button type="submit">Save</button>
+                    </form>
+                )}
+            </Form>,
+        );
+        const group = screen.getByRole("group", { name: "Scopes" });
+
+        screen.getByRole("checkbox", { name: "Main" }).focus();
+        await userEvent.tab();
+        expect(screen.getByRole("checkbox", { name: "German" })).toHaveFocus();
+        expect(group).not.toHaveAccessibleDescription("Select a scope");
+
+        await userEvent.tab();
+        await userEvent.tab();
+        expect(screen.getByRole("button", { name: "Save" })).toHaveFocus();
+        expect(group).toHaveAccessibleDescription("Select a scope");
+    });
 });

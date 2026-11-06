@@ -1,7 +1,6 @@
-import { SvgIcon, type SvgIconProps } from "@mui/material";
-import type { JSX } from "react";
+import type { JSX, SVGProps } from "react";
 
-interface ColumnsIconProps extends SvgIconProps {
+interface ColumnsIconProps extends SVGProps<SVGSVGElement> {
     columns: number;
 }
 
@@ -49,10 +48,10 @@ export function ColumnsIcon({ columns, ...svgProps }: ColumnsIconProps): JSX.Ele
         // Fallback for cases where column number is too high to display it with svgs
         <span>{columns}</span>
     ) : (
-        <SvgIcon viewBox="0 0 48 48" {...svgProps}>
+        <svg viewBox="0 0 48 48" width="1em" height="1em" fill="currentColor" aria-hidden {...svgProps}>
             {rectangleAttributesMatrices[columns - 1].map((c, i) => (
-                <rect key={i} y={4} height={40} {...c} />
+                <rect key={i} y={4} height={40} rx={2} {...c} />
             ))}
-        </SvgIcon>
+        </svg>
     );
 }

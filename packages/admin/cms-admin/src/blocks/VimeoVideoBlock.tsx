@@ -1,10 +1,10 @@
-import { Field, FinalFormInput } from "@dextinity/admin";
-import { Box } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 
 import type { VimeoVideoBlockData, VimeoVideoBlockInput } from "../blocks.generated";
 import { useBlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
 import { BlockAdminComponentSection } from "./common/BlockAdminComponentSection";
+import { BlockInputField } from "./form/BlockInputField";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { VideoOptionsFields } from "./helpers/VideoOptionsFields";
@@ -76,24 +76,20 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
         const isInPaper = useBlockAdminComponentPaper();
 
         return (
-            <Box
-                sx={{
-                    padding: isInPaper ? 3 : 0,
-                    pb: 0,
-                }}
-            >
+            <VideoFields data-in-paper={isInPaper ? "" : undefined}>
                 <SelectPreviewComponent>
                     <BlocksFinalForm onSubmit={updateState} initialValues={state}>
-                        <Field
-                            name="vimeoIdentifier"
-                            label={<FormattedMessage id="dextinity.blocks.vimeoVideo.vimeoIdentifier" defaultMessage="Vimeo URL or Vimeo Video ID" />}
-                            validate={validateIdentifier}
-                            type="text"
-                            component={FinalFormInput}
-                            fullWidth
-                            disableContentTranslation
-                        />
-                        <VideoOptionsFields />
+                        <FormFields>
+                            <BlockInputField
+                                name="vimeoIdentifier"
+                                label={
+                                    <FormattedMessage id="dextinity.blocks.vimeoVideo.vimeoIdentifier" defaultMessage="Vimeo URL or Vimeo Video ID" />
+                                }
+                                validate={validateIdentifier}
+                                disableContentTranslation
+                            />
+                            <VideoOptionsFields />
+                        </FormFields>
                     </BlocksFinalForm>
                     <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.video.previewImage" defaultMessage="Preview Image" />}>
                         <PixelImageBlock.AdminComponent
@@ -107,7 +103,7 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
                         />
                     </BlockAdminComponentSection>
                 </SelectPreviewComponent>
-            </Box>
+            </VideoFields>
         );
     },
 
@@ -127,3 +123,15 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
     },
     tags: ["Vimeo"],
 };
+
+const VideoFields = styled("div")`
+    &[data-in-paper] {
+        padding: var(--dextinity-space-4) var(--dextinity-space-4) 0;
+    }
+`;
+
+const FormFields = styled("div")`
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+`;

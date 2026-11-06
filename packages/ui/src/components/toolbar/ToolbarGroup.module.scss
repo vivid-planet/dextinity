@@ -1,0 +1,10 @@
+.root {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-toolbar-gap);
+
+    :global(.dextinityToolbar[data-orientation="vertical"]) > & {
+        flex-direction: column;
+    }
+}

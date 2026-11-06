@@ -1,0 +1,17 @@
+.root {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-toolbar-gap);
+    min-inline-size: 0;
+    padding: var(--dextinity-toolbar-padding);
+    font-family: var(--dextinity-font-family-text);
+
+    --dextinity-icon-button-size: var(--dextinity-toolbar-button-size);
+    --dextinity-icon-button-icon-size: var(--dextinity-toolbar-button-icon-size);
+
+    &[data-orientation="vertical"] {
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
+}

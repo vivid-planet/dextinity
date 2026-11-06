@@ -1,0 +1,15 @@
+.root {
+    flex: none;
+    align-self: stretch;
+    inline-size: var(--dextinity-line-width);
+    margin-block: var(--dextinity-toolbar-separator-inset);
+    margin-inline: var(--dextinity-toolbar-separator-space);
+    background: var(--dextinity-toolbar-separator-color);
+
+    &[data-orientation="horizontal"] {
+        inline-size: auto;
+        block-size: var(--dextinity-line-width);
+        margin-block: var(--dextinity-toolbar-separator-space);
+        margin-inline: var(--dextinity-toolbar-separator-inset);
+    }
+}

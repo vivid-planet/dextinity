@@ -70,6 +70,7 @@
         "lodash.escaperegexp": "^4.1.2",
         "mime-db": "^1.54.0",
         "p-debounce": "^6.0.0",
+        "react-dropzone": "^20.1.4",
         "react-cool-dimensions": "^3.0.1",
         "react-dropzone": "^20.2.0",
         "react-final-form-arrays": "^3.1.4",

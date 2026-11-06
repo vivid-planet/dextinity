@@ -35,14 +35,12 @@ EditPage: previewApi, created with useBlockPreview: State containing showOnlyVis
          - has hoveredSiteRoute state
          - handles messages coming from iframe (SelectComponent, HoverComponent)
     SplitPreview (prop drilling: previewApi, previewState)
-       BlockPreview (prop drilling: previewApi, previewState)
-            - messages previewState to iframe (with useIFrameBridge)
-            - messages AccessToken (with useIFrameBridge)
-            - has controls for managing previewApi (showOnlyVisible, device, minimized)
-            - sets the iframe ref to inject it into IFrameBrdige (with useIFrameBridge)
-         IFrameViewer[common] (prop drilling: device (from previewApi))
-              - does scale the iframe according to device (+the device around the iframe)
-              - renders the actual iframe
+       BlockPreview (prop drilling: previewApi, previewState): adds the minimize action
+         BlockPreviewPane (editors built with @dextinity/ui use it directly)
+            - messages previewState, the content scope JWT and the API URL to the iframe (useBlockPreviewBridge)
+            - has controls for managing previewApi (device, showOnlyVisible)
+            - sets the iframe ref to inject it into IFrameBridge (with useIFrameBridge)
+            - renders DevicePreview of @dextinity/ui, which scales the iframe according to the device and shows a spinner until the iframe is ready
     RootBlockAdmin
         - highlights blocks with matching hoveredSiteRoute (with useIFrameBridge)
         - sends SelectComponent on block admin render (using SelectPreviewComponent with useIFrameBridge)
@@ -100,8 +98,8 @@ SitePreview: state from Url (get params): path, device, showOnlyVisible
     - has controls for managing path, device, showOnlyVisible
     - handles messages coming from iframe (OpenLink, SitePreviewLocation)
     - handles incoming messages (with useSitePreviewIFrameBridge)
-  IFrameViewer[common] (prop drilling: device)
-    - does scale the iframe according to device (+the device around the iframe)
+  DevicePreview of @dextinity/ui
+    - scales the iframe according to the device
     - renders the actual iframe
 ```
 

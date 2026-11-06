@@ -66,7 +66,7 @@ export const HoverPreviewComponent = ({ children, componentSlug }: PropsWithChil
                 }
             }}
         >
-            <sc.Hover isHovered={isHovered} />
+            <sc.Hover data-hovered={isHovered ? "" : undefined} />
             <sc.Children>{children}</sc.Children>
         </sc.Root>
     );

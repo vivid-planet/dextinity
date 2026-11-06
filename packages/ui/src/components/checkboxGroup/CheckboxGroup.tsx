@@ -81,7 +81,8 @@ export interface CheckboxGroupProps<Value extends string = string> extends Omit<
      */
     orientation?: CheckboxGroupOrientation;
     /**
-     * Requires at least one option to be checked before a form is submitted, and adds a star after the label.
+     * Marks the group as needing at least one checked option with a star after the label. The form validates it, e.g. through
+     * `CheckboxGroupField`'s `required`.
      *
      * @defaultValue `false`
      */

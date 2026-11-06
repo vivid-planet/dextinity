@@ -23,7 +23,7 @@ vi.mock("../chooseFile/DamFilePickerDialog", () => ({
     },
 }));
 
-function createFile(id: string, name: string): GQLDamFileFieldFileFragment {
+function createFile(id: string, name: string, folderId: string | null = null): GQLDamFileFieldFileFragment {
     return {
         id,
         name,
@@ -33,6 +33,7 @@ function createFile(id: string, name: string): GQLDamFileFieldFileFragment {
         title: null,
         altText: null,
         archived: false,
+        folder: folderId != null ? { id: folderId } : null,
         fileUrl: `https://example.com/${name}`,
         image: {
             width: 800,
@@ -47,6 +48,7 @@ function withTypenames(file: GQLDamFileFieldFileFragment) {
     return {
         __typename: "DamFile",
         ...file,
+        folder: file.folder && { __typename: "DamFolder", ...file.folder },
         image: file.image && { __typename: "DamFileImage", ...file.image, cropArea: { __typename: "ImageCropArea", ...file.image.cropArea } },
     };
 }
@@ -74,6 +76,7 @@ function createFailingClient() {
 
 const lake = createFile("lake", "lake.jpg");
 const forest = createFile("forest", "forest.jpg");
+const boat = createFile("boat", "boat.jpg", "harbor");
 
 function TestForm({
     initialValue,
@@ -148,6 +151,43 @@ describe("DamFileField", () => {
         await waitFor(() => expect(screen.getByText("forest.jpg")).toBeTruthy());
         expect(onValueChange).toHaveBeenLastCalledWith(expect.objectContaining({ id: "forest" }));
         expect(screen.queryByRole("dialog", { name: "Picker" })).toBeNull();
+    });
+
+    it("opens the picker in the folder of the chosen file", () => {
+        render(
+            <MockedProvider>
+                <TestForm initialValue={boat} onValueChange={vi.fn()} />
+            </MockedProvider>,
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: /^Image/ }));
+
+        expect(pickerDialogProps.current?.initialFolderId).toBe("harbor");
+    });
+
+    it("opens the picker in the root folder for a file in the root", () => {
+        render(
+            <MockedProvider>
+                <TestForm initialValue={lake} onValueChange={vi.fn()} />
+            </MockedProvider>,
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: /^Image/ }));
+
+        expect(pickerDialogProps.current?.initialFolderId).toBeNull();
+    });
+
+    it("lets the picker look up the folder of a file loaded without it", () => {
+        const { folder: _folder, ...lakeWithoutFolder } = lake;
+        render(
+            <MockedProvider>
+                <TestForm initialValue={lakeWithoutFolder} onValueChange={vi.fn()} />
+            </MockedProvider>,
+        );
+
+        fireEvent.click(screen.getByRole("button", { name: /^Image/ }));
+
+        expect(pickerDialogProps.current?.initialFolderId).toBeUndefined();
     });
 
     it("shows the number of files with multiple", () => {

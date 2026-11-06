@@ -13,6 +13,9 @@ export const damFileFieldFragment = gql`
         title
         altText
         archived
+        folder {
+            id
+        }
         image {
             ...DamFileThumbnail
             ...PixelImageBlockImage

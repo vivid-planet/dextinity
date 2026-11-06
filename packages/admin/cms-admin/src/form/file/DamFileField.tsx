@@ -53,6 +53,14 @@ function FileThumbnail({ file }: { file: DamFile }) {
     );
 }
 
+/** The folder of a file whose value was loaded with its folder, `null` for the root; `undefined` lets the picker look it up. */
+export function getDamFileFolderId(file: Pick<DamFile, "folder"> | null | undefined): string | null | undefined {
+    if (file == null || file.folder === undefined) {
+        return undefined;
+    }
+    return file.folder?.id ?? null;
+}
+
 function renderFileMeta(intl: IntlShape, file: DamFile) {
     return [getFileExtension(file.name), formatFileSize(intl, file.size)].filter((part) => part != null).join(" · ");
 }
@@ -90,6 +98,7 @@ function SingleDamFileField({ allowedMimetypes, placeholder, labels, multiple: _
                     open={open}
                     onClose={onClose}
                     initialFileIds={value != null ? [value.id] : []}
+                    initialFolderId={getDamFileFolderId(value)}
                     allowedMimetypes={allowedMimetypes}
                     onChoose={async ([fileId]) => {
                         try {
@@ -150,6 +159,7 @@ function MultipleDamFileField({ allowedMimetypes, placeholder, labels, multiple:
                     multiple
                     onClose={onClose}
                     initialFileIds={(value ?? []).map((file) => file.id)}
+                    initialFolderId={getDamFileFolderId(value?.[0])}
                     allowedMimetypes={allowedMimetypes}
                     onChoose={async (fileIds) => {
                         try {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { hasUnsavedChanges, toSaveState } from "./useFormSaveState";
+import { hasUnsavedChanges, toSaveState } from "../useFormSaveState";
 
 const pristine = { submitting: false, dirty: false, dirtySinceLastSubmit: false, submitSucceeded: false, hasSubmitErrors: false };
 

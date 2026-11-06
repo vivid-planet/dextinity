@@ -2,10 +2,10 @@ import { render, screen } from "@testing-library/react";
 import { Form } from "react-final-form";
 import { describe, expect, it } from "vitest";
 
-import { ComboboxField } from "../comboboxField/ComboboxField";
-import { InputField } from "../inputField/InputField";
-import { PickerField } from "../pickerField/PickerField";
-import { SelectField } from "../selectField/SelectField";
+import { ComboboxField } from "../../comboboxField/ComboboxField";
+import { InputField } from "../../inputField/InputField";
+import { PickerField } from "../../pickerField/PickerField";
+import { SelectField } from "../../selectField/SelectField";
 
 // `pnpm run lint:tsc` checks the @ts-expect-error lines: each must stay a type error, or the unused directive fails the build
 function TypedFields() {

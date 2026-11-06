@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { Form } from "react-final-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { focusOnError } from "../focusOnError/focusOnError";
-import { DateField, toDateValue } from "./DateField";
+import { focusOnError } from "../../focusOnError/focusOnError";
+import { DateField, toDateValue } from "../DateField";
 
 function renderForm(onSubmit: (values: Record<string, unknown>) => void, initialValues?: Record<string, unknown>) {
     return render(

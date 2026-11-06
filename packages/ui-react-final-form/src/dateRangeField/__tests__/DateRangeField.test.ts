@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isIncompleteDateRange, toDateRangeValue } from "./DateRangeField";
+import { isIncompleteDateRange, toDateRangeValue } from "../DateRangeField";
 
 describe("toDateRangeValue", () => {
     it("maps an empty form value to no range", () => {

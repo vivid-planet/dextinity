@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { Form } from "react-final-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { focusOnError } from "../focusOnError/focusOnError";
-import { RadioGroupField, toRadioGroupValue } from "./RadioGroupField";
+import { focusOnError } from "../../focusOnError/focusOnError";
+import { RadioGroupField, toRadioGroupValue } from "../RadioGroupField";
 
 const options = [
     { value: "full-time", label: "Full-time" },

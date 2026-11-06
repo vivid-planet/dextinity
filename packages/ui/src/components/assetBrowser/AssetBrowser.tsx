@@ -247,6 +247,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
     const [activeId, setActiveId] = useState<string>();
     const [anchorId, setAnchorId] = useState<string>();
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
+    const [collapsedIds, setCollapsedIds] = useState<string[]>([]);
     const [draggedIds, setDraggedIds] = useState<string[]>();
     const [dropFolderId, setDropFolderId] = useState<string>();
     const treeRef = useRef<HTMLDivElement>(null);
@@ -295,6 +296,8 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         folders.filter((folder) => folder.parentId === id).length + assets.filter((asset) => asset.folderId === id).length;
 
     const path = ancestorsOf(folderId);
+    const pathAncestorIds = path.slice(0, -1).map((folder) => folder.id);
+    const pathAncestorIdsKey = JSON.stringify(pathAncestorIds);
     const currentFolder = folderById.get(folderId);
     const items = itemsOf(folderId);
     const itemIds = items.map(itemId);
@@ -404,6 +407,12 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         event.preventDefault();
         onSidebarWidthChange?.(clampSidebarWidth(width));
     };
+
+    // Opening a folder reveals it in the tree, even inside a folder the user collapsed before
+    useEffect(() => {
+        const ancestorIds: string[] = JSON.parse(pathAncestorIdsKey);
+        setCollapsedIds((ids) => (ids.some((id) => ancestorIds.includes(id)) ? ids.filter((id) => !ancestorIds.includes(id)) : ids));
+    }, [pathAncestorIdsKey]);
 
     const focusItem = (id: string) => {
         setActiveId(id);
@@ -799,7 +808,14 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                 return { id: folder.id, label: folder.name, type: "folder", children: children.length > 0 ? children : undefined };
             });
     const rootIds = folders.filter((folder) => folder.parentId == null).map((folder) => folder.id);
-    const treeExpandedIds = Array.from(new Set([...rootIds, ...expandedIds, ...path.slice(0, -1).map((folder) => folder.id)]));
+    const treeExpandedIds = Array.from(new Set([...rootIds, ...expandedIds, ...pathAncestorIds])).filter((id) => !collapsedIds.includes(id));
+    const changeTreeExpandedIds = (ids: string[]) => {
+        setExpandedIds(ids);
+        setCollapsedIds((previousIds) => [
+            ...previousIds.filter((id) => !ids.includes(id)),
+            ...treeExpandedIds.filter((id) => !ids.includes(id) && !previousIds.includes(id)),
+        ]);
+    };
 
     const findTreeFolderId = (event: DragEvent<HTMLElement>) => {
         const treeItem = (event.target as HTMLElement).closest<HTMLElement>("[role='treeitem']");
@@ -888,7 +904,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                         aria-label={labels.folders}
                         nodes={treeNodes(null)}
                         expandedIds={treeExpandedIds}
-                        onExpandedChange={(ids) => setExpandedIds(ids)}
+                        onExpandedChange={changeTreeExpandedIds}
                         selectedId={folderId}
                         onSelect={(id) => {
                             if (id !== folderId) {

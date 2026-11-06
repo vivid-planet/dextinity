@@ -102,7 +102,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "More actions" }));
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(true);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(true));
         const menu = await screen.findByRole("menu");
         await waitFor(() => expect(menu).toBeVisible());
         await userEvent.keyboard("{ArrowDown}");
@@ -110,7 +110,7 @@ export const Default: Story = {
         await userEvent.keyboard("{ArrowDown}");
         await expect(screen.getByRole("menuitem", { name: /Duplicate/ })).toHaveFocus();
         await userEvent.keyboard("{Escape}");
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
         await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
     },
 };
@@ -225,7 +225,7 @@ export const SelectItem: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "More actions" }));
         await userEvent.click(await screen.findByRole("menuitem", { name: "Duplicate" }));
         await expect(onDuplicate).toHaveBeenCalled();
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
         await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
     },
 };

@@ -477,6 +477,10 @@ export const LoadingForm: Story = {
     args: { variant: "form", loading: true },
 };
 
+export const LoadingFormWithBlocks: Story = {
+    args: { variant: "formWithBlocks", loading: true },
+};
+
 /**
  * In narrow layouts only one pane fits: the pane switch chooses between the preview and the editor.
  */

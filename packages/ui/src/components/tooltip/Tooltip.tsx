@@ -60,7 +60,10 @@ export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, "clas
     slotProps?: TooltipSlotProps;
 }
 
-function readDelayToken(element: Element | null) {
+/**
+ * Reads the theme's hover delay for tooltips (`--dextinity-motion-tooltip-delay`) at an element, in milliseconds.
+ */
+export function readTooltipDelay(element: Element | null) {
     if (element == null) {
         return fallbackDelay;
     }
@@ -83,7 +86,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
 ) {
     const ownerState: TooltipOwnerState = { placement, disabled };
     const { anchor, anchorRef, container } = useThemePortalContainer<HTMLElement>();
-    const themeDelay = useMemo(() => readDelayToken(anchor), [anchor]);
+    const themeDelay = useMemo(() => readTooltipDelay(anchor), [anchor]);
 
     const positionerProps = resolveSlotProps<TooltipOwnerState, typeof BaseTooltip.Positioner, typeof BaseTooltip.Positioner>({
         ownProps: { side: ownerState.placement, sideOffset: 6, collisionPadding: 8, className: styles.positioner },

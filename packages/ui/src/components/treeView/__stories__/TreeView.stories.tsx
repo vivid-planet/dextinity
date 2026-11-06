@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fireEvent, fn, userEvent, waitFor } from "storybook/test";
+import { expect, fireEvent, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
@@ -249,6 +249,62 @@ export const Filtered: Story = {
     args: {
         expandedIds: [],
         filter: (node) => node.status === "unpublished" || node.status === "archived",
+    },
+};
+
+const longNameTree: TreeNode[] = [
+    {
+        id: "news",
+        label: "News",
+        type: "folder",
+        path: "/news",
+        children: [
+            {
+                id: "announcement",
+                label: "Annual report 2026: results, outlook, and the new sustainability strategy",
+                status: "published",
+                path: "/news/annual-report-2026",
+            },
+            { id: "event", label: "Open day", status: "unpublished", path: "/news/open-day" },
+        ],
+    },
+];
+
+/**
+ * A name that doesn't fit is cut off with an ellipsis. Its full text shows in a tooltip on hover and when the row gets the keyboard
+ * focus; Escape hides it.
+ */
+export const LongNames: Story = {
+    args: {
+        nodes: longNameTree,
+        expandedIds: ["news"],
+    },
+    render: (args) => (
+        <div className={styles.narrow}>
+            <ControlledTreeView {...args} />
+        </div>
+    ),
+    play: async ({ canvas }) => {
+        const fullName = "Annual report 2026: results, outlook, and the new sustainability strategy";
+        await userEvent.tab();
+        await userEvent.keyboard("{ArrowDown}");
+        await expect(canvas.getByRole("treeitem", { name: fullName })).toHaveFocus();
+        const tooltip = await screen.findByRole("tooltip");
+        await expect(tooltip).toHaveTextContent(fullName);
+
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
+        await expect(canvas.getByRole("treeitem", { name: fullName })).toHaveFocus();
+
+        await userEvent.keyboard("{ArrowDown}");
+        await expect(canvas.getByRole("treeitem", { name: "Open day" })).toHaveFocus();
+        await expect(screen.queryByRole("tooltip")).toBeNull();
+
+        const row = canvas.getByRole("treeitem", { name: fullName }).firstElementChild as HTMLElement;
+        await userEvent.hover(row);
+        await waitFor(() => expect(screen.getByRole("tooltip")).toHaveTextContent(fullName));
+        await userEvent.unhover(row);
+        await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
     },
 };
 

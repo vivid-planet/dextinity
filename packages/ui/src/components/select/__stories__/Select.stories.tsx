@@ -3,6 +3,7 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Dialog } from "../../dialog/Dialog";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Icon } from "../../icon/Icon";
 import { Select, type SelectOption, type SelectProps } from "../Select";
@@ -388,5 +389,27 @@ export const ObjectValues: Story = {
         await userEvent.click(trigger);
         await userEvent.click(await screen.findByRole("option", { name: "Tyrol Gear" }));
         await waitFor(() => expect(args.onChange).toHaveBeenCalledWith({ id: "3", name: "Tyrol Gear" }));
+    },
+};
+
+/**
+ * In a `Dialog`, the options open above the dialog.
+ */
+export const InDialog: Story = {
+    render: (args) => (
+        <Dialog open onOpenChange={() => undefined} title="Move event">
+            <ControlledSelect {...(args as SelectProps<boolean>)} />
+        </Dialog>
+    ),
+    play: async ({ args }) => {
+        const dialog = await screen.findByRole("dialog", { name: "Move event" });
+        await userEvent.click(within(dialog).getByRole("combobox", { name: /Location/ }));
+        const option = await screen.findByRole("option", { name: "Graz" });
+        await waitFor(() => {
+            const { left, top, width, height } = option.getBoundingClientRect();
+            expect(option.contains(document.elementFromPoint(left + width / 2, top + height / 2))).toBe(true);
+        });
+        await userEvent.click(option);
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith("graz"));
     },
 };

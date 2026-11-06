@@ -19,7 +19,7 @@ Add `BlockPreviewPane`, the block preview for editors built with `@dextinity/ui`
 </IFrameBridgeProvider>
 ```
 
-`BlockPreview`, `SplitPreview` and `BlockPreviewWithTabs` stay for editors built with MUI and render the new preview as well.
+`BlockPreview`, `SplitPreview` and `BlockPreviewWithTabs` stay for editors built with MUI and render the new preview as well. Pass them the public address of the edited page as `siteUrl` to show it above the preview instead of the address of the block preview page.
 
 **Breaking changes**
 

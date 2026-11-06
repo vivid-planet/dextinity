@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-export type AsyncOptionsStatus = "loading" | "success" | "error";
+type AsyncOptionsStatus = "loading" | "success" | "error";
 
 interface LoadResult<Option> {
     status: AsyncOptionsStatus;

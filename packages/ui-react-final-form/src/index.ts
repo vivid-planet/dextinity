@@ -1,10 +1,13 @@
 export { CheckboxField, type CheckboxFieldProps } from "./checkboxField/CheckboxField";
+export { CheckboxGroupField, type CheckboxGroupFieldProps } from "./checkboxGroupField/CheckboxGroupField";
 export type { FieldAdapterActions, FieldAdapterActionsContext, FieldAdapterBaseProps } from "./field/fieldAdapterProps";
 export type { FinalFormFieldConfig } from "./field/finalFormFieldConfig";
 export { FocalPointPickerField, type FocalPointPickerFieldProps } from "./focalPointPickerField/FocalPointPickerField";
 export { focusOnError } from "./focusOnError/focusOnError";
 export { type FormSaveState, useFormSaveState, useHasUnsavedChanges } from "./formState/useFormSaveState";
 export { InputField, type InputFieldProps } from "./inputField/InputField";
+export { NumberField, type NumberFieldProps } from "./numberField/NumberField";
+export { RadioGroupField, type RadioGroupFieldProps } from "./radioGroupField/RadioGroupField";
 export { RichTextEditorField, type RichTextEditorFieldProps } from "./richTextEditorField/RichTextEditorField";
 export { SegmentedControlField, type SegmentedControlFieldProps } from "./segmentedControlField/SegmentedControlField";
 export { SelectField, type SelectFieldProps } from "./selectField/SelectField";

@@ -143,6 +143,7 @@ export {
 export { defaultPaginationLabels, Pagination, type PaginationLabels, type PaginationSlotProps } from "./components/pagination/Pagination";
 export { type PaginationOwnerState, type PaginationProps } from "./components/pagination/Pagination";
 export { Panel, type PanelOwnerState, type PanelProps, type PanelSlotProps, type PanelSlots } from "./components/panel/Panel";
+export { Picker, type PickerLabels, type PickerOwnerState, type PickerProps } from "./components/picker/Picker";
 export { Popover, type PopoverOwnerState, type PopoverPlacement, type PopoverProps } from "./components/popover/Popover";
 export { type PopoverSlotProps } from "./components/popover/Popover";
 export { QuickLook, type QuickLookItem, type QuickLookOwnerState, type QuickLookProps } from "./components/quickLook/QuickLook";

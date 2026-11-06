@@ -14,6 +14,19 @@ export const damFinderFoldersQuery = gql`
     }
 `;
 
+export const damFinderFileUsagesQuery = gql`
+    query DamFinderFileUsages($scope: DamScopeInput!, $ids: [ID!]!) {
+        damFilesList(scope: $scope, filter: { ids: $ids }, limit: 100) {
+            nodes {
+                id
+                dependents(offset: 0, limit: 1) {
+                    totalCount
+                }
+            }
+        }
+    }
+`;
+
 export const deleteDamFinderFolderMutation = gql`
     mutation DeleteDamFinderFolder($id: ID!) {
         deleteDamFolder(id: $id)

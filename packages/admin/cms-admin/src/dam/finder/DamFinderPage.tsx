@@ -43,6 +43,7 @@ import { damFinderRootFolderId, getDamFinderAssetType, getFileExtension, toAsset
 import {
     archiveDamFinderFilesMutation,
     createDamFinderFolderMutation,
+    damFinderFileUsagesQuery,
     damFinderFoldersQuery,
     deleteDamFinderFileMutation,
     deleteDamFinderFolderMutation,
@@ -53,6 +54,8 @@ import type {
     GQLArchiveDamFinderFilesMutationVariables,
     GQLCreateDamFinderFolderMutation,
     GQLCreateDamFinderFolderMutationVariables,
+    GQLDamFinderFileUsagesQuery,
+    GQLDamFinderFileUsagesQueryVariables,
     GQLDamFinderFoldersQuery,
     GQLDamFinderFoldersQueryVariables,
     GQLDeleteDamFinderFileMutation,
@@ -298,6 +301,14 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
 
     const pendingDeleteFileIds = pendingDeleteIds?.filter((id) => fileById.has(id)) ?? [];
     const pendingDeleteFolderIds = pendingDeleteIds?.filter((id) => damFolderById.has(id)) ?? [];
+
+    const pendingDeleteUsagesQuery = useQuery<GQLDamFinderFileUsagesQuery, GQLDamFinderFileUsagesQueryVariables>(damFinderFileUsagesQuery, {
+        variables: { scope, ids: pendingDeleteFileIds },
+        skip: pendingDeleteFileIds.length === 0,
+        fetchPolicy: "network-only",
+    });
+    const pendingDeleteUsedFiles = (pendingDeleteUsagesQuery.data?.damFilesList.nodes ?? []).filter((file) => file.dependents.totalCount > 0);
+    const pendingDeleteUsageCount = pendingDeleteUsedFiles.reduce((sum, file) => sum + file.dependents.totalCount, 0);
 
     const handleDelete = async () => {
         if (pendingDeleteIds == null) {
@@ -575,11 +586,25 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                     { id: "dextinity.damFinder.delete.title", defaultMessage: "Delete {count, plural, one {# item} other {# items}}?" },
                     { count: pendingDeleteIds?.length ?? 0 },
                 )}
-                description={intl.formatMessage({
-                    id: "dextinity.damFinder.delete.description",
-                    defaultMessage:
-                        "Deleted files and folders, including everything inside them, can't be restored. Archived files stay available in the asset manager.",
-                })}
+                description={[
+                    pendingDeleteUsedFiles.length > 0
+                        ? intl.formatMessage(
+                              {
+                                  id: "dextinity.damFinder.delete.inUse",
+                                  defaultMessage:
+                                      "{files, plural, one {# file is} other {# files are}} still used {usages, plural, one {# time} other {# times}}, e.g. on pages. These places lose the file.",
+                              },
+                              { files: pendingDeleteUsedFiles.length, usages: pendingDeleteUsageCount },
+                          )
+                        : undefined,
+                    intl.formatMessage({
+                        id: "dextinity.damFinder.delete.description",
+                        defaultMessage:
+                            "Deleted files and folders, including everything inside them, can't be restored. Archived files stay available in the asset manager.",
+                    }),
+                ]
+                    .filter((part) => part != null)
+                    .join(" ")}
                 confirmLabel={intl.formatMessage({ id: "dextinity.damFinder.delete.confirm", defaultMessage: "Delete" })}
                 confirmIcon={<Icon name="trash" />}
                 onConfirm={handleDelete}

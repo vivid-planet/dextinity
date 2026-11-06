@@ -1,0 +1,35 @@
+.root {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    box-sizing: border-box;
+    min-block-size: var(--dextinity-block-list-header-height);
+    padding-inline: 10px 6px;
+    color: var(--dextinity-block-list-header-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: 12.5px;
+
+    &[data-selecting] {
+        color: var(--dextinity-color-text);
+    }
+}
+
+.checkbox {
+    flex: none;
+}
+
+.count {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    font-variant-numeric: tabular-nums;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.actions {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 2px;
+}

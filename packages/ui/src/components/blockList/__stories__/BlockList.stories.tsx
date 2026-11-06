@@ -1,13 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
+import { SegmentedControl } from "../../segmentedControl/SegmentedControl";
+import { Tooltip } from "../../tooltip/Tooltip";
 import blockListTokens from "../_tokens.scss?raw";
 import { Block } from "../Block";
 import { BlockList, type BlockListProps } from "../BlockList";
+import { BlockListHeader } from "../BlockListHeader";
 import styles from "./BlockList.stories.module.scss";
 
 interface SampleBlock {
@@ -97,6 +100,7 @@ const meta = {
     },
     argTypes: {
         children: { control: false },
+        header: { control: false },
         labels: { control: false },
         className: { control: false },
         slotProps: { control: false },
@@ -149,5 +153,152 @@ export const InsertBetween: Story = {
         const [firstInsert] = canvas.getAllByRole("button", { name: "Insert block here" });
         await userEvent.click(firstInsert);
         await waitFor(() => expect(args.onAdd).toHaveBeenLastCalledWith(1));
+    },
+};
+
+/** Blocks with checkboxes and a header with the bulk actions; the selection lives in local state. */
+function BulkActionsBlockList(props: BlockListProps) {
+    const [blocks, setBlocks] = useState(initialBlocks);
+    const [checkedIds, setCheckedIds] = useState<string[]>([]);
+    const hasSelection = checkedIds.length > 0;
+    const setVisible = (visible: boolean) =>
+        setBlocks((current) => current.map((block) => (checkedIds.includes(block.id) ? { ...block, visible } : block)));
+    const action = (label: string, icon: ReactNode, onClick: () => void, disabled = !hasSelection) => (
+        <Tooltip content={label}>
+            <IconButton size="small" aria-label={label} disabled={disabled} onClick={onClick}>
+                {icon}
+            </IconButton>
+        </Tooltip>
+    );
+
+    return (
+        <div className={styles.container}>
+            <BlockList
+                {...props}
+                header={
+                    <BlockListHeader
+                        count={blocks.length}
+                        selectedCount={checkedIds.length}
+                        onSelectAllChange={(selected) => setCheckedIds(selected ? blocks.map((block) => block.id) : [])}
+                        actions={
+                            <>
+                                {action("Show", <Icon name="eye" />, () => setVisible(true))}
+                                {action("Hide", <Icon name="eye-off" />, () => setVisible(false))}
+                                {action("Copy", <Icon name="copy" />, () => undefined)}
+                                {action("Paste", <Icon name="paste" />, () => undefined, false)}
+                                {action("Delete", <Icon name="trash" />, () => {
+                                    setBlocks((current) => current.filter((block) => !checkedIds.includes(block.id)));
+                                    setCheckedIds([]);
+                                })}
+                            </>
+                        }
+                    />
+                }
+            >
+                {blocks.map((block) => (
+                    <Block
+                        key={block.id}
+                        title={block.title}
+                        summary={block.summary}
+                        icon={block.icon}
+                        visible={block.visible}
+                        checked={checkedIds.includes(block.id)}
+                        onCheckedChange={(checked) =>
+                            setCheckedIds((current) => (checked ? [...current, block.id] : current.filter((id) => id !== block.id)))
+                        }
+                        invalid={block.id === "jobs"}
+                        invalidReason="Choose at least one job category"
+                    />
+                ))}
+            </BlockList>
+        </div>
+    );
+}
+
+/**
+ * Give the blocks `checked` and `onCheckedChange`, and put a `BlockListHeader` in `header`: it selects all blocks and holds the bulk
+ * actions, e.g. show, hide, copy, paste, and delete.
+ */
+export const BulkActions: Story = {
+    args: { onAdd: undefined },
+    render: (args) => <BulkActionsBlockList {...args} />,
+    play: async ({ canvas }) => {
+        await expect(canvas.getByText("4 blocks")).toBeVisible();
+        await expect(canvas.getByRole("button", { name: "Hide" })).toBeDisabled();
+
+        await userEvent.click(canvas.getByRole("checkbox", { name: "Select all blocks" }));
+        await expect(canvas.getByText("4 selected")).toBeVisible();
+        await userEvent.click(canvas.getAllByRole("checkbox", { name: "Select" })[0]);
+        await expect(canvas.getByText("3 selected")).toBeVisible();
+        await expect(canvas.getByRole("checkbox", { name: "Select all blocks" })).toHaveAttribute("aria-checked", "mixed");
+
+        await userEvent.click(canvas.getByRole("button", { name: "Delete" }));
+        await expect(canvas.getByText("1 block")).toBeVisible();
+    },
+};
+
+/** A preview stand-in: choosing a block there selects it in the list and scrolls it into view. */
+function PreviewSyncBlockList(props: BlockListProps) {
+    const blocks = Array.from({ length: 12 }, (_, index) => ({
+        id: `block-${index + 1}`,
+        title: `Section ${index + 1}`,
+        summary: "Text · Image",
+    }));
+    const [selectedId, setSelectedId] = useState(blocks[0].id);
+    const blockRefs = useRef(new Map<string, HTMLLIElement>());
+
+    useEffect(() => {
+        blockRefs.current.get(selectedId)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }, [selectedId]);
+
+    return (
+        <div className={styles.syncLayout}>
+            <SegmentedControl
+                size="small"
+                aria-label="Selected in the preview"
+                value={selectedId}
+                onChange={setSelectedId}
+                options={[0, 5, 11].map((index) => ({ value: blocks[index].id, label: blocks[index].title }))}
+            />
+            <div className={styles.scroller}>
+                <BlockList {...props}>
+                    {blocks.map((block) => (
+                        <Block
+                            key={block.id}
+                            ref={(element) => {
+                                if (element != null) {
+                                    blockRefs.current.set(block.id, element);
+                                } else {
+                                    blockRefs.current.delete(block.id);
+                                }
+                            }}
+                            data-block-key={block.id}
+                            title={block.title}
+                            summary={block.summary}
+                            icon={<Icon name="page" />}
+                            visible
+                            selected={block.id === selectedId}
+                            onSelect={() => setSelectedId(block.id)}
+                        />
+                    ))}
+                </BlockList>
+            </div>
+        </div>
+    );
+}
+
+/**
+ * A `Block`'s ref and attributes go to its list item: keep refs by block, or set `data-block-key`, to scroll the block selected in the
+ * preview into view.
+ */
+export const PreviewSync: Story = {
+    args: { onAdd: undefined, onReorder: undefined },
+    render: (args) => <PreviewSyncBlockList {...args} />,
+    play: async ({ canvas, canvasElement }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Section 12" }));
+        const block = canvasElement.querySelector<HTMLElement>('[data-block-key="block-12"]');
+        await expect(block).toHaveAttribute("data-selected");
+        const scroller = block?.closest<HTMLElement>(`.${styles.scroller}`);
+        await waitFor(() => expect(scroller?.scrollTop).toBeGreaterThan(0));
     },
 };

@@ -18,6 +18,14 @@
         box-shadow: var(--dextinity-block-selected-shadow);
     }
 
+    &[data-invalid] {
+        box-shadow: var(--dextinity-block-invalid-shadow);
+    }
+
+    &[data-checked] {
+        background: var(--dextinity-block-checked-background);
+    }
+
     &[data-dragging] {
         opacity: 0.4;
     }
@@ -100,8 +108,13 @@
     }
 }
 
-.root:not(:has(.grip)) .header {
+.root:not(:has(.grip, .checkbox)) .header {
     padding-inline-start: 10px;
+}
+
+.checkbox {
+    flex: none;
+    margin-inline-start: 4px;
 }
 
 .main {
@@ -163,6 +176,23 @@
     line-height: 1.35;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.invalidMarker {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 24px;
+    block-size: 24px;
+    border-radius: 6px;
+    color: var(--dextinity-block-invalid-marker-color);
+
+    --dextinity-icon-size: 16px;
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
 }
 
 .hiddenTag {

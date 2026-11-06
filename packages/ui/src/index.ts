@@ -29,6 +29,9 @@ export {
     type BlockListProps,
     type BlockListSlotProps,
 } from "./components/blockList/BlockList";
+export { BlockListHeader, type BlockListHeaderLabels, type BlockListHeaderOwnerState } from "./components/blockList/BlockListHeader";
+export { type BlockListHeaderProps, type BlockListHeaderSlotProps } from "./components/blockList/BlockListHeader";
+export { defaultBlockListHeaderLabels } from "./components/blockList/BlockListHeader";
 export { Breadcrumbs, type BreadcrumbsItem, type BreadcrumbsLabels, type BreadcrumbsSlotProps } from "./components/breadcrumbs/Breadcrumbs";
 export { type BreadcrumbsOwnerState, type BreadcrumbsProps, type BreadcrumbsSeparator } from "./components/breadcrumbs/Breadcrumbs";
 export {

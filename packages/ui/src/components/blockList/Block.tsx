@@ -3,6 +3,7 @@ import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useId, useRef } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
+import { Checkbox } from "../checkbox/Checkbox";
 import { Icon } from "../icon/Icon";
 import { IconButton } from "../iconButton/IconButton";
 import { Tooltip } from "../tooltip/Tooltip";
@@ -18,6 +19,10 @@ export interface BlockLabels {
     hidden: string;
     /** The accessible name of the button that shows or hides the block's fields. */
     toggleFields: string;
+    /** The accessible name of the checkbox that selects the block for bulk actions. */
+    select: string;
+    /** The tooltip and accessible name of the marker on an invalid block, unless `invalidReason` is set. */
+    invalid: string;
 }
 
 const defaultLabels: BlockLabels = {
@@ -25,6 +30,8 @@ const defaultLabels: BlockLabels = {
     hide: "Hide",
     hidden: "Hidden",
     toggleFields: "Fields",
+    select: "Select",
+    invalid: "Contains errors",
 };
 
 /**
@@ -35,6 +42,10 @@ export type BlockOwnerState = {
     selected: boolean;
     expanded: boolean;
     expandable: boolean;
+    invalid: boolean;
+    /** The block has a checkbox for bulk actions. */
+    checkable: boolean;
+    checked: boolean;
 };
 
 export interface BlockSlotProps {
@@ -44,6 +55,10 @@ export interface BlockSlotProps {
     main?: SlotPropsValue<BlockOwnerState, "button">;
     /** Props for the `icon` slot, the tile around the block type's icon. */
     icon?: SlotPropsValue<BlockOwnerState, "span">;
+    /** Props for the `checkbox` slot, which selects the block for bulk actions. */
+    checkbox?: SlotPropsValue<BlockOwnerState, "div">;
+    /** Props for the `invalidMarker` slot, the warning icon on an invalid block. */
+    invalidMarker?: SlotPropsValue<BlockOwnerState, "span">;
     /** Props for the `body` slot, which holds the fields. */
     body?: SlotPropsValue<BlockOwnerState, typeof Collapsible.Panel>;
 }
@@ -74,6 +89,18 @@ export interface BlockProps extends Omit<HTMLAttributes<HTMLLIElement>, "classNa
     selected?: boolean;
     /** Called when the header is clicked, e.g. to select the block in the preview or open its fields in a panel. */
     onSelect?: () => void;
+    /**
+     * Marks the block as invalid, e.g. a required field is empty, so the user finds it in a long list.
+     *
+     * @defaultValue `false`
+     */
+    invalid?: boolean;
+    /** Why the block is invalid, shown in the marker's tooltip, e.g. "Image is required". */
+    invalidReason?: string;
+    /** Whether the block is selected for bulk actions, e.g. hide or delete. Without it, there is no checkbox. */
+    checked?: boolean;
+    /** Called with the new state of the checkbox. */
+    onCheckedChange?: (checked: boolean) => void;
     /** Further actions in the header, e.g. a menu button. */
     actions?: ReactNode;
     /** The block's fields, shown while `expanded`. */
@@ -88,7 +115,8 @@ export interface BlockProps extends Omit<HTMLAttributes<HTMLLIElement>, "classNa
 
 /**
  * A block in the page editor: grip, type icon, title, summary, visibility, and actions, with its fields below when expanded. Use it
- * inside a `BlockList`.
+ * inside a `BlockList`. Its ref and attributes, e.g. `data-block-key`, go to the list item, so the editor can find the block to scroll it
+ * into view when it's selected in the preview.
  */
 export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
     {
@@ -101,6 +129,10 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
         onExpandedChange,
         selected = false,
         onSelect,
+        invalid = false,
+        invalidReason,
+        checked,
+        onCheckedChange,
         actions,
         children,
         labels: labelsProp,
@@ -119,6 +151,9 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
         selected,
         expanded: expanded ?? false,
         expandable: expanded != null,
+        invalid,
+        checkable: checked != null,
+        checked: checked ?? false,
     };
 
     const focusGrip = listItem?.focusGrip ?? false;
@@ -153,6 +188,21 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
         slotProps: slotProps?.icon,
         ownerState,
     });
+    const checkboxProps = resolveSlotProps<BlockOwnerState, "div", "div">({
+        ownProps: { className: styles.checkbox },
+        slotProps: slotProps?.checkbox,
+        ownerState,
+    });
+    const invalidMarkerProps = resolveSlotProps<BlockOwnerState, "span", "span">({
+        ownProps: {
+            className: styles.invalidMarker,
+            role: "img",
+            tabIndex: 0,
+            "aria-label": invalidReason ?? labels.invalid,
+        },
+        slotProps: slotProps?.invalidMarker,
+        ownerState,
+    });
     const bodyProps = resolveSlotProps<BlockOwnerState, typeof Collapsible.Panel, typeof Collapsible.Panel>({
         ownProps: { className: styles.body },
         slotProps: slotProps?.body,
@@ -171,6 +221,9 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                     data-selected={ownerState.selected ? "" : undefined}
                     data-expanded={ownerState.expanded ? "" : undefined}
                     data-expandable={ownerState.expandable ? "" : undefined}
+                    data-invalid={ownerState.invalid ? "" : undefined}
+                    data-checkable={ownerState.checkable ? "" : undefined}
+                    data-checked={ownerState.checked ? "" : undefined}
                     data-drop={listItem?.dropPosition}
                     data-dragging={listItem?.dragging ? "" : undefined}
                     className={clsx(styles.root, className)}
@@ -180,6 +233,15 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
             }
         >
             <div {...headerProps}>
+                {ownerState.checkable && (
+                    <Checkbox
+                        {...checkboxProps}
+                        checked={ownerState.checked}
+                        onChange={(nextChecked) => onCheckedChange?.(nextChecked)}
+                        aria-label={labels.select}
+                        aria-describedby={titleId}
+                    />
+                )}
                 {listItem?.reorderable && (
                     <Tooltip content={labels.move}>
                         <button
@@ -207,6 +269,13 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                         {summary != null && <span className={styles.summary}>{summary}</span>}
                     </span>
                 </button>
+                {ownerState.invalid && (
+                    <Tooltip content={invalidReason ?? labels.invalid}>
+                        <span {...invalidMarkerProps}>
+                            <Icon name="warning" />
+                        </span>
+                    </Tooltip>
+                )}
                 {!ownerState.visible && <span className={styles.hiddenTag}>{labels.hidden}</span>}
                 {onVisibleChange != null && (
                     <IconButton

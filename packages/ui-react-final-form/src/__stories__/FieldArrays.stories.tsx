@@ -4,10 +4,10 @@ import type { CSSProperties } from "react";
 import { useForm, useFormState } from "react-final-form";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
-import { InputField } from "../inputField/InputField";
-import { SelectField } from "../selectField/SelectField";
+import { InputField } from "../fields/inputField/InputField";
+import { SelectField } from "../fields/selectField/SelectField";
+import { SwitchField } from "../fields/switchField/SwitchField";
 import { finalFormDecorator } from "../storybook/FinalFormStoryFrame";
-import { SwitchField } from "../switchField/SwitchField";
 
 interface Address {
     id: string;

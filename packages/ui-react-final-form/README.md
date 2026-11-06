@@ -158,6 +158,21 @@ Like `@dextinity/ui`, any export may change or be removed at any time, without d
 
 The package follows the [component conventions of `@dextinity/ui`](../ui/README.md#component-conventions) where they apply: TSDoc on every export and prop, props as `<Name>Props` interfaces, named exports, components wrapped in `forwardRef`. The adapters render no elements of their own, so they have no styles, slots, or owner state.
 
+## Structure
+
+| Folder                    | Contents                                                                                                                                      |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/fields/<fieldName>/` | One folder per adapter, e.g. `src/fields/inputField/InputField.tsx`, with its `__stories__/` and `__tests__/`                                 |
+| `src/fieldAdapter/`       | The plumbing all adapters share: `useFieldAdapter` on `useField`, the shared props, splitting them from the ui props, and rendering `actions` |
+| `src/fieldAdapterConfig/` | `FieldAdapterConfigProvider`, which configures every adapter inside it                                                                        |
+| `src/focusOnError/`       | The `focusOnError` decorator that focuses the first invalid field after a failed submit                                                       |
+| `src/formState/`          | The form helpers `useFormSaveState` and `useHasUnsavedChanges`                                                                                |
+| `src/utils/`              | Small helpers without form logic                                                                                                              |
+| `src/storybook/`          | `FinalFormStoryFrame` and sample data, used by the stories only and not exported                                                              |
+| `src/__stories__/`        | Stories spanning several adapters: `Example form` and `Field arrays`                                                                          |
+
+A new adapter gets its own folder in `src/fields/` and its export in `src/index.ts`.
+
 ## Stories and tests
 
 The stories live in `src/**/__stories__/` and are shown in the Storybook of `@dextinity/ui`, under `Forms/Final Form`, with a complete edit page as `Example form`; run them with `pnpm run test:storybook` in `packages/ui`. Unit tests (`pnpm run test:unit`, `jsdom`) in each adapter's `__tests__/` folder cover the value and error mapping.

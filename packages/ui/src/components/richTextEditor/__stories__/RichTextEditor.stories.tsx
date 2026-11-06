@@ -79,7 +79,7 @@ export const Link: Story = {
         await userEvent.click(editor);
         await userEvent.keyboard("{Control>}a{/Control}");
         await userEvent.click(canvas.getByRole("button", { name: "Link" }));
-        await expect(args.onRequestLink).toHaveBeenCalled();
+        await waitFor(() => expect(args.onRequestLink).toHaveBeenCalled());
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringContaining('<a href="https://example.com">')));
     },
 };
@@ -119,7 +119,7 @@ export const Placeholder: Story = {
     },
     play: async ({ args, canvas }) => {
         await userEvent.type(canvas.getByRole("textbox"), "Hello");
-        await expect(args.onChange).toHaveBeenLastCalledWith("Hello");
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("Hello"));
     },
 };
 

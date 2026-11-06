@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/_tokens.scss?raw";
@@ -68,7 +68,7 @@ export const Default: Story = {
     play: async ({ args, canvas }) => {
         const input = canvas.getByRole("textbox", { name: "Title" });
         await userEvent.type(input, "!");
-        await expect(args.onChange).toHaveBeenCalled();
+        await waitFor(() => expect(args.onChange).toHaveBeenCalled());
         await expect(input).toHaveValue("Senior UX Designer!");
     },
 };

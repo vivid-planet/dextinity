@@ -194,10 +194,10 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ args }) => {
         await userEvent.keyboard("{Control>}j{/Control}");
-        await expect(args.onAiOpenChange).toHaveBeenLastCalledWith(true);
+        await waitFor(() => expect(args.onAiOpenChange).toHaveBeenLastCalledWith(true));
         await waitFor(() => expect(screen.getByRole("complementary", { name: "AI assistant" })).toBeVisible());
         await userEvent.click(screen.getByRole("button", { name: "Close AI assistant" }));
-        await expect(args.onAiOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onAiOpenChange).toHaveBeenLastCalledWith(false));
     },
 };
 

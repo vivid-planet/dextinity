@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
@@ -54,7 +54,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("link", { name: /Job postings/ }));
-        await expect(args.onClick).toHaveBeenCalled();
+        await waitFor(() => expect(args.onClick).toHaveBeenCalled());
     },
 };
 
@@ -86,6 +86,6 @@ export const Keyboard: Story = {
         await userEvent.tab();
         await expect(canvas.getByRole("link", { name: /Job postings/ })).toHaveFocus();
         await userEvent.keyboard("{Enter}");
-        await expect(args.onClick).toHaveBeenCalled();
+        await waitFor(() => expect(args.onClick).toHaveBeenCalled());
     },
 };

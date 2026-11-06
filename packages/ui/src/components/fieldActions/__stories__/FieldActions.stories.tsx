@@ -73,14 +73,14 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Translate" }));
-        await expect(args.onTranslate).toHaveBeenCalledWith(["en", "fr"]);
+        await waitFor(() => expect(args.onTranslate).toHaveBeenCalledWith(["en", "fr"]));
 
         await userEvent.click(canvas.getByRole("button", { name: "Improve with AI" }));
         await expect(canvas.getByRole("textbox")).toHaveAttribute("aria-busy", "true");
         const accept = await canvas.findByRole("button", { name: "Accept" });
         await waitFor(() => expect(canvas.getByRole("group", { name: "AI suggestion" })).toHaveFocus());
         await userEvent.click(accept);
-        await expect(args.onAiAccept).toHaveBeenCalledWith("Three colleagues discuss a design draft at a bright office table.");
+        await waitFor(() => expect(args.onAiAccept).toHaveBeenCalledWith("Three colleagues discuss a design draft at a bright office table."));
         await expect(canvas.getByRole("textbox")).toHaveValue("Three colleagues discuss a design draft at a bright office table.");
         await expect(canvas.queryByRole("group", { name: "AI suggestion" })).toBeNull();
         await expect(canvas.getByRole("textbox")).toHaveFocus();

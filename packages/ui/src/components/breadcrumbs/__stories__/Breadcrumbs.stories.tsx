@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import breadcrumbsTokens from "../_tokens.scss?raw";
@@ -68,7 +68,7 @@ export const WithClickHandlers: Story = {
     },
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("link", { name: "Teaser grid" }));
-        await expect(args.items[1].onClick).toHaveBeenCalled();
+        await waitFor(() => expect(args.items[1].onClick).toHaveBeenCalled());
     },
 };
 
@@ -90,7 +90,7 @@ export const Collapsed: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "Show hidden levels" }));
         const body = within(canvasElement.ownerDocument.body);
         await userEvent.click(await body.findByRole("menuitem", { name: "Teaser grid" }));
-        await expect(args.items[1].onClick).toHaveBeenCalled();
+        await waitFor(() => expect(args.items[1].onClick).toHaveBeenCalled());
     },
 };
 

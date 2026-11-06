@@ -123,13 +123,13 @@ export const Default: Story = {
         const [firstGrip] = canvas.getAllByRole("button", { name: "Move" });
         firstGrip.focus();
         await userEvent.keyboard("{ArrowDown}");
-        await expect(args.onReorder).toHaveBeenLastCalledWith(0, 1);
+        await waitFor(() => expect(args.onReorder).toHaveBeenLastCalledWith(0, 1));
         const titles = () => canvas.getAllByRole("button", { pressed: false, name: /·/ }).map((button) => button.textContent);
         await expect(titles()[0]).toContain("Why join us");
         await waitFor(() => expect(canvas.getAllByRole("button", { name: "Move" })[1]).toHaveFocus());
 
         await userEvent.click(canvas.getByRole("button", { name: "Add block" }));
-        await expect(args.onAdd).toHaveBeenLastCalledWith(4);
+        await waitFor(() => expect(args.onAdd).toHaveBeenLastCalledWith(4));
         await expect(canvas.getByRole("button", { name: /New text/ })).toHaveAttribute("aria-pressed", "true");
     },
 };
@@ -148,6 +148,6 @@ export const InsertBetween: Story = {
     play: async ({ args, canvas }) => {
         const [firstInsert] = canvas.getAllByRole("button", { name: "Insert block here" });
         await userEvent.click(firstInsert);
-        await expect(args.onAdd).toHaveBeenLastCalledWith(1);
+        await waitFor(() => expect(args.onAdd).toHaveBeenLastCalledWith(1));
     },
 };

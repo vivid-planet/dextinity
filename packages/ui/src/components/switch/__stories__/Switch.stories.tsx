@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import switchTokens from "../_tokens.scss?raw";
@@ -55,11 +55,11 @@ export const Default: Story = {
     play: async ({ args, canvas }) => {
         const control = canvas.getByRole("switch", { name: "Hide in menu" });
         await userEvent.click(control);
-        await expect(args.onChange).toHaveBeenLastCalledWith(true);
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(true));
         await expect(control).toHaveAttribute("aria-checked", "true");
         await userEvent.click(canvas.getByText("Hide in menu"));
-        await expect(args.onChange).toHaveBeenLastCalledWith(false);
-        await expect(args.onChange).toHaveBeenCalledTimes(2);
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(false));
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledTimes(2));
     },
 };
 
@@ -104,7 +104,7 @@ export const Keyboard: Story = {
         await userEvent.tab();
         await expect(canvas.getByRole("switch")).toHaveFocus();
         await userEvent.keyboard(" ");
-        await expect(args.onChange).toHaveBeenLastCalledWith(true);
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(true));
     },
 };
 

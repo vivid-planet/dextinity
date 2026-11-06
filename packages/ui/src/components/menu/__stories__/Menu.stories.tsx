@@ -148,10 +148,12 @@ export const SelectionWithCheck: Story = {
         ),
         children: <ThemeItems />,
     },
-    play: async () => {
+    play: async ({ args }) => {
         await expect(await screen.findByRole("menuitemradio", { name: "Light" })).toHaveAttribute("aria-checked", "true");
         await userEvent.click(screen.getByRole("menuitemradio", { name: "Dark" }));
-        await expect(await screen.findByRole("menuitemradio", { name: "Dark" })).toHaveAttribute("aria-checked", "true");
+        // Choosing an option closes the menu, as `closeOnClick` defaults to true for radio items
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
+        await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
     },
 };
 
@@ -224,7 +226,7 @@ export const SelectItem: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "More actions" }));
         await userEvent.click(await screen.findByRole("menuitem", { name: "Duplicate" }));
-        await expect(onDuplicate).toHaveBeenCalled();
+        await waitFor(() => expect(onDuplicate).toHaveBeenCalled());
         await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
         await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
     },

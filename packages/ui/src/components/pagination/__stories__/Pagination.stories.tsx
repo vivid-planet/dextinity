@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import paginationTokens from "../_tokens.scss?raw";
@@ -66,12 +66,12 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Page 2" }));
-        await expect(args.onPageChange).toHaveBeenLastCalledWith(2);
+        await waitFor(() => expect(args.onPageChange).toHaveBeenLastCalledWith(2));
         await expect(canvas.getByRole("button", { name: "Page 2" })).toHaveAttribute("aria-current", "page");
         await expect(canvas.getByText("11–20 of 47")).toBeVisible();
 
         await userEvent.click(canvas.getByRole("button", { name: "Next page" }));
-        await expect(args.onPageChange).toHaveBeenLastCalledWith(3);
+        await waitFor(() => expect(args.onPageChange).toHaveBeenLastCalledWith(3));
     },
 };
 
@@ -105,7 +105,7 @@ export const ChangePageSize: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "Per page: 10" }));
         const body = within(canvasElement.ownerDocument.body);
         await userEvent.click(await body.findByRole("menuitemradio", { name: "25" }));
-        await expect(args.onPageSizeChange).toHaveBeenCalledWith(25);
+        await waitFor(() => expect(args.onPageSizeChange).toHaveBeenCalledWith(25));
         await expect(canvas.getByText("1–25 of 47")).toBeVisible();
     },
 };

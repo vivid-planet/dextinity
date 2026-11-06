@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
@@ -190,11 +190,11 @@ export const Sorting: Story = {
         await expect(titleHeader).toHaveAttribute("aria-sort", "ascending");
 
         await userEvent.click(within(titleHeader).getByRole("button"));
-        await expect(args.onSortChange).toHaveBeenLastCalledWith({ key: "title", direction: "desc" });
+        await waitFor(() => expect(args.onSortChange).toHaveBeenLastCalledWith({ key: "title", direction: "desc" }));
         await expect(titleHeader).toHaveAttribute("aria-sort", "descending");
 
         await userEvent.click(canvas.getByRole("button", { name: /Location/ }));
-        await expect(args.onSortChange).toHaveBeenLastCalledWith({ key: "location", direction: "asc" });
+        await waitFor(() => expect(args.onSortChange).toHaveBeenLastCalledWith({ key: "location", direction: "asc" }));
         await expect(titleHeader).not.toHaveAttribute("aria-sort");
     },
 };
@@ -210,7 +210,7 @@ export const Selection: Story = {
     },
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("checkbox", { name: "Select Frontend Developer" }));
-        await expect(args.onSelectionChange).toHaveBeenLastCalledWith(["job-2"]);
+        await waitFor(() => expect(args.onSelectionChange).toHaveBeenLastCalledWith(["job-2"]));
         await expect(args.onRowClick).not.toHaveBeenCalled();
 
         const selectAll = canvas.getByRole("checkbox", { name: "Select all" });
@@ -219,11 +219,11 @@ export const Selection: Story = {
         await expect(canvas.getByText("1 selected")).toBeInTheDocument();
 
         await userEvent.click(selectAll);
-        await expect(args.onSelectionChange).toHaveBeenLastCalledWith(["job-1", "job-2", "job-3", "job-4", "job-5"]);
+        await waitFor(() => expect(args.onSelectionChange).toHaveBeenLastCalledWith(["job-1", "job-2", "job-3", "job-4", "job-5"]));
         await expect(selectAll).toHaveAttribute("aria-checked", "true");
 
         await userEvent.keyboard("{Escape}");
-        await expect(args.onSelectionChange).toHaveBeenLastCalledWith([]);
+        await waitFor(() => expect(args.onSelectionChange).toHaveBeenLastCalledWith([]));
     },
 };
 
@@ -237,7 +237,7 @@ export const RowClick: Story = {
     },
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByText("DevOps Engineer"));
-        await expect(args.onRowClick).toHaveBeenLastCalledWith(allJobs[4]);
+        await waitFor(() => expect(args.onRowClick).toHaveBeenLastCalledWith(allJobs[4]));
 
         await userEvent.tab();
         await expect(canvas.getByRole("button", { name: "Actions for DevOps Engineer" })).toHaveFocus();
@@ -245,7 +245,7 @@ export const RowClick: Story = {
         await userEvent.tab({ shift: true });
         await userEvent.tab({ shift: true });
         await userEvent.keyboard("{Enter}");
-        await expect(args.onRowClick).toHaveBeenLastCalledWith(allJobs[3]);
+        await waitFor(() => expect(args.onRowClick).toHaveBeenLastCalledWith(allJobs[3]));
     },
 };
 

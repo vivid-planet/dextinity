@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { landscapeImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -67,9 +67,9 @@ export const Default: Story = {
         const marker = canvas.getByRole("slider", { name: "Focal point" });
         marker.focus();
         await userEvent.keyboard("{ArrowRight}");
-        await expect(args.onChange).toHaveBeenLastCalledWith({ x: 0.57, y: 0.34 });
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith({ x: 0.57, y: 0.34 }));
         await userEvent.keyboard("{Shift>}{ArrowDown}{/Shift}");
-        await expect(args.onChange).toHaveBeenLastCalledWith({ x: 0.57, y: 0.44 });
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith({ x: 0.57, y: 0.44 }));
         await expect(marker).toHaveAttribute("aria-valuetext", "57 % from the left, 44 % from the top");
     },
 };

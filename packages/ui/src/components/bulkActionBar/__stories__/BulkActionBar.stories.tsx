@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
@@ -69,7 +69,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Archive" }));
-        await expect(args.actions[1].onClick).toHaveBeenCalled();
+        await waitFor(() => expect(args.actions[1].onClick).toHaveBeenCalled());
     },
 };
 
@@ -80,7 +80,7 @@ export const ClearWithEscape: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Archive" }));
         await userEvent.keyboard("{Escape}");
-        await expect(args.onClear).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(args.onClear).toHaveBeenCalledTimes(1));
         await expect(canvas.getByRole("toolbar", { hidden: true })).not.toHaveAttribute("data-open");
     },
 };
@@ -97,7 +97,7 @@ export const Keyboard: Story = {
         await userEvent.keyboard("{ArrowRight}{ArrowRight}");
         await expect(canvas.getByRole("button", { name: "Clear selection" })).toHaveFocus();
         await userEvent.keyboard("{Enter}");
-        await expect(args.onClear).toHaveBeenCalled();
+        await waitFor(() => expect(args.onClear).toHaveBeenCalled());
     },
 };
 

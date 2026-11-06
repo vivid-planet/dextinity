@@ -123,7 +123,7 @@ export const Default: Story = {
         await expect(trigger).toHaveTextContent("Vienna");
         await userEvent.click(trigger);
         await userEvent.click(await screen.findByRole("option", { name: "Graz" }));
-        await expect(args.onChange).toHaveBeenCalledWith("graz");
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith("graz"));
         await waitFor(() => expect(trigger).toHaveTextContent("Graz"));
     },
 };
@@ -149,7 +149,7 @@ export const Keyboard: Story = {
         await userEvent.keyboard("{ArrowDown}");
         await waitFor(() => expect(within(listbox).getByRole("option", { name: "Graz" })).toHaveAttribute("data-highlighted"));
         await userEvent.keyboard("{Enter}");
-        await expect(args.onChange).toHaveBeenCalledWith("graz");
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith("graz"));
     },
 };
 
@@ -182,10 +182,10 @@ export const Multiple: Story = {
     ),
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Remove Remote" }));
-        await expect(args.onChange).toHaveBeenCalledWith(["vienna"]);
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith(["vienna"]));
         await userEvent.click(canvas.getByRole("combobox"));
         await userEvent.click(await screen.findByRole("option", { name: "Linz" }));
-        await expect(args.onChange).toHaveBeenLastCalledWith(["vienna", "linz"]);
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(["vienna", "linz"]));
     },
 };
 
@@ -206,7 +206,7 @@ export const Searchable: Story = {
         await userEvent.type(within(popup).getByRole("combobox"), "slo");
         await waitFor(() => expect(screen.getAllByRole("option").map((option) => option.textContent)).toStrictEqual(["Slovakia", "Slovenia"]));
         await userEvent.click(screen.getByRole("option", { name: "Slovenia" }));
-        await expect(args.onChange).toHaveBeenCalledWith("slovenia");
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith("slovenia"));
     },
 };
 

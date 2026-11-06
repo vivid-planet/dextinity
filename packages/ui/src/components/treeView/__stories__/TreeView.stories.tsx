@@ -216,8 +216,8 @@ export const Keyboard: Story = {
         await expect(canvas.getByRole("treeitem", { name: /^Imprint/ })).toHaveFocus();
 
         await userEvent.keyboard("{Enter}");
-        await expect(args.onSelect).toHaveBeenLastCalledWith("imprint");
-        await expect(args.onOpen).toHaveBeenLastCalledWith("imprint");
+        await waitFor(() => expect(args.onSelect).toHaveBeenLastCalledWith("imprint"));
+        await waitFor(() => expect(args.onOpen).toHaveBeenLastCalledWith("imprint"));
         await expect(canvas.getByRole("treeitem", { name: /^Imprint/ })).toHaveAttribute("aria-selected", "true");
     },
 };
@@ -232,12 +232,12 @@ export const Checkable: Story = {
     },
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByText("Open positions"));
-        await expect(args.onSelect).toHaveBeenLastCalledWith("jobs");
+        await waitFor(() => expect(args.onSelect).toHaveBeenLastCalledWith("jobs"));
 
         await userEvent.keyboard(" ");
-        await expect(args.onCheckedChange).toHaveBeenLastCalledWith(["jobs"]);
+        await waitFor(() => expect(args.onCheckedChange).toHaveBeenLastCalledWith(["jobs"]));
         await userEvent.keyboard("{Shift>}{ArrowDown}{ArrowDown}{/Shift}");
-        await expect(args.onCheckedChange).toHaveBeenLastCalledWith(["jobs", "benefits", "apply"]);
+        await waitFor(() => expect(args.onCheckedChange).toHaveBeenLastCalledWith(["jobs", "benefits", "apply"]));
         await expect(canvas.getByRole("treeitem", { name: "How to apply" })).toHaveAttribute("aria-checked", "true");
     },
 };
@@ -272,7 +272,7 @@ export const DragAndDrop: Story = {
         fireEvent.dragOver(target, { dataTransfer, clientY: rect.top + 2 });
         await waitFor(() => expect(target).toHaveAttribute("data-drop", "before"));
         fireEvent.drop(target, { dataTransfer, clientY: rect.top + 2 });
-        await expect(args.onMove).toHaveBeenCalledWith({ id: "apply", targetId: "jobs", position: "before" });
+        await waitFor(() => expect(args.onMove).toHaveBeenCalledWith({ id: "apply", targetId: "jobs", position: "before" }));
 
         const careers = canvas.getByRole("treeitem", { name: "Careers" });
         const childNames = [...careers.querySelectorAll('[role="group"] > [role="treeitem"]')].map((item) => item.getAttribute("data-id"));
@@ -295,11 +295,11 @@ export const KeyboardMove: Story = {
 
         await userEvent.keyboard("{Home}{ArrowDown}");
         await userEvent.keyboard("{Shift>}{Control>}v{/Control}{/Shift}");
-        await expect(args.onMove).toHaveBeenLastCalledWith({ id: "imprint", targetId: "careers", position: "after" });
+        await waitFor(() => expect(args.onMove).toHaveBeenLastCalledWith({ id: "imprint", targetId: "careers", position: "after" }));
 
         await userEvent.keyboard("{Control>}x{/Control}");
         await userEvent.keyboard("{ArrowDown}{Control>}v{/Control}");
-        await expect(args.onMove).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(args.onMove).toHaveBeenCalledTimes(1));
         await userEvent.keyboard("{Escape}");
         await expect(canvas.getByText("Careers").closest("[data-cut]")).toBeNull();
     },

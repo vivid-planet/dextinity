@@ -94,7 +94,7 @@ export const Default: Story = {
         const dialog = await screen.findByRole("alertdialog", { name: "Unsaved changes" });
         await waitFor(() => expect(screen.getByRole("button", { name: "Cancel" })).toHaveFocus());
         await userEvent.click(screen.getByRole("button", { name: "Save and continue" }));
-        await expect(args.onConfirm).toHaveBeenCalled();
+        await waitFor(() => expect(args.onConfirm).toHaveBeenCalled());
         await waitFor(() => expect(dialog).not.toBeInTheDocument());
     },
 };
@@ -106,7 +106,7 @@ export const Cancel: Story = {
     args: { open: true },
     play: async ({ args }) => {
         await userEvent.click(await screen.findByRole("button", { name: "Cancel" }));
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
         await expect(args.onConfirm).not.toHaveBeenCalled();
     },
 };
@@ -122,7 +122,7 @@ export const WithSecondaryAction: Story = {
     },
     play: async ({ args }) => {
         await userEvent.click(await screen.findByRole("button", { name: "Discard" }));
-        await expect(args.onSecondary).toHaveBeenCalled();
+        await waitFor(() => expect(args.onSecondary).toHaveBeenCalled());
     },
 };
 

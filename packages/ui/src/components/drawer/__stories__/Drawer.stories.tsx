@@ -117,7 +117,7 @@ export const Default: Story = {
         await expect(screen.getByRole("textbox", { name: "Source" })).toHaveValue("/alt-3");
         await expect(drawer).toBeInTheDocument();
         await userEvent.click(screen.getByRole("button", { name: "Close" }));
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
         await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     },
 };
@@ -148,6 +148,6 @@ export const Modal: Story = {
     play: async ({ args }) => {
         await screen.findByRole("dialog", { name: "Edit redirect" });
         await userEvent.keyboard("{Escape}");
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
     },
 };

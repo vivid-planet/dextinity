@@ -104,13 +104,13 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Change scope: Austria · German" }));
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(true);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(true));
         const french = await screen.findByRole("radio", { name: /French/ });
         await userEvent.click(french);
-        await expect(args.onChange).toHaveBeenLastCalledWith(["at", "fr"]);
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(["at", "fr"]));
         await expect(french).toHaveAttribute("aria-checked", "true");
         await userEvent.keyboard("{ArrowDown}");
-        await expect(args.onChange).toHaveBeenLastCalledWith(["at", "it"]);
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(["at", "it"]));
     },
 };
 
@@ -124,8 +124,8 @@ export const Search: Story = {
         await userEvent.type(search, "ch fr");
         await waitFor(() => expect(screen.getByRole("button", { name: "Switzerland · French" })).toBeVisible());
         await userEvent.keyboard("{Enter}");
-        await expect(args.onChange).toHaveBeenLastCalledWith(["ch", "fr"]);
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(["ch", "fr"]));
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
         await waitFor(() => expect(canvas.getByRole("button", { name: "Change scope: Switzerland · French" })).toBeVisible());
     },
 };

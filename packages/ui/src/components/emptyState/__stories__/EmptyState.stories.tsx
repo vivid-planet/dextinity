@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
@@ -78,7 +78,7 @@ export const NoResults: Story = {
     },
     play: async ({ canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Reset filters" }));
-        await expect(onResetFilters).toHaveBeenCalled();
+        await waitFor(() => expect(onResetFilters).toHaveBeenCalled());
     },
 };
 

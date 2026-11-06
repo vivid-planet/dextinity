@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import aiPanelTokens from "../_tokens.scss?raw";
@@ -110,14 +110,14 @@ export const Default: Story = {
         await expect(canvas.getByRole("button", { name: "Send" })).toBeDisabled();
         await userEvent.type(input, "Which job ads expire this week?");
         await userEvent.keyboard("{Enter}");
-        await expect(args.onSend).toHaveBeenLastCalledWith("Which job ads expire this week?");
+        await waitFor(() => expect(args.onSend).toHaveBeenLastCalledWith("Which job ads expire this week?"));
         await expect(input).toHaveValue("");
 
         await userEvent.click(canvas.getByRole("button", { name: "Check structure" }));
-        await expect(args.onSend).toHaveBeenLastCalledWith("Check the page structure for problems.");
+        await waitFor(() => expect(args.onSend).toHaveBeenLastCalledWith("Check the page structure for problems."));
 
         await userEvent.click(canvas.getByRole("button", { name: "Close AI assistant" }));
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
     },
 };
 

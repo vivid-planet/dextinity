@@ -57,7 +57,7 @@ export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.hover(canvas.getByRole("button"));
         await expect(await screen.findByRole("tooltip")).toHaveTextContent("More actions");
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(true);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(true));
         await userEvent.unhover(canvas.getByRole("button"));
         await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
     },

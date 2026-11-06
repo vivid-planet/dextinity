@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { jobAds, type JobAdStatus } from "../../../storybook/patterns/jobAds";
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -85,7 +85,7 @@ export const Default: Story = {
     play: async ({ args, canvas }) => {
         const search = canvas.getByRole("searchbox", { name: "Search" });
         await userEvent.type(search, "designer");
-        await expect(args.onSearchChange).toHaveBeenLastCalledWith("designer");
+        await waitFor(() => expect(args.onSearchChange).toHaveBeenLastCalledWith("designer"));
         await expect(canvas.getByRole("button", { name: /^All/ })).toHaveTextContent("2");
     },
 };
@@ -100,7 +100,7 @@ export const Keyboard: Story = {
         await userEvent.keyboard("/");
         await expect(search).toHaveFocus();
         await userEvent.keyboard("{Escape}");
-        await expect(args.onSearchChange).toHaveBeenLastCalledWith("");
+        await waitFor(() => expect(args.onSearchChange).toHaveBeenLastCalledWith(""));
         await expect(search).toHaveValue("");
     },
 };

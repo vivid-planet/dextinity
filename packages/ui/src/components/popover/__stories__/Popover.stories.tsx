@@ -90,11 +90,11 @@ export const Default: Story = {
     play: async ({ args, canvas }) => {
         const trigger = canvas.getByRole("button", { name: "Time of day" });
         await userEvent.click(trigger);
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(true);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(true));
         const popover = await screen.findByRole("dialog", { name: "Simulate time of day" });
         await waitFor(() => expect(popover).toBeVisible());
         await userEvent.keyboard("{Escape}");
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
         await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
         await expect(trigger).toHaveFocus();
     },

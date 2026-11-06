@@ -57,7 +57,7 @@ export const Default: Story = {
         const textarea = canvas.getByRole("textbox", { name: "Tasks" });
         const initialHeight = textarea.getBoundingClientRect().height;
         await userEvent.type(textarea, "{enter}a{enter}b{enter}c{enter}d");
-        await expect(args.onChange).toHaveBeenCalled();
+        await waitFor(() => expect(args.onChange).toHaveBeenCalled());
         await expect(textarea.getBoundingClientRect().height).toBeGreaterThan(initialHeight);
     },
 };

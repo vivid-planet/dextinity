@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent } from "storybook/test";
+import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -181,15 +181,15 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("option", { name: /lobby\.jpg/ }));
-        await expect(args.onSelectionChange).toHaveBeenLastCalledWith(["a2"]);
+        await waitFor(() => expect(args.onSelectionChange).toHaveBeenLastCalledWith(["a2"]));
         await userEvent.keyboard("{Shift>}{ArrowRight}{/Shift}");
-        await expect(args.onSelectionChange).toHaveBeenLastCalledWith(["a2", "a3"]);
+        await waitFor(() => expect(args.onSelectionChange).toHaveBeenLastCalledWith(["a2", "a3"]));
         await userEvent.keyboard("{Enter}");
-        await expect(args.onOpen).toHaveBeenLastCalledWith(expect.objectContaining({ id: "a3" }));
+        await waitFor(() => expect(args.onOpen).toHaveBeenLastCalledWith(expect.objectContaining({ id: "a3" })));
         await userEvent.dblClick(canvas.getByRole("option", { name: /Campaigns/ }));
-        await expect(args.onFolderChange).toHaveBeenLastCalledWith("campaigns");
+        await waitFor(() => expect(args.onFolderChange).toHaveBeenLastCalledWith("campaigns"));
         await userEvent.keyboard("{Control>}{ArrowUp}{/Control}");
-        await expect(args.onFolderChange).toHaveBeenLastCalledWith("root");
+        await waitFor(() => expect(args.onFolderChange).toHaveBeenLastCalledWith("root"));
     },
 };
 
@@ -206,11 +206,11 @@ export const Columns: Story = {
     play: async ({ args, canvas }) => {
         canvas.getByRole("option", { name: /spring-hero\.jpg/ }).focus();
         await userEvent.keyboard("{ArrowLeft}");
-        await expect(args.onFolderChange).toHaveBeenLastCalledWith("campaigns");
-        await expect(args.onSelectionChange).toHaveBeenLastCalledWith(["spring"]);
+        await waitFor(() => expect(args.onFolderChange).toHaveBeenLastCalledWith("campaigns"));
+        await waitFor(() => expect(args.onSelectionChange).toHaveBeenLastCalledWith(["spring"]));
         await expect(canvas.getByRole("option", { name: /Spring 2026/ })).toHaveFocus();
         await userEvent.keyboard("{ArrowRight}");
-        await expect(args.onFolderChange).toHaveBeenLastCalledWith("spring");
+        await waitFor(() => expect(args.onFolderChange).toHaveBeenLastCalledWith("spring"));
     },
 };
 
@@ -252,7 +252,7 @@ export const Delete: Story = {
     play: async ({ args, canvas }) => {
         canvas.getByRole("option", { selected: true }).focus();
         await userEvent.keyboard("{Delete}");
-        await expect(args.onDelete).toHaveBeenCalledWith(["a5"]);
+        await waitFor(() => expect(args.onDelete).toHaveBeenCalledWith(["a5"]));
         await expect(canvas.queryByText("campaign.mp4")).toBeNull();
     },
 };

@@ -121,7 +121,7 @@ export const Default: Story = {
     play: async ({ args, canvas }) => {
         const chip = canvas.getByRole("button", { name: "Published" });
         await userEvent.click(chip);
-        await expect(args.onClick).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(args.onClick).toHaveBeenCalledTimes(1));
         await expect(chip).toHaveAttribute("aria-pressed", "true");
     },
 };
@@ -151,7 +151,7 @@ export const WithMenu: Story = {
         const chip = canvas.getByRole("button", { name: "Author" });
         await expect(chip).toHaveAttribute("aria-haspopup", "menu");
         await userEvent.click(chip);
-        await expect(args.onClick).toHaveBeenCalledTimes(1);
+        await waitFor(() => expect(args.onClick).toHaveBeenCalledTimes(1));
         await userEvent.click(await screen.findByRole("menuitemradio", { name: "Lukas Huber" }));
         await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
         await expect(canvas.getByRole("button", { name: "Lukas Huber" })).toHaveAttribute("aria-pressed", "true");

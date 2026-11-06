@@ -99,9 +99,9 @@ export const Default: Story = {
         await expect(canvas.getByRole("link", { name: "Job ads" })).toHaveAttribute("aria-current", "page");
 
         await userEvent.click(canvas.getByRole("button", { name: "Structure" }));
-        await expect(args.onExpandedChange).toHaveBeenLastCalledWith(["website", "careers", "structure"]);
+        await waitFor(() => expect(args.onExpandedChange).toHaveBeenLastCalledWith(["website", "careers", "structure"]));
         await userEvent.click(canvas.getByRole("link", { name: "Main navigation" }));
-        await expect(args.onNavigate).toHaveBeenLastCalledWith(expect.objectContaining({ id: "main-navigation" }), expect.anything());
+        await waitFor(() => expect(args.onNavigate).toHaveBeenLastCalledWith(expect.objectContaining({ id: "main-navigation" }), expect.anything()));
         await expect(canvas.getByRole("link", { name: "Main navigation" })).toHaveAttribute("aria-current", "page");
     },
 };
@@ -118,7 +118,7 @@ export const Collapsed: Story = {
         const menu = await screen.findByRole("menu");
         await waitFor(() => expect(menu).toBeVisible());
         await userEvent.click(screen.getByRole("menuitem", { name: "Locations" }));
-        await expect(args.onNavigate).toHaveBeenLastCalledWith(expect.objectContaining({ id: "locations" }), expect.anything());
+        await waitFor(() => expect(args.onNavigate).toHaveBeenLastCalledWith(expect.objectContaining({ id: "locations" }), expect.anything()));
         await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
     },
 };

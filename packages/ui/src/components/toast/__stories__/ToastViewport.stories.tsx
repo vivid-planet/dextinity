@@ -69,8 +69,8 @@ export const Default: Story = {
         const region = canvas.getByRole("region", { name: "Notifications" });
         await expect(region).toHaveTextContent("Saved – the change is live");
         await userEvent.click(canvas.getByRole("button", { name: "Undo" }));
-        await expect(onUndo).toHaveBeenCalled();
-        await expect(args.onDismiss).toHaveBeenCalledWith("toast-1");
+        await waitFor(() => expect(onUndo).toHaveBeenCalled());
+        await waitFor(() => expect(args.onDismiss).toHaveBeenCalledWith("toast-1"));
         await waitFor(() => expect(region).not.toHaveTextContent("Saved – the change is live"));
     },
 };

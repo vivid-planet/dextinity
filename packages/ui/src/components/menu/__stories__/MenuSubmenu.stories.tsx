@@ -97,7 +97,7 @@ export const Default: Story = {
         await userEvent.click(trigger);
         const nestedItem = await screen.findByRole("menuitem", { name: "Images" });
         await waitFor(() => expect(nestedItem).toBeVisible());
-        await expect(args.onOpenChange).toHaveBeenCalledWith(true);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenCalledWith(true));
     },
 };
 

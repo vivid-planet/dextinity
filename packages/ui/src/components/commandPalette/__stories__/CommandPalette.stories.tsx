@@ -116,15 +116,15 @@ export const Default: Story = {
         const input = await screen.findByRole("combobox", { name: "Search, jump, create …" });
         await waitFor(() => expect(input).toHaveFocus());
         await userEvent.type(input, "jo");
-        await expect(args.onQueryChange).toHaveBeenLastCalledWith("jo");
+        await waitFor(() => expect(args.onQueryChange).toHaveBeenLastCalledWith("jo"));
         const options = screen.getAllByRole("option");
         await expect(options.map((option) => option.textContent)).toStrictEqual(["Job ads", "New job ad⌘N"]);
         await expect(options[0]).toHaveAttribute("aria-selected", "true");
         await userEvent.keyboard("{ArrowDown}");
         await expect(options[1]).toHaveAttribute("aria-selected", "true");
         await userEvent.keyboard("{ArrowUp}{Enter}");
-        await expect(openJobAds).toHaveBeenCalled();
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(openJobAds).toHaveBeenCalled());
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
     },
 };
 
@@ -134,10 +134,10 @@ export const Default: Story = {
 export const GlobalShortcut: Story = {
     play: async ({ args }) => {
         await userEvent.keyboard("{Control>}k{/Control}");
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(true);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(true));
         await screen.findByRole("combobox");
         await userEvent.keyboard("{Escape}");
-        await expect(args.onOpenChange).toHaveBeenLastCalledWith(false);
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
     },
 };
 

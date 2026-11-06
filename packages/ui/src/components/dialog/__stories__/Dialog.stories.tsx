@@ -180,9 +180,21 @@ export const OverBrightPage: Story = {
         </>
     ),
     play: async () => {
+        const alphaOf = (color: string) => Number(/\/\s*([\d.]+)\s*\)$/.exec(color)?.[1] ?? 1);
         const dialog = await screen.findByRole("dialog", { name: "Choose a page" });
-        const alpha = Number(/\/\s*([\d.]+)\s*\)$/.exec(getComputedStyle(dialog).backgroundColor)?.[1] ?? 1);
-        await expect(alpha).toBeGreaterThanOrEqual(0.95);
+        await expect(alphaOf(getComputedStyle(dialog).backgroundColor)).toBeGreaterThanOrEqual(0.95);
+
+        // Dark mode is where a bright page shone through, so check the surface in every color scheme, not only the one shown
+        for (const colorScheme of ["light", "dark", "high-contrast"]) {
+            const probe = document.createElement("div");
+            probe.dataset.dextinityColorScheme = colorScheme;
+            probe.style.background = "var(--dextinity-dialog-background)";
+            document.body.append(probe);
+            const background = getComputedStyle(probe).backgroundColor;
+            probe.remove();
+            await expect(background, colorScheme).not.toBe("rgba(0, 0, 0, 0)");
+            await expect(alphaOf(background), colorScheme).toBeGreaterThanOrEqual(0.95);
+        }
     },
 };
 

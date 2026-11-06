@@ -19,7 +19,7 @@ type Story = StoryObj<typeof meta>;
 export const CustomizationViaSlotPropsClassName: Story = {
     args: {
         children: "Slot-level override",
-        startIcon: <Icon name="check" />,
+        startIcon: <Icon name="favorite" />,
         endIcon: <Icon name="arrow-right" />,
         className: styles.customRoot,
         slotProps: {
@@ -31,7 +31,7 @@ export const CustomizationViaSlotPropsClassName: Story = {
 export const CustomizationViaWrapperGlobalSelectors: Story = {
     render: () => (
         <div className={styles.wrapper}>
-            <Button startIcon={<Icon name="check" />}>Themed via wrapper</Button>
+            <Button startIcon={<Icon name="favorite" />}>Themed via wrapper</Button>
             <Button color="secondary" endIcon={<Icon name="arrow-right" />}>
                 Secondary in the same wrapper
             </Button>

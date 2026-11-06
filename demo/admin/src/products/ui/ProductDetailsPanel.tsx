@@ -168,6 +168,18 @@ export function ProductDetailsPanel({ productId, editUrl, onClose, onChangeStatu
             key: intl.formatMessage({ id: "uiDemo.products.updatedAt", defaultMessage: "Updated" }),
             value: <FormattedDate value={product.updatedAt} dateStyle="medium" timeStyle="short" />,
         },
+        ...(imageUrl == null
+            ? [
+                  {
+                      key: intl.formatMessage({ id: "uiDemo.products.image", defaultMessage: "Image" }),
+                      value: (
+                          <span className={styles.muted}>
+                              {intl.formatMessage({ id: "uiDemo.products.panel.noImage", defaultMessage: "No image chosen" })}
+                          </span>
+                      ),
+                  },
+              ]
+            : []),
     ];
 
     const toggleInStock = async (inStock: boolean) => {
@@ -185,15 +197,7 @@ export function ProductDetailsPanel({ productId, editUrl, onClose, onChangeStatu
     return (
         <Panel title={product.title} description={<span className={styles.mono}>{`/${product.slug}`}</span>} actions={closeButton}>
             <div className={styles.panelBody}>
-                <AssetThumbnail
-                    type="image"
-                    src={imageUrl}
-                    alt={product.title}
-                    ratio="4:3"
-                    meta={
-                        imageUrl == null ? intl.formatMessage({ id: "uiDemo.products.panel.noImage", defaultMessage: "No image chosen" }) : undefined
-                    }
-                />
+                {imageUrl != null && <AssetThumbnail type="image" src={imageUrl} alt={product.title} ratio="4:3" />}
                 {product.description && <p className={styles.description}>{product.description}</p>}
                 <div
                     className={styles.quickActions}

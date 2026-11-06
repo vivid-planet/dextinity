@@ -15,7 +15,7 @@ import type {
     GQLOverviewPageActivityQuery,
     GQLOverviewPageActivityQueryVariables,
 } from "./OverviewPage.gql.generated";
-import { PageActivityCard } from "./PageActivityCard";
+import { countPagesEditedSince, PageActivityCard } from "./PageActivityCard";
 import { RecentlyEditedCard } from "./RecentlyEditedCard";
 
 function getTimeOfDay(date: Date) {
@@ -44,7 +44,7 @@ export function OverviewPage() {
     const pageTreeUrl = `${scopeUrl}/pages/pagetree/main-navigation`;
     const newsUrl = `${scopeUrl}/structured-content/news`;
 
-    const editedPages = pageActivity.data?.paginatedPageTreeNodes.nodes.filter((node) => new Date(node.updatedAt) >= editedSince).length;
+    const editedPages = pageActivity.data && countPagesEditedSince(pageActivity.data, editedSince);
     const editedNews = newsCount.data?.editedNews.totalCount;
 
     return (
@@ -64,10 +64,11 @@ export function OverviewPage() {
                           {
                               id: "overview.summary",
                               defaultMessage:
-                                  "In the last 24 hours, <pagesLink>{pages, plural, =0 {no pages} one {# page} other {# pages}}</pagesLink> and <newsLink>{news, plural, =0 {no news} one {# news article} other {# news articles}}</newsLink> were edited.",
+                                  "In the last 24 hours, <pagesLink>{isLowerBound, select, true {at least {pages} pages} other {{pages, plural, =0 {no pages} one {# page} other {# pages}}}}</pagesLink> and <newsLink>{news, plural, =0 {no news} one {# news article} other {# news articles}}</newsLink> were edited.",
                           },
                           {
-                              pages: editedPages,
+                              pages: editedPages.count,
+                              isLowerBound: String(editedPages.isLowerBound),
                               news: editedNews,
                               pagesLink: (chunks: ReactNode[]) => <RouterLink to={pageTreeUrl}>{chunks}</RouterLink>,
                               newsLink: (chunks: ReactNode[]) => <RouterLink to={newsUrl}>{chunks}</RouterLink>,

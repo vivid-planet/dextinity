@@ -25,4 +25,13 @@
     --dextinity-segmented-control-selected-font-weight: 500;
     --dextinity-segmented-control-selected-shadow:
         var(--dextinity-shadow-1), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+
+    // Line around the track in the error state
+    --dextinity-segmented-control-line-error: var(--dextinity-color-danger);
+    // Space between the options and the validation message
+    --dextinity-segmented-control-message-gap: var(--dextinity-space-1);
+    --dextinity-segmented-control-message-font-size: var(--dextinity-typography-small-size);
+    --dextinity-segmented-control-message-color-error: var(--dextinity-color-danger-text);
+    --dextinity-segmented-control-message-color-warning: var(--dextinity-color-warning-text);
+    --dextinity-segmented-control-message-color-success: var(--dextinity-color-success-text);
 }

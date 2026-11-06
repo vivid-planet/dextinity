@@ -54,6 +54,7 @@ const meta = {
     },
     argTypes: {
         size: { control: "radio", options: ["default", "small"] },
+        state: { control: "select", options: ["default", "success", "warning", "error"] },
         options: { control: false },
         className: { control: false },
         slotProps: { control: false },
@@ -123,4 +124,25 @@ export const Keyboard: Story = {
         await userEvent.keyboard(" ");
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("part"));
     },
+};
+
+/**
+ * **Rules**
+ * - Say what is missing and how to fix it.
+ */
+export const Error: Story = {
+    args: { state: "error", validationMessage: "Choose the type of employment." },
+    play: async ({ canvas }) => {
+        const group = canvas.getByRole("group", { name: "Employment" });
+        await expect(group).toHaveAttribute("aria-invalid", "true");
+        await expect(group).toHaveAccessibleDescription("Choose the type of employment.");
+    },
+};
+
+export const Warning: Story = {
+    args: { state: "warning", validationMessage: "Freelance jobs are not shown on the career page." },
+};
+
+export const Success: Story = {
+    args: { state: "success", validationMessage: "Matches the job ad." },
 };

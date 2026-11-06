@@ -253,7 +253,7 @@ function NewsEditForm({ baseUrl, news }: NewsEditFormProps) {
 
     return (
         <>
-            <Form<NewsFormValues> onSubmit={save} initialValues={savedValues} decorators={formDecorators}>
+            <Form<NewsFormValues> onSubmit={save} initialValues={savedValues} keepDirtyOnReinitialize decorators={formDecorators}>
                 {({ handleSubmit, form }) => (
                     <form onSubmit={handleSubmit} noValidate>
                         <NewsEditFormContent baseUrl={baseUrl} savedNews={savedNews} createdId={createdId} form={form} addToast={addToast} />

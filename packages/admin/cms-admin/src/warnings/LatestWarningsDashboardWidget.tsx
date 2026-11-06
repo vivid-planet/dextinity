@@ -94,7 +94,7 @@ const latestWarningsListFragment = gql`
     }
 `;
 
-const latestWarningsQuery = gql`
+export const latestWarningsQuery = gql`
     query LatestWarnings($scopes: [JSONObject!]!) {
         warnings(limit: 5, scopes: $scopes, sort: { field: createdAt, direction: DESC }) {
             nodes {

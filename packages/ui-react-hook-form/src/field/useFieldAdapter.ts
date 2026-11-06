@@ -75,9 +75,11 @@ export function useFieldAdapter<TFieldValues extends FieldValues, TName extends 
         shouldUnregister,
     });
 
-    const error = toErrorMessage(fieldState.error, requiredMessage);
-    const showsError = error != null && error !== "" && (fieldState.isTouched || formState.isSubmitted);
-    const validationProps: FieldAdapterValidationProps = showsError ? { state: "error", validationMessage: error } : {};
+    // A rule without a message, e.g. `{ maxLength: 10 }`, still blocks submitting, so the field shows as invalid even without a text
+    const showsError = fieldState.error != null && (fieldState.isTouched || formState.isSubmitted);
+    const validationProps: FieldAdapterValidationProps = showsError
+        ? { state: "error", validationMessage: toErrorMessage(fieldState.error, requiredMessage) }
+        : {};
 
     const fieldRef = field.ref;
     const ref = useMemo(

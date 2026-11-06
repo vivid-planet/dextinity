@@ -85,7 +85,7 @@ When submitting fails validation, React Hook Form focuses the first invalid fiel
 Each adapter takes the field configuration of `useController`, typed as `ReactHookFormFieldConfig<TFieldValues, TName>`:
 
 - **`control`** — the form's `control`; defaults to the one of the surrounding `FormProvider`.
-- **`rules`** — validation rules as in `register` (`validate`, `pattern`, `min`, `maxLength`, …). `required` adds its check in front of them; a `required` rule without a message shows `requiredMessage`.
+- **`rules`** — validation rules as in `register` (`validate`, `pattern`, `min`, `maxLength`, …). `required` adds its check in front of them; a `required` rule without a message shows `requiredMessage`, any other rule without a message marks the field invalid without a text.
 - **`defaultValue`** and **`shouldUnregister`** — as in `useController`.
 
 The adapters are generic in the form values and the field's path, `<TFieldValues, TName extends FieldPath<TFieldValues>>`, like `useController`: with a typed `control`, or with `<InputField<PageFormValues> … />` inside a `FormProvider`, `name` must be a path of the form values. `SelectField` and `SegmentedControlField` take their own value type parameter first, as in `@dextinity/ui`.

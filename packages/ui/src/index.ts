@@ -86,6 +86,7 @@ export { EmptyState, type EmptyStateOwnerState, type EmptyStateProps } from "./c
 export { type EmptyStateSlotProps, type EmptyStateSlots } from "./components/emptyState/EmptyState";
 export { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "./components/field/Field";
 export { type FieldSize, type FieldState } from "./components/field/Field";
+export { type FieldLayout } from "./components/field/Field";
 export { FieldActions, type FieldActionsLabels, type FieldActionsOwnerState, type FieldActionsProps } from "./components/fieldActions/FieldActions";
 export { FilterBar, type FilterBarLabels, type FilterBarOwnerState } from "./components/filterBar/FilterBar";
 export { type FilterBarProps, type FilterBarSlotProps } from "./components/filterBar/FilterBar";

@@ -8,14 +8,14 @@ afterEach(cleanup);
 describe("Field owner state", () => {
     it("emits the state, size, and booleans as data attributes", () => {
         render(
-            <Field data-testid="field" label="Title" state="error" size="small" required disabled readOnly loading>
+            <Field data-testid="field" label="Title" state="error" size="small" layout="stacked" required disabled readOnly loading>
                 {(control) => <input {...control} />}
             </Field>,
         );
 
         const field = screen.getByTestId("field");
         expect(field.className).toContain("dextinityField");
-        expect([field.dataset.state, field.dataset.size]).toStrictEqual(["error", "small"]);
+        expect([field.dataset.state, field.dataset.size, field.dataset.layout]).toStrictEqual(["error", "small", "stacked"]);
         expect([field.dataset.required, field.dataset.disabled, field.dataset.readonly, field.dataset.loading]).toStrictEqual(["", "", "", ""]);
     });
 
@@ -27,7 +27,12 @@ describe("Field owner state", () => {
         );
 
         const field = screen.getByTestId("field");
-        expect([field.dataset.state, field.dataset.size, field.hasAttribute("data-disabled")]).toStrictEqual(["default", "default", false]);
+        expect([field.dataset.state, field.dataset.size, field.dataset.layout, field.hasAttribute("data-disabled")]).toStrictEqual([
+            "default",
+            "default",
+            "inline",
+            false,
+        ]);
     });
 });
 

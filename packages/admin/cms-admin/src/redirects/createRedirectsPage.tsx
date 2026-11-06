@@ -40,6 +40,7 @@ export function createRedirectsLinkBlock(customTargets?: Record<string, BlockInt
         supportedBlocks: { internal: RedirectsInternalLinkBlock, external: RedirectsExternalLinkBlock, ...customTargets },
         name: "RedirectsLink",
         displayName: <FormattedMessage id="dextinity.blocks.link" defaultMessage="Link" />,
+        label: <FormattedMessage id="dextinity.blocks.link.linkType" defaultMessage="Link type" />,
         allowEmpty: false,
     });
 }

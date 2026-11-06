@@ -19,11 +19,17 @@ export type FieldActionsOwnerState = {
  * Texts of the field actions, for translation.
  */
 export interface FieldActionsLabels {
+    /** The accessible name of the translate button. */
     translate: string;
+    /** The accessible name of the AI button. */
     aiAssist: string;
+    /** The heading and accessible name of a suggestion from `onAiSuggest`. */
     suggestion: string;
+    /** The heading and accessible name of a translation from `onTranslateSuggest`. */
     translation: string;
+    /** The button that applies the suggestion or translation. */
     accept: string;
+    /** The button that drops the suggestion or translation. */
     discard: string;
 }
 

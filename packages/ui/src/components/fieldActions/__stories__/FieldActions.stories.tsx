@@ -30,6 +30,41 @@ function AltTextField(props: FieldActionsProps) {
                         props.onAiAccept?.(suggestion);
                         setValue(suggestion);
                     }}
+                    onTranslateAccept={(translation) => {
+                        props.onTranslateAccept?.(translation);
+                        setValue(translation);
+                    }}
+                />
+            }
+        />
+    );
+}
+
+function translateToGerman(text: string) {
+    return new Promise<string>((resolve) =>
+        setTimeout(() => resolve(text === "Three people at a table in the office." ? "Drei Personen an einem Tisch im Büro." : text), 600),
+    );
+}
+
+/**
+ * Translates in place with a single click, like cms-admin's content translation service: no target locales, the handler sets the value.
+ */
+function TranslatedInPlaceField(props: FieldActionsProps) {
+    const [value, setValue] = useState("Three people at a table in the office.");
+    return (
+        <Textarea
+            name="altText"
+            label="Alt text"
+            rows={2}
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+            actions={
+                <FieldActions
+                    {...props}
+                    onTranslate={async (targetLocales) => {
+                        props.onTranslate?.(targetLocales);
+                        setValue(await translateToGerman(value));
+                    }}
                 />
             }
         />
@@ -145,4 +180,42 @@ export const OnInput: Story = {
             />
         </div>
     ),
+};
+
+/**
+ * Without `targetLocales`, "Translate" is a single click that translates the field's content in place, e.g. with cms-admin's content
+ * translation service. Return a promise from `onTranslate` to show the field as loading until the translation is set.
+ */
+export const TranslateInPlace: Story = {
+    args: { aiAssist: false, targetLocales: undefined },
+    render: (args) => <TranslatedInPlaceField {...args} />,
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Translate" }));
+        await expect(args.onTranslate).toHaveBeenCalledWith([]);
+        await expect(canvas.getByRole("textbox")).toHaveAttribute("aria-busy", "true");
+        await waitFor(() => expect(canvas.getByRole("textbox")).toHaveValue("Drei Personen an einem Tisch im Büro."));
+        await waitFor(() => expect(canvas.getByRole("textbox")).not.toHaveAttribute("aria-busy"));
+    },
+};
+
+/**
+ * With `onTranslateSuggest`, the translation is offered to accept or discard, like an AI suggestion, e.g. for cms-admin's content
+ * translation service with `showApplyTranslationDialog`.
+ */
+export const ReviewTranslation: Story = {
+    args: {
+        aiAssist: false,
+        targetLocales: undefined,
+        onTranslateSuggest: fn(() => translateToGerman("Three people at a table in the office.")),
+        onTranslateAccept: fn(),
+    },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Translate" }));
+        const translation = await canvas.findByRole("group", { name: "Translation" });
+        await expect(translation).toHaveTextContent("Drei Personen an einem Tisch im Büro.");
+        await expect(args.onTranslate).not.toHaveBeenCalled();
+        await userEvent.click(canvas.getByRole("button", { name: "Accept" }));
+        await waitFor(() => expect(args.onTranslateAccept).toHaveBeenCalledWith("Drei Personen an einem Tisch im Büro."));
+        await expect(canvas.getByRole("textbox")).toHaveValue("Drei Personen an einem Tisch im Büro.");
+    },
 };

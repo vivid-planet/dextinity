@@ -22,6 +22,7 @@ export interface FieldActionsLabels {
     translate: string;
     aiAssist: string;
     suggestion: string;
+    translation: string;
     accept: string;
     discard: string;
 }
@@ -30,9 +31,21 @@ const defaultLabels: FieldActionsLabels = {
     translate: "Translate",
     aiAssist: "Improve with AI",
     suggestion: "AI suggestion",
+    translation: "Translation",
     accept: "Accept",
     discard: "Discard",
 };
+
+type FieldAction = "translate" | "aiAssist";
+
+function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
+    return typeof value === "object" && value !== null && "then" in value && typeof value.then === "function";
+}
+
+interface Suggestion {
+    action: FieldAction;
+    text: string;
+}
 
 export interface FieldActionsProps extends Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children" | "translate"> {
     /**
@@ -48,13 +61,27 @@ export interface FieldActionsProps extends Omit<HTMLAttributes<HTMLSpanElement>,
      */
     aiAssist?: boolean;
     /**
-     * The locales passed to `onTranslate`. Leave empty to let the application ask for them.
+     * The locales passed to `onTranslate`, to translate the content into other locales. Leave empty when `onTranslate` translates the field's
+     * content in place or asks for the locales itself, e.g. with a locale picker.
      *
      * @defaultValue `[]`
      */
     targetLocales?: string[];
-    /** Called when the user asks to translate the field's content. */
-    onTranslate?: (targetLocales: string[]) => void;
+    /**
+     * Called when the user clicks "Translate", with `targetLocales`. Without target locales, a single click translates the field's content
+     * in place, e.g. with cms-admin's content translation service: translate and set the value in the handler. Return a promise to show the
+     * field as loading until it settles; a rejection goes to `onTranslateError`.
+     */
+    onTranslate?: (targetLocales: string[]) => unknown;
+    /**
+     * Instead of `onTranslate`: delivers the translation of the field's content for the user to review. The field shows as loading until it
+     * resolves, then offers the translation to accept or discard, like an AI suggestion.
+     */
+    onTranslateSuggest?: () => Promise<string>;
+    /** Called when the user accepts the translation from `onTranslateSuggest`; set the field's value from it. */
+    onTranslateAccept?: (translation: string) => void;
+    /** Called when the promise of `onTranslate` or `onTranslateSuggest` rejects. */
+    onTranslateError?: (error: unknown) => void;
     /** Delivers the suggestion. The field shows as loading until it resolves, then offers the suggestion to accept or discard. */
     onAiSuggest?: () => Promise<string>;
     /** Called when the user accepts the suggestion; set the field's value from it. */
@@ -76,6 +103,9 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
         aiAssist = false,
         targetLocales = [],
         onTranslate,
+        onTranslateSuggest,
+        onTranslateAccept,
+        onTranslateError,
         onAiSuggest,
         onAiAccept,
         onAiError,
@@ -92,12 +122,13 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
     const setActionContent = field?.setActionContent;
     const disabled = field != null && (field.ownerState.disabled || field.ownerState.readOnly);
 
-    const [pending, setPending] = useState(false);
-    const [suggestion, setSuggestion] = useState<string | null>(null);
+    const [pendingAction, setPendingAction] = useState<FieldAction | null>(null);
+    const pending = pendingAction != null;
+    const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
 
     const controlId = field?.control.id;
-    const latest = useRef({ onAiAccept, labels, controlId });
-    latest.current = { onAiAccept, labels, controlId };
+    const latest = useRef({ onAiAccept, onTranslateAccept, labels, controlId });
+    latest.current = { onAiAccept, onTranslateAccept, labels, controlId };
     const suggestionRef = useRef<HTMLDivElement | null>(null);
 
     const mounted = useRef(true);
@@ -121,6 +152,7 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
             return;
         }
         const { labels: currentLabels } = latest.current;
+        const isTranslation = suggestion.action === "translate";
         const close = () => {
             setSuggestion(null);
             const id = latest.current.controlId;
@@ -136,19 +168,24 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
                 }}
                 className={styles.suggestion}
                 role="group"
-                aria-label={currentLabels.suggestion}
+                aria-label={isTranslation ? currentLabels.translation : currentLabels.suggestion}
                 tabIndex={-1}
+                data-action={suggestion.action}
             >
                 <span className={styles.suggestionLabel} aria-hidden>
-                    <Icon name="sparkle" />
-                    {currentLabels.suggestion}
+                    <Icon name={isTranslation ? "translate" : "sparkle"} />
+                    {isTranslation ? currentLabels.translation : currentLabels.suggestion}
                 </span>
-                <p className={styles.suggestionText}>{suggestion}</p>
+                <p className={styles.suggestionText}>{suggestion.text}</p>
                 <span className={styles.suggestionActions}>
                     <Button
                         size="small"
                         onClick={() => {
-                            latest.current.onAiAccept?.(suggestion);
+                            if (isTranslation) {
+                                latest.current.onTranslateAccept?.(suggestion.text);
+                            } else {
+                                latest.current.onAiAccept?.(suggestion.text);
+                            }
                             close();
                         }}
                     >
@@ -170,23 +207,41 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
         [setActionContent, setActionPending],
     );
 
-    async function requestSuggestion() {
-        if (onAiSuggest == null || pending) {
+    async function run(action: FieldAction, task: () => unknown, onError: ((error: unknown) => void) | undefined, suggests: boolean) {
+        if (pending) {
             return;
         }
         setSuggestion(null);
-        setPending(true);
         try {
-            const result = await onAiSuggest();
-            if (mounted.current) {
-                setSuggestion(result);
+            const result = task();
+            if (!isPromiseLike(result)) {
+                return;
+            }
+            setPendingAction(action);
+            const text: unknown = await result;
+            if (suggests && mounted.current && typeof text === "string") {
+                setSuggestion({ action, text });
             }
         } catch (error) {
-            onAiError?.(error);
+            onError?.(error);
         } finally {
             if (mounted.current) {
-                setPending(false);
+                setPendingAction(null);
             }
+        }
+    }
+
+    function translateContent() {
+        if (onTranslateSuggest != null) {
+            void run("translate", onTranslateSuggest, onTranslateError, true);
+        } else if (onTranslate != null) {
+            void run("translate", () => onTranslate(targetLocales), onTranslateError, false);
+        }
+    }
+
+    function requestSuggestion() {
+        if (onAiSuggest != null) {
+            void run("aiAssist", onAiSuggest, onAiError, true);
         }
     }
 
@@ -199,12 +254,24 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
             data-aiassist={ownerState.aiassist ? "" : undefined}
         >
             {translate && (
-                <IconButton size="small" aria-label={labels.translate} disabled={disabled} onClick={() => onTranslate?.(targetLocales)}>
+                <IconButton
+                    size="small"
+                    aria-label={labels.translate}
+                    disabled={disabled}
+                    loading={pendingAction === "translate"}
+                    onClick={translateContent}
+                >
                     <Icon name="translate" />
                 </IconButton>
             )}
             {aiAssist && (
-                <IconButton size="small" aria-label={labels.aiAssist} disabled={disabled} loading={pending} onClick={requestSuggestion}>
+                <IconButton
+                    size="small"
+                    aria-label={labels.aiAssist}
+                    disabled={disabled}
+                    loading={pendingAction === "aiAssist"}
+                    onClick={requestSuggestion}
+                >
                     <Icon name="sparkle" />
                 </IconButton>
             )}

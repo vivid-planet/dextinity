@@ -126,12 +126,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     const editable = !disabled && !readOnly;
 
     const change = (date: IsoDate | null, nextTime: TimeOfDay | null) => {
-        if (date == null) {
-            setPendingTime(null);
-            onChange(null);
-        } else {
-            onChange(joinDateTime(date, nextTime ?? midnight));
-        }
+        setPendingTime(null);
+        onChange(date == null ? null : joinDateTime(date, nextTime ?? midnight));
     };
 
     const dateDraft = useTextDraft(current == null ? "" : formatDate(current.date, locale), (text) => {

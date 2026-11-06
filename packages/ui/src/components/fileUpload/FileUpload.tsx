@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { type FocusEvent, forwardRef, type HTMLAttributes, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Dropzone, type DropzoneProps, type DropzoneRejection } from "../dropzone/Dropzone";
@@ -201,6 +201,8 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
         labels: labelsProp,
         className,
         slotProps,
+        onFocus,
+        onBlur,
         ...restProps
     },
     ref,
@@ -235,6 +237,22 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
             onUploadingChangeRef.current?.(uploading);
         }
     }, [uploading]);
+
+    // A button that had the focus can disappear: the drop area once the files fill the field, the row of a finished, cancelled, or removed
+    // upload. The focus then moves to the nearest remaining control instead of getting lost on the page.
+    const rootElement = useRef<HTMLDivElement | null>(null);
+    const focusedElement = useRef<HTMLElement | null>(null);
+    useLayoutEffect(() => {
+        const focused = focusedElement.current;
+        const root = rootElement.current;
+        if (focused == null || root == null || focused.isConnected) {
+            return;
+        }
+        focusedElement.current = null;
+        if (document.activeElement == null || document.activeElement === document.body) {
+            root.querySelector<HTMLElement>(`.${styles.files} button, .${styles.dropzone} button:not(:disabled)`)?.focus();
+        }
+    });
 
     const updatePending = (key: string, update: Partial<PendingFile> | null) => {
         setPending((current) =>
@@ -379,6 +397,17 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
             data-readonly={ownerState.readOnly ? "" : undefined}
             data-uploading={ownerState.uploading ? "" : undefined}
             className={clsx(styles.root, className)}
+            onFocus={(event) => {
+                rootElement.current = event.currentTarget;
+                focusedElement.current = event.target;
+                onFocus?.(event);
+            }}
+            onBlur={(event: FocusEvent<HTMLDivElement>) => {
+                if (event.relatedTarget != null && !event.currentTarget.contains(event.relatedTarget)) {
+                    focusedElement.current = null;
+                }
+                onBlur?.(event);
+            }}
         >
             {label != null && (
                 <div className={styles.labelRow}>

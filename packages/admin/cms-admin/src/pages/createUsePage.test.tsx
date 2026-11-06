@@ -4,7 +4,7 @@ import { MuiThemeProvider, SnackbarProvider } from "@dextinity/admin";
 import { createTheme } from "@mui/material";
 import type { PropsWithChildren } from "react";
 import { IntlProvider } from "react-intl";
-import { act, renderHook } from "test-utils";
+import { act, renderHook, waitFor } from "test-utils";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 
 import type { BlockInterface } from "../blocks/types";
@@ -104,5 +104,26 @@ describe("createUsePage", () => {
 
         expect(result.current.pageState?.document?.content).toEqual({ text: "Content set from outside" });
         expect(result.current.hasChanges).toBe(true);
+    });
+
+    it("reports the save state and when the loaded version was saved", () => {
+        const { result } = renderHook(() => usePage({ pageId: "page-tree-node-id" }), { wrapper: Providers });
+
+        expect(result.current.saveState).toBe("saved");
+        expect(result.current.savedAt).toEqual(new Date("2026-01-01T00:00:00.000Z"));
+
+        act(() => {
+            result.current.setPageState((pageState) =>
+                pageState?.document ? { ...pageState, document: { ...pageState.document, content: { text: "Changed" } } } : pageState,
+            );
+        });
+
+        expect(result.current.saveState).toBe("dirty");
+    });
+
+    it("validates each root block", async () => {
+        const { result } = renderHook(() => usePage({ pageId: "page-tree-node-id" }), { wrapper: Providers });
+
+        await waitFor(() => expect(result.current.rootBlocksValidity).toEqual({ content: true }));
     });
 });

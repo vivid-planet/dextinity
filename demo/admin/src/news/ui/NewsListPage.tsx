@@ -1,4 +1,5 @@
 import { useApolloClient, useQuery } from "@apollo/client";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import { useContentScope } from "@dextinity/cms-admin";
 import {
     Button,
@@ -110,27 +111,29 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
 
     const newsUrl = (id: string) => `${baseUrl}/${id}/edit`;
 
-    const setStatuses = async (news: NewsRow[], nextStatus: GQLNewsStatus) => {
-        await Promise.all(
-            news.map((entry) =>
-                client.mutate<GQLNewsUiUpdateStatusMutation, GQLNewsUiUpdateStatusMutationVariables>({
-                    mutation: updateNewsStatusMutation,
-                    variables: { id: entry.id, status: nextStatus },
-                }),
-            ),
-        );
-        await refetch();
-    };
-
-    const restoreStatuses = async (news: NewsRow[]) => {
-        await Promise.all(
+    const updateStatuses = async (news: Array<Pick<NewsRow, "id" | "status">>) => {
+        const results = await Promise.allSettled(
             news.map((entry) =>
                 client.mutate<GQLNewsUiUpdateStatusMutation, GQLNewsUiUpdateStatusMutationVariables>({
                     mutation: updateNewsStatusMutation,
                     variables: { id: entry.id, status: entry.status },
+                    context: LocalErrorScopeApolloContext,
                 }),
             ),
         );
+        const failedCount = results.filter((result) => result.status === "rejected").length;
+        if (failedCount > 0) {
+            addToast({
+                tone: "error",
+                message: intl.formatMessage(
+                    {
+                        id: "uiDemo.news.list.statusFailed",
+                        defaultMessage: "Changing the status failed for {failedCount, plural, one {# news} other {# news}}",
+                    },
+                    { failedCount },
+                ),
+            });
+        }
         await refetch();
     };
 
@@ -139,15 +142,15 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
         if (affected.length === 0) {
             return;
         }
-        const previous = affected.map((entry) => ({ ...entry }));
+        const previous = affected.map((entry) => ({ id: entry.id, status: entry.status }));
         const name = affected.length === 1 ? affected[0].title : undefined;
         perform({
             run: () => {
                 setSelectedIds([]);
-                void setStatuses(affected, nextStatus);
+                void updateStatuses(affected.map((entry) => ({ id: entry.id, status: nextStatus })));
             },
             undo: () => {
-                void restoreStatuses(previous);
+                void updateStatuses(previous);
             },
             icon: <Icon name={nextStatus === "deleted" ? "archive" : "refresh"} />,
             message:
@@ -173,33 +176,41 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
 
     const deletePermanently = async () => {
         setDeleting(true);
-        try {
-            await Promise.all(
-                newsToDelete.map((entry) =>
-                    client.mutate<GQLNewsUiDeleteMutation, GQLNewsUiDeleteMutationVariables>({
-                        mutation: deleteNewsMutation,
-                        variables: { id: entry.id },
-                    }),
-                ),
-            );
+        const results = await Promise.allSettled(
+            newsToDelete.map((entry) =>
+                client.mutate<GQLNewsUiDeleteMutation, GQLNewsUiDeleteMutationVariables>({
+                    mutation: deleteNewsMutation,
+                    variables: { id: entry.id },
+                    context: LocalErrorScopeApolloContext,
+                }),
+            ),
+        );
+        const deletedIds = newsToDelete.filter((_entry, index) => results[index].status === "fulfilled").map((entry) => entry.id);
+        const failedCount = newsToDelete.length - deletedIds.length;
+        if (failedCount === 0) {
             addToast({
                 icon: <Icon name="trash" />,
                 message: intl.formatMessage(
                     { id: "uiDemo.news.list.deleted", defaultMessage: "{count, plural, one {# news} other {# news}} deleted permanently" },
-                    { count: newsToDelete.length },
+                    { count: deletedIds.length },
                 ),
             });
-            setSelectedIds((ids) => ids.filter((id) => !newsToDelete.some((entry) => entry.id === id)));
-            setNewsToDelete([]);
-            await refetch();
-        } catch {
+        } else {
             addToast({
                 tone: "error",
-                message: intl.formatMessage({ id: "uiDemo.news.list.deleteFailed", defaultMessage: "Deleting failed · nothing was deleted" }),
+                message: intl.formatMessage(
+                    {
+                        id: "uiDemo.news.list.deleteFailed",
+                        defaultMessage: "{failedCount} of {count} news could not be deleted",
+                    },
+                    { failedCount, count: newsToDelete.length },
+                ),
             });
-        } finally {
-            setDeleting(false);
         }
+        setSelectedIds((ids) => ids.filter((id) => !deletedIds.includes(id)));
+        setNewsToDelete([]);
+        setDeleting(false);
+        await refetch();
     };
 
     const selectedRows = rows.filter((row) => selectedIds.includes(row.id));

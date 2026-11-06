@@ -9,6 +9,18 @@
     color: var(--dextinity-data-grid-foreground);
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-data-grid-font-size);
+
+    &[data-variant="surface"] {
+        --dextinity-data-grid-padding-block-end: var(--dextinity-data-grid-surface-padding-block-end);
+
+        box-sizing: border-box;
+        padding-block: var(--dextinity-data-grid-surface-padding-block-start) var(--dextinity-data-grid-padding-block-end);
+        padding-inline: var(--dextinity-data-grid-surface-padding-inline);
+        border-radius: var(--dextinity-data-grid-surface-radius);
+        background: var(--dextinity-data-grid-surface-background);
+        box-shadow: var(--dextinity-data-grid-surface-shadow);
+        backdrop-filter: blur(var(--dextinity-data-grid-surface-blur)) saturate(1.6);
+    }
 }
 
 .scroller {
@@ -267,7 +279,9 @@ th.actionsCell {
 }
 
 .root:has(> .bulkActionBarAnchor > [data-open]) {
-    padding-block-end: calc(var(--dextinity-data-grid-bulk-action-bar-height) + var(--dextinity-data-grid-bulk-action-bar-offset));
+    padding-block-end: calc(
+        var(--dextinity-data-grid-bulk-action-bar-height) + var(--dextinity-data-grid-bulk-action-bar-offset) + var(--dextinity-data-grid-padding-block-end, 0px)
+    );
 }
 
 .visuallyHidden {

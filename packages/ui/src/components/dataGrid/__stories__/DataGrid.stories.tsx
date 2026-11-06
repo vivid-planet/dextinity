@@ -10,6 +10,7 @@ import { IconButton } from "../../iconButton/IconButton";
 import { Menu } from "../../menu/Menu";
 import { MenuItem } from "../../menu/MenuItem";
 import { MenuSeparator } from "../../menu/MenuSeparator";
+import { Panel } from "../../panel/Panel";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import dataGridTokens from "../_tokens.scss?raw";
 import { DataGrid, type DataGridColumn, type DataGridProps, type DataGridSort } from "../DataGrid";
@@ -132,6 +133,7 @@ const meta = {
         onSelectionChange: fn(),
     },
     argTypes: {
+        variant: { control: "radio", options: ["surface", "plain"] },
         columns: { control: false },
         rows: { control: false },
         getRowId: { control: false },
@@ -288,5 +290,23 @@ export const StickyHeader: Story = {
     args: {
         stickyHeader: true,
         className: styles.fixedHeight,
+    },
+};
+
+/**
+ * A grid that already sits inside a `Panel` or `Card` uses `variant="plain"`, so it doesn't stack a second panel on the first.
+ */
+export const InsidePanel: Story = {
+    args: {
+        variant: "plain",
+        rows: allJobs.slice(0, 5),
+    },
+    render: (args) => (
+        <Panel title="Open jobs" description="The latest jobs of this location.">
+            <ControlledDataGrid {...args} />
+        </Panel>
+    ),
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("table", { name: "Jobs" }).closest("[data-variant]")).toHaveAttribute("data-variant", "plain");
     },
 };

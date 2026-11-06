@@ -58,9 +58,15 @@ export interface DataGridSort {
 }
 
 /**
+ * `surface` sits on its own panel; `plain` has no background, for a grid that already is inside a `Panel` or `Card`.
+ */
+export type DataGridVariant = "surface" | "plain";
+
+/**
  * The resolved configuration that influences the component's appearance or behavior.
  */
 export type DataGridOwnerState = {
+    variant: DataGridVariant;
     selectable: boolean;
     loading: boolean;
     empty: boolean;
@@ -154,6 +160,12 @@ export interface DataGridProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>,
      * @defaultValue `false`
      */
     stickyHeader?: boolean;
+    /**
+     * `surface` puts the grid on a panel of its own; use `plain` when it already is inside a `Panel` or `Card`.
+     *
+     * @defaultValue `"surface"`
+     */
+    variant?: DataGridVariant;
     /** Texts for translation; missing keys fall back to `defaultDataGridLabels`. */
     labels?: Partial<DataGridLabels>;
     /** Added alongside the component's own classes. */
@@ -202,6 +214,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
         loadingRowCount = 5,
         emptyState,
         stickyHeader = false,
+        variant = "surface",
         labels: labelsProp,
         className,
         slotProps,
@@ -212,6 +225,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
 ) {
     const labels = { ...defaultDataGridLabels, ...labelsProp };
     const ownerState: DataGridOwnerState = {
+        variant,
         selectable,
         loading,
         empty: !loading && rows.length === 0,
@@ -333,6 +347,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
         <div
             {...restProps}
             ref={ref}
+            data-variant={ownerState.variant}
             data-selectable={ownerState.selectable ? "" : undefined}
             data-loading={ownerState.loading ? "" : undefined}
             data-empty={ownerState.empty ? "" : undefined}

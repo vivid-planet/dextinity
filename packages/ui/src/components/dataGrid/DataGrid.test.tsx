@@ -26,6 +26,12 @@ function getRowId(row: Row) {
 }
 
 describe("DataGrid", () => {
+    it("drops its own surface with the plain variant", () => {
+        const { container } = render(<DataGrid aria-label="Items" columns={columns} rows={rows} getRowId={getRowId} variant="plain" />);
+
+        expect((container.firstElementChild as HTMLElement).getAttribute("data-variant")).toBe("plain");
+    });
+
     it("emits the root class and owner state", () => {
         const { container } = render(
             <DataGrid aria-label="Items" columns={columns} rows={rows} getRowId={getRowId} selectable onRowClick={() => {}} />,
@@ -36,6 +42,7 @@ describe("DataGrid", () => {
         expect(root.hasAttribute("data-selectable")).toBe(true);
         expect(root.hasAttribute("data-clickable")).toBe(true);
         expect(root.hasAttribute("data-loading")).toBe(false);
+        expect(root.getAttribute("data-variant")).toBe("surface");
         expect(screen.getByRole("table", { name: "Items" }).className).toContain("dextinityDataGrid__table");
     });
 

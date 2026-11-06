@@ -4,6 +4,8 @@ import { expect, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
+import { Toolbar } from "../../toolbar/Toolbar";
+import { ToolbarButton } from "../../toolbar/ToolbarButton";
 import fieldTokens from "../_tokens.scss?raw";
 import { Field, type FieldControlProps } from "../Field";
 import styles from "./Field.stories.module.scss";
@@ -33,6 +35,37 @@ function RangeControl(control: FieldControlProps) {
     );
 }
 
+/** Stands in for a third-party editor, e.g. TipTap's `EditorContent`: a toolbar above an editable area. */
+function EditorControl(control: FieldControlProps) {
+    const [bold, setBold] = useState(false);
+    return (
+        <>
+            <Toolbar aria-label="Formatting" className={styles.editorToolbar} disabled={control.disabled || control.readOnly}>
+                <ToolbarButton aria-label="Bold" shortcut="⌘B" pressed={bold} keepFocus onClick={() => setBold(!bold)}>
+                    <Icon name="bold" />
+                </ToolbarButton>
+                <ToolbarButton aria-label="Link" shortcut="⌘K" keepFocus>
+                    <Icon name="link" />
+                </ToolbarButton>
+            </Toolbar>
+            <div
+                id={control.id}
+                role="textbox"
+                aria-multiline
+                aria-labelledby={control["aria-labelledby"]}
+                aria-describedby={control["aria-describedby"]}
+                aria-invalid={control["aria-invalid"]}
+                contentEditable={!control.disabled && !control.readOnly}
+                suppressContentEditableWarning
+                tabIndex={0}
+                className={styles.editor}
+            >
+                Our team grows: we are looking for a Senior UX Designer in Vienna.
+            </div>
+        </>
+    );
+}
+
 const adornmentOptions = {
     Domain: "example.com",
     Unit: "€ / year",
@@ -51,6 +84,7 @@ const meta = {
     argTypes: {
         state: { control: "select", options: ["default", "success", "warning", "error"] },
         size: { control: "radio", options: ["small", "default", "large"] },
+        layout: { control: "radio", options: ["inline", "stacked"] },
         prefix: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
         suffix: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
         children: { control: false },
@@ -201,5 +235,25 @@ export const CustomControl: Story = {
         label: "Image quality",
         helperText: "Higher values make larger files.",
         children: (control) => <RangeControl {...control} />,
+    },
+};
+
+/**
+ * `layout="stacked"` lets a multi-line control fill the box from edge to edge, e.g. a third-party editor with its toolbar. Give the
+ * editable element the control's `id` and ARIA props, so it is named by the label and described by the message.
+ */
+export const StackedLayout: Story = {
+    args: {
+        label: "Description",
+        layout: "stacked",
+        helperText: "Shown on the job posting.",
+        children: (control) => <EditorControl {...control} />,
+    },
+    play: async ({ canvas }) => {
+        const editor = canvas.getByRole("textbox", { name: "Description" });
+        await userEvent.click(editor);
+        await userEvent.click(canvas.getByRole("button", { name: "Bold" }));
+        await expect(canvas.getByRole("button", { name: "Bold" })).toHaveAttribute("aria-pressed", "true");
+        await expect(editor).toHaveFocus();
     },
 };

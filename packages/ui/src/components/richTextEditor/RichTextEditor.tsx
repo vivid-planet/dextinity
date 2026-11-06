@@ -1,4 +1,3 @@
-import { Toolbar } from "@base-ui/react/toolbar";
 import { clsx } from "clsx";
 import {
     type ClipboardEvent,
@@ -7,7 +6,6 @@ import {
     forwardRef,
     type HTMLAttributes,
     type KeyboardEvent,
-    type MouseEvent,
     useCallback,
     useEffect,
     useLayoutEffect,
@@ -18,7 +16,10 @@ import {
 import { Field, type FieldBaseProps, type FieldOwnerState, type FieldProps } from "../field/Field";
 import { Icon } from "../icon/Icon";
 import type { IconName } from "../icon/iconNames";
-import { IconButton } from "../iconButton/IconButton";
+import { Toolbar } from "../toolbar/Toolbar";
+import { ToolbarButton } from "../toolbar/ToolbarButton";
+import { ToolbarGroup } from "../toolbar/ToolbarGroup";
+import { ToolbarSeparator } from "../toolbar/ToolbarSeparator";
 import styles from "./RichTextEditor.module.scss";
 import { isSafeHref, sanitizeHtml } from "./sanitizeHtml";
 
@@ -133,10 +134,6 @@ function readActiveFormats(editor: HTMLElement): ActiveFormats {
 
 function isEmpty(editor: HTMLElement) {
     return (editor.textContent ?? "").trim() === "" && editor.querySelector("li, a") == null;
-}
-
-function preventFocusLoss(event: MouseEvent) {
-    event.preventDefault();
 }
 
 /**
@@ -329,6 +326,7 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
             ref={ref}
             style={{ ...style, "--dextinity-rich-text-editor-min-rows": minRows } as CSSProperties}
             className={clsx(styles.root, className)}
+            layout="stacked"
             controlId={id}
             label={label}
             required={required}
@@ -345,28 +343,25 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
             {(control) => (
                 <>
                     {groups.length > 0 && (
-                        <Toolbar.Root className={styles.toolbar} aria-label={labels.toolbar} disabled={!editable}>
+                        <Toolbar className={styles.toolbar} aria-label={labels.toolbar} disabled={!editable}>
                             {groups.map((group, groupIndex) => [
-                                groupIndex > 0 && <Toolbar.Separator key={`separator-${group[0]}`} className={styles.separator} />,
-                                ...group.map((format) => (
-                                    <Toolbar.Button
-                                        key={format}
-                                        render={
-                                            <IconButton
-                                                aria-label={labels[format]}
-                                                shortcut={formatShortcuts[format]}
-                                                aria-pressed={activeFormats[format]}
-                                                className={styles.toolbarButton}
-                                                onMouseDown={preventFocusLoss}
-                                                onClick={() => applyFormat(format)}
-                                            >
-                                                <Icon name={formatIcons[format]} />
-                                            </IconButton>
-                                        }
-                                    />
-                                )),
+                                groupIndex > 0 && <ToolbarSeparator key={`separator-${group[0]}`} />,
+                                <ToolbarGroup key={group[0]}>
+                                    {group.map((format) => (
+                                        <ToolbarButton
+                                            key={format}
+                                            aria-label={labels[format]}
+                                            shortcut={formatShortcuts[format]}
+                                            pressed={activeFormats[format]}
+                                            keepFocus
+                                            onClick={() => applyFormat(format)}
+                                        >
+                                            <Icon name={formatIcons[format]} />
+                                        </ToolbarButton>
+                                    ))}
+                                </ToolbarGroup>,
                             ])}
-                        </Toolbar.Root>
+                        </Toolbar>
                     )}
                     <div
                         ref={editorRef}

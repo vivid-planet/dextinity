@@ -121,6 +121,17 @@
         font-size: var(--dextinity-field-font-size-large);
     }
 
+    .root[data-layout="stacked"] > & {
+        position: relative;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        min-block-size: 0;
+        padding: 0;
+        border-radius: var(--dextinity-field-radius-stacked);
+        cursor: auto;
+    }
+
     .root[data-readonly] > & {
         background: var(--dextinity-field-background-read-only);
         box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-field-line);
@@ -153,6 +164,12 @@
     align-self: stretch;
     padding-inline-end: var(--dextinity-space-2);
     box-shadow: inset calc(var(--dextinity-line-width) * -1) 0 0 var(--dextinity-field-line);
+}
+
+.root[data-layout="stacked"] > .box > .suffix {
+    position: absolute;
+    inset-block-start: var(--dextinity-field-padding);
+    inset-inline-end: var(--dextinity-field-padding);
 }
 
 .spinner {

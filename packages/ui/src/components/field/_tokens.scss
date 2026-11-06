@@ -8,6 +8,8 @@
     --dextinity-field-padding: var(--dextinity-space-3);
     --dextinity-field-padding-small: 10px;
     --dextinity-field-radius: var(--dextinity-radius-control);
+    // The box of a multi-line control with `layout="stacked"`, e.g. a text editor
+    --dextinity-field-radius-stacked: calc(12px * var(--dextinity-brand-radius-factor));
     --dextinity-field-font-size: var(--dextinity-typography-body-size);
     --dextinity-field-font-size-small: 13px;
     --dextinity-field-font-size-large: 15px;

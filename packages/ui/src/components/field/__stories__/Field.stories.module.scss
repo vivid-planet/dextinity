@@ -27,3 +27,14 @@
     gap: var(--dextinity-density-form-gap);
     max-inline-size: 420px;
 }
+
+.editorToolbar {
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-line);
+}
+
+.editor {
+    min-block-size: 96px;
+    padding: 14px 16px;
+    outline: none;
+    line-height: 1.62;
+}

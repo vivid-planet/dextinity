@@ -8,6 +8,7 @@ import { FieldContext, type FieldContextValue } from "./fieldContext";
 
 export type FieldState = "default" | "success" | "warning" | "error";
 export type FieldSize = "small" | "default" | "large";
+export type FieldLayout = "inline" | "stacked";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -19,6 +20,7 @@ export type FieldOwnerState = {
     disabled: boolean;
     readOnly: boolean;
     loading: boolean;
+    layout: FieldLayout;
 };
 
 /**
@@ -105,6 +107,13 @@ export interface FieldBaseProps {
 
 export interface FieldProps extends FieldBaseProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "prefix"> {
     /**
+     * How the box arranges its content: `inline` puts prefix, control, and suffix in a row of the field's height; `stacked` lets a
+     * multi-line control fill the box from edge to edge, e.g. a text editor with its toolbar above the text, and keeps its own padding.
+     *
+     * @defaultValue `"inline"`
+     */
+    layout?: FieldLayout;
+    /**
      * The id of the control, used to connect it with the label.
      *
      * @defaultValue generated
@@ -124,7 +133,7 @@ const interactiveSelector = "input, textarea, select, button, a, [contenteditabl
 
 /**
  * The frame shared by all form fields: label, required star, actions, the bordered box with prefix and suffix, help, and validation
- * message. Wrap a custom control in it to get the same look and accessible connections.
+ * message. Wrap a custom control in it to get the same look and accessible connections, e.g. a third-party editor with `layout="stacked"`.
  */
 export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
     {
@@ -141,6 +150,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
         suffix,
         actions,
         counter,
+        layout = "inline",
         controlId: controlIdProp,
         children,
         className,
@@ -157,7 +167,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
     const [actionPending, setActionPending] = useState(false);
     const [actionContent, setActionContent] = useState<ReactNode>(null);
 
-    const ownerState: FieldOwnerState = { state, size, required, disabled, readOnly, loading: loading || actionPending };
+    const ownerState: FieldOwnerState = { state, size, required, disabled, readOnly, loading: loading || actionPending, layout };
 
     const showsValidation = state !== "default" && validationMessage != null && validationMessage !== "";
     const message = showsValidation ? validationMessage : helperText;
@@ -229,6 +239,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
                 data-disabled={ownerState.disabled ? "" : undefined}
                 data-readonly={ownerState.readOnly ? "" : undefined}
                 data-loading={ownerState.loading ? "" : undefined}
+                data-layout={ownerState.layout}
             >
                 <div className={styles.labelRow}>
                     <label {...labelProps}>{label}</label>

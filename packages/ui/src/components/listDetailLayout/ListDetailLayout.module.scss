@@ -1,0 +1,49 @@
+.root {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-list-detail-layout-header-spacing);
+    min-inline-size: 0;
+}
+
+.body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--dextinity-list-detail-layout-gap);
+    align-items: start;
+
+    .root[data-open] > & {
+        grid-template-columns: minmax(0, 1fr) var(--dextinity-list-detail-layout-panel-width);
+    }
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-list-detail-layout-gap);
+    min-inline-size: 0;
+}
+
+.header,
+.toolbar,
+.content {
+    min-inline-size: 0;
+}
+
+.sidePanel {
+    position: sticky;
+    inset-block-start: var(--dextinity-list-detail-layout-sticky-offset);
+    min-inline-size: 0;
+}
+
+// Narrow: the side panel moves above the list, so the list stays visible below it
+@container (max-width: 1040px) {
+    .root[data-open] > .body {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sidePanel {
+        position: static;
+        order: -1;
+    }
+}

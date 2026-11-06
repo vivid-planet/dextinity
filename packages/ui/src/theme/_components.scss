@@ -1,5 +1,6 @@
 // Component tokens. Each component declares its own in `src/components/<feature>/_tokens.scss`.
 @use "../components/aiPanel/tokens" as aiPanel;
+@use "../components/appShell/tokens" as appShell;
 @use "../components/assetBrowser/tokens" as assetBrowser;
 @use "../components/assetThumbnail/tokens" as assetThumbnail;
 @use "../components/avatar/tokens" as avatar;

@@ -348,6 +348,7 @@ export const SideNav = forwardRef<HTMLElement, SideNavProps>(function SideNav(
         onNavigate: (item, event) => {
             setFlyoutId(null);
             onNavigate(item, event);
+            shell?.onNavigate?.();
         },
         LinkSlot: slots?.link ?? "a",
     };

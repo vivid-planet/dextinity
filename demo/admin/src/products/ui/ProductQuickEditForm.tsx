@@ -117,7 +117,7 @@ export function ProductQuickEditForm({ product, onUnsavedChangesChange }: Produc
                             refetchQueries: ["ProductsUiList"],
                             context: LocalErrorScopeApolloContext,
                         });
-                        reset(data ? toFormValues(data.updateProduct) : values);
+                        reset(data ? toFormValues(data.updateProduct) : values, { keepDirtyValues: true });
                         isSaved = true;
                     } catch (error) {
                         setError("root.server", {

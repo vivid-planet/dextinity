@@ -121,6 +121,8 @@ export { ListDetailLayout, type ListDetailLayoutOwnerState, type ListDetailLayou
 export { type ListDetailLayoutSlotProps } from "./components/listDetailLayout/ListDetailLayout";
 export { ListLayout, type ListLayoutOwnerState, type ListLayoutProps } from "./components/listLayout/ListLayout";
 export { type ListLayoutSlotProps } from "./components/listLayout/ListLayout";
+export { LogViewer, type LogViewerLabels, type LogViewerLineTone, type LogViewerOwnerState } from "./components/logViewer/LogViewer";
+export { type LogViewerProps, type LogViewerSlotProps } from "./components/logViewer/LogViewer";
 export { Menu, type MenuOwnerState, type MenuPlacement, type MenuProps, type MenuSlotProps } from "./components/menu/Menu";
 export { MenuGroup, type MenuGroupOwnerState, type MenuGroupProps, type MenuGroupSlotProps } from "./components/menu/MenuGroup";
 export { MenuItem, type MenuItemOwnerState, type MenuItemProps } from "./components/menu/MenuItem";

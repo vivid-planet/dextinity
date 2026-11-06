@@ -39,4 +39,24 @@ describe("FileUploadField", () => {
         await userEvent.click(screen.getByRole("button", { name: "Save" }));
         expect(onSubmit).toHaveBeenCalledWith({ contract: [{ id: "42", name: "contract.pdf" }] }, expect.anything(), expect.anything());
     });
+
+    it("is touched only once the focus leaves the field", async () => {
+        render(
+            <Form onSubmit={vi.fn()} initialValues={{ files: [{ id: "1", name: "a.pdf" }] }}>
+                {() => (
+                    <form>
+                        <FileUploadField name="files" label="Files" multiple onUpload={vi.fn()} validate={() => "Too few files"} />
+                        <button type="button">Next</button>
+                    </form>
+                )}
+            </Form>,
+        );
+
+        screen.getByRole("button", { name: "choose files" }).focus();
+        await userEvent.tab();
+        expect(screen.getByRole("button", { name: "Remove" })).toHaveFocus();
+        expect(screen.getByRole("group", { name: "Files" })).not.toHaveAccessibleDescription("Too few files");
+        await userEvent.tab();
+        expect(screen.getByRole("group", { name: "Files" })).toHaveAccessibleDescription("Too few files");
+    });
 });

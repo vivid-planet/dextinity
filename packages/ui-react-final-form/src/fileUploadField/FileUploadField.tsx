@@ -45,7 +45,13 @@ export const FileUploadField = forwardRef(function FileUploadField<FieldValue = 
             value={toFileUploadValue(input.value)}
             required={options.required}
             onChange={input.onChange}
-            onBlur={onBlur}
+            onBlur={(event) => {
+                // Moving between the field's own buttons, or to the file dialog, isn't leaving the field, so it isn't touched yet
+                const leavesField = event.relatedTarget == null ? document.hasFocus() : !event.currentTarget.contains(event.relatedTarget as Node);
+                if (leavesField) {
+                    onBlur();
+                }
+            }}
             onFocus={(event) => {
                 onFieldFocus();
                 onFocus?.(event);

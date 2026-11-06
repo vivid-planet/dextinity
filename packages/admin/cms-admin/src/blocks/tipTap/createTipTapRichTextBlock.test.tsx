@@ -415,14 +415,14 @@ describe("createTipTapRichTextBlock", () => {
             const block = createTipTapRichTextBlock({ textBlocks });
             const { container } = render(<block.AdminComponent state={{ tipTapContent: listContent }} updateState={vi.fn()} />);
 
-            expect(within(container).queryByRole("combobox")?.getAttribute("aria-disabled")).toBe("true");
+            expect(within(container).getByRole("button", { name: "Text style" }).hasAttribute("data-disabled")).toBe(true);
         });
 
         it("should not show a style select when nothing has styles", () => {
             const block = createTipTapRichTextBlock({ textBlocks: [{ name: "paragraph", label: "Paragraph", tag: "p" }] });
             const { container } = render(<block.AdminComponent state={{ tipTapContent: listContent }} updateState={vi.fn()} />);
 
-            expect(within(container).queryByRole("combobox")).toBeNull();
+            expect(within(container).queryByRole("button", { name: "Text style" })).toBeNull();
         });
     });
 

@@ -116,3 +116,18 @@ export const Disabled: Story = {
         await expect(args.onClick).not.toHaveBeenCalled();
     },
 };
+
+/**
+ * `disabledReason` explains why the item is disabled, in a tooltip and to screen readers.
+ */
+export const DisabledWithReason: Story = {
+    args: { label: "Delete", icon: <Icon name="trash" />, color: "error", disabled: true, disabledReason: "Only admins can delete pages" },
+    play: async ({ args }) => {
+        const item = await screen.findByRole("menuitem", { name: "Delete" });
+        await expect(item).toHaveAccessibleDescription("Only admins can delete pages");
+        await userEvent.hover(item);
+        await waitFor(() => expect(screen.getByRole("tooltip")).toHaveTextContent("Only admins can delete pages"));
+        await userEvent.click(item);
+        await expect(args.onClick).not.toHaveBeenCalled();
+    },
+};

@@ -124,7 +124,9 @@ export function RteDesignSystemTheme({ children }: PropsWithChildren) {
                     },
                 },
                 MuiPopover: {
+                    ...outerTheme.components?.MuiPopover,
                     defaultProps: {
+                        ...outerTheme.components?.MuiPopover?.defaultProps,
                         container,
                     },
                 },

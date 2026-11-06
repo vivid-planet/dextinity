@@ -18,4 +18,11 @@ export const DependencyActionsUnavailableWrapper = styled("span")`
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
     }
+
+    @media (forced-colors: active) {
+        &:focus-visible {
+            outline: 2px solid;
+            outline-offset: 2px;
+        }
+    }
 `;

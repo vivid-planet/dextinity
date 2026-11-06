@@ -21,6 +21,10 @@
     // Space between the focus ring and the tab's top edge, and between the ring and the indicator
     --dextinity-tabs-focus-inset: 4px;
 
+    // A tab with invalid fields
+    --dextinity-tabs-error-foreground: var(--dextinity-color-danger-text);
+    --dextinity-tabs-error-marker-color: var(--dextinity-color-danger);
+
     // The count after a tab's label, e.g. open issues in a section
     --dextinity-tabs-count-background: var(--dextinity-color-warning-soft);
     --dextinity-tabs-count-foreground: var(--dextinity-color-warning-text);

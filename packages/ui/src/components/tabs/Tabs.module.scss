@@ -39,6 +39,15 @@
         color: var(--dextinity-tabs-foreground-active);
     }
 
+    &[data-tone="error"] {
+        color: var(--dextinity-tabs-error-foreground);
+    }
+
+    // A tab rendered as a link through `slots.tab`
+    &:any-link {
+        text-decoration: none;
+    }
+
     // Drawn inside the tab and above the indicator: the scrolling list clips anything outside the tab
     &::after {
         content: "";
@@ -61,6 +70,22 @@
         opacity: var(--dextinity-tabs-disabled-opacity);
         cursor: not-allowed;
     }
+}
+
+.errorMarker {
+    display: inline-flex;
+    color: var(--dextinity-tabs-error-marker-color);
+
+    --dextinity-icon-size: 14px;
+}
+
+.visuallyHidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
 }
 
 .count {

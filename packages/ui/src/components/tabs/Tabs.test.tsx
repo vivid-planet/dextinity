@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Tabs } from "./Tabs";
@@ -82,5 +82,31 @@ describe("Tabs", () => {
         expect(tab.tagName).toBe("A");
         expect(tab.getAttribute("href")).toBe("/page/seo");
         expect(tab.dataset.router).toBe("");
+    });
+
+    it("keeps the click handler from slotProps on link tabs, and leaves the tab on a modifier click", () => {
+        const onChange = vi.fn();
+        const onTabClick = vi.fn();
+        render(
+            <Tabs
+                aria-label="Page"
+                items={[
+                    { value: "blocks", label: "Blocks", href: "#blocks" },
+                    { value: "seo", label: "SEO", href: "#seo" },
+                ]}
+                value="blocks"
+                onChange={onChange}
+                slotProps={{ tab: { onClick: onTabClick } }}
+            />,
+        );
+
+        const tab = screen.getByRole("tab", { name: "SEO" });
+        fireEvent.click(tab, { ctrlKey: true });
+        expect(onTabClick).toHaveBeenCalledTimes(1);
+        expect(onChange).not.toHaveBeenCalled();
+
+        fireEvent.click(tab);
+        expect(onTabClick).toHaveBeenCalledTimes(2);
+        expect(onChange).toHaveBeenCalledWith("seo");
     });
 });

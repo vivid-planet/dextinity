@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type KeyboardEvent, type ReactNode } from "react";
+import { type FocusEvent, forwardRef, type HTMLAttributes, type KeyboardEvent, type ReactNode, useEffect, useRef } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./ListDetailLayout.module.scss";
@@ -42,7 +42,10 @@ export interface ListDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElemen
     sidePanelLabel: string;
     /** Whether the side panel is shown next to the list. */
     open: boolean;
-    /** Called with `false` when Escape is pressed in the side panel. */
+    /**
+     * Called with `false` when Escape is pressed in the side panel. When the panel closes while it has focus, focus returns to the element
+     * outside the panel that had it last, e.g. the row that opened it.
+     */
     onOpenChange: (open: boolean) => void;
     /** Added alongside the component's own classes. */
     className?: string;
@@ -55,10 +58,34 @@ export interface ListDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElemen
  * panel. In narrow layouts the side panel moves above the list.
  */
 export const ListDetailLayout = forwardRef<HTMLDivElement, ListDetailLayoutProps>(function ListDetailLayout(
-    { header, toolbar, children, sidePanel, sidePanelLabel, open, onOpenChange, className, slotProps, ...restProps },
+    { header, toolbar, children, sidePanel, sidePanelLabel, open, onOpenChange, className, slotProps, onFocusCapture, ...restProps },
     ref,
 ) {
     const ownerState: ListDetailLayoutOwnerState = { open, toolbar: toolbar != null };
+    const sidePanelRef = useRef<HTMLElement>(null);
+    const returnFocusRef = useRef<HTMLElement | null>(null);
+    const panelHadFocusRef = useRef(false);
+
+    function rememberFocus(event: FocusEvent<HTMLDivElement>) {
+        onFocusCapture?.(event);
+        const inPanel = sidePanelRef.current?.contains(event.target) ?? false;
+        panelHadFocusRef.current = inPanel;
+        if (!inPanel && event.target instanceof HTMLElement) {
+            returnFocusRef.current = event.target;
+        }
+    }
+
+    useEffect(() => {
+        if (open || !panelHadFocusRef.current) {
+            return;
+        }
+        panelHadFocusRef.current = false;
+        // The panel unmounted with the focus inside it, which dropped the focus to the body
+        const returnTarget = returnFocusRef.current;
+        if (returnTarget?.isConnected && (document.activeElement == null || document.activeElement === document.body)) {
+            returnTarget.focus();
+        }
+    }, [open]);
 
     function closeOnEscape(event: KeyboardEvent<HTMLElement>) {
         // Escape in a popup portaled out of the panel, e.g. a select's list, closes only that popup
@@ -103,6 +130,7 @@ export const ListDetailLayout = forwardRef<HTMLDivElement, ListDetailLayoutProps
         <div
             {...restProps}
             ref={ref}
+            onFocusCapture={rememberFocus}
             data-open={ownerState.open ? "" : undefined}
             data-toolbar={ownerState.toolbar ? "" : undefined}
             className={clsx(styles.root, className)}
@@ -113,7 +141,11 @@ export const ListDetailLayout = forwardRef<HTMLDivElement, ListDetailLayoutProps
                     {toolbar != null && <div {...toolbarProps}>{toolbar}</div>}
                     <div {...contentProps}>{children}</div>
                 </div>
-                {open && <aside {...sidePanelProps}>{sidePanel}</aside>}
+                {open && (
+                    <aside {...sidePanelProps} ref={sidePanelRef}>
+                        {sidePanel}
+                    </aside>
+                )}
             </div>
         </div>
     );

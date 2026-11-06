@@ -151,3 +151,59 @@ export const Keyboard: Story = {
         await expect(canvas.getByRole("link", { name: "Page tree" })).toHaveFocus();
     },
 };
+
+/** The ancestors of `element` up to the SideNav's scroll area whose clip cuts off the element's focus ring. */
+function ancestorsClippingFocusRing(element: HTMLElement) {
+    const ringWidth = Math.max(
+        0,
+        ...[...getComputedStyle(element).boxShadow.matchAll(/0px 0px 0px (\d+(?:\.\d+)?)px/g)].map((match) => Number(match[1])),
+    );
+    const ring = element.getBoundingClientRect();
+    const clipping: HTMLElement[] = [];
+    for (let ancestor = element.parentElement; ancestor != null; ancestor = ancestor.parentElement) {
+        const { overflowY } = getComputedStyle(ancestor);
+        if (overflowY === "auto" || overflowY === "scroll") {
+            break;
+        }
+        if (overflowY === "visible") {
+            continue;
+        }
+        const clip = ancestor.getBoundingClientRect();
+        if (
+            ring.left - ringWidth < clip.left ||
+            ring.top - ringWidth < clip.top ||
+            ring.right + ringWidth > clip.right ||
+            ring.bottom + ringWidth > clip.bottom
+        ) {
+            clipping.push(ancestor);
+        }
+    }
+    return { ringWidth, clipping };
+}
+
+/**
+ * The focus ring of a sub-entry follows the entry's own shape, also for the active entry and on the third level; the open sub-entries
+ * don't cut it off.
+ */
+export const FocusRing: Story = {
+    args: {
+        activeId: "main-navigation",
+        expanded: ["website", "careers", "structure"],
+    },
+    play: async ({ canvas }) => {
+        canvas.getByRole("button", { name: "Structure" }).focus();
+        await userEvent.tab();
+        const mainNavigation = canvas.getByRole("link", { name: "Main navigation" });
+        await expect(mainNavigation).toHaveFocus();
+        await waitFor(() => expect(ancestorsClippingFocusRing(mainNavigation)).toStrictEqual({ ringWidth: 4, clipping: [] }));
+
+        await userEvent.tab();
+        const footer = canvas.getByRole("link", { name: /Footer and legal pages/ });
+        await expect(footer).toHaveFocus();
+        await expect(ancestorsClippingFocusRing(footer)).toStrictEqual({ ringWidth: 4, clipping: [] });
+
+        const locations = canvas.getByRole("link", { name: "Locations" });
+        locations.focus();
+        await expect(ancestorsClippingFocusRing(locations)).toStrictEqual({ ringWidth: 4, clipping: [] });
+    },
+};

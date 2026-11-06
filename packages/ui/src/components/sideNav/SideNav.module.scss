@@ -255,6 +255,11 @@
     inset-inline-end: 2px;
 }
 
+// The sub-entries clip their content to animate opening and closing. Room around them, taken back by a negative margin, keeps the focus
+// ring and the active entry's shadow from being cut off at the edges of the clip.
+$children-room: 4px;
+$children-room-end: 12px;
+
 .children {
     display: grid;
     grid-template-rows: 0fr;
@@ -267,20 +272,28 @@
     > .list {
         position: relative;
         min-block-size: 0;
+        margin: (-$children-room) (-$children-room) (-$children-room-end);
+        padding: $children-room $children-room $children-room-end;
         overflow: hidden;
 
         &::before {
             content: "";
             position: absolute;
-            inset-block: 2px 6px;
-            inset-inline-start: 19px;
+            inset-block: calc(#{$children-room} + 2px) calc(#{$children-room-end} + 6px);
+            inset-inline-start: calc(#{$children-room} + 19px);
             inline-size: var(--dextinity-line-width);
             background: var(--dextinity-side-nav-guide-color);
         }
     }
 
+    // The room would show the edge of the first sub-entry while closed; hidden only once the closing has finished
+    &:not([data-open]) > .list {
+        visibility: hidden;
+        transition: visibility 0s var(--dextinity-motion-duration-medium);
+    }
+
     &[data-level="3"] > .list::before {
-        inset-inline-start: 44px;
+        inset-inline-start: calc(#{$children-room} + 44px);
     }
 }
 

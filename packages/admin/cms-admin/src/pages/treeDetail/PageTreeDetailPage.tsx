@@ -248,7 +248,7 @@ function PageTreeDetailView({
         if (pages.length === 0) {
             return (
                 <EmptyState
-                    icon={<Icon name="page" />}
+                    icon={<Icon name="file" />}
                     title={intl.formatMessage({ id: "dextinity.pageTreeDetail.empty.title", defaultMessage: "No pages yet" })}
                     description={intl.formatMessage({
                         id: "dextinity.pageTreeDetail.empty.description",
@@ -364,18 +364,20 @@ function PageTreeDetailView({
                             <>
                                 <IconButton
                                     variant="text"
+                                    color="secondary"
                                     aria-label={intl.formatMessage({ id: "dextinity.pageTreeDetail.expandAll", defaultMessage: "Expand all" })}
                                     onClick={() => setExpandedIds(folderIds)}
                                 >
-                                    <Icon name="expand" />
+                                    <Icon name="maximize" />
                                 </IconButton>
                                 <IconButton
                                     variant="text"
+                                    color="secondary"
                                     aria-label={intl.formatMessage({ id: "dextinity.pageTreeDetail.collapseAll", defaultMessage: "Collapse all" })}
                                     onClick={() => setExpandedIds([])}
                                     disabled={expandedIds.length === 0}
                                 >
-                                    <Icon name="collapse" />
+                                    <Icon name="minimize" />
                                 </IconButton>
                             </>
                         }
@@ -440,7 +442,7 @@ function PageTreeDetailView({
                         },
                         { visibility },
                     ),
-                    icon: <Icon name={visibility === "Published" ? "eye" : visibility === "Unpublished" ? "eye-off" : "archive"} />,
+                    icon: <Icon name={visibility === "Published" ? "visible" : visibility === "Unpublished" ? "invisible" : "archive"} />,
                     onClick: () => {
                         changeVisibility(checkedIds, visibility);
                         setCheckedIds([]);

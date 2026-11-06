@@ -76,7 +76,7 @@ export function AppFrameCommandPalette({ open, onOpenChange, menuEntries, comman
                   .map((result) => ({
                       id: `content:${result.entityName}:${result.id}`,
                       label: result.secondaryInformation ? `${result.name}${breadcrumbSeparator}${result.secondaryInformation}` : result.name,
-                      icon: <Icon name="page" />,
+                      icon: <Icon name="file" />,
                       onSelect: () => void openSearchResult(result),
                   }))
             : [];
@@ -84,7 +84,7 @@ export function AppFrameCommandPalette({ open, onOpenChange, menuEntries, comman
         .map(({ item, parentLabels, external }) => ({
             id: `menu:${item.id}`,
             label: [...parentLabels, item.label].join(breadcrumbSeparator),
-            icon: <Icon name={external ? "external-link" : "arrow-right"} />,
+            icon: <Icon name={external ? "open-new-tab" : "arrow-right"} />,
             onSelect: () => {
                 if (item.href == null) {
                     return;

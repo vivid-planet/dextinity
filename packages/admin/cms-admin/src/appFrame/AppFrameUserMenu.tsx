@@ -46,9 +46,9 @@ export function AppFrameUserMenu({ colorScheme, onColorSchemeChange, density, on
         "high-contrast": intl.formatMessage({ id: "dextinity.appFrame.userMenu.colorScheme.highContrast", defaultMessage: "High contrast" }),
     };
     const colorSchemeIcons: Record<ThemeColorScheme, ReactNode> = {
-        light: <Icon name="sun" />,
-        dark: <Icon name="moon" />,
-        "high-contrast": <Icon name="contrast" />,
+        light: <Icon name="light-mode" />,
+        dark: <Icon name="dark-mode" />,
+        "high-contrast": <Icon name="high-contrast-mode" />,
     };
     const densityLabels: Record<ThemeDensity, string> = {
         comfortable: intl.formatMessage({ id: "dextinity.appFrame.userMenu.density.comfortable", defaultMessage: "Comfortable" }),
@@ -84,7 +84,7 @@ export function AppFrameUserMenu({ colorScheme, onColorSchemeChange, density, on
                     >
                         <MenuItem
                             label={intl.formatMessage({ id: "dextinity.generic.stopImpersonation", defaultMessage: "Regain original identity" })}
-                            icon={<Icon name="refresh" />}
+                            icon={<Icon name="reload" />}
                             onClick={() => void stopImpersonation()}
                         />
                     </MenuGroup>
@@ -95,7 +95,7 @@ export function AppFrameUserMenu({ colorScheme, onColorSchemeChange, density, on
                 <>
                     <MenuItem
                         label={intl.formatMessage({ id: "dextinity.appFrame.userMenu.myAccount", defaultMessage: "My account" })}
-                        icon={<Icon name="user" />}
+                        icon={<Icon name="account" />}
                         onClick={() => window.open(user.accountUrl, "_blank", "noopener,noreferrer")}
                     />
                     <MenuSeparator />

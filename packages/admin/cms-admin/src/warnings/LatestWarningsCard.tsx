@@ -59,14 +59,14 @@ export function LatestWarningsCard({ warningsUrl, showAllScopes = false }: Lates
                 <Skeleton variant="row" count={3} />
             ) : error ? (
                 <EmptyState
-                    icon={<Icon name="alert" />}
+                    icon={<Icon name="error" />}
                     title={intl.formatMessage({ id: "dextinity.latestWarningsCard.error.title", defaultMessage: "Couldn't load" })}
                     description={intl.formatMessage({
                         id: "dextinity.latestWarningsCard.error.description",
                         defaultMessage: "The warnings couldn't be loaded. Your content is not affected.",
                     })}
                     actions={
-                        <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="refresh" />} onClick={() => refetch()}>
+                        <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="reload" />} onClick={() => refetch()}>
                             <FormattedMessage id="dextinity.latestWarningsCard.error.retry" defaultMessage="Load again" />
                         </Button>
                     }

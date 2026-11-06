@@ -113,7 +113,7 @@ export function AppFrame({
             label: navCollapsed
                 ? intl.formatMessage({ id: "dextinity.appFrame.command.expandNavigation", defaultMessage: "Expand navigation" })
                 : intl.formatMessage({ id: "dextinity.appFrame.command.collapseNavigation", defaultMessage: "Collapse navigation" }),
-            icon: <Icon name={navCollapsed ? "sidebar-open" : "sidebar-close"} />,
+            icon: <Icon name={navCollapsed ? "pin-right" : "pin-left"} />,
             shortcut: formatShortcut("mod+\\").join(isApplePlatform() ? "" : "+"),
             onSelect: () => setNavCollapsed(!navCollapsed),
         },
@@ -123,7 +123,7 @@ export function AppFrame({
                 colorScheme === "light"
                     ? intl.formatMessage({ id: "dextinity.appFrame.command.darkColorScheme", defaultMessage: "Switch to dark theme" })
                     : intl.formatMessage({ id: "dextinity.appFrame.command.lightColorScheme", defaultMessage: "Switch to light theme" }),
-            icon: <Icon name={colorScheme === "light" ? "moon" : "sun"} />,
+            icon: <Icon name={colorScheme === "light" ? "dark-mode" : "light-mode"} />,
             onSelect: () => onColorSchemeChange(colorScheme === "light" ? "dark" : "light"),
         },
     ];
@@ -131,7 +131,7 @@ export function AppFrame({
         commands.push({
             id: "toggle-ai-assistant",
             label: intl.formatMessage({ id: "dextinity.appFrame.command.toggleAiAssistant", defaultMessage: "Toggle AI assistant" }),
-            icon: <Icon name="sparkle" />,
+            icon: <Icon name="artificial-intelligence" />,
             shortcut: formatShortcut("mod+j").join(isApplePlatform() ? "" : "+"),
             onSelect: () => aiAssistant.onOpenChange(!aiAssistant.open),
         });

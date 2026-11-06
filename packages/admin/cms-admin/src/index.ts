@@ -237,6 +237,7 @@ export { useSaveConflict } from "./pages/useSaveConflict";
 export { useSaveConflictQuery } from "./pages/useSaveConflictQuery";
 export { useSavePageShortcut } from "./pages/useSavePageShortcut";
 export { BlockPreview } from "./preview/block/BlockPreview";
+export { BlockPreviewPane, type BlockPreviewPaneProps } from "./preview/block/BlockPreviewPane";
 export { BlockPreviewWithTabs } from "./preview/block/BlockPreviewWithTabs";
 export { SplitPreview } from "./preview/block/SplitPreview";
 export type { BlockPreviewApi } from "./preview/block/useBlockPreview";

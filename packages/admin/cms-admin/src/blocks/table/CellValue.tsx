@@ -1,4 +1,4 @@
-import { alpha, styled } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 
 import { useTableBlockContext } from "./TableBlockContext";
 
@@ -6,68 +6,77 @@ type Props = {
     highlighted: boolean;
     isTemporarilyHighlighted?: boolean;
     value: unknown;
+    /** Finds the cell to scroll to, e.g. the cell clicked in the preview. */
+    cellKey?: string;
 };
 
-export const CellValue = ({ highlighted, isTemporarilyHighlighted, value }: Props) => {
+export const tableCellKeyAttribute = "data-table-cell-key";
+
+export const CellValue = ({ highlighted, isTemporarilyHighlighted, value, cellKey }: Props) => {
     const { RichTextBlock } = useTableBlockContext();
 
     return (
-        <CellValueContainer $highlighted={highlighted} $isTemporarilyHighlighted={isTemporarilyHighlighted}>
-            <RteContentWrapper>
-                <RteContent>
-                    <RichTextBlock.ReadOnlyComponent state={value} />
-                </RteContent>
-            </RteContentWrapper>
+        <CellValueContainer
+            {...{ [tableCellKeyAttribute]: cellKey }}
+            data-highlighted={highlighted ? "" : undefined}
+            data-temporarily-highlighted={isTemporarilyHighlighted ? "" : undefined}
+        >
+            <RteContent>
+                <RichTextBlock.ReadOnlyComponent state={value} />
+            </RteContent>
         </CellValueContainer>
     );
 };
 
-const CellValueContainer = styled("div")<{ $highlighted: boolean; $isTemporarilyHighlighted?: boolean }>(
-    ({ $highlighted, $isTemporarilyHighlighted, theme }) => ({
-        position: "relative",
-        backgroundColor: $highlighted ? theme.palette.grey[50] : "transparent",
-        marginLeft: theme.spacing(-2),
-        marginRight: theme.spacing(-2),
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
-        height: "100%",
+// Fills the cell's padding, so a highlighted row or column reads as a stripe
+const CellValueContainer = styled("div")`
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-block-size: var(--dextinity-data-grid-row-height);
+    margin-inline: calc(-1 * var(--dextinity-data-grid-cell-padding));
+    padding: var(--dextinity-space-2) var(--dextinity-data-grid-cell-padding);
 
-        "&:after": {
-            content: "''",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: alpha(theme.palette.primary.dark, 0.4),
-            opacity: $isTemporarilyHighlighted ? 1 : 0,
-            transition: "opacity 1s ease-in-out",
-            pointerEvents: "none",
-        },
-    }),
-);
+    &[data-highlighted] {
+        background: color-mix(in oklch, var(--dextinity-color-text) 6%, transparent);
+    }
 
-const RteContentWrapper = styled("div")(({ theme }) => ({
-    overflow: "hidden",
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-    // The data grid sets a line height as tall as the row, which cell content inherits.
-    lineHeight: "normal",
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--dextinity-color-accent-soft);
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        pointer-events: none;
+    }
 
-    ".DextinityAdminRteBlockElement-root:first-child, .MuiTypography-root:first-child": {
-        marginTop: 0,
-    },
+    &[data-temporarily-highlighted]::after {
+        opacity: 1;
+    }
+`;
 
-    ".DextinityAdminRteBlockElement-root:last-child, .MuiTypography-root:last-child": {
-        marginBottom: 0,
-    },
-}));
+const RteContent = styled("div")`
+    color: var(--dextinity-data-grid-foreground);
+    max-block-size: 7.5em;
+    overflow: hidden;
+    pointer-events: none;
 
-const RteContent = styled("div")({
-    marginTop: "auto",
-    marginBottom: "auto",
-    pointerEvents: "none",
-});
+    // The rich text renders with the MUI theme, which doesn't follow the color scheme of the design system
+    .MuiTypography-root {
+        color: inherit;
+    }
+
+    .DextinityAdminRteBlockElement-root:first-of-type,
+    .MuiTypography-root:first-of-type,
+    p:first-of-type {
+        margin-block-start: 0;
+    }
+
+    .DextinityAdminRteBlockElement-root:last-of-type,
+    .MuiTypography-root:last-of-type,
+    p:last-of-type {
+        margin-block-end: 0;
+    }
+`;

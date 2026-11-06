@@ -39,11 +39,11 @@ describe("TableBlock: Copy and paste a row", () => {
 
         const rows = within(rowgroup).getAllByRole("row");
         const sourceRowElement = rows[sourceRowIndex];
-        const sourceRowCells = within(sourceRowElement).getAllByRole("gridcell");
+        const sourceRowCells = within(sourceRowElement).getAllByRole("cell");
 
         const newlyInsertedRowIndex = targetRowIndex + 1;
         const newRowElement = rows[newlyInsertedRowIndex];
-        const newRowCells = within(newRowElement).getAllByRole("gridcell");
+        const newRowCells = within(newRowElement).getAllByRole("cell");
 
         const sourceRowValues = initialBlockData.rows[sourceRowIndex].cellValues.map((cellValue) => getPlainTextFromState(cellValue.value));
 

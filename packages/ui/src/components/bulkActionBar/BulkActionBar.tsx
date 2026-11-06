@@ -1,6 +1,6 @@
 import { Toolbar } from "@base-ui/react/toolbar";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type KeyboardEvent, type ReactNode, useState } from "react";
+import { forwardRef, Fragment, type HTMLAttributes, type KeyboardEvent, type ReactNode, useId, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -27,6 +27,11 @@ export interface BulkActionBarAction {
     color?: "default" | "error";
     /** Prevents running the action, e.g. when it doesn't apply to every selected item. */
     disabled?: boolean;
+    /**
+     * Why the action is disabled, e.g. "Select the subpages too to delete a page". Shown in a tooltip and read with the button, so
+     * people know what to change instead of guessing.
+     */
+    disabledReason?: string;
     /** Runs the action on the selected items. */
     onClick: () => void;
 }
@@ -78,6 +83,7 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
     ref,
 ) {
     const labels = { ...defaultBulkActionBarLabels, ...labelsProp };
+    const reasonIdPrefix = useId();
     const ownerState: BulkActionBarOwnerState = { open: count > 0 };
     // Keeps showing the last count while the bar fades out after the selection was cleared
     const [shownCount, setShownCount] = useState(count);
@@ -113,7 +119,7 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
             }}
         >
             <span {...countProps}>{labels.count(shownCount)}</span>
-            {actions.map((action) => {
+            {actions.map((action, index) => {
                 const actionProps = resolveSlotProps<BulkActionBarOwnerState, typeof Toolbar.Button, typeof Toolbar.Button>({
                     ownProps: {
                         className: styles.action,
@@ -123,8 +129,15 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
                     slotProps: slotProps?.action,
                     ownerState,
                 });
-                return (
-                    <Toolbar.Button key={action.label} data-color={action.color ?? "default"} {...actionProps}>
+                const disabledReason = action.disabled === true ? action.disabledReason : undefined;
+                const reasonId = `${reasonIdPrefix}-${index}`;
+                const button = (
+                    <Toolbar.Button
+                        key={action.label}
+                        data-color={action.color ?? "default"}
+                        aria-describedby={disabledReason != null ? reasonId : undefined}
+                        {...actionProps}
+                    >
                         {action.icon != null && (
                             <span className={styles.actionIcon} aria-hidden>
                                 {action.icon}
@@ -132,6 +145,16 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
                         )}
                         {action.label}
                     </Toolbar.Button>
+                );
+                return disabledReason != null ? (
+                    <Fragment key={action.label}>
+                        <Tooltip content={disabledReason}>{button}</Tooltip>
+                        <span id={reasonId} hidden>
+                            {disabledReason}
+                        </span>
+                    </Fragment>
+                ) : (
+                    button
                 );
             })}
             <Tooltip content={labels.clear}>

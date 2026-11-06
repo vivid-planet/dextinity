@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent, waitFor } from "storybook/test";
+import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
@@ -102,7 +102,7 @@ export const Keyboard: Story = {
 };
 
 /**
- * A disabled action doesn't apply to the current selection.
+ * A disabled action doesn't apply to the current selection. `disabledReason` explains why in a tooltip, on hover and keyboard focus.
  */
 export const DisabledAction: Story = {
     args: {
@@ -110,6 +110,21 @@ export const DisabledAction: Story = {
         actions: [
             { label: "Publish", icon: <Icon name="check" />, onClick: fn() },
             { label: "Translate", icon: <Icon name="translate" />, disabled: true, onClick: fn() },
+            {
+                label: "Delete",
+                icon: <Icon name="delete" />,
+                color: "error",
+                disabled: true,
+                disabledReason: "Select the subpages too to delete a page",
+                onClick: fn(),
+            },
         ],
+    },
+    play: async ({ args, canvas }) => {
+        const deleteButton = canvas.getByRole("button", { name: "Delete" });
+        await userEvent.hover(deleteButton);
+        await expect(await screen.findByRole("tooltip")).toHaveTextContent("Select the subpages too to delete a page");
+        await userEvent.click(deleteButton);
+        await expect(args.actions[2].onClick).not.toHaveBeenCalled();
     },
 };

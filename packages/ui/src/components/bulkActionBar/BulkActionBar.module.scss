@@ -65,7 +65,7 @@
     &[data-disabled] {
         opacity: 0.45;
         cursor: default;
-        pointer-events: none;
+        background: transparent;
     }
 }
 

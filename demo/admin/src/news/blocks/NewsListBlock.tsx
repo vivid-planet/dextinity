@@ -129,7 +129,7 @@ export const NewsListBlock: BlockInterface<NewsListBlockData, State, NewsListBlo
                     footer={
                         state.ids.length > 0 ? (
                             <>
-                                <Typography variant="small">
+                                <Typography variant="small" element="span">
                                     <FormattedMessage
                                         id="blocks.newsList.selectedCount"
                                         defaultMessage="{count, plural, one {# news selected} other {# news selected}}"

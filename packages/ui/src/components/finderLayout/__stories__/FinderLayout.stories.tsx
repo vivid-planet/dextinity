@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { PageTypeShell, StructureFrame, StructureRegion } from "../../../storybook/pageTypes/PageTypeShell";
 import { PatternLegend, PatternPage, PatternRules, PatternSection, PatternShortcuts, PatternUses } from "../../../storybook/patterns/PatternPage";
@@ -22,6 +22,7 @@ const folders: AssetBrowserFolder[] = [
     { id: "campaigns", name: "Campaigns", parentId: "root" },
     { id: "spring", name: "Spring 2026", parentId: "campaigns" },
     { id: "documents", name: "Documents", parentId: "root" },
+    { id: "policies", name: "Policies and agreements for applicants and employees", parentId: "documents" },
 ];
 
 const images = [landscapeImage, interiorImage, portraitImage];
@@ -97,6 +98,7 @@ function AssetsPage() {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [currentAssets, setCurrentAssets] = useState(assets);
     const [currentFolders, setCurrentFolders] = useState(folders);
+    const [sidebarWidth, setSidebarWidth] = useState<number>();
 
     return (
         <FinderLayout
@@ -125,6 +127,8 @@ function AssetsPage() {
                 onViewChange={setView}
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
+                sidebarWidth={sidebarWidth}
+                onSidebarWidthChange={setSidebarWidth}
                 onMove={(ids, targetId) => {
                     setCurrentAssets((current) => current.map((asset) => (ids.includes(asset.id) ? { ...asset, folderId: targetId } : asset)));
                     setCurrentFolders((current) => current.map((folder) => (ids.includes(folder.id) ? { ...folder, parentId: targetId } : folder)));
@@ -175,7 +179,7 @@ type Story = StoryObj<typeof meta>;
  *
  * **Rules**
  *
- * - Do: behave like the macOS Finder; remember the view per user.
+ * - Do: behave like the macOS Finder; remember the view and the folder tree's width per user.
  * - Don't: invent shortcuts where the Finder has its own; nest folders deeper than five levels.
  */
 export const Default: Story = {
@@ -190,6 +194,11 @@ export const Default: Story = {
         await expect(canvas.getAllByText("Job ads").length).toBeGreaterThan(0);
         await userEvent.click(within(sidebar).getByText("All assets"));
         await expect(canvas.getAllByText("career-stage.jpg").length).toBeGreaterThan(0);
+        const separator = canvas.getByRole("separator", { name: /resize folders/i });
+        separator.focus();
+        await userEvent.keyboard("{End}");
+        await waitFor(() => expect(separator.getAttribute("aria-valuenow")).toBe(separator.getAttribute("aria-valuemax")));
+        await userEvent.dblClick(separator);
     },
 };
 

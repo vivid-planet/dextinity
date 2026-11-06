@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent, waitFor } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -91,9 +91,18 @@ function ControlledAssetBrowser(props: AssetBrowserProps) {
     const [selectedIds, setSelectedIds] = useState<string[]>([...props.selectedIds]);
     const [currentFolders, setCurrentFolders] = useState(props.folders);
     const [currentAssets, setCurrentAssets] = useState(props.assets);
+    const [sidebarWidth, setSidebarWidth] = useState(props.sidebarWidth);
     return (
         <AssetBrowser
             {...props}
+            sidebarWidth={sidebarWidth}
+            onSidebarWidthChange={
+                props.onSidebarWidthChange &&
+                ((width) => {
+                    props.onSidebarWidthChange?.(width);
+                    setSidebarWidth(width);
+                })
+            }
             folders={currentFolders}
             assets={currentAssets}
             folderId={folderId}
@@ -160,6 +169,7 @@ const meta = {
         labels: { control: false },
         className: { control: false },
         slotProps: { control: false },
+        sidebarWidth: { control: false },
     },
     render: (args) => <ControlledAssetBrowser {...args} />,
 } satisfies Meta<typeof AssetBrowser>;
@@ -254,5 +264,43 @@ export const Delete: Story = {
         await userEvent.keyboard("{Delete}");
         await waitFor(() => expect(args.onDelete).toHaveBeenCalledWith(["a5"]));
         await expect(canvas.queryByText("campaign.mp4")).toBeNull();
+    },
+};
+
+const deepFolders: AssetBrowserFolder[] = [
+    ...folders,
+    { id: "press", name: "Press releases and media kits for the annual general meeting", parentId: "documents" },
+    { id: "press-2026", name: "2026 · Shareholder letters, translated into all languages", parentId: "press" },
+    { id: "brand", name: "Brand guidelines, logos, and partner co-branding templates", parentId: "root" },
+];
+
+/**
+ * Drag the edge of the folder tree, or focus it and use ← and →, Home, and End, to make long folder names readable; double-click it to
+ * go back to the theme's width. Remember the width per user.
+ */
+export const ResizableSidebar: Story = {
+    args: { folders: deepFolders, folderId: "press-2026", onSidebarWidthChange: fn() },
+    play: async ({ args, canvasElement }) => {
+        const separator = within(canvasElement).getByRole("separator", { name: "Resize folders" });
+        const sidebar = within(canvasElement).getByRole("navigation", { name: "Folders" });
+        const startWidth = Math.round(sidebar.getBoundingClientRect().width);
+        await expect(separator).toHaveAttribute("aria-valuenow", String(startWidth));
+
+        const { x, y, width } = separator.getBoundingClientRect();
+        await userEvent.pointer([
+            { keys: "[MouseLeft>]", target: separator, coords: { clientX: x + width / 2, clientY: y + 40 } },
+            { target: separator, coords: { clientX: x + width / 2 + 120, clientY: y + 40 } },
+            { keys: "[/MouseLeft]", target: separator },
+        ]);
+        await waitFor(() => expect(args.onSidebarWidthChange).toHaveBeenLastCalledWith(startWidth + 120));
+        await waitFor(() => expect(Math.round(sidebar.getBoundingClientRect().width)).toBe(startWidth + 120));
+
+        await userEvent.keyboard("{ArrowLeft}");
+        await waitFor(() => expect(args.onSidebarWidthChange).toHaveBeenLastCalledWith(startWidth + 104));
+        await waitFor(() => expect(separator).toHaveAttribute("aria-valuenow", String(startWidth + 104)));
+
+        await userEvent.dblClick(separator);
+        await waitFor(() => expect(args.onSidebarWidthChange).toHaveBeenLastCalledWith(undefined));
+        await waitFor(() => expect(Math.round(sidebar.getBoundingClientRect().width)).toBe(startWidth));
     },
 };

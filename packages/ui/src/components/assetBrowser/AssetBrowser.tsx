@@ -5,7 +5,9 @@ import {
     type HTMLAttributes,
     type KeyboardEvent,
     type MouseEvent,
+    type PointerEvent,
     type ReactNode,
+    useCallback,
     useEffect,
     useId,
     useRef,
@@ -88,6 +90,8 @@ export interface AssetBrowserLabels {
     itemCount: (count: number) => string;
     /** The number of selected items, in the path bar. */
     selectedCount: (selected: number, total: number) => string;
+    /** The accessible name of the handle that resizes the folder tree. */
+    resizeSidebar: string;
 }
 
 const defaultLabels: AssetBrowserLabels = {
@@ -105,7 +109,13 @@ const defaultLabels: AssetBrowserLabels = {
     empty: "This folder is empty",
     itemCount: (count) => (count === 1 ? "1 item" : `${count} items`),
     selectedCount: (selected, total) => `${selected} of ${total} selected`,
+    resizeSidebar: "Resize folders",
 };
+
+// Keeps the content usable when the sidebar is dragged wide in a narrow browser
+const minContentWidth = 320;
+const resizeStep = 16;
+const largeResizeStep = 64;
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -118,6 +128,8 @@ export type AssetBrowserOwnerState = {
 export interface AssetBrowserSlotProps {
     /** Props for the `sidebar` slot, which holds the folder tree. */
     sidebar?: SlotPropsValue<AssetBrowserOwnerState, "nav">;
+    /** Props for the `resizeHandle` slot, the separator on the sidebar's edge. Only rendered when the sidebar can be resized. */
+    resizeHandle?: SlotPropsValue<AssetBrowserOwnerState, "div">;
     /** Props for the `toolbar` slot. */
     toolbar?: SlotPropsValue<AssetBrowserOwnerState, "div">;
     /** Props for the `content` slot, the area showing the folder's items. */
@@ -157,6 +169,25 @@ export interface AssetBrowserProps extends Omit<HTMLAttributes<HTMLDivElement>, 
     onDelete?: (ids: string[]) => void;
     /** Further controls in the toolbar, e.g. search, "New folder", and "Upload". */
     toolbar?: ReactNode;
+    /** The width of the folder tree in pixels; `undefined` uses the theme's width. Remember it per user. */
+    sidebarWidth?: number;
+    /**
+     * Called with the width the folder tree is resized to by dragging its edge or with the arrow keys, Home, and End on it, and with
+     * `undefined` when the edge is double-clicked to go back to the theme's width. The folder tree can only be resized when set.
+     */
+    onSidebarWidthChange?: (width: number | undefined) => void;
+    /**
+     * The narrowest the folder tree can be resized to, in pixels.
+     *
+     * @defaultValue `160`
+     */
+    sidebarMinWidth?: number;
+    /**
+     * The widest the folder tree can be resized to, in pixels. It also leaves the content at least 320 pixels.
+     *
+     * @defaultValue `560`
+     */
+    sidebarMaxWidth?: number;
     /** The built-in texts. */
     labels?: Partial<AssetBrowserLabels>;
     /** Added alongside the component's own classes. */
@@ -198,6 +229,10 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         onMove,
         onDelete,
         toolbar,
+        sidebarWidth,
+        onSidebarWidthChange,
+        sidebarMinWidth = 160,
+        sidebarMaxWidth = 560,
         labels: labelsProp,
         className,
         slotProps,
@@ -218,6 +253,23 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
     const contentRef = useRef<HTMLDivElement>(null);
     const columnsRef = useRef<HTMLDivElement>(null);
     const focusContentAfterNavigation = useRef(false);
+    const rootRef = useRef<HTMLDivElement | null>(null);
+    const sidebarRef = useRef<HTMLElement>(null);
+    const resizeStart = useRef<{ pointerX: number; width: number; direction: 1 | -1 } | undefined>(undefined);
+    const [isResizing, setIsResizing] = useState(false);
+    const [measured, setMeasured] = useState<{ sidebar: number; root: number }>();
+    const isResizable = onSidebarWidthChange != null;
+    const setRootRef = useCallback(
+        (element: HTMLDivElement | null) => {
+            rootRef.current = element;
+            if (typeof ref === "function") {
+                ref(element);
+            } else if (ref != null) {
+                ref.current = element;
+            }
+        },
+        [ref],
+    );
 
     const folderById = new Map(folders.map((folder) => [folder.id, folder]));
     const ancestorsOf = (id: string) => {
@@ -272,6 +324,88 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
             row.toggleAttribute("data-drop-target", row.dataset.id === dropFolderId);
         });
     }, [dropFolderId]);
+
+    useEffect(() => {
+        const root = rootRef.current;
+        const sidebar = sidebarRef.current;
+        if (!isResizable || root == null || sidebar == null || typeof ResizeObserver === "undefined") {
+            return;
+        }
+        const observer = new ResizeObserver(() => {
+            setMeasured({ sidebar: sidebar.getBoundingClientRect().width, root: root.getBoundingClientRect().width });
+        });
+        observer.observe(root);
+        observer.observe(sidebar);
+        return () => observer.disconnect();
+    }, [isResizable]);
+
+    const effectiveMaxWidth = () => {
+        const rootWidth = rootRef.current?.getBoundingClientRect().width ?? 0;
+        const available = rootWidth > 0 ? rootWidth - minContentWidth : sidebarMaxWidth;
+        return Math.max(sidebarMinWidth, Math.min(sidebarMaxWidth, available));
+    };
+    const clampSidebarWidth = (width: number) => Math.round(Math.min(effectiveMaxWidth(), Math.max(sidebarMinWidth, width)));
+    const currentSidebarWidth = () => {
+        const renderedWidth = sidebarRef.current?.getBoundingClientRect().width ?? 0;
+        return renderedWidth > 0 ? renderedWidth : (sidebarWidth ?? sidebarMinWidth);
+    };
+
+    const handleResizePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+        if (event.button !== 0 || rootRef.current == null) {
+            return;
+        }
+        event.preventDefault();
+        try {
+            event.currentTarget.setPointerCapture(event.pointerId);
+        } catch {
+            // Synthetic pointers, e.g. from testing tools, can't be captured; the drag then follows the handle only
+        }
+        event.currentTarget.focus({ preventScroll: true });
+        resizeStart.current = {
+            pointerX: event.clientX,
+            width: currentSidebarWidth(),
+            direction: getComputedStyle(rootRef.current).direction === "rtl" ? -1 : 1,
+        };
+        setIsResizing(true);
+    };
+    const handleResizePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+        const start = resizeStart.current;
+        if (start == null) {
+            return;
+        }
+        onSidebarWidthChange?.(clampSidebarWidth(start.width + (event.clientX - start.pointerX) * start.direction));
+    };
+    const handleResizePointerEnd = (event: PointerEvent<HTMLDivElement>) => {
+        if (resizeStart.current == null) {
+            return;
+        }
+        resizeStart.current = undefined;
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+            event.currentTarget.releasePointerCapture(event.pointerId);
+        }
+        setIsResizing(false);
+    };
+    const handleResizeKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+        const isRtl = rootRef.current != null && getComputedStyle(rootRef.current).direction === "rtl";
+        const step = event.shiftKey ? largeResizeStep : resizeStep;
+        const widen = isRtl ? "ArrowLeft" : "ArrowRight";
+        const narrow = isRtl ? "ArrowRight" : "ArrowLeft";
+        let width: number | undefined;
+        if (event.key === widen) {
+            width = currentSidebarWidth() + step;
+        } else if (event.key === narrow) {
+            width = currentSidebarWidth() - step;
+        } else if (event.key === "Home") {
+            width = sidebarMinWidth;
+        } else if (event.key === "End") {
+            width = effectiveMaxWidth();
+        }
+        if (width == null) {
+            return;
+        }
+        event.preventDefault();
+        onSidebarWidthChange?.(clampSidebarWidth(width));
+    };
 
     const focusItem = (id: string) => {
         setActiveId(id);
@@ -674,9 +808,32 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         return treeItem?.dataset.id;
     };
 
+    const sidebarId = `${baseId}-sidebar`;
     const sidebarProps = resolveSlotProps<AssetBrowserOwnerState, "nav", "nav">({
-        ownProps: { className: styles.sidebar, "aria-label": labels.folders },
+        ownProps: { ref: sidebarRef, id: sidebarId, className: styles.sidebar, "aria-label": labels.folders },
         slotProps: slotProps?.sidebar,
+        ownerState,
+    });
+    const resizeHandleProps = resolveSlotProps<AssetBrowserOwnerState, "div", "div">({
+        ownProps: {
+            className: styles.resizeHandle,
+            role: "separator",
+            tabIndex: 0,
+            "aria-label": labels.resizeSidebar,
+            "aria-controls": sidebarId,
+            "aria-orientation": "vertical",
+            "aria-valuemin": sidebarMinWidth,
+            "aria-valuemax":
+                measured != null ? Math.max(sidebarMinWidth, Math.min(sidebarMaxWidth, measured.root - minContentWidth)) : sidebarMaxWidth,
+            "aria-valuenow": Math.round(measured?.sidebar ?? sidebarWidth ?? sidebarMinWidth),
+            onPointerDown: handleResizePointerDown,
+            onPointerMove: handleResizePointerMove,
+            onPointerUp: handleResizePointerEnd,
+            onPointerCancel: handleResizePointerEnd,
+            onKeyDown: handleResizeKeyDown,
+            onDoubleClick: () => onSidebarWidthChange?.(undefined),
+        },
+        slotProps: slotProps?.resizeHandle,
         ownerState,
     });
     const toolbarProps = resolveSlotProps<AssetBrowserOwnerState, "div", "div">({
@@ -710,7 +867,23 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
     const visibleSelectedCount = itemIds.filter((id) => selected.has(id)).length;
 
     return (
-        <div {...restProps} ref={ref} data-view={ownerState.view} data-mode={ownerState.mode} className={clsx(styles.root, className)}>
+        <div
+            {...restProps}
+            ref={setRootRef}
+            data-view={ownerState.view}
+            data-mode={ownerState.mode}
+            data-resizable={isResizable || undefined}
+            data-resizing={isResizing || undefined}
+            className={clsx(styles.root, className)}
+            style={
+                sidebarWidth != null
+                    ? {
+                          ...restProps.style,
+                          ["--dextinity-asset-browser-sidebar-width" as string]: `${Math.max(sidebarMinWidth, Math.min(sidebarMaxWidth, sidebarWidth))}px`,
+                      }
+                    : restProps.style
+            }
+        >
             <nav {...sidebarProps}>
                 <div ref={treeRef} className={styles.tree}>
                     <TreeView
@@ -750,6 +923,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                     />
                 </div>
             </nav>
+            {isResizable && <div {...resizeHandleProps} />}
             <div className={styles.main}>
                 <div {...toolbarProps}>
                     <IconButton

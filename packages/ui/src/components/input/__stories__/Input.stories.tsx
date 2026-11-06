@@ -44,7 +44,7 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
-        type: { control: "select", options: ["text", "email", "password", "number", "search", "tel", "url"] },
+        type: { control: "select", options: ["text", "email", "password", "number", "search", "tel", "url", "date"] },
         state: { control: "select", options: ["default", "success", "warning", "error"] },
         size: { control: "radio", options: ["small", "default", "large"] },
         prefix: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
@@ -144,6 +144,21 @@ export const Search: Story = {
         placeholder: "Search job ads",
         prefix: <Icon name="search" />,
         suffix: <Kbd>/</Kbd>,
+    },
+};
+
+/**
+ * A calendar date with the browser's date picker; the value is `YYYY-MM-DD`.
+ */
+export const DateInput: Story = {
+    args: {
+        name: "publishedOn",
+        label: "Published on",
+        type: "date",
+        value: "2026-10-02",
+    },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByLabelText("Published on")).toHaveValue("2026-10-02");
     },
 };
 

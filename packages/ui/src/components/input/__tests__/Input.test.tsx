@@ -16,6 +16,14 @@ describe("Input", () => {
         expect(screen.getByRole("textbox").className).toContain("dextinityInput__control");
     });
 
+    it("renders a date input with its value", () => {
+        const { container } = render(<Input name="date" label="Date" type="date" value="2026-10-02" onChange={vi.fn()} />);
+
+        const input = screen.getByLabelText("Date") as HTMLInputElement;
+        expect((container.firstElementChild as HTMLElement).dataset.type).toBe("date");
+        expect([input.type, input.value]).toStrictEqual(["date", "2026-10-02"]);
+    });
+
     it("passes unknown props and the ref to the input, keeping a consumer description next to its own", () => {
         const ref = { current: null as HTMLInputElement | null };
         render(

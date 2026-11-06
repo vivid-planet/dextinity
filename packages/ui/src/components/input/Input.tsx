@@ -4,7 +4,7 @@ import { type ChangeEvent, forwardRef, type InputHTMLAttributes } from "react";
 import { Field, type FieldBaseProps, type FieldOwnerState, type FieldProps } from "../field/Field";
 import styles from "./Input.module.scss";
 
-type InputType = "text" | "email" | "password" | "number" | "search" | "tel" | "url";
+type InputType = "text" | "email" | "password" | "number" | "search" | "tel" | "url" | "date";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -27,7 +27,7 @@ export interface InputProps
     /** Called on every change; set `value` from it. */
     onChange: (event: ChangeEvent<HTMLInputElement>) => void;
     /**
-     * Controls validation and the on-screen keyboard.
+     * Controls validation and the on-screen keyboard; `date` shows the browser's date picker and takes the value as `YYYY-MM-DD`.
      *
      * @defaultValue `"text"`
      */

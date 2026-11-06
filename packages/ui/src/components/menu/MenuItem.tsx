@@ -1,9 +1,10 @@
 import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { clsx } from "clsx";
-import { type ElementType, type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
+import { type ElementType, type ForwardedRef, forwardRef, type ReactNode, type RefAttributes, useId } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Kbd } from "../kbd/Kbd";
+import { Tooltip } from "../tooltip/Tooltip";
 import styles from "./MenuItem.module.scss";
 
 type MenuItemColor = "default" | "error";
@@ -56,6 +57,11 @@ export interface MenuItemProps<IconElement extends ElementType = "span"> extends
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /**
+     * Why the item is disabled, e.g. "Only admins can delete pages". Shown in a tooltip and read with the item, so people know what to
+     * change instead of guessing.
+     */
+    disabledReason?: string;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -69,11 +75,24 @@ export interface MenuItemProps<IconElement extends ElementType = "span"> extends
  */
 export const MenuItem: <IconElement extends ElementType = "span">(props: MenuItemProps<IconElement> & RefAttributes<HTMLDivElement>) => ReactNode =
     forwardRef(function MenuItem<IconElement extends ElementType = "span">(
-        { label, icon, shortcut, color = "default", disabled = false, className, slots, slotProps, ...restProps }: MenuItemProps<IconElement>,
+        {
+            label,
+            icon,
+            shortcut,
+            color = "default",
+            disabled = false,
+            disabledReason,
+            className,
+            slots,
+            slotProps,
+            ...restProps
+        }: MenuItemProps<IconElement>,
         ref: ForwardedRef<HTMLDivElement>,
     ) {
         const ownerState: MenuItemOwnerState = { color, disabled };
         const IconSlot: ElementType = slots?.icon ?? "span";
+        const reasonId = useId();
+        const showsReason = ownerState.disabled && disabledReason != null;
 
         const iconProps = resolveSlotProps<MenuItemOwnerState, IconElement, "span">({
             ownProps: { className: styles.icon, "aria-hidden": true },
@@ -91,12 +110,13 @@ export const MenuItem: <IconElement extends ElementType = "span">(props: MenuIte
             ownerState,
         });
 
-        return (
+        const item = (
             <BaseMenu.Item
                 {...restProps}
                 ref={ref}
                 label={label}
                 disabled={ownerState.disabled}
+                aria-describedby={showsReason ? reasonId : restProps["aria-describedby"]}
                 data-color={ownerState.color}
                 className={clsx(styles.root, className)}
             >
@@ -104,5 +124,18 @@ export const MenuItem: <IconElement extends ElementType = "span">(props: MenuIte
                 <span {...labelProps}>{label}</span>
                 {shortcut != null && <Kbd {...shortcutProps} />}
             </BaseMenu.Item>
+        );
+
+        return showsReason ? (
+            <>
+                <Tooltip content={disabledReason} placement="right">
+                    {item}
+                </Tooltip>
+                <span id={reasonId} hidden>
+                    {disabledReason}
+                </span>
+            </>
+        ) : (
+            item
         );
     });

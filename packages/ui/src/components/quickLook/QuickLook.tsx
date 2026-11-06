@@ -178,20 +178,32 @@ export const QuickLook = forwardRef<HTMLDivElement, QuickLookProps>(function Qui
                                         {actions != null && <div {...actionsProps}>{actions}</div>}
                                         <BaseDialog.Close
                                             render={
-                                                <IconButton aria-label={labels.close}>
+                                                <IconButton variant="text" color="secondary" aria-label={labels.close}>
                                                     <Icon name="close" />
                                                 </IconButton>
                                             }
                                         />
                                     </div>
                                     <div className={styles.body}>
-                                        <IconButton aria-label={labels.previous} disabled={ownerState.first} onClick={() => step(-1)}>
+                                        <IconButton
+                                            variant="text"
+                                            color="secondary"
+                                            aria-label={labels.previous}
+                                            disabled={ownerState.first}
+                                            onClick={() => step(-1)}
+                                        >
                                             <Icon name="chevron-left" />
                                         </IconButton>
                                         <div {...previewProps}>
                                             {renderPreview != null ? renderPreview(item) : <img src={item.src} alt={item.alt ?? item.title} />}
                                         </div>
-                                        <IconButton aria-label={labels.next} disabled={ownerState.last} onClick={() => step(1)}>
+                                        <IconButton
+                                            variant="text"
+                                            color="secondary"
+                                            aria-label={labels.next}
+                                            disabled={ownerState.last}
+                                            onClick={() => step(1)}
+                                        >
                                             <Icon name="chevron-right" />
                                         </IconButton>
                                     </div>

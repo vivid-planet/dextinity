@@ -166,7 +166,7 @@ export const Default: Story = {
         checkedIds: ["benefits"],
         draggable: true,
         renderActions: (node) => (
-            <IconButton aria-label={`Add page below ${node.label}`} size="small" variant="text">
+            <IconButton color="secondary" aria-label={`Add page below ${node.label}`} size="small" variant="text">
                 <Icon name="plus" />
             </IconButton>
         ),

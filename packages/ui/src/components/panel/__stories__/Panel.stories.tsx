@@ -16,7 +16,7 @@ const actionOptions = {
         </Link>
     ),
     IconButton: (
-        <IconButton aria-label="More actions" size="small">
+        <IconButton variant="text" color="secondary" aria-label="More actions" size="small">
             <Icon name="more-horizontal" />
         </IconButton>
     ),

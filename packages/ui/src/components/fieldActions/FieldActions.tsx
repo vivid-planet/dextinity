@@ -261,6 +261,8 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
         >
             {translate && (
                 <IconButton
+                    variant="text"
+                    color="secondary"
                     size="small"
                     aria-label={labels.translate}
                     disabled={disabled || (pending && pendingAction !== "translate")}
@@ -272,6 +274,8 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
             )}
             {aiAssist && (
                 <IconButton
+                    variant="text"
+                    color="secondary"
                     size="small"
                     aria-label={labels.aiAssist}
                     disabled={disabled || (pending && pendingAction !== "aiAssist")}

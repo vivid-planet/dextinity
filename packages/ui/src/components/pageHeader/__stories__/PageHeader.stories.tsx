@@ -64,7 +64,7 @@ export const WithBack: Story = {
         back: { label: "Page tree", href: "#page-tree", onClick: fn() },
         actions: (
             <>
-                <IconButton aria-label="More actions" variant="text">
+                <IconButton color="secondary" aria-label="More actions" variant="text">
                     <Icon name="more-horizontal" />
                 </IconButton>
                 <Button>Publish</Button>

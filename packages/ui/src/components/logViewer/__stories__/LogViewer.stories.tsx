@@ -141,7 +141,7 @@ export const Follow: Story = {
 export const Actions: Story = {
     args: {
         actions: (
-            <IconButton size="small" aria-label="Download log" onClick={fn()}>
+            <IconButton variant="text" color="secondary" size="small" aria-label="Download log" onClick={fn()}>
                 <Icon name="download" />
             </IconButton>
         ),

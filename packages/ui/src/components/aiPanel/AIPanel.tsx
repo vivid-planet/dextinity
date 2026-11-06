@@ -191,7 +191,14 @@ export const AIPanel = forwardRef<HTMLElement, AIPanelProps>(function AIPanel(
                     </span>
                     <span className={styles.context}>{context}</span>
                 </span>
-                <IconButton aria-label={labels.close} size="small" onClick={() => onOpenChange(false)} className={styles.closeButton}>
+                <IconButton
+                    variant="text"
+                    color="secondary"
+                    aria-label={labels.close}
+                    size="small"
+                    onClick={() => onOpenChange(false)}
+                    className={styles.closeButton}
+                >
                     <Icon name="close" />
                 </IconButton>
             </div>
@@ -239,7 +246,14 @@ export const AIPanel = forwardRef<HTMLElement, AIPanelProps>(function AIPanel(
                         onKeyDown={handleKeyDown}
                         className={styles.input}
                     />
-                    <IconButton aria-label={labels.send} disabled={!canSend} onClick={send} className={styles.sendButton}>
+                    <IconButton
+                        variant="text"
+                        color="secondary"
+                        aria-label={labels.send}
+                        disabled={!canSend}
+                        onClick={send}
+                        className={styles.sendButton}
+                    >
                         <Icon name="arrow-up" />
                     </IconButton>
                 </div>

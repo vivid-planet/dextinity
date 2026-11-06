@@ -77,7 +77,7 @@ function ControlledBlockList(props: BlockListProps) {
                         selected={block.id === selectedId}
                         onSelect={() => setSelectedId(block.id)}
                         actions={
-                            <IconButton size="small" aria-label="More actions">
+                            <IconButton variant="text" color="secondary" size="small" aria-label="More actions">
                                 <Icon name="more-horizontal" />
                             </IconButton>
                         }
@@ -165,7 +165,7 @@ function BulkActionsBlockList(props: BlockListProps) {
         setBlocks((current) => current.map((block) => (checkedIds.includes(block.id) ? { ...block, visible } : block)));
     const action = (label: string, icon: ReactNode, onClick: () => void, disabled = !hasSelection) => (
         <Tooltip content={label}>
-            <IconButton size="small" aria-label={label} disabled={disabled} onClick={onClick}>
+            <IconButton variant="text" color="secondary" size="small" aria-label={label} disabled={disabled} onClick={onClick}>
                 {icon}
             </IconButton>
         </Tooltip>

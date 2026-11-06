@@ -7,7 +7,8 @@ import { Spinner } from "../spinner/Spinner";
 import { Tooltip, type TooltipProps } from "../tooltip/Tooltip";
 import styles from "./IconButton.module.scss";
 
-type IconButtonVariant = "text" | "outlined";
+type IconButtonVariant = "contained" | "outlined" | "text";
+type IconButtonColor = "primary" | "secondary" | "error" | "success";
 type IconButtonSize = "default" | "small";
 
 /**
@@ -15,6 +16,7 @@ type IconButtonSize = "default" | "small";
  */
 export type IconButtonOwnerState = {
     variant: IconButtonVariant;
+    color: IconButtonColor;
     size: IconButtonSize;
     disabled: boolean;
     loading: boolean;
@@ -46,20 +48,27 @@ export interface IconButtonSlotProps<Icon extends ElementType, LoadingSpinner ex
 
 export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinner extends ElementType = typeof Spinner> extends Omit<
     BaseButton.Props,
-    "className" | "ref" | "children"
+    "className" | "ref"
 > {
-    /** The icon, e.g. `<Icon name="more-horizontal" />`. */
-    children: ReactNode;
-    /** The accessible name of the button, also shown as its tooltip. Name the action, e.g. "More actions". */
+    /** Names the action, since the button shows no text. It is also shown as the button's tooltip, e.g. "More actions". */
     "aria-label": string;
+    /** The icon to show, e.g. `<Icon name="more-horizontal" />`. */
+    children?: ReactNode;
     /** A keyboard shortcut for the action, shown in the tooltip, e.g. `⌘S`. */
     shortcut?: string;
     /**
-     * Visual emphasis: `text` for toolbars and rows, `outlined` where the button stands alone on a surface.
+     * Visual emphasis: `contained` for the main action, `outlined` where the button stands alone on a surface, and `text` for toolbars
+     * and rows.
      *
-     * @defaultValue `"text"`
+     * @defaultValue `"contained"`
      */
     variant?: IconButtonVariant;
+    /**
+     * Use `error` for destructive actions and `success` for confirming ones, `secondary` for neutral ones, e.g. in toolbars and rows.
+     *
+     * @defaultValue `"primary"`
+     */
+    color?: IconButtonColor;
     /**
      * `small` in table rows, tree rows, and dense panels.
      *
@@ -91,17 +100,19 @@ function preventDefault(event: SyntheticEvent) {
 }
 
 /**
- * A button with only an icon. Its accessible name is also its tooltip, so every icon-only action explains itself.
+ * A button that shows only an icon, for actions that are clear without text. Its accessible name is also its tooltip, so every
+ * icon-only action explains itself.
  */
 export const IconButton: <Icon extends ElementType = "span", LoadingSpinner extends ElementType = typeof Spinner>(
     props: IconButtonProps<Icon, LoadingSpinner> & RefAttributes<HTMLButtonElement>,
 ) => ReactNode = forwardRef(function IconButton<Icon extends ElementType = "span", LoadingSpinner extends ElementType = typeof Spinner>(
     {
-        variant = "text",
-        size = "default",
-        disabled = false,
-        loading = false,
+        disabled,
+        loading,
         type = "button",
+        variant = "contained",
+        color = "primary",
+        size = "default",
         shortcut,
         className,
         slots,
@@ -113,7 +124,7 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
     }: IconButtonProps<Icon, LoadingSpinner>,
     ref: ForwardedRef<HTMLButtonElement>,
 ) {
-    const ownerState: IconButtonOwnerState = { variant, size, disabled, loading };
+    const ownerState: IconButtonOwnerState = { variant, color, size, disabled: disabled === true, loading: loading === true };
 
     const IconSlot: ElementType = slots?.icon ?? "span";
     const LoadingSpinnerSlot: ElementType = slots?.loadingSpinner ?? Spinner;
@@ -138,6 +149,7 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
                 aria-label={ariaLabel}
                 disabled={ownerState.disabled}
                 data-variant={ownerState.variant}
+                data-color={ownerState.color}
                 data-size={ownerState.size}
                 data-loading={ownerState.loading ? "" : undefined}
                 aria-busy={ownerState.loading || undefined}

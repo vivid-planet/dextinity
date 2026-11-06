@@ -45,7 +45,7 @@ function Addresses() {
                         <div style={rowStyle}>
                             <InputField name={`addresses[${index}].city`} label="City" required requiredMessage="Enter a city" />
                             <SelectField name={`addresses[${index}].country`} label="Country" options={countries} />
-                            <IconButton
+                            <IconButton variant="text" color="secondary"
                                 aria-label={`Remove address ${index + 1}`}
                                 disabled={addresses.length === 1}
                                 onClick={() =>

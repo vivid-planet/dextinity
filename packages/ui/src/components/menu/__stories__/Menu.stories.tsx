@@ -66,7 +66,7 @@ const meta = {
     render: (args) => <ControlledMenu {...args} />,
     args: {
         trigger: (
-            <IconButton aria-label="More actions" variant="outlined">
+            <IconButton color="secondary" aria-label="More actions" variant="outlined">
                 <Icon name="more-horizontal" />
             </IconButton>
         ),

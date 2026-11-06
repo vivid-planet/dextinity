@@ -279,6 +279,8 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                 {!ownerState.visible && <span className={styles.hiddenTag}>{labels.hidden}</span>}
                 {onVisibleChange != null && (
                     <IconButton
+                        variant="text"
+                        color="secondary"
                         size="small"
                         className={styles.visibility}
                         aria-label={labels.hide}
@@ -293,7 +295,7 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                 {ownerState.expandable && (
                     <Collapsible.Trigger
                         render={
-                            <IconButton size="small" className={styles.toggle} aria-label={labels.toggleFields}>
+                            <IconButton variant="text" color="secondary" size="small" className={styles.toggle} aria-label={labels.toggleFields}>
                                 <Icon name="chevron-down" className={styles.toggleIcon} />
                             </IconButton>
                         }

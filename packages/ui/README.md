@@ -110,7 +110,7 @@ The contract has two parts: **structural class names** for a component's element
 
 - **Enum state** → a single valued attribute: `data-variant="contained"`.
 - **Boolean state** → presence only: `data-disabled` (absent when false).
-- The attribute name is `data-` + the lowercased owner-state key. Owner-state keys are single lowercase words, so the name needs no kebab-casing.
+- The attribute name is `data-` + the owner-state key in lowercase: `readOnly` becomes `data-readonly`.
 
 **Emission.** These attributes cover owner-state values only; parts are class names. How a component emits them depends on its foundation: one rendered through `useRender` passes `state: ownerState` for base-ui to convert; one built on a base-ui primitive lets the primitive emit the state it owns and passes the rest inline (`data-variant={variant}`).
 

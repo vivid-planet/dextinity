@@ -52,8 +52,10 @@ export type { OptionalBlockOutput } from "./blocks/factories/createOptionalBlock
 export { createOptionalBlock } from "./blocks/factories/createOptionalBlock";
 export { createSpaceBlock } from "./blocks/factories/spaceBlock/createSpaceBlock";
 export { AutosaveFinalForm } from "./blocks/form/AutosaveFinalForm";
+export { BlockInputField, type BlockInputFieldProps, BlockTextareaField, type BlockTextareaFieldProps } from "./blocks/form/BlockInputField";
 export { BlocksFinalForm } from "./blocks/form/BlocksFinalForm";
 export { createFinalFormBlock } from "./blocks/form/createFinalFormBlock";
+export { useContentTranslationFieldActions } from "./blocks/form/useContentTranslationFieldActions";
 export { composeBlocks } from "./blocks/helpers/composeBlocks/composeBlocks";
 export { createCompositeBlockField } from "./blocks/helpers/composeBlocks/createCompositeBlockField";
 export { createCompositeBlockFields } from "./blocks/helpers/composeBlocks/createCompositeBlockFields";

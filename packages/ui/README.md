@@ -78,16 +78,18 @@ export interface ButtonProps {
 
 A change that makes a comment inaccurate updates it in the same change.
 
-### Root element props
+### Root and primary element props
 
-A component extends the props of its root element and passes the ones it doesn't handle itself to that element, so a consumer can set any attribute or event handler the root element accepts without us maintaining a dedicated prop for each. By default it doesn't re-declare or document them; they stay as the root element defines them. It may still re-declare one to support it as a documented feature.
+A component's primary element is the native element that does its job — the `<button>` of a button, the `<input>` of a text field, the `<img>` of an image. A component extends the props of its primary element and passes the ones it doesn't handle itself to that element, so a consumer can set any attribute or event handler it accepts without us maintaining a dedicated prop for each. By default it doesn't re-declare or document them; they stay as the element defines them. It may still re-declare one to support it as a documented feature.
+
+Usually the primary element is the root. When a component wraps it, for example to place adornments next to it, `className` and `style` go to the root, where they place and size the component, and `slotProps.root` sets the root's other props. The primary element is then a slot, so `slotProps` also reaches it like any other part.
 
 ### Override props
 
 The exported components share one set of override props; each offers the ones that apply to it. The [styling contract](#styling-contract) is the primary way to style a component; these props do what it can't — place and swap inner parts, and set or vary their props.
 
 - **`className`** — a string, merged with the contract classes, never replacing them. It is not a function: every value in `ownerState` already emits a `data-*` attribute, so an `ownerState`-dependent class would add nothing.
-- **`slots`** — sets which element a named inner part renders as. Every inner part is a slot, so a consumer can reach it through `slots` and `slotProps`. The root is not a slot — it is the component's own outermost element, configured through the component's top-level props directly (`className`, event handlers, ARIA, …).
+- **`slots`** — sets which element a named inner part renders as. Every inner part is a slot, so a consumer can reach it through `slots` and `slotProps`. The root is not a slot — it is the component's own outermost element, configured through the component's top-level props (`className`, `style`, and, when the root is the primary element, event handlers, ARIA, …), and through `slotProps.root` when the component wraps its primary element.
 - **`slotProps`** — props for those same inner parts, as an object **or** a function of `ownerState`. Their type follows the element chosen for the slot in `slots`, and falls back to the slot's default element when `slots` is omitted. They are merged with the component's own props, so a contract class or handler is never dropped.
 - **`ownerState`** — one object per component: the resolved configuration (`variant`, `disabled`, …) that influences the component's appearance or behavior; the root's `data-*` attributes are derived from it. It holds no transient interaction state (hover/press/focus).
 

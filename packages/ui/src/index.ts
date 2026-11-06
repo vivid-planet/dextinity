@@ -32,6 +32,8 @@ export { type EmptyStateSlotProps, type EmptyStateSlots } from "./components/emp
 export { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "./components/field/Field";
 export { type FieldSize, type FieldState } from "./components/field/Field";
 export { FieldActions, type FieldActionsLabels, type FieldActionsOwnerState, type FieldActionsProps } from "./components/fieldActions/FieldActions";
+export { FilterBar, type FilterBarLabels, type FilterBarOwnerState } from "./components/filterBar/FilterBar";
+export { type FilterBarProps, type FilterBarSlotProps } from "./components/filterBar/FilterBar";
 export { FilterChip, type FilterChipOwnerState, type FilterChipProps, type FilterChipSlotProps } from "./components/filterChip/FilterChip";
 export type { FocalPointPickerLabels } from "./components/focalPointPicker/FocalPointPicker";
 export { FocalPointPicker, type FocalPointPickerOwnerState, type FocalPointPickerProps } from "./components/focalPointPicker/FocalPointPicker";

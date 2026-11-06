@@ -1109,7 +1109,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                                             onColumnVisibilityChange={onColumnVisibilityChange}
                                             placement="bottom-end"
                                             trigger={
-                                                <IconButton aria-label={labels.columns} size="small" variant="text">
+                                                <IconButton color="secondary" aria-label={labels.columns} size="small" variant="text">
                                                     <Icon name="columns-3" />
                                                 </IconButton>
                                             }

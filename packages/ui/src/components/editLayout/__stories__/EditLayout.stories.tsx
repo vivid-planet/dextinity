@@ -303,7 +303,7 @@ function EditHeader({ kind, compact }: { kind: "page" | "jobAd"; compact: boolea
 const editActions = (
     <>
         <SaveState state="dirty" />
-        <IconButton aria-label="More actions">
+        <IconButton variant="text" color="secondary" aria-label="More actions">
             <Icon name="more-horizontal" />
         </IconButton>
         <Button startIcon={<Icon name="check" />}>Save</Button>

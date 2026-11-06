@@ -136,7 +136,7 @@ export const Selected: Story = {
         selected: true,
         onSelect: fn(),
         actions: (
-            <IconButton size="small" aria-label="More actions">
+            <IconButton variant="text" color="secondary" size="small" aria-label="More actions">
                 <Icon name="more-horizontal" />
             </IconButton>
         ),

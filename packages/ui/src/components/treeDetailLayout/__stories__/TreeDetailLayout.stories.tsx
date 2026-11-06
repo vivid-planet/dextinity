@@ -144,10 +144,10 @@ function PageTreePage() {
                         onSearchChange={setSearch}
                         actions={
                             <>
-                                <IconButton aria-label="Expand all" variant="text" onClick={() => setExpandedIds(folderIds)}>
+                                <IconButton color="secondary" aria-label="Expand all" variant="text" onClick={() => setExpandedIds(folderIds)}>
                                     <Icon name="maximize" />
                                 </IconButton>
-                                <IconButton aria-label="Collapse all" variant="text" onClick={() => setExpandedIds([])}>
+                                <IconButton color="secondary" aria-label="Collapse all" variant="text" onClick={() => setExpandedIds([])}>
                                     <Icon name="minimize" />
                                 </IconButton>
                             </>

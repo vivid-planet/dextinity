@@ -123,14 +123,14 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
             className={clsx(styles.root, className)}
         >
             {onMenuClick != null && (
-                <IconButton aria-label={labels.menu} onClick={onMenuClick} className={styles.menuButton}>
+                <IconButton variant="text" color="secondary" aria-label={labels.menu} onClick={onMenuClick} className={styles.menuButton}>
                     <Icon name="hamburger" />
                 </IconButton>
             )}
             {ownerState.mode === "edit" ? (
                 <>
                     {back != null && (
-                        <IconButton aria-label={back.label} onClick={back.onClick} className={styles.backButton}>
+                        <IconButton variant="text" color="secondary" aria-label={back.label} onClick={back.onClick} className={styles.backButton}>
                             <Icon name="arrow-left" />
                         </IconButton>
                     )}

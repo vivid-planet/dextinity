@@ -70,7 +70,7 @@ function RowMenu({ job }: { job: Job }) {
             onOpenChange={setOpen}
             placement="bottom-end"
             trigger={
-                <IconButton aria-label={`Actions for ${job.title}`} size="small" variant="text">
+                <IconButton color="secondary" aria-label={`Actions for ${job.title}`} size="small" variant="text">
                     <Icon name="more-horizontal" />
                 </IconButton>
             }

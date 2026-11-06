@@ -190,6 +190,8 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
                                 <BaseDialog.Close
                                     render={
                                         <IconButton
+                                            variant="text"
+                                            color="secondary"
                                             size="small"
                                             {...slotProps?.closeButton}
                                             disabled={!ownerState.dismissible || slotProps?.closeButton?.disabled}

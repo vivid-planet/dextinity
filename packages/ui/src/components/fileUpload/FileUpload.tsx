@@ -442,7 +442,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                                 {file.size != null && <span className={styles.meta}>{formatSize(file.size)}</span>}
                             </span>
                             {editable && (
-                                <IconButton size="small" aria-label={labels.remove} onClick={() => remove(file)}>
+                                <IconButton variant="text" color="secondary" size="small" aria-label={labels.remove} onClick={() => remove(file)}>
                                     <Icon name="close" />
                                 </IconButton>
                             )}
@@ -469,11 +469,13 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                             </span>
                             <span className={styles.actions}>
                                 {entry.status === "failed" && !disabled && (
-                                    <IconButton size="small" aria-label={labels.retry} onClick={() => retry(entry)}>
+                                    <IconButton variant="text" color="secondary" size="small" aria-label={labels.retry} onClick={() => retry(entry)}>
                                         <Icon name="reload" />
                                     </IconButton>
                                 )}
                                 <IconButton
+                                    variant="text"
+                                    color="secondary"
                                     size="small"
                                     aria-label={entry.status === "uploading" ? labels.cancel : labels.dismiss}
                                     onClick={() => cancel(entry)}

@@ -159,6 +159,8 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(function Drawer(
                         <BaseDialog.Close
                             render={
                                 <IconButton
+                                    variant="text"
+                                    color="secondary"
                                     size="small"
                                     {...slotProps?.closeButton}
                                     aria-label={labels.close}

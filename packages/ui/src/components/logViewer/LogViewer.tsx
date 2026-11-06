@@ -240,6 +240,8 @@ export const LogViewer = forwardRef<HTMLDivElement, LogViewerProps>(function Log
                 <span className={styles.actions}>
                     {actions}
                     <IconButton
+                        variant="text"
+                        color="secondary"
                         size="small"
                         aria-label={copied ? labels.copied : labels.copy}
                         disabled={lines.length === 0}

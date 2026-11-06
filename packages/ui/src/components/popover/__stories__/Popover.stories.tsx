@@ -113,7 +113,7 @@ export const WithoutTitle: Story = {
         title: undefined,
         "aria-label": "Time of day",
         trigger: (
-            <IconButton aria-label="Time of day" variant="outlined">
+            <IconButton color="secondary" aria-label="Time of day" variant="outlined">
                 <Icon name="time" />
             </IconButton>
         ),

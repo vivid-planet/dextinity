@@ -941,6 +941,8 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
             <div className={styles.main}>
                 <div {...toolbarProps}>
                     <IconButton
+                        variant="text"
+                        color="secondary"
                         size="small"
                         aria-label={labels.up}
                         disabled={parentId == null}

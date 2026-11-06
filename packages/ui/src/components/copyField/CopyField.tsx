@@ -98,6 +98,8 @@ export const CopyField = forwardRef<HTMLDivElement, CopyFieldProps>(function Cop
         <div {...restProps} ref={ref} data-copied={ownerState.copied ? "" : undefined} className={clsx(styles.root, className)}>
             <span {...valueProps}>{value}</span>
             <IconButton
+                variant="text"
+                color="secondary"
                 size="small"
                 {...slotProps?.button}
                 className={clsx(styles.button, slotProps?.button?.className)}

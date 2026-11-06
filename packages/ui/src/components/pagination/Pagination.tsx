@@ -180,7 +180,14 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(function Pagi
             )}
             <span {...rangeProps}>{labels.range(from, to, total)}</span>
             <div {...pagesProps}>
-                <IconButton size="small" aria-label={labels.previous} disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
+                <IconButton
+                    variant="text"
+                    color="secondary"
+                    size="small"
+                    aria-label={labels.previous}
+                    disabled={page <= 1}
+                    onClick={() => onPageChange(page - 1)}
+                >
                     <Icon name="chevron-left" />
                 </IconButton>
                 {getPageItems(page, pageCount).map((item) =>
@@ -201,7 +208,14 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(function Pagi
                         </span>
                     ),
                 )}
-                <IconButton size="small" aria-label={labels.next} disabled={page >= pageCount} onClick={() => onPageChange(page + 1)}>
+                <IconButton
+                    variant="text"
+                    color="secondary"
+                    size="small"
+                    aria-label={labels.next}
+                    disabled={page >= pageCount}
+                    onClick={() => onPageChange(page + 1)}
+                >
                     <Icon name="chevron-right" />
                 </IconButton>
             </div>

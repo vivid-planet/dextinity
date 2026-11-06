@@ -8,6 +8,7 @@ import { IconButton } from "../IconButton";
 import styles from "./IconButton.stories.module.scss";
 
 const iconOptions = {
+    Favorite: <Icon name="favorite" />,
     More: <Icon name="more-horizontal" />,
     Edit: <Icon name="edit" />,
     Trash: <Icon name="delete" />,
@@ -27,8 +28,8 @@ const meta = {
     ],
     parameters: { tokens: iconButtonTokens },
     args: {
-        children: <Icon name="more-horizontal" />,
-        "aria-label": "More actions",
+        children: <Icon name="favorite" />,
+        "aria-label": "Add to favorites",
         onClick: fn(),
     },
     argTypes: {
@@ -39,7 +40,11 @@ const meta = {
         },
         variant: {
             control: "radio",
-            options: ["text", "outlined"],
+            options: ["contained", "outlined", "text"],
+        },
+        color: {
+            control: "select",
+            options: ["primary", "secondary", "error", "success"],
         },
         size: {
             control: "radio",
@@ -62,12 +67,13 @@ type Story = StoryObj<typeof meta>;
  *
  * - Always name the action in `aria-label`; it is also the tooltip text.
  * - Use an icon only for actions whose icon is well known (more, edit, delete, close). Otherwise use a `Button` with a label.
+ * - In toolbars and rows, use `variant="text"` with `color="secondary"`.
  */
 export const Default: Story = {
     play: async ({ args, canvas }) => {
-        const button = canvas.getByRole("button", { name: "More actions" });
+        const button = canvas.getByRole("button", { name: "Add to favorites" });
         await userEvent.hover(button);
-        await expect(await screen.findByRole("tooltip")).toHaveTextContent("More actions");
+        await expect(await screen.findByRole("tooltip")).toHaveTextContent("Add to favorites");
         await userEvent.click(button);
         await expect(args.onClick).toHaveBeenCalledOnce();
     },
@@ -101,6 +107,40 @@ export const Outlined: Story = {
 };
 
 /**
+ * For toolbars and rows, usually with `color="secondary"`.
+ */
+export const Text: Story = {
+    args: {
+        variant: "text",
+    },
+};
+
+/**
+ * Neutral, e.g. `variant="text"` for the actions of a table row.
+ */
+export const Secondary: Story = {
+    args: {
+        color: "secondary",
+    },
+};
+
+export const Error: Story = {
+    args: {
+        color: "error",
+        children: <Icon name="delete" />,
+        "aria-label": "Delete",
+    },
+};
+
+export const Success: Story = {
+    args: {
+        color: "success",
+        children: <Icon name="check" />,
+        "aria-label": "Approve",
+    },
+};
+
+/**
  * In table rows, tree rows, and dense panels.
  */
 export const Small: Story = {
@@ -129,15 +169,19 @@ export const Loading: Story = {
 };
 
 /**
- * Both variants in both sizes.
+ * Every variant in every color, in both sizes.
  */
 export const Overview: Story = {
     render: (args) => (
-        <div className={styles.row}>
-            <IconButton {...args} />
-            <IconButton {...args} size="small" />
-            <IconButton {...args} variant="outlined" />
-            <IconButton {...args} variant="outlined" size="small" />
+        <div className={styles.grid}>
+            {(["contained", "outlined", "text"] as const).map((variant) =>
+                (["primary", "secondary", "error", "success"] as const).map((color) => (
+                    <div key={`${variant}-${color}`} className={styles.row}>
+                        <IconButton {...args} variant={variant} color={color} />
+                        <IconButton {...args} variant={variant} color={color} size="small" />
+                    </div>
+                )),
+            )}
         </div>
     ),
 };

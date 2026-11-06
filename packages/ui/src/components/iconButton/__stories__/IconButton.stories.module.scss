@@ -9,3 +9,9 @@
     align-items: center;
     gap: var(--dextinity-space-3);
 }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    gap: var(--dextinity-space-4) var(--dextinity-space-6);
+}

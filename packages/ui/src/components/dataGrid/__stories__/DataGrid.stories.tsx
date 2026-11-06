@@ -57,7 +57,7 @@ function RowMenu({ job }: { job: Job }) {
             onOpenChange={setOpen}
             placement="bottom-end"
             trigger={
-                <IconButton aria-label={`Actions for ${job.title}`} size="small" variant="text">
+                <IconButton color="secondary" aria-label={`Actions for ${job.title}`} size="small" variant="text">
                     <Icon name="more-horizontal" />
                 </IconButton>
             }
@@ -687,7 +687,7 @@ function ActionsMenu({ label, actions }: { label: string; actions: SheetAction[]
             onOpenChange={setOpen}
             placement="bottom-end"
             trigger={
-                <IconButton aria-label={label} size="small" variant="text">
+                <IconButton color="secondary" aria-label={label} size="small" variant="text">
                     <Icon name="more-horizontal" />
                 </IconButton>
             }

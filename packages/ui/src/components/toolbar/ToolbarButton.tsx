@@ -69,6 +69,8 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(f
             render={
                 <IconButton
                     {...restProps}
+                    variant="text"
+                    color="secondary"
                     aria-label={ariaLabel}
                     shortcut={shortcut}
                     aria-pressed={ownerState.toggle ? ownerState.pressed : undefined}

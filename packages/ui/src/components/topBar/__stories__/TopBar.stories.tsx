@@ -33,10 +33,10 @@ function ControlledTopBar(props: TopBarProps) {
 const editActions = (
     <>
         <SaveState state="dirty" />
-        <IconButton aria-label="Preview">
+        <IconButton variant="text" color="secondary" aria-label="Preview">
             <Icon name="visible" />
         </IconButton>
-        <IconButton aria-label="More actions">
+        <IconButton variant="text" color="secondary" aria-label="More actions">
             <Icon name="more-horizontal" />
         </IconButton>
         <Button startIcon={<Icon name="check" />}>Save</Button>

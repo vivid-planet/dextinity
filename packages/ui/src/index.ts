@@ -44,6 +44,8 @@ export { Checkbox, type CheckboxOwnerState, type CheckboxProps, type CheckboxSlo
 export { CheckboxGroup, type CheckboxGroupOption, type CheckboxGroupOwnerState } from "./components/checkboxGroup/CheckboxGroup";
 export { type CheckboxGroupProps, type CheckboxGroupSlotProps } from "./components/checkboxGroup/CheckboxGroup";
 export { Chip, type ChipLabels, type ChipOwnerState, type ChipProps, type ChipSlotProps } from "./components/chip/Chip";
+export { Combobox, type ComboboxLabels, type ComboboxOwnerState, type ComboboxProps } from "./components/combobox/Combobox";
+export { type ComboboxValue } from "./components/combobox/Combobox";
 export { CommandPalette, type CommandPaletteGroup, type CommandPaletteItem } from "./components/commandPalette/CommandPalette";
 export { type CommandPaletteLabels, type CommandPaletteOwnerState } from "./components/commandPalette/CommandPalette";
 export { type CommandPaletteProps, type CommandPaletteSlotProps } from "./components/commandPalette/CommandPalette";

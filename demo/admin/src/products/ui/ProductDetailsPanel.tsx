@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import { useDextinityConfig } from "@dextinity/cms-admin";
 import {
     AssetThumbnail,
@@ -45,6 +46,7 @@ export function ProductDetailsPanel({ productId, editUrl, onClose, onChangeStatu
     const navigateWithRouter = useRouterLinkClick();
     const { data, loading, error } = useQuery<GQLProductsUiDetailsQuery, GQLProductsUiDetailsQueryVariables>(productDetailsQuery, {
         variables: { id: productId },
+        context: LocalErrorScopeApolloContext,
     });
     const [updateInStock, { loading: updatingInStock }] = useMutation<
         GQLProductsUiUpdateInStockMutation,
@@ -173,6 +175,7 @@ export function ProductDetailsPanel({ productId, editUrl, onClose, onChangeStatu
             await updateInStock({
                 variables: { id: product.id, inStock },
                 refetchQueries: ["ProductsUiList"],
+                context: LocalErrorScopeApolloContext,
             });
         } catch {
             onError(intl.formatMessage({ id: "uiDemo.products.inStockFailed", defaultMessage: "Changing the stock failed · nothing was changed" }));

@@ -37,4 +37,19 @@ describe("NumberInput", () => {
         expect(screen.queryByRole("button")).toBeNull();
         expect(screen.getByRole("textbox", { name: "Price" })).toHaveValue("");
     });
+
+    it("takes all texts for assistive technology from labels", () => {
+        render(
+            <NumberInput
+                label="Preis"
+                value={1}
+                onChange={vi.fn()}
+                labels={{ increment: "Erhöhen", decrement: "Verringern", roleDescription: "Zahlenfeld" }}
+            />,
+        );
+
+        expect(screen.getByRole("textbox", { name: "Preis" }).getAttribute("aria-roledescription")).toBe("Zahlenfeld");
+        expect(screen.getByRole("button", { name: "Erhöhen" })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Verringern" })).toBeInTheDocument();
+    });
 });

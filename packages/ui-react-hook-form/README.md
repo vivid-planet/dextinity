@@ -47,9 +47,12 @@ One adapter per value-holding control of `@dextinity/ui`. Each takes `name`, the
 | `InputField`            | `Input`            | `string`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `TextareaField`         | `Textarea`         | `string`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `SelectField`           | `Select`           | `string \| null`, `string[]` with `multiple`             | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `NumberField`           | `NumberInput`      | `number \| null`                                         | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `RichTextEditorField`   | `RichTextEditor`   | `string` (HTML)                                          | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `CheckboxField`         | `Checkbox`         | `boolean`, or `string[]` when the checkbox has a `value` | `name`, `checked`, `onChange`, `onBlur`, `state`, `validationMessage` |
 | `SwitchField`           | `Switch`           | `boolean`                                                | `name`, `checked`, `onChange`, `onBlur`, `state`, `validationMessage` |
+| `RadioGroupField`       | `RadioGroup`       | one of the options' values, `null` for none              | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `CheckboxGroupField`    | `CheckboxGroup`    | the checked options' values (`string[]`)                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `SegmentedControlField` | `SegmentedControl` | one of the options' values                               | `value`, `onChange`, `onBlur`, `state`, `validationMessage`           |
 | `SliderField`           | `Slider`           | `number`                                                 | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `FocalPointPickerField` | `FocalPointPicker` | `FocalPoint` (`{ x, y }`)                                | `value`, `onChange`, `onBlur`, `state`, `validationMessage`           |
@@ -61,7 +64,7 @@ One adapter per value-holding control of `@dextinity/ui`. Each takes `name`, the
 Shared by both adapter packages:
 
 - **`name`** — the field's path in the form values, e.g. `title` or `seo.description`. It is also passed to the ui component where it takes one.
-- **`required`** — marks the field where the ui component supports it (star and `aria-required` on the framed fields, `CheckboxField`, and `SwitchField`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing. A custom validation still runs on a non-empty value.
+- **`required`** — marks the field where the ui component supports it (star and `aria-required` on the framed fields, `CheckboxField`, `SwitchField`, `RadioGroupField`, and `CheckboxGroupField`) and validates it: empty string, `null`/`undefined`, `false`, and an empty list are missing; for `RichTextEditorField`, markup without visible text is missing. A custom validation still runs on a non-empty value.
 - **`requiredMessage`** — the message for a missing required value. Defaults to `"Required"`; pass a translated text.
 - **`actions`** (`InputField`, `TextareaField`, `SelectField`, `RichTextEditorField`) — content at the label as in the ui component, or a function `({ value, setValue }) => ReactNode` to connect `FieldActions`, e.g. `actions={({ setValue }) => <FieldActions aiAssist onAiSuggest={suggest} onAiAccept={setValue} />}`.
 - **`ref`** — forwarded to the ui component, so it reaches the same element as on the component itself.
@@ -72,11 +75,11 @@ Shared by both adapter packages:
 
 ### Value mapping
 
-An empty form value (`undefined` or `null`, e.g. a field without a default value) maps to the control's empty state: `""` for text, `null` (or `[]` with `multiple`) for `SelectField`, unchecked for `CheckboxField` and `SwitchField`, no pressed option for `SegmentedControlField`, `min` for `SliderField`, and the center for `FocalPointPickerField`. The adapters write the control's value back unchanged; convert other types in the form's `defaultValues` and submit handler.
+An empty form value (`undefined` or `null`, e.g. a field without a default value) maps to the control's empty state: `""` for text, `null` (or `[]` with `multiple`) for `SelectField`, `null` for `NumberField`, unchecked for `CheckboxField` and `SwitchField`, no chosen option for `RadioGroupField`, `[]` for `CheckboxGroupField`, no pressed option for `SegmentedControlField`, `min` for `SliderField`, and the center for `FocalPointPickerField`. The adapters write the control's value back unchanged; convert other types in the form's `defaultValues` and submit handler.
 
 ### Validation
 
-A field shows its error once it was touched (blurred) or the form was submitted: `state="error"` with the message as `validationMessage`. An error set with `setError` after submitting (e.g. from the server) shows the same way until the field changes and validates again. Controls without a field frame – `CheckboxField`, `SwitchField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` – show it below the control, the same way.
+A field shows its error once it was touched (blurred) or the form was submitted: `state="error"` with the message as `validationMessage`. An error set with `setError` after submitting (e.g. from the server) shows the same way until the field changes and validates again. Controls without a field frame – `CheckboxField`, `SwitchField`, `RadioGroupField`, `CheckboxGroupField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` – show it below the control, the same way.
 
 When submitting fails validation, React Hook Form focuses the first invalid field (`shouldFocusError`, on by default). The adapters register the element to focus inside the ui component – the input, the select trigger, the editor, or the checkbox – since not every ui component's root takes focus. Pass `{ shouldFocus: true }` to `setError` to focus a field with a server error.
 
@@ -88,7 +91,7 @@ Each adapter takes the field configuration of `useController`, typed as `ReactHo
 - **`rules`** — validation rules as in `register` (`validate`, `pattern`, `min`, `maxLength`, …). `required` adds its check in front of them; a `required` rule without a message shows `requiredMessage`, any other rule without a message marks the field invalid without a text.
 - **`defaultValue`** and **`shouldUnregister`** — as in `useController`.
 
-The adapters are generic in the form values and the field's path, `<TFieldValues, TName extends FieldPath<TFieldValues>>`, like `useController`: with a typed `control`, or with `<InputField<PageFormValues> … />` inside a `FormProvider`, `name` must be a path of the form values. `SelectField` and `SegmentedControlField` take their own value type parameter first, as in `@dextinity/ui`.
+The adapters are generic in the form values and the field's path, `<TFieldValues, TName extends FieldPath<TFieldValues>>`, like `useController`: with a typed `control`, or with `<InputField<PageFormValues> … />` inside a `FormProvider`, `name` must be a path of the form values. `SelectField`, `SegmentedControlField`, `RadioGroupField`, and `CheckboxGroupField` take their own value type parameter first, as in `@dextinity/ui`.
 
 ## Form helpers
 

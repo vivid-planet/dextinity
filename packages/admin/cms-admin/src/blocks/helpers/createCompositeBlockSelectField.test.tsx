@@ -1,5 +1,6 @@
+import userEvent from "@testing-library/user-event";
 import { FormattedMessage } from "react-intl";
-import { cleanup, render, screen } from "test-utils";
+import { cleanup, render, screen, waitFor } from "test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createCompositeBlockSelectField } from "./createCompositeBlockSelectField";
@@ -68,5 +69,17 @@ describe("createCompositeBlockSelectField", () => {
         render(<block.AdminComponent state="a" updateState={vi.fn()} />);
 
         expect(screen.getByRole("combobox", { name: /Letter/ }).textContent).toContain("Letter A");
+    });
+
+    it("updates the state with the number of the chosen option", async () => {
+        const [block] = createCompositeBlockSelectField<number>({ defaultValue: 1, label: "Number", options: optionsNumber });
+        const updateState = vi.fn();
+        render(<block.AdminComponent state={1} updateState={updateState} />);
+
+        const user = userEvent.setup();
+        await user.click(screen.getByRole("combobox", { name: /Number/ }));
+        await user.click(await screen.findByRole("option", { name: "Two" }));
+
+        await waitFor(() => expect(updateState).toHaveBeenLastCalledWith(2));
     });
 });

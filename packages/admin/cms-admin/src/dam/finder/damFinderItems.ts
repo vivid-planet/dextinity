@@ -78,3 +78,29 @@ export function toAssetBrowserAsset(intl: IntlShape, file: GQLDamFinderFileFragm
         modified: intl.formatDate(file.updatedAt, { dateStyle: "medium" }),
     };
 }
+
+// One of the default device sizes the image URL service allows; sharp enough for the quick look on most screens
+const quickLookImageWidth = 1920;
+const mimetypesShownAsOriginal = ["image/svg+xml", "image/gif"];
+
+/**
+ * The URL of the image shown in the quick look: a large image scaled down by the image URL service, so that the quick look doesn't load
+ * an original of many megabytes, and the original otherwise.
+ */
+export function getDamFinderQuickLookImageUrl({
+    file,
+    apiUrl,
+    damBasePath,
+}: {
+    file: Pick<GQLDamFinderFileFragment, "id" | "name" | "mimetype" | "fileUrl"> & { image?: { width: number; height: number } | null };
+    apiUrl: string;
+    damBasePath: string;
+}) {
+    if (file.image == null || file.image.width <= quickLookImageWidth || mimetypesShownAsOriginal.includes(file.mimetype)) {
+        return file.fileUrl;
+    }
+    // The API only accepts the height that keeps the aspect ratio of the uncropped image
+    const height = Math.ceil(quickLookImageWidth / (file.image.width / file.image.height));
+    const fileNameWithoutExtension = file.name.includes(".") ? file.name.slice(0, file.name.lastIndexOf(".")) : file.name;
+    return `${apiUrl}/${damBasePath}/images/preview/${file.id}/crop:100:100:NORTHWEST:0:0/resize:${quickLookImageWidth}:${height}/${encodeURIComponent(fileNameWithoutExtension)}`;
+}

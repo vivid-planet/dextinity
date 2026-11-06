@@ -18,7 +18,7 @@ export interface IconProps extends Omit<ComponentPropsWithoutRef<"span">, "child
  *
  * To use the default icons of `@dextinity/ui`, import `@dextinity/ui/css/icons` once in your application, see [Installation and setup](?path=/docs/intro--docs#installation-and-setup).
  *
- * To replace or add icons, see [Customize icon set](?path=/docs/theme-customize-icon-set--docs).
+ * For a list of all icons, see [All icons](?path=/docs/theme-all-icons--docs). To replace or add icons, see [Customize icon set](?path=/docs/theme-customize-icon-set--docs).
  */
 export const Icon = forwardRef<HTMLSpanElement, IconProps>(function Icon(
     { name, className, style, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, ...restProps },

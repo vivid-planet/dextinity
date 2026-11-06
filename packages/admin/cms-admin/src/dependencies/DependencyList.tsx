@@ -41,7 +41,7 @@ export interface DependencyListItem extends DependencyTarget {
     visible: boolean;
 }
 
-export interface DependencyListPage {
+interface DependencyListPage {
     nodes: DependencyListItem[];
     totalCount: number;
 }

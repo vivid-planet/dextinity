@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Toolbar } from "../Toolbar";
@@ -62,5 +62,28 @@ describe("ToolbarButton", () => {
         ]);
         expect([italic.getAttribute("aria-pressed"), italic.hasAttribute("data-pressed")]).toStrictEqual(["false", false]);
         expect([undo.hasAttribute("aria-pressed"), undo.hasAttribute("data-toggle")]).toStrictEqual([false, false]);
+    });
+});
+
+describe("ToolbarMenu", () => {
+    it("is announced as disabled and stays focusable while `disabled`", () => {
+        const onOpenChange = vi.fn();
+        render(
+            <Toolbar aria-label="Formatting">
+                <ToolbarMenu label="Paragraph" aria-label="Text style" disabled open={false} onOpenChange={onOpenChange}>
+                    {null}
+                </ToolbarMenu>
+                <ToolbarMenu label="Insert" open={false} onOpenChange={vi.fn()}>
+                    {null}
+                </ToolbarMenu>
+            </Toolbar>,
+        );
+
+        const disabledTrigger = screen.getByRole("button", { name: "Text style" });
+        expect([disabledTrigger.getAttribute("aria-disabled"), disabledTrigger.hasAttribute("disabled")]).toStrictEqual(["true", false]);
+        expect(screen.getByRole("button", { name: "Insert" }).getAttribute("aria-disabled")).not.toBe("true");
+
+        fireEvent.click(disabledTrigger);
+        expect(onOpenChange).not.toHaveBeenCalledWith(true);
     });
 });

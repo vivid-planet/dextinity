@@ -13,6 +13,7 @@ export type MenuPlacement = "bottom-start" | "bottom-end" | "top-start" | "top-e
  */
 export type MenuOwnerState = {
     placement: MenuPlacement;
+    disabled: boolean;
 };
 
 export interface MenuSlotProps {
@@ -35,6 +36,12 @@ export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "classNa
      * @defaultValue `"bottom-start"`
      */
     placement?: MenuPlacement;
+    /**
+     * Prevents opening the menu and marks the trigger as disabled.
+     *
+     * @defaultValue `false`
+     */
+    disabled?: boolean;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -45,10 +52,10 @@ export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "classNa
  * A list of actions at a trigger. Arrow keys move through the items, Enter selects, Escape closes.
  */
 export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
-    { trigger, children, open, onOpenChange, placement = "bottom-start", className, slotProps, ...restProps },
+    { trigger, children, open, onOpenChange, placement = "bottom-start", disabled = false, className, slotProps, ...restProps },
     ref,
 ) {
-    const ownerState: MenuOwnerState = { placement };
+    const ownerState: MenuOwnerState = { placement, disabled };
     const { anchorRef, container } = useThemePortalContainer<HTMLElement>();
     const [side, align] = ownerState.placement.split("-") as ["bottom" | "top", "start" | "end"];
 
@@ -60,7 +67,7 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
 
     return (
         <BaseMenu.Root open={open} onOpenChange={(nextOpen) => onOpenChange(nextOpen)} modal={false}>
-            <BaseMenu.Trigger ref={anchorRef} render={trigger} />
+            <BaseMenu.Trigger ref={anchorRef} render={trigger} disabled={ownerState.disabled} />
             <BaseMenu.Portal container={container}>
                 <BaseMenu.Positioner {...positionerProps}>
                     <BaseMenu.Popup {...restProps} ref={ref} data-placement={ownerState.placement} className={clsx(styles.root, className)}>

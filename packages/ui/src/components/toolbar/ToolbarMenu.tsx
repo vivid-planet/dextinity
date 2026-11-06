@@ -21,7 +21,7 @@ export interface ToolbarMenuSlotProps {
     /** Props for the `label` slot. */
     label?: SlotPropsValue<ToolbarMenuOwnerState, "span">;
     /** Props for the menu, e.g. its `className`. */
-    menu?: Partial<Omit<MenuProps, "trigger" | "children" | "open" | "onOpenChange" | "placement">>;
+    menu?: Partial<Omit<MenuProps, "trigger" | "children" | "open" | "onOpenChange" | "placement" | "disabled">>;
 }
 
 export interface ToolbarMenuProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className" | "children" | "disabled" | "aria-label"> {
@@ -81,6 +81,7 @@ export const ToolbarMenu = forwardRef<HTMLButtonElement, ToolbarMenuProps>(funct
             open={open && !disabled}
             onOpenChange={(nextOpen) => onOpenChange(nextOpen && !disabled)}
             placement={placement}
+            disabled={ownerState.disabled}
             trigger={
                 <BaseToolbar.Button
                     {...restProps}

@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Theme } from "../../theme/Theme";
@@ -58,5 +58,19 @@ describe("Menu", () => {
         expect(location.className).toContain("dextinityMenuCheckboxItem");
         expect(location).toHaveProperty("dataset.unchecked", "");
         expect(screen.getByRole("menuitem", { name: "Move to" }).className).toContain("dextinityMenuSubmenu");
+    });
+
+    it("disables its trigger while `disabled`", () => {
+        const onOpenChange = vi.fn();
+        render(
+            <Menu open={false} onOpenChange={onOpenChange} disabled trigger={<button type="button">Trigger</button>}>
+                <MenuItem label="Duplicate" onClick={vi.fn()} />
+            </Menu>,
+        );
+
+        const trigger = screen.getByRole("button", { name: "Trigger" });
+        expect(trigger).toHaveProperty("disabled", true);
+        fireEvent.click(trigger);
+        expect(onOpenChange).not.toHaveBeenCalled();
     });
 });

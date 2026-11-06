@@ -151,7 +151,15 @@ export function ProductQuickEditForm({ product, onUnsavedChangesChange }: Produc
         return () => window.removeEventListener("beforeunload", warnBeforeUnload);
     }, [hasUnsavedChanges]);
 
-    useKeyboardShortcut("mod+s", () => void unsavedChanges.save(), { allowInEditable: true });
+    useKeyboardShortcut(
+        "mod+s",
+        () => {
+            if (hasUnsavedChanges) {
+                void unsavedChanges.save();
+            }
+        },
+        { allowInEditable: true },
+    );
 
     const requiredMessage = intl.formatMessage({ id: "uiDemo.products.quickEdit.required", defaultMessage: "Required" });
     const statusOptions: SelectOption[] = productStatuses.map((status) => ({ value: status, label: getProductStatusLabel(intl, status) }));

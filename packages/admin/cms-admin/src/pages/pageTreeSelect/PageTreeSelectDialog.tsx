@@ -16,8 +16,6 @@ import type {
     GQLSelectedPageFragment,
 } from "./PageTreeSelectDialog.generated";
 
-export type { GQLSelectedPageFragment };
-
 export const selectedPageFragment = gql`
     fragment SelectedPage on PageTreeNode {
         id
@@ -253,9 +251,6 @@ export function PageTreeSelectDialog({ value, onChange, open, onClose, defaultCa
         </Dialog>
     );
 }
-
-/** @deprecated Use the named export `PageTreeSelectDialog` instead. */
-export default PageTreeSelectDialog;
 
 const Content = styled("div")`
     display: grid;

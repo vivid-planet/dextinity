@@ -310,3 +310,30 @@ export const ResizableSidebar: Story = {
         await waitFor(() => expect(Math.round(sidebar.getBoundingClientRect().width)).toBe(startWidth));
     },
 };
+
+/**
+ * With `onQuickLook`, Space on an asset selects it and asks for a quick look, as in the Finder.
+ */
+export const QuickLookOnSpace: Story = {
+    args: { onQuickLook: fn() },
+    play: async ({ args, canvas }) => {
+        canvas.getByRole("option", { name: /lobby\.jpg/ }).focus();
+        await userEvent.keyboard(" ");
+        await waitFor(() => expect(args.onQuickLook).toHaveBeenLastCalledWith(expect.objectContaining({ id: "a2" })));
+        await expect(canvas.getByRole("option", { name: /lobby\.jpg/ })).toHaveAttribute("aria-selected", "true");
+    },
+};
+
+/**
+ * When the assets are loaded per folder, `meta` shows a folder's details, e.g. its number of items, in place of the count of the loaded
+ * items.
+ */
+export const FolderMeta: Story = {
+    args: {
+        folders: folders.map((folder) => (folder.id === "documents" ? { ...folder, meta: "48 items" } : folder)),
+        view: "list",
+    },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("option", { name: /Documents/ })).toHaveTextContent("48 items");
+    },
+};

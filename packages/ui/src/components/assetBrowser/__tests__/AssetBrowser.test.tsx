@@ -109,4 +109,10 @@ describe("AssetBrowser", () => {
         expect(treeItem("All assets").getAttribute("aria-expanded")).toBe("true");
         expect(treeItem("Team").getAttribute("aria-expanded")).toBe("true");
     });
+
+    it("shows a folder's meta in place of the count of its loaded items", () => {
+        renderBrowser({ folders: [folders[0], { ...folders[1], meta: "12 items" }] });
+
+        expect(screen.getByRole("option", { name: /Team/ }).textContent).toContain("12 items");
+    });
 });

@@ -13,6 +13,11 @@ interface Props {
     siteUrl?: string;
 }
 
+/**
+ * The tabs of a page editor next to the block preview, built with MUI.
+ *
+ * @deprecated Use `PageContentEditor`, whose `tabs` each can have their own preview.
+ */
 function BlockPreviewWithTabs({ children, previewApi, previewState, previewUrl, siteUrl }: Props) {
     let pageContent = null;
 

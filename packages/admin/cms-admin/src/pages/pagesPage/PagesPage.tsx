@@ -47,6 +47,11 @@ interface Props {
 
 const DefaultEditPageNode = createEditPageNode({});
 
+/**
+ * The page tree as a list with row actions, built with MUI.
+ *
+ * @deprecated Use `PageTreeDetailPage`, built with `@dextinity/ui`, and `PageContentEditor` for the editors of the document types.
+ */
 export function PagesPage({
     category,
     path,

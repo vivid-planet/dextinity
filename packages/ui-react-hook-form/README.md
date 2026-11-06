@@ -99,7 +99,7 @@ Shared by both adapter packages, for the content of a form:
 | `useFormSaveState()`     | `{ state, savedAt }` for `SaveState`: `saving` while submitting, `error` after a failed submit, `dirty` with unsaved changes, else `saved` |
 | `useHasUnsavedChanges()` | Whether the form has changes that are not saved, e.g. to ask with a `ConfirmDialog` before leaving                                         |
 
-Both take an optional `{ control }` (`FormStateHookOptions`) and use the surrounding `FormProvider` without it. A successful submit counts as saved even if the form keeps its default values; calling `reset(values)` after saving is still the usual way to make the saved values the new baseline. React Hook Form doesn't tell a submit blocked by validation from one whose handler failed or called `setError`, so both report `error` until the next change.
+Both take an optional `{ control }` (`FormStateHookOptions`) and use the surrounding `FormProvider` without it. A successful submit counts as saved even if the form keeps its default values; calling `reset(values)` after saving is still the usual way to make the saved values the new baseline, with `{ keepDirtyValues: true }` to keep what was typed while saving. Changes made while a save is running count as unsaved. React Hook Form doesn't tell a submit blocked by validation from one whose handler failed or called `setError`, so both report `error` until the next change.
 
 Shared types: `FieldAdapterBaseProps` (`name`, `required`, `requiredMessage`), `FieldAdapterActions<Value>` and `FieldAdapterActionsContext<Value>` (the `actions` prop), and `<Adapter>Props` for each adapter.
 

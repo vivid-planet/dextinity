@@ -84,4 +84,45 @@ describe("useFormSaveState", () => {
         await userEvent.type(title, "!");
         expect(screen.getByText("dirty")).toBeInTheDocument();
     });
+
+    function ResettingTestForm({ saveDuration = 0 }: { saveDuration?: number }) {
+        const { control, handleSubmit, reset } = useForm({ defaultValues: { title: "Benefits" } });
+        const { state } = useFormSaveState({ control });
+        return (
+            <form
+                onSubmit={handleSubmit(async (values) => {
+                    await new Promise((resolve) => setTimeout(resolve, saveDuration));
+                    reset(values, { keepDirtyValues: true });
+                })}
+            >
+                <InputField control={control} name="title" label="Title" />
+                <output>{state}</output>
+                <button type="submit">Save</button>
+            </form>
+        );
+    }
+
+    it("is saved after every save that resets the form to the saved values", async () => {
+        render(<ResettingTestForm />);
+        const title = screen.getByLabelText("Title");
+
+        for (const change of ["!", "?", "!"]) {
+            await userEvent.type(title, change);
+            expect(screen.getByText("dirty")).toBeInTheDocument();
+            await userEvent.click(screen.getByRole("button", { name: "Save" }));
+            await waitFor(() => expect(screen.getByText("saved")).toBeInTheDocument());
+        }
+    });
+
+    it("keeps changes made while saving unsaved", async () => {
+        render(<ResettingTestForm saveDuration={200} />);
+        const title = screen.getByLabelText("Title");
+
+        await userEvent.type(title, "!");
+        await userEvent.click(screen.getByRole("button", { name: "Save" }));
+        expect(screen.getByText("saving")).toBeInTheDocument();
+        await userEvent.type(title, "?");
+        await waitFor(() => expect(screen.getByText("dirty")).toBeInTheDocument());
+        expect(title).toHaveValue("Benefits!?");
+    });
 });

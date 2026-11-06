@@ -32,9 +32,12 @@ function useSaveRelevantFormState<TFieldValues extends FieldValues>(control: Con
     const { isSubmitting, isDirty, isSubmitted, isSubmitSuccessful, submitCount } = useFormState({ control });
     // React Hook Form compares with the default values only, so the values at the last submit tell whether something changed since
     const values = useWatch({ control, compute: serializeValues });
-    const [lastSubmit, setLastSubmit] = useState({ submitCount, values });
-    if (!isSubmitting && lastSubmit.submitCount !== submitCount) {
-        setLastSubmit({ submitCount, values });
+    const [lastSubmit, setLastSubmit] = useState({ isSubmitting, submitCount, values });
+    if (isSubmitting && !lastSubmit.isSubmitting) {
+        setLastSubmit({ isSubmitting, submitCount, values });
+    } else if (!isSubmitting && (lastSubmit.isSubmitting || lastSubmit.submitCount !== submitCount)) {
+        // reset() in a submit handler sets submitCount back, so a changed submitCount only catches submits that never rendered as submitting
+        setLastSubmit({ isSubmitting, submitCount, values: lastSubmit.isSubmitting ? lastSubmit.values : values });
     }
     return { isSubmitting, isDirty, isSubmitted, isSubmitSuccessful, changedSinceLastSubmit: values !== lastSubmit.values };
 }

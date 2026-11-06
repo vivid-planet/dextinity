@@ -85,7 +85,7 @@ Shared by both adapter packages, for the content of a form:
 | `useFormSaveState()`     | `{ state, savedAt }` for `SaveState`: `saving` while submitting, `error` after a failed submit, `dirty` with unsaved changes, else `saved` |
 | `useHasUnsavedChanges()` | Whether the form has changes that are not saved, e.g. to ask with a `ConfirmDialog` before leaving                                         |
 
-A successful submit counts as saved even if the form keeps its initial values. A submit counts as failed when `onSubmit` returns submit errors, and reports `error` until the next change; a submit blocked by validation errors doesn't change the state.
+A successful submit counts as saved even if the form keeps its initial values. Changes made while a save is running count as unsaved. A submit counts as failed when `onSubmit` returns submit errors, and reports `error` until the next change; a submit blocked by validation errors doesn't change the state.
 
 Shared types: `FieldAdapterBaseProps` (`name`, `required`, `requiredMessage`), `FieldAdapterActions<Value>` and `FieldAdapterActionsContext<Value>` (the `actions` prop), and `<Adapter>Props` for each adapter.
 

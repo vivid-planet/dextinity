@@ -162,6 +162,7 @@ export { DamPage } from "./dam/DamPage";
 export type { FileWithDamUploadMetadata } from "./dam/DataGrid/fileUpload/useDamFileUpload";
 export { useDamFileUpload } from "./dam/DataGrid/fileUpload/useDamFileUpload";
 export { createDamFileDependency } from "./dam/dependencies/createDamFileDependency";
+export { DamFinderPage, type DamFinderPageProps } from "./dam/finder/DamFinderPage";
 export { DashboardHeader, type DashboardHeaderProps } from "./dashboard/DashboardHeader";
 export { LatestBuildsCard, type LatestBuildsCardProps } from "./dashboard/LatestBuildsCard";
 export { DashboardWidgetRoot, type DashboardWidgetRootProps } from "./dashboard/widgets/DashboardWidgetRoot";

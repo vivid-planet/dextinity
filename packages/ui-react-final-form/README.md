@@ -70,6 +70,8 @@ An empty form value (`undefined`, or `""` from React Final Form's default `forma
 
 A field shows its error once it was touched (blurred) or the form was submitted: `state="error"` with the message as `validationMessage`. A submit error for the field (returned from `onSubmit`) shows the same way until the field changes. `CheckboxField`, `SwitchField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` have no field frame in `@dextinity/ui`, so the adapter shows the message below the control, connected through `aria-describedby`.
 
+To focus the first field with an error when submitting fails, in document order, add the `focusOnError` decorator to the `<Form>`: `decorators={[focusOnError]}`. React Final Form has no focus on error of its own. The boxes of a checkbox group count as one field, focused at the first box.
+
 ### React Final Form configuration
 
 Each adapter takes the field configuration of `useField`, typed as `FinalFormFieldConfig<FieldValue, ControlValue>`: `validate`, `validateFields`, `parse`, `format`, `formatOnBlur`, `initialValue`, `defaultValue`, `isEqual`, `allowNull`, `data`, `beforeSubmit`, and `afterSubmit`. The adapters are generic in the form value, `FieldValue`, which defaults to the control's value; `parse` and `format` convert between the two. `SliderField` keeps the `Slider`'s own `format` (number formatting) and leaves out React Final Form's.
@@ -82,6 +84,8 @@ Shared by both adapter packages, for the content of a form:
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `useFormSaveState()`     | `{ state, savedAt }` for `SaveState`: `saving` while submitting, `error` after a failed submit, `dirty` with unsaved changes, else `saved` |
 | `useHasUnsavedChanges()` | Whether the form has changes that are not saved, e.g. to ask with a `ConfirmDialog` before leaving                                         |
+
+A successful submit counts as saved even if the form keeps its initial values. A submit counts as failed when `onSubmit` returns submit errors, and reports `error` until the next change; a submit blocked by validation errors doesn't change the state.
 
 Shared types: `FieldAdapterBaseProps` (`name`, `required`, `requiredMessage`), `FieldAdapterActions<Value>` and `FieldAdapterActionsContext<Value>` (the `actions` prop), and `<Adapter>Props` for each adapter.
 

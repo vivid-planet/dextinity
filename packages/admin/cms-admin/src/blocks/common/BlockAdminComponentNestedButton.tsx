@@ -1,6 +1,7 @@
 import { Icon } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import type { MouseEventHandler, ReactNode } from "react";
+import { useIntl } from "react-intl";
 
 import { BlockAdminComponentPaper } from "./BlockAdminComponentPaper";
 import { usePromise } from "./usePromise";
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export const BlockAdminComponentNestedButton = ({ displayName, preview, count, onClick, isValid: isValidFn }: Props) => {
+    const intl = useIntl();
     const isValid = usePromise(isValidFn, { initialValue: true });
 
     return (
@@ -21,7 +23,12 @@ export const BlockAdminComponentNestedButton = ({ displayName, preview, count, o
             <Row type="button" onClick={onClick}>
                 <Text>
                     <Title>
-                        {!isValid && <InvalidIcon name="warning-solid" />}
+                        {!isValid && (
+                            <InvalidIcon
+                                name="warning-solid"
+                                aria-label={intl.formatMessage({ id: "dextinity.blocks.containsErrors", defaultMessage: "Contains errors" })}
+                            />
+                        )}
                         <TitleText>
                             {displayName}
                             {count !== undefined && ` (${count})`}

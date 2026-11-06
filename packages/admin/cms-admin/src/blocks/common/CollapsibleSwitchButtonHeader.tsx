@@ -1,6 +1,7 @@
-import { Switch, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { Switch } from "@dextinity/ui";
 import type { ReactNode } from "react";
+
+import { useCollapsible } from "./Collapsible";
 
 interface CollapsibleSwitchButtonHeaderProps {
     checked: boolean;
@@ -8,18 +9,11 @@ interface CollapsibleSwitchButtonHeaderProps {
 }
 
 export const CollapsibleSwitchButtonHeader = ({ checked, title }: CollapsibleSwitchButtonHeaderProps) => {
+    const collapsible = useCollapsible();
+
     return (
-        <Root>
-            <Typography>{title}</Typography>
-            <Switch checked={checked} />
-        </Root>
+        <Switch checked={checked} onChange={() => collapsible?.onToggle()}>
+            {title}
+        </Switch>
     );
 };
-
-const Root = styled("div")`
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-`;

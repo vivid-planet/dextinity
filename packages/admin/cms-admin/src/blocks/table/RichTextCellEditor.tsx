@@ -11,7 +11,7 @@ import { useTableBlockContext } from "./TableBlockContext";
 
 /**
  * The rich text editor of a table cell, in a panel at the cell. Unlike the grid's own editors, Escape and a click outside keep the
- * changes, since a rich text is too much work to lose with one key, and Enter adds a paragraph. Ctrl/Cmd+Enter saves and moves down.
+ * changes, since a rich text is too much work to lose with one key, and Enter adds a paragraph. Ctrl/Cmd+Enter saves.
  */
 export function RichTextCellEditor({ value, label, onChange, onCommit }: DataGridEditorRenderParams<TableBlockRowState>) {
     const { RichTextBlock } = useTableBlockContext();
@@ -47,6 +47,15 @@ export function RichTextCellEditor({ value, label, onChange, onCommit }: DataGri
         }
     };
 
+    // Before the rich text editor, which would add a line break. The grid doesn't get the key: the panel isn't inside the grid's cell.
+    const handleKeyDownCapture = (event: KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === "Enter" && (event.metaKey || event.ctrlKey) && isInsideEditor(event.target)) {
+            event.preventDefault();
+            event.stopPropagation();
+            onCommit();
+        }
+    };
+
     return (
         <>
             <EditorAnchor ref={anchorRef} />
@@ -67,7 +76,14 @@ export function RichTextCellEditor({ value, label, onChange, onCommit }: DataGri
             >
                 <Popover.Portal container={container}>
                     <EditorPositioner anchor={anchor?.closest("td") ?? anchor} side="bottom" align="start" sideOffset={4} collisionPadding={16}>
-                        <EditorPopup ref={setPopup} aria-label={label} initialFocus={false} finalFocus={false} onKeyDown={handleKeyDown}>
+                        <EditorPopup
+                            ref={setPopup}
+                            aria-label={label}
+                            initialFocus={false}
+                            finalFocus={false}
+                            onKeyDown={handleKeyDown}
+                            onKeyDownCapture={handleKeyDownCapture}
+                        >
                             <EditorContent ref={setContent}>
                                 <RichTextBlock.AdminComponent
                                     state={value}

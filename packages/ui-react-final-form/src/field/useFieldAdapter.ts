@@ -18,7 +18,7 @@ export interface UseFieldAdapterOptions<FieldValue, ControlValue> extends FinalF
     isEmpty?: (value: FieldValue) => boolean;
 }
 
-export interface FieldAdapterValidationProps {
+interface FieldAdapterValidationProps {
     state?: "error";
     validationMessage?: ReactNode;
 }

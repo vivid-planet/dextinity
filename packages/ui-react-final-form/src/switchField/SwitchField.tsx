@@ -5,21 +5,23 @@ import type { FieldAdapterBaseProps } from "../field/fieldAdapterProps";
 import type { FinalFormFieldConfig } from "../field/finalFormFieldConfig";
 import { splitFieldAdapterProps } from "../field/splitFieldAdapterProps";
 import { useFieldAdapter } from "../field/useFieldAdapter";
-import { useValidationMessage } from "../field/useValidationMessage";
 
 export interface SwitchFieldProps<FieldValue = boolean>
     extends
         FieldAdapterBaseProps,
         FinalFormFieldConfig<FieldValue, boolean>,
-        Omit<SwitchProps, "name" | "checked" | "onChange" | "onBlur" | "defaultValue" | "defaultChecked"> {}
+        Omit<
+            SwitchProps,
+            "name" | "checked" | "onChange" | "onBlur" | "required" | "defaultValue" | "defaultChecked" | "state" | "validationMessage"
+        > {}
 
 /**
  * A `Switch` connected to a boolean React Final Form field. Shows the field's error below the switch once it was touched or the form was
  * submitted.
  */
 export const SwitchField = forwardRef(function SwitchField<FieldValue = boolean>(
-    { name, onFocus, "aria-describedby": ariaDescribedBy, ...props }: SwitchFieldProps<FieldValue>,
-    forwardedRef: ForwardedRef<HTMLLabelElement>,
+    { name, onFocus, ...props }: SwitchFieldProps<FieldValue>,
+    forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
     const [options, switchProps] = splitFieldAdapterProps(props);
     const {
@@ -28,25 +30,22 @@ export const SwitchField = forwardRef(function SwitchField<FieldValue = boolean>
         ref,
         onBlur,
         onFocus: onFieldFocus,
-    } = useFieldAdapter<FieldValue, boolean, HTMLLabelElement>(name, options, forwardedRef);
-    const { message, describedBy } = useValidationMessage(validationProps, ariaDescribedBy);
+    } = useFieldAdapter<FieldValue, boolean, HTMLDivElement>(name, options, forwardedRef);
 
     return (
-        <>
-            <Switch
-                {...switchProps}
-                ref={ref}
-                name={input.name}
-                checked={input.value === true}
-                aria-describedby={describedBy}
-                onChange={input.onChange}
-                onBlur={onBlur}
-                onFocus={(event) => {
-                    onFieldFocus();
-                    onFocus?.(event);
-                }}
-            />
-            {message}
-        </>
+        <Switch
+            {...switchProps}
+            ref={ref}
+            name={input.name}
+            checked={input.value === true}
+            required={options.required}
+            {...validationProps}
+            onChange={input.onChange}
+            onBlur={onBlur}
+            onFocus={(event) => {
+                onFieldFocus();
+                onFocus?.(event);
+            }}
+        />
     );
-}) as <FieldValue = boolean>(props: SwitchFieldProps<FieldValue> & RefAttributes<HTMLLabelElement>) => ReactNode;
+}) as <FieldValue = boolean>(props: SwitchFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;

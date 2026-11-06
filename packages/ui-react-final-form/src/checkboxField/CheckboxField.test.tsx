@@ -37,7 +37,10 @@ describe("CheckboxField", () => {
         );
 
         await userEvent.click(screen.getByRole("button", { name: "Save" }));
-        expect(screen.getByText("Accept the terms to continue")).toBeInTheDocument();
+        const checkbox = screen.getByRole("checkbox", { name: "I accept the terms" });
+        expect(checkbox).toBeRequired();
+        expect(checkbox).toBeInvalid();
+        expect(checkbox).toHaveAccessibleDescription("Accept the terms to continue");
         expect(onSubmit).not.toHaveBeenCalled();
 
         await userEvent.click(screen.getByRole("checkbox"));

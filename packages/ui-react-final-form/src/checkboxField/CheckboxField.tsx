@@ -5,13 +5,15 @@ import type { FieldAdapterBaseProps } from "../field/fieldAdapterProps";
 import type { FinalFormFieldConfig } from "../field/finalFormFieldConfig";
 import { splitFieldAdapterProps } from "../field/splitFieldAdapterProps";
 import { useFieldAdapter } from "../field/useFieldAdapter";
-import { useValidationMessage } from "../field/useValidationMessage";
 
 export interface CheckboxFieldProps<FieldValue = boolean | string[]>
     extends
         FieldAdapterBaseProps,
         FinalFormFieldConfig<FieldValue, boolean | string[]>,
-        Omit<CheckboxProps, "name" | "checked" | "onChange" | "onBlur" | "required" | "defaultValue" | "defaultChecked"> {
+        Omit<
+            CheckboxProps,
+            "name" | "checked" | "onChange" | "onBlur" | "required" | "defaultValue" | "defaultChecked" | "state" | "validationMessage"
+        > {
     /** Makes the checkbox one of a group: the field holds the list of the checked boxes' values, and this box adds or removes its own. */
     value?: string;
 }
@@ -33,8 +35,8 @@ export function toggleCheckboxValue(fieldValue: unknown, value: string | undefin
  * checked. Shows the field's error below the checkbox once it was touched or the form was submitted.
  */
 export const CheckboxField = forwardRef(function CheckboxField<FieldValue = boolean | string[]>(
-    { name, value, onFocus, "aria-describedby": ariaDescribedBy, ...props }: CheckboxFieldProps<FieldValue>,
-    forwardedRef: ForwardedRef<HTMLLabelElement>,
+    { name, value, onFocus, ...props }: CheckboxFieldProps<FieldValue>,
+    forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
     const [options, checkboxProps] = splitFieldAdapterProps(props);
     const {
@@ -43,27 +45,23 @@ export const CheckboxField = forwardRef(function CheckboxField<FieldValue = bool
         ref,
         onBlur,
         onFocus: onFieldFocus,
-    } = useFieldAdapter<FieldValue, boolean | string[], HTMLLabelElement>(name, options, forwardedRef);
-    const { message, describedBy } = useValidationMessage(validationProps, ariaDescribedBy);
+    } = useFieldAdapter<FieldValue, boolean | string[], HTMLDivElement>(name, options, forwardedRef);
 
     return (
-        <>
-            <Checkbox
-                {...checkboxProps}
-                ref={ref}
-                name={input.name}
-                value={value}
-                checked={isCheckboxChecked(input.value, value)}
-                required={options.required}
-                aria-describedby={describedBy}
-                onChange={(checked) => input.onChange(toggleCheckboxValue(input.value, value, checked))}
-                onBlur={onBlur}
-                onFocus={(event) => {
-                    onFieldFocus();
-                    onFocus?.(event);
-                }}
-            />
-            {message}
-        </>
+        <Checkbox
+            {...checkboxProps}
+            ref={ref}
+            name={input.name}
+            value={value}
+            checked={isCheckboxChecked(input.value, value)}
+            required={options.required}
+            {...validationProps}
+            onChange={(checked) => input.onChange(toggleCheckboxValue(input.value, value, checked))}
+            onBlur={onBlur}
+            onFocus={(event) => {
+                onFieldFocus();
+                onFocus?.(event);
+            }}
+        />
     );
-}) as <FieldValue = boolean | string[]>(props: CheckboxFieldProps<FieldValue> & RefAttributes<HTMLLabelElement>) => ReactNode;
+}) as <FieldValue = boolean | string[]>(props: CheckboxFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;

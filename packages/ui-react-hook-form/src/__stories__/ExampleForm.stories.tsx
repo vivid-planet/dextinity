@@ -14,17 +14,17 @@ import { type CSSProperties, type ReactNode, useState } from "react";
 import { type Control, useForm } from "react-hook-form";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 
-import { CheckboxField } from "../checkboxField/CheckboxField";
-import { FocalPointPickerField } from "../focalPointPickerField/FocalPointPickerField";
+import { CheckboxField } from "../fields/checkboxField/CheckboxField";
+import { FocalPointPickerField } from "../fields/focalPointPickerField/FocalPointPickerField";
+import { InputField } from "../fields/inputField/InputField";
+import { RichTextEditorField } from "../fields/richTextEditorField/RichTextEditorField";
+import { SegmentedControlField } from "../fields/segmentedControlField/SegmentedControlField";
+import { SelectField } from "../fields/selectField/SelectField";
+import { SliderField } from "../fields/sliderField/SliderField";
+import { SwitchField } from "../fields/switchField/SwitchField";
+import { TextareaField } from "../fields/textareaField/TextareaField";
 import { useFormSaveState, useHasUnsavedChanges } from "../formState/useFormSaveState";
-import { InputField } from "../inputField/InputField";
-import { RichTextEditorField } from "../richTextEditorField/RichTextEditorField";
-import { SegmentedControlField } from "../segmentedControlField/SegmentedControlField";
-import { SelectField } from "../selectField/SelectField";
-import { SliderField } from "../sliderField/SliderField";
 import { sampleImage } from "../storybook/sampleImage";
-import { SwitchField } from "../switchField/SwitchField";
-import { TextareaField } from "../textareaField/TextareaField";
 
 interface PageFormValues {
     title: string;

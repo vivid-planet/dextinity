@@ -22,7 +22,7 @@ import {
 import { DialogContent } from "@mui/material";
 import { type ComponentType, type MouseEvent, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
-import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
+import { Route, useHistory, useLocation, useRouteMatch } from "react-router-dom";
 
 import { type ContentScope, useContentScope } from "../../contentScope/Provider";
 import { useContentScopeConfig } from "../../contentScope/useContentScopeConfig";
@@ -35,20 +35,19 @@ import { useSiteConfig } from "../../siteConfigs/useSiteConfig";
 import { usePageTreeScope } from "../config/usePageTreeScope";
 import { createEditPageNode, type EditPageNodeProps } from "../createEditPageNode";
 import { createPagesQuery, type GQLPagesQuery, type GQLPagesQueryVariables, type GQLPageTreePageFragment } from "../pagesPage/createPagesQuery";
-import { PagesPage } from "../pagesPage/PagesPage";
 import { PageTreeContext } from "../pageTree/PageTreeContext";
 import { arrayToTreeMap } from "../pageTree/treemap/TreeMapUtils";
 import { usePageTreeConfig } from "../pageTreeConfig";
+import { PageEditorRoute } from "./PageEditorRoute";
 import { PageTreeNodeDetail } from "./PageTreeNodeDetail";
 import { usePageTreeStatusLabels, visibilityStatus } from "./pageTreeStatus";
 import { createPageTreeStructure, getAncestorIds, isHomePage, type PageTreeStructure } from "./pageTreeStructure";
+import { selectedPageParam } from "./selectedPageParam";
 import { usePageTreeDetailActions } from "./usePageTreeDetailActions";
 
 type StatusFilter = GQLPageTreeNodeVisibility | "all";
 
 const statusFilters: StatusFilter[] = ["all", "Published", "Unpublished", "Archived"];
-
-const selectedPageParam = "page";
 
 const DefaultEditPageNode = createEditPageNode({});
 
@@ -61,8 +60,8 @@ export interface PageTreeDetailPageProps {
     documentTypes: Record<DocumentType, DocumentInterface> | ((category: string) => Record<DocumentType, DocumentInterface>);
     /** The form for adding a page and editing its properties. */
     editPageNode?: ComponentType<EditPageNodeProps>;
-    /** The scope indicator of the content editor, which is still the one of `PagesPage`. */
-    renderContentScopeIndicator: (scope: ContentScope) => ReactNode;
+    /** @deprecated Unused, the page editor is no longer the one of `PagesPage`. */
+    renderContentScopeIndicator?: (scope: ContentScope) => ReactNode;
     /** The title of the page header. */
     title?: string;
     /** The label above the title, e.g. the category. */
@@ -71,21 +70,32 @@ export interface PageTreeDetailPageProps {
 
 /**
  * The page tree as a tree with the detail of the selected page next to it, built with `@dextinity/ui`. Editing a page's content opens
- * the editor of `PagesPage` at `<url>/<pageId>/edit`.
+ * the editor of its document type at `<url>/<pageId>/edit`, which can read the page through `usePageEditorContext`.
  */
 export function PageTreeDetailPage(props: PageTreeDetailPageProps) {
     const match = useRouteMatch();
-    const editorMatch = useRouteMatch(`${match.path}/:pageId/:stackPage`);
+    const editorPath = `${match.path}/:pageId/edit`;
+    const editorMatch = useRouteMatch<{ pageId: string }>(editorPath);
+    const { setRedirectPathAfterChange } = useContentScope();
+    useContentScopeConfig({ redirectPathAfterChange: props.path });
+
+    useEffect(() => {
+        setRedirectPathAfterChange(props.path);
+        return () => setRedirectPathAfterChange(undefined);
+    }, [setRedirectPathAfterChange, props.path]);
 
     if (editorMatch != null) {
+        const { documentTypes, category } = props;
         return (
-            <PagesPage
-                category={props.category}
-                path={props.path}
-                documentTypes={props.documentTypes}
-                editPageNode={props.editPageNode}
-                renderContentScopeIndicator={props.renderContentScopeIndicator}
-            />
+            <Route path={editorPath}>
+                <PageEditorRoute
+                    pageId={editorMatch.params.pageId}
+                    category={category}
+                    documentTypes={typeof documentTypes === "function" ? documentTypes(category) : documentTypes}
+                    getDocumentTypesByCategory={typeof documentTypes === "function" ? documentTypes : undefined}
+                    pageTreeUrl={match.url}
+                />
+            </Route>
         );
     }
 
@@ -117,13 +127,12 @@ function matchesSearch(page: GQLPageTreePageFragment, search: string) {
     return query === "" || page.name.toLowerCase().includes(query) || page.path.toLowerCase().includes(query);
 }
 
-interface PageTreeDetailViewProps extends PageTreeDetailPageProps {
+interface PageTreeDetailViewProps extends Omit<PageTreeDetailPageProps, "path" | "renderContentScopeIndicator"> {
     url: string;
 }
 
 function PageTreeDetailView({
     category,
-    path,
     documentTypes: passedDocumentTypes,
     editPageNode: EditPageNode = DefaultEditPageNode,
     title,
@@ -133,18 +142,11 @@ function PageTreeDetailView({
     const intl = useIntl();
     const history = useHistory();
     const location = useLocation();
-    const { scope, match: contentScopeMatch, setRedirectPathAfterChange } = useContentScope();
+    const { scope, match: contentScopeMatch } = useContentScope();
     const pageTreeScope = usePageTreeScope();
     const siteConfig = useSiteConfig({ scope });
     const { additionalPageTreeNodeFragment } = usePageTreeConfig();
     const statusLabels = usePageTreeStatusLabels();
-    useContentScopeConfig({ redirectPathAfterChange: path });
-
-    useEffect(() => {
-        setRedirectPathAfterChange(path);
-        return () => setRedirectPathAfterChange(undefined);
-    }, [setRedirectPathAfterChange, path]);
-
     const documentTypes = typeof passedDocumentTypes === "function" ? passedDocumentTypes(category) : passedDocumentTypes;
     const pagesQuery = useMemo(() => createPagesQuery({ additionalPageTreeNodeFragment }), [additionalPageTreeNodeFragment]);
     const { data, loading, error, refetch, startPolling, stopPolling } = useQuery<GQLPagesQuery, GQLPagesQueryVariables>(pagesQuery, {

@@ -2,7 +2,7 @@
 
 Read [README.md](README.md) before working in this package. It defines the package and its conventions — which differ from the other Dextinity packages, so their code is not a reliable guide — and it takes precedence over instructions from parent directories.
 
-- Writing or changing a component: [Component conventions](README.md#component-conventions) and [Testing](README.md#testing).
+- Writing or changing a component: [Component conventions](README.md#component-conventions), [Testing](README.md#testing), and the [accessibility guidelines](../../docs/docs/9-coding-guidelines/14-accessibility.md).
 - Changing the theme tokens: [Theme](README.md#theme).
 - Adding an icon: [Adding an icon](README.md#adding-an-icon).
 

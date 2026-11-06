@@ -133,6 +133,7 @@ export function AppFrameCommandPalette({ open, onOpenChange, menuEntries, comman
                 navigate: intl.formatMessage({ id: "dextinity.appFrame.commandPalette.navigate", defaultMessage: "Navigate" }),
                 select: intl.formatMessage({ id: "dextinity.appFrame.commandPalette.select", defaultMessage: "Open" }),
                 close: intl.formatMessage({ id: "dextinity.appFrame.commandPalette.close", defaultMessage: "Close" }),
+                escapeKey: intl.formatMessage({ id: "dextinity.appFrame.commandPalette.escapeKey", defaultMessage: "Esc" }),
             }}
         />
     );

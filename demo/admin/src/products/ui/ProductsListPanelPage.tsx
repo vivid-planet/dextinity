@@ -1,4 +1,5 @@
 import { useApolloClient, useQuery } from "@apollo/client";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import {
     Button,
     Chip,
@@ -98,6 +99,7 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
                 mutation: updateProductStatusMutation,
                 variables: { id, status: nextStatus },
                 refetchQueries: ["ProductsUiList"],
+                context: LocalErrorScopeApolloContext,
             });
         } catch {
             addToast({

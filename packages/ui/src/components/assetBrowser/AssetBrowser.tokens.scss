@@ -15,6 +15,15 @@
     --dextinity-asset-browser-row-height: 38px;
     --dextinity-asset-browser-item-radius: var(--dextinity-radius-item);
     --dextinity-asset-browser-meta-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-asset-browser-search-width: 220px;
+    --dextinity-asset-browser-search-height: calc(var(--dextinity-density-segment-height) - 4px);
+    --dextinity-asset-browser-search-radius: var(--dextinity-radius-control);
+    --dextinity-asset-browser-search-background: var(--dextinity-color-surface);
+    --dextinity-asset-browser-search-line: var(--dextinity-color-line-strong);
+    --dextinity-asset-browser-search-line-hover: var(--dextinity-color-text-subtle);
+    --dextinity-asset-browser-search-line-focus: var(--dextinity-color-accent);
+    // Soft halo around the focused search
+    --dextinity-asset-browser-search-halo-focus: var(--dextinity-color-accent-soft);
 
     --dextinity-asset-browser-hover-background: color-mix(in oklch, var(--dextinity-color-text) 5%, transparent);
     --dextinity-asset-browser-selected-background: var(--dextinity-color-accent-soft);

@@ -115,4 +115,100 @@ describe("AssetBrowser", () => {
 
         expect(screen.getByRole("option", { name: /Team/ }).textContent).toContain("12 items");
     });
+
+    describe("search", () => {
+        const teamAsset: AssetBrowserAsset = { id: "t", name: "team.jpg", folderId: "team", type: "image", meta: "JPG · 1 MB" };
+
+        it("shows a search field only with onSearchChange", () => {
+            renderBrowser();
+            expect(screen.queryByRole("searchbox")).toBeNull();
+        });
+
+        it("lists the results across folders with their folder path instead of the folder's items", () => {
+            const { container } = renderBrowser({ search: "team", onSearchChange: vi.fn(), searchResults: [teamAsset, assets[1]], selectedIds: [] });
+
+            expect((container.firstElementChild as HTMLElement).dataset.searching).toBe("");
+            const results = screen.getByRole("listbox", { name: "Search results" });
+            expect(results.getAttribute("aria-busy")).toBeNull();
+            const options = screen.getAllByRole("option");
+            expect(options.map((option) => option.textContent)).toStrictEqual(["team.jpgAll assets › TeamJPG · 1 MB", "a.jpgAll assets"]);
+            expect(screen.getByText("2 results", { selector: "[class*='titleMeta']" })).toBeTruthy();
+        });
+
+        it("shows the columns view as a list while searching", () => {
+            renderBrowser({ view: "columns", search: "team", onSearchChange: vi.fn(), searchResults: [teamAsset] });
+
+            expect(screen.getByText("Location")).toBeTruthy();
+        });
+
+        it("shows the loading and the empty state", () => {
+            const { rerender } = renderBrowser({ search: "x", onSearchChange: vi.fn(), searchResults: [], searchLoading: true });
+            expect(screen.getByRole("status").textContent).toBe("Searching…");
+
+            rerender(
+                <AssetBrowser
+                    folders={folders}
+                    assets={assets}
+                    folderId="root"
+                    onFolderChange={vi.fn()}
+                    view="list"
+                    onViewChange={vi.fn()}
+                    selectedIds={[]}
+                    onSelectionChange={vi.fn()}
+                    search=" x "
+                    onSearchChange={vi.fn()}
+                    searchResults={[]}
+                />,
+            );
+            expect(screen.getByRole("status").textContent).toBe("No results for “x”");
+        });
+
+        it("clears the search on Escape in the search field and with the clear button", () => {
+            const onSearchChange = vi.fn();
+            renderBrowser({ search: "team", onSearchChange, searchResults: [] });
+
+            fireEvent.keyDown(screen.getByRole("searchbox", { name: "Search" }), { key: "Escape" });
+            expect(onSearchChange).toHaveBeenLastCalledWith("");
+            onSearchChange.mockClear();
+            fireEvent.click(screen.getByRole("button", { name: "Clear search" }));
+            expect(onSearchChange).toHaveBeenLastCalledWith("");
+        });
+
+        it("opens a folder on the selected result's path and selects what leads to the result", () => {
+            const nestedFolders: AssetBrowserFolder[] = [...folders, { id: "portraits", name: "Portraits", parentId: "team" }];
+            const result: AssetBrowserAsset = { id: "p", name: "portrait.jpg", folderId: "portraits", type: "image" };
+            const onFolderChange = vi.fn();
+            const onSelectionChange = vi.fn();
+            const onSearchChange = vi.fn();
+            renderBrowser({
+                folders: nestedFolders,
+                search: "portrait",
+                onSearchChange,
+                searchResults: [result],
+                selectedIds: ["p"],
+                onFolderChange,
+                onSelectionChange,
+            });
+
+            const pathBar = screen.getByRole("navigation", { name: "Breadcrumbs" });
+            expect(pathBar.textContent).toContain("portrait.jpg");
+            fireEvent.click(screen.getByRole("button", { name: "Team" }));
+            expect([onSearchChange.mock.lastCall, onFolderChange.mock.lastCall, onSelectionChange.mock.lastCall]).toStrictEqual([
+                [""],
+                ["team"],
+                [["portraits"]],
+            ]);
+
+            fireEvent.keyDown(screen.getByRole("option", { name: /portrait\.jpg/ }), { key: "ArrowUp", ctrlKey: true });
+            expect([onFolderChange.mock.lastCall, onSelectionChange.mock.lastCall]).toStrictEqual([["portraits"], [["p"]]]);
+        });
+
+        it("deletes only the selected results", () => {
+            const onDelete = vi.fn();
+            renderBrowser({ search: "team", onSearchChange: vi.fn(), searchResults: [teamAsset], selectedIds: ["a", "t"], onDelete });
+
+            fireEvent.keyDown(screen.getByRole("option", { name: /team\.jpg/ }), { key: "Delete" });
+            expect(onDelete).toHaveBeenCalledWith(["t"]);
+        });
+    });
 });

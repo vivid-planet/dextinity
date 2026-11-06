@@ -1,70 +1,90 @@
-import { gql, useQuery } from "@apollo/client";
-import { Link } from "@dextinity/admin-icons";
-import { useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { Icon, Picker, type PickerProps } from "@dextinity/ui";
+import { styled } from "@mui/material/styles";
+import { type ReactNode, useState } from "react";
+import { useIntl } from "react-intl";
 
-import { BlockAdminComponentButton } from "../../blocks/common/BlockAdminComponentButton";
-import { BlockAdminComponentNestedButton } from "../../blocks/common/BlockAdminComponentNestedButton";
-import { usePageTreeConfig } from "../pageTreeConfig";
-import type { GQLPageTreeSelectDetailQuery, GQLPageTreeSelectDetailQueryVariables } from "./PageTreeSelect.generated";
-import PageTreeSelectDialog, { type GQLSelectedPageFragment } from "./PageTreeSelectDialog";
+import { PageTreeSelectDialog, type PageTreeSelectValue } from "./PageTreeSelectDialog";
 
-interface PageTreeSelectProps {
-    value: GQLSelectedPageFragment | undefined | null;
-    onChange: (newValue: GQLSelectedPageFragment | null) => void;
+export interface PageTreeSelectProps extends Omit<
+    PickerProps<PageTreeSelectValue>,
+    "value" | "onChange" | "renderValue" | "onOpen" | "onClear" | "label"
+> {
+    /**
+     * The field's label.
+     *
+     * @defaultValue "Page"
+     */
+    label?: PickerProps<PageTreeSelectValue>["label"];
+    value: PageTreeSelectValue | undefined | null;
+    onChange: (newValue: PageTreeSelectValue | null) => void;
+    /**
+     * Shows a button that clears the chosen page.
+     *
+     * @defaultValue `true`, unless `required`
+     */
+    clearable?: boolean;
 }
 
-const pageTreeSelectDetail = gql`
-    query PageTreeSelectDetail($id: ID!) {
-        page: pageTreeNode(id: $id) {
-            category
-        }
-    }
-`;
+/**
+ * Shows a page's name and path, as the value of a page tree select.
+ */
+export function renderPageTreeSelectValue(page: PageTreeSelectValue): ReactNode {
+    return (
+        <>
+            <Icon name={page.documentType === "Link" ? "link" : "file"} />
+            <PageName>{page.name}</PageName>
+            <PagePath>{page.path}</PagePath>
+        </>
+    );
+}
 
-export function PageTreeSelect({ value, onChange }: PageTreeSelectProps) {
-    const config = usePageTreeConfig();
+/**
+ * A field showing the chosen page that opens the `PageTreeSelectDialog` to choose another one, built with `@dextinity/ui`. For forms,
+ * use `PageTreeSelectField`.
+ */
+export function PageTreeSelect({ value, onChange, clearable, label, placeholder, labels, required, ...pickerProps }: PageTreeSelectProps) {
+    const intl = useIntl();
     const [open, setOpen] = useState(false);
-
-    const { data, loading } = useQuery<GQLPageTreeSelectDetailQuery, GQLPageTreeSelectDetailQueryVariables>(pageTreeSelectDetail, {
-        variables: { id: value?.id as string },
-        skip: !value?.id,
-    });
-
-    const handleButtonClick = () => setOpen(true);
-
-    let defaultCategory: string;
-
-    if (data?.page?.category) {
-        defaultCategory = data.page.category;
-    } else {
-        if (config.categories.length === 0) {
-            throw new Error("No categories defined in the page tree configuration. Please define at least one category.");
-        }
-
-        defaultCategory = config.categories[0].category;
-    }
+    const showsClear = clearable ?? !required;
 
     return (
         <>
-            {value ? (
-                <BlockAdminComponentNestedButton onClick={handleButtonClick} displayName={value.name} preview={value.path} />
-            ) : (
-                <BlockAdminComponentButton onClick={handleButtonClick} size="large" startIcon={<Link />} disabled={loading}>
-                    <FormattedMessage id="dextinity.pages.pageTreeSelect.label" defaultMessage="Select Page" />
-                </BlockAdminComponentButton>
-            )}
-
-            {/* Render Dialog only when open is true to prevent render-cycles originating from setQuery in usePageQuery */}
+            <Picker<PageTreeSelectValue>
+                {...pickerProps}
+                label={label ?? intl.formatMessage({ id: "dextinity.pages.pageTreeSelect.fieldLabel", defaultMessage: "Page" })}
+                required={required}
+                value={value ?? null}
+                renderValue={renderPageTreeSelectValue}
+                placeholder={placeholder ?? intl.formatMessage({ id: "dextinity.pages.pageTreeSelect.label", defaultMessage: "Select Page" })}
+                icon={<Icon name="file" />}
+                labels={{ clear: intl.formatMessage({ id: "dextinity.pages.pageTreeSelect.clear", defaultMessage: "Remove page" }), ...labels }}
+                onOpen={() => setOpen(true)}
+                onClear={showsClear ? () => onChange(null) : undefined}
+            />
+            {/* Mounted only while open, so that the page tree is only queried then */}
             {open && (
                 <PageTreeSelectDialog
-                    open={open}
-                    onClose={() => setOpen(false)}
+                    open
                     value={value}
-                    onChange={onChange}
-                    defaultCategory={defaultCategory}
+                    onChange={(newValue) => {
+                        onChange(newValue);
+                        setOpen(false);
+                    }}
+                    onClose={() => setOpen(false)}
                 />
             )}
         </>
     );
 }
+
+const PageName = styled("span")`
+    overflow: hidden;
+    text-overflow: ellipsis;
+`;
+
+const PagePath = styled("span")`
+    overflow: hidden;
+    color: var(--dextinity-color-text-tertiary);
+    font-size: var(--dextinity-typography-small-size);
+    text-overflow: ellipsis;
+`;

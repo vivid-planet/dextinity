@@ -67,6 +67,8 @@ export { type MenuRadioItemSlotProps, type MenuRadioItemSlots } from "./componen
 export { MenuSeparator, type MenuSeparatorOwnerState, type MenuSeparatorProps } from "./components/menu/MenuSeparator";
 export { MenuSubmenu, type MenuSubmenuOwnerState, type MenuSubmenuProps, type MenuSubmenuSlotProps } from "./components/menu/MenuSubmenu";
 export { MiniChart, type MiniChartOwnerState, type MiniChartProps, type MiniChartSlotProps } from "./components/miniChart/MiniChart";
+export { OverviewLayout, type OverviewLayoutOwnerState, type OverviewLayoutProps } from "./components/overviewLayout/OverviewLayout";
+export { type OverviewLayoutSlotProps } from "./components/overviewLayout/OverviewLayout";
 export { PageHeader, type PageHeaderBack, type PageHeaderOwnerState, type PageHeaderProps } from "./components/pageHeader/PageHeader";
 export { defaultPaginationLabels, Pagination, type PaginationLabels } from "./components/pagination/Pagination";
 export { type PaginationOwnerState, type PaginationProps } from "./components/pagination/Pagination";

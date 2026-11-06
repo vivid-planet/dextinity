@@ -1,0 +1,17 @@
+@use "../../theme/scope";
+
+@include scope.component-tokens {
+    // Space between the cards; follows the density
+    --dextinity-overview-layout-gap: calc(var(--dextinity-density-panel-padding) + 2px);
+    // Space above and below the greeting
+    --dextinity-overview-layout-hero-padding: 20px 12px 40px;
+    --dextinity-overview-layout-label-color: var(--dextinity-color-text-tertiary);
+    --dextinity-overview-layout-title-color: var(--dextinity-color-text);
+    --dextinity-overview-layout-title-font-size: var(--dextinity-typography-display-xl-size);
+    --dextinity-overview-layout-summary-color: var(--dextinity-color-text-secondary);
+    --dextinity-overview-layout-summary-font-size: 18px;
+    // Underline of the links in the summary
+    --dextinity-overview-layout-link-underline: color-mix(in oklch, var(--dextinity-color-accent) 55%, transparent);
+    // Below this width of the layout, the cards stack in one column
+    --dextinity-overview-layout-card-min-width: 420px;
+}

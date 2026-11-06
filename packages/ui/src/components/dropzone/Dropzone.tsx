@@ -287,7 +287,7 @@ export const Dropzone = forwardRef<HTMLDivElement, DropzoneProps>(function Dropz
                     </>
                 )}
             </div>
-            <input {...inputProps} />
+            <input {...inputProps} ref={inputRef} />
             {error != null && <p {...errorProps}>{error}</p>}
             {uploads.length > 0 && (
                 <ul {...uploadsProps}>

@@ -126,6 +126,16 @@
         --dextinity-current-chip-line: var(--dextinity-chip-outlined-success-line);
         --dextinity-current-chip-foreground: var(--dextinity-chip-outlined-success-foreground);
     }
+
+    // Forced colors remove backgrounds and box shadows, which would leave the chip without an edge and without a focus ring
+    @media (forced-colors: active) {
+        border: 1px solid;
+
+        &:focus-visible {
+            outline: 2px solid;
+            outline-offset: 2px;
+        }
+    }
 }
 
 .startIcon,
@@ -174,5 +184,13 @@
     > svg {
         inline-size: var(--dextinity-icon-size);
         block-size: var(--dextinity-icon-size);
+    }
+
+    // Forced colors remove box shadows, which would leave the button without a focus ring
+    @media (forced-colors: active) {
+        &:focus-visible {
+            outline: 2px solid;
+            outline-offset: 1px;
+        }
     }
 }

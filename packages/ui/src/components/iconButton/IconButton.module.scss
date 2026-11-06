@@ -125,6 +125,16 @@
             box-shadow: var(--dextinity-focus-ring);
         }
     }
+
+    // Forced colors remove backgrounds and box shadows, which would leave the button without an edge and without a focus ring
+    @media (forced-colors: active) {
+        border: 1px solid;
+
+        &:focus-visible {
+            outline: 2px solid;
+            outline-offset: 2px;
+        }
+    }
 }
 
 .icon {

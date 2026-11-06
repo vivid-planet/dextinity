@@ -12,6 +12,7 @@ const packageFolderMapping = {
     "@dextinity/brevo-api": "packages/api/brevo-api",
     "@dextinity/site-nextjs": "packages/site/site-nextjs",
     "@dextinity/site-react": "packages/site/site-react",
+    "@dextinity/ui": "packages/ui",
 };
 
 const waitOnPackages = (...packages: (keyof typeof packageFolderMapping)[]) => {
@@ -145,6 +146,12 @@ export default defineConfig({
             name: "dextinity-ui",
             script: "pnpm --filter @dextinity/ui run dev",
             group: ["dextinity-ui"],
+        },
+        {
+            name: "dextinity-ui-react-final-form",
+            script: "pnpm --filter @dextinity/ui-react-final-form run dev",
+            group: ["dextinity-ui"],
+            waitOn: waitOnPackages("@dextinity/ui"),
         },
         {
             name: "storybook-dextinity-ui",

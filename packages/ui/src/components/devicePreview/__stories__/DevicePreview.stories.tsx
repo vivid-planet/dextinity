@@ -188,9 +188,9 @@ export const WithOverlay: Story = {
     args: {
         overlay: (
             <>
-                <div className={styles.highlightHovered} style={{ top: 72, left: 0, width: "100%", height: 220 }} />
-                <div className={styles.highlightSelected} style={{ top: 330, left: 32, width: "calc(100% - 64px)", height: 150 }}>
-                    <span className={styles.highlightLabel}>Teaser list</span>
+                <div className={styles.highlightHovered} style={{ top: 52, left: 0, width: "100%", height: 488 }} />
+                <div className={styles.highlightSelected} style={{ top: 540, left: 0, width: "100%", height: 108 }}>
+                    <span className={styles.highlightLabel}>Heading</span>
                 </div>
             </>
         ),

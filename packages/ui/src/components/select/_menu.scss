@@ -1,0 +1,141 @@
+// The menu of choices shared by `Select` and `Combobox`: its popup, options, and the chips of chosen options. Both use the Select tokens.
+
+@mixin chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    box-sizing: border-box;
+    max-inline-size: 100%;
+    block-size: var(--dextinity-select-chip-height);
+    padding-inline: 8px 2px;
+    border-radius: var(--dextinity-select-chip-radius);
+    background: var(--dextinity-select-chip-background);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-select-chip-line);
+    font-size: var(--dextinity-select-chip-font-size);
+    white-space: nowrap;
+    cursor: default;
+
+    --dextinity-icon-size: 12px;
+}
+
+@mixin chipRemove {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 20px;
+    block-size: 20px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: calc(var(--dextinity-select-chip-radius) - 2px);
+    background: transparent;
+    color: var(--dextinity-color-text-tertiary);
+    cursor: pointer;
+
+    &:hover {
+        background: var(--dextinity-select-item-background-highlight);
+        color: var(--dextinity-color-text);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}
+
+@mixin positioner {
+    z-index: 100;
+    outline: none;
+}
+
+@mixin popup {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-inline-size: max(var(--anchor-width), 228px);
+    max-block-size: min(var(--dextinity-select-popup-max-height), var(--available-height));
+    padding: var(--dextinity-select-popup-padding);
+    border-radius: var(--dextinity-select-popup-radius);
+    background: var(--dextinity-select-popup-background);
+    box-shadow: var(--dextinity-select-popup-shadow);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    outline: none;
+    transform-origin: var(--transform-origin);
+    transition:
+        opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    &[data-starting-style],
+    &[data-ending-style] {
+        opacity: 0;
+        transform: scale(0.96) translateY(calc(var(--dextinity-motion-distance) * -1));
+    }
+}
+
+@mixin list {
+    overflow-y: auto;
+    outline: none;
+    scrollbar-width: thin;
+}
+
+@mixin empty {
+    padding: var(--dextinity-space-2) var(--dextinity-select-item-padding);
+    color: var(--dextinity-color-text-tertiary);
+    font-size: var(--dextinity-typography-small-size);
+
+    &:empty {
+        display: none;
+    }
+}
+
+@mixin item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    min-block-size: var(--dextinity-select-item-height);
+    padding-inline: var(--dextinity-select-item-padding);
+    border-radius: var(--dextinity-select-item-radius);
+    font-size: var(--dextinity-select-item-font-size);
+    white-space: nowrap;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+
+    --dextinity-icon-size: 16px;
+
+    &[data-highlighted] {
+        background: var(--dextinity-select-item-background-highlight);
+    }
+
+    :global([data-dextinity-color-scheme="high-contrast"]) &[data-highlighted] {
+        box-shadow: inset 0 0 0 2px var(--dextinity-color-focus);
+    }
+
+    &[data-disabled] {
+        opacity: 0.42;
+        cursor: not-allowed;
+    }
+}
+
+@mixin itemIcon {
+    display: inline-flex;
+    color: var(--dextinity-select-item-icon-color);
+}
+
+@mixin itemText {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@mixin itemIndicator {
+    display: inline-flex;
+    margin-inline-start: auto;
+    color: var(--dextinity-select-item-indicator-color);
+}

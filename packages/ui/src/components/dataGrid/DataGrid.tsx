@@ -243,6 +243,13 @@ export interface DataGridProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>,
     selectedIds?: string[];
     /** Called with the new selection. */
     onSelectionChange?: (ids: string[]) => void;
+    /**
+     * Clears the selection on Escape. Turn it off where the selection is the edited data rather than a step before a bulk action, so
+     * Escape doesn't discard it and reaches e.g. the dialog around the grid instead.
+     *
+     * @defaultValue `true`
+     */
+    clearSelectionOnEscape?: boolean;
     /** The active sorting. */
     sort?: DataGridSort;
     /** Called with the new sorting when a sortable header is clicked. */
@@ -425,6 +432,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
         selectable = false,
         selectedIds = [],
         onSelectionChange,
+        clearSelectionOnEscape = true,
         sort,
         onSortChange,
         onRowClick,
@@ -1039,7 +1047,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
             className={clsx(styles.root, className)}
             onKeyDown={(event) => {
                 onKeyDown?.(event);
-                if (event.key === "Escape" && !event.defaultPrevented && selectable && selectedIds.length > 0) {
+                if (event.key === "Escape" && !event.defaultPrevented && clearSelectionOnEscape && selectable && selectedIds.length > 0) {
                     event.preventDefault();
                     onSelectionChange?.([]);
                 }

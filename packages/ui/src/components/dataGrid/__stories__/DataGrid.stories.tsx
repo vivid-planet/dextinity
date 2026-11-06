@@ -286,6 +286,29 @@ export const Selection: Story = {
 };
 
 /**
+ * With `clearSelectionOnEscape={false}`, Escape keeps the selection, for a grid whose selection is the edited data, e.g. the items
+ * picked for a block, rather than a step before a bulk action.
+ */
+export const KeepSelectionOnEscape: Story = {
+    args: {
+        rows: allJobs.slice(0, 5),
+        selectable: true,
+        selectedIds: ["job-2"],
+        clearSelectionOnEscape: false,
+    },
+    play: async ({ args, canvas }) => {
+        const checkbox = canvas.getByRole("checkbox", { name: "Select Frontend Developer" });
+        await userEvent.click(checkbox);
+        await waitFor(() => expect(args.onSelectionChange).toHaveBeenLastCalledWith([]));
+        await userEvent.click(checkbox);
+        await waitFor(() => expect(checkbox).toHaveAttribute("aria-checked", "true"));
+        await userEvent.keyboard("{Escape}");
+        await expect(args.onSelectionChange).toHaveBeenCalledTimes(2);
+        await expect(checkbox).toHaveAttribute("aria-checked", "true");
+    },
+};
+
+/**
  * With `onRowClick`, rows are focusable and open on Enter; the row actions appear on focus.
  */
 export const RowClick: Story = {

@@ -1,27 +1,25 @@
-import { useQuery } from "@apollo/client";
-import { Button, Card, CardRow, EmptyState, Icon, Link, Skeleton, StatusIndicator, type StatusIndicatorStatus } from "@dextinity/ui";
+import { gql, useQuery } from "@apollo/client";
+import { Button, Card, CardRow, EmptyState, Icon, Link, Skeleton } from "@dextinity/ui";
 import { parseISO } from "date-fns";
-import { defineMessages, FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { Link as RouterLink } from "react-router-dom";
 
 import { JobRuntime } from "../cronJobs/JobRuntime";
-import type { GQLKubernetesJobStatus } from "../graphql.generated";
-import { latestBuildsQuery } from "./widgets/LatestBuildsDashboardWidget";
-import type { GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables } from "./widgets/LatestBuildsDashboardWidget.generated";
+import { JobStatusIndicator } from "../cronJobs/JobStatusIndicator";
+import type { GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables } from "./LatestBuildsCard.generated";
 
-const buildStatus: Record<GQLKubernetesJobStatus, StatusIndicatorStatus> = {
-    pending: "info",
-    active: "running",
-    succeeded: "published",
-    failed: "critical",
-};
-
-const buildStatusLabels = defineMessages({
-    pending: { id: "dextinity.latestBuildsCard.status.pending", defaultMessage: "Pending" },
-    active: { id: "dextinity.latestBuildsCard.status.active", defaultMessage: "Running" },
-    succeeded: { id: "dextinity.latestBuildsCard.status.succeeded", defaultMessage: "Succeeded" },
-    failed: { id: "dextinity.latestBuildsCard.status.failed", defaultMessage: "Failed" },
-});
+const latestBuildsQuery = gql`
+    query LatestBuilds {
+        builds(limit: 5) {
+            id
+            status
+            name
+            trigger
+            startTime
+            completionTime
+        }
+    }
+`;
 
 export interface LatestBuildsCardProps {
     /** The URL of the publisher, linked from the card's header and from each build. */
@@ -81,11 +79,7 @@ export function LatestBuildsCard({ publisherUrl }: LatestBuildsCardProps) {
                                 completionTime={build.completionTime ? parseISO(build.completionTime) : undefined}
                             />
                         }
-                        end={
-                            <StatusIndicator status={buildStatus[build.status]}>
-                                {intl.formatMessage(buildStatusLabels[build.status])}
-                            </StatusIndicator>
-                        }
+                        end={<JobStatusIndicator status={build.status} />}
                     />
                 ))
             )}

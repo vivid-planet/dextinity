@@ -1,0 +1,259 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    inline-size: var(--dextinity-ai-panel-width);
+    max-inline-size: 100%;
+    block-size: 100%;
+    min-block-size: 0;
+    border-radius: var(--dextinity-ai-panel-radius);
+    background: var(--dextinity-ai-panel-background);
+    backdrop-filter: blur(var(--dextinity-ai-panel-blur)) saturate(1.6);
+    box-shadow: var(--dextinity-ai-panel-shadow);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+.header {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 12px 14px 16px;
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-ai-panel-separator-color);
+}
+
+.orb {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 32px;
+    block-size: 32px;
+    border-radius: var(--dextinity-radius-item);
+    background: var(--dextinity-ai-panel-orb-background);
+    box-shadow: var(--dextinity-ai-panel-orb-shadow);
+    color: var(--dextinity-ai-panel-orb-foreground);
+    --dextinity-icon-size: 16px;
+}
+
+.heading {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-inline-size: 0;
+}
+
+.title {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.context {
+    overflow: hidden;
+    color: var(--dextinity-ai-panel-context-color);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.closeButton {
+    flex: none;
+}
+
+.messages {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 10px;
+    min-block-size: 0;
+    padding: 16px;
+    overflow: auto;
+}
+
+.message {
+    max-inline-size: 90%;
+    padding: 10px 13px;
+    border-radius: var(--dextinity-ai-panel-message-radius);
+    font-size: var(--dextinity-ai-panel-message-font-size);
+    line-height: 1.5;
+    animation: message-in var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    &[data-role="assistant"] {
+        align-self: flex-start;
+        border-start-start-radius: 6px;
+        background: var(--dextinity-ai-panel-assistant-background);
+        box-shadow: var(--dextinity-ai-panel-assistant-shadow);
+    }
+
+    &[data-role="user"] {
+        align-self: flex-end;
+        border-start-end-radius: 6px;
+        background: var(--dextinity-ai-panel-user-background);
+        color: var(--dextinity-ai-panel-user-foreground);
+    }
+}
+
+@keyframes message-in {
+    from {
+        transform: translateY(var(--dextinity-motion-distance));
+    }
+}
+
+.messageContent {
+    > :first-child {
+        margin-block-start: 0;
+    }
+
+    > :last-child {
+        margin-block-end: 0;
+    }
+}
+
+.messageActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-block-start: 10px;
+}
+
+.typing {
+    display: flex;
+    gap: 4px;
+    padding: 13px 14px;
+
+    > span {
+        inline-size: 6px;
+        block-size: 6px;
+        border-radius: 50%;
+        background: var(--dextinity-ai-panel-context-color);
+        animation: typing 1s infinite;
+
+        &:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        &:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+    }
+}
+
+@keyframes typing {
+    0%,
+    80%,
+    100% {
+        opacity: 0.3;
+    }
+
+    40% {
+        opacity: 1;
+    }
+}
+
+.suggestions {
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 16px 12px;
+}
+
+.suggestion {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 11px;
+    border: 0;
+    border-radius: var(--dextinity-radius-control);
+    background: transparent;
+    box-shadow: var(--dextinity-ai-panel-suggestion-shadow);
+    color: var(--dextinity-color-text-secondary);
+    font: inherit;
+    font-size: 12.5px;
+    text-align: start;
+    cursor: pointer;
+    transition:
+        background var(--dextinity-motion-duration-short),
+        box-shadow var(--dextinity-motion-duration-short),
+        color var(--dextinity-motion-duration-short);
+    --dextinity-icon-size: 13px;
+
+    > :first-child {
+        color: var(--dextinity-color-accent-text);
+    }
+
+    &:hover {
+        background: var(--dextinity-ai-panel-suggestion-background-hover);
+        box-shadow: var(--dextinity-ai-panel-suggestion-shadow-hover);
+        color: var(--dextinity-color-text);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+}
+
+.composer {
+    flex: none;
+    padding: 10px 12px 12px;
+    box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-ai-panel-separator-color);
+}
+
+.inputBox {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 6px 6px 6px 14px;
+    border-radius: var(--dextinity-ai-panel-input-radius);
+    background: var(--dextinity-ai-panel-input-background);
+    box-shadow: var(--dextinity-ai-panel-input-shadow);
+    cursor: text;
+    transition: box-shadow var(--dextinity-motion-duration-medium);
+
+    &:focus-within {
+        box-shadow: var(--dextinity-ai-panel-input-shadow-focus);
+    }
+}
+
+.input {
+    flex: 1;
+    box-sizing: border-box;
+    min-inline-size: 0;
+    max-block-size: 120px;
+    padding: 6px 0;
+    border: 0;
+    background: transparent;
+    color: var(--dextinity-color-text);
+    font: inherit;
+    font-size: var(--dextinity-ai-panel-message-font-size);
+    line-height: 1.45;
+    resize: none;
+    field-sizing: content;
+    outline: none;
+
+    &::placeholder {
+        color: var(--dextinity-color-text-subtle);
+    }
+}
+
+.sendButton {
+    flex: none;
+
+    &:not([data-disabled]) {
+        background: var(--dextinity-ai-panel-send-background);
+        color: var(--dextinity-ai-panel-send-foreground);
+    }
+}
+
+.note {
+    margin: 7px 0 0;
+    color: var(--dextinity-ai-panel-note-color);
+    font-size: 11px;
+    text-align: center;
+}

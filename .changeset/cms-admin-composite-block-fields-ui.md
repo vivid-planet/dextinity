@@ -11,7 +11,7 @@ The factories keep their names, default values, and block state. Only their opti
 - The deprecated `fieldProps` option is removed. Set the props directly.
 - `fullWidth` has no effect, as the fields always fill their container. It's deprecated and will be removed.
 - `createCompositeBlockTextField` shows a textarea with `multiline` and `rows`. Use `disableContentTranslation` to hide the "Translate" action.
-- The options of `createCompositeBlockSelectField` are `SelectOption`s of `@dextinity/ui`: an `icon` goes into `icon` instead of the `label`. A label that isn't a string or a `FormattedMessage` needs a `textValue`. Lists choose several options; set `multiple` to override it.
+- The options of `createCompositeBlockSelectField` are `SelectOption`s of `@dextinity/ui`: an `icon` goes into `icon` instead of the `label`. A label that isn't a string or a `FormattedMessage` needs a `textValue`. Lists choose several options; set `multiple` to override it. Type option lists defined outside the factory call with the new `CompositeBlockSelectFieldOption`.
 
 ```tsx
 createCompositeBlockSelectField<"left" | "center">({

@@ -48,4 +48,33 @@ describe("Breadcrumbs", () => {
         fireEvent.click(level);
         expect(onClick).toHaveBeenCalledTimes(1);
     });
+
+    it("calls onClick instead of following the link on a plain click", () => {
+        const onClick = vi.fn();
+        render(<Breadcrumbs items={[{ label: "Page", href: "#page", onClick }, { label: "Teaser 2" }]} />);
+
+        const notCanceled = fireEvent.click(screen.getByRole("link", { name: "Page" }));
+        expect(notCanceled).toBe(false);
+        expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([{ metaKey: true }, { ctrlKey: true }, { shiftKey: true }, { altKey: true }, { button: 1 }])(
+        "lets the browser follow the link on a click with %o",
+        (init) => {
+            const onClick = vi.fn();
+            render(<Breadcrumbs items={[{ label: "Page", href: "#page", onClick }, { label: "Teaser 2" }]} />);
+
+            const notCanceled = fireEvent.click(screen.getByRole("link", { name: "Page" }), init);
+            expect(notCanceled).toBe(true);
+            expect(onClick).not.toHaveBeenCalled();
+        },
+    );
+
+    it("calls onClick of a level without a link on a click with a modifier key", () => {
+        const onClick = vi.fn();
+        render(<Breadcrumbs items={[{ label: "Page", onClick }, { label: "Teaser 2" }]} />);
+
+        fireEvent.click(screen.getByRole("button", { name: "Page" }), { metaKey: true });
+        expect(onClick).toHaveBeenCalledTimes(1);
+    });
 });

@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type MouseEvent, useState } from "react";
 
+import { isModifiedClick } from "../../utils/modifiedClick";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
 import { Link, type LinkProps } from "../link/Link";
@@ -17,7 +18,10 @@ export interface BreadcrumbsItem {
     label: string;
     /** The destination of the level. */
     href?: string;
-    /** Called when the level is chosen, e.g. to navigate with the router. Without `href` and `render`, the level renders as a button. */
+    /**
+     * Called when the level is chosen, e.g. to navigate with the router, instead of following `href`. A click with a modifier key or
+     * the middle button still follows the link, e.g. into a new tab. Without `href` and `render`, the level renders as a button.
+     */
     onClick?: () => void;
     /** Render the link as a custom element, e.g. the router's link component. Ignored for the current level. */
     render?: LinkProps["render"];
@@ -188,6 +192,10 @@ export const Breadcrumbs = forwardRef<HTMLElement, BreadcrumbsProps>(function Br
                                     item.onClick == null
                                         ? undefined
                                         : (event: MouseEvent<HTMLAnchorElement>) => {
+                                              if ((item.href != null || item.render != null) && isModifiedClick(event)) {
+                                                  // The browser opens the link elsewhere, so the current page stays where it is
+                                                  return;
+                                              }
                                               event.preventDefault();
                                               item.onClick?.();
                                           }

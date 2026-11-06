@@ -209,6 +209,7 @@ export type { AllCategories } from "./pages/pageTree/PageTreeContext";
 export { useCopyPastePages } from "./pages/pageTree/useCopyPastePages";
 export { PageTreeSelect } from "./pages/pageTreeSelect/PageTreeSelect";
 export { resolveHasSaveConflict } from "./pages/resolveHasSaveConflict";
+export { PageTreeDetailPage, type PageTreeDetailPageProps } from "./pages/treeDetail/PageTreeDetailPage";
 export { useSaveConflict } from "./pages/useSaveConflict";
 export { useSaveConflictQuery } from "./pages/useSaveConflictQuery";
 export { BlockPreview } from "./preview/block/BlockPreview";

@@ -49,7 +49,14 @@ function LoadingExample() {
 
     return (
         <div className={styles.loading}>
-            <Button variant="outlined" size="small" startIcon={<Icon name="refresh" />} loading={loading} onClick={() => setLoading(true)}>
+            <Button
+                variant="outlined"
+                color="secondary"
+                size="small"
+                startIcon={<Icon name="refresh" />}
+                loading={loading}
+                onClick={() => setLoading(true)}
+            >
                 Reload
             </Button>
             <div className={styles.rows} aria-busy={loading} aria-label="Job ads" role="region">
@@ -94,11 +101,12 @@ function EmptyLoadingErrorPage() {
                 <PatternSpecs>
                     <PatternSpec label="First use">
                         <EmptyState
+                            className={styles.emptyState}
                             icon={<Icon name="page" />}
                             title="No redirects yet"
                             description="Redirects are created automatically when a path changes."
                             actions={
-                                <Button variant="outlined" size="small">
+                                <Button variant="outlined" color="secondary" size="small">
                                     New redirect
                                 </Button>
                             }
@@ -106,11 +114,12 @@ function EmptyLoadingErrorPage() {
                     </PatternSpec>
                     <PatternSpec label="No matches">
                         <EmptyState
+                            className={styles.emptyState}
                             icon={<Icon name="search" />}
                             title="No matches for “Marketing”"
                             description="Check the spelling or reset the filters."
                             actions={
-                                <Button variant="outlined" size="small">
+                                <Button variant="outlined" color="secondary" size="small">
                                     Reset filters
                                 </Button>
                             }
@@ -118,11 +127,12 @@ function EmptyLoadingErrorPage() {
                     </PatternSpec>
                     <PatternSpec label="Empty folder">
                         <EmptyState
+                            className={styles.emptyState}
                             icon={<Icon name="folder" />}
                             title="This folder is empty"
                             description="Drag files here or upload them."
                             actions={
-                                <Button variant="outlined" size="small" startIcon={<Icon name="upload" />}>
+                                <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="upload" />}>
                                     Upload
                                 </Button>
                             }
@@ -146,7 +156,7 @@ function EmptyLoadingErrorPage() {
                     <PatternSpec label="Connection" caption="Banner above the content">
                         <Banner
                             action={
-                                <Button variant="outlined" size="small">
+                                <Button variant="outlined" color="secondary" size="small">
                                     Try again
                                 </Button>
                             }

@@ -122,7 +122,7 @@ function SearchAndFilterExample() {
                     title={search === "" ? "No matches" : `No matches for “${search}”`}
                     description="Check the spelling or reset the filters."
                     actions={
-                        <Button variant="outlined" size="small" onClick={reset}>
+                        <Button variant="outlined" color="secondary" size="small" onClick={reset}>
                             Reset filters
                         </Button>
                     }

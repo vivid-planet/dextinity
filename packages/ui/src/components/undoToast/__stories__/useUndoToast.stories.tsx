@@ -21,6 +21,7 @@ function ArchiveDemo() {
             <StatusIndicator status={archived ? "archived" : "published"} />
             <Button
                 variant="outlined"
+                color="secondary"
                 startIcon={<Icon name="archive" />}
                 disabled={archived}
                 onClick={() =>

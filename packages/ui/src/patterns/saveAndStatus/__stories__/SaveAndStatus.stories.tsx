@@ -85,7 +85,13 @@ function EditPageExample() {
                     <SaveState state={dirty ? "dirty" : saveState} />
                     <span className={styles.spacer} />
                     {status === "archived" ? (
-                        <Button variant="outlined" size="small" startIcon={<Icon name="refresh" />} onClick={() => setStatus("unpublished")}>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            size="small"
+                            startIcon={<Icon name="refresh" />}
+                            onClick={() => setStatus("unpublished")}
+                        >
                             Restore
                         </Button>
                     ) : (
@@ -93,10 +99,10 @@ function EditPageExample() {
                             <Switch checked={status === "published"} onChange={(checked) => setStatus(checked ? "published" : "unpublished")}>
                                 Published
                             </Switch>
-                            <Button variant="outlined" size="small" startIcon={<Icon name="archive" />} onClick={archive}>
+                            <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="archive" />} onClick={archive}>
                                 Archive
                             </Button>
-                            <Button variant="outlined" size="small" onClick={() => (dirty ? setLeaveDialogOpen(true) : undefined)}>
+                            <Button variant="outlined" color="secondary" size="small" onClick={() => (dirty ? setLeaveDialogOpen(true) : undefined)}>
                                 Leave
                             </Button>
                             <Tooltip

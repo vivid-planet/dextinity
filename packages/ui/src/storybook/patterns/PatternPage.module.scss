@@ -251,3 +251,16 @@
     flex: 1;
     min-inline-size: 0;
 }
+
+// Applied by the high-contrast color scheme, where tinted backgrounds are off
+:global([data-dextinity-color-scheme="high-contrast"]) .row {
+    &[data-selected] {
+        box-shadow: inset 0 0 0 calc(var(--dextinity-line-width) * 2) var(--dextinity-color-accent);
+    }
+
+    mark {
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 3px;
+    }
+}

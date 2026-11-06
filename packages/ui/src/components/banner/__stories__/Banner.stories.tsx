@@ -17,7 +17,7 @@ const meta = {
     args: {
         children: "No connection. Changes stay here until they are saved.",
         action: (
-            <Button variant="outlined" size="small" onClick={retry}>
+            <Button variant="outlined" color="secondary" size="small" onClick={retry}>
                 Try again
             </Button>
         ),

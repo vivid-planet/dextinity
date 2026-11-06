@@ -6,6 +6,7 @@ import {
     type HTMLAttributes,
     type KeyboardEvent,
     type MouseEvent,
+    type PointerEvent,
     type ReactNode,
     useEffect,
     useId,
@@ -18,6 +19,7 @@ import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Checkbox } from "../checkbox/Checkbox";
 import { Icon } from "../icon/Icon";
 import { StatusIndicator, type StatusIndicatorStatus } from "../statusIndicator/StatusIndicator";
+import { readTooltipDelay, Tooltip } from "../tooltip/Tooltip";
 import styles from "./TreeView.module.scss";
 
 /** A node of a `TreeView`. */
@@ -258,6 +260,9 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
     const [draggedId, setDraggedId] = useState<string>();
     const [dropTarget, setDropTarget] = useState<Omit<TreeViewMove, "id">>();
     const [cutId, setCutId] = useState<string>();
+    const labelRefs = useRef(new Map<string, HTMLSpanElement>());
+    const [fullLabelId, setFullLabelId] = useState<string>();
+    const fullLabelTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
     const expanded = new Set(expandedIds);
     const checked = new Set(checkedIds);
@@ -298,6 +303,29 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
             updateActionsTabOrder(actions, actions.dataset.actionsFor === tabStopId);
         }
     });
+
+    useEffect(() => () => clearTimeout(fullLabelTimeout.current), []);
+
+    const isLabelTruncated = (id: string) => {
+        const label = labelRefs.current.get(id);
+        return label != null && label.scrollWidth > label.clientWidth;
+    };
+    const showFullLabel = (id: string, delay = 0) => {
+        clearTimeout(fullLabelTimeout.current);
+        if (!isLabelTruncated(id)) {
+            setFullLabelId(undefined);
+            return;
+        }
+        if (delay === 0) {
+            setFullLabelId(id);
+        } else {
+            fullLabelTimeout.current = setTimeout(() => setFullLabelId(id), delay);
+        }
+    };
+    const hideFullLabel = (id?: string) => {
+        clearTimeout(fullLabelTimeout.current);
+        setFullLabelId((previous) => (id == null || previous === id ? undefined : previous));
+    };
 
     const focusNode = (id: string) => {
         setFocusedId(id);
@@ -392,9 +420,10 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                 }
                 break;
             case "Escape":
+                hideFullLabel();
                 if (cutId != null) {
                     setCutId(undefined);
-                } else {
+                } else if (fullLabelId == null) {
                     handled = false;
                 }
                 break;
@@ -445,6 +474,12 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                         focusNode(node.id);
                         onSelect?.(node.id);
                     },
+                    onPointerEnter: (event: PointerEvent<HTMLDivElement>) => {
+                        if (event.pointerType === "mouse") {
+                            showFullLabel(node.id, readTooltipDelay(event.currentTarget));
+                        }
+                    },
+                    onPointerLeave: () => hideFullLabel(node.id),
                     onDragStart: draggable
                         ? (event: DragEvent<HTMLDivElement>) => {
                               event.dataTransfer.effectAllowed = "move";
@@ -498,6 +533,22 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                 ownerState,
             });
 
+            const label = (
+                <span
+                    ref={(element) => {
+                        if (element != null) {
+                            labelRefs.current.set(node.id, element);
+                        } else {
+                            labelRefs.current.delete(node.id);
+                        }
+                    }}
+                    id={partId("label")}
+                    className={styles.label}
+                >
+                    {node.label}
+                </span>
+            );
+
             return (
                 <li
                     key={node.id}
@@ -523,6 +574,14 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                     onFocus={(event) => {
                         if (event.target === event.currentTarget) {
                             setFocusedId(node.id);
+                            if (event.currentTarget.matches(":focus-visible")) {
+                                showFullLabel(node.id);
+                            }
+                        }
+                    }}
+                    onBlur={(event) => {
+                        if (event.target === event.currentTarget) {
+                            hideFullLabel(node.id);
                         }
                     }}
                 >
@@ -569,9 +628,19 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                         <span className={styles.icon} aria-hidden>
                             {node.icon ?? <Icon name={typeIcons[node.type ?? "page"]} />}
                         </span>
-                        <span id={partId("label")} className={styles.label}>
-                            {node.label}
-                        </span>
+                        {fullLabelId === node.id ? (
+                            <Tooltip
+                                content={node.label}
+                                placement="right"
+                                open
+                                onOpenChange={(open) => !open && hideFullLabel(node.id)}
+                                slotProps={{ positioner: { anchor: () => labelRefs.current.get(node.id)?.parentElement ?? null } }}
+                            >
+                                {label}
+                            </Tooltip>
+                        ) : (
+                            label
+                        )}
                         {node.hiddenInMenu && (
                             <span id={partId("hidden")} className={styles.hiddenInMenu} role="img" aria-label={labels.hiddenInMenu}>
                                 <Icon name="invisible" />

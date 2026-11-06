@@ -8,7 +8,7 @@ import { newsCategories } from "./newsLabels";
 
 export type NewsStatusFilter = GQLNewsStatus | "all";
 
-export const sortableNewsColumns = ["title", "date", "category", "status", "updatedAt"] as const;
+const sortableNewsColumns = ["title", "date", "category", "status", "updatedAt"] as const;
 
 const defaultSort: DataGridSort = { key: "date", direction: "desc" };
 

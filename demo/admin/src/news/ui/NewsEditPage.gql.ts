@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const newsEditFragment = gql`
+const newsEditFragment = gql`
     fragment NewsUiEdit on News {
         id
         title

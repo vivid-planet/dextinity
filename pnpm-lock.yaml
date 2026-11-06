@@ -239,6 +239,12 @@ importers:
       '@dextinity/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@dextinity/ui-react-final-form':
+        specifier: workspace:*
+        version: link:../../packages/ui-react-final-form
+      '@dextinity/ui-react-hook-form':
+        specifier: workspace:*
+        version: link:../../packages/ui-react-hook-form
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1)
@@ -308,6 +314,9 @@ importers:
       react-final-form:
         specifier: ^6.5.9
         version: 6.5.9(final-form@4.20.10)(react@19.3.1)
+      react-hook-form:
+        specifier: ^7.91.0
+        version: 7.91.0(@types/react@19.3.0)(react@19.3.1)
       react-intl:
         specifier: ^12.1.4
         version: 12.1.5(@types/react@19.3.0)(react@19.3.1)
@@ -1710,6 +1719,9 @@ importers:
       '@dextinity/ui':
         specifier: workspace:*
         version: link:../../ui
+      '@dextinity/ui-react-final-form':
+        specifier: workspace:*
+        version: link:../../ui-react-final-form
       '@tiptap/core':
         specifier: ^3.32.2
         version: 3.32.2(@tiptap/pm@3.32.2)

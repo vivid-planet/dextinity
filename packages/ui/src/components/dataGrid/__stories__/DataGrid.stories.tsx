@@ -280,8 +280,13 @@ export const Selection: Story = {
         await waitFor(() => expect(args.onSelectionChange).toHaveBeenLastCalledWith(["job-1", "job-2", "job-3", "job-4", "job-5"]));
         await expect(selectAll).toHaveAttribute("aria-checked", "true");
 
+        const escapeOnDocument = fn();
+        document.addEventListener("keydown", escapeOnDocument);
         await userEvent.keyboard("{Escape}");
+        document.removeEventListener("keydown", escapeOnDocument);
         await waitFor(() => expect(args.onSelectionChange).toHaveBeenLastCalledWith([]));
+        // Clearing the selection must not also close a dialog around the grid
+        await expect(escapeOnDocument).not.toHaveBeenCalled();
     },
 };
 

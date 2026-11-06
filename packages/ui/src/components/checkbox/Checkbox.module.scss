@@ -1,3 +1,4 @@
+@use "../../theme/forcedColors" as forced-colors;
 @use "../field/controlMessage";
 
 .root {
@@ -52,12 +53,15 @@
     &[data-indeterminate] {
         background: var(--dextinity-checkbox-background-checked);
         box-shadow: none;
+        @include forced-colors.surface;
     }
 
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
     }
+
+    @include forced-colors.surface;
 
     // Forced colors remove backgrounds and box shadows, which would leave the box without an edge and without a focus ring
     @media (forced-colors: active) {
@@ -83,8 +87,9 @@
 
     @media (forced-colors: active) {
         forced-color-adjust: none;
-        background: CanvasText;
     }
+
+    @include forced-colors.fill;
 }
 
 .label {

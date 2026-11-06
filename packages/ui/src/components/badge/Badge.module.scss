@@ -63,6 +63,7 @@
     }
 
     &:not([data-variant="dot"]) {
+        @include forced-colors.surface;
         @include forced-colors.edge;
     }
 }

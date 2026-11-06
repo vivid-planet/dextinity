@@ -11,6 +11,7 @@ import { Slider } from "../../components/slider/Slider";
 import { Switch } from "../../components/switch/Switch";
 import { Tabs } from "../../components/tabs/Tabs";
 import { Tooltip } from "../../components/tooltip/Tooltip";
+import { TreeView } from "../../components/treeView/TreeView";
 import { themeDecorator } from "../../storybook/themeDecorator";
 import styles from "./ForcedColors.stories.module.scss";
 
@@ -56,6 +57,18 @@ function Gallery() {
                 onChange={setSection}
             />
             <ProgressBar aria-label="Upload" value={42} />
+            <TreeView
+                aria-label="Pages"
+                nodes={[
+                    { id: "jobs", label: "Jobs", status: "published" },
+                    { id: "imprint", label: "Imprint", status: "published" },
+                ]}
+                expandedIds={[]}
+                onExpandedChange={() => {}}
+                selectedId="jobs"
+                checkable
+                checkedIds={["jobs", "imprint"]}
+            />
             <Tooltip content="More actions" open>
                 <Button variant="outlined" color="secondary">
                     With tooltip
@@ -123,6 +136,15 @@ export const Default: Story = {
         await expect(query(".dextinityTabs__indicator").backgroundColor).toBe(highlight);
         await expect(query(".dextinityProgressBar__indicator").backgroundColor).toBe(highlight);
         await waitFor(() => expect(getComputedStyle(screen.getByRole("tooltip")).outlineStyle).toBe("solid"));
+
+        // The parts of a selected item are drawn on the highlight color, so they swap to the highlight text color
+        const selectedRow = "[role='treeitem'][aria-selected='true'] > div";
+        const otherRow = "[role='treeitem'][aria-selected='false'] > div";
+        await expect(query(selectedRow).backgroundColor).toBe(highlight);
+        await expect(query(`${selectedRow} .dextinityStatusIndicator__dot`).backgroundColor).toBe(systemColor("HighlightText"));
+        await expect(query(`${selectedRow} .dextinityCheckbox__control`).backgroundColor).toBe(highlight);
+        await expect(query(`${otherRow} .dextinityStatusIndicator__dot`).backgroundColor).toBe(systemColor("CanvasText"));
+        await expect(query(`${otherRow} .dextinityCheckbox__control`).backgroundColor).toBe(systemColor("Canvas"));
 
         await userEvent.click(canvas.getByRole("textbox", { name: "Title" }));
         await expect(query(".dextinityField__box").outlineWidth).toBe("2px");

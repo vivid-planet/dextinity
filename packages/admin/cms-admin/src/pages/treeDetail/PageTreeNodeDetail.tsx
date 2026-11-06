@@ -118,9 +118,10 @@ export function PageTreeNodeDetail({
                     trigger={
                         <IconButton
                             variant="text"
+                            color="secondary"
                             aria-label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.moreActions", defaultMessage: "More actions" })}
                         >
-                            <Icon name="more" />
+                            <Icon name="more-horizontal" />
                         </IconButton>
                     }
                 >
@@ -139,7 +140,7 @@ export function PageTreeNodeDetail({
                     <MenuSeparator />
                     {isArchived ? (
                         <MenuItem
-                            icon={<Icon name="refresh" />}
+                            icon={<Icon name="reload" />}
                             label={intl.formatMessage({
                                 id: "dextinity.pageTreeDetail.detail.restore",
                                 defaultMessage: "Restore as unpublished",
@@ -175,7 +176,7 @@ export function PageTreeNodeDetail({
                     <Button
                         variant="outlined"
                         color="secondary"
-                        startIcon={<Icon name="external-link" />}
+                        startIcon={<Icon name="open-new-tab" />}
                         onClick={onPreviewClick}
                         disabled={!hasPreview}
                     >

@@ -4,7 +4,12 @@ import type { StorybookConfig } from "@storybook/react-vite";
 import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
-    stories: ["../src/**/*.mdx", "../src/**/__stories__/*.stories.tsx", "../../ui-react-final-form/src/**/__stories__/*.stories.tsx"],
+    stories: [
+        "../src/**/*.mdx",
+        "../src/**/__stories__/*.stories.tsx",
+        "../../ui-react-final-form/src/**/__stories__/*.stories.tsx",
+        "../../ui-react-hook-form/src/**/__stories__/*.stories.tsx",
+    ],
     addons: ["@storybook/addon-docs", "@storybook/addon-mcp", "@storybook/addon-vitest", "storybook-addon-tag-badges"],
     framework: "@storybook/react-vite",
     staticDirs: [{ from: "../src/docs/theme/__stories__/customization", to: "/customization" }],

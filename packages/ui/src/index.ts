@@ -19,6 +19,9 @@ export { Button, type ButtonOwnerState, type ButtonProps } from "./components/bu
 export { Card, type CardOwnerState, type CardProps, type CardSlotProps, type CardSlots } from "./components/card/Card";
 export { Checkbox, type CheckboxOwnerState, type CheckboxProps, type CheckboxSlotProps } from "./components/checkbox/Checkbox";
 export { Chip, type ChipLabels, type ChipOwnerState, type ChipProps, type ChipSlotProps } from "./components/chip/Chip";
+export { CommandPalette, type CommandPaletteGroup, type CommandPaletteItem } from "./components/commandPalette/CommandPalette";
+export { type CommandPaletteLabels, type CommandPaletteOwnerState } from "./components/commandPalette/CommandPalette";
+export { type CommandPaletteProps, type CommandPaletteSlotProps } from "./components/commandPalette/CommandPalette";
 export { ConfirmDialog, type ConfirmDialogOwnerState, type ConfirmDialogProps } from "./components/confirmDialog/ConfirmDialog";
 export { type ConfirmDialogSlotProps } from "./components/confirmDialog/ConfirmDialog";
 export { CopyField, type CopyFieldLabels, type CopyFieldOwnerState, type CopyFieldProps } from "./components/copyField/CopyField";

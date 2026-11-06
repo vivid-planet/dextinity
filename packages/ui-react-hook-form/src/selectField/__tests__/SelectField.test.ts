@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { toSelectValue } from "./SelectField";
+import { toSelectValue } from "../SelectField";
 
 describe("toSelectValue", () => {
     it("maps an empty form value to nothing chosen", () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isEmptyValue, toErrorMessage, withRequiredRule } from "./useFieldAdapter";
+import { isEmptyValue, toErrorMessage, withRequiredRule } from "../useFieldAdapter";
 
 describe("withRequiredRule", () => {
     it("keeps the rules of an optional field", () => {

@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { DateField, toDateValue } from "./DateField";
+import { DateField, toDateValue } from "../DateField";
 
 interface FormValues {
     publishedOn: string | null;

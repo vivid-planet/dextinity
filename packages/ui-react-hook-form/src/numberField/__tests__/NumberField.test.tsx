@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { NumberField, toNumberValue } from "./NumberField";
+import { NumberField, toNumberValue } from "../NumberField";
 
 describe("NumberField", () => {
     it("maps a missing or non-numeric value to an empty field", () => {

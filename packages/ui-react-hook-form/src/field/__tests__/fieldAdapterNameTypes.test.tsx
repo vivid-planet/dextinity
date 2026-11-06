@@ -2,12 +2,12 @@ import { render } from "@testing-library/react";
 import { FormProvider, useForm } from "react-hook-form";
 import { describe, expect, it } from "vitest";
 
-import { CheckboxField } from "../checkboxField/CheckboxField";
-import { ComboboxField } from "../comboboxField/ComboboxField";
-import { InputField } from "../inputField/InputField";
-import { PickerField } from "../pickerField/PickerField";
-import { SegmentedControlField } from "../segmentedControlField/SegmentedControlField";
-import { SelectField } from "../selectField/SelectField";
+import { CheckboxField } from "../../checkboxField/CheckboxField";
+import { ComboboxField } from "../../comboboxField/ComboboxField";
+import { InputField } from "../../inputField/InputField";
+import { PickerField } from "../../pickerField/PickerField";
+import { SegmentedControlField } from "../../segmentedControlField/SegmentedControlField";
+import { SelectField } from "../../selectField/SelectField";
 
 interface FormValues {
     title: string;

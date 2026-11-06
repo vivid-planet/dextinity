@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { FormProvider, useForm } from "react-hook-form";
 import { describe, expect, it, vi } from "vitest";
 
-import { InputField } from "./InputField";
+import { InputField } from "../InputField";
 
 interface FormValues {
     title: string;

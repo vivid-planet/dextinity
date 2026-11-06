@@ -8,7 +8,7 @@ import type { FinalFormFieldConfig } from "./finalFormFieldConfig";
 
 const defaultRequiredMessage = "Required";
 
-export function isEmptyValue(value: unknown) {
+function isEmptyValue(value: unknown) {
     return value === undefined || value === null || value === "" || value === false || (Array.isArray(value) && value.length === 0);
 }
 

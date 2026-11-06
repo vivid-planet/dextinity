@@ -177,6 +177,13 @@ jobs:
                   path: packages/ui/lib
                   key: ${{ runner.os }}-build-ui-${{ hashFiles('packages/ui/src/**', 'packages/ui/package.json', 'packages/ui/tsconfig*.json', 'pnpm-lock.yaml') }}
 
+            - name: Cache @dextinity/ui-react-final-form build
+              id: cache-ui-react-final-form
+              uses: actions/cache@v4
+              with:
+                  path: packages/ui-react-final-form/lib
+                  key: ${{ runner.os }}-build-ui-react-final-form-${{ hashFiles('packages/ui-react-final-form/src/**', 'packages/ui-react-final-form/package.json', 'packages/ui-react-final-form/tsconfig*.json', 'pnpm-lock.yaml') }}
+
             - uses: ./.github/actions/setup
               with:
                   setup-ci: "false"
@@ -217,6 +224,7 @@ jobs:
                   [ "${{ steps.cache-site-nextjs.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/site-nextjs"
                   [ "${{ steps.cache-site-react.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/site-react"
                   [ "${{ steps.cache-ui.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/ui"
+                  [ "${{ steps.cache-ui-react-final-form.outputs.cache-hit }}" != "true" ] && FILTERS="$FILTERS --filter @dextinity/ui-react-final-form"
                   if [ -n "$FILTERS" ]; then
                       pnpm --recursive $FILTERS run build
                   fi

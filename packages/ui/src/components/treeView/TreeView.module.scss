@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root,
 .group {
     margin: 0;
@@ -44,6 +46,8 @@
         block-size: var(--dextinity-tree-view-drop-line-width);
         border-radius: var(--dextinity-tree-view-drop-line-width);
         background: var(--dextinity-tree-view-drop-color);
+
+        @include forced-colors.fill(Highlight);
     }
 
     &[data-drop]::after {
@@ -52,6 +56,8 @@
         block-size: var(--dextinity-tree-view-drop-cap-size);
         border-radius: 50%;
         background: var(--dextinity-tree-view-drop-color);
+
+        @include forced-colors.fill(Highlight);
     }
 
     &[data-drop="before"]::before {
@@ -100,6 +106,7 @@
     &[data-selected] {
         background: var(--dextinity-tree-view-row-background-selected);
         box-shadow: var(--dextinity-tree-view-row-shadow-selected);
+        @include forced-colors.selected;
 
         .label {
             font-weight: 600;
@@ -108,6 +115,7 @@
 
     .item:focus-visible > & {
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     &[data-dragging],
@@ -118,6 +126,7 @@
     &[data-drop="inside"] {
         background: var(--dextinity-tree-view-drop-background);
         box-shadow: inset 0 0 0 1.5px var(--dextinity-tree-view-drop-color);
+        @include forced-colors.edge(2px, Highlight);
     }
 
     :global([data-dextinity-color-scheme="high-contrast"]) &:hover {
@@ -136,6 +145,7 @@
 
     :global([data-dextinity-color-scheme="high-contrast"]) .item:focus-visible > & {
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     :global([data-dextinity-color-scheme="high-contrast"]) &[data-drop="inside"] {

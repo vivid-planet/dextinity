@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     position: relative;
     box-sizing: border-box;
@@ -12,11 +14,15 @@
         background: var(--dextinity-panel-glass-background);
         box-shadow: var(--dextinity-panel-glass-shadow);
         backdrop-filter: blur(var(--dextinity-panel-glass-blur)) saturate(1.6);
+
+        @include forced-colors.edge;
     }
 
     &[data-variant="solid"] {
         background: var(--dextinity-panel-solid-background);
         box-shadow: var(--dextinity-panel-solid-shadow);
+
+        @include forced-colors.edge;
     }
 
     &[data-padding="none"] {

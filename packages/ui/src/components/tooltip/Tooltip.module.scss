@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .positioner {
     z-index: 1000;
 }
@@ -37,6 +39,8 @@
     &[data-instant] {
         transition-duration: 0ms;
     }
+
+    @include forced-colors.edge;
 }
 
 .shortcut {

@@ -1,7 +1,10 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     &[data-pressed] {
         background: var(--dextinity-toolbar-button-background-pressed);
         color: var(--dextinity-toolbar-button-foreground-pressed);
+        @include forced-colors.selected;
     }
 
     :global([data-dextinity-color-scheme="high-contrast"]) &[data-pressed] {

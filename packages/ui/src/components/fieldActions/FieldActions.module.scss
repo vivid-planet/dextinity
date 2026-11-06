@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: inline-flex;
     align-items: center;
@@ -22,6 +24,8 @@
         outline: 2px solid var(--dextinity-color-focus);
         outline-offset: 2px;
     }
+
+    @include forced-colors.edge;
 }
 
 .suggestionLabel {

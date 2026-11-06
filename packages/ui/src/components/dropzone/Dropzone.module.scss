@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     position: relative;
     display: flex;
@@ -11,6 +13,7 @@
         background: var(--dextinity-dropzone-active-background);
         box-shadow: var(--dextinity-dropzone-active-shadow);
         outline-color: transparent;
+        @include forced-colors.edge(2px, Highlight);
     }
 
     &[data-error] .zone {
@@ -103,6 +106,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     &:disabled {
@@ -147,6 +151,8 @@
     &[data-status="error"] .uploadIcon {
         color: var(--dextinity-dropzone-error-foreground);
     }
+
+    @include forced-colors.edge;
 }
 
 .uploadIcon {
@@ -177,6 +183,8 @@
     overflow: hidden;
     border-radius: var(--dextinity-radius-pill);
     background: var(--dextinity-dropzone-progress-track);
+
+    @include forced-colors.edge;
 }
 
 .indicator {
@@ -189,6 +197,8 @@
         inline-size: 30%;
         animation: indeterminate 1.4s var(--dextinity-motion-easing) infinite;
     }
+
+    @include forced-colors.fill(Highlight);
 }
 
 @keyframes indeterminate {

@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     flex-direction: column;
@@ -35,6 +37,8 @@
         opacity: 0;
         content: "";
         transition: opacity var(--dextinity-motion-duration-short);
+
+        @include forced-colors.fill(Highlight);
     }
 
     &:hover::before,
@@ -73,7 +77,10 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
+
+    @include forced-colors.edge;
 }
 
 .add {
@@ -113,5 +120,6 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 }

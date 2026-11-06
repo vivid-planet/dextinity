@@ -1,4 +1,5 @@
 @use "../field/controlMessage";
+@use "../../theme/forcedColors" as forced-colors;
 
 // Label and message span all columns; the icons take their columns only when present
 .root {
@@ -65,11 +66,15 @@
     border-radius: var(--dextinity-radius-pill);
     background: var(--dextinity-slider-track-background);
     box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-slider-track-line);
+
+    @include forced-colors.edge;
 }
 
 .indicator {
     border-radius: inherit;
     background: var(--dextinity-slider-indicator-background);
+
+    @include forced-colors.fill(Highlight);
 }
 
 .thumb {
@@ -78,12 +83,14 @@
     block-size: var(--dextinity-slider-thumb-size);
     border-radius: 50%;
     background: var(--dextinity-slider-thumb-background);
+    @include forced-colors.fill;
     box-shadow:
         0 0 0 var(--dextinity-slider-thumb-ring-width) var(--dextinity-slider-thumb-ring),
         var(--dextinity-slider-thumb-shadow);
 
     &:has(:focus-visible) {
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 }
 

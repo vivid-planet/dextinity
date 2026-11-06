@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     flex-direction: column;
@@ -19,11 +21,14 @@
     &[data-selected] .preview,
     &[data-selected]:hover .preview {
         box-shadow: var(--dextinity-asset-thumbnail-selected-shadow);
+
+        @include forced-colors.edge(3px, Highlight);
     }
 
     &:focus-visible .preview,
     &:focus-visible:hover .preview {
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     &[data-type="document"] .preview {
@@ -68,6 +73,8 @@
     transition:
         box-shadow var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
         transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    @include forced-colors.edge;
 }
 
 .image {

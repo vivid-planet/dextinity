@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     container: dextinity-shell-bar / inline-size;
     display: flex;
@@ -13,6 +15,8 @@
     color: var(--dextinity-color-text);
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-typography-body-size);
+
+    @include forced-colors.edge;
 }
 
 .menuButton {
@@ -49,7 +53,10 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
+
+    @include forced-colors.edge;
 }
 
 .searchText {
@@ -115,7 +122,10 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
+
+    @include forced-colors.edge;
 }
 
 .aiIcon {
@@ -141,6 +151,7 @@
         background: var(--dextinity-top-bar-ai-thumb);
         box-shadow: 0 1px 2px oklch(0 0 0 / 0.25);
         transition: transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+        @include forced-colors.fill;
 
         :global([data-dextinity-color-scheme="high-contrast"]) & {
             background: var(--dextinity-top-bar-ai-thumb-high-contrast);
@@ -149,11 +160,15 @@
 
     .aiToggle[aria-checked="true"] & {
         background: var(--dextinity-top-bar-ai-track-on);
+        @include forced-colors.fill(Highlight);
 
         &::after {
             transform: translateX(12px);
+            @include forced-colors.fill(HighlightText);
         }
     }
+
+    @include forced-colors.edge;
 }
 
 @container dextinity-shell-bar (max-width: 860px) {

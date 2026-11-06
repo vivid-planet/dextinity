@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     flex-direction: column;
@@ -47,6 +49,13 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    @include forced-colors.edge;
+
+    &:focus-visible {
+        @include forced-colors.focus-ring(-2px);
     }
 }
 
@@ -111,11 +120,13 @@
 
     &[data-highlighted] {
         box-shadow: var(--dextinity-block-picker-item-highlight-shadow);
+        @include forced-colors.selected;
     }
 
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 }
 

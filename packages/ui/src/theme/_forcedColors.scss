@@ -1,0 +1,53 @@
+// Forced colors (e.g. a Windows contrast theme) replace every color with the user's system colors, drop box shadows, and turn
+// background colors into the canvas. Edges, focus rings, selected states, and shapes drawn only with box shadows or background
+// colors disappear. These mixins put them back with system colors, which forced colors keep. Use them instead of
+// `forced-color-adjust: none`, so the user's colors still apply.
+
+/// A 1 px edge that doesn't change the layout, for an element whose edge is a box shadow or a background.
+@mixin edge($width: 1px, $color: CanvasText) {
+    @media (forced-colors: active) {
+        outline: $width solid $color;
+        outline-offset: -$width;
+    }
+}
+
+/// A dividing line on one side, e.g. `block-end` under a header, for a line drawn with an inset box shadow.
+@mixin separator($side: block-end) {
+    @media (forced-colors: active) {
+        border-#{$side}: 1px solid CanvasText;
+    }
+}
+
+/// The focus ring. Include it where the element shows `--dextinity-focus-ring` or another box-shadow ring.
+@mixin focus-ring($offset: 2px) {
+    @media (forced-colors: active) {
+        outline: 2px solid Highlight;
+        outline-offset: $offset;
+    }
+}
+
+/// A selected, checked, or current item, e.g. the active segment or a selected row.
+@mixin selected {
+    @media (forced-colors: active) {
+        // Forced colors would draw a canvas-colored backplate behind the text, hiding the highlight text color, and turn the text
+        // of the item's parts back to the canvas text color. The item keeps its colors instead and passes them on.
+        forced-color-adjust: none;
+        background: Highlight;
+        color: HighlightText;
+
+        * {
+            color: inherit !important;
+        }
+
+        :focus-visible {
+            outline-color: HighlightText !important;
+        }
+    }
+}
+
+/// A shape drawn only with its background, e.g. a dot, a bar, or a thumb. Takes a system color: forced colors replace any other.
+@mixin fill($color: CanvasText) {
+    @media (forced-colors: active) {
+        background: $color;
+    }
+}

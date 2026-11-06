@@ -1,4 +1,5 @@
 @use "../select/menu";
+@use "../../theme/forcedColors" as forced-colors;
 
 .root {
     --dextinity-data-grid-bulk-action-bar-offset: var(--dextinity-space-3);
@@ -22,6 +23,8 @@
         background: var(--dextinity-data-grid-surface-background);
         box-shadow: var(--dextinity-data-grid-surface-shadow);
         backdrop-filter: blur(var(--dextinity-data-grid-surface-blur)) saturate(1.6);
+
+        @include forced-colors.edge;
     }
 }
 
@@ -120,6 +123,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     [aria-sort] > & > :last-child {
@@ -169,6 +173,7 @@
         box-shadow:
             inset 0 0 0 2px var(--dextinity-data-grid-editor-line),
             0 0 0 3px var(--dextinity-data-grid-editor-halo);
+        @include forced-colors.edge(2px);
 
         // Like a focused field: the keyboard position stays as visible as on a focused cell
         :global([data-dextinity-color-scheme="high-contrast"]) & {
@@ -304,6 +309,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     @media (hover: none) {
@@ -362,6 +368,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -438,6 +445,7 @@ th.actionsCell {
     &[data-selected] > td,
     &[data-active] > td {
         background: var(--dextinity-data-grid-row-background-selected);
+        @include forced-colors.selected;
     }
 
     &[data-active] > td:first-child {
@@ -460,6 +468,7 @@ th.actionsCell {
             background: var(--dextinity-data-grid-drop-indicator);
             content: "";
             pointer-events: none;
+            @include forced-colors.fill(Highlight);
         }
 
         &:first-child::after {

@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: inline-flex;
     align-items: center;
@@ -43,11 +45,18 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     &[data-disabled] {
         opacity: var(--dextinity-filter-chip-disabled-opacity);
         cursor: not-allowed;
+    }
+
+    @include forced-colors.edge;
+
+    &[data-selected] {
+        @include forced-colors.selected;
     }
 }
 

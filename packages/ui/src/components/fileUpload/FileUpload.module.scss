@@ -1,4 +1,5 @@
 @use "../field/groupFrame";
+@use "../../theme/forcedColors" as forced-colors;
 
 .root {
     @include groupFrame.root(file-upload);
@@ -60,6 +61,8 @@
     &[data-status="uploading"] .fileIcon {
         color: var(--dextinity-color-accent-text);
     }
+
+    @include forced-colors.edge;
 }
 
 .fileIcon {
@@ -103,6 +106,7 @@
         &:focus-visible {
             outline: none;
             box-shadow: var(--dextinity-focus-ring);
+            @include forced-colors.focus-ring;
         }
     }
 }

@@ -1,4 +1,5 @@
 @use "../field/controlMessage";
+@use "../../theme/forcedColors" as forced-colors;
 
 .root {
     display: inline-flex;
@@ -78,6 +79,13 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    @include forced-colors.edge;
+
+    &[data-checked] {
+        @include forced-colors.fill(Highlight);
     }
 }
 
@@ -99,6 +107,12 @@
 
     &:dir(rtl)[data-checked] {
         transform: translateX(calc(var(--_track-height) - var(--_track-width)));
+    }
+
+    @include forced-colors.fill;
+
+    &[data-checked] {
+        @include forced-colors.fill(HighlightText);
     }
 }
 

@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     flex-direction: column;
@@ -17,6 +19,8 @@
     &[hidden] {
         display: none;
     }
+
+    @include forced-colors.edge;
 }
 
 .header {
@@ -26,6 +30,8 @@
     gap: 10px;
     padding: 14px 12px 14px 16px;
     box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-ai-panel-separator-color);
+
+    @include forced-colors.separator;
 }
 
 .orb {
@@ -88,6 +94,7 @@
         border-start-start-radius: 6px;
         background: var(--dextinity-ai-panel-assistant-background);
         box-shadow: var(--dextinity-ai-panel-assistant-shadow);
+        @include forced-colors.edge;
     }
 
     &[data-role="user"] {
@@ -95,6 +102,7 @@
         border-start-end-radius: 6px;
         background: var(--dextinity-ai-panel-user-background);
         color: var(--dextinity-ai-panel-user-foreground);
+        @include forced-colors.edge;
     }
 }
 
@@ -140,6 +148,8 @@
         &:nth-child(3) {
             animation-delay: 0.3s;
         }
+
+        @include forced-colors.fill;
     }
 }
 
@@ -196,13 +206,18 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
+
+    @include forced-colors.edge;
 }
 
 .composer {
     flex: none;
     padding: 10px 12px 12px;
     box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-ai-panel-separator-color);
+
+    @include forced-colors.separator(block-start);
 }
 
 .inputBox {
@@ -218,6 +233,12 @@
 
     &:focus-within {
         box-shadow: var(--dextinity-ai-panel-input-shadow-focus);
+    }
+
+    @include forced-colors.edge;
+
+    &:focus-within {
+        @include forced-colors.focus-ring(-2px);
     }
 }
 

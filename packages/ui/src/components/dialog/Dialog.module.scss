@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .backdrop {
     position: fixed;
     inset: 0;
@@ -70,6 +72,8 @@
             transform: none;
         }
     }
+
+    @include forced-colors.edge;
 }
 
 .header {

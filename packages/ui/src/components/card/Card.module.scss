@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     box-sizing: border-box;
     min-inline-size: 0;
@@ -9,6 +11,8 @@
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-typography-body-size);
     backdrop-filter: blur(var(--dextinity-card-blur)) saturate(1.6);
+
+    @include forced-colors.edge;
 }
 
 .header {

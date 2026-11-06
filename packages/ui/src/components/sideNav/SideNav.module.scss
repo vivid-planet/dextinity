@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     flex-direction: column;
@@ -18,6 +20,8 @@
     &[data-collapsed] {
         inline-size: var(--dextinity-side-nav-width-collapsed);
     }
+
+    @include forced-colors.edge;
 }
 
 .header {
@@ -92,6 +96,7 @@
         margin-block-start: 4px;
         padding-block-start: 14px;
         box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-side-nav-separator-color);
+        @include forced-colors.separator(block-start);
     }
 }
 
@@ -168,6 +173,7 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     &[data-ancestor] {
@@ -192,6 +198,7 @@
         color: var(--dextinity-side-nav-item-active-foreground);
         font-weight: 600;
         box-shadow: var(--dextinity-side-nav-item-active-shadow);
+        @include forced-colors.selected;
 
         .itemIcon {
             color: inherit;
@@ -200,6 +207,7 @@
 
     &[data-active]:focus-visible {
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 
     &[aria-expanded="true"] .itemChevron {
@@ -308,6 +316,7 @@ $children-room-end: 12px;
     flex: none;
     padding: 10px;
     box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-side-nav-separator-color);
+    @include forced-colors.separator(block-start);
 
     .root[data-collapsed] & {
         justify-content: center;
@@ -337,6 +346,7 @@ $children-room-end: 12px;
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
 }
 
@@ -352,6 +362,7 @@ $children-room-end: 12px;
     &[aria-current="page"] {
         color: var(--dextinity-color-accent-text);
         font-weight: 600;
+        @include forced-colors.selected;
     }
 }
 

@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: inline-flex;
     align-items: center;
@@ -36,6 +38,8 @@
     &[data-tone="info"] {
         --dextinity-toast-icon-color: var(--dextinity-toast-info-icon-color);
     }
+
+    @include forced-colors.edge;
 }
 
 .icon {
@@ -69,7 +73,10 @@
 
     &:focus-visible {
         box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
     }
+
+    @include forced-colors.edge(1px, ButtonText);
 }
 
 // Applied by the dark color schemes, where the inverted toast is light: the tone colors are made for a dark background there, so

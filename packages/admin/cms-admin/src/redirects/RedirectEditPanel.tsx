@@ -216,6 +216,8 @@ function RedirectForm({ redirect, linkBlock, scope, closeButton, onCreated, onUn
                     >
                         <RedirectFormContent
                             savedRedirect={savedRedirect}
+                            cachedRedirect={redirect}
+                            onSavedRedirectChange={setSavedRedirect}
                             scope={scope}
                             FinalFormLinkBlock={FinalFormLinkBlock}
                             onUnsavedChangesChange={onUnsavedChangesChange}
@@ -229,12 +231,21 @@ function RedirectForm({ redirect, linkBlock, scope, closeButton, onCreated, onUn
 
 interface RedirectFormContentProps {
     savedRedirect?: GQLRedirectDetailFragment;
+    cachedRedirect?: GQLRedirectDetailFragment;
+    onSavedRedirectChange: (redirect: GQLRedirectDetailFragment) => void;
     scope: Record<string, unknown>;
     FinalFormLinkBlock: ReturnType<typeof createFinalFormBlock>;
     onUnsavedChangesChange: (unsavedChanges: RedirectUnsavedChanges | undefined) => void;
 }
 
-function RedirectFormContent({ savedRedirect, scope, FinalFormLinkBlock, onUnsavedChangesChange }: RedirectFormContentProps) {
+function RedirectFormContent({
+    savedRedirect,
+    cachedRedirect,
+    onSavedRedirectChange,
+    scope,
+    FinalFormLinkBlock,
+    onUnsavedChangesChange,
+}: RedirectFormContentProps) {
     const intl = useIntl();
     const client = useApolloClient();
     const location = useLocation();
@@ -272,6 +283,23 @@ function RedirectFormContent({ savedRedirect, scope, FinalFormLinkBlock, onUnsav
         window.addEventListener("beforeunload", warnBeforeUnload);
         return () => window.removeEventListener("beforeunload", warnBeforeUnload);
     }, [hasUnsavedChanges]);
+
+    useEffect(() => {
+        if (
+            !cachedRedirect ||
+            !savedRedirect ||
+            cachedRedirect.id !== savedRedirect.id ||
+            cachedRedirect.updatedAt === savedRedirect.updatedAt ||
+            form.getState().submitting
+        ) {
+            return;
+        }
+        // The list changed the activation of the open redirect: adopt it without losing the user's other edits
+        onSavedRedirectChange(cachedRedirect);
+        form.setConfig("keepDirtyOnReinitialize", true);
+        form.initialize({ ...form.getState().initialValues, active: cachedRedirect.active });
+        form.setConfig("keepDirtyOnReinitialize", false);
+    }, [cachedRedirect, savedRedirect, form, onSavedRedirectChange]);
 
     useKeyboardShortcut("mod+s", () => void form.submit(), { allowInEditable: true });
 

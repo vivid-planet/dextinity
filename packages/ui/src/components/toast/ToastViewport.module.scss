@@ -14,6 +14,7 @@
 }
 
 .list {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -33,5 +34,13 @@
     @starting-style {
         opacity: 0;
         transform: translateY(calc(var(--dextinity-motion-distance) * 2.25));
+    }
+
+    // A removed toast fades out at its place, out of the flow, so the toasts after it and a replacing toast take their place at once
+    &[data-ending-style] {
+        position: absolute;
+        opacity: 0;
+        transform: translateY(calc(var(--dextinity-motion-distance) * 2.25));
+        pointer-events: none;
     }
 }

@@ -77,15 +77,27 @@ export const Default: Story = {
 };
 
 /**
- * A new toast replaces the current one, so only the latest result is shown.
+ * A new toast replaces the current one, so only the latest result is shown; the replaced toast fades out in its place.
  */
 export const ReplacesCurrentToast: Story = {
     render: (args) => <ToastDemo {...args} toast={{ message: "Saved – the change is live" }} />,
     play: async ({ canvas }) => {
+        const region = canvas.getByRole("region", { name: "Notifications" });
         await userEvent.click(canvas.getByRole("button", { name: "Save" }));
-        await userEvent.click(canvas.getByRole("button", { name: "Publish" }));
-        await expect(canvas.getByRole("alert")).toHaveTextContent("Please enter a title first");
-        await expect(canvas.getByRole("region", { name: "Notifications" })).not.toHaveTextContent("Saved");
+        const leavingToasts: string[] = [];
+        const observer = new MutationObserver(() => {
+            region.querySelectorAll("[data-ending-style][aria-hidden='true']").forEach((item) => leavingToasts.push(item.textContent ?? ""));
+        });
+        observer.observe(region, { subtree: true, childList: true, attributes: true });
+        try {
+            await userEvent.click(canvas.getByRole("button", { name: "Publish" }));
+            await expect(canvas.getByRole("alert")).toHaveTextContent("Please enter a title first");
+        } finally {
+            observer.disconnect();
+        }
+        // The replaced toast fades out, hidden from assistive technology, and is gone once its exit animation has finished
+        await expect(leavingToasts).toContain("Saved – the change is live");
+        await waitFor(() => expect(region).not.toHaveTextContent("Saved"));
     },
 };
 
@@ -99,7 +111,7 @@ export const Duration: Story = {
         const region = canvas.getByRole("region", { name: "Notifications" });
         await expect(region).toHaveTextContent("Link copied");
         await waitFor(() => expect(args.onDismiss).toHaveBeenCalled(), { timeout: 2000 });
-        await expect(region).not.toHaveTextContent("Link copied");
+        await waitFor(() => expect(region).not.toHaveTextContent("Link copied"));
     },
 };
 

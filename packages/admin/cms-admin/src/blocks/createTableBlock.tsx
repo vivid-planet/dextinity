@@ -1,7 +1,7 @@
 import { messages, useStackApi } from "@dextinity/admin";
 import { Button, Dialog } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
-import { useMemo, useState } from "react";
+import { type CSSProperties, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useLocation } from "react-router";
 import { v4 as uuid } from "uuid";
@@ -13,7 +13,7 @@ import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
 import { TableBlockContextProvider } from "./table/TableBlockContext";
-import { TableBlockGrid } from "./table/TableBlockGrid";
+import { getTableBlockGridWidth, TableBlockGrid } from "./table/TableBlockGrid";
 import { createCellRoute, parseCellHash } from "./table/utils/cellRoute";
 import { createTablePreviewText, getPlainTexts } from "./table/utils/createTablePreviewText";
 import {
@@ -207,6 +207,11 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
                                     }
                                 }}
                                 size="large"
+                                slotProps={{
+                                    viewport: {
+                                        style: { "--table-block-grid-width": `${getTableBlockGridWidth(state.columns)}px` } as CSSProperties,
+                                    },
+                                }}
                                 title={intl.formatMessage({ id: "dextinity.blocks.table.displayName", defaultMessage: "Table" })}
                                 footer={
                                     <Button onClick={closeTableBlock}>
@@ -230,11 +235,9 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
     return TableBlock;
 };
 
-// Wider and taller than a large dialog, so tables with many columns and rows stay workable
+// As wide as the table's columns, at least as wide as a large dialog, and as high as the table, up to the screen's size
 const TableDialog = styled(Dialog)`
     &&[data-size="large"] {
-        --dextinity-dialog-width: 1440px;
-
-        block-size: min(880px, calc(100dvh - 2 * var(--dextinity-dialog-viewport-padding)));
+        --dextinity-dialog-width: max(var(--dextinity-dialog-width-large), calc(var(--table-block-grid-width) + 2 * var(--dextinity-dialog-padding)));
     }
 `;

@@ -146,6 +146,7 @@ export { MasterMenuRoutes, useRoutePropsFromMasterMenuData } from "./common/Mast
 export type { PageListItem } from "./common/PageList";
 export { PageList } from "./common/PageList";
 export { PageName, usePageName } from "./common/PageName";
+export { RouterTabLink } from "./common/RouterTabLink";
 export { SignOutButton } from "./common/signOutButton/SignOutButton";
 export { useEditState } from "./common/useEditState";
 export { useRouterLinkClick } from "./common/useRouterLinkClick";
@@ -222,6 +223,12 @@ export {
     type FinalFormFileUploadProps,
 } from "./form/file/FinalFormFileUpload";
 export type { GQLFinalFormFileUploadDownloadableFragment, GQLFinalFormFileUploadFragment } from "./form/file/FinalFormFileUpload.generated";
+export {
+    type MultiplePublicFileUploadFieldProps,
+    PublicFileUploadField,
+    type PublicFileUploadFieldProps,
+    type SinglePublicFileUploadFieldProps,
+} from "./form/file/PublicFileUploadField";
 export { queryUpdatedAt } from "./form/queryUpdatedAt";
 export { serializeInitialValues } from "./form/serializeInitialValues";
 export { SyncFields } from "./form/SyncFields";

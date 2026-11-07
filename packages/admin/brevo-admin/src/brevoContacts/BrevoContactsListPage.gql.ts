@@ -1,16 +1,7 @@
 import { gql } from "@apollo/client";
 
 import type { AdditionalAttributesFragment } from "./additionalAttributesFragment";
-
-export const brevoContactsListItemFragment = gql`
-    fragment BrevoContactsListItem on BrevoContact {
-        id
-        createdAt
-        modifiedAt
-        email
-        emailBlacklisted
-    }
-`;
+import { brevoContactsListItemFragment } from "./brevoContactsListItemFragment";
 
 export const brevoContactsListQuery = (additionalAttributesFragment?: AdditionalAttributesFragment) => gql`
     query BrevoContactsList($offset: Int!, $limit: Int!, $email: String, $scope: EmailCampaignContentScopeInput!) {

@@ -20,7 +20,7 @@ import {
 } from "@dextinity/cms-admin";
 import { Chip } from "@mui/material";
 import { type BrevoContactConfig, getBrevoContactConfig } from "@src/brevo/brevoModuleConfig/brevoContactsPageAttributesConfig";
-import { additionalFormConfig } from "@src/brevo/brevoModuleConfig/targetGroupFormConfig";
+import { getTargetGroupFormConfig } from "@src/brevo/brevoModuleConfig/targetGroupFormConfig";
 import { EmailCampaignContentBlock } from "@src/brevo/emailCampaigns/blocks/EmailCampaignContentBlock";
 import { DextinityUiPage } from "@src/dextinityUi/DextinityUiPage";
 import { Link } from "@src/documents/links/Link";
@@ -59,7 +59,13 @@ export const pageTreeDocumentTypes: Record<string, DocumentInterface<any, any>> 
     PredefinedPage,
 };
 
-const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoContactConfig }): MasterMenuData => {
+const getMasterMenuData = ({
+    brevoContactConfig,
+    targetGroupFormConfig,
+}: {
+    brevoContactConfig: BrevoContactConfig;
+    targetGroupFormConfig: ReturnType<typeof getTargetGroupFormConfig>;
+}): MasterMenuData => {
     const BrevoContactsPage = createBrevoContactsPage({
         additionalAttributesFragment: brevoContactConfig.additionalAttributesFragment,
         additionalGridFields: brevoContactConfig.additionalGridFields,
@@ -68,13 +74,13 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
     });
 
     const TargetGroupsPage = createTargetGroupsPage({
-        additionalFormFields: additionalFormConfig.additionalFormFields,
+        additionalFormFields: targetGroupFormConfig.additionalFormFields,
         exportTargetGroupOptions: {
             additionalAttributesFragment: brevoContactConfig.additionalAttributesFragment,
             exportFields: brevoContactConfig.exportFields,
         },
-        nodeFragment: additionalFormConfig.nodeFragment,
-        input2State: additionalFormConfig.input2State,
+        nodeFragment: targetGroupFormConfig.nodeFragment,
+        input2State: targetGroupFormConfig.input2State,
     });
 
     const CampaignsPage = createEmailCampaignsPage({
@@ -445,7 +451,10 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
 export const useAppMasterMenuData = (): MasterMenuData => {
     const intl = useIntl();
 
-    return useMemo(() => getMasterMenuData({ brevoContactConfig: getBrevoContactConfig(intl) }), [intl]);
+    return useMemo(
+        () => getMasterMenuData({ brevoContactConfig: getBrevoContactConfig(intl), targetGroupFormConfig: getTargetGroupFormConfig(intl) }),
+        [intl],
+    );
 };
 
 export const AppMasterMenuRoutes = () => {

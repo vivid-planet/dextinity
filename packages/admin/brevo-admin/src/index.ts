@@ -6,5 +6,5 @@ export { createBrevoContactsPage } from "./brevoContacts/BrevoContactsPage";
 export { createBrevoTestContactsPage } from "./brevoTestContacts/BrevoTestContactsPage";
 export { type BrevoConfig, BrevoConfigProvider, useBrevoConfig } from "./common/BrevoConfigProvider";
 export { createEmailCampaignsPage } from "./emailCampaigns/EmailCampaignsPage";
-export type { EditTargetGroupFinalFormValues } from "./targetGroups/TargetGroupForm";
-export { createTargetGroupsPage } from "./targetGroups/TargetGroupsPage";
+export type { EditTargetGroupFinalFormValues } from "./targetGroups/TargetGroupEditPage";
+export { createTargetGroupsPage, type ExportTargetGroupOptions } from "./targetGroups/TargetGroupsPage";

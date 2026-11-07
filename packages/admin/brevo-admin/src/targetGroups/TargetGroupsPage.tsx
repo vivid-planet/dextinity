@@ -1,66 +1,74 @@
-import { Stack, StackPage, StackSwitch, Toolbar } from "@dextinity/admin";
-import { ContentScopeIndicator, useContentScope } from "@dextinity/cms-admin";
+import type { DataGridColumn } from "@dextinity/ui";
 import type { DocumentNode } from "graphql";
 import type { JSX, ReactNode } from "react";
-import { useIntl } from "react-intl";
+import { Route, Switch, useRouteMatch } from "react-router";
 
-import { useBrevoConfig } from "../common/BrevoConfigProvider";
+import type { AdditionalAttributesFragment } from "../brevoContacts/additionalAttributesFragment";
+import type { BrevoContactRow } from "../brevoContacts/BrevoContactsListPage";
+import { useBrevoScope } from "../common/useBrevoScope";
 import { ConfigVerification } from "../configVerification/ConfigVerification";
-import { type EditTargetGroupFinalFormValues, TargetGroupForm } from "./TargetGroupForm";
-import { type AdditionalContactAttributesType, TargetGroupsGrid } from "./TargetGroupsGrid";
+import { type EditTargetGroupFinalFormValues, TargetGroupEditPage } from "./TargetGroupEditPage";
+import { TargetGroupsListPage } from "./TargetGroupsListPage";
 
-interface CreateContactsPageOptions {
+export interface ExportTargetGroupOptions<AdditionalAttributes extends object = Record<string, unknown>> {
+    additionalAttributesFragment: AdditionalAttributesFragment;
+    /** Further columns of the exported CSV, after the Brevo ID, the email address and the blocked states. */
+    exportFields: DataGridColumn<BrevoContactRow<AdditionalAttributes>>[];
+}
+
+interface CreateTargetGroupsPageOptions<AdditionalAttributes extends object> {
+    /** Fields of `@dextinity/ui-react-final-form` for the filters that assign contacts to the target group by their attributes. */
     additionalFormFields?: ReactNode;
-    exportTargetGroupOptions?: {
-        additionalAttributesFragment: { name: string; fragment: DocumentNode };
-        exportFields: { renderValue: (row: AdditionalContactAttributesType) => string; headerName: string }[];
-    };
+    exportTargetGroupOptions?: ExportTargetGroupOptions<AdditionalAttributes>;
     nodeFragment?: { name: string; fragment: DocumentNode };
     input2State?: (values?: EditTargetGroupFinalFormValues) => EditTargetGroupFinalFormValues;
     valuesToOutput?: (values: EditTargetGroupFinalFormValues) => EditTargetGroupFinalFormValues;
 }
 
-export function createTargetGroupsPage({ additionalFormFields, nodeFragment, input2State, exportTargetGroupOptions }: CreateContactsPageOptions) {
+/**
+ * Creates the page of the target groups: a list with a search and the export of a group's contacts, and an edit page per target group at
+ * `<list URL>/<id>/edit` with its filters and contacts.
+ */
+export function createTargetGroupsPage<AdditionalAttributes extends object = Record<string, unknown>>({
+    additionalFormFields,
+    nodeFragment,
+    input2State,
+    valuesToOutput,
+    exportTargetGroupOptions,
+}: CreateTargetGroupsPageOptions<AdditionalAttributes>) {
     function TargetGroupsPage(): JSX.Element {
-        const { scopeParts } = useBrevoConfig();
-        const { scope: completeScope } = useContentScope();
-        const intl = useIntl();
-
-        const scope = scopeParts.reduce(
-            (acc, scopePart) => {
-                acc[scopePart] = completeScope[scopePart];
-                return acc;
-            },
-            {} as { [key: string]: unknown },
-        );
+        const { scope, scopeLabel } = useBrevoScope();
+        const routeMatch = useRouteMatch();
 
         return (
             <ConfigVerification scope={scope}>
-                <Stack topLevelTitle={intl.formatMessage({ id: "dextinity.targetGroups.targetGroups", defaultMessage: "Target groups" })}>
-                    <StackSwitch>
-                        <StackPage name="grid">
-                            <Toolbar scopeIndicator={<ContentScopeIndicator scope={scope} />} />
-                            <TargetGroupsGrid scope={scope} exportTargetGroupOptions={exportTargetGroupOptions} />
-                        </StackPage>
-                        <StackPage
-                            name="edit"
-                            title={intl.formatMessage({
-                                id: "dextinity.targetGroups.editTargetGroup",
-                                defaultMessage: "Edit target group",
-                            })}
-                        >
-                            {(selectedId) => (
-                                <TargetGroupForm
-                                    id={selectedId}
+                <Switch>
+                    <Route path={`${routeMatch.path}/:targetGroupId/edit`}>
+                        {({ match }) =>
+                            match && (
+                                <TargetGroupEditPage
+                                    key={match.params.targetGroupId}
+                                    id={match.params.targetGroupId}
                                     scope={scope}
+                                    scopeLabel={scopeLabel}
+                                    listUrl={routeMatch.url}
                                     additionalFormFields={additionalFormFields}
                                     nodeFragment={nodeFragment}
                                     input2State={input2State}
+                                    valuesToOutput={valuesToOutput}
                                 />
-                            )}
-                        </StackPage>
-                    </StackSwitch>
-                </Stack>
+                            )
+                        }
+                    </Route>
+                    <Route>
+                        <TargetGroupsListPage<AdditionalAttributes>
+                            scope={scope}
+                            scopeLabel={scopeLabel}
+                            listUrl={routeMatch.url}
+                            exportTargetGroupOptions={exportTargetGroupOptions}
+                        />
+                    </Route>
+                </Switch>
             </ConfigVerification>
         );
     }

@@ -5,7 +5,7 @@ const dataGridImportRestrictions = ["@mui/x-data-grid", "@mui/x-data-grid-pro", 
     ["DataGrid", "DataGridPro", "DataGridPremium"].map((importName) => ({
         name,
         importNames: [importName],
-        message: "Please use DataGrid from `@dextinity/brevo-admin` instead, which resolves the configured grid via `DextinityConfig`.",
+        message: "Please use the `DataGrid` of `@dextinity/ui` instead.",
     })),
 );
 
@@ -14,7 +14,7 @@ export default defineConfig([
     ...eslintConfigReact,
     {
         // This file interpolates a JS expression into a `gql` template, which `@graphql-eslint/eslint-plugin` cannot parse.
-        files: ["src/targetGroups/TargetGroupForm.tsx"],
+        files: ["src/targetGroups/TargetGroupEditPage.gql.ts"],
         processor: {
             meta: { name: "no-op" },
             preprocess: (code) => [code],

@@ -554,8 +554,10 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
             .filter((part) => part != null)
             .join(" · "),
     }));
+    const quickLookFile = quickLookIndex != null ? currentFiles[quickLookIndex] : undefined;
+    const quickLookEditUrl = quickLookFile != null ? editFileUrl?.(quickLookFile.id) : undefined;
     const renderQuickLookPreview = (item: QuickLookItem) => {
-        const file = quickLookIndex != null ? currentFiles[quickLookIndex] : undefined;
+        const file = quickLookFile;
         if (file == null) {
             return <img src={item.src} alt={item.alt ?? item.title} />;
         }
@@ -749,6 +751,27 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
                     changeSelection([currentFiles[index].id]);
                 }}
                 renderPreview={renderQuickLookPreview}
+                actions={
+                    quickLookEditUrl != null && (
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            color="secondary"
+                            startIcon={<Icon name="edit" />}
+                            href={quickLookEditUrl}
+                            onClick={(event: MouseEvent<HTMLElement>) => {
+                                const isModifiedClick = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
+                                if (!isModifiedClick) {
+                                    event.preventDefault();
+                                    setQuickLookIndex(undefined);
+                                    history.push(quickLookEditUrl);
+                                }
+                            }}
+                        >
+                            {intl.formatMessage({ id: "dextinity.damFinder.details.edit", defaultMessage: "All settings" })}
+                        </Button>
+                    )
+                }
                 labels={{
                     close: intl.formatMessage({ id: "dextinity.damFinder.quickLook.close", defaultMessage: "Close" }),
                     previous: intl.formatMessage({ id: "dextinity.damFinder.quickLook.previous", defaultMessage: "Previous" }),

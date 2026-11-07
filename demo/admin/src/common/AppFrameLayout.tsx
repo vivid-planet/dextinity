@@ -1,6 +1,6 @@
 import { useStoredState } from "@dextinity/admin";
 import { DextinityLogo } from "@dextinity/admin-icons";
-import { AppFrame } from "@dextinity/cms-admin";
+import { AppFrame, BuildEntry } from "@dextinity/cms-admin";
 import type { ThemeColorScheme, ThemeDensity } from "@dextinity/ui";
 import type { PropsWithChildren } from "react";
 import { useIntl } from "react-intl";
@@ -27,6 +27,7 @@ export function AppFrameLayout({ children }: PropsWithChildren) {
             onColorSchemeChange={setColorScheme}
             density={density}
             onDensityChange={setDensity}
+            topBarActions={<BuildEntry />}
             scopeDimensionLabels={{
                 domain: intl.formatMessage({ id: "appFrame.scope.domain", defaultMessage: "Site" }),
                 language: intl.formatMessage({ id: "appFrame.scope.language", defaultMessage: "Language" }),

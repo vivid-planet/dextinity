@@ -1,86 +1,141 @@
-import { Button, CancelButton, Dialog, Loading, SaveButton } from "@dextinity/admin";
-import { Reload } from "@dextinity/admin-icons";
 import { useCurrentDamFolder, useDamAcceptedMimeTypes, useDamFileUpload } from "@dextinity/cms-admin";
-import { Box, DialogActions, DialogContent } from "@mui/material";
+import { Button, Dialog, EmptyState, Icon, Spinner } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import { useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { useIntl } from "react-intl";
 
 import { getRandomPicsumImage, type PicsumImage } from "./getRandomPicsumImage";
-import PicsumIcon from "./PicsumIcon";
 
 export const ImportFromPicsum = () => {
+    const intl = useIntl();
     const { allAcceptedMimeTypes } = useDamAcceptedMimeTypes();
     const { folderId } = useCurrentDamFolder();
     const [isOpen, setIsOpen] = useState(false);
     const [picsumImage, setPicsumImage] = useState<PicsumImage>();
+    const [isImporting, setIsImporting] = useState(false);
+    const [hasLoadingFailed, setHasLoadingFailed] = useState(false);
 
-    const { uploadFiles } = useDamFileUpload({
+    const { uploadFiles, dialogs: uploadDialogs } = useDamFileUpload({
         acceptedMimetypes: allAcceptedMimeTypes,
     });
 
-    const handleOpenDialog = async () => {
-        setIsOpen(true);
-        const image = await getRandomPicsumImage();
-        setPicsumImage(image);
+    const shuffle = async () => {
+        setPicsumImage(undefined);
+        setHasLoadingFailed(false);
+        try {
+            setPicsumImage(await getRandomPicsumImage());
+        } catch {
+            setHasLoadingFailed(true);
+        }
     };
 
-    const handleCloseDialog = () => {
+    const openDialog = () => {
+        setIsOpen(true);
+        shuffle();
+    };
+
+    const closeDialog = () => {
         setIsOpen(false);
         setPicsumImage(undefined);
     };
 
-    const handleSave = async () => {
+    const importImage = async () => {
         if (picsumImage === undefined) {
             return;
         }
-        await uploadFiles(
-            { acceptedFiles: [picsumImage.file], fileRejections: [] },
-            {
-                folderId,
-            },
-        );
+        setIsImporting(true);
+        try {
+            await uploadFiles({ acceptedFiles: [picsumImage.file], fileRejections: [] }, { folderId });
+        } finally {
+            setIsImporting(false);
+        }
+        closeDialog();
     };
 
-    const handleShuffle = async () => {
-        const image = await getRandomPicsumImage();
-        setPicsumImage(image);
-    };
+    const title = intl.formatMessage({ id: "pages.dam.importFromPicsum", defaultMessage: "Import from Picsum" });
 
     return (
         <>
-            <Button variant="textDark" startIcon={<PicsumIcon />} onClick={handleOpenDialog}>
-                <FormattedMessage id="pages.dam.importFromPicsum" defaultMessage="Import from Picsum" />
+            <Button variant="text" color="secondary" startIcon={<Icon name="image" />} onClick={openDialog}>
+                {title}
             </Button>
             <Dialog
                 open={isOpen}
-                onClose={handleCloseDialog}
-                title={<FormattedMessage id="pages.dam.importFromPicsum" defaultMessage="Import from Picsum" />}
-            >
-                <>
-                    <DialogContent>
-                        <Box sx={{ aspectRatio: "16/9", lineHeight: 0 }}>
-                            {picsumImage ? <ImagePreview src={picsumImage?.url} alt="image" /> : <Loading behavior="fillParent" />}
-                        </Box>
-                    </DialogContent>
-                    <DialogActions>
-                        <CancelButton onClick={handleCloseDialog} />
-                        <Button variant="textDark" startIcon={<Reload />} onClick={handleShuffle}>
-                            <FormattedMessage id="pages.dam.importFromPicsum.dialog.shuffle" defaultMessage="Shuffle" />
+                onOpenChange={(open) => {
+                    if (!open) {
+                        closeDialog();
+                    }
+                }}
+                title={title}
+                description={intl.formatMessage({
+                    id: "pages.dam.importFromPicsum.dialog.description",
+                    defaultMessage: "A random photo from Lorem Picsum, imported into the current folder.",
+                })}
+                labels={{ close: intl.formatMessage({ id: "pages.dam.importFromPicsum.dialog.close", defaultMessage: "Close" }) }}
+                footer={
+                    <>
+                        <Button variant="outlined" color="secondary" onClick={closeDialog}>
+                            {intl.formatMessage({ id: "pages.dam.importFromPicsum.dialog.cancel", defaultMessage: "Cancel" })}
                         </Button>
-                        <SaveButton
-                            onClick={async () => {
-                                await handleSave();
-                                handleCloseDialog();
-                            }}
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            startIcon={<Icon name="reload" />}
+                            disabled={(picsumImage === undefined && !hasLoadingFailed) || isImporting}
+                            onClick={shuffle}
+                        >
+                            {intl.formatMessage({ id: "pages.dam.importFromPicsum.dialog.shuffle", defaultMessage: "Shuffle" })}
+                        </Button>
+                        <Button startIcon={<Icon name="download" />} disabled={picsumImage === undefined} loading={isImporting} onClick={importImage}>
+                            {intl.formatMessage({ id: "pages.dam.importFromPicsum.dialog.import", defaultMessage: "Import" })}
+                        </Button>
+                    </>
+                }
+            >
+                <ImagePreview>
+                    {hasLoadingFailed ? (
+                        <EmptyState
+                            icon={<Icon name="warning" />}
+                            title={intl.formatMessage({
+                                id: "pages.dam.importFromPicsum.dialog.loadingFailed",
+                                defaultMessage: "The photo couldn't be loaded",
+                            })}
+                            description={intl.formatMessage({
+                                id: "pages.dam.importFromPicsum.dialog.loadingFailedDescription",
+                                defaultMessage: "Check the connection to picsum.photos and shuffle to try again.",
+                            })}
                         />
-                    </DialogActions>
-                </>
+                    ) : picsumImage ? (
+                        <img
+                            src={picsumImage.url}
+                            alt={intl.formatMessage({
+                                id: "pages.dam.importFromPicsum.dialog.preview",
+                                defaultMessage: "Random photo from Lorem Picsum",
+                            })}
+                        />
+                    ) : (
+                        <Spinner
+                            aria-label={intl.formatMessage({ id: "pages.dam.importFromPicsum.dialog.loading", defaultMessage: "Loading a photo" })}
+                        />
+                    )}
+                </ImagePreview>
             </Dialog>
+            {uploadDialogs}
         </>
     );
 };
 
-const ImagePreview = styled("img")`
-    max-width: 100%;
+const ImagePreview = styled("div")`
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--dextinity-radius-item);
+    background-color: var(--dextinity-color-surface-sunken);
+
+    > img {
+        inline-size: 100%;
+        block-size: 100%;
+        object-fit: cover;
+    }
 `;

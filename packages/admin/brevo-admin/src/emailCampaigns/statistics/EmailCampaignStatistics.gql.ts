@@ -1,15 +1,26 @@
 import { gql } from "@apollo/client";
 
-export const emailCampaignStatistics = gql`
+export const emailCampaignStatisticsQuery = gql`
     query EmailCampaignStatistics($id: ID!) {
+        brevoEmailCampaign(id: $id) {
+            id
+            title
+            subject
+            scheduledAt
+            brevoTargetGroups {
+                id
+                title
+            }
+        }
         brevoEmailCampaignStatistics(id: $id) {
-            uniqueClicks
-            unsubscriptions
-            delivered
             sent
+            delivered
             softBounces
             hardBounces
             uniqueViews
+            uniqueClicks
+            unsubscriptions
+            complaints
         }
     }
 `;

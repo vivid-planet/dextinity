@@ -5,6 +5,7 @@ import { type HTMLAttributes, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
+import { chooseMenuItem } from "./tipTapStoryInteractions";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -231,7 +232,7 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
 
         await step("Apply 'Highlight' inline style from the More options menu", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "More options" }));
-            await userEvent.click(await within(document.body).findByRole("menuitemcheckbox", { name: "Highlight" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemcheckbox", "Highlight");
         });
 
         await step("Verify highlight element (from `element` prop) is rendered with its styling", async () => {
@@ -257,7 +258,7 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
         });
 
         await step("Switch to 'Tag' inline style", async () => {
-            await userEvent.click(await within(document.body).findByRole("menuitemcheckbox", { name: "Tag" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemcheckbox", "Tag");
         });
 
         await step("Verify tag element replaces the highlight element", async () => {
@@ -277,7 +278,7 @@ export const InlineStylesMoreOptions: StoryObj<typeof InlineStylesBlockStory> = 
 
         await step("Clicking the active 'Tag' item again clears the inline style", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "More options" }));
-            await userEvent.click(await within(document.body).findByRole("menuitemcheckbox", { name: "Tag" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemcheckbox", "Tag");
 
             await waitFor(
                 () => {

@@ -9,6 +9,7 @@ import {
     type TipTapTextBlock,
     type TipTapTextBlockStyle,
 } from "../createTipTapRichTextBlock";
+import { chooseMenuItem } from "./tipTapStoryInteractions";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -171,7 +172,7 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Heading 2" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 2");
         });
 
         await step("Selected heading level is applied", async () => {
@@ -258,7 +259,7 @@ export const HeadingOnlyWithTextBlockStyles: StoryObj<typeof HeadingOnlyWithText
                 { timeout: 3000 },
             );
 
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Size 550" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Size 550");
 
             await waitFor(
                 () => {

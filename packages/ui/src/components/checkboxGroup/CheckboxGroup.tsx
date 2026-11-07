@@ -6,7 +6,7 @@ import { Checkbox } from "../checkbox/Checkbox";
 import type { FieldState } from "../field/Field";
 import { useGroupMessage } from "../field/groupMessage";
 import styles from "./CheckboxGroup.module.scss";
-import { optionCheckState, toggleOption } from "./checkboxGroupSelection";
+import { optionCheckState, optionValues, toggleOption } from "./checkboxGroupSelection";
 
 type CheckboxGroupOrientation = "vertical" | "horizontal";
 
@@ -18,7 +18,7 @@ export interface CheckboxGroupOption<Value extends string = string> {
     label: ReactNode;
     /** A second line under the label, e.g. an identifier or what the option does. */
     description?: ReactNode;
-    /** Prevents changing this option, or – for a group – all options inside it. */
+    /** Prevents changing this option, or – for a group – all options inside it. A group whose options are all disabled is disabled too. */
     disabled?: boolean;
     /** The options inside this group, shown indented below it. Its checkbox selects or clears all of them. */
     children?: ReadonlyArray<CheckboxGroupOption<Value>>;
@@ -188,6 +188,7 @@ export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends str
     const renderOption = (option: CheckboxGroupOption<Value>, path: string, parentDisabled: boolean): ReactNode => {
         const optionDisabled = disabled || parentDisabled || option.disabled === true;
         const children = option.children ?? [];
+        const checkboxDisabled = optionDisabled || (children.length > 0 && optionValues(option, true).length === 0);
         const { checked, indeterminate } = optionCheckState(option, selected);
         const headingId = `${idPrefix}${path}heading`;
         const checkbox =
@@ -195,7 +196,7 @@ export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends str
                 <Checkbox
                     checked={checked}
                     indeterminate={indeterminate}
-                    disabled={optionDisabled}
+                    disabled={checkboxDisabled}
                     state={controlState}
                     name={children.length > 0 ? undefined : name}
                     value={children.length > 0 ? undefined : option.value}
@@ -256,7 +257,7 @@ export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends str
                     <div className={styles.selectAll}>
                         <Checkbox
                             {...optionCheckState(allOptions, selected)}
-                            disabled={disabled}
+                            disabled={disabled || optionValues(allOptions, true).length === 0}
                             state={controlState}
                             onChange={() => onChange(toggleOption(options, value, allOptions))}
                         >

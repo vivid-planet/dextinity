@@ -111,7 +111,8 @@ export const Keyboard: Story = {
 
 /**
  * Typed dates follow the locale's order of day, month, and year, with any separator, or none: `24.12.2026`, `24/12/26`, `24122026`. A
- * typed date is read on blur or Enter; text that is no valid day is discarded.
+ * typed date is read on blur or Enter. Text that is no valid day stays in the field with an error that shows the expected format, and
+ * the value stays as it was until the text is corrected; Escape brings the value's text back.
  */
 export const Typing: Story = {
     args: { locale: "de-AT", value: null, placeholder: "TT.MM.JJJJ" },
@@ -123,8 +124,22 @@ export const Typing: Story = {
         await expect(input).toHaveValue("24.12.2026");
         await userEvent.clear(input);
         await userEvent.type(input, "31.2.2026{Enter}");
-        await expect(input).toHaveValue("24.12.2026");
+        await expect(input).toHaveValue("31.2.2026");
+        await expect(input).toHaveAttribute("aria-invalid", "true");
+        await expect(input).toHaveAccessibleDescription("Enter a date like 24.12.2026.");
         await expect(args.onChange).toHaveBeenCalledTimes(1);
+        await userEvent.clear(input);
+        await expect(input).not.toHaveAttribute("aria-invalid");
+        await userEvent.type(input, "1.2.2026{Enter}");
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("2026-02-01"));
+        await expect(input).toHaveValue("01.02.2026");
+
+        await userEvent.clear(input);
+        await userEvent.type(input, "next week{Enter}");
+        await expect(input).toHaveAccessibleDescription("Enter a date like 24.12.2026.");
+        await userEvent.keyboard("{Escape}");
+        await expect(input).toHaveValue("01.02.2026");
+        await expect(input).not.toHaveAttribute("aria-invalid");
     },
 };
 
@@ -133,8 +148,8 @@ export const Placeholder: Story = {
 };
 
 /**
- * `min` and `max` limit the days that can be chosen, both inclusive. Days outside are struck through in the calendar, and typing one is
- * discarded.
+ * `min` and `max` limit the days that can be chosen, both inclusive. Days outside are struck through in the calendar, and a typed one
+ * shows an error with the limits.
  */
 export const MinAndMax: Story = {
     args: { locale: "en-GB", min: "2026-11-03", max: "2026-11-20", helperText: "Between 3 and 20 November" },
@@ -146,6 +161,14 @@ export const MinAndMax: Story = {
         await userEvent.click(before);
         await expect(args.onChange).not.toHaveBeenCalled();
         await expect(screen.getByRole("button", { name: "Previous month" })).toBeDisabled();
+        await userEvent.keyboard("{Escape}");
+
+        const input = canvas.getByRole("textbox", { name: "Published on" });
+        await userEvent.clear(input);
+        await userEvent.type(input, "24/11/2026");
+        await userEvent.tab();
+        await expect(input).toHaveAccessibleDescription("Choose a date from 03/11/2026 to 20/11/2026.");
+        await expect(args.onChange).not.toHaveBeenCalled();
     },
 };
 

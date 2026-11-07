@@ -6,13 +6,14 @@ import { Icon } from "../icon/Icon";
 import { type CalendarLabels, defaultCalendarLabels } from "./Calendar";
 import { CalendarPopover } from "./CalendarPopover";
 import styles from "./DatePicker.module.scss";
-import { formatDate, isIsoDate, isWithin, localeWeekStart, parseDate } from "./dateValues";
+import { formatDate, isIsoDate, localeWeekStart } from "./dateValues";
+import { type DateInputErrorLabels, defaultDateInputErrorLabels, readTypedDay } from "./typedDay";
 import { useTextDraft } from "./useTextDraft";
 
 /**
  * Texts of the date picker, for translation.
  */
-export interface DatePickerLabels extends CalendarLabels {
+export interface DatePickerLabels extends CalendarLabels, DateInputErrorLabels {
     /** Accessible name of the button that opens the calendar. */
     openCalendar: string;
     /** Accessible name of the button that removes the value. */
@@ -21,6 +22,7 @@ export interface DatePickerLabels extends CalendarLabels {
 
 export const defaultDatePickerLabels: DatePickerLabels = {
     ...defaultCalendarLabels,
+    ...defaultDateInputErrorLabels,
     openCalendar: "Choose date",
     clear: "Clear",
 };
@@ -85,7 +87,7 @@ export interface DatePickerProps
 
 /**
  * A day, typed in the locale's format or chosen in a calendar. Typed text is read on blur or Enter; text that is no valid day, or lies
- * outside `min` and `max`, is discarded.
+ * outside `min` and `max`, stays in the field with an error and leaves the value unchanged until it is corrected.
  */
 export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function DatePicker(
     {
@@ -135,14 +137,11 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
 
     const date = isIsoDate(value) ? value : null;
     const draft = useTextDraft(date == null ? "" : formatDate(date, locale), (text) => {
-        if (text.trim() === "") {
-            onChange(null);
-            return;
+        const typed = readTypedDay(text, { locale, min, max, labels });
+        if (typed.error != null) {
+            return typed.error;
         }
-        const parsed = parseDate(text, locale);
-        if (parsed != null && isWithin(parsed, min, max)) {
-            onChange(parsed);
-        }
+        onChange(typed.day);
     });
     const editable = !disabled && !readOnly;
 
@@ -167,8 +166,8 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
             label={label}
             required={required}
             helperText={helperText}
-            validationMessage={validationMessage}
-            state={state}
+            validationMessage={draft.error ?? validationMessage}
+            state={draft.error != null ? "error" : state}
             disabled={disabled}
             readOnly={readOnly}
             loading={loading}

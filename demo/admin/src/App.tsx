@@ -162,7 +162,6 @@ export function App() {
                             <LocalizationProvider adapterLocale={dateFnsLocale} dateAdapter={AdapterDateFns}>
                                 <DndProvider options={HTML5toTouch}>
                                     <SnackbarProvider>
-                                        <ErrorDialogHandler />
                                         <CurrentUserProvider>
                                             <RouterBrowserRouter>
                                                 <GlobalStyle />
@@ -172,7 +171,12 @@ export function App() {
                                                             <Switch>
                                                                 <Route
                                                                     path={`${match.path}/preview`}
-                                                                    render={(props) => <SitePreviewPage {...props} />}
+                                                                    render={(props) => (
+                                                                        <>
+                                                                            <ErrorDialogHandler />
+                                                                            <SitePreviewPage {...props} />
+                                                                        </>
+                                                                    )}
                                                                 />
                                                                 <Route
                                                                     render={() => (

@@ -8,9 +8,9 @@ export interface RouterConfirmationDialogState {
     open: boolean;
     /** The message of the prompt that blocked the navigation, e.g. "Save your changes?". */
     message: string;
-    /** Whether the prompts can save, i.e. every `RouterPrompt` has a `saveAction`. */
+    /** Whether the prompts can save, i.e. at least one registered `RouterPrompt` has a `saveAction`. */
     showSaveButton: boolean;
-    /** Saves the changes of all prompts and navigates on success. */
+    /** Runs the `saveAction` of every prompt that has one and navigates if all of them succeed. */
     onSave: () => Promise<void>;
     /** Resets the changes of all prompts and navigates. */
     onDiscard: () => Promise<void>;

@@ -1,6 +1,8 @@
 import type { ApolloClient } from "@apollo/client";
 import { readClipboardText, writeClipboardText } from "@dextinity/admin";
 import type { DocumentNode, OperationDefinitionNode } from "graphql";
+import type { PropsWithChildren } from "react";
+import { IntlProvider } from "react-intl";
 import { act, renderHook } from "test-utils";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 
@@ -19,6 +21,10 @@ vi.mock(import("@dextinity/admin"), async (importOriginal) => ({
 
 vi.mock("../../config/DextinityConfigContext", () => ({ useDextinityConfig: vi.fn() }));
 vi.mock("../../contentScope/Provider", () => ({ useContentScope: vi.fn() }));
+
+function IntlWrapper({ children }: PropsWithChildren) {
+    return <IntlProvider locale="en">{children}</IntlProvider>;
+}
 vi.mock("../context/useBlockContext", () => ({ useBlockContext: vi.fn() }));
 
 const operationName = (document: DocumentNode) => (document.definitions[0] as OperationDefinitionNode).name?.value;
@@ -91,7 +97,7 @@ function renderUseBlockClipboard({ domain, scopeParts = ["domain"] }: { domain: 
         pageTreeScope: {},
     });
 
-    return renderHook(() => useBlockClipboard({ supports: [PixelImageBlock, InternalLinkBlock] })).result;
+    return renderHook(() => useBlockClipboard({ supports: [PixelImageBlock, InternalLinkBlock] }), { wrapper: IntlWrapper }).result;
 }
 
 async function getClipboardContent(result: ReturnType<typeof renderUseBlockClipboard>) {

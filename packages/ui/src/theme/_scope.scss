@@ -9,3 +9,22 @@
         }
     }
 }
+
+// A component's values for the dark color schemes (dark and high contrast) and for the high-contrast color scheme, declared on
+// their theme boundary after the component tokens, so a nested `Theme` with another color scheme declares its own values again.
+@mixin dark-component-tokens {
+    @layer dextinity {
+        [data-dextinity-color-scheme="dark"],
+        [data-dextinity-color-scheme="high-contrast"] {
+            @content;
+        }
+    }
+}
+
+@mixin high-contrast-component-tokens {
+    @layer dextinity {
+        [data-dextinity-color-scheme="high-contrast"] {
+            @content;
+        }
+    }
+}

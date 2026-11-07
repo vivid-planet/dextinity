@@ -130,8 +130,3 @@
         @include forced-colors.focus-ring;
     }
 }
-
-// Applied by the high-contrast color scheme
-:global([data-dextinity-color-scheme="high-contrast"]) .root {
-    --dextinity-tabs-count-line: var(--dextinity-color-warning);
-}

@@ -29,6 +29,8 @@
     --dextinity-field-line-warning: var(--dextinity-color-warning);
     --dextinity-field-halo-warning: var(--dextinity-color-warning-soft);
     --dextinity-field-line-success: var(--dextinity-color-success);
+    // Replaces the line of the validation state while the field is focused; `initial` keeps the state's line
+    --dextinity-field-line-focus-over-state: initial;
     --dextinity-field-halo-success: var(--dextinity-color-success-soft);
     --dextinity-field-disabled-opacity: 0.55;
 
@@ -50,4 +52,11 @@
     --dextinity-field-icon-size: 16px;
     // Translate and AI at the label stay muted until the field is hovered or focused
     --dextinity-field-actions-idle-opacity: 0.55;
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-field-actions-idle-opacity: 1;
+    // Focus wins over the validation state, so the keyboard position stays visible
+    --dextinity-field-line-focus: var(--dextinity-color-focus);
+    --dextinity-field-line-focus-over-state: var(--dextinity-color-focus);
 }

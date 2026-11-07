@@ -29,3 +29,9 @@
     --dextinity-slider-message-color-warning: var(--dextinity-color-warning-text);
     --dextinity-slider-message-color-success: var(--dextinity-color-success-text);
 }
+
+@mixin high-contrast-tokens {
+    // The track and the filled part would otherwise look alike
+    --dextinity-slider-track-background: var(--dextinity-color-canvas);
+    --dextinity-slider-track-line: var(--dextinity-color-text);
+}

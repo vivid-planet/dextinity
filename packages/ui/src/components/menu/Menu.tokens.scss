@@ -16,6 +16,7 @@
     --dextinity-menu-item-foreground: var(--dextinity-color-text);
     // Keyboard or pointer highlight
     --dextinity-menu-item-background-highlight: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+    --dextinity-menu-item-shadow-highlight: 0 0 transparent;
     --dextinity-menu-item-icon-color: var(--dextinity-color-text-tertiary);
     --dextinity-menu-item-icon-size: 16px;
     --dextinity-menu-item-shortcut-color: var(--dextinity-color-text-tertiary);
@@ -27,4 +28,8 @@
 
     --dextinity-menu-separator-color: var(--dextinity-color-line-strong);
     --dextinity-menu-group-label-color: var(--dextinity-color-text-tertiary);
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-menu-item-shadow-highlight: inset 0 0 0 2px var(--dextinity-color-focus);
 }

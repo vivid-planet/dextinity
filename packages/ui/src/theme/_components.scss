@@ -159,3 +159,36 @@
     @include treeView.tokens;
     @include userMenu.tokens;
 }
+
+@include scope.dark-component-tokens {
+    @include toast.dark-tokens;
+}
+
+@include scope.high-contrast-component-tokens {
+    @include assetBrowser.high-contrast-tokens;
+    @include assetThumbnail.high-contrast-tokens;
+    @include banner.high-contrast-tokens;
+    @include blockList.high-contrast-tokens;
+    @include blockPicker.high-contrast-tokens;
+    @include commandPalette.high-contrast-tokens;
+    @include dataGrid.high-contrast-tokens;
+    @include datePicker.high-contrast-tokens;
+    @include devicePreview.high-contrast-tokens;
+    @include dialog.high-contrast-tokens;
+    @include dropzone.high-contrast-tokens;
+    @include field.high-contrast-tokens;
+    @include focalPointPicker.high-contrast-tokens;
+    @include logViewer.high-contrast-tokens;
+    @include menu.high-contrast-tokens;
+    @include progressBar.high-contrast-tokens;
+    @include scopeSwitcher.high-contrast-tokens;
+    @include segmentedControl.high-contrast-tokens;
+    @include select.high-contrast-tokens;
+    @include slider.high-contrast-tokens;
+    @include statusIndicator.high-contrast-tokens;
+    @include switch.high-contrast-tokens;
+    @include tabs.high-contrast-tokens;
+    @include toolbar.high-contrast-tokens;
+    @include topBar.high-contrast-tokens;
+    @include treeView.high-contrast-tokens;
+}

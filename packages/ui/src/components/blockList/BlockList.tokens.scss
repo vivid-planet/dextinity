@@ -21,6 +21,7 @@
     --dextinity-block-icon-radius: calc(var(--dextinity-radius-item) * 1.1);
     --dextinity-block-icon-background: var(--dextinity-color-accent-soft);
     --dextinity-block-icon-foreground: var(--dextinity-color-accent-text);
+    --dextinity-block-icon-shadow: 0 0 transparent;
     --dextinity-block-summary-foreground: var(--dextinity-color-text-tertiary);
     --dextinity-block-grip-foreground: var(--dextinity-color-text-subtle);
 
@@ -43,4 +44,10 @@
     // The header above the blocks with the select-all checkbox and the bulk actions
     --dextinity-block-list-header-height: 40px;
     --dextinity-block-list-header-foreground: var(--dextinity-color-text-tertiary);
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-block-hidden-tag-shadow: inset 0 0 0 1px var(--dextinity-color-warning);
+    --dextinity-block-selected-shadow: inset 0 0 0 2px var(--dextinity-color-accent);
+    --dextinity-block-icon-shadow: inset 0 0 0 1px var(--dextinity-color-accent);
 }

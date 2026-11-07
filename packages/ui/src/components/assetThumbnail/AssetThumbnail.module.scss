@@ -181,12 +181,3 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
-// Applied by the high-contrast color scheme
-:global([data-dextinity-color-scheme="high-contrast"]) .root {
-    --dextinity-asset-thumbnail-folder-back: var(--dextinity-color-canvas);
-    --dextinity-asset-thumbnail-folder-front: var(--dextinity-color-canvas);
-    --dextinity-asset-thumbnail-folder-line: var(--dextinity-color-text);
-    --dextinity-asset-thumbnail-mark-background: var(--dextinity-color-canvas);
-    --dextinity-asset-thumbnail-document-mark-background: var(--dextinity-color-danger);
-}

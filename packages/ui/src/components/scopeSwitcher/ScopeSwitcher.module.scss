@@ -160,11 +160,8 @@
         background: var(--dextinity-scope-switcher-option-selected-background);
         color: var(--dextinity-scope-switcher-option-selected-foreground);
         font-weight: 550;
+        box-shadow: var(--dextinity-scope-switcher-option-selected-shadow);
         @include forced-colors.selected;
-
-        :global([data-dextinity-color-scheme="high-contrast"]) & {
-            box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-scope-switcher-option-selected-outline-high-contrast);
-        }
     }
 
     &[data-checked]:focus-visible,

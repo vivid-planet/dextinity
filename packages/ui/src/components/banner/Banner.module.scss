@@ -10,6 +10,7 @@
     padding-block: var(--dextinity-banner-padding-block);
     padding-inline: var(--dextinity-banner-padding-inline);
     border-radius: var(--dextinity-banner-radius);
+    box-shadow: var(--dextinity-banner-shadow);
     color: var(--dextinity-banner-foreground);
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-banner-font-size);
@@ -28,10 +29,6 @@
     &[data-tone="info"] {
         background: var(--dextinity-banner-info-background);
         --dextinity-banner-icon-color: var(--dextinity-banner-info-icon);
-    }
-
-    :global([data-dextinity-color-scheme="high-contrast"]) & {
-        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-banner-line-high-contrast);
     }
 
     @include forced-colors.edge;

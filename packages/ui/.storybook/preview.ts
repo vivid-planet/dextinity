@@ -17,11 +17,6 @@ const preview: Preview = {
     tags: ["autodocs"],
     decorators: [colorSchemeBackgroundDecorator, formsThemeDecorator],
     parameters: {
-        options: {
-            storySort: {
-                order: ["Intro", "*", "Theme", ["Overview", "Customize brand", "Customize icons", "All icons"], "Components"],
-            },
-        },
         docs: {
             codePanel: true,
             page: DocsPage,
@@ -32,7 +27,17 @@ const preview: Preview = {
                 order: [
                     "Intro",
                     "Foundations",
-                    ["Colors", "Typography", "Spacing, radii & material", "Tokens", "Icons", "Motion", "Theme"],
+                    [
+                        "Colors",
+                        "Typography",
+                        "Spacing, radii & material",
+                        "Tokens",
+                        "Icons",
+                        ["Icon", "All icons", "Customize icons"],
+                        "Motion",
+                        "Theme",
+                        ["Overview", "Customize brand", "Theme"],
+                    ],
                     "Building blocks",
                     [
                         "Buttons",
@@ -61,6 +66,7 @@ const preview: Preview = {
                         "Translate & AI at the field",
                         "Drag & drop",
                         "Keyboard",
+                        "Actions",
                     ],
                     "Page types",
                     ["Overview", "List", "Tree + detail", "Edit", "Finder", "List + side panel"],

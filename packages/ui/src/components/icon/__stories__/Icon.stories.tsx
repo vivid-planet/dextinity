@@ -131,7 +131,7 @@ export const Duotone: Story = {
  * }
  * ```
  *
- * See [Customize icon set](?path=/docs/foundations-icons-customize-icon-set--docs).
+ * See [Customize icons](?path=/docs/foundations-icons-customize-icons--docs).
  */
 export const CustomIcons: Story = {
     render: () => (

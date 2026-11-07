@@ -6,7 +6,7 @@ import { ThemeExampleContent } from "../../../storybook/ThemeExampleContent";
 import styles from "./overview.module.scss";
 
 const meta = {
-    title: "Theme/Overview",
+    title: "Foundations/Theme/Overview",
     tags: ["!dev", "!autodocs", "!manifest"],
 } satisfies Meta;
 

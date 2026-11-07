@@ -1,0 +1,17 @@
+:global([data-dextinity-brand="sunset"]) {
+    --dextinity-brand-primary-hue: 350;
+    --dextinity-brand-primary-chroma: 0.22;
+    --dextinity-brand-secondary-hue: 55;
+    --dextinity-brand-secondary-chroma: 0.17;
+    --dextinity-brand-font-family-text: Georgia, serif;
+    --dextinity-brand-font-family-display: Georgia, serif;
+    --dextinity-brand-radius-control: 20px;
+    --dextinity-brand-radius-factor: 1.6;
+    --dextinity-icon-add: url("./custom-add.svg#icon");
+    --dextinity-icon-edit: url("./custom-edit.svg#icon");
+}
+
+.nested {
+    display: grid;
+    gap: var(--dextinity-space-4);
+}

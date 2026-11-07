@@ -1,15 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, within } from "storybook/test";
 
-import { Button } from "../../button/Button";
-import { Icon } from "../../icon/Icon";
-import { Typography } from "../../typography/Typography";
+import { ThemeExampleContent } from "../../../storybook/ThemeExampleContent";
 import { Theme } from "../Theme";
 import styles from "./Theme.stories.module.scss";
 
 const meta = {
     component: Theme,
-    title: "Foundations/Theme",
+    title: "Foundations/Theme/Theme",
     argTypes: {
         colorScheme: { control: "radio", options: ["light", "dark", "high-contrast"] },
         brand: { control: "select", options: ["dextinity", "ai-hub", "cms"] },
@@ -18,7 +16,7 @@ const meta = {
     },
     render: (args) => (
         <Theme {...args}>
-            <ExampleContent />
+            <ThemeExampleContent />
         </Theme>
     ),
 } satisfies Meta<typeof Theme>;
@@ -26,23 +24,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-function ExampleContent() {
-    return (
-        <div className={styles.example}>
-            <Typography variant="label">Structured content</Typography>
-            <Typography variant="displayL">Job postings</Typography>
-            <Typography>Body text follows the active brand, color scheme, and density.</Typography>
-            <div className={styles.actions}>
-                <Button startIcon={<Icon name="check" />}>Save</Button>
-                <Button variant="outlined" color="secondary" startIcon={<Icon name="search" />}>
-                    Preview
-                </Button>
-                <Button variant="text">Cancel</Button>
-            </div>
-        </div>
-    );
-}
 
 export const Default: Story = {};
 
@@ -72,12 +53,12 @@ export const Nested: Story = {
     render: () => (
         <Theme>
             <div className={styles.nested}>
-                <ExampleContent />
+                <ThemeExampleContent />
                 <Theme colorScheme="dark" brand="ai-hub">
-                    <ExampleContent />
+                    <ThemeExampleContent />
                 </Theme>
                 <Theme brand="cms" density="comfortable">
-                    <ExampleContent />
+                    <ThemeExampleContent />
                 </Theme>
             </div>
         </Theme>
@@ -92,9 +73,9 @@ export const NestedInHighContrast: Story = {
     render: () => (
         <Theme colorScheme="high-contrast" data-testid="high-contrast">
             <div className={styles.nested}>
-                <ExampleContent />
+                <ThemeExampleContent />
                 <Theme data-testid="light">
-                    <ExampleContent />
+                    <ThemeExampleContent />
                 </Theme>
             </div>
         </Theme>

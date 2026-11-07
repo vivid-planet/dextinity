@@ -29,7 +29,8 @@ export interface ThemeProps extends ComponentPropsWithoutRef<"div"> {
 }
 
 /**
- * Scopes the color scheme, brand, and density to its subtree. Wrap an application, or a section of one.
+ * Gives the components in its subtree their styles, in the color scheme, brand, and density that its props set. Wrap an application, or a section of one.
+ * For the tokens and how to customize them, see the "Foundations → Theme" pages in the Storybook.
  */
 export const Theme = forwardRef<HTMLDivElement, ThemeProps>(function Theme(
     { colorScheme = "light", brand = "dextinity", density = "standard", className, children, ...restProps },

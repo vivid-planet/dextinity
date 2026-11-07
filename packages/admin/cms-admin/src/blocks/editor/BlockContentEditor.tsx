@@ -126,7 +126,7 @@ export function BlockContentEditor({
     );
 
     return (
-        <IFrameBridgeProvider key={activePreview?.url}>
+        <IFrameBridgeProvider>
             {save != null && (
                 <UnsavedChangesPrompt hasChanges={save.hasChanges} onSave={save.onSave} onDiscard={save.onDiscard} allowWithin={editorUrl} />
             )}

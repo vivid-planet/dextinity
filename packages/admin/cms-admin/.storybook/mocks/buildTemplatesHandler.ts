@@ -12,3 +12,5 @@ export const buildTemplatesHandler = graphql.query("BuildTemplates", () => {
         },
     });
 });
+
+export const createBuildsHandler = graphql.mutation("CreateBuilds", () => HttpResponse.json({ data: { createBuilds: true } }));

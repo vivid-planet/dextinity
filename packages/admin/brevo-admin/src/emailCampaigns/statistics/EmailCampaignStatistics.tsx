@@ -1,13 +1,13 @@
 import { useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import { useRouterLinkClick } from "@dextinity/cms-admin";
-import { Button, Card, Icon, OverviewLayout, StatTile } from "@dextinity/ui";
+import { Button, Card, Icon, OverviewLayout, Skeleton, StatTile } from "@dextinity/ui";
 import type { ReactNode } from "react";
 import { useIntl } from "react-intl";
 
 import { emailCampaignStatisticsQuery } from "./EmailCampaignStatistics.gql";
 import type { GQLEmailCampaignStatisticsQuery, GQLEmailCampaignStatisticsQueryVariables } from "./EmailCampaignStatistics.gql.generated";
-import { FullWidthBanner, Tiles } from "./EmailCampaignStatistics.sc";
+import { BackLink, FullWidthBanner, Tiles } from "./EmailCampaignStatistics.sc";
 
 type CampaignStatistics = NonNullable<GQLEmailCampaignStatisticsQuery["brevoEmailCampaignStatistics"]>;
 
@@ -47,19 +47,30 @@ export function EmailCampaignStatistics({ baseUrl, id, scopeLabel }: EmailCampai
             { id: "dextinity.emailCampaignStatistics.ofSent", defaultMessage: "{count} of {sent} sent" },
             { count: formatCount(count), sent: formatCount(sent) },
         );
-    const renderShare = (label: string, count: number | null | undefined, context?: ReactNode) => (
-        <StatTile value={formatShare(count)} unit={count == null ? undefined : "%"} label={label} context={context ?? shareContext(count)} />
-    );
+    const isLoadingInitially = loading && data == null;
+    const renderShare = (label: string, count: number | null | undefined, context?: ReactNode) =>
+        isLoadingInitially ? (
+            <Skeleton variant="tile" />
+        ) : (
+            <StatTile value={formatShare(count)} unit={count == null ? undefined : "%"} label={label} context={context ?? shareContext(count)} />
+        );
 
     return (
         <OverviewLayout
-            eyebrow={[
-                intl.formatMessage({ id: "dextinity.emailCampaignStatistics.eyebrow", defaultMessage: "Email campaign statistics" }),
-                scopeLabel,
-            ]
-                .filter(Boolean)
-                .join(" · ")}
-            title={campaign?.title ?? intl.formatMessage({ id: "dextinity.emailCampaigns.loading", defaultMessage: "Loading campaign …" })}
+            eyebrow={
+                <>
+                    <BackLink href={baseUrl} onClick={navigateWithRouter} startIcon={<Icon name="arrow-left" />}>
+                        {intl.formatMessage({ id: "dextinity.emailCampaigns.emailCampaigns", defaultMessage: "Email campaigns" })}
+                    </BackLink>
+                    {[
+                        intl.formatMessage({ id: "dextinity.emailCampaignStatistics.eyebrow", defaultMessage: "Email campaign statistics" }),
+                        scopeLabel,
+                    ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                </>
+            }
+            title={campaign?.title ?? (isLoadingInitially ? <Skeleton variant="text" width="18rem" /> : "")}
             summary={
                 campaign
                     ? intl.formatMessage(
@@ -84,7 +95,7 @@ export function EmailCampaignStatistics({ baseUrl, id, scopeLabel }: EmailCampai
                               ),
                           },
                       )
-                    : undefined
+                    : isLoadingInitially && <Skeleton variant="text" width="28rem" />
             }
         >
             {error && (

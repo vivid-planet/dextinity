@@ -225,7 +225,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
                 />
             }
             loading={loading}
-            preview={{ url: `${siteConfig.blockPreviewBaseUrl}/welcome-email`, state: previewState }}
+            preview={{ url: `${siteConfig.blockPreviewBaseUrl}/welcome-email`, siteUrl: null, state: previewState }}
             previewApi={previewApi}
             onOpenSitePreview={hasSavedEmail ? openInSite : undefined}
             save={{ hasChanges, saving, onSave: handleSave, onDiscard: () => resetToSavedContent(data?.welcomeEmail) }}

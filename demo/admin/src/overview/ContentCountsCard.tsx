@@ -57,7 +57,7 @@ export function ContentCountsCard({ newsCount, newsUrl }: ContentCountsCardProps
                     </RouterLink>
                 )}
                 {isAllowed("products") && (
-                    <RouterLink to={`${scopeUrl}/products`} className={styles.tileLink}>
+                    <RouterLink to={`${scopeUrl}/products-handmade`} className={styles.tileLink}>
                         <StatTile
                             value={formatCount(productsCount.data?.products.totalCount)}
                             label={intl.formatMessage({ id: "overview.contentCounts.products", defaultMessage: "Products" })}

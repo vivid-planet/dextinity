@@ -355,7 +355,8 @@ function EmailCampaignFormContent({
     const createdId = match.url === `${baseUrl}/add` ? savedCampaign?.id : undefined;
     useEffect(() => {
         if (createdId != null && !hasUnsavedChanges) {
-            history.replace(`${baseUrl}/${createdId}/edit`);
+            const { pathname, search } = history.location;
+            history.replace(`${pathname.replace(`${baseUrl}/add`, `${baseUrl}/${createdId}/edit`)}${search}`);
         }
     }, [baseUrl, history, createdId, hasUnsavedChanges]);
 

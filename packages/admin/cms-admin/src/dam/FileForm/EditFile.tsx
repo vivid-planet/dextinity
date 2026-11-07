@@ -85,13 +85,13 @@ export interface EditImageFormValues {
 
 export interface EditFileFormValues extends EditImageFormValues {
     name: string;
-    altText: string;
+    altText?: string;
     aiContentType: GQLDamFileAiContentType | null;
-    title: string;
+    title?: string;
     license: {
         type: LicenseType;
-        details: string;
-        author: string;
+        details?: string;
+        author?: string;
         duration: DateRange | null;
     };
 }
@@ -114,6 +114,8 @@ function toDateInputValue(dateTime: string | null | undefined) {
     return dateTime ? format(new Date(dateTime), "yyyy-MM-dd") : null;
 }
 
+// React Final Form parses a cleared text field to `undefined`, so empty texts start as `undefined` too; otherwise a field cleared and saved
+// would still count as changed once the saved file reinitializes the form.
 function toFormValues(file: DamFileDetails): EditFileFormValues {
     const durationFrom = toDateInputValue(file.license?.durationFrom);
     const durationTo = toDateInputValue(file.license?.durationTo);
@@ -126,13 +128,13 @@ function toFormValues(file: DamFileDetails): EditFileFormValues {
             x: file.image?.cropArea.x ?? 0,
             y: file.image?.cropArea.y ?? 0,
         },
-        altText: file.altText ?? "",
+        altText: file.altText || undefined,
         aiContentType: file.aiContentType ?? null,
-        title: file.title ?? "",
+        title: file.title || undefined,
         license: {
             type: file.license?.type ?? "NO_LICENSE",
-            details: file.license?.details ?? "",
-            author: file.license?.author ?? "",
+            details: file.license?.details || undefined,
+            author: file.license?.author || undefined,
             duration: durationFrom != null || durationTo != null ? { start: durationFrom, end: durationTo } : null,
         },
     };

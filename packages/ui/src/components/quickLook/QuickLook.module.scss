@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .backdrop {
     position: fixed;
     inset: 0;
@@ -5,6 +7,8 @@
     background: var(--dextinity-quick-look-backdrop);
     backdrop-filter: blur(var(--dextinity-quick-look-backdrop-blur));
     transition: opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    @include forced-colors.backdrop;
 
     &[data-starting-style],
     &[data-ending-style] {

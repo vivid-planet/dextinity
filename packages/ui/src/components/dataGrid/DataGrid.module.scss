@@ -438,6 +438,10 @@ th.actionsCell {
         box-shadow:
             inset var(--dextinity-data-grid-row-active-indicator-width) 0 0 var(--dextinity-data-grid-row-active-indicator),
             var(--dextinity-data-grid-row-shadow-selected);
+
+        @media (forced-colors: active) {
+            box-shadow: inset var(--dextinity-data-grid-row-active-indicator-width) 0 0 HighlightText;
+        }
     }
 
     &[data-dragging] {

@@ -2,8 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, screen, userEvent, waitFor } from "storybook/test";
 
+import { AssetThumbnail } from "../../components/assetThumbnail/AssetThumbnail";
 import { Button } from "../../components/button/Button";
+import { DataGrid } from "../../components/dataGrid/DataGrid";
 import { DateTimePicker } from "../../components/datePicker/DateTimePicker";
+import { Dialog } from "../../components/dialog/Dialog";
 import { FilterBar } from "../../components/filterBar/FilterBar";
 import { Icon } from "../../components/icon/Icon";
 import { Input } from "../../components/input/Input";
@@ -121,6 +124,42 @@ function SeparatorGallery() {
     );
 }
 
+interface Asset {
+    id: string;
+    name: string;
+}
+
+function SelectedRowGallery() {
+    const [selectedIds, setSelectedIds] = useState(["hero"]);
+    return (
+        <DataGrid<Asset>
+            aria-label="Assets"
+            columns={[
+                { key: "preview", header: "Preview", width: 96, render: () => <AssetThumbnail type="image" /> },
+                { key: "name", header: "Name" },
+            ]}
+            rows={[
+                { id: "hero", name: "hero.jpg" },
+                { id: "team", name: "team.jpg" },
+            ]}
+            getRowId={(asset) => asset.id}
+            selectable
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            activeRowId="hero"
+        />
+    );
+}
+
+function DialogGallery() {
+    const [open, setOpen] = useState(true);
+    return (
+        <Dialog open={open} onOpenChange={setOpen} title="Choose a page" description="The page the link points to.">
+            <Button onClick={() => setOpen(false)}>Close</Button>
+        </Dialog>
+    );
+}
+
 const meta = {
     title: "Foundations/Forced colors",
     decorators: [themeDecorator],
@@ -172,12 +211,13 @@ export const Default: Story = {
         await expect(query(".dextinitySwitch__control").backgroundColor).toBe(highlight);
         await expect(query(".dextinitySwitch__thumb").backgroundColor).not.toBe(transparent);
         await expect(query(".dextinitySegmentedControl__group").outlineStyle).toBe("solid");
-        await expect(query(".dextinitySegmentedControl__option[aria-pressed='true']").backgroundColor).toBe(highlight);
+        await expect(query(".dextinitySegmentedControl__option[aria-checked='true']").backgroundColor).toBe(highlight);
         await expect(query(".dextinityRadioGroup__control").outlineStyle).toBe("solid");
         await expect(query(".dextinityRadioGroup__indicator").backgroundColor).not.toBe(transparent);
         await expect(query(".dextinitySlider__track").outlineStyle).toBe("solid");
         await expect(query(".dextinitySlider__indicator").backgroundColor).toBe(highlight);
         await expect(query(".dextinityTabs__indicator").backgroundColor).toBe(highlight);
+        await expect(query(".dextinityTabs__tab[aria-selected='true']").color).toBe(highlight);
         await expect(query(".dextinityProgressBar__indicator").backgroundColor).toBe(highlight);
         await waitFor(() => expect(getComputedStyle(screen.getByRole("tooltip")).outlineStyle).toBe("solid"));
 
@@ -211,5 +251,40 @@ export const Separators: Story = {
         await expect(query(".dextinityMenuSeparator").backgroundColor).toBe(canvasText);
         await expect(query(".dextinityToolbarSeparator").backgroundColor).toBe(canvasText);
         await expect(query(".dextinityDateTimePicker__separator").backgroundColor).toBe(canvasText);
+    },
+};
+
+/**
+ * A part with its own background inside a selected item, e.g. a thumbnail in a selected row, takes the highlight colors instead of
+ * keeping its theme color, and the bar of the active row stays visible on the highlight.
+ */
+export const InsideSelectedItems: Story = {
+    render: () => <SelectedRowGallery />,
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("table", { name: "Assets" })).toBeInTheDocument();
+        if (!window.matchMedia("(forced-colors: active)").matches) {
+            return;
+        }
+        const highlight = systemColor("Highlight");
+
+        await expect(query("[data-selected] .dextinityAssetThumbnail__preview").backgroundColor).toBe(highlight);
+        await expect(query("tr:not([data-selected]) .dextinityAssetThumbnail__preview").backgroundColor).toBe(systemColor("Canvas"));
+        await expect(query("[data-active] > td:first-child").boxShadow).toContain(systemColor("HighlightText"));
+    },
+};
+
+/**
+ * Forced colors keep only the alpha of a tinted backdrop, so the backdrop behind a dialog or a drawer covers the page with the
+ * canvas color instead, and only the dialog reads as active.
+ */
+export const Backdrop: Story = {
+    render: () => <DialogGallery />,
+    play: async () => {
+        await waitFor(() => expect(screen.getByRole("dialog")).toBeVisible());
+        if (!window.matchMedia("(forced-colors: active)").matches) {
+            return;
+        }
+        await waitFor(() => expect(query(".dextinityDialog__backdrop").opacity).toBe("0.75"));
+        await expect(query(".dextinityDialog__backdrop").backgroundColor).toBe(systemColor("Canvas"));
     },
 };

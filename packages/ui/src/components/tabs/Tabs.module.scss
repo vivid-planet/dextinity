@@ -41,6 +41,11 @@
 
     &[data-active] {
         color: var(--dextinity-tabs-foreground-active);
+
+        // With the indicator alone, the active tab hardly stands out from the others, which forced colors draw in the same color
+        @media (forced-colors: active) {
+            color: Highlight;
+        }
     }
 
     &[data-tone="error"] {

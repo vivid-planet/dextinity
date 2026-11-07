@@ -62,3 +62,12 @@ export const doubleOptInTemplatesSelectQuery = gql`
         }
     }
 `;
+
+export const brevoConfigUpdatedAtQuery = gql`
+    query BrevoConfigUpdatedAt($scope: EmailCampaignContentScopeInput!) {
+        brevoConfig(scope: $scope) {
+            id
+            updatedAt
+        }
+    }
+`;

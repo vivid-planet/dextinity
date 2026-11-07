@@ -43,6 +43,8 @@
         "@dextinity/admin": "workspace:*",
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",
+        "@dextinity/ui": "workspace:*",
+        "@dextinity/ui-react-final-form": "workspace:*",
         "date-fns": "^4.4.0",
         "react-dropzone": "^20.2.0"
     },

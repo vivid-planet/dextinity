@@ -1610,6 +1610,12 @@ importers:
       '@dextinity/cms-admin':
         specifier: workspace:*
         version: link:../cms-admin
+      '@dextinity/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      '@dextinity/ui-react-final-form':
+        specifier: workspace:*
+        version: link:../../ui-react-final-form
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0

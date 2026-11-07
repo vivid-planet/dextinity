@@ -1,0 +1,44 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as FormsStories from "./__stories__/Forms.stories";
+
+<Meta title="Patterns/Forms" />
+
+# Forms
+
+How to build a form from fields, sections, and buttons, and how to show the result of validation.
+
+## When to use which component
+
+- [`FormLabel`](?path=/docs/components-formlabel--docs): names a field.
+- [`Input`](?path=/docs/components-input--docs): a single line of text.
+- [`FormHelperText`](?path=/docs/components-formhelpertext--docs): a hint below a field when the field needs one, or, with `error`, the message that says what is wrong.
+- [`Button`](?path=/docs/components-button--docs): `type="submit"` saves the form. A secondary action, such as "Cancel", uses `variant="outlined"` and `color="secondary"`.
+
+## Fields
+
+- The label is above the input, and the hint is below it, with a space of `var(--dextinity-unit-1)` between them.
+- Give the `Input` an `id`, and set the same value as `htmlFor` on the `FormLabel`.
+- Give the `FormHelperText` an `id`, and set it as `aria-describedby` on the `Input`.
+- For a required field, set `required` on the `FormLabel` and on the `Input`.
+- For a field without a visible label, such as a search field, give the `Input` an `aria-label`.
+
+<Canvas of={FormsStories.Field} />
+
+## Layout
+
+- Fields are below each other. In a dialog or a sidebar, they take the full width.
+- When the form is wide enough, fields can be next to each other and share its width.
+- Split a large form into sections: a `fieldset` with a `legend` for each section. A small form needs no sections.
+- Put the buttons at the end of the form, with the main action last.
+
+<Canvas of={FormsStories.Form} />
+
+## Validation
+
+- **Error:** the value is not valid, and the form can't be saved. Set `status="error"` on the `Input` and `error` on the `FormLabel`, and show the message in a `FormHelperText` with `error`.
+- **Warning:** the value can be saved, but the user should check it. Set `status="warning"` on the `Input`, and show the message in a `FormHelperText`.
+- **Success:** a check of the value passed, for example that a domain is reachable. Set `status="success"` on the `Input`.
+- An error about the whole form, for example when saving fails, goes above the buttons, in a `FormHelperText` with `error`.
+
+<Canvas of={FormsStories.Validation} />

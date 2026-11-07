@@ -1,12 +1,5 @@
 import { type DocumentNode, gql } from "@apollo/client";
 
-export const createTargetGroupFormFragment = (nodeFragment: { name: string; fragment: DocumentNode }) => gql`
-    fragment TargetGroupForm on BrevoTargetGroup {
-        ${"...".concat(nodeFragment.name)}
-    }
-    ${nodeFragment.fragment}
-`;
-
 export const targetGroupFormQuery = (targetGroupFormFragment?: DocumentNode) => gql`
     query TargetGroupForm($id: ID!) {
         brevoTargetGroup(id: $id) {

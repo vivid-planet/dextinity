@@ -23,7 +23,8 @@ import { useIntl } from "react-intl";
 import { BrevoFormSaveState } from "../common/form/BrevoFormSaveState";
 import { FormSection } from "../common/form/FormSection";
 import { TargetGroupContactsTabs } from "./contacts/TargetGroupContactsTabs";
-import { createTargetGroupFormFragment, targetGroupFormQuery, updateTargetGroupMutation } from "./TargetGroupEditPage.gql";
+import { createTargetGroupFormFragment } from "./createTargetGroupFormFragment";
+import { targetGroupFormQuery, updateTargetGroupMutation } from "./TargetGroupEditPage.gql";
 import type {
     GQLTargetGroupFormQuery,
     GQLTargetGroupFormQueryVariables,

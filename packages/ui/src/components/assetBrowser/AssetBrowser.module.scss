@@ -1,3 +1,4 @@
+@use "../menu/menuPopup";
 @use "../../theme/forcedColors" as forced-colors;
 
 .root {
@@ -621,4 +622,35 @@
 .count {
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
+}
+
+// Renames an item or names a new folder in place of the name
+.nameField {
+    box-sizing: border-box;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    margin: 0;
+    padding: 1px 6px;
+    border: 0;
+    border-radius: 5px;
+    outline: none;
+    background: var(--dextinity-asset-browser-name-field-background);
+    box-shadow: var(--dextinity-asset-browser-name-field-shadow);
+    color: var(--dextinity-color-text);
+    font: inherit;
+    text-align: inherit;
+    // A clamped name would cut off the text being typed
+    display: block;
+    -webkit-line-clamp: none;
+    user-select: text;
+
+    @include forced-colors.edge(2px);
+}
+
+.contextMenuPositioner {
+    @include menuPopup.positioner;
+}
+
+.contextMenu {
+    @include menuPopup.popup;
 }

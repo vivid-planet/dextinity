@@ -1,11 +1,10 @@
 import { RouteWithErrorBoundary } from "@dextinity/admin";
-import { EditLayout, type EditLayoutPane, Icon, Panel, SegmentedControl, Tabs } from "@dextinity/ui";
+import { EditLayout, type EditLayoutPane, Icon, Panel, SegmentedControl } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import { type PropsWithChildren, type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
 import { Switch } from "react-router";
 
-import { RouterTabLink } from "../../common/RouterTabLink";
 import { UnsavedChangesPrompt } from "../../pages/editor/UnsavedChangesPrompt";
 import { useEditorTabRoute } from "../../pages/editor/useEditorTabRoute";
 import { useSavePageShortcut } from "../../pages/useSavePageShortcut";
@@ -13,6 +12,7 @@ import { BlockPreviewPane } from "../../preview/block/BlockPreviewPane";
 import { type BlockPreviewApi, useBlockPreview } from "../../preview/block/useBlockPreview";
 import { useScrollRestoration } from "../common/useScrollRestoration";
 import { IFrameBridgeProvider } from "../iframebridge/IFrameBridge";
+import { EditorTabBar } from "./EditorTabBar";
 
 /** What the preview of a block editor shows: the site's block preview page and the unsaved state of the root block shown there. */
 export interface BlockContentEditorPreview {
@@ -95,23 +95,7 @@ export function BlockContentEditor({
 
     const editor = (
         <EditorPanel padding="none" data-preview={activePreview != null ? "" : undefined}>
-            {tabs.length > 1 && (
-                <TabBar
-                    aria-label={intl.formatMessage({ id: "dextinity.pageEditor.tabs", defaultMessage: "Editor" })}
-                    value={selectedKey ?? ""}
-                    onChange={() => {
-                        // The tabs are router links, which navigate themselves; the route decides the selected tab
-                    }}
-                    items={tabs.map((tab) => ({
-                        value: tab.key,
-                        label: tab.label,
-                        href: getTabUrl(tab.key),
-                        tone: tab.invalid ? "error" : "default",
-                    }))}
-                    labels={{ error: intl.formatMessage({ id: "dextinity.pageEditor.tabInvalid", defaultMessage: "Contains errors" }) }}
-                    slots={{ tab: RouterTabLink }}
-                />
-            )}
+            {tabs.length > 1 && <EditorTabBar tabs={tabs} selectedKey={selectedKey} getTabUrl={getTabUrl} />}
             <TabContent {...scrollRestoration}>
                 <Switch>
                     {tabs.slice(1).map((tab) => (
@@ -196,12 +180,6 @@ const EditorPanel = styled(Panel)`
         min-block-size: var(--dextinity-edit-layout-preview-min-height);
     }
 `;
-
-const TabBar = styled(Tabs)`
-    flex-shrink: 0;
-    padding-inline: var(--dextinity-panel-padding);
-    padding-block-start: var(--dextinity-space-2);
-` as typeof Tabs;
 
 const TabContent = styled("div")`
     flex: 1;

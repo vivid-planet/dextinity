@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import { useRouterLinkClick } from "@dextinity/cms-admin";
-import { Card, Icon, OverviewLayout, StatTile } from "@dextinity/ui";
+import { Button, Card, Icon, OverviewLayout, StatTile } from "@dextinity/ui";
 import type { ReactNode } from "react";
 import { useIntl } from "react-intl";
 
@@ -25,12 +25,16 @@ function sum(...counts: Array<number | null | undefined>) {
 export function EmailCampaignStatistics({ baseUrl, id, scopeLabel }: EmailCampaignStatisticsProps) {
     const intl = useIntl();
     const navigateWithRouter = useRouterLinkClick();
-    const { data, error } = useQuery<GQLEmailCampaignStatisticsQuery, GQLEmailCampaignStatisticsQueryVariables>(emailCampaignStatisticsQuery, {
-        variables: { id },
-        fetchPolicy: "network-only",
-        errorPolicy: "all",
-        context: LocalErrorScopeApolloContext,
-    });
+    const { data, error, refetch, loading } = useQuery<GQLEmailCampaignStatisticsQuery, GQLEmailCampaignStatisticsQueryVariables>(
+        emailCampaignStatisticsQuery,
+        {
+            variables: { id },
+            fetchPolicy: "network-only",
+            errorPolicy: "all",
+            notifyOnNetworkStatusChange: true,
+            context: LocalErrorScopeApolloContext,
+        },
+    );
     const campaign = data?.brevoEmailCampaign;
     const statistics: Partial<CampaignStatistics> = data?.brevoEmailCampaignStatistics ?? {};
     const sent = statistics.sent;
@@ -84,7 +88,14 @@ export function EmailCampaignStatistics({ baseUrl, id, scopeLabel }: EmailCampai
             }
         >
             {error && (
-                <FullWidthBanner tone="error">
+                <FullWidthBanner
+                    tone="error"
+                    action={
+                        <Button variant="outlined" color="secondary" size="small" loading={loading} onClick={() => void refetch()}>
+                            {intl.formatMessage({ id: "dextinity.emailCampaignStatistics.retry", defaultMessage: "Try again" })}
+                        </Button>
+                    }
+                >
                     {intl.formatMessage(
                         { id: "dextinity.emailCampaignStatistics.loadFailed", defaultMessage: "Brevo's statistics couldn't be loaded: {reason}" },
                         { reason: error.message },

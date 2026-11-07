@@ -107,7 +107,7 @@ export function PageTreeDetailPage(props: PageTreeDetailPageProps) {
     }, [setRedirectPathAfterChange, props.path]);
 
     if (editorMatch != null) {
-        const { documentTypes, category } = props;
+        const { documentTypes, category, editPageNode = DefaultEditPageNode } = props;
         return (
             <Route path={editorPath}>
                 <PageEditorRoute
@@ -116,6 +116,7 @@ export function PageTreeDetailPage(props: PageTreeDetailPageProps) {
                     documentTypes={typeof documentTypes === "function" ? documentTypes(category) : documentTypes}
                     getDocumentTypesByCategory={typeof documentTypes === "function" ? documentTypes : undefined}
                     pageTreeUrl={match.url}
+                    editPageNode={editPageNode}
                 />
             </Route>
         );

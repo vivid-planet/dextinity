@@ -11,6 +11,16 @@ export const damFinderFileFragment = gql`
         mimetype
         fileUrl
         updatedAt
+        archived
+        importSourceType
+        license {
+            type
+            durationTo
+            expirationDate
+            isNotValidYet
+            expiresWithinThirtyDays
+            hasExpired
+        }
         image {
             width
             height

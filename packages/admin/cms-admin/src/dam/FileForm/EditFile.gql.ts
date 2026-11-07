@@ -7,10 +7,13 @@ const damFileDetailFragment = gql`
             id
         }
         name
+        damPath
         size
         mimetype
         archived
         contentHash
+        createdAt
+        updatedAt
         title
         altText
         aiContentType

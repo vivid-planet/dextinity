@@ -1,10 +1,10 @@
-import { RouteWithErrorBoundary } from "@dextinity/admin";
 import { Tabs } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import type { JSX } from "react";
 import { useIntl } from "react-intl";
 import { Switch, useRouteMatch } from "react-router";
 
+import { RouteWithContentErrorBoundary } from "../../common/errorBoundary/RouteWithContentErrorBoundary";
 import { RouterTabLink } from "../../common/RouterTabLink";
 import type { BlockAdminComponentPart } from "../types";
 import { TabContent } from "./AdminTabsTabContent";
@@ -46,13 +46,13 @@ export function BlockAdminTabs({ children }: BlockAdminTabsProps): JSX.Element |
             <TabContent selectedTab={selectedTab}>
                 <Switch>
                     {otherTabs.map((tab) => (
-                        <RouteWithErrorBoundary key={tab.key} path={`${match.url}/${tab.key}`}>
+                        <RouteWithContentErrorBoundary key={tab.key} path={`${match.url}/${tab.key}`}>
                             {tab.content}
-                        </RouteWithErrorBoundary>
+                        </RouteWithContentErrorBoundary>
                     ))}
 
                     {/* first tab is default route, last in <Switch> */}
-                    <RouteWithErrorBoundary path={match.url}>{firstTab.content}</RouteWithErrorBoundary>
+                    <RouteWithContentErrorBoundary path={match.url}>{firstTab.content}</RouteWithContentErrorBoundary>
                 </Switch>
             </TabContent>
         </Root>

@@ -1,8 +1,8 @@
-import { RouteWithErrorBoundary } from "@dextinity/admin";
 import type { ReactNode } from "react";
 import { Redirect, type RouteProps, Switch, useRouteMatch } from "react-router-dom";
 
 import { type Permission, useUserPermissionCheck } from "../userPermissions/hooks/currentUser";
+import { RouteWithContentErrorBoundary } from "./errorBoundary/RouteWithContentErrorBoundary";
 import type { MasterMenuData, MasterMenuItem } from "./MasterMenu";
 
 export function useRoutePropsFromMasterMenuData(items: MasterMenuData): RouteProps[] {
@@ -66,7 +66,7 @@ export const MasterMenuRoutes = ({ menu }: MasterMenuRoutesProps) => {
         <Switch>
             <Redirect to={`${match.url}${routes[0].path}`} exact={true} from={match.path} />
             {routes.map((route, index) => (
-                <RouteWithErrorBoundary key={index} {...route} path={`${match.path}${route.path}`} />
+                <RouteWithContentErrorBoundary key={index} {...route} path={`${match.path}${route.path}`} />
             ))}
         </Switch>
     );

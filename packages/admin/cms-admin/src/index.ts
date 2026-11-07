@@ -134,6 +134,8 @@ export { BuildEntry } from "./builds/BuildEntry";
 export { PublisherPage } from "./builds/PublisherPage";
 export { includeInvisibleContentContext } from "./common/apollo/links/includeInvisibleContentContext";
 export { DropdownMenuItem } from "./common/DropdownMenuItem";
+export { ContentErrorBoundary, type ContentErrorBoundaryProps } from "./common/errorBoundary/ContentErrorBoundary";
+export { RouteWithContentErrorBoundary } from "./common/errorBoundary/RouteWithContentErrorBoundary";
 export { useBuildInformation } from "./common/header/about/build-information/useBuildInformation";
 export { Header } from "./common/header/Header";
 export { UserHeaderItem } from "./common/header/UserHeaderItem";

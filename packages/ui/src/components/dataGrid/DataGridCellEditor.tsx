@@ -1,3 +1,4 @@
+import { Popover as BasePopover } from "@base-ui/react/popover";
 import { Select as BaseSelect } from "@base-ui/react/select";
 import { type KeyboardEvent, type ReactNode, useLayoutEffect, useRef } from "react";
 
@@ -10,9 +11,12 @@ interface DataGridCellEditorProps<Row> {
     editor: DataGridEditor<Row>;
     row: Row;
     draft: unknown;
+    error: string | undefined;
+    errorId: string | undefined;
     label: string;
     onDraftChange: (draft: unknown) => void;
     onCommit: (value: unknown) => void;
+    onLeave: (value: unknown) => void;
     onCancel: () => void;
     onKeyDown: (event: KeyboardEvent<HTMLElement>) => void;
 }
@@ -24,16 +28,18 @@ function optionKey(value: DataGridEditorOption["value"]): string {
 function TextEditor({
     draft,
     label,
+    errorId,
     numeric,
     onDraftChange,
-    onCommit,
+    onLeave,
     onKeyDown,
 }: {
     draft: string;
     label: string;
+    errorId: string | undefined;
     numeric: boolean;
     onDraftChange: (draft: string) => void;
-    onCommit: (value: string) => void;
+    onLeave: (value: string) => void;
     onKeyDown: (event: KeyboardEvent<HTMLElement>) => void;
 }) {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -51,11 +57,13 @@ function TextEditor({
             ref={inputRef}
             className={styles.editorInput}
             aria-label={label}
+            aria-invalid={errorId != null ? true : undefined}
+            aria-describedby={errorId}
             inputMode={numeric ? "decimal" : undefined}
             value={draft}
             onChange={(event) => onDraftChange(event.target.value)}
             onKeyDown={onKeyDown}
-            onBlur={(event) => onCommit(event.target.value)}
+            onBlur={(event) => onLeave(event.target.value)}
         />
     );
 }
@@ -145,21 +153,22 @@ export function DataGridCellEditor<Row>({
     editor,
     row,
     draft,
+    error,
+    errorId,
     label,
     onDraftChange,
     onCommit,
+    onLeave,
     onCancel,
     onKeyDown,
 }: DataGridCellEditorProps<Row>): ReactNode {
     switch (editor.type) {
         case "select":
-            return (
-                <SelectEditor options={editor.options} draft={draft} label={label} onCommit={onCommit} onCancel={onCancel} onKeyDown={onKeyDown} />
-            );
+            return <SelectEditor options={editor.options} draft={draft} label={label} onCommit={onLeave} onCancel={onCancel} onKeyDown={onKeyDown} />;
         case "custom":
             return (
                 <div className={styles.editorCustom} onKeyDown={onKeyDown}>
-                    {editor.render({ row, value: draft, label, onChange: onDraftChange, onCommit, onCancel })}
+                    {editor.render({ row, value: draft, label, error, onChange: onDraftChange, onCommit, onCancel })}
                 </div>
             );
         case "checkbox":
@@ -169,11 +178,41 @@ export function DataGridCellEditor<Row>({
                 <TextEditor
                     draft={draft == null ? "" : String(draft)}
                     label={label}
+                    errorId={errorId}
                     numeric={editor.type === "number"}
                     onDraftChange={onDraftChange}
-                    onCommit={onCommit}
+                    onLeave={onLeave}
                     onKeyDown={onKeyDown}
                 />
             );
     }
+}
+
+/**
+ * Why the edited value can't be saved, shown below the cell. Internal to `DataGrid`.
+ */
+export function DataGridEditorError({ id, children }: { id: string; children: ReactNode }): ReactNode {
+    const { anchor, anchorRef, container } = useThemePortalContainer<HTMLSpanElement>();
+
+    return (
+        <>
+            <span ref={anchorRef} hidden />
+            <BasePopover.Root open modal={false}>
+                <BasePopover.Portal container={container}>
+                    <BasePopover.Positioner
+                        className={styles.editorErrorPositioner}
+                        anchor={anchor?.closest("td") ?? null}
+                        side="bottom"
+                        align="start"
+                        sideOffset={4}
+                        collisionPadding={8}
+                    >
+                        <BasePopover.Popup className={styles.editorError} role="none" initialFocus={false} finalFocus={false}>
+                            <span id={id}>{children}</span>
+                        </BasePopover.Popup>
+                    </BasePopover.Positioner>
+                </BasePopover.Portal>
+            </BasePopover.Root>
+        </>
+    );
 }

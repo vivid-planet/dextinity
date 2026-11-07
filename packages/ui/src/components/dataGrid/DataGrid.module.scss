@@ -62,6 +62,33 @@
     &[aria-sort] {
         color: var(--dextinity-data-grid-header-foreground-active);
     }
+
+    &[data-dragging] {
+        opacity: 0.5;
+    }
+
+    &[data-drop] {
+        position: relative;
+
+        &::after {
+            position: absolute;
+            inset-block: var(--dextinity-space-1);
+            inline-size: 2px;
+            border-radius: 1px;
+            background: var(--dextinity-data-grid-drop-indicator);
+            content: "";
+            pointer-events: none;
+            @include forced-colors.fill(Highlight);
+        }
+    }
+
+    &[data-drop="before"]::after {
+        inset-inline-start: -1px;
+    }
+
+    &[data-drop="after"]::after {
+        inset-inline-end: -1px;
+    }
 }
 
 .headerContent {
@@ -172,6 +199,10 @@
         box-shadow: var(--dextinity-data-grid-editor-shadow);
         @include forced-colors.edge(2px);
     }
+
+    .row > &[data-editing][data-invalid] {
+        box-shadow: var(--dextinity-data-grid-editor-shadow-invalid);
+    }
 }
 
 .cellContent {
@@ -261,6 +292,60 @@
 
 .editorCustom {
     min-inline-size: 0;
+}
+
+.editorErrorPositioner {
+    @include menu.positioner;
+}
+
+.editorError {
+    box-sizing: border-box;
+    max-inline-size: min(320px, var(--available-width));
+    padding: var(--dextinity-space-1) var(--dextinity-space-2);
+    border-radius: var(--dextinity-radius-item);
+    background: var(--dextinity-data-grid-editor-error-background);
+    box-shadow: var(--dextinity-shadow-2);
+    color: var(--dextinity-data-grid-editor-error-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-small-size);
+    line-height: 1.35;
+    outline: none;
+
+    @include forced-colors.edge;
+}
+
+.columnGrip {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    inline-size: 16px;
+    block-size: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--dextinity-radius-item);
+    background: transparent;
+    color: var(--dextinity-data-grid-grip-foreground);
+    opacity: var(--dextinity-data-grid-actions-idle-opacity);
+    cursor: grab;
+    transition: opacity var(--dextinity-motion-duration-short);
+
+    --dextinity-icon-size: 14px;
+
+    .header:hover &,
+    .header:focus-within &,
+    &:focus-visible {
+        opacity: 1;
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    @media (hover: none) {
+        opacity: 1;
+    }
 }
 
 .checkboxCell {

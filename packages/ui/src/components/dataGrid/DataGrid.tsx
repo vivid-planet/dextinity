@@ -21,7 +21,7 @@ import { Icon } from "../icon/Icon";
 import { IconButton } from "../iconButton/IconButton";
 import { Pagination, type PaginationProps } from "../pagination/Pagination";
 import styles from "./DataGrid.module.scss";
-import { DataGridCellEditor } from "./DataGridCellEditor";
+import { DataGridCellEditor, DataGridEditorError } from "./DataGridCellEditor";
 import { DataGridColumnsMenu } from "./DataGridColumnsMenu";
 import { getDataGridCellText, getDataGridCellValue } from "./dataGridValue";
 
@@ -56,6 +56,8 @@ export interface DataGridEditorRenderParams<Row> {
     onCommit: (value?: unknown) => void;
     /** Ends editing and drops the draft. */
     onCancel: () => void;
+    /** Why the draft can't be saved, from the column's `validate`; show it at the editor. */
+    error?: string;
 }
 
 /**
@@ -107,6 +109,17 @@ export interface DataGridColumn<Row> {
      * @defaultValue `{ type: "text" }`
      */
     editor?: DataGridEditor<Row>;
+    /**
+     * Checks an edited value before it is saved; return a message saying what is wrong, shown at the editor. While the value is
+     * invalid, Enter and Tab keep the editor open; leaving the cell otherwise discards the edit.
+     */
+    validate?: (value: unknown, row: Row) => string | undefined;
+    /**
+     * Can be moved when the grid has `onColumnReorder`.
+     *
+     * @defaultValue `true`
+     */
+    reorderable?: boolean;
     /**
      * Can be hidden in the columns menu.
      *
@@ -184,6 +197,7 @@ export type DataGridOwnerState = {
     clickable: boolean;
     editable: boolean;
     reorderable: boolean;
+    columnreorderable: boolean;
     expandable: boolean;
 };
 
@@ -200,6 +214,14 @@ export interface DataGridLabels {
     expandRow: string;
     /** The accessible name of the button that opens the columns menu. */
     columns: string;
+    /** Prefixes a column's header as the accessible name of its grip, e.g. "Move column Status". */
+    moveColumn: string;
+    /** Shown at a `number` editor whose text isn't a number. */
+    invalidNumber: string;
+    /** Announced to screen readers after a row moved, with its first cell's text, e.g. "Frontend Developer, position 2 of 5". */
+    rowMoved: (rowLabel: string, position: number, count: number) => string;
+    /** Announced to screen readers after a column moved, e.g. "Status, column 3 of 6". */
+    columnMoved: (columnLabel: string, position: number, count: number) => string;
 }
 
 export const defaultDataGridLabels: DataGridLabels = {
@@ -209,6 +231,10 @@ export const defaultDataGridLabels: DataGridLabels = {
     moveRow: "Move",
     expandRow: "Expand",
     columns: "Columns",
+    moveColumn: "Move column",
+    invalidNumber: "Enter a number.",
+    rowMoved: (rowLabel, position, count) => `${rowLabel}, position ${position} of ${count}`,
+    columnMoved: (columnLabel, position, count) => `${columnLabel}, column ${position} of ${count}`,
 };
 
 export interface DataGridSlotProps {
@@ -276,6 +302,11 @@ export interface DataGridProps<Row> extends Omit<HTMLAttributes<HTMLDivElement>,
      * index in `rows` and its new index. Sub rows stay with their parent.
      */
     onRowReorder?: (fromIndex: number, toIndex: number) => void;
+    /**
+     * Adds a grip to each header: drag it, or focus it and press ArrowLeft, ArrowRight, Home, or End, to move the column. Called with
+     * the column's index in `columns` and its new index; hidden columns keep their place.
+     */
+    onColumnReorder?: (fromIndex: number, toIndex: number) => void;
     /** Which columns are shown; a column missing here is shown. */
     columnVisibility?: DataGridColumnVisibility;
     /** Called with the new visibility from the columns menu, which appears at the end of the header when this is set. */
@@ -364,6 +395,11 @@ interface DropTarget {
     position: "before" | "after";
 }
 
+interface ColumnDropTarget {
+    key: string;
+    position: "before" | "after";
+}
+
 type Direction = "up" | "down" | "left" | "right" | "home" | "end";
 
 const cellKeyDirections: Record<string, Direction> = {
@@ -398,6 +434,12 @@ function isPrintableKey(event: KeyboardEvent) {
 
 function isTypingEditor<Row>(editor: DataGridEditor<Row>) {
     return editor.type === "text" || editor.type === "number";
+}
+
+/** The index to pass to a reorder callback for an item dropped before or after the item at `targetIndex`. */
+function dropIndex(fromIndex: number, targetIndex: number, position: "before" | "after") {
+    const insertionIndex = targetIndex + (position === "after" ? 1 : 0);
+    return insertionIndex > fromIndex ? insertionIndex - 1 : insertionIndex;
 }
 
 function parseDraft<Row>(editor: DataGridEditor<Row>, draft: unknown, previousValue: unknown): { value: unknown } | undefined {
@@ -443,6 +485,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
         onCellChange,
         onRowChange,
         onRowReorder,
+        onColumnReorder,
         columnVisibility,
         onColumnVisibilityChange,
         getSubRows,
@@ -469,6 +512,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
     const labels = { ...defaultDataGridLabels, ...labelsProp };
     const visibleColumns = columns.filter((column) => columnVisibility?.[column.key] !== false);
     const reorderable = onRowReorder != null;
+    const columnReorderable = onColumnReorder != null;
     const ownerState: DataGridOwnerState = {
         variant,
         selectable,
@@ -478,12 +522,15 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
         clickable: onRowClick != null,
         editable: visibleColumns.some((column) => column.editable != null && column.editable !== false),
         reorderable,
+        columnreorderable: columnReorderable,
         expandable: getSubRows != null || renderRowDetail != null,
     };
     const id = useId();
     const selectRowLabelId = `${id}-select-row`;
     const moveRowLabelId = `${id}-move-row`;
     const expandRowLabelId = `${id}-expand-row`;
+    const moveColumnLabelId = `${id}-move-column`;
+    const editorErrorId = `${id}-editor-error`;
 
     const [activeCell, setActiveCell] = useState<CellPosition>();
     const [editing, setEditing] = useState<EditingCell>();
@@ -494,6 +541,11 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
     const [dropTarget, setDropTarget] = useState<DropTarget>();
     const [pendingGripFocus, setPendingGripFocus] = useState<{ index: number }>();
     const gripElements = useRef(new Map<number, HTMLButtonElement>());
+    const [draggedColumnKey, setDraggedColumnKey] = useState<string>();
+    const [columnDropTarget, setColumnDropTarget] = useState<ColumnDropTarget>();
+    const [pendingColumnGripFocus, setPendingColumnGripFocus] = useState<{ key: string }>();
+    const columnGripElements = useRef(new Map<string, HTMLButtonElement>());
+    const [announcement, setAnnouncement] = useState("");
 
     useEffect(() => {
         if (pendingFocus != null) {
@@ -506,6 +558,15 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
             gripElements.current.get(pendingGripFocus.index)?.focus();
         }
     }, [pendingGripFocus]);
+
+    useEffect(() => {
+        if (pendingColumnGripFocus != null) {
+            columnGripElements.current.get(pendingColumnGripFocus.key)?.focus();
+        }
+    }, [pendingColumnGripFocus]);
+
+    // A live region only speaks when its text changes, so a repeated message alternates a trailing no-break space
+    const announce = (message: string) => setAnnouncement((previous) => (previous === message ? `${message}\u00a0` : message));
 
     const expanded = new Set(expandedRowIds);
     const entries: RowEntry<Row>[] = [];
@@ -580,6 +641,11 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
         if (Object.is(value, previousValue)) {
             return;
         }
+        const error = column.validate?.(value, entry.row);
+        if (error != null) {
+            announce(error);
+            return;
+        }
         const change: DataGridCellChange<Row> = { row: entry.row, rowId: entry.rowId, columnKey: column.key, value, previousValue };
         onCellChange?.(change);
         if (onRowChange != null) {
@@ -603,21 +669,43 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
 
     const isEditingCell = (cell: CellPosition) => editingRef.current != null && cellKey(editingRef.current) === cellKey(cell);
 
-    const commitEditing = (value?: unknown) => {
+    const validateDraft = (entry: RowEntry<Row>, column: DataGridColumn<Row>, draft: unknown) => {
+        const parsed = parseDraft(editorOf(column), draft, getDataGridCellValue(entry.row, column));
+        if (parsed == null) {
+            return { error: labels.invalidNumber };
+        }
+        return { value: parsed.value, error: column.validate?.(parsed.value, entry.row) };
+    };
+
+    /**
+     * Saves the draft, or `value` instead, and ends editing. An invalid value keeps the editor open with it, or with `discardInvalid`
+     * drops it. Returns whether editing ended.
+     */
+    const commitEditing = (value?: unknown, { discardInvalid = false } = {}): boolean => {
         const current = editingRef.current;
         if (current == null) {
-            return;
+            return true;
         }
-        setEditingCell(undefined);
         const entry = findEntry(current.rowId);
         const column = findColumn(current.columnKey);
         if (entry == null || column == null) {
-            return;
+            setEditingCell(undefined);
+            return true;
         }
-        const parsed = parseDraft(editorOf(column), value === undefined ? current.draft : value, getDataGridCellValue(entry.row, column));
-        if (parsed != null) {
-            writeValue(entry, column, parsed.value);
+        const draft = value === undefined ? current.draft : value;
+        const result = validateDraft(entry, column, draft);
+        if (result.error != null) {
+            if (discardInvalid) {
+                setEditingCell(undefined);
+                return true;
+            }
+            setEditingCell({ ...current, draft });
+            announce(result.error);
+            return false;
         }
+        setEditingCell(undefined);
+        writeValue(entry, column, result.value);
+        return true;
     };
 
     const cancelEditing = () => {
@@ -686,12 +774,16 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
         } else if (event.key === "Enter") {
             event.preventDefault();
             event.stopPropagation();
-            commitEditing();
-            focusCell(neighborCell(current, event.shiftKey ? "up" : "down") ?? current);
+            if (commitEditing()) {
+                focusCell(neighborCell(current, event.shiftKey ? "up" : "down") ?? current);
+            }
         } else if (event.key === "Tab") {
             const index = editableCells.findIndex((cell) => cellKey(cell) === cellKey(current));
             const target = editableCells[index + (event.shiftKey ? -1 : 1)];
-            commitEditing();
+            if (!commitEditing()) {
+                event.preventDefault();
+                return;
+            }
             if (target != null) {
                 event.preventDefault();
                 const targetEntry = findEntry(target.rowId);
@@ -713,7 +805,101 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
         }
         onRowReorder(fromIndex, toIndex);
         setPendingGripFocus({ index: toIndex });
+        const firstColumn = visibleColumns[0] as DataGridColumn<Row> | undefined;
+        const rowLabel = firstColumn != null ? getDataGridCellText(rows[fromIndex], firstColumn) : "";
+        announce(labels.rowMoved(rowLabel, toIndex + 1, rows.length));
     };
+
+    const moveColumn = (column: DataGridColumn<Row>, toIndex: number) => {
+        const fromIndex = columns.indexOf(column);
+        if (onColumnReorder == null || fromIndex < 0 || toIndex < 0 || toIndex >= columns.length || toIndex === fromIndex) {
+            return;
+        }
+        onColumnReorder(fromIndex, toIndex);
+        setPendingColumnGripFocus({ key: column.key });
+        const reordered = [...columns];
+        reordered.splice(toIndex, 0, ...reordered.splice(fromIndex, 1));
+        const visibleReordered = reordered.filter((candidate) => columnVisibility?.[candidate.key] !== false);
+        announce(labels.columnMoved(column.header, visibleReordered.indexOf(column) + 1, visibleReordered.length));
+    };
+
+    const handleColumnGripKeyDown = (event: KeyboardEvent<HTMLButtonElement>, column: DataGridColumn<Row>) => {
+        const visibleIndex = visibleColumns.indexOf(column);
+        const targets: Record<string, DataGridColumn<Row> | undefined> = {
+            ArrowLeft: visibleColumns[visibleIndex - 1],
+            ArrowRight: visibleColumns[visibleIndex + 1],
+            Home: visibleColumns[0],
+            End: visibleColumns[visibleColumns.length - 1],
+        };
+        if (!(event.key in targets)) {
+            return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        const target = targets[event.key];
+        if (target != null && target !== column) {
+            moveColumn(column, columns.indexOf(target));
+        }
+    };
+
+    const handleHeaderDragOver = (event: DragEvent<HTMLTableCellElement>, column: DataGridColumn<Row>) => {
+        if (draggedColumnKey == null) {
+            return;
+        }
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+        const rect = event.currentTarget.getBoundingClientRect();
+        const startHalf = event.clientX - rect.left < rect.width / 2;
+        const isRtl = getComputedStyle(event.currentTarget).direction === "rtl";
+        const position = startHalf !== isRtl ? "before" : "after";
+        if (columnDropTarget?.key !== column.key || columnDropTarget.position !== position) {
+            setColumnDropTarget({ key: column.key, position });
+        }
+    };
+
+    const handleHeaderDrop = (event: DragEvent<HTMLTableCellElement>) => {
+        event.preventDefault();
+        const dragged = columns.find((column) => column.key === draggedColumnKey);
+        const target = columns.find((column) => column.key === columnDropTarget?.key);
+        if (dragged != null && target != null && columnDropTarget != null) {
+            moveColumn(dragged, dropIndex(columns.indexOf(dragged), columns.indexOf(target), columnDropTarget.position));
+        }
+        setDraggedColumnKey(undefined);
+        setColumnDropTarget(undefined);
+    };
+
+    const renderColumnGrip = (column: DataGridColumn<Row>, headerTextId: string) => (
+        <button
+            ref={(element) => {
+                if (element != null) {
+                    columnGripElements.current.set(column.key, element);
+                } else if (columnGripElements.current.get(column.key)?.isConnected === false) {
+                    columnGripElements.current.delete(column.key);
+                }
+            }}
+            type="button"
+            className={styles.columnGrip}
+            aria-labelledby={`${moveColumnLabelId} ${headerTextId}`}
+            aria-keyshortcuts="ArrowLeft ArrowRight Home End"
+            draggable
+            onKeyDown={(event) => handleColumnGripKeyDown(event, column)}
+            onDragStart={(event) => {
+                event.dataTransfer.effectAllowed = "move";
+                event.dataTransfer.setData("text/plain", column.key);
+                const headerElement = event.currentTarget.closest("th");
+                if (headerElement != null) {
+                    event.dataTransfer.setDragImage(headerElement, 16, 16);
+                }
+                setDraggedColumnKey(column.key);
+            }}
+            onDragEnd={() => {
+                setDraggedColumnKey(undefined);
+                setColumnDropTarget(undefined);
+            }}
+        >
+            <Icon name="drag-indicator" />
+        </button>
+    );
 
     const hasTrailingColumn = rowActions != null || onColumnVisibilityChange != null;
     const columnCount = (reorderable ? 1 : 0) + (selectable ? 1 : 0) + visibleColumns.length + (hasTrailingColumn ? 1 : 0);
@@ -756,11 +942,14 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
             );
         }
         if (isEditing && editing != null) {
+            const { error } = validateDraft(entry, column, editing.draft);
             return (
                 <DataGridCellEditor
                     editor={editor}
                     row={entry.row}
                     draft={editing.draft}
+                    error={error}
+                    errorId={error != null ? editorErrorId : undefined}
                     label={column.header}
                     onDraftChange={(draft) => {
                         if (isEditingCell(position)) {
@@ -768,8 +957,13 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                         }
                     }}
                     onCommit={(value) => {
+                        if (isEditingCell(position) && commitEditing(value) && !isTypingEditor(editor)) {
+                            focusCell(position);
+                        }
+                    }}
+                    onLeave={(value) => {
                         if (isEditingCell(position)) {
-                            commitEditing(value);
+                            commitEditing(value, { discardInvalid: true });
                             if (!isTypingEditor(editor)) {
                                 focusCell(position);
                             }
@@ -874,8 +1068,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
     const handleRowDrop = (event: DragEvent<HTMLTableRowElement>) => {
         event.preventDefault();
         if (draggedIndex != null && dropTarget != null) {
-            const insertionIndex = dropTarget.index + (dropTarget.position === "after" ? 1 : 0);
-            moveRow(draggedIndex, insertionIndex > draggedIndex ? insertionIndex - 1 : insertionIndex);
+            moveRow(draggedIndex, dropIndex(draggedIndex, dropTarget.index, dropTarget.position));
         }
         setDraggedIndex(undefined);
         setDropTarget(undefined);
@@ -940,6 +1133,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                     const position = { rowId, columnKey: column.key };
                     const key = cellKey(position);
                     const isEditing = editing != null && cellKey(editing) === key;
+                    const editingError = isEditing && editing != null ? validateDraft(entry, column, editing.draft).error : undefined;
                     const editorType = editable ? editorOf(column).type : undefined;
                     const content = renderCellContent(entry, column, editable, isEditing);
                     return (
@@ -962,6 +1156,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                             data-priority={column.priority ?? "high"}
                             data-editable={editable ? "" : undefined}
                             data-editing={isEditing ? "" : undefined}
+                            data-invalid={editingError != null ? "" : undefined}
                             data-editor={editorType}
                             tabIndex={editable ? (key === tabbableCellKey && !isEditing ? 0 : -1) : undefined}
                             onKeyDown={editable ? (event) => handleCellKeyDown(event, entry, column) : undefined}
@@ -979,6 +1174,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                             ) : (
                                 content
                             )}
+                            {editingError != null && <DataGridEditorError id={editorErrorId}>{editingError}</DataGridEditorError>}
                         </td>
                     );
                 })}
@@ -1043,6 +1239,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
             data-clickable={ownerState.clickable ? "" : undefined}
             data-editable={ownerState.editable ? "" : undefined}
             data-reorderable={ownerState.reorderable ? "" : undefined}
+            data-columnreorderable={ownerState.columnreorderable ? "" : undefined}
             data-expandable={ownerState.expandable ? "" : undefined}
             className={clsx(styles.root, className)}
             onKeyDown={(event) => {
@@ -1058,6 +1255,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                 onDragLeave?.(event);
                 if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
                     setDropTarget(undefined);
+                    setColumnDropTarget(undefined);
                 }
             }}
         >
@@ -1070,6 +1268,12 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
             <span id={expandRowLabelId} hidden>
                 {labels.expandRow}
             </span>
+            <span id={moveColumnLabelId} hidden>
+                {labels.moveColumn}
+            </span>
+            <div className={styles.visuallyHidden} role="status" aria-live="polite" aria-atomic>
+                {announcement}
+            </div>
             <div {...scrollerProps}>
                 <table {...tableProps}>
                     <thead>
@@ -1086,8 +1290,10 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                                     />
                                 </th>
                             )}
-                            {visibleColumns.map((column) => {
+                            {visibleColumns.map((column, columnIndex) => {
                                 const sortDirection = sort?.key === column.key ? sort.direction : undefined;
+                                const headerTextId = `${id}-header-${columnIndex}`;
+                                const movable = columnReorderable && column.reorderable !== false;
                                 return (
                                     <th
                                         key={column.key}
@@ -1095,8 +1301,12 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                                         className={styles.header}
                                         data-align={column.align ?? "start"}
                                         data-priority={column.priority ?? "high"}
+                                        data-dragging={draggedColumnKey === column.key ? "" : undefined}
+                                        data-drop={columnDropTarget?.key === column.key ? columnDropTarget.position : undefined}
                                         aria-sort={sortDirection == null ? undefined : sortDirection === "asc" ? "ascending" : "descending"}
                                         style={column.width != null ? { width: column.width } : undefined}
+                                        onDragOver={columnReorderable ? (event) => handleHeaderDragOver(event, column) : undefined}
+                                        onDrop={columnReorderable ? handleHeaderDrop : undefined}
                                     >
                                         <span className={styles.headerContent}>
                                             {column.sortable ? (
@@ -1105,12 +1315,13 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                                                     className={styles.sortButton}
                                                     onClick={() => onSortChange?.(nextSort(sort, column.key))}
                                                 >
-                                                    {column.header}
+                                                    <span id={headerTextId}>{column.header}</span>
                                                     <Icon name={sortDirection === "asc" ? "arrow-up" : "arrow-down"} />
                                                 </button>
                                             ) : (
-                                                column.header
+                                                <span id={headerTextId}>{column.header}</span>
                                             )}
+                                            {movable && renderColumnGrip(column, headerTextId)}
                                             {column.headerActions != null && <span className={styles.headerActions}>{column.headerActions}</span>}
                                         </span>
                                     </th>

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useRef, useState } from "react";
-import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
+import { expect, fireEvent, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
@@ -92,6 +92,7 @@ function moveItem<Item>(items: Item[], fromIndex: number, toIndex: number) {
  */
 function ControlledDataGrid(props: DataGridProps<Job>) {
     const [allRows, setAllRows] = useState(props.rows);
+    const [orderedColumns, setOrderedColumns] = useState(props.columns);
     const [sort, setSort] = useState(props.sort);
     const [selectedIds, setSelectedIds] = useState(props.selectedIds ?? []);
     const [expandedRowIds, setExpandedRowIds] = useState(props.expandedRowIds ?? []);
@@ -107,6 +108,15 @@ function ControlledDataGrid(props: DataGridProps<Job>) {
     return (
         <DataGrid
             {...props}
+            columns={orderedColumns}
+            onColumnReorder={
+                props.onColumnReorder != null
+                    ? (fromIndex, toIndex) => {
+                          props.onColumnReorder?.(fromIndex, toIndex);
+                          setOrderedColumns((current) => moveItem(current, fromIndex, toIndex));
+                      }
+                    : undefined
+            }
             rows={rows}
             sort={sort}
             onSortChange={(nextSort) => {
@@ -501,6 +511,60 @@ export const InlineEditing: Story = {
 };
 
 /**
+ * A column's `validate` checks an edited value before it is saved. While it returns a message, the message shows below the cell,
+ * Enter and Tab keep the editor open, and leaving the cell otherwise discards the edit. A `number` editor rejects text that isn't a
+ * number the same way.
+ */
+export const EditingValidation: Story = {
+    args: {
+        columns: editableColumns.map((column) =>
+            column.key === "title"
+                ? { ...column, validate: (value) => (typeof value === "string" && value.trim() === "" ? "Enter a title." : undefined) }
+                : column.key === "applications"
+                  ? { ...column, validate: (value) => (typeof value === "number" && value > 999 ? "At most 999 applications." : undefined) }
+                  : column,
+        ),
+        rows: allJobs.slice(0, 5),
+        onRowClick: undefined,
+        onCellChange: fn(),
+        onRowChange: fn(),
+    },
+    play: async ({ args, canvas, canvasElement }) => {
+        await userEvent.click(cellOf(canvasElement, "Senior UX Designer"));
+        await userEvent.keyboard("{Enter}");
+        const editor = canvas.getByRole("textbox", { name: "Title" });
+        await userEvent.clear(editor);
+        await waitFor(() => expect(editor).toHaveAccessibleDescription("Enter a title."));
+        await expect(editor).toHaveAttribute("aria-invalid", "true");
+        await expect(closestOf(editor, "td")).toHaveAttribute("data-invalid");
+
+        await userEvent.keyboard("{Enter}");
+        await expect(editor).toHaveFocus();
+        await userEvent.keyboard("{Tab}");
+        await expect(editor).toHaveFocus();
+        await expect(args.onCellChange).not.toHaveBeenCalled();
+        await expect(canvas.getByRole("status")).toHaveTextContent("Enter a title.");
+
+        await userEvent.type(editor, "Lead Designer{Enter}");
+        await waitFor(() =>
+            expect(args.onCellChange).toHaveBeenLastCalledWith(expect.objectContaining({ columnKey: "title", value: "Lead Designer" })),
+        );
+        await expect(screen.queryByText("Enter a title.", { selector: "[id]" })).toBeNull();
+
+        await userEvent.click(cellOf(canvasElement, "7"));
+        await userEvent.keyboard("abc");
+        const numberEditor = canvas.getByRole("textbox", { name: "Applications" });
+        await waitFor(() => expect(numberEditor).toHaveAccessibleDescription("Enter a number."));
+        await userEvent.clear(numberEditor);
+        await userEvent.type(numberEditor, "1200{Enter}");
+        await waitFor(() => expect(numberEditor).toHaveAccessibleDescription("At most 999 applications."));
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(cellOf(canvasElement, "7")).toHaveFocus());
+        await expect(args.onCellChange).toHaveBeenCalledTimes(1);
+    },
+};
+
+/**
  * With `onRowReorder`, each row gets a grip: drag it, or focus it and press ArrowUp, ArrowDown, Home, or End. The line shows where
  * the row lands.
  */
@@ -523,6 +587,51 @@ export const RowReorder: Story = {
         await userEvent.keyboard("{Home}");
         await waitFor(() => expect(args.onRowReorder).toHaveBeenLastCalledWith(4, 0));
         await expect(canvas.getAllByRole("row")[1]).toHaveTextContent("Senior UX Designer");
+        // Screen readers hear where the row landed
+        await expect(canvas.getByRole("status")).toHaveTextContent("Senior UX Designer, position 1 of 5");
+    },
+};
+
+function headerTexts(canvasElement: HTMLElement) {
+    return [...canvasElement.querySelectorAll("thead th[scope='col']")].map((header) => header.textContent);
+}
+
+/**
+ * With `onColumnReorder`, each header gets a grip, shown on hover and focus: drag it onto another header, or focus it and press
+ * ArrowLeft, ArrowRight, Home, or End. Columns with `reorderable: false` keep their place but others can move past them; screen
+ * readers hear where a column landed.
+ */
+export const ColumnReorder: Story = {
+    args: {
+        rows: allJobs.slice(0, 5),
+        onRowClick: undefined,
+        onColumnReorder: fn(),
+        columns: columns.map((column) => (column.key === "title" ? { ...column, reorderable: false } : column)),
+    },
+    play: async ({ args, canvas, canvasElement }) => {
+        await expect(canvas.queryByRole("button", { name: "Move column Title" })).toBeNull();
+        const statusGrip = canvas.getByRole("button", { name: "Move column Status" });
+        statusGrip.focus();
+        await userEvent.keyboard("{ArrowLeft}");
+        await waitFor(() => expect(args.onColumnReorder).toHaveBeenLastCalledWith(3, 2));
+        await waitFor(() => expect(canvas.getByRole("button", { name: "Move column Status" })).toHaveFocus());
+        await expect(headerTexts(canvasElement)).toStrictEqual(["Title", "Location", "Status", "Applications"]);
+        await expect(canvas.getByRole("status")).toHaveTextContent("Status, column 3 of 4");
+        await userEvent.keyboard("{Home}");
+        await waitFor(() => expect(args.onColumnReorder).toHaveBeenLastCalledWith(2, 0));
+        await expect(headerTexts(canvasElement)).toStrictEqual(["Status", "Title", "Location", "Applications"]);
+
+        // Dragging the grip onto the end half of a header drops the column after it
+        const dataTransfer = new DataTransfer();
+        const locationHeader = closestOf(canvas.getByText("Location"), "th");
+        const applicationsHeader = closestOf(canvas.getByText("Applications"), "th");
+        const rect = applicationsHeader.getBoundingClientRect();
+        fireEvent.dragStart(within(locationHeader).getByRole("button", { name: "Move column Location" }), { dataTransfer });
+        fireEvent.dragOver(applicationsHeader, { dataTransfer, clientX: rect.right - 4, clientY: rect.top + 4 });
+        await waitFor(() => expect(applicationsHeader).toHaveAttribute("data-drop", "after"));
+        fireEvent.drop(applicationsHeader, { dataTransfer, clientX: rect.right - 4, clientY: rect.top + 4 });
+        await waitFor(() => expect(args.onColumnReorder).toHaveBeenLastCalledWith(2, 3));
+        await expect(headerTexts(canvasElement)).toStrictEqual(["Status", "Title", "Applications", "Location"]);
     },
 };
 

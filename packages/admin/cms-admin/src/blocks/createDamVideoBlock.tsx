@@ -1,7 +1,6 @@
 import { gql } from "@apollo/client";
 import { Banner, Icon } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
-import { deepClone } from "@mui/x-data-grid/internals";
 import { Field } from "react-final-form";
 import { defineMessage, FormattedMessage, type MessageDescriptor } from "react-intl";
 
@@ -143,7 +142,7 @@ export const createDamVideoBlock = (
         },
 
         replaceDependenciesInOutput: (output, replacements) => {
-            const clonedOutput: DamVideoBlockInput = deepClone(output);
+            const clonedOutput: DamVideoBlockInput = structuredClone(output);
             const replacement = replacements.find((replacement) => replacement.type === "DamFile" && replacement.originalId === output.damFileId);
 
             if (replacement) {

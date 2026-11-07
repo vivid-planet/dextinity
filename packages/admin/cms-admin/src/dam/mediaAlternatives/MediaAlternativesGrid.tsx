@@ -1,17 +1,6 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
-import {
-    Button,
-    ConfirmDialog,
-    DataGrid,
-    type DataGridColumn,
-    EmptyState,
-    FilterBar,
-    Icon,
-    IconButton,
-    ToastViewport,
-    useToasts,
-} from "@dextinity/ui";
+import { Button, ConfirmDialog, DataGrid, type DataGridColumn, EmptyState, FilterBar, Icon, IconButton, type NewToast } from "@dextinity/ui";
 import { useState } from "react";
 import { useIntl } from "react-intl";
 
@@ -89,15 +78,16 @@ interface MediaAlternativesGridProps {
     file: { id: string };
     type: GQLDamMediaAlternativeType;
     direction: MediaAlternativeDirection;
+    /** Shows a toast in the page's notifications. */
+    addToast: (toast: NewToast) => void;
 }
 
-export function MediaAlternativesGrid({ file, type, direction }: MediaAlternativesGridProps) {
+export function MediaAlternativesGrid({ file, type, direction, addToast }: MediaAlternativesGridProps) {
     const intl = useIntl();
     const { labels: dataGridLabels } = useDataGridLabels();
     const listState = useRemoteListState({ queryParamsPrefix: `mediaAlternatives_${direction}`, sortableColumns, defaultPageSize: 10 });
     const [dialog, setDialog] = useState<{ id?: string }>();
     const [deleteCandidate, setDeleteCandidate] = useState<GQLDamMediaAlternativeGridFragment>();
-    const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
     const isOtherFileTheAlternative = direction === "for";
     const getOtherFile = (mediaAlternative: GQLDamMediaAlternativeGridFragment) =>
         isOtherFileTheAlternative ? mediaAlternative.alternative : mediaAlternative.for;
@@ -281,11 +271,6 @@ export function MediaAlternativesGrid({ file, type, direction }: MediaAlternativ
                 onConfirm={() => void confirmDelete()}
                 loading={deleting}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.generic.cancel", defaultMessage: "Cancel" }) }}
-            />
-            <ToastViewport
-                toasts={toasts}
-                onDismiss={dismissToast}
-                labels={{ region: intl.formatMessage({ id: "dextinity.damMediaAlternatives.notifications", defaultMessage: "Notifications" }) }}
             />
         </GridRoot>
     );

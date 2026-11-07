@@ -1,0 +1,13 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem;
+    background-color: var(--dextinity-color-background-default);
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+}

@@ -13,6 +13,11 @@ const preview: Preview = {
     tags: ["autodocs"],
     decorators: [colorSchemeBackgroundDecorator, brandDecorator],
     parameters: {
+        options: {
+            storySort: {
+                order: ["Intro", "*", "Theme", ["Overview", "Customize brand", "Customize icons", "All icons"], "Components"],
+            },
+        },
         docs: {
             codePanel: true,
         },

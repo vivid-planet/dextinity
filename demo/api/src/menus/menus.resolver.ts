@@ -1,12 +1,12 @@
-import { PageTreeNodeInterface, PageTreeReadApiService, RequiredPermission } from "@dextinity/cms-api";
+import { type PageTreeNodeInterface, PageTreeReadApiService, RequiredPermission } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, Query, Resolver } from "@nestjs/graphql";
-import { PageTreeNodeScope } from "@src/page-tree/dto/page-tree-node-scope";
-import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity";
-import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category";
+import { PageTreeNodeScope } from "@src/page-tree/dto/page-tree-node-scope.js";
+import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
+import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category.js";
 
-import { MainMenuObject } from "./dto/main-menu.object";
-import { MainMenuItem } from "./entities/main-menu-item.entity";
+import { MainMenuObject } from "./dto/main-menu.object.js";
+import { MainMenuItem } from "./entities/main-menu-item.entity.js";
 
 @Resolver(() => MainMenuObject)
 @RequiredPermission("pageTree")

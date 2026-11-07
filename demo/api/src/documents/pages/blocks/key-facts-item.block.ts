@@ -1,16 +1,16 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
     SvgImageBlock,
 } from "@dextinity/cms-api";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
 import { IsString } from "class-validator";
 
 class KeyFactsItemBlockData extends BlockData {

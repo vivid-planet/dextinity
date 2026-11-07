@@ -1,8 +1,8 @@
-import { createFileUploadInputFromUrl, FileInterface, FilesService } from "@dextinity/cms-api";
+import { createFileUploadInputFromUrl, type FileInterface, FilesService } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Logger } from "@nestjs/common";
-import { DamScope } from "@src/dam/dto/dam-scope";
-import { faker } from "@src/db/fixtures/faker";
+import type { DamScope } from "@src/dam/dto/dam-scope.js";
+import { faker } from "@src/db/fixtures/faker.js";
 import * as fs from "fs/promises";
 import path from "path";
 

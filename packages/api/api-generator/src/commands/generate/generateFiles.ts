@@ -2,6 +2,7 @@ import console from "node:console";
 import { realpathSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import {
     CRUD_GENERATOR_METADATA_KEY,
@@ -48,6 +49,15 @@ export const generateFiles = async (
 
         const entities = orm.em.getMetadata().getAll();
         LazyMetadataStorage.load();
+
+        for (const entity of entities.values()) {
+            for (const metadata of [entity, ...entity.props.map((prop) => prop.targetMeta)]) {
+                if (metadata?.path?.startsWith("file:")) {
+                    // MikroORM derives the path from the stack trace, which contains file URLs for ES modules
+                    metadata.path = fileURLToPath(metadata.path);
+                }
+            }
+        }
 
         for (const entity of entities.values()) {
             if (!entity.class) {

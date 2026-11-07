@@ -1,5 +1,5 @@
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Args, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
 import { DextinityEntityNotFoundException } from "../../common/errors/entity-not-found.exception.js";
@@ -7,9 +7,9 @@ import { DextinityValidationException } from "../../common/errors/validation.exc
 import { contentScopesAreEqual } from "../../user-permissions/content-scopes-are-equal.js";
 import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
 import { EmptyDamScope } from "../files/dto/empty-dam-scope.js";
-import { FileInterface } from "../files/entities/file.entity.js";
+import type { FileInterface } from "../files/entities/file.entity.js";
 import { FilesService } from "../files/files.service.js";
-import { DamScopeInterface } from "../types.js";
+import type { DamScopeInterface } from "../types.js";
 import { damSettingsByScope } from "./dam-settings-by-scope.js";
 import { DamSettingsInput } from "./dto/dam-settings.input.js";
 import { DamSettings } from "./entities/dam-settings.entity.js";

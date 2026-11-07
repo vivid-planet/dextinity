@@ -1,19 +1,19 @@
-import { PageTreeNodeBaseCreateInput, PageTreeNodeInterface, PageTreeNodeVisibility, PageTreeService } from "@dextinity/cms-api";
+import { type PageTreeNodeBaseCreateInput, type PageTreeNodeInterface, PageTreeNodeVisibility, PageTreeService } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
-import { PageContentBlock } from "@src/documents/pages/blocks/page-content.block";
-import { SeoBlock } from "@src/documents/pages/blocks/seo.block";
-import { StageBlock } from "@src/documents/pages/blocks/stage.block";
-import { Page } from "@src/documents/pages/entities/page.entity";
-import { PageTreeNodeScope } from "@src/page-tree/dto/page-tree-node-scope";
-import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category";
-import { UserGroup } from "@src/user-groups/user-group";
+import { faker } from "@src/db/fixtures/faker.js";
+import { PageContentBlock } from "@src/documents/pages/blocks/page-content.block.js";
+import { SeoBlock } from "@src/documents/pages/blocks/seo.block.js";
+import { StageBlock } from "@src/documents/pages/blocks/stage.block.js";
+import { Page } from "@src/documents/pages/entities/page.entity.js";
+import type { PageTreeNodeScope } from "@src/page-tree/dto/page-tree-node-scope.js";
+import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category.js";
+import { UserGroup } from "@src/user-groups/user-group.js";
 import slugify from "slugify";
 
-import { BlockCategory, PageContentBlockFixtureService } from "./page-content-block-fixture.service";
-import { SeoBlockFixtureService } from "./seo-block-fixture.service";
-import { StageBlockFixtureService } from "./stage-block-fixture.service";
+import { type BlockCategory, PageContentBlockFixtureService } from "./page-content-block-fixture.service.js";
+import { SeoBlockFixtureService } from "./seo-block-fixture.service.js";
+import { StageBlockFixtureService } from "./stage-block-fixture.service.js";
 
 interface GeneratePageInput {
     name: string;

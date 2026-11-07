@@ -2,6 +2,6 @@
 // You may choose to use this file as scaffold by moving this file out of generated folder and removing this comment.
 import { ObjectType } from "@nestjs/graphql";
 import { PaginatedResponseFactory } from "@dextinity/cms-api";
-import { ManufacturerCountry } from "../../entities/manufacturer-country.entity";
+import { ManufacturerCountry } from "../../entities/manufacturer-country.entity.js";
 @ObjectType()
 export class PaginatedManufacturerCountries extends PaginatedResponseFactory.create(ManufacturerCountry) {}

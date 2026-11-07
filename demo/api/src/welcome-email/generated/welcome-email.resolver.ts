@@ -3,10 +3,10 @@
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { RequiredPermission } from "@dextinity/cms-api";
-import { WelcomeEmail } from "../entities/welcome-email.entity";
-import { WelcomeEmailScope } from "../dto/welcome-email-scope";
-import { WelcomeEmailsService } from "./welcome-emails.service";
-import { WelcomeEmailInput } from "./dto/welcome-email.input";
+import { WelcomeEmail } from "../entities/welcome-email.entity.js";
+import { WelcomeEmailScope } from "../dto/welcome-email-scope.js";
+import { WelcomeEmailsService } from "./welcome-emails.service.js";
+import { WelcomeEmailInput } from "./dto/welcome-email.input.js";
 @Resolver(() => WelcomeEmail)
 @RequiredPermission(["pageTree"])
 export class WelcomeEmailResolver {

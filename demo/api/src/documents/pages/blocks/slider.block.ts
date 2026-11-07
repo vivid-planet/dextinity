@@ -1,16 +1,16 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
     createListBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { MediaBlock } from "@src/common/blocks/media.block";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block";
+import { MediaBlock } from "@src/common/blocks/media.block.js";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
 
 class SliderItemBlockData extends BlockData {
     @ChildBlock(MediaBlock)

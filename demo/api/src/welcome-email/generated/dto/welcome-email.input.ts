@@ -4,7 +4,7 @@ import { Field, InputType } from "@nestjs/graphql";
 import { Transform } from "class-transformer";
 import { type BlockInputInterface, RootBlockInputScalar, isBlockInputInterface } from "@dextinity/cms-api";
 import { IsNotEmpty, ValidateNested } from "class-validator";
-import { WelcomeEmailContentBlock } from "../../blocks/welcome-email-content.block";
+import { WelcomeEmailContentBlock } from "../../blocks/welcome-email-content.block.js";
 @InputType()
 export class WelcomeEmailInput {
     @IsNotEmpty()

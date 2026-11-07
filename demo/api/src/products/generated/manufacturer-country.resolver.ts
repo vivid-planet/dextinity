@@ -2,9 +2,9 @@
 // You may choose to use this file as scaffold by moving this file out of generated folder and removing this comment.
 import { EntityManager, type FindOptions } from "@mikro-orm/postgresql";
 import { Args, Query, Resolver } from "@nestjs/graphql";
-import { PaginatedManufacturerCountries } from "./dto/paginated-manufacturer-countries";
-import { ManufacturerCountriesArgs } from "./dto/manufacturer-countries.args";
-import { ManufacturerCountry } from "../entities/manufacturer-country.entity";
+import { PaginatedManufacturerCountries } from "./dto/paginated-manufacturer-countries.js";
+import { ManufacturerCountriesArgs } from "./dto/manufacturer-countries.args.js";
+import { ManufacturerCountry } from "../entities/manufacturer-country.entity.js";
 import { RequiredPermission, gqlArgsToMikroOrmQuery } from "@dextinity/cms-api";
 @Resolver(() => ManufacturerCountry)
 @RequiredPermission(["manufacturers"], { skipScopeCheck: true })

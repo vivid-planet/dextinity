@@ -2,9 +2,9 @@
 // You may choose to use this file as scaffold by moving this file out of generated folder and removing this comment.
 import { EntityManager, type FindOptions, type ObjectQuery, Reference } from "@mikro-orm/postgresql";
 import { Args, ID, Mutation, Query, Resolver, ResolveField, Parent } from "@nestjs/graphql";
-import { ProductHighlightInput, ProductHighlightUpdateInput } from "./dto/product-highlight.input";
-import { Product } from "../entities/product.entity";
-import { ProductHighlight } from "../entities/product-highlight.entity";
+import { ProductHighlightInput, ProductHighlightUpdateInput } from "./dto/product-highlight.input.js";
+import { Product } from "../entities/product.entity.js";
+import { ProductHighlight } from "../entities/product-highlight.entity.js";
 import { AffectedEntity, RequiredPermission } from "@dextinity/cms-api";
 @Resolver(() => ProductHighlight)
 @RequiredPermission(["products"], { skipScopeCheck: true })

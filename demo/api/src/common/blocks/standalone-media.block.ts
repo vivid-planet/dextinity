@@ -1,16 +1,16 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { MediaBlock } from "@src/common/blocks/media.block";
-import { MediaAspectRatios } from "@src/util/mediaAspectRatios";
+import { MediaBlock } from "@src/common/blocks/media.block.js";
+import { MediaAspectRatios } from "@src/util/mediaAspectRatios.js";
 import { IsEnum } from "class-validator";
 
 class StandaloneMediaBlockData extends BlockData {

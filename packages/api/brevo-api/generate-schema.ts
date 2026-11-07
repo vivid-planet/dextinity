@@ -5,22 +5,22 @@ import { Field, GraphQLSchemaBuilderModule, GraphQLSchemaFactory, InputType, Obj
 import { writeFile } from "fs/promises";
 import { printSchema } from "graphql";
 
-import { createBrevoConfigResolver } from "./lib/brevo-config/brevo-config.resolver";
-import { BrevoConfigEntityFactory } from "./lib/brevo-config/entities/brevo-config-entity.factory";
-import { createBrevoContactResolver } from "./lib/brevo-contact/brevo-contact.resolver";
-import { createBrevoContactImportResolver } from "./lib/brevo-contact/brevo-contact-import.resolver";
-import { BrevoContactFactory } from "./lib/brevo-contact/dto/brevo-contact.factory";
-import { BrevoContactInputFactory } from "./lib/brevo-contact/dto/brevo-contact-input.factory";
-import { BrevoTestContactInputFactory } from "./lib/brevo-contact/dto/brevo-test-contact-input.factory";
-import { SubscribeInputFactory } from "./lib/brevo-contact/dto/subscribe-input.factory";
-import { EmailCampaignInputFactory } from "./lib/email-campaign/dto/email-campaign-input.factory";
-import { createEmailCampaignsResolver } from "./lib/email-campaign/email-campaign.resolver";
-import { createEmailCampaignEntity } from "./lib/email-campaign/entities/email-campaign-entity.factory";
-import { TargetGroupInputFactory } from "./lib/target-group/dto/target-group-input.factory";
-import { createTargetGroupEntity } from "./lib/target-group/entity/target-group-entity.factory";
-import { createTargetGroupsResolver } from "./lib/target-group/target-group.resolver";
-import { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "./lib/types";
-import { BrevoPermission } from "./lib";
+import { createBrevoConfigResolver } from "./lib/brevo-config/brevo-config.resolver.js";
+import { BrevoConfigEntityFactory } from "./lib/brevo-config/entities/brevo-config-entity.factory.js";
+import { createBrevoContactResolver } from "./lib/brevo-contact/brevo-contact.resolver.js";
+import { createBrevoContactImportResolver } from "./lib/brevo-contact/brevo-contact-import.resolver.js";
+import { BrevoContactFactory } from "./lib/brevo-contact/dto/brevo-contact.factory.js";
+import { BrevoContactInputFactory } from "./lib/brevo-contact/dto/brevo-contact-input.factory.js";
+import { BrevoTestContactInputFactory } from "./lib/brevo-contact/dto/brevo-test-contact-input.factory.js";
+import { SubscribeInputFactory } from "./lib/brevo-contact/dto/subscribe-input.factory.js";
+import { EmailCampaignInputFactory } from "./lib/email-campaign/dto/email-campaign-input.factory.js";
+import { createEmailCampaignsResolver } from "./lib/email-campaign/email-campaign.resolver.js";
+import { createEmailCampaignEntity } from "./lib/email-campaign/entities/email-campaign-entity.factory.js";
+import { TargetGroupInputFactory } from "./lib/target-group/dto/target-group-input.factory.js";
+import { createTargetGroupEntity } from "./lib/target-group/entity/target-group-entity.factory.js";
+import { createTargetGroupsResolver } from "./lib/target-group/target-group.resolver.js";
+import type { BrevoContactFilterAttributesInterface, EmailCampaignScopeInterface } from "./lib/types.js";
+import { BrevoPermission } from "./lib/index.js";
 
 @ObjectType("EmailCampaignContentScope")
 @InputType("EmailCampaignContentScopeInput")

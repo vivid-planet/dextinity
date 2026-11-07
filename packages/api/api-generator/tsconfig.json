@@ -11,7 +11,8 @@
         "strictNullChecks": true,
         "strictPropertyInitialization": false,
         "target": "ES2023",
-        "useDefineForClassFields": false
+        "useDefineForClassFields": false,
+        "verbatimModuleSyntax": true
     },
     "exclude": ["node_modules", "lib"],
     "extends": "../../../tsconfig.core.json",

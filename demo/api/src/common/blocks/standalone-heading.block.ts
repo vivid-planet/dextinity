@@ -1,15 +1,15 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { HeadingBlock } from "@src/common/blocks/heading.block";
+import { HeadingBlock } from "@src/common/blocks/heading.block.js";
 import { IsEnum } from "class-validator";
 
 export enum TextAlignment {

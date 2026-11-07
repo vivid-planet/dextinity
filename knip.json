@@ -102,6 +102,7 @@
         "demo/api": {
             "entry": [
                 "./src/main.ts",
+                "./src/tracing.ts",
                 "./src/content-scope/content-scope.interface.ts",
                 "./src/repl.ts",
                 "./src/db/ormconfig.cli.ts",
@@ -114,6 +115,7 @@
             ],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@as-integrations/express5", "@swc-node/register"],
+            "ignoreUnresolved": ["^\\./dist/"],
             "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
         },
         "demo/site": {

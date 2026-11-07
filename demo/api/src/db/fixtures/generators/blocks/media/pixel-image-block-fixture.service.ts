@@ -1,8 +1,8 @@
-import { ExtractBlockInputFactoryProps, FocalPoint, ImageCropAreaInput, PixelImageBlock } from "@dextinity/cms-api";
+import { type ExtractBlockInputFactoryProps, FocalPoint, type ImageCropAreaInput, type PixelImageBlock } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
+import { faker } from "@src/db/fixtures/faker.js";
 
-import { ImageFixtureService } from "../../image-fixture.service";
+import { ImageFixtureService } from "../../image-fixture.service.js";
 
 @Injectable()
 export class PixelImageBlockFixtureService {

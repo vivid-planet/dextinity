@@ -4,12 +4,12 @@ import { describe, expect, it } from "vitest";
 
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
-    BlockInputInterface,
+    type BlockInputInterface,
     blockInputToData,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
 } from "../../blocks/block.js";
 import { ChildBlock } from "../../blocks/decorators/child-block.js";
 import { ChildBlockInput } from "../../blocks/decorators/child-block-input.js";

@@ -3,16 +3,16 @@ import {
     PageTreeNodeVisibility,
     PageTreeService,
     RequestContext,
-    RequestContextInterface,
+    type RequestContextInterface,
     RequiredPermission,
     validateNotModified,
 } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, ID, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity";
+import type { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
 
-import { MainMenuItemInput } from "./dto/main-menu-item.input";
-import { MainMenuItem } from "./entities/main-menu-item.entity";
+import { MainMenuItemInput } from "./dto/main-menu-item.input.js";
+import { MainMenuItem } from "./entities/main-menu-item.entity.js";
 
 @Resolver(() => MainMenuItem)
 @RequiredPermission(["pageTree"])

@@ -1,6 +1,6 @@
-import { DynamicModule, Global, Module } from "@nestjs/common";
+import { type DynamicModule, Global, Module } from "@nestjs/common";
 
-import { Config } from "./config";
+import type { Config } from "./config.js";
 
 export const CONFIG = "config";
 

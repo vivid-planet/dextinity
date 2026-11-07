@@ -4,9 +4,9 @@ import { Field, InputType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsNullable, PartialType } from "@dextinity/cms-api";
 import { IsEnum, IsNotEmpty, IsString, ValidateNested } from "class-validator";
-import { Address, AddressAsEmbeddable } from "../../entities/manufacturer.entity";
-import { Coordinates } from "../../coordinates.type";
-import { ProductType } from "../../entities/product-type.enum";
+import { Address, AddressAsEmbeddable } from "../../entities/manufacturer.entity.js";
+import { Coordinates } from "../../coordinates.type.js";
+import { ProductType } from "../../entities/product-type.enum.js";
 @InputType()
 export class ManufacturerInput {
     @IsNotEmpty()

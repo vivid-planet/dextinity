@@ -30,6 +30,7 @@ export function ColumnsSelectField({ name, label, columns }: ColumnsSelectFieldP
                 aria-label={messageText(intl, label) ?? intl.formatMessage({ id: "dextinity.blocks.columns.columns", defaultMessage: "Columns" })}
                 aria-labelledby={labelId}
                 options={options}
+                overflow="wrap"
                 format={(value) => (value === undefined ? "" : String(value))}
                 parse={(value) => Number(value)}
             />

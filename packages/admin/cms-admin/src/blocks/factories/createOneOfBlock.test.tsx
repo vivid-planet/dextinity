@@ -92,11 +92,11 @@ describe("createOneOfBlock", () => {
     it("chooses the block with a segmented control", async () => {
         const updateState = renderAdminComponent("toggle", "image");
 
-        expect(screen.getByRole("group", { name: "Media type" })).toBeTruthy();
-        expect(screen.getByRole("button", { name: "Image" }).getAttribute("aria-pressed")).toBe("true");
+        expect(screen.getByRole("radiogroup", { name: "Media type" })).toBeTruthy();
+        expect(screen.getByRole("radio", { name: "Image" }).getAttribute("aria-checked")).toBe("true");
 
         const user = userEvent.setup();
-        await user.click(screen.getByRole("button", { name: "Video" }));
+        await user.click(screen.getByRole("radio", { name: "Video" }));
 
         await waitFor(() => expect(updateState).toHaveBeenCalled());
     });

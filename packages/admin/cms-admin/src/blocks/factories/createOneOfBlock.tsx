@@ -522,14 +522,23 @@ function BlockTypeField({ variant, label, options }: BlockTypeFieldProps) {
 }
 
 const StretchedSegmentedControl = styled("div")`
-    & > *,
-    & [role="group"] {
+    & > * {
         display: flex;
         inline-size: 100%;
     }
 
-    & [aria-pressed] {
-        flex: 1 1 auto;
+    & [role="radiogroup"] {
+        display: flex;
+        min-inline-size: 100%;
+    }
+
+    & [role="radio"] {
+        flex: 1 0 auto;
+    }
+
+    & > [data-collapsed] > button {
+        justify-content: space-between;
+        inline-size: 100%;
     }
 `;
 

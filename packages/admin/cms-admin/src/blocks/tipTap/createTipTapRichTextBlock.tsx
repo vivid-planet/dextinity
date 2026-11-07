@@ -728,7 +728,14 @@ export const TipTapEditor = ({
         extensions,
         content: state.tipTapContent,
         editable: !readOnly,
-        editorProps: { attributes: { "aria-label": accessibleName, "aria-multiline": "true" } },
+        editorProps: {
+            attributes: {
+                role: "textbox",
+                "aria-label": accessibleName,
+                "aria-multiline": "true",
+                ...(readOnly ? { "aria-readonly": "true" } : {}),
+            },
+        },
         onUpdate: ({ editor }) => {
             if (maxTextBlocks !== undefined && editor.state.doc.childCount > maxTextBlocks) {
                 // Remove excess text blocks (e.g. from paste)

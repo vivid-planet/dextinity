@@ -6,6 +6,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { BlockContentEditor, type BlockContentEditorPreview, type BlockContentEditorTab } from "../../blocks/editor/BlockContentEditor";
 import { normalizeSiteAddress } from "../../preview/block/normalizeSiteAddress";
 import type { BlockPreviewApi } from "../../preview/block/useBlockPreview";
+import { usePageEditorContext } from "../treeDetail/PageEditorContext";
 import { PageEditorHeader } from "./PageEditorHeader";
 import { useEditorTabRoute } from "./useEditorTabRoute";
 import { usePageEditorHeader } from "./usePageEditorHeader";
@@ -56,6 +57,7 @@ export function PageContentEditor({ pageId, pageApi, tabs, preview, previewApi, 
     const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
     const translationService = useContentTranslationService();
     const errorDialog = useErrorDialog();
+    const editorContext = usePageEditorContext();
     const [translating, setTranslating] = useState(false);
     const { hasChanges = false, saving, handleSavePage } = pageApi;
     const { selectedKey } = useEditorTabRoute(tabs.map((tab) => tab.key));
@@ -110,6 +112,13 @@ export function PageContentEditor({ pageId, pageApi, tabs, preview, previewApi, 
 
     const menuItems = (
         <>
+            {editorContext != null && (
+                <MenuItem
+                    label={intl.formatMessage({ id: "dextinity.pageEditor.pageProperties", defaultMessage: "Page properties" })}
+                    icon={<Icon name="settings" />}
+                    onClick={editorContext.openPageProperties}
+                />
+            )}
             {openSitePreview && (
                 <MenuItem
                     label={intl.formatMessage({ id: "dextinity.pageEditor.sitePreview", defaultMessage: "Site preview" })}

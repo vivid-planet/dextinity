@@ -657,10 +657,12 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         onSelectionChange([]);
     };
 
-    // Opens a folder on the path of a search result and selects what leads to the result: the result itself or a subfolder
+    // Opens a folder on the path of a search result and selects what leads to the result: the result itself or a subfolder. A result
+    // without a parent folder only ends the search
     const revealResult = (result: Item, targetFolderId = containerOf(result)) => {
         const containerId = containerOf(result);
         if (containerId == null || targetFolderId == null) {
+            onSearchChange?.("");
             return;
         }
         const resultPath = ancestorsOf(containerId);

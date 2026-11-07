@@ -679,7 +679,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
 
     /**
      * Saves the draft, or `value` instead, and ends editing. An invalid value keeps the editor open with it, or with `discardInvalid`
-     * drops it. Returns whether editing ended.
+     * drops it and announces why. Returns whether editing ended.
      */
     const commitEditing = (value?: unknown, { discardInvalid = false } = {}): boolean => {
         const current = editingRef.current;
@@ -697,6 +697,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
         if (result.error != null) {
             if (discardInvalid) {
                 setEditingCell(undefined);
+                announce(result.error);
                 return true;
             }
             setEditingCell({ ...current, draft });

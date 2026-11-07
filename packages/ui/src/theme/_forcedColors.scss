@@ -45,6 +45,15 @@ $-swappable: (
     }
 }
 
+/// The backdrop behind a modal layer, e.g. a dialog or a drawer. Forced colors keep only the alpha of its tinted background, which
+/// hardly sets the page apart from the layer, so it covers the page with the canvas color instead.
+@mixin backdrop {
+    @media (forced-colors: active) {
+        background: Canvas;
+        opacity: 0.75;
+    }
+}
+
 /// A selected, checked, or current item, e.g. the active segment or a selected row.
 @mixin selected {
     @media (forced-colors: active) {

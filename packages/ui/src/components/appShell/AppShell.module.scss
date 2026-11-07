@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     position: relative;
     isolation: isolate;
@@ -160,6 +162,8 @@
     z-index: 900;
     background: var(--dextinity-app-shell-backdrop);
     transition: opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    @include forced-colors.backdrop;
 
     &[data-starting-style],
     &[data-ending-style] {

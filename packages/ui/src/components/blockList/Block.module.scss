@@ -121,8 +121,9 @@
 
     --dextinity-icon-size: 16px;
 
-    .root:hover &,
-    .root:focus-within & {
+    // Only the block's own grip: a nested block's grip shows when that block is hovered
+    .root:hover > .header > &,
+    .root:focus-within > .header > & {
         opacity: 1;
     }
 
@@ -137,7 +138,7 @@
     }
 }
 
-.root:not(:has(.grip, .checkbox)) .header {
+.root:not(:has(> .header > :is(.grip, .checkbox))) > .header {
     padding-inline-start: 10px;
 }
 
@@ -266,7 +267,7 @@
 .toggleIcon {
     transition: transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
 
-    .root:not([data-expanded]) & {
+    .root:not([data-expanded]) > .header & {
         transform: rotate(-90deg);
     }
 }

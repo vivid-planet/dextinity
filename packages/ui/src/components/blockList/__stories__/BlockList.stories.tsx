@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { expect, fn, userEvent, waitFor } from "storybook/test";
+import { expect, fireEvent, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
@@ -297,10 +297,146 @@ export const PreviewSync: Story = {
     args: { onAdd: undefined, onReorder: undefined },
     render: (args) => <PreviewSyncBlockList {...args} />,
     play: async ({ canvas, canvasElement }) => {
-        await userEvent.click(canvas.getByRole("button", { name: "Section 12" }));
+        await userEvent.click(canvas.getByRole("radio", { name: "Section 12" }));
         const block = canvasElement.querySelector<HTMLElement>('[data-block-key="block-12"]');
         await expect(block).toHaveAttribute("data-selected");
         const scroller = block?.closest<HTMLElement>(`.${styles.scroller}`);
         await waitFor(() => expect(scroller?.scrollTop).toBeGreaterThan(0));
+    },
+};
+
+interface NestedColumn {
+    id: string;
+    title: string;
+    blocks: SampleBlock[];
+}
+
+const initialColumns: NestedColumn[] = [
+    {
+        id: "left",
+        title: "Left column",
+        blocks: [
+            { id: "left-heading", title: "Our values", summary: "Heading", icon: <Icon name="rte-heading" />, visible: true },
+            { id: "left-text", title: "We build for people", summary: "Text", icon: <Icon name="edit-record" />, visible: true },
+            { id: "left-image", title: "Team at work", summary: "Image", icon: <Icon name="image" />, visible: true },
+        ],
+    },
+    {
+        id: "right",
+        title: "Right column",
+        blocks: [{ id: "right-quote", title: "“Best team ever”", summary: "Quote", icon: <Icon name="edit-record" />, visible: true }],
+    },
+];
+
+/** Keeps the story controlled: the outer order, each column's blocks, and the expanded blocks live in local state. */
+function NestedBlockList(listProps: BlockListProps) {
+    const [columns, setColumns] = useState(initialColumns);
+    const [expandedIds, setExpandedIds] = useState(["left"]);
+    const updateBlocks = (columnId: string, update: (blocks: SampleBlock[]) => SampleBlock[]) =>
+        setColumns((current) => current.map((column) => (column.id === columnId ? { ...column, blocks: update(column.blocks) } : column)));
+
+    return (
+        <div className={styles.container}>
+            <BlockList
+                {...listProps}
+                onReorder={(fromIndex, toIndex) => {
+                    listProps.onReorder?.(fromIndex, toIndex);
+                    setColumns((current) => moveItem(current, fromIndex, toIndex));
+                }}
+                onAdd={undefined}
+            >
+                {columns.map((column) => (
+                    <Block
+                        key={column.id}
+                        title={column.title}
+                        summary={`Column · ${column.blocks.length === 1 ? "1 block" : `${column.blocks.length} blocks`}`}
+                        icon={<Icon name="columns-3" />}
+                        visible
+                        expanded={expandedIds.includes(column.id)}
+                        onExpandedChange={(expanded) =>
+                            setExpandedIds((current) => (expanded ? [...current, column.id] : current.filter((id) => id !== column.id)))
+                        }
+                    >
+                        <BlockList
+                            aria-label={`Blocks of ${column.title}`}
+                            onReorder={(fromIndex, toIndex) => updateBlocks(column.id, (blocks) => moveItem(blocks, fromIndex, toIndex))}
+                            onAdd={(index) =>
+                                updateBlocks(column.id, (blocks) => [
+                                    ...blocks.slice(0, index),
+                                    {
+                                        id: `${column.id}-${Date.now()}`,
+                                        title: "New text",
+                                        summary: "Text",
+                                        icon: <Icon name="rte-heading" />,
+                                        visible: true,
+                                    },
+                                    ...blocks.slice(index),
+                                ])
+                            }
+                        >
+                            {column.blocks.map((block) => (
+                                <Block key={block.id} title={block.title} summary={block.summary} icon={block.icon} visible={block.visible} />
+                            ))}
+                        </BlockList>
+                    </Block>
+                ))}
+            </BlockList>
+        </div>
+    );
+}
+
+function titlesOf(list: HTMLElement) {
+    return within(list)
+        .getAllByRole("listitem")
+        .filter((item) => item.parentElement === list)
+        .map((item) => item.querySelector("[class*='title']")?.textContent)
+        .filter((title) => title != null);
+}
+
+/**
+ * A block's fields can hold a `BlockList` of its own, e.g. the blocks of a column, with its own insert buttons and moving. Each list
+ * moves only its own blocks, by keyboard and by dragging; a block dragged over a nested list lands in the list it came from.
+ */
+export const NestedBlocks: Story = {
+    render: (args) => <NestedBlockList {...args} />,
+    play: async ({ args, canvas }) => {
+        const outer = canvas.getByRole("list", { name: "Blocks" });
+        const nested = canvas.getByRole("list", { name: "Blocks of Left column" });
+
+        // The keyboard moves a nested block within its column
+        within(nested).getAllByRole("button", { name: "Move" })[0].focus();
+        await userEvent.keyboard("{ArrowDown}");
+        await waitFor(() => expect(titlesOf(nested)).toStrictEqual(["We build for people", "Our values", "Team at work"]));
+        await expect(args.onReorder).not.toHaveBeenCalled();
+        await waitFor(() => expect(within(nested).getAllByRole("button", { name: "Move" })[1]).toHaveFocus());
+
+        // Dragging a nested block within its column
+        const dataTransfer = new DataTransfer();
+        const nestedItems = () =>
+            within(nested)
+                .getAllByRole("listitem")
+                .filter((item) => item.parentElement === nested && item.querySelector("[class*='title']"));
+        fireEvent.dragStart(within(nestedItems()[2]).getByRole("button", { name: "Move" }), { dataTransfer });
+        const target = nestedItems()[0];
+        const rect = target.getBoundingClientRect();
+        fireEvent.dragOver(target, { dataTransfer, clientX: rect.left + 10, clientY: rect.top + 2 });
+        fireEvent.drop(target, { dataTransfer, clientX: rect.left + 10, clientY: rect.top + 2 });
+        await waitFor(() => expect(titlesOf(nested)).toStrictEqual(["Team at work", "We build for people", "Our values"]));
+        await expect(args.onReorder).not.toHaveBeenCalled();
+
+        // An outer block dragged over a nested block moves in the outer list
+        const outerItems = () =>
+            within(outer)
+                .getAllByRole("listitem")
+                .filter((item) => item.parentElement === outer);
+        fireEvent.dragStart(within(outerItems()[1]).getAllByRole("button", { name: "Move" })[0], { dataTransfer });
+        const nestedTarget = nestedItems()[0];
+        const nestedRect = nestedTarget.getBoundingClientRect();
+        fireEvent.dragOver(nestedTarget, { dataTransfer, clientX: nestedRect.left + 10, clientY: nestedRect.top + 2 });
+        await waitFor(() => expect(outerItems()[0]).toHaveAttribute("data-drop", "before"));
+        await expect(nestedTarget).not.toHaveAttribute("data-drop");
+        fireEvent.drop(nestedTarget, { dataTransfer, clientX: nestedRect.left + 10, clientY: nestedRect.top + 2 });
+        await waitFor(() => expect(args.onReorder).toHaveBeenLastCalledWith(1, 0));
+        await expect(titlesOf(outer)).toStrictEqual(["Right column", "Left column"]);
     },
 };

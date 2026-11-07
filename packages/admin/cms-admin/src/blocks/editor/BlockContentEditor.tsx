@@ -186,4 +186,9 @@ const TabContent = styled("div")`
     min-block-size: 0;
     overflow: hidden auto;
     padding: var(--dextinity-panel-padding);
+
+    // A form without a preview spans the page, where the narrow padding of the side panel looks cramped
+    [data-variant="form"] & {
+        padding: var(--dextinity-edit-layout-gap);
+    }
 `;

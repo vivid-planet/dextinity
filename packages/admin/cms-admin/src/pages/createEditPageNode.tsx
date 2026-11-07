@@ -1,7 +1,7 @@
 import { gql, useApolloClient, useQuery } from "@apollo/client";
 import { ErrorScope } from "@dextinity/admin";
-import { Banner, Dialog, DialogFormActions, Skeleton } from "@dextinity/ui";
-import { focusOnError, InputField, SelectField, SwitchField } from "@dextinity/ui-react-final-form";
+import { Banner, Dialog, DialogFormActions, FieldActions, Skeleton } from "@dextinity/ui";
+import { type FieldAdapterActions, focusOnError, InputField, SelectField, SwitchField } from "@dextinity/ui-react-final-form";
 import { styled } from "@mui/material/styles";
 import { FORM_ERROR, type Mutator } from "final-form";
 import setFieldTouched from "final-form-set-field-touched";
@@ -12,6 +12,9 @@ import { Form } from "react-final-form";
 import { useIntl } from "react-intl";
 import { useDebounce } from "use-debounce";
 
+import { BlockInputField } from "../blocks/form/BlockInputField";
+import { messageText } from "../blocks/form/messageText";
+import { useContentTranslationFieldActionsProps } from "../blocks/form/useContentTranslationFieldActions";
 import { useContentLanguage } from "../contentLanguage/useContentLanguage";
 import type { DocumentInterface, DocumentType } from "../documents/types";
 import { SyncFields } from "../form/SyncFields";
@@ -274,8 +277,23 @@ function EditPageNodeForm({
     const documentTypeOptions = Object.keys(documentTypes).map((type) => ({
         value: type,
         label: documentTypes[type].displayName,
-        textValue: type,
+        textValue: messageText(intl, documentTypes[type].displayName) ?? type,
     }));
+
+    const getTranslationActionsProps = useContentTranslationFieldActionsProps();
+    const slugTranslationActions: FieldAdapterActions<string> | undefined = getTranslationActionsProps
+        ? (context) => (
+              <FieldActions
+                  {...getTranslationActionsProps({
+                      value: (context.value ?? "").replace(/[-_]+/g, " "),
+                      setValue: (translatedSlug) => {
+                          setManuallyChangedSlug(true);
+                          context.setValue(transformToSlug(translatedSlug, language));
+                      },
+                  })}
+              />
+          )
+        : undefined;
 
     useEffect(() => {
         apollo.cache.evict({ fieldName: "pageTreeNodeSlugAvailable" });
@@ -456,7 +474,7 @@ function EditPageNodeForm({
                     )}
                     {submitError != null && <Banner tone="error">{submitError}</Banner>}
                     <FormSection>
-                        <InputField
+                        <BlockInputField
                             name="name"
                             label={intl.formatMessage({ id: "dextinity.pages.pages.page.name", defaultMessage: "Name" })}
                             required
@@ -469,6 +487,7 @@ function EditPageNodeForm({
                                 required
                                 validate={debouncedValidateSlug}
                                 onInput={() => setManuallyChangedSlug(true)}
+                                actions={slugTranslationActions}
                                 helperText={
                                     values.slug
                                         ? intl.formatMessage(

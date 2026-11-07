@@ -4,6 +4,7 @@ import { parseISO } from "date-fns";
 import { FormattedDate, FormattedTime, useIntl } from "react-intl";
 import { useRouteMatch } from "react-router";
 
+import { useVisibleDocumentPolling } from "../common/polling/useVisibleDocumentPolling";
 import { useContentScope } from "../contentScope/Provider";
 import { useContentScopeConfig } from "../contentScope/useContentScopeConfig";
 import { JobRuntime } from "../cronJobs/JobRuntime";
@@ -60,7 +61,8 @@ export function PublisherPage() {
     useContentScopeConfig({ redirectPathAfterChange: routeMatch.url.replace(match.url, "") });
     const { labels: dataGridLabels } = useDataGridLabels();
 
-    const { data, loading, error } = useQuery<GQLBuildsQuery>(buildsQuery, { pollInterval: buildsPollInterval });
+    const { data, loading, error, refetch, startPolling, stopPolling } = useQuery<GQLBuildsQuery>(buildsQuery);
+    useVisibleDocumentPolling({ pollInterval: buildsPollInterval, refetch, startPolling, stopPolling });
 
     if (error) {
         throw error;

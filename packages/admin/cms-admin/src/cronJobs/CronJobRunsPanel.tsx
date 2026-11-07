@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { FormattedDate, useIntl } from "react-intl";
 import { Link as RouterLink } from "react-router-dom";
 
+import { useVisibleDocumentPolling } from "../common/polling/useVisibleDocumentPolling";
 import type {
     GQLKubernetesCronJobQuery,
     GQLKubernetesCronJobQueryVariables,
@@ -124,10 +125,11 @@ export function CronJobRunsPanel({ cronJobName, jobName, runsUrl, logsUrl, onClo
 
 function JobRuns({ cronJobName, logsUrl }: { cronJobName: string; logsUrl: (jobName: string) => string }) {
     const intl = useIntl();
-    const { data, loading, error } = useQuery<GQLKubernetesJobsQuery, GQLKubernetesJobsQueryVariables>(jobsQuery, {
-        variables: { cronJobName },
-        pollInterval: jobsPollInterval,
-    });
+    const { data, loading, error, refetch, startPolling, stopPolling } = useQuery<GQLKubernetesJobsQuery, GQLKubernetesJobsQueryVariables>(
+        jobsQuery,
+        { variables: { cronJobName } },
+    );
+    useVisibleDocumentPolling({ pollInterval: jobsPollInterval, refetch, startPolling, stopPolling });
 
     if (error) {
         throw error;
@@ -175,10 +177,11 @@ function JobRuns({ cronJobName, logsUrl }: { cronJobName: string; logsUrl: (jobN
 function JobLogs({ jobName }: { jobName: string }) {
     const intl = useIntl();
     const [isPolling, setIsPolling] = useState(false);
-    const { data, loading, error } = useQuery<GQLKubernetesJobWithLogsQuery, GQLKubernetesJobWithLogsQueryVariables>(jobWithLogsQuery, {
-        variables: { name: jobName },
-        pollInterval: isPolling ? runningJobLogsPollInterval : 0,
-    });
+    const { data, loading, error, refetch, startPolling, stopPolling } = useQuery<
+        GQLKubernetesJobWithLogsQuery,
+        GQLKubernetesJobWithLogsQueryVariables
+    >(jobWithLogsQuery, { variables: { name: jobName } });
+    useVisibleDocumentPolling({ pollInterval: isPolling ? runningJobLogsPollInterval : 0, refetch, startPolling, stopPolling });
     const isRunning = data?.kubernetesJob.status === "active" || data?.kubernetesJob.status === "pending";
 
     useEffect(() => {

@@ -10,7 +10,7 @@ It builds on an unstyled foundation rather than evolving the MUI-based component
 - **[`AGENTS.md`](AGENTS.md)** adds only what AI agents need and people don't.
 - **The [Storybook](https://next--6adb09e1f667e1e0e9a4a772.chromatic.com)** is for developers who use the package: its docs pages, and the component docs built from TSDoc and stories.
 
-When this README needs something that the Storybook already explains, it links to the explanation instead of repeating it.
+When this README needs something that the Storybook already explains, it links to the explanation instead of repeating it. A change to a convention updates this README in the same change.
 
 ## Experimental
 
@@ -165,6 +165,17 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 The tag is `development` rather than `dev` because Storybook already uses `dev` as a built-in tag on every story.
 
 A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
+
+## Development
+
+The package has two dev-pm scripts:
+
+| Name                     | What it does                                                      |
+| ------------------------ | ----------------------------------------------------------------- |
+| `dextinity-ui`           | `vite build --watch` and `tsc --watch` — rebuild `lib/` on change |
+| `storybook-dextinity-ui` | `storybook dev -p 26648 --no-open`                                |
+
+The `@dextinity-ui` group starts `dextinity-ui`. Start `storybook-dextinity-ui` on its own, or with the `@storybook` group. The Storybook then runs at `http://localhost:26648`.
 
 ## Testing
 

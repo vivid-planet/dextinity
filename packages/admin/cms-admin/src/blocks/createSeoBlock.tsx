@@ -243,7 +243,7 @@ export function createSeoBlock(
                             {({ fields }) => (
                                 <Fields>
                                     {fields.map((link, index) => (
-                                        <AlternativeLinkRow key={link}>
+                                        <AlternativeLinkRow key={link} data-repeated={index > 0 ? "" : undefined}>
                                             <InputField
                                                 label={intl.formatMessage({
                                                     id: "dextinity.blocks.seo.alternativeLinks.code",
@@ -349,11 +349,21 @@ const CollapsibleFields = styled(Fields)`
     border-block-start: var(--dextinity-line-width) solid var(--dextinity-color-line);
 `;
 
+// Only the first row shows the labels, like the header of a table; the other rows keep them for screen readers
 const AlternativeLinkRow = styled("div")`
     display: grid;
     grid-template-columns: minmax(6rem, 1fr) 3fr auto;
     align-items: start;
     gap: var(--dextinity-space-3);
+
+    &[data-repeated] div:has(> label) {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
 `;
 
 // Aligns the button with the inputs below their labels
@@ -362,4 +372,8 @@ const AlternativeLinkRemoveButton = styled("div")`
     align-items: center;
     min-block-size: var(--dextinity-field-height);
     margin-block-start: calc(18px + var(--dextinity-field-gap));
+
+    [data-repeated] > & {
+        margin-block-start: 0;
+    }
 `;

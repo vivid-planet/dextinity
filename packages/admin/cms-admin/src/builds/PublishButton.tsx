@@ -1,34 +1,24 @@
-import { Button } from "@dextinity/admin";
-import { styled } from "@mui/material/styles";
+import { Button, type ButtonProps, Icon } from "@dextinity/ui";
 import { useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { useIntl } from "react-intl";
 
 import { StartBuildsDialog } from "./StartBuildsDialog";
 
-export const PublishButton = () => {
+export function PublishButton(props: Omit<ButtonProps, "onClick" | "children">) {
+    const intl = useIntl();
     const [isStartBuildsDialogOpen, setIsStartBuildsDialogOpen] = useState(false);
 
-    const handlePublishClick = () => {
-        setIsStartBuildsDialogOpen(true);
-    };
-
     return (
-        <Root>
-            <Button onClick={handlePublishClick} disabled={process.env.NODE_ENV === "development"} fullWidth>
-                <FormattedMessage id="dextinity.pages.publisher.build" defaultMessage="Start builds" />
+        <>
+            <Button
+                startIcon={<Icon name="play" />}
+                disabled={process.env.NODE_ENV === "development"}
+                {...props}
+                onClick={() => setIsStartBuildsDialogOpen(true)}
+            >
+                {intl.formatMessage({ id: "dextinity.pages.publisher.build", defaultMessage: "Start builds" })}
             </Button>
-            <StartBuildsDialog
-                open={isStartBuildsDialogOpen}
-                onClose={() => {
-                    setIsStartBuildsDialogOpen(false);
-                }}
-            />
-        </Root>
+            <StartBuildsDialog open={isStartBuildsDialogOpen} onClose={() => setIsStartBuildsDialogOpen(false)} />
+        </>
     );
-};
-
-const Root = styled("div")`
-    position: relative;
-    width: 100%;
-    margin: ${({ theme }) => theme.spacing(1)};
-`;
+}

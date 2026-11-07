@@ -10,7 +10,7 @@ import { BlockListItemContext, type BlockListItemContextValue } from "./blockLis
 export interface BlockListLabels {
     /** The button at the end of the list. */
     add: string;
-    /** The accessible name of the buttons between blocks. */
+    /** The accessible name of the buttons before and between blocks. */
     insert: string;
 }
 
@@ -30,7 +30,7 @@ export type BlockListOwnerState = {
 export interface BlockListSlotProps {
     /** Props for the `header` slot, the row that holds `header`. */
     header?: SlotPropsValue<BlockListOwnerState, "li">;
-    /** Props for the `insertButton` slot, the button between two blocks. */
+    /** Props for each `insertButton` slot, the button before the first block and between two blocks. */
     insertButton?: SlotPropsValue<BlockListOwnerState, "button">;
     /** Props for the `addButton` slot, the button at the end of the list. */
     addButton?: SlotPropsValue<BlockListOwnerState, "button">;
@@ -48,7 +48,10 @@ export interface BlockListProps extends Omit<HTMLAttributes<HTMLUListElement>, "
      * blocks can't be moved.
      */
     onReorder?: (fromIndex: number, toIndex: number) => void;
-    /** Called with the index a new block should go to, from the buttons between blocks and at the end. Without it, there are none. */
+    /**
+     * Called with the index a new block should go to, from the buttons before the first block, between blocks, and at the end. Without it,
+     * there are none.
+     */
     onAdd?: (index: number) => void;
     /** The built-in texts. */
     labels?: Partial<BlockListLabels>;
@@ -64,7 +67,7 @@ interface DropTarget {
 }
 
 /**
- * The blocks of a page in their order: move them by dragging or with the keyboard, and add new ones between them or at the end.
+ * The blocks of a page in their order: move them by dragging or with the keyboard, and add new ones before, between, or after them.
  */
 export const BlockList = forwardRef<HTMLUListElement, BlockListProps>(function BlockList(
     { children, header, onReorder, onAdd, labels: labelsProp, className, slotProps, ...restProps },
@@ -176,7 +179,7 @@ export const BlockList = forwardRef<HTMLUListElement, BlockListProps>(function B
             {header != null && <li {...headerProps}>{header}</li>}
             {blocks.map((block, index) => (
                 <BlockListItemContext.Provider key={block.key ?? index} value={createItemContext(index)}>
-                    {ownerState.addable && index > 0 && (
+                    {ownerState.addable && (
                         <li role="none" className={styles.insert}>
                             <Tooltip content={labels.insert}>
                                 <button {...getInsertButtonProps(index)}>

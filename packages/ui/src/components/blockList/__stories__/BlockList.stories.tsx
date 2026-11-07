@@ -113,8 +113,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Drag a block by its grip, or focus the grip and press the arrow keys (Home and End move to the top and bottom). Hover between
- * two blocks to insert one there.
+ * Drag a block by its grip, or focus the grip and press the arrow keys (Home and End move to the top and bottom). Hover above the
+ * first block or between two blocks to insert one there.
  *
  * **Rules**
  *
@@ -146,13 +146,15 @@ export const Static: Story = {
 };
 
 /**
- * The insert buttons between blocks pass the index the new block goes to.
+ * The insert buttons before the first block and between blocks pass the index the new block goes to.
  */
 export const InsertBetween: Story = {
     play: async ({ args, canvas }) => {
-        const [firstInsert] = canvas.getAllByRole("button", { name: "Insert block here" });
-        await userEvent.click(firstInsert);
+        const [beforeFirst, betweenFirstAndSecond] = canvas.getAllByRole("button", { name: "Insert block here" });
+        await userEvent.click(betweenFirstAndSecond);
         await waitFor(() => expect(args.onAdd).toHaveBeenLastCalledWith(1));
+        await userEvent.click(beforeFirst);
+        await waitFor(() => expect(args.onAdd).toHaveBeenLastCalledWith(0));
     },
 };
 

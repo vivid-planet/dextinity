@@ -44,7 +44,7 @@ export function BlockPreviewPane({ url, previewState, previewApi, siteUrl, onOpe
             devices={previewDevices}
             loading={!iFrameBridge.iFrameReady}
             labels={labels}
-            slotProps={{ iframe: { ref: iFrameBridge.iFrameRef } }}
+            slotProps={{ iframe: { ref: iFrameBridge.iFrameRef, onLoad: iFrameBridge.onIFrameLoad } }}
             actions={
                 <>
                     <VisibilityToggle showOnlyVisible={previewApi.showOnlyVisible} onChange={previewApi.setShowOnlyVisible} />

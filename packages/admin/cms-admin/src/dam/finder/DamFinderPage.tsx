@@ -31,7 +31,7 @@ import { CurrentDamFolderProvider } from "../CurrentDamFolderProvider";
 import { ManualDuplicatedFilenamesHandlerContextProvider } from "../DataGrid/duplicatedFilenames/ManualDuplicatedFilenamesHandler";
 import { FileUploadContextProvider, useFileUploadContext } from "../DataGrid/fileUpload/FileUploadContext";
 import { useDamFileUpload } from "../DataGrid/fileUpload/useDamFileUpload";
-import { createAssetBrowserLabels } from "./createAssetBrowserLabels";
+import { createAssetBrowserLabels, formatLimitedResultCount } from "./createAssetBrowserLabels";
 import { DamFinderFileDetails, DamFinderFolderDetails, DamFinderSelectionDetails } from "./DamFinderDetails";
 import type { DamFinderUnsavedChanges } from "./DamFinderFormState";
 import { damFinderRootFolderId, getDamFinderLicenseStatus, getFileExtension, toAssetBrowserAsset, toAssetBrowserFolder } from "./damFinderItems";
@@ -75,11 +75,13 @@ import type {
 import { DetailsColumn, FinderBody, FinderDropzone } from "./DamFinderPage.sc";
 import { DamFinderQuickLookPreview } from "./DamFinderQuickLookPreview";
 import { DamFinderFilterMenu, type DamFinderLicenseFilter, DamFinderSelectionMenu } from "./DamFinderToolbarMenus";
+import { LoadMoreSearchResultsButton } from "./LoadMoreSearchResultsButton";
 import { useDamFinderFiles } from "./useDamFinderFiles";
 import { useDamFinderWindowHeight } from "./useDamFinderWindowHeight";
+import { useLoadMoreSearchResults } from "./useLoadMoreSearchResults";
 
 const folderParam = "folder";
-const searchResultLimit = 100;
+const searchPageSize = 100;
 
 export interface DamFinderPageProps {
     /** The title of the page header. */
@@ -156,6 +158,7 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
     const [isNewFolderDialogOpen, setIsNewFolderDialogOpen] = useState(false);
     const [detailsUnsavedChanges, setDetailsUnsavedChanges] = useState<DamFinderUnsavedChanges>();
     const [pendingSelectedIds, setPendingSelectedIds] = useState<string[]>();
+    const [scrollToItemId, setScrollToItemId] = useState<string>();
     const layoutRef = useRef<HTMLDivElement>(null);
     const windowContentRef = useRef<HTMLDivElement>(null);
     const layoutStyle = useDamFinderWindowHeight({ layoutRef, windowContentRef });
@@ -189,10 +192,11 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
     const { filesByFolderId, loadingFolderIds, error: filesError, reload } = useDamFinderFiles(pathFolderIds, { includeArchived: showArchived });
 
     const searchQuery = useQuery<GQLDamFinderSearchQuery, GQLDamFinderSearchQueryVariables>(damFinderSearchQuery, {
-        variables: { scope, searchText: debouncedSearch, includeArchived: showArchived, limit: searchResultLimit },
+        variables: { scope, searchText: debouncedSearch, includeArchived: showArchived, limit: searchPageSize },
         skip: debouncedSearch === "",
         fetchPolicy: "network-only",
     });
+    const searchPaging = useLoadMoreSearchResults(searchQuery, searchPageSize);
     const isSearching = search.trim() !== "";
     const isSearchLoading = isSearching && (debouncedSearch !== search.trim() || searchQuery.loading);
     const searchFiles = useMemo(
@@ -246,6 +250,7 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
     const selectedFile = selectedIds.length === 1 ? fileById.get(selectedIds[0]) : undefined;
     const selectedFolder = selectedIds.length === 1 ? damFolderById.get(selectedIds[0]) : undefined;
 
+    const assetBrowserLabels = createAssetBrowserLabels(intl);
     const undoLabel = intl.formatMessage({ id: "dextinity.damFinder.undo", defaultMessage: "Undo" });
     const showError = useCallback((message: string) => addToast({ message, tone: "error" }), [addToast]);
 
@@ -302,6 +307,7 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
             const idsInCurrentFolder = uploadedItems.filter((item) => (item.parentId ?? damFinderRootFolderId) === folderId).map((item) => item.id);
             if (idsInCurrentFolder.length > 0) {
                 setSelectedIds(idsInCurrentFolder);
+                setScrollToItemId(idsInCurrentFolder[0]);
             }
         });
         // Reacts only to new uploads; the folder and the loaders are read at that moment
@@ -710,6 +716,7 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
                             onQuickLook={(asset) => openQuickLook(asset.id)}
                             onMove={handleMove}
                             onDelete={setPendingDeleteIds}
+                            scrollToItemId={scrollToItemId}
                             search={search}
                             onSearchChange={setSearch}
                             searchResults={searchResults}
@@ -721,6 +728,9 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
                                             size="small"
                                             aria-label={intl.formatMessage({ id: "dextinity.damFinder.loading", defaultMessage: "Loading" })}
                                         />
+                                    )}
+                                    {isSearching && !isSearchLoading && searchPaging.hasMore && (
+                                        <LoadMoreSearchResultsButton onClick={searchPaging.loadMore} loading={searchPaging.isLoadingMore} />
                                     )}
                                     <DamFinderFilterMenu
                                         showArchived={showArchived}
@@ -740,7 +750,13 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
                                     />
                                 </>
                             }
-                            labels={createAssetBrowserLabels(intl)}
+                            labels={{
+                                ...assetBrowserLabels,
+                                resultCount: (count) =>
+                                    searchPaging.hasMore
+                                        ? formatLimitedResultCount(intl, searchPaging.loadedCount, searchPaging.totalCount)
+                                        : (assetBrowserLabels.resultCount?.(count) ?? ""),
+                            }}
                         />
                         <DetailsColumn>{renderDetails()}</DetailsColumn>
                     </FinderBody>

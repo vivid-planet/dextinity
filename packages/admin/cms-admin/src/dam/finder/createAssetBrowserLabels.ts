@@ -34,3 +34,10 @@ export function createAssetBrowserLabels(intl: IntlShape): Partial<AssetBrowserL
             ),
     };
 }
+
+export function formatLimitedResultCount(intl: IntlShape, loadedCount: number, totalCount: number) {
+    return intl.formatMessage(
+        { id: "dextinity.damFinder.limitedResultCount", defaultMessage: "First {count} of {total} results" },
+        { count: loadedCount, total: totalCount },
+    );
+}

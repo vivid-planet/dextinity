@@ -84,12 +84,12 @@ export const moveDamFinderFoldersMutation = gql`
 `;
 
 export const damFinderSearchQuery = gql`
-    query DamFinderSearch($scope: DamScopeInput!, $searchText: String!, $includeArchived: Boolean!, $limit: Int!) {
+    query DamFinderSearch($scope: DamScopeInput!, $searchText: String!, $includeArchived: Boolean!, $offset: Int = 0, $limit: Int!) {
         damFilesList(
             scope: $scope
             filter: { searchText: $searchText }
             includeArchived: $includeArchived
-            offset: 0
+            offset: $offset
             limit: $limit
             sortColumnName: "name"
         ) {

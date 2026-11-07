@@ -1,0 +1,34 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as ActionsStories from "./__stories__/Actions.stories";
+
+<Meta title="Patterns/Actions" />
+
+# Actions
+
+How to choose the button for an action, and how to show that an action runs.
+
+## When to use which component
+
+- [`Button`](?path=/docs/components-button--docs): an action with a visible label.
+- [`IconButton`](?path=/docs/components-iconbutton--docs): an action in a toolbar or a table row, where an icon is enough. Give it an `aria-label` that names the action.
+
+## Main action
+
+- Give a view or a dialog only one `contained` button, for its main action.
+- Other actions use `variant="outlined"` and `color="secondary"`.
+- Put the main action last.
+
+<Canvas of={ActionsStories.MainAction} />
+
+## Icon buttons
+
+Use `variant="text"` and `color="secondary"`. For a destructive action, such as Delete, set `color="error"`.
+
+<Canvas of={ActionsStories.IconButtons} />
+
+## Loading
+
+While an action runs, set `loading` on its button, not `disabled`, and keep the label.
+
+<Canvas of={ActionsStories.Loading} />

@@ -9,7 +9,6 @@ const emailCampaignsListFragment = gql`
         sendingState
         scheduledAt
         brevoId
-        content
         brevoTargetGroups {
             id
             title
@@ -51,6 +50,15 @@ export const emailCampaignsListQuery = gql`
 export const deleteEmailCampaignMutation = gql`
     mutation DeleteEmailCampaign($id: ID!) {
         deleteBrevoEmailCampaign(id: $id)
+    }
+`;
+
+export const emailCampaignContentQuery = gql`
+    query EmailCampaignContent($id: ID!) {
+        brevoEmailCampaign(id: $id) {
+            id
+            content
+        }
     }
 `;
 

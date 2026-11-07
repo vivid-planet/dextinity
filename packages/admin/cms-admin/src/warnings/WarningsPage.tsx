@@ -372,12 +372,12 @@ export function WarningsPage({ showAllScopes = false }: WarningsPageProps) {
                             ))}
                         </MenuRadioGroup>
                     </Menu>
-                    {typeOptions.length > 0 && (
+                    {(typeOptions.length > 0 || filters.type !== "") && (
                         <Menu
                             {...filterMenuProps("type")}
                             trigger={
                                 <FilterChip selected={filters.type !== ""} hasMenu onClick={() => undefined}>
-                                    {typeLabel}
+                                    {filters.type !== "" ? `${typeLabel}: ${selectedTypeLabel}` : typeLabel}
                                 </FilterChip>
                             }
                         >
@@ -431,18 +431,6 @@ export function WarningsPage({ showAllScopes = false }: WarningsPageProps) {
                     >
                         {intl.formatMessage({ id: "dextinity.warnings.filter.visibleOnly", defaultMessage: "Visible only" })}
                     </FilterChip>
-                    {filters.type !== "" && (
-                        <Chip
-                            color="secondary"
-                            onClear={() => listState.setFilter("type", "")}
-                            clearLabel={intl.formatMessage(
-                                { id: "dextinity.warnings.filter.removeType", defaultMessage: "Remove filter Type: {type}" },
-                                { type: selectedTypeLabel },
-                            )}
-                        >
-                            {`${typeLabel}: ${selectedTypeLabel}`}
-                        </Chip>
-                    )}
                 </FilterBar>
             }
         >

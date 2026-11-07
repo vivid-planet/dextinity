@@ -18,7 +18,7 @@ export interface SegmentedControlFieldProps<
         Omit<SegmentedControlProps<Value>, "value" | "onChange" | "onBlur" | "state" | "validationMessage"> {}
 
 /**
- * A `SegmentedControl` connected to a React Hook Form field holding one of the options' values. Without a value, no option is pressed.
+ * A `SegmentedControl` connected to a React Hook Form field holding one of the options' values. Without a value, no option is checked.
  * Shows the field's error below the control once it was touched or the form was submitted.
  */
 export const SegmentedControlField = forwardRef(function SegmentedControlField<

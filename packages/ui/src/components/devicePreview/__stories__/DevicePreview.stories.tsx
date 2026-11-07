@@ -92,9 +92,9 @@ type Story = StoryObj<typeof meta>;
  */
 export const Default: Story = {
     play: async ({ args, canvas }) => {
-        await userEvent.click(canvas.getByRole("button", { name: "Phone" }));
+        await userEvent.click(canvas.getByRole("radio", { name: "Phone" }));
         await waitFor(() => expect(args.onDeviceChange).toHaveBeenLastCalledWith("mobile"));
-        await expect(canvas.getByRole("button", { name: "Phone" })).toHaveAttribute("aria-pressed", "true");
+        await expect(canvas.getByRole("radio", { name: "Phone" })).toHaveAttribute("aria-checked", "true");
     },
 };
 
@@ -145,9 +145,9 @@ export const WithIframe: Story = {
 export const Responsive: Story = {
     args: { device: "responsive", devices: ["responsive", "desktop", "tablet", "mobile"] },
     play: async ({ args, canvas }) => {
-        await userEvent.click(canvas.getByRole("button", { name: "Tablet" }));
+        await userEvent.click(canvas.getByRole("radio", { name: "Tablet" }));
         await waitFor(() => expect(args.onDeviceChange).toHaveBeenLastCalledWith("tablet"));
-        await userEvent.click(canvas.getByRole("button", { name: "Full width" }));
+        await userEvent.click(canvas.getByRole("radio", { name: "Full width" }));
         await waitFor(() => expect(args.onDeviceChange).toHaveBeenLastCalledWith("responsive"));
     },
 };

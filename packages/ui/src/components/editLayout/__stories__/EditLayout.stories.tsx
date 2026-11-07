@@ -494,7 +494,7 @@ export const NarrowPaneSwitch: Story = {
     ),
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("tab", { name: /Blocks/ })).toBeVisible();
-        await userEvent.click(canvas.getByRole("button", { name: "Preview" }));
+        await userEvent.click(canvas.getByRole("radio", { name: "Preview" }));
         await expect(canvas.queryByRole("tab", { name: /Blocks/ })).toBeNull();
         await expect(canvas.getByText("example.com/careers")).toBeVisible();
     },

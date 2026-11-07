@@ -1,15 +1,10 @@
-import { CancelButton, DeleteButton, OkayButton } from "@dextinity/admin";
+import { messages } from "@dextinity/admin";
 import { Link } from "@dextinity/admin-icons";
 import { ControlButton, findEntityInCurrentSelection, findTextInCurrentSelection, selectionIsInOneBlock } from "@dextinity/admin-rte";
-// eslint-disable-next-line no-restricted-imports
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import { styled } from "@mui/material/styles";
+import { Button, Dialog, DialogFormActions, Tooltip } from "@dextinity/ui";
 import { EditorState, type EntityInstance, RichUtils } from "draft-js";
-import { type MouseEvent, type ReactElement, useCallback, useMemo, useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { type FormEvent, type ReactElement, useCallback, useId, useMemo, useState } from "react";
+import { useIntl } from "react-intl";
 
 import type { BlockInterface, BlockState } from "../../../types";
 import { ENTITY_TYPE } from "./Decorator";
@@ -25,7 +20,9 @@ interface CreateCmsLinkToolbarButtonOptions {
 
 export function createCmsLinkToolbarButton({ link: LinkBlock }: CreateCmsLinkToolbarButtonOptions): (props: IProps) => ReactElement {
     function ToolbarButton({ editorState, setEditorState }: IProps) {
+        const intl = useIntl();
         const [open, setOpen] = useState(false);
+        const linkLabel = intl.formatMessage({ id: "dextinity.rte.extensions.link.buttonTooltip", defaultMessage: "Link" });
         const { entity: linkEntity, entitySelection: linkSelection } = findEntityInCurrentSelection(editorState, ENTITY_TYPE);
         const selection = editorState.getSelection();
         const linkEditCreateDisabled = !linkEntity && (selection.isCollapsed() || !selectionIsInOneBlock(editorState)); // when a link entity is found it is always editable, when no entity is found, creating a link is disabled when no char is selected (selection.isCollapsed()) or when the selection exceeds a block (a link over multiple blocks is normally not intended)
@@ -43,7 +40,17 @@ export function createCmsLinkToolbarButton({ link: LinkBlock }: CreateCmsLinkToo
             setOpen(true);
         }
         return (
-            <ControlButton disabled={linkEditCreateDisabled} onButtonClick={handleClick} icon={Link}>
+            <>
+                <Tooltip content={linkLabel}>
+                    <span>
+                        <ControlButton
+                            disabled={linkEditCreateDisabled}
+                            onButtonClick={handleClick}
+                            icon={Link}
+                            slotProps={{ root: { "aria-label": linkLabel } }}
+                        />
+                    </span>
+                </Tooltip>
                 {open && (
                     <LinkDialog
                         editorState={editorState}
@@ -55,7 +62,7 @@ export function createCmsLinkToolbarButton({ link: LinkBlock }: CreateCmsLinkToo
                         }}
                     />
                 )}
-            </ControlButton>
+            </>
         );
     }
 
@@ -67,7 +74,8 @@ export function createCmsLinkToolbarButton({ link: LinkBlock }: CreateCmsLinkToo
         setEditorState: (editorState: EditorState) => void;
     }
     function LinkDialog({ onClose, linkEntity, editorState, setEditorState, selectedText }: ILinkDialogProps) {
-        // provides the form inputs
+        const intl = useIntl();
+        const formId = useId();
 
         const linkState: BlockState<typeof LinkBlock> = useMemo(() => {
             if (linkEntity) {
@@ -81,28 +89,23 @@ export function createCmsLinkToolbarButton({ link: LinkBlock }: CreateCmsLinkToo
 
         const [newLinkState, setNewLinkState] = useState<BlockState<typeof LinkBlock>>(linkState);
 
-        const handleClose = () => {
-            onClose();
-        };
-
         // removes the selected link entity
-        const handleRemove = useCallback(
-            (e: MouseEvent) => {
-                e.preventDefault();
-
-                const selection = editorState.getSelection();
-                if (!selection.isCollapsed()) {
-                    setEditorState(RichUtils.toggleLink(editorState, selection, null));
-                }
-                onClose();
-            },
-            [editorState, onClose, setEditorState],
-        );
+        const handleRemove = useCallback(() => {
+            const selection = editorState.getSelection();
+            if (!selection.isCollapsed()) {
+                setEditorState(RichUtils.toggleLink(editorState, selection, null));
+            }
+            onClose();
+        }, [editorState, onClose, setEditorState]);
 
         // creates or updates the draft link entity
-        const handleUpdate = useCallback(
-            (e: MouseEvent) => {
-                e.preventDefault();
+        const handleSubmit = useCallback(
+            (event: FormEvent<HTMLFormElement>) => {
+                event.preventDefault();
+                // React lets submit events of forms in portals, e.g. a dialog of the link block, bubble to this form
+                if (event.target !== event.currentTarget) {
+                    return;
+                }
                 const selection = editorState.getSelection();
                 // update the data in the entity
                 const contentState = editorState.getCurrentContent();
@@ -117,59 +120,44 @@ export function createCmsLinkToolbarButton({ link: LinkBlock }: CreateCmsLinkToo
         );
 
         return (
-            <Dialog onClose={handleClose} open={true}>
-                <DialogTitle>
-                    {linkEntity ? (
-                        <FormattedMessage
-                            id="dextinity.rteExtensions.cmsLink.editLink"
-                            defaultMessage='Edit link "{link}"'
-                            values={{ link: selectedText }}
-                        />
-                    ) : (
-                        <FormattedMessage id="dextinity.rteExtensions.cmsLink.insertLink" defaultMessage="Insert link" />
-                    )}
-                </DialogTitle>
-                <DialogContent>
+            <Dialog
+                open
+                onOpenChange={(open) => {
+                    if (!open) {
+                        onClose();
+                    }
+                }}
+                title={
+                    linkEntity
+                        ? intl.formatMessage(
+                              { id: "dextinity.rteExtensions.cmsLink.editLink", defaultMessage: 'Edit link "{link}"' },
+                              { link: selectedText },
+                          )
+                        : intl.formatMessage({ id: "dextinity.rteExtensions.cmsLink.insertLink", defaultMessage: "Insert link" })
+                }
+                labels={{ close: intl.formatMessage({ id: "dextinity.generic.close", defaultMessage: "Close" }) }}
+                footer={
+                    <DialogFormActions
+                        formId={formId}
+                        submitLabel={intl.formatMessage(messages.ok)}
+                        onCancel={onClose}
+                        labels={{ cancel: intl.formatMessage(messages.cancel) }}
+                        secondaryActions={
+                            linkEntity && (
+                                <Button variant="text" color="error" onClick={handleRemove}>
+                                    {intl.formatMessage({ id: "dextinity.rteExtensions.cmsLink.removeLink", defaultMessage: "Delete Link" })}
+                                </Button>
+                            )
+                        }
+                    />
+                }
+            >
+                <form id={formId} onSubmit={handleSubmit} noValidate>
                     <LinkBlock.AdminComponent state={newLinkState} updateState={setNewLinkState} />
-                </DialogContent>
-                <StyledDialogActions>
-                    <CancelButton onClick={handleClose} />
-                    <ButtonContainer>
-                        {linkEntity && (
-                            <DeleteButton onClick={handleRemove}>
-                                <FormattedMessage id="dextinity.rteExtensions.cmsLink.removeLink" defaultMessage="Delete Link" />
-                            </DeleteButton>
-                        )}
-                        <OkayButton onClick={handleUpdate} />
-                    </ButtonContainer>
-                </StyledDialogActions>
+                </form>
             </Dialog>
         );
     }
 
     return ToolbarButton;
 }
-
-const StyledDialogActions = styled(DialogActions)`
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: stretch;
-    gap: 10px;
-
-    ${({ theme }) => theme.breakpoints.up("md")} {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        gap: 0;
-    }
-`;
-
-const ButtonContainer = styled("div")`
-    display: contents;
-
-    ${({ theme }) => theme.breakpoints.up("md")} {
-        display: flex;
-        flex-direction: row;
-        gap: 10px;
-    }
-`;

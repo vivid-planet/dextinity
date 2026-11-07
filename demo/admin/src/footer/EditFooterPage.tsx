@@ -1,22 +1,23 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { FillSpace, MainContent, messages, SaveButton, Stack, StackToolbar, ToolbarActions, ToolbarTitleItem } from "@dextinity/admin";
+import { LocalErrorScopeApolloContext, messages } from "@dextinity/admin";
 import {
     BlockAdminComponentRoot,
-    BlockPreviewWithTabs,
+    BlockContentEditor,
     type BlockState,
-    ContentScopeIndicator,
     resolveHasSaveConflict,
     useBlockContext,
     useBlockPreview,
     useContentScope,
     useContentScopeConfig,
     useSaveConflictQuery,
+    useShowAppToast,
     useSiteConfig,
 } from "@dextinity/cms-admin";
+import { Button, formatShortcut, Icon, isApplePlatform, PageHeader, SaveState, type SaveStateValue, Tooltip } from "@dextinity/ui";
 import type { FooterContentBlockInput } from "@src/blocks.generated";
 import { deepEqual } from "fast-equals";
 import { type JSX, useEffect, useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { useIntl } from "react-intl";
 import { useRouteMatch } from "react-router";
 
 import { FooterContentBlock } from "./blocks/FooterContentBlock";
@@ -31,8 +32,10 @@ import {
 } from "./EditFooterPage.generated";
 
 export function EditFooterPage(): JSX.Element | null {
+    const intl = useIntl();
     const { scope } = useContentScope();
     const siteConfig = useSiteConfig({ scope });
+    const showToast = useShowAppToast();
     const [footerState, setFooterState] = useState<BlockState<typeof FooterContentBlock>>(FooterContentBlock.defaultValues());
     const [hasChanges, setHasChanges] = useState(false);
     const [referenceContent, setReferenceContent] = useState<FooterContentBlockInput | null>(null);
@@ -43,17 +46,13 @@ export function EditFooterPage(): JSX.Element | null {
     useContentScopeConfig({ redirectPathAfterChange: "/project-snips/footer" });
 
     const { data, refetch, loading } = useQuery<GQLFooterQuery, GQLFooterQueryVariables>(footerQuery, {
-        variables: {
-            scope,
-        },
+        variables: { scope },
     });
 
     const saveConflict = useSaveConflictQuery<GQLCheckForChangesFooterQuery, GQLCheckForChangesFooterQueryVariables>(
         checkForChangesQuery,
         {
-            variables: {
-                scope,
-            },
+            variables: { scope },
             resolveHasConflict: (checkForChangesData) => {
                 return resolveHasSaveConflict(data?.footer?.updatedAt, checkForChangesData?.footer?.updatedAt);
             },
@@ -69,22 +68,20 @@ export function EditFooterPage(): JSX.Element | null {
         },
     );
 
-    const [update, { loading: saving, error: hasSaveErrors }] = useMutation<GQLSaveFooterMutation, GQLSaveFooterMutationVariables>(
-        saveFooterMutation,
-        { refetchQueries: !data?.footer ? [namedOperations.Query.Footer] : [] },
-    );
+    const [update, { loading: saving, error: saveError }] = useMutation<GQLSaveFooterMutation, GQLSaveFooterMutationVariables>(saveFooterMutation, {
+        refetchQueries: !data?.footer ? [namedOperations.Query.Footer] : [],
+        context: LocalErrorScopeApolloContext,
+    });
+
+    const resetToSavedContent = (savedFooter: GQLFooterQuery["footer"] | undefined) => {
+        const state = savedFooter ? FooterContentBlock.input2State(savedFooter.content) : FooterContentBlock.defaultValues();
+        setFooterState(state);
+        setReferenceContent(FooterContentBlock.state2Output(state));
+    };
 
     useEffect(() => {
         if (data) {
-            if (data.footer) {
-                const content = FooterContentBlock.input2State(data.footer.content);
-                setFooterState(content);
-                setReferenceContent(FooterContentBlock.state2Output(content));
-            } else {
-                const state = FooterContentBlock.defaultValues();
-                setFooterState(state);
-                setReferenceContent(FooterContentBlock.state2Output(state));
-            }
+            resetToSavedContent(data.footer);
         }
     }, [data]);
 
@@ -93,33 +90,25 @@ export function EditFooterPage(): JSX.Element | null {
         setHasChanges(!equal);
     }, [footerState, referenceContent]);
 
-    if (loading) {
-        return null;
-    }
-
-    const handleSavePage = async () => {
+    const handleSave = async () => {
         const hasSaveConflict = await saveConflict.checkForConflicts();
         if (hasSaveConflict) {
-            return; // dialogs open for the user to handle the conflict
+            return false; // dialogs open for the user to handle the conflict
         }
 
-        const input = { content: FooterContentBlock.state2Output(footerState) };
-        await update({
-            variables: { input, scope },
-        });
+        const output = FooterContentBlock.state2Output(footerState);
+        try {
+            await update({ variables: { input: { content: output }, scope } });
+        } catch {
+            showToast({
+                tone: "error",
+                message: intl.formatMessage({ id: "footers.edit.saveFailed", defaultMessage: "The footer wasn't saved" }),
+            });
+            return false;
+        }
+        setReferenceContent(output);
+        return true;
     };
-
-    const tabs = [
-        {
-            key: "content",
-            label: <FormattedMessage {...messages.content} />,
-            content: (
-                <BlockAdminComponentRoot>
-                    <FooterContentBlock.AdminComponent state={footerState} updateState={setFooterState} />
-                </BlockAdminComponentRoot>
-            ),
-        },
-    ];
 
     const previewState = FooterContentBlock.createPreviewState(footerState, {
         ...blockContext,
@@ -127,24 +116,63 @@ export function EditFooterPage(): JSX.Element | null {
         showVisibleOnly: previewApi.showOnlyVisible,
     });
 
+    const saveState: SaveStateValue = saving ? "saving" : saveError != null && hasChanges ? "error" : hasChanges ? "dirty" : "saved";
+    const saveShortcut = formatShortcut("mod+s").join(isApplePlatform() ? "" : "+");
+
     return (
-        <Stack topLevelTitle={null}>
-            <StackToolbar scopeIndicator={<ContentScopeIndicator />}>
-                <ToolbarTitleItem>
-                    <FormattedMessage id="footers.edit.toolbarTitle" defaultMessage="Edit footer" />
-                </ToolbarTitleItem>
-                <FillSpace />
-                <ToolbarActions>
-                    <SaveButton disabled={!hasChanges} loading={saving} hasErrors={hasSaveErrors != null} onClick={handleSavePage} />
-                </ToolbarActions>
-            </StackToolbar>
-            <MainContent disablePaddingBottom>
-                <BlockPreviewWithTabs previewUrl={`${siteConfig.blockPreviewBaseUrl}/footer`} previewState={previewState} previewApi={previewApi}>
-                    {tabs}
-                </BlockPreviewWithTabs>
-            </MainContent>
+        <BlockContentEditor
+            header={
+                <PageHeader
+                    variant="compact"
+                    eyebrow={intl.formatMessage({ id: "footers.edit.eyebrow", defaultMessage: "Project snips" })}
+                    title={intl.formatMessage({ id: "footers.edit.title", defaultMessage: "Footer" })}
+                    subtitle={intl.formatMessage({ id: "footers.edit.subtitle", defaultMessage: "Shown at the bottom of every page of this site" })}
+                    actions={
+                        <>
+                            {(data?.footer != null || hasChanges) && (
+                                <SaveState
+                                    state={saveState}
+                                    savedAt={data?.footer ? new Date(data.footer.updatedAt) : undefined}
+                                    locale={intl.locale}
+                                    labels={{
+                                        saved: intl.formatMessage({ id: "footers.edit.saveState.saved", defaultMessage: "All changes saved" }),
+                                        dirty: intl.formatMessage({ id: "footers.edit.saveState.dirty", defaultMessage: "Unsaved changes" }),
+                                        saving: intl.formatMessage({ id: "footers.edit.saveState.saving", defaultMessage: "Saving …" }),
+                                        error: intl.formatMessage({ id: "footers.edit.saveState.error", defaultMessage: "Not saved" }),
+                                        savedAt: intl.formatMessage({ id: "footers.edit.saveState.savedAt", defaultMessage: "Saved '{time}'" }),
+                                    }}
+                                />
+                            )}
+                            <Tooltip
+                                content={intl.formatMessage({ id: "footers.edit.saveTooltip", defaultMessage: "Saves the footer" })}
+                                shortcut={saveShortcut}
+                            >
+                                <Button startIcon={<Icon name="check" />} disabled={!hasChanges} loading={saving} onClick={() => void handleSave()}>
+                                    {intl.formatMessage(messages.save)}
+                                </Button>
+                            </Tooltip>
+                        </>
+                    }
+                />
+            }
+            loading={loading}
+            preview={{ url: `${siteConfig.blockPreviewBaseUrl}/footer`, siteUrl: `${siteConfig.url}/${scope.language}`, state: previewState }}
+            previewApi={previewApi}
+            save={{ hasChanges, saving, onSave: handleSave, onDiscard: () => resetToSavedContent(data?.footer) }}
+            tabs={[
+                {
+                    key: "content",
+                    label: intl.formatMessage(messages.content),
+                    content: (
+                        <BlockAdminComponentRoot>
+                            <FooterContentBlock.AdminComponent state={footerState} updateState={setFooterState} />
+                        </BlockAdminComponentRoot>
+                    ),
+                },
+            ]}
+        >
             {saveConflict.dialogs}
-        </Stack>
+        </BlockContentEditor>
     );
 }
 

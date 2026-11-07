@@ -984,6 +984,80 @@ The details passed to the callbacks of the Data Grid require `apiRef` now. Add i
 
 MUI X v9 requires a new license key for the Pro and Premium packages. Regenerate it in the [MUI Store](https://mui.com/store/) and replace the key wherever your project sets it, for example, in the environment variables of the admin.
 
+### Move the page tree and the page editors to `@dextinity/ui` (optional)
+
+`PagesPage`, `BlockPreviewWithTabs`, `SplitPreview`, `BlockPreview`, `BlockAdminTabs`, the `pageSaveButton` of `createUsePage` and the `progressDialog` of `useCopyPastePages` are deprecated. They keep working, so this step can wait. Their successors are built with `@dextinity/ui`; import its CSS once in the admin's entry file if you haven't yet.
+
+1. Replace `PagesPage` with `PageTreeDetailPage`. It hosts the editors of the document types at `<page tree URL>/:pageId/edit`, so remove the routes you added for them. Pass `getCategoryUrl` to link to the target category after moving a page:
+
+    ```diff
+    - <PagesPage
+    + <PageTreeDetailPage
+          path={`/pages/pagetree/${categoryToUrlParam(category)}`}
+    +     getCategoryUrl={(category) => `/pages/pagetree/${categoryToUrlParam(category)}`}
+          category={category}
+          documentTypes={documentTypes}
+          editPageNode={EditPageNode}
+    -     renderContentScopeIndicator={(scope) => <ContentScopeIndicator scope={scope} />}
+      />
+    ```
+
+2. Move each `editComponent` from the toolbar and `BlockPreviewWithTabs` to `PageContentEditor`. It renders the header with the page's status and Save, the preview and the tabs, asks before leaving with unsaved changes and saves with Mod+S. Pass the result of the `createUsePage` hook as it is:
+
+    ```diff
+      const pageApi = usePage({ pageId: id });
+    - const { pageState, rootBlocksApi, pageSaveButton, dialogs } = pageApi;
+    + const { pageState, rootBlocksApi, rootBlocksValidity } = pageApi;
+
+    - return (
+    -     <>
+    -         <Toolbar>
+    -             <ToolbarBackButton />
+    -             <PageName pageId={id} />
+    -             <FillSpace />
+    -             <ToolbarActions>{pageSaveButton}</ToolbarActions>
+    -         </Toolbar>
+    -         <BlockPreviewWithTabs previewUrl={`${siteConfig.blockPreviewBaseUrl}/page`} previewState={previewState} previewApi={previewApi}>
+    -             {[{ key: "content", label: "Blocks", content: rootBlocksApi.content.adminUI }]}
+    -         </BlockPreviewWithTabs>
+    -         {dialogs}
+    -     </>
+    - );
+    + return (
+    +     <PageContentEditor
+    +         pageId={id}
+    +         pageApi={pageApi}
+    +         previewApi={previewApi}
+    +         preview={{ url: `${siteConfig.blockPreviewBaseUrl}/page`, state: previewState, siteUrl }}
+    +         tabs={[
+    +             {
+    +                 key: "content",
+    +                 label: intl.formatMessage({ id: "pages.edit.blocks", defaultMessage: "Blocks" }),
+    +                 invalid: rootBlocksValidity.content === false,
+    +                 content: <BlockAdminComponentRoot title="Page">{rootBlocksApi.content.adminUI}</BlockAdminComponentRoot>,
+    +             },
+    +         ]}
+    +     />
+    + );
+    ```
+
+    A tab with its own `preview` shows it while selected, e.g. a stage block. Editors without a preview, e.g. of links, leave `preview` out. Editors that aren't page editors put `BlockPreviewPane` next to their form instead of `SplitPreview`.
+
+3. Build the `additionalFormFields` of `createEditPageNode` with the adapters of `@dextinity/ui-react-final-form`, since the add page dialog is a form of `@dextinity/ui` now:
+
+    ```diff
+    - import { Field, FinalFormSelect } from "@dextinity/admin";
+    + import { SelectField } from "@dextinity/ui-react-final-form";
+
+      const EditPageNode = createEditPageNode({
+    -     additionalFormFields: <Field name="userGroup" label="User group" component={FinalFormSelect} options={userGroupOptions} />,
+    +     additionalFormFields: <SelectField name="userGroup" label="User group" options={userGroupOptions} />,
+          nodeFragment: { name: "PageTreeNodeAdditionalFields", fragment: additionalFieldsFragment },
+      });
+    ```
+
+4. If you call `useCopyPastePages` yourself, show its `progress` instead of `progressDialog`, and pass `onPasteError` to report errors yourself. `sendPages` resolves to whether the pages were pasted.
+
 <!-- "Verify lint passes" must always be the last step for this service. -->
 
 ### Verify lint passes

@@ -39,11 +39,11 @@ export const BillboardTeaserBlock = createCompositeBlock(
             },
             overlay: {
                 block: createCompositeBlockSelectField<BillboardTeaserBlockData["overlay"]>({
+                    label: <FormattedMessage id="billboardTeaserBlock.overlay" defaultMessage="Overlay" />,
                     defaultValue: 50,
                     options: overlayOptions,
                     required: true,
                 }),
-                title: <FormattedMessage id="billboardTeaserBlock.overlay" defaultMessage="Overlay" />,
                 hiddenInSubroute: true,
             },
             callToActionList: {

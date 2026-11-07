@@ -1,13 +1,11 @@
 import { gql } from "@apollo/client";
-import { Field } from "@dextinity/admin";
-import { Video } from "@dextinity/admin-icons";
-import { Box } from "@mui/material";
-import { deepClone } from "@mui/x-data-grid/internals";
+import { Banner, Icon } from "@dextinity/ui";
+import { styled } from "@mui/material/styles";
+import { Field } from "react-final-form";
 import { defineMessage, FormattedMessage, type MessageDescriptor } from "react-intl";
 
 import type { DamVideoBlockData, DamVideoBlockInput } from "../blocks.generated";
 import { useVideoPerformanceWarning } from "../dam/config/damConfig";
-import { VideoPerformanceWarningAlert } from "../dam/VideoPerformanceWarningAlert";
 import { FileField } from "../form/file/FileField";
 import { useBlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
 import { BlockAdminComponentSection } from "./common/BlockAdminComponentSection";
@@ -144,7 +142,7 @@ export const createDamVideoBlock = (
         },
 
         replaceDependenciesInOutput: (output, replacements) => {
-            const clonedOutput: DamVideoBlockInput = deepClone(output);
+            const clonedOutput: DamVideoBlockInput = structuredClone(output);
             const replacement = replacements.find((replacement) => replacement.type === "DamFile" && replacement.originalId === output.damFileId);
 
             if (replacement) {
@@ -163,21 +161,20 @@ export const createDamVideoBlock = (
             const { isVideoTooLarge } = useVideoPerformanceWarning();
 
             return (
-                <Box
-                    sx={{
-                        padding: isInPaper ? 3 : 0,
-                        pb: 0,
-                    }}
-                >
+                <Root data-padding={isInPaper ? "default" : "none"}>
                     <BlocksFinalForm onSubmit={updateState} initialValues={state}>
-                        {state.damFile && isVideoTooLarge(state.damFile) && <VideoPerformanceWarningAlert sx={{ marginBottom: 2 }} />}
-                        <Field
-                            name="damFile"
-                            component={FileField}
-                            fullWidth
-                            allowedMimetypes={["video/mp4", "video/webm"]}
-                            preview={<Video fontSize="large" color="primary" />}
-                        />
+                        {state.damFile && isVideoTooLarge(state.damFile) && (
+                            <Banner tone="warning">
+                                <strong>
+                                    <FormattedMessage id="dextinity.dam.videoPerformanceWarning.title" defaultMessage="Large video file" />
+                                </strong>{" "}
+                                <FormattedMessage
+                                    id="dextinity.dam.videoPerformanceWarning.text"
+                                    defaultMessage="This video is very large. Videos are delivered without optimization, which can lead to poor loading performance."
+                                />
+                            </Banner>
+                        )}
+                        <Field name="damFile" component={FileField} allowedMimetypes={["video/mp4", "video/webm"]} preview={<Icon name="video" />} />
                         {supports.includes("controls") && <VideoOptionsFields />}
                         {supports.includes("previewImage") && (
                             <BlockAdminComponentSection
@@ -192,7 +189,7 @@ export const createDamVideoBlock = (
                             </BlockAdminComponentSection>
                         )}
                     </BlocksFinalForm>
-                </Box>
+                </Root>
             );
         },
 
@@ -220,3 +217,12 @@ export const createDamVideoBlock = (
 
     return DamVideoBlock;
 };
+
+const Root = styled("div")`
+    display: grid;
+    gap: var(--dextinity-space-4);
+
+    &[data-padding="default"] {
+        padding: var(--dextinity-space-4) var(--dextinity-space-4) 0;
+    }
+`;

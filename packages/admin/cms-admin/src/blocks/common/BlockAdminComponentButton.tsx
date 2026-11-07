@@ -1,5 +1,5 @@
-// eslint-disable-next-line no-restricted-imports
-import { Button } from "@mui/material";
+import { Button } from "@dextinity/ui";
+import { styled } from "@mui/material/styles";
 import type { MouseEventHandler, PropsWithChildren, ReactNode } from "react";
 
 import { BlockAdminComponentPaper } from "./BlockAdminComponentPaper";
@@ -8,23 +8,28 @@ interface Props {
     variant?: "primary" | "default";
     size?: "medium" | "large";
     startIcon?: ReactNode;
-    onClick?: MouseEventHandler;
+    onClick?: MouseEventHandler<HTMLButtonElement>;
     disabled?: boolean;
 }
 
-export const BlockAdminComponentButton = ({ variant, size, ...buttonProps }: PropsWithChildren<Props>) => {
+export const BlockAdminComponentButton = ({ variant = "default", size = "medium", ...buttonProps }: PropsWithChildren<Props>) => {
     return (
         <BlockAdminComponentPaper disablePadding>
-            <Button
-                fullWidth
-                color={variant === "primary" ? "primary" : "info"}
-                sx={({ spacing }) => ({
-                    ...(size === "large" && {
-                        padding: spacing(4),
-                    }),
-                })}
-                {...buttonProps}
-            />
+            <ButtonContainer data-size={size}>
+                <Button variant="text" color={variant === "primary" ? "primary" : "secondary"} {...buttonProps} />
+            </ButtonContainer>
         </BlockAdminComponentPaper>
     );
 };
+
+const ButtonContainer = styled("div")`
+    display: flex;
+
+    > * {
+        flex: 1;
+    }
+
+    &[data-size="large"] {
+        --dextinity-button-height: 64px;
+    }
+`;

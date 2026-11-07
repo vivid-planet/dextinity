@@ -1,4 +1,3 @@
-import { SwitchField } from "@dextinity/admin";
 import {
     BlockCategory,
     BlocksFinalForm,
@@ -8,6 +7,7 @@ import {
     createCompositeBlockSelectField,
     createCompositeBlockTextField,
 } from "@dextinity/cms-admin";
+import { SwitchField } from "@dextinity/ui-react-final-form";
 import type { AccordionItemBlockData } from "@src/blocks.generated";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
@@ -64,10 +64,9 @@ export const AccordionItemBlock = createCompositeBlock(
                                 onSubmit={({ openByDefault }) => updateState(openByDefault)}
                                 initialValues={{ openByDefault: state }}
                             >
-                                <SwitchField
-                                    name="openByDefault"
-                                    label={<FormattedMessage id="accordionBlock.accordionItem.openByDefault" defaultMessage="Open by default" />}
-                                />
+                                <SwitchField name="openByDefault">
+                                    <FormattedMessage id="accordionBlock.accordionItem.openByDefault" defaultMessage="Open by default" />
+                                </SwitchField>
                             </BlocksFinalForm>
                         );
                     },

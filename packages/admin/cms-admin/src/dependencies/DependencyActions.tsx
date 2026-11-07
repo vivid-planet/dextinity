@@ -1,112 +1,117 @@
-import { useApolloClient } from "@apollo/client";
-import { messages, Tooltip } from "@dextinity/admin";
-import { ArrowRight, OpenNewTab } from "@dextinity/admin-icons";
-import { Box, IconButton } from "@mui/material";
-import { FormattedMessage } from "react-intl";
+import { messages } from "@dextinity/admin";
+import { Icon, IconButton, Tooltip } from "@dextinity/ui";
+import { type ReactNode, useEffect, useState } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
 import { useHistory } from "react-router";
 
-import { type ContentScope, useContentScope } from "../contentScope/Provider";
-import { useDependenciesConfig } from "./dependenciesConfig";
-import { resolveDependencyScope } from "./resolveDependencyScope";
-import type { DependencyInterface } from "./types";
+import { DependencyActionsRoot, DependencyActionsUnavailable, DependencyActionsUnavailableWrapper } from "./DependencyActions.sc";
+import { type DependencyTarget, useDependencyUrlResolver } from "./useDependencyUrlResolver";
 
-interface DependencyActionsProps {
-    graphqlObjectType: string;
-    id: string;
-    rootColumnName?: string;
-    jsonPath?: string;
-    /**
-     * Scope of the linked entity. Entities can be used across scopes (e.g. a DAM file shared between sites), which is
-     * why the link must not be built with the currently active scope.
-     */
-    scope?: ContentScope;
+const copiedFeedbackMs = 2000;
+
+interface DependencyActionsProps extends DependencyTarget {
+    onCopyLinkError: () => void;
 }
 
-export const DependencyActions = ({ graphqlObjectType, id, rootColumnName, jsonPath, scope }: DependencyActionsProps) => {
-    const { entityDependencyMap } = useDependenciesConfig();
-    const apolloClient = useApolloClient();
+export const DependencyActions = ({ onCopyLinkError, ...target }: DependencyActionsProps) => {
+    const intl = useIntl();
     const history = useHistory();
-    const contentScope = useContentScope();
+    const dependencyUrl = useDependencyUrlResolver()(target);
+    const [isCopied, setIsCopied] = useState(false);
 
-    const dependencyObject = entityDependencyMap[graphqlObjectType] as DependencyInterface | undefined;
-
-    if (dependencyObject === undefined) {
-        if (process.env.NODE_ENV === "development") {
-            console.warn(
-                `Cannot load URL because no implementation of DependencyInterface for ${graphqlObjectType} was provided via the DependenciesConfig`,
-            );
+    useEffect(() => {
+        if (!isCopied) {
+            return;
         }
-        return <FormattedMessage id="dextinity.dependencies.dataGrid.cannotLoadUrl" defaultMessage="Cannot determine URL" />;
-    }
+        const timeout = window.setTimeout(() => setIsCopied(false), copiedFeedbackMs);
+        return () => window.clearTimeout(timeout);
+    }, [isCopied]);
 
-    const scopeToOpen = scope && resolveDependencyScope({ scope, activeScope: contentScope.scope, availableScopes: contentScope.values });
-
-    if (scope !== undefined && scopeToOpen === undefined) {
+    if (dependencyUrl.status === "unknownType") {
         return (
-            <Tooltip
-                title={
-                    <FormattedMessage
-                        id="dextinity.dependencies.dataGrid.scopeNotAllowed"
-                        defaultMessage="You don't have access to the scope of this item."
-                    />
-                }
-            >
-                <Box
-                    sx={{
-                        display: "flex",
-                    }}
-                >
-                    <IconButton disabled>
-                        <OpenNewTab />
-                    </IconButton>
-                    <IconButton disabled>
-                        <ArrowRight />
-                    </IconButton>
-                </Box>
-            </Tooltip>
+            <DependencyActionsUnavailable>
+                <FormattedMessage id="dextinity.dependencies.dataGrid.cannotLoadUrl" defaultMessage="Cannot determine URL" />
+            </DependencyActionsUnavailable>
         );
     }
 
-    const loadUrl = async () => {
-        const path = await dependencyObject.resolvePath({
-            rootColumnName,
-            jsonPath,
-            apolloClient,
-            id,
-        });
+    const isScopeAllowed = dependencyUrl.status === "available";
+    const scopeNotAllowedLabel = intl.formatMessage({
+        id: "dextinity.dependencies.dataGrid.scopeNotAllowed",
+        defaultMessage: "You don't have access to the scope of this item.",
+    });
 
-        const scopeUrl = scopeToOpen ? contentScope.createUrl(scopeToOpen) : contentScope.match.url;
-
-        return scopeUrl + path;
-    };
-
-    return (
-        <Box
-            sx={{
-                display: "flex",
-            }}
-        >
-            <Tooltip title={<FormattedMessage {...messages.openInNewTab} />}>
-                <IconButton
-                    onClick={async () => {
-                        const url = await loadUrl();
+    const actions = (
+        <DependencyActionsRoot>
+            <IconButton
+                aria-label={
+                    isCopied
+                        ? intl.formatMessage({ id: "dextinity.dependencies.dataGrid.linkCopied", defaultMessage: "Link copied" })
+                        : isScopeAllowed
+                          ? intl.formatMessage({ id: "dextinity.dependencies.dataGrid.copyLink", defaultMessage: "Copy link" })
+                          : scopeNotAllowedLabel
+                }
+                variant="text"
+                color="secondary"
+                size="small"
+                disabled={!isScopeAllowed}
+                onClick={async () => {
+                    try {
+                        const url = await dependencyUrl.loadUrl?.();
+                        if (url !== undefined) {
+                            await navigator.clipboard.writeText(new URL(url, window.location.origin).toString());
+                            setIsCopied(true);
+                        }
+                    } catch {
+                        onCopyLinkError();
+                    }
+                }}
+            >
+                <Icon name={isCopied ? "check" : "link"} />
+            </IconButton>
+            <IconButton
+                aria-label={isScopeAllowed ? intl.formatMessage(messages.openInNewTab) : scopeNotAllowedLabel}
+                variant="text"
+                color="secondary"
+                size="small"
+                disabled={!isScopeAllowed}
+                onClick={async () => {
+                    const url = await dependencyUrl.loadUrl?.();
+                    if (url !== undefined) {
                         window.open(url, "_blank");
-                    }}
-                >
-                    <OpenNewTab />
-                </IconButton>
-            </Tooltip>
-            <Tooltip title={<FormattedMessage {...messages.openInThisTab} />}>
-                <IconButton
-                    onClick={async () => {
-                        const url = await loadUrl();
-
+                    }
+                }}
+            >
+                <Icon name="open-new-tab" />
+            </IconButton>
+            <IconButton
+                aria-label={isScopeAllowed ? intl.formatMessage(messages.openInThisTab) : scopeNotAllowedLabel}
+                variant="text"
+                color="secondary"
+                size="small"
+                disabled={!isScopeAllowed}
+                onClick={async () => {
+                    const url = await dependencyUrl.loadUrl?.();
+                    if (url !== undefined) {
                         history.push(url);
-                    }}
-                >
-                    <ArrowRight />
-                </IconButton>
-            </Tooltip>
-        </Box>
+                    }
+                }}
+            >
+                <Icon name="arrow-right" />
+            </IconButton>
+        </DependencyActionsRoot>
     );
+
+    return isScopeAllowed ? actions : <ScopeNotAllowedReason reason={scopeNotAllowedLabel}>{actions}</ScopeNotAllowedReason>;
 };
+
+// Disabled buttons receive neither hover nor focus, so the reason is shown on a focusable wrapper around them
+function ScopeNotAllowedReason({ reason, children }: { reason: string; children: ReactNode }) {
+    return (
+        <Tooltip content={reason}>
+            <DependencyActionsUnavailableWrapper tabIndex={0} role="note" aria-label={reason}>
+                {children}
+            </DependencyActionsUnavailableWrapper>
+        </Tooltip>
+    );
+}

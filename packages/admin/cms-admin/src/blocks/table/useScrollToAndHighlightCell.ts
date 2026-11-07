@@ -1,61 +1,34 @@
-import {
-    type GridApi,
-    gridClasses,
-    gridDimensionsSelector,
-    gridExpandedSortedRowIdsSelector,
-    gridPageSizeSelector,
-    type GridRowId,
-    gridRowsMetaSelector,
-    gridVisibleRowsSelector,
-} from "@mui/x-data-grid";
 import { type RefObject, useEffect } from "react";
 
-import type { CellPosition } from "./utils/cellRoute";
+import { tableCellKeyAttribute } from "./CellValue";
+import { type CellPosition, createCellKey } from "./utils/cellRoute";
 
 type Options = {
-    apiRef: RefObject<GridApi | null>;
+    gridRef: RefObject<HTMLElement | null>;
     cell: CellPosition | undefined;
     highlightCell: (cell: CellPosition) => void;
 };
 
-const isRowOnCurrentPage = (apiRef: RefObject<GridApi | null>, rowId: GridRowId) => gridVisibleRowsSelector(apiRef).rowIdToIndexMap.has(rowId);
-
-const getPageOfRow = (apiRef: RefObject<GridApi | null>, rowId: GridRowId) => {
-    const rowIndexInTable = gridExpandedSortedRowIdsSelector(apiRef).indexOf(rowId);
-    return Math.floor(rowIndexInTable / gridPageSizeSelector(apiRef));
-};
-
-export const useScrollToAndHighlightCell = ({ apiRef, cell, highlightCell }: Options) => {
+export const useScrollToAndHighlightCell = ({ gridRef, cell, highlightCell }: Options) => {
     useEffect(() => {
-        const api = apiRef.current;
-        const scroller = api?.rootElementRef.current?.querySelector(`.${gridClasses.virtualScroller}`);
-        if (!cell || !api || !scroller) {
+        if (!cell) {
             return;
         }
 
-        const column = api.getColumn(cell.columnId);
-        if (!api.getRow(cell.rowId) || !column) {
-            return;
-        }
+        // Waits for the dialog to lay out the grid
+        const animationFrame = requestAnimationFrame(() => {
+            const cellKey = createCellKey(cell);
+            const cellElement = Array.from(gridRef.current?.querySelectorAll(`[${tableCellKeyAttribute}]`) ?? []).find(
+                (element) => element.getAttribute(tableCellKeyAttribute) === cellKey,
+            );
+            if (!cellElement) {
+                return;
+            }
 
-        if (!isRowOnCurrentPage(apiRef, cell.rowId)) {
-            api.setPage(getPageOfRow(apiRef, cell.rowId));
-        }
-
-        const rowIndex = api.getRowIndexRelativeToVisibleRows(cell.rowId);
-
-        const { viewportInnerSize, leftPinnedWidth, rightPinnedWidth } = gridDimensionsSelector(apiRef);
-        const { positions: rowTops, currentPageTotalHeight } = gridRowsMetaSelector(apiRef);
-        const rowBottom = rowTops[rowIndex + 1] ?? currentPageTotalHeight;
-        const visibleColumnsWidth = viewportInnerSize.width - leftPinnedWidth - rightPinnedWidth;
-        const cellCenterX = api.getColumnPosition(cell.columnId) + column.computedWidth / 2;
-        const cellCenterY = (rowTops[rowIndex] + rowBottom) / 2;
-
-        scroller.scrollTo({
-            left: cellCenterX - leftPinnedWidth - visibleColumnsWidth / 2,
-            top: cellCenterY - viewportInnerSize.height / 2,
-            behavior: "smooth",
+            cellElement.scrollIntoView({ block: "center", inline: "center" });
+            highlightCell(cell);
         });
-        highlightCell(cell);
-    }, [apiRef, cell, highlightCell]);
+
+        return () => cancelAnimationFrame(animationFrame);
+    }, [gridRef, cell, highlightCell]);
 };

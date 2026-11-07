@@ -1,10 +1,9 @@
-import { Field, type FieldProps, FinalFormInput, Loading, messages, SelectField } from "@dextinity/admin";
-import { Add, ArtificialIntelligence, Delete } from "@dextinity/admin-icons";
-import { Box, Divider, Grid, IconButton, Paper, Typography } from "@mui/material";
+import { messages } from "@dextinity/admin";
+import { Button, FieldActions, Icon, IconButton } from "@dextinity/ui";
+import { type FieldAdapterActions, InputField, SelectField, TextareaField } from "@dextinity/ui-react-final-form";
 import { styled } from "@mui/material/styles";
 import arrayMutators from "final-form-arrays";
-import { useState } from "react";
-import { Field as ReactFinalFormField, useForm } from "react-final-form";
+import { Field as ReactFinalFormField } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -12,13 +11,13 @@ import type { SeoBlockData, SeoBlockInput } from "../blocks.generated";
 import { useContentGenerationConfig } from "../documents/ContentGenerationConfigContext";
 import { validateJson } from "../validation/validateJson";
 import { validateUrl } from "../validation/validateUrl";
-import { BlockAdminComponentButton } from "./common/BlockAdminComponentButton";
 import { BlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
-import { BlockAdminComponentSectionGroup } from "./common/BlockAdminComponentSectionGroup";
+import { BlockAdminComponentSection } from "./common/BlockAdminComponentSection";
 import { Collapsible } from "./common/Collapsible";
 import { CollapsibleSwitchButtonHeader } from "./common/CollapsibleSwitchButtonHeader";
 import { createOptionalBlock } from "./factories/createOptionalBlock";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
+import { useContentTranslationFieldActionsProps } from "./form/useContentTranslationFieldActions";
 import { composeBlocks } from "./helpers/composeBlocks/composeBlocks";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { decomposeUpdateStateAction } from "./helpers/decomposeUpdateStateAction";
@@ -97,283 +96,198 @@ export function createSeoBlock(
 
             const priorityOptions = useSitemapPagePriorityFormOptions();
             const changeFrequencyOptions = useSitemapChangeFrequencyFormOptions();
-
-            const generateSeoTag = useSeoTagGeneration();
+            const seoTagActions = useSeoTagFieldActions();
 
             return (
-                <div>
-                    <BlocksFinalForm
-                        onSubmit={(values) => {
-                            updateState((prevState) => ({
-                                ...prevState,
-                                htmlTitle: values.htmlTitle,
-                                metaDescription: values.metaDescription,
+                <BlocksFinalForm
+                    onSubmit={(values) => {
+                        updateState((prevState) => ({
+                            ...prevState,
+                            htmlTitle: values.htmlTitle,
+                            metaDescription: values.metaDescription,
 
-                                openGraphTitle: values.openGraphTitle,
-                                openGraphDescription: values.openGraphDescription,
+                            openGraphTitle: values.openGraphTitle,
+                            openGraphDescription: values.openGraphDescription,
 
-                                structuredData: values.structuredData,
+                            structuredData: values.structuredData,
 
-                                noIndex: values.noIndex,
-                                priority: values.priority,
-                                changeFrequency: values.changeFrequency,
+                            noIndex: values.noIndex,
+                            priority: values.priority,
+                            changeFrequency: values.changeFrequency,
 
-                                canonicalUrl: values.canonicalUrl,
+                            canonicalUrl: values.canonicalUrl,
 
-                                alternativeLinks: values.alternativeLinks,
-                            }));
-                        }}
-                        mutators={{ ...arrayMutators }}
-                        initialValues={{
-                            htmlTitle: state.htmlTitle,
-                            metaDescription: state.metaDescription,
+                            alternativeLinks: values.alternativeLinks ?? [],
+                        }));
+                    }}
+                    mutators={{ ...arrayMutators }}
+                    initialValues={{
+                        htmlTitle: state.htmlTitle,
+                        metaDescription: state.metaDescription,
 
-                            openGraphTitle: state.openGraphTitle,
-                            openGraphDescription: state.openGraphDescription,
+                        openGraphTitle: state.openGraphTitle,
+                        openGraphDescription: state.openGraphDescription,
 
-                            structuredData: state.structuredData,
+                        structuredData: state.structuredData,
 
-                            noIndex: state.noIndex,
-                            priority: state.priority,
-                            changeFrequency: state.changeFrequency,
+                        noIndex: state.noIndex,
+                        priority: state.priority,
+                        changeFrequency: state.changeFrequency,
 
-                            canonicalUrl: state.canonicalUrl,
+                        canonicalUrl: state.canonicalUrl,
 
-                            alternativeLinks: state.alternativeLinks,
-                        }}
-                    >
-                        {/* Meta */}
-                        <Box
-                            sx={{
-                                marginBottom: 8,
-                            }}
-                        >
-                            <Typography variant="h4" gutterBottom>
-                                <FormattedMessage id="dextinity.blocks.seo.meta.sectionTitle" defaultMessage="Meta Tags" />
-                            </Typography>
-
-                            <FieldWithContentGeneration
-                                label={intl.formatMessage({
-                                    id: "dextinity.blocks.seo.htmlTitle",
-                                    defaultMessage: "HTML Title",
-                                })}
+                        alternativeLinks: state.alternativeLinks,
+                    }}
+                >
+                    <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.seo.meta.sectionTitle" defaultMessage="Meta Tags" />}>
+                        <Fields>
+                            <InputField
+                                label={intl.formatMessage({ id: "dextinity.blocks.seo.htmlTitle", defaultMessage: "HTML Title" })}
                                 name="htmlTitle"
-                                generateSeoTag={generateSeoTag}
-                                component={FinalFormInput}
-                                fullWidth
+                                actions={seoTagActions("htmlTitle")}
                             />
-
-                            <FieldWithContentGeneration
-                                label={intl.formatMessage({
-                                    id: "dextinity.blocks.seo.metaDescription",
-                                    defaultMessage: "Meta Description",
-                                })}
+                            <TextareaField
+                                label={intl.formatMessage({ id: "dextinity.blocks.seo.metaDescription", defaultMessage: "Meta Description" })}
                                 name="metaDescription"
-                                generateSeoTag={generateSeoTag}
-                                multiline
                                 rows={3}
-                                component={FinalFormInput}
-                                fullWidth
+                                actions={seoTagActions("metaDescription")}
                             />
-                        </Box>
+                        </Fields>
+                    </BlockAdminComponentSection>
 
-                        {/* Open Graph */}
-                        <Box
-                            sx={{
-                                marginTop: 8,
-                                marginBottom: 8,
-                            }}
-                        >
-                            <Typography variant="h4" gutterBottom>
-                                <FormattedMessage id="dextinity.blocks.seo.openGraph.sectionTitle" defaultMessage="Open Graph" />
-                            </Typography>
-                            <FieldWithContentGeneration
-                                label={intl.formatMessage({
-                                    id: "dextinity.blocks.seo.openGraphTitle",
-                                    defaultMessage: "Title",
-                                })}
+                    <BlockAdminComponentSection
+                        title={<FormattedMessage id="dextinity.blocks.seo.openGraph.sectionTitle" defaultMessage="Open Graph" />}
+                    >
+                        <Fields>
+                            <InputField
+                                label={intl.formatMessage({ id: "dextinity.blocks.seo.openGraphTitle", defaultMessage: "Title" })}
                                 name="openGraphTitle"
-                                generateSeoTag={generateSeoTag}
-                                component={FinalFormInput}
-                                fullWidth
+                                actions={seoTagActions("openGraphTitle")}
                             />
-                            <FieldWithContentGeneration
-                                label={intl.formatMessage({
-                                    id: "dextinity.blocks.seo.openGraphDescription",
-                                    defaultMessage: "Description",
-                                })}
+                            <TextareaField
+                                label={intl.formatMessage({ id: "dextinity.blocks.seo.openGraphDescription", defaultMessage: "Description" })}
                                 name="openGraphDescription"
-                                generateSeoTag={generateSeoTag}
-                                multiline={true}
                                 rows={3}
-                                component={FinalFormInput}
-                                fullWidth
+                                actions={seoTagActions("openGraphDescription")}
                             />
                             {openGraphImage}
-                        </Box>
+                        </Fields>
+                    </BlockAdminComponentSection>
 
-                        {/* Structured Data */}
-                        <Box
-                            sx={{
-                                marginTop: 8,
-                                marginBottom: 8,
+                    <BlockAdminComponentSection
+                        title={<FormattedMessage id="dextinity.blocks.seo.structuredData.sectionTitle" defaultMessage="Structured Data" />}
+                    >
+                        <TextareaField
+                            label={intl.formatMessage({ id: "dextinity.blocks.seo.structuredData", defaultMessage: "JSON-LD" })}
+                            name="structuredData"
+                            rows={15}
+                            maxRows={40}
+                            spellCheck={false}
+                            validate={validateJson}
+                        />
+                    </BlockAdminComponentSection>
+
+                    <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.seo.sitemap.sectionTitle" defaultMessage="Sitemap" />}>
+                        <ReactFinalFormField<boolean> name="noIndex" type="checkbox" parse={(index) => !index} format={(noIndex) => !noIndex}>
+                            {({ input: { checked, onChange } }) => {
+                                const pageIndex = checked ?? false;
+                                return (
+                                    <BlockAdminComponentPaper disablePadding>
+                                        <Collapsible
+                                            open={pageIndex}
+                                            header={
+                                                <CollapsibleSwitchButtonHeader
+                                                    checked={pageIndex}
+                                                    title={<FormattedMessage id="dextinity.seo.sitemap.pageIndex" defaultMessage="Page Index" />}
+                                                />
+                                            }
+                                            onChange={onChange}
+                                        >
+                                            <CollapsibleFields>
+                                                <SelectField
+                                                    label={intl.formatMessage({
+                                                        id: "dextinity.blocks.seo.sitemap.priority",
+                                                        defaultMessage: "Priority",
+                                                    })}
+                                                    name="priority"
+                                                    required
+                                                    options={priorityOptions}
+                                                />
+                                                <SelectField
+                                                    label={intl.formatMessage({
+                                                        id: "dextinity.blocks.seo.sitemap.changeFrequency",
+                                                        defaultMessage: "Change Frequency",
+                                                    })}
+                                                    name="changeFrequency"
+                                                    required
+                                                    options={changeFrequencyOptions}
+                                                />
+                                            </CollapsibleFields>
+                                        </Collapsible>
+                                    </BlockAdminComponentPaper>
+                                );
                             }}
-                        >
-                            <Typography variant="h4" gutterBottom>
-                                <FormattedMessage id="dextinity.blocks.seo.structuredData.sectionTitle" defaultMessage="Structured Data" />
-                            </Typography>
-                            <Field name="structuredData" multiline={true} rows={15} component={FinalFormInput} fullWidth validate={validateJson} />
-                        </Box>
+                        </ReactFinalFormField>
+                    </BlockAdminComponentSection>
 
-                        {/* Sitemap */}
-                        <Box
-                            sx={{
-                                marginTop: 8,
-                                marginBottom: 8,
-                            }}
-                        >
-                            <Typography variant="h4" gutterBottom>
-                                <FormattedMessage id="dextinity.blocks.seo.sitemap.sectionTitle" defaultMessage="Sitemap" />
-                            </Typography>
+                    <BlockAdminComponentSection
+                        title={<FormattedMessage id="dextinity.blocks.seo.canonicalTag.sectionTitle" defaultMessage="Canonical Tag" />}
+                    >
+                        <InputField label={intl.formatMessage(messages.url)} name="canonicalUrl" type="url" validate={validateUrl} />
+                    </BlockAdminComponentSection>
 
-                            <ReactFinalFormField
-                                name="noIndex"
-                                type="checkbox"
-                                parse={(v) => {
-                                    return !v; // parse from noIndex to index
-                                }}
-                                format={(v) => {
-                                    return !v; // format back from index to noIndex
-                                }}
-                            >
-                                {({ input: { checked, onChange } }) => {
-                                    const open = checked ? checked : false;
-                                    return (
-                                        <Paper variant="outlined">
-                                            <Collapsible
-                                                open={open}
-                                                header={
-                                                    <CollapsibleSwitchButtonHeader
-                                                        checked={open}
-                                                        title={<FormattedMessage id="dextinity.seo.sitemap.pageIndex" defaultMessage="Page Index" />}
-                                                    />
-                                                }
-                                                onChange={onChange}
-                                            >
-                                                <Divider />
-                                                <Box
-                                                    sx={{
-                                                        padding: 4,
-                                                    }}
+                    <BlockAdminComponentSection
+                        title={<FormattedMessage id="dextinity.blocks.seo.alternativeLinks.sectionTitle" defaultMessage="Alternate links" />}
+                    >
+                        <FieldArray<SeoBlockData["alternativeLinks"][number]> name="alternativeLinks">
+                            {({ fields }) => (
+                                <Fields>
+                                    {fields.map((link, index) => (
+                                        <AlternativeLinkRow key={link} data-repeated={index > 0 ? "" : undefined}>
+                                            <InputField
+                                                label={intl.formatMessage({
+                                                    id: "dextinity.blocks.seo.alternativeLinks.code",
+                                                    defaultMessage: "Code",
+                                                })}
+                                                name={`${link}.code`}
+                                                placeholder="en-US"
+                                            />
+                                            <InputField
+                                                label={intl.formatMessage(messages.url)}
+                                                name={`${link}.url`}
+                                                type="url"
+                                                validate={validateUrl}
+                                            />
+                                            <AlternativeLinkRemoveButton>
+                                                <IconButton
+                                                    variant="text"
+                                                    color="secondary"
+                                                    aria-label={intl.formatMessage({
+                                                        id: "dextinity.blocks.seo.alternativeLinks.remove",
+                                                        defaultMessage: "Remove alternate link",
+                                                    })}
+                                                    onClick={() => fields.remove(index)}
                                                 >
-                                                    <SelectField
-                                                        label={intl.formatMessage({
-                                                            id: "dextinity.blocks.seo.sitemap.priority",
-                                                            defaultMessage: "Priority",
-                                                        })}
-                                                        name="priority"
-                                                        fullWidth
-                                                        required
-                                                        options={priorityOptions}
-                                                    />
-                                                    <SelectField
-                                                        label={intl.formatMessage({
-                                                            id: "dextinity.blocks.seo.sitemap.changeFrequency",
-                                                            defaultMessage: "Change Frequency",
-                                                        })}
-                                                        name="changeFrequency"
-                                                        fullWidth
-                                                        required
-                                                        options={changeFrequencyOptions}
-                                                    />
-                                                </Box>
-                                            </Collapsible>
-                                        </Paper>
-                                    );
-                                }}
-                            </ReactFinalFormField>
-                        </Box>
-
-                        {/* Canonical Tag */}
-                        <Box
-                            sx={{
-                                marginTop: 8,
-                                marginBottom: 8,
-                            }}
-                        >
-                            <Typography variant="h4" gutterBottom>
-                                <FormattedMessage id="dextinity.blocks.seo.canonicalTag.sectionTitle" defaultMessage="Canonical Tag" />
-                            </Typography>
-                            <Field label={<FormattedMessage {...messages.url} />} name="canonicalUrl" component={FinalFormInput} fullWidth />
-                        </Box>
-
-                        {/* Alternate Hreflang */}
-                        <Box
-                            sx={{
-                                marginTop: 8,
-                                marginBottom: 8,
-                            }}
-                        >
-                            <BlockAdminComponentSectionGroup
-                                title={<FormattedMessage id="dextinity.blocks.seo.alternativeLinks.sectionTitle" defaultMessage="Alternate links" />}
-                            >
-                                <BlockAdminComponentPaper>
-                                    <FieldArray name="alternativeLinks">
-                                        {({ fields }) => (
-                                            <>
-                                                {fields.map((link, i) => (
-                                                    <Grid key={i} container spacing={2} sx={{ marginBottom: 2 }}>
-                                                        <Grid size={3}>
-                                                            <Field
-                                                                label={
-                                                                    <FormattedMessage
-                                                                        id="dextinity.blocks.seo.alternativeLinks.code"
-                                                                        defaultMessage="Code"
-                                                                    />
-                                                                }
-                                                                name={`${link}.code`}
-                                                                component={FinalFormInput}
-                                                                placeholder="en-US"
-                                                            />
-                                                        </Grid>
-                                                        <Grid size="grow">
-                                                            <Field
-                                                                label={<FormattedMessage {...messages.url} />}
-                                                                name={`${link}.url`}
-                                                                component={FinalFormInput}
-                                                                fullWidth
-                                                                validate={(url) => validateUrl(url)}
-                                                            />
-                                                        </Grid>
-                                                        <Grid
-                                                            sx={{
-                                                                alignSelf: "flex-start",
-                                                            }}
-                                                        >
-                                                            <DeleteButtonWrapper>
-                                                                <IconButton onClick={() => fields.remove(i)} size="large">
-                                                                    <Delete />
-                                                                </IconButton>
-                                                            </DeleteButtonWrapper>
-                                                        </Grid>
-                                                    </Grid>
-                                                ))}
-                                                <BlockAdminComponentButton variant="primary" onClick={() => fields.push({ code: "", url: "" })}>
-                                                    <AddButtonContent>
-                                                        <AddButtonIcon />
-                                                        <Typography>
-                                                            <FormattedMessage {...messages.add} />
-                                                        </Typography>
-                                                    </AddButtonContent>
-                                                </BlockAdminComponentButton>
-                                            </>
-                                        )}
-                                    </FieldArray>
-                                </BlockAdminComponentPaper>
-                            </BlockAdminComponentSectionGroup>
-                        </Box>
-                    </BlocksFinalForm>
-                </div>
+                                                    <Icon name="delete" />
+                                                </IconButton>
+                                            </AlternativeLinkRemoveButton>
+                                        </AlternativeLinkRow>
+                                    ))}
+                                    <div>
+                                        <Button
+                                            variant="outlined"
+                                            color="secondary"
+                                            startIcon={<Icon name="add" />}
+                                            onClick={() => fields.push({ code: "", url: "" })}
+                                        >
+                                            <FormattedMessage id="dextinity.blocks.seo.alternativeLinks.add" defaultMessage="Add alternate link" />
+                                        </Button>
+                                    </div>
+                                </Fields>
+                            )}
+                        </FieldArray>
+                    </BlockAdminComponentSection>
+                </BlocksFinalForm>
             );
         },
     };
@@ -385,61 +299,81 @@ export function createSeoBlock(
     return SeoBlock;
 }
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-interface FieldWithContentGenerationProps<FieldValue = any, FieldElement extends HTMLElement = HTMLElement> extends FieldProps<
-    FieldValue,
-    FieldElement
-> {
-    name: SeoTag;
-    generateSeoTag: (tag: SeoTag, currentValue: string | undefined) => Promise<string>;
-}
-
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-function FieldWithContentGeneration<FieldValue = any, FieldElement extends HTMLElement = HTMLElement>({
-    name,
-    generateSeoTag,
-    endAdornment: passedEndAdornment,
-    ...props
-}: FieldWithContentGenerationProps<FieldValue, FieldElement>) {
+function useSeoTagFieldActions(): (tag: SeoTag) => FieldAdapterActions<string> | undefined {
+    const intl = useIntl();
     const contentGenerationConfig = useContentGenerationConfig();
-    const formApi = useForm();
+    const generateSeoTag = useSeoTagGeneration();
+    const getTranslationActionsProps = useContentTranslationFieldActionsProps();
+    const contentGenerationEnabled = Boolean(contentGenerationConfig?.seo);
 
-    const [loading, setLoading] = useState(false);
+    if (!contentGenerationEnabled && !getTranslationActionsProps) {
+        return () => undefined;
+    }
 
-    const endAdornment = contentGenerationConfig?.seo ? (
-        <>
-            {passedEndAdornment}
-            <IconButton
-                color="primary"
-                onClick={async () => {
-                    setLoading(true);
-                    const seoTag = await generateSeoTag(name, formApi.getFieldState(name)?.value);
-                    setLoading(false);
-                    formApi.change(name, seoTag);
+    const labels = {
+        aiAssist: intl.formatMessage({ id: "dextinity.blocks.seo.generateSeoTag", defaultMessage: "Generate with AI" }),
+        suggestion: intl.formatMessage({ id: "dextinity.blocks.seo.generatedSeoTag", defaultMessage: "AI suggestion" }),
+        accept: intl.formatMessage({ id: "dextinity.blocks.seo.generatedSeoTag.accept", defaultMessage: "Accept" }),
+        discard: intl.formatMessage({ id: "dextinity.blocks.seo.generatedSeoTag.discard", defaultMessage: "Discard" }),
+    };
+
+    return (tag) => (context) => {
+        const translationActionsProps = getTranslationActionsProps?.(context);
+        return (
+            <FieldActions
+                {...translationActionsProps}
+                labels={{ ...translationActionsProps?.labels, ...labels }}
+                aiAssist={contentGenerationEnabled}
+                onAiSuggest={async () => {
+                    const generatedTag = await generateSeoTag(tag, context.value);
+                    if (!generatedTag) {
+                        // generateSeoTag already showed the error
+                        throw new Error(`Failed to generate ${tag}`);
+                    }
+                    return generatedTag;
                 }}
-            >
-                {loading ? <Loading behavior="fillParent" fontSize="large" /> : <ArtificialIntelligence />}
-            </IconButton>
-        </>
-    ) : (
-        passedEndAdornment
-    );
-
-    return <Field name={name} endAdornment={endAdornment} {...props} />;
+                onAiAccept={context.setValue}
+            />
+        );
+    };
 }
 
-const AddButtonContent = styled("span")`
+const Fields = styled("div")`
     display: flex;
     flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+`;
+
+const CollapsibleFields = styled(Fields)`
+    padding: var(--dextinity-space-4);
+    border-block-start: var(--dextinity-line-width) solid var(--dextinity-color-line);
+`;
+
+// Only the first row shows the labels, like the header of a table; the other rows keep them for screen readers
+const AlternativeLinkRow = styled("div")`
+    display: grid;
+    grid-template-columns: minmax(6rem, 1fr) 3fr auto;
+    align-items: start;
+    gap: var(--dextinity-space-3);
+
+    &[data-repeated] div:has(> label) {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+`;
+
+// Aligns the button with the inputs below their labels
+const AlternativeLinkRemoveButton = styled("div")`
+    display: flex;
     align-items: center;
-    padding: 4px 0;
-`;
+    min-block-size: var(--dextinity-field-height);
+    margin-block-start: calc(18px + var(--dextinity-field-gap));
 
-const AddButtonIcon = styled(Add)`
-    font-size: 24px;
-    margin-bottom: 8px;
-`;
-
-const DeleteButtonWrapper = styled("div")`
-    padding-top: 24px;
+    [data-repeated] > & {
+        margin-block-start: 0;
+    }
 `;

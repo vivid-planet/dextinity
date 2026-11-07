@@ -1,8 +1,9 @@
 import { StackPage, StackSwitch, StackSwitchApiContext, SubRoute, useSubRoutePrefix } from "@dextinity/admin";
-import { Divider } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { Fragment, type ReactNode } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
+import { BlockAdminComponentDivider } from "../common/BlockAdminComponentDivider";
 import { BlockAdminComponentNestedButton } from "../common/BlockAdminComponentNestedButton";
 import { BlockAdminComponentPaper, useBlockAdminComponentPaper } from "../common/BlockAdminComponentPaper";
 import { BlockAdminComponentSection } from "../common/BlockAdminComponentSection";
@@ -293,7 +294,7 @@ export const createCompositeBlock = <Options extends CreateCompositeBlockOptions
                         >
                             {children}
                         </BlockAdminComponentSection>
-                        {showDivider && <Divider />}
+                        {showDivider && <BlockDivider />}
                     </Container>
                 );
             };
@@ -374,3 +375,11 @@ export const createCompositeBlock = <Options extends CreateCompositeBlockOptions
     }
     return CompositeBlock;
 };
+
+const BlockDivider = styled(BlockAdminComponentDivider)`
+    margin-block: var(--dextinity-space-3);
+
+    &:last-child {
+        margin-block-end: 0;
+    }
+`;

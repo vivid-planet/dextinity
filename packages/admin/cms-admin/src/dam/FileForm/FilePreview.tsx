@@ -1,23 +1,13 @@
-import { useApolloClient } from "@apollo/client";
-import { Button, downloadFile, useStackApi } from "@dextinity/admin";
-import { Archive, Delete, Download, Restore, ZipFile } from "@dextinity/admin-icons";
-import { Paper } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { type ReactNode, useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { downloadFile } from "@dextinity/admin";
+import { Button, Icon } from "@dextinity/ui";
+import type { ReactNode } from "react";
+import { useIntl } from "react-intl";
 
-import { ConfirmDeleteDialog } from "../FileActions/ConfirmDeleteDialog";
-import { clearDamItemCache } from "../helpers/clearDamItemCache";
+import { useVideoPerformanceWarning } from "../config/damConfig";
+import { VideoPerformanceWarningAlert } from "../VideoPerformanceWarningAlert";
 import type { DamFileDetails } from "./EditFile";
-import { archiveDamFileMutation, deleteDamFileMutation, restoreDamFileMutation } from "./FilePreview.gql";
-import type {
-    GQLArchiveFileMutation,
-    GQLArchiveFileMutationVariables,
-    GQLDeleteDamFileMutation,
-    GQLDeleteDamFileMutationVariables,
-    GQLRestoreFileMutation,
-    GQLRestoreFileMutationVariables,
-} from "./FilePreview.gql.generated";
+import { FileInfos } from "./FileInfos";
+import { PreviewBody, PreviewPanel, PreviewStage } from "./FilePreview.sc";
 import { AudioPreview } from "./previews/AudioPreview";
 import { DefaultFilePreview } from "./previews/DefaultFilePreview";
 import { ImagePreview } from "./previews/ImagePreview";
@@ -25,122 +15,57 @@ import { PdfPreview } from "./previews/PdfPreview";
 import { VideoPreview } from "./previews/VideoPreview";
 import { ReplaceFileButton } from "./ReplaceFileButton";
 
-const ActionsContainer = styled("div")`
-    background-color: ${({ theme }) => theme.palette.grey["A400"]};
-    display: flex;
-    justify-content: center;
-`;
-
-const FileWrapper = styled(Paper)`
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
-
-const FilePreviewWrapper = styled("div")`
-    width: 100%;
-`;
-
-const ZipFileIcon = styled(ZipFile)`
-    color: ${({ theme }) => theme.palette.primary.main};
-    width: 54px;
-    height: 72px;
-`;
-
 interface FilePreviewProps {
     file: DamFileDetails;
+    onNotify: (notification: { tone: "error" | "info"; message: string }) => void;
 }
 
-export const FilePreview = ({ file }: FilePreviewProps) => {
-    const client = useApolloClient();
-    const stackApi = useStackApi();
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+/**
+ * The preview pane of `EditFile`: the file itself, where the crop area and focus point of an image are set, its facts, and the actions
+ * that work on its content.
+ */
+export function FilePreview({ file, onNotify }: FilePreviewProps) {
+    const intl = useIntl();
+    const { isVideoTooLarge } = useVideoPerformanceWarning();
 
     let preview: ReactNode;
-
-    if (file.mimetype.startsWith("image/") && file.image !== undefined) {
+    if (file.mimetype.startsWith("image/") && file.image != null) {
         preview = <ImagePreview file={file} />;
+    } else if (file.mimetype === "image/svg+xml") {
+        preview = <img src={file.fileUrl} alt={file.altText ?? ""} />;
     } else if (file.mimetype.startsWith("audio/")) {
         preview = <AudioPreview file={file} />;
     } else if (file.mimetype.startsWith("video/")) {
         preview = <VideoPreview file={file} />;
     } else if (file.mimetype === "application/pdf") {
         preview = <PdfPreview file={file} />;
-    } else if (["application/x-zip-compressed", "application/zip"].includes(file.mimetype)) {
-        preview = <DefaultFilePreview customIcon={<ZipFileIcon />} />;
     } else {
-        preview = <DefaultFilePreview />;
+        preview = <DefaultFilePreview file={file} />;
     }
 
     return (
-        <FilePreviewWrapper>
-            <ActionsContainer>
-                <Button
-                    variant="textLight"
-                    startIcon={<Download />}
-                    onClick={() => {
-                        downloadFile(file.fileUrl, file.name);
-                    }}
-                >
-                    <FormattedMessage id="dextinity.dam.file.downloadFile" defaultMessage="Download File" />
-                </Button>
-                <ReplaceFileButton file={file} />
-                <Button
-                    variant="textLight"
-                    startIcon={file.archived ? <Restore /> : <Archive />}
-                    onClick={() => {
-                        if (file.archived) {
-                            client.mutate<GQLRestoreFileMutation, GQLRestoreFileMutationVariables>({
-                                mutation: restoreDamFileMutation,
-                                variables: { id: file.id },
-                            });
-                        } else {
-                            client.mutate<GQLArchiveFileMutation, GQLArchiveFileMutationVariables>({
-                                mutation: archiveDamFileMutation,
-                                variables: { id: file.id },
-                            });
-                        }
-                    }}
-                >
-                    {file.archived ? (
-                        <FormattedMessage id="dextinity.dam.file.restore" defaultMessage="Restore" />
-                    ) : (
-                        <FormattedMessage id="dextinity.dam.file.archive" defaultMessage="Archive" />
-                    )}
-                </Button>
-                <Button
-                    variant="textLight"
-                    startIcon={<Delete />}
-                    onClick={() => {
-                        setDeleteDialogOpen(true);
-                    }}
-                >
-                    <FormattedMessage id="dextinity.dam.file.delete" defaultMessage="Delete" />
-                </Button>
-            </ActionsContainer>
-            <FileWrapper>{preview}</FileWrapper>
-            <ConfirmDeleteDialog
-                open={deleteDialogOpen}
-                onCloseDialog={async (confirmed) => {
-                    if (confirmed) {
-                        await client.mutate<GQLDeleteDamFileMutation, GQLDeleteDamFileMutationVariables>({
-                            mutation: deleteDamFileMutation,
-                            variables: { id: file.id },
-                            refetchQueries: ["DamItemsList"],
-                            update: (cache) => {
-                                clearDamItemCache(cache);
-                            },
-                        });
-
-                        stackApi?.goBack();
-                    }
-
-                    setDeleteDialogOpen(false);
-                }}
-                itemType="file"
-                name={file.name}
-            />
-        </FilePreviewWrapper>
+        <PreviewPanel
+            title={intl.formatMessage({ id: "dextinity.dam.file.preview", defaultMessage: "Preview" })}
+            actions={
+                <>
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        size="small"
+                        startIcon={<Icon name="download" />}
+                        onClick={() => downloadFile(file.fileUrl, file.name)}
+                    >
+                        {intl.formatMessage({ id: "dextinity.dam.file.downloadFile", defaultMessage: "Download File" })}
+                    </Button>
+                    <ReplaceFileButton file={file} onNotify={onNotify} />
+                </>
+            }
+        >
+            <PreviewBody>
+                {isVideoTooLarge(file) && <VideoPerformanceWarningAlert />}
+                <PreviewStage data-type={file.mimetype === "application/pdf" ? "pdf" : undefined}>{preview}</PreviewStage>
+                <FileInfos file={file} />
+            </PreviewBody>
+        </PreviewPanel>
     );
-};
+}

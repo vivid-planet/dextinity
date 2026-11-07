@@ -1,6 +1,7 @@
-import { Dialog, OkayButton, useStackApi } from "@dextinity/admin";
-import { DialogActions } from "@mui/material";
-import { useMemo, useState } from "react";
+import { messages, useStackApi } from "@dextinity/admin";
+import { Button, Dialog } from "@dextinity/ui";
+import { styled } from "@mui/material/styles";
+import { type CSSProperties, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useLocation } from "react-router";
 import { v4 as uuid } from "uuid";
@@ -12,7 +13,7 @@ import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
 import { TableBlockContextProvider } from "./table/TableBlockContext";
-import { TableBlockGrid } from "./table/TableBlockGrid";
+import { getTableBlockGridWidth, TableBlockGrid } from "./table/TableBlockGrid";
 import { createCellRoute, parseCellHash } from "./table/utils/cellRoute";
 import { createTablePreviewText, getPlainTexts } from "./table/utils/createTablePreviewText";
 import {
@@ -186,11 +187,8 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
             const stackApi = useStackApi();
             const intl = useIntl();
             const [showDialog, setShowDialog] = useState(true);
-            const [hasDialogOpened, setHasDialogOpened] = useState(false);
             const location = useLocation();
             const clickedCell = useMemo(() => parseCellHash(location.hash), [location.hash]);
-
-            const handleDialogOpened = () => setHasDialogOpened(true);
 
             const closeTableBlock = () => {
                 setShowDialog(false);
@@ -201,26 +199,28 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
                 <TableBlockContextProvider RichTextBlock={RichTextBlock}>
                     <SelectPreviewComponent>
                         <BlocksFinalForm<TableBlockState<CellState>> onSubmit={updateState} initialValues={state}>
-                            <Dialog
+                            <TableDialog
                                 open={showDialog}
-                                maxWidth="xl"
-                                onClose={closeTableBlock}
-                                title={intl.formatMessage({ id: "dextinity.blocks.table.displayName", defaultMessage: "Table" })}
-                                sx={(theme) => ({ zIndex: theme.zIndex.modal - 2 })}
+                                onOpenChange={(open) => {
+                                    if (!open) {
+                                        closeTableBlock();
+                                    }
+                                }}
+                                size="large"
                                 slotProps={{
-                                    root: {
-                                        slotProps: {
-                                            paper: { sx: { height: "100%", maxHeight: 880 } },
-                                            transition: { onEntered: handleDialogOpened },
-                                        },
+                                    viewport: {
+                                        style: { "--table-block-grid-width": `${getTableBlockGridWidth(state.columns)}px` } as CSSProperties,
                                     },
                                 }}
+                                title={intl.formatMessage({ id: "dextinity.blocks.table.displayName", defaultMessage: "Table" })}
+                                footer={
+                                    <Button onClick={closeTableBlock}>
+                                        <FormattedMessage {...messages.ok} />
+                                    </Button>
+                                }
                             >
-                                <TableBlockGrid state={state} updateState={updateState} clickedCell={hasDialogOpened ? clickedCell : undefined} />
-                                <DialogActions>
-                                    <OkayButton onClick={closeTableBlock} />
-                                </DialogActions>
-                            </Dialog>
+                                <TableBlockGrid state={state} updateState={updateState} clickedCell={clickedCell} />
+                            </TableDialog>
                         </BlocksFinalForm>
                     </SelectPreviewComponent>
                 </TableBlockContextProvider>
@@ -234,3 +234,10 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
 
     return TableBlock;
 };
+
+// As wide as the table's columns, at least as wide as a large dialog, and as high as the table, up to the screen's size
+const TableDialog = styled(Dialog)`
+    &&[data-size="large"] {
+        --dextinity-dialog-width: max(var(--dextinity-dialog-width-large), calc(var(--table-block-grid-width) + 2 * var(--dextinity-dialog-padding)));
+    }
+`;

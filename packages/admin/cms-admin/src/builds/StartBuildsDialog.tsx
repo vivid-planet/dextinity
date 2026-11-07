@@ -1,19 +1,14 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Alert, Button, CancelButton, LocalErrorScopeApolloContext } from "@dextinity/admin";
-import {
-    CircularProgress,
-    // eslint-disable-next-line no-restricted-imports
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-} from "@mui/material";
-import type { GridRowSelectionModel } from "@mui/x-data-grid";
-import { useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
+import { Banner, Button, Dialog, DialogFormActions, EmptyState, Icon, Skeleton } from "@dextinity/ui";
+import { CheckboxGroupField, focusOnError } from "@dextinity/ui-react-final-form";
+import { FORM_ERROR, type FormApi } from "final-form";
+import { useId } from "react";
+import { Form } from "react-final-form";
+import { useIntl } from "react-intl";
 
-import { DataGrid } from "../dataGrid/DataGrid";
 import type { GQLBuildTemplatesQuery, GQLCreateBuildsMutation, GQLCreateBuildsMutationVariables } from "./StartBuildsDialog.generated";
+import { StartBuildsForm } from "./StartBuildsDialog.sc";
 
 const buildTemplatesQuery = gql`
     query BuildTemplates {
@@ -31,83 +26,147 @@ const createBuildsMutation = gql`
     }
 `;
 
+interface StartBuildsFormValues {
+    names: string[];
+}
+
+const initialValues: StartBuildsFormValues = { names: [] };
+const formDecorators = [focusOnError];
+
 type StartBuildsDialogProps = {
     open: boolean;
     onClose: () => void;
 };
 
-export function StartBuildsDialog(props: StartBuildsDialogProps) {
-    const { open, onClose } = props;
-
+/**
+ * Starts builds of the chosen build templates, e.g. after a failed automatic publication.
+ */
+export function StartBuildsDialog({ open, onClose }: StartBuildsDialogProps) {
     const intl = useIntl();
+    const formId = useId();
 
-    const { data } = useQuery<GQLBuildTemplatesQuery>(buildTemplatesQuery, {
+    const { data, loading, error, refetch } = useQuery<GQLBuildTemplatesQuery>(buildTemplatesQuery, {
+        skip: !open,
+        context: LocalErrorScopeApolloContext,
+        notifyOnNetworkStatusChange: true,
+    });
+    const [startBuilds, { loading: starting }] = useMutation<GQLCreateBuildsMutation, GQLCreateBuildsMutationVariables>(createBuildsMutation, {
+        refetchQueries: ["Builds"],
         context: LocalErrorScopeApolloContext,
     });
-    const [startBuilds, { loading }] = useMutation<GQLCreateBuildsMutation, GQLCreateBuildsMutationVariables>(createBuildsMutation, {
-        refetchQueries: ["Builds"],
-    });
 
-    const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({
-        type: "include",
-        ids: new Set([]),
-    });
+    const buildTemplates = data?.buildTemplates ?? [];
 
-    const rows = data?.buildTemplates ?? [];
+    const submit = async ({ names }: StartBuildsFormValues, form: FormApi<StartBuildsFormValues>) => {
+        try {
+            await startBuilds({ variables: { input: { names } } });
+        } catch {
+            return {
+                [FORM_ERROR]: intl.formatMessage({
+                    id: "dextinity.pages.publisher.startBuildsDialog.failed",
+                    defaultMessage: "The builds couldn't be started. Try again in a moment.",
+                }),
+            };
+        }
+        onClose();
+        form.restart();
+    };
 
     return (
-        <Dialog open={open} onClose={onClose}>
-            <DialogTitle>
-                <FormattedMessage id="dextinity.pages.publisher.startBuildsDialog.header" defaultMessage="Start manual builds" />
-            </DialogTitle>
-            <DialogContent>
-                <Alert severity="info">
-                    <FormattedMessage
-                        id="dextinity.pages.publisher.startBuildsDialog.hint"
-                        defaultMessage="Please use this function only in exceptional cases. The more builds you start, the longer it takes until they are completed. If you need to rebuild manually, select only the scopes required."
-                    />
-                </Alert>
-                <DataGrid
-                    autoHeight
-                    rows={rows}
-                    columns={[
-                        {
-                            field: "name",
-                            headerName: intl.formatMessage({
-                                id: "dextinity.pages.publisher.startBuildsDialog.buildTemplates.name",
-                                defaultMessage: "Name",
-                            }),
-                            flex: 1,
-                            renderCell: ({ row }) => {
-                                return row.label && row.label.length > 0 ? row.label : row.name;
-                            },
-                        },
-                    ]}
-                    checkboxSelection
-                    disableColumnSelector
-                    onRowSelectionModelChange={(newSelectionModel) => {
-                        setSelectionModel(newSelectionModel);
+        <Form<StartBuildsFormValues> onSubmit={submit} initialValues={initialValues} decorators={formDecorators}>
+            {({ handleSubmit, submitError, form }) => (
+                <Dialog
+                    open={open}
+                    onOpenChange={(nextOpen) => {
+                        if (!nextOpen) {
+                            onClose();
+                            form.restart();
+                        }
                     }}
-                    disableRowSelectionExcludeModel
-                    rowSelectionModel={selectionModel}
-                    hideFooter
-                />
-            </DialogContent>
-            <DialogActions>
-                <CancelButton onClick={() => onClose()} />
-                <Button
-                    disabled={loading || selectionModel.ids.size < 1}
-                    startIcon={loading ? <CircularProgress size={20} /> : undefined}
-                    onClick={async () => {
-                        await startBuilds({
-                            variables: { input: { names: rows.filter((row) => selectionModel.ids.has(row.id)).map((row) => row.name) } },
-                        });
-                        onClose();
-                    }}
+                    dismissible={!starting}
+                    title={intl.formatMessage({ id: "dextinity.pages.publisher.startBuildsDialog.header", defaultMessage: "Start manual builds" })}
+                    description={intl.formatMessage({
+                        id: "dextinity.pages.publisher.startBuildsDialog.hint",
+                        defaultMessage:
+                            "Please use this function only in exceptional cases. The more builds you start, the longer it takes until they are completed. If you need to rebuild manually, select only the scopes required.",
+                    })}
+                    footer={
+                        <DialogFormActions
+                            formId={formId}
+                            submitLabel={intl.formatMessage({
+                                id: "dextinity.pages.publisher.startBuildsDialog.button",
+                                defaultMessage: "Start builds",
+                            })}
+                            onCancel={() => {
+                                onClose();
+                                form.restart();
+                            }}
+                            submitting={starting}
+                            submitDisabled={buildTemplates.length === 0}
+                            labels={{ cancel: intl.formatMessage({ id: "dextinity.generic.cancel", defaultMessage: "Cancel" }) }}
+                        />
+                    }
                 >
-                    <FormattedMessage id="dextinity.pages.publisher.startBuildsDialog.button" defaultMessage="Start builds" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+                    <StartBuildsForm id={formId} onSubmit={handleSubmit} noValidate>
+                        {submitError && <Banner tone="error">{submitError}</Banner>}
+                        {loading ? (
+                            <Skeleton variant="row" count={3} />
+                        ) : error ? (
+                            <EmptyState
+                                icon={<Icon name="error" />}
+                                title={intl.formatMessage({
+                                    id: "dextinity.pages.publisher.startBuildsDialog.loadError",
+                                    defaultMessage: "The build templates couldn't be loaded",
+                                })}
+                                actions={
+                                    <Button
+                                        variant="outlined"
+                                        color="secondary"
+                                        size="small"
+                                        startIcon={<Icon name="reload" />}
+                                        onClick={() => refetch()}
+                                    >
+                                        {intl.formatMessage({
+                                            id: "dextinity.pages.publisher.startBuildsDialog.retry",
+                                            defaultMessage: "Load again",
+                                        })}
+                                    </Button>
+                                }
+                            />
+                        ) : buildTemplates.length === 0 ? (
+                            <EmptyState
+                                icon={<Icon name="online" />}
+                                title={intl.formatMessage({
+                                    id: "dextinity.pages.publisher.startBuildsDialog.empty",
+                                    defaultMessage: "There are no build templates",
+                                })}
+                            />
+                        ) : (
+                            <CheckboxGroupField<string>
+                                name="names"
+                                label={intl.formatMessage({
+                                    id: "dextinity.pages.publisher.startBuildsDialog.buildTemplates.name",
+                                    defaultMessage: "Builds",
+                                })}
+                                required
+                                selectAllLabel={intl.formatMessage({
+                                    id: "dextinity.pages.publisher.startBuildsDialog.selectAll",
+                                    defaultMessage: "All builds",
+                                })}
+                                options={buildTemplates.map((buildTemplate) => ({
+                                    value: buildTemplate.name,
+                                    label: buildTemplate.label || buildTemplate.name,
+                                    description: buildTemplate.label ? buildTemplate.name : undefined,
+                                }))}
+                                requiredMessage={intl.formatMessage({
+                                    id: "dextinity.pages.publisher.startBuildsDialog.required",
+                                    defaultMessage: "Select at least one build",
+                                })}
+                            />
+                        )}
+                    </StartBuildsForm>
+                </Dialog>
+            )}
+        </Form>
     );
 }

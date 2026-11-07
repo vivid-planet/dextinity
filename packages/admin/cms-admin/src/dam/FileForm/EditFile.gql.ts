@@ -7,10 +7,13 @@ const damFileDetailFragment = gql`
             id
         }
         name
+        damPath
         size
         mimetype
         archived
         contentHash
+        createdAt
+        updatedAt
         title
         altText
         aiContentType
@@ -83,6 +86,30 @@ export const damFileDependentsQuery = gql`
                 }
                 totalCount
             }
+        }
+    }
+`;
+
+export const deleteDamFileMutation = gql`
+    mutation DeleteDamFile($id: ID!) {
+        deleteDamFile(id: $id)
+    }
+`;
+
+export const archiveDamFileMutation = gql`
+    mutation ArchiveFile($id: ID!) {
+        archiveDamFile(id: $id) {
+            id
+            archived
+        }
+    }
+`;
+
+export const restoreDamFileMutation = gql`
+    mutation RestoreFile($id: ID!) {
+        restoreDamFile(id: $id) {
+            id
+            archived
         }
     }
 `;

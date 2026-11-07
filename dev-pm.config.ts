@@ -13,6 +13,8 @@ const packageFolderMapping = {
     "@dextinity/site-nextjs": "packages/site/site-nextjs",
     "@dextinity/site-react": "packages/site/site-react",
     "@dextinity/ui": "packages/ui",
+    "@dextinity/ui-react-final-form": "packages/ui-react-final-form",
+    "@dextinity/ui-react-hook-form": "packages/ui-react-hook-form",
 };
 
 const waitOnPackages = (...packages: (keyof typeof packageFolderMapping)[]) => {
@@ -64,7 +66,13 @@ export default defineConfig({
             name: "cms-admin",
             script: "pnpm --filter @dextinity/cms-admin run start",
             group: ["cms-admin", "cms"],
-            waitOn: waitOnPackages("@dextinity/admin", "@dextinity/admin-icons", "@dextinity/admin-rte"),
+            waitOn: waitOnPackages(
+                "@dextinity/admin",
+                "@dextinity/admin-icons",
+                "@dextinity/admin-rte",
+                "@dextinity/ui",
+                "@dextinity/ui-react-final-form",
+            ),
         },
         {
             name: "cms-admin-codegen-graphql-types",
@@ -145,18 +153,18 @@ export default defineConfig({
         {
             name: "dextinity-ui",
             script: "pnpm --filter @dextinity/ui run dev",
-            group: ["dextinity-ui"],
+            group: ["dextinity-ui", "cms-admin", "cms"],
         },
         {
             name: "dextinity-ui-react-final-form",
             script: "pnpm --filter @dextinity/ui-react-final-form run dev",
-            group: ["dextinity-ui"],
+            group: ["dextinity-ui", "cms-admin", "cms"],
             waitOn: waitOnPackages("@dextinity/ui"),
         },
         {
             name: "dextinity-ui-react-hook-form",
             script: "pnpm --filter @dextinity/ui-react-hook-form run dev",
-            group: ["dextinity-ui"],
+            group: ["dextinity-ui", "cms-admin", "cms"],
             waitOn: waitOnPackages("@dextinity/ui"),
         },
         {
@@ -215,6 +223,9 @@ export default defineConfig({
                     "@dextinity/admin-rte",
                     "@dextinity/cms-admin",
                     "@dextinity/brevo-admin",
+                    "@dextinity/ui",
+                    "@dextinity/ui-react-final-form",
+                    "@dextinity/ui-react-hook-form",
                 ),
                 "tcp:$API_PORT",
             ],

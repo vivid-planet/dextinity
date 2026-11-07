@@ -1,10 +1,10 @@
-import { Field, FinalFormInput } from "@dextinity/admin";
-import { Box } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { FormattedMessage } from "react-intl";
 
 import type { YouTubeVideoBlockData, YouTubeVideoBlockInput } from "../blocks.generated";
 import { useBlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
 import { BlockAdminComponentSection } from "./common/BlockAdminComponentSection";
+import { BlockInputField } from "./form/BlockInputField";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { VideoOptionsFields } from "./helpers/VideoOptionsFields";
@@ -76,28 +76,23 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
         const isInPaper = useBlockAdminComponentPaper();
 
         return (
-            <Box
-                sx={{
-                    padding: isInPaper ? 3 : 0,
-                    pb: 0,
-                }}
-            >
+            <VideoFields data-in-paper={isInPaper ? "" : undefined}>
                 <SelectPreviewComponent>
                     <BlocksFinalForm onSubmit={updateState} initialValues={state}>
-                        <Field
-                            label={
-                                <FormattedMessage
-                                    id="dextinity.blocks.youTubeVideo.youtubeIdentifier"
-                                    defaultMessage="YouTube URL or YouTube Video ID"
-                                />
-                            }
-                            validate={validateIdentifier}
-                            name="youtubeIdentifier"
-                            component={FinalFormInput}
-                            fullWidth
-                            disableContentTranslation
-                        />
-                        <VideoOptionsFields />
+                        <FormFields>
+                            <BlockInputField
+                                label={
+                                    <FormattedMessage
+                                        id="dextinity.blocks.youTubeVideo.youtubeIdentifier"
+                                        defaultMessage="YouTube URL or YouTube Video ID"
+                                    />
+                                }
+                                validate={validateIdentifier}
+                                name="youtubeIdentifier"
+                                disableContentTranslation
+                            />
+                            <VideoOptionsFields />
+                        </FormFields>
                     </BlocksFinalForm>
                     <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.video.previewImage" defaultMessage="Preview Image" />}>
                         <PixelImageBlock.AdminComponent
@@ -108,7 +103,7 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
                         />
                     </BlockAdminComponentSection>
                 </SelectPreviewComponent>
-            </Box>
+            </VideoFields>
         );
     },
 
@@ -129,3 +124,15 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
 
     tags: ["YouTube"],
 };
+
+const VideoFields = styled("div")`
+    &[data-in-paper] {
+        padding: var(--dextinity-space-4) var(--dextinity-space-4) 0;
+    }
+`;
+
+const FormFields = styled("div")`
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+`;

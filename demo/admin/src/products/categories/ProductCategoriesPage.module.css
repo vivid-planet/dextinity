@@ -1,0 +1,25 @@
+.titleCell {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+}
+
+.title {
+    overflow: hidden;
+    font-weight: 500;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.slug {
+    overflow: hidden;
+    color: var(--dextinity-color-text-tertiary);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-mono-size);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.muted {
+    color: var(--dextinity-color-text-secondary);
+}

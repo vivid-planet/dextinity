@@ -9,6 +9,7 @@ import {
     type TipTapTextBlock,
     type TipTapTextBlockStyle,
 } from "../createTipTapRichTextBlock";
+import { chooseMenuItem, closeMenu } from "./tipTapStoryInteractions";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -99,18 +100,19 @@ function ListTextBlockStylesStory() {
 export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
     render: () => <ListTextBlockStylesStory />,
     play: async ({ canvas, userEvent, step }) => {
-        await step("Editor is ready with two comboboxes", async () => {
+        await step("Editor is ready with the text type and text style menus", async () => {
             await waitFor(
                 () => {
                     expect(canvas.getByRole("textbox")).toBeInTheDocument();
-                    expect(canvas.getAllByRole("combobox")).toHaveLength(2);
+                    expect(canvas.getByRole("button", { name: "Text type" })).toBeInTheDocument();
+                    expect(canvas.getByRole("button", { name: "Text style" })).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
         });
 
         await step("Paragraph mode: text block style dropdown shows paragraph-applicable styles only", async () => {
-            const textBlockStyleSelect = canvas.getAllByRole("combobox")[1];
+            const textBlockStyleSelect = canvas.getByRole("button", { name: "Text style" });
             await userEvent.click(textBlockStyleSelect);
 
             await waitFor(
@@ -125,7 +127,7 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.keyboard("{Escape}");
+            await closeMenu(userEvent);
         });
 
         await step("Click the editor, then type text so list toggle works", async () => {
@@ -152,12 +154,12 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
         await step("Unordered list mode: text block style dropdown shows UL-applicable styles", async () => {
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox").length).toBeGreaterThanOrEqual(2);
+                    expect(canvas.getByRole("button", { name: "Text style" })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
 
-            const textBlockStyleSelect = canvas.getAllByRole("combobox")[1];
+            const textBlockStyleSelect = canvas.getByRole("button", { name: "Text style" });
             await userEvent.click(textBlockStyleSelect);
 
             await waitFor(
@@ -172,7 +174,7 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.keyboard("{Escape}");
+            await closeMenu(userEvent);
         });
 
         await step("Switch to ordered list via keyboard shortcut", async () => {
@@ -190,7 +192,7 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
         });
 
         await step("Ordered list mode: text block style dropdown includes OL-only style", async () => {
-            const textBlockStyleSelect = canvas.getAllByRole("combobox")[1];
+            const textBlockStyleSelect = canvas.getByRole("button", { name: "Text style" });
             await userEvent.click(textBlockStyleSelect);
 
             await waitFor(
@@ -205,11 +207,11 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.keyboard("{Escape}");
+            await closeMenu(userEvent);
         });
 
         await step("Select 'List Large' style", async () => {
-            const textBlockStyleSelect = canvas.getAllByRole("combobox")[1];
+            const textBlockStyleSelect = canvas.getByRole("button", { name: "Text style" });
             await userEvent.click(textBlockStyleSelect);
 
             await waitFor(
@@ -223,7 +225,7 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
 
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("List Large");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("List Large");
                 },
                 { timeout: 3000 },
             );
@@ -256,20 +258,20 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
         });
 
         await step("The innermost list decides: the nested bullet list offers its own styles, not the outer list's", async () => {
-            const textBlockStyleSelect = canvas.getAllByRole("combobox")[1];
+            const textBlockStyleSelect = canvas.getByRole("button", { name: "Text style" });
             await userEvent.click(textBlockStyleSelect);
 
             await waitFor(
                 () => {
                     const options = within(document.body)
-                        .getAllByRole("option")
+                        .getAllByRole("menuitemradio")
                         .map((option) => option.textContent);
                     expect(options).toEqual(["Default", "List Large", "List Small", "Universal"]);
                 },
                 { timeout: 3000 },
             );
 
-            await userEvent.keyboard("{Escape}");
+            await closeMenu(userEvent);
         });
     },
 };
@@ -381,8 +383,8 @@ export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
             await userEvent.click(editor);
             await userEvent.keyboard("Heading in a list");
 
-            await userEvent.click(canvas.getAllByRole("combobox")[0]);
-            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+            await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 2");
 
             await waitFor(
                 () => {
@@ -410,8 +412,8 @@ export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
         await step("Choosing a heading inside a list takes the content out of the list", async () => {
             const editor = canvas.getByRole("textbox");
 
-            await userEvent.click(canvas.getAllByRole("combobox")[0]);
-            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+            await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 2");
 
             await waitFor(
                 () => {

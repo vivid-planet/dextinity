@@ -1,6 +1,7 @@
-import { Warning } from "@dextinity/admin-icons";
+import { Icon } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import type { PropsWithChildren } from "react";
+import { useIntl } from "react-intl";
 
 import { usePromise } from "./usePromise";
 
@@ -9,14 +10,28 @@ interface BlockAdminTabLabelProps {
 }
 
 export function BlockAdminTabLabel({ children, isValid: isValidFn }: PropsWithChildren<BlockAdminTabLabelProps>) {
+    const intl = useIntl();
     const isValid = usePromise(isValidFn, { initialValue: true });
 
     return (
         <Root>
-            {!isValid && <Warning color="error" />}
+            {!isValid && (
+                <InvalidIcon
+                    name="warning-solid"
+                    aria-label={intl.formatMessage({ id: "dextinity.blocks.containsErrors", defaultMessage: "Contains errors" })}
+                />
+            )}
             {children}
         </Root>
     );
 }
 
-const Root = styled("span")``;
+const Root = styled("span")`
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-1);
+`;
+
+const InvalidIcon = styled(Icon)`
+    color: var(--dextinity-color-danger);
+`;

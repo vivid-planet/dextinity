@@ -11,7 +11,7 @@ export const Root = createComponentSlot("div")<RteToolbarClassKey>({
 })(
     ({ theme }) => css`
         position: sticky;
-        top: 0;
+        top: var(--dextinity-admin-sticky-top, 0px);
         z-index: 2;
         display: flex;
         flex-wrap: wrap;

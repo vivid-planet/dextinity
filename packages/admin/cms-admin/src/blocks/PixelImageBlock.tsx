@@ -1,10 +1,9 @@
 import { gql } from "@apollo/client";
-import { Field } from "@dextinity/admin";
-import { Crop } from "@dextinity/admin-icons";
+import { Icon } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
-import { deepClone } from "@mui/x-data-grid/internals";
 import { useCallback, useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { Field } from "react-final-form";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import type { PixelImageBlockData, PixelImageBlockInput } from "../blocks.generated";
 import { useDextinityConfig } from "../config/DextinityConfigContext";
@@ -131,7 +130,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
     },
 
     replaceDependenciesInOutput: (output, replacements) => {
-        const clonedOutput: PixelImageBlockInput = deepClone(output);
+        const clonedOutput: PixelImageBlockInput = structuredClone(output);
         const replacement = replacements.find((replacement) => replacement.type === "DamFile" && replacement.originalId === output.damFileId);
 
         if (replacement) {
@@ -144,12 +143,11 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
     definesOwnPadding: true,
 
     AdminComponent: ({ state, updateState }) => {
+        const intl = useIntl();
         const [open, setOpen] = useState(false);
         const { apiUrl } = useDextinityConfig();
         const damBasePath = useDamBasePath();
         const { filteredAcceptedMimeTypes } = useDamAcceptedMimeTypes();
-
-        // useSyncImageAttributes({ state, updateState });
 
         const handleClose = useCallback(() => {
             setOpen(false);
@@ -172,14 +170,13 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
                     <Field
                         name="damFile"
                         component={FileField}
-                        fullWidth
                         buttonText={<FormattedMessage id="dextinity.blocks.image.chooseImage" defaultMessage="Choose image" />}
                         allowedMimetypes={filteredAcceptedMimeTypes.pixelImage}
-                        preview={<PreviewImage src={previewUrl} width="70" height="70" />}
+                        preview={<PreviewImage src={previewUrl} alt="" />}
                         menuActions={[
                             {
-                                label: <FormattedMessage id="dextinity.blocks.image.cropImage" defaultMessage="Crop image" />,
-                                icon: <Crop />,
+                                label: intl.formatMessage({ id: "dextinity.blocks.image.cropImage", defaultMessage: "Crop image" }),
+                                icon: <Icon name="crop" />,
                                 onClick: handleCropClick,
                             },
                         ]}

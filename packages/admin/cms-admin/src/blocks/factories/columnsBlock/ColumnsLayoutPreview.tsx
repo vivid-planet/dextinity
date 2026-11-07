@@ -1,4 +1,3 @@
-import { Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Children, type ReactElement, type ReactNode } from "react";
 
@@ -13,28 +12,41 @@ interface ContainerProps {
 
 export function ColumnsLayoutPreview({ children }: ContainerProps) {
     const columns = Children.map(children, (child) => `${child.props.width}fr`).join(" ");
-    return <Root columns={columns}>{children}</Root>;
+    return <Root style={{ gridTemplateColumns: columns }}>{children}</Root>;
 }
 
-const Root = styled("div")<{ columns: string }>`
+const Root = styled("span")`
     display: grid;
-    grid-template-columns: ${({ columns }) => columns};
-    box-shadow: ${({ theme }) => theme.shadows[1]};
+    box-sizing: border-box;
+    inline-size: 100%;
+    min-inline-size: 72px;
+    block-size: 32px;
+    overflow: hidden;
+    border: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    border-radius: var(--dextinity-radius-item);
+    background: var(--dextinity-color-surface-sunken);
 `;
 
-export const ColumnsLayoutPreviewSpacing = styled("span")<ItemProps>`
-    height: 40px;
-    background-color: #fff;
-`;
+export function ColumnsLayoutPreviewSpacing(_props: ItemProps) {
+    return <span />;
+}
 
-const RootContent = styled(ColumnsLayoutPreviewSpacing)`
-    background-color: ${({ theme }) => theme.palette.grey[100]};
-    color: ${({ theme }) => theme.palette.background.paper};
+const Content = styled("span")`
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    min-inline-size: 0;
+    background: var(--dextinity-color-accent-soft);
+    color: var(--dextinity-color-accent-text);
+    font-size: var(--dextinity-typography-small-size);
+    font-variant-numeric: tabular-nums;
+
+    & svg {
+        inline-size: 14px;
+        block-size: 14px;
+    }
 `;
 
 export function ColumnsLayoutPreviewContent({ width, label }: ItemProps) {
-    return <RootContent width={width}>{label ? label : width > 3 ? <Typography variant="subtitle1">{width}</Typography> : null}</RootContent>;
+    return <Content>{label ? label : width > 3 ? width : null}</Content>;
 }

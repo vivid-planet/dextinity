@@ -1,32 +1,16 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
-import {
-    Button,
-    DataGridToolbar,
-    DeleteDialog,
-    FillSpace,
-    GridCellContent,
-    type GridColDef,
-    GridToolbarQuickFilter,
-    messages,
-    muiGridFilterToGql,
-    muiGridSortToGql,
-    ToolbarActions,
-    ToolbarItem,
-    useBufferedRowCount,
-    useDataGridRemote,
-    useEditDialog,
-    usePersistentColumnState,
-} from "@dextinity/admin";
-import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from "@dextinity/admin-icons";
-import { DialogContent, IconButton } from "@mui/material";
-import type { GridSlotsComponent, GridToolbarProps } from "@mui/x-data-grid";
-import { type ReactElement, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
+import { Button, ConfirmDialog, DataGrid, type DataGridColumn, EmptyState, FilterBar, Icon, IconButton, type NewToast } from "@dextinity/ui";
+import { useState } from "react";
+import { useIntl } from "react-intl";
 
-import { DataGrid } from "../../dataGrid/DataGrid";
-import type { GQLDamMediaAlternativeType } from "../../graphql.generated";
+import { toGqlSort } from "../../dataGrid/remoteList/toGqlSort";
+import { useDataGridLabels } from "../../dataGrid/remoteList/useDataGridLabels";
+import { useRemoteListPagination } from "../../dataGrid/remoteList/useRemoteListPagination";
+import { useRemoteListState } from "../../dataGrid/remoteList/useRemoteListState";
+import type { GQLDamMediaAlternativeSortField, GQLDamMediaAlternativeType } from "../../graphql.generated";
 import { VideoPreviewCaptionsQueryName } from "../FileForm/previews/VideoPreview";
-import { MediaAlternativeForm } from "./MediaAlternativeForm";
+import { MediaAlternativeDialog } from "./MediaAlternativeDialog";
 import type {
     GQLDamMediaAlternativeGridFragment,
     GQLDamMediaAlternativesQuery,
@@ -34,6 +18,7 @@ import type {
     GQLDeleteDamMediaAlternativeMutation,
     GQLDeleteDamMediaAlternativeMutationVariables,
 } from "./MediaAlternativesGrid.generated";
+import { GridRoot, Name, NameCell, SecondaryText } from "./MediaAlternativesGrid.sc";
 
 const damMediaAlternativeFragment = gql`
     fragment DamMediaAlternativeGrid on DamMediaAlternative {
@@ -79,162 +64,214 @@ const deleteDamMediaAlternativeMutation = gql`
     }
 `;
 
-export const mediaAlternativesGridRefetchQueries = [damMediaAlternativesQuery, VideoPreviewCaptionsQueryName];
+const refetchQueries = ["DamMediaAlternatives", VideoPreviewCaptionsQueryName];
 
-interface MediaAlternativesGridToolbarProps extends GridToolbarProps {
-    handleAdd: () => void;
-}
+/**
+ * `for`: the file is the original, e.g. a video, and the list shows its alternatives, e.g. captions. `alternative`: the file is the
+ * alternative and the list shows the originals it's used for.
+ */
+export type MediaAlternativeDirection = "for" | "alternative";
 
-function MediaAlternativesGridToolbar({ handleAdd }: MediaAlternativesGridToolbarProps) {
-    return (
-        <DataGridToolbar>
-            <ToolbarItem>
-                <GridToolbarQuickFilter />
-            </ToolbarItem>
-            <FillSpace />
-            <ToolbarActions>
-                <Button responsive startIcon={<AddIcon />} onClick={handleAdd}>
-                    <FormattedMessage {...messages.add} />
-                </Button>
-            </ToolbarActions>
-        </DataGridToolbar>
-    );
-}
-
-type Direction = "for" | "alternative";
+const sortableColumns = ["file", "language"];
 
 interface MediaAlternativesGridProps {
     file: { id: string };
     type: GQLDamMediaAlternativeType;
-    direction: Direction;
+    direction: MediaAlternativeDirection;
+    /** Shows a toast in the page's notifications. */
+    addToast: (toast: NewToast) => void;
 }
 
-export function MediaAlternativesGrid({ file, type, direction }: MediaAlternativesGridProps): ReactElement {
-    const client = useApolloClient();
+export function MediaAlternativesGrid({ file, type, direction, addToast }: MediaAlternativesGridProps) {
     const intl = useIntl();
-    const dataGridProps = { ...useDataGridRemote(), ...usePersistentColumnState("DamMediaAlternativesGrid") };
-    const [EditDialog, selection, editDialogApi, selectionApi] = useEditDialog();
-    const [deleteId, setDeleteId] = useState<string | undefined>();
+    const { labels: dataGridLabels } = useDataGridLabels();
+    const listState = useRemoteListState({ queryParamsPrefix: `mediaAlternatives_${direction}`, sortableColumns, defaultPageSize: 10 });
+    const [dialog, setDialog] = useState<{ id?: string }>();
+    const [deleteCandidate, setDeleteCandidate] = useState<GQLDamMediaAlternativeGridFragment>();
+    const isOtherFileTheAlternative = direction === "for";
+    const getOtherFile = (mediaAlternative: GQLDamMediaAlternativeGridFragment) =>
+        isOtherFileTheAlternative ? mediaAlternative.alternative : mediaAlternative.for;
 
-    const columns: GridColDef<GQLDamMediaAlternativeGridFragment>[] = [
+    const { data, previousData, loading, error } = useQuery<GQLDamMediaAlternativesQuery, GQLDamMediaAlternativesQueryVariables>(
+        damMediaAlternativesQuery,
         {
-            field: direction === "for" ? "alternative" : "for",
-            headerName: intl.formatMessage({ id: "dextinity.damMediaAlternatives.title", defaultMessage: "File" }),
-            flex: 1,
-            minWidth: 150,
-            renderCell: ({ row }) =>
-                direction === "for" ? (
-                    <GridCellContent primaryText={row.alternative.name} secondaryText={row.alternative.damPath} />
-                ) : (
-                    <GridCellContent primaryText={row.for.name} secondaryText={row.for.damPath} />
+            variables: {
+                search: listState.search || undefined,
+                offset: listState.offset,
+                limit: listState.limit,
+                sort: toGqlSort<GQLDamMediaAlternativeSortField>(listState.sort, (columnKey) =>
+                    columnKey === "file" ? (direction === "for" ? "alternative" : "for") : "language",
                 ),
-            filterable: false,
-        },
-        {
-            field: "language",
-            headerName: intl.formatMessage({ id: "dextinity.damMediaAlternatives.language", defaultMessage: "Language" }),
-            flex: 1,
-            minWidth: 50,
-            filterable: false,
-        },
-        {
-            field: "actions",
-            headerName: "",
-            sortable: false,
-            filterable: false,
-            type: "actions",
-            align: "right",
-            pinned: "right",
-            width: 84,
-            renderCell: (params) => {
-                return (
-                    <>
-                        <IconButton
-                            color="primary"
-                            onClick={() => {
-                                editDialogApi.openEditDialog(params.row.id);
-                            }}
-                        >
-                            <EditIcon />
-                        </IconButton>
-                        <IconButton
-                            onClick={() => {
-                                setDeleteId(params.row.id);
-                            }}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </>
-                );
+                for: isOtherFileTheAlternative ? file.id : undefined,
+                alternative: isOtherFileTheAlternative ? undefined : file.id,
+                type,
             },
         },
-    ];
+    );
+    const [deleteMediaAlternative, { loading: deleting }] = useMutation<
+        GQLDeleteDamMediaAlternativeMutation,
+        GQLDeleteDamMediaAlternativeMutationVariables
+    >(deleteDamMediaAlternativeMutation, { refetchQueries });
+    const page = (data ?? previousData)?.damMediaAlternatives;
+    const pagination = useRemoteListPagination(listState, page?.totalCount);
 
-    const { search: gqlSearch } = muiGridFilterToGql(columns, dataGridProps.filterModel);
-
-    const { data, loading, error } = useQuery<GQLDamMediaAlternativesQuery, GQLDamMediaAlternativesQueryVariables>(damMediaAlternativesQuery, {
-        variables: {
-            search: gqlSearch,
-            offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
-            limit: dataGridProps.paginationModel.pageSize,
-            sort: muiGridSortToGql(dataGridProps.sortModel),
-            for: direction === "for" ? file.id : undefined,
-            alternative: direction === "alternative" ? file.id : undefined,
-            type: type,
-        },
-    });
-    const rowCount = useBufferedRowCount(data?.damMediaAlternatives.totalCount);
     if (error) {
         throw error;
     }
-    const rows = data?.damMediaAlternatives.nodes ?? [];
+
+    const columns: DataGridColumn<GQLDamMediaAlternativeGridFragment>[] = [
+        {
+            key: "file",
+            header: intl.formatMessage({ id: "dextinity.damMediaAlternatives.title", defaultMessage: "File" }),
+            sortable: true,
+            render: (mediaAlternative) => (
+                <NameCell>
+                    <Name>{getOtherFile(mediaAlternative).name}</Name>
+                    {getOtherFile(mediaAlternative).damPath !== "/" && <SecondaryText>{getOtherFile(mediaAlternative).damPath}</SecondaryText>}
+                </NameCell>
+            ),
+        },
+        {
+            key: "language",
+            header: intl.formatMessage({ id: "dextinity.damMediaAlternatives.language", defaultMessage: "Language" }),
+            sortable: true,
+            width: 140,
+            render: (mediaAlternative) => mediaAlternative.language,
+        },
+    ];
+
+    const addLabel = isOtherFileTheAlternative
+        ? intl.formatMessage({ id: "dextinity.damMediaAlternatives.addCaptions", defaultMessage: "Add captions" })
+        : intl.formatMessage({ id: "dextinity.damMediaAlternatives.addVideo", defaultMessage: "Use for a video" });
+
+    const confirmDelete = async () => {
+        if (!deleteCandidate) {
+            return;
+        }
+        try {
+            await deleteMediaAlternative({ variables: { id: deleteCandidate.id }, context: LocalErrorScopeApolloContext });
+            setDeleteCandidate(undefined);
+        } catch {
+            addToast({
+                tone: "error",
+                message: intl.formatMessage({ id: "dextinity.damMediaAlternatives.deleteFailed", defaultMessage: "Removing failed" }),
+            });
+        }
+    };
 
     return (
-        <>
+        <GridRoot>
+            <FilterBar
+                searchValue={listState.searchInput}
+                onSearchChange={listState.setSearchInput}
+                searchShortcut={false}
+                resultCount={page?.totalCount}
+                labels={{
+                    search: intl.formatMessage({ id: "dextinity.damMediaAlternatives.search", defaultMessage: "Search" }),
+                    searchPlaceholder: intl.formatMessage({ id: "dextinity.damMediaAlternatives.searchPlaceholder", defaultMessage: "Search file" }),
+                    filters: intl.formatMessage({ id: "dextinity.damMediaAlternatives.filters", defaultMessage: "Filters" }),
+                    resultCount: (count) =>
+                        intl.formatMessage(
+                            { id: "dextinity.damMediaAlternatives.resultCount", defaultMessage: "{count, plural, one {# result} other {# results}}" },
+                            { count },
+                        ),
+                }}
+                actions={
+                    <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="add" />} onClick={() => setDialog({})}>
+                        {addLabel}
+                    </Button>
+                }
+            />
             <DataGrid
-                {...dataGridProps}
-                autoHeight={true}
-                disableRowSelectionOnClick
-                rows={rows}
-                rowCount={rowCount}
+                aria-label={intl.formatMessage({ id: "dextinity.dam.file.mediaAlternatives.tabTitle", defaultMessage: "Media alternatives" })}
                 columns={columns}
-                loading={loading}
-                slots={{
-                    toolbar: MediaAlternativesGridToolbar as GridSlotsComponent["toolbar"],
-                }}
-                slotProps={{
-                    toolbar: { handleAdd: () => editDialogApi.openAddDialog(file.id) } as MediaAlternativesGridToolbarProps,
-                }}
-                showToolbar
-            />
-            <EditDialog>
-                {selection.id && selection.mode ? (
-                    <DialogContent>
-                        <MediaAlternativeForm
-                            mode={selection.mode}
-                            id={selection.mode === "edit" ? selection.id : undefined}
-                            fileId={file.id}
-                            selectionApi={selectionApi}
-                            type={type}
-                            direction={direction}
+                rows={page?.nodes ?? []}
+                getRowId={(mediaAlternative) => mediaAlternative.id}
+                loading={loading && !page}
+                loadingRowCount={2}
+                sort={listState.sort}
+                onSortChange={listState.setSort}
+                onRowClick={(mediaAlternative) => setDialog({ id: mediaAlternative.id })}
+                rowActions={(mediaAlternative) => (
+                    <>
+                        <IconButton
+                            aria-label={intl.formatMessage({ id: "dextinity.damMediaAlternatives.edit", defaultMessage: "Edit" })}
+                            variant="text"
+                            color="secondary"
+                            size="small"
+                            onClick={() => setDialog({ id: mediaAlternative.id })}
+                        >
+                            <Icon name="edit" />
+                        </IconButton>
+                        <IconButton
+                            aria-label={intl.formatMessage({ id: "dextinity.damMediaAlternatives.remove", defaultMessage: "Remove" })}
+                            variant="text"
+                            color="secondary"
+                            size="small"
+                            onClick={() => setDeleteCandidate(mediaAlternative)}
+                        >
+                            <Icon name="delete" />
+                        </IconButton>
+                    </>
+                )}
+                pagination={pagination}
+                labels={dataGridLabels}
+                emptyState={
+                    listState.search !== "" ? (
+                        <EmptyState
+                            icon={<Icon name="search" />}
+                            title={intl.formatMessage({
+                                id: "dextinity.damMediaAlternatives.noMatches",
+                                defaultMessage: "Nothing matches the search",
+                            })}
                         />
-                    </DialogContent>
-                ) : null}
-            </EditDialog>
-            <DeleteDialog
-                dialogOpen={deleteId !== undefined}
-                onCancel={() => setDeleteId(undefined)}
-                onDelete={async () => {
-                    if (deleteId) {
-                        await client.mutate<GQLDeleteDamMediaAlternativeMutation, GQLDeleteDamMediaAlternativeMutationVariables>({
-                            mutation: deleteDamMediaAlternativeMutation,
-                            variables: { id: deleteId },
-                            refetchQueries: mediaAlternativesGridRefetchQueries,
-                        });
-                    }
-                    setDeleteId(undefined);
-                }}
+                    ) : (
+                        <EmptyState
+                            icon={<Icon name={isOtherFileTheAlternative ? "language" : "video"} />}
+                            title={
+                                isOtherFileTheAlternative
+                                    ? intl.formatMessage({ id: "dextinity.damMediaAlternatives.noCaptions", defaultMessage: "No captions yet" })
+                                    : intl.formatMessage({
+                                          id: "dextinity.damMediaAlternatives.noVideos",
+                                          defaultMessage: "Not used for a video yet",
+                                      })
+                            }
+                        />
+                    )
+                }
             />
-        </>
+            {dialog && (
+                <MediaAlternativeDialog
+                    id={dialog.id}
+                    fileId={file.id}
+                    type={type}
+                    direction={direction}
+                    refetchQueries={refetchQueries}
+                    onClose={() => setDialog(undefined)}
+                />
+            )}
+            <ConfirmDialog
+                open={deleteCandidate !== undefined}
+                onOpenChange={(open) => {
+                    if (!open && !deleting) {
+                        setDeleteCandidate(undefined);
+                    }
+                }}
+                tone="danger"
+                title={intl.formatMessage(
+                    { id: "dextinity.damMediaAlternatives.removeDialog.title", defaultMessage: "Remove “{name}”?" },
+                    { name: deleteCandidate ? getOtherFile(deleteCandidate).name : "" },
+                )}
+                description={intl.formatMessage({
+                    id: "dextinity.damMediaAlternatives.removeDialog.description",
+                    defaultMessage: "Only the link between the files is removed; both files stay in the DAM.",
+                })}
+                confirmLabel={intl.formatMessage({ id: "dextinity.damMediaAlternatives.remove", defaultMessage: "Remove" })}
+                confirmIcon={<Icon name="delete" />}
+                onConfirm={() => void confirmDelete()}
+                loading={deleting}
+                labels={{ cancel: intl.formatMessage({ id: "dextinity.generic.cancel", defaultMessage: "Cancel" }) }}
+            />
+        </GridRoot>
     );
 }

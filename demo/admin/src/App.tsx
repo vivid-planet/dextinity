@@ -1,7 +1,10 @@
+import "@fontsource-variable/inter";
 import "@fontsource-variable/roboto-flex/full.css";
+import "@dextinity/ui/css";
+import "@dextinity/ui/css/icons";
 
 import { ApolloProvider } from "@apollo/client";
-import { ErrorDialogHandler, MasterLayout, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@dextinity/admin";
+import { ErrorDialogHandler, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@dextinity/admin";
 import { BrevoConfigProvider } from "@dextinity/brevo-admin";
 import {
     AzureAiTranslatorProvider,
@@ -10,10 +13,8 @@ import {
     createDamFileDependency,
     CurrentUserProvider,
     DextinityConfigProvider,
-    SitePreview,
 } from "@dextinity/cms-admin";
 import { css, Global } from "@emotion/react";
-import { DataGridPro } from "@mui/x-data-grid-pro";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LicenseInfo } from "@mui/x-license";
@@ -28,9 +29,10 @@ import { DndProvider } from "react-dnd-multi-backend";
 import { FormattedMessage, IntlProvider } from "react-intl";
 import { Route, Switch } from "react-router";
 
+import { AppFrameLayout } from "./common/AppFrameLayout";
 import { additionalPageTreeNodeFieldsFragment } from "./common/EditPageNode";
-import MasterHeader from "./common/MasterHeader";
-import { AppMasterMenu, AppMasterMenuRoutes, pageTreeDocumentTypes } from "./common/MasterMenu";
+import { AppMasterMenuRoutes, pageTreeDocumentTypes } from "./common/MasterMenu";
+import { SitePreviewPage } from "./common/SitePreviewPage";
 import { ImportFromPicsum } from "./dam/ImportFromPicsum";
 import { Link } from "./documents/links/Link";
 import { Page } from "./documents/pages/Page";
@@ -85,9 +87,6 @@ export function App() {
             }}
             redirects={{
                 scopeParts: ["domain"],
-            }}
-            dataGrid={{
-                component: DataGridPro,
             }}
             dam={{
                 ...config.dam,
@@ -163,7 +162,6 @@ export function App() {
                             <LocalizationProvider adapterLocale={dateFnsLocale} dateAdapter={AdapterDateFns}>
                                 <DndProvider options={HTML5toTouch}>
                                     <SnackbarProvider>
-                                        <ErrorDialogHandler />
                                         <CurrentUserProvider>
                                             <RouterBrowserRouter>
                                                 <GlobalStyle />
@@ -174,19 +172,17 @@ export function App() {
                                                                 <Route
                                                                     path={`${match.path}/preview`}
                                                                     render={(props) => (
-                                                                        <SitePreview
-                                                                            resolvePath={(path: string, scope) => {
-                                                                                return `/${scope.language}${path}`;
-                                                                            }}
-                                                                            {...props}
-                                                                        />
+                                                                        <>
+                                                                            <ErrorDialogHandler />
+                                                                            <SitePreviewPage {...props} />
+                                                                        </>
                                                                     )}
                                                                 />
                                                                 <Route
                                                                     render={() => (
-                                                                        <MasterLayout headerComponent={MasterHeader} menuComponent={AppMasterMenu}>
+                                                                        <AppFrameLayout>
                                                                             <AppMasterMenuRoutes />
-                                                                        </MasterLayout>
+                                                                        </AppFrameLayout>
                                                                     )}
                                                                 />
                                                             </Switch>

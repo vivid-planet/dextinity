@@ -1,33 +1,32 @@
-import { Stack, StackPage, StackSwitch, StackToolbar } from "@dextinity/admin";
-import { Document, LinkExternal } from "@dextinity/admin-icons";
+import { Icon } from "@dextinity/ui";
 import type { ComponentType, JSX } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
+import { Redirect, Route, Switch, useRouteMatch } from "react-router";
 
 import { ExternalLinkBlock } from "../blocks/ExternalLinkBlock";
 import { createOneOfBlock } from "../blocks/factories/createOneOfBlock";
 import { InternalLinkBlock } from "../blocks/InternalLinkBlock";
 import type { BlockInterface } from "../blocks/types";
-import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
 import { useContentScopeConfig } from "../contentScope/useContentScopeConfig";
-import { RedirectForm } from "./RedirectForm";
 import { useRedirectsScope } from "./redirectsConfig";
-import { RedirectsGrid } from "./RedirectsGrid";
+import { RedirectsListPage } from "./RedirectsListPage";
 
 const RedirectsInternalLinkBlock: typeof InternalLinkBlock = {
     ...InternalLinkBlock,
     previewContent: (state) => [...(state.targetPage?.path ? [{ type: "text" as const, content: state.targetPage.path }] : [])],
-    icon: (state) => state.targetPage && <Document color="primary" />,
+    icon: (state) => state.targetPage && <Icon name="file" />,
     dynamicDisplayName: (state) => state.targetPage?.name ?? InternalLinkBlock.displayName,
 };
 
 const RedirectsExternalLinkBlock: typeof ExternalLinkBlock = {
     ...ExternalLinkBlock,
     previewContent: (state) => [...(state.targetUrl ? [{ type: "text" as const, content: ExternalLinkBlock.displayName }] : [])],
-    icon: (state) => state.targetUrl && <LinkExternal color="primary" />,
+    icon: (state) => state.targetUrl && <Icon name="open-new-tab" />,
     dynamicDisplayName: (state) => state.targetUrl ?? ExternalLinkBlock.displayName,
 };
 
 interface RedirectsPageProps {
+    /** Where to go after the content scope was changed. */
     redirectPathAfterChange?: string;
 }
 
@@ -40,38 +39,34 @@ export function createRedirectsLinkBlock(customTargets?: Record<string, BlockInt
         supportedBlocks: { internal: RedirectsInternalLinkBlock, external: RedirectsExternalLinkBlock, ...customTargets },
         name: "RedirectsLink",
         displayName: <FormattedMessage id="dextinity.blocks.link" defaultMessage="Link" />,
+        label: <FormattedMessage id="dextinity.blocks.link.linkType" defaultMessage="Link type" />,
         allowEmpty: false,
     });
 }
 
+/**
+ * Creates the redirects page: the list of the scope's redirects, with the open redirect edited in a side panel. The open redirect is
+ * kept in the URL as `?selected=<id>`; the former edit URLs (`<path>/<id>/edit`) are forwarded there.
+ */
 function createRedirectsPage({ linkBlock = createRedirectsLinkBlock() }: CreateRedirectsPageOptions = {}): ComponentType<RedirectsPageProps> {
     function Redirects({ redirectPathAfterChange }: RedirectsPageProps): JSX.Element {
-        const intl = useIntl();
+        const match = useRouteMatch();
         useContentScopeConfig({ redirectPathAfterChange });
-
         const scope = useRedirectsScope();
 
-        const isGlobalScoped = Object.keys(scope).length === 0;
-
         return (
-            <Stack topLevelTitle={intl.formatMessage({ id: "dextinity.pages.redirects", defaultMessage: "Redirects" })}>
-                <StackSwitch initialPage="grid">
-                    <StackPage name="grid">
-                        <StackToolbar scopeIndicator={<ContentScopeIndicator global={isGlobalScoped} scope={isGlobalScoped ? undefined : scope} />} />
-                        <RedirectsGrid linkBlock={linkBlock} scope={scope} />
-                    </StackPage>
-                    <StackPage name="edit" title={intl.formatMessage({ id: "dextinity.pages.redirects.edit", defaultMessage: "edit" })}>
-                        {(selectedId: string) => {
-                            return <RedirectForm mode="edit" id={selectedId} linkBlock={linkBlock} scope={scope} />;
-                        }}
-                    </StackPage>
-                    <StackPage name="add" title={intl.formatMessage({ id: "dextinity.pages.redirects.create", defaultMessage: "create" })}>
-                        {() => {
-                            return <RedirectForm mode="add" linkBlock={linkBlock} scope={scope} />;
-                        }}
-                    </StackPage>
-                </StackSwitch>
-            </Stack>
+            <Switch>
+                <Route
+                    path={`${match.path}/:id/:pageName(edit|add)`}
+                    render={({ match: legacyMatch }) => {
+                        const selected = legacyMatch.params.pageName === "add" ? "new" : legacyMatch.params.id;
+                        return <Redirect to={`${match.url}?selected=${encodeURIComponent(selected)}`} />;
+                    }}
+                />
+                <Route>
+                    <RedirectsListPage linkBlock={linkBlock} scope={scope} />
+                </Route>
+            </Switch>
         );
     }
 

@@ -22,10 +22,5 @@ const Root = styled("div")`
 `;
 
 const Content = styled("div")`
-    margin-top: ${({ theme }) => theme.spacing(4)};
-    margin-bottom: ${({ theme }) => theme.spacing(4)};
-
-    & > .DextinityAdminStackBreadcrumbs-root:first-of-type {
-        margin-top: -${({ theme }) => theme.spacing(4)};
-    }
+    padding-block: var(--dextinity-space-4);
 `;

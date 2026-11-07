@@ -10,7 +10,7 @@ import {
     type InfoTagProps,
     type TranslatableInterface,
 } from "@dextinity/cms-admin";
-import { Chip } from "@mui/material";
+import { Chip } from "@dextinity/ui";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 import type { GQLPageTreeNodeAdditionalFieldsFragment } from "@src/common/EditPageNode";
 import type { GQLLink, GQLLinkInput } from "@src/graphql.generated";
@@ -59,7 +59,11 @@ export const Link: DocumentInterface<Pick<GQLLink, "content">, GQLLinkInput> &
     `,
     InfoTag: ({ page }: InfoTagProps<GQLPageTreeNodeAdditionalFieldsFragment>) => {
         if (page.userGroup !== "all") {
-            return <Chip size="small" label={page.userGroup} />;
+            return (
+                <Chip size="small" color="secondary">
+                    {page.userGroup}
+                </Chip>
+            );
         }
         return null;
     },

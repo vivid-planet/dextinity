@@ -1,31 +1,21 @@
-import { WarningSolid } from "@dextinity/admin-icons";
-import { Chip } from "@mui/material";
-import { defineMessages, FormattedMessage } from "react-intl";
+import { StatusIndicator, type StatusIndicatorStatus } from "@dextinity/ui";
+import { defineMessages, useIntl } from "react-intl";
 
 import type { GQLWarningSeverity } from "../graphql.generated";
 
-interface Props {
-    severity: GQLWarningSeverity;
-}
+export const warningSeverityStatus: Record<GQLWarningSeverity, StatusIndicatorStatus> = {
+    high: "critical",
+    medium: "warning",
+    low: "info",
+};
 
-export function WarningSeverity({ severity }: Props) {
-    const colorMapping: Record<GQLWarningSeverity, "error" | "warning" | "default"> = {
-        high: "error",
-        medium: "warning",
-        low: "default",
-    };
-
-    return (
-        <Chip
-            icon={severity === "high" ? <WarningSolid /> : undefined}
-            color={colorMapping[severity]}
-            label={<FormattedMessage {...warningSeverityLabels[severity]} />}
-        />
-    );
-}
-
-const warningSeverityLabels = defineMessages({
+export const warningSeverityLabels = defineMessages({
     high: { id: "dextinity.warnings.warningSeverity.high", defaultMessage: "High" },
     medium: { id: "dextinity.warnings.warningSeverity.medium", defaultMessage: "Medium" },
     low: { id: "dextinity.warnings.warningSeverity.low", defaultMessage: "Low" },
 });
+
+export function WarningSeverity({ severity }: { severity: GQLWarningSeverity }) {
+    const intl = useIntl();
+    return <StatusIndicator status={warningSeverityStatus[severity]}>{intl.formatMessage(warningSeverityLabels[severity])}</StatusIndicator>;
+}

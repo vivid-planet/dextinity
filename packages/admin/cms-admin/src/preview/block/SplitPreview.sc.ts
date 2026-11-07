@@ -1,5 +1,3 @@
-import { Maximize } from "@dextinity/admin-icons";
-import { css } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import ReactSplit from "react-split";
 
@@ -42,7 +40,7 @@ export const Split = styled(ReactSplit)`
             border-radius: 2px;
             margin-top: -40px;
             margin-left: -2px;
-            background-color: ${({ theme }) => theme.palette.grey[200]};
+            background-color: var(--dextinity-color-line-strong);
         }
     }
 `;
@@ -52,11 +50,7 @@ export const FirstColumnContainer = styled("div")`
     overflow-x: auto;
 `;
 
-interface PreviewContainerProps {
-    minimized: boolean;
-}
-
-export const PreviewContainer = styled("div", { shouldForwardProp: (prop) => prop !== "minimized" })<PreviewContainerProps>`
+export const PreviewContainer = styled("div")`
     position: absolute;
     z-index: 15;
     top: 0;
@@ -65,27 +59,28 @@ export const PreviewContainer = styled("div", { shouldForwardProp: (prop) => pro
     bottom: 32px;
     transform-origin: left bottom;
     will-change: transform;
-    transition: transform 0.25s ease;
+    transition: transform var(--dextinity-motion-duration-long) var(--dextinity-motion-easing);
 
-    ${({ minimized, theme }) =>
-        minimized &&
-        css`
-            transform: translateZ(0) translateY(-${theme.spacing(4)}) scale(0.1);
-            border-radius: 50px;
-            overflow: hidden;
-        `}
+    &[data-minimized] {
+        transform: translateZ(0) translateY(-32px) scale(0.1);
+        border-radius: 50px;
+        overflow: hidden;
+    }
+`;
+
+export const PreviewContent = styled("div")`
+    height: 100%;
 `;
 
 export const MaximizeButton = styled("button")`
     position: absolute;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: oklch(0 0 0 / 0.6);
+    color: oklch(1 0 0);
     cursor: pointer;
-`;
-
-export const MaximizeIcon = styled(Maximize)`
-    fill: ${({ theme }) => theme.palette.common.white};
-    transform: scale(15);
+    --dextinity-icon-size: 240px;
 `;

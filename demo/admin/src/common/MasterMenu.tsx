@@ -1,4 +1,18 @@
-import { Assets, Dashboard, Data, DextinityIcon, Mail, PageTree, Snips, Wrench } from "@dextinity/admin-icons";
+import {
+    Assets,
+    Company,
+    Dashboard,
+    Data,
+    DextinityIcon,
+    Favorite,
+    ItemsGrouping,
+    Mail,
+    PageTree,
+    Snips,
+    Store,
+    Tag,
+    Wrench,
+} from "@dextinity/admin-icons";
 import {
     BrevoConfigPage,
     createBrevoContactsPage,
@@ -7,25 +21,21 @@ import {
     createTargetGroupsPage,
 } from "@dextinity/brevo-admin";
 import {
-    ContentScopeIndicator,
     CronJobsPage,
     DamPage,
     type DocumentInterface,
     type DocumentType,
-    MasterMenu,
     type MasterMenuData,
     MasterMenuRoutes,
-    PagesPage,
+    PageTreeDetailPage,
     PublisherPage,
     UserPermissionsPage,
     WarningsPage,
 } from "@dextinity/cms-admin";
 import { Chip } from "@mui/material";
 import { type BrevoContactConfig, getBrevoContactConfig } from "@src/brevo/brevoModuleConfig/brevoContactsPageAttributesConfig";
-import { additionalFormConfig } from "@src/brevo/brevoModuleConfig/targetGroupFormConfig";
+import { getTargetGroupFormConfig } from "@src/brevo/brevoModuleConfig/targetGroupFormConfig";
 import { EmailCampaignContentBlock } from "@src/brevo/emailCampaigns/blocks/EmailCampaignContentBlock";
-import { ImportFromPicsum } from "@src/dam/ImportFromPicsum";
-import { DashboardPage } from "@src/dashboard/DashboardPage";
 import { DextinityUiPage } from "@src/dextinityUi/DextinityUiPage";
 import { Link } from "@src/documents/links/Link";
 import { Page } from "@src/documents/pages/Page";
@@ -33,22 +43,15 @@ import { PredefinedPage } from "@src/documents/predefinedPages/PredefinedPage";
 import { EditFooterPage } from "@src/footer/EditFooterPage";
 import type { GQLPageTreeNodeCategory } from "@src/graphql.generated";
 import MainMenu from "@src/mainMenu/MainMenu";
-import { NewsPage } from "@src/news/NewsPage";
+import { NewsUiPage } from "@src/news/ui/NewsUiPage";
+import { OverviewPage } from "@src/overview/OverviewPage";
 import { categoryToUrlParam, pageTreeCategories, urlParamToCategory } from "@src/pageTree/pageTreeCategories";
-import { CreateCapProductPage } from "@src/products/generator/CreateCapProductPage";
-import { ManufacturersPage } from "@src/products/generator/ManufacturersPage";
-import { ProductCategoriesPage } from "@src/products/generator/ProductCategoriesPage";
-import { ProductHighlightsPage } from "@src/products/generator/ProductHighlightsPage";
-import { ProductsPage } from "@src/products/generator/ProductsPage";
-import { ProductsWithLowPricePage } from "@src/products/generator/ProductsWithLowPricePage";
-import { ProductTagsPage } from "@src/products/generator/ProductTagsPage";
-import { ProductHighlightsPage as ProductHighlightsHandmadePage } from "@src/products/highlights/ProductHighlightsPage";
-import { ManufacturersPage as ManufacturersHandmadePage } from "@src/products/ManufacturersPage";
-import { ProductCategoriesPage as ProductCategoriesHandmadePage } from "@src/products/ProductCategoriesPage";
-import ProductsHandmadePage from "@src/products/ProductsPage";
-import { ProductTagsPage as ProductTagsHandmadePage } from "@src/products/tags/ProductTagsPage";
+import { ProductCategoriesPage } from "@src/products/categories/ProductCategoriesPage";
+import { ProductHighlightsPage } from "@src/products/highlights/ProductHighlightsPage";
+import { ManufacturersPage } from "@src/products/manufacturers/ManufacturersPage";
+import { ProductTagsPage } from "@src/products/tags/ProductTagsPage";
+import { ProductsUiPage } from "@src/products/ui/ProductsUiPage";
 import { RedirectsPage } from "@src/redirects/RedirectsPage";
-import type { ContentScope } from "@src/site-configs";
 import { EditWelcomeEmailPage } from "@src/welcomeEmail/EditWelcomeEmailPage";
 import { useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -63,7 +66,13 @@ export const pageTreeDocumentTypes: Record<string, DocumentInterface<any, any>> 
     PredefinedPage,
 };
 
-const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoContactConfig }): MasterMenuData => {
+const getMasterMenuData = ({
+    brevoContactConfig,
+    targetGroupFormConfig,
+}: {
+    brevoContactConfig: BrevoContactConfig;
+    targetGroupFormConfig: ReturnType<typeof getTargetGroupFormConfig>;
+}): MasterMenuData => {
     const BrevoContactsPage = createBrevoContactsPage({
         additionalAttributesFragment: brevoContactConfig.additionalAttributesFragment,
         additionalGridFields: brevoContactConfig.additionalGridFields,
@@ -72,13 +81,13 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
     });
 
     const TargetGroupsPage = createTargetGroupsPage({
-        additionalFormFields: additionalFormConfig.additionalFormFields,
+        additionalFormFields: targetGroupFormConfig.additionalFormFields,
         exportTargetGroupOptions: {
             additionalAttributesFragment: brevoContactConfig.additionalAttributesFragment,
             exportFields: brevoContactConfig.exportFields,
         },
-        nodeFragment: additionalFormConfig.nodeFragment,
-        input2State: additionalFormConfig.input2State,
+        nodeFragment: targetGroupFormConfig.nodeFragment,
+        input2State: targetGroupFormConfig.input2State,
     });
 
     const CampaignsPage = createEmailCampaignsPage({
@@ -99,7 +108,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             icon: <Dashboard />,
             route: {
                 path: "/dashboard",
-                component: DashboardPage,
+                component: OverviewPage,
             },
         },
         {
@@ -121,8 +130,9 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     }
 
                     return (
-                        <PagesPage
+                        <PageTreeDetailPage
                             path={`/pages/pagetree/${match.params.category}`}
+                            eyebrow={pageTreeCategories.find((pageTreeCategory) => pageTreeCategory.category === category)?.label}
                             documentTypes={(category): Record<DocumentType, DocumentInterface> => {
                                 if (category === "TopMenu") {
                                     return {
@@ -138,8 +148,8 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                                 };
                             }}
                             editPageNode={EditPageNode}
+                            getCategoryUrl={(targetCategory) => `/pages/pagetree/${categoryToUrlParam(targetCategory)}`}
                             category={category}
-                            renderContentScopeIndicator={(scope: ContentScope) => <ContentScopeIndicator scope={scope} />}
                         />
                     );
                 },
@@ -156,7 +166,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     primary: <FormattedMessage id="menu.news" defaultMessage="News" />,
                     route: {
                         path: "/structured-content/news",
-                        component: NewsPage,
+                        component: NewsUiPage,
                     },
                 },
             ],
@@ -168,7 +178,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             icon: <Assets />,
             route: {
                 path: "/assets",
-                render: () => <DamPage additionalToolbarItems={<ImportFromPicsum />} />,
+                component: DamPage,
             },
             requiredPermission: "dam",
         },
@@ -314,114 +324,49 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             title: <FormattedMessage id="menu.products" defaultMessage="Products" />,
             items: [
                 {
-                    type: "collapsible",
-                    primary: <FormattedMessage id="menu.generator" defaultMessage="Generator" />,
-                    icon: <Snips />,
-                    items: [
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.products" defaultMessage="Products" />,
-                            route: {
-                                path: "/products",
-                                component: ProductsPage,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.createCapProduct" defaultMessage="Create Cap Product" />,
-                            route: {
-                                path: "/create-cap-product",
-                                component: CreateCapProductPage,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.manufacturers" defaultMessage="Manufacturers" />,
-                            route: {
-                                path: "/manufacturers",
-                                component: ManufacturersPage,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productsWithLowPrice" defaultMessage="Products with low price" />,
-                            route: {
-                                path: "/products-with-low-price",
-                                component: ProductsWithLowPricePage,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productCategories" defaultMessage="Product Categories" />,
-                            route: {
-                                path: "/product-categories",
-                                component: ProductCategoriesPage,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productTags" defaultMessage="Product Tags" />,
-                            route: {
-                                path: "/product-tags",
-                                component: ProductTagsPage,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productHighlights" defaultMessage="Product Highlights" />,
-                            route: {
-                                path: "/product-highlights",
-                                component: ProductHighlightsPage,
-                            },
-                        },
-                    ],
+                    type: "route",
+                    primary: <FormattedMessage id="menu.products" defaultMessage="Products" />,
+                    icon: <Store />,
+                    route: {
+                        path: "/products-handmade",
+                        component: ProductsUiPage,
+                    },
                 },
                 {
-                    type: "collapsible",
-                    primary: <FormattedMessage id="menu.handmade" defaultMessage="Handmade" />,
-                    icon: <Snips />,
-                    items: [
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productsHandmade" defaultMessage="Products Handmade" />,
-                            route: {
-                                path: "/products-handmade",
-                                component: ProductsHandmadePage,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.manufacturersHandmade" defaultMessage="Manufacturers Handmade" />,
-                            route: {
-                                path: "/manufacturers-handmade",
-                                component: ManufacturersHandmadePage,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productCategoriesHandmade" defaultMessage="Product Categories Handmade" />,
-                            route: {
-                                path: "/product-categories-handmade",
-                                component: ProductCategoriesHandmadePage,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productTagsHandmade" defaultMessage="Product Tags Handmade" />,
-                            route: {
-                                path: "/product-tags-handmade",
-                                component: ProductTagsHandmadePage,
-                            },
-                        },
-                        {
-                            type: "route",
-                            primary: <FormattedMessage id="menu.productHighlightsHandmade" defaultMessage="Product Highlights Handmade" />,
-                            route: {
-                                path: "/product-highlights-handmade",
-                                component: ProductHighlightsHandmadePage,
-                            },
-                        },
-                    ],
+                    type: "route",
+                    primary: <FormattedMessage id="menu.manufacturers" defaultMessage="Manufacturers" />,
+                    icon: <Company />,
+                    route: {
+                        path: "/manufacturers-handmade",
+                        component: ManufacturersPage,
+                    },
+                },
+                {
+                    type: "route",
+                    primary: <FormattedMessage id="menu.productCategories" defaultMessage="Product Categories" />,
+                    icon: <ItemsGrouping />,
+                    route: {
+                        path: "/product-categories-handmade",
+                        component: ProductCategoriesPage,
+                    },
+                },
+                {
+                    type: "route",
+                    primary: <FormattedMessage id="menu.productTags" defaultMessage="Product Tags" />,
+                    icon: <Tag />,
+                    route: {
+                        path: "/product-tags-handmade",
+                        component: ProductTagsPage,
+                    },
+                },
+                {
+                    type: "route",
+                    primary: <FormattedMessage id="menu.productHighlights" defaultMessage="Product Highlights" />,
+                    icon: <Favorite />,
+                    route: {
+                        path: "/product-highlights-handmade",
+                        component: ProductHighlightsPage,
+                    },
                 },
             ],
             requiredPermission: "products",
@@ -445,18 +390,17 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
     ];
 };
 
-export const AppMasterMenu = () => {
+export const useAppMasterMenuData = (): MasterMenuData => {
     const intl = useIntl();
 
-    const masterMenuData = useMemo(() => getMasterMenuData({ brevoContactConfig: getBrevoContactConfig(intl) }), [intl]);
-
-    return <MasterMenu menu={masterMenuData} />;
+    return useMemo(
+        () => getMasterMenuData({ brevoContactConfig: getBrevoContactConfig(intl), targetGroupFormConfig: getTargetGroupFormConfig(intl) }),
+        [intl],
+    );
 };
 
 export const AppMasterMenuRoutes = () => {
-    const intl = useIntl();
-
-    const masterMenuData = useMemo(() => getMasterMenuData({ brevoContactConfig: getBrevoContactConfig(intl) }), [intl]);
+    const masterMenuData = useAppMasterMenuData();
 
     return <MasterMenuRoutes menu={masterMenuData} />;
 };

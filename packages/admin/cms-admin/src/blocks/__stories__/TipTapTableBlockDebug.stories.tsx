@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-restricted-imports
-import { DataGridPro } from "@mui/x-data-grid-pro";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type HTMLAttributes, useState } from "react";
 import { expect, screen, waitFor, within } from "storybook/test";
@@ -46,9 +44,6 @@ const config: Meta<typeof TipTapTableBlockStory> = {
     component: TipTapTableBlockStory,
     title: "Debug/blocks/TipTapTableBlock",
     tags: ["!autodocs"],
-    parameters: {
-        dataGrid: { component: DataGridPro },
-    },
 };
 
 export default config;
@@ -57,8 +52,8 @@ type Story = StoryObj<typeof config>;
 
 export const CellEditorOpensScrolledToEnd: Story = {
     play: async ({ userEvent }) => {
-        await userEvent.dblClick(await screen.findByRole("gridcell", { name: /^Line/ }, { timeout: 5000 }));
-        const cellEditor = await screen.findByRole("tooltip");
+        await userEvent.dblClick(await screen.findByRole("cell", { name: /^Line/ }, { timeout: 5000 }));
+        const cellEditor = await screen.findByRole("dialog", { name: "Column 1" });
         await within(cellEditor).findByText("Line 50");
         const scrollArea = getScrollArea(cellEditor);
 
@@ -68,8 +63,8 @@ export const CellEditorOpensScrolledToEnd: Story = {
 
 export const TypingAfterDoubleClickAppendsToLastLine: Story = {
     play: async ({ userEvent }) => {
-        await userEvent.dblClick(await screen.findByRole("gridcell", { name: /^Line/ }, { timeout: 5000 }));
-        const cellEditor = await screen.findByRole("tooltip");
+        await userEvent.dblClick(await screen.findByRole("cell", { name: /^Line/ }, { timeout: 5000 }));
+        const cellEditor = await screen.findByRole("dialog", { name: "Column 1" });
         await waitFor(() => expect(within(cellEditor).getByRole("textbox")).toHaveFocus());
 
         await userEvent.keyboard("X");
@@ -79,9 +74,12 @@ export const TypingAfterDoubleClickAppendsToLastLine: Story = {
 };
 
 function getScrollArea(cellEditor: HTMLElement) {
-    const scrollArea = cellEditor.querySelector(".DextinityAdminTipTapToolbar-root")?.parentElement;
-    if (!scrollArea) {
-        throw new Error("The cell editor has no scroll area");
+    let element = cellEditor.querySelector("[role='toolbar']")?.parentElement;
+    while (element && element !== cellEditor) {
+        if (getComputedStyle(element).overflowY === "auto") {
+            return element;
+        }
+        element = element.parentElement;
     }
-    return scrollArea;
+    throw new Error("The cell editor has no scroll area");
 }

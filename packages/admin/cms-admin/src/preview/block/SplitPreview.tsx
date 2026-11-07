@@ -1,9 +1,11 @@
 import { useWindowSize } from "@dextinity/admin";
+import { Icon } from "@dextinity/ui";
 import { Box } from "@mui/material";
 import { type ReactNode, useEffect, useRef, useState } from "react";
+import { useIntl } from "react-intl";
 
 import { BlockPreview } from "./BlockPreview";
-import { Column, FirstColumnContainer, MaximizeButton, MaximizeIcon, PreviewContainer, Root, ScrollableColumn, Split } from "./SplitPreview.sc";
+import { Column, FirstColumnContainer, MaximizeButton, PreviewContainer, PreviewContent, Root, ScrollableColumn, Split } from "./SplitPreview.sc";
 import type { BlockPreviewApi } from "./useBlockPreview";
 
 interface Props {
@@ -11,9 +13,17 @@ interface Props {
     previewApi: BlockPreviewApi;
     previewState: unknown;
     children: ReactNode | [ReactNode, ReactNode];
+    /** The public address of the edited page, shown above the preview. Defaults to `url`. */
+    siteUrl?: string;
 }
 
-function SplitPreview({ url, previewState, children, previewApi }: Props) {
+/**
+ * The editor next to the block preview, built with MUI.
+ *
+ * @deprecated Use `PageContentEditor` for pages, or `BlockPreviewPane` next to your own editor.
+ */
+function SplitPreview({ url, previewState, children, previewApi, siteUrl }: Props) {
+    const intl = useIntl();
     const { minimized, setMinimized } = previewApi;
     const rootRef = useRef<HTMLDivElement>(null);
     const [columnHeight, setColumnHeight] = useState<number>(0);
@@ -55,11 +65,16 @@ function SplitPreview({ url, previewState, children, previewApi }: Props) {
                             {firstColumn}
                         </Box>
                     </FirstColumnContainer>
-                    <PreviewContainer minimized={minimized}>
-                        <BlockPreview url={url} previewState={previewState} previewApi={previewApi} />
+                    <PreviewContainer data-minimized={minimized ? "" : undefined}>
+                        <PreviewContent inert={minimized}>
+                            <BlockPreview url={url} siteUrl={siteUrl} previewState={previewState} previewApi={previewApi} />
+                        </PreviewContent>
                         {minimized && (
-                            <MaximizeButton onClick={handleMaximizeClick}>
-                                <MaximizeIcon />
+                            <MaximizeButton
+                                onClick={handleMaximizeClick}
+                                aria-label={intl.formatMessage({ id: "dextinity.preview.maximize", defaultMessage: "Maximize preview" })}
+                            >
+                                <Icon name="maximize" />
                             </MaximizeButton>
                         )}
                     </PreviewContainer>

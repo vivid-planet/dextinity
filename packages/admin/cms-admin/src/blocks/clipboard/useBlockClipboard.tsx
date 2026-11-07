@@ -1,7 +1,7 @@
 import { readClipboardText, writeClipboardText } from "@dextinity/admin";
 import { deepEqual } from "fast-equals";
 import type { ReactNode } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { useProgressDialog } from "../../common/useProgressDialog";
 import { type ContentScope, useContentScope } from "../../contentScope/Provider";
@@ -52,8 +52,9 @@ function useBlockClipboard({ supports }: UseBlockClipboardOptions): BlockClipboa
     const context = useBlockContext();
     const { scope: contentScope } = useContentScope();
     const damScope = useDamScopeFromContentScope();
+    const intl = useIntl();
     const progress = useProgressDialog({
-        title: <FormattedMessage id="dextinity.blocks.insertingBlocks" defaultMessage="Inserting blocks" />,
+        title: intl.formatMessage({ id: "dextinity.blocks.insertingBlocks", defaultMessage: "Inserting blocks" }),
     });
     const updateProgress = progress.updateProgress;
 

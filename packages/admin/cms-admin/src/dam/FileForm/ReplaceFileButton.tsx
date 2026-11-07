@@ -1,10 +1,8 @@
 import { useApolloClient } from "@apollo/client";
-import { Alert, Button, useErrorDialog, useSnackbarApi } from "@dextinity/admin";
-import { ThreeDotSaving, Upload } from "@dextinity/admin-icons";
-import { Snackbar } from "@mui/material";
+import { Button, Icon } from "@dextinity/ui";
 import { useRef, useState } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
-import { FormattedMessage } from "react-intl";
+import { useIntl } from "react-intl";
 
 import { useDextinityConfig } from "../../config/DextinityConfigContext";
 import { replaceById } from "../../form/file/upload";
@@ -16,100 +14,75 @@ import type { DamFileDetails } from "./EditFile";
 
 interface ReplaceFileButtonProps {
     file: DamFileDetails;
+    /** Called with a message for the user when the file was replaced, or couldn't be. */
+    onNotify: (notification: { tone: "error" | "info"; message: string }) => void;
 }
 
-const replaceFileErrorTitle = <FormattedMessage id="dextinity.dam.file.replace.errorTitle" defaultMessage="File could not be replaced" />;
-
-export function ReplaceFileButton({ file }: ReplaceFileButtonProps) {
+/**
+ * Replaces the file's content with a file chosen from the computer, keeping its ID and therefore every use. Only files of the same
+ * category (image, video, …) are accepted, documents only of the same type.
+ */
+export function ReplaceFileButton({ file, onNotify }: ReplaceFileButtonProps) {
+    const intl = useIntl();
     const apolloClient = useApolloClient();
     const { apiUrl } = useDextinityConfig();
     const damConfig = useDamConfig();
     const damBasePath = useDamBasePath();
     const { filteredAcceptedMimeTypes } = useDamAcceptedMimeTypes();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const abortControllerRef = useRef<AbortController | null>(null);
-
-    const maxFileSizeInMegabytes = damConfig.uploadsMaxFileSize;
-    const maxFileSizeInBytes = maxFileSizeInMegabytes * 1024 * 1024;
-    const errorDialog = useErrorDialog();
-    const snackbarApi = useSnackbarApi();
-    const [replaceLoading, setReplaceLoading] = useState(false);
+    const [isReplacing, setIsReplacing] = useState(false);
 
     const fileCategory = getDamFileCategory(file.mimetype);
-    const acceptedMimeTypesForReplacement = fileCategory === "document" ? [file.mimetype] : filteredAcceptedMimeTypes[fileCategory];
+    const acceptedMimeTypes = fileCategory === "document" ? [file.mimetype] : filteredAcceptedMimeTypes[fileCategory];
+
+    const notifyError = (reason?: string) => {
+        const message = intl.formatMessage({ id: "dextinity.dam.file.replace.errorTitle", defaultMessage: "File could not be replaced" });
+        onNotify({ tone: "error", message: reason ? `${message}: ${reason}` : message });
+    };
 
     const { getInputProps } = useDropzone({
-        maxSize: maxFileSizeInBytes,
+        maxSize: damConfig.uploadsMaxFileSize * 1024 * 1024,
         multiple: false,
-        accept: convertMimetypesToDropzoneAccept(acceptedMimeTypesForReplacement),
+        accept: convertMimetypesToDropzoneAccept(acceptedMimeTypes),
         getFilesFromEvent: getFilesWithMimeTypeFromEvent,
         onDrop: async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
             if (fileRejections.length > 0) {
-                errorDialog?.showError({
-                    title: replaceFileErrorTitle,
-                    userMessage: (
-                        <FormattedMessage
-                            id="dextinity.dam.file.replace.fileRejection"
-                            defaultMessage="The selected file could not be uploaded because it doesn't meet the required criteria. Please choose a valid file to replace the existing one."
-                        />
-                    ),
-                    error: fileRejections.toString(),
-                });
+                notifyError(
+                    intl.formatMessage({
+                        id: "dextinity.dam.file.replace.fileRejection",
+                        defaultMessage:
+                            "The selected file could not be uploaded because it doesn't meet the required criteria. Please choose a valid file to replace the existing one.",
+                    }),
+                );
                 return;
             }
-
             const uploadedFile = acceptedFiles[0];
             if (uploadedFile === undefined) {
                 return;
             }
-
+            setIsReplacing(true);
             try {
-                setReplaceLoading(true);
-                if (abortControllerRef.current) {
-                    abortControllerRef.current.abort();
-                }
-                const abortController = new AbortController();
-                abortControllerRef.current = abortController;
-                const response = await replaceById({
-                    apiUrl,
-                    data: { file: uploadedFile, fileId: file.id },
-                    damBasePath,
-                });
+                const response = await replaceById({ apiUrl, data: { file: uploadedFile, fileId: file.id }, damBasePath });
                 const replacedFile = response.data as { name?: string } | undefined;
-
                 apolloClient.cache.evict({ id: `DamFile:${file.id}` });
-
-                if (replacedFile?.name !== undefined && replacedFile.name !== file.name) {
-                    snackbarApi.showSnackbar(
-                        <Snackbar autoHideDuration={5000}>
-                            <Alert severity="info">
-                                <FormattedMessage
-                                    id="dextinity.dam.file.replace.renamed"
-                                    defaultMessage="The file was renamed to {name} because another file with its name already exists in this folder."
-                                    values={{ name: replacedFile.name }}
-                                />
-                            </Alert>
-                        </Snackbar>,
-                    );
-                }
-            } catch (error) {
-                if (error instanceof DOMException && error.name === "AbortError") {
-                    return;
-                }
-                const message = error instanceof Error ? error.message : String(error);
-
-                errorDialog?.showError({
-                    title: replaceFileErrorTitle,
-                    userMessage: (
-                        <FormattedMessage
-                            id="dextinity.dam.file.replace.error"
-                            defaultMessage="An error occurred while replacing the file. Please try again later."
-                        />
-                    ),
-                    error: message,
+                onNotify({
+                    tone: "info",
+                    message:
+                        replacedFile?.name !== undefined && replacedFile.name !== file.name
+                            ? intl.formatMessage(
+                                  {
+                                      id: "dextinity.dam.file.replace.renamed",
+                                      defaultMessage:
+                                          "The file was renamed to {name} because another file with its name already exists in this folder.",
+                                  },
+                                  { name: replacedFile.name },
+                              )
+                            : intl.formatMessage({ id: "dextinity.dam.file.replace.success", defaultMessage: "File replaced" }),
                 });
+            } catch (error) {
+                notifyError(error instanceof Error ? error.message : undefined);
             } finally {
-                setReplaceLoading(false);
+                setIsReplacing(false);
             }
         },
     });
@@ -117,14 +90,14 @@ export function ReplaceFileButton({ file }: ReplaceFileButtonProps) {
     return (
         <>
             <Button
-                variant="textLight"
-                startIcon={replaceLoading ? <ThreeDotSaving /> : <Upload />}
-                onClick={() => {
-                    // Trigger file input with button click
-                    fileInputRef.current?.click();
-                }}
+                variant="outlined"
+                color="secondary"
+                size="small"
+                startIcon={<Icon name="upload" />}
+                loading={isReplacing}
+                onClick={() => fileInputRef.current?.click()}
             >
-                <FormattedMessage id="dextinity.dam.file.replaceFile" defaultMessage="Replace File" />
+                {intl.formatMessage({ id: "dextinity.dam.file.replaceFile", defaultMessage: "Replace File" })}
             </Button>
             <input type="file" hidden {...getInputProps()} ref={fileInputRef} />
         </>

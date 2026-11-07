@@ -1,23 +1,51 @@
-import { TextField, type TextFieldProps } from "@dextinity/admin";
-
+import { BlockInputField, type BlockInputFieldProps, BlockTextareaField } from "../form/BlockInputField";
 import { BlocksFinalForm } from "../form/BlocksFinalForm";
 import type { BlockMethods } from "../types";
 import { createCompositeBlockField } from "./composeBlocks/createCompositeBlockField";
 
-interface Options extends Partial<TextFieldProps> {
+type TextFieldOptions = Pick<
+    BlockInputFieldProps,
+    | "label"
+    | "helperText"
+    | "placeholder"
+    | "required"
+    | "requiredMessage"
+    | "disabled"
+    | "readOnly"
+    | "size"
+    | "prefix"
+    | "suffix"
+    | "actions"
+    | "maxLength"
+    | "showCount"
+    | "validate"
+    | "warn"
+    | "disableContentTranslation"
+>;
+
+interface Options extends TextFieldOptions {
     defaultValue?: string;
     /**
-     * @deprecated Set the props directly instead of nesting inside fieldProps
+     * Shows a multi-line textarea instead of a single-line input.
+     *
+     * @defaultValue `false`
      */
-    fieldProps?: Partial<TextFieldProps>;
+    multiline?: boolean;
+    /** Visible lines of the textarea at the start, with `multiline`. */
+    rows?: number;
+    /**
+     * @deprecated Fields always fill their container. The option has no effect and will be removed.
+     */
+    fullWidth?: boolean;
     extractTextContents?: BlockMethods["extractTextContents"];
     translateContent?: BlockMethods["translateContent"];
 }
 
 export function createCompositeBlockTextField({
     defaultValue = "",
-    fullWidth = true,
-    fieldProps: legacyFieldProps,
+    multiline = false,
+    rows,
+    fullWidth: _fullWidth,
     extractTextContents,
     translateContent,
     ...fieldProps
@@ -29,7 +57,7 @@ export function createCompositeBlockTextField({
                 onSubmit={({ value }) => updateState(value ?? "")}
                 initialValues={{ value: state || undefined }}
             >
-                <TextField name="value" fullWidth={fullWidth} {...legacyFieldProps} {...fieldProps} />
+                {multiline ? <BlockTextareaField name="value" rows={rows} {...fieldProps} /> : <BlockInputField name="value" {...fieldProps} />}
             </BlocksFinalForm>
         ),
         extractTextContents,

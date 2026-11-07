@@ -1,8 +1,7 @@
 import { gql } from "@apollo/client";
-import { Field, FinalFormSelect } from "@dextinity/admin";
-import { Divider, MenuItem } from "@mui/material";
-import { deepClone } from "@mui/x-data-grid/internals";
-import { FormattedMessage } from "react-intl";
+import { SelectField } from "@dextinity/ui-react-final-form";
+import { Field } from "react-final-form";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import type { DamFileDownloadLinkBlockData, DamFileDownloadLinkBlockInput } from "../../blocks.generated";
 import { BlockAdminComponentPaper } from "../../blocks/common/BlockAdminComponentPaper";
@@ -86,7 +85,7 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
     },
 
     replaceDependenciesInOutput: (output, replacements) => {
-        const clonedOutput: DamFileDownloadLinkBlockInput = deepClone(output);
+        const clonedOutput: DamFileDownloadLinkBlockInput = structuredClone(output);
         const replacement = replacements.find((replacement) => replacement.type === "DamFile" && replacement.originalId === output.fileId);
 
         if (replacement) {
@@ -99,6 +98,7 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
     definesOwnPadding: true,
 
     AdminComponent: ({ state, updateState }) => {
+        const intl = useIntl();
         return (
             <BlocksFinalForm<{
                 openFileType: DamFileDownloadLinkBlockData["openFileType"];
@@ -115,28 +115,28 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
                     openFileType: state.openFileType ?? "Download",
                 }}
             >
-                <Field name="file" component={FileField} fullWidth />
-                <Divider />
+                <Field name="file" component={FileField} />
                 <BlockAdminComponentPaper>
-                    <Field
+                    <SelectField<false, DamFileDownloadLinkBlockData["openFileType"]>
                         name="openFileType"
-                        fullWidth
-                        label={<FormattedMessage id="dextinity.blocks.damFileDownloadLink.openFileType" defaultMessage="Open file" />}
-                    >
-                        {(props) => (
-                            <FinalFormSelect {...props}>
-                                <MenuItem value="Download">
-                                    <FormattedMessage
-                                        id="dextinity.blocks.damFileDownloadLink.openFileType.download"
-                                        defaultMessage="as a download"
-                                    />
-                                </MenuItem>
-                                <MenuItem value="NewTab">
-                                    <FormattedMessage id="dextinity.blocks.damFileDownloadLink.openFileType.newTab" defaultMessage="in a new tab" />
-                                </MenuItem>
-                            </FinalFormSelect>
-                        )}
-                    </Field>
+                        label={intl.formatMessage({ id: "dextinity.blocks.damFileDownloadLink.openFileType", defaultMessage: "Open file" })}
+                        options={[
+                            {
+                                value: "Download",
+                                label: intl.formatMessage({
+                                    id: "dextinity.blocks.damFileDownloadLink.openFileType.download",
+                                    defaultMessage: "as a download",
+                                }),
+                            },
+                            {
+                                value: "NewTab",
+                                label: intl.formatMessage({
+                                    id: "dextinity.blocks.damFileDownloadLink.openFileType.newTab",
+                                    defaultMessage: "in a new tab",
+                                }),
+                            },
+                        ]}
+                    />
                 </BlockAdminComponentPaper>
             </BlocksFinalForm>
         );

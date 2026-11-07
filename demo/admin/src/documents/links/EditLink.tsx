@@ -1,20 +1,6 @@
 import { gql } from "@apollo/client";
-import {
-    CrudMoreActionsMenu,
-    FillSpace,
-    Loading,
-    MainContent,
-    messages,
-    RouterPrompt,
-    RouterTab,
-    RouterTabs,
-    Toolbar,
-    ToolbarItem,
-    useStackApi,
-} from "@dextinity/admin";
-import { ArrowLeft } from "@dextinity/admin-icons";
-import { BlockAdminComponentRoot, ContentScopeIndicator, createUsePage, PageName, TranslateContentMenuItem } from "@dextinity/cms-admin";
-import { IconButton } from "@mui/material";
+import { messages } from "@dextinity/admin";
+import { BlockAdminComponentRoot, createUsePage, PageContentEditor } from "@dextinity/cms-admin";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
 import { useIntl } from "react-intl";
 
@@ -63,71 +49,20 @@ interface Props {
 
 export const EditLink = ({ id }: Props) => {
     const intl = useIntl();
-    const stackApi = useStackApi();
-
-    const {
-        pageState: linkState,
-        rootBlocksApi,
-        hasChanges,
-        loading,
-        dialogs,
-        pageSaveButton,
-        handleSavePage,
-        translateContent,
-    } = usePage({
-        pageId: id,
-    });
-
-    const handleSaveAction = async () => {
-        try {
-            await handleSavePage();
-            return true;
-        } catch {
-            return false;
-        }
-    };
-
-    if (loading) {
-        return <Loading behavior="fillPageHeight" />;
-    }
-
-    if (!linkState) {
-        return null;
-    }
+    const pageApi = usePage({ pageId: id });
 
     return (
-        <>
-            {hasChanges && (
-                <RouterPrompt
-                    message={(location) => {
-                        return intl.formatMessage(messages.saveUnsavedChanges);
-                    }}
-                    saveAction={handleSaveAction}
-                />
-            )}
-            <Toolbar scopeIndicator={<ContentScopeIndicator />}>
-                <ToolbarItem>
-                    <IconButton onClick={stackApi?.goBack}>
-                        <ArrowLeft />
-                    </IconButton>
-                </ToolbarItem>
-                <PageName pageId={id} />
-                <FillSpace />
-                <ToolbarItem>
-                    <CrudMoreActionsMenu
-                        overallActions={[<TranslateContentMenuItem key="translate" translateContent={translateContent} disabled={!linkState} />]}
-                    />
-                </ToolbarItem>
-                <ToolbarItem>{pageSaveButton}</ToolbarItem>
-            </Toolbar>
-            <MainContent>
-                <RouterTabs>
-                    <RouterTab label={intl.formatMessage(messages.content)} path="">
-                        <BlockAdminComponentRoot>{rootBlocksApi.content.adminUI}</BlockAdminComponentRoot>
-                    </RouterTab>
-                </RouterTabs>
-            </MainContent>
-            {dialogs}
-        </>
+        <PageContentEditor
+            pageId={id}
+            pageApi={pageApi}
+            tabs={[
+                {
+                    key: "content",
+                    label: intl.formatMessage(messages.content),
+                    invalid: pageApi.rootBlocksValidity.content === false,
+                    content: <BlockAdminComponentRoot>{pageApi.rootBlocksApi.content.adminUI}</BlockAdminComponentRoot>,
+                },
+            ]}
+        />
     );
 };

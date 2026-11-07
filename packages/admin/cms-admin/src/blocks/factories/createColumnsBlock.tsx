@@ -1,21 +1,15 @@
-import { Field, StackPage, StackPageTitle, StackSwitch, StackSwitchApiContext } from "@dextinity/admin";
-import { Add, Copy, Delete, Invisible, Paste, Visible } from "@dextinity/admin-icons";
-import { Checkbox, Divider, FormControlLabel, IconButton, Typography } from "@mui/material";
+import { StackPage, StackPageTitle, StackSwitch, StackSwitchApiContext } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { FormattedMessage, type IntlShape, type MessageDescriptor, useIntl } from "react-intl";
 import { v4 as uuid } from "uuid";
 
-import { AdminComponentStickyFooter } from "../common/AdminComponentStickyFooter";
-import { BlockAdminComponentButton } from "../common/BlockAdminComponentButton";
-import { BlockAdminComponentPaper } from "../common/BlockAdminComponentPaper";
 import { BlockAdminComponentSection } from "../common/BlockAdminComponentSection";
-import { BlockPreviewContent } from "../common/blockRow/BlockPreviewContent";
 import { BlockRow } from "../common/blockRow/BlockRow";
+import { BlockRowList } from "../common/blockRow/BlockRowList";
 import { BlocksFinalForm } from "../form/BlocksFinalForm";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { deduplicateBlockDependencies } from "../helpers/deduplicateBlockDependencies";
-import { HoverPreviewComponent } from "../iframebridge/HoverPreviewComponent";
 import { SelectPreviewComponent } from "../iframebridge/SelectPreviewComponent";
 import {
     BlockCategory,
@@ -27,8 +21,8 @@ import {
 } from "../types";
 import { resolveNewState } from "../utils";
 import { parallelAsyncEvery } from "../utils/parallelAsyncEvery";
-import { FinalFormColumnsSelect } from "./columnsBlock/FinalFormColumnsSelect";
-import { FinalFormLayoutSelect } from "./columnsBlock/FinalFormLayoutSelect";
+import { ColumnsSelectField } from "./columnsBlock/ColumnsSelectField";
+import { LayoutSelectField } from "./columnsBlock/LayoutSelectField";
 import type { ListBlockItem, ListBlockState } from "./createListBlock";
 import { createUseAdminComponent as createUseListBlockAdminComponent } from "./listBlock/createUseAdminComponent";
 
@@ -233,17 +227,22 @@ export function createColumnsBlock<T extends BlockInterface>(
             const {
                 cannotPasteBlockErrorDialog,
                 clipboardProgressDialog,
+                toasts,
+                dismissToast,
                 createUpdateSubBlocksFn,
-                updateClipboardContent,
                 addNewBlock,
+                moveBlock,
+                duplicateBlock,
+                copyBlock,
                 copySelectedBlocks,
                 deleteAllSelectedBlocks,
                 selectBlock,
-                handleToggleSelectAll,
+                selectAllBlocks,
                 pasteBlock,
                 selectedCount,
                 deleteBlocks,
                 toggleVisible,
+                setVisibleOfSelectedBlocks,
             } = useListBlockAdminComponent({ state: { blocks: state.columns }, updateState: handleListBlockAdminChange });
 
             return (
@@ -267,165 +266,66 @@ export function createColumnsBlock<T extends BlockInterface>(
                                 }}
                                 initialValues={{ layout: state.layout, columns: state.layout.columns }}
                             >
-                                <Field
-                                    name="columns"
-                                    label={<FormattedMessage id="dextinity.blocks.columns.columns" defaultMessage="Columns" />}
-                                    component={FinalFormColumnsSelect}
-                                    columns={groupLayoutsByColumnsApi.columns}
-                                    fullWidth
-                                />
-                                <Field
-                                    name="layout"
-                                    label={<FormattedMessage id="dextinity.blocks.columns.layout" defaultMessage="Layout" />}
-                                    component={FinalFormLayoutSelect}
-                                    layouts={groupLayoutsByColumnsApi.getLayouts(state.layout.columns)}
-                                    fullWidth
-                                />
+                                <Fields>
+                                    <ColumnsSelectField
+                                        name="columns"
+                                        label={<FormattedMessage id="dextinity.blocks.columns.columns" defaultMessage="Columns" />}
+                                        columns={groupLayoutsByColumnsApi.columns}
+                                    />
+                                    <LayoutSelectField
+                                        name="layout"
+                                        label={<FormattedMessage id="dextinity.blocks.columns.layout" defaultMessage="Layout" />}
+                                        layouts={groupLayoutsByColumnsApi.getLayouts(state.layout.columns)}
+                                    />
+                                </Fields>
                             </BlocksFinalForm>
                             <BlockAdminComponentSection title={<FormattedMessage id="dextinity.blocks.columns.items" defaultMessage="Items" />}>
-                                <BlockAdminComponentPaper disablePadding>
-                                    <StackSwitchApiContext.Consumer>
-                                        {(stackApi) => {
-                                            return (
-                                                <SelectPreviewComponent>
-                                                    <BlockListHeader>
-                                                        {state.columns.length ? (
-                                                            <SelectAllFromControlLabel
-                                                                control={
-                                                                    <Checkbox
-                                                                        checked={selectedCount === state.columns.length && selectedCount > 0}
-                                                                        indeterminate={selectedCount > 0 && selectedCount !== state.columns.length}
-                                                                        onChange={handleToggleSelectAll}
-                                                                    />
-                                                                }
-                                                                label={
-                                                                    <FormattedMessage
-                                                                        id="dextinity.blocks.list.selectAll"
-                                                                        defaultMessage="Select all"
-                                                                    />
-                                                                }
-                                                            />
-                                                        ) : (
-                                                            <div />
-                                                        )}
-                                                        <BlockListHeaderActionContainer>
-                                                            {selectedCount > 0 && (
-                                                                <>
-                                                                    <IconButton onClick={deleteAllSelectedBlocks} size="large">
-                                                                        <Delete />
-                                                                    </IconButton>
-                                                                    <IconButton onClick={copySelectedBlocks} size="large">
-                                                                        <Copy />
-                                                                    </IconButton>
-                                                                </>
-                                                            )}
-                                                            <IconButton onClick={() => pasteBlock(0)} size="large">
-                                                                <Paste />
-                                                            </IconButton>
-                                                        </BlockListHeaderActionContainer>
-                                                    </BlockListHeader>
-
-                                                    <Divider />
-                                                    <div>
-                                                        {state.columns.map((column, columnIndex) => {
-                                                            return (
-                                                                <HoverPreviewComponent key={column.key} componentSlug={`${column.key}/edit`}>
-                                                                    <BlockRow
-                                                                        id={column.key}
-                                                                        renderPreviewContent={() => (
-                                                                            <BlockPreviewContent block={contentBlock} state={column.props} />
-                                                                        )}
-                                                                        index={columnIndex}
-                                                                        onContentClick={() => {
-                                                                            stackApi.activatePage("edit", column.key);
-                                                                        }}
-                                                                        onDeleteClick={() => {
-                                                                            deleteBlocks([column.key]);
-                                                                        }}
-                                                                        moveBlock={(from, to) => {
-                                                                            updateState((prevState) => {
-                                                                                const columns = [...prevState.columns];
-                                                                                const columnToMove = columns.splice(from, 1)[0];
-                                                                                columns.splice(to, 0, columnToMove);
-                                                                                return { ...prevState, columns };
-                                                                            });
-                                                                        }}
-                                                                        visibilityButton={
-                                                                            <IconButton onClick={() => toggleVisible(column.key)} size="small">
-                                                                                {column.visible ? (
-                                                                                    <Visible color="success" />
-                                                                                ) : (
-                                                                                    <Invisible color="action" />
-                                                                                )}
-                                                                            </IconButton>
-                                                                        }
-                                                                        onAddNewBlock={(beforeIndex) => {
-                                                                            const key = addNewBlock(beforeIndex);
-                                                                            stackApi.activatePage("edit", key);
-                                                                        }}
-                                                                        onCopyClick={() => {
-                                                                            updateClipboardContent([
-                                                                                {
-                                                                                    name: contentBlock.name,
-                                                                                    visible: column.visible,
-                                                                                    state: column.props,
-                                                                                },
-                                                                            ]);
-                                                                        }}
-                                                                        onPasteClick={() => {
-                                                                            pasteBlock(columnIndex + 1);
-                                                                        }}
-                                                                        selected={column.selected}
-                                                                        onSelectedClick={(selected) => {
-                                                                            selectBlock(column, selected);
-                                                                        }}
-                                                                        isValidFn={() => contentBlock.isValid(column.props)}
-                                                                        slideIn={column.slideIn}
-                                                                        hideBottomInsertBetweenButton={columnIndex >= state.columns.length - 1}
-                                                                    />
-                                                                </HoverPreviewComponent>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                    {state.columns.length === 0 ? (
-                                                        <BlockAdminComponentButton
-                                                            variant="primary"
-                                                            onClick={() => {
-                                                                const key = addNewBlock();
-                                                                stackApi.activatePage("edit", key);
-                                                            }}
-                                                            size="large"
-                                                        >
-                                                            <LargeAddButtonContent>
-                                                                <LargeAddButtonIcon />
-                                                                <Typography>
-                                                                    <FormattedMessage
-                                                                        id="dextinity.blocks.columns.addItem"
-                                                                        defaultMessage="Add item"
-                                                                    />
-                                                                </Typography>
-                                                            </LargeAddButtonContent>
-                                                        </BlockAdminComponentButton>
-                                                    ) : (
-                                                        <AdminComponentStickyFooter>
-                                                            <BlockAdminComponentButton
-                                                                variant="primary"
-                                                                onClick={() => {
-                                                                    const key = addNewBlock();
-                                                                    stackApi.activatePage("edit", key);
-                                                                }}
-                                                                size="large"
-                                                                startIcon={<Add />}
-                                                            >
-                                                                <FormattedMessage id="dextinity.blocks.columns.addItem" defaultMessage="Add item" />
-                                                            </BlockAdminComponentButton>
-                                                        </AdminComponentStickyFooter>
-                                                    )}
-                                                </SelectPreviewComponent>
-                                            );
-                                        }}
-                                    </StackSwitchApiContext.Consumer>
-                                </BlockAdminComponentPaper>
+                                <StackSwitchApiContext.Consumer>
+                                    {(stackApi) => (
+                                        <SelectPreviewComponent>
+                                            <BlockRowList
+                                                aria-label={intl.formatMessage({ id: "dextinity.blocks.columns.items", defaultMessage: "Items" })}
+                                                addLabel={intl.formatMessage({ id: "dextinity.blocks.columns.addItem", defaultMessage: "Add item" })}
+                                                count={state.columns.length}
+                                                selectedCount={selectedCount}
+                                                onSelectAllChange={selectAllBlocks}
+                                                onAdd={(index) => {
+                                                    const key = addNewBlock(index);
+                                                    stackApi.activatePage("edit", key);
+                                                }}
+                                                onReorder={moveBlock}
+                                                bulkActions={{
+                                                    onShow: () => setVisibleOfSelectedBlocks(true),
+                                                    onHide: () => setVisibleOfSelectedBlocks(false),
+                                                    onCopy: copySelectedBlocks,
+                                                    onPaste: () => pasteBlock(0),
+                                                    onDelete: deleteAllSelectedBlocks,
+                                                }}
+                                                toasts={toasts}
+                                                onDismissToast={dismissToast}
+                                            >
+                                                {state.columns.map((column, columnIndex) => (
+                                                    <BlockRow
+                                                        key={column.key}
+                                                        block={contentBlock}
+                                                        state={column.props}
+                                                        previewSlug={`${column.key}/edit`}
+                                                        label={columnCountLabel(intl, columnIndex + 1)}
+                                                        visible={column.visible}
+                                                        onVisibleChange={() => toggleVisible(column.key)}
+                                                        checked={column.selected}
+                                                        onCheckedChange={(checked) => selectBlock(column.key, checked)}
+                                                        onOpen={() => stackApi.activatePage("edit", column.key)}
+                                                        onCopy={() => copyBlock(column.key)}
+                                                        onPaste={() => pasteBlock(columnIndex + 1)}
+                                                        onDuplicate={() => duplicateBlock(column.key)}
+                                                        onDelete={() => deleteBlocks([column.key])}
+                                                    />
+                                                ))}
+                                            </BlockRowList>
+                                        </SelectPreviewComponent>
+                                    )}
+                                </StackSwitchApiContext.Consumer>
                             </BlockAdminComponentSection>
                         </StackPage>
                         <StackPage
@@ -515,32 +415,6 @@ export function createColumnsBlock<T extends BlockInterface>(
     return ColumnsBlock;
 }
 
-const BlockListHeader = styled("div")`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`;
-
-const BlockListHeaderActionContainer = styled("div")`
-    padding: 12px 0;
-`;
-
-const SelectAllFromControlLabel = styled(FormControlLabel)`
-    padding: 15px 10px 15px 7px;
-`;
-
-const LargeAddButtonContent = styled("span")`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 4px 0;
-`;
-
-const LargeAddButtonIcon = styled(Add)`
-    font-size: 24px;
-    margin-bottom: 8px;
-`;
-
 type GroupedLayoutsByColumnsApi = {
     columns: number[];
     getLayouts: (columns: number) => ColumnsBlockLayout[];
@@ -574,3 +448,10 @@ function createGroupLayoutsByColumnsApi(layouts: ColumnsBlockLayout[]): GroupedL
         },
     };
 }
+
+const Fields = styled("div")`
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+    padding-block-end: var(--dextinity-space-4);
+`;

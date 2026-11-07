@@ -117,8 +117,13 @@ export default function useBlockTypes({
 
     const activeDropdownBlockType: string = useMemo(() => {
         const activeFeature = dropdownFeatures.find((c) => c.selected);
-        return activeFeature ? activeFeature.name : "unstyled";
-    }, [dropdownFeatures]);
+        if (activeFeature) {
+            return activeFeature.name;
+        }
+        // An unstyled block shows as the standard block type, which takes the place of "unstyled" in the dropdown
+        const isUnstyled = getCurrentBlock(editorState)?.getType() === "unstyled";
+        return isUnstyled && dropdownFeatures.some((feature) => feature.name === standardBlockType) ? standardBlockType : "unstyled";
+    }, [dropdownFeatures, editorState, standardBlockType]);
 
     return {
         dropdownFeatures,

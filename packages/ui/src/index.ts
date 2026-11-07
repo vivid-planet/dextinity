@@ -146,6 +146,8 @@ export { type MenuCheckboxItemSlotProps, type MenuCheckboxItemSlots } from "./co
 export { MenuGroup, type MenuGroupOwnerState, type MenuGroupProps, type MenuGroupSlotProps } from "./components/menu/MenuGroup";
 export { MenuItem, type MenuItemOwnerState, type MenuItemProps } from "./components/menu/MenuItem";
 export { type MenuItemSlotProps, type MenuItemSlots } from "./components/menu/MenuItem";
+export { MenuLinkItem, type MenuLinkItemOwnerState, type MenuLinkItemProps } from "./components/menu/MenuLinkItem";
+export { type MenuLinkItemSlotProps } from "./components/menu/MenuLinkItem";
 export { MenuRadioGroup, type MenuRadioGroupOwnerState, type MenuRadioGroupProps } from "./components/menu/MenuRadioGroup";
 export { MenuRadioItem, type MenuRadioItemOwnerState, type MenuRadioItemProps } from "./components/menu/MenuRadioItem";
 export { type MenuRadioItemSlotProps, type MenuRadioItemSlots } from "./components/menu/MenuRadioItem";

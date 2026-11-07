@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type MouseEvent, useState } from "react";
+import { forwardRef, type HTMLAttributes, isValidElement, type MouseEvent, useState } from "react";
 
 import { isModifiedClick } from "../../utils/modifiedClick";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
@@ -7,6 +7,7 @@ import { Icon } from "../icon/Icon";
 import { Link, type LinkProps } from "../link/Link";
 import { Menu } from "../menu/Menu";
 import { MenuItem } from "../menu/MenuItem";
+import { MenuLinkItem } from "../menu/MenuLinkItem";
 import styles from "./Breadcrumbs.module.scss";
 
 export type BreadcrumbsSeparator = "/" | "›" | "·";
@@ -23,7 +24,10 @@ export interface BreadcrumbsItem {
      * the middle button still follows the link, e.g. into a new tab. Without `href` and `render`, the level renders as a button.
      */
     onClick?: () => void;
-    /** Render the link as a custom element, e.g. the router's link component. Ignored for the current level. */
+    /**
+     * Render the link as a custom element, e.g. the router's link component. Ignored for the current level; a level collapsed into the
+     * "more" menu takes it only as an element.
+     */
     render?: LinkProps["render"];
 }
 
@@ -138,14 +142,6 @@ export const Breadcrumbs = forwardRef<HTMLElement, BreadcrumbsProps>(function Br
         ownerState,
     });
 
-    function chooseCollapsedItem(item: BreadcrumbsItem) {
-        if (item.onClick != null) {
-            item.onClick();
-        } else if (item.href != null) {
-            window.location.assign(item.href);
-        }
-    }
-
     return (
         <nav
             aria-label={labels.breadcrumbs}
@@ -170,9 +166,19 @@ export const Breadcrumbs = forwardRef<HTMLElement, BreadcrumbsProps>(function Br
                                     </button>
                                 }
                             >
-                                {entry.items.map((item, index) => (
-                                    <MenuItem key={index} label={item.label} onClick={() => chooseCollapsedItem(item)} />
-                                ))}
+                                {entry.items.map((item, index) =>
+                                    item.href != null || item.render != null ? (
+                                        <MenuLinkItem
+                                            key={index}
+                                            label={item.label}
+                                            href={item.href}
+                                            render={isValidElement(item.render) ? item.render : undefined}
+                                            onClick={item.onClick}
+                                        />
+                                    ) : (
+                                        <MenuItem key={index} label={item.label} onClick={item.onClick} />
+                                    ),
+                                )}
                             </Menu>
                         );
                     } else if (isLast) {

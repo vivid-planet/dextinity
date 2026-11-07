@@ -1,8 +1,4 @@
 import { deDE as coreDe, enUS as coreEn } from "@mui/material/locale";
-import { deDE as dataGridDe, enUS as dataGridEn } from "@mui/x-data-grid-pro/locales";
-import { deDE as datePickersDe, enUS as datePickersEn } from "@mui/x-date-pickers/locales";
-import type { Locale } from "date-fns";
-import { de, enUS } from "date-fns/locale";
 import type { ResolvedIntlConfig } from "react-intl";
 
 import dextinity_demo_messages_de from "../lang-compiled/dextinity-demo-lang-admin/de.json";
@@ -42,20 +38,14 @@ function getMessages(language: SupportedLanguage): ResolvedIntlConfig["messages"
     };
 }
 
-const dateFnsLocales: Record<SupportedLanguage, Locale> = {
-    en: enUS,
-    de,
-};
-
 const muiLocales: Record<SupportedLanguage, object[]> = {
-    en: [coreEn, dataGridEn, datePickersEn],
-    de: [coreDe, dataGridDe, datePickersDe],
+    en: [coreEn],
+    de: [coreDe],
 };
 
 export function getLanguageConfig(): {
     language: SupportedLanguage;
     messages: ResolvedIntlConfig["messages"];
-    dateFnsLocale: Locale;
     muiLocale: object[];
 } {
     const language = getClosestSupportedLanguageFromBrowserLanguages();
@@ -63,7 +53,6 @@ export function getLanguageConfig(): {
     return {
         language,
         messages: getMessages(language),
-        dateFnsLocale: dateFnsLocales[language],
         muiLocale: muiLocales[language],
     };
 }

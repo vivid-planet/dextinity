@@ -15,9 +15,6 @@ import {
     DextinityConfigProvider,
 } from "@dextinity/cms-admin";
 import { css, Global } from "@emotion/react";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LicenseInfo } from "@mui/x-license";
 import { createApolloClient } from "@src/common/apollo/createApolloClient";
 import { createConfig } from "@src/config";
 import { PageTreeNodeDependency } from "@src/pageTree/PageTreeNodeDependency";
@@ -66,10 +63,8 @@ declare module "@dextinity/cms-admin" {
     }
 }
 
-LicenseInfo.setLicenseKey(config.muiLicenseKey);
-
 export function App() {
-    const { language, messages, dateFnsLocale, muiLocale } = getLanguageConfig();
+    const { language, messages, muiLocale } = getLanguageConfig();
     const theme = useMemo(() => createTheme(muiLocale), [muiLocale]);
 
     return (
@@ -160,41 +155,39 @@ export function App() {
                 <ApolloProvider client={apolloClient}>
                     <IntlProvider locale={language} messages={messages}>
                         <MuiThemeProvider theme={theme}>
-                            <LocalizationProvider adapterLocale={dateFnsLocale} dateAdapter={AdapterDateFns}>
-                                <DndProvider options={HTML5toTouch}>
-                                    <SnackbarProvider>
-                                        <CurrentUserProvider>
-                                            <RouterBrowserRouter>
-                                                <GlobalStyle />
-                                                <ContentScopeProvider>
-                                                    {({ match }) => (
-                                                        <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
-                                                            <Switch>
-                                                                <Route
-                                                                    path={`${match.path}/preview`}
-                                                                    render={(props) => (
-                                                                        <>
-                                                                            <ErrorDialogHandler />
-                                                                            <SitePreviewPage {...props} />
-                                                                        </>
-                                                                    )}
-                                                                />
-                                                                <Route
-                                                                    render={() => (
-                                                                        <AppFrameLayout>
-                                                                            <AppMasterMenuRoutes />
-                                                                        </AppFrameLayout>
-                                                                    )}
-                                                                />
-                                                            </Switch>
-                                                        </AzureAiTranslatorProvider>
-                                                    )}
-                                                </ContentScopeProvider>
-                                            </RouterBrowserRouter>
-                                        </CurrentUserProvider>
-                                    </SnackbarProvider>
-                                </DndProvider>
-                            </LocalizationProvider>
+                            <DndProvider options={HTML5toTouch}>
+                                <SnackbarProvider>
+                                    <CurrentUserProvider>
+                                        <RouterBrowserRouter>
+                                            <GlobalStyle />
+                                            <ContentScopeProvider>
+                                                {({ match }) => (
+                                                    <AzureAiTranslatorProvider enabled showApplyTranslationDialog>
+                                                        <Switch>
+                                                            <Route
+                                                                path={`${match.path}/preview`}
+                                                                render={(props) => (
+                                                                    <>
+                                                                        <ErrorDialogHandler />
+                                                                        <SitePreviewPage {...props} />
+                                                                    </>
+                                                                )}
+                                                            />
+                                                            <Route
+                                                                render={() => (
+                                                                    <AppFrameLayout>
+                                                                        <AppMasterMenuRoutes />
+                                                                    </AppFrameLayout>
+                                                                )}
+                                                            />
+                                                        </Switch>
+                                                    </AzureAiTranslatorProvider>
+                                                )}
+                                            </ContentScopeProvider>
+                                        </RouterBrowserRouter>
+                                    </CurrentUserProvider>
+                                </SnackbarProvider>
+                            </DndProvider>
                         </MuiThemeProvider>
                     </IntlProvider>
                 </ApolloProvider>

@@ -1,8 +1,11 @@
 import { gql } from "@apollo/client";
 
-export const manufacturerFormFragment = gql`
-    fragment ManufacturerFormDetailsHandmade on Manufacturer {
+const manufacturerEditFragment = gql`
+    fragment ManufacturersUiEdit on Manufacturer {
+        id
         name
+        productType
+        updatedAt
         address {
             street
             streetNumber
@@ -27,35 +30,36 @@ export const manufacturerFormFragment = gql`
                 country
             }
         }
+        coordinates {
+            latitude
+            longitude
+        }
     }
 `;
-export const manufacturerQuery = gql`
-    query Manufacturer($id: ID!) {
+
+export const manufacturerEditQuery = gql`
+    query ManufacturersUiEdit($id: ID!) {
         manufacturer(id: $id) {
-            id
-            updatedAt
-            ...ManufacturerFormDetailsHandmade
+            ...ManufacturersUiEdit
         }
     }
-    ${manufacturerFormFragment}
+    ${manufacturerEditFragment}
 `;
+
 export const createManufacturerMutation = gql`
-    mutation CreateManufacturer($input: ManufacturerInput!) {
+    mutation ManufacturersUiCreate($input: ManufacturerInput!) {
         createManufacturer(input: $input) {
-            id
-            updatedAt
-            ...ManufacturerFormDetailsHandmade
+            ...ManufacturersUiEdit
         }
     }
-    ${manufacturerFormFragment}
+    ${manufacturerEditFragment}
 `;
+
 export const updateManufacturerMutation = gql`
-    mutation UpdateManufacturer($id: ID!, $input: ManufacturerUpdateInput!) {
+    mutation ManufacturersUiUpdate($id: ID!, $input: ManufacturerUpdateInput!) {
         updateManufacturer(id: $id, input: $input) {
-            id
-            updatedAt
-            ...ManufacturerFormDetailsHandmade
+            ...ManufacturersUiEdit
         }
     }
-    ${manufacturerFormFragment}
+    ${manufacturerEditFragment}
 `;

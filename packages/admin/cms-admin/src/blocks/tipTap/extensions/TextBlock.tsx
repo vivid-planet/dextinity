@@ -151,7 +151,21 @@ export function createTextBlock({
         ...(styled
             ? {
                   addNodeView() {
-                      return ReactNodeViewRenderer(createTextBlockNodeView(defaultTextBlock));
+                      return ReactNodeViewRenderer(createTextBlockNodeView(defaultTextBlock), {
+                          // Another text block or style can render another element, which React would swap underneath ProseMirror,
+                          // leaving it with a detached content element: the caret jumps and typing after End and Enter loses the
+                          // text. A new node view keeps ProseMirror's DOM and selection in sync.
+                          update: ({ oldNode, newNode, updateProps }) => {
+                              if (
+                                  oldNode.attrs.textBlock !== newNode.attrs.textBlock ||
+                                  oldNode.attrs.textBlockStyle !== newNode.attrs.textBlockStyle
+                              ) {
+                                  return false;
+                              }
+                              updateProps();
+                              return true;
+                          },
+                      });
                   },
               }
             : {}),

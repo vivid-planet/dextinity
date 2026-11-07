@@ -4,6 +4,7 @@ import { forwardRef, Fragment, type HTMLAttributes, type KeyboardEvent, type Rea
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
+import { Menu } from "../menu/Menu";
 import { Tooltip } from "../tooltip/Tooltip";
 import styles from "./BulkActionBar.module.scss";
 
@@ -14,7 +15,7 @@ export type BulkActionBarOwnerState = {
     open: boolean;
 };
 
-export interface BulkActionBarAction {
+interface BulkActionBarActionBase {
     /** The visible name of the action. */
     label: string;
     /** An icon before the label, e.g. `<Icon name="archive" />`. */
@@ -32,9 +33,34 @@ export interface BulkActionBarAction {
      * people know what to change instead of guessing.
      */
     disabledReason?: string;
+}
+
+/**
+ * An action of a `BulkActionBar` that runs on click.
+ */
+export interface BulkActionBarButtonAction extends BulkActionBarActionBase {
     /** Runs the action on the selected items. */
     onClick: () => void;
+    menu?: never;
 }
+
+/**
+ * An action of a `BulkActionBar` that opens a menu, e.g. "Move to" with the folders to choose from.
+ */
+export interface BulkActionBarMenuAction extends BulkActionBarActionBase {
+    /** The menu's content, e.g. `MenuItem`s, `MenuSeparator`s, and `MenuSubmenu`s. */
+    menu: ReactNode;
+    /** Whether the menu is open. */
+    open: boolean;
+    /** Called with the new open state, e.g. when the button is clicked or an item is chosen. */
+    onOpenChange: (open: boolean) => void;
+    onClick?: never;
+}
+
+/**
+ * An action of a `BulkActionBar`: a button, or a button that opens a menu.
+ */
+export type BulkActionBarAction = BulkActionBarButtonAction | BulkActionBarMenuAction;
 
 export interface BulkActionBarLabels {
     /** The number of selected items, e.g. "3 selected". */
@@ -54,7 +80,7 @@ export const defaultBulkActionBarLabels: BulkActionBarLabels = {
 export interface BulkActionBarSlotProps {
     /** Props for the `count` slot, the number of selected items. */
     count?: SlotPropsValue<BulkActionBarOwnerState, "span">;
-    /** Props for each `action` slot, the buttons of the actions. */
+    /** Props for each `action` slot, the buttons of the actions, including the ones that open a menu. */
     action?: SlotPropsValue<BulkActionBarOwnerState, typeof Toolbar.Button>;
     /** Props for the `clear` slot, the button that clears the selection. */
     clear?: SlotPropsValue<BulkActionBarOwnerState, typeof Toolbar.Button>;
@@ -112,7 +138,9 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
             className={clsx(styles.root, className)}
             onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
                 onKeyDown?.(event);
-                if (event.key === "Escape" && !event.defaultPrevented) {
+                // An action's menu is portaled elsewhere in the document; Escape there only closes the menu
+                const isInBar = event.target instanceof Node && event.currentTarget.contains(event.target);
+                if (event.key === "Escape" && !event.defaultPrevented && isInBar) {
                     event.preventDefault();
                     onClear();
                 }
@@ -125,6 +153,7 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
                         className: styles.action,
                         disabled: action.disabled,
                         onClick: action.onClick,
+                        "aria-haspopup": action.menu != null ? "menu" : undefined,
                     },
                     slotProps: slotProps?.action,
                     ownerState,
@@ -144,8 +173,20 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
                             </span>
                         )}
                         {action.label}
+                        {action.menu != null && (
+                            <span className={styles.actionIcon} data-menu-indicator="" aria-hidden>
+                                <Icon name="chevron-up" />
+                            </span>
+                        )}
                     </Toolbar.Button>
                 );
+                if (action.menu != null && action.disabled !== true) {
+                    return (
+                        <Menu key={action.label} open={action.open} onOpenChange={action.onOpenChange} placement="top-start" trigger={button}>
+                            {action.menu}
+                        </Menu>
+                    );
+                }
                 return disabledReason != null ? (
                     <Fragment key={action.label}>
                         <Tooltip content={disabledReason}>{button}</Tooltip>

@@ -223,10 +223,15 @@ export interface AssetBrowserProps extends Omit<HTMLAttributes<HTMLDivElement>, 
     onSearchChange?: (search: string) => void;
     /**
      * The assets matching `search`, across all folders, in the order to show them. Each shows with the path of its folder, taken from
-     * `folders`; choosing a folder on that path in the path bar, or ⌘/Ctrl+↑, opens the folder and selects what the result is in.
-     * The columns view shows them as a list.
+     * `folders`; choosing a folder on that path in the path bar, the up button, or ⌘/Ctrl+↑, opens the folder and selects what the
+     * result is in. The columns view shows them as a list.
      */
     searchResults?: ReadonlyArray<AssetBrowserAsset>;
+    /**
+     * The folders matching `search`, shown before `searchResults` with the path of their parent folder. Opening one ends the search and
+     * shows the folder.
+     */
+    searchFolderResults?: ReadonlyArray<AssetBrowserFolder>;
     /**
      * Shows that the results for `search` are loading.
      *
@@ -298,6 +303,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         search = "",
         onSearchChange,
         searchResults,
+        searchFolderResults,
         searchLoading = false,
         sidebarWidth,
         onSidebarWidthChange,
@@ -367,11 +373,18 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
     const countOf = (id: string) =>
         folders.filter((folder) => folder.parentId === id).length + assets.filter((asset) => asset.folderId === id).length;
 
+    const containerOf = (item: Item) => (item.kind === "folder" ? (item.folder.parentId ?? undefined) : item.asset.folderId);
+
     const path = ancestorsOf(folderId);
     const pathAncestorIds = path.slice(0, -1).map((folder) => folder.id);
     const pathAncestorIdsKey = JSON.stringify(pathAncestorIds);
     const currentFolder = folderById.get(folderId);
-    const items = isSearching ? (searchResults ?? []).map((asset): Item => ({ kind: "asset", asset })) : itemsOf(folderId);
+    const items = isSearching
+        ? [
+              ...(searchFolderResults ?? []).map((folder): Item => ({ kind: "folder", folder })),
+              ...(searchResults ?? []).map((asset): Item => ({ kind: "asset", asset })),
+          ]
+        : itemsOf(folderId);
     const itemIds = items.map(itemId);
     const selected = new Set(selectedIds);
     const canManage = ownerState.mode === "manage";
@@ -520,13 +533,17 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
     };
 
     // Opens a folder on the path of a search result and selects what leads to the result: the result itself or a subfolder
-    const revealResult = (asset: AssetBrowserAsset, targetFolderId = asset.folderId) => {
-        const resultPath = ancestorsOf(asset.folderId);
+    const revealResult = (result: Item, targetFolderId = containerOf(result)) => {
+        const containerId = containerOf(result);
+        if (containerId == null || targetFolderId == null) {
+            return;
+        }
+        const resultPath = ancestorsOf(containerId);
         const index = resultPath.findIndex((folder) => folder.id === targetFolderId);
         focusContentAfterNavigation.current = true;
         onSearchChange?.("");
         onFolderChange(targetFolderId);
-        onSelectionChange([index === -1 || index === resultPath.length - 1 ? asset.id : resultPath[index + 1].id]);
+        onSelectionChange([index === -1 || index === resultPath.length - 1 ? itemId(result) : resultPath[index + 1].id]);
     };
 
     const openItem = (item: Item) => {
@@ -557,7 +574,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         setAnchorId(id);
         if (event.metaKey || event.ctrlKey) {
             onSelectionChange(selected.has(id) ? selectedIds.filter((selectedId) => selectedId !== id) : [...selectedIds, id]);
-        } else if (ownerState.view === "columns" && item.kind === "folder") {
+        } else if (ownerState.view === "columns" && !isSearching && item.kind === "folder") {
             openFolder(item.folder.id);
         } else {
             onSelectionChange([id]);
@@ -578,8 +595,8 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         if (modifier && event.key === "ArrowUp") {
             event.preventDefault();
             const focusedResult = isSearching ? items.find((item) => itemId(item) === tabStopId) : undefined;
-            if (focusedResult?.kind === "asset") {
-                revealResult(focusedResult.asset);
+            if (focusedResult != null) {
+                revealResult(focusedResult);
                 return;
             }
             const parentId = isSearching ? undefined : currentFolder?.parentId;
@@ -775,10 +792,14 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
 
     const itemMeta = (item: Item) => (item.kind === "folder" ? (item.folder.meta ?? labels.itemCount(countOf(item.folder.id))) : item.asset.meta);
 
-    const locationOf = (asset: AssetBrowserAsset) =>
-        ancestorsOf(asset.folderId)
-            .map((folder) => folder.name)
-            .join(" › ");
+    const locationOf = (item: Item) => {
+        const containerId = containerOf(item);
+        return containerId == null
+            ? ""
+            : ancestorsOf(containerId)
+                  .map((folder) => folder.name)
+                  .join(" › ");
+    };
 
     const listboxProps = {
         role: "listbox",
@@ -817,9 +838,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                     <li key={itemId(item)} {...optionProps(item, index)} className={styles.tile}>
                         {renderThumbnail(item)}
                         <span className={styles.tileName}>{itemName(item)}</span>
-                        <span className={styles.tileMeta}>
-                            {isSearching && item.kind === "asset" ? folderById.get(item.asset.folderId)?.name : itemMeta(item)}
-                        </span>
+                        <span className={styles.tileMeta}>{isSearching ? folderById.get(containerOf(item) ?? "")?.name : itemMeta(item)}</span>
                     </li>
                 ))}
             </ul>
@@ -843,9 +862,9 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                                 <span className={styles.rowThumbnail}>{renderThumbnail(item, true)}</span>
                                 <span className={styles.ellipsis}>{itemName(item)}</span>
                             </span>
-                            {isSearching && item.kind === "asset" && (
-                                <span className={styles.rowMeta} title={locationOf(item.asset)}>
-                                    {locationOf(item.asset)}
+                            {isSearching && (
+                                <span className={styles.rowMeta} title={locationOf(item)}>
+                                    {locationOf(item)}
                                 </span>
                             )}
                             <span className={styles.rowMeta}>{itemMeta(item)}</span>
@@ -1066,8 +1085,22 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
     const parentId = isSearching ? undefined : currentFolder?.parentId;
     const visibleSelectedCount = itemIds.filter((id) => selected.has(id)).length;
     const pathResultId = tabStopId != null && selected.has(tabStopId) ? tabStopId : itemIds.find((id) => selected.has(id));
-    const pathResult = isSearching ? searchResults?.find((asset) => asset.id === pathResultId) : undefined;
+    const pathResult = isSearching ? items.find((item) => itemId(item) === pathResultId) : undefined;
+    const pathResultContainerId = pathResult != null ? containerOf(pathResult) : undefined;
+    // The columns view can't show results from many folders, so they show as a list, and the switch says so
     const renderedView = isSearching && ownerState.view === "columns" ? "list" : ownerState.view;
+    const canGoUp = isSearching || parentId != null;
+    const goUp = () => {
+        if (isSearching) {
+            if (pathResult != null) {
+                revealResult(pathResult);
+            } else {
+                onSearchChange?.("");
+            }
+        } else if (parentId != null) {
+            openFolder(parentId);
+        }
+    };
 
     return (
         <div
@@ -1144,14 +1177,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
             {isResizable && <div {...resizeHandleProps} />}
             <div className={styles.main}>
                 <div {...toolbarProps}>
-                    <IconButton
-                        variant="text"
-                        color="secondary"
-                        size="small"
-                        aria-label={labels.up}
-                        disabled={parentId == null}
-                        onClick={() => parentId != null && openFolder(parentId)}
-                    >
+                    <IconButton variant="text" color="secondary" size="small" aria-label={labels.up} disabled={!canGoUp} onClick={goUp}>
                         <Icon name="arrow-up" />
                     </IconButton>
                     <span className={styles.title}>
@@ -1190,12 +1216,12 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                     <SegmentedControl<AssetBrowserView>
                         size="small"
                         aria-label={labels.view}
-                        value={ownerState.view}
+                        value={renderedView}
                         onChange={onViewChange}
                         options={[
                             { value: "icons", icon: <Icon name="grid" />, "aria-label": labels.icons },
                             { value: "list", icon: <Icon name="list" />, "aria-label": labels.list },
-                            { value: "columns", icon: <Icon name="columns-3" />, "aria-label": labels.columns },
+                            { value: "columns", icon: <Icon name="columns-3" />, "aria-label": labels.columns, disabled: isSearching },
                             { value: "gallery", icon: <Icon name="assets" />, "aria-label": labels.gallery },
                         ]}
                     />
@@ -1217,17 +1243,17 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                                 onClick: folder.id === folderId ? undefined : () => openFolder(folder.id),
                             }))}
                         />
-                    ) : pathResult != null ? (
+                    ) : pathResult != null && pathResultContainerId != null ? (
                         <Breadcrumbs
                             className={styles.path}
                             separator="›"
                             maxItems={5}
                             items={[
-                                ...ancestorsOf(pathResult.folderId).map((folder) => ({
+                                ...ancestorsOf(pathResultContainerId).map((folder) => ({
                                     label: folder.name,
                                     onClick: () => revealResult(pathResult, folder.id),
                                 })),
-                                { label: pathResult.name },
+                                { label: itemName(pathResult) },
                             ]}
                         />
                     ) : (

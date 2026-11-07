@@ -30,7 +30,7 @@ export const DateTimeField = forwardRef(function DateTimeField<TFieldValues exte
     forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
     const [options, datePickerProps] = splitFieldAdapterProps(props);
-    const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLInputElement>({ name, ...options }, forwardedRef);
+    const { field, validationProps, ref, setValue } = useFieldAdapter<TFieldValues, TName, HTMLInputElement>({ name, ...options }, forwardedRef);
     const value = toDateTimeValue(field.value);
 
     return (
@@ -41,8 +41,8 @@ export const DateTimeField = forwardRef(function DateTimeField<TFieldValues exte
             name={field.name}
             value={value}
             required={options.required}
-            actions={renderActions(actions, value, field.onChange)}
-            onChange={field.onChange}
+            actions={renderActions(actions, value, setValue)}
+            onChange={setValue}
             onBlur={field.onBlur}
         />
     );

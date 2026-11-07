@@ -1,5 +1,5 @@
 import { type ReactNode, type Ref, useMemo } from "react";
-import { type FieldPath, type FieldValues, useController, type UseControllerProps, type Validate } from "react-hook-form";
+import { type FieldPath, type FieldValues, get, useController, type UseControllerProps, type Validate } from "react-hook-form";
 
 import { useFieldAdapterConfig } from "../fieldAdapterConfig/FieldAdapterConfigProvider";
 import { mergeRefs } from "../utils/mergeRefs";
@@ -31,6 +31,10 @@ export function withRequiredRule<TFieldValues extends FieldValues, TName extends
     return { ...rules, validate: { [requiredRuleKey]: requiredValidation, ...otherValidations } } as Rules<TFieldValues, TName>;
 }
 
+function isEmptyScalar(value: unknown) {
+    return value === undefined || value === null || value === "";
+}
+
 export function toErrorMessage(error: { type?: string; message?: string } | undefined, requiredMessage: ReactNode): ReactNode {
     if (error == null) {
         return undefined;
@@ -49,6 +53,12 @@ export interface UseFieldAdapterOptions<TFieldValues extends FieldValues, TName 
     required?: boolean;
     requiredMessage?: ReactNode;
     isEmpty?: (value: unknown) => boolean;
+    /**
+     * Which values count as nothing entered for `setValue`.
+     *
+     * @defaultValue `undefined`, `null`, and `""`
+     */
+    isBlank?: (value: unknown) => boolean;
 }
 
 export function useFieldAdapter<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>, Element extends HTMLElement>(
@@ -62,6 +72,7 @@ export function useFieldAdapter<TFieldValues extends FieldValues, TName extends 
         required = false,
         requiredMessage = defaultRequiredMessage,
         isEmpty = isEmptyValue,
+        isBlank = isEmptyScalar,
     }: UseFieldAdapterOptions<TFieldValues, TName>,
     forwardedRef: Ref<Element> | undefined,
 ) {
@@ -93,5 +104,11 @@ export function useFieldAdapter<TFieldValues extends FieldValues, TName extends 
         [forwardedRef, fieldRef],
     );
 
-    return { field, validationProps, ref };
+    // React Hook Form compares with the default value as is, so writing back a blank default keeps a field that was emptied again pristine
+    const setValue = (value: unknown) => {
+        const initialValue = get(formState.defaultValues, name);
+        field.onChange(isBlank(value) && isBlank(initialValue) ? initialValue : value);
+    };
+
+    return { field, validationProps, ref, setValue };
 }

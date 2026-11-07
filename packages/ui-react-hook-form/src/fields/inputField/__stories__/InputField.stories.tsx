@@ -1,9 +1,14 @@
-import { FieldActions } from "@dextinity/ui";
+import { FieldActions, SaveState } from "@dextinity/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
+import { useFormSaveState } from "../../../formState/useFormSaveState";
 import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFrame";
 import { InputField } from "../InputField";
+
+function FormSaveState() {
+    return <SaveState {...useFormSaveState()} />;
+}
 
 const meta = {
     title: "Forms/React Hook Form/InputField",
@@ -99,5 +104,24 @@ export const Rules: Story = {
 export const WithFieldActions: Story = {
     args: {
         actions: ({ setValue }) => <FieldActions aiAssist onAiSuggest={async () => "Benefits of working with us"} onAiAccept={setValue} />,
+    },
+};
+
+export const EmptiedAgain: Story = {
+    parameters: { initialValues: { title: null } },
+    render: (args) => (
+        <>
+            <FormSaveState />
+            <InputField {...args} />
+        </>
+    ),
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        const input = canvas.getByLabelText("Title");
+
+        await userEvent.type(input, "Benefits");
+        await expect(canvas.getByText("Unsaved changes")).toBeVisible();
+        await userEvent.clear(input);
+        await expect(canvas.getByText("All changes saved")).toBeVisible();
     },
 };

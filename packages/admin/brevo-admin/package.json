@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/brevo-admin",
-    "version": "10.15.0",
+    "version": "10.14.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -41,12 +41,10 @@
     },
     "dependencies": {
         "@dextinity/admin": "workspace:*",
-        "@dextinity/admin-icons": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",
         "@dextinity/ui": "workspace:*",
         "@dextinity/ui-react-final-form": "workspace:*",
-        "fast-equals": "^5.4.0",
-        "react-dropzone": "^20.2.0"
+        "fast-equals": "^5.4.0"
     },
     "devDependencies": {
         "@apollo/client": "^3.14.1",
@@ -72,7 +70,7 @@
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.5",
         "final-form": "^4.20.10",
-        "graphql": "^16.15.0",
+        "graphql": "^16.14.2",
         "prettier": "^3.9.10",
         "react": "^19.3.1",
         "react-dnd": "^16.0.1",

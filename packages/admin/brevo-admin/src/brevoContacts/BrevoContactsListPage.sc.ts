@@ -12,7 +12,3 @@ export const Toolbar = styled("div")`
     flex-direction: column;
     gap: var(--dextinity-space-3);
 `;
-
-export const Muted = styled("span")`
-    color: var(--dextinity-color-text-secondary);
-`;

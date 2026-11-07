@@ -1,4 +1,5 @@
 import { Button, type ButtonProps, Icon, Tooltip } from "@dextinity/ui";
+import { useId } from "react";
 import { useIntl } from "react-intl";
 
 import { useCurrentUser, useUserPermissionCheck } from "../hooks/currentUser";
@@ -31,6 +32,7 @@ export const StartImpersonationButton = ({ userId, impersonationAllowed = true }
     const currentUser = useCurrentUser();
     const isAllowed = useUserPermissionCheck();
     const messages = useImpersonationMessages();
+    const disabledReasonId = useId();
 
     if (!isAllowed("impersonation")) {
         return null;
@@ -55,6 +57,8 @@ export const StartImpersonationButton = ({ userId, impersonationAllowed = true }
             color="secondary"
             startIcon={<Icon name="impersonate-user" />}
             disabled={disabledReason !== undefined}
+            focusableWhenDisabled
+            aria-describedby={disabledReason ? disabledReasonId : undefined}
             onClick={() => void startImpersonation(userId)}
         >
             {messages.startImpersonation}
@@ -62,9 +66,12 @@ export const StartImpersonationButton = ({ userId, impersonationAllowed = true }
     );
 
     return disabledReason ? (
-        <Tooltip content={disabledReason}>
-            <span tabIndex={0}>{button}</span>
-        </Tooltip>
+        <>
+            <Tooltip content={disabledReason}>{button}</Tooltip>
+            <span id={disabledReasonId} hidden>
+                {disabledReason}
+            </span>
+        </>
     ) : (
         button
     );

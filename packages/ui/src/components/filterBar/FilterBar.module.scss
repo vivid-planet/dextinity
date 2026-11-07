@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     flex-wrap: wrap;
@@ -36,6 +38,15 @@
             inset 0 0 0 calc(var(--dextinity-line-width) * 2) var(--dextinity-filter-bar-search-line-focus),
             0 0 0 4px var(--dextinity-filter-bar-search-halo-focus);
     }
+
+    @include forced-colors.edge;
+
+    @media (forced-colors: active) {
+        &:focus-within {
+            outline: 2px solid Highlight;
+            outline-offset: -2px;
+        }
+    }
 }
 
 .input {
@@ -51,6 +62,10 @@
 
     &::placeholder {
         color: var(--dextinity-filter-bar-search-placeholder);
+
+        @media (forced-colors: active) {
+            color: GrayText;
+        }
     }
 
     &::-webkit-search-cancel-button {

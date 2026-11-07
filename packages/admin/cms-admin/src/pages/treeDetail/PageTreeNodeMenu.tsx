@@ -29,7 +29,7 @@ interface PageTreeNodeMenuProps {
     categories: PageTreeNodeMenuCategory[];
     onMoveToCategoryClick: (category: string) => void;
     /** Without it, translating isn't offered, e.g. when no translation service is configured. */
-    translate?: { disabled: boolean; onClick: () => void };
+    translate?: { disabledReason?: string; onClick: () => void };
     /** Without it, deleting isn't offered. */
     delete?: { disabledReason?: string; onClick: () => void };
 }
@@ -147,7 +147,8 @@ export function PageTreeNodeMenu({
                 <MenuItem
                     icon={<Icon name="translate" />}
                     label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.translate", defaultMessage: "Translate" })}
-                    disabled={translate.disabled || isArchived}
+                    disabled={translate.disabledReason != null || isArchived}
+                    disabledReason={isArchived ? undefined : translate.disabledReason}
                     onClick={translate.onClick}
                 />
             )}

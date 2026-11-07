@@ -12,18 +12,9 @@ It builds on an unstyled foundation rather than evolving the MUI-based component
 
 When this README needs something that the Storybook already explains, it links to the explanation instead of repeating it.
 
-## Usage
-
-Load the Inter font and import the styles once, in the application's entry file:
-
-```ts
-import "@fontsource-variable/inter";
-import "@dextinity/ui/css";
-```
-
 ## Experimental
 
-Any export may change or be removed at any time, without deprecation notice. Changesets are not created for changes within this package.
+Changesets are not created for changes within this package.
 
 ## Non-goals
 

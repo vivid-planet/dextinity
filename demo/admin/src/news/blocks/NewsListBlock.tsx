@@ -118,6 +118,7 @@ export const NewsListBlock: BlockInterface<NewsListBlockData, State, NewsListBlo
                     selectable
                     selectedIds={state.ids}
                     onSelectionChange={(ids) => updateState({ ids })}
+                    clearSelectionOnEscape={false}
                     sort={sort}
                     onSortChange={(newSort) => {
                         setSort(newSort);

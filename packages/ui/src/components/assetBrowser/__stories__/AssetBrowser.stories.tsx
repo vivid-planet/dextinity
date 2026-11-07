@@ -281,6 +281,80 @@ export const WithToolbar: Story = {
     },
 };
 
+const manyAssets: AssetBrowserAsset[] = Array.from({ length: 36 }, (_, index) => ({
+    id: `photo-${index + 1}`,
+    name: `photo-${String(index + 1).padStart(2, "0")}.jpg`,
+    folderId: "root",
+    type: "image",
+    src: [landscapeImage, interiorImage, portraitImage][index % 3],
+    meta: "JPG · 1.8 MB",
+}));
+
+function UploadAndReveal(props: AssetBrowserProps) {
+    const [view, setView] = useState(props.view);
+    const [currentAssets, setCurrentAssets] = useState(manyAssets);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [scrollToItemId, setScrollToItemId] = useState<string>();
+    const upload = () => {
+        const uploaded: AssetBrowserAsset = {
+            id: `upload-${currentAssets.length}`,
+            name: "zz-team-offsite.jpg",
+            folderId: "root",
+            type: "image",
+            src: landscapeImage,
+            meta: "JPG · 2.2 MB",
+        };
+        setCurrentAssets((current) => [...current, uploaded]);
+        setSelectedIds([uploaded.id]);
+        setScrollToItemId(uploaded.id);
+    };
+    return (
+        <AssetBrowser
+            {...props}
+            assets={currentAssets}
+            view={view}
+            onViewChange={setView}
+            selectedIds={selectedIds}
+            onSelectionChange={(ids) => {
+                setSelectedIds(ids);
+                setScrollToItemId(undefined);
+            }}
+            scrollToItemId={scrollToItemId}
+            toolbar={
+                <Button size="small" variant="outlined" color="secondary" startIcon={<Icon name="upload" />} onClick={upload}>
+                    Upload
+                </Button>
+            }
+        />
+    );
+}
+
+/**
+ * `scrollToItemId` reveals an item, e.g. a file just uploaded: it scrolls into view once it shows in the content. Here, "Upload" adds
+ * a file sorted last, selects it, and scrolls to it.
+ */
+export const ScrollToItem: Story = {
+    render: (args) => <UploadAndReveal {...args} />,
+    play: async ({ canvas, canvasElement }) => {
+        const content = canvasElement.querySelector<HTMLElement>(".dextinityAssetBrowser__content");
+        if (content == null) {
+            throw new Error("Missing the content");
+        }
+        await expect(content.scrollTop).toBe(0);
+
+        await userEvent.click(canvas.getByRole("button", { name: "Upload" }));
+
+        const uploaded = await canvas.findByRole("option", { name: /zz-team-offsite\.jpg/ });
+        await waitFor(() => {
+            const contentBox = content.getBoundingClientRect();
+            const itemBox = uploaded.getBoundingClientRect();
+            expect(itemBox.top).toBeGreaterThanOrEqual(contentBox.top - 1);
+            expect(itemBox.bottom).toBeLessThanOrEqual(contentBox.bottom + 1);
+        });
+        await expect(content.scrollTop).toBeGreaterThan(0);
+    },
+};
+
 export const EmptyFolder: Story = {
     args: { folderId: "autumn" },
 };

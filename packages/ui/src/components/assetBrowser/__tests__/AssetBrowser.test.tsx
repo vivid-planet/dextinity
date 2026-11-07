@@ -57,6 +57,35 @@ describe("AssetBrowser", () => {
         expect(option.querySelectorAll("[tabindex='0'], button, a[href], input")).toHaveLength(0);
     });
 
+    it("scrolls to scrollToItemId once it shows, and again for another id", () => {
+        const scrollIntoView = vi.fn();
+        Element.prototype.scrollIntoView = scrollIntoView;
+        const { rerender } = renderBrowser({ scrollToItemId: "c" });
+        expect(scrollIntoView).not.toHaveBeenCalled();
+
+        const props = {
+            folders,
+            folderId: "root",
+            onFolderChange: vi.fn(),
+            view: "list" as const,
+            onViewChange: vi.fn(),
+            selectedIds: [],
+            onSelectionChange: vi.fn(),
+        };
+        const withUpload = [...assets, { id: "c", name: "c.jpg", folderId: "root", type: "image" as const }];
+        rerender(<AssetBrowser {...props} assets={withUpload} scrollToItemId="c" />);
+        expect(scrollIntoView).toHaveBeenCalledTimes(1);
+        expect(scrollIntoView.mock.contexts[0]).toBe(screen.getByRole("option", { name: /c\.jpg/ }));
+
+        rerender(<AssetBrowser {...props} assets={[...withUpload]} scrollToItemId="c" />);
+        expect(scrollIntoView).toHaveBeenCalledTimes(1);
+
+        rerender(<AssetBrowser {...props} assets={withUpload} scrollToItemId="a" />);
+        expect(scrollIntoView).toHaveBeenCalledTimes(2);
+        expect(scrollIntoView.mock.contexts[1]).toBe(screen.getByRole("option", { name: /a\.jpg/ }));
+        delete (Element.prototype as Partial<Element>).scrollIntoView;
+    });
+
     it("can only be resized when the width can change", () => {
         renderBrowser();
 

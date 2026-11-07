@@ -206,6 +206,11 @@ export interface AssetBrowserProps extends Omit<HTMLAttributes<HTMLDivElement>, 
     /** Further controls in the toolbar, e.g. "New folder" and "Upload". */
     toolbar?: ReactNode;
     /**
+     * The id of a folder or asset to scroll into view, e.g. a file just uploaded. It scrolls once the item shows in the content, and
+     * again whenever the id changes; set `undefined` in between to reveal the same item again.
+     */
+    scrollToItemId?: string;
+    /**
      * The search text. While it isn't empty, the content shows `searchResults` instead of the folder's items.
      *
      * @defaultValue `""`
@@ -289,6 +294,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         onMove,
         onDelete,
         toolbar,
+        scrollToItemId,
         search = "",
         onSearchChange,
         searchResults,
@@ -380,6 +386,24 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
             (firstOption ?? contentRef.current)?.focus();
         }
     }, [folderId, isSearching]);
+
+    const scrolledToItemId = useRef<string>(undefined);
+    const isScrollTargetShown = scrollToItemId != null && itemIds.includes(scrollToItemId);
+    useEffect(() => {
+        if (scrollToItemId == null) {
+            scrolledToItemId.current = undefined;
+            return;
+        }
+        if (!isScrollTargetShown || scrolledToItemId.current === scrollToItemId) {
+            return;
+        }
+        const element = optionRefs.current.get(scrollToItemId);
+        if (element == null) {
+            return;
+        }
+        scrolledToItemId.current = scrollToItemId;
+        element.scrollIntoView?.({ block: "nearest", inline: "nearest" });
+    }, [scrollToItemId, isScrollTargetShown]);
 
     useEffect(() => {
         const columns = columnsRef.current;

@@ -30,7 +30,7 @@ export const NumberField = forwardRef(function NumberField<TFieldValues extends 
     forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
     const [options, numberInputProps] = splitFieldAdapterProps(props);
-    const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLInputElement>({ name, ...options }, forwardedRef);
+    const { field, validationProps, ref, setValue } = useFieldAdapter<TFieldValues, TName, HTMLInputElement>({ name, ...options }, forwardedRef);
     const value = toNumberValue(field.value);
 
     return (
@@ -41,8 +41,8 @@ export const NumberField = forwardRef(function NumberField<TFieldValues extends 
             name={field.name}
             value={value}
             required={options.required}
-            actions={renderActions(actions, value, field.onChange)}
-            onChange={field.onChange}
+            actions={renderActions(actions, value, setValue)}
+            onChange={setValue}
             onBlur={field.onBlur}
         />
     );

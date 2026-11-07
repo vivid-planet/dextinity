@@ -44,8 +44,8 @@ export const RichTextEditorField = forwardRef(function RichTextEditorField<TFiel
     forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
     const [options, editorProps] = splitFieldAdapterProps(props);
-    const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLDivElement>(
-        { name, ...options, isEmpty: isEmptyRichText },
+    const { field, validationProps, ref, setValue } = useFieldAdapter<TFieldValues, TName, HTMLDivElement>(
+        { name, ...options, isEmpty: isEmptyRichText, isBlank: isEmptyRichText },
         forwardedRef,
     );
     const value: string = field.value ?? "";
@@ -58,8 +58,8 @@ export const RichTextEditorField = forwardRef(function RichTextEditorField<TFiel
             name={field.name}
             value={value}
             required={options.required}
-            actions={renderActions(actions, value, field.onChange)}
-            onChange={field.onChange}
+            actions={renderActions(actions, value, setValue)}
+            onChange={setValue}
             onBlur={field.onBlur}
         />
     );

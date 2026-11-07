@@ -18,14 +18,15 @@ export interface InputFieldProps<TFieldValues extends FieldValues = FieldValues,
 }
 
 /**
- * An `Input` connected to a React Hook Form field. Shows the field's error once it was touched or the form was submitted.
+ * An `Input` connected to a React Hook Form field. Shows the field's error once it was touched or the form was submitted. An
+ * emptied field gets its default value back when that is empty (`""` or `null`), so it counts as unchanged.
  */
 export const InputField = forwardRef(function InputField<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
     { name, actions, ...props }: InputFieldProps<TFieldValues, TName>,
     forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
     const [options, inputProps] = splitFieldAdapterProps(props);
-    const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLInputElement>({ name, ...options }, forwardedRef);
+    const { field, validationProps, ref, setValue } = useFieldAdapter<TFieldValues, TName, HTMLInputElement>({ name, ...options }, forwardedRef);
     const value: string = field.value ?? "";
 
     return (
@@ -36,8 +37,8 @@ export const InputField = forwardRef(function InputField<TFieldValues extends Fi
             name={field.name}
             value={value}
             required={options.required}
-            actions={renderActions(actions, value, field.onChange)}
-            onChange={field.onChange}
+            actions={renderActions(actions, value, setValue)}
+            onChange={(event) => setValue(event.target.value)}
             onBlur={field.onBlur}
         />
     );

@@ -13,9 +13,11 @@ import { useDamScope } from "../../../dam/config/useDamScope";
 import { ManualDuplicatedFilenamesHandlerContextProvider } from "../../../dam/DataGrid/duplicatedFilenames/ManualDuplicatedFilenamesHandler";
 import { FileUploadContextProvider } from "../../../dam/DataGrid/fileUpload/FileUploadContext";
 import { useDamFileUpload } from "../../../dam/DataGrid/fileUpload/useDamFileUpload";
-import { createAssetBrowserLabels } from "../../../dam/finder/createAssetBrowserLabels";
+import { createAssetBrowserLabels, formatLimitedResultCount } from "../../../dam/finder/createAssetBrowserLabels";
 import { damFinderRootFolderId, toAssetBrowserAsset, toAssetBrowserFolder } from "../../../dam/finder/damFinderItems";
+import { LoadMoreSearchResultsButton } from "../../../dam/finder/LoadMoreSearchResultsButton";
 import { useDamFinderFiles } from "../../../dam/finder/useDamFinderFiles";
+import { useLoadMoreSearchResults } from "../../../dam/finder/useLoadMoreSearchResults";
 import { damFilePickerFoldersQuery, damFilePickerInitialFileFolderQuery, damFilePickerSearchQuery } from "./DamFilePickerDialog.gql";
 import type {
     GQLDamFilePickerFoldersQuery,
@@ -26,7 +28,7 @@ import type {
     GQLDamFilePickerSearchQueryVariables,
 } from "./DamFilePickerDialog.gql.generated";
 
-const searchResultLimit = 100;
+const searchPageSize = 100;
 // Nested folder names need more room than the theme's default width of the folder tree
 const defaultSidebarWidth = 280;
 
@@ -144,10 +146,11 @@ function DamFilePickerDialogContent({
     const { filesByFolderId, loadingFolderIds, error: filesError, reload } = useDamFinderFiles(pathFolderIds);
 
     const searchQuery = useQuery<GQLDamFilePickerSearchQuery, GQLDamFilePickerSearchQueryVariables>(damFilePickerSearchQuery, {
-        variables: { scope, searchText: debouncedSearch, mimetypes: allowedMimetypes, limit: searchResultLimit },
+        variables: { scope, searchText: debouncedSearch, mimetypes: allowedMimetypes, limit: searchPageSize },
         skip: !open || debouncedSearch === "",
         fetchPolicy: "network-only",
     });
+    const searchPaging = useLoadMoreSearchResults(searchQuery, searchPageSize);
     const isSearching = search.trim() !== "";
     const isSearchLoading = isSearching && (debouncedSearch !== search.trim() || searchQuery.loading);
     const searchResults = useMemo(
@@ -229,6 +232,7 @@ function DamFilePickerDialogContent({
     const acceptedMimetypes = allowedMimetypes != null ? allAcceptedMimeTypes.filter(isAllowed) : allAcceptedMimeTypes;
     const { uploadFiles, dialogs: uploadDialogs, dropzoneConfig } = useDamFileUpload({ acceptedMimetypes });
     const [isUploading, setIsUploading] = useState(false);
+    const [scrollToItemId, setScrollToItemId] = useState<string>();
     const upload = async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
         setIsUploading(true);
         try {
@@ -243,6 +247,7 @@ function DamFilePickerDialogContent({
                 setSelectedFileIds((ids) =>
                     multiple ? [...ids.filter((id) => !uploadedFileIds.includes(id)), ...uploadedFileIds] : [uploadedFileIds[0]],
                 );
+                setScrollToItemId(uploadedFileIds[0]);
             }
         } finally {
             setIsUploading(false);
@@ -259,7 +264,6 @@ function DamFilePickerDialogContent({
     const isCurrentFolderLoading = loadingFolderIds.includes(folderId) || foldersQuery.loading;
     const error = foldersQuery.error ?? filesError;
     const searchError = isSearching ? searchQuery.error : undefined;
-    const searchTotalCount = searchQuery.data?.damFilesList.totalCount ?? 0;
     const assetBrowserLabels = createAssetBrowserLabels(intl);
 
     const renderContent = (): ReactNode => {
@@ -295,6 +299,7 @@ function DamFilePickerDialogContent({
                 onFolderChange={setStoredFolderId}
                 view={view}
                 onViewChange={setView}
+                scrollToItemId={scrollToItemId}
                 search={search}
                 onSearchChange={changeSearch}
                 searchResults={searchResults}
@@ -313,6 +318,9 @@ function DamFilePickerDialogContent({
                         {((!isSearching && isCurrentFolderLoading) || isUploading) && (
                             <Spinner size="small" aria-label={intl.formatMessage({ id: "dextinity.damFinder.loading", defaultMessage: "Loading" })} />
                         )}
+                        {isSearching && !isSearchLoading && searchPaging.hasMore && (
+                            <LoadMoreSearchResultsButton onClick={searchPaging.loadMore} loading={searchPaging.isLoadingMore} />
+                        )}
                         <input {...getInputProps()} />
                         <Button
                             size="small"
@@ -329,14 +337,8 @@ function DamFilePickerDialogContent({
                 labels={{
                     ...assetBrowserLabels,
                     resultCount: (count) =>
-                        searchTotalCount > count
-                            ? intl.formatMessage(
-                                  {
-                                      id: "dextinity.form.file.picker.limitedResultCount",
-                                      defaultMessage: "First {count} of {total} results",
-                                  },
-                                  { count, total: searchTotalCount },
-                              )
+                        searchPaging.hasMore
+                            ? formatLimitedResultCount(intl, searchPaging.loadedCount, searchPaging.totalCount)
                             : (assetBrowserLabels.resultCount?.(count) ?? ""),
                 }}
             />

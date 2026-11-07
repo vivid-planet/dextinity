@@ -28,8 +28,14 @@ export const damFilePickerInitialFileFolderQuery = gql`
 `;
 
 export const damFilePickerSearchQuery = gql`
-    query DamFilePickerSearch($scope: DamScopeInput!, $searchText: String!, $mimetypes: [String!], $limit: Int!) {
-        damFilesList(scope: $scope, filter: { searchText: $searchText, mimetypes: $mimetypes }, offset: 0, limit: $limit, sortColumnName: "name") {
+    query DamFilePickerSearch($scope: DamScopeInput!, $searchText: String!, $mimetypes: [String!], $offset: Int = 0, $limit: Int!) {
+        damFilesList(
+            scope: $scope
+            filter: { searchText: $searchText, mimetypes: $mimetypes }
+            offset: $offset
+            limit: $limit
+            sortColumnName: "name"
+        ) {
             nodes {
                 ...DamFinderFile
                 folder {

@@ -29,7 +29,7 @@ describe("DevicePreview", () => {
 
         expect(root.dataset.fill).toBe("");
         expect(screen.getByText("Page").parentElement?.style.inlineSize).toBe("100%");
-        expect(screen.getAllByRole("button").map((button) => button.getAttribute("aria-label"))).toEqual(["Full width", "Desktop"]);
+        expect(screen.getAllByRole("radio").map((radio) => radio.getAttribute("aria-label"))).toEqual(["Full width", "Desktop"]);
     });
 
     it("shows the page from src in an iframe and marks the frame as loading until it has loaded", () => {

@@ -9,6 +9,8 @@ export interface PageEditorContextValue {
     category: string;
     documentType: DocumentInterface;
     page: GQLPageTreePageFragment;
+    /** Opens the dialog with the page's properties (name, slug, document type, menu visibility). */
+    openPageProperties: () => void;
 }
 
 export const PageEditorContext = createContext<PageEditorContextValue | undefined>(undefined);

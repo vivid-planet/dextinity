@@ -1,13 +1,15 @@
 import { useQuery } from "@apollo/client";
 import { type IStackApi, LocalErrorScopeApolloContext, Stack, StackApiContext, useStackApi } from "@dextinity/admin";
 import { Banner, Button, EditLayout, EmptyState, Icon, PageHeader, Panel, Skeleton } from "@dextinity/ui";
-import { type PropsWithChildren, useCallback, useMemo } from "react";
+import { type ComponentType, type PropsWithChildren, useCallback, useMemo, useState } from "react";
 import { useIntl } from "react-intl";
 import { useHistory } from "react-router-dom";
 
+import { useShowAppToast } from "../../common/toasts/AppToasts";
 import { DamScopeProvider } from "../../dam/config/DamScopeProvider";
 import type { DocumentInterface, DocumentType } from "../../documents/types";
 import { usePageTreeScope } from "../config/usePageTreeScope";
+import type { EditPageNodeProps } from "../createEditPageNode";
 import { createPagesQuery, type GQLPagesQuery, type GQLPagesQueryVariables } from "../pagesPage/createPagesQuery";
 import { PageTreeContext } from "../pageTree/PageTreeContext";
 import { arrayToTreeMap } from "../pageTree/treemap/TreeMapUtils";
@@ -21,14 +23,25 @@ interface PageEditorRouteProps {
     documentTypes: Record<DocumentType, DocumentInterface>;
     getDocumentTypesByCategory?: (category: string) => Record<DocumentType, DocumentInterface>;
     pageTreeUrl: string;
+    /** The dialog with the page's properties, offered in the editor's "More actions" menu. */
+    editPageNode: ComponentType<EditPageNodeProps>;
 }
 
 /**
  * Hosts the editor of a page's document type at `<page tree url>/<pageId>/edit`: loads the page from the page tree query, shows why it
  * can't be edited, and provides the contexts that editors and blocks rely on.
  */
-export function PageEditorRoute({ pageId, category, documentTypes, getDocumentTypesByCategory, pageTreeUrl }: PageEditorRouteProps) {
+export function PageEditorRoute({
+    pageId,
+    category,
+    documentTypes,
+    getDocumentTypesByCategory,
+    pageTreeUrl,
+    editPageNode: EditPageNode,
+}: PageEditorRouteProps) {
     const intl = useIntl();
+    const showToast = useShowAppToast();
+    const [isPagePropertiesOpen, setIsPagePropertiesOpen] = useState(false);
     const history = useHistory();
     const pageTreeScope = usePageTreeScope();
     const { additionalPageTreeNodeFragment } = usePageTreeConfig();
@@ -126,7 +139,13 @@ export function PageEditorRoute({ pageId, category, documentTypes, getDocumentTy
         );
     }
 
-    const pageEditorContext: PageEditorContextValue = { backUrl: `${pageTreeUrl}?${backLocation.search}`, category, documentType, page };
+    const pageEditorContext: PageEditorContextValue = {
+        backUrl: `${pageTreeUrl}?${backLocation.search}`,
+        category,
+        documentType,
+        page,
+        openPageProperties: () => setIsPagePropertiesOpen(true),
+    };
 
     return (
         <DamScopeProvider>
@@ -137,6 +156,22 @@ export function PageEditorRoute({ pageId, category, documentTypes, getDocumentTy
                             <EditComponent id={pageId} category={category} />
                         </BackToPageTreeStackApi>
                     </Stack>
+                    <EditPageNode
+                        open={isPagePropertiesOpen}
+                        onOpenChange={setIsPagePropertiesOpen}
+                        mode="edit"
+                        id={pageId}
+                        category={category}
+                        documentTypes={documentTypes}
+                        onSaved={() =>
+                            showToast({
+                                message: intl.formatMessage({
+                                    id: "dextinity.pageTreeDetail.propertiesSaved",
+                                    defaultMessage: "Page properties saved",
+                                }),
+                            })
+                        }
+                    />
                 </PageEditorContext.Provider>
             </PageTreeContext.Provider>
         </DamScopeProvider>

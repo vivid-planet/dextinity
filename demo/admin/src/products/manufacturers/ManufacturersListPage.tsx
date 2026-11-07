@@ -154,6 +154,7 @@ export function ManufacturersListPage({ baseUrl }: ManufacturersListPageProps) {
         {
             key: "address",
             header: intl.formatMessage({ id: "uiDemo.manufacturers.address", defaultMessage: "Address" }),
+            width: "25%",
             render: (manufacturer) =>
                 manufacturer.address ? (
                     <span className={styles.address}>
@@ -165,9 +166,17 @@ export function ManufacturersListPage({ baseUrl }: ManufacturersListPageProps) {
                 ),
         },
         {
+            key: "addressAsEmbeddable_country",
+            header: intl.formatMessage({ id: "uiDemo.manufacturers.embeddableCountry", defaultMessage: "Embeddable country" }),
+            sortable: true,
+            width: 130,
+            priority: "low",
+            render: (manufacturer) => manufacturer.addressAsEmbeddable.country,
+        },
+        {
             key: "alternativeAddress",
             header: intl.formatMessage({ id: "uiDemo.manufacturers.alternativeAddress", defaultMessage: "Alternative address" }),
-            width: 170,
+            width: 150,
             priority: "low",
             render: (manufacturer) =>
                 manufacturer.address?.alternativeAddress ? (
@@ -182,7 +191,7 @@ export function ManufacturersListPage({ baseUrl }: ManufacturersListPageProps) {
             key: "productType",
             header: intl.formatMessage({ id: "uiDemo.manufacturers.productType", defaultMessage: "Product type" }),
             sortable: true,
-            width: 140,
+            width: 110,
             priority: "low",
             render: (manufacturer) =>
                 manufacturer.productType ? getProductTypeLabel(intl, manufacturer.productType) : <span className={styles.muted}>–</span>,
@@ -191,10 +200,10 @@ export function ManufacturersListPage({ baseUrl }: ManufacturersListPageProps) {
             key: "updatedAt",
             header: intl.formatMessage({ id: "uiDemo.productsCommon.updatedAt", defaultMessage: "Updated" }),
             sortable: true,
-            width: 140,
+            width: 120,
             priority: "low",
             render: (manufacturer) => (
-                <span className={styles.muted}>
+                <span className={styles.date}>
                     <FormattedDate value={manufacturer.updatedAt} dateStyle="medium" />
                 </span>
             ),
@@ -227,7 +236,7 @@ export function ManufacturersListPage({ baseUrl }: ManufacturersListPageProps) {
                             onOpenChange={setCountryMenuOpen}
                             trigger={
                                 <FilterChip selected={country !== ""} hasMenu onClick={() => undefined}>
-                                    {intl.formatMessage({ id: "uiDemo.manufacturers.country", defaultMessage: "Country" })}
+                                    {intl.formatMessage({ id: "uiDemo.manufacturers.embeddableCountry", defaultMessage: "Embeddable country" })}
                                 </FilterChip>
                             }
                         >
@@ -284,12 +293,15 @@ export function ManufacturersListPage({ baseUrl }: ManufacturersListPageProps) {
                                 color="secondary"
                                 onClear={() => listState.setFilter("country", "")}
                                 clearLabel={intl.formatMessage(
-                                    { id: "uiDemo.manufacturers.removeCountry", defaultMessage: "Remove filter Country: {country}" },
+                                    {
+                                        id: "uiDemo.manufacturers.removeEmbeddableCountry",
+                                        defaultMessage: "Remove filter Embeddable country: {country}",
+                                    },
                                     { country: countryLabel(country) },
                                 )}
                             >
                                 {intl.formatMessage(
-                                    { id: "uiDemo.manufacturers.countryChip", defaultMessage: "Country: {country}" },
+                                    { id: "uiDemo.manufacturers.embeddableCountryChip", defaultMessage: "Embeddable country: {country}" },
                                     { country: countryLabel(country) },
                                 )}
                             </Chip>

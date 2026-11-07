@@ -14,3 +14,8 @@
 .muted {
     color: var(--dextinity-color-text-secondary);
 }
+
+.date {
+    color: var(--dextinity-color-text-secondary);
+    white-space: nowrap;
+}

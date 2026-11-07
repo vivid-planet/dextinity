@@ -25,6 +25,7 @@ import { type ComponentType, type KeyboardEvent, type MouseEvent, type ReactNode
 import { useIntl } from "react-intl";
 import { Route, useHistory, useLocation, useRouteMatch } from "react-router-dom";
 
+import { ProgressDialog } from "../../common/useProgressDialog";
 import { type ContentScope, useContentScope } from "../../contentScope/Provider";
 import { useContentScopeConfig } from "../../contentScope/useContentScopeConfig";
 import { DamScopeProvider } from "../../dam/config/DamScopeProvider";
@@ -37,7 +38,6 @@ import { createEditPageNode, type EditPageNodeInitialValues, type EditPageNodePr
 import { createPagesQuery, type GQLPagesQuery, type GQLPagesQueryVariables, type GQLPageTreePageFragment } from "../pagesPage/createPagesQuery";
 import { categorySupportsDocumentType } from "../pageTree/categorySupportsDocumentType";
 import { PageTreeContext } from "../pageTree/PageTreeContext";
-import { PageTreeProgressDialog } from "../pageTree/PageTreeProgressDialog";
 import { arrayToTreeMap } from "../pageTree/treemap/TreeMapUtils";
 import { useTranslatePagesAction } from "../pageTree/useTranslatePagesAction";
 import { usePageTreeConfig } from "../pageTreeConfig";
@@ -728,7 +728,7 @@ function PageTreeDetailView({
                 onConfirm={() => void confirmDelete()}
                 loading={isDeleting}
             />
-            <PageTreeProgressDialog
+            <ProgressDialog
                 title={intl.formatMessage({ id: "dextinity.pageTreeDetail.pasting", defaultMessage: "Pasting pages" })}
                 progress={copyPaste.progress}
             />

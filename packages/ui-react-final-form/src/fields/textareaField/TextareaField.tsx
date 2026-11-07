@@ -17,7 +17,8 @@ export interface TextareaFieldProps<FieldValue = string>
 }
 
 /**
- * A `Textarea` connected to a React Final Form field. Shows the field's error once it was touched or the form was submitted.
+ * A `Textarea` connected to a React Final Form field. Shows the field's error once it was touched or the form was submitted. An
+ * emptied field counts as unchanged when its initial value is `""`, `null`, or `undefined`.
  */
 export const TextareaField = forwardRef(function TextareaField<FieldValue = string>(
     { name, actions, onFocus, ...props }: TextareaFieldProps<FieldValue>,

@@ -7,6 +7,7 @@ import { useFieldElementRef } from "../focusOnError/fieldElements";
 import { mergeRefs } from "../utils/mergeRefs";
 import { fieldValidationProps } from "./fieldValidationProps";
 import type { FinalFormFieldConfig } from "./finalFormFieldConfig";
+import { isEqualTreatingEmptyAlike } from "./isEqualTreatingEmptyAlike";
 
 const defaultRequiredMessage = "Required";
 
@@ -32,6 +33,7 @@ export function useFieldAdapter<FieldValue, ControlValue, Element extends HTMLEl
         isEmpty = isEmptyValue,
         validate,
         warn,
+        isEqual = isEqualTreatingEmptyAlike,
         ...config
     }: UseFieldAdapterOptions<FieldValue, ControlValue>,
     forwardedRef: Ref<Element> | undefined,
@@ -41,7 +43,7 @@ export function useFieldAdapter<FieldValue, ControlValue, Element extends HTMLEl
     const validateWithRequired: FieldValidator<FieldValue> | undefined = required
         ? (value, allValues, meta) => (isEmpty(value) ? requiredMessage : validate?.(value, allValues, meta))
         : validate;
-    const { input, meta } = useField<FieldValue, Element, ControlValue>(name, { ...config, validate: validateWithRequired });
+    const { input, meta } = useField<FieldValue, Element, ControlValue>(name, { ...config, isEqual, validate: validateWithRequired });
 
     const error: ReactNode = meta.error || (meta.dirtySinceLastSubmit ? undefined : meta.submitError);
     const warning: ReactNode = warningFromData(meta.data) ?? warn?.(getIn(form.getState().values, name) as FieldValue);

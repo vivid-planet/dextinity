@@ -26,6 +26,14 @@ const widthForColumnSize: Record<ColumnSize, number> = {
     extraLarge: 500,
 };
 
+// The grip before and the row actions after the cells
+const rowControlsWidth = 40 + 52;
+
+/** How wide the grid of a table block is when every column gets the width of its size. */
+export function getTableBlockGridWidth(columns: TableBlockState["columns"]) {
+    return columns.reduce((width, column) => width + widthForColumnSize[column.size], rowControlsWidth);
+}
+
 const getCellValue = (row: TableBlockRowState, columnId: string): unknown =>
     row.cellValues.find((cellValue) => cellValue.columnId === columnId)?.value;
 

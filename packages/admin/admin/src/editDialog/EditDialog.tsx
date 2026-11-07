@@ -25,6 +25,7 @@ import { SaveBoundary } from "../saveBoundary/SaveBoundary";
 import { SaveBoundarySaveButton } from "../saveBoundary/SaveBoundarySaveButton";
 import type { ISelectionApi } from "../SelectionApi";
 import { useSelectionRoute } from "../SelectionRoute";
+import { EditDialogActionsContext } from "./EditDialogActions";
 import type { CloseDialogOptions, IEditDialogApi } from "./EditDialogApiContext";
 
 interface ITitle {
@@ -43,6 +44,7 @@ type EditDialogProps = PropsWithChildren<{
     disableCloseAfterSave?: boolean;
     onAfterSave?: () => void;
     componentsProps?: EditDialogComponentsProps;
+    disableDialogActions?: boolean;
 }>;
 
 export function useEditDialog(): [ComponentType<EditDialogProps>, { id?: string; mode?: "edit" | "add" }, IEditDialogApi, ISelectionApi] {
@@ -117,6 +119,7 @@ const EditDialogInner = ({
     onAfterSave,
     children,
     componentsProps,
+    disableDialogActions,
 }: PropsWithChildren<EditDialogProps & IHookProps>) => {
     const intl = useIntl();
 
@@ -125,10 +128,12 @@ const EditDialogInner = ({
         add: intl.formatMessage(messages.add),
     };
 
-    const handleCancelClick = () => {
+    const handleCancelClick = useCallback(() => {
         // TODO DirtyHandler removal: do we need a onReset functionality here?
         api.closeDialog();
-    };
+    }, [api]);
+
+    const editDialogActionsContextValue = useMemo(() => ({ onCancel: handleCancelClick }), [handleCancelClick]);
 
     const handleCloseClick = () => {
         api.closeDialog();
@@ -148,16 +153,20 @@ const EditDialogInner = ({
 
     return (
         <SaveBoundary onAfterSave={handleAfterSave}>
-            <Dialog open={isOpen} onClose={handleCloseClick} {...componentsProps?.dialog}>
-                <DialogTitle {...componentsProps?.dialogTitle}>
-                    {typeof title === "string" ? title : selection.mode === "edit" ? title.edit : title.add}
-                </DialogTitle>
-                {children}
-                <DialogActions {...componentsProps?.dialogActions}>
-                    <CancelButton onClick={handleCancelClick} />
-                    <SaveBoundarySaveButton disabled={false} />
-                </DialogActions>
-            </Dialog>
+            <EditDialogActionsContext.Provider value={editDialogActionsContextValue}>
+                <Dialog open={isOpen} onClose={handleCloseClick} {...componentsProps?.dialog}>
+                    <DialogTitle {...componentsProps?.dialogTitle}>
+                        {typeof title === "string" ? title : selection.mode === "edit" ? title.edit : title.add}
+                    </DialogTitle>
+                    {children}
+                    {!disableDialogActions && (
+                        <DialogActions {...componentsProps?.dialogActions}>
+                            <CancelButton onClick={handleCancelClick} />
+                            <SaveBoundarySaveButton disabled={false} />
+                        </DialogActions>
+                    )}
+                </Dialog>
+            </EditDialogActionsContext.Provider>
         </SaveBoundary>
     );
 };
@@ -167,13 +176,13 @@ interface IEditDialogHooklessProps extends Omit<EditDialogProps, "children"> {
 }
 
 const EditDialogHooklessInner: ForwardRefRenderFunction<IEditDialogApi, IEditDialogHooklessProps> = (
-    { children, title, onAfterSave, componentsProps },
+    { children, title, onAfterSave, componentsProps, disableDialogActions },
     ref,
 ) => {
     const [EditDialogConfigured, selection, api] = useEditDialog();
     useImperativeHandle(ref, () => api);
     return (
-        <EditDialogConfigured title={title} onAfterSave={onAfterSave} componentsProps={componentsProps}>
+        <EditDialogConfigured title={title} onAfterSave={onAfterSave} componentsProps={componentsProps} disableDialogActions={disableDialogActions}>
             {children({ selectedId: selection.id, selectionMode: selection.mode })}
         </EditDialogConfigured>
     );

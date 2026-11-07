@@ -11,6 +11,7 @@ import { useContentTranslationFieldActionsProps } from "../../blocks/form/useCon
 import { ImageCropSettingsFields } from "../../common/image/ImageCropSettingsFields";
 import { useContentLanguage } from "../../contentLanguage/useContentLanguage";
 import { useContentScope } from "../../contentScope/Provider";
+import { useDateRangePickerLabels } from "../../form/useDatePickerLabels";
 import type { GQLDamFileAiContentType } from "../../graphql.generated";
 import { useDamConfig } from "../config/damConfig";
 import { useDamAcceptedMimeTypes } from "../config/useDamAcceptedMimeTypes";
@@ -213,6 +214,7 @@ function SettingsSection({ title, description, children }: PropsWithChildren<Set
 
 function LicenseFields({ isLicenseRequired }: { isLicenseRequired: boolean }) {
     const intl = useIntl();
+    const dateRangePickerLabels = useDateRangePickerLabels();
     const {
         values: { license },
     } = useFormState<EditFileFormValues>({ subscription: { values: true } });
@@ -250,10 +252,12 @@ function LicenseFields({ isLicenseRequired }: { isLicenseRequired: boolean }) {
                 <DateRangeField
                     name="license.duration"
                     label={intl.formatMessage({ id: "dextinity.dam.file.licenseDuration", defaultMessage: "License duration" })}
+                    locale={intl.locale}
                     disabled={hasNoLicense}
                     required={isLicenseRequired && license.type === "RIGHTS_MANAGED"}
                     requiredMessage={requiredMessage}
                     labels={{
+                        ...dateRangePickerLabels,
                         start: intl.formatMessage({ id: "dextinity.dam.file.licenseDurationFrom", defaultMessage: "From" }),
                         end: intl.formatMessage({ id: "dextinity.dam.file.licenseDurationTo", defaultMessage: "To" }),
                     }}

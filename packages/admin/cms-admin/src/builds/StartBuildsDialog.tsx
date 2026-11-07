@@ -2,7 +2,7 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import { Banner, Button, Dialog, DialogFormActions, EmptyState, Icon, Skeleton } from "@dextinity/ui";
 import { CheckboxGroupField, focusOnError } from "@dextinity/ui-react-final-form";
-import { FORM_ERROR } from "final-form";
+import { FORM_ERROR, type FormApi } from "final-form";
 import { useId } from "react";
 import { Form } from "react-final-form";
 import { useIntl } from "react-intl";
@@ -30,6 +30,9 @@ interface StartBuildsFormValues {
     names: string[];
 }
 
+const initialValues: StartBuildsFormValues = { names: [] };
+const formDecorators = [focusOnError];
+
 type StartBuildsDialogProps = {
     open: boolean;
     onClose: () => void;
@@ -54,7 +57,7 @@ export function StartBuildsDialog({ open, onClose }: StartBuildsDialogProps) {
 
     const buildTemplates = data?.buildTemplates ?? [];
 
-    const submit = async ({ names }: StartBuildsFormValues) => {
+    const submit = async ({ names }: StartBuildsFormValues, form: FormApi<StartBuildsFormValues>) => {
         try {
             await startBuilds({ variables: { input: { names } } });
         } catch {
@@ -66,10 +69,11 @@ export function StartBuildsDialog({ open, onClose }: StartBuildsDialogProps) {
             };
         }
         onClose();
+        form.restart();
     };
 
     return (
-        <Form<StartBuildsFormValues> onSubmit={submit} initialValues={{ names: [] }} decorators={[focusOnError]}>
+        <Form<StartBuildsFormValues> onSubmit={submit} initialValues={initialValues} decorators={formDecorators}>
             {({ handleSubmit, submitError, form }) => (
                 <Dialog
                     open={open}

@@ -279,6 +279,7 @@ export function ProductEditPage({ listUrl, pageUrl, getEditUrl, id }: ProductEdi
             listUrl={listUrl}
             listLabel={listLabel}
             pageUrl={pageUrl}
+            isPathOfPage={(pathname) => [pageUrl, `${pageUrl}/price`, `${pageUrl}/variants`].includes(pathname.replace(/\/$/, ""))}
             title={product?.title ?? intl.formatMessage({ id: "uiDemo.productEdit.newTitle", defaultMessage: "New product" })}
             subtitle={
                 product ? (

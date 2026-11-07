@@ -7,6 +7,7 @@ import {
     queryUpdatedAt,
     resolveHasSaveConflict,
     useContentScope,
+    useDatePickerLabels,
     useRouterLinkClick,
 } from "@dextinity/cms-admin";
 import {
@@ -30,7 +31,15 @@ import {
     useKeyboardShortcut,
     useToasts,
 } from "@dextinity/ui";
-import { focusOnError, InputField, SelectField, SwitchField, useFormSaveState, useHasUnsavedChanges } from "@dextinity/ui-react-final-form";
+import {
+    DateField,
+    focusOnError,
+    InputField,
+    SelectField,
+    SwitchField,
+    useFormSaveState,
+    useHasUnsavedChanges,
+} from "@dextinity/ui-react-final-form";
 import type { GQLNewsCategory, GQLNewsStatus } from "@src/graphql.generated";
 import { deepEqual } from "fast-equals";
 import { FORM_ERROR, type FormApi, type SubmissionErrors } from "final-form";
@@ -354,6 +363,7 @@ function NewsEditFormContent({ baseUrl, savedNews, createdId, form, addToast }: 
     };
 
     const requiredMessage = intl.formatMessage({ id: "uiDemo.news.edit.required", defaultMessage: "Required" });
+    const datePickerLabels = useDatePickerLabels();
     const validateTitle = (title: string) => (title.trim() === "" ? requiredMessage : undefined);
     const validateSlug = (slug: string) =>
         slugPattern.test(slug)
@@ -539,10 +549,11 @@ function NewsEditFormContent({ baseUrl, savedNews, createdId, form, addToast }: 
                                         defaultMessage: "Part of the news URL; changing it breaks existing links.",
                                     })}
                                 />
-                                <InputField
+                                <DateField
                                     name="date"
-                                    type="date"
                                     label={intl.formatMessage({ id: "uiDemo.news.date", defaultMessage: "Date" })}
+                                    locale={intl.locale}
+                                    labels={datePickerLabels}
                                     required
                                     requiredMessage={requiredMessage}
                                 />

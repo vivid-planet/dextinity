@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { BulkActionBar } from "../../bulkActionBar/BulkActionBar";
 import { Button } from "../../button/Button";
 import toastTokens from "../Toast.tokens.scss?raw";
 import { ToastViewport, type ToastViewportProps } from "../ToastViewport";
@@ -108,5 +109,26 @@ export const Duration: Story = {
 export const Static: Story = {
     args: {
         toasts: [{ id: "saved", message: "Saved – the change is live", action: { label: "Undo", onClick: fn() }, duration: 3_600_000 }],
+    },
+};
+
+/**
+ * While a `BulkActionBar` is open, e.g. at the bottom of a `DataGrid`, the toasts move up above it, so its actions stay reachable.
+ * `--dextinity-toast-viewport-offset-above-bulk-action-bar` sets the distance.
+ */
+export const AboveBulkActionBar: Story = {
+    render: (args) => (
+        <>
+            <ToastDemo {...args} toast={{ message: "2 jobs archived", action: { label: "Undo", onClick: onUndo } }} />
+            <div className={styles.bottomBar}>
+                <BulkActionBar count={2} actions={[{ label: "Archive", onClick: fn() }]} onClear={fn()} />
+            </div>
+        </>
+    ),
+    play: async ({ canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Save" }));
+        const toast = await canvas.findByText("2 jobs archived");
+        const bar = canvas.getByRole("toolbar", { name: "Bulk actions" });
+        await waitFor(() => expect(toast.closest("li")?.getBoundingClientRect().bottom).toBeLessThanOrEqual(bar.getBoundingClientRect().top));
     },
 };

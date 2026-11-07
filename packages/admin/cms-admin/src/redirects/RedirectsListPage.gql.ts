@@ -66,6 +66,7 @@ export const updateRedirectActivenessMutation = gql`
             id
             active
             activatedAt
+            updatedAt
         }
     }
 `;

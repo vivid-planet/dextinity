@@ -165,7 +165,13 @@ export function RedirectsListPage({ linkBlock, scope }: RedirectsListPageProps):
                     mutation: updateRedirectActivenessMutation,
                     variables: { id, input: { active } },
                     optimisticResponse: {
-                        updateRedirectActiveness: { __typename: "Redirect", id, active, activatedAt: active ? new Date().toISOString() : null },
+                        updateRedirectActiveness: {
+                            __typename: "Redirect",
+                            id,
+                            active,
+                            activatedAt: active ? new Date().toISOString() : null,
+                            updatedAt: new Date().toISOString(),
+                        },
                     },
                     context: LocalErrorScopeApolloContext,
                 });

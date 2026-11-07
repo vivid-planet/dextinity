@@ -17,6 +17,7 @@ const latestWarningsListFragment = gql`
         createdAt
         message
         severity
+        scope
         sourceInfo {
             rootEntityName
             jsonPath
@@ -102,7 +103,7 @@ function LatestWarningRow({ warning, warningsUrl }: { warning: GQLLatestWarnings
     const history = useHistory();
     const { messages } = useWarningsConfig();
     const { entityDependencyMap } = useDependenciesConfig();
-    const loadSourceUrl = useWarningSourceUrl(warning.sourceInfo);
+    const loadSourceUrl = useWarningSourceUrl(warning.sourceInfo, warning.scope ?? undefined);
 
     const createdAt = intl.formatDate(warning.createdAt, { dateStyle: "medium", timeStyle: "short" });
     const source = entityDependencyMap[warning.sourceInfo.rootEntityName]?.displayName ?? warning.sourceInfo.rootEntityName;

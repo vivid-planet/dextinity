@@ -1,7 +1,7 @@
 import { useApolloClient } from "@apollo/client";
 import { LocalErrorScopeApolloContext, messages, readClipboardText, useErrorDialog, writeClipboardText } from "@dextinity/admin";
 import { type ReactNode, useCallback, useContext } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { useProgressDialog } from "../../common/useProgressDialog";
 import { useDextinityConfig } from "../../config/DextinityConfigContext";
@@ -101,7 +101,8 @@ function useCopyPastePages({ onPasteError, category }: UseCopyPastePagesOptions 
     const client = useApolloClient();
     const scope = usePageTreeScope();
     const damScope = useDamScope();
-    const progress = useProgressDialog({ title: <FormattedMessage id="dextinity.pages.insertingPages" defaultMessage="Inserting pages" /> });
+    const intl = useIntl();
+    const progress = useProgressDialog({ title: intl.formatMessage({ id: "dextinity.pages.insertingPages", defaultMessage: "Inserting pages" }) });
     const errorDialog = useErrorDialog();
     const damBasePath = useDamBasePath();
 

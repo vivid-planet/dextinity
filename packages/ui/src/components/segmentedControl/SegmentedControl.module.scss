@@ -2,10 +2,12 @@
 @use "../../theme/forcedColors" as forced-colors;
 
 .root {
+    position: relative;
     display: inline-flex;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--dextinity-segmented-control-message-gap);
+    min-inline-size: 0;
     max-inline-size: 100%;
     font-family: var(--dextinity-font-family-text);
 
@@ -17,24 +19,44 @@
         --_padding: var(--dextinity-segmented-control-padding-small);
     }
 
-    &[data-disabled] .group {
+    &[data-disabled] .group,
+    &[data-disabled] .menuTrigger {
         opacity: var(--dextinity-segmented-control-disabled-opacity);
+    }
+
+    // Takes the whole width it may, so the options are measured against it and come back once they fit
+    &[data-collapsed] {
+        display: flex;
+        inline-size: 100%;
     }
 }
 
 .group {
     display: inline-flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: var(--dextinity-segmented-control-gap);
     box-sizing: border-box;
-    max-inline-size: 100%;
     padding: var(--dextinity-segmented-control-inset);
     border-radius: var(--dextinity-segmented-control-radius);
     background: var(--dextinity-segmented-control-background);
     box-shadow: var(--dextinity-segmented-control-shadow);
 
+    .root[data-overflow="wrap"] > & {
+        flex-wrap: wrap;
+        max-inline-size: 100%;
+    }
+
     .root[data-state="error"] > & {
         box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-segmented-control-line-error);
+    }
+
+    // Stays measurable while the menu replaces it
+    .root[data-collapsed] > & {
+        position: absolute;
+        inset-block-start: 0;
+        inset-inline-start: 0;
+        visibility: hidden;
+        pointer-events: none;
     }
 
     @include forced-colors.edge;
@@ -42,6 +64,7 @@
 
 .option {
     display: inline-flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
     gap: var(--dextinity-space-2);
@@ -67,7 +90,7 @@
         color: var(--dextinity-segmented-control-foreground-hover);
     }
 
-    &[data-pressed] {
+    &[data-checked] {
         background: var(--dextinity-segmented-control-selected-background);
         color: var(--dextinity-segmented-control-selected-foreground);
         font-weight: var(--dextinity-segmented-control-selected-font-weight);
@@ -91,6 +114,58 @@
     }
 }
 
+.menuTrigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    box-sizing: border-box;
+    max-inline-size: 100%;
+    block-size: calc(var(--_height) + 2 * var(--dextinity-segmented-control-inset));
+    margin: 0;
+    padding-inline: calc(var(--_padding) + var(--dextinity-segmented-control-inset)) var(--_padding);
+    border: 0;
+    border-radius: var(--dextinity-segmented-control-radius);
+    background: var(--dextinity-segmented-control-selected-background);
+    box-shadow: var(--dextinity-segmented-control-selected-shadow);
+    color: var(--dextinity-segmented-control-selected-foreground);
+    font: inherit;
+    font-size: var(--dextinity-segmented-control-font-size);
+    font-weight: var(--dextinity-segmented-control-selected-font-weight);
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+
+    .root[data-state="error"] > & {
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-segmented-control-line-error);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+
+    @include forced-colors.edge;
+}
+
+.menuTriggerValue {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.menuTriggerChevron {
+    color: var(--dextinity-segmented-control-foreground);
+    --dextinity-icon-size: 14px;
+}
+
 .optionIcon {
     display: inline-flex;
     --dextinity-icon-size: var(--dextinity-segmented-control-icon-size);
@@ -98,10 +173,4 @@
 
 .message {
     @include controlMessage.message(segmented-control);
-}
-
-// Applied by the high-contrast color scheme
-:global([data-dextinity-color-scheme="high-contrast"]) .root {
-    --dextinity-segmented-control-selected-background: var(--dextinity-color-text);
-    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-canvas);
 }

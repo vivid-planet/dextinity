@@ -28,7 +28,7 @@ export const Default: Story = {
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
 
-        await userEvent.click(canvas.getByRole("button", { name: "Map" }));
+        await userEvent.click(canvas.getByRole("radio", { name: "Map" }));
         await expect(canvas.getByText('Values: {"layout":"map"}')).toBeInTheDocument();
     },
 };
@@ -40,6 +40,6 @@ export const Required: Story = {
 
         await userEvent.click(canvas.getByRole("button", { name: "Submit" }));
         await expect(canvas.getByText("Choose a layout")).toBeVisible();
-        await expect(canvas.getByRole("button", { name: "List" })).toHaveFocus();
+        await expect(canvas.getByRole("radio", { name: "List" })).toHaveFocus();
     },
 };

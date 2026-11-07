@@ -1,7 +1,7 @@
 import { messages } from "@dextinity/admin";
 import { Link } from "@dextinity/admin-icons";
 import { ControlButton, findEntityInCurrentSelection, findTextInCurrentSelection, selectionIsInOneBlock } from "@dextinity/admin-rte";
-import { Button, Dialog, DialogFormActions } from "@dextinity/ui";
+import { Button, Dialog, DialogFormActions, Tooltip } from "@dextinity/ui";
 import { EditorState, type EntityInstance, RichUtils } from "draft-js";
 import { type FormEvent, type ReactElement, useCallback, useId, useMemo, useState } from "react";
 import { useIntl } from "react-intl";
@@ -20,7 +20,9 @@ interface CreateCmsLinkToolbarButtonOptions {
 
 export function createCmsLinkToolbarButton({ link: LinkBlock }: CreateCmsLinkToolbarButtonOptions): (props: IProps) => ReactElement {
     function ToolbarButton({ editorState, setEditorState }: IProps) {
+        const intl = useIntl();
         const [open, setOpen] = useState(false);
+        const linkLabel = intl.formatMessage({ id: "dextinity.rte.extensions.link.buttonTooltip", defaultMessage: "Link" });
         const { entity: linkEntity, entitySelection: linkSelection } = findEntityInCurrentSelection(editorState, ENTITY_TYPE);
         const selection = editorState.getSelection();
         const linkEditCreateDisabled = !linkEntity && (selection.isCollapsed() || !selectionIsInOneBlock(editorState)); // when a link entity is found it is always editable, when no entity is found, creating a link is disabled when no char is selected (selection.isCollapsed()) or when the selection exceeds a block (a link over multiple blocks is normally not intended)
@@ -39,7 +41,16 @@ export function createCmsLinkToolbarButton({ link: LinkBlock }: CreateCmsLinkToo
         }
         return (
             <>
-                <ControlButton disabled={linkEditCreateDisabled} onButtonClick={handleClick} icon={Link} />
+                <Tooltip content={linkLabel}>
+                    <span>
+                        <ControlButton
+                            disabled={linkEditCreateDisabled}
+                            onButtonClick={handleClick}
+                            icon={Link}
+                            slotProps={{ root: { "aria-label": linkLabel } }}
+                        />
+                    </span>
+                </Tooltip>
                 {open && (
                     <LinkDialog
                         editorState={editorState}

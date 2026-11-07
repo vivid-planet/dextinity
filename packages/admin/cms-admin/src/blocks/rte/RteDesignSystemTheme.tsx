@@ -1,9 +1,35 @@
 import { useThemePortalContainer } from "@dextinity/ui";
+import { tooltipClasses } from "@mui/material";
 import { type Theme, ThemeProvider } from "@mui/material/styles";
 import { type PropsWithChildren, useCallback } from "react";
 
+const tooltipStyles = {
+    [`& .${tooltipClasses.tooltip}`]: {
+        maxWidth: "var(--dextinity-tooltip-max-width)",
+        padding: "var(--dextinity-tooltip-padding-block) var(--dextinity-tooltip-padding-inline)",
+        borderRadius: "var(--dextinity-tooltip-radius)",
+        backgroundColor: "var(--dextinity-tooltip-background)",
+        boxShadow: "var(--dextinity-tooltip-shadow)",
+        color: "var(--dextinity-tooltip-foreground)",
+        fontFamily: "var(--dextinity-font-family-text)",
+        fontSize: "var(--dextinity-tooltip-font-size)",
+        fontWeight: "normal",
+        lineHeight: 1.3,
+    },
+    [`& .${tooltipClasses.tooltip} .MuiTypography-root`]: {
+        font: "inherit",
+        color: "inherit",
+    },
+    "@media (forced-colors: active)": {
+        [`& .${tooltipClasses.tooltip}`]: {
+            border: "1px solid CanvasText",
+        },
+    },
+};
+
 /**
- * Styles the Draft.js editor of `@dextinity/admin-rte` like the fields of `@dextinity/ui`, in every color scheme of the surrounding `Theme`.
+ * Styles the Draft.js editor of `@dextinity/admin-rte` like the fields of `@dextinity/ui`, in every color scheme of the surrounding `Theme`,
+ * and its toolbar tooltips like the ui `Tooltip`.
  * The editor still renders with MUI, so it is restyled through the MUI theme with the design tokens, and its menus are portaled into the
  * `Theme` so the tokens reach them.
  */
@@ -121,6 +147,26 @@ export function RteDesignSystemTheme({ children }: PropsWithChildren) {
                         blockquote: {
                             backgroundColor: "var(--dextinity-color-surface-sunken)",
                         },
+                    },
+                },
+                DextinityAdminTooltip: {
+                    ...outerTheme.components?.DextinityAdminTooltip,
+                    defaultProps: {
+                        ...outerTheme.components?.DextinityAdminTooltip?.defaultProps,
+                        slotProps: { popper: { container } },
+                    },
+                    styleOverrides: {
+                        popper: tooltipStyles,
+                    },
+                },
+                MuiTooltip: {
+                    ...outerTheme.components?.MuiTooltip,
+                    defaultProps: {
+                        ...outerTheme.components?.MuiTooltip?.defaultProps,
+                        slotProps: { popper: { container } },
+                    },
+                    styleOverrides: {
+                        popper: tooltipStyles,
                     },
                 },
                 MuiPopover: {

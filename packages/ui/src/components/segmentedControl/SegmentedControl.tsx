@@ -2,9 +2,9 @@ import { Radio } from "@base-ui/react/radio";
 import { RadioGroup } from "@base-ui/react/radio-group";
 import { clsx } from "clsx";
 import {
-    type ForwardRefExoticComponent,
     type ForwardedRef,
     forwardRef,
+    type ForwardRefExoticComponent,
     type HTMLAttributes,
     type ReactNode,
     type RefAttributes,

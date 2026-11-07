@@ -1,13 +1,13 @@
 import { gql, useQuery } from "@apollo/client";
-import { AppHeaderDropdown, LocalErrorScopeApolloContext, useFocusAwarePolling } from "@dextinity/admin";
-import { SsgRunning, SsgStandby } from "@dextinity/admin-icons";
-import { Box, List, ListItem, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { LocalErrorScopeApolloContext, useFocusAwarePolling } from "@dextinity/admin";
+import { Icon, IconButton, Popover, ProgressBar } from "@dextinity/ui";
 import { differenceInMinutes, parseISO } from "date-fns";
-import type { ReactNode } from "react";
-import { FormattedMessage, FormattedTime } from "react-intl";
+import { useState } from "react";
+import { FormattedMessage, FormattedRelativeTime, FormattedTime, useIntl } from "react-intl";
 
+import { JobStatusIndicator } from "../cronJobs/JobStatusIndicator";
 import type { GQLBuildStatusQuery } from "./BuildEntry.generated";
+import { BuildStatusContent, BuildStatusError, BuildStatusRow, BuildStatusText } from "./BuildEntry.sc";
 import { PublishButton } from "./PublishButton";
 
 const buildStatusQuery = gql`
@@ -29,24 +29,40 @@ const buildStatusQuery = gql`
     }
 `;
 
-const BuildStatusPopperContent = ({ data: { autoBuildStatus, builds } }: { data: GQLBuildStatusQuery }) => {
-    const content: ReactNode[] = [];
+function BuildStatus({ data: { autoBuildStatus, builds } }: { data: GQLBuildStatusQuery }) {
     const lastBuild = builds.length > 0 ? builds[0] : undefined;
+    const isRunning = lastBuild?.status === "active" || lastBuild?.status === "pending";
+    const lastBuildTime = lastBuild?.completionTime ?? lastBuild?.startTime;
+    const remainingRuntime = lastBuild?.estimatedCompletionTime
+        ? Math.abs(differenceInMinutes(parseISO(lastBuild.estimatedCompletionTime), new Date()))
+        : undefined;
 
-    if (lastBuild) {
-        if (lastBuild.status === "active" || lastBuild.status === "pending") {
-            let remainingRuntime: number | undefined;
-
-            if (lastBuild.estimatedCompletionTime) {
-                remainingRuntime = Math.abs(differenceInMinutes(parseISO(lastBuild.estimatedCompletionTime), new Date()));
-            }
-
-            content.push(
-                <Typography variant="body2">
-                    <FormattedMessage id="dextinity.header.buildStatus.buildRunning" defaultMessage="Publication is in progress." />
+    return (
+        <>
+            {lastBuild && (
+                <BuildStatusRow>
+                    <JobStatusIndicator status={lastBuild.status} />
+                    {lastBuildTime && (
+                        <BuildStatusText>
+                            <FormattedRelativeTime
+                                value={-differenceInMinutes(new Date(), parseISO(lastBuildTime))}
+                                unit="minute"
+                                updateIntervalInSeconds={60}
+                                numeric="auto"
+                            />
+                        </BuildStatusText>
+                    )}
+                </BuildStatusRow>
+            )}
+            {isRunning && (
+                <>
+                    <ProgressBar
+                        value={null}
+                        size="small"
+                        label={<FormattedMessage id="dextinity.header.buildStatus.buildRunning" defaultMessage="Publication is in progress." />}
+                    />
                     {remainingRuntime !== undefined && (
-                        <>
-                            {" "}
+                        <BuildStatusText>
                             <FormattedMessage
                                 id="dextinity.header.buildStatus.estimatedCompletion"
                                 defaultMessage="Estimated time to finish: {remainingRuntime, plural,
@@ -55,54 +71,44 @@ const BuildStatusPopperContent = ({ data: { autoBuildStatus, builds } }: { data:
                                 }"
                                 values={{ remainingRuntime }}
                             />
-                        </>
+                        </BuildStatusText>
                     )}
-                </Typography>,
-            );
-        } else if (autoBuildStatus.hasChangesSinceLastBuild) {
-            const nextCheck = parseISO(autoBuildStatus.nextCheck);
-
-            content.push(
-                <Typography variant="body2">
-                    <FormattedMessage
-                        id="dextinity.header.buildStatus.nextScheduledBuild"
-                        defaultMessage="New content changes found. Next publication is planned for: "
-                    />{" "}
-                    <FormattedTime value={nextCheck} />
-                </Typography>,
-            );
-            content.push(<PublishButton />);
-        }
-
-        if (lastBuild.status === "failed") {
-            content.push(
-                <Typography variant="body2" color="error">
+                </>
+            )}
+            {lastBuild?.status === "failed" && (
+                <BuildStatusError>
                     <FormattedMessage id="dextinity.header.buildStatus.lastBuildFailure" defaultMessage="Last publication failed" />
-                </Typography>,
-            );
-        }
-    }
-
-    if (!autoBuildStatus.hasChangesSinceLastBuild) {
-        content.push(
-            <Typography variant="body2">
-                <FormattedMessage id="dextinity.header.buildStatus.noChanges" defaultMessage="No new content changes" />
-            </Typography>,
-        );
-    }
-
-    return (
-        <>
-            {content.map((item, index) => (
-                <ListItem key={index} dense={false} divider={index !== content.length - 1}>
-                    {item}
-                </ListItem>
-            ))}
+                </BuildStatusError>
+            )}
+            {autoBuildStatus.hasChangesSinceLastBuild ? (
+                !isRunning && (
+                    <>
+                        <BuildStatusText>
+                            <FormattedMessage
+                                id="dextinity.header.buildStatus.nextScheduledBuild"
+                                defaultMessage="New content changes found. Next publication is planned for: "
+                            />{" "}
+                            <FormattedTime value={parseISO(autoBuildStatus.nextCheck)} />
+                        </BuildStatusText>
+                        <PublishButton size="small" />
+                    </>
+                )
+            ) : (
+                <BuildStatusText>
+                    <FormattedMessage id="dextinity.header.buildStatus.noChanges" defaultMessage="No new content changes" />
+                </BuildStatusText>
+            )}
         </>
     );
-};
+}
 
+/**
+ * The status of the static site generation for the top bar: whether a build is running, how the last one went, and when the next one is
+ * planned.
+ */
 export function BuildEntry() {
+    const intl = useIntl();
+    const [open, setOpen] = useState(false);
     const { data, error, refetch, startPolling, stopPolling } = useQuery<GQLBuildStatusQuery>(buildStatusQuery, {
         skip: process.env.NODE_ENV === "development",
         fetchPolicy: "network-only",
@@ -118,52 +124,28 @@ export function BuildEntry() {
     });
 
     const running = data?.builds[0]?.status === "active" || data?.builds[0]?.status === "pending";
+    const title = intl.formatMessage({ id: "dextinity.header.buildStatus.staticSiteGeneration", defaultMessage: "Static Site Generation" });
 
     return (
-        <AppHeaderDropdown
-            startIcon={running ? <SsgRunning color="primary" /> : <SsgStandby />}
-            dropdownArrow={null}
-            slotProps={{
-                button: {
-                    slotProps: {
-                        content: {
-                            sx: (theme) => ({
-                                paddingX: "17px",
-
-                                [theme.breakpoints.up("md")]: {
-                                    paddingX: theme.spacing(4),
-                                },
-                            }),
-                        },
-                    },
-                },
-            }}
+        <Popover
+            open={open}
+            onOpenChange={setOpen}
+            placement="bottom-end"
+            title={title}
+            trigger={
+                <IconButton aria-label={title} variant="text" color={running ? "primary" : "secondary"}>
+                    <Icon name={running ? "ssg-running" : "ssg-standby"} />
+                </IconButton>
+            }
         >
-            <Content>
-                <List>
-                    <ListItem dense={false}>
-                        <Typography variant="body2">
-                            <strong>
-                                <FormattedMessage id="dextinity.header.buildStatus.staticSiteGeneration" defaultMessage="Static Site Generation" />
-                            </strong>
-                        </Typography>
-                    </ListItem>
-                    {error !== undefined && (
-                        <ListItem dense={false}>
-                            <Typography variant="body2" color="error">
-                                <FormattedMessage id="dextinity.header.buildStatus.error" defaultMessage="Failed to fetch build status" />
-                            </Typography>
-                        </ListItem>
-                    )}
-                    {data && <BuildStatusPopperContent data={data} />}
-                </List>
-            </Content>
-        </AppHeaderDropdown>
+            <BuildStatusContent>
+                {error !== undefined && (
+                    <BuildStatusError>
+                        <FormattedMessage id="dextinity.header.buildStatus.error" defaultMessage="Failed to fetch build status" />
+                    </BuildStatusError>
+                )}
+                {data && <BuildStatus data={data} />}
+            </BuildStatusContent>
+        </Popover>
     );
 }
-
-const Content = styled(Box)`
-    padding: ${({ theme }) => theme.spacing(1, 0)};
-    width: 300px;
-    min-height: 40px;
-`;

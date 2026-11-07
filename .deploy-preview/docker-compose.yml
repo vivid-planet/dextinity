@@ -189,7 +189,6 @@ services:
             ADMIN_URL: *admin-url
             PREVIEW_URL: *site-url
             API_URL_INTERNAL: http://api:4000/api
-            MUI_LICENSE_KEY: ${MUI_LICENSE_KEY:-}
             BREVO_ALLOW_ADDING_CONTACTS_WITHOUT_DOI: ${BREVO_ALLOW_ADDING_CONTACTS_WITHOUT_DOI}
             NODE_OPTIONS: --max-old-space-size=256
         env_file:

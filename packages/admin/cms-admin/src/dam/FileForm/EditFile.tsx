@@ -30,7 +30,7 @@ import { focusOnError, useHasUnsavedChanges } from "@dextinity/ui-react-final-fo
 import { format } from "date-fns";
 import { deepEqual } from "fast-equals";
 import { FORM_ERROR, type FormApi } from "final-form";
-import { useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { Form, useForm, useFormState } from "react-final-form";
 import { useIntl } from "react-intl";
 import { useHistory, useLocation, useRouteMatch } from "react-router";
@@ -264,9 +264,14 @@ function EditFileForm({ file, assetsUrl, assetsLabel }: EditFileFormProps) {
         <>
             <Form<EditFileFormValues> onSubmit={save} initialValues={initialValues} initialValuesEqual={deepEqual} decorators={formDecorators}>
                 {({ handleSubmit, form }) => (
-                    <form onSubmit={handleSubmit} noValidate>
-                        <EditFileFormContent file={file} assetsUrl={assetsUrl} assetsLabel={assetsLabel} form={form} addToast={addToast} />
-                    </form>
+                    <EditFileFormContent
+                        file={file}
+                        assetsUrl={assetsUrl}
+                        assetsLabel={assetsLabel}
+                        form={form}
+                        handleSubmit={handleSubmit}
+                        addToast={addToast}
+                    />
                 )}
             </Form>
             <ToastViewport
@@ -280,11 +285,13 @@ function EditFileForm({ file, assetsUrl, assetsLabel }: EditFileFormProps) {
 
 interface EditFileFormContentProps extends EditFileFormProps {
     form: FormApi<EditFileFormValues>;
+    handleSubmit: (event?: FormEvent<HTMLFormElement>) => Promise<unknown> | undefined;
     addToast: (toast: NewToast) => void;
 }
 
-function EditFileFormContent({ file, assetsUrl, assetsLabel, form, addToast }: EditFileFormContentProps) {
+function EditFileFormContent({ file, assetsUrl, assetsLabel, form, handleSubmit, addToast }: EditFileFormContentProps) {
     const intl = useIntl();
+    const history = useHistory();
     const location = useLocation();
     const match = useRouteMatch();
     const navigateWithRouter = useRouterLinkClick();
@@ -316,104 +323,132 @@ function EditFileFormContent({ file, assetsUrl, assetsLabel, form, addToast }: E
         dependents: intl.formatMessage({ id: "dextinity.dam.file.dependents", defaultMessage: "Dependents" }),
     };
 
-    useKeyboardShortcut("mod+s", () => void form.submit(), { allowInEditable: true });
+    // All fields are on the settings tab, which stays mounted but hidden while another tab is open
+    const settingsRef = useRef<HTMLDivElement>(null);
+    const [isFocusingFirstError, setIsFocusingFirstError] = useState(false);
+    const showSettingsIfInvalid = () => {
+        if (form.getState().hasValidationErrors && selectedTab !== "settings") {
+            history.push(`${fileUrl}${tabPaths.settings}`);
+            setIsFocusingFirstError(true);
+        }
+    };
+    useEffect(() => {
+        if (isFocusingFirstError && selectedTab === "settings") {
+            settingsRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+            setIsFocusingFirstError(false);
+        }
+    }, [isFocusingFirstError, selectedTab]);
+    const submit = async () => {
+        const result = form.submit();
+        showSettingsIfInvalid();
+        await result;
+    };
+    const submitFromForm = (event: FormEvent<HTMLFormElement>) => {
+        const result = handleSubmit(event);
+        showSettingsIfInvalid();
+        return result;
+    };
+
+    useKeyboardShortcut("mod+s", () => void submit(), { allowInEditable: true });
     const saveShortcut = formatShortcut("mod+s").join(isApplePlatform() ? "" : "+");
     const backUrl = file.folder ? `${assetsUrl}?folder=${encodeURIComponent(file.folder.id)}` : assetsUrl;
 
     const submitAndReportSuccess = async () => {
-        await form.submit();
+        await submit();
         const { hasValidationErrors, hasSubmitErrors } = form.getState();
         return !hasValidationErrors && !hasSubmitErrors;
     };
 
     return (
-        <RouterPrompt
-            message={() =>
-                hasUnsavedChanges
-                    ? intl.formatMessage({ id: "dextinity.dam.file.unsavedChanges", defaultMessage: "Do you want to save your changes?" })
-                    : true
-            }
-            saveAction={submitAndReportSuccess}
-            resetAction={() => form.reset()}
-            subRoutePath={fileUrl}
-        >
-            <EditLayout
-                variant="formWithBlocks"
-                header={
-                    <PageHeader
-                        back={{ label: assetsLabel, href: backUrl }}
-                        slotProps={{ back: { onClick: navigateWithRouter } }}
-                        title={file.name}
-                        subtitle={<FileStatus file={file} />}
-                        actions={
-                            <HeaderActions>
-                                <FileActionsMenu file={file} assetsUrl={backUrl} addToast={addToast} />
-                                <DamFinderFormSaveState />
-                                <Tooltip
-                                    content={intl.formatMessage({
-                                        id: "dextinity.dam.file.saveTooltip",
-                                        defaultMessage: "Saves the file's settings",
-                                    })}
-                                    shortcut={saveShortcut}
-                                >
-                                    <Button type="submit" startIcon={<Icon name="check" />} loading={submitting} disabled={!hasUnsavedChanges}>
-                                        {intl.formatMessage({ id: "dextinity.generic.save", defaultMessage: "Save" })}
-                                    </Button>
-                                </Tooltip>
-                            </HeaderActions>
-                        }
-                    />
+        <form onSubmit={submitFromForm} noValidate>
+            <RouterPrompt
+                message={() =>
+                    hasUnsavedChanges
+                        ? intl.formatMessage({ id: "dextinity.dam.file.unsavedChanges", defaultMessage: "Do you want to save your changes?" })
+                        : true
                 }
-                pane={pane}
-                paneSwitch={
-                    <SegmentedControl
-                        aria-label={intl.formatMessage({ id: "dextinity.dam.file.pane", defaultMessage: "View" })}
-                        value={pane}
-                        onChange={setPane}
-                        options={[
-                            {
-                                value: "preview",
-                                label: intl.formatMessage({ id: "dextinity.dam.file.pane.preview", defaultMessage: "Preview" }),
-                                icon: <Icon name="visible" />,
-                            },
-                            {
-                                value: "editor",
-                                label: intl.formatMessage({ id: "dextinity.dam.file.pane.editor", defaultMessage: "Edit" }),
-                                icon: <Icon name="edit" />,
-                            },
-                        ]}
-                    />
-                }
-                preview={<FilePreview file={file} onNotify={addToast} />}
+                saveAction={submitAndReportSuccess}
+                resetAction={() => form.reset()}
+                subRoutePath={fileUrl}
             >
-                <Panel>
-                    <EditorContent>
-                        <Tabs<EditFileTab>
-                            aria-label={intl.formatMessage({ id: "dextinity.dam.file.tabs", defaultMessage: "File" })}
-                            value={selectedTab}
-                            onChange={() => {
-                                // The tabs are router links, which navigate themselves; the route decides the selected tab
-                            }}
-                            items={shownTabs.map((tab) => ({ value: tab, label: tabLabels[tab], href: `${fileUrl}${tabPaths[tab]}` }))}
-                            slots={{ tab: RouterTabLink }}
+                <EditLayout
+                    variant="formWithBlocks"
+                    header={
+                        <PageHeader
+                            back={{ label: assetsLabel, href: backUrl }}
+                            slotProps={{ back: { onClick: navigateWithRouter } }}
+                            title={file.name}
+                            subtitle={<FileStatus file={file} />}
+                            actions={
+                                <HeaderActions>
+                                    <FileActionsMenu file={file} assetsUrl={backUrl} addToast={addToast} />
+                                    <DamFinderFormSaveState />
+                                    <Tooltip
+                                        content={intl.formatMessage({
+                                            id: "dextinity.dam.file.saveTooltip",
+                                            defaultMessage: "Saves the file's settings",
+                                        })}
+                                        shortcut={saveShortcut}
+                                    >
+                                        <Button type="submit" startIcon={<Icon name="check" />} loading={submitting} disabled={!hasUnsavedChanges}>
+                                            {intl.formatMessage({ id: "dextinity.generic.save", defaultMessage: "Save" })}
+                                        </Button>
+                                    </Tooltip>
+                                </HeaderActions>
+                            }
                         />
-                        {/* Hidden instead of unmounted, so the form keeps tracking unsaved changes of the fields while another tab is open */}
-                        <div hidden={selectedTab !== "settings"}>
-                            <FileSettingsFields file={file} onError={(message) => addToast({ tone: "error", message })} />
-                        </div>
-                        {selectedTab === "metadata" && exif != null && <EmbeddedMetadata exif={exif} />}
-                        {selectedTab === "mediaAlternatives" && (
-                            <>
-                                {isVideo && <MediaAlternativesGrid file={file} type="captions" direction="for" />}
-                                {isCaptions && <MediaAlternativesGrid file={file} type="captions" direction="alternative" />}
-                            </>
-                        )}
-                        {selectedTab === "duplicates" && <Duplicates fileId={file.id} getEditUrl={(fileId) => `${assetsUrl}/${fileId}/edit`} />}
-                        {selectedTab === "dependents" && <DependentsList query={damFileDependentsQuery} variables={{ id: file.id }} />}
-                    </EditorContent>
-                </Panel>
-            </EditLayout>
-        </RouterPrompt>
+                    }
+                    pane={pane}
+                    paneSwitch={
+                        <SegmentedControl
+                            aria-label={intl.formatMessage({ id: "dextinity.dam.file.pane", defaultMessage: "View" })}
+                            value={pane}
+                            onChange={setPane}
+                            options={[
+                                {
+                                    value: "preview",
+                                    label: intl.formatMessage({ id: "dextinity.dam.file.pane.preview", defaultMessage: "Preview" }),
+                                    icon: <Icon name="visible" />,
+                                },
+                                {
+                                    value: "editor",
+                                    label: intl.formatMessage({ id: "dextinity.dam.file.pane.editor", defaultMessage: "Edit" }),
+                                    icon: <Icon name="edit" />,
+                                },
+                            ]}
+                        />
+                    }
+                    preview={<FilePreview file={file} onNotify={addToast} />}
+                >
+                    <Panel>
+                        <EditorContent>
+                            <Tabs<EditFileTab>
+                                aria-label={intl.formatMessage({ id: "dextinity.dam.file.tabs", defaultMessage: "File" })}
+                                value={selectedTab}
+                                onChange={() => {
+                                    // The tabs are router links, which navigate themselves; the route decides the selected tab
+                                }}
+                                items={shownTabs.map((tab) => ({ value: tab, label: tabLabels[tab], href: `${fileUrl}${tabPaths[tab]}` }))}
+                                slots={{ tab: RouterTabLink }}
+                            />
+                            {/* Hidden instead of unmounted, so the form keeps tracking unsaved changes of the fields while another tab is open */}
+                            <div ref={settingsRef} hidden={selectedTab !== "settings"}>
+                                <FileSettingsFields file={file} onError={(message) => addToast({ tone: "error", message })} />
+                            </div>
+                            {selectedTab === "metadata" && exif != null && <EmbeddedMetadata exif={exif} />}
+                            {selectedTab === "mediaAlternatives" && (
+                                <>
+                                    {isVideo && <MediaAlternativesGrid file={file} type="captions" direction="for" addToast={addToast} />}
+                                    {isCaptions && <MediaAlternativesGrid file={file} type="captions" direction="alternative" addToast={addToast} />}
+                                </>
+                            )}
+                            {selectedTab === "duplicates" && <Duplicates fileId={file.id} getEditUrl={(fileId) => `${assetsUrl}/${fileId}/edit`} />}
+                            {selectedTab === "dependents" && <DependentsList query={damFileDependentsQuery} variables={{ id: file.id }} />}
+                        </EditorContent>
+                    </Panel>
+                </EditLayout>
+            </RouterPrompt>
+        </form>
     );
 }
 

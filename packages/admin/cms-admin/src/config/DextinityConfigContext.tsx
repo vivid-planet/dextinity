@@ -1,8 +1,5 @@
 import { ErrorHandlerProvider } from "@dextinity/admin";
-import type { DataGridProps } from "@mui/x-data-grid";
-import type { DataGridPremiumProps } from "@mui/x-data-grid-premium";
-import type { DataGridProProps } from "@mui/x-data-grid-pro";
-import { type ComponentType, createContext, type ErrorInfo, type PropsWithChildren, useContext } from "react";
+import { createContext, type ErrorInfo, type PropsWithChildren, useContext } from "react";
 
 import { type BlocksConfig, BlocksConfigProvider } from "../blocks/config/BlocksConfigContext";
 import type { BlockContext } from "../blocks/context/BlockContext";
@@ -31,13 +28,6 @@ export interface DextinityConfig<SiteConfigs = unknown> {
         context?: Omit<BlockContext, "apiUrl" | "apolloClient">;
     };
     warnings?: WarningsConfig;
-    /**
-     * @deprecated No longer used: the table block edits on the `DataGrid` of `@dextinity/ui`, which needs no MUI X license. Remove the
-     * option.
-     */
-    dataGrid?: {
-        component?: ComponentType<DataGridProps> | ComponentType<DataGridProProps> | ComponentType<DataGridPremiumProps>;
-    };
     onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 

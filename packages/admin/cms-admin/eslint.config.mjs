@@ -2,24 +2,12 @@ import eslintConfigReact, { restrictedImportPaths } from "@dextinity/eslint-conf
 import { defineConfig, globalIgnores } from "eslint/config";
 import storybook from "eslint-plugin-storybook";
 
-const dataGridImportRestrictions = ["@mui/x-data-grid", "@mui/x-data-grid-pro", "@mui/x-data-grid-premium"].flatMap((name) =>
-    ["DataGrid", "DataGridPro", "DataGridPremium"].map((importName) => ({
-        name,
-        importNames: [importName],
-        message: "Please use DataGrid from `@dextinity/cms-admin` instead, which resolves the configured grid via `DextinityConfig`.",
-    })),
-);
-
 export default defineConfig([
     globalIgnores(["src/*.generated.ts", "lib/**", "**/*.generated.ts", "block-meta.json", "storybook-static/**"]),
     ...eslintConfigReact,
     {
         // These files interpolate JS expressions into `gql` templates, which `@graphql-eslint/eslint-plugin` cannot parse.
-        files: [
-            "src/dependencies/createDependencyMethods.ts",
-            "src/dependencies/createDocumentDependencyMethods.ts",
-            "src/form/queryUpdatedAt.tsx",
-        ],
+        files: ["src/dependencies/createDependencyMethods.ts", "src/dependencies/createDocumentDependencyMethods.ts", "src/form/queryUpdatedAt.tsx"],
         processor: {
             meta: { name: "no-op" },
             preprocess: (code) => [code],
@@ -30,16 +18,6 @@ export default defineConfig([
     {
         rules: {
             "@dextinity/no-other-module-relative-import": "off",
-        },
-    },
-    {
-        rules: {
-            "no-restricted-imports": [
-                "error",
-                {
-                    paths: [...restrictedImportPaths, ...dataGridImportRestrictions],
-                },
-            ],
         },
     },
     {

@@ -16,7 +16,8 @@ export interface ThemeProps extends ComponentPropsWithoutRef<"div"> {
 }
 
 /**
- * Scopes the active color scheme to its subtree. Wrap an application, or a section of one.
+ * Gives the components in its subtree their styles, in the color scheme that `colorScheme` sets. Wrap an application, or a section of one.
+ * For the tokens and how to customize them, see the "Theme" pages in the Storybook.
  */
 export const Theme = forwardRef<HTMLDivElement, ThemeProps>(function Theme({ colorScheme = "light", className, children, ...restProps }, ref) {
     return (

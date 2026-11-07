@@ -5,7 +5,7 @@ import { Typography } from "../../../components/typography/Typography";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 
 const meta = {
-    title: "Theme/Customize icon set",
+    title: "Theme/Customize icons",
     tags: ["!dev", "!autodocs", "!manifest"],
     decorators: [themeDecorator],
 } satisfies Meta;

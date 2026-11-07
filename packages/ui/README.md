@@ -131,6 +131,16 @@ Stories live under the "Components" section. Each consumer-facing component has 
 
 The docs show only the body of a story's `render` function, so everything the example needs goes inside it. A `render` function names its parameter `args`. To show a story's full source instead of its `render` body, set `parameters.docs.source.type` to `"code"`.
 
+A story that needs styles, for example to show a customization, puts them in a `.module.scss` file next to the story file and uses it in its `render` function. The file contains only styles that belong to the example: the docs show it next to the story's code.
+
+```tsx
+import sizeStyles from "./iconSize.module.scss";
+
+export const Size: Story = {
+    render: (args) => <Icon {...args} className={sizeStyles.largeIcon} />,
+};
+```
+
 #### Main story
 
 `__stories__/<ComponentName>.stories.tsx`, included in autodocs, is the component's consumer-facing documentation: a new variant, feature, or state gets a story in the same change, keeping the docs page current.

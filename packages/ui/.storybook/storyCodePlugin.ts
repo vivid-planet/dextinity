@@ -2,12 +2,23 @@ import ts from "typescript";
 import type { Plugin } from "vite";
 
 import { childrenPlaceholder } from "../src/storybook/childrenPlaceholder";
-import { findProperty, parseStoryFile, storyExportsOf } from "./storyFile";
+import {
+    parseStoryFile,
+    renderBodyOf,
+    storyExportsOf,
+    type StyleImport,
+    styleImportReferencesIn,
+    styleImportsOf,
+    styleImportsUsedIn,
+} from "./storyFile";
+
+type TextEdit = { start: number; end: number; text: string };
 
 /**
  * Adds parameters to each story with a `render` function:
  *
  * - `renderSource`: the function's body as written in the story file.
+ * - `styleSource`: the `.module.scss` files that the body uses.
  */
 export function storyCodePlugin(): Plugin {
     return {
@@ -17,28 +28,55 @@ export function storyCodePlugin(): Plugin {
             if (!id.endsWith(".stories.tsx")) {
                 return undefined;
             }
-            const renderSourceFile = parseStoryFile(withChildrenPlaceholders(code, id), id);
-            const storyParametersAssignments = storyExportsOf(renderSourceFile).flatMap(({ exportName, storyObject }) => {
-                const renderSource = renderSourceOf(storyObject, renderSourceFile);
-                return renderSource === undefined ? [] : [storyParametersAssignment(exportName, renderSource)];
+            const storyFile = parseStoryFile(code, id);
+            const styleImports = styleImportsOf(storyFile);
+            const renderSourceFile = parseStoryFile(withRenderSourceEdits(storyFile, styleImports), id);
+            const renderSources = new Map(
+                storyExportsOf(renderSourceFile).map(({ exportName, storyObject }) => [exportName, renderSourceOf(storyObject, renderSourceFile)]),
+            );
+            const storyParametersAssignments = storyExportsOf(storyFile).flatMap(({ exportName, storyObject }) => {
+                const renderSource = renderSources.get(exportName);
+                const renderBody = renderBodyOf(storyObject);
+                if (renderSource === undefined || !renderBody) {
+                    return [];
+                }
+                return [storyParametersAssignment(exportName, renderSource, styleImportsUsedIn(renderBody, styleImports))];
             });
             if (storyParametersAssignments.length === 0) {
                 return undefined;
             }
-            return { code: [code, ...storyParametersAssignments].join("\n"), map: null };
+            return { code: [code, ...styleImports.map(rawStyleImport), ...storyParametersAssignments].join("\n"), map: null };
         },
     };
 }
 
-function withChildrenPlaceholders(code: string, fileName: string) {
-    let codeWithPlaceholders = "";
+function withRenderSourceEdits(storyFile: ts.SourceFile, styleImports: StyleImport[]) {
+    const edits = [...childrenPlaceholderEdits(storyFile), ...styleImportRenameEdits(storyFile, styleImports)].sort(
+        (first, second) => first.start - second.start,
+    );
+    let editedCode = "";
     let copiedUntil = 0;
-    for (const element of selfClosingElementsSpreadingArgs(parseStoryFile(code, fileName))) {
-        codeWithPlaceholders += code.slice(copiedUntil, element.attributes.getEnd());
-        codeWithPlaceholders += `>${childrenPlaceholder}</${element.tagName.getText()}>`;
-        copiedUntil = element.getEnd();
+    for (const edit of edits) {
+        editedCode += storyFile.text.slice(copiedUntil, edit.start) + edit.text;
+        copiedUntil = edit.end;
     }
-    return codeWithPlaceholders + code.slice(copiedUntil);
+    return editedCode + storyFile.text.slice(copiedUntil);
+}
+
+function childrenPlaceholderEdits(storyFile: ts.SourceFile): TextEdit[] {
+    return selfClosingElementsSpreadingArgs(storyFile).map((element) => ({
+        start: element.attributes.getEnd(),
+        end: element.getEnd(),
+        text: `>${childrenPlaceholder}</${element.tagName.getText()}>`,
+    }));
+}
+
+function styleImportRenameEdits(storyFile: ts.SourceFile, styleImports: StyleImport[]): TextEdit[] {
+    return styleImportReferencesIn(storyFile, styleImports).map((reference) => ({
+        start: reference.getStart(),
+        end: reference.getEnd(),
+        text: "styles",
+    }));
 }
 
 function selfClosingElementsSpreadingArgs(node: ts.Node): ts.JsxSelfClosingElement[] {
@@ -51,28 +89,11 @@ function isArgsSpread(attribute: ts.JsxAttributeLike) {
 }
 
 function renderSourceOf(storyObject: ts.ObjectLiteralExpression, sourceFile: ts.SourceFile) {
-    const body = renderBodyOf(findProperty(storyObject, "render"));
+    const body = renderBodyOf(storyObject);
     if (!body) {
         return undefined;
     }
     return ts.isBlock(body) ? blockSourceWithoutReturnKeyword(body, sourceFile) : dedentedSourceOf(unwrapParentheses(body), sourceFile);
-}
-
-function renderBodyOf(renderProperty: ts.ObjectLiteralElementLike | undefined) {
-    if (!renderProperty) {
-        return undefined;
-    }
-    if (ts.isMethodDeclaration(renderProperty)) {
-        return renderProperty.body;
-    }
-    if (ts.isPropertyAssignment(renderProperty) && isFunctionLiteral(renderProperty.initializer)) {
-        return renderProperty.initializer.body;
-    }
-    return undefined;
-}
-
-function isFunctionLiteral(expression: ts.Expression): expression is ts.ArrowFunction | ts.FunctionExpression {
-    return ts.isArrowFunction(expression) || ts.isFunctionExpression(expression);
 }
 
 function blockSourceWithoutReturnKeyword(block: ts.Block, sourceFile: ts.SourceFile) {
@@ -103,7 +124,19 @@ function indentationOfLineAt(position: number, sourceFile: ts.SourceFile) {
     return textBeforePosition.slice(0, textBeforePosition.length - textBeforePosition.trimStart().length);
 }
 
-function storyParametersAssignment(exportName: string, renderSource: string) {
+function rawStyleImport({ importName, modulePath }: StyleImport) {
+    return `import ${rawStyleSourceName(importName)} from ${JSON.stringify(`${modulePath}?raw`)};`;
+}
+
+function rawStyleSourceName(importName: string) {
+    return `rawStyleSourceOf_${importName}`;
+}
+
+function storyParametersAssignment(exportName: string, renderSource: string, usedStyleImports: StyleImport[]) {
     const parameters = `${exportName}.parameters`;
-    return `${parameters} = { ...${parameters}, renderSource: ${JSON.stringify(renderSource)} };`;
+    const renderSourceParameter = `renderSource: ${JSON.stringify(renderSource)}`;
+    const styleSourceNames = usedStyleImports.map(({ importName }) => rawStyleSourceName(importName));
+    const styleSourceParameter = styleSourceNames.length > 0 ? `styleSource: [${styleSourceNames.join(", ")}].join("\\n\\n")` : undefined;
+    const assignedParameters = [`...${parameters}`, renderSourceParameter, styleSourceParameter].filter((parameter) => parameter !== undefined);
+    return `${parameters} = { ${assignedParameters.join(", ")} };`;
 }

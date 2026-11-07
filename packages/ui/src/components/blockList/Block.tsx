@@ -8,7 +8,7 @@ import { Icon } from "../icon/Icon";
 import { IconButton } from "../iconButton/IconButton";
 import { Tooltip } from "../tooltip/Tooltip";
 import styles from "./Block.module.scss";
-import { useBlockListItem } from "./blockListContext";
+import { BlockListItemContext, useBlockListItem } from "./blockListContext";
 
 export interface BlockLabels {
     /** The accessible name of the grip, which moves the block. */
@@ -304,7 +304,10 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
             </div>
             {ownerState.expandable && (
                 <Collapsible.Panel {...bodyProps}>
-                    <div className={styles.fields}>{children}</div>
+                    <div className={styles.fields}>
+                        {/* A block in the fields belongs to a nested list, never to the list of this block */}
+                        <BlockListItemContext.Provider value={undefined}>{children}</BlockListItemContext.Provider>
+                    </div>
                 </Collapsible.Panel>
             )}
         </Collapsible.Root>

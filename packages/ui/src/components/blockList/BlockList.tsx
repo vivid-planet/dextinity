@@ -67,7 +67,8 @@ interface DropTarget {
 }
 
 /**
- * The blocks of a page in their order: move them by dragging or with the keyboard, and add new ones before, between, or after them.
+ * The blocks of a page in their order: move them by dragging or with the keyboard, and add new ones before, between, or after them. A
+ * block's fields can hold a nested `BlockList`, e.g. the blocks of a column; each list moves only its own blocks.
  */
 export const BlockList = forwardRef<HTMLUListElement, BlockListProps>(function BlockList(
     { children, header, onReorder, onAdd, labels: labelsProp, className, slotProps, ...restProps },
@@ -123,10 +124,12 @@ export const BlockList = forwardRef<HTMLUListElement, BlockListProps>(function B
             setDropTarget(undefined);
         },
         onDragOver: (event: DragEvent<HTMLElement>) => {
+            // A drag from another list, e.g. one nested in a block, is left to that list
             if (draggedIndex == null) {
                 return;
             }
             event.preventDefault();
+            event.stopPropagation();
             event.dataTransfer.dropEffect = "move";
             const rect = event.currentTarget.getBoundingClientRect();
             const position = event.clientY - rect.top < rect.height / 2 ? "before" : "after";
@@ -135,8 +138,12 @@ export const BlockList = forwardRef<HTMLUListElement, BlockListProps>(function B
             }
         },
         onDrop: (event: DragEvent<HTMLElement>) => {
+            if (draggedIndex == null) {
+                return;
+            }
             event.preventDefault();
-            if (draggedIndex != null && dropTarget != null) {
+            event.stopPropagation();
+            if (dropTarget != null) {
                 const insertionIndex = dropTarget.index + (dropTarget.position === "after" ? 1 : 0);
                 move(draggedIndex, insertionIndex > draggedIndex ? insertionIndex - 1 : insertionIndex);
             }

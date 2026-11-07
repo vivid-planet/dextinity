@@ -46,6 +46,24 @@ describe("CheckboxGroup", () => {
         expect(screen.getByRole("group", { name: "Main" })).toContainElement(screen.getByRole("checkbox", { name: "English" }));
     });
 
+    it("disables a group whose options are all disabled", () => {
+        const assignedOptions: CheckboxGroupOption[] = [
+            {
+                value: "main",
+                label: "Main",
+                children: [
+                    { value: "main-de", label: "German", disabled: true },
+                    { value: "main-en", label: "English", disabled: true },
+                ],
+            },
+            { value: "archive", label: "Archive" },
+        ];
+        render(<CheckboxGroup aria-label="Scopes" options={assignedOptions} value={["main-de", "main-en"]} onChange={vi.fn()} />);
+
+        expect(screen.getByRole("checkbox", { name: "Main" }).getAttribute("aria-disabled")).toBe("true");
+        expect(screen.getByRole("checkbox", { name: "Archive" }).getAttribute("aria-disabled")).toBeNull();
+    });
+
     it("shows a group as a heading without selectableGroups", () => {
         render(<CheckboxGroup aria-label="Scopes" options={options} value={[]} onChange={vi.fn()} selectableGroups={false} />);
 

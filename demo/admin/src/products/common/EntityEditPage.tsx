@@ -41,6 +41,11 @@ interface EntityEditPageProps<Values extends object> {
     listLabel: string;
     /** The URL of the page; navigating within it, e.g. between tabs, keeps the unsaved changes without asking. */
     pageUrl: string;
+    /**
+     * Whether a path still shows this page's form, so leaving the unsaved changes there needs no confirmation.
+     * @defaultValue the `pageUrl` and the paths below it
+     */
+    isPathOfPage?: (pathname: string) => boolean;
     title: string;
     subtitle?: ReactNode;
     initialValues: Values;
@@ -65,6 +70,7 @@ export function EntityEditPage<Values extends object>({
     listUrl,
     listLabel,
     pageUrl,
+    isPathOfPage = (pathname) => pathname === pageUrl || pathname.startsWith(`${pageUrl}/`),
     title,
     subtitle,
     initialValues,
@@ -138,7 +144,7 @@ export function EntityEditPage<Values extends object>({
                         <EntityEditPageContent
                             listUrl={listUrl}
                             listLabel={listLabel}
-                            pageUrl={pageUrl}
+                            isPathOfPage={isPathOfPage}
                             title={title}
                             subtitle={subtitle}
                             createdUrl={createdId ? getEditUrl(createdId) : undefined}
@@ -165,7 +171,7 @@ export function EntityEditPage<Values extends object>({
 interface EntityEditPageContentProps {
     listUrl: string;
     listLabel: string;
-    pageUrl: string;
+    isPathOfPage: (pathname: string) => boolean;
     title: string;
     subtitle?: ReactNode;
     createdUrl?: string;
@@ -179,7 +185,7 @@ interface EntityEditPageContentProps {
 function EntityEditPageContent({
     listUrl,
     listLabel,
-    pageUrl,
+    isPathOfPage,
     title,
     subtitle,
     createdUrl,
@@ -224,7 +230,7 @@ function EntityEditPageContent({
     return (
         <RouterPrompt
             message={(location) =>
-                hasUnsavedChanges && !location.pathname.startsWith(pageUrl)
+                hasUnsavedChanges && !isPathOfPage(location.pathname)
                     ? intl.formatMessage({ id: "uiDemo.productsCommon.unsavedChangesPrompt", defaultMessage: "Do you want to save your changes?" })
                     : true
             }

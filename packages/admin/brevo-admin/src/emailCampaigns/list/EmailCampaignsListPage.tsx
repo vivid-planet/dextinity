@@ -33,12 +33,19 @@ import { useHistory } from "react-router";
 import type { GQLEmailCampaignFilter, GQLEmailCampaignSortField, GQLSendingState } from "../../graphql.generated";
 import { hasEmailCampaignStatistics, isEmailCampaignEditable } from "../common/emailCampaignActions";
 import { EmailCampaignSendingState, sendingStateMessages, sendingStates, sendingStateStatus } from "../common/EmailCampaignSendingState";
-import { deleteEmailCampaignMutation, duplicateEmailCampaignMutation, emailCampaignsListQuery } from "./EmailCampaignsListPage.gql";
+import {
+    deleteEmailCampaignMutation,
+    duplicateEmailCampaignMutation,
+    emailCampaignContentQuery,
+    emailCampaignsListQuery,
+} from "./EmailCampaignsListPage.gql";
 import type {
     GQLDeleteEmailCampaignMutation,
     GQLDeleteEmailCampaignMutationVariables,
     GQLDuplicateEmailCampaignMutation,
     GQLDuplicateEmailCampaignMutationVariables,
+    GQLEmailCampaignContentQuery,
+    GQLEmailCampaignContentQueryVariables,
     GQLEmailCampaignsListFragment,
     GQLEmailCampaignsListQuery,
     GQLEmailCampaignsListQueryVariables,
@@ -112,6 +119,11 @@ export function EmailCampaignsListPage({ baseUrl, scope, scopeLabel, addToast, E
 
     const duplicate = async (campaign: GQLEmailCampaignsListFragment) => {
         try {
+            const { data: contentData } = await client.query<GQLEmailCampaignContentQuery, GQLEmailCampaignContentQueryVariables>({
+                query: emailCampaignContentQuery,
+                variables: { id: campaign.id },
+                fetchPolicy: "network-only",
+            });
             const { data: duplicateData } = await client.mutate<GQLDuplicateEmailCampaignMutation, GQLDuplicateEmailCampaignMutationVariables>({
                 mutation: duplicateEmailCampaignMutation,
                 variables: {
@@ -122,7 +134,9 @@ export function EmailCampaignsListPage({ baseUrl, scope, scopeLabel, addToast, E
                             { title: campaign.title },
                         ),
                         subject: campaign.subject,
-                        content: EmailCampaignContentBlock.state2Output(EmailCampaignContentBlock.input2State(campaign.content)),
+                        content: EmailCampaignContentBlock.state2Output(
+                            EmailCampaignContentBlock.input2State(contentData.brevoEmailCampaign.content),
+                        ),
                         brevoTargetGroups: campaign.brevoTargetGroups.map((targetGroup) => targetGroup.id),
                     },
                 },

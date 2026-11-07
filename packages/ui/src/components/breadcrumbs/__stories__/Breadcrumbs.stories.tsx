@@ -106,7 +106,7 @@ export const ModifierClick: Story = {
 };
 
 /**
- * Deep paths keep the first level and the last ones; the levels in between move into a menu.
+ * Deep paths keep the first level and the last ones; the levels in between move into a menu, as links that open in a new tab too.
  */
 export const Collapsed: Story = {
     args: {
@@ -122,8 +122,12 @@ export const Collapsed: Story = {
         await expect(canvas.getAllByRole("link").map((link) => link.textContent)).toStrictEqual(["Page", "Columns"]);
         await userEvent.click(canvas.getByRole("button", { name: "Show hidden levels" }));
         const body = within(canvasElement.ownerDocument.body);
-        await userEvent.click(await body.findByRole("menuitem", { name: "Teaser grid" }));
+        const collapsedLevel = await body.findByRole("menuitem", { name: "Teaser grid" });
+        // A link, so it can be opened in a new tab
+        await expect(collapsedLevel).toHaveAttribute("href", "#teaser-grid");
+        await userEvent.click(collapsedLevel);
         await waitFor(() => expect(args.items[1].onClick).toHaveBeenCalled());
+        await waitFor(() => expect(body.queryByRole("menu")).not.toBeInTheDocument());
     },
 };
 

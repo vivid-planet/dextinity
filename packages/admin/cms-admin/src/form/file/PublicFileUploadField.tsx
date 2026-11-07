@@ -1,6 +1,6 @@
 import type { FileUploadFile } from "@dextinity/ui";
 import { FileUploadField, type FileUploadFieldProps } from "@dextinity/ui-react-final-form";
-import type { ReactNode } from "react";
+import { type ReactNode, useRef } from "react";
 import { useIntl } from "react-intl";
 
 import { useDextinityConfig } from "../../config/DextinityConfigContext";
@@ -53,14 +53,21 @@ function isDownloadable(file: PublicFileUpload): file is GQLFinalFormFileUploadD
 export function PublicFileUploadField({ uploadEndpoint, expiresIn, labels, ...props }: PublicFileUploadFieldProps): ReactNode {
     const intl = useIntl();
     const { apiUrl } = useDextinityConfig();
+    const knownFiles = useRef(new Map<string, PublicFileUpload>());
 
-    const toFileUploadFile = (file: PublicFileUpload): FileUploadFile => ({
-        id: file.id,
-        name: file.name,
-        size: file.size,
-        url: isDownloadable(file) ? `${apiUrl}${file.downloadUrl}` : undefined,
-        thumbnailUrl: "imageUrl" in file && file.imageUrl ? `${apiUrl}${file.imageUrl}` : undefined,
-    });
+    const toPublicFileUpload = (file: FileUploadFile): PublicFileUpload =>
+        knownFiles.current.get(file.id) ?? { id: file.id, name: file.name, size: file.size ?? 0 };
+
+    const toFileUploadFile = (file: PublicFileUpload): FileUploadFile => {
+        knownFiles.current.set(file.id, file);
+        return {
+            id: file.id,
+            name: file.name,
+            size: file.size,
+            url: isDownloadable(file) ? `${apiUrl}${file.downloadUrl}` : undefined,
+            thumbnailUrl: "imageUrl" in file && file.imageUrl ? `${apiUrl}${file.imageUrl}` : undefined,
+        };
+    };
 
     const upload = async (file: File, { onProgress, signal }: { onProgress: (progress: number | null) => void; signal: AbortSignal }) => {
         onProgress(null);
@@ -78,7 +85,9 @@ export function PublicFileUploadField({ uploadEndpoint, expiresIn, labels, ...pr
                     : intl.formatMessage({ id: "dextinity.publicFileUpload.failed", defaultMessage: "The upload failed." }),
             );
         }
-        return { id: body.id, name: body.name, size: body.size ?? file.size, url: body.downloadUrl ? `${apiUrl}${body.downloadUrl}` : undefined };
+        const uploadedFile = { id: body.id, name: body.name, size: body.size ?? file.size };
+        knownFiles.current.set(uploadedFile.id, body.downloadUrl ? { ...uploadedFile, downloadUrl: body.downloadUrl, imageUrl: null } : uploadedFile);
+        return { ...uploadedFile, url: body.downloadUrl ? `${apiUrl}${body.downloadUrl}` : undefined };
     };
 
     const sharedProps = {
@@ -106,6 +115,7 @@ export function PublicFileUploadField({ uploadEndpoint, expiresIn, labels, ...pr
                 multiple
                 format={(files) => (files ?? []).map(toFileUploadFile)}
                 parse={(files) => files.map(toPublicFileUpload)}
+                isEqual={(files, otherFiles) => haveSameIds(files ?? [], otherFiles ?? [])}
             />
         );
     }
@@ -117,10 +127,12 @@ export function PublicFileUploadField({ uploadEndpoint, expiresIn, labels, ...pr
             {...sharedProps}
             format={(file) => (file ? [toFileUploadFile(file)] : [])}
             parse={(files) => (files.length > 0 ? toPublicFileUpload(files[files.length - 1]) : null)}
+            isEqual={(file, otherFile) => file?.id === otherFile?.id}
         />
     );
 }
 
-function toPublicFileUpload(file: FileUploadFile): GQLFinalFormFileUploadFragment {
-    return { id: file.id, name: file.name, size: file.size ?? 0 };
+// The download URLs of the API are signed anew on every query, so only the ids tell whether the files changed
+function haveSameIds(files: PublicFileUpload[], otherFiles: PublicFileUpload[]) {
+    return files.length === otherFiles.length && files.every((file, index) => file.id === otherFiles[index].id);
 }

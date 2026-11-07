@@ -84,20 +84,24 @@ const assets: AssetBrowserAsset[] = [
     },
 ];
 
-/** Simulates searching on a server: the assets whose name contains the search, after a short delay. */
-function useSimulatedSearch(search: string, allAssets: ReadonlyArray<AssetBrowserAsset>) {
-    const [result, setResult] = useState<{ search: string; assets: AssetBrowserAsset[] }>();
+/** Simulates searching on a server: the folders and assets whose name contains the search, after a short delay. */
+function useSimulatedSearch(search: string, allFolders: ReadonlyArray<AssetBrowserFolder>, allAssets: ReadonlyArray<AssetBrowserAsset>) {
+    const [result, setResult] = useState<{ search: string; folders: AssetBrowserFolder[]; assets: AssetBrowserAsset[] }>();
     useEffect(() => {
         const query = search.trim().toLowerCase();
         if (query === "") {
             return;
         }
         const timeout = setTimeout(() => {
-            setResult({ search, assets: allAssets.filter((asset) => asset.name.toLowerCase().includes(query)) });
+            setResult({
+                search,
+                folders: allFolders.filter((folder) => folder.parentId != null && folder.name.toLowerCase().includes(query)),
+                assets: allAssets.filter((asset) => asset.name.toLowerCase().includes(query)),
+            });
         }, 400);
         return () => clearTimeout(timeout);
-    }, [search, allAssets]);
-    return { searchResults: result?.assets, searchLoading: result?.search !== search };
+    }, [search, allFolders, allAssets]);
+    return { searchResults: result?.assets, searchFolderResults: result?.folders, searchLoading: result?.search !== search };
 }
 
 /** Keeps the story controlled: folder, view, selection, search, moves, and deletions live in local state. */
@@ -109,7 +113,7 @@ function ControlledAssetBrowser(props: AssetBrowserProps) {
     const [currentAssets, setCurrentAssets] = useState(props.assets);
     const [sidebarWidth, setSidebarWidth] = useState(props.sidebarWidth);
     const [search, setSearch] = useState(props.search ?? "");
-    const simulatedSearch = useSimulatedSearch(search, currentAssets);
+    const simulatedSearch = useSimulatedSearch(search, currentFolders, currentAssets);
     return (
         <AssetBrowser
             {...props}
@@ -198,6 +202,7 @@ const meta = {
         slotProps: { control: false },
         sidebarWidth: { control: false },
         searchResults: { control: false },
+        searchFolderResults: { control: false },
     },
     render: (args) => <ControlledAssetBrowser {...args} />,
 } satisfies Meta<typeof AssetBrowser>;
@@ -246,7 +251,7 @@ export const Columns: Story = {
         await userEvent.keyboard("{ArrowLeft}");
         await waitFor(() => expect(args.onFolderChange).toHaveBeenLastCalledWith("campaigns"));
         await waitFor(() => expect(args.onSelectionChange).toHaveBeenLastCalledWith(["spring"]));
-        await expect(canvas.getByRole("option", { name: /Spring 2026/ })).toHaveFocus();
+        await expect(canvas.getByRole("option", { name: /^Spring 2026/ })).toHaveFocus();
         await userEvent.keyboard("{ArrowRight}");
         await waitFor(() => expect(args.onFolderChange).toHaveBeenLastCalledWith("spring"));
     },
@@ -457,8 +462,8 @@ export const Search: Story = {
         await userEvent.click(canvas.getByRole("option", { name: /lobby\.jpg/ }));
         await userEvent.keyboard("{Control>}f{/Control}");
         await expect(searchField).toHaveFocus();
-        await userEvent.type(searchField, "spring");
-        await waitFor(() => expect(args.onSearchChange).toHaveBeenLastCalledWith("spring"));
+        await userEvent.type(searchField, "spring-");
+        await waitFor(() => expect(args.onSearchChange).toHaveBeenLastCalledWith("spring-"));
         const results = await canvas.findByRole("listbox", { name: "Search results" });
         await waitFor(() => expect(within(results).getAllByRole("option")).toHaveLength(2));
         await expect(within(results).getByRole("option", { name: /spring-hero\.jpg/ })).toHaveTextContent("All assets › Campaigns › Spring 2026");
@@ -474,7 +479,7 @@ export const Search: Story = {
         await waitFor(() => expect(args.onFolderChange).toHaveBeenLastCalledWith("campaigns"));
         await expect(args.onSearchChange).toHaveBeenLastCalledWith("");
         await expect(args.onSelectionChange).toHaveBeenLastCalledWith(["spring"]);
-        await waitFor(() => expect(canvas.getByRole("option", { name: /Spring 2026/ })).toHaveFocus());
+        await waitFor(() => expect(canvas.getByRole("option", { name: /^Spring 2026/ })).toHaveFocus());
         await expect(searchField).toHaveValue("");
     },
 };
@@ -503,6 +508,46 @@ export const SearchRevealWithKeyboard: Story = {
         await expect(args.onSelectionChange).toHaveBeenLastCalledWith(["a9"]);
         await waitFor(() => expect(canvas.getByRole("option", { name: /terms\.pdf/ })).toHaveFocus());
         await expect(canvas.getByRole("option", { name: /terms\.pdf/ })).toHaveAttribute("aria-selected", "true");
+    },
+};
+
+/**
+ * Matching folders show before the assets, as `searchFolderResults`; opening one ends the search and shows it. The columns view
+ * can't show results from many folders, so they show as a list, and the view switch says so. The up button goes to the folder of the
+ * selected result, or without one back to where the search started.
+ */
+export const SearchFolders: Story = {
+    args: { view: "columns", onSearchChange: fn() },
+    play: async ({ args, canvas }) => {
+        const viewSwitch = canvas.getByRole("radiogroup", { name: "View" });
+        await expect(within(viewSwitch).getByRole("radio", { name: "Columns" })).toHaveAttribute("aria-checked", "true");
+        await userEvent.type(canvas.getByRole("searchbox", { name: "Search" }), "spring");
+        const results = await canvas.findByRole("listbox", { name: "Search results" });
+        await waitFor(() =>
+            expect(
+                within(results)
+                    .getAllByRole("option")
+                    .map((option) => option.textContent?.split("All assets")[0]),
+            ).toStrictEqual(["Spring 2026", "spring-hero.jpg", "spring-teaser.jpg"]),
+        );
+        await expect(within(viewSwitch).getByRole("radio", { name: "List" })).toHaveAttribute("aria-checked", "true");
+        await expect(within(viewSwitch).getByRole("radio", { name: "Columns" })).toHaveAttribute("aria-disabled", "true");
+
+        const up = canvas.getByRole("button", { name: "Enclosing folder" });
+        await expect(up).toBeEnabled();
+        await userEvent.click(within(results).getByRole("option", { name: /^Spring 2026/ }));
+        const pathBar = canvas.getByRole("navigation", { name: "Breadcrumbs" });
+        await expect(within(pathBar).getByText("Spring 2026")).toHaveAttribute("aria-current", "page");
+        await userEvent.click(up);
+        await waitFor(() => expect(args.onFolderChange).toHaveBeenLastCalledWith("campaigns"));
+        await expect(args.onSelectionChange).toHaveBeenLastCalledWith(["spring"]);
+        await expect(args.onSearchChange).toHaveBeenLastCalledWith("");
+
+        await userEvent.type(canvas.getByRole("searchbox", { name: "Search" }), "spring");
+        await waitFor(() => expect(canvas.getAllByRole("option", { name: /^Spring 2026/ })).toHaveLength(1));
+        await userEvent.dblClick(canvas.getByRole("option", { name: /^Spring 2026/ }));
+        await waitFor(() => expect(args.onFolderChange).toHaveBeenLastCalledWith("spring"));
+        await expect(canvas.getByRole("searchbox", { name: "Search" })).toHaveValue("");
     },
 };
 

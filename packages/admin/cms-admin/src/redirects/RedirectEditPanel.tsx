@@ -290,7 +290,7 @@ function RedirectFormContent({
             !savedRedirect ||
             cachedRedirect.id !== savedRedirect.id ||
             cachedRedirect.updatedAt === savedRedirect.updatedAt ||
-            form.getState().submitting
+            submitting
         ) {
             return;
         }
@@ -299,7 +299,7 @@ function RedirectFormContent({
         form.setConfig("keepDirtyOnReinitialize", true);
         form.initialize({ ...form.getState().initialValues, active: cachedRedirect.active });
         form.setConfig("keepDirtyOnReinitialize", false);
-    }, [cachedRedirect, savedRedirect, form, onSavedRedirectChange]);
+    }, [cachedRedirect, savedRedirect, submitting, form, onSavedRedirectChange]);
 
     useKeyboardShortcut("mod+s", () => void form.submit(), { allowInEditable: true });
 

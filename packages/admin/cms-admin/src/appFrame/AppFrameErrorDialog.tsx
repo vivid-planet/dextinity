@@ -1,6 +1,6 @@
 import { type ErrorDialogOptions, useErrorDialogState, writeClipboardText } from "@dextinity/admin";
 import { Button, Dialog, Icon, KeyValueList, Typography } from "@dextinity/ui";
-import { isValidElement, type ReactNode, useEffect, useState } from "react";
+import { isValidElement, type ReactNode, useEffect, useRef, useState } from "react";
 import { FormattedMessage, type MessageDescriptor, useIntl } from "react-intl";
 
 import { AppFrameErrorDialogContent, AppFrameErrorList } from "./AppFrameErrorDialog.sc";
@@ -21,10 +21,14 @@ export function AppFrameErrorDialog() {
     const intl = useIntl();
     const { errorOptions, clearError } = useErrorDialogState();
     const [open, setOpen] = useState(false);
+    const clearTimeoutRef = useRef<number>(undefined);
 
     useEffect(() => {
+        window.clearTimeout(clearTimeoutRef.current);
         setOpen(errorOptions != null);
     }, [errorOptions]);
+
+    useEffect(() => () => window.clearTimeout(clearTimeoutRef.current), []);
 
     if (!errorOptions) {
         return null;
@@ -43,7 +47,7 @@ export function AppFrameErrorDialog() {
 
     const close = () => {
         setOpen(false);
-        window.setTimeout(clearError, closeAnimationDuration);
+        clearTimeoutRef.current = window.setTimeout(clearError, closeAnimationDuration);
     };
 
     let content: ReactNode;

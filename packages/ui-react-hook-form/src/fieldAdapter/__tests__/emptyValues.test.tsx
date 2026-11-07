@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { FormProvider, useForm, useFormState } from "react-hook-form";
 import { describe, expect, it, vi } from "vitest";
 
+import { CheckboxField } from "../../fields/checkboxField/CheckboxField";
 import { InputField } from "../../fields/inputField/InputField";
 import { TextareaField } from "../../fields/textareaField/TextareaField";
 
@@ -63,5 +64,53 @@ describe("emptied text fields", () => {
         await userEvent.click(screen.getByRole("button", { name: "Save" }));
 
         expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ title: "" }), expect.anything());
+    });
+});
+
+describe("fields without a default value", () => {
+    function FormWithoutDefaults({ onSubmit = () => undefined }: { onSubmit?: (values: unknown) => void }) {
+        const form = useForm<{ title: string; description?: string; featured?: boolean }>({ defaultValues: { title: "Benefits" } });
+        return (
+            <FormProvider {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <InputField name="title" label="Title" />
+                    <InputField name="description" label="Description" />
+                    <CheckboxField name="featured">Featured</CheckboxField>
+                    <DirtyState />
+                    <button type="submit">Save</button>
+                </form>
+            </FormProvider>
+        );
+    }
+
+    it("stay pristine after typing and clearing", async () => {
+        const onSubmit = vi.fn();
+        render(<FormWithoutDefaults onSubmit={onSubmit} />);
+
+        await userEvent.type(screen.getByLabelText("Description"), "Text");
+        expect(screen.getByRole("status")).toHaveTextContent("dirty");
+        await userEvent.clear(screen.getByLabelText("Description"));
+        expect(screen.getByRole("status")).toHaveTextContent("pristine");
+
+        await userEvent.click(screen.getByRole("button", { name: "Save" }));
+        expect(onSubmit).toHaveBeenCalledWith({ title: "Benefits", description: undefined }, expect.anything());
+    });
+
+    it("stay pristine after checking and unchecking", async () => {
+        render(<FormWithoutDefaults />);
+
+        await userEvent.click(screen.getByRole("checkbox", { name: "Featured" }));
+        expect(screen.getByRole("status")).toHaveTextContent("dirty");
+        await userEvent.click(screen.getByRole("checkbox", { name: "Featured" }));
+        expect(screen.getByRole("status")).toHaveTextContent("pristine");
+    });
+
+    it("keep the form pristine while they are untouched", async () => {
+        render(<FormWithoutDefaults />);
+
+        await userEvent.type(screen.getByLabelText("Title"), "!");
+        expect(screen.getByRole("status")).toHaveTextContent("dirty");
+        await userEvent.type(screen.getByLabelText("Title"), "{Backspace}");
+        expect(screen.getByRole("status")).toHaveTextContent("pristine");
     });
 });

@@ -1,5 +1,16 @@
-import { type ReactNode, type Ref, useMemo } from "react";
-import { type FieldPath, type FieldValues, get, useController, type UseControllerProps, type Validate } from "react-hook-form";
+import { type ReactNode, type Ref, useEffect, useMemo } from "react";
+import {
+    type Control,
+    type ControllerRenderProps,
+    type FieldPath,
+    type FieldValues,
+    get,
+    set,
+    useController,
+    type UseControllerProps,
+    useFormContext,
+    type Validate,
+} from "react-hook-form";
 
 import { useFieldAdapterConfig } from "../fieldAdapterConfig/FieldAdapterConfigProvider";
 import { mergeRefs } from "../utils/mergeRefs";
@@ -77,6 +88,9 @@ export function useFieldAdapter<TFieldValues extends FieldValues, TName extends 
     forwardedRef: Ref<Element> | undefined,
 ) {
     const adapterConfig = useFieldAdapterConfig();
+    // Without a `FormProvider`, `useFormContext` returns `null`
+    const formContext: { control: Control<TFieldValues> } | null = useFormContext<TFieldValues>();
+    const formControl = control ?? formContext?.control;
     const { field, fieldState, formState } = useController<TFieldValues, TName>({
         name,
         control,
@@ -104,11 +118,34 @@ export function useFieldAdapter<TFieldValues extends FieldValues, TName extends 
         [forwardedRef, fieldRef],
     );
 
+    // React Hook Form compares the whole form values with the default values to tell whether the form is dirty. A field without a
+    // default value gets an entry in the form values but none in the default values, so the form would stay dirty once that field was
+    // set, even back to empty: the field gets an empty entry in the default values, too, and the control's empty value once it's set
+    // to that, e.g. `false` for an unchecked checkbox.
+    useEffect(() => {
+        if (formControl == null || get(formControl._defaultValues, name) !== undefined) {
+            return;
+        }
+        set(formControl._defaultValues, name, undefined);
+        if (get(formControl._formValues, name) === undefined) {
+            set(formControl._formValues, name, undefined);
+        }
+    }, [formControl, name]);
+
+    const change = (value: unknown) => {
+        if (formControl != null && isEmptyValue(value) && get(formControl._defaultValues, name) === undefined) {
+            set(formControl._defaultValues, name, value);
+        }
+        field.onChange(value);
+    };
+
     // React Hook Form compares with the default value as is, so writing back a blank default keeps a field that was emptied again pristine
     const setValue = (value: unknown) => {
         const initialValue = get(formState.defaultValues, name);
-        field.onChange(isBlank(value) && isBlank(initialValue) ? initialValue : value);
+        change(isBlank(value) && isBlank(initialValue) ? initialValue : value);
     };
 
-    return { field, validationProps, ref, setValue };
+    const adaptedField: ControllerRenderProps<TFieldValues, TName> = { ...field, onChange: change };
+
+    return { field: adaptedField, validationProps, ref, setValue };
 }

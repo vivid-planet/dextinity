@@ -1,63 +1,46 @@
-import { Music } from "@dextinity/admin-icons";
+import { Icon } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 
 import type { DamFileDetails } from "../EditFile";
-
-const AudioPreviewWrapper = styled("div")`
-    width: 100%;
-    min-height: 400px;
-    background-color: ${({ theme }) => theme.palette.grey[50]};
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-`;
-
-const MusicIconContainer = styled("div")`
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
-
-const MusicIconWrapper = styled("div")`
-    width: 150px;
-    height: 150px;
-    background: white;
-    border-radius: 10px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
-`;
-
-const StyledMusicIcon = styled(Music)`
-    width: 54px;
-    height: 54px;
-    color: ${({ theme }) => theme.palette.primary.main};
-`;
-
-const StyledAudio = styled("audio")`
-    width: inherit;
-`;
 
 interface AudioPreviewProps {
     file: DamFileDetails;
 }
 
-export const AudioPreview = ({ file }: AudioPreviewProps) => {
+export function AudioPreview({ file }: AudioPreviewProps) {
     return (
-        <AudioPreviewWrapper>
-            <MusicIconContainer>
-                <MusicIconWrapper>
-                    <StyledMusicIcon />
-                </MusicIconWrapper>
-            </MusicIconContainer>
-            <StyledAudio controls>
+        <Root>
+            <Artwork>
+                <Icon name="music" size="large" />
+            </Artwork>
+            <Audio controls>
                 <source src={file.fileUrl} type={file.mimetype} />
-            </StyledAudio>
-        </AudioPreviewWrapper>
+            </Audio>
+        </Root>
     );
-};
+}
+
+const Root = styled("div")`
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    justify-items: center;
+    gap: var(--dextinity-space-4);
+    inline-size: 100%;
+    block-size: 100%;
+`;
+
+const Artwork = styled("div")`
+    display: grid;
+    place-items: center;
+    align-self: center;
+    inline-size: 160px;
+    aspect-ratio: 1;
+    border-radius: var(--dextinity-radius-panel);
+    background: var(--dextinity-color-surface);
+    color: var(--dextinity-color-accent);
+    box-shadow: var(--dextinity-shadow-1);
+`;
+
+const Audio = styled("audio")`
+    inline-size: 100%;
+`;

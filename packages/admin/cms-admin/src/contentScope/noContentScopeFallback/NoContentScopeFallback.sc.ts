@@ -29,4 +29,8 @@ export const NoContentScopeFallbackHelp = styled("section")`
         margin: 0 0 var(--dextinity-space-3);
         padding-inline-start: var(--dextinity-space-6);
     }
+
+    & li::marker {
+        color: var(--dextinity-color-text-secondary);
+    }
 `;

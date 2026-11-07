@@ -89,7 +89,7 @@ export function NoContentScopeFallback({ colorScheme = getPreferredColorScheme()
                         }
                     />
                     <NoContentScopeFallbackHelp>
-                        <Typography variant="label" element="h2">
+                        <Typography variant="body" element="p">
                             {intl.formatMessage({
                                 id: "dextinity.admin.contentScope.noContentScopeError.help.title",
                                 defaultMessage:

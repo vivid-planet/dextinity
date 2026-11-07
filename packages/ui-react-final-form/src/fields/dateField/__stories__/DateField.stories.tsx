@@ -33,10 +33,15 @@ export const Required: Story = {
         const canvas = within(canvasElement);
         const input = canvas.getByRole("textbox", { name: /Published on/ });
 
+        // Text that can't be read stays with the picker's own message, and the field's value stays empty
         await userEvent.type(input, "not a day");
         await userEvent.tab();
+        await waitFor(() => expect(input).toHaveAccessibleDescription(/^Enter a date like 24\/12\/\d{4}\.$/));
+        await expect(input).toHaveValue("not a day");
+
+        await userEvent.clear(input);
+        await userEvent.tab();
         await expect(await canvas.findByText("Enter the day the article was published")).toBeVisible();
-        await expect(input).toHaveValue("");
 
         await userEvent.click(canvas.getByRole("button", { name: "Submit" }));
         await waitFor(() => expect(input).toHaveFocus());

@@ -1,5 +1,7 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { MenuItem } from "../../menu/MenuItem";
 
 import { BulkActionBar } from "../BulkActionBar";
 
@@ -48,5 +50,32 @@ describe("BulkActionBar", () => {
         const root = container.firstElementChild as HTMLElement;
         expect(root.hasAttribute("data-open")).toBe(false);
         expect(root.hasAttribute("inert")).toBe(true);
+    });
+
+    it("opens an action's menu and keeps the selection on Escape in it", () => {
+        const onOpenChange = vi.fn();
+        const onClear = vi.fn();
+        const { rerender } = render(
+            <BulkActionBar
+                count={2}
+                actions={[{ label: "Move to", menu: <MenuItem label="Images" onClick={noop} />, open: false, onOpenChange }]}
+                onClear={onClear}
+            />,
+        );
+
+        const trigger = screen.getByRole("button", { name: "Move to" });
+        expect(trigger.getAttribute("aria-haspopup")).toBe("menu");
+        fireEvent.click(trigger);
+        expect(onOpenChange).toHaveBeenLastCalledWith(true);
+
+        rerender(
+            <BulkActionBar
+                count={2}
+                actions={[{ label: "Move to", menu: <MenuItem label="Images" onClick={noop} />, open: true, onOpenChange }]}
+                onClear={onClear}
+            />,
+        );
+        fireEvent.keyDown(screen.getByRole("menuitem", { name: "Images" }), { key: "Escape" });
+        expect(onClear).not.toHaveBeenCalled();
     });
 });

@@ -5,6 +5,8 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
+import { MenuItem } from "../../menu/MenuItem";
+import { MenuSeparator } from "../../menu/MenuSeparator";
 import { BulkActionBar, type BulkActionBarProps } from "../BulkActionBar";
 import bulkActionBarTokens from "../BulkActionBar.tokens.scss?raw";
 
@@ -126,5 +128,54 @@ export const DisabledAction: Story = {
         await expect(await screen.findByRole("tooltip")).toHaveTextContent("Select the subpages too to delete a page");
         await userEvent.click(deleteButton);
         await expect(args.actions[2].onClick).not.toHaveBeenCalled();
+    },
+};
+
+function WithMenuActionBar(props: BulkActionBarProps) {
+    const [moveToOpen, setMoveToOpen] = useState(false);
+    return (
+        <ControlledBulkActionBar
+            {...props}
+            actions={[
+                { label: "Duplicate", icon: <Icon name="copy" />, onClick: props.actions[0].onClick ?? fn() },
+                {
+                    label: "Move to",
+                    icon: <Icon name="folder" />,
+                    open: moveToOpen,
+                    onOpenChange: setMoveToOpen,
+                    menu: (
+                        <>
+                            <MenuItem label="Images" icon={<Icon name="folder" />} onClick={moveToFolder} />
+                            <MenuItem label="Documents" icon={<Icon name="folder" />} onClick={moveToFolder} />
+                            <MenuSeparator />
+                            <MenuItem label="New folder…" icon={<Icon name="add-folder" />} onClick={moveToFolder} />
+                        </>
+                    ),
+                },
+                { label: "Delete", icon: <Icon name="delete" />, color: "error", onClick: fn() },
+            ]}
+        />
+    );
+}
+
+const moveToFolder = fn();
+
+/**
+ * An action with `menu` opens a menu instead of running directly, e.g. "Move to" with the folders to choose from. Its open state is
+ * controlled with `open` and `onOpenChange`. Escape in the menu closes the menu and keeps the selection.
+ */
+export const WithMenu: Story = {
+    render: (args) => <WithMenuActionBar {...args} />,
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Move to" }));
+        await userEvent.click(await screen.findByRole("menuitem", { name: "Documents" }));
+        await waitFor(() => expect(moveToFolder).toHaveBeenCalled());
+        await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+
+        await userEvent.click(canvas.getByRole("button", { name: "Move to" }));
+        await screen.findByRole("menu");
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+        await expect(args.onClear).not.toHaveBeenCalled();
     },
 };

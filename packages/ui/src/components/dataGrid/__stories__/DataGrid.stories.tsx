@@ -560,6 +560,12 @@ export const EditingValidation: Story = {
         await waitFor(() => expect(numberEditor).toHaveAccessibleDescription("At most 999 applications."));
         await userEvent.keyboard("{Escape}");
         await waitFor(() => expect(cellOf(canvasElement, "7")).toHaveFocus());
+
+        await userEvent.keyboard("abc");
+        await userEvent.click(cellOf(canvasElement, "14"));
+        await waitFor(() => expect(canvas.queryByRole("textbox", { name: "Applications" })).toBeNull());
+        await expect(canvas.getByRole("status")).toHaveTextContent("Enter a number.");
+        await expect(cellOf(canvasElement, "7")).toBeInTheDocument();
         await expect(args.onCellChange).toHaveBeenCalledTimes(1);
     },
 };

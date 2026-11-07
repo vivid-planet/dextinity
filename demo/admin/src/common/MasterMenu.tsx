@@ -8,7 +8,6 @@ import {
 } from "@dextinity/brevo-admin";
 import {
     CronJobsPage,
-    DamFinderPage,
     DamPage,
     type DocumentInterface,
     type DocumentType,
@@ -23,7 +22,6 @@ import { Chip } from "@mui/material";
 import { type BrevoContactConfig, getBrevoContactConfig } from "@src/brevo/brevoModuleConfig/brevoContactsPageAttributesConfig";
 import { additionalFormConfig } from "@src/brevo/brevoModuleConfig/targetGroupFormConfig";
 import { EmailCampaignContentBlock } from "@src/brevo/emailCampaigns/blocks/EmailCampaignContentBlock";
-import { ImportFromPicsum } from "@src/dam/ImportFromPicsum";
 import { DextinityUiPage } from "@src/dextinityUi/DextinityUiPage";
 import { Link } from "@src/documents/links/Link";
 import { Page } from "@src/documents/pages/Page";
@@ -162,29 +160,13 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             requiredPermission: "news",
         },
         {
-            type: "collapsible",
+            type: "route",
             primary: <FormattedMessage id="menu.dam" defaultMessage="Assets" />,
             icon: <Assets />,
-            items: [
-                {
-                    type: "route",
-                    primary: <FormattedMessage id="menu.dam.finder" defaultMessage="Finder" />,
-                    route: {
-                        path: "/asset-finder",
-                        render: ({ match }: RouteComponentProps) => (
-                            <DamFinderPage editFileUrl={(fileId) => `${match.url.replace(/\/asset-finder$/, "/assets")}/${fileId}/edit`} />
-                        ),
-                    },
-                },
-                {
-                    type: "route",
-                    primary: <FormattedMessage id="menu.dam.assetManager" defaultMessage="Asset manager" />,
-                    route: {
-                        path: "/assets",
-                        render: () => <DamPage additionalToolbarItems={<ImportFromPicsum />} />,
-                    },
-                },
-            ],
+            route: {
+                path: "/assets",
+                component: DamPage,
+            },
             requiredPermission: "dam",
         },
         {

@@ -15,9 +15,13 @@
     --dextinity-select-item-font-size: 13.5px;
     // Keyboard or pointer highlight in the list
     --dextinity-select-item-background-highlight: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+    --dextinity-select-item-shadow-highlight: 0 0 transparent;
     --dextinity-select-item-icon-color: var(--dextinity-color-text-tertiary);
     // Check mark of the selected option
     --dextinity-select-item-indicator-color: var(--dextinity-color-accent-text);
+    // Header and divider of a group of options
+    --dextinity-select-group-label-color: var(--dextinity-color-text-tertiary);
+    --dextinity-select-group-line: var(--dextinity-color-line);
 
     // Selected options in a multiple select
     --dextinity-select-chip-height: 24px;
@@ -27,4 +31,8 @@
     --dextinity-select-chip-font-size: 12.5px;
 
     --dextinity-select-search-line: var(--dextinity-color-line);
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-select-item-shadow-highlight: inset 0 0 0 2px var(--dextinity-color-focus);
 }

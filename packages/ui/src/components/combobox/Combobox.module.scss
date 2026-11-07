@@ -129,6 +129,14 @@
     }
 }
 
+.group {
+    @include menu.group;
+}
+
+.groupLabel {
+    @include menu.groupLabel;
+}
+
 .item {
     @include menu.item;
 }

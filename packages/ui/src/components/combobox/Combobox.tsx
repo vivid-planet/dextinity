@@ -5,6 +5,7 @@ import { type ForwardedRef, forwardRef, type HTMLAttributes, type ReactNode, typ
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "../field/Field";
 import { Icon } from "../icon/Icon";
+import { groupOptions, hasGroups, type OptionGroup } from "../select/optionGroups";
 import { defaultGetKey } from "../select/optionKey";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./Combobox.module.scss";
@@ -77,6 +78,8 @@ export interface ComboboxProps<Option, Multiple extends boolean = false>
     renderOption?: (option: Option) => ReactNode;
     /** Shows an option in the menu without allowing to choose it. */
     isOptionDisabled?: (option: Option) => boolean;
+    /** The header an option is listed under in the menu. Options with the same group are shown together, in the order the groups first appear. */
+    getOptionGroup?: (option: Option) => string | undefined;
     /**
      * Allows choosing several options, shown as chips in the field.
      *
@@ -161,6 +164,7 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
         getOptionKey = defaultGetOptionKey,
         renderOption,
         isOptionDisabled,
+        getOptionGroup,
         multiple,
         debounce = 300,
         onCreate,
@@ -207,6 +211,8 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
         status === "success" &&
         !options.some((option) => getOptionLabel(option).toLocaleLowerCase() === query.toLocaleLowerCase());
     const entries: Entry<Option>[] = canCreate ? [...optionEntries, { kind: "create", key: `create:${query}`, query }] : optionEntries;
+    const entryGroup = (entry: Entry<Option>) => (entry.kind === "option" ? getOptionGroup?.(entry.option) : undefined);
+    const grouped = getOptionGroup != null && hasGroups(entries, entryGroup);
 
     const emit = (next: Option[]) => {
         onChange((isMultiple ? next : (next[0] ?? null)) as ComboboxValue<Multiple, Option>);
@@ -261,6 +267,30 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
             labels.noResults
         ) : null;
 
+    const renderEntry = (entry: Entry<Option>) =>
+        entry.kind === "retry" ? (
+            <BaseCombobox.Item key={entry.key} value={entry} className={styles.item}>
+                <span className={styles.itemIcon}>
+                    <Icon name="reload" />
+                </span>
+                <span className={styles.itemText}>{labels.retry}</span>
+            </BaseCombobox.Item>
+        ) : entry.kind === "create" ? (
+            <BaseCombobox.Item key={entry.key} value={entry} className={styles.item}>
+                <span className={styles.itemIcon}>
+                    <Icon name="plus" />
+                </span>
+                <span className={styles.itemText}>{labels.create(entry.query)}</span>
+            </BaseCombobox.Item>
+        ) : (
+            <BaseCombobox.Item key={entry.key} value={entry} disabled={isOptionDisabled?.(entry.option)} className={styles.item}>
+                <span className={styles.itemText}>{renderOption != null ? renderOption(entry.option) : getOptionLabel(entry.option)}</span>
+                <BaseCombobox.ItemIndicator className={styles.itemIndicator}>
+                    <Icon name="check" />
+                </BaseCombobox.ItemIndicator>
+            </BaseCombobox.Item>
+        );
+
     return (
         <Field
             {...restProps}
@@ -283,7 +313,7 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
         >
             {(control) => (
                 <BaseCombobox.Root
-                    items={entries}
+                    items={grouped ? groupOptions(entries, entryGroup) : entries}
                     filter={null}
                     multiple={isMultiple}
                     value={isMultiple ? selectedEntries : (selectedEntries[0] ?? null)}
@@ -336,37 +366,16 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
                             <BaseCombobox.Popup className={styles.popup} aria-busy={status === "loading" ? true : undefined}>
                                 <BaseCombobox.Status className={styles.status}>{statusContent}</BaseCombobox.Status>
                                 <BaseCombobox.List className={styles.list}>
-                                    {(entry: Entry<Option>) =>
-                                        entry.kind === "retry" ? (
-                                            <BaseCombobox.Item key={entry.key} value={entry} className={styles.item}>
-                                                <span className={styles.itemIcon}>
-                                                    <Icon name="reload" />
-                                                </span>
-                                                <span className={styles.itemText}>{labels.retry}</span>
-                                            </BaseCombobox.Item>
-                                        ) : entry.kind === "create" ? (
-                                            <BaseCombobox.Item key={entry.key} value={entry} className={styles.item}>
-                                                <span className={styles.itemIcon}>
-                                                    <Icon name="plus" />
-                                                </span>
-                                                <span className={styles.itemText}>{labels.create(entry.query)}</span>
-                                            </BaseCombobox.Item>
-                                        ) : (
-                                            <BaseCombobox.Item
-                                                key={entry.key}
-                                                value={entry}
-                                                disabled={isOptionDisabled?.(entry.option)}
-                                                className={styles.item}
-                                            >
-                                                <span className={styles.itemText}>
-                                                    {renderOption != null ? renderOption(entry.option) : getOptionLabel(entry.option)}
-                                                </span>
-                                                <BaseCombobox.ItemIndicator className={styles.itemIndicator}>
-                                                    <Icon name="check" />
-                                                </BaseCombobox.ItemIndicator>
-                                            </BaseCombobox.Item>
-                                        )
-                                    }
+                                    {grouped
+                                        ? (group: OptionGroup<Entry<Option>>) => (
+                                              <BaseCombobox.Group key={group.label ?? ""} items={group.items} className={styles.group}>
+                                                  {group.label != null && (
+                                                      <BaseCombobox.GroupLabel className={styles.groupLabel}>{group.label}</BaseCombobox.GroupLabel>
+                                                  )}
+                                                  <BaseCombobox.Collection>{renderEntry}</BaseCombobox.Collection>
+                                              </BaseCombobox.Group>
+                                          )
+                                        : renderEntry}
                                 </BaseCombobox.List>
                             </BaseCombobox.Popup>
                         </BaseCombobox.Positioner>

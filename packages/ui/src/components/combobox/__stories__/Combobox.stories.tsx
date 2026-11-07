@@ -314,3 +314,26 @@ export const Keyboard: Story = {
         await waitFor(() => expect(args.onChange).toHaveBeenCalledWith(categories[3]));
     },
 };
+
+/**
+ * `getOptionGroup` lists the options under headers, e.g. by their first letter.
+ */
+export const Groups: Story = {
+    render: (args) => (
+        <CategoryCombobox
+            name="category"
+            label="Category"
+            placeholder="Search categories"
+            initialValue={null}
+            onChange={args.onChange}
+            getOptionGroup={(category) => (category.products > 10 ? "Popular" : "More")}
+        />
+    ),
+    play: async ({ canvas }) => {
+        await userEvent.click(canvas.getByRole("combobox", { name: "Category" }));
+        await userEvent.type(canvas.getByRole("combobox", { name: "Category" }), "s");
+        const groups = await screen.findAllByRole("group");
+        await expect(groups).toHaveLength(2);
+        await expect(groups[0]).toHaveAccessibleName(/Popular|More/);
+    },
+};

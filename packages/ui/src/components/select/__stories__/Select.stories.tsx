@@ -44,6 +44,16 @@ const channels: SelectOption[] = [
     { value: "print", label: "Print", icon: <Icon name="file" />, disabled: true },
 ];
 
+const offices: SelectOption[] = [
+    { value: "vienna", label: "Vienna", group: "Austria" },
+    { value: "graz", label: "Graz", group: "Austria" },
+    { value: "munich", label: "Munich", group: "Germany" },
+    { value: "berlin", label: "Berlin", group: "Germany" },
+    { value: "salzburg", label: "Salzburg", group: "Austria" },
+    { value: "zurich", label: "Zurich", group: "Switzerland" },
+    { value: "remote", label: "Remote" },
+];
+
 /** Keeps the story controlled: choosing updates the local value; changing the `value` control starts over from it. */
 function ControlledSelect(props: SelectProps<boolean>) {
     const [value, setValue] = useState(props.value);
@@ -210,6 +220,52 @@ export const Searchable: Story = {
         await waitFor(() => expect(screen.getAllByRole("option").map((option) => option.textContent)).toStrictEqual(["Slovakia", "Slovenia"]));
         await userEvent.click(screen.getByRole("option", { name: "Slovenia" }));
         await waitFor(() => expect(args.onChange).toHaveBeenCalledWith("slovenia"));
+    },
+};
+
+/**
+ * An option's `group` lists it under a header. Options with the same group are shown together, in the order the groups first appear.
+ */
+export const Groups: Story = {
+    args: {
+        name: "office",
+        label: "Office",
+        options: offices,
+        value: "munich",
+    },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("combobox", { name: /Office/ }));
+        const listbox = await screen.findByRole("listbox");
+        const groups = within(listbox).getAllByRole("group");
+        await expect(groups.map((group) => group.getAttribute("aria-labelledby") != null)).toStrictEqual([true, true, true, false]);
+        await expect(
+            within(groups[0])
+                .getAllByRole("option")
+                .map((option) => option.textContent),
+        ).toStrictEqual(["Vienna", "Graz", "Salzburg"]);
+        await expect(groups[0]).toHaveAccessibleName("Austria");
+        await userEvent.click(within(groups[2]).getByRole("option", { name: "Zurich" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith("zurich"));
+    },
+};
+
+/**
+ * Groups work with the search too; a group without matches disappears.
+ */
+export const SearchableGroups: Story = {
+    args: {
+        name: "office",
+        label: "Office",
+        options: offices,
+        value: null,
+        searchable: true,
+    },
+    play: async ({ canvas }) => {
+        await userEvent.click(canvas.getByRole("combobox", { name: /Office/ }));
+        const popup = await screen.findByRole("dialog");
+        await userEvent.type(within(popup).getByRole("combobox"), "ur");
+        await waitFor(() => expect(screen.getAllByRole("option").map((option) => option.textContent)).toStrictEqual(["Salzburg", "Zurich"]));
+        await expect(screen.getAllByRole("group")).toHaveLength(2);
     },
 };
 

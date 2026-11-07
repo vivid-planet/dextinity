@@ -109,15 +109,16 @@ function BuildStatus({ data: { autoBuildStatus, builds } }: { data: GQLBuildStat
 export function BuildEntry() {
     const intl = useIntl();
     const [open, setOpen] = useState(false);
+    const isStatusUnavailable = process.env.NODE_ENV === "development";
     const { data, error, refetch, startPolling, stopPolling } = useQuery<GQLBuildStatusQuery>(buildStatusQuery, {
-        skip: process.env.NODE_ENV === "development",
+        skip: isStatusUnavailable,
         fetchPolicy: "network-only",
         context: LocalErrorScopeApolloContext,
     });
 
     useFocusAwarePolling({
         pollInterval: process.env.NODE_ENV === "production" ? 10000 : undefined,
-        skip: process.env.NODE_ENV === "development",
+        skip: isStatusUnavailable,
         refetch,
         startPolling,
         stopPolling,
@@ -145,6 +146,14 @@ export function BuildEntry() {
                     </BuildStatusError>
                 )}
                 {data && <BuildStatus data={data} />}
+                {isStatusUnavailable && (
+                    <BuildStatusText>
+                        <FormattedMessage
+                            id="dextinity.header.buildStatus.unavailableInDevelopment"
+                            defaultMessage="The build status isn't available in local development."
+                        />
+                    </BuildStatusText>
+                )}
             </BuildStatusContent>
         </Popover>
     );

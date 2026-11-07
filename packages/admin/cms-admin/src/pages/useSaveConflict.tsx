@@ -1,8 +1,7 @@
-import { Alert, useSnackbarApi } from "@dextinity/admin";
-import { Snackbar } from "@mui/material";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { useIntl } from "react-intl";
 
+import { useShowAppToast } from "../common/toasts/AppToasts";
 import { SaveConflictDialog } from "./SaveConflictDialog";
 
 interface SaveConflictOptions {
@@ -20,7 +19,8 @@ export interface SaveConflictHookReturn {
 
 export function useSaveConflict(options: SaveConflictOptions): SaveConflictHookReturn {
     const { checkConflict, hasChanges, loadLatestVersion, onDiscardButtonPressed } = options;
-    const snackbarApi = useSnackbarApi();
+    const intl = useIntl();
+    const showAppToast = useShowAppToast();
     const pollingIntervalId = useRef<number | undefined>(undefined);
 
     const [showDialog, setShowDialog] = useState(false);
@@ -33,16 +33,13 @@ export function useSaveConflict(options: SaveConflictOptions): SaveConflictHookR
             if (!hasChanges()) {
                 // No local changes, server changes available
                 await loadLatestVersion();
-                snackbarApi.showSnackbar(
-                    <Snackbar anchorOrigin={{ vertical: "bottom", horizontal: "left" }} autoHideDuration={5000}>
-                        <Alert severity="success">
-                            <FormattedMessage
-                                id="dextinity.saveConflict.autoReloadSuccessfull"
-                                defaultMessage="This content has changed. We've refreshed the page for you."
-                            />
-                        </Alert>
-                    </Snackbar>,
-                );
+                showAppToast({
+                    tone: "success",
+                    message: intl.formatMessage({
+                        id: "dextinity.saveConflict.autoReloadSuccessfull",
+                        defaultMessage: "This content has changed. We've refreshed the page for you.",
+                    }),
+                });
             } else {
                 // local changes, and server changes available: ask user what to do
                 if (!hasConflict) {
@@ -54,7 +51,7 @@ export function useSaveConflict(options: SaveConflictOptions): SaveConflictHookR
             setShowDialog(false);
             setHasConflict(false);
         }
-    }, [checkConflict, hasChanges, hasConflict, loadLatestVersion, snackbarApi]);
+    }, [checkConflict, hasChanges, hasConflict, loadLatestVersion, showAppToast, intl]);
 
     const startPolling = useCallback(() => {
         if (!hasConflict) {
@@ -93,7 +90,7 @@ export function useSaveConflict(options: SaveConflictOptions): SaveConflictHookR
 
             stopPolling();
         };
-    }, [checkConflict, snackbarApi, loadLatestVersion, hasChanges, checkChanges, startPolling, stopPolling, hasConflict]);
+    }, [checkConflict, showAppToast, loadLatestVersion, hasChanges, checkChanges, startPolling, stopPolling, hasConflict]);
 
     const checkForConflicts = useCallback(async () => {
         const newHasConflict = await checkConflict();

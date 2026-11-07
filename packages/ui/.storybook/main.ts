@@ -2,6 +2,7 @@ import type { StorybookConfig } from "@storybook/react-vite";
 import { mergeConfig } from "vite";
 
 import { storyCodePlugin } from "./storyCodePlugin";
+import { addStyleSourcesToManifests } from "./addStyleSourcesToManifests";
 
 const config: StorybookConfig = {
     stories: ["../src/**/*.mdx", "../src/**/__stories__/*.stories.tsx"],
@@ -12,6 +13,7 @@ const config: StorybookConfig = {
         development: { defaultFilterSelection: "exclude" },
     },
     features: { componentsManifest: true },
+    experimental_manifests: addStyleSourcesToManifests,
     viteFinal: (viteConfig) =>
         mergeConfig(viteConfig, {
             plugins: [storyCodePlugin()],

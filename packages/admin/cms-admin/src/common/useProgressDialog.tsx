@@ -23,7 +23,6 @@ export function ProgressDialog({ title, progress }: ProgressDialogProps) {
                 label={progress?.message}
                 aria-label={progress?.message == null ? title : undefined}
                 showValue
-                format={{ style: "percent", maximumFractionDigits: 0 }}
                 locale={intl.locale}
             />
         </Dialog>

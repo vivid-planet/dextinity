@@ -3,11 +3,15 @@ import { LocalErrorScopeApolloContext, messages } from "@dextinity/admin";
 import {
     BlockAdminComponentRoot,
     type BlockState,
+    IFrameBridgeProvider,
     openSitePreviewWindow,
     resolveNewState,
     UnsavedChangesPrompt,
+    useBlockContext,
+    useBlockPreview,
     useContentScope,
     useShowAppToast,
+    useSiteConfig,
 } from "@dextinity/cms-admin";
 import { Button, EmptyState, Icon, IconButton, Panel, SaveState, type SaveStateValue, Skeleton, Tooltip } from "@dextinity/ui";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
@@ -22,7 +26,7 @@ import type {
     GQLUpdateMainMenuItemMutation,
     GQLUpdateMainMenuItemMutationVariables,
 } from "./MainMenuItemPanel.generated";
-import { MainMenuItemContent, MainMenuItemFooter } from "./MainMenuItemPanel.sc";
+import { MainMenuItemContent, MainMenuItemFooter, MainMenuItemPreview, MainMenuItemPreviewSection } from "./MainMenuItemPanel.sc";
 
 const mainMenuItemQuery = gql`
     query MainMenuItemPanel($id: ID!) {
@@ -68,7 +72,10 @@ function toContentState(content: unknown): RichTextBlockState | null {
 export function MainMenuItemPanel({ pageTreeNodeId, onClose, onUnsavedChangesChange }: MainMenuItemPanelProps) {
     const intl = useIntl();
     const match = useRouteMatch();
-    const { match: contentScopeMatch } = useContentScope();
+    const { match: contentScopeMatch, scope } = useContentScope();
+    const siteConfig = useSiteConfig({ scope });
+    const previewApi = useBlockPreview();
+    const blockContext = useBlockContext();
     const showToast = useShowAppToast();
     const [content, setContent] = useState<RichTextBlockState | null>(null);
     const [savedContentOutput, setSavedContentOutput] = useState<unknown>(null);
@@ -157,6 +164,9 @@ export function MainMenuItemPanel({ pageTreeNodeId, onClose, onUnsavedChangesCha
         );
     }
 
+    const previewState = content
+        ? RichTextBlock.createPreviewState(content, { ...blockContext, parentUrl: match.url, showVisibleOnly: previewApi.showOnlyVisible })
+        : null;
     const saveState: SaveStateValue = saving ? "saving" : saveError != null && hasChanges ? "error" : hasChanges ? "dirty" : "saved";
 
     return (
@@ -181,57 +191,73 @@ export function MainMenuItemPanel({ pageTreeNodeId, onClose, onUnsavedChangesCha
             }
         >
             <UnsavedChangesPrompt hasChanges={hasChanges} onSave={save} onDiscard={resetToSavedContent} allowWithin={match.url} />
-            <MainMenuItemContent>
-                {content ? (
-                    <>
-                        <BlockAdminComponentRoot title={intl.formatMessage({ id: "mainMenu.menuItem", defaultMessage: "Menu item" })}>
-                            <RichTextBlock.AdminComponent
-                                state={content}
-                                updateState={(setStateAction) => setContent(resolveNewState({ prevState: content, setStateAction }))}
-                            />
-                        </BlockAdminComponentRoot>
-                        <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="delete" />} onClick={() => setContent(null)}>
-                            {intl.formatMessage({ id: "mainMenu.removeContent", defaultMessage: "Remove content" })}
-                        </Button>
-                    </>
-                ) : (
-                    <EmptyState
-                        icon={<Icon name="snips" />}
-                        title={intl.formatMessage({ id: "mainMenu.panel.noContent", defaultMessage: "No content" })}
-                        description={intl.formatMessage({
-                            id: "mainMenu.panel.noContentDescription",
-                            defaultMessage: "Add a text the site shows in the menu below this page.",
-                        })}
-                        actions={
+            <IFrameBridgeProvider>
+                <MainMenuItemContent>
+                    {content ? (
+                        <>
+                            <BlockAdminComponentRoot title={intl.formatMessage({ id: "mainMenu.menuItem", defaultMessage: "Menu item" })}>
+                                <RichTextBlock.AdminComponent
+                                    state={content}
+                                    updateState={(setStateAction) => setContent(resolveNewState({ prevState: content, setStateAction }))}
+                                />
+                            </BlockAdminComponentRoot>
                             <Button
                                 variant="outlined"
                                 color="secondary"
-                                startIcon={<Icon name="plus" />}
-                                onClick={() => setContent(RichTextBlock.defaultValues())}
+                                size="small"
+                                startIcon={<Icon name="delete" />}
+                                onClick={() => setContent(null)}
                             >
-                                {intl.formatMessage({ id: "mainMenu.addContent", defaultMessage: "Add content" })}
+                                {intl.formatMessage({ id: "mainMenu.removeContent", defaultMessage: "Remove content" })}
                             </Button>
-                        }
-                    />
-                )}
-                <MainMenuItemFooter>
-                    <SaveState
-                        state={saveState}
-                        savedAt={new Date(item.updatedAt)}
-                        locale={intl.locale}
-                        labels={{
-                            saved: intl.formatMessage({ id: "mainMenu.panel.saveState.saved", defaultMessage: "Saved" }),
-                            dirty: intl.formatMessage({ id: "mainMenu.panel.saveState.dirty", defaultMessage: "Unsaved changes" }),
-                            saving: intl.formatMessage({ id: "mainMenu.panel.saveState.saving", defaultMessage: "Saving …" }),
-                            error: intl.formatMessage({ id: "mainMenu.panel.saveState.error", defaultMessage: "Not saved" }),
-                            savedAt: intl.formatMessage({ id: "mainMenu.panel.saveState.savedAt", defaultMessage: "Saved '{time}'" }),
-                        }}
-                    />
-                    <Button size="small" startIcon={<Icon name="check" />} loading={saving} disabled={!hasChanges} onClick={() => void save()}>
-                        {intl.formatMessage(messages.save)}
-                    </Button>
-                </MainMenuItemFooter>
-            </MainMenuItemContent>
+                            <MainMenuItemPreviewSection aria-label={intl.formatMessage({ id: "mainMenu.panel.preview", defaultMessage: "Preview" })}>
+                                <MainMenuItemPreview
+                                    url={`${siteConfig.blockPreviewBaseUrl}/main-menu`}
+                                    siteUrl={`${siteConfig.url}${item.node.path}`}
+                                    previewState={previewState}
+                                    previewApi={previewApi}
+                                />
+                            </MainMenuItemPreviewSection>
+                        </>
+                    ) : (
+                        <EmptyState
+                            icon={<Icon name="snips" />}
+                            title={intl.formatMessage({ id: "mainMenu.panel.noContent", defaultMessage: "No content" })}
+                            description={intl.formatMessage({
+                                id: "mainMenu.panel.noContentDescription",
+                                defaultMessage: "Add a text the site shows in the menu below this page.",
+                            })}
+                            actions={
+                                <Button
+                                    variant="outlined"
+                                    color="secondary"
+                                    startIcon={<Icon name="plus" />}
+                                    onClick={() => setContent(RichTextBlock.defaultValues())}
+                                >
+                                    {intl.formatMessage({ id: "mainMenu.addContent", defaultMessage: "Add content" })}
+                                </Button>
+                            }
+                        />
+                    )}
+                    <MainMenuItemFooter>
+                        <SaveState
+                            state={saveState}
+                            savedAt={new Date(item.updatedAt)}
+                            locale={intl.locale}
+                            labels={{
+                                saved: intl.formatMessage({ id: "mainMenu.panel.saveState.saved", defaultMessage: "Saved" }),
+                                dirty: intl.formatMessage({ id: "mainMenu.panel.saveState.dirty", defaultMessage: "Unsaved changes" }),
+                                saving: intl.formatMessage({ id: "mainMenu.panel.saveState.saving", defaultMessage: "Saving …" }),
+                                error: intl.formatMessage({ id: "mainMenu.panel.saveState.error", defaultMessage: "Not saved" }),
+                                savedAt: intl.formatMessage({ id: "mainMenu.panel.saveState.savedAt", defaultMessage: "Saved '{time}'" }),
+                            }}
+                        />
+                        <Button size="small" startIcon={<Icon name="check" />} loading={saving} disabled={!hasChanges} onClick={() => void save()}>
+                            {intl.formatMessage(messages.save)}
+                        </Button>
+                    </MainMenuItemFooter>
+                </MainMenuItemContent>
+            </IFrameBridgeProvider>
         </Panel>
     );
 }

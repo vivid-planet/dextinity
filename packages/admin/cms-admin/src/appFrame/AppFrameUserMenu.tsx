@@ -31,10 +31,11 @@ interface AppFrameUserMenuProps {
     onColorSchemeChange: (colorScheme: ThemeColorScheme) => void;
     density: ThemeDensity;
     onDensityChange: (density: ThemeDensity) => void;
+    onAboutClick: () => void;
     children?: ReactNode;
 }
 
-export function AppFrameUserMenu({ colorScheme, onColorSchemeChange, density, onDensityChange, children }: AppFrameUserMenuProps) {
+export function AppFrameUserMenu({ colorScheme, onColorSchemeChange, density, onDensityChange, onAboutClick, children }: AppFrameUserMenuProps) {
     const intl = useIntl();
     const user = useCurrentUser();
     const [open, setOpen] = useState(false);
@@ -122,12 +123,13 @@ export function AppFrameUserMenu({ colorScheme, onColorSchemeChange, density, on
                     ))}
                 </MenuRadioGroup>
             </MenuGroup>
-            {children != null && (
-                <>
-                    <MenuSeparator />
-                    {children}
-                </>
-            )}
+            <MenuSeparator />
+            {children}
+            <MenuItem
+                label={intl.formatMessage({ id: "dextinity.appFrame.userMenu.about", defaultMessage: "About" })}
+                icon={<Icon name="info" />}
+                onClick={onAboutClick}
+            />
         </UserMenu>
     );
 }

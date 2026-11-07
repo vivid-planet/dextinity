@@ -3,12 +3,15 @@ import { gql } from "@apollo/client";
 const redirectDetailFragment = gql`
     fragment RedirectDetail on Redirect {
         id
+        active
+        activatedAt
         sourceType
         source
         target
         comment
         generationType
         redirectType
+        createdAt
         updatedAt
     }
 `;
@@ -22,9 +25,24 @@ export const redirectDetailQuery = gql`
     ${redirectDetailFragment}
 `;
 
+export const redirectSourceAvailableQuery = gql`
+    query RedirectSourceAvailable($scope: RedirectScopeInput!, $source: String!) {
+        redirectSourceAvailable(scope: $scope, source: $source)
+    }
+`;
+
 export const updateRedirectMutation = gql`
     mutation UpdateRedirect($id: ID!, $lastUpdatedAt: DateTime, $input: RedirectInput!) {
         updateRedirect(id: $id, lastUpdatedAt: $lastUpdatedAt, input: $input) {
+            ...RedirectDetail
+        }
+    }
+    ${redirectDetailFragment}
+`;
+
+export const updateRedirectDetailActivenessMutation = gql`
+    mutation UpdateRedirectDetailActiveness($id: ID!, $input: RedirectUpdateActivenessInput!) {
+        updateRedirectActiveness(id: $id, input: $input) {
             ...RedirectDetail
         }
     }

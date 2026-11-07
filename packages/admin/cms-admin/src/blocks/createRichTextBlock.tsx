@@ -17,6 +17,7 @@ import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
 import { createCmsLinkToolbarButton } from "./rte/extension/CmsLink/createCmsLinkToolbarButton";
 import { Decorator as CmsLinkDecorator } from "./rte/extension/CmsLink/Decorator";
+import { ContentTranslationToolbarButton } from "./rte/extension/ContentTranslation/ContentTranslationToolbarButton";
 import { RteDesignSystemTheme } from "./rte/RteDesignSystemTheme";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface, type ReadOnlyBlockRenderInterface } from "./types";
 
@@ -133,6 +134,7 @@ export const createRichTextBlock = (options: RichTextBlockFactoryOptions, overri
         standardBlockType: "unstyled",
 
         overwriteLinkButton: CmsLinkToolbarButton,
+        overwriteTranslationButton: ContentTranslationToolbarButton,
     };
     const LinkBlock = options.link;
     const rteOptions = { ...defaultRteOptions, ...(options.rte ?? {}) };

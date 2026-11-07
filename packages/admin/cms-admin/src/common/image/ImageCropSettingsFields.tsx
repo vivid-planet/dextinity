@@ -74,6 +74,7 @@ export function ImageCropSettingsFields({ disabled }: ImageCropSettingsFieldsPro
                         <SegmentedControlField<ManualFocalPoint, GQLFocalPoint>
                             name="focalPoint"
                             disabled={disabled}
+                            overflow="wrap"
                             aria-label={intl.formatMessage({ id: "dextinity.blocks.image.focalPoint", defaultMessage: "Set manual focus point" })}
                             options={(Object.keys(focalPointIcons) as ManualFocalPoint[]).map((value) => ({
                                 value,

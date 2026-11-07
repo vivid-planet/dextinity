@@ -19,11 +19,11 @@ describe("ColumnsSelectField", () => {
             </Form>,
         );
 
-        expect(screen.getByRole("group", { name: "Columns" })).toBeTruthy();
-        expect(screen.getByRole("button", { name: "1 column" }).getAttribute("aria-pressed")).toBe("true");
+        expect(screen.getByRole("radiogroup", { name: "Columns" })).toBeTruthy();
+        expect(screen.getByRole("radio", { name: "1 column" }).getAttribute("aria-checked")).toBe("true");
 
         const user = userEvent.setup();
-        await user.click(screen.getByRole("button", { name: "3 columns" }));
+        await user.click(screen.getByRole("radio", { name: "3 columns" }));
 
         await waitFor(() => expect(onChange).toHaveBeenLastCalledWith(3));
     });

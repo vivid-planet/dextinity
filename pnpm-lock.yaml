@@ -2204,9 +2204,6 @@ importers:
       '@nestjs/mapped-types':
         specifier: ^12.0.0
         version: 12.0.0(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)
-      '@opentelemetry/api':
-        specifier: ^1.9.1
-        version: 1.9.1
       '@tiptap/core':
         specifier: ^3.32.2
         version: 3.32.2(@tiptap/pm@3.32.2)
@@ -2340,6 +2337,9 @@ importers:
       '@nestjs/testing':
         specifier: ^12.0.4
         version: 12.2.0(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.2.0)(@nestjs/platform-express@12.2.0)
+      '@opentelemetry/api':
+        specifier: ^1.9.1
+        version: 1.9.1
       '@sentry/node':
         specifier: ^9.47.2
         version: 9.47.2(supports-color@8.1.1)

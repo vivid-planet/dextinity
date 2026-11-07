@@ -293,9 +293,6 @@ importers:
       graphql:
         specifier: ^16.14.2
         version: 16.14.2
-      p-debounce:
-        specifier: ^6.0.0
-        version: 6.0.0
       rdndmb-html5-to-touch:
         specifier: ^9.0.0
         version: 9.0.0(dnd-core@16.0.1)

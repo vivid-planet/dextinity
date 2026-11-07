@@ -109,9 +109,11 @@
     }
 
     @each $state in error, warning, success {
+        $line: var(--dextinity-field-line-focus-over-state, var(--dextinity-field-line-#{$state}));
+
         .root[data-state="#{$state}"]:not([data-disabled], [data-readonly]) > &:is(:focus-within, :has([aria-expanded="true"])) {
             box-shadow:
-                inset 0 0 0 var(--dextinity-field-line-width-focus) var(--dextinity-field-line-focus-over-state, var(--dextinity-field-line-#{$state})),
+                inset 0 0 0 var(--dextinity-field-line-width-focus) $line,
                 0 0 0 4px var(--dextinity-field-halo-#{$state});
         }
     }

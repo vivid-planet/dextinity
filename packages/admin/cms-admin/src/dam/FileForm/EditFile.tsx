@@ -5,6 +5,7 @@ import {
     ConfirmDialog,
     type DateRange,
     EditLayout,
+    type EditLayoutPane,
     EmptyState,
     formatShortcut,
     Icon,
@@ -16,6 +17,7 @@ import {
     type NewToast,
     PageHeader,
     Panel,
+    SegmentedControl,
     Skeleton,
     StatusIndicator,
     Tabs,
@@ -289,6 +291,7 @@ function EditFileFormContent({ file, assetsUrl, assetsLabel, form, addToast }: E
     const match = useRouteMatch();
     const navigateWithRouter = useRouterLinkClick();
     const hasUnsavedChanges = useHasUnsavedChanges();
+    const [pane, setPane] = useState<EditLayoutPane>("editor");
     const { submitting } = useFormState({ subscription: { submitting: true } });
     const isAllowed = useUserPermissionCheck();
     const { entityDependencyMap } = useDependenciesConfig();
@@ -361,6 +364,26 @@ function EditFileFormContent({ file, assetsUrl, assetsLabel, form, addToast }: E
                                 </Tooltip>
                             </HeaderActions>
                         }
+                    />
+                }
+                pane={pane}
+                paneSwitch={
+                    <SegmentedControl
+                        aria-label={intl.formatMessage({ id: "dextinity.dam.file.pane", defaultMessage: "View" })}
+                        value={pane}
+                        onChange={setPane}
+                        options={[
+                            {
+                                value: "preview",
+                                label: intl.formatMessage({ id: "dextinity.dam.file.pane.preview", defaultMessage: "Preview" }),
+                                icon: <Icon name="visible" />,
+                            },
+                            {
+                                value: "editor",
+                                label: intl.formatMessage({ id: "dextinity.dam.file.pane.editor", defaultMessage: "Edit" }),
+                                icon: <Icon name="edit" />,
+                            },
+                        ]}
                     />
                 }
                 preview={<FilePreview file={file} onNotify={addToast} />}

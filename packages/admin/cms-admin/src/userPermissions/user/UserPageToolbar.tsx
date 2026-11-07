@@ -3,6 +3,7 @@ import { PageHeader, type PageHeaderBack, Skeleton } from "@dextinity/ui";
 import { useIntl } from "react-intl";
 
 import { useRouterLinkClick } from "../../common/useRouterLinkClick";
+import { useCurrentUser } from "../hooks/currentUser";
 import { StartImpersonationButton } from "./ImpersonationButtons";
 import type { GQLUserPageQuery, GQLUserPageQueryVariables } from "./UserPageToolbar.generated";
 
@@ -13,10 +14,12 @@ interface UserPermissionsUserPageToolbarProps {
 }
 
 /**
- * The `PageHeader` of a user's page: the name and e-mail, and the start or stop of the impersonation as the action.
+ * The `PageHeader` of a user's page: the name and e-mail, and the start of the impersonation as the action, or its stop while any user
+ * is impersonated.
  */
 export const UserPermissionsUserPageToolbar = ({ userId, back }: UserPermissionsUserPageToolbarProps) => {
     const intl = useIntl();
+    const currentUser = useCurrentUser();
     const navigateWithRouter = useRouterLinkClick();
     const { data, error } = useQuery<GQLUserPageQuery, GQLUserPageQueryVariables>(
         gql`
@@ -47,6 +50,7 @@ export const UserPermissionsUserPageToolbar = ({ userId, back }: UserPermissions
                 eyebrow={eyebrow}
                 title={intl.formatMessage({ id: "dextinity.userPermissions.edit", defaultMessage: "User" })}
                 subtitle={<Skeleton variant="text" width="12rem" />}
+                actions={currentUser.impersonated ? <StartImpersonationButton userId={userId} /> : undefined}
             />
         );
     }

@@ -10,9 +10,10 @@ import type { GQLDamFinderFilesQuery, GQLDamFinderFilesQueryVariables } from "./
 const pageSize = 100;
 
 /**
- * Loads the files of the given folders, all pages each, and keeps them until `reload` is called for a folder.
+ * Loads the files of the given folders, all pages each, and keeps them until `reload` is called for a folder. Archived files are only
+ * loaded with `includeArchived`.
  */
-export function useDamFinderFiles(folderIds: string[]) {
+export function useDamFinderFiles(folderIds: string[], { includeArchived = false }: { includeArchived?: boolean } = {}) {
     const client = useApolloClient();
     const scope = useDamScope();
     const [filesByFolderId, setFilesByFolderId] = useState<Record<string, GQLDamFinderFileFragment[]>>({});
@@ -35,6 +36,7 @@ export function useDamFinderFiles(folderIds: string[]) {
                             scope,
                             offset: files.length,
                             limit: pageSize,
+                            includeArchived,
                         },
                         fetchPolicy: "network-only",
                     });
@@ -49,13 +51,13 @@ export function useDamFinderFiles(folderIds: string[]) {
                 setLoadingFolderIds((ids) => ids.filter((id) => id !== folderId));
             }
         },
-        [client, scope],
+        [client, scope, includeArchived],
     );
 
     useEffect(() => {
         requestedFolderIds.current.clear();
         setFilesByFolderId({});
-    }, [scope]);
+    }, [scope, includeArchived]);
 
     useEffect(() => {
         for (const folderId of folderIds) {

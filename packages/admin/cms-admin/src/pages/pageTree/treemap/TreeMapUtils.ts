@@ -40,7 +40,7 @@ export const traverse = <T extends TreeMapNode>(
     }
 };
 
-export const traversePreOrder = <T extends TreeMapNode>(tree: TreeMap<T>, onTraverse: (element: T, level: number) => void): void => {
+const traversePreOrder = <T extends TreeMapNode>(tree: TreeMap<T>, onTraverse: (element: T, level: number) => void): void => {
     const traverse = (parentId: string, level = 1) => {
         const children = tree.get(parentId) || [];
 

@@ -49,6 +49,35 @@ export function getThumbnailUrl(file: GQLDamFinderFileFragment) {
     return file.image?.thumbnailUrl ?? (file.mimetype === "image/svg+xml" ? file.fileUrl : undefined);
 }
 
+export type DamFinderLicenseStatus = "notValidYet" | "expiresSoon" | "expired";
+
+export function getDamFinderLicenseStatus(file: Pick<GQLDamFinderFileFragment, "license">): DamFinderLicenseStatus | undefined {
+    if (file.license == null) {
+        return undefined;
+    }
+    if (file.license.hasExpired) {
+        return "expired";
+    }
+    if (file.license.isNotValidYet) {
+        return "notValidYet";
+    }
+    if (file.license.expiresWithinThirtyDays) {
+        return "expiresSoon";
+    }
+    return undefined;
+}
+
+export function formatDamFinderLicenseStatus(intl: IntlShape, status: DamFinderLicenseStatus) {
+    switch (status) {
+        case "expired":
+            return intl.formatMessage({ id: "dextinity.damFinder.license.expired", defaultMessage: "License expired" });
+        case "notValidYet":
+            return intl.formatMessage({ id: "dextinity.damFinder.license.notValidYet", defaultMessage: "License not valid yet" });
+        case "expiresSoon":
+            return intl.formatMessage({ id: "dextinity.damFinder.license.expiresSoon", defaultMessage: "License expires soon" });
+    }
+}
+
 export function toAssetBrowserFolder(intl: IntlShape, folder: DamFinderFolder): AssetBrowserFolder {
     return {
         id: folder.id,
@@ -64,6 +93,7 @@ export function toAssetBrowserFolder(intl: IntlShape, folder: DamFinderFolder): 
 export function toAssetBrowserAsset(intl: IntlShape, file: GQLDamFinderFileFragment, folderId: string): AssetBrowserAsset {
     const type = getDamFinderAssetType(file.mimetype);
     const extension = getFileExtension(file.name);
+    const licenseStatus = getDamFinderLicenseStatus(file);
     return {
         id: file.id,
         name: file.name,
@@ -74,7 +104,14 @@ export function toAssetBrowserAsset(intl: IntlShape, file: GQLDamFinderFileFragm
         focalPoint: file.image != null ? focalPoints[file.image.cropArea.focalPoint] : undefined,
         badges: [...(file.aiContentType != null ? (["ai"] as const) : []), ...(type === "image" && !file.altText ? (["missingAlt"] as const) : [])],
         fileType: type === "document" ? extension : undefined,
-        meta: [extension, formatFileSize(intl, file.size)].filter((part) => part != null).join(" · "),
+        meta: [
+            file.archived ? intl.formatMessage({ id: "dextinity.damFinder.archivedFile", defaultMessage: "Archived" }) : undefined,
+            licenseStatus != null ? formatDamFinderLicenseStatus(intl, licenseStatus) : undefined,
+            extension,
+            formatFileSize(intl, file.size),
+        ]
+            .filter((part) => part != null)
+            .join(" · "),
         modified: intl.formatDate(file.updatedAt, { dateStyle: "medium" }),
     };
 }

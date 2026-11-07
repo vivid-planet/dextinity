@@ -3,6 +3,7 @@ import { useState } from "react";
 import { expect, screen, userEvent, waitFor } from "storybook/test";
 
 import { Button } from "../../components/button/Button";
+import { FilterBar } from "../../components/filterBar/FilterBar";
 import { Input } from "../../components/input/Input";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import { RadioGroup } from "../../components/radioGroup/RadioGroup";
@@ -22,8 +23,10 @@ function Gallery() {
     const [contract, setContract] = useState<string | null>("full-time");
     const [size, setSize] = useState(40);
     const [section, setSection] = useState("blocks");
+    const [search, setSearch] = useState("");
     return (
         <div className={styles.gallery}>
+            <FilterBar searchValue={search} onSearchChange={setSearch} searchShortcut={false} />
             <Input name="title" label="Title" value={title} onChange={(event) => setTitle(event.target.value)} />
             <Switch checked={hidden} onChange={setHidden}>
                 Hide in menu
@@ -124,6 +127,7 @@ export const Default: Story = {
         const transparent = systemColor("transparent");
 
         await expect(query(".dextinityField__box").outlineStyle).toBe("solid");
+        await expect(query(".dextinityFilterBar__search").outlineStyle).toBe("solid");
         await expect(query(".dextinitySwitch__control").outlineStyle).toBe("solid");
         await expect(query(".dextinitySwitch__control").backgroundColor).toBe(highlight);
         await expect(query(".dextinitySwitch__thumb").backgroundColor).not.toBe(transparent);

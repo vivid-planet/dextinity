@@ -139,6 +139,10 @@ const Root = styled("div")`
     gap: var(--dextinity-space-1);
     padding-inline: var(--dextinity-panel-padding);
     padding-block-start: var(--dextinity-space-2);
+
+    [data-variant="form"] & {
+        padding-inline: var(--dextinity-edit-layout-gap);
+    }
 `;
 
 const TabList = styled(Tabs)`

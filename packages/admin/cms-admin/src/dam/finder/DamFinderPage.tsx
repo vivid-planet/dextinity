@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { LocalErrorScopeApolloContext, useStoredState } from "@dextinity/admin";
+import { downloadFile, LocalErrorScopeApolloContext, useStoredState } from "@dextinity/admin";
 import {
     AssetBrowser,
     type AssetBrowserView,
@@ -14,38 +14,40 @@ import {
     ToastViewport,
     useToasts,
 } from "@dextinity/ui";
-import { type ReactNode, useCallback, useMemo, useRef, useState } from "react";
+import { type MouseEvent, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
 import { useIntl } from "react-intl";
 import { useHistory, useLocation, useRouteMatch } from "react-router";
+import { useDebounce } from "use-debounce";
 
+import { useDextinityConfig } from "../../config/DextinityConfigContext";
 import { useContentScope } from "../../contentScope/Provider";
 import { useContentScopeConfig } from "../../contentScope/useContentScopeConfig";
+import { useDamBasePath, useDamConfig } from "../config/damConfig";
 import { DamScopeProvider } from "../config/DamScopeProvider";
 import { useDamAcceptedMimeTypes } from "../config/useDamAcceptedMimeTypes";
 import { useDamScope } from "../config/useDamScope";
+import { CurrentDamFolderProvider } from "../CurrentDamFolderProvider";
 import { ManualDuplicatedFilenamesHandlerContextProvider } from "../DataGrid/duplicatedFilenames/ManualDuplicatedFilenamesHandler";
-import { FileUploadContextProvider } from "../DataGrid/fileUpload/FileUploadContext";
+import { FileUploadContextProvider, useFileUploadContext } from "../DataGrid/fileUpload/FileUploadContext";
 import { useDamFileUpload } from "../DataGrid/fileUpload/useDamFileUpload";
-import { moveDamFilesMutation, moveDamFoldersMutation } from "../DataGrid/FolderDataGrid";
-import type {
-    GQLMoveDamFilesMutation,
-    GQLMoveDamFilesMutationVariables,
-    GQLMoveDamFoldersMutation,
-    GQLMoveDamFoldersMutationVariables,
-} from "../DataGrid/FolderDataGrid.gql.generated";
 import { createAssetBrowserLabels } from "./createAssetBrowserLabels";
 import { DamFinderFileDetails, DamFinderFolderDetails, DamFinderSelectionDetails } from "./DamFinderDetails";
 import type { DamFinderUnsavedChanges } from "./DamFinderFormState";
-import { damFinderRootFolderId, getFileExtension, toAssetBrowserAsset, toAssetBrowserFolder } from "./damFinderItems";
+import { damFinderRootFolderId, getDamFinderLicenseStatus, getFileExtension, toAssetBrowserAsset, toAssetBrowserFolder } from "./damFinderItems";
+import type { GQLDamFinderFileFragment } from "./damFinderItems.fragment.generated";
+import { DamFinderMoveDialog } from "./DamFinderMoveDialog";
 import { DamFinderNewFolderDialog } from "./DamFinderNewFolderDialog";
 import {
     archiveDamFinderFilesMutation,
     createDamFinderFolderMutation,
     damFinderFileUsagesQuery,
     damFinderFoldersQuery,
+    damFinderSearchQuery,
     deleteDamFinderFileMutation,
     deleteDamFinderFolderMutation,
+    moveDamFinderFilesMutation,
+    moveDamFinderFoldersMutation,
     restoreDamFinderFilesMutation,
 } from "./DamFinderPage.gql";
 import type {
@@ -57,19 +59,27 @@ import type {
     GQLDamFinderFileUsagesQueryVariables,
     GQLDamFinderFoldersQuery,
     GQLDamFinderFoldersQueryVariables,
+    GQLDamFinderSearchQuery,
+    GQLDamFinderSearchQueryVariables,
     GQLDeleteDamFinderFileMutation,
     GQLDeleteDamFinderFileMutationVariables,
     GQLDeleteDamFinderFolderMutation,
     GQLDeleteDamFinderFolderMutationVariables,
+    GQLMoveDamFinderFilesMutation,
+    GQLMoveDamFinderFilesMutationVariables,
+    GQLMoveDamFinderFoldersMutation,
+    GQLMoveDamFinderFoldersMutationVariables,
     GQLRestoreDamFinderFilesMutation,
     GQLRestoreDamFinderFilesMutationVariables,
 } from "./DamFinderPage.gql.generated";
 import { DetailsColumn, FinderBody, FinderDropzone } from "./DamFinderPage.sc";
 import { DamFinderQuickLookPreview } from "./DamFinderQuickLookPreview";
+import { DamFinderFilterMenu, type DamFinderLicenseFilter, DamFinderSelectionMenu } from "./DamFinderToolbarMenus";
 import { useDamFinderFiles } from "./useDamFinderFiles";
 import { useDamFinderWindowHeight } from "./useDamFinderWindowHeight";
 
 const folderParam = "folder";
+const searchResultLimit = 100;
 
 export interface DamFinderPageProps {
     /** The title of the page header. */
@@ -78,11 +88,23 @@ export interface DamFinderPageProps {
     eyebrow?: ReactNode;
     /** The URL of a file's full settings, e.g. in the `DamPage`. Without it, the details panel links nowhere. */
     editFileUrl?: (fileId: string) => string;
+    /**
+     * The URL of the DAM settings, e.g. in the `DamPage`. They are only linked with `enableLicenseFeature` and
+     * `blockFilesWithInvalidLicense` in the DAM config.
+     */
+    settingsUrl?: string;
+    /**
+     * Further actions in the page header, e.g. an import from an image service. They can upload with `useDamFileUpload` into the
+     * folder of `useCurrentDamFolder`; the finder shows and selects what they uploaded. Defaults to `additionalToolbarItems` of the DAM
+     * config.
+     */
+    additionalToolbarItems?: ReactNode;
 }
 
 /**
  * The assets as a finder built with `@dextinity/ui`: the folder tree, the folder's files as icons, a list, columns, or a gallery, a
- * quick look on Space, and the details of the selection. Files are uploaded by dropping them onto the finder or with "Upload".
+ * search over all folders, a quick look on Space, and the details of the selection. Files and folders are uploaded by dropping them
+ * onto the finder or with "Upload", and moved, downloaded, archived, restored, or deleted with the actions of the selection.
  */
 export function DamFinderPage(props: DamFinderPageProps) {
     const { match } = useContentScope();
@@ -104,13 +126,27 @@ function byName(first: { name: string }, second: { name: string }) {
     return first.name.localeCompare(second.name);
 }
 
-function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
+function isModifiedClick(event: MouseEvent<HTMLElement>) {
+    return event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
+}
+
+function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToolbarItems }: DamFinderPageProps) {
     const intl = useIntl();
     const history = useHistory();
     const location = useLocation();
     const scope = useDamScope();
+    const damConfig = useDamConfig();
+    const { apiUrl } = useDextinityConfig();
+    const damBasePath = useDamBasePath();
     const { allAcceptedMimeTypes } = useDamAcceptedMimeTypes();
     const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
+    const { newlyUploadedItems } = useFileUploadContext();
+
+    const [showArchived, setShowArchived] = useStoredState<boolean>("damFinderShowArchived", false);
+    const [licenseFilter, setLicenseFilter] = useState<DamFinderLicenseFilter>("all");
+    const [search, setSearch] = useState("");
+    const [debouncedSearch] = useDebounce(search.trim(), 300);
+    const [pendingMoveIds, setPendingMoveIds] = useState<string[]>();
 
     const [view, setView] = useStoredState<AssetBrowserView>("damFinderView", "icons");
     const [sidebarWidth, setSidebarWidth] = useStoredState<number | null>("damFinderSidebarWidth", null);
@@ -126,8 +162,8 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
 
     const foldersQuery = useQuery<GQLDamFinderFoldersQuery, GQLDamFinderFoldersQueryVariables>(damFinderFoldersQuery, { variables: { scope } });
     const [createFolder] = useMutation<GQLCreateDamFinderFolderMutation, GQLCreateDamFinderFolderMutationVariables>(createDamFinderFolderMutation);
-    const [moveFiles] = useMutation<GQLMoveDamFilesMutation, GQLMoveDamFilesMutationVariables>(moveDamFilesMutation);
-    const [moveFolders] = useMutation<GQLMoveDamFoldersMutation, GQLMoveDamFoldersMutationVariables>(moveDamFoldersMutation);
+    const [moveFiles] = useMutation<GQLMoveDamFinderFilesMutation, GQLMoveDamFinderFilesMutationVariables>(moveDamFinderFilesMutation);
+    const [moveFolders] = useMutation<GQLMoveDamFinderFoldersMutation, GQLMoveDamFinderFoldersMutationVariables>(moveDamFinderFoldersMutation);
     const [deleteFile] = useMutation<GQLDeleteDamFinderFileMutation, GQLDeleteDamFinderFileMutationVariables>(deleteDamFinderFileMutation);
     const [deleteFolder] = useMutation<GQLDeleteDamFinderFolderMutation, GQLDeleteDamFinderFolderMutationVariables>(deleteDamFinderFolderMutation);
     const [archiveFiles] = useMutation<GQLArchiveDamFinderFilesMutation, GQLArchiveDamFinderFilesMutationVariables>(archiveDamFinderFilesMutation);
@@ -150,7 +186,25 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
     }, [folderId, damFolderById]);
     const pathFolderIds = useMemo(() => pathFolderIdsKey.split("/"), [pathFolderIdsKey]);
 
-    const { filesByFolderId, loadingFolderIds, error: filesError, reload } = useDamFinderFiles(pathFolderIds);
+    const { filesByFolderId, loadingFolderIds, error: filesError, reload } = useDamFinderFiles(pathFolderIds, { includeArchived: showArchived });
+
+    const searchQuery = useQuery<GQLDamFinderSearchQuery, GQLDamFinderSearchQueryVariables>(damFinderSearchQuery, {
+        variables: { scope, searchText: debouncedSearch, includeArchived: showArchived, limit: searchResultLimit },
+        skip: debouncedSearch === "",
+        fetchPolicy: "network-only",
+    });
+    const isSearching = search.trim() !== "";
+    const isSearchLoading = isSearching && (debouncedSearch !== search.trim() || searchQuery.loading);
+    const searchFiles = useMemo(
+        () => (isSearching && debouncedSearch !== "" ? (searchQuery.data?.damFilesList.nodes ?? []) : []),
+        [isSearching, debouncedSearch, searchQuery.data],
+    );
+
+    const isLicenseFilterEnabled = damConfig.enableLicenseFeature === true;
+    const matchesLicenseFilter = useCallback(
+        (file: GQLDamFinderFileFragment) => !isLicenseFilterEnabled || licenseFilter === "all" || getDamFinderLicenseStatus(file) === licenseFilter,
+        [isLicenseFilterEnabled, licenseFilter],
+    );
 
     const folders = useMemo(
         () => [
@@ -164,14 +218,30 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
         [damFolders, intl],
     );
     const assets = useMemo(
-        () => Object.entries(filesByFolderId).flatMap(([id, files]) => files.map((file) => toAssetBrowserAsset(intl, file, id))),
-        [filesByFolderId, intl],
+        () =>
+            Object.entries(filesByFolderId).flatMap(([id, files]) =>
+                files.filter(matchesLicenseFilter).map((file) => toAssetBrowserAsset(intl, file, id)),
+            ),
+        [filesByFolderId, intl, matchesLicenseFilter],
     );
-    const currentFiles = useMemo(() => [...(filesByFolderId[folderId] ?? [])].sort(byName), [filesByFolderId, folderId]);
+    const searchResults = useMemo(
+        () => searchFiles.filter(matchesLicenseFilter).map((file) => toAssetBrowserAsset(intl, file, file.folder?.id ?? damFinderRootFolderId)),
+        [searchFiles, intl, matchesLicenseFilter],
+    );
+    const currentFiles = useMemo(
+        () =>
+            isSearching ? searchFiles.filter(matchesLicenseFilter) : [...(filesByFolderId[folderId] ?? [])].filter(matchesLicenseFilter).sort(byName),
+        [isSearching, searchFiles, filesByFolderId, folderId, matchesLicenseFilter],
+    );
     const fileById = useMemo(
-        () => new Map(Object.values(filesByFolderId).flatMap((files) => files.map((file) => [file.id, file]))),
-        [filesByFolderId],
+        () =>
+            new Map<string, GQLDamFinderFileFragment>([
+                ...Object.values(filesByFolderId).flatMap((files) => files.map((file) => [file.id, file] as const)),
+                ...searchFiles.map((file) => [file.id, file] as const),
+            ]),
+        [filesByFolderId, searchFiles],
     );
+    const searchFileFolderIds = useMemo(() => new Map(searchFiles.map((file) => [file.id, file.folder?.id ?? damFinderRootFolderId])), [searchFiles]);
 
     const selectedFile = selectedIds.length === 1 ? fileById.get(selectedIds[0]) : undefined;
     const selectedFolder = selectedIds.length === 1 ? damFolderById.get(selectedIds[0]) : undefined;
@@ -203,7 +273,6 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
     });
     const upload = async (acceptedFiles: File[], fileRejections: FileRejection[] = []) => {
         await uploadFiles({ acceptedFiles, fileRejections }, { folderId: folderId === damFinderRootFolderId ? undefined : folderId });
-        await refresh([folderId]);
     };
     const { getInputProps, open: openFileChooser } = useDropzone({
         ...dropzoneConfig,
@@ -211,6 +280,33 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
         noDrag: true,
         onDrop: (acceptedFiles, fileRejections) => upload(acceptedFiles, fileRejections),
     });
+    const { getInputProps: getFolderInputProps, open: openFolderChooser } = useDropzone({
+        ...dropzoneConfig,
+        noClick: true,
+        noDrag: true,
+        onDrop: (acceptedFiles, fileRejections) => upload(acceptedFiles, fileRejections),
+    });
+
+    // Uploads, also those of `additionalToolbarItems`, report the uploaded items through the upload context
+    const handledUploadedItemIds = useRef(new Set<string>());
+    useEffect(() => {
+        const uploadedItems = newlyUploadedItems.filter((item) => !handledUploadedItemIds.current.has(item.id));
+        if (uploadedItems.length === 0) {
+            return;
+        }
+        for (const item of uploadedItems) {
+            handledUploadedItemIds.current.add(item.id);
+        }
+        const parentFolderIds = uploadedItems.map((item) => item.parentId ?? damFinderRootFolderId);
+        Promise.all([reload([folderId, ...parentFolderIds]), foldersQuery.refetch()]).then(() => {
+            const idsInCurrentFolder = uploadedItems.filter((item) => (item.parentId ?? damFinderRootFolderId) === folderId).map((item) => item.id);
+            if (idsInCurrentFolder.length > 0) {
+                setSelectedIds(idsInCurrentFolder);
+            }
+        });
+        // Reacts only to new uploads; the folder and the loaders are read at that moment
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [newlyUploadedItems]);
     const handleDroppedFiles = (files: File[]) => {
         const isAccepted = (file: File) => allAcceptedMimeTypes.includes(file.type) && file.size <= maxFileSizeInBytes;
         // The upload's error dialog reads only the file's name, type, and size of a rejection
@@ -230,6 +326,7 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
 
     const getSourceFolderId = (id: string) =>
         damFolderById.get(id)?.parent?.id ??
+        searchFileFolderIds.get(id) ??
         Object.entries(filesByFolderId).find(([, files]) => files.some((file) => file.id === id))?.[0] ??
         damFinderRootFolderId;
 
@@ -279,7 +376,13 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
         } catch {
             showError(intl.formatMessage({ id: "dextinity.damFinder.moveFailed", defaultMessage: "The items couldn't be moved" }));
         }
-        await refresh([folderId, targetFolderId]);
+        await Promise.all([refresh([folderId, targetFolderId, ...sourceFolderIds.values()]), isSearching ? searchQuery.refetch() : undefined]);
+    };
+
+    const moveToChosenFolder = (targetFolderId: string) => {
+        const ids = pendingMoveIds ?? [];
+        setPendingMoveIds(undefined);
+        handleMove(ids, targetFolderId);
     };
 
     const pendingDeleteFileIds = pendingDeleteIds?.filter((id) => fileById.has(id)) ?? [];
@@ -323,10 +426,12 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                 tone: "success",
             });
         }
-        await refresh([folderId]);
+        await Promise.all([refresh([folderId]), isSearching ? searchQuery.refetch() : undefined]);
     };
 
-    const undoArchive = async (fileIds: string[]) => {
+    const affectedFolderIds = (fileIds: string[]) => [folderId, ...fileIds.map(getSourceFolderId)];
+
+    const restore = async (fileIds: string[]) => {
         try {
             await restoreFiles({ variables: { ids: fileIds } });
             addToast({
@@ -339,27 +444,50 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
         } catch {
             showError(intl.formatMessage({ id: "dextinity.damFinder.restoreFailed", defaultMessage: "The files couldn't be restored" }));
         }
-        await refresh([folderId]);
+        await Promise.all([refresh(affectedFolderIds(fileIds)), isSearching ? searchQuery.refetch() : undefined]);
     };
 
-    const handleArchive = async () => {
-        const archivedFileIds = pendingDeleteFileIds;
-        setPendingDeleteIds(undefined);
+    const archive = async (archivedFileIds: string[]) => {
         try {
             await archiveFiles({ variables: { ids: archivedFileIds } });
-            setSelectedIds([]);
+            if (!showArchived) {
+                setSelectedIds([]);
+            }
             addToast({
                 message: intl.formatMessage(
                     { id: "dextinity.damFinder.archived", defaultMessage: "Archived {count, plural, one {# file} other {# files}}" },
                     { count: archivedFileIds.length },
                 ),
                 tone: "success",
-                action: { label: undoLabel, onClick: () => undoArchive(archivedFileIds) },
+                action: { label: undoLabel, onClick: () => restore(archivedFileIds) },
             });
         } catch {
             showError(intl.formatMessage({ id: "dextinity.damFinder.archiveFailed", defaultMessage: "The files couldn't be archived" }));
         }
-        await refresh([folderId]);
+        await Promise.all([refresh(affectedFolderIds(archivedFileIds)), isSearching ? searchQuery.refetch() : undefined]);
+    };
+
+    const handleArchiveInsteadOfDelete = () => {
+        const archivedFileIds = pendingDeleteFileIds;
+        setPendingDeleteIds(undefined);
+        archive(archivedFileIds);
+    };
+
+    const selectedFileIds = selectedIds.filter((id) => fileById.has(id));
+    const selectedFolderIds = selectedIds.filter((id) => damFolderById.has(id));
+    const selectedArchivedFileIds = selectedFileIds.filter((id) => fileById.get(id)?.archived);
+
+    const downloadSelection = () => {
+        if (selectedFileIds.length === 0 && selectedFolderIds.length === 1) {
+            window.open(`${apiUrl}/${damBasePath}/folders/${selectedFolderIds[0]}/zip`, "_blank", "noopener");
+            return;
+        }
+        for (const id of selectedFileIds) {
+            const file = fileById.get(id);
+            if (file != null) {
+                downloadFile(file.fileUrl, file.name);
+            }
+        }
     };
 
     const handleCreateFolder = async (name: string) => {
@@ -442,6 +570,8 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
     }
 
     const isCurrentFolderLoading = loadingFolderIds.includes(folderId) || foldersQuery.loading;
+    const shownAdditionalToolbarItems = additionalToolbarItems ?? damConfig.additionalToolbarItems;
+    const isSettingsLinkShown = settingsUrl != null && damConfig.enableLicenseFeature === true && damConfig.blockFilesWithInvalidLicense === true;
 
     const renderDetails = () => {
         if (selectedFile != null) {
@@ -473,7 +603,7 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
     };
 
     return (
-        <>
+        <CurrentDamFolderProvider folderId={folderId === damFinderRootFolderId ? undefined : folderId}>
             <FinderLayout
                 ref={layoutRef}
                 style={layoutStyle}
@@ -501,18 +631,39 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                         }
                         actions={
                             <>
+                                {shownAdditionalToolbarItems}
+                                {isSettingsLinkShown && (
+                                    <Button
+                                        variant="text"
+                                        color="secondary"
+                                        startIcon={<Icon name="settings" />}
+                                        href={settingsUrl}
+                                        onClick={(event: MouseEvent<HTMLElement>) => {
+                                            if (!isModifiedClick(event)) {
+                                                event.preventDefault();
+                                                history.push(settingsUrl);
+                                            }
+                                        }}
+                                    >
+                                        {intl.formatMessage({ id: "dextinity.damFinder.settings", defaultMessage: "Settings" })}
+                                    </Button>
+                                )}
                                 <Button
                                     variant="outlined"
                                     color="secondary"
-                                    startIcon={<Icon name="folder" />}
+                                    startIcon={<Icon name="add-folder" />}
                                     onClick={() => setIsNewFolderDialogOpen(true)}
                                 >
                                     {intl.formatMessage({ id: "dextinity.damFinder.newFolder", defaultMessage: "New folder" })}
+                                </Button>
+                                <Button variant="outlined" color="secondary" startIcon={<Icon name="folder-import" />} onClick={openFolderChooser}>
+                                    {intl.formatMessage({ id: "dextinity.damFinder.uploadFolder", defaultMessage: "Upload folder" })}
                                 </Button>
                                 <Button startIcon={<Icon name="upload" />} onClick={openFileChooser}>
                                     {intl.formatMessage({ id: "dextinity.damFinder.upload", defaultMessage: "Upload" })}
                                 </Button>
                                 <input {...getInputProps()} />
+                                <input {...getFolderInputProps()} webkitdirectory="webkitdirectory" directory="directory" />
                             </>
                         }
                     />
@@ -548,13 +699,35 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                             onQuickLook={(asset) => openQuickLook(asset.id)}
                             onMove={handleMove}
                             onDelete={setPendingDeleteIds}
+                            search={search}
+                            onSearchChange={setSearch}
+                            searchResults={searchResults}
+                            searchLoading={isSearchLoading}
                             toolbar={
-                                isCurrentFolderLoading ? (
-                                    <Spinner
-                                        size="small"
-                                        aria-label={intl.formatMessage({ id: "dextinity.damFinder.loading", defaultMessage: "Loading" })}
+                                <>
+                                    {!isSearching && isCurrentFolderLoading && (
+                                        <Spinner
+                                            size="small"
+                                            aria-label={intl.formatMessage({ id: "dextinity.damFinder.loading", defaultMessage: "Loading" })}
+                                        />
+                                    )}
+                                    <DamFinderFilterMenu
+                                        showArchived={showArchived}
+                                        onShowArchivedChange={setShowArchived}
+                                        licenseFilter={isLicenseFilterEnabled ? licenseFilter : undefined}
+                                        onLicenseFilterChange={setLicenseFilter}
                                     />
-                                ) : undefined
+                                    <DamFinderSelectionMenu
+                                        fileCount={selectedFileIds.length}
+                                        folderCount={selectedFolderIds.length}
+                                        archivedFileCount={selectedArchivedFileIds.length}
+                                        onMove={() => setPendingMoveIds([...selectedFileIds, ...selectedFolderIds])}
+                                        onDownload={downloadSelection}
+                                        onArchive={() => archive(selectedFileIds.filter((id) => !fileById.get(id)?.archived))}
+                                        onRestore={() => restore(selectedArchivedFileIds)}
+                                        onDelete={() => setPendingDeleteIds([...selectedFileIds, ...selectedFolderIds])}
+                                    />
+                                </>
                             }
                             labels={createAssetBrowserLabels(intl)}
                         />
@@ -615,7 +788,7 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                     intl.formatMessage({
                         id: "dextinity.damFinder.delete.description",
                         defaultMessage:
-                            "Deleted files and folders, including everything inside them, can't be restored. Archived files stay available in the asset manager.",
+                            "Deleted files and folders, including everything inside them, can't be restored. Archived files stay available with the filter “Show archived files”.",
                     }),
                 ]
                     .filter((part) => part != null)
@@ -628,8 +801,17 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                         ? intl.formatMessage({ id: "dextinity.damFinder.delete.archive", defaultMessage: "Archive instead" })
                         : undefined
                 }
-                onSecondary={pendingDeleteFolderIds.length === 0 ? handleArchive : undefined}
+                onSecondary={pendingDeleteFolderIds.length === 0 ? handleArchiveInsteadOfDelete : undefined}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.damFinder.delete.cancel", defaultMessage: "Cancel" }) }}
+            />
+            <DamFinderMoveDialog
+                open={pendingMoveIds != null}
+                onClose={() => setPendingMoveIds(undefined)}
+                folders={folders}
+                count={pendingMoveIds?.length ?? 0}
+                movedFolderIds={pendingMoveIds?.filter((id) => damFolderById.has(id)) ?? []}
+                sourceFolderId={isSearching ? undefined : folderId}
+                onMove={moveToChosenFolder}
             />
             <DamFinderNewFolderDialog open={isNewFolderDialogOpen} onOpenChange={setIsNewFolderDialogOpen} onCreate={handleCreateFolder} />
             <ConfirmDialog
@@ -656,6 +838,6 @@ function DamFinderView({ title, eyebrow, editFileUrl }: DamFinderPageProps) {
                 labels={{ region: intl.formatMessage({ id: "dextinity.damFinder.notifications", defaultMessage: "Notifications" }) }}
             />
             {uploadDialogs}
-        </>
+        </CurrentDamFolderProvider>
     );
 }

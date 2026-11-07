@@ -1,19 +1,24 @@
 import { gql, useQuery } from "@apollo/client";
-import { CrudMoreActionsMenu, FillSpace, Loading, StackToolbar, ToolbarActions, ToolbarBackButton, ToolbarTitleItem } from "@dextinity/admin";
-import { ImpersonateUser, Reset } from "@dextinity/admin-icons";
-import { styled } from "@mui/material/styles";
+import { PageHeader, type PageHeaderBack, Skeleton } from "@dextinity/ui";
+import { useIntl } from "react-intl";
 
-import { commonImpersonationMessages } from "../../common/impersonation/commonImpersonationMessages";
-import { ContentScopeIndicator } from "../../contentScope/ContentScopeIndicator";
-import { useCurrentUser, useUserPermissionCheck } from "../hooks/currentUser";
-import { startImpersonation, stopImpersonation } from "../utils/handleImpersonation";
+import { useRouterLinkClick } from "../../common/useRouterLinkClick";
+import { StartImpersonationButton } from "./ImpersonationButtons";
 import type { GQLUserPageQuery, GQLUserPageQueryVariables } from "./UserPageToolbar.generated";
 
-export const UserPermissionsUserPageToolbar = ({ userId }: { userId: string }) => {
-    const currentUser = useCurrentUser();
-    const isAllowed = useUserPermissionCheck();
+interface UserPermissionsUserPageToolbarProps {
+    userId: string;
+    /** The link back to the list of users. */
+    back?: PageHeaderBack;
+}
 
-    const { data, error, loading } = useQuery<GQLUserPageQuery, GQLUserPageQueryVariables>(
+/**
+ * The `PageHeader` of a user's page: the name and e-mail, and the start or stop of the impersonation as the action.
+ */
+export const UserPermissionsUserPageToolbar = ({ userId, back }: UserPermissionsUserPageToolbarProps) => {
+    const intl = useIntl();
+    const navigateWithRouter = useRouterLinkClick();
+    const { data, error } = useQuery<GQLUserPageQuery, GQLUserPageQueryVariables>(
         gql`
             query UserPage($id: String!) {
                 user: userPermissionsUserById(id: $id) {
@@ -32,52 +37,28 @@ export const UserPermissionsUserPageToolbar = ({ userId }: { userId: string }) =
         throw new Error(error.message);
     }
 
-    if (loading || !data) {
-        return <Loading />;
+    const eyebrow = intl.formatMessage({ id: "dextinity.userPermissions.eyebrow", defaultMessage: "User · Global" });
+
+    if (!data) {
+        return (
+            <PageHeader
+                back={back}
+                slotProps={{ back: { onClick: navigateWithRouter } }}
+                eyebrow={eyebrow}
+                title={intl.formatMessage({ id: "dextinity.userPermissions.edit", defaultMessage: "User" })}
+                subtitle={<Skeleton variant="text" width="12rem" />}
+            />
+        );
     }
 
     return (
-        <StackToolbar scopeIndicator={<ContentScopeIndicator global />}>
-            <ToolbarBackButton />
-            <ToolbarTitleItem>
-                <TitleText>{data.user.name}</TitleText>
-                <SupportText>{data.user.email}</SupportText>
-            </ToolbarTitleItem>
-            <FillSpace />
-            <ToolbarActions>
-                {isAllowed("impersonation") && (
-                    <CrudMoreActionsMenu
-                        overallActions={[
-                            currentUser.impersonated
-                                ? {
-                                      icon: <Reset />,
-                                      label: commonImpersonationMessages.stopImpersonation,
-                                      onClick: () => stopImpersonation(),
-                                  }
-                                : {
-                                      label: commonImpersonationMessages.startImpersonation,
-                                      icon: <ImpersonateUser />,
-                                      disabled: !data.user.impersonationAllowed,
-                                      onClick: () => startImpersonation(userId),
-                                  },
-                        ]}
-                    />
-                )}
-            </ToolbarActions>
-        </StackToolbar>
+        <PageHeader
+            back={back}
+            slotProps={{ back: { onClick: navigateWithRouter } }}
+            eyebrow={eyebrow}
+            title={data.user.name}
+            subtitle={data.user.email}
+            actions={<StartImpersonationButton userId={userId} impersonationAllowed={data.user.impersonationAllowed} />}
+        />
     );
 };
-
-const TitleText = styled("div")`
-    font-weight: ${({ theme }) => theme.typography.fontWeightRegular};
-    font-size: 18px;
-    line-height: 21px;
-    color: ${({ theme }) => theme.palette.text.primary};
-`;
-
-const SupportText = styled("div")`
-    font-weight: ${({ theme }) => theme.typography.fontWeightRegular};
-    font-size: 14px;
-    line-height: 20px;
-    color: ${({ theme }) => theme.palette.text.secondary};
-`;

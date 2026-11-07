@@ -1,12 +1,10 @@
-import { Box } from "@mui/material";
-
 import { ContentScopeGrid } from "./ContentScopeGrid";
 import { PermissionGrid } from "./PermissionGrid";
+import { PermissionPanels } from "./PermissionsPanel.sc";
 
 export const UserPermissionsUserPagePermissionsPanel = ({ userId }: { userId: string }) => (
-    <>
+    <PermissionPanels>
         <ContentScopeGrid userId={userId} />
-        <Box sx={{ height: 20 }} />
         <PermissionGrid userId={userId} />
-    </>
+    </PermissionPanels>
 );

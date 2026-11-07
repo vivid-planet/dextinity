@@ -4,10 +4,14 @@ import {
     type AvailableContentScope,
     availableContentScopeMatchesSelection,
     enumerableScopeCombinationExists,
+    getContentScopeKey,
+    getContentScopeOptions,
     getDimensionOptions,
     getEnumerableDimensionNames,
     getEnumerableSelectionAfterChange,
     getRequiredEnumerableDimensions,
+    isContentScopeCoveredBy,
+    toContentScope,
 } from "./contentScopeSelection";
 
 const ALL = "*";
@@ -187,5 +191,97 @@ describe("enumerableScopeCombinationExists", () => {
         expect(enumerableScopeCombinationExists({ scope: { domain: "shop", language: ALL }, availableContentScopes: heterogeneousScopes })).toBe(
             false,
         );
+    });
+});
+
+describe("getContentScopeKey", () => {
+    it("is independent of the order of the dimensions and of raw JSON values", () => {
+        expect(getContentScopeKey({ domain: "main", tenant: 1 })).toEqual(getContentScopeKey({ tenant: "1", domain: "main" }));
+        expect(getContentScopeKey({ domain: "main" })).not.toEqual(getContentScopeKey({ domain: "main", language: "en" }));
+    });
+});
+
+describe("toContentScope", () => {
+    it("turns raw JSON values into strings", () => {
+        expect(toContentScope(numericScopes[0])).toEqual({ tenant: "1" });
+    });
+});
+
+describe("getContentScopeOptions", () => {
+    it("groups the scopes by the declared dimensions", () => {
+        expect(getContentScopeOptions({ availableContentScopes: domainLanguageScopes, dimensionNames: ["domain", "language", "product"] })).toEqual([
+            {
+                value: 'group:["main"]',
+                label: "Main",
+                children: [
+                    { value: getContentScopeKey({ domain: "main", language: "en" }), label: "English" },
+                    { value: getContentScopeKey({ domain: "main", language: "de" }), label: "German" },
+                ],
+            },
+            {
+                value: 'group:["secondary"]',
+                label: "Secondary",
+                children: [{ value: getContentScopeKey({ domain: "secondary", language: "en" }), label: "English" }],
+            },
+        ]);
+    });
+
+    it("follows the order of the declared dimensions", () => {
+        const options = getContentScopeOptions({ availableContentScopes: domainLanguageScopes, dimensionNames: ["language", "domain"] });
+        expect(options.map((option) => option.label)).toEqual(["English", "German"]);
+        expect(options[0].children?.map((option) => option.label)).toEqual(["Main", "Secondary"]);
+    });
+
+    it("keeps a scope without the deeper dimensions at its level", () => {
+        expect(getContentScopeOptions({ availableContentScopes: heterogeneousScopes, dimensionNames: ["domain", "language"] })).toEqual([
+            { value: 'group:["main"]', label: "main", children: [{ value: getContentScopeKey({ domain: "main", language: "en" }), label: "en" }] },
+            { value: getContentScopeKey({ domain: "shop" }), label: "shop" },
+        ]);
+    });
+
+    it("lists a single dimension without groups", () => {
+        expect(getContentScopeOptions({ availableContentScopes: numericScopes, dimensionNames: [] })).toEqual([
+            { value: getContentScopeKey({ tenant: 1 }), label: "Tenant One" },
+            { value: getContentScopeKey({ tenant: 2 }), label: "Tenant Two" },
+        ]);
+    });
+
+    it("keeps only the scopes that match the search in any dimension", () => {
+        const options = getContentScopeOptions({
+            availableContentScopes: domainLanguageScopes,
+            dimensionNames: ["domain", "language"],
+            search: "germ",
+        });
+        expect(options).toEqual([
+            {
+                value: 'group:["main"]',
+                label: "Main",
+                children: [{ value: getContentScopeKey({ domain: "main", language: "de" }), label: "German" }],
+            },
+        ]);
+        expect(getContentScopeOptions({ availableContentScopes: domainLanguageScopes, dimensionNames: [], search: "secondary" })).toHaveLength(1);
+    });
+});
+
+describe("isContentScopeCoveredBy", () => {
+    const availableScope = { domain: "main", language: "en" };
+
+    it("covers the same scope", () => {
+        expect(isContentScopeCoveredBy({ availableScope, assignedScope: { domain: "main", language: "en" } })).toBe(true);
+    });
+
+    it("covers values and missing dimensions through the wildcard", () => {
+        expect(isContentScopeCoveredBy({ availableScope, assignedScope: { domain: "main", language: ALL, product: ALL } })).toBe(true);
+        expect(isContentScopeCoveredBy({ availableScope, assignedScope: { domain: ALL, language: ALL } })).toBe(true);
+    });
+
+    it("doesn't cover other values, extra dimensions with a value, or missing dimensions", () => {
+        expect(isContentScopeCoveredBy({ availableScope, assignedScope: { domain: "secondary", language: ALL } })).toBe(false);
+        expect(isContentScopeCoveredBy({ availableScope, assignedScope: { domain: "main", language: "en", product: "shoes" } })).toBe(false);
+        expect(isContentScopeCoveredBy({ availableScope, assignedScope: { domain: "main" } })).toBe(false);
+    });
+
+    it("compares raw JSON values as strings", () => {
+        expect(isContentScopeCoveredBy({ availableScope: { tenant: 1 }, assignedScope: { tenant: "1" } })).toBe(true);
     });
 });

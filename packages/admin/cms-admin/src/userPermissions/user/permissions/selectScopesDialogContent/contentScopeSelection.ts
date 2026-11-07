@@ -107,3 +107,107 @@ export function enumerableScopeCombinationExists({
         ),
     );
 }
+
+// Content scopes are flat objects of primitive values, so their sorted entries form a stable key, independent of the order of the
+// dimensions and of whether a value is raw JSON (e.g. a number) or a string.
+export function getContentScopeKey(scope: Record<string, unknown>): string {
+    return JSON.stringify(
+        Object.entries(scope)
+            .map(([dimension, value]) => [dimension, String(value)])
+            .sort(([a], [b]) => a.localeCompare(b)),
+    );
+}
+
+export function toContentScope(availableContentScope: AvailableContentScope): ContentScope {
+    return Object.fromEntries(Object.entries(availableContentScope.scope).map(([dimension, value]) => [dimension, String(value)]));
+}
+
+export interface ContentScopeOption {
+    /** The scope's key (see `getContentScopeKey`) for a scope, or an id prefixed with `group:` for a group of scopes. */
+    value: string;
+    label: string;
+    children?: ContentScopeOption[];
+}
+
+// Groups the available content scopes by their enumerable dimensions in the declared order, e.g. the languages below their domain. A
+// scope that lacks the dimension of a level stays at that level.
+export function getContentScopeOptions({
+    availableContentScopes,
+    dimensionNames,
+    search = "",
+}: {
+    availableContentScopes: AvailableContentScope[];
+    /** The declared dimensions, in their order. Enumerable dimensions that aren't declared follow them. */
+    dimensionNames: string[];
+    search?: string;
+}): ContentScopeOption[] {
+    const enumerableDimensionNames = getEnumerableDimensionNames(availableContentScopes);
+    const levels = [
+        ...dimensionNames.filter((dimension) => enumerableDimensionNames.includes(dimension)),
+        ...enumerableDimensionNames.filter((dimension) => !dimensionNames.includes(dimension)),
+    ];
+    const getLabel = (availableContentScope: AvailableContentScope, dimension: string) =>
+        availableContentScope.label?.[dimension] ?? String(availableContentScope.scope[dimension]);
+    const normalizedSearch = search.trim().toLowerCase();
+    const matchingScopes = normalizedSearch
+        ? availableContentScopes.filter((availableContentScope) =>
+              levels.some(
+                  (dimension) =>
+                      availableContentScope.scope[dimension] != null &&
+                      getLabel(availableContentScope, dimension).toLowerCase().includes(normalizedSearch),
+              ),
+          )
+        : availableContentScopes;
+
+    const buildLevel = (scopes: AvailableContentScope[], depth: number, path: string[]): ContentScopeOption[] => {
+        const dimension = levels[depth];
+        const remainingDimensions = levels.slice(depth + 1);
+        const options: ContentScopeOption[] = [];
+        const groups = new Map<string, AvailableContentScope[]>();
+        const groupValues = new Map<string, string>();
+        for (const availableContentScope of scopes) {
+            const value = availableContentScope.scope[dimension];
+            const hasDeeperDimension = remainingDimensions.some((remaining) => availableContentScope.scope[remaining] != null);
+            if (value == null || !hasDeeperDimension) {
+                options.push({
+                    value: getContentScopeKey(availableContentScope.scope),
+                    label:
+                        value == null
+                            ? levels
+                                  .filter((level) => availableContentScope.scope[level] != null)
+                                  .map((level) => getLabel(availableContentScope, level))
+                                  .join(" · ")
+                            : getLabel(availableContentScope, dimension),
+                });
+                continue;
+            }
+            const groupScopes = groups.get(String(value));
+            if (groupScopes) {
+                groupScopes.push(availableContentScope);
+            } else {
+                const groupOptionValue = `group:${JSON.stringify([...path, String(value)])}`;
+                groups.set(String(value), [availableContentScope]);
+                groupValues.set(groupOptionValue, String(value));
+                options.push({ value: groupOptionValue, label: getLabel(availableContentScope, dimension) });
+            }
+        }
+        return options.map((option) => {
+            const groupValue = groupValues.get(option.value);
+            return groupValue === undefined
+                ? option
+                : { ...option, children: buildLevel(groups.get(groupValue) ?? [], depth + 1, [...path, groupValue]) };
+        });
+    };
+
+    return levels.length > 0 ? buildLevel(matchingScopes, 0, []) : [];
+}
+
+// Whether an assigned scope grants access to the available scope: each of its values equals the available scope's value or is the
+// wildcard (`*`), which also covers dimensions the available scope lacks.
+export function isContentScopeCoveredBy({ availableScope, assignedScope }: { availableScope: Record<string, unknown>; assignedScope: ContentScope }) {
+    return (
+        Object.entries(assignedScope).every(
+            ([dimension, value]) => value === contentScopeAllValues || String(availableScope[dimension]) === String(value),
+        ) && Object.keys(availableScope).every((dimension) => assignedScope[dimension] !== undefined)
+    );
+}

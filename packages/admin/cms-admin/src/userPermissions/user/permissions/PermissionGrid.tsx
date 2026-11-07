@@ -1,13 +1,26 @@
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Button, DataGridToolbar, DeleteDialog, FieldSet, FillSpace, GridCellContent, type GridColDef } from "@dextinity/admin";
-import { Add, Delete, Edit, StateFilled } from "@dextinity/admin-icons";
-import { IconButton, Typography } from "@mui/material";
-import type { GridToolbarProps } from "@mui/x-data-grid";
+import {
+    Button,
+    Chip,
+    ConfirmDialog,
+    DataGrid,
+    type DataGridColumn,
+    EmptyState,
+    Icon,
+    IconButton,
+    Menu,
+    MenuItem,
+    MenuSeparator,
+    Panel,
+    StatusIndicator,
+    type StatusIndicatorStatus,
+} from "@dextinity/ui";
 import { differenceInDays, parseISO } from "date-fns";
-import { type ReactNode, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useState } from "react";
+import { type IntlShape, useIntl } from "react-intl";
 
-import { DataGrid } from "../../../dataGrid/DataGrid";
+import { DataGridRowActions, DataGridSecondaryText, DataGridTitle, DataGridTitleCell } from "../../../dataGrid/dataGridCells";
+import { useDataGridLabels } from "../../../dataGrid/remoteList/useDataGridLabels";
 import { camelCaseToHumanReadable } from "../../utils/camelCaseToHumanReadable";
 import { OverrideContentScopesDialog } from "./OverrideContentScopesDialog";
 import { PermissionDialog } from "./PermissionDialog";
@@ -19,27 +32,60 @@ import {
     type GQLPermissionsQueryVariables,
     namedOperations,
 } from "./PermissionGrid.generated";
+import { useAssignmentTypeLabels } from "./useAssignmentTypeLabels";
 
-interface ToolbarProps extends GridToolbarProps {
-    toolbarAction?: ReactNode;
+const expiringSoonDays = 30;
+
+type PermissionValidity = "active" | "expiringSoon" | "expired" | "scheduled";
+
+const permissionValidityStatus: Record<PermissionValidity, StatusIndicatorStatus> = {
+    active: "published",
+    expiringSoon: "warning",
+    expired: "critical",
+    scheduled: "info",
+};
+
+function getPermissionValidity(permission: GQLPermissionForGridFragment, now: Date): PermissionValidity {
+    if (permission.validTo && differenceInDays(parseISO(permission.validTo), now) < 0) {
+        return "expired";
+    }
+    if (permission.validFrom && parseISO(permission.validFrom) > now) {
+        return "scheduled";
+    }
+    if (permission.validTo && differenceInDays(parseISO(permission.validTo), now) < expiringSoonDays) {
+        return "expiringSoon";
+    }
+    return "active";
 }
 
-function PermissionGridToolbar({ toolbarAction }: ToolbarProps) {
-    return (
-        <DataGridToolbar>
-            <FillSpace />
-            {toolbarAction}
-        </DataGridToolbar>
-    );
+function getPermissionValidityLabel(validity: PermissionValidity, intl: IntlShape) {
+    switch (validity) {
+        case "expired":
+            return intl.formatMessage({ id: "dextinity.userPermissions.expired", defaultMessage: "Expired" });
+        case "expiringSoon":
+            return intl.formatMessage({ id: "dextinity.userPermissions.expiringSoon", defaultMessage: "Expiring soon" });
+        case "scheduled":
+            return intl.formatMessage({ id: "dextinity.userPermissions.scheduled", defaultMessage: "Not valid yet" });
+        case "active":
+            return intl.formatMessage({ id: "dextinity.userPermissions.active", defaultMessage: "Active" });
+    }
 }
+
+function formatValidityDate(value: string | null, intl: IntlShape) {
+    return value ? intl.formatDate(value, { dateStyle: "medium" }) : "∞";
+}
+
+const hasPermissionSpecificScopes = (permission: GQLPermissionForGridFragment) => permission.source === "MANUAL" || permission.overrideContentScopes;
 
 export const PermissionGrid = ({ userId }: { userId: string }) => {
     const intl = useIntl();
+    const { labels: dataGridLabels } = useDataGridLabels();
+    const assignmentTypeLabels = useAssignmentTypeLabels();
     const [permissionId, setPermissionId] = useState<string | "add" | null>(null);
     const [overrideContentScopesId, setOverrideContentScopesId] = useState<string | null>(null);
-    const [permissionToDelete, setPermissionToDelete] = useState<string | null>(null);
+    const [permissionToDelete, setPermissionToDelete] = useState<GQLPermissionForGridFragment | null>(null);
 
-    const [deletePermission] = useMutation<GQLDeletePermissionMutation, GQLDeletePermissionMutationVariables>(gql`
+    const [deletePermission, { loading: deleting }] = useMutation<GQLDeletePermissionMutation, GQLDeletePermissionMutationVariables>(gql`
         mutation DeletePermission($id: ID!) {
             userPermissionsDeletePermission(id: $id)
         }
@@ -71,146 +117,143 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
         },
     );
 
-    const columns: GridColDef<GQLPermissionForGridFragment>[] = [
-        {
-            field: "name",
-            flex: 1,
-            pinnable: false,
-            headerName: intl.formatMessage({ id: "dextinity.userPermissions.permission", defaultMessage: "Permission" }),
-            renderCell: ({ row }) => <Typography variant="subtitle2">{camelCaseToHumanReadable(row.permission)}</Typography>,
-        },
-        {
-            field: "status",
-            width: 200,
-            filterable: false,
-            pinnable: false,
-            headerName: intl.formatMessage({ id: "dextinity.userPermissions.status", defaultMessage: "Status" }),
-            renderCell: ({ row }) => (
-                <>
-                    {row.validTo && differenceInDays(parseISO(row.validTo), new Date()) < 0 && (
-                        <GridCellContent
-                            icon={<StateFilled color="error" />}
-                            primaryText={<FormattedMessage id="dextinity.userPermissions.expired" defaultMessage="Expired" />}
-                        />
-                    )}
-                    {row.validTo &&
-                    differenceInDays(parseISO(row.validTo), new Date()) >= 0 &&
-                    differenceInDays(parseISO(row.validTo), new Date()) < 30 ? (
-                        <GridCellContent
-                            icon={<StateFilled color="warning" />}
-                            primaryText={<FormattedMessage id="dextinity.userPermissions.expiringSoon" defaultMessage="Expiring soon" />}
-                        />
-                    ) : (
-                        <GridCellContent
-                            icon={<StateFilled color="success" />}
-                            primaryText={<FormattedMessage id="dextinity.userPermissions.active" defaultMessage="Active" />}
-                        />
-                    )}
-                </>
-            ),
-        },
-        {
-            field: "validityPeriod",
-            width: 200,
-            pinnable: false,
-            headerName: intl.formatMessage({ id: "dextinity.userPermissions.validityPeriod", defaultMessage: "Validity period" }),
-            renderCell: ({ row }) =>
-                `${row.validFrom ? new Date(row.validFrom).toLocaleDateString() : "∞"} - ${
-                    row.validTo ? new Date(row.validTo).toLocaleDateString() : "∞"
-                }`,
-        },
-        {
-            field: "overrideContentScopes",
-            headerName: "",
-            flex: 1,
-            sortable: false,
-            pinnable: false,
-            filterable: false,
-            renderCell: ({ row }) =>
-                (row.source === "MANUAL" || row.overrideContentScopes) && (
-                    <Button onClick={() => setOverrideContentScopesId(row.id)}>
-                        <FormattedMessage id="dextinity.userPermissions.overrideContentScopes" defaultMessage="Permission-specific Content-Scopes" />
-                    </Button>
-                ),
-        },
-        {
-            field: "source",
-            width: 200,
-            pinnable: false,
-            headerName: intl.formatMessage({ id: "dextinity.userPermissions.source", defaultMessage: "Assignment type" }),
-            renderCell: ({ row }) =>
-                row.source === "BY_RULE" ? (
-                    <FormattedMessage id="dextinity.userPermissions.assignmentType.byRule" defaultMessage="By rule" />
-                ) : (
-                    <FormattedMessage id="dextinity.userPermissions.assignmentType.manual" defaultMessage="Manual" />
-                ),
-        },
-        {
-            field: "actions",
-            type: "actions",
-            headerName: "",
-            sortable: false,
-            pinnable: false,
-            filterable: false,
-            width: 116,
-            pinned: "right",
-            renderCell: ({ row }) => {
-                return (
-                    <>
-                        <IconButton
-                            onClick={() => {
-                                setPermissionId(row.id);
-                            }}
-                            color="primary"
-                        >
-                            <Edit />
-                        </IconButton>
-
-                        {row.source !== "BY_RULE" && (
-                            <IconButton onClick={() => setPermissionToDelete(row.id)}>
-                                <Delete />
-                            </IconButton>
-                        )}
-                    </>
-                );
-            },
-        },
-    ];
-
     if (error) {
         throw new Error(error.message);
     }
 
-    const toolbarSlotProps: ToolbarProps = {
-        toolbarAction: (
-            <Button
-                startIcon={<Add />}
-                onClick={() => {
-                    setPermissionId("add");
-                }}
-            >
-                <FormattedMessage id="dextinity.userPermissions.addPermission" defaultMessage="Add new permission" />
-            </Button>
-        ),
+    const now = new Date();
+    const title = intl.formatMessage({ id: "dextinity.userPermissions.assignedPermissions", defaultMessage: "Assigned Permissions" });
+    const addPermissionLabel = intl.formatMessage({ id: "dextinity.userPermissions.addPermission", defaultMessage: "Add permission" });
+
+    const columns: DataGridColumn<GQLPermissionForGridFragment>[] = [
+        {
+            key: "permission",
+            header: intl.formatMessage({ id: "dextinity.userPermissions.permission", defaultMessage: "Permission" }),
+            render: (permission) => (
+                <DataGridTitleCell>
+                    <DataGridTitle>{camelCaseToHumanReadable(permission.permission)}</DataGridTitle>
+                    {permission.reason && <DataGridSecondaryText>{permission.reason}</DataGridSecondaryText>}
+                </DataGridTitleCell>
+            ),
+        },
+        {
+            key: "status",
+            header: intl.formatMessage({ id: "dextinity.userPermissions.status", defaultMessage: "Status" }),
+            width: 150,
+            render: (permission) => {
+                const validity = getPermissionValidity(permission, now);
+                return <StatusIndicator status={permissionValidityStatus[validity]}>{getPermissionValidityLabel(validity, intl)}</StatusIndicator>;
+            },
+        },
+        {
+            key: "validityPeriod",
+            header: intl.formatMessage({ id: "dextinity.userPermissions.validityPeriod", defaultMessage: "Validity period" }),
+            width: 220,
+            priority: "low",
+            render: (permission) => (
+                <DataGridSecondaryText>
+                    {`${formatValidityDate(permission.validFrom, intl)} – ${formatValidityDate(permission.validTo, intl)}`}
+                </DataGridSecondaryText>
+            ),
+        },
+        {
+            key: "contentScopes",
+            header: intl.formatMessage({ id: "dextinity.userPermissions.contentScopes", defaultMessage: "Content scopes" }),
+            width: 200,
+            priority: "low",
+            render: (permission) =>
+                permission.overrideContentScopes ? (
+                    <Chip size="small" color="info" startIcon={<Icon name="domain" />}>
+                        {intl.formatMessage({ id: "dextinity.userPermissions.contentScopes.specific", defaultMessage: "Permission-specific" })}
+                    </Chip>
+                ) : (
+                    <DataGridSecondaryText>
+                        {intl.formatMessage({ id: "dextinity.userPermissions.contentScopes.assigned", defaultMessage: "Assigned scopes" })}
+                    </DataGridSecondaryText>
+                ),
+        },
+        {
+            key: "source",
+            header: assignmentTypeLabels.header,
+            width: 150,
+            render: (permission) =>
+                permission.source === "BY_RULE" ? (
+                    <Chip size="small" color="secondary">
+                        {assignmentTypeLabels.byRule}
+                    </Chip>
+                ) : (
+                    <Chip size="small" color="primary" variant="outlined">
+                        {assignmentTypeLabels.manual}
+                    </Chip>
+                ),
+        },
+    ];
+
+    const confirmDelete = async () => {
+        if (permissionToDelete) {
+            await deletePermission({
+                variables: { id: permissionToDelete.id },
+                refetchQueries: [namedOperations.Query.Permissions],
+                awaitRefetchQueries: true,
+            });
+        }
+        setPermissionToDelete(null);
     };
 
     return (
-        <FieldSet
-            title={intl.formatMessage({ id: "dextinity.userPermissions.assignedPermissions", defaultMessage: "Assigned Permissions" })}
-            disablePadding
+        <Panel
+            title={title}
+            description={
+                data
+                    ? intl.formatMessage(
+                          {
+                              id: "dextinity.userPermissions.assignedPermissions.count",
+                              defaultMessage: "{count, plural, one {# permission} other {# permissions}}",
+                          },
+                          { count: data.permissions.length },
+                      )
+                    : undefined
+            }
+            actions={
+                <Button size="small" startIcon={<Icon name="plus" />} onClick={() => setPermissionId("add")}>
+                    {addPermissionLabel}
+                </Button>
+            }
+            padding="none"
         >
-            <DataGrid<GQLPermissionForGridFragment>
-                rows={data?.permissions ?? []}
+            <DataGrid
+                aria-label={title}
+                variant="plain"
                 columns={columns}
-                rowCount={data?.permissions.length ?? 0}
-                loading={loading}
-                slots={{
-                    toolbar: PermissionGridToolbar,
-                }}
-                slotProps={{
-                    toolbar: toolbarSlotProps,
-                }}
-                showToolbar
+                rows={data?.permissions ?? []}
+                getRowId={(permission) => permission.id}
+                loading={loading && !data}
+                loadingRowCount={3}
+                onRowClick={(permission) => setPermissionId(permission.id)}
+                rowActions={(permission) => (
+                    <PermissionRowMenu
+                        permission={permission}
+                        onEdit={() => setPermissionId(permission.id)}
+                        onEditContentScopes={() => setOverrideContentScopesId(permission.id)}
+                        onDelete={() => setPermissionToDelete(permission)}
+                    />
+                )}
+                labels={dataGridLabels}
+                emptyState={
+                    <EmptyState
+                        icon={<Icon name="security" />}
+                        title={intl.formatMessage({ id: "dextinity.userPermissions.noPermissions", defaultMessage: "No permissions assigned" })}
+                        description={intl.formatMessage({
+                            id: "dextinity.userPermissions.noPermissionsDescription",
+                            defaultMessage: "Permissions decide which areas of the admin the user can use.",
+                        })}
+                        actions={
+                            <Button variant="outlined" color="secondary" size="small" onClick={() => setPermissionId("add")}>
+                                {addPermissionLabel}
+                            </Button>
+                        }
+                    />
+                }
             />
             {overrideContentScopesId && (
                 <OverrideContentScopesDialog
@@ -220,21 +263,100 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
                 />
             )}
             {permissionId && <PermissionDialog userId={userId} permissionId={permissionId} handleDialogClose={() => setPermissionId(null)} />}
-            <DeleteDialog
-                dialogOpen={permissionToDelete !== null}
-                deleteType="remove"
-                onCancel={() => setPermissionToDelete(null)}
-                onDelete={async () => {
-                    if (permissionToDelete !== null) {
-                        await deletePermission({
-                            variables: { id: permissionToDelete },
-                            refetchQueries: [namedOperations.Query.Permissions],
-                            awaitRefetchQueries: true,
-                        });
+            <ConfirmDialog
+                open={permissionToDelete !== null}
+                onOpenChange={(open) => {
+                    if (!open && !deleting) {
+                        setPermissionToDelete(null);
                     }
-                    setPermissionToDelete(null);
                 }}
+                tone="danger"
+                title={intl.formatMessage(
+                    { id: "dextinity.userPermissions.removePermissionDialog.title", defaultMessage: "Remove the permission “{permission}”?" },
+                    { permission: permissionToDelete ? camelCaseToHumanReadable(permissionToDelete.permission) : "" },
+                )}
+                description={intl.formatMessage({
+                    id: "dextinity.userPermissions.removePermissionDialog.description",
+                    defaultMessage: "The user can't use this area of the admin anymore.",
+                })}
+                confirmLabel={intl.formatMessage({ id: "dextinity.userPermissions.removePermissionDialog.confirm", defaultMessage: "Remove" })}
+                confirmIcon={<Icon name="delete" />}
+                onConfirm={() => void confirmDelete()}
+                loading={deleting}
+                labels={{ cancel: intl.formatMessage({ id: "dextinity.userPermissions.cancel", defaultMessage: "Cancel" }) }}
             />
-        </FieldSet>
+        </Panel>
     );
 };
+
+interface PermissionRowMenuProps {
+    permission: GQLPermissionForGridFragment;
+    onEdit: () => void;
+    onEditContentScopes: () => void;
+    onDelete: () => void;
+}
+
+function PermissionRowMenu({ permission, onEdit, onEditContentScopes, onDelete }: PermissionRowMenuProps) {
+    const intl = useIntl();
+    const [open, setOpen] = useState(false);
+    const isByRule = permission.source === "BY_RULE";
+
+    return (
+        <DataGridRowActions>
+            <Menu
+                open={open}
+                onOpenChange={setOpen}
+                placement="bottom-end"
+                trigger={
+                    <IconButton
+                        aria-label={intl.formatMessage(
+                            { id: "dextinity.userPermissions.permissionActions", defaultMessage: "Actions for {permission}" },
+                            { permission: camelCaseToHumanReadable(permission.permission) },
+                        )}
+                        variant="text"
+                        color="secondary"
+                        size="small"
+                    >
+                        <Icon name="more-vertical" />
+                    </IconButton>
+                }
+            >
+                <MenuItem
+                    label={
+                        isByRule
+                            ? intl.formatMessage({ id: "dextinity.userPermissions.showPermission", defaultMessage: "Show details" })
+                            : intl.formatMessage({ id: "dextinity.userPermissions.editPermission", defaultMessage: "Edit" })
+                    }
+                    icon={<Icon name={isByRule ? "view" : "edit"} />}
+                    onClick={onEdit}
+                />
+                {hasPermissionSpecificScopes(permission) && (
+                    <MenuItem
+                        label={intl.formatMessage({
+                            id: "dextinity.userPermissions.overrideContentScopes",
+                            defaultMessage: "Permission-specific Content-Scopes",
+                        })}
+                        icon={<Icon name="domain" />}
+                        onClick={onEditContentScopes}
+                    />
+                )}
+                <MenuSeparator />
+                <MenuItem
+                    label={intl.formatMessage({ id: "dextinity.userPermissions.removePermission", defaultMessage: "Remove" })}
+                    icon={<Icon name="delete" />}
+                    color="error"
+                    onClick={onDelete}
+                    disabled={isByRule}
+                    disabledReason={
+                        isByRule
+                            ? intl.formatMessage({
+                                  id: "dextinity.userPermissions.removePermission.byRule",
+                                  defaultMessage: "Assigned by a rule, so it can't be removed here",
+                              })
+                            : undefined
+                    }
+                />
+            </Menu>
+        </DataGridRowActions>
+    );
+}

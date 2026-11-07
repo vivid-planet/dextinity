@@ -3,14 +3,22 @@ import { useState } from "react";
 import { expect, screen, userEvent, waitFor } from "storybook/test";
 
 import { Button } from "../../components/button/Button";
+import { DateTimePicker } from "../../components/datePicker/DateTimePicker";
 import { FilterBar } from "../../components/filterBar/FilterBar";
+import { Icon } from "../../components/icon/Icon";
 import { Input } from "../../components/input/Input";
+import { Menu } from "../../components/menu/Menu";
+import { MenuItem } from "../../components/menu/MenuItem";
+import { MenuSeparator } from "../../components/menu/MenuSeparator";
 import { ProgressBar } from "../../components/progressBar/ProgressBar";
 import { RadioGroup } from "../../components/radioGroup/RadioGroup";
 import { SegmentedControl } from "../../components/segmentedControl/SegmentedControl";
 import { Slider } from "../../components/slider/Slider";
 import { Switch } from "../../components/switch/Switch";
 import { Tabs } from "../../components/tabs/Tabs";
+import { Toolbar } from "../../components/toolbar/Toolbar";
+import { ToolbarButton } from "../../components/toolbar/ToolbarButton";
+import { ToolbarSeparator } from "../../components/toolbar/ToolbarSeparator";
 import { Tooltip } from "../../components/tooltip/Tooltip";
 import { TreeView } from "../../components/treeView/TreeView";
 import { themeDecorator } from "../../storybook/themeDecorator";
@@ -77,6 +85,38 @@ function Gallery() {
                     With tooltip
                 </Button>
             </Tooltip>
+        </div>
+    );
+}
+
+function SeparatorGallery() {
+    const [menuOpen, setMenuOpen] = useState(true);
+    const [publishAt, setPublishAt] = useState<string | null>("2026-03-01T09:30:00.000Z");
+    return (
+        <div className={styles.gallery}>
+            <Toolbar aria-label="Formatting">
+                <ToolbarButton aria-label="Bold" pressed={false} onClick={() => {}}>
+                    <Icon name="rte-bold" />
+                </ToolbarButton>
+                <ToolbarSeparator />
+                <ToolbarButton aria-label="Link" onClick={() => {}}>
+                    <Icon name="link" />
+                </ToolbarButton>
+            </Toolbar>
+            <DateTimePicker name="publishAt" label="Publish at" value={publishAt} onChange={setPublishAt} />
+            <Menu
+                open={menuOpen}
+                onOpenChange={setMenuOpen}
+                trigger={
+                    <Button variant="outlined" color="secondary">
+                        Actions
+                    </Button>
+                }
+            >
+                <MenuItem label="Duplicate" onClick={() => {}} />
+                <MenuSeparator />
+                <MenuItem label="Delete" color="error" onClick={() => {}} />
+            </Menu>
         </div>
     );
 }
@@ -152,5 +192,24 @@ export const Default: Story = {
 
         await userEvent.click(canvas.getByRole("textbox", { name: "Title" }));
         await expect(query(".dextinityField__box").outlineWidth).toBe("2px");
+    },
+};
+
+/**
+ * Separators drawn as a line with a background color – in menus, toolbars, and between the date and the time of a date-time picker –
+ * keep a `CanvasText` line in forced colors.
+ */
+export const Separators: Story = {
+    render: () => <SeparatorGallery />,
+    play: async () => {
+        await waitFor(() => expect(screen.getByRole("menu")).toBeVisible());
+        if (!window.matchMedia("(forced-colors: active)").matches) {
+            return;
+        }
+        const canvasText = systemColor("CanvasText");
+
+        await expect(query(".dextinityMenuSeparator").backgroundColor).toBe(canvasText);
+        await expect(query(".dextinityToolbarSeparator").backgroundColor).toBe(canvasText);
+        await expect(query(".dextinityDateTimePicker__separator").backgroundColor).toBe(canvasText);
     },
 };

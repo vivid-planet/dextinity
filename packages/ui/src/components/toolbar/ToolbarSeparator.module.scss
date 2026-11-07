@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     flex: none;
     align-self: stretch;
@@ -5,6 +7,8 @@
     margin-block: var(--dextinity-toolbar-separator-inset);
     margin-inline: var(--dextinity-toolbar-separator-space);
     background: var(--dextinity-toolbar-separator-color);
+
+    @include forced-colors.fill;
 
     &[data-orientation="horizontal"] {
         inline-size: auto;

@@ -16,6 +16,18 @@ export function useDataGridLabels(): { labels: DataGridLabels; bulkActionLabels:
                 moveRow: intl.formatMessage({ id: "dextinity.dataGrid.moveRow", defaultMessage: "Move" }),
                 expandRow: intl.formatMessage({ id: "dextinity.dataGrid.expandRow", defaultMessage: "Expand" }),
                 columns: intl.formatMessage({ id: "dextinity.dataGrid.columns", defaultMessage: "Columns" }),
+                moveColumn: intl.formatMessage({ id: "dextinity.dataGrid.moveColumn", defaultMessage: "Move column" }),
+                invalidNumber: intl.formatMessage({ id: "dextinity.dataGrid.invalidNumber", defaultMessage: "Enter a number." }),
+                rowMoved: (rowLabel, position, count) =>
+                    intl.formatMessage(
+                        { id: "dextinity.dataGrid.rowMoved", defaultMessage: "{rowLabel}, position {position} of {count}" },
+                        { rowLabel, position, count },
+                    ),
+                columnMoved: (columnLabel, position, count) =>
+                    intl.formatMessage(
+                        { id: "dextinity.dataGrid.columnMoved", defaultMessage: "{columnLabel}, column {position} of {count}" },
+                        { columnLabel, position, count },
+                    ),
             },
             bulkActionLabels: {
                 count: (count) => intl.formatMessage({ id: "dextinity.dataGrid.bulk.count", defaultMessage: "{count} selected" }, { count }),

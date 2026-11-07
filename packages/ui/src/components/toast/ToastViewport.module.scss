@@ -5,6 +5,12 @@
     z-index: 1100;
     padding-inline: var(--dextinity-space-4);
     pointer-events: none;
+    transition: inset-block-end var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+}
+
+// An open bulk action bar sits at the bottom of the screen, so the toasts move up and leave it reachable
+:global(:root:has(.dextinityBulkActionBar[data-open])) .root {
+    inset-block-end: var(--dextinity-toast-viewport-offset-above-bulk-action-bar);
 }
 
 .list {

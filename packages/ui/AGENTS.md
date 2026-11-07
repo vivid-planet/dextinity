@@ -6,22 +6,11 @@ Read [README.md](README.md) before working in this package. It defines the packa
 - Changing the theme tokens: [Theme](README.md#theme).
 - Adding an icon: [Adding an icon](README.md#adding-an-icon).
 
-Components and utilities are documented in TSDoc on the export (see [TSDoc](README.md#tsdoc)); read a feature's TSDoc before working on it or anything that touches it. When a change shifts a convention, reverses a decision, or makes documentation inaccurate, update the affected TSDoc — and the README, when a convention changes — in the same change.
-
-## Running processes (dev-pm)
-
-This package has two dev-pm scripts (see the `dev-pm` skill for command usage):
-
-| Name                     | What it does                                                      |
-| ------------------------ | ----------------------------------------------------------------- |
-| `dextinity-ui`           | `vite build --watch` and `tsc --watch` — rebuild `lib/` on change |
-| `storybook-dextinity-ui` | `storybook dev -p 26648 --no-open`                                |
-
-The `@dextinity-ui` group starts `dextinity-ui`. Start `storybook-dextinity-ui` on its own, or with the `@storybook` group.
+Read a feature's TSDoc before working on it or anything that touches it.
 
 ## Storybook
 
-Storybook runs on a fixed port, `http://localhost:26648`, and serves an MCP server at `http://localhost:26648/mcp`.
+Start the Storybook with the `dev-pm` skill (see [Development](README.md#development)). It serves an MCP server at `http://localhost:26648/mcp`.
 
 List the stories from the story index at `http://localhost:26648/index.json`, and open a story in isolation with its `id` from the index:
 

@@ -1,0 +1,37 @@
+@mixin tokens {
+    --dextinity-tabs-height: var(--dextinity-density-tab-height);
+    --dextinity-tabs-padding: 6px;
+    --dextinity-tabs-gap: 16px;
+    --dextinity-tabs-font-size: var(--dextinity-typography-body-size);
+    --dextinity-tabs-font-weight: 500;
+    --dextinity-tabs-radius: var(--dextinity-radius-item);
+    --dextinity-tabs-disabled-opacity: 0.42;
+
+    --dextinity-tabs-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-tabs-foreground-hover: var(--dextinity-color-text);
+    --dextinity-tabs-foreground-active: var(--dextinity-color-text);
+    // The line under the whole tab list
+    --dextinity-tabs-line: var(--dextinity-color-line-strong);
+    --dextinity-tabs-indicator-height: 2px;
+    --dextinity-tabs-indicator-background: var(--dextinity-gradient-brand);
+    // How far the indicator stays from the tab's edges
+    --dextinity-tabs-indicator-inset: 4px;
+    // Space between the focus ring and the tab's top edge, and between the ring and the indicator
+    --dextinity-tabs-focus-inset: 4px;
+
+    // A tab with invalid fields
+    --dextinity-tabs-error-foreground: var(--dextinity-color-danger-text);
+    --dextinity-tabs-error-marker-color: var(--dextinity-color-danger);
+
+    // The count after a tab's label, e.g. open issues in a section
+    --dextinity-tabs-count-background: var(--dextinity-color-warning-soft);
+    --dextinity-tabs-count-foreground: var(--dextinity-color-warning-text);
+    --dextinity-tabs-count-font-size: 11px;
+    --dextinity-tabs-count-radius: calc(var(--dextinity-radius-item) * 0.625);
+    // Line around the count; transparent normally, a full line in high contrast, where soft fills are transparent
+    --dextinity-tabs-count-line: transparent;
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-tabs-count-line: var(--dextinity-color-warning);
+}

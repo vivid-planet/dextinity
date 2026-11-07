@@ -1,0 +1,38 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    inline-size: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: var(--dextinity-shortcut-list-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-shortcut-list-font-size);
+
+    th {
+        block-size: var(--dextinity-shortcut-list-header-height);
+        padding-block: 0;
+        padding-inline: var(--dextinity-shortcut-list-cell-padding);
+        box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-shortcut-list-header-line);
+        color: var(--dextinity-shortcut-list-header-foreground);
+        font-size: var(--dextinity-shortcut-list-header-font-size);
+        font-weight: 500;
+        text-align: start;
+        white-space: nowrap;
+
+        @include forced-colors.separator;
+    }
+
+    td {
+        block-size: var(--dextinity-shortcut-list-row-height);
+        padding-block: 0;
+        padding-inline: var(--dextinity-shortcut-list-cell-padding);
+        vertical-align: middle;
+    }
+}
+
+.keys {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-shortcut-list-key-gap);
+    align-items: center;
+}

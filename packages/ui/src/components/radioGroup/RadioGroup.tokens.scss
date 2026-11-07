@@ -1,0 +1,47 @@
+@mixin tokens {
+    // Space between the label, the options, and the message
+    --dextinity-radio-group-gap: var(--dextinity-field-gap);
+    // Space between the options
+    --dextinity-radio-group-option-gap: var(--dextinity-space-2);
+    --dextinity-radio-group-option-gap-horizontal: var(--dextinity-space-4);
+    --dextinity-radio-group-label-gap: var(--dextinity-space-2);
+    --dextinity-radio-group-disabled-opacity: 0.42;
+
+    --dextinity-radio-group-label-font-size: var(--dextinity-field-label-font-size);
+    --dextinity-radio-group-label-font-weight: var(--dextinity-field-label-font-weight);
+    --dextinity-radio-group-label-color: var(--dextinity-field-label-color);
+    --dextinity-radio-group-required-color: var(--dextinity-field-required-color);
+
+    // The circle
+    --dextinity-radio-group-size: 17px;
+    --dextinity-radio-group-line-width: 1.5px;
+    --dextinity-radio-group-background: var(--dextinity-color-surface);
+    --dextinity-radio-group-line: var(--dextinity-color-text-subtle);
+    --dextinity-radio-group-line-hover: var(--dextinity-color-text-tertiary);
+    --dextinity-radio-group-line-error: var(--dextinity-color-danger);
+    --dextinity-radio-group-background-checked: var(--dextinity-color-accent);
+    // The dot inside the chosen circle
+    --dextinity-radio-group-dot-size: 7px;
+    --dextinity-radio-group-dot-color: var(--dextinity-color-accent-foreground);
+
+    --dextinity-radio-group-option-color: var(--dextinity-color-text);
+    --dextinity-radio-group-option-font-size: var(--dextinity-typography-body-size);
+    --dextinity-radio-group-description-color: var(--dextinity-color-text-tertiary);
+    --dextinity-radio-group-description-font-size: 12.5px;
+
+    // The `card` variant
+    --dextinity-radio-group-card-padding: var(--dextinity-space-3);
+    --dextinity-radio-group-card-radius: var(--dextinity-radius-field);
+    --dextinity-radio-group-card-min-width: 200px;
+    --dextinity-radio-group-card-background: var(--dextinity-color-surface-raised);
+    --dextinity-radio-group-card-line: var(--dextinity-color-line-strong);
+    --dextinity-radio-group-card-line-hover: var(--dextinity-color-text-subtle);
+    --dextinity-radio-group-card-background-checked: var(--dextinity-color-accent-soft);
+    --dextinity-radio-group-card-line-checked: var(--dextinity-color-accent);
+
+    --dextinity-radio-group-message-font-size: var(--dextinity-field-message-font-size);
+    --dextinity-radio-group-message-color: var(--dextinity-field-message-color);
+    --dextinity-radio-group-message-color-error: var(--dextinity-field-message-color-error);
+    --dextinity-radio-group-message-color-warning: var(--dextinity-field-message-color-warning);
+    --dextinity-radio-group-message-color-success: var(--dextinity-field-message-color-success);
+}

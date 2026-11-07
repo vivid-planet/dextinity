@@ -1,0 +1,98 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    min-inline-size: 0;
+}
+
+.trigger {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    align-self: stretch;
+    gap: var(--dextinity-space-2);
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+
+    .root[data-readonly] & {
+        cursor: default;
+    }
+}
+
+.value {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.placeholder {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--dextinity-picker-placeholder-color);
+}
+
+.openIcon {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--dextinity-picker-button-size);
+    color: var(--dextinity-picker-icon-color);
+
+    cursor: pointer;
+
+    .trigger:hover ~ &,
+    &:hover {
+        color: var(--dextinity-picker-icon-color-hover);
+    }
+
+    .root[data-disabled] &,
+    .root[data-readonly] & {
+        color: var(--dextinity-picker-icon-color);
+        cursor: default;
+    }
+}
+
+.clear {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--dextinity-picker-button-size);
+    block-size: var(--dextinity-picker-button-size);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--dextinity-picker-button-radius);
+    background: transparent;
+    color: var(--dextinity-picker-icon-color);
+    cursor: pointer;
+
+    &:hover {
+        background: var(--dextinity-picker-button-background-hover);
+        color: var(--dextinity-picker-icon-color-hover);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}

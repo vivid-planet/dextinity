@@ -1,0 +1,33 @@
+.root {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-copy-field-gap);
+    min-inline-size: 0;
+
+    &[data-copied] .button {
+        color: var(--dextinity-copy-field-copied-color);
+    }
+}
+
+.value {
+    min-inline-size: 0;
+    overflow: hidden;
+    color: var(--dextinity-copy-field-color);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-copy-field-font-size);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.button {
+    flex: none;
+}
+
+.status {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}

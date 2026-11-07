@@ -1,0 +1,64 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.positioner {
+    z-index: 1000;
+    outline: none;
+}
+
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-popover-gap);
+    box-sizing: border-box;
+    min-inline-size: var(--dextinity-popover-min-width);
+    max-inline-size: min(var(--dextinity-popover-max-width), var(--available-width));
+    max-block-size: var(--available-height);
+    overflow-y: auto;
+    padding: var(--dextinity-popover-padding);
+    border-radius: var(--dextinity-popover-radius);
+    background: var(--dextinity-popover-background);
+    box-shadow: var(--dextinity-popover-shadow);
+    backdrop-filter: blur(var(--dextinity-popover-blur)) saturate(1.6);
+    color: var(--dextinity-popover-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+    line-height: var(--dextinity-typography-body-line-height);
+    outline: none;
+    transform-origin: var(--transform-origin);
+    transition:
+        opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    &[data-starting-style],
+    &[data-ending-style] {
+        opacity: 0;
+        transform: scale(0.96) translateY(calc(var(--dextinity-motion-distance) * -0.5));
+    }
+
+    &[data-side="top"] {
+        &[data-starting-style],
+        &[data-ending-style] {
+            transform: scale(0.96) translateY(calc(var(--dextinity-motion-distance) * 0.5));
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &[data-starting-style],
+        &[data-ending-style] {
+            transform: none;
+        }
+    }
+
+    @include forced-colors.edge;
+}
+
+.title {
+    margin: 0;
+    color: var(--dextinity-popover-title-color);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-label-size);
+    font-weight: 400;
+    letter-spacing: var(--dextinity-typography-label-letter-spacing);
+    line-height: 1.2;
+    text-transform: uppercase;
+}

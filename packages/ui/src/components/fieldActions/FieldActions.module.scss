@@ -1,0 +1,52 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: inline-flex;
+    align-items: center;
+
+    --dextinity-icon-button-size-small: var(--dextinity-field-actions-button-size);
+    --dextinity-icon-button-icon-size-small: var(--dextinity-field-actions-icon-size);
+}
+
+.suggestion {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-2);
+    padding: var(--dextinity-field-actions-suggestion-padding);
+    border-radius: var(--dextinity-field-actions-suggestion-radius);
+    background: var(--dextinity-field-actions-suggestion-background);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-field-actions-suggestion-line);
+    font-size: var(--dextinity-typography-body-size);
+    line-height: var(--dextinity-typography-body-line-height);
+    color: var(--dextinity-color-text);
+
+    &:focus-visible {
+        outline: 2px solid var(--dextinity-color-focus);
+        outline-offset: 2px;
+    }
+
+    @include forced-colors.edge;
+}
+
+.suggestionLabel {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-1);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-label-size);
+    letter-spacing: var(--dextinity-typography-label-letter-spacing);
+    text-transform: uppercase;
+    color: var(--dextinity-field-actions-suggestion-label-color);
+
+    --dextinity-icon-size: 12px;
+}
+
+.suggestionText {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+.suggestionActions {
+    display: flex;
+    gap: var(--dextinity-space-2);
+}

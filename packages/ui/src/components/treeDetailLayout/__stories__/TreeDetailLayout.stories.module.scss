@@ -1,0 +1,42 @@
+.treePanel {
+    padding: 8px;
+}
+
+.path {
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-mono-size);
+}
+
+.detail {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.detailActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.structure {
+    display: grid;
+    // The wireframe needs the full width to show the detail next to the tree
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.structureLayout {
+    --dextinity-tree-detail-layout-header-spacing: 8px;
+    --dextinity-tree-detail-layout-gap: 8px;
+    --dextinity-tree-detail-layout-detail-width: 36%;
+}
+
+.structureTree {
+    min-block-size: 220px;
+}
+
+.structureDetail {
+    min-block-size: 280px;
+}

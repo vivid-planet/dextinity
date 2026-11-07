@@ -1,0 +1,152 @@
+@use "menu";
+@use "../../theme/forcedColors" as forced-colors;
+
+.root[data-multiple] > :global(.dextinityField__box) {
+    flex-wrap: wrap;
+    row-gap: var(--dextinity-space-1);
+    padding-block: var(--dextinity-space-1);
+}
+
+.trigger {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    align-self: stretch;
+    gap: var(--dextinity-space-2);
+    min-inline-size: 4rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+
+    &[data-disabled] {
+        cursor: not-allowed;
+    }
+
+    &[data-readonly] {
+        cursor: default;
+    }
+}
+
+.value {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.placeholder {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--dextinity-select-placeholder-color);
+}
+
+.chevron {
+    display: inline-flex;
+    margin-inline-start: auto;
+    color: var(--dextinity-select-chevron-color);
+    transition: transform var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
+
+    &[data-popup-open] {
+        transform: rotate(180deg);
+    }
+}
+
+.chip {
+    @include menu.chip;
+}
+
+.chipRemove {
+    @include menu.chipRemove;
+}
+
+.visuallyHidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.positioner {
+    @include menu.positioner;
+}
+
+.popup {
+    @include menu.popup;
+}
+
+.search {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    block-size: var(--dextinity-select-item-height);
+    margin-block-end: var(--dextinity-select-popup-padding);
+    padding-inline: var(--dextinity-select-item-padding);
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-select-search-line);
+    color: var(--dextinity-select-item-icon-color);
+
+    --dextinity-icon-size: 16px;
+
+    @include forced-colors.separator;
+}
+
+.searchInput {
+    flex: 1;
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--dextinity-color-text);
+    font: inherit;
+    font-size: var(--dextinity-select-item-font-size);
+
+    &::placeholder {
+        color: var(--dextinity-select-placeholder-color);
+    }
+}
+
+.list {
+    @include menu.list;
+}
+
+.empty {
+    @include menu.empty;
+}
+
+.group {
+    @include menu.group;
+}
+
+.groupLabel {
+    @include menu.groupLabel;
+}
+
+.item {
+    @include menu.item;
+}
+
+.itemIcon {
+    @include menu.itemIcon;
+}
+
+.itemText {
+    @include menu.itemText;
+}
+
+.itemIndicator {
+    @include menu.itemIndicator;
+}

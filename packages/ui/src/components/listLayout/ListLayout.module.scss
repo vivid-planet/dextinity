@@ -1,0 +1,16 @@
+.root {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-list-layout-gap);
+    min-inline-size: 0;
+}
+
+.header {
+    margin-block-end: calc(var(--dextinity-list-layout-header-spacing) - var(--dextinity-list-layout-gap));
+}
+
+.toolbar,
+.content {
+    min-inline-size: 0;
+}

@@ -1,0 +1,19 @@
+@mixin tokens {
+    --dextinity-filter-bar-gap: var(--dextinity-space-2);
+    --dextinity-filter-bar-search-width: 220px;
+    --dextinity-filter-bar-search-height: var(--dextinity-density-field-height);
+    --dextinity-filter-bar-search-padding: var(--dextinity-space-3);
+    --dextinity-filter-bar-search-radius: var(--dextinity-radius-control);
+    --dextinity-filter-bar-search-background: var(--dextinity-color-surface);
+    --dextinity-filter-bar-search-foreground: var(--dextinity-color-text);
+    --dextinity-filter-bar-search-placeholder: var(--dextinity-color-text-subtle);
+    --dextinity-filter-bar-search-line: var(--dextinity-color-line-strong);
+    --dextinity-filter-bar-search-shadow: var(--dextinity-shadow-1);
+    --dextinity-filter-bar-search-line-hover: var(--dextinity-color-text-subtle);
+    --dextinity-filter-bar-search-line-focus: var(--dextinity-color-accent);
+    // Soft halo around the focused search
+    --dextinity-filter-bar-search-halo-focus: var(--dextinity-color-accent-soft);
+    --dextinity-filter-bar-search-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-filter-bar-count-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-filter-bar-count-font-size: var(--dextinity-typography-small-size);
+}

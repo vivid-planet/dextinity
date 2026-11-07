@@ -1,13 +1,20 @@
 @mixin tokens {
-    --dextinity-icon-button-default-height: var(--dextinity-unit-10);
-    --dextinity-icon-button-default-radius: var(--dextinity-brand-radius-control);
-    --dextinity-icon-button-default-padding-horizontal: var(--dextinity-unit-3);
-    --dextinity-icon-button-default-padding-vertical: var(--dextinity-unit-3);
-    --dextinity-icon-button-default-icon-size: 16px;
+    --dextinity-icon-button-size: var(--dextinity-density-icon-button-size);
+    --dextinity-icon-button-size-small: var(--dextinity-density-icon-button-size-small);
+    --dextinity-icon-button-radius: var(--dextinity-radius-control);
+    --dextinity-icon-button-icon-size: 18px;
+    --dextinity-icon-button-icon-size-small: 16px;
+    --dextinity-icon-button-disabled-opacity: 0.42;
 
-    --dextinity-icon-button-small-height: var(--dextinity-unit-8);
-    --dextinity-icon-button-small-radius: var(--dextinity-brand-radius-control-small);
-    --dextinity-icon-button-small-padding-horizontal: var(--dextinity-unit-2);
-    --dextinity-icon-button-small-padding-vertical: var(--dextinity-unit-2);
-    --dextinity-icon-button-small-icon-size: 16px;
+    --dextinity-icon-button-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-icon-button-foreground-hover: var(--dextinity-color-text);
+    --dextinity-icon-button-background-hover: color-mix(in oklch, var(--dextinity-color-text) 6%, transparent);
+    // While the menu or panel the button opens is open
+    --dextinity-icon-button-background-expanded: color-mix(in oklch, var(--dextinity-color-text) 8%, transparent);
+
+    --dextinity-icon-button-outlined-background: var(--dextinity-color-surface);
+    --dextinity-icon-button-outlined-foreground: var(--dextinity-color-text);
+    --dextinity-icon-button-outlined-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-1);
+    --dextinity-icon-button-outlined-shadow-hover:
+        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle), var(--dextinity-shadow-2);
 }

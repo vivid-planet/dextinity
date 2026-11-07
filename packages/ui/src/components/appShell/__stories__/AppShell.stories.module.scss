@@ -1,0 +1,12 @@
+.panels {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-panel-gap);
+    margin-block-start: 30px;
+}
+
+.placeholder {
+    margin: 0;
+    min-block-size: 160px;
+    color: var(--dextinity-color-text-tertiary);
+}

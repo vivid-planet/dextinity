@@ -1,0 +1,177 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-block-picker-gap);
+    min-inline-size: 0;
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+}
+
+.searchBox {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.searchIcon {
+    position: absolute;
+    inset-inline-start: 11px;
+    color: var(--dextinity-color-text-tertiary);
+    pointer-events: none;
+
+    --dextinity-icon-size: 16px;
+}
+
+.search {
+    box-sizing: border-box;
+    inline-size: 100%;
+    block-size: var(--dextinity-block-picker-search-height);
+    padding-inline: 34px var(--dextinity-space-3);
+    border: 0;
+    border-radius: var(--dextinity-block-picker-search-radius);
+    background: var(--dextinity-block-picker-search-background);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-block-picker-search-line);
+    color: inherit;
+    font: inherit;
+    appearance: none;
+
+    &::placeholder {
+        color: var(--dextinity-color-text-subtle);
+    }
+
+    &::-webkit-search-cancel-button {
+        appearance: none;
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    @include forced-colors.edge;
+
+    &:focus-visible {
+        @include forced-colors.focus-ring(-2px);
+    }
+}
+
+.categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.results {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-4);
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sectionTitle {
+    margin: 0 0 2px;
+    padding-inline: 10px;
+    color: var(--dextinity-block-picker-section-title-color);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-label-size);
+    font-weight: 400;
+    letter-spacing: var(--dextinity-typography-label-letter-spacing);
+    text-transform: uppercase;
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    inline-size: 100%;
+    padding: var(--dextinity-block-picker-item-padding);
+    border: 0;
+    border-radius: var(--dextinity-block-picker-item-radius);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition: background var(--dextinity-motion-duration-short);
+
+    &:hover,
+    &[data-highlighted] {
+        background: var(--dextinity-block-picker-item-background-hover);
+    }
+
+    &[data-highlighted] {
+        box-shadow: var(--dextinity-block-picker-item-highlight-shadow);
+        @include forced-colors.selected;
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}
+
+.itemIcon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--dextinity-block-picker-item-icon-size);
+    block-size: var(--dextinity-block-picker-item-icon-size);
+    border-radius: var(--dextinity-block-picker-item-icon-radius);
+    background: var(--dextinity-block-picker-item-icon-background);
+    color: var(--dextinity-block-picker-item-icon-foreground);
+
+    --dextinity-icon-size: 16px;
+}
+
+.itemText {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+}
+
+.itemLabel {
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.35;
+}
+
+.itemDescription {
+    overflow: hidden;
+    color: var(--dextinity-block-picker-item-description-color);
+    font-size: 12.5px;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.empty {
+    margin: 0;
+    padding: var(--dextinity-space-4) 10px;
+    color: var(--dextinity-color-text-tertiary);
+    text-align: center;
+}
+
+// Stays in the page while empty so screen readers announce the text when it appears
+.empty:empty {
+    padding: 0;
+}

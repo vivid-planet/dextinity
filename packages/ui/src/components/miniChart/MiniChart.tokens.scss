@@ -1,0 +1,15 @@
+@mixin tokens {
+    --dextinity-mini-chart-height: 70px;
+    --dextinity-mini-chart-bar-gap: 3px;
+    --dextinity-mini-chart-bar-radius: 3px;
+    --dextinity-mini-chart-line-width: 1.5px;
+    --dextinity-mini-chart-point-size: 7px;
+    // The usual values stay quiet
+    --dextinity-mini-chart-color: color-mix(in oklch, var(--dextinity-color-text-subtle) 55%, transparent);
+    // The last value, e.g. today
+    --dextinity-mini-chart-color-last: var(--dextinity-color-accent);
+    // Values passed in `highlighted`
+    --dextinity-mini-chart-color-highlighted: var(--dextinity-color-warning);
+    --dextinity-mini-chart-label-color: var(--dextinity-color-text-tertiary);
+    --dextinity-mini-chart-label-font-size: 12px;
+}

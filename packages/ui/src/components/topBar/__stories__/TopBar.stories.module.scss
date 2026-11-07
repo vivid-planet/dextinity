@@ -1,0 +1,12 @@
+.stage {
+    box-sizing: border-box;
+    min-block-size: 360px;
+    padding: 18px;
+    background:
+        radial-gradient(60% 80% at 10% 0%, var(--dextinity-material-field-1), transparent),
+        radial-gradient(60% 80% at 90% 20%, var(--dextinity-material-field-2), transparent), var(--dextinity-color-canvas);
+}
+
+.narrow {
+    max-inline-size: 420px;
+}

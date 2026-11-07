@@ -1,0 +1,25 @@
+@use "dateField";
+
+.root {
+    min-inline-size: 0;
+}
+
+.input {
+    @include dateField.input;
+
+    min-inline-size: 5.5em;
+}
+
+.separator {
+    @include dateField.separator;
+
+    --dextinity-icon-size: 14px;
+}
+
+.clear {
+    @include dateField.clear-button;
+}
+
+.trigger {
+    @include dateField.button;
+}

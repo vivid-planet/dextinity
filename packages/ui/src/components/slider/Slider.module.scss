@@ -1,0 +1,95 @@
+@use "../field/controlMessage";
+@use "../../theme/forcedColors" as forced-colors;
+
+// Label and message span all columns; the icons take their columns only when present
+.root {
+    display: inline-grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    row-gap: var(--dextinity-slider-row-gap);
+    font-family: var(--dextinity-font-family-text);
+    color: var(--dextinity-slider-icon-color);
+
+    &[data-disabled] {
+        opacity: var(--dextinity-slider-disabled-opacity);
+    }
+}
+
+.label {
+    grid-column: 1 / -1;
+    font-size: var(--dextinity-slider-label-font-size);
+    font-weight: var(--dextinity-slider-label-font-weight);
+    line-height: 1.3;
+    color: var(--dextinity-slider-label-color);
+}
+
+.startIcon,
+.endIcon {
+    display: inline-flex;
+}
+
+.startIcon {
+    grid-column: 1;
+    margin-inline-end: var(--dextinity-slider-gap);
+    --dextinity-icon-size: var(--dextinity-slider-start-icon-size);
+}
+
+.endIcon {
+    grid-column: 3;
+    margin-inline-start: var(--dextinity-slider-gap);
+    --dextinity-icon-size: var(--dextinity-slider-end-icon-size);
+}
+
+.message {
+    grid-column: 1 / -1;
+    @include controlMessage.message(slider);
+}
+
+.control {
+    grid-column: 2;
+    display: flex;
+    align-items: center;
+    min-inline-size: var(--dextinity-slider-width);
+    block-size: var(--dextinity-slider-thumb-size);
+    touch-action: none;
+    cursor: pointer;
+
+    &[data-disabled] {
+        cursor: not-allowed;
+    }
+}
+
+.track {
+    position: relative;
+    inline-size: 100%;
+    block-size: var(--dextinity-slider-track-height);
+    border-radius: var(--dextinity-radius-pill);
+    background: var(--dextinity-slider-track-background);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-slider-track-line);
+
+    @include forced-colors.edge;
+}
+
+.indicator {
+    border-radius: inherit;
+    background: var(--dextinity-slider-indicator-background);
+
+    @include forced-colors.fill(Highlight);
+}
+
+.thumb {
+    box-sizing: border-box;
+    inline-size: var(--dextinity-slider-thumb-size);
+    block-size: var(--dextinity-slider-thumb-size);
+    border-radius: 50%;
+    background: var(--dextinity-slider-thumb-background);
+    @include forced-colors.fill;
+    box-shadow:
+        0 0 0 var(--dextinity-slider-thumb-ring-width) var(--dextinity-slider-thumb-ring),
+        var(--dextinity-slider-thumb-shadow);
+
+    &:has(:focus-visible) {
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}

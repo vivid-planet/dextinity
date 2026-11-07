@@ -1,0 +1,291 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    position: relative;
+    border-radius: var(--dextinity-block-radius);
+    background: var(--dextinity-block-background);
+    box-shadow: var(--dextinity-block-shadow);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    transition:
+        box-shadow var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        opacity var(--dextinity-motion-duration-short);
+
+    &:hover {
+        box-shadow: var(--dextinity-block-shadow-hover);
+    }
+
+    &[data-selected],
+    &[data-selected]:hover {
+        box-shadow: var(--dextinity-block-selected-shadow);
+    }
+
+    &[data-invalid] {
+        box-shadow: var(--dextinity-block-invalid-shadow);
+    }
+
+    // The red ring alone would hide that the block is the one selected in the preview
+    &[data-selected][data-invalid] {
+        box-shadow: var(--dextinity-block-selected-invalid-shadow);
+    }
+
+    &[data-checked] {
+        background: var(--dextinity-block-checked-background);
+    }
+
+    @include forced-colors.edge;
+
+    // Forced colors: the selected block has a highlight-colored ring, an invalid one a dashed ring
+    @media (forced-colors: active) {
+        &[data-selected] {
+            outline: 2px solid Highlight;
+            outline-offset: -2px;
+        }
+
+        &[data-invalid] {
+            outline: 2px dashed CanvasText;
+            outline-offset: -2px;
+        }
+
+        &[data-selected][data-invalid] {
+            outline-color: Highlight;
+        }
+    }
+
+    &[data-dragging] {
+        opacity: 0.4;
+    }
+
+    // The line showing where a dragged block lands
+    &[data-drop]::after {
+        position: absolute;
+        inset-inline: 0;
+        block-size: 3px;
+        border-radius: 2px;
+        background: var(--dextinity-block-list-drop-indicator);
+        content: "";
+        pointer-events: none;
+
+        @include forced-colors.fill(Highlight);
+    }
+
+    &[data-drop="before"]::after {
+        inset-block-start: calc(var(--dextinity-block-list-gap) / -2 - 2px);
+    }
+
+    &[data-drop="after"]::after {
+        inset-block-end: calc(var(--dextinity-block-list-gap) / -2 - 2px);
+    }
+
+    &:not([data-visible]) {
+        .icon {
+            background: var(--dextinity-block-hidden-icon-background);
+            color: var(--dextinity-block-hidden-icon-foreground);
+        }
+
+        .title {
+            color: var(--dextinity-color-text-tertiary);
+        }
+
+        .summary {
+            color: var(--dextinity-color-text-subtle);
+        }
+
+        .visibility {
+            color: var(--dextinity-block-hidden-tag-foreground);
+        }
+    }
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    padding: var(--dextinity-block-padding);
+}
+
+.grip {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 18px;
+    block-size: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--dextinity-block-grip-foreground);
+    opacity: 0;
+    cursor: grab;
+    transition: opacity var(--dextinity-motion-duration-short);
+
+    --dextinity-icon-size: 16px;
+
+    // Only the block's own grip: a nested block's grip shows when that block is hovered
+    .root:hover > .header > &,
+    .root:focus-within > .header > & {
+        opacity: 1;
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    @media (hover: none) {
+        opacity: 1;
+    }
+}
+
+.root:not(:has(> .header > :is(.grip, .checkbox))) > .header {
+    padding-inline-start: 10px;
+}
+
+.checkbox {
+    flex: none;
+    margin-inline-start: 4px;
+}
+
+.main {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 10px;
+    min-inline-size: 0;
+    padding: 0;
+    border: 0;
+    border-radius: calc(var(--dextinity-block-radius) * 0.6);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+
+    &:is([aria-pressed], [aria-expanded]) {
+        cursor: pointer;
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}
+
+.icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--dextinity-block-icon-size);
+    block-size: var(--dextinity-block-icon-size);
+    border-radius: var(--dextinity-block-icon-radius);
+    background: var(--dextinity-block-icon-background);
+    box-shadow: var(--dextinity-block-icon-shadow);
+    color: var(--dextinity-block-icon-foreground);
+
+    --dextinity-icon-size: 16px;
+}
+
+.text {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+}
+
+.title {
+    overflow: hidden;
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.summary {
+    overflow: hidden;
+    color: var(--dextinity-block-summary-foreground);
+    font-size: 12.5px;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.invalidMarker {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 24px;
+    block-size: 24px;
+    border-radius: 6px;
+    color: var(--dextinity-block-invalid-marker-color);
+
+    --dextinity-icon-size: 16px;
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}
+
+.hiddenTag {
+    flex: none;
+    padding: 1px 7px;
+    border-radius: var(--dextinity-radius-pill);
+    background: var(--dextinity-block-hidden-tag-background);
+    box-shadow: var(--dextinity-block-hidden-tag-shadow);
+    color: var(--dextinity-block-hidden-tag-foreground);
+    font-size: 10.5px;
+    font-weight: 500;
+    line-height: 1.5;
+
+    @include forced-colors.edge;
+}
+
+.actions {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+}
+
+.chevron {
+    flex: none;
+    color: var(--dextinity-color-text-tertiary);
+
+    --dextinity-icon-size: 14px;
+}
+
+.toggle {
+    flex: none;
+
+    // The rotating chevron already shows the state; an expanded background would read as a pressed menu button
+    &[aria-expanded="true"]:not(:hover) {
+        background: transparent;
+    }
+}
+
+.toggleIcon {
+    transition: transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    .root:not([data-expanded]) > .header & {
+        transform: rotate(-90deg);
+    }
+}
+
+.body {
+    block-size: var(--collapsible-panel-height);
+    overflow: hidden;
+    transition: block-size var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    &[data-starting-style],
+    &[data-ending-style] {
+        block-size: 0;
+    }
+}
+
+.fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+    padding: var(--dextinity-block-fields-padding);
+}

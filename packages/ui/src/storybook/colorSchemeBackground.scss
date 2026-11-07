@@ -1,5 +1,7 @@
 body,
 body .docs-story {
-    background-color: var(--dextinity-color-background-default);
-    color: var(--dextinity-color-foreground-default);
+    background-color: var(--dextinity-color-canvas);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
 }

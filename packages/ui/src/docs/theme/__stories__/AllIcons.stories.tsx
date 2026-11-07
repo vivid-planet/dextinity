@@ -37,11 +37,11 @@ function IconList() {
                         <div key={iconName} className={styles.item} title={iconName}>
                             <Icon name={iconName} className={styles.icon} />
                             <div className={styles.label}>
-                                <Typography variant="labelM" className={styles.name}>
+                                <Typography variant="body" className={styles.name}>
                                     {iconName}
                                 </Typography>
                                 {iconSearchTerms[iconName].length > 0 && (
-                                    <Typography variant="caption" className={styles.searchTerms}>
+                                    <Typography variant="small" className={styles.searchTerms}>
                                         {iconSearchTerms[iconName].join(", ")}
                                     </Typography>
                                 )}
@@ -54,7 +54,7 @@ function IconList() {
 }
 
 const meta = {
-    title: "Theme/All icons",
+    title: "Foundations/Icons/All icons",
     tags: ["!dev", "!autodocs", "!manifest"],
     decorators: [themeDecorator],
 } satisfies Meta;

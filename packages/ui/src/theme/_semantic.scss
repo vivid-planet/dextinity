@@ -1,367 +1,197 @@
+// Semantic tokens per color scheme. Components use these, the material, motion, and density tokens — never primitives.
+$primary-hue: var(--dextinity-brand-primary-hue);
+$primary-chroma: var(--dextinity-brand-primary-chroma);
+$secondary-hue: var(--dextinity-brand-secondary-hue);
+$secondary-chroma: var(--dextinity-brand-secondary-chroma);
+$gradient-hue: var(--dextinity-brand-gradient-hue);
+$neutral-hue: var(--dextinity-brand-neutral-hue);
+$success-hue: var(--dextinity-brand-success-hue);
+$danger-hue: var(--dextinity-brand-danger-hue);
+
 @layer dextinity {
-    [data-dextinity-color-scheme="dark"] {
-        --dextinity-color-background-default: var(--dextinity-brand-color-neutral-900);
-        --dextinity-color-background-subtle: var(--dextinity-brand-color-neutral-800);
-        --dextinity-color-background-muted: var(--dextinity-brand-color-neutral-700);
-        --dextinity-color-background-inverse: var(--dextinity-brand-color-neutral-50);
-        --dextinity-color-background-overlay: rgb(0 0 0 / 0.7);
+    // Shared by all color schemes. Declared on every theme boundary so a nested `Theme` resolves against its own brand.
+    :root,
+    [data-dextinity-color-scheme] {
+        --dextinity-line-width: 0.5px;
+        --dextinity-gradient-brand: linear-gradient(
+            120deg,
+            var(--dextinity-color-accent) 15%,
+            color-mix(in oklch, var(--dextinity-color-accent) 35%, var(--dextinity-color-accent-secondary)) 100%
+        );
+        --dextinity-focus-ring: 0 0 0 2px var(--dextinity-color-canvas), 0 0 0 4px var(--dextinity-color-focus);
+        --dextinity-icon-duotone-opacity: 0.16;
 
-        --dextinity-color-foreground-default: var(--dextinity-brand-color-neutral-100);
-        --dextinity-color-foreground-muted: var(--dextinity-brand-color-neutral-300);
-        --dextinity-color-foreground-subtle: var(--dextinity-brand-color-neutral-500);
-        --dextinity-color-foreground-inverse: var(--dextinity-brand-color-neutral-900);
-        --dextinity-color-foreground-placeholder: var(--dextinity-brand-color-neutral-300);
-
-        --dextinity-color-foreground-on-accent: var(--dextinity-color-black);
-
-        --dextinity-color-border-default: var(--dextinity-brand-color-neutral-700);
-        --dextinity-color-border-subtle: var(--dextinity-brand-color-neutral-800);
-        --dextinity-color-border-muted: var(--dextinity-brand-color-neutral-600);
-        --dextinity-color-border-strong: var(--dextinity-brand-color-neutral-500);
-        --dextinity-color-border-focus: var(--dextinity-brand-color-primary-300);
-        --dextinity-color-border-field: var(--dextinity-brand-color-neutral-400);
-
-        --dextinity-color-action-primary-default: var(--dextinity-brand-color-primary-400);
-        --dextinity-color-action-primary-hover: var(--dextinity-brand-color-primary-300);
-        --dextinity-color-action-primary-active: var(--dextinity-brand-color-primary-200);
-        --dextinity-color-action-primary-disabled: var(--dextinity-brand-color-neutral-700);
-        --dextinity-color-action-primary-subtle: var(--dextinity-brand-color-primary-900);
-        --dextinity-color-action-primary-foreground: var(--dextinity-color-black);
-        --dextinity-color-action-primary-standalone: var(--dextinity-brand-color-primary-300);
-
-        --dextinity-color-action-secondary-default: var(--dextinity-brand-color-secondary-700);
-        --dextinity-color-action-secondary-hover: var(--dextinity-brand-color-secondary-600);
-        --dextinity-color-action-secondary-active: var(--dextinity-brand-color-secondary-500);
-        --dextinity-color-action-secondary-disabled: var(--dextinity-brand-color-secondary-800);
-        --dextinity-color-action-secondary-foreground: var(--dextinity-brand-color-secondary-100);
-        --dextinity-color-action-secondary-subtle: var(--dextinity-brand-color-secondary-800);
-
-        --dextinity-color-action-error-default: var(--dextinity-brand-color-danger-400);
-        --dextinity-color-action-error-hover: var(--dextinity-brand-color-danger-300);
-        --dextinity-color-action-error-active: var(--dextinity-brand-color-danger-200);
-        --dextinity-color-action-error-disabled: var(--dextinity-brand-color-neutral-700);
-        --dextinity-color-action-error-subtle: var(--dextinity-brand-color-danger-900);
-        --dextinity-color-action-error-foreground: var(--dextinity-color-grey-950);
-
-        --dextinity-color-feedback-success-default: var(--dextinity-brand-color-success-300);
-        --dextinity-color-feedback-success-subtle: var(--dextinity-brand-color-success-900);
-        --dextinity-color-feedback-success-foreground: var(--dextinity-brand-color-success-200);
-        --dextinity-color-feedback-success-border: var(--dextinity-brand-color-success-700);
-        --dextinity-color-feedback-success-strong: var(--dextinity-brand-color-success-300);
-
-        --dextinity-color-feedback-warning-default: var(--dextinity-brand-color-warning-300);
-        --dextinity-color-feedback-warning-subtle: var(--dextinity-brand-color-warning-900);
-        --dextinity-color-feedback-warning-foreground: var(--dextinity-brand-color-warning-200);
-        --dextinity-color-feedback-warning-border: var(--dextinity-brand-color-warning-700);
-        --dextinity-color-feedback-warning-strong: var(--dextinity-brand-color-warning-300);
-
-        --dextinity-color-feedback-danger-default: var(--dextinity-brand-color-danger-300);
-        --dextinity-color-feedback-danger-subtle: var(--dextinity-brand-color-danger-900);
-        --dextinity-color-feedback-danger-foreground: var(--dextinity-brand-color-danger-200);
-        --dextinity-color-feedback-danger-border: var(--dextinity-brand-color-danger-700);
-        --dextinity-color-feedback-danger-strong: var(--dextinity-brand-color-danger-300);
-
-        --dextinity-color-feedback-info-default: var(--dextinity-brand-color-info-300);
-        --dextinity-color-feedback-info-subtle: var(--dextinity-brand-color-info-900);
-        --dextinity-color-feedback-info-foreground: var(--dextinity-brand-color-info-200);
-        --dextinity-color-feedback-info-border: var(--dextinity-brand-color-info-700);
-        --dextinity-color-feedback-info-strong: var(--dextinity-brand-color-info-300);
-
-        --dextinity-color-background-tinted-default: var(--dextinity-brand-color-neutral-tinted-950);
-        --dextinity-color-background-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-900);
-        --dextinity-color-background-tinted-muted: var(--dextinity-brand-color-neutral-tinted-800);
-        --dextinity-color-background-tinted-inverse: var(--dextinity-brand-color-neutral-tinted-50);
-        --dextinity-color-background-tinted-overlay: rgb(0 0 0 / 0.7);
-
-        --dextinity-color-foreground-tinted-default: var(--dextinity-brand-color-neutral-tinted-100);
-        --dextinity-color-foreground-tinted-muted: var(--dextinity-brand-color-neutral-tinted-300);
-        --dextinity-color-foreground-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-500);
-        --dextinity-color-foreground-tinted-inverse: var(--dextinity-brand-color-neutral-tinted-900);
-
-        --dextinity-color-foreground-tinted-on-accent: var(--dextinity-brand-color-neutral-tinted-900);
-
-        --dextinity-color-border-tinted-default: var(--dextinity-brand-color-neutral-tinted-700);
-        --dextinity-color-border-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-800);
-        --dextinity-color-border-tinted-muted: var(--dextinity-brand-color-neutral-tinted-600);
-        --dextinity-color-border-tinted-strong: var(--dextinity-brand-color-neutral-tinted-500);
-        --dextinity-color-border-tinted-focus: var(--dextinity-brand-color-primary-300);
-
-        --dextinity-focus-ring-width: 2px;
-        --dextinity-focus-ring-offset: 2px;
-
-        --dextinity-color-action-success-default: var(--dextinity-brand-color-success-400);
-        --dextinity-color-action-success-hover: var(--dextinity-brand-color-success-300);
-        --dextinity-color-action-success-active: var(--dextinity-brand-color-success-200);
-        --dextinity-color-action-success-disabled: var(--dextinity-brand-color-neutral-700);
-        --dextinity-color-action-success-subtle: var(--dextinity-brand-color-success-900);
-        --dextinity-color-action-success-foreground: var(--dextinity-color-green-950);
-
-        --dextinity-color-feedback-success-strong-hover: var(--dextinity-brand-color-success-200);
-
-        --dextinity-color-feedback-success-on-strong: var(--dextinity-brand-color-neutral-900);
-
-        --dextinity-color-feedback-warning-strong-hover: var(--dextinity-brand-color-warning-200);
-
-        --dextinity-color-feedback-warning-on-strong: var(--dextinity-brand-color-neutral-900);
-
-        --dextinity-color-feedback-danger-strong-hover: var(--dextinity-brand-color-danger-200);
-
-        --dextinity-color-feedback-danger-on-strong: var(--dextinity-brand-color-neutral-900);
-
-        --dextinity-color-feedback-info-strong-hover: var(--dextinity-brand-color-info-200);
-
-        --dextinity-color-feedback-info-on-strong: var(--dextinity-brand-color-neutral-900);
-
-        --dextinity-color-feedback-danger-border-strong: var(--dextinity-brand-color-danger-300);
-
-        --dextinity-color-feedback-success-border-strong: var(--dextinity-brand-color-success-300);
-
-        --dextinity-color-feedback-warning-border-strong: var(--dextinity-brand-color-warning-300);
-
-        --dextinity-color-feedback-info-border-strong: var(--dextinity-brand-color-info-300);
+        --dextinity-font-family-text: var(--dextinity-brand-font-family-text);
+        --dextinity-font-family-display: var(--dextinity-brand-font-family-display);
+        --dextinity-font-family-mono: var(--dextinity-brand-font-family-mono);
     }
 
-    [data-dextinity-color-scheme="high-contrast"] {
-        --dextinity-color-background-default: var(--dextinity-color-black);
-        --dextinity-color-background-subtle: var(--dextinity-brand-color-neutral-900);
-        --dextinity-color-background-muted: var(--dextinity-brand-color-neutral-800);
-        --dextinity-color-background-inverse: var(--dextinity-color-white);
-        --dextinity-color-background-overlay: rgb(0 0 0 / 0.9);
-
-        --dextinity-color-foreground-default: var(--dextinity-color-white);
-        --dextinity-color-foreground-muted: var(--dextinity-brand-color-neutral-100);
-        --dextinity-color-foreground-subtle: var(--dextinity-brand-color-neutral-300);
-        --dextinity-color-foreground-inverse: var(--dextinity-color-black);
-        --dextinity-color-foreground-placeholder: var(--dextinity-brand-color-neutral-300);
-
-        --dextinity-color-foreground-on-accent: var(--dextinity-color-black);
-
-        --dextinity-color-border-default: var(--dextinity-color-white);
-        --dextinity-color-border-subtle: var(--dextinity-brand-color-neutral-300);
-        --dextinity-color-border-muted: var(--dextinity-brand-color-neutral-400);
-        --dextinity-color-border-strong: var(--dextinity-color-white);
-        --dextinity-color-border-focus: var(--dextinity-color-amber-300);
-        --dextinity-color-border-field: var(--dextinity-color-white);
-
-        --dextinity-color-action-primary-default: var(--dextinity-color-white);
-        --dextinity-color-action-primary-hover: var(--dextinity-brand-color-primary-200);
-        --dextinity-color-action-primary-active: var(--dextinity-brand-color-primary-300);
-        --dextinity-color-action-primary-disabled: var(--dextinity-brand-color-neutral-700);
-        --dextinity-color-action-primary-subtle: var(--dextinity-brand-color-neutral-800);
-        --dextinity-color-action-primary-foreground: var(--dextinity-color-black);
-        --dextinity-color-action-primary-standalone: var(--dextinity-brand-color-primary-200);
-
-        --dextinity-color-action-secondary-default: var(--dextinity-brand-color-secondary-800);
-        --dextinity-color-action-secondary-hover: var(--dextinity-brand-color-secondary-700);
-        --dextinity-color-action-secondary-active: var(--dextinity-brand-color-secondary-600);
-        --dextinity-color-action-secondary-disabled: var(--dextinity-brand-color-secondary-900);
-        --dextinity-color-action-secondary-foreground: var(--dextinity-color-white);
-        --dextinity-color-action-secondary-subtle: var(--dextinity-brand-color-secondary-900);
-
-        --dextinity-color-action-error-default: var(--dextinity-brand-color-danger-200);
-        --dextinity-color-action-error-hover: var(--dextinity-brand-color-danger-100);
-        --dextinity-color-action-error-active: var(--dextinity-brand-color-danger-50);
-        --dextinity-color-action-error-disabled: var(--dextinity-brand-color-neutral-700);
-        --dextinity-color-action-error-subtle: var(--dextinity-brand-color-neutral-900);
-        --dextinity-color-action-error-foreground: var(--dextinity-color-black);
-
-        --dextinity-color-feedback-success-default: var(--dextinity-brand-color-success-200);
-        --dextinity-color-feedback-success-subtle: var(--dextinity-brand-color-neutral-900);
-        --dextinity-color-feedback-success-foreground: var(--dextinity-brand-color-success-100);
-        --dextinity-color-feedback-success-border: var(--dextinity-brand-color-success-300);
-        --dextinity-color-feedback-success-strong: var(--dextinity-brand-color-success-200);
-
-        --dextinity-color-feedback-warning-default: var(--dextinity-brand-color-warning-200);
-        --dextinity-color-feedback-warning-subtle: var(--dextinity-brand-color-neutral-900);
-        --dextinity-color-feedback-warning-foreground: var(--dextinity-brand-color-warning-100);
-        --dextinity-color-feedback-warning-border: var(--dextinity-brand-color-warning-300);
-        --dextinity-color-feedback-warning-strong: var(--dextinity-brand-color-warning-200);
-
-        --dextinity-color-feedback-danger-default: var(--dextinity-brand-color-danger-200);
-        --dextinity-color-feedback-danger-subtle: var(--dextinity-brand-color-neutral-900);
-        --dextinity-color-feedback-danger-foreground: var(--dextinity-brand-color-danger-100);
-        --dextinity-color-feedback-danger-border: var(--dextinity-brand-color-danger-300);
-        --dextinity-color-feedback-danger-strong: var(--dextinity-brand-color-danger-200);
-
-        --dextinity-color-feedback-info-default: var(--dextinity-brand-color-info-200);
-        --dextinity-color-feedback-info-subtle: var(--dextinity-brand-color-neutral-900);
-        --dextinity-color-feedback-info-foreground: var(--dextinity-brand-color-info-100);
-        --dextinity-color-feedback-info-border: var(--dextinity-brand-color-info-300);
-        --dextinity-color-feedback-info-strong: var(--dextinity-brand-color-info-200);
-
-        --dextinity-color-background-tinted-default: var(--dextinity-brand-color-neutral-tinted-950);
-        --dextinity-color-background-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-900);
-        --dextinity-color-background-tinted-muted: var(--dextinity-brand-color-neutral-tinted-800);
-        --dextinity-color-background-tinted-inverse: var(--dextinity-color-white);
-        --dextinity-color-background-tinted-overlay: rgb(0 0 0 / 0.9);
-
-        --dextinity-color-foreground-tinted-default: var(--dextinity-color-white);
-        --dextinity-color-foreground-tinted-muted: var(--dextinity-brand-color-neutral-tinted-100);
-        --dextinity-color-foreground-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-300);
-        --dextinity-color-foreground-tinted-inverse: var(--dextinity-brand-color-neutral-tinted-950);
-
-        --dextinity-color-foreground-tinted-on-accent: var(--dextinity-brand-color-neutral-tinted-950);
-
-        --dextinity-color-border-tinted-default: var(--dextinity-color-white);
-        --dextinity-color-border-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-300);
-        --dextinity-color-border-tinted-muted: var(--dextinity-brand-color-neutral-tinted-400);
-        --dextinity-color-border-tinted-strong: var(--dextinity-color-white);
-        --dextinity-color-border-tinted-focus: var(--dextinity-color-amber-300);
-
-        --dextinity-focus-ring-width: 3px;
-        --dextinity-focus-ring-offset: 2px;
-
-        --dextinity-color-action-success-default: var(--dextinity-brand-color-success-200);
-        --dextinity-color-action-success-hover: var(--dextinity-brand-color-success-100);
-        --dextinity-color-action-success-active: var(--dextinity-brand-color-success-50);
-        --dextinity-color-action-success-disabled: var(--dextinity-brand-color-neutral-700);
-        --dextinity-color-action-success-subtle: var(--dextinity-brand-color-neutral-900);
-        --dextinity-color-action-success-foreground: var(--dextinity-color-black);
-
-        --dextinity-color-feedback-success-strong-hover: var(--dextinity-brand-color-success-100);
-
-        --dextinity-color-feedback-success-on-strong: var(--dextinity-color-black);
-
-        --dextinity-color-feedback-warning-strong-hover: var(--dextinity-brand-color-warning-100);
-
-        --dextinity-color-feedback-warning-on-strong: var(--dextinity-color-black);
-
-        --dextinity-color-feedback-danger-strong-hover: var(--dextinity-brand-color-danger-100);
-
-        --dextinity-color-feedback-danger-on-strong: var(--dextinity-color-black);
-
-        --dextinity-color-feedback-info-strong-hover: var(--dextinity-brand-color-info-100);
-
-        --dextinity-color-feedback-info-on-strong: var(--dextinity-color-black);
-
-        --dextinity-color-feedback-danger-border-strong: var(--dextinity-brand-color-danger-300);
-
-        --dextinity-color-feedback-success-border-strong: var(--dextinity-brand-color-success-300);
-
-        --dextinity-color-feedback-warning-border-strong: var(--dextinity-brand-color-warning-300);
-
-        --dextinity-color-feedback-info-border-strong: var(--dextinity-brand-color-info-300);
-    }
-
+    :root,
     [data-dextinity-color-scheme="light"] {
-        --dextinity-color-background-default: var(--dextinity-color-white);
-        --dextinity-color-background-subtle: var(--dextinity-brand-color-neutral-50);
-        --dextinity-color-background-muted: var(--dextinity-brand-color-neutral-100);
-        --dextinity-color-background-inverse: var(--dextinity-brand-color-neutral-900);
-        --dextinity-color-background-overlay: rgb(20 21 23 / 0.5);
+        color-scheme: light;
 
-        --dextinity-color-foreground-default: var(--dextinity-brand-color-neutral-800);
-        --dextinity-color-foreground-muted: var(--dextinity-brand-color-neutral-600);
-        --dextinity-color-foreground-subtle: var(--dextinity-brand-color-neutral-400);
-        --dextinity-color-foreground-inverse: var(--dextinity-color-white);
-        --dextinity-color-foreground-placeholder: var(--dextinity-brand-color-neutral-500);
+        --dextinity-color-canvas: oklch(0.984 0.003 #{$neutral-hue});
+        --dextinity-color-surface: oklch(1 0 0);
+        --dextinity-color-surface-raised: oklch(0.972 0.004 #{$neutral-hue});
+        --dextinity-color-surface-sunken: oklch(0.955 0.005 #{$neutral-hue});
 
-        --dextinity-color-foreground-on-accent: var(--dextinity-color-white);
+        --dextinity-color-text: oklch(0.19 0.015 #{$neutral-hue});
+        --dextinity-color-text-secondary: oklch(0.35 0.016 #{$neutral-hue});
+        --dextinity-color-text-tertiary: oklch(0.46 0.014 #{$neutral-hue});
+        --dextinity-color-text-subtle: oklch(0.63 0.012 #{$neutral-hue});
 
-        --dextinity-color-border-default: var(--dextinity-brand-color-neutral-200);
-        --dextinity-color-border-subtle: var(--dextinity-brand-color-neutral-100);
-        --dextinity-color-border-muted: var(--dextinity-brand-color-neutral-200);
-        --dextinity-color-border-strong: var(--dextinity-brand-color-neutral-400);
-        --dextinity-color-border-focus: var(--dextinity-brand-color-primary-500);
-        --dextinity-color-border-field: var(--dextinity-brand-color-neutral-400);
+        --dextinity-color-line: oklch(0.25 0.02 #{$neutral-hue} / 0.13);
+        --dextinity-color-line-strong: oklch(0.25 0.02 #{$neutral-hue} / 0.24);
 
-        --dextinity-color-action-primary-default: var(--dextinity-brand-color-primary-500);
-        --dextinity-color-action-primary-hover: var(--dextinity-brand-color-primary-600);
-        --dextinity-color-action-primary-active: var(--dextinity-brand-color-primary-700);
-        --dextinity-color-action-primary-disabled: var(--dextinity-brand-color-neutral-200);
-        --dextinity-color-action-primary-subtle: var(--dextinity-brand-color-primary-50);
-        --dextinity-color-action-primary-foreground: var(--dextinity-color-white);
-        --dextinity-color-action-primary-standalone: var(--dextinity-brand-color-primary-500);
+        --dextinity-color-accent: oklch(0.52 #{$primary-chroma} #{$primary-hue});
+        --dextinity-color-accent-foreground: oklch(1 0 0);
+        --dextinity-color-accent-text: oklch(0.45 #{$primary-chroma} #{$primary-hue});
+        --dextinity-color-accent-soft: oklch(0.955 calc(#{$primary-chroma} * 0.2) #{$primary-hue});
+        --dextinity-color-accent-glow: oklch(0.6 #{$primary-chroma} #{$primary-hue} / 0.32);
+        --dextinity-color-accent-secondary: oklch(0.64 #{$secondary-chroma} #{$gradient-hue});
+        --dextinity-color-focus: oklch(0.58 #{$primary-chroma} #{$primary-hue});
 
-        --dextinity-color-action-secondary-default: var(--dextinity-brand-color-secondary-100);
-        --dextinity-color-action-secondary-hover: var(--dextinity-brand-color-secondary-200);
-        --dextinity-color-action-secondary-active: var(--dextinity-brand-color-secondary-300);
-        --dextinity-color-action-secondary-disabled: var(--dextinity-brand-color-secondary-50);
-        --dextinity-color-action-secondary-foreground: var(--dextinity-brand-color-secondary-800);
-        --dextinity-color-action-secondary-subtle: var(--dextinity-brand-color-secondary-50);
+        --dextinity-color-success: oklch(0.6 0.15 #{$success-hue});
+        --dextinity-color-success-text: oklch(0.42 0.11 #{$success-hue});
+        --dextinity-color-success-soft: oklch(0.6 0.15 #{$success-hue} / 0.1);
+        --dextinity-color-warning: oklch(0.76 0.15 75);
+        --dextinity-color-warning-text: oklch(0.45 0.1 62);
+        --dextinity-color-warning-soft: oklch(0.76 0.15 75 / 0.14);
+        --dextinity-color-danger: oklch(0.6 0.2 #{$danger-hue});
+        --dextinity-color-danger-text: oklch(0.46 0.18 #{$danger-hue});
+        --dextinity-color-danger-soft: oklch(0.6 0.2 #{$danger-hue} / 0.09);
+        --dextinity-color-danger-foreground: oklch(1 0 0);
+        --dextinity-color-info: oklch(0.62 0.11 240);
+        --dextinity-color-info-text: oklch(0.43 0.1 240);
+        --dextinity-color-info-soft: oklch(0.62 0.11 240 / 0.1);
 
-        --dextinity-color-action-error-default: var(--dextinity-brand-color-danger-500);
-        --dextinity-color-action-error-hover: var(--dextinity-brand-color-danger-600);
-        --dextinity-color-action-error-active: var(--dextinity-brand-color-danger-700);
-        --dextinity-color-action-error-disabled: var(--dextinity-brand-color-neutral-200);
-        --dextinity-color-action-error-subtle: var(--dextinity-brand-color-danger-50);
-        --dextinity-color-action-error-foreground: var(--dextinity-color-white);
+        --dextinity-material-field-1: oklch(0.8 calc(#{$primary-chroma} * 0.7) #{$primary-hue} / 0.36);
+        --dextinity-material-field-2: oklch(0.88 #{$secondary-chroma} #{$secondary-hue} / 0.4);
+        --dextinity-material-field-3: oklch(0.86 calc(#{$primary-chroma} * 0.45) calc(#{$primary-hue} - 25) / 0.3);
+        --dextinity-material-glass: oklch(1 0 0 / 0.74);
+        --dextinity-material-glass-strong: oklch(1 0 0 / 0.9);
+        --dextinity-material-glass-overlay: oklch(1 0 0 / 0.96);
+        --dextinity-material-highlight: oklch(1 0 0 / 0.9);
+        --dextinity-material-edge: oklch(0.25 0.02 #{$neutral-hue} / 0.13);
+        --dextinity-material-blur: 30px;
+        --dextinity-material-grain: 0.05;
 
-        --dextinity-color-feedback-success-default: var(--dextinity-brand-color-success-400);
-        --dextinity-color-feedback-success-subtle: var(--dextinity-brand-color-success-50);
-        --dextinity-color-feedback-success-foreground: var(--dextinity-brand-color-success-700);
-        --dextinity-color-feedback-success-border: var(--dextinity-brand-color-success-200);
-        --dextinity-color-feedback-success-strong: var(--dextinity-brand-color-success-700);
+        --dextinity-shadow-1: 0 1px 1px oklch(0.2 0.02 #{$neutral-hue} / 0.03), 0 2px 8px -3px oklch(0.2 0.02 #{$neutral-hue} / 0.07);
+        --dextinity-shadow-2: 0 1px 2px oklch(0.2 0.02 #{$neutral-hue} / 0.04), 0 18px 40px -18px oklch(0.25 0.06 #{$primary-hue} / 0.25);
+        --dextinity-shadow-3: 0 2px 4px oklch(0.2 0.02 #{$neutral-hue} / 0.04), 0 30px 70px -30px oklch(0.25 0.08 #{$primary-hue} / 0.35);
+    }
 
-        --dextinity-color-feedback-warning-default: var(--dextinity-brand-color-warning-400);
-        --dextinity-color-feedback-warning-subtle: var(--dextinity-brand-color-warning-50);
-        --dextinity-color-feedback-warning-foreground: var(--dextinity-brand-color-warning-700);
-        --dextinity-color-feedback-warning-border: var(--dextinity-brand-color-warning-200);
-        --dextinity-color-feedback-warning-strong: var(--dextinity-brand-color-warning-400);
+    [data-dextinity-color-scheme="dark"] {
+        color-scheme: dark;
 
-        --dextinity-color-feedback-danger-default: var(--dextinity-brand-color-danger-400);
-        --dextinity-color-feedback-danger-subtle: var(--dextinity-brand-color-danger-50);
-        --dextinity-color-feedback-danger-foreground: var(--dextinity-brand-color-danger-700);
-        --dextinity-color-feedback-danger-border: var(--dextinity-brand-color-danger-200);
-        --dextinity-color-feedback-danger-strong: var(--dextinity-brand-color-danger-500);
+        --dextinity-color-canvas: oklch(0.135 0.007 #{$neutral-hue});
+        --dextinity-color-surface: oklch(0.175 0.008 #{$neutral-hue});
+        --dextinity-color-surface-raised: oklch(0.2 0.009 #{$neutral-hue});
+        --dextinity-color-surface-sunken: oklch(0.12 0.006 #{$neutral-hue});
 
-        --dextinity-color-feedback-info-default: var(--dextinity-brand-color-info-400);
-        --dextinity-color-feedback-info-subtle: var(--dextinity-brand-color-info-50);
-        --dextinity-color-feedback-info-foreground: var(--dextinity-brand-color-info-700);
-        --dextinity-color-feedback-info-border: var(--dextinity-brand-color-info-200);
-        --dextinity-color-feedback-info-strong: var(--dextinity-brand-color-info-600);
+        --dextinity-color-text: oklch(0.965 0.004 #{$neutral-hue});
+        --dextinity-color-text-secondary: oklch(0.78 0.008 #{$neutral-hue});
+        --dextinity-color-text-tertiary: oklch(0.62 0.01 #{$neutral-hue});
+        --dextinity-color-text-subtle: oklch(0.44 0.01 #{$neutral-hue});
 
-        --dextinity-color-background-tinted-default: var(--dextinity-color-white);
-        --dextinity-color-background-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-50);
-        --dextinity-color-background-tinted-muted: var(--dextinity-brand-color-neutral-tinted-100);
-        --dextinity-color-background-tinted-inverse: var(--dextinity-brand-color-neutral-tinted-900);
-        --dextinity-color-background-tinted-overlay: rgb(20 21 23 / 0.5);
+        --dextinity-color-line: oklch(1 0 0 / 0.075);
+        --dextinity-color-line-strong: oklch(1 0 0 / 0.13);
 
-        --dextinity-color-foreground-tinted-default: var(--dextinity-brand-color-neutral-tinted-800);
-        --dextinity-color-foreground-tinted-muted: var(--dextinity-brand-color-neutral-tinted-600);
-        --dextinity-color-foreground-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-400);
-        --dextinity-color-foreground-tinted-inverse: var(--dextinity-color-white);
+        --dextinity-color-accent: oklch(0.74 calc(#{$primary-chroma} * 0.8) #{$primary-hue});
+        --dextinity-color-accent-foreground: oklch(0.15 0.03 #{$primary-hue});
+        --dextinity-color-accent-text: oklch(0.8 calc(#{$primary-chroma} * 0.62) #{$primary-hue});
+        --dextinity-color-accent-soft: oklch(0.74 calc(#{$primary-chroma} * 0.8) #{$primary-hue} / 0.13);
+        --dextinity-color-accent-glow: oklch(0.66 #{$primary-chroma} #{$primary-hue} / 0.45);
+        --dextinity-color-accent-secondary: oklch(0.78 #{$secondary-chroma} #{$gradient-hue});
+        --dextinity-color-focus: oklch(0.8 calc(#{$primary-chroma} * 0.6) #{$primary-hue});
 
-        --dextinity-color-foreground-tinted-on-accent: var(--dextinity-color-white);
+        --dextinity-color-success: oklch(0.76 0.16 #{$success-hue});
+        --dextinity-color-success-text: oklch(0.82 0.13 #{$success-hue});
+        --dextinity-color-success-soft: oklch(0.76 0.16 #{$success-hue} / 0.12);
+        --dextinity-color-warning: oklch(0.83 0.14 80);
+        --dextinity-color-warning-text: oklch(0.86 0.11 82);
+        --dextinity-color-warning-soft: oklch(0.83 0.14 80 / 0.13);
+        --dextinity-color-danger: oklch(0.68 0.2 #{$danger-hue});
+        --dextinity-color-danger-text: oklch(0.78 0.14 #{$danger-hue});
+        --dextinity-color-danger-soft: oklch(0.68 0.2 #{$danger-hue} / 0.15);
+        --dextinity-color-danger-foreground: oklch(0.15 0.03 #{$danger-hue});
+        --dextinity-color-info: oklch(0.74 0.1 240);
+        --dextinity-color-info-text: oklch(0.8 0.08 240);
+        --dextinity-color-info-soft: oklch(0.74 0.1 240 / 0.13);
 
-        --dextinity-color-border-tinted-default: var(--dextinity-brand-color-neutral-tinted-200);
-        --dextinity-color-border-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-100);
-        --dextinity-color-border-tinted-muted: var(--dextinity-brand-color-neutral-tinted-200);
-        --dextinity-color-border-tinted-strong: var(--dextinity-brand-color-neutral-tinted-400);
-        --dextinity-color-border-tinted-focus: var(--dextinity-brand-color-primary-500);
+        --dextinity-material-field-1: oklch(0.42 calc(#{$primary-chroma} * 0.85) #{$primary-hue} / 0.55);
+        --dextinity-material-field-2: oklch(0.38 calc(#{$secondary-chroma} * 1.2) #{$secondary-hue} / 0.35);
+        --dextinity-material-field-3: oklch(0.35 calc(#{$primary-chroma} * 0.6) calc(#{$primary-hue} - 25) / 0.45);
+        --dextinity-material-glass: oklch(0.21 0.012 #{$neutral-hue} / 0.55);
+        --dextinity-material-glass-strong: oklch(0.25 0.012 #{$neutral-hue} / 0.75);
+        --dextinity-material-glass-overlay: oklch(0.25 0.012 #{$neutral-hue} / 0.96);
+        --dextinity-material-highlight: oklch(1 0 0 / 0.1);
+        --dextinity-material-edge: oklch(1 0 0 / 0.07);
+        --dextinity-material-blur: 30px;
+        --dextinity-material-grain: 0.07;
 
-        --dextinity-focus-ring-width: 2px;
-        --dextinity-focus-ring-offset: 2px;
+        --dextinity-shadow-1: 0 1px 1px oklch(0 0 0 / 0.3), 0 4px 12px -4px oklch(0 0 0 / 0.4);
+        --dextinity-shadow-2: 0 1px 2px oklch(0 0 0 / 0.4), 0 24px 50px -22px oklch(0 0 0 / 0.7);
+        --dextinity-shadow-3: 0 2px 4px oklch(0 0 0 / 0.4), 0 40px 80px -30px oklch(0 0 0 / 0.8);
+    }
 
-        --dextinity-color-action-success-default: var(--dextinity-brand-color-success-500);
-        --dextinity-color-action-success-hover: var(--dextinity-brand-color-success-600);
-        --dextinity-color-action-success-active: var(--dextinity-brand-color-success-700);
-        --dextinity-color-action-success-disabled: var(--dextinity-brand-color-neutral-200);
-        --dextinity-color-action-success-subtle: var(--dextinity-brand-color-success-50);
-        --dextinity-color-action-success-foreground: var(--dextinity-color-white);
+    // Light and glass off, lines on
+    [data-dextinity-color-scheme="high-contrast"] {
+        color-scheme: dark;
 
-        --dextinity-color-feedback-success-strong-hover: var(--dextinity-brand-color-success-800);
+        --dextinity-line-width: 1px;
+        --dextinity-gradient-brand: var(--dextinity-color-accent);
+        --dextinity-icon-duotone-opacity: 0;
 
-        --dextinity-color-feedback-success-on-strong: var(--dextinity-color-white);
+        --dextinity-color-canvas: oklch(0 0 0);
+        --dextinity-color-surface: oklch(0 0 0);
+        --dextinity-color-surface-raised: oklch(0.16 0 0);
+        --dextinity-color-surface-sunken: oklch(0 0 0);
 
-        --dextinity-color-feedback-warning-strong-hover: var(--dextinity-brand-color-warning-500);
+        --dextinity-color-text: oklch(1 0 0);
+        --dextinity-color-text-secondary: oklch(0.95 0 0);
+        --dextinity-color-text-tertiary: oklch(0.9 0 0);
+        --dextinity-color-text-subtle: oklch(0.8 0 0);
 
-        --dextinity-color-feedback-warning-on-strong: var(--dextinity-brand-color-neutral-950);
+        --dextinity-color-line: oklch(1 0 0 / 0.7);
+        --dextinity-color-line-strong: oklch(1 0 0);
 
-        --dextinity-color-feedback-danger-strong-hover: var(--dextinity-brand-color-danger-600);
+        --dextinity-color-accent: oklch(0.88 calc(#{$primary-chroma} * 0.45) #{$primary-hue});
+        --dextinity-color-accent-foreground: oklch(0 0 0);
+        --dextinity-color-accent-text: oklch(0.88 calc(#{$primary-chroma} * 0.45) #{$primary-hue});
+        --dextinity-color-accent-soft: oklch(0 0 0);
+        --dextinity-color-accent-glow: transparent;
+        --dextinity-color-accent-secondary: var(--dextinity-color-accent);
+        --dextinity-color-focus: oklch(0.87 0.16 85);
 
-        --dextinity-color-feedback-danger-on-strong: var(--dextinity-color-white);
+        --dextinity-color-success: oklch(0.88 0.16 #{$success-hue});
+        --dextinity-color-success-text: oklch(0.9 0.14 #{$success-hue});
+        --dextinity-color-success-soft: transparent;
+        --dextinity-color-warning: oklch(0.9 0.15 90);
+        --dextinity-color-warning-text: oklch(0.92 0.14 90);
+        --dextinity-color-warning-soft: transparent;
+        --dextinity-color-danger: oklch(0.82 0.13 #{$danger-hue});
+        --dextinity-color-danger-text: oklch(0.85 0.12 #{$danger-hue});
+        --dextinity-color-danger-soft: transparent;
+        --dextinity-color-danger-foreground: oklch(0 0 0);
+        --dextinity-color-info: oklch(0.87 0.09 235);
+        --dextinity-color-info-text: oklch(0.88 0.08 235);
+        --dextinity-color-info-soft: transparent;
 
-        --dextinity-color-feedback-info-strong-hover: var(--dextinity-brand-color-info-700);
+        --dextinity-material-field-1: transparent;
+        --dextinity-material-field-2: transparent;
+        --dextinity-material-field-3: transparent;
+        --dextinity-material-glass: oklch(0 0 0);
+        --dextinity-material-glass-strong: oklch(0 0 0);
+        --dextinity-material-glass-overlay: oklch(0 0 0);
+        --dextinity-material-highlight: transparent;
+        --dextinity-material-edge: oklch(1 0 0);
+        --dextinity-material-blur: 0px;
+        --dextinity-material-grain: 0;
 
-        --dextinity-color-feedback-info-on-strong: var(--dextinity-color-white);
-
-        --dextinity-color-feedback-danger-border-strong: var(--dextinity-brand-color-danger-500);
-
-        --dextinity-color-feedback-success-border-strong: var(--dextinity-brand-color-success-700);
-
-        --dextinity-color-feedback-warning-border-strong: var(--dextinity-brand-color-warning-600);
-
-        --dextinity-color-feedback-info-border-strong: var(--dextinity-brand-color-info-600);
+        // A transparent shadow rather than `none`, so a component can list it after its own hairline
+        --dextinity-shadow-1: 0 0 transparent;
+        --dextinity-shadow-2: 0 0 transparent;
+        --dextinity-shadow-3: 0 0 transparent;
     }
 }

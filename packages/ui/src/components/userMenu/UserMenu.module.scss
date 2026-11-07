@@ -1,0 +1,64 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--dextinity-user-menu-trigger-size);
+    block-size: var(--dextinity-user-menu-trigger-size);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    transition: background var(--dextinity-motion-duration-short);
+
+    &:hover,
+    &[data-popup-open] {
+        background: var(--dextinity-user-menu-trigger-background-hover);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}
+
+.avatar {
+    pointer-events: none;
+}
+
+.popup {
+    min-inline-size: var(--dextinity-user-menu-min-width);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px 10px;
+}
+
+.identity {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-inline-size: 0;
+}
+
+.name {
+    overflow: hidden;
+    color: var(--dextinity-user-menu-name-color);
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.role {
+    overflow: hidden;
+    color: var(--dextinity-user-menu-role-color);
+    font-size: 12.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

@@ -1,0 +1,78 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-linked-content-gap);
+    padding: var(--dextinity-linked-content-padding);
+    border-radius: var(--dextinity-linked-content-radius);
+    background: var(--dextinity-linked-content-background);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-linked-content-line);
+    color: var(--dextinity-linked-content-title-color);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+    line-height: var(--dextinity-typography-body-line-height);
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        box-shadow var(--dextinity-motion-duration-medium),
+        transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    &:hover {
+        box-shadow:
+            inset 0 0 0 var(--dextinity-line-width) var(--dextinity-linked-content-line-hover),
+            var(--dextinity-linked-content-shadow-hover);
+        transform: translateY(calc(var(--dextinity-motion-distance) * -0.125));
+
+        .arrow {
+            transform: translateX(calc(var(--dextinity-motion-distance) * 0.375));
+        }
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    @include forced-colors.edge;
+}
+
+.icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--dextinity-linked-content-icon-size);
+    block-size: var(--dextinity-linked-content-icon-size);
+    border-radius: var(--dextinity-linked-content-icon-radius);
+    background: var(--dextinity-linked-content-icon-background);
+    color: var(--dextinity-linked-content-icon-color);
+
+    --dextinity-icon-size: 16px;
+}
+
+.text {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+}
+
+.title {
+    font-weight: 500;
+}
+
+.description {
+    color: var(--dextinity-linked-content-description-color);
+    font-size: var(--dextinity-typography-small-size);
+    line-height: var(--dextinity-typography-small-line-height);
+}
+
+.arrow {
+    display: inline-flex;
+    flex: none;
+    margin-inline-start: auto;
+    color: var(--dextinity-linked-content-arrow-color);
+    transition: transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    --dextinity-icon-size: 14px;
+}

@@ -1,0 +1,38 @@
+@mixin tokens {
+    --dextinity-card-radius: var(--dextinity-radius-panel);
+    --dextinity-card-padding: 10px;
+    --dextinity-card-header-padding: 10px 12px 14px;
+    --dextinity-card-header-gap: var(--dextinity-space-3);
+    // Rows in the body bring their own padding
+    --dextinity-card-body-padding: 0;
+    --dextinity-card-background: var(--dextinity-material-glass);
+    --dextinity-card-blur: var(--dextinity-material-blur);
+    --dextinity-card-shadow:
+        inset 0 1px 0 var(--dextinity-material-highlight), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge),
+        var(--dextinity-shadow-2);
+
+    --dextinity-card-orb-size: 38px;
+    --dextinity-card-orb-icon-size: 20px;
+    --dextinity-card-orb-foreground: var(--dextinity-color-accent-text);
+    --dextinity-card-orb-background: var(--dextinity-material-glass-strong);
+    --dextinity-card-orb-shadow:
+        inset 0 1px 0 var(--dextinity-material-highlight), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge);
+
+    --dextinity-card-title-font-size: var(--dextinity-typography-title-size);
+    --dextinity-card-title-font-weight: var(--dextinity-typography-title-font-weight);
+    --dextinity-card-meta-color: var(--dextinity-color-text-tertiary);
+    --dextinity-card-meta-font-size: 13px;
+
+    --dextinity-card-row-padding: 12px 14px;
+    --dextinity-card-row-gap: 14px;
+    --dextinity-card-row-radius: var(--dextinity-radius-row);
+    --dextinity-card-row-hover-background: color-mix(in oklch, var(--dextinity-color-text) 4%, transparent);
+    --dextinity-card-row-title-font-weight: 500;
+    --dextinity-card-row-subtitle-color: var(--dextinity-color-text-tertiary);
+    --dextinity-card-row-subtitle-font-size: 12.5px;
+    --dextinity-card-row-end-gap: 10px;
+    --dextinity-card-row-end-color: var(--dextinity-color-text-tertiary);
+    --dextinity-card-row-end-font-size: 13px;
+    --dextinity-card-row-arrow-size: 22px;
+    --dextinity-card-row-arrow-color: var(--dextinity-color-text-subtle);
+}

@@ -1,9 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
 import { expect, fn, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Chip } from "../Chip";
+import chipTokens from "../Chip.tokens.scss?raw";
+import styles from "./Chip.stories.module.scss";
 
 const iconOptions = {
     Calendar: <Icon name="calendar" />,
@@ -12,8 +15,9 @@ const iconOptions = {
 
 const meta = {
     component: Chip,
-    title: "Components/Chip",
+    title: "Building blocks/Status, tags & badges/Chip",
     decorators: [themeDecorator],
+    parameters: { tokens: chipTokens },
     args: {
         children: "Label",
     },
@@ -119,5 +123,54 @@ export const WithClearButton: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Remove filter: Label" }));
         await expect(args.onClear).toHaveBeenCalledOnce();
+    },
+};
+
+const variants = ["contained", "outlined"] as const;
+const colors = ["primary", "secondary", "info", "warning", "error", "success"] as const;
+
+/**
+ * Every variant in every color.
+ *
+ * **Rules**
+ *
+ * - Use `info`, `success`, `warning`, and `error` only where the color carries meaning, e.g. a status.
+ * - Use `secondary` for neutral values such as tags.
+ */
+export const Colors: Story = {
+    render: (args) => (
+        <div className={styles.grid}>
+            {variants.map((variant) =>
+                colors.map((color) => (
+                    <Chip key={`${variant}-${color}`} {...args} variant={variant} color={color}>
+                        {color}
+                    </Chip>
+                )),
+            )}
+        </div>
+    ),
+};
+
+/**
+ * A chip that toggles a filter renders as a button through `render`, with `aria-pressed`.
+ */
+export const AsToggle: Story = {
+    render: function Render(args) {
+        const [pressed, setPressed] = useState(false);
+        return (
+            <Chip
+                {...args}
+                variant={pressed ? "contained" : "outlined"}
+                color="secondary"
+                render={<button type="button" aria-pressed={pressed} onClick={() => setPressed(!pressed)} />}
+            >
+                Published
+            </Chip>
+        );
+    },
+    play: async ({ canvas }) => {
+        const chip = canvas.getByRole("button", { name: "Published" });
+        await userEvent.click(chip);
+        await expect(chip).toHaveAttribute("aria-pressed", "true");
     },
 };

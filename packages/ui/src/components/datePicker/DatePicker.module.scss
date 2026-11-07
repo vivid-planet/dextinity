@@ -1,0 +1,17 @@
+@use "dateField";
+
+.root {
+    min-inline-size: 0;
+}
+
+.input {
+    @include dateField.input;
+}
+
+.clear {
+    @include dateField.clear-button;
+}
+
+.trigger {
+    @include dateField.button;
+}

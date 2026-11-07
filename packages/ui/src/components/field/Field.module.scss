@@ -1,0 +1,226 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-field-gap);
+    min-inline-size: 0;
+    font-family: var(--dextinity-font-family-text);
+    color: var(--dextinity-field-foreground);
+
+    &:hover .actions,
+    &:focus-within .actions {
+        opacity: 1;
+    }
+}
+
+.labelRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-block-size: 18px;
+}
+
+.label {
+    font-size: var(--dextinity-field-label-font-size);
+    font-weight: var(--dextinity-field-label-font-weight);
+    line-height: 1.3;
+    color: var(--dextinity-field-label-color);
+}
+
+.required {
+    color: var(--dextinity-field-required-color);
+    font-size: var(--dextinity-field-label-font-size);
+    font-weight: var(--dextinity-field-label-font-weight);
+
+    &::after {
+        content: "*";
+    }
+}
+
+.counter {
+    margin-inline-start: auto;
+    font-family: var(--dextinity-font-family-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--dextinity-field-counter-color);
+}
+
+.actions {
+    display: inline-flex;
+    align-items: center;
+    margin-inline-start: auto;
+    opacity: var(--dextinity-field-actions-idle-opacity);
+    transition: opacity var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
+}
+
+.counter + .actions {
+    margin-inline-start: var(--dextinity-space-1);
+}
+
+.box {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    box-sizing: border-box;
+    min-block-size: var(--dextinity-field-height);
+    min-inline-size: 0;
+    padding-inline: var(--dextinity-field-padding);
+    border-radius: var(--dextinity-field-radius);
+    background: var(--dextinity-field-background);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-field-line);
+    color: var(--dextinity-field-foreground);
+    font-size: var(--dextinity-field-font-size);
+    cursor: text;
+    transition:
+        box-shadow var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        background var(--dextinity-motion-duration-medium);
+
+    --dextinity-icon-size: var(--dextinity-field-icon-size);
+
+    &:hover {
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-field-line-hover);
+    }
+
+    &:focus-within,
+    &:has([aria-expanded="true"]) {
+        background: var(--dextinity-field-background-focus);
+        box-shadow:
+            inset 0 0 0 var(--dextinity-field-line-width-focus) var(--dextinity-field-line-focus),
+            0 0 0 4px var(--dextinity-field-halo-focus);
+    }
+
+    .root[data-state="error"] > & {
+        box-shadow:
+            inset 0 0 0 var(--dextinity-field-line-width-focus) var(--dextinity-field-line-error),
+            0 0 0 4px var(--dextinity-field-halo-error);
+    }
+
+    .root[data-state="warning"] > & {
+        box-shadow:
+            inset 0 0 0 var(--dextinity-field-line-width-focus) var(--dextinity-field-line-warning),
+            0 0 0 4px var(--dextinity-field-halo-warning);
+    }
+
+    .root[data-state="success"] > & {
+        box-shadow:
+            inset 0 0 0 var(--dextinity-field-line-width-focus) var(--dextinity-field-line-success),
+            0 0 0 4px var(--dextinity-field-halo-success);
+    }
+
+    @each $state in error, warning, success {
+        $line: var(--dextinity-field-line-focus-over-state, var(--dextinity-field-line-#{$state}));
+
+        .root[data-state="#{$state}"]:not([data-disabled], [data-readonly]) > &:is(:focus-within, :has([aria-expanded="true"])) {
+            box-shadow:
+                inset 0 0 0 var(--dextinity-field-line-width-focus) $line,
+                0 0 0 4px var(--dextinity-field-halo-#{$state});
+        }
+    }
+
+    .root[data-size="small"] > & {
+        min-block-size: var(--dextinity-field-height-small);
+        padding-inline: var(--dextinity-field-padding-small);
+        font-size: var(--dextinity-field-font-size-small);
+    }
+
+    .root[data-size="large"] > & {
+        min-block-size: var(--dextinity-field-height-large);
+        font-size: var(--dextinity-field-font-size-large);
+    }
+
+    .root[data-layout="stacked"] > & {
+        position: relative;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        min-block-size: 0;
+        padding: 0;
+        border-radius: var(--dextinity-field-radius-stacked);
+        cursor: auto;
+    }
+
+    .root[data-readonly] > & {
+        background: var(--dextinity-field-background-read-only);
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-field-line);
+    }
+
+    .root[data-readonly] > &:focus-within {
+        box-shadow: inset 0 0 0 var(--dextinity-field-line-width-focus) var(--dextinity-field-line-focus);
+    }
+
+    .root[data-disabled] > & {
+        opacity: var(--dextinity-field-disabled-opacity);
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-field-line);
+        cursor: not-allowed;
+    }
+
+    @include forced-colors.edge;
+
+    // Forced colors keep a thicker edge for the validation states, a gray one when disabled, and the focus in the highlight color
+    @media (forced-colors: active) {
+        .root:is([data-state="error"], [data-state="warning"]) > & {
+            outline-width: 2px;
+            outline-offset: -2px;
+        }
+
+        .root[data-disabled] > & {
+            outline-color: GrayText;
+        }
+
+        .root:not([data-disabled]) > &:is(:focus-within, :has([aria-expanded="true"])) {
+            outline: 2px solid Highlight;
+            outline-offset: -2px;
+        }
+    }
+}
+
+.prefix,
+.suffix {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    color: var(--dextinity-field-adornment-color);
+    font-family: var(--dextinity-field-adornment-font-family);
+    font-size: var(--dextinity-field-adornment-font-size);
+    white-space: nowrap;
+}
+
+// A text prefix is separated from the value by a line; an icon is not
+.prefix:not(:has(> :global(.dextinityIcon):only-child)) {
+    align-self: stretch;
+    padding-inline-end: var(--dextinity-space-2);
+    box-shadow: inset calc(var(--dextinity-line-width) * -1) 0 0 var(--dextinity-field-line);
+
+    @media (forced-colors: active) {
+        border-inline-end: 1px solid CanvasText;
+    }
+}
+
+.root[data-layout="stacked"] > .box > .suffix {
+    position: absolute;
+    inset-block-start: var(--dextinity-field-padding);
+    inset-inline-end: var(--dextinity-field-padding);
+}
+
+.spinner {
+    color: var(--dextinity-field-line-focus);
+}
+
+.message {
+    font-size: var(--dextinity-field-message-font-size);
+    line-height: var(--dextinity-typography-small-line-height);
+    color: var(--dextinity-field-message-color);
+
+    .root[data-state="error"] > & {
+        color: var(--dextinity-field-message-color-error);
+    }
+
+    .root[data-state="warning"] > & {
+        color: var(--dextinity-field-message-color-warning);
+    }
+
+    .root[data-state="success"] > & {
+        color: var(--dextinity-field-message-color-success);
+    }
+}

@@ -1,0 +1,19 @@
+@mixin tokens {
+    // Space between the label row and the bar
+    --dextinity-progress-bar-gap: 6px;
+    --dextinity-progress-bar-height: 6px;
+    --dextinity-progress-bar-height-small: 4px;
+    --dextinity-progress-bar-track: color-mix(in oklch, var(--dextinity-color-text) 10%, transparent);
+    --dextinity-progress-bar-track-shadow: 0 0 transparent;
+    --dextinity-progress-bar-indicator-accent: var(--dextinity-gradient-brand);
+    --dextinity-progress-bar-indicator-success: var(--dextinity-color-success);
+    --dextinity-progress-bar-indicator-warning: var(--dextinity-color-warning);
+    --dextinity-progress-bar-indicator-danger: var(--dextinity-color-danger);
+    --dextinity-progress-bar-label-font-size: 13px;
+    --dextinity-progress-bar-label-color: var(--dextinity-color-text-secondary);
+    --dextinity-progress-bar-value-color: var(--dextinity-color-text-tertiary);
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-progress-bar-track-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+}

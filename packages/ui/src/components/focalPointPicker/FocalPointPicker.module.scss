@@ -1,0 +1,123 @@
+@use "../field/controlMessage";
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--dextinity-focal-point-picker-gap);
+    font-family: var(--dextinity-font-family-text);
+
+    &[data-disabled] .stage {
+        cursor: not-allowed;
+    }
+}
+
+.stage {
+    position: relative;
+    flex: 1.2 1 320px;
+    min-inline-size: 0;
+    overflow: hidden;
+    border-radius: var(--dextinity-focal-point-picker-radius);
+    box-shadow: var(--dextinity-focal-point-picker-shadow);
+    cursor: crosshair;
+    touch-action: none;
+    user-select: none;
+
+    // An outline, since the image covers an inset shadow
+    .root[data-state="error"] > & {
+        outline: calc(var(--dextinity-line-width) * 2) solid var(--dextinity-focal-point-picker-line-error);
+    }
+
+    @include forced-colors.edge;
+}
+
+.image {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    pointer-events: none;
+}
+
+.marker {
+    position: absolute;
+    box-sizing: border-box;
+    inline-size: var(--dextinity-focal-point-picker-marker-size);
+    block-size: var(--dextinity-focal-point-picker-marker-size);
+    margin-block-start: calc(var(--dextinity-focal-point-picker-marker-size) / -2);
+    margin-inline-start: calc(var(--dextinity-focal-point-picker-marker-size) / -2);
+    border: var(--dextinity-focal-point-picker-marker-border);
+    border-radius: 50%;
+    background: var(--dextinity-focal-point-picker-marker-background);
+    box-shadow: var(--dextinity-focal-point-picker-marker-shadow);
+    cursor: grab;
+    transition: transform var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focal-point-picker-marker-shadow), var(--dextinity-focus-ring);
+        transform: scale(1.12);
+        @include forced-colors.focus-ring;
+    }
+
+    .root[data-auto] & {
+        border-style: dashed;
+    }
+
+    .root[data-disabled] & {
+        cursor: not-allowed;
+    }
+}
+
+.autoTag {
+    position: absolute;
+    inset-block-start: var(--dextinity-space-2);
+    inset-inline-start: var(--dextinity-space-2);
+    padding: 3px 8px;
+    border-radius: var(--dextinity-radius-pill);
+    background: var(--dextinity-focal-point-picker-auto-background);
+    color: var(--dextinity-focal-point-picker-auto-foreground);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    pointer-events: none;
+}
+
+.previews {
+    display: grid;
+    flex: 1 1 260px;
+    grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+    align-items: end;
+    gap: var(--dextinity-space-2);
+    min-inline-size: 0;
+}
+
+.preview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-1);
+    margin: 0;
+    min-inline-size: 0;
+}
+
+.previewImage {
+    display: block;
+    inline-size: 100%;
+    object-fit: cover;
+    border-radius: var(--dextinity-focal-point-picker-preview-radius);
+    box-shadow: var(--dextinity-focal-point-picker-shadow);
+
+    @include forced-colors.edge;
+}
+
+.previewCaption {
+    color: var(--dextinity-focal-point-picker-caption-foreground);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: 10.5px;
+    text-align: center;
+}
+
+.message {
+    flex-basis: 100%;
+    @include controlMessage.message(focal-point-picker);
+}

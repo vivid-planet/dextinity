@@ -1,0 +1,17 @@
+@mixin tokens {
+    --dextinity-bulk-action-bar-radius: var(--dextinity-radius-field);
+    // Inverted: the bar uses the text color as its fill so it stands out from the list below
+    --dextinity-bulk-action-bar-background: var(--dextinity-color-text);
+    --dextinity-bulk-action-bar-foreground: var(--dextinity-color-canvas);
+    --dextinity-bulk-action-bar-shadow: var(--dextinity-shadow-3);
+    --dextinity-bulk-action-bar-padding: var(--dextinity-space-2);
+    --dextinity-bulk-action-bar-font-size: var(--dextinity-typography-small-size);
+
+    --dextinity-bulk-action-bar-action-height: var(--dextinity-density-control-height-small);
+    --dextinity-bulk-action-bar-action-radius: var(--dextinity-radius-item);
+    --dextinity-bulk-action-bar-action-background-hover: color-mix(in oklch, var(--dextinity-color-canvas) 16%, transparent);
+    // Text of destructive actions such as "Delete", readable on the inverted fill
+    --dextinity-bulk-action-bar-action-foreground-error: color-mix(in oklch, var(--dextinity-color-danger) 55%, var(--dextinity-color-canvas));
+    // Focus on the inverted fill, where the regular focus ring may not stand out
+    --dextinity-bulk-action-bar-focus-ring: inset 0 0 0 2px var(--dextinity-color-canvas);
+}

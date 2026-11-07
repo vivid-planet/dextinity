@@ -1,0 +1,11 @@
+.stage {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-block-size: 300px;
+    padding: 24px;
+}
+
+.stageTop {
+    align-items: flex-end;
+}

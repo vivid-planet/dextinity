@@ -1,0 +1,29 @@
+@mixin tokens {
+    --dextinity-focal-point-picker-gap: var(--dextinity-space-panel-gap);
+    --dextinity-focal-point-picker-radius: var(--dextinity-radius-field);
+    --dextinity-focal-point-picker-preview-radius: calc(var(--dextinity-radius-item) * 0.75);
+    --dextinity-focal-point-picker-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+
+    --dextinity-focal-point-picker-marker-size: 26px;
+    // The ring of the point; white so it stands out on any picture
+    --dextinity-focal-point-picker-marker-border: 2.5px solid oklch(1 0 0);
+    --dextinity-focal-point-picker-marker-shadow: 0 0 0 1px oklch(0 0 0 / 0.3), 0 2px 8px oklch(0 0 0 / 0.3);
+    --dextinity-focal-point-picker-marker-background: oklch(1 0 0 / 0.18);
+
+    --dextinity-focal-point-picker-caption-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-focal-point-picker-auto-background: oklch(0 0 0 / 0.55);
+    --dextinity-focal-point-picker-auto-foreground: oklch(1 0 0);
+
+    // Line around the image in the error state
+    --dextinity-focal-point-picker-line-error: var(--dextinity-color-danger);
+    --dextinity-focal-point-picker-message-font-size: var(--dextinity-typography-small-size);
+    --dextinity-focal-point-picker-message-color-error: var(--dextinity-color-danger-text);
+    --dextinity-focal-point-picker-message-color-warning: var(--dextinity-color-warning-text);
+    --dextinity-focal-point-picker-message-color-success: var(--dextinity-color-success-text);
+}
+
+@mixin high-contrast-tokens {
+    // A solid outline around the white ring
+    --dextinity-focal-point-picker-marker-shadow: 0 0 0 2px oklch(0 0 0);
+    --dextinity-focal-point-picker-auto-background: oklch(0 0 0);
+}

@@ -1,0 +1,79 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-filter-chip-gap);
+    box-sizing: border-box;
+    block-size: var(--dextinity-filter-chip-height);
+    padding-inline: var(--dextinity-filter-chip-padding);
+    border: 0;
+    border-radius: var(--dextinity-filter-chip-radius);
+    background: transparent;
+    box-shadow: var(--dextinity-filter-chip-shadow);
+    color: var(--dextinity-filter-chip-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-filter-chip-font-size);
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background var(--dextinity-motion-duration-short),
+        color var(--dextinity-motion-duration-short),
+        box-shadow var(--dextinity-motion-duration-short);
+
+    &:hover:not([data-disabled]) {
+        color: var(--dextinity-filter-chip-foreground-hover);
+        box-shadow: var(--dextinity-filter-chip-shadow-hover);
+    }
+
+    &[data-selected] {
+        background: var(--dextinity-filter-chip-selected-background);
+        color: var(--dextinity-filter-chip-selected-foreground);
+        box-shadow: none;
+
+        &:hover:not([data-disabled]) {
+            color: var(--dextinity-filter-chip-selected-foreground);
+            box-shadow: none;
+        }
+
+        .count {
+            color: var(--dextinity-filter-chip-selected-count-foreground);
+        }
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    &[data-disabled] {
+        opacity: var(--dextinity-filter-chip-disabled-opacity);
+        cursor: not-allowed;
+    }
+
+    @include forced-colors.edge;
+
+    &[data-selected] {
+        @include forced-colors.selected;
+    }
+}
+
+.label {
+    color: inherit;
+    font-size: inherit;
+}
+
+.count {
+    color: var(--dextinity-filter-chip-count-foreground);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-filter-chip-count-font-size);
+    font-variant-numeric: tabular-nums;
+}
+
+.menuIcon {
+    display: inline-flex;
+    margin-inline-end: -4px;
+    --dextinity-icon-size: var(--dextinity-filter-chip-icon-size);
+}

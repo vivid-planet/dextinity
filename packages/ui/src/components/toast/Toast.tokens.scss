@@ -1,0 +1,41 @@
+@mixin tokens {
+    // Inverted: the text color as the background, so the toast stands out on any surface
+    --dextinity-toast-background: var(--dextinity-color-text);
+    --dextinity-toast-foreground: var(--dextinity-color-canvas);
+    --dextinity-toast-radius: var(--dextinity-radius-field);
+    --dextinity-toast-shadow: var(--dextinity-shadow-3);
+    --dextinity-toast-padding-block: 8px;
+    --dextinity-toast-padding-inline-start: 14px;
+    --dextinity-toast-padding-inline-end: 8px;
+    --dextinity-toast-gap: 12px;
+    --dextinity-toast-min-height: 44px;
+    --dextinity-toast-font-size: 13.5px;
+    --dextinity-toast-icon-size: 16px;
+    --dextinity-toast-success-icon-color: var(--dextinity-color-success);
+    --dextinity-toast-error-icon-color: var(--dextinity-color-danger);
+    --dextinity-toast-warning-icon-color: var(--dextinity-color-warning);
+    --dextinity-toast-info-icon-color: var(--dextinity-color-info);
+
+    --dextinity-toast-action-height: 28px;
+    --dextinity-toast-action-padding: 10px;
+    --dextinity-toast-action-radius: var(--dextinity-radius-item);
+    --dextinity-toast-action-background: color-mix(in oklch, var(--dextinity-color-canvas) 15%, transparent);
+    --dextinity-toast-action-background-hover: color-mix(in oklch, var(--dextinity-color-canvas) 25%, transparent);
+
+    // Distance of the toast stack from the bottom of the viewport
+    --dextinity-toast-viewport-offset: 24px;
+    // Distance from the bottom while a bulk action bar is open, so the toasts don't cover it
+    --dextinity-toast-viewport-offset-above-bulk-action-bar: calc(
+        var(--dextinity-toast-viewport-offset) + var(--dextinity-bulk-action-bar-action-height) + 2 * var(--dextinity-bulk-action-bar-padding) +
+            var(--dextinity-space-2)
+    );
+}
+
+@mixin dark-tokens {
+    // The inverted toast is light here, and the tone colors are made for a dark background, so they are darkened toward the toast's
+    // foreground to stand out on it
+    --dextinity-toast-success-icon-color: color-mix(in oklab, var(--dextinity-color-success) 55%, var(--dextinity-toast-foreground));
+    --dextinity-toast-error-icon-color: color-mix(in oklab, var(--dextinity-color-danger) 60%, var(--dextinity-toast-foreground));
+    --dextinity-toast-warning-icon-color: color-mix(in oklab, var(--dextinity-color-warning) 50%, var(--dextinity-toast-foreground));
+    --dextinity-toast-info-icon-color: color-mix(in oklab, var(--dextinity-color-info) 55%, var(--dextinity-toast-foreground));
+}

@@ -1,0 +1,36 @@
+@mixin tokens {
+    --dextinity-dropzone-radius: calc(var(--dextinity-radius-field) * 1.15);
+    --dextinity-dropzone-padding: var(--dextinity-space-8);
+    // The dashed outline of the drop area
+    --dextinity-dropzone-outline: 1.5px dashed var(--dextinity-color-line-strong);
+    --dextinity-dropzone-background: transparent;
+    --dextinity-dropzone-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-dropzone-hint-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-dropzone-icon-size: 26px;
+    --dextinity-dropzone-icon-foreground: var(--dextinity-color-accent-text);
+    --dextinity-dropzone-browse-foreground: var(--dextinity-color-accent-text);
+
+    // While files are dragged over the drop area
+    --dextinity-dropzone-active-background: color-mix(in oklch, var(--dextinity-color-accent) 16%, transparent);
+    --dextinity-dropzone-active-shadow: inset 0 0 0 2px var(--dextinity-color-accent);
+    // Behind the overlay's content while files are dragged over it
+    --dextinity-dropzone-overlay-background: color-mix(in oklch, var(--dextinity-color-surface) 78%, transparent);
+
+    --dextinity-dropzone-error-foreground: var(--dextinity-color-danger-text);
+    --dextinity-dropzone-error-outline: 1.5px dashed var(--dextinity-color-danger);
+
+    --dextinity-dropzone-upload-gap: var(--dextinity-space-3);
+    --dextinity-dropzone-upload-radius: var(--dextinity-radius-control);
+    --dextinity-dropzone-upload-background: var(--dextinity-color-surface);
+    --dextinity-dropzone-upload-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+    --dextinity-dropzone-progress-height: 4px;
+    --dextinity-dropzone-progress-track: color-mix(in oklch, var(--dextinity-color-text) 10%, transparent);
+    --dextinity-dropzone-progress-track-shadow: 0 0 transparent;
+    --dextinity-dropzone-progress-indicator: var(--dextinity-gradient-brand);
+    --dextinity-dropzone-done-foreground: var(--dextinity-color-success-text);
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-dropzone-active-background: var(--dextinity-color-canvas);
+    --dextinity-dropzone-progress-track-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+}

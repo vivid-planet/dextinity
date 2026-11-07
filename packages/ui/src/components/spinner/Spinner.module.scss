@@ -1,8 +1,18 @@
 .root {
     display: inline-block;
     flex-shrink: 0;
-    color: var(--dextinity-color-action-primary-default);
-    animation: spin 1s linear infinite;
+    color: var(--dextinity-spinner-color);
+    animation: spin var(--dextinity-spinner-duration) linear infinite;
+
+    &[data-size="small"] {
+        inline-size: 14px;
+        block-size: 14px;
+
+        .arc {
+            r: 5.25px;
+            stroke-width: 1.5px;
+        }
+    }
 
     &[data-size="md"] {
         inline-size: 16px;

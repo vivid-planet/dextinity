@@ -1,30 +1,39 @@
-@use "buttonColors";
-
 .root {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    gap: var(--dextinity-button-default-gap);
-    block-size: var(--dextinity-button-default-height);
-    padding-block: calc(var(--dextinity-button-default-padding-vertical) - var(--dextinity-button-border-width));
-    padding-inline: calc(var(--dextinity-button-default-padding-horizontal) - var(--dextinity-button-border-width));
-    border: var(--dextinity-button-border-width) solid;
-    border-radius: var(--dextinity-button-default-radius);
-    font-family: var(--dextinity-brand-font-family-sans);
-    font-size: var(--dextinity-button-default-font-size);
-    font-weight: var(--dextinity-button-default-font-weight);
-    line-height: var(--dextinity-button-default-font-line-height);
-    letter-spacing: var(--dextinity-font-letter-spacing-normal);
+    gap: var(--dextinity-button-gap);
+    block-size: var(--dextinity-button-height);
+    padding-inline: var(--dextinity-button-padding);
+    border: 0;
+    border-radius: var(--dextinity-button-radius);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-button-font-size);
+    font-weight: var(--dextinity-button-font-weight);
+    line-height: 1;
     white-space: nowrap;
+    text-decoration: none;
     cursor: pointer;
+    transition:
+        transform var(--dextinity-motion-duration-short) var(--dextinity-motion-easing),
+        background var(--dextinity-motion-duration-short),
+        color var(--dextinity-motion-duration-short),
+        box-shadow var(--dextinity-motion-duration-medium);
 
     &:focus-visible {
-        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
-        outline-offset: var(--dextinity-focus-ring-offset);
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+
+    &:active:not([data-disabled], [data-loading]) {
+        transform: scale(0.98);
+        filter: brightness(var(--dextinity-button-active-brightness));
     }
 
     &[data-disabled] {
+        opacity: var(--dextinity-button-disabled-opacity);
         cursor: not-allowed;
     }
 
@@ -32,19 +41,124 @@
         cursor: progress;
     }
 
+    &[data-size="small"] {
+        block-size: var(--dextinity-button-height-small);
+        padding-inline: var(--dextinity-button-padding-small);
+        font-size: var(--dextinity-button-font-size-small);
+    }
+
+    // Contained: the primary action — one per area
+    &[data-variant="contained"] {
+        background: var(--dextinity-button-primary-background);
+        color: var(--dextinity-button-primary-foreground);
+        box-shadow: var(--dextinity-button-primary-shadow);
+
+        &:hover:not([data-disabled], [data-loading]) {
+            background: var(--dextinity-button-primary-background-hover);
+            box-shadow: var(--dextinity-button-primary-shadow-hover);
+        }
+
+        &[data-color="secondary"] {
+            background: var(--dextinity-color-text);
+            color: var(--dextinity-color-canvas);
+            box-shadow: var(--dextinity-shadow-1);
+        }
+
+        &[data-color="error"] {
+            background: var(--dextinity-button-danger-background);
+            color: var(--dextinity-button-danger-background-foreground);
+            box-shadow: var(--dextinity-shadow-1);
+        }
+
+        &[data-color="success"] {
+            background: var(--dextinity-button-success-background);
+            color: var(--dextinity-color-accent-foreground);
+            box-shadow: var(--dextinity-shadow-1);
+        }
+
+        &:focus-visible {
+            box-shadow: var(--dextinity-focus-ring);
+        }
+    }
+
+    // Outlined: further actions, quiet surface with a hairline
+    &[data-variant="outlined"] {
+        background: var(--dextinity-button-secondary-background);
+        color: var(--dextinity-button-secondary-foreground);
+        box-shadow: var(--dextinity-button-secondary-shadow);
+
+        &:hover:not([data-disabled], [data-loading]) {
+            box-shadow: var(--dextinity-button-secondary-shadow-hover);
+        }
+
+        &[data-color="primary"] {
+            color: var(--dextinity-color-accent-text);
+        }
+
+        &[data-color="error"] {
+            color: var(--dextinity-button-danger-foreground);
+        }
+
+        &[data-color="success"] {
+            color: var(--dextinity-button-success-foreground);
+        }
+
+        &:focus-visible {
+            box-shadow: var(--dextinity-focus-ring);
+        }
+    }
+
+    // Text: ghost, for quiet actions
+    &[data-variant="text"] {
+        background: transparent;
+        color: var(--dextinity-button-text-foreground);
+
+        &:hover:not([data-disabled], [data-loading]) {
+            background: var(--dextinity-button-text-background-hover);
+            color: var(--dextinity-button-text-foreground-hover);
+        }
+
+        &[data-color="primary"] {
+            color: var(--dextinity-color-accent-text);
+        }
+
+        &[data-color="error"] {
+            color: var(--dextinity-button-danger-foreground);
+        }
+
+        &[data-color="success"] {
+            color: var(--dextinity-button-success-foreground);
+        }
+    }
+
     .loadingSpinner {
         color: inherit;
     }
 
-    &[data-size="small"] {
-        gap: var(--dextinity-button-small-gap);
-        block-size: var(--dextinity-button-small-height);
-        padding-block: calc(var(--dextinity-button-small-padding-vertical) - var(--dextinity-button-border-width));
-        padding-inline: calc(var(--dextinity-button-small-padding-horizontal) - var(--dextinity-button-border-width));
-        border-radius: var(--dextinity-button-small-radius);
+    // Without a start icon, the spinner covers the hidden label, so the button keeps its width
+    &:has(> .loadingSpinnerOverlay) {
+        -webkit-text-fill-color: transparent;
+
+        .endIcon {
+            visibility: hidden;
+        }
     }
 
-    @include buttonColors.colors;
+    .loadingSpinnerOverlay {
+        position: absolute;
+        inset: 0;
+        margin: auto;
+    }
+
+    // Forced colors remove backgrounds and box shadows, which would leave the button without an edge and without a focus ring
+    @media (forced-colors: active) {
+        border: 1px solid;
+
+        &:focus-visible {
+            outline: 2px solid Highlight;
+            outline-offset: 2px;
+        }
+    }
 }
 
 .startIcon,
@@ -52,15 +166,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: var(--dextinity-button-default-icon-size);
-    block-size: var(--dextinity-button-default-icon-size);
+    inline-size: var(--dextinity-button-icon-size);
+    block-size: var(--dextinity-button-icon-size);
+    --dextinity-icon-size: var(--dextinity-button-icon-size);
 
-    .root[data-size="small"] & {
-        inline-size: var(--dextinity-button-small-icon-size);
-        block-size: var(--dextinity-button-small-icon-size);
-    }
-
-    > :is(svg, :global(.dextinityIcon)) {
+    > svg {
         inline-size: 100%;
         block-size: 100%;
     }

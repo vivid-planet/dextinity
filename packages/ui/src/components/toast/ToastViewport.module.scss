@@ -1,0 +1,46 @@
+.root {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: var(--dextinity-toast-viewport-offset);
+    z-index: 1100;
+    padding-inline: var(--dextinity-space-4);
+    pointer-events: none;
+    transition: inset-block-end var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+}
+
+// An open bulk action bar sits at the bottom of the screen, so the toasts move up and leave it reachable
+:global(:root:has(.dextinityBulkActionBar[data-open])) .root {
+    inset-block-end: var(--dextinity-toast-viewport-offset-above-bulk-action-bar);
+}
+
+.list {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.item {
+    display: flex;
+    pointer-events: auto;
+    transition:
+        opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    @starting-style {
+        opacity: 0;
+        transform: translateY(calc(var(--dextinity-motion-distance) * 2.25));
+    }
+
+    // A removed toast fades out at its place, out of the flow, so the toasts after it and a replacing toast take their place at once
+    &[data-ending-style] {
+        position: absolute;
+        opacity: 0;
+        transform: translateY(calc(var(--dextinity-motion-distance) * 2.25));
+        pointer-events: none;
+    }
+}

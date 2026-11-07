@@ -4,6 +4,7 @@ import { type ElementType, type ForwardedRef, forwardRef, type ReactNode, type R
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Spinner } from "../spinner/Spinner";
+import { Tooltip, type TooltipProps } from "../tooltip/Tooltip";
 import styles from "./IconButton.module.scss";
 
 type IconButtonVariant = "contained" | "outlined" | "text";
@@ -21,7 +22,7 @@ export type IconButtonOwnerState = {
     loading: boolean;
 };
 
-interface IconButtonSlots<Icon extends ElementType, LoadingSpinner extends ElementType> {
+export interface IconButtonSlots<Icon extends ElementType, LoadingSpinner extends ElementType> {
     /**
      * Element for the `icon` slot.
      *
@@ -36,34 +37,43 @@ interface IconButtonSlots<Icon extends ElementType, LoadingSpinner extends Eleme
     loadingSpinner?: LoadingSpinner;
 }
 
-interface IconButtonSlotProps<Icon extends ElementType, LoadingSpinner extends ElementType> {
+export interface IconButtonSlotProps<Icon extends ElementType, LoadingSpinner extends ElementType> {
     /** Props for the `icon` slot. */
     icon?: SlotPropsValue<IconButtonOwnerState, Icon>;
     /** Props for the `loadingSpinner` slot. */
     loadingSpinner?: SlotPropsValue<IconButtonOwnerState, LoadingSpinner>;
+    /** Props for the tooltip, e.g. its `placement`. */
+    tooltip?: Partial<Omit<TooltipProps, "content" | "children" | "shortcut">>;
 }
 
 export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinner extends ElementType = typeof Spinner> extends Omit<
     BaseButton.Props,
     "className" | "ref"
 > {
-    /** Names the action, since the button shows no text. */
+    /** Names the action, since the button shows no text. It is also shown as the button's tooltip, e.g. "More actions". */
     "aria-label": string;
-    /** The icon to show. */
+    /** The icon to show, e.g. `<Icon name="more-horizontal" />`. */
     children?: ReactNode;
+    /** A keyboard shortcut for the action, shown in the tooltip, e.g. `⌘S`. */
+    shortcut?: string;
     /**
-     * Visual emphasis: `contained` for the main action, `outlined` and `text` for less important ones.
+     * Visual emphasis: `contained` for the main action, `outlined` where the button stands alone on a surface, and `text` for toolbars
+     * and rows.
      *
      * @defaultValue `"contained"`
      */
     variant?: IconButtonVariant;
     /**
-     * Use `error` for destructive actions and `success` for confirming ones.
+     * Use `error` for destructive actions and `success` for confirming ones, `secondary` for neutral ones, e.g. in toolbars and rows.
      *
      * @defaultValue `"primary"`
      */
     color?: IconButtonColor;
-    /** @defaultValue `"default"` */
+    /**
+     * `small` in table rows, tree rows, and dense panels.
+     *
+     * @defaultValue `"default"`
+     */
     size?: IconButtonSize;
     /**
      * Prevents interaction with the button.
@@ -90,7 +100,8 @@ function preventDefault(event: SyntheticEvent) {
 }
 
 /**
- * A button that shows only an icon, for actions that are clear without text.
+ * A button that shows only an icon, for actions that are clear without text. Its accessible name is also its tooltip, so every
+ * icon-only action explains itself.
  */
 export const IconButton: <Icon extends ElementType = "span", LoadingSpinner extends ElementType = typeof Spinner>(
     props: IconButtonProps<Icon, LoadingSpinner> & RefAttributes<HTMLButtonElement>,
@@ -102,11 +113,13 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
         variant = "contained",
         color = "primary",
         size = "default",
+        shortcut,
         className,
         slots,
         slotProps,
         children,
         onClick,
+        "aria-label": ariaLabel,
         ...restProps
     }: IconButtonProps<Icon, LoadingSpinner>,
     ref: ForwardedRef<HTMLButtonElement>,
@@ -128,20 +141,23 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
     });
 
     return (
-        <BaseButton
-            {...restProps}
-            ref={ref}
-            type={type}
-            disabled={ownerState.disabled}
-            data-variant={ownerState.variant}
-            data-color={ownerState.color}
-            data-size={ownerState.size}
-            data-loading={ownerState.loading ? "" : undefined}
-            aria-busy={ownerState.loading || undefined}
-            onClick={ownerState.loading ? preventDefault : onClick}
-            className={clsx(styles.root, className)}
-        >
-            {ownerState.loading ? <LoadingSpinnerSlot {...loadingSpinnerProps} /> : <IconSlot {...iconProps}>{children}</IconSlot>}
-        </BaseButton>
+        <Tooltip {...slotProps?.tooltip} content={ariaLabel} shortcut={shortcut}>
+            <BaseButton
+                {...restProps}
+                ref={ref}
+                type={type}
+                aria-label={ariaLabel}
+                disabled={ownerState.disabled}
+                data-variant={ownerState.variant}
+                data-color={ownerState.color}
+                data-size={ownerState.size}
+                data-loading={ownerState.loading ? "" : undefined}
+                aria-busy={ownerState.loading || undefined}
+                onClick={ownerState.loading ? preventDefault : onClick}
+                className={clsx(styles.root, className)}
+            >
+                {ownerState.loading ? <LoadingSpinnerSlot {...loadingSpinnerProps} /> : <IconSlot {...iconProps}>{children}</IconSlot>}
+            </BaseButton>
+        </Tooltip>
     );
 });

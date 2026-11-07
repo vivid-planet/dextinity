@@ -1,37 +1,43 @@
 .searchField {
-    width: 100%;
-    margin-bottom: 24px;
-    padding: 8px 12px;
-    font-family: var(--dextinity-brand-font-family-sans);
-    font-size: var(--dextinity-typography-body-md-size);
-    line-height: var(--dextinity-typography-body-md-line-height);
+    box-sizing: border-box;
+    inline-size: 100%;
+    margin-block-end: var(--dextinity-space-6);
+    padding-block: var(--dextinity-space-2);
+    padding-inline: var(--dextinity-space-3);
+    border: var(--dextinity-line-width) solid var(--dextinity-color-line-strong);
+    border-radius: var(--dextinity-radius-control);
+    background: var(--dextinity-color-surface);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
 }
 
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     grid-auto-rows: 1fr;
-    gap: 16px;
+    gap: var(--dextinity-space-4);
 }
 
 .item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border: 1px solid var(--dextinity-color-border-default);
-    border-radius: 4px;
+    gap: var(--dextinity-space-3);
+    padding: var(--dextinity-space-3);
+    border-radius: var(--dextinity-radius-item);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+    color: var(--dextinity-color-text);
 }
 
 .icon {
-    width: 24px;
-    height: 24px;
+    inline-size: 24px;
+    block-size: 24px;
 }
 
 .label {
     display: flex;
     flex-direction: column;
-    min-width: 0;
+    min-inline-size: 0;
 }
 
 .name,
@@ -39,4 +45,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.searchTerms {
+    color: var(--dextinity-color-text-tertiary);
 }

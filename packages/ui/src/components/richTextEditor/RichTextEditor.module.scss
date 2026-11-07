@@ -1,0 +1,65 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    --dextinity-field-radius-stacked: var(--dextinity-rich-text-editor-radius);
+}
+
+.toolbar {
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-rich-text-editor-toolbar-line);
+
+    --dextinity-toolbar-padding: var(--dextinity-rich-text-editor-toolbar-padding);
+    --dextinity-toolbar-button-size: var(--dextinity-rich-text-editor-toolbar-button-size);
+    --dextinity-toolbar-button-background-pressed: var(--dextinity-rich-text-editor-toolbar-button-background-active);
+    --dextinity-toolbar-button-foreground-pressed: var(--dextinity-rich-text-editor-toolbar-button-foreground-active);
+
+    @include forced-colors.separator;
+}
+
+.content {
+    box-sizing: border-box;
+    min-block-size: calc(var(--dextinity-rich-text-editor-min-rows) * 1lh + 28px);
+    padding: var(--dextinity-rich-text-editor-content-padding);
+    outline: none;
+    line-height: var(--dextinity-rich-text-editor-line-height);
+    overflow-wrap: anywhere;
+    cursor: text;
+
+    &[data-empty]::before {
+        content: attr(data-placeholder);
+        position: absolute;
+        color: var(--dextinity-rich-text-editor-placeholder-color);
+        pointer-events: none;
+    }
+
+    &[aria-disabled="true"] {
+        cursor: not-allowed;
+    }
+
+    p,
+    ul,
+    ol,
+    h3 {
+        margin: 0 0 10px;
+
+        &:last-child {
+            margin-block-end: 0;
+        }
+    }
+
+    ul,
+    ol {
+        padding-inline-start: 20px;
+    }
+
+    h3 {
+        font-size: var(--dextinity-rich-text-editor-heading-size);
+        font-weight: var(--dextinity-rich-text-editor-heading-weight);
+        line-height: var(--dextinity-typography-section-line-height);
+    }
+
+    a {
+        color: var(--dextinity-rich-text-editor-link-color);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+}

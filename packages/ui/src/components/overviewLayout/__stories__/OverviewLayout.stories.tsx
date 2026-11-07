@@ -152,6 +152,7 @@ const meta = {
     argTypes: {
         title: { control: "text" },
         eyebrow: { control: "text" },
+        back: { control: false },
         summary: { control: false },
         aside: { control: false },
         children: { control: false },
@@ -194,6 +195,22 @@ export const Default: Story = {
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("heading", { level: 1, name: "Good morning, Max" })).toBeVisible();
         await expect(canvas.getByRole("region", { name: "Warnings" })).toBeVisible();
+    },
+};
+
+/**
+ * `back` leads to the page above, e.g. from the overview of one site to the list of all sites.
+ */
+export const WithBack: Story = {
+    render: (args) => (
+        <PageTypeShell activeId="dashboard">
+            <OverviewLayout {...args} eyebrow="Overview" back={{ label: "All sites", href: "#sites" }}>
+                <OverviewCards />
+            </OverviewLayout>
+        </PageTypeShell>
+    ),
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("link", { name: "All sites" })).toBeVisible();
     },
 };
 

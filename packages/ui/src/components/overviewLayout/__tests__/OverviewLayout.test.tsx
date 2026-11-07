@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { OverviewLayout } from "../OverviewLayout";
 
@@ -36,5 +36,25 @@ describe("OverviewLayout", () => {
         );
         expect(root.dataset.aside).toBe("");
         expect(screen.getByText("09:41").className).toContain("dextinityOverviewLayout__aside");
+    });
+
+    it("shows the back link before the eyebrow and lets the router handle it", () => {
+        const onClick = vi.fn();
+        render(
+            <OverviewLayout title="Main site" eyebrow="Overview" back={{ label: "All sites", href: "/sites", onClick }}>
+                <section />
+            </OverviewLayout>,
+        );
+
+        const back = screen.getByRole("link", { name: "All sites" });
+        expect(back.getAttribute("href")).toBe("/sites");
+        expect(back.className).toContain("dextinityOverviewLayout__back");
+        expect(back.parentElement?.className).toContain("dextinityOverviewLayout__label");
+        expect(back.parentElement?.textContent).toMatch(/All sites.*Overview/);
+
+        const click = new MouseEvent("click", { bubbles: true, cancelable: true });
+        fireEvent(back, click);
+        expect(onClick).toHaveBeenCalledOnce();
+        expect(click.defaultPrevented).toBe(true);
     });
 });

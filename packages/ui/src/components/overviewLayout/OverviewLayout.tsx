@@ -1,7 +1,10 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type MouseEvent, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
+import { Icon } from "../icon/Icon";
+import { Link, type LinkProps } from "../link/Link";
+import type { PageHeaderBack } from "../pageHeader/PageHeader";
 import styles from "./OverviewLayout.module.scss";
 
 /**
@@ -17,8 +20,10 @@ export interface OverviewLayoutSlotProps {
     hero?: SlotPropsValue<OverviewLayoutOwnerState, "header">;
     /** Props for the `heading` slot, which holds the label, the title, and the summary. */
     heading?: SlotPropsValue<OverviewLayoutOwnerState, "div">;
-    /** Props for the `label` slot. */
+    /** Props for the `label` slot, the mono line above the greeting with the back link and the eyebrow. */
     label?: SlotPropsValue<OverviewLayoutOwnerState, "div">;
+    /** Props for the back link, e.g. a different `startIcon`. */
+    back?: Partial<Omit<LinkProps, "children" | "href" | "render">>;
     /** Props for the `title` slot. */
     title?: SlotPropsValue<OverviewLayoutOwnerState, "h1">;
     /** Props for the `summary` slot. */
@@ -34,6 +39,8 @@ export interface OverviewLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>
     title: ReactNode;
     /** A mono label above the greeting, e.g. the app name. */
     eyebrow?: ReactNode;
+    /** A back link before the eyebrow, for an overview below another page, e.g. the overview of one site among several. */
+    back?: PageHeaderBack;
     /** One sentence on what happened since the last visit, with links to it. Warnings belong in their own card, not here. */
     summary?: ReactNode;
     /** Shown at the end of the greeting, e.g. a clock with the date; hidden in narrow layouts. */
@@ -46,11 +53,13 @@ export interface OverviewLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>
     slotProps?: OverviewLayoutSlotProps;
 }
 
+const labelSeparator = "·";
+
 /**
  * The layout of an overview page, the entry point of an app: a greeting with a summary of what happened, then cards that lead on.
  */
 export const OverviewLayout = forwardRef<HTMLDivElement, OverviewLayoutProps>(function OverviewLayout(
-    { title, eyebrow, summary, aside, children, className, slotProps, ...restProps },
+    { title, eyebrow, back, summary, aside, children, className, slotProps, ...restProps },
     ref,
 ) {
     const ownerState: OverviewLayoutOwnerState = { aside: aside != null };
@@ -95,7 +104,30 @@ export const OverviewLayout = forwardRef<HTMLDivElement, OverviewLayoutProps>(fu
         <div {...restProps} ref={ref} data-aside={ownerState.aside ? "" : undefined} className={clsx(styles.root, className)}>
             <header {...heroProps}>
                 <div {...headingProps}>
-                    {eyebrow != null && <div {...labelProps}>{eyebrow}</div>}
+                    {(back != null || eyebrow != null) && (
+                        <div {...labelProps}>
+                            {back != null && (
+                                <Link
+                                    startIcon={<Icon name="arrow-left" />}
+                                    {...slotProps?.back}
+                                    className={clsx(styles.back, slotProps?.back?.className)}
+                                    href={back.href}
+                                    render={back.render}
+                                    onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+                                        slotProps?.back?.onClick?.(event);
+                                        if (back.onClick != null) {
+                                            event.preventDefault();
+                                            back.onClick();
+                                        }
+                                    }}
+                                >
+                                    {back.label}
+                                </Link>
+                            )}
+                            {back != null && eyebrow != null && <span aria-hidden>{labelSeparator}</span>}
+                            {eyebrow}
+                        </div>
+                    )}
                     <h1 {...titleProps}>{title}</h1>
                     {summary != null && <p {...summaryProps}>{summary}</p>}
                 </div>

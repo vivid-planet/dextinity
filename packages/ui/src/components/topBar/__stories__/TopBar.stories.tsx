@@ -7,6 +7,7 @@ import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { SaveState } from "../../saveState/SaveState";
+import { Tooltip } from "../../tooltip/Tooltip";
 import { TopBar, type TopBarProps } from "../TopBar";
 import topBarTokens from "../TopBar.tokens.scss?raw";
 import styles from "./TopBar.stories.module.scss";
@@ -67,6 +68,7 @@ const meta = {
         aiOpen: { control: "boolean" },
         scope: { control: false },
         userMenu: { control: false },
+        browseActions: { control: false },
         actions: { control: false },
         back: { control: false },
         title: { control: "text" },
@@ -96,6 +98,28 @@ export const Default: Story = {
         await userEvent.click(aiToggle);
         await waitFor(() => expect(args.onAiOpenChange).toHaveBeenLastCalledWith(true));
         await expect(aiToggle).toHaveAttribute("aria-checked", "true");
+    },
+};
+
+/**
+ * `browseActions` holds the app's own controls while browsing, before the scope, e.g. a button that opens the status of the site's
+ * builds.
+ */
+export const WithBrowseActions: Story = {
+    args: {
+        browseActions: (
+            <Tooltip content="Builds">
+                <IconButton variant="text" color="secondary" aria-label="Builds" onClick={fn()}>
+                    <Icon name="reload" />
+                </IconButton>
+            </Tooltip>
+        ),
+    },
+    play: async ({ canvas }) => {
+        const builds = canvas.getByRole("button", { name: "Builds" });
+        const scope = canvas.getByRole("banner").querySelector(".dextinityScopeSwitcher");
+        await expect(builds).toBeVisible();
+        await expect(scope != null && builds.compareDocumentPosition(scope) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     },
 };
 

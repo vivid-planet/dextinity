@@ -15,6 +15,7 @@ export const FullWidthBanner = styled(Banner)`
 export const BackLink = styled(Link)`
     && {
         gap: 4px;
+        vertical-align: bottom;
         margin-inline-end: var(--dextinity-space-2);
         font-family: inherit;
         font-size: inherit;

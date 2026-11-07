@@ -16,10 +16,10 @@ In this grid, you can:
 
 :::tip
 
-Use the `showAllScopes` prop on `WarningsPage` and `LatestWarningsDashboardWidget` to display the warnings of all scopes the user is allowed to access instead:
+Use the `showAllScopes` prop on `WarningsPage` and `LatestWarningsCard` to display the warnings of all scopes the user is allowed to access instead:
 
 ```tsx
-<LatestWarningsDashboardWidget showAllScopes />
+<LatestWarningsCard warningsUrl={`${match.url}/system/warnings`} showAllScopes />
 ```
 
 For `WarningsPage`, the masterMenu entry needs a `render` function instead of `component` to pass the prop:
@@ -81,12 +81,12 @@ To make the warnings accessible in the admin panel, add the following entry to t
 ```
 
 `requiredPermission` hides the entry for users without the `warnings` permission in the currently selected scope.
-Guard `LatestWarningsDashboardWidget` the same way with `useUserPermissionCheck`:
+Guard `LatestWarningsCard` the same way with `useUserPermissionCheck`:
 
 ```tsx
 const isAllowed = useUserPermissionCheck();
 
-return isAllowed("warnings") && <LatestWarningsDashboardWidget />;
+return isAllowed("warnings") && <LatestWarningsCard warningsUrl={`${match.url}/system/warnings`} />;
 ```
 
 ### 3. Schedule the Daily Warning Check

@@ -1,4 +1,4 @@
-import { Banner, Link } from "@dextinity/ui";
+import { Banner } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 
 export const Tiles = styled("div")`
@@ -10,14 +10,4 @@ export const Tiles = styled("div")`
 
 export const FullWidthBanner = styled(Banner)`
     grid-column: 1 / -1;
-`;
-
-export const BackLink = styled(Link)`
-    && {
-        gap: 4px;
-        vertical-align: bottom;
-        margin-inline-end: var(--dextinity-space-2);
-        font-family: inherit;
-        font-size: inherit;
-    }
 `;

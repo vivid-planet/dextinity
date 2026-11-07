@@ -7,7 +7,7 @@ import { useIntl } from "react-intl";
 
 import { emailCampaignStatisticsQuery } from "./EmailCampaignStatistics.gql";
 import type { GQLEmailCampaignStatisticsQuery, GQLEmailCampaignStatisticsQueryVariables } from "./EmailCampaignStatistics.gql.generated";
-import { BackLink, FullWidthBanner, Tiles } from "./EmailCampaignStatistics.sc";
+import { FullWidthBanner, Tiles } from "./EmailCampaignStatistics.sc";
 
 type CampaignStatistics = NonNullable<GQLEmailCampaignStatisticsQuery["brevoEmailCampaignStatistics"]>;
 
@@ -57,19 +57,14 @@ export function EmailCampaignStatistics({ baseUrl, id, scopeLabel }: EmailCampai
 
     return (
         <OverviewLayout
-            eyebrow={
-                <>
-                    <BackLink href={baseUrl} onClick={navigateWithRouter} startIcon={<Icon name="arrow-left" />}>
-                        {intl.formatMessage({ id: "dextinity.emailCampaigns.emailCampaigns", defaultMessage: "Email campaigns" })}
-                    </BackLink>
-                    {[
-                        intl.formatMessage({ id: "dextinity.emailCampaignStatistics.eyebrow", defaultMessage: "Email campaign statistics" }),
-                        scopeLabel,
-                    ]
-                        .filter(Boolean)
-                        .join(" · ")}
-                </>
-            }
+            back={{ label: intl.formatMessage({ id: "dextinity.emailCampaigns.emailCampaigns", defaultMessage: "Email campaigns" }), href: baseUrl }}
+            slotProps={{ back: { onClick: navigateWithRouter } }}
+            eyebrow={[
+                intl.formatMessage({ id: "dextinity.emailCampaignStatistics.eyebrow", defaultMessage: "Email campaign statistics" }),
+                scopeLabel,
+            ]
+                .filter(Boolean)
+                .join(" · ")}
             title={campaign?.title ?? (isLoadingInitially ? <Skeleton variant="text" width="18rem" /> : "")}
             summary={
                 campaign

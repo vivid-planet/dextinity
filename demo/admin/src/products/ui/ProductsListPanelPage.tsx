@@ -16,6 +16,8 @@ import {
     MenuRadioItem,
     PageHeader,
     StatusIndicator,
+    ToastViewport,
+    useToasts,
 } from "@dextinity/ui";
 import type { GQLProductFilter, GQLProductSortField, GQLProductType } from "@src/graphql.generated";
 import { useEffect, useState } from "react";
@@ -27,6 +29,7 @@ import type { ProductUnsavedChanges } from "./ProductQuickEditForm";
 import { productsListQuery } from "./ProductsListPanelPage.gql";
 import type { GQLProductsUiListQuery, GQLProductsUiListQueryVariables } from "./ProductsListPanelPage.gql.generated";
 import styles from "./ProductsListPanelPage.module.css";
+import { PublishAllProductsButton } from "./PublishAllProductsButton";
 import { type ProductStatusFilter, useProductsListUrlState } from "./useProductsListUrlState";
 
 type ProductRow = GQLProductsUiListQuery["products"]["nodes"][number];
@@ -47,6 +50,7 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
     const [typeMenuOpen, setTypeMenuOpen] = useState(false);
     const [panelUnsavedChanges, setPanelUnsavedChanges] = useState<ProductUnsavedChanges>();
     const [pendingSelection, setPendingSelection] = useState<{ productId: string | null }>();
+    const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
 
     useEffect(() => {
         if (searchInput === search) {
@@ -224,9 +228,12 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
                                 : undefined
                         }
                         actions={
-                            <Button startIcon={<Icon name="plus" />} href={`${baseUrl}/add/add`} onClick={navigateWithRouter}>
-                                {intl.formatMessage({ id: "uiDemo.products.new", defaultMessage: "New product" })}
-                            </Button>
+                            <>
+                                <PublishAllProductsButton onNotify={addToast} />
+                                <Button startIcon={<Icon name="plus" />} href={`${baseUrl}/add`} onClick={navigateWithRouter}>
+                                    {intl.formatMessage({ id: "uiDemo.products.new", defaultMessage: "New product" })}
+                                </Button>
+                            </>
                         }
                     />
                 }
@@ -394,6 +401,11 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
                 confirmLabel={intl.formatMessage({ id: "uiDemo.products.unsavedChanges.save", defaultMessage: "Save and continue" })}
                 onConfirm={() => void saveAndApplyPendingSelection()}
                 labels={{ cancel: intl.formatMessage({ id: "uiDemo.products.unsavedChanges.cancel", defaultMessage: "Cancel" }) }}
+            />
+            <ToastViewport
+                toasts={toasts}
+                onDismiss={dismissToast}
+                labels={{ region: intl.formatMessage({ id: "uiDemo.productsCommon.notifications", defaultMessage: "Notifications" }) }}
             />
         </>
     );

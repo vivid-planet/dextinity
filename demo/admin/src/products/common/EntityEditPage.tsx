@@ -25,9 +25,11 @@ import { Form, useForm, useFormState } from "react-final-form";
 import { useIntl } from "react-intl";
 import { useHistory } from "react-router";
 
+import styles from "./EntityEditPage.module.css";
+
 const formDecorators = [focusOnError];
 
-export interface EntityEditPageSaveResult {
+interface EntityEditPageSaveResult {
     /** The id of the entry that was created, to open its edit page. */
     createdId?: string;
     /** Errors of fields, or `[FORM_ERROR]`, that keep the form unsaved. */
@@ -277,9 +279,11 @@ function EntityEditPageContent({
                 aside={aside}
                 asideLabel={asideLabel}
             >
-                {beforeContent}
-                {submitError != null && <Banner tone="error">{submitError}</Banner>}
-                {children}
+                <div className={styles.content}>
+                    {beforeContent}
+                    {submitError != null && <Banner tone="error">{submitError}</Banner>}
+                    {children}
+                </div>
             </EditLayout>
         </RouterPrompt>
     );

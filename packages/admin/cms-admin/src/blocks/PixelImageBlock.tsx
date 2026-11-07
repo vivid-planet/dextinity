@@ -1,7 +1,6 @@
 import { gql } from "@apollo/client";
 import { Icon } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
-import { deepClone } from "@mui/x-data-grid/internals";
 import { useCallback, useState } from "react";
 import { Field } from "react-final-form";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -132,7 +131,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
     },
 
     replaceDependenciesInOutput: (output, replacements) => {
-        const clonedOutput: PixelImageBlockInput = deepClone(output);
+        const clonedOutput: PixelImageBlockInput = structuredClone(output);
         const replacement = replacements.find((replacement) => replacement.type === "DamFile" && replacement.originalId === output.damFileId);
 
         if (replacement) {

@@ -230,6 +230,7 @@ export function EmailCampaignsListPage({ baseUrl, scope, scopeLabel, addToast, E
             header: intl.formatMessage({ id: "dextinity.emailCampaigns.updatedAt", defaultMessage: "Last changed" }),
             sortable: true,
             width: 180,
+            priority: "low",
             render: (campaign) => (
                 <SecondaryText>
                     <FormattedDate value={campaign.updatedAt} dateStyle="medium" timeStyle="short" />

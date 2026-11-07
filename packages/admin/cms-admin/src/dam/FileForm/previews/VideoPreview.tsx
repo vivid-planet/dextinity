@@ -5,19 +5,6 @@ import { FormattedMessage } from "react-intl";
 import type { DamFileDetails } from "../EditFile";
 import { type GQLVideoPreviewCaptionsQuery, type GQLVideoPreviewCaptionsQueryVariables, namedOperations } from "./VideoPreview.generated";
 
-const VideoPreviewWrapper = styled("div")`
-    width: 100%;
-    max-width: 60vw;
-    min-height: 200px;
-    background-color: ${({ theme }) => theme.palette.grey[50]};
-    display: flex;
-    flex-direction: column;
-`;
-
-const StyledVideo = styled("video")`
-    width: 100%;
-`;
-
 interface VideoPreviewProps {
     file: DamFileDetails;
 }
@@ -41,26 +28,30 @@ const videoPreviewCaptionsQuery = gql`
     }
 `;
 
-export const VideoPreview = ({ file }: VideoPreviewProps) => {
+export function VideoPreview({ file }: VideoPreviewProps) {
     const { data } = useQuery<GQLVideoPreviewCaptionsQuery, GQLVideoPreviewCaptionsQueryVariables>(videoPreviewCaptionsQuery, {
-        variables: {
-            id: file.id,
-        },
+        variables: { id: file.id },
     });
 
     return (
-        <VideoPreviewWrapper>
-            <StyledVideo controls src={file.fileUrl}>
-                {data?.damFile.alternativesForThisFile
-                    .filter((alternative) => alternative.type === "captions")
-                    .map((caption) => {
-                        return <track key={caption.id} src={caption.alternative.fileUrl} kind="captions" srcLang={caption.language} />;
-                    })}
-                <FormattedMessage
-                    id="dextinity.dam.file.unsupportedVideoTag"
-                    defaultMessage="Your browser does not support the video element. Please use another browser."
-                />
-            </StyledVideo>
-        </VideoPreviewWrapper>
+        <Video controls src={file.fileUrl}>
+            {data?.damFile.alternativesForThisFile
+                .filter((alternative) => alternative.type === "captions")
+                .map((caption) => (
+                    <track key={caption.id} src={caption.alternative.fileUrl} kind="captions" srcLang={caption.language} label={caption.language} />
+                ))}
+            <FormattedMessage
+                id="dextinity.dam.file.unsupportedVideoTag"
+                defaultMessage="Your browser does not support the video element. Please use another browser."
+            />
+        </Video>
     );
-};
+}
+
+const Video = styled("video")`
+    display: block;
+    inline-size: 100%;
+    max-block-size: 100%;
+    border-radius: var(--dextinity-radius-item);
+    background: var(--dextinity-color-surface-sunken);
+`;

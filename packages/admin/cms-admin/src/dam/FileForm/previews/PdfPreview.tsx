@@ -2,25 +2,18 @@ import { styled } from "@mui/material/styles";
 
 import type { DamFileDetails } from "../EditFile";
 
-const PdfPreviewWrapper = styled("div")`
-    width: 100%;
-    height: calc(100vh - 300px);
-    overflow-y: auto;
-`;
-
-const PdfPreviewIFrame = styled("iframe")`
-    width: inherit;
-    height: inherit;
-`;
-
 interface PdfPreviewProps {
     file: DamFileDetails;
 }
 
-export const PdfPreview = ({ file }: PdfPreviewProps) => {
-    return (
-        <PdfPreviewWrapper>
-            <PdfPreviewIFrame src={file.fileUrl} />
-        </PdfPreviewWrapper>
-    );
-};
+export function PdfPreview({ file }: PdfPreviewProps) {
+    return <PdfFrame src={file.fileUrl} title={file.name} />;
+}
+
+const PdfFrame = styled("iframe")`
+    align-self: stretch;
+    inline-size: 100%;
+    min-block-size: 480px;
+    border: 0;
+    border-radius: var(--dextinity-radius-item);
+`;

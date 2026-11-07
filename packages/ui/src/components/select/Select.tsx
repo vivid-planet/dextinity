@@ -6,6 +6,7 @@ import { type ForwardedRef, forwardRef, Fragment, type HTMLAttributes, type Reac
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "../field/Field";
 import { Icon } from "../icon/Icon";
+import { groupOptions, hasGroups, type OptionGroup } from "./optionGroups";
 import { defaultGetKey } from "./optionKey";
 import styles from "./Select.module.scss";
 
@@ -23,6 +24,8 @@ export interface SelectOption<Value = string> {
     icon?: ReactNode;
     /** Shows the option without allowing to choose it. */
     disabled?: boolean;
+    /** The header the option is listed under in the menu. Options with the same group are shown together, in the order the groups first appear. */
+    group?: string;
 }
 
 /**
@@ -231,6 +234,10 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
           ))
         : null;
 
+    const getGroup = (option: SelectOption<Value>) => option.group;
+    const grouped = hasGroups(options, getGroup);
+    const optionGroups = grouped ? groupOptions(options, getGroup) : [];
+
     const itemContent = (option: SelectOption<Value>, ItemIndicator: typeof BaseSelect.ItemIndicator | typeof Combobox.ItemIndicator) => (
         <>
             {option.icon != null && <span className={styles.itemIcon}>{option.icon}</span>}
@@ -239,6 +246,24 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                 <Icon name="check" />
             </ItemIndicator>
         </>
+    );
+
+    const renderComboboxItem = (option: SelectOption<Value>) => (
+        <Combobox.Item key={getKey(option.value)} value={option} disabled={option.disabled} className={styles.item}>
+            {itemContent(option, Combobox.ItemIndicator)}
+        </Combobox.Item>
+    );
+
+    const renderSelectItem = (option: SelectOption<Value>) => (
+        <BaseSelect.Item
+            key={getKey(option.value)}
+            value={getKey(option.value)}
+            label={optionText(option)}
+            disabled={option.disabled}
+            className={styles.item}
+        >
+            {itemContent(option, BaseSelect.ItemIndicator)}
+        </BaseSelect.Item>
     );
 
     return (
@@ -265,7 +290,7 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
             {(control) =>
                 searchable ? (
                     <Combobox.Root
-                        items={options}
+                        items={grouped ? optionGroups : options}
                         multiple={isMultiple}
                         value={isMultiple ? selectedOptions : (selectedOptions[0] ?? null)}
                         onValueChange={(next: SelectOption<Value> | SelectOption<Value>[] | null) => emit(toList(next))}
@@ -300,16 +325,16 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                                     </div>
                                     <Combobox.Empty className={styles.empty}>{labels.noResults}</Combobox.Empty>
                                     <Combobox.List className={styles.list}>
-                                        {(option: SelectOption<Value>) => (
-                                            <Combobox.Item
-                                                key={getKey(option.value)}
-                                                value={option}
-                                                disabled={option.disabled}
-                                                className={styles.item}
-                                            >
-                                                {itemContent(option, Combobox.ItemIndicator)}
-                                            </Combobox.Item>
-                                        )}
+                                        {grouped
+                                            ? (group: OptionGroup<SelectOption<Value>>) => (
+                                                  <Combobox.Group key={group.label ?? ""} items={group.items} className={styles.group}>
+                                                      {group.label != null && (
+                                                          <Combobox.GroupLabel className={styles.groupLabel}>{group.label}</Combobox.GroupLabel>
+                                                      )}
+                                                      <Combobox.Collection>{renderComboboxItem}</Combobox.Collection>
+                                                  </Combobox.Group>
+                                              )
+                                            : renderComboboxItem}
                                     </Combobox.List>
                                 </Combobox.Popup>
                             </Combobox.Positioner>
@@ -342,17 +367,16 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                             >
                                 <BaseSelect.Popup className={styles.popup}>
                                     <BaseSelect.List className={styles.list}>
-                                        {options.map((option) => (
-                                            <BaseSelect.Item
-                                                key={getKey(option.value)}
-                                                value={getKey(option.value)}
-                                                label={optionText(option)}
-                                                disabled={option.disabled}
-                                                className={styles.item}
-                                            >
-                                                {itemContent(option, BaseSelect.ItemIndicator)}
-                                            </BaseSelect.Item>
-                                        ))}
+                                        {grouped
+                                            ? optionGroups.map((group) => (
+                                                  <BaseSelect.Group key={group.label ?? ""} className={styles.group}>
+                                                      {group.label != null && (
+                                                          <BaseSelect.GroupLabel className={styles.groupLabel}>{group.label}</BaseSelect.GroupLabel>
+                                                      )}
+                                                      {group.items.map(renderSelectItem)}
+                                                  </BaseSelect.Group>
+                                              ))
+                                            : options.map(renderSelectItem)}
                                     </BaseSelect.List>
                                 </BaseSelect.Popup>
                             </BaseSelect.Positioner>

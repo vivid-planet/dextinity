@@ -59,5 +59,16 @@ export function usePageTreeCopyPaste({ structure, category, onPasteError }: UseP
         return pasteTo(page, "after", pagesClipboard);
     };
 
-    return { copyPages, readClipboard, hasClipboardPages: clipboard != null, pastePages, duplicatePage, progress: pasteProgress };
+    /** Duplicates each page next to itself, starting with the last one so that the earlier pages keep their positions. */
+    const duplicatePages = async (pages: GQLPageTreePageFragment[]) => {
+        let duplicatedCount = 0;
+        for (const page of [...pages].sort((pageA, pageB) => pageB.pos - pageA.pos)) {
+            if (await duplicatePage(page)) {
+                duplicatedCount++;
+            }
+        }
+        return duplicatedCount;
+    };
+
+    return { copyPages, readClipboard, hasClipboardPages: clipboard != null, pastePages, duplicatePage, duplicatePages, progress: pasteProgress };
 }

@@ -21,6 +21,11 @@ export const useSnackbarApi = () => {
     return context;
 };
 
+/** The snackbar API of a surrounding `SnackbarProvider`, or `undefined` without one, e.g. for a fallback when another notification system is used. */
+export const useOptionalSnackbarApi = (): SnackbarApi | undefined => {
+    return useContext(SnackbarContext) ?? undefined;
+};
+
 type SnackbarCloseEvent = SyntheticEvent<any> | Event | null;
 type HandleClose = (event: SnackbarCloseEvent, reason: SnackbarCloseReason, onClose?: SnackbarProps["onClose"]) => void;
 

@@ -34,5 +34,7 @@
 @mixin high-contrast-tokens {
     --dextinity-date-picker-day-shadow-selected: inset 0 0 0 2px var(--dextinity-color-focus);
     // The soft range fill is black, so lines above and below mark the range instead
-    --dextinity-date-picker-day-shadow-range: inset 0 var(--dextinity-line-width) 0 var(--dextinity-color-text), inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-text);
+    --dextinity-date-picker-day-shadow-range:
+        inset 0 var(--dextinity-line-width) 0 var(--dextinity-color-text),
+        inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-text);
 }

@@ -488,6 +488,15 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
                 downloadFile(file.fileUrl, file.name);
             }
         }
+        if (selectedFolderIds.length > 0) {
+            addToast({
+                message: intl.formatMessage({
+                    id: "dextinity.damFinder.download.foldersSkipped",
+                    defaultMessage: "Only the files are downloaded. Download a folder on its own to get it as a ZIP.",
+                }),
+                tone: "info",
+            });
+        }
     };
 
     const handleCreateFolder = async (name: string) => {

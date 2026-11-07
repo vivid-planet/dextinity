@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { FormProvider, useForm, useFormState } from "react-hook-form";
+import { FormProvider, useFieldArray, useForm, useFormState } from "react-hook-form";
 import { describe, expect, it, vi } from "vitest";
 
 import { CheckboxField } from "../../fields/checkboxField/CheckboxField";
@@ -111,6 +111,43 @@ describe("fields without a default value", () => {
         await userEvent.type(screen.getByLabelText("Title"), "!");
         expect(screen.getByRole("status")).toHaveTextContent("dirty");
         await userEvent.type(screen.getByLabelText("Title"), "{Backspace}");
+        expect(screen.getByRole("status")).toHaveTextContent("pristine");
+    });
+
+    it("leave no default values behind for a field array row that was added and removed", async () => {
+        type Values = { items: Array<{ title: string; note?: string }> };
+        function Rows() {
+            const { fields, append, remove } = useFieldArray<Values>({ name: "items" });
+            return (
+                <>
+                    {fields.map((item, index) => (
+                        <div key={item.id}>
+                            <InputField name={`items.${index}.note`} label={`Note ${index}`} />
+                            <button type="button" onClick={() => remove(index)}>
+                                Remove {index}
+                            </button>
+                        </div>
+                    ))}
+                    <button type="button" onClick={() => append({ title: "" })}>
+                        Add
+                    </button>
+                </>
+            );
+        }
+        function FormWithFieldArray() {
+            const form = useForm<Values>({ defaultValues: { items: [] } });
+            return (
+                <FormProvider {...form}>
+                    <Rows />
+                    <DirtyState />
+                </FormProvider>
+            );
+        }
+        render(<FormWithFieldArray />);
+
+        await userEvent.click(screen.getByRole("button", { name: "Add" }));
+        expect(screen.getByRole("status")).toHaveTextContent("dirty");
+        await userEvent.click(screen.getByRole("button", { name: "Remove 0" }));
         expect(screen.getByRole("status")).toHaveTextContent("pristine");
     });
 });

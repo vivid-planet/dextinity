@@ -1,0 +1,26 @@
+.body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+}
+
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.actions {
+    margin-inline-start: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}

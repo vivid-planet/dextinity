@@ -48,6 +48,11 @@
     --dextinity-data-grid-editor-halo: var(--dextinity-field-halo-focus);
     --dextinity-data-grid-editor-shadow: inset 0 0 0 2px var(--dextinity-data-grid-editor-line), 0 0 0 3px var(--dextinity-data-grid-editor-halo);
     --dextinity-data-grid-editable-background-hover: color-mix(in oklch, var(--dextinity-color-text) 9%, transparent);
+    // An editor whose value can't be saved, and the message below it
+    --dextinity-data-grid-editor-shadow-invalid:
+        inset 0 0 0 2px var(--dextinity-color-danger), 0 0 0 3px color-mix(in oklch, var(--dextinity-color-danger) 22%, transparent);
+    --dextinity-data-grid-editor-error-background: var(--dextinity-color-danger);
+    --dextinity-data-grid-editor-error-foreground: var(--dextinity-color-danger-foreground);
 
     // Reordering
     --dextinity-data-grid-grip-foreground: var(--dextinity-color-text-subtle);
@@ -67,4 +72,5 @@
     --dextinity-data-grid-actions-idle-opacity: 1;
     // Like a focused field: the keyboard position stays as visible as on a focused cell
     --dextinity-data-grid-editor-shadow: inset 0 0 0 2px var(--dextinity-data-grid-cell-focus-line);
+    --dextinity-data-grid-editor-shadow-invalid: inset 0 0 0 3px var(--dextinity-color-danger);
 }

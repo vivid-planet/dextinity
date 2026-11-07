@@ -20,8 +20,8 @@ export interface BlockContentEditorPreview {
     url: string;
     /** The state to render, created with the root block's `createPreviewState`. */
     state: unknown;
-    /** The public address of the edited content, shown above the preview. Defaults to `url`. */
-    siteUrl?: string;
+    /** The public address of the edited content, shown above the preview. Defaults to `url`. `null` shows no address, e.g. for content without its own page. */
+    siteUrl?: string | null;
 }
 
 export interface BlockContentEditorTab {

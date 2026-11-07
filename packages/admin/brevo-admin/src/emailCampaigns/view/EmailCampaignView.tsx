@@ -88,6 +88,7 @@ export function EmailCampaignView({ baseUrl, id, scope, scopeLabel, EmailCampaig
             previewApi={previewApi}
             preview={{
                 url: previewUrl,
+                siteUrl: null,
                 state: campaign
                     ? {
                           emailCampaignId: id,

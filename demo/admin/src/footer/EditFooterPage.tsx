@@ -156,7 +156,7 @@ export function EditFooterPage(): JSX.Element | null {
                 />
             }
             loading={loading}
-            preview={{ url: `${siteConfig.blockPreviewBaseUrl}/footer`, state: previewState }}
+            preview={{ url: `${siteConfig.blockPreviewBaseUrl}/footer`, siteUrl: `${siteConfig.url}/${scope.language}`, state: previewState }}
             previewApi={previewApi}
             save={{ hasChanges, saving, onSave: handleSave, onDiscard: () => resetToSavedContent(data?.footer) }}
             tabs={[

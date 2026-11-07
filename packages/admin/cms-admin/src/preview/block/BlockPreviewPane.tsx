@@ -16,8 +16,8 @@ export interface BlockPreviewPaneProps {
     /** The state to render, created with the root block's `createPreviewState`. */
     previewState: unknown;
     previewApi: Pick<BlockPreviewApi, "device" | "setDevice" | "showOnlyVisible" | "setShowOnlyVisible">;
-    /** The public address of the edited page, shown above the preview. Defaults to `url`. */
-    siteUrl?: string;
+    /** The public address of the edited page, shown above the preview. Defaults to `url`. `null` shows no address, e.g. for content without its own page. */
+    siteUrl?: string | null;
     /** Opens the saved page in the site preview, e.g. with `openSitePreviewWindow`. Without it, the action is not shown. */
     onOpenSitePreview?: () => void;
     /** Further actions at the end of the toolbar. */
@@ -37,7 +37,7 @@ export function BlockPreviewPane({ url, previewState, previewApi, siteUrl, onOpe
     return (
         <Root
             className={className}
-            url={normalizeSiteAddress(siteUrl ?? url)}
+            url={siteUrl === null ? "" : normalizeSiteAddress(siteUrl ?? url)}
             src={url}
             device={previewApi.device}
             onDeviceChange={previewApi.setDevice}

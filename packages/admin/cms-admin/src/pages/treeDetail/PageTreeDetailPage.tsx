@@ -11,6 +11,7 @@ import {
     Icon,
     IconButton,
     matchesShortcut,
+    MenuItem,
     PageHeader,
     Panel,
     Skeleton,
@@ -48,7 +49,7 @@ import { PageTreeNodeDetail } from "./PageTreeNodeDetail";
 import { PageTreeNodeMenu, type PageTreeNodeMenuCategory } from "./PageTreeNodeMenu";
 import { pageTreeShortcuts } from "./pageTreeShortcuts";
 import { usePageTreeStatusLabels, visibilityStatus } from "./pageTreeStatus";
-import { createPageTreeStructure, getAncestorIds, isHomePage, type PageTreeStructure } from "./pageTreeStructure";
+import { createPageTreeStructure, getAncestorIds, getSubtree, getTopmostPageIds, isHomePage, type PageTreeStructure } from "./pageTreeStructure";
 import { selectedPageParam } from "./selectedPageParam";
 import { type PastePosition, usePageTreeCopyPaste } from "./usePageTreeCopyPaste";
 import { areSubtreesComplete, getPagesToDelete, usePageTreeDetailActions } from "./usePageTreeDetailActions";
@@ -208,6 +209,7 @@ function PageTreeDetailView({
             showError(intl.formatMessage({ id: "dextinity.pageTreeDetail.pasteFailed", defaultMessage: "The pages could not be pasted" })),
     });
     const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>();
+    const [isBulkMoveMenuOpen, setIsBulkMoveMenuOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const selectedIdParam = new URLSearchParams(location.search).get(selectedPageParam);
@@ -272,47 +274,118 @@ function PageTreeDetailView({
         }
     };
 
-    const getMoveCategories = (page: GQLPageTreePageFragment): PageTreeNodeMenuCategory[] =>
+    const duplicatePages = async (pagesToDuplicate: GQLPageTreePageFragment[]) => {
+        try {
+            const count = await copyPaste.duplicatePages(pagesToDuplicate);
+            if (count > 0) {
+                addToast({
+                    message: intl.formatMessage(
+                        {
+                            id: "dextinity.pageTreeDetail.duplicatedPages",
+                            defaultMessage: "{count, plural, one {# page} other {# pages}} duplicated",
+                        },
+                        { count },
+                    ),
+                });
+            }
+        } catch {
+            showError(
+                intl.formatMessage({ id: "dextinity.pageTreeDetail.duplicatePagesFailed", defaultMessage: "Not all pages could be duplicated" }),
+            );
+        }
+    };
+
+    const getMoveCategories = (pagesToMove: GQLPageTreePageFragment[]): PageTreeNodeMenuCategory[] =>
         categories.length > 1
             ? categories
                   .filter((otherCategory) => otherCategory.category !== category)
                   .map((otherCategory) => ({
                       category: otherCategory.category,
                       label: getCategoryLabelText(otherCategory, intl),
-                      disabledReason: categorySupportsDocumentType(
-                          otherCategory.category,
-                          page.documentType,
-                          typeof passedDocumentTypes === "function" ? passedDocumentTypes : undefined,
+                      disabledReason: pagesToMove.every((page) =>
+                          categorySupportsDocumentType(
+                              otherCategory.category,
+                              page.documentType,
+                              typeof passedDocumentTypes === "function" ? passedDocumentTypes : undefined,
+                          ),
                       )
                           ? undefined
-                          : intl.formatMessage({
-                                id: "dextinity.pageTreeDetail.categoryUnsupported",
-                                defaultMessage: "This category has no pages of this type",
-                            }),
+                          : pagesToMove.length > 1
+                            ? intl.formatMessage({
+                                  id: "dextinity.pageTreeDetail.categoryUnsupportedForSome",
+                                  defaultMessage: "This category has no pages of the type of some selected pages",
+                              })
+                            : intl.formatMessage({
+                                  id: "dextinity.pageTreeDetail.categoryUnsupported",
+                                  defaultMessage: "This category has no pages of this type",
+                              }),
                   }))
             : [];
 
-    const movePageToCategory = async (page: GQLPageTreePageFragment, targetCategory: string) => {
+    const movePagesToCategory = async (pagesToMove: GQLPageTreePageFragment[], targetCategory: string) => {
         const targetCategoryConfig = categories.find((otherCategory) => otherCategory.category === targetCategory);
+        const movedPages: GQLPageTreePageFragment[] = [];
         try {
-            await moveToCategory(page, targetCategory);
+            for (const page of pagesToMove) {
+                await moveToCategory(page, targetCategory);
+                movedPages.push(page);
+            }
         } catch {
-            showError(intl.formatMessage({ id: "dextinity.pageTreeDetail.moveCategoryFailed", defaultMessage: "The page could not be moved" }));
-            return;
+            showError(
+                pagesToMove.length > 1
+                    ? intl.formatMessage({ id: "dextinity.pageTreeDetail.movePagesCategoryFailed", defaultMessage: "Not all pages could be moved" })
+                    : intl.formatMessage({ id: "dextinity.pageTreeDetail.moveCategoryFailed", defaultMessage: "The page could not be moved" }),
+            );
+            if (movedPages.length === 0) {
+                return;
+            }
         }
+        const movedIds = new Set(movedPages.map((page) => page.id));
+        setCheckedIds((ids) =>
+            ids.filter((id) => !movedIds.has(id) && !getAncestorIds(structure, id).some((ancestorId) => movedIds.has(ancestorId))),
+        );
+        const categoryLabel = targetCategoryConfig != null ? getCategoryLabelText(targetCategoryConfig, intl) : targetCategory;
         addToast({
-            message: intl.formatMessage(
-                { id: "dextinity.pageTreeDetail.movedToCategory", defaultMessage: "“{name}” moved to {category}" },
-                { name: page.name, category: targetCategoryConfig != null ? getCategoryLabelText(targetCategoryConfig, intl) : targetCategory },
-            ),
+            message:
+                movedPages.length === 1
+                    ? intl.formatMessage(
+                          { id: "dextinity.pageTreeDetail.movedToCategory", defaultMessage: "“{name}” moved to {category}" },
+                          { name: movedPages[0].name, category: categoryLabel },
+                      )
+                    : intl.formatMessage(
+                          {
+                              id: "dextinity.pageTreeDetail.movedPagesToCategory",
+                              defaultMessage: "{count, plural, one {# page} other {# pages}} moved to {category}",
+                          },
+                          { count: movedPages.length, category: categoryLabel },
+                      ),
             action:
                 getCategoryUrl != null
                     ? {
                           label: intl.formatMessage({ id: "dextinity.pageTreeDetail.showMovedPage", defaultMessage: "Show" }),
-                          onClick: () => history.push(`${contentScopeMatch.url}${getCategoryUrl(targetCategory)}?${selectedPageParam}=${page.id}`),
+                          onClick: () =>
+                              history.push(`${contentScopeMatch.url}${getCategoryUrl(targetCategory)}?${selectedPageParam}=${movedPages[0].id}`),
                       }
                     : undefined,
         });
+    };
+
+    const getTranslateDisabledReason = (translation: { translating: boolean; hasTranslatableContent: boolean }, pageCount: number) => {
+        if (translation.translating) {
+            return intl.formatMessage({ id: "dextinity.pageTreeDetail.translating", defaultMessage: "A translation is running" });
+        }
+        if (!translation.hasTranslatableContent) {
+            return pageCount > 1
+                ? intl.formatMessage({
+                      id: "dextinity.pageTreeDetail.noTranslatablePages",
+                      defaultMessage: "None of the selected pages is translatable, archived pages and pages without translatable content are skipped",
+                  })
+                : intl.formatMessage({
+                      id: "dextinity.pageTreeDetail.noTranslatablePage",
+                      defaultMessage: "This page has no translatable content",
+                  });
+        }
+        return undefined;
     };
 
     const notFullySelectedReason = intl.formatMessage({
@@ -435,6 +508,9 @@ function PageTreeDetailView({
     }
 
     const checkedDeleteDisabledReason = getDeleteDisabledReason(checkedIds);
+    const topmostCheckedPages = getTopmostPageIds(structure, checkedIds).flatMap((id) => structure.pagesById.get(id) ?? []);
+    const checkedMoveCategories = getMoveCategories(topmostCheckedPages.flatMap((page) => getSubtree(structure, page)));
+    const checkedTranslateDisabledReason = getTranslateDisabledReason(checkedPagesTranslation, checkedPages.length);
     const bulkActions: BulkActionBarAction[] = [
         ...(["Published", "Unpublished", "Archived"] as const).map((visibility) => ({
             label: intl.formatMessage(
@@ -455,12 +531,48 @@ function PageTreeDetailView({
             icon: <Icon name="copy" />,
             onClick: () => void copyPages(checkedIds),
         },
+        {
+            label: intl.formatMessage({ id: "dextinity.pageTreeDetail.bulk.duplicate", defaultMessage: "Duplicate" }),
+            icon: <Icon name="duplicate" />,
+            onClick: () => {
+                void duplicatePages(topmostCheckedPages);
+                setCheckedIds([]);
+            },
+        },
+        ...(checkedMoveCategories.length > 0
+            ? [
+                  {
+                      label: intl.formatMessage({ id: "dextinity.pageTreeDetail.bulk.moveToCategory", defaultMessage: "Move to" }),
+                      icon: <Icon name="move-page" />,
+                      disabled: topmostCheckedPages.some((page) => page.visibility === "Archived"),
+                      disabledReason: intl.formatMessage({
+                          id: "dextinity.pageTreeDetail.bulk.moveArchived",
+                          defaultMessage: "Archived pages can't be moved to another category, restore them first",
+                      }),
+                      open: isBulkMoveMenuOpen,
+                      onOpenChange: setIsBulkMoveMenuOpen,
+                      menu: checkedMoveCategories.map(({ category: targetCategory, label, disabledReason }) => (
+                          <MenuItem
+                              key={targetCategory}
+                              label={label}
+                              disabled={disabledReason != null}
+                              disabledReason={disabledReason}
+                              onClick={() => {
+                                  setIsBulkMoveMenuOpen(false);
+                                  void movePagesToCategory(topmostCheckedPages, targetCategory);
+                              }}
+                          />
+                      )),
+                  },
+              ]
+            : []),
         ...(checkedPagesTranslation.enabled
             ? [
                   {
                       label: intl.formatMessage({ id: "dextinity.pageTreeDetail.bulk.translate", defaultMessage: "Translate" }),
                       icon: <Icon name="translate" />,
-                      disabled: checkedPagesTranslation.translating || !checkedPagesTranslation.hasTranslatableContent,
+                      disabled: checkedTranslateDisabledReason != null,
+                      disabledReason: checkedTranslateDisabledReason,
                       onClick: checkedPagesTranslation.openDialog,
                   },
               ]
@@ -672,12 +784,12 @@ function PageTreeDetailView({
                                     onOpen={() => void copyPaste.readClipboard()}
                                     hasClipboardPages={copyPaste.hasClipboardPages}
                                     onDuplicateClick={() => void duplicatePage(selectedPage)}
-                                    categories={getMoveCategories(selectedPage)}
-                                    onMoveToCategoryClick={(targetCategory) => void movePageToCategory(selectedPage, targetCategory)}
+                                    categories={getMoveCategories([selectedPage])}
+                                    onMoveToCategoryClick={(targetCategory) => void movePagesToCategory([selectedPage], targetCategory)}
                                     translate={
                                         selectedPageTranslation.enabled
                                             ? {
-                                                  disabled: selectedPageTranslation.translating || !selectedPageTranslation.hasTranslatableContent,
+                                                  disabledReason: getTranslateDisabledReason(selectedPageTranslation, 1),
                                                   onClick: selectedPageTranslation.openDialog,
                                               }
                                             : undefined

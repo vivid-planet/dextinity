@@ -28,6 +28,7 @@ import type { GQLProductInput, GQLProductMutationErrorCode, GQLProductStatus, GQ
 import { EntityEditPage, EntityEditPageStatus } from "@src/products/common/EntityEditPage";
 import { OnFieldChange } from "@src/products/common/OnFieldChange";
 import { useComboboxLabels } from "@src/products/common/useComboboxLabels";
+import { format } from "date-fns";
 import { deepEqual } from "fast-equals";
 import { FORM_ERROR } from "final-form";
 import { type PropsWithChildren, type ReactNode, useMemo } from "react";
@@ -433,6 +434,7 @@ function ProductFields() {
                             label={intl.formatMessage({ id: "uiDemo.products.title", defaultMessage: "Title" })}
                             required
                             requiredMessage={requiredMessage}
+                            validate={(title?: string) => (title?.trim() ? undefined : requiredMessage)}
                         />
                         <InputField
                             className={styles.fullWidth}
@@ -590,7 +592,7 @@ function FutureAvailabilityBanner() {
     const {
         input: { value: availableSince },
     } = useField<string | null>("availableSince", { subscription: { value: true } });
-    const today = new Date().toISOString().slice(0, 10);
+    const today = format(new Date(), "yyyy-MM-dd");
     if (!availableSince || availableSince <= today) {
         return null;
     }

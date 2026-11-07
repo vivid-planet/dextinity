@@ -166,6 +166,10 @@ The tag is `development` rather than `dev` because Storybook already uses `dev` 
 
 A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
 
+#### Pattern pages
+
+A pattern page is an MDX page in `src/docs/patterns/` with the title `Patterns/<Name>`, named in sentence case after the part of an application it covers. It explains when to use which component and how to combine them, and links to the docs pages of the components it uses. It states what to do, not why. Its examples are stories in `src/docs/patterns/__stories__/`, tagged `["!dev", "!autodocs", "!manifest"]`.
+
 ## Development
 
 The package has two dev-pm scripts:

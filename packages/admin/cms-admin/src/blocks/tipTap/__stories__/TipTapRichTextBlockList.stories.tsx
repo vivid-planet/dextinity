@@ -9,6 +9,7 @@ import {
     type TipTapTextBlock,
     type TipTapTextBlockStyle,
 } from "../createTipTapRichTextBlock";
+import { chooseMenuItem, closeMenu } from "./tipTapStoryInteractions";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -126,7 +127,7 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.keyboard("{Escape}");
+            await closeMenu(userEvent);
         });
 
         await step("Click the editor, then type text so list toggle works", async () => {
@@ -173,7 +174,7 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.keyboard("{Escape}");
+            await closeMenu(userEvent);
         });
 
         await step("Switch to ordered list via keyboard shortcut", async () => {
@@ -206,7 +207,7 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.keyboard("{Escape}");
+            await closeMenu(userEvent);
         });
 
         await step("Select 'List Large' style", async () => {
@@ -270,7 +271,7 @@ export const ListTextBlockStyles: StoryObj<typeof ListTextBlockStylesStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.keyboard("{Escape}");
+            await closeMenu(userEvent);
         });
     },
 };
@@ -383,7 +384,7 @@ export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
             await userEvent.keyboard("Heading in a list");
 
             await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Heading 2" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 2");
 
             await waitFor(
                 () => {
@@ -412,7 +413,7 @@ export const ListTextBlock: StoryObj<typeof ListTextBlockStory> = {
             const editor = canvas.getByRole("textbox");
 
             await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Heading 2" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 2");
 
             await waitFor(
                 () => {

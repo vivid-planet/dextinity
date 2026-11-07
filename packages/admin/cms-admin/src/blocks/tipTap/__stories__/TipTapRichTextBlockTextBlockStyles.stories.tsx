@@ -4,6 +4,7 @@ import { type PropsWithChildren, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState, type TipTapTextBlockStyle } from "../createTipTapRichTextBlock";
+import { chooseMenuItem, closeMenu } from "./tipTapStoryInteractions";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -91,7 +92,7 @@ export const ApplyingAStyle: StoryObj<typeof ApplyingAStyleStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Intro Text" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Intro Text");
 
             await waitFor(
                 () => {
@@ -297,7 +298,7 @@ export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
 
         await step("Display renders through its own element", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Display" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Display");
 
             await waitFor(
                 () => {
@@ -310,7 +311,7 @@ export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
 
         await step("Heading 1 offers its styles instead", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Heading 1" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 1");
 
             await waitFor(
                 () => {
@@ -369,12 +370,12 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
                 },
                 { timeout: 3000 },
             );
-            await userEvent.keyboard("{Escape}");
+            await closeMenu(userEvent);
         });
 
         await step("Switching to Heading 1 applies its own default style", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Heading 1" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 1");
 
             await waitFor(
                 () => {
@@ -386,7 +387,7 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
 
         await step("Heading 2 shares the styles but keeps the Default entry, having no default style", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Heading 2" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 2");
 
             // "Large Heading" is offered by both, so switching keeps it instead of resetting. The switch is applied once the menu has
             // closed and moves the focus into the editor, which would close a menu opened before it.
@@ -407,7 +408,7 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
                 },
                 { timeout: 3000 },
             );
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Default" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Default");
 
             await waitFor(
                 () => {
@@ -419,7 +420,7 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
 
         await step("The list shortcut hands the paragraph to the list's default style and back", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Paragraph" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Paragraph");
 
             const editor = canvas.getByRole("textbox");
             await userEvent.click(editor);
@@ -561,7 +562,7 @@ export const TextBlockStyleSelectDisabledInHeading: StoryObj<typeof TextBlockSty
 
         await step("A heading without styles keeps the styling select, disabled", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Heading 1" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 1");
 
             await waitFor(
                 () => {
@@ -575,7 +576,7 @@ export const TextBlockStyleSelectDisabledInHeading: StoryObj<typeof TextBlockSty
 
         await step("Back in a paragraph, the styling select is enabled again", async () => {
             await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
-            await userEvent.click(await within(document.body).findByRole("menuitemradio", { name: "Paragraph" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Paragraph");
 
             await waitFor(
                 () => {

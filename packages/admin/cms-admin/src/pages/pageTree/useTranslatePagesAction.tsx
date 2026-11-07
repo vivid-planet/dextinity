@@ -4,12 +4,12 @@ import { Button, ConfirmDialog, Dialog, Icon } from "@dextinity/ui";
 import { type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
 
+import { ProgressDialog } from "../../common/useProgressDialog";
 import { useContentLanguage } from "../../contentLanguage/useContentLanguage";
 import { useContentScope } from "../../contentScope/Provider";
 import type { DocumentInterface, GQLDocument } from "../../documents/types";
 import type { TranslatableInterface } from "../../translation/TranslatableInterface";
 import { findAvailableSlug } from "./findAvailableSlug";
-import { PageTreeProgressDialog } from "./PageTreeProgressDialog";
 import { transformToSlug } from "./transformToSlug";
 import type { GQLPageTreePageFragment } from "./usePageTree";
 
@@ -190,7 +190,7 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
                 onConfirm={handleTranslate}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.translator.confirmDialog.cancel", defaultMessage: "Cancel" }) }}
             />
-            <PageTreeProgressDialog
+            <ProgressDialog
                 title={intl.formatMessage({ id: "dextinity.translator.progress.title", defaultMessage: "Translating pages" })}
                 progress={progress}
             />

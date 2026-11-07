@@ -23,7 +23,7 @@ import type {
     GQLGenerateImageTitleMutation,
     GQLGenerateImageTitleMutationVariables,
 } from "./FileSettingsFields.gql.generated";
-import { type LicenseType, licenseTypeArray, licenseTypeLabels } from "./licenseType";
+import { getLicenseTypeLabel, type LicenseType, licenseTypes } from "./licenseType";
 
 interface SettingsFormProps {
     file: DamFileDetails;
@@ -223,8 +223,8 @@ export const FileSettingsFields = ({ file }: SettingsFormProps) => {
                 <FormSection title={<FormattedMessage id="dextinity.dam.file.licenseInformation" defaultMessage="License information" />}>
                     <Field
                         component={FinalFormSelect}
-                        options={licenseTypeArray}
-                        getOptionLabel={(option: LicenseType) => licenseTypeLabels[option]}
+                        options={licenseTypes}
+                        getOptionLabel={(option: LicenseType) => getLicenseTypeLabel(intl, option)}
                         getOptionSelected={(option: LicenseType, selectedOption: LicenseType) => {
                             return option === selectedOption;
                         }}

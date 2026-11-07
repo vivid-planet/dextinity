@@ -73,10 +73,14 @@
     &:hover::after,
     .root[data-resizing] > &::after {
         background: var(--dextinity-asset-browser-resize-line-color);
+
+        @include forced-colors.fill;
     }
 
     &:focus-visible::after {
         background: var(--dextinity-color-focus);
+
+        @include forced-colors.fill(Highlight);
     }
 }
 

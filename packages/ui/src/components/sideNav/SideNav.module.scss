@@ -297,6 +297,8 @@ $children-room-end: 12px;
             inset-inline-start: calc(#{$children-room} + 19px);
             inline-size: var(--dextinity-line-width);
             background: var(--dextinity-side-nav-guide-color);
+
+            @include forced-colors.fill;
         }
     }
 

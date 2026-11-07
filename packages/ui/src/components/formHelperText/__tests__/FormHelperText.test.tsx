@@ -1,8 +1,8 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { Theme } from "../theme/Theme";
-import { FormHelperText } from "./FormHelperText";
+import { Theme } from "../../theme/Theme";
+import { FormHelperText } from "../FormHelperText";
 
 afterEach(cleanup);
 

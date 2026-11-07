@@ -55,6 +55,7 @@ export interface FormHelperTextProps<IconSlot extends ElementType = "span", Text
 
 /**
  * Gives additional information about a form field, or the reason its value is invalid.
+ * `Field` already shows its own help and validation message; use `FormHelperText` below a control without a `Field`.
  */
 export const FormHelperText: <IconSlot extends ElementType = "span", Text extends ElementType = "span">(
     props: FormHelperTextProps<IconSlot, Text> & RefAttributes<HTMLElement>,

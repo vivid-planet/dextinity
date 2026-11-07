@@ -1,13 +1,13 @@
+// The values match the message of `Field`, so a helper text below a custom control looks like the one below a field.
 @mixin tokens {
-    --dextinity-form-helper-text-gap: var(--dextinity-unit-1);
-    --dextinity-form-helper-text-gap-internal: var(--dextinity-unit-1-5);
+    // Between the error icon and the text
+    --dextinity-form-helper-text-gap-internal: 6px;
+    --dextinity-form-helper-text-icon-size: var(--dextinity-icon-size-small);
 
-    --dextinity-form-helper-text-font-size: var(--dextinity-typography-body-sm-size);
-    --dextinity-form-helper-text-font-line-height: var(--dextinity-typography-body-sm-line-height);
-    --dextinity-form-helper-text-font-weight: var(--dextinity-font-weight-regular);
-    --dextinity-form-helper-text-font-weight-style: var(--dextinity-font-weight-regular-style);
+    --dextinity-form-helper-text-font-size: var(--dextinity-typography-small-size);
+    --dextinity-form-helper-text-font-line-height: var(--dextinity-typography-small-line-height);
+    --dextinity-form-helper-text-font-weight: var(--dextinity-typography-body-font-weight);
 
-    --dextinity-form-helper-text-type-hint-foreground: var(--dextinity-color-foreground-muted);
-    --dextinity-form-helper-text-type-error-foreground: var(--dextinity-color-feedback-danger-default);
-    --dextinity-form-helper-text-count-foreground: var(--dextinity-color-foreground-muted);
+    --dextinity-form-helper-text-type-hint-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-form-helper-text-type-error-foreground: var(--dextinity-color-danger-text);
 }

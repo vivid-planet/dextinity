@@ -34,6 +34,7 @@
 @use "../components/filterChip/FilterChip.tokens" as filterChip;
 @use "../components/finderLayout/FinderLayout.tokens" as finderLayout;
 @use "../components/focalPointPicker/FocalPointPicker.tokens" as focalPointPicker;
+@use "../components/formHelperText/FormHelperText.tokens" as formHelperText;
 @use "../components/icon/Icon.tokens" as icon;
 @use "../components/iconButton/IconButton.tokens" as iconButton;
 @use "../components/input/Input.tokens" as input;
@@ -114,6 +115,7 @@
     @include filterChip.tokens;
     @include finderLayout.tokens;
     @include focalPointPicker.tokens;
+    @include formHelperText.tokens;
     @include icon.tokens;
     @include iconButton.tokens;
     @include input.tokens;

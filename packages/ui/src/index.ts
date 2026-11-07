@@ -118,6 +118,7 @@ export {
     type FocalPointPickerProps,
     type FocalPointPickerSlotProps,
 } from "./components/focalPointPicker/FocalPointPicker";
+export { FormHelperText, type FormHelperTextOwnerState, type FormHelperTextProps } from "./components/formHelperText/FormHelperText";
 export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Icon";
 export type { DefaultIconName, DefaultIconRegistry, IconName, IconRegistry } from "./components/icon/iconRegistry";
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";

@@ -2,11 +2,13 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { FormHelperText } from "../FormHelperText";
+import formHelperTextTokens from "../FormHelperText.tokens.scss?raw";
 
 const meta = {
     component: FormHelperText,
-    title: "Components/FormHelperText",
+    title: "Building blocks/Form fields/FormHelperText",
     decorators: [themeDecorator],
+    parameters: { tokens: formHelperTextTokens },
     args: {
         children: "Additional info text",
     },

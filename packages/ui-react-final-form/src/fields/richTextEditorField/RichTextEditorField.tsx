@@ -51,7 +51,7 @@ export const RichTextEditorField = forwardRef(function RichTextEditorField<Field
         onFocus: onFieldFocus,
     } = useFieldAdapter<FieldValue, string, HTMLDivElement>(
         name,
-        { isEqual: isEqualTreatingEmptyRichText, ...options, isEmpty: isEmptyRichText },
+        { ...options, isEqual: options.isEqual ?? isEqualTreatingEmptyRichText, isEmpty: isEmptyRichText },
         forwardedRef,
     );
     const value = input.value ?? "";

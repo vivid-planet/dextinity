@@ -1,84 +1,23 @@
-import { type GridColDef, Stack, StackPage, StackSwitch, StackToolbar } from "@dextinity/admin";
-import { ContentScopeIndicator, useContentScope } from "@dextinity/cms-admin";
-import type { DocumentNode } from "graphql";
-import type { JSX, ReactNode } from "react";
-import { useIntl } from "react-intl";
+import type { JSX } from "react";
 
-import { useBrevoConfig } from "../common/BrevoConfigProvider";
+import { useBrevoScope } from "../common/useBrevoScope";
 import { ConfigVerification } from "../configVerification/ConfigVerification";
-import { BrevoContactsGrid } from "./BrevoContactsGrid";
-import { BrevoContactForm, type EditBrevoContactFormValues } from "./form/BrevoContactForm";
+import { type BrevoContactsListOptions, BrevoContactsListPage } from "./BrevoContactsListPage";
 
-interface CreateContactsPageOptions {
-    additionalAttributesFragment?: { name: string; fragment: DocumentNode };
-    additionalGridFields?: GridColDef[];
-    additionalFormFields?: ReactNode;
-    input2State?: (values?: EditBrevoContactFormValues) => EditBrevoContactFormValues;
-}
-
-function createBrevoContactsPage({
-    additionalAttributesFragment,
-    additionalFormFields,
-    additionalGridFields,
-    input2State,
-}: CreateContactsPageOptions) {
+/**
+ * Creates the page of the newsletter contacts: a list with a search, a side panel to add and edit a contact, and the import from CSV.
+ */
+export function createBrevoContactsPage<AdditionalAttributes extends object = Record<string, unknown>>(
+    options: BrevoContactsListOptions<AdditionalAttributes>,
+) {
     function BrevoContactsPage(): JSX.Element {
-        const intl = useIntl();
-        const { scopeParts } = useBrevoConfig();
-        const { scope: completeScope } = useContentScope();
-
-        const scope = scopeParts.reduce(
-            (acc, scopePart) => {
-                acc[scopePart] = completeScope[scopePart];
-                return acc;
-            },
-            {} as { [key: string]: unknown },
-        );
-
+        const { scope, scopeLabel } = useBrevoScope();
         return (
             <ConfigVerification scope={scope}>
-                <Stack topLevelTitle={intl.formatMessage({ id: "dextinity.brevoContacts.brevoContacts", defaultMessage: "Contacts" })}>
-                    <StackSwitch>
-                        <StackPage name="grid">
-                            <StackToolbar scopeIndicator={<ContentScopeIndicator scope={scope} />} />
-                            <BrevoContactsGrid
-                                scope={scope}
-                                additionalAttributesFragment={additionalAttributesFragment}
-                                additionalGridFields={additionalGridFields}
-                            />
-                        </StackPage>
-                        <StackPage
-                            name="edit"
-                            title={intl.formatMessage({ id: "dextinity.brevoContacts.editBrevoContact", defaultMessage: "Edit contact" })}
-                        >
-                            {(selectedId) => (
-                                <BrevoContactForm
-                                    additionalFormFields={additionalFormFields}
-                                    additionalAttributesFragment={additionalAttributesFragment}
-                                    input2State={input2State}
-                                    id={Number(selectedId)}
-                                    scope={scope}
-                                />
-                            )}
-                        </StackPage>
-                        <StackPage
-                            name="add"
-                            title={intl.formatMessage({ id: "dextinity.brevoContacts.addBrevoContact", defaultMessage: "Add contact" })}
-                        >
-                            <BrevoContactForm
-                                additionalFormFields={additionalFormFields}
-                                additionalAttributesFragment={additionalAttributesFragment}
-                                input2State={input2State}
-                                scope={scope}
-                            />
-                        </StackPage>
-                    </StackSwitch>
-                </Stack>
+                <BrevoContactsListPage<AdditionalAttributes> {...options} variant="contacts" scope={scope} scopeLabel={scopeLabel} />
             </ConfigVerification>
         );
     }
 
     return BrevoContactsPage;
 }
-
-export { createBrevoContactsPage };

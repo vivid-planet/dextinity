@@ -1,7 +1,8 @@
 export { NewsletterImageBlock } from "./blocks/NewsletterImageBlock";
 export { BrevoConfigPage } from "./brevoConfiguration/BrevoConfigPage";
+export type { EditBrevoContactFormValues } from "./brevoContacts/BrevoContactPanel";
+export type { BrevoContactRow, BrevoContactsListOptions } from "./brevoContacts/BrevoContactsListPage";
 export { createBrevoContactsPage } from "./brevoContacts/BrevoContactsPage";
-export type { EditBrevoContactFormValues } from "./brevoContacts/form/BrevoContactForm";
 export { createBrevoTestContactsPage } from "./brevoTestContacts/BrevoTestContactsPage";
 export { type BrevoConfig, BrevoConfigProvider, useBrevoConfig } from "./common/BrevoConfigProvider";
 export { createEmailCampaignsPage } from "./emailCampaigns/EmailCampaignsPage";

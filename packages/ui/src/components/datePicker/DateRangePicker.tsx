@@ -6,7 +6,8 @@ import { Icon } from "../icon/Icon";
 import { CalendarPopover } from "./CalendarPopover";
 import { type DatePickerCalendarProps, type DatePickerLabels, defaultDatePickerLabels } from "./DatePicker";
 import styles from "./DateRangePicker.module.scss";
-import { formatDate, isIsoDate, type IsoDate, isWithin, localeWeekStart, parseDate } from "./dateValues";
+import { formatDate, isIsoDate, type IsoDate, localeWeekStart } from "./dateValues";
+import { readTypedDay } from "./typedDay";
 import { useTextDraft } from "./useTextDraft";
 
 /**
@@ -74,7 +75,8 @@ function toRange(start: IsoDate | null, end: IsoDate | null): DateRange | null {
 
 /**
  * A range of days, typed in the locale's format or chosen in a calendar: the first click chooses the start, the second the end. Typed
- * text is read on blur or Enter; text that is no valid day, or lies outside `min` and `max`, is discarded.
+ * text is read on blur or Enter; text that is no valid day, or lies outside `min` and `max`, stays in its input with an error and leaves
+ * the value unchanged until it is corrected.
  */
 export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(function DateRangePicker(
     {
@@ -133,17 +135,16 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
     const editable = !disabled && !readOnly;
 
     const readDay = (text: string, apply: (day: IsoDate | null) => void) => {
-        if (text.trim() === "") {
-            apply(null);
-            return;
+        const typed = readTypedDay(text, { locale, min, max, labels });
+        if (typed.error != null) {
+            return typed.error;
         }
-        const parsed = parseDate(text, locale);
-        if (parsed != null && isWithin(parsed, min, max)) {
-            apply(parsed);
-        }
+        apply(typed.day);
     };
     const startDraft = useTextDraft(start == null ? "" : formatDate(start, locale), (text) => readDay(text, (day) => onChange(toRange(day, end))));
     const endDraft = useTextDraft(end == null ? "" : formatDate(end, locale), (text) => readDay(text, (day) => onChange(toRange(start, day))));
+
+    const draftError = startDraft.error ?? endDraft.error;
 
     const onKeyDown = (draft: typeof startDraft) => (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
@@ -166,8 +167,8 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
             label={label}
             required={required}
             helperText={helperText}
-            validationMessage={validationMessage}
-            state={state}
+            validationMessage={draftError ?? validationMessage}
+            state={draftError != null ? "error" : state}
             disabled={disabled}
             readOnly={readOnly}
             loading={loading}

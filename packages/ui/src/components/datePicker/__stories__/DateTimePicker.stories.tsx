@@ -78,7 +78,7 @@ export const Default: Story = {
 
 /**
  * The time is typed with or without separator, in 24 hours or with am/pm: `14:45`, `1445`, `2:45 pm`. It is shown in the locale's
- * clock.
+ * clock. Text that isn't a time stays in the input with an error until it is corrected.
  */
 export const TypingTheTime: Story = {
     args: { locale: "en-US" },
@@ -90,6 +90,13 @@ export const TypingTheTime: Story = {
         await userEvent.tab();
         await waitFor(() => expect(args.onChange).toHaveBeenCalledWith(localInstant(2026, 10, 6, 14, 45)));
         await expect(time).toHaveValue("02:45 PM");
+
+        // Text that isn't a time stays with an error that shows the expected format
+        await userEvent.clear(time);
+        await userEvent.type(time, "noon{Enter}");
+        await expect(time).toHaveValue("noon");
+        await expect(time).toHaveAccessibleDescription("Enter a time like 02:30 PM.");
+        await expect(args.onChange).toHaveBeenCalledTimes(1);
     },
 };
 

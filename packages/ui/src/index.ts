@@ -80,6 +80,7 @@ export { type DateRange, DateRangePicker, type DateRangePickerLabels } from "./c
 export { type DateRangePickerOwnerState, type DateRangePickerProps } from "./components/datePicker/DateRangePicker";
 export { DateTimePicker, type DateTimePickerLabels, type DateTimePickerOwnerState } from "./components/datePicker/DateTimePicker";
 export { type DateTimePickerProps } from "./components/datePicker/DateTimePicker";
+export { type DateInputErrorLabels } from "./components/datePicker/typedDay";
 export type { DevicePreviewDevice, DevicePreviewLabels } from "./components/devicePreview/DevicePreview";
 export {
     DevicePreview,

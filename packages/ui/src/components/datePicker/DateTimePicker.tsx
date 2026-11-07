@@ -6,18 +6,8 @@ import { Icon } from "../icon/Icon";
 import { CalendarPopover } from "./CalendarPopover";
 import { type DatePickerCalendarProps, type DatePickerLabels, defaultDatePickerLabels } from "./DatePicker";
 import styles from "./DateTimePicker.module.scss";
-import {
-    formatDate,
-    formatTime,
-    type IsoDate,
-    isWithin,
-    joinDateTime,
-    localeWeekStart,
-    parseDate,
-    parseTime,
-    splitDateTime,
-    type TimeOfDay,
-} from "./dateValues";
+import { formatDate, formatTime, type IsoDate, joinDateTime, localeWeekStart, parseTime, splitDateTime, type TimeOfDay } from "./dateValues";
+import { invalidTimeMessage, readTypedDay } from "./typedDay";
 import { useTextDraft } from "./useTextDraft";
 
 /**
@@ -69,7 +59,8 @@ export interface DateTimePickerProps
 
 /**
  * A day and a time of day, typed in the locale's format or with the day chosen in a calendar. Choosing a day keeps the time; without
- * one, the time is midnight. Typed text is read on blur or Enter; text that can't be read is discarded.
+ * one, the time is midnight. Typed text is read on blur or Enter; text that can't be read, or a day outside `min` and `max`, stays in its
+ * input with an error and leaves the value unchanged until it is corrected.
  */
 export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(function DateTimePicker(
     {
@@ -131,14 +122,11 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     };
 
     const dateDraft = useTextDraft(current == null ? "" : formatDate(current.date, locale), (text) => {
-        if (text.trim() === "") {
-            change(null, null);
-            return;
+        const typed = readTypedDay(text, { locale, min, max, labels });
+        if (typed.error != null) {
+            return typed.error;
         }
-        const parsed = parseDate(text, locale);
-        if (parsed != null && isWithin(parsed, min, max)) {
-            change(parsed, time);
-        }
+        change(typed.day, typed.day == null ? null : time);
     });
     const timeDraft = useTextDraft(time == null ? "" : formatTime(time, locale), (text) => {
         if (text.trim() === "" && current == null) {
@@ -147,7 +135,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         }
         const parsed = text.trim() === "" ? midnight : parseTime(text);
         if (parsed == null) {
-            return;
+            return invalidTimeMessage(locale, labels);
         }
         if (current == null) {
             setPendingTime(parsed);
@@ -155,6 +143,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             change(current.date, parsed);
         }
     });
+
+    const draftError = dateDraft.error ?? timeDraft.error;
 
     const onKeyDown = (draft: typeof dateDraft) => (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
@@ -177,8 +167,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             label={label}
             required={required}
             helperText={helperText}
-            validationMessage={validationMessage}
-            state={state}
+            validationMessage={draftError ?? validationMessage}
+            state={draftError != null ? "error" : state}
             disabled={disabled}
             readOnly={readOnly}
             loading={loading}

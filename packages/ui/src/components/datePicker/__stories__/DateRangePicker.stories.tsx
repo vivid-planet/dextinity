@@ -76,7 +76,7 @@ export const Default: Story = {
 };
 
 /**
- * Each end can be typed. A range never ends before it starts: typed ends are swapped.
+ * Each end can be typed. A range never ends before it starts: typed ends are swapped. Text that is no valid day shows an error.
  */
 export const Typing: Story = {
     args: { locale: "de-AT", value: null, placeholder: "TT.MM.JJJJ" },
@@ -87,6 +87,14 @@ export const Typing: Story = {
         await userEvent.type(canvas.getByRole("textbox", { name: "Campaign period End" }), "2.11.2026");
         await userEvent.tab();
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith({ start: "2026-11-02", end: "2026-11-20" }));
+
+        // Text that is no valid day stays in its input with an error, and that end keeps its value
+        const end = canvas.getByRole("textbox", { name: "Campaign period End" });
+        await userEvent.clear(end);
+        await userEvent.type(end, "32.11.2026{Enter}");
+        await expect(end).toHaveValue("32.11.2026");
+        await expect(end).toHaveAccessibleDescription("Enter a date like 24.12.2026.");
+        await expect(args.onChange).toHaveBeenCalledTimes(2);
     },
 };
 

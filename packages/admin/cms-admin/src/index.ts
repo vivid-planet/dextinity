@@ -269,7 +269,7 @@ export {
     useUserPermissionCheck,
 } from "./userPermissions/hooks/currentUser";
 export { UserPermissionsUserPageBasicDataPanel } from "./userPermissions/user/basicData/UserBasicData";
-export { StartImpersonationButton, StopImpersonationButton } from "./userPermissions/user/ImpersonationButtons";
+export { StartImpersonationButton, StopImpersonationButton, type StopImpersonationButtonProps } from "./userPermissions/user/ImpersonationButtons";
 export { UserPermissionsUserPagePermissionsPanel } from "./userPermissions/user/permissions/PermissionsPanel";
 export { UserPermissionsUserPageToolbar } from "./userPermissions/user/UserPageToolbar";
 export { UserPermissionsUserGrid } from "./userPermissions/UserGrid";

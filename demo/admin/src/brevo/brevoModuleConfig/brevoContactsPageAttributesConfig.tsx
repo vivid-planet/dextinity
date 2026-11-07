@@ -1,11 +1,11 @@
 import { gql } from "@apollo/client";
-import { Field, FinalFormSelect, type GridColDef, TextField } from "@dextinity/admin";
-import type { EditBrevoContactFormValues } from "@dextinity/brevo-admin";
-import { MenuItem } from "@mui/material";
+import type { BrevoContactRow, EditBrevoContactFormValues } from "@dextinity/brevo-admin";
+import type { DataGridColumn, SelectOption } from "@dextinity/ui";
+import { InputField, SelectField } from "@dextinity/ui-react-final-form";
 import type { GQLBrevoContactBranch, GQLBrevoContactSalutation } from "@src/graphql.generated";
 import type { DocumentNode } from "graphql";
 import type { ReactNode } from "react";
-import { FormattedMessage, type IntlShape } from "react-intl";
+import type { IntlShape } from "react-intl";
 
 import type { GQLBrevoContactAttributesFragment } from "./brevoContactsPageAttributesConfig.generated";
 
@@ -20,32 +20,6 @@ const attributesFragment = gql`
     }
 `;
 
-const salutationOptions: Array<{ label: ReactNode; value: GQLBrevoContactSalutation }> = [
-    {
-        label: <FormattedMessage id="brevoContact.filters.salutation.male" defaultMessage="Male" />,
-        value: "MALE",
-    },
-    {
-        label: <FormattedMessage id="brevoContact.filters.salutation.female" defaultMessage="Female" />,
-        value: "FEMALE",
-    },
-];
-
-const branchOptions: Array<{ label: ReactNode; value: GQLBrevoContactBranch }> = [
-    {
-        label: <FormattedMessage id="brevoContact.filters.branch.products" defaultMessage="Products" />,
-        value: "PRODUCTS",
-    },
-    {
-        label: <FormattedMessage id="brevoContact.filters.branch.marketing" defaultMessage="Marketing" />,
-        value: "MARKETING",
-    },
-    {
-        label: <FormattedMessage id="brevoContact.filters.branch.news" defaultMessage="News" />,
-        value: "NEWS",
-    },
-];
-
 interface AdditionalFormConfigInputProps extends EditBrevoContactFormValues {
     attributes: {
         BRANCH?: Array<GQLBrevoContactBranch>;
@@ -55,8 +29,10 @@ interface AdditionalFormConfigInputProps extends EditBrevoContactFormValues {
     };
 }
 
+type BrevoContactWithAttributes = BrevoContactRow<GQLBrevoContactAttributesFragment>;
+
 export interface BrevoContactConfig {
-    additionalGridFields: GridColDef<GQLBrevoContactAttributesFragment>[];
+    additionalGridFields: DataGridColumn<BrevoContactWithAttributes>[];
     additionalFormFields: ReactNode;
     additionalAttributesFragment: {
         fragment: DocumentNode;
@@ -72,62 +48,55 @@ export interface BrevoContactConfig {
 }
 
 export const getBrevoContactConfig = (intl: IntlShape): BrevoContactConfig => {
+    const salutationOptions: SelectOption<GQLBrevoContactSalutation>[] = [
+        { value: "MALE", label: intl.formatMessage({ id: "brevoContact.filters.salutation.male", defaultMessage: "Male" }) },
+        { value: "FEMALE", label: intl.formatMessage({ id: "brevoContact.filters.salutation.female", defaultMessage: "Female" }) },
+    ];
+    const branchOptions: SelectOption<GQLBrevoContactBranch>[] = [
+        { value: "PRODUCTS", label: intl.formatMessage({ id: "brevoContact.filters.branch.products", defaultMessage: "Products" }) },
+        { value: "MARKETING", label: intl.formatMessage({ id: "brevoContact.filters.branch.marketing", defaultMessage: "Marketing" }) },
+        { value: "NEWS", label: intl.formatMessage({ id: "brevoContact.filters.branch.news", defaultMessage: "News" }) },
+    ];
+
     return {
         additionalGridFields: [
             {
-                field: "attributes.firstName",
-                headerName: intl.formatMessage({ id: "brevoContact.firstName", defaultMessage: "First name" }),
-                filterable: false,
-                sortable: false,
+                key: "firstName",
+                header: intl.formatMessage({ id: "brevoContact.firstName", defaultMessage: "First name" }),
                 width: 150,
-                renderCell: ({ row }) => row.attributes?.FIRSTNAME,
+                render: (row) => row.attributes?.FIRSTNAME,
+                getValue: (row) => row.attributes?.FIRSTNAME,
             },
             {
-                field: "attributes.lastName",
-                headerName: intl.formatMessage({ id: "brevoContact.lastName", defaultMessage: "Last name" }),
-                filterable: false,
-                sortable: false,
+                key: "lastName",
+                header: intl.formatMessage({ id: "brevoContact.lastName", defaultMessage: "Last name" }),
                 width: 150,
-                renderCell: ({ row }) => row.attributes?.LASTNAME,
+                render: (row) => row.attributes?.LASTNAME,
+                getValue: (row) => row.attributes?.LASTNAME,
             },
         ],
         additionalFormFields: (
             <>
-                <Field
-                    label={<FormattedMessage id="brevoContact.fields.salutation" defaultMessage="Salutation" />}
+                <SelectField<false, GQLBrevoContactSalutation>
                     name="attributes.SALUTATION"
-                    fullWidth
-                >
-                    {(props) => (
-                        <FinalFormSelect {...props} fullWidth>
-                            {salutationOptions.map((option) => (
-                                <MenuItem value={option.value} key={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </FinalFormSelect>
-                    )}
-                </Field>
-                <Field label={<FormattedMessage id="brevoContact.fields.branch" defaultMessage="Branch" />} name="attributes.BRANCH" fullWidth>
-                    {(props) => (
-                        <FinalFormSelect {...props} fullWidth multiple>
-                            {branchOptions.map((option) => (
-                                <MenuItem value={option.value} key={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </FinalFormSelect>
-                    )}
-                </Field>
-                <TextField
-                    label={<FormattedMessage id="brevoContact.fields.firstName" defaultMessage="First name" />}
-                    name="attributes.FIRSTNAME"
-                    fullWidth
+                    label={intl.formatMessage({ id: "brevoContact.fields.salutation", defaultMessage: "Salutation" })}
+                    options={salutationOptions}
                 />
-                <TextField
-                    label={<FormattedMessage id="brevoContact.fields.lastName" defaultMessage="Last name" />}
+                <SelectField<true, GQLBrevoContactBranch>
+                    name="attributes.BRANCH"
+                    label={intl.formatMessage({ id: "brevoContact.fields.branch", defaultMessage: "Branch" })}
+                    options={branchOptions}
+                    multiple
+                />
+                <InputField
+                    name="attributes.FIRSTNAME"
+                    label={intl.formatMessage({ id: "brevoContact.fields.firstName", defaultMessage: "First name" })}
+                    required
+                />
+                <InputField
                     name="attributes.LASTNAME"
-                    fullWidth
+                    label={intl.formatMessage({ id: "brevoContact.fields.lastName", defaultMessage: "Last name" })}
+                    required
                 />
             </>
         ),
@@ -136,8 +105,8 @@ export const getBrevoContactConfig = (intl: IntlShape): BrevoContactConfig => {
                 attributes: {
                     BRANCH: values?.attributes?.BRANCH ?? [],
                     SALUTATION: values?.attributes?.SALUTATION,
-                    FIRSTNAME: values?.attributes?.FIRSTNAME,
-                    LASTNAME: values?.attributes?.LASTNAME,
+                    FIRSTNAME: values?.attributes?.FIRSTNAME ?? "",
+                    LASTNAME: values?.attributes?.LASTNAME ?? "",
                 },
             };
         },

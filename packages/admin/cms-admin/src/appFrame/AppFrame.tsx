@@ -18,7 +18,11 @@ import { useIntl } from "react-intl";
 import { useHistory } from "react-router";
 
 import type { MasterMenuData } from "../common/MasterMenu";
+import { AppToastsProvider } from "../common/toasts/AppToasts";
+import { AppFrameAboutDialog } from "./AppFrameAboutDialog";
 import { AppFrameCommandPalette } from "./AppFrameCommandPalette";
+import { AppFrameErrorDialog } from "./AppFrameErrorDialog";
+import { AppFrameRouterConfirmationDialog } from "./AppFrameRouterConfirmationDialog";
 import { type AppFrameScopeDimensionLabels, AppFrameScopeSwitcher } from "./AppFrameScopeSwitcher";
 import { AppFrameUserMenu } from "./AppFrameUserMenu";
 import { useAppFrameMenu } from "./useAppFrameMenu";
@@ -42,6 +46,7 @@ export interface AppFrameProps {
     title: string;
     /** Tenant and environment, shown small below the app name. */
     subtitle?: string;
+    /** The product's logo, shown in the navigation and in the About dialog. */
     logo?: ReactNode;
     /** The product's sign, shown instead of the logo while the navigation is collapsed. */
     logoMark?: ReactNode;
@@ -56,6 +61,8 @@ export interface AppFrameProps {
     scopeDimensionLabels?: AppFrameScopeDimensionLabels;
     /** Further entries of the user menu, e.g. `MenuItem`s from `@dextinity/ui`. */
     userMenuItems?: ReactNode;
+    /** App-wide status and actions in the top bar, before the scope switcher, e.g. `BuildEntry`. */
+    topBarActions?: ReactNode;
 }
 
 const NavLink = forwardRef<HTMLAnchorElement, AnchorHTMLAttributes<HTMLAnchorElement>>(function NavLink({ children, ...props }, ref) {
@@ -74,6 +81,9 @@ function isModifiedClick(event: MouseEvent<HTMLElement>) {
 /**
  * The admin's frame built on `@dextinity/ui`: navigation from the menu data, top bar with search, scope, and user menu, and the
  * command palette (⌘K). Wrap the routes with it, inside `ContentScopeProvider`.
+ *
+ * It also shows the app-wide feedback with `@dextinity/ui`: toasts (`useShowAppToast`), the errors of `useErrorDialog` and
+ * `createErrorDialogApolloLink` (replacing `ErrorDialogHandler`), and the unsaved-changes dialog of `RouterPrompt`s.
  */
 export function AppFrame({
     menu,
@@ -89,6 +99,7 @@ export function AppFrame({
     aiAssistant,
     scopeDimensionLabels,
     userMenuItems,
+    topBarActions,
     children,
 }: PropsWithChildren<AppFrameProps>) {
     const intl = useIntl();
@@ -100,6 +111,7 @@ export function AppFrame({
     const [expanded, setExpanded] = useState(activeAncestorIds);
     const [navCollapsed, setNavCollapsed] = useStoredState<boolean>("dextinity-app-frame-nav-collapsed", false);
     const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+    const [aboutDialogOpen, setAboutDialogOpen] = useState(false);
 
     const activeAncestorKey = activeAncestorIds.join(" ");
     useEffect(() => {
@@ -142,69 +154,85 @@ export function AppFrame({
             <CssBaseline />
             <GlobalStyles styles={{ ".DextinityAdminMainContent-fullHeight": { marginBottom: -shellContentBottomPadding } }} />
             <Theme colorScheme={colorScheme} brand={brand} density={density}>
-                <AppShell
-                    navCollapsed={navCollapsed}
-                    onNavCollapsedChange={setNavCollapsed}
-                    aiPanel={aiAssistant?.panel}
-                    aiOpen={aiAssistant?.open}
-                    onAiOpenChange={aiAssistant?.onOpenChange}
-                    labels={{
-                        navigation: intl.formatMessage({ id: "dextinity.appFrame.navigation", defaultMessage: "Navigation" }),
-                        ai: intl.formatMessage({ id: "dextinity.appFrame.aiAssistant", defaultMessage: "AI assistant" }),
-                    }}
-                    nav={
-                        <SideNav
-                            logo={logo}
-                            logoMark={logoMark}
-                            title={title}
-                            subtitle={subtitle}
-                            groups={groups}
-                            activeId={activeId}
-                            expanded={expanded}
-                            onExpandedChange={setExpanded}
-                            onNavigate={(item, event) => {
-                                const isInternal = entries.some((entry) => entry.item === item && !entry.external);
-                                if (isInternal && item.href != null && !isModifiedClick(event)) {
-                                    event.preventDefault();
-                                    history.push(item.href);
+                <AppToastsProvider>
+                    <AppShell
+                        navCollapsed={navCollapsed}
+                        onNavCollapsedChange={setNavCollapsed}
+                        aiPanel={aiAssistant?.panel}
+                        aiOpen={aiAssistant?.open}
+                        onAiOpenChange={aiAssistant?.onOpenChange}
+                        labels={{
+                            navigation: intl.formatMessage({ id: "dextinity.appFrame.navigation", defaultMessage: "Navigation" }),
+                            ai: intl.formatMessage({ id: "dextinity.appFrame.aiAssistant", defaultMessage: "AI assistant" }),
+                        }}
+                        nav={
+                            <SideNav
+                                logo={logo}
+                                logoMark={logoMark}
+                                title={title}
+                                subtitle={subtitle}
+                                groups={groups}
+                                activeId={activeId}
+                                expanded={expanded}
+                                onExpandedChange={setExpanded}
+                                onNavigate={(item, event) => {
+                                    const isInternal = entries.some((entry) => entry.item === item && !entry.external);
+                                    if (isInternal && item.href != null && !isModifiedClick(event)) {
+                                        event.preventDefault();
+                                        history.push(item.href);
+                                    }
+                                }}
+                                slots={{ link: NavLink }}
+                                labels={{
+                                    navigation: intl.formatMessage({ id: "dextinity.appFrame.navigation.main", defaultMessage: "Main navigation" }),
+                                    collapse: intl.formatMessage({ id: "dextinity.appFrame.navigation.collapse", defaultMessage: "Collapse" }),
+                                    expand: intl.formatMessage({ id: "dextinity.appFrame.navigation.expand", defaultMessage: "Expand" }),
+                                }}
+                            />
+                        }
+                        topBar={
+                            <TopBar
+                                onSearchClick={() => setCommandPaletteOpen(true)}
+                                scope={
+                                    <>
+                                        {topBarActions}
+                                        <AppFrameScopeSwitcher dimensionLabels={scopeDimensionLabels} />
+                                    </>
                                 }
-                            }}
-                            slots={{ link: NavLink }}
-                            labels={{
-                                navigation: intl.formatMessage({ id: "dextinity.appFrame.navigation.main", defaultMessage: "Main navigation" }),
-                                collapse: intl.formatMessage({ id: "dextinity.appFrame.navigation.collapse", defaultMessage: "Collapse" }),
-                                expand: intl.formatMessage({ id: "dextinity.appFrame.navigation.expand", defaultMessage: "Expand" }),
-                            }}
-                        />
-                    }
-                    topBar={
-                        <TopBar
-                            onSearchClick={() => setCommandPaletteOpen(true)}
-                            scope={<AppFrameScopeSwitcher dimensionLabels={scopeDimensionLabels} />}
-                            aiOpen={aiAssistant?.open}
-                            onAiOpenChange={aiAssistant?.onOpenChange}
-                            userMenu={
-                                <AppFrameUserMenu
-                                    colorScheme={colorScheme}
-                                    onColorSchemeChange={onColorSchemeChange}
-                                    density={density}
-                                    onDensityChange={onDensityChange}
-                                >
-                                    {userMenuItems}
-                                </AppFrameUserMenu>
-                            }
-                            labels={{
-                                search: intl.formatMessage({ id: "dextinity.appFrame.topBar.search", defaultMessage: "Search, jump to …" }),
-                                searchShortcut: formatShortcut("mod+k").join(isApplePlatform() ? "" : "+"),
-                                ai: intl.formatMessage({ id: "dextinity.appFrame.aiAssistant", defaultMessage: "AI assistant" }),
-                                menu: intl.formatMessage({ id: "dextinity.appFrame.topBar.menu", defaultMessage: "Open navigation" }),
-                            }}
-                        />
-                    }
-                >
-                    {children}
-                </AppShell>
-                <AppFrameCommandPalette open={commandPaletteOpen} onOpenChange={setCommandPaletteOpen} menuEntries={entries} commands={commands} />
+                                aiOpen={aiAssistant?.open}
+                                onAiOpenChange={aiAssistant?.onOpenChange}
+                                userMenu={
+                                    <AppFrameUserMenu
+                                        colorScheme={colorScheme}
+                                        onColorSchemeChange={onColorSchemeChange}
+                                        density={density}
+                                        onDensityChange={onDensityChange}
+                                        onAboutClick={() => setAboutDialogOpen(true)}
+                                    >
+                                        {userMenuItems}
+                                    </AppFrameUserMenu>
+                                }
+                                labels={{
+                                    search: intl.formatMessage({ id: "dextinity.appFrame.topBar.search", defaultMessage: "Search, jump to …" }),
+                                    searchShortcut: formatShortcut("mod+k").join(isApplePlatform() ? "" : "+"),
+                                    ai: intl.formatMessage({ id: "dextinity.appFrame.aiAssistant", defaultMessage: "AI assistant" }),
+                                    menu: intl.formatMessage({ id: "dextinity.appFrame.topBar.menu", defaultMessage: "Open navigation" }),
+                                }}
+                            />
+                        }
+                    >
+                        {children}
+                    </AppShell>
+                    <AppFrameCommandPalette
+                        open={commandPaletteOpen}
+                        onOpenChange={setCommandPaletteOpen}
+                        menuEntries={entries}
+                        commands={commands}
+                    />
+                    <AppFrameAboutDialog open={aboutDialogOpen} onOpenChange={setAboutDialogOpen} logo={logo} />
+                    <AppFrameErrorDialog />
+                    <AppFrameRouterConfirmationDialog />
+                </AppToastsProvider>
             </Theme>
         </MasterLayoutContext.Provider>
     );

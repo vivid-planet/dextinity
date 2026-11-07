@@ -12,6 +12,8 @@ export interface ContentErrorBoundaryProps {
     description?: string;
     /** Shows the error and the component stack below the actions. Defaults to `true` in development only. */
     showDetails?: boolean;
+    /** Clears a caught error when it changes, e.g. the location, so navigating shows the content again. */
+    resetKey?: unknown;
 }
 
 interface CaughtError {
@@ -26,12 +28,14 @@ interface CaughtError {
 export function ContentErrorBoundary({
     children,
     showDetails = process.env.NODE_ENV === "development",
+    resetKey,
     ...fallbackProps
 }: ContentErrorBoundaryProps) {
     const { onError } = useErrorHandler();
     return (
         <CatchingBoundary
             onError={onError}
+            resetKey={resetKey}
             renderFallback={(caught, reset) => <ErrorFallback {...fallbackProps} caught={caught} showDetails={showDetails} onRetry={reset} />}
         >
             {children}
@@ -42,6 +46,7 @@ export function ContentErrorBoundary({
 interface CatchingBoundaryProps {
     children?: ReactNode;
     onError?: (error: Error, errorInfo: ErrorInfo) => void;
+    resetKey?: unknown;
     renderFallback: (caught: CaughtError, reset: () => void) => ReactNode;
 }
 
@@ -51,6 +56,12 @@ class CatchingBoundary extends Component<CatchingBoundaryProps, { caught?: Caugh
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         this.setState({ caught: { error, errorInfo } });
         this.props.onError?.(error, errorInfo);
+    }
+
+    componentDidUpdate(previousProps: CatchingBoundaryProps) {
+        if (this.state.caught && !Object.is(previousProps.resetKey, this.props.resetKey)) {
+            this.reset();
+        }
     }
 
     reset = () => {

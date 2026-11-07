@@ -56,7 +56,6 @@
         "fast-equals": "^5.4.0",
         "final-form": "^4.20.10",
         "graphql": "^16.15.0",
-        "p-debounce": "^6.0.0",
         "rdndmb-html5-to-touch": "^9.0.0",
         "react": "^19.3.1",
         "react-dnd": "^16.0.1",

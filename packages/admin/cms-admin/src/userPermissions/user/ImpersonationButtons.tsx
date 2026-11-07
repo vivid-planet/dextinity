@@ -24,7 +24,7 @@ interface StartImpersonationButtonProps {
 }
 
 /**
- * Starts the impersonation of the user, or stops it while the user is impersonated. Renders nothing without the `impersonation`
+ * Starts the impersonation of the user, or, while any user is impersonated, stops it. Renders nothing without the `impersonation`
  * permission.
  */
 export const StartImpersonationButton = ({ userId, impersonationAllowed = true }: StartImpersonationButtonProps) => {
@@ -39,7 +39,7 @@ export const StartImpersonationButton = ({ userId, impersonationAllowed = true }
     }
 
     if (currentUser.impersonated) {
-        return currentUser.id === userId ? <StopImpersonationButton variant="outlined" color="secondary" /> : null;
+        return <StopImpersonationButton variant="outlined" color="secondary" />;
     }
 
     const disabledReason =

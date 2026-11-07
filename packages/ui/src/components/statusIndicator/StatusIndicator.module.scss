@@ -99,11 +99,7 @@
     }
 }
 
-// Applied by the high-contrast color scheme and in forced colors, where all dots look alike
-:global([data-dextinity-color-scheme="high-contrast"]) .root {
-    --dextinity-status-indicator-critical-mark: "!";
-}
-
+// In forced colors all dots look alike
 @media (forced-colors: active) {
     .root {
         --dextinity-status-indicator-critical-mark: "!";

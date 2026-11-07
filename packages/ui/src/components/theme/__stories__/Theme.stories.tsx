@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, within } from "storybook/test";
 
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
@@ -81,4 +82,30 @@ export const Nested: Story = {
             </div>
         </Theme>
     ),
+};
+
+/**
+ * A nested `Theme` with another color scheme resolves the values that differ per color scheme against its own, e.g. a light preview
+ * inside a high-contrast application.
+ */
+export const NestedInHighContrast: Story = {
+    render: () => (
+        <Theme colorScheme="high-contrast" data-testid="high-contrast">
+            <div className={styles.nested}>
+                <ExampleContent />
+                <Theme data-testid="light">
+                    <ExampleContent />
+                </Theme>
+            </div>
+        </Theme>
+    ),
+    play: async ({ canvasElement }) => {
+        const canvas = within(canvasElement);
+        const token = (testId: string, name: string) => getComputedStyle(canvas.getByTestId(testId)).getPropertyValue(name).trim();
+
+        await expect(token("high-contrast", "--dextinity-field-actions-idle-opacity")).toBe("1");
+        await expect(token("light", "--dextinity-field-actions-idle-opacity")).toBe("0.55");
+        await expect(token("high-contrast", "--dextinity-toast-success-icon-color")).toContain("color-mix");
+        await expect(token("light", "--dextinity-toast-success-icon-color")).not.toContain("color-mix");
+    },
 };

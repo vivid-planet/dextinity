@@ -17,3 +17,7 @@
     --dextinity-block-picker-item-icon-foreground: var(--dextinity-color-accent-text);
     --dextinity-block-picker-item-description-color: var(--dextinity-color-text-tertiary);
 }
+
+@mixin high-contrast-tokens {
+    --dextinity-block-picker-item-highlight-shadow: inset 0 0 0 1px var(--dextinity-color-accent);
+}

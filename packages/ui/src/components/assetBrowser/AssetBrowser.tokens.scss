@@ -27,6 +27,8 @@
 
     --dextinity-asset-browser-hover-background: color-mix(in oklch, var(--dextinity-color-text) 5%, transparent);
     --dextinity-asset-browser-selected-background: var(--dextinity-color-accent-soft);
+    // Around a selected tile and a selected row in the list view
+    --dextinity-asset-browser-selected-shadow: 0 0 transparent;
     // The name of a selected tile and a selected row in the columns view
     --dextinity-asset-browser-selected-strong-background: var(--dextinity-color-accent);
     --dextinity-asset-browser-selected-strong-foreground: var(--dextinity-color-accent-foreground);
@@ -36,4 +38,9 @@
     // The shadow under the large picture in the gallery view
     --dextinity-asset-browser-gallery-image-shadow: 0 12px 24px oklch(0 0 0 / 0.22);
     --dextinity-asset-browser-drop-shadow: inset 0 0 0 2px var(--dextinity-color-accent);
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-asset-browser-hover-background: transparent;
+    --dextinity-asset-browser-selected-shadow: inset 0 0 0 1px var(--dextinity-color-accent);
 }

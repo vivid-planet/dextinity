@@ -15,3 +15,7 @@
     // Covers the frame while the page loads; the frame stays white, so the overlay does too
     --dextinity-device-preview-loading-background: oklch(1 0 0 / 0.72);
 }
+
+@mixin high-contrast-tokens {
+    --dextinity-device-preview-frame-shadow: 0 0 0 1px var(--dextinity-color-text);
+}

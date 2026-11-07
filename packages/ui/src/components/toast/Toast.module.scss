@@ -78,12 +78,3 @@
 
     @include forced-colors.edge(1px, ButtonText);
 }
-
-// Applied by the dark color schemes, where the inverted toast is light: the tone colors are made for a dark background there, so
-// they are darkened toward the toast's foreground to stand out on the light toast
-:global(:is([data-dextinity-color-scheme="dark"], [data-dextinity-color-scheme="high-contrast"])) .root {
-    --dextinity-toast-success-icon-color: color-mix(in oklab, var(--dextinity-color-success) 55%, var(--dextinity-toast-foreground));
-    --dextinity-toast-error-icon-color: color-mix(in oklab, var(--dextinity-color-danger) 60%, var(--dextinity-toast-foreground));
-    --dextinity-toast-warning-icon-color: color-mix(in oklab, var(--dextinity-color-warning) 50%, var(--dextinity-toast-foreground));
-    --dextinity-toast-info-icon-color: color-mix(in oklab, var(--dextinity-color-info) 55%, var(--dextinity-toast-foreground));
-}

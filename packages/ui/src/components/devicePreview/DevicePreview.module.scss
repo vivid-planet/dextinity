@@ -104,8 +104,3 @@
     place-items: center;
     background: var(--dextinity-device-preview-loading-background);
 }
-
-// Applied by the high-contrast color scheme
-:global([data-dextinity-color-scheme="high-contrast"]) .root {
-    --dextinity-device-preview-frame-shadow: 0 0 0 1px var(--dextinity-color-text);
-}

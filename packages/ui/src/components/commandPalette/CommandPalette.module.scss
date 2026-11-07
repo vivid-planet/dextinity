@@ -12,10 +12,6 @@
     &[data-ending-style] {
         opacity: 0;
     }
-
-    :global([data-dextinity-color-scheme="high-contrast"]) & {
-        background: var(--dextinity-command-palette-backdrop-high-contrast);
-    }
 }
 
 .root {
@@ -118,14 +114,11 @@
     &[aria-selected="true"] {
         background: var(--dextinity-command-palette-item-active-background);
         color: var(--dextinity-command-palette-item-active-foreground);
+        box-shadow: var(--dextinity-command-palette-item-active-shadow);
         @include forced-colors.selected;
 
         .itemIcon {
             color: var(--dextinity-command-palette-item-active-icon-color);
-        }
-
-        :global([data-dextinity-color-scheme="high-contrast"]) & {
-            box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-command-palette-item-active-outline-high-contrast);
         }
     }
 }

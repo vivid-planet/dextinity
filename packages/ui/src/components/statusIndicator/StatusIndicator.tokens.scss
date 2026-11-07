@@ -31,3 +31,7 @@
     --dextinity-status-indicator-running-pulse: var(--dextinity-color-accent-glow);
     --dextinity-status-indicator-running-foreground: var(--dextinity-color-accent-text);
 }
+
+@mixin high-contrast-tokens {
+    --dextinity-status-indicator-critical-mark: "!";
+}

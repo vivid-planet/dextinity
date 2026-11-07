@@ -5,8 +5,7 @@
     --dextinity-banner-radius: var(--dextinity-radius-field);
     --dextinity-banner-font-size: 13px;
     --dextinity-banner-foreground: var(--dextinity-color-text);
-    // Outline in high contrast, where the tinted backgrounds are off
-    --dextinity-banner-line-high-contrast: var(--dextinity-color-line-strong);
+    --dextinity-banner-shadow: 0 0 transparent;
     --dextinity-banner-icon-size: 16px;
     --dextinity-banner-warning-background: var(--dextinity-color-warning-soft);
     --dextinity-banner-warning-icon: var(--dextinity-color-warning-text);
@@ -14,4 +13,9 @@
     --dextinity-banner-error-icon: var(--dextinity-color-danger-text);
     --dextinity-banner-info-background: var(--dextinity-color-info-soft);
     --dextinity-banner-info-icon: var(--dextinity-color-info-text);
+}
+
+@mixin high-contrast-tokens {
+    // An outline, where the tinted backgrounds are off
+    --dextinity-banner-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
 }

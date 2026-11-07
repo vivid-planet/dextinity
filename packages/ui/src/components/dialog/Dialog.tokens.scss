@@ -12,8 +12,6 @@
     // Space between the dialog and the edge of the screen
     --dextinity-dialog-viewport-padding: var(--dextinity-space-4);
     --dextinity-dialog-backdrop: oklch(0 0 0 / 0.34);
-    // Backdrop in high contrast, dark enough that only the dialog reads as active
-    --dextinity-dialog-backdrop-high-contrast: oklch(0 0 0 / 0.85);
 
     --dextinity-dialog-title-font-size: 16px;
     --dextinity-dialog-title-font-weight: 600;
@@ -22,4 +20,9 @@
     // Space between the fields of a form in the dialog
     --dextinity-dialog-body-gap: var(--dextinity-density-form-gap);
     --dextinity-dialog-footer-gap: var(--dextinity-space-2);
+}
+
+@mixin high-contrast-tokens {
+    // Dark enough that only the dialog reads as active
+    --dextinity-dialog-backdrop: oklch(0 0 0 / 0.85);
 }

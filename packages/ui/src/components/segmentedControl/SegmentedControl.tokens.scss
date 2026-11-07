@@ -33,3 +33,8 @@
     --dextinity-segmented-control-message-color-warning: var(--dextinity-color-warning-text);
     --dextinity-segmented-control-message-color-success: var(--dextinity-color-success-text);
 }
+
+@mixin high-contrast-tokens {
+    --dextinity-segmented-control-selected-background: var(--dextinity-color-text);
+    --dextinity-segmented-control-selected-foreground: var(--dextinity-color-canvas);
+}

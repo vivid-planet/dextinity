@@ -123,11 +123,3 @@
 .message {
     @include controlMessage.message(switch);
 }
-
-// Applied by the high-contrast color scheme
-:global([data-dextinity-color-scheme="high-contrast"]) .root {
-    --dextinity-switch-track-background: var(--dextinity-color-canvas);
-    --dextinity-switch-track-line: var(--dextinity-color-text);
-    --dextinity-switch-thumb-background: var(--dextinity-color-text);
-    --dextinity-switch-thumb-background-checked: var(--dextinity-color-canvas);
-}

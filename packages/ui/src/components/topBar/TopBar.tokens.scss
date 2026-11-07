@@ -26,10 +26,12 @@
     --dextinity-top-bar-ai-track: var(--dextinity-color-text-subtle);
     --dextinity-top-bar-ai-track-on: var(--dextinity-gradient-brand);
     --dextinity-top-bar-ai-thumb: oklch(1 0 0);
-    // The thumb takes the canvas color in high contrast, where the track on is light
-    --dextinity-top-bar-ai-thumb-high-contrast: var(--dextinity-color-canvas);
 
     // What is edited, after the back button in the edit mode
     --dextinity-top-bar-title-color: var(--dextinity-color-text);
     --dextinity-top-bar-title-font-size: 15px;
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-top-bar-ai-thumb: var(--dextinity-color-canvas);
 }

@@ -30,3 +30,12 @@
             var(--dextinity-space-2)
     );
 }
+
+@mixin dark-tokens {
+    // The inverted toast is light here, and the tone colors are made for a dark background, so they are darkened toward the toast's
+    // foreground to stand out on it
+    --dextinity-toast-success-icon-color: color-mix(in oklab, var(--dextinity-color-success) 55%, var(--dextinity-toast-foreground));
+    --dextinity-toast-error-icon-color: color-mix(in oklab, var(--dextinity-color-danger) 60%, var(--dextinity-toast-foreground));
+    --dextinity-toast-warning-icon-color: color-mix(in oklab, var(--dextinity-color-warning) 50%, var(--dextinity-toast-foreground));
+    --dextinity-toast-info-icon-color: color-mix(in oklab, var(--dextinity-color-info) 55%, var(--dextinity-toast-foreground));
+}

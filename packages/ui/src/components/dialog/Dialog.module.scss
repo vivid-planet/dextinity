@@ -11,10 +11,6 @@
     &[data-ending-style] {
         opacity: 0;
     }
-
-    :global([data-dextinity-color-scheme="high-contrast"]) & {
-        background: var(--dextinity-dialog-backdrop-high-contrast);
-    }
 }
 
 .viewport {

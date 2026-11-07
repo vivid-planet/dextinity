@@ -38,6 +38,16 @@ export function TokenTable({ tokens }: TokenTableProps) {
                                 </td>
                                 <td>
                                     <code className={styles.definition}>{token.definition}</code>
+                                    {token.darkDefinition != null && (
+                                        <div className={styles.description}>
+                                            Dark and high contrast: <code className={styles.definition}>{token.darkDefinition}</code>
+                                        </div>
+                                    )}
+                                    {token.highContrastDefinition != null && (
+                                        <div className={styles.description}>
+                                            High contrast: <code className={styles.definition}>{token.highContrastDefinition}</code>
+                                        </div>
+                                    )}
                                 </td>
                                 <td>
                                     <span className={styles.value}>

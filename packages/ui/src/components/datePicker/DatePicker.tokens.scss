@@ -22,11 +22,17 @@
     --dextinity-date-picker-day-background-hover: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
     --dextinity-date-picker-day-background-selected: var(--dextinity-color-accent);
     --dextinity-date-picker-day-foreground-selected: var(--dextinity-color-accent-foreground);
+    --dextinity-date-picker-day-shadow-selected: 0 0 transparent;
     // Days between the start and end of a range
     --dextinity-date-picker-day-background-range: var(--dextinity-color-accent-soft);
     --dextinity-date-picker-day-foreground-range: var(--dextinity-color-accent-text);
-    // The lines above and below the days of a range in the high-contrast color scheme
-    --dextinity-date-picker-range-outline-high-contrast: var(--dextinity-color-text);
+    --dextinity-date-picker-day-shadow-range: 0 0 transparent;
     // The mark below today's number
     --dextinity-date-picker-today-color: var(--dextinity-color-accent);
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-date-picker-day-shadow-selected: inset 0 0 0 2px var(--dextinity-color-focus);
+    // The soft range fill is black, so lines above and below mark the range instead
+    --dextinity-date-picker-day-shadow-range: inset 0 var(--dextinity-line-width) 0 var(--dextinity-color-text), inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-text);
 }

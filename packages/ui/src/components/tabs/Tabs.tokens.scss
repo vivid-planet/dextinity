@@ -31,3 +31,7 @@
     // Line around the count; transparent normally, a full line in high contrast, where soft fills are transparent
     --dextinity-tabs-count-line: transparent;
 }
+
+@mixin high-contrast-tokens {
+    --dextinity-tabs-count-line: var(--dextinity-color-warning);
+}

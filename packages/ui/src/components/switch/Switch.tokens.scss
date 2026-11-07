@@ -32,3 +32,10 @@
     --dextinity-switch-message-color-warning: var(--dextinity-color-warning-text);
     --dextinity-switch-message-color-success: var(--dextinity-color-success-text);
 }
+
+@mixin high-contrast-tokens {
+    --dextinity-switch-track-background: var(--dextinity-color-canvas);
+    --dextinity-switch-track-line: var(--dextinity-color-text);
+    --dextinity-switch-thumb-background: var(--dextinity-color-text);
+    --dextinity-switch-thumb-background-checked: var(--dextinity-color-canvas);
+}

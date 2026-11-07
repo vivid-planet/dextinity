@@ -79,8 +79,8 @@
         @include forced-colors.selected;
     }
 
-    :global([data-dextinity-color-scheme="high-contrast"]) &[data-highlighted] {
-        box-shadow: inset 0 0 0 2px var(--dextinity-color-focus);
+    &[data-highlighted] {
+        box-shadow: var(--dextinity-menu-item-shadow-highlight);
     }
 
     &[data-disabled] {

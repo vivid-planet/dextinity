@@ -304,6 +304,7 @@
 
     &[data-selected] {
         background: var(--dextinity-asset-browser-hover-background);
+        box-shadow: var(--dextinity-asset-browser-selected-shadow);
 
         .tileName {
             background: var(--dextinity-asset-browser-selected-strong-background);
@@ -387,6 +388,12 @@
     &[data-selected]:hover {
         background: var(--dextinity-asset-browser-selected-background);
         @include forced-colors.selected;
+    }
+
+    &[data-selected] {
+        box-shadow:
+            inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-asset-browser-divider),
+            var(--dextinity-asset-browser-selected-shadow);
     }
 
     &:focus-visible {
@@ -614,14 +621,4 @@
 .count {
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
-}
-
-// Applied by the high-contrast color scheme
-:global([data-dextinity-color-scheme="high-contrast"]) .root {
-    --dextinity-asset-browser-hover-background: transparent;
-
-    .row[data-selected],
-    .tile[data-selected] {
-        box-shadow: inset 0 0 0 1px var(--dextinity-color-accent);
-    }
 }

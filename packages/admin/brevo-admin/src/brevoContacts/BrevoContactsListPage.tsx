@@ -21,12 +21,13 @@ import {
     useToasts,
 } from "@dextinity/ui";
 import { type JSX, type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { FormattedDate, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { useHistory, useLocation } from "react-router";
 
 import { ContactImportDialog } from "../common/contactImport/ContactImportDialog";
 import type { AdditionalAttributesFragment } from "./additionalAttributesFragment";
 import { BrevoContactPanel, type BrevoContactsVariant, type BrevoContactUnsavedChanges, type EditBrevoContactFormValues } from "./BrevoContactPanel";
+import type { GQLBrevoContactsListItemFragment } from "./brevoContactsListItemFragment.generated";
 import {
     brevoContactsListQuery,
     brevoTestContactsListQuery,
@@ -35,7 +36,6 @@ import {
     updateBrevoContactBlockedMutation,
 } from "./BrevoContactsListPage.gql";
 import type {
-    GQLBrevoContactsListItemFragment,
     GQLBrevoContactsListQuery,
     GQLBrevoContactsListQueryVariables,
     GQLBrevoTestContactsListQuery,
@@ -46,8 +46,8 @@ import type {
     GQLUpdateBrevoContactBlockedMutation,
     GQLUpdateBrevoContactBlockedMutationVariables,
 } from "./BrevoContactsListPage.gql.generated";
-import { HeaderActions, Muted, Toolbar } from "./BrevoContactsListPage.sc";
-import { ContactStatus } from "./ContactStatus";
+import { HeaderActions, Toolbar } from "./BrevoContactsListPage.sc";
+import { useBrevoContactColumns } from "./useBrevoContactColumns";
 
 /** A row of the contacts list: the contact with the attributes of `additionalAttributesFragment`. */
 export type BrevoContactRow<AdditionalAttributes extends object = Record<string, unknown>> = GQLBrevoContactsListItemFragment & AdditionalAttributes;
@@ -222,46 +222,7 @@ export function BrevoContactsListPage<AdditionalAttributes extends object>({
         }
     };
 
-    const columns: DataGridColumn<Row>[] = [
-        {
-            key: "email",
-            header: intl.formatMessage({ id: "dextinity.brevoContact.email", defaultMessage: "Email" }),
-            hideable: false,
-        },
-        ...additionalGridFields,
-        {
-            key: "emailBlacklisted",
-            header: intl.formatMessage({ id: "dextinity.brevoContact.status", defaultMessage: "Status" }),
-            width: 130,
-            render: (contact) => <ContactStatus blocked={contact.emailBlacklisted} />,
-            exportValue: (contact) =>
-                contact.emailBlacklisted
-                    ? intl.formatMessage({ id: "dextinity.brevoContact.status.blocked", defaultMessage: "Blocked" })
-                    : intl.formatMessage({ id: "dextinity.brevoContact.status.subscribed", defaultMessage: "Subscribed" }),
-        },
-        {
-            key: "createdAt",
-            header: intl.formatMessage({ id: "dextinity.brevoContact.subscribedAt", defaultMessage: "Subscribed at" }),
-            width: 140,
-            priority: "low",
-            render: (contact) => (
-                <Muted>
-                    <FormattedDate value={contact.createdAt} dateStyle="medium" />
-                </Muted>
-            ),
-        },
-        {
-            key: "modifiedAt",
-            header: intl.formatMessage({ id: "dextinity.brevoContact.modifiedAt", defaultMessage: "Modified at" }),
-            width: 140,
-            priority: "low",
-            render: (contact) => (
-                <Muted>
-                    <FormattedDate value={contact.modifiedAt} dateStyle="medium" />
-                </Muted>
-            ),
-        },
-    ];
+    const columns = useBrevoContactColumns<Row>(additionalGridFields);
 
     const isPanelOpen = openContactId != null;
     const visibleColumns = isPanelOpen ? columns.filter((column) => !columnsHiddenNextToPanel.includes(column.key)) : columns;

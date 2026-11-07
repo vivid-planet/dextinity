@@ -1589,9 +1589,6 @@ importers:
       '@dextinity/admin':
         specifier: workspace:*
         version: link:../admin
-      '@dextinity/admin-icons':
-        specifier: workspace:*
-        version: link:../admin-icons
       '@dextinity/cms-admin':
         specifier: workspace:*
         version: link:../cms-admin
@@ -1604,9 +1601,6 @@ importers:
       fast-equals:
         specifier: ^5.4.0
         version: 5.4.5
-      react-dropzone:
-        specifier: ^20.1.4
-        version: 20.1.4(@types/react@19.3.0)(react@19.3.1)
     devDependencies:
       '@apollo/client':
         specifier: ^3.14.1

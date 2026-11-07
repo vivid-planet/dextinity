@@ -41,12 +41,10 @@
     },
     "dependencies": {
         "@dextinity/admin": "workspace:*",
-        "@dextinity/admin-icons": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",
         "@dextinity/ui": "workspace:*",
         "@dextinity/ui-react-final-form": "workspace:*",
-        "fast-equals": "^5.4.0",
-        "react-dropzone": "^20.1.4"
+        "fast-equals": "^5.4.0"
     },
     "devDependencies": {
         "@apollo/client": "^3.14.1",

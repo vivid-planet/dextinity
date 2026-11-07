@@ -17,7 +17,7 @@ export class BrevoApiCampaignsService {
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
     ) {}
 
-    public getSendingInformationFromBrevoCampaign(campaign: BrevoApiCampaign): SendingState {
+    public getSendingInformationFromBrevoCampaign(campaign: BrevoApiCampaign): SendingState | undefined {
         if (campaign.status === Brevo.GetEmailCampaignResponse.Status.Sent) {
             return SendingState.SENT;
         } else if (
@@ -25,6 +25,9 @@ export class BrevoApiCampaignsService {
             campaign.status === Brevo.GetEmailCampaignResponse.Status.InProcess
         ) {
             return SendingState.SCHEDULED;
+        } else if (campaign.status === Brevo.GetEmailCampaignResponse.Status.Draft) {
+            // A campaign sent via sendBrevoEmailCampaignNow is a draft in Brevo until the background send queues it
+            return undefined;
         }
 
         return SendingState.DRAFT;

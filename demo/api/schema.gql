@@ -2183,6 +2183,7 @@ input SendTestEmailCampaignArgs {
 
 enum SendingState {
   DRAFT
+  FAILED
   SCHEDULED
   SENT
 }

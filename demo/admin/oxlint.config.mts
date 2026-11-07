@@ -4,5 +4,5 @@ import { defineConfig } from "oxlint";
 export default defineConfig({
     extends: [reactConfig],
     plugins: reactConfig.plugins,
-    ignorePatterns: ["dist/**", "src/**/*.generated.ts", "src/**/generated/**", "lang/**", "lang-compiled/**", "lang-extracted/**"],
+    ignorePatterns: ["dist/**", "src/**/*.generated.ts", "lang/**", "lang-compiled/**", "lang-extracted/**"],
 });

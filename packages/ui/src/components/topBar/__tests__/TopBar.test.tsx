@@ -25,6 +25,15 @@ describe("TopBar render contract", () => {
         expect(screen.getByRole("button", { name: "Back to job ads" })).toBeTruthy();
     });
 
+    it("shows the app's browse actions only while browsing", () => {
+        const builds = <button type="button">Builds</button>;
+        const { rerender } = render(<TopBar browseActions={builds} />);
+        expect(screen.getByRole("button", { name: "Builds" })).toBeTruthy();
+
+        rerender(<TopBar mode="edit" browseActions={builds} />);
+        expect(screen.queryByRole("button", { name: "Builds" })).toBeNull();
+    });
+
     it("opens the AppShell's navigation drawer from the menu button", () => {
         const onNavDrawerOpen = vi.fn();
         render(

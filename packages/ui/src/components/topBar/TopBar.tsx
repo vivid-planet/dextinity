@@ -64,6 +64,11 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
     aiOpen?: boolean;
     /** Shows the AI assistant toggle. */
     onAiOpenChange?: (open: boolean) => void;
+    /**
+     * Only in `browse`: the app's own controls, before the scope, e.g. a popover with the status of the site's builds. Keep them few
+     * and compact, e.g. icon buttons.
+     */
+    browseActions?: ReactNode;
     /** The user menu, usually a `UserMenu`. */
     userMenu?: ReactNode;
     /** Only in `edit`: the back button at the start. Without it, the one set with `useTopBarEdit` shows. */
@@ -84,7 +89,7 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
 }
 
 /**
- * The glass bar above the content: search, scope, AI assistant, and user menu while browsing; back and the editing actions while
+ * The glass bar above the content: search, the app's own actions, scope, AI assistant, and user menu while browsing; back and the editing actions while
  * editing. The app name never appears here, only in the navigation.
  */
 export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
@@ -94,6 +99,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
         scope,
         aiOpen = false,
         onAiOpenChange,
+        browseActions,
         userMenu,
         back: backProp,
         title: titleProp,
@@ -147,6 +153,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
                         </button>
                     )}
                     <div className={styles.actions}>
+                        {browseActions}
                         {scope}
                         {onAiOpenChange != null && (
                             <button

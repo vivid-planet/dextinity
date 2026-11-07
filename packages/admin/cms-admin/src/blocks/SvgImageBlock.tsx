@@ -1,5 +1,4 @@
 import { gql } from "@apollo/client";
-import { deepClone } from "@mui/x-data-grid/internals";
 import { Field } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
@@ -103,7 +102,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
     },
 
     replaceDependenciesInOutput: (output, replacements) => {
-        const clonedOutput: SvgImageBlockInput = deepClone(output);
+        const clonedOutput: SvgImageBlockInput = structuredClone(output);
         const replacement = replacements.find((replacement) => replacement.type === "DamFile" && replacement.originalId === output.damFileId);
 
         if (replacement) {

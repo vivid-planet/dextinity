@@ -29,6 +29,13 @@ export type { TextImageBlockFactoryOptions } from "./blocks/createTextImageBlock
 export { createTextImageBlock } from "./blocks/createTextImageBlock";
 export { createTextLinkBlock } from "./blocks/createTextLinkBlock";
 export { DamVideoBlock } from "./blocks/DamVideoBlock";
+export {
+    BlockContentEditor,
+    type BlockContentEditorPreview,
+    type BlockContentEditorProps,
+    type BlockContentEditorSave,
+    type BlockContentEditorTab,
+} from "./blocks/editor/BlockContentEditor";
 export { EmailLinkBlock } from "./blocks/EmailLinkBlock";
 export { ExternalLinkBlock } from "./blocks/ExternalLinkBlock";
 export { ColumnsLayoutPreview, ColumnsLayoutPreviewContent, ColumnsLayoutPreviewSpacing } from "./blocks/factories/columnsBlock/ColumnsLayoutPreview";

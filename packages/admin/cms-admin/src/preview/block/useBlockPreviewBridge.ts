@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 import { useIFrameBridge } from "../../blocks/iframebridge/useIFrameBridge";
 import { useDextinityConfig } from "../../config/DextinityConfigContext";
@@ -22,7 +22,8 @@ interface UseBlockPreviewBridgeOptions {
 
 /**
  * Sends the preview state, the content scope JWT and the API URL to the block preview `iframe` of the surrounding `IFrameBridgeProvider`
- * once it is ready, and again whenever they change.
+ * once it is ready, and again whenever they change. When `url` changes, the same `iframe` loads the new address and gets the state once
+ * the new document is ready.
  */
 export function useBlockPreviewBridge({ url, previewState, showOnlyVisible }: UseBlockPreviewBridgeOptions) {
     const iFrameBridge = useIFrameBridge();
@@ -37,6 +38,15 @@ export function useBlockPreviewBridge({ url, previewState, showOnlyVisible }: Us
     if (error) {
         throw new Error(error.message);
     }
+
+    const previousUrlRef = useRef(url);
+    const { onIFrameNavigate } = iFrameBridge;
+    useLayoutEffect(() => {
+        if (previousUrlRef.current !== url) {
+            previousUrlRef.current = url;
+            onIFrameNavigate();
+        }
+    }, [url, onIFrameNavigate]);
 
     const jwt = data?.blockPreviewJwt;
     useEffect(() => {

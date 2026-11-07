@@ -125,6 +125,7 @@ export { ErrorDialog, type ErrorDialogOptions, type ErrorDialogProps } from "./e
 export { ErrorDialogHandler } from "./error/errordialog/ErrorDialogHandler";
 export { ErrorScope, errorScopeForOperationContext, LocalErrorScopeApolloContext } from "./error/errordialog/ErrorScope";
 export { useErrorDialog, type UseErrorDialogReturn } from "./error/errordialog/useErrorDialog";
+export { type ErrorDialogState, useErrorDialogState } from "./error/errordialog/useErrorDialogState";
 export { ErrorHandlerProvider, useErrorHandler } from "./error/errorHandler/ErrorHandlerProvider";
 export { createFetch, FetchContext, FetchProvider, useFetch } from "./fetchProvider/fetch";
 export { FileIcon } from "./fileIcons/FileIcon";
@@ -220,6 +221,7 @@ export { RouterMemoryRouter } from "./router/MemoryRouter";
 export { RouterPrompt } from "./router/Prompt";
 export { RouterPromptHandler, type SaveAction } from "./router/PromptHandler";
 export { SubRoute, SubRouteIndexRoute, useSubRoutePrefix } from "./router/SubRoute";
+export { type RouterConfirmationDialogState, useRouterConfirmationDialog } from "./router/useRouterConfirmationDialog";
 export { RowActionsItem, type RowActionsItemProps } from "./rowActions/RowActionsItem";
 export { RowActionsMenu, type RowActionsMenuProps } from "./rowActions/RowActionsMenu";
 export {
@@ -242,7 +244,7 @@ export { Selected } from "./Selected";
 export { type ISelectionRenderPropArgs, Selection, useSelection } from "./Selection";
 export type { ISelectionApi } from "./SelectionApi";
 export { type ISelectionRouterRenderPropArgs, SelectionRoute, SelectionRouteInner, useSelectionRoute } from "./SelectionRoute";
-export { type SnackbarApi, SnackbarProvider, useSnackbarApi } from "./snackbar/SnackbarProvider";
+export { type SnackbarApi, SnackbarProvider, useOptionalSnackbarApi, useSnackbarApi } from "./snackbar/SnackbarProvider";
 export { UndoSnackbar, type UndoSnackbarProps } from "./snackbar/UndoSnackbar";
 export { type IStackApi, type IWithApiProps, StackApiContext, useStackApi, withStackApi } from "./stack/Api";
 export { StackBackButton, type StackBackButtonClassKey, type StackBackButtonProps } from "./stack/backbutton/StackBackButton";

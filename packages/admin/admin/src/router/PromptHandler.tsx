@@ -1,10 +1,15 @@
 import type * as History from "history";
-import { type PropsWithChildren, type RefObject, useRef, useState } from "react";
+import { type PropsWithChildren, type RefObject, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { matchPath, Prompt } from "react-router";
 
 import { PromptAction, RouterConfirmationDialog } from "./ConfirmationDialog";
 import { RouterContext } from "./Context";
 import type { PromptRoutes } from "./Prompt";
+import {
+    createRouterConfirmationDialogRegistry,
+    type RouterConfirmationDialogRegistry,
+    RouterConfirmationDialogRegistryContext,
+} from "./useRouterConfirmationDialog";
 
 interface PromptHandlerState {
     showConfirmationDialog: boolean;
@@ -17,9 +22,11 @@ export interface PromptHandlerApi {
 function InnerPromptHandler({
     registeredMessages,
     apiRef,
+    confirmationDialogRegistry,
 }: {
     registeredMessages: RefObject<PromptMessages>;
     apiRef: RefObject<PromptHandlerApi | undefined>;
+    confirmationDialogRegistry: RouterConfirmationDialogRegistry;
 }) {
     const [state, setState] = useState<PromptHandlerState>({
         showConfirmationDialog: false,
@@ -88,14 +95,30 @@ function InnerPromptHandler({
         });
     };
 
+    const showSaveButton = Object.values(registeredMessages.current).some((registeredMessage) => !!registeredMessage.saveAction);
+    const hasCustomConfirmationDialog = useSyncExternalStore(confirmationDialogRegistry.subscribe, confirmationDialogRegistry.hasCustomDialog);
+
+    useEffect(() => {
+        confirmationDialogRegistry.publish({
+            open: state.showConfirmationDialog,
+            message: state.message,
+            showSaveButton,
+            onSave: () => handleClose(PromptAction.Save),
+            onDiscard: () => handleClose(PromptAction.Discard),
+            onCancel: () => handleClose(PromptAction.Cancel),
+        });
+    });
+
     return (
         <>
-            <RouterConfirmationDialog
-                isOpen={state.showConfirmationDialog}
-                message={state.message}
-                handleClose={handleClose}
-                showSaveButton={Object.values(registeredMessages.current).some((registeredMessage) => !!registeredMessage.saveAction)}
-            />
+            {!hasCustomConfirmationDialog && (
+                <RouterConfirmationDialog
+                    isOpen={state.showConfirmationDialog}
+                    message={state.message}
+                    handleClose={handleClose}
+                    showSaveButton={showSaveButton}
+                />
+            )}
             <Prompt when={true} message={promptMessage} />
         </>
     );
@@ -121,6 +144,7 @@ export type ResetAction = () => void;
 
 export const RouterPromptHandler = function ({ children, apiRef }: PropsWithChildren<Props>) {
     const registeredMessages = useRef<PromptMessages>({});
+    const [confirmationDialogRegistry] = useState(createRouterConfirmationDialogRegistry);
 
     const register = ({
         id,
@@ -159,9 +183,11 @@ export const RouterPromptHandler = function ({ children, apiRef }: PropsWithChil
                 unregister,
             }}
         >
-            {/* inner component not wrapping children contains local state to avoid rerender on state change */}
-            <InnerPromptHandler registeredMessages={registeredMessages} apiRef={apiRef} />
-            {children}
+            <RouterConfirmationDialogRegistryContext.Provider value={confirmationDialogRegistry}>
+                {/* inner component not wrapping children contains local state to avoid rerender on state change */}
+                <InnerPromptHandler registeredMessages={registeredMessages} apiRef={apiRef} confirmationDialogRegistry={confirmationDialogRegistry} />
+                {children}
+            </RouterConfirmationDialogRegistryContext.Provider>
         </RouterContext.Provider>
     );
 };

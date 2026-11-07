@@ -28,7 +28,10 @@
     }
 }
 
+// The containing block of the absolutely positioned visually hidden labels, so they stay inside the scroll area instead of
+// widening the page when the table is wider than the grid
 .scroller {
+    position: relative;
     flex: 1 1 auto;
     min-block-size: 0;
     overflow: auto;

@@ -8,9 +8,10 @@ function TranslationControls(props: IControlProps) {
     const translationContext = useContentTranslationService();
 
     if (translationContext.enabled && !props.options.disableContentTranslation) {
+        const TranslationButton = props.options.overwriteTranslationButton ?? TranslationToolbarButton;
         return (
             <ButtonGroup>
-                <TranslationToolbarButton {...props} />
+                <TranslationButton {...props} />
             </ButtonGroup>
         );
     }

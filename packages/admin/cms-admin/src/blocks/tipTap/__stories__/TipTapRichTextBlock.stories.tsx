@@ -10,6 +10,7 @@ import {
     type TipTapTextBlock,
     type TipTapTextBlockStyle,
 } from "../createTipTapRichTextBlock";
+import { chooseMenuItem } from "./tipTapStoryInteractions";
 
 const defaultHeadingTextBlocks: TipTapTextBlock[] = ([1, 2, 3, 4, 5, 6] as const).map((level) => ({
     name: `heading-${level}`,
@@ -251,7 +252,7 @@ export const Placeholders: StoryObj<typeof PlaceholdersStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.click(await within(document.body).findByRole("menuitem", { name: "First Name" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitem", "First Name");
         });
 
         await step("Inserted placeholder is rendered as a chip in the editor", async () => {

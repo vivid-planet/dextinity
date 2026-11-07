@@ -72,7 +72,7 @@ export function EmailCampaignEditor({ baseUrl, id, scope, scopeLabel, addToast, 
             <BlockContentEditor
                 header={<EditorHeader baseUrl={baseUrl} eyebrow={eyebrow} />}
                 tabs={[]}
-                preview={{ url: previewUrl, state: undefined }}
+                preview={{ url: previewUrl, siteUrl: null, state: undefined }}
                 loading={loading}
             />
         );
@@ -427,7 +427,7 @@ function EmailCampaignFormContent({
                     }
                 />
             }
-            preview={{ url: previewUrl, state: previewState }}
+            preview={{ url: previewUrl, siteUrl: null, state: previewState }}
             previewApi={previewApi}
             save={{
                 hasChanges: hasUnsavedChanges,

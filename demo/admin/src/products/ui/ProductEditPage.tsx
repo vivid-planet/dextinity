@@ -12,6 +12,8 @@ import {
     queryUpdatedAt,
     resolveHasSaveConflict,
     RouterTabLink,
+    useDatePickerLabels,
+    useDateTimePickerLabels,
 } from "@dextinity/cms-admin";
 import { Banner, KeyValueList, Panel, StatusIndicator, Tabs, type TabsItem } from "@dextinity/ui";
 import {
@@ -420,6 +422,8 @@ function FormSection({ title, description, children }: PropsWithChildren<FormSec
 
 function ProductFields() {
     const intl = useIntl();
+    const datePickerLabels = useDatePickerLabels();
+    const dateTimePickerLabels = useDateTimePickerLabels();
     const requiredMessage = intl.formatMessage({ id: "uiDemo.productsCommon.required", defaultMessage: "Required" });
     const typeOptions = productTypes.map((productType) => ({ value: productType, label: getProductTypeLabel(intl, productType) }));
 
@@ -496,6 +500,7 @@ function ProductFields() {
                             name="availableSince"
                             label={intl.formatMessage({ id: "uiDemo.products.availableSince", defaultMessage: "Available since" })}
                             locale={intl.locale}
+                            labels={datePickerLabels}
                             required
                             requiredMessage={requiredMessage}
                         />
@@ -503,6 +508,7 @@ function ProductFields() {
                             name="lastCheckedAt"
                             label={intl.formatMessage({ id: "uiDemo.productEdit.lastCheckedAt", defaultMessage: "Last checked at" })}
                             locale={intl.locale}
+                            labels={dateTimePickerLabels}
                         />
                         <FutureAvailabilityBanner />
                     </div>

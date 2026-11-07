@@ -6,6 +6,7 @@ import { useId, useMemo } from "react";
 import { Form } from "react-final-form";
 import { useIntl } from "react-intl";
 
+import { useDateRangePickerLabels } from "../../../form/useDatePickerLabels";
 import type { GQLPermission } from "../../../graphql.generated";
 import { camelCaseToHumanReadable } from "../../utils/camelCaseToHumanReadable";
 import {
@@ -45,6 +46,7 @@ const toOptionalText = (text: string | undefined) => (text?.trim() ? text.trim()
 
 export const PermissionDialog = ({ userId, permissionId, handleDialogClose }: FormProps) => {
     const intl = useIntl();
+    const dateRangePickerLabels = useDateRangePickerLabels();
     const client = useApolloClient();
     const formId = useId();
     const isNew = permissionId === "add";
@@ -222,6 +224,7 @@ export const PermissionDialog = ({ userId, permissionId, handleDialogClose }: Fo
                                     locale={intl.locale}
                                     disabled={isByRule}
                                     labels={{
+                                        ...dateRangePickerLabels,
                                         start: intl.formatMessage({ id: "dextinity.userPermissions.validFrom", defaultMessage: "Valid from" }),
                                         end: intl.formatMessage({ id: "dextinity.userPermissions.validTo", defaultMessage: "Valid to" }),
                                     }}

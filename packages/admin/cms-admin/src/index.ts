@@ -236,6 +236,7 @@ export {
 export { queryUpdatedAt } from "./form/queryUpdatedAt";
 export { serializeInitialValues } from "./form/serializeInitialValues";
 export { SyncFields } from "./form/SyncFields";
+export { useDatePickerLabels, useDateRangePickerLabels, useDateTimePickerLabels } from "./form/useDatePickerLabels";
 export { useFormSaveConflict } from "./form/useFormSaveConflict";
 export { createEditPageNode, type EditPageNodeInitialValues, type EditPageNodeProps } from "./pages/createEditPageNode";
 export { createUsePage, type PageState } from "./pages/createUsePage";

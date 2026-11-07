@@ -61,13 +61,20 @@ export const TipTapContentTranslationDialog = ({
                     <Typography variant="label" element="h3">
                         {intl.formatMessage({ id: "dextinity.translator.original", defaultMessage: "Original" })}
                     </Typography>
-                    <TipTapEditor state={{ tipTapContent: originalContent }} updateState={() => {}} {...editorProps} readOnly />
+                    <TipTapEditor
+                        state={{ tipTapContent: originalContent }}
+                        updateState={() => {}}
+                        {...editorProps}
+                        readOnly
+                        label={intl.formatMessage({ id: "dextinity.translator.original", defaultMessage: "Original" })}
+                    />
                 </Column>
                 <Column>
                     <Typography variant="label" element="h3">
                         {translationLabel}
                     </Typography>
                     <TipTapEditor
+                        label={translationLabel}
                         state={{ tipTapContent: translation }}
                         updateState={(next) => {
                             const nextState = typeof next === "function" ? next({ tipTapContent: translation }) : next;

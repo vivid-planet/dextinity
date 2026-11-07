@@ -4,6 +4,14 @@ An **experimental**, UI-only React component library. It contains no routing, fo
 
 It builds on an unstyled foundation rather than evolving the MUI-based components of `@dextinity/admin`; `@base-ui/react` is the chosen foundation.
 
+## Documentation
+
+- **This README** is for developers who work on `@dextinity/ui` itself.
+- **[`AGENTS.md`](AGENTS.md)** adds only what AI agents need and people don't.
+- **The [Storybook](https://next--6adb09e1f667e1e0e9a4a772.chromatic.com)** is for developers who use the package: its docs pages, and the component docs built from TSDoc and stories.
+
+When this README needs something that the Storybook already explains, it links to the explanation instead of repeating it.
+
 ## Usage
 
 Load the Inter font and import the styles once, in the application's entry file:

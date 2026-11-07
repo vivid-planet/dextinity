@@ -4,19 +4,15 @@ An **experimental**, UI-only React component library. It contains no routing, fo
 
 It builds on an unstyled foundation rather than evolving the MUI-based components of `@dextinity/admin`; `@base-ui/react` is the chosen foundation.
 
-## Usage
+## Documentation
 
-Load the Inter font and import the styles once, in the application's entry file:
+- **This README** is for developers who work on `@dextinity/ui` itself.
+- **[`AGENTS.md`](AGENTS.md)** adds only what AI agents need and people don't.
+- **The [Storybook](https://next--6adb09e1f667e1e0e9a4a772.chromatic.com)** is for developers who use the package: its docs pages, and the component docs built from TSDoc and stories.
 
-```ts
-import "@fontsource-variable/inter";
-import "@dextinity/ui/css";
-import "@dextinity/ui/css/icons";
-```
+When this README needs something that the Storybook already explains, it links to the explanation instead of repeating it. A change to a convention updates this README in the same change. How applications install the package and import its styles and icons is in the Storybook's Intro page.
 
-`@dextinity/ui/css/icons` holds the default icon set (see [Icons](#icons)); a project with its own full icon set skips it.
-
-### Forms
+## Forms
 
 Every form uses a form library. The fields here are plain controlled components; an adapter package binds them to the library, with the same adapter names and props in both:
 
@@ -33,7 +29,7 @@ The adapters' stories are part of this package's Storybook, under `Forms`.
 
 ## Experimental
 
-Any export may change or be removed at any time, without deprecation notice. Changesets are not created for changes within this package.
+Changesets are not created for changes within this package.
 
 ## Non-goals
 
@@ -61,7 +57,7 @@ Any export may change or be removed at any time, without deprecation notice. Cha
 
 Components and utilities are documented in TSDoc on the export itself, so the docs ship with the package, get picked up by Storybook, and stay next to the code.
 
-Keep each comment as close as possible to what it describes: the component comment says what the component is for, while a prop's description and its `@defaultValue` go on the prop. Say what a feature does, not how (leave out the rendered element, prop forwarding, the base-ui foundation) and not why (the commit carries that); don't merely restate the name. Keep it as short as the feature allows. The shared override-API members — `className`, `slots`, `slotProps`, and the `OwnerState` type — share the wording shown below, extended only where a component needs more detail.
+Keep each comment as close as possible to what it describes: the component comment says what the component is for, while a prop's description and its `@defaultValue` go on the prop. Describe what a component is for in general, not only the place where it is used today, and mention that place at most as an example: "Shows a short status, such as the state of an order", not "Shows the state of an order". Only when the name itself names the place, such as `OrderStatus`, describe the component for that place. Say what a feature does, not how (leave out the rendered element, prop forwarding, the base-ui foundation) and not why (the commit carries that); don't merely restate the name. Keep it as short as the feature allows. Don't link to Storybook pages. The shared override-API members — `className`, `slots`, `slotProps`, and the `OwnerState` type — share the wording shown below, extended only where a component needs more detail.
 
 ```tsx
 /**
@@ -116,7 +112,7 @@ Usually the primary element is the root. When a component wraps it, for example 
 The exported components share one set of override props; each offers the ones that apply to it. The [styling contract](#styling-contract) is the primary way to style a component; these props do what it can't — place and swap inner parts, and set or vary their props.
 
 - **`className`** — a string, merged with the contract classes, never replacing them. It is not a function: every value in `ownerState` already emits a `data-*` attribute, so an `ownerState`-dependent class would add nothing.
-- **`slots`** — sets which element a named inner part renders as. Every inner part is a slot, so a consumer can reach it through `slots` and `slotProps`. The root is not a slot — it is the component's own outermost element, configured through the component's top-level props (`className`, `style`, and, when the root is the primary element, event handlers, ARIA, …), and through `slotProps.root` when the component wraps its primary element.
+- **`slots`** — sets which element a named inner part renders as. Every inner part is a slot, so a consumer can reach it through `slots` and `slotProps`. A slot is named after its job, not after what it shows by default (`clearIcon`, not `crossIcon`). A part that appears in only one state also names that state (`errorIcon`). The root is not a slot — it is the component's own outermost element, configured through the component's top-level props (`className`, `style`, and, when the root is the primary element, event handlers, ARIA, …), and through `slotProps.root` when the component wraps its primary element.
 - **`slotProps`** — props for those same inner parts, as an object **or** a function of `ownerState`. Their type follows the element chosen for the slot in `slots`, and falls back to the slot's default element when `slots` is omitted. They are merged with the component's own props, so a contract class or handler is never dropped.
 - **`ownerState`** — one object per component: the resolved configuration (`variant`, `disabled`, …) that influences the component's appearance or behavior; the root's `data-*` attributes are derived from it. It holds no transient interaction state (hover/press/focus).
 
@@ -194,6 +190,21 @@ The tag is `development` rather than `dev` because Storybook already uses `dev` 
 
 A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
 
+#### Pattern pages
+
+A pattern page has the title `Patterns/<Name>`, named in sentence case after the part of an application it covers. It explains when to use which component and how to combine them, and links to the docs pages of the components it uses. It states what to do, not why. A pattern from the design system draft is a story file in `src/patterns/<pattern>/__stories__/`, laid out with the components of [`src/storybook/patterns/PatternPage.tsx`](src/storybook/patterns/PatternPage.tsx) and with play functions for its live examples. Any other pattern page is an MDX page in `src/docs/patterns/`, with its examples as stories in `src/docs/patterns/__stories__/`, tagged `["!dev", "!autodocs", "!manifest"]`.
+
+## Development
+
+The package has two dev-pm scripts:
+
+| Name                     | What it does                                                      |
+| ------------------------ | ----------------------------------------------------------------- |
+| `dextinity-ui`           | `vite build --watch` and `tsc --watch` — rebuild `lib/` on change |
+| `storybook-dextinity-ui` | `storybook dev -p 26648 --no-open`                                |
+
+The `@dextinity-ui` group starts `dextinity-ui`. Start `storybook-dextinity-ui` on its own, or with the `@storybook` group. The Storybook then runs at `http://localhost:26648`.
+
 ## Testing
 
 Test the behavior and contracts a consumer depends on, not the implementation. Each test protects one such behavior; anything written only for coverage, or that just restates the type checker or the implementation, is left out.
@@ -215,7 +226,7 @@ Run from `packages/ui`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pn
 
 ## Theme
 
-Components read their colors, metrics, and font family from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-density-…)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object.
+Components read their colors, metrics, and font family from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-density-…)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object. How applications use and override the tokens is in [Foundations → Theme → Overview](src/docs/theme/Overview.mdx).
 
 ### Token layers
 

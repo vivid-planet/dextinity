@@ -38,6 +38,10 @@
     // The shadow under the large picture in the gallery view
     --dextinity-asset-browser-gallery-image-shadow: 0 12px 24px oklch(0 0 0 / 0.22);
     --dextinity-asset-browser-drop-shadow: inset 0 0 0 2px var(--dextinity-color-accent);
+
+    // The field that renames an item in place
+    --dextinity-asset-browser-name-field-background: var(--dextinity-field-background-focus);
+    --dextinity-asset-browser-name-field-shadow: inset 0 0 0 1px var(--dextinity-field-line-focus), 0 0 0 3px var(--dextinity-field-halo-focus);
 }
 
 @mixin high-contrast-tokens {

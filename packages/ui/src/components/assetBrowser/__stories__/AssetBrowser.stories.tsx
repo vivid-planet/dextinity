@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useEffect, useState } from "react";
-import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+import { expect, fireEvent, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
+import { MenuItem } from "../../menu/MenuItem";
 import { AssetBrowser, type AssetBrowserAsset, type AssetBrowserFolder, type AssetBrowserProps } from "../AssetBrowser";
 import assetBrowserTokens from "../AssetBrowser.tokens.scss?raw";
 
@@ -166,6 +167,21 @@ function ControlledAssetBrowser(props: AssetBrowserProps) {
                     props.onDelete?.(ids);
                     setCurrentAssets((current) => current.filter((asset) => !ids.includes(asset.id)));
                     setSelectedIds([]);
+                })
+            }
+            onRename={
+                props.onRename &&
+                ((id, name) => {
+                    props.onRename?.(id, name);
+                    setCurrentAssets((current) => current.map((asset) => (asset.id === id ? { ...asset, name } : asset)));
+                    setCurrentFolders((current) => current.map((folder) => (folder.id === id ? { ...folder, name } : folder)));
+                })
+            }
+            onCreateFolder={
+                props.onCreateFolder &&
+                ((name, parentId) => {
+                    props.onCreateFolder?.(name, parentId);
+                    setCurrentFolders((current) => [...current, { id: `folder-${current.length + 1}`, name, parentId }]);
                 })
             }
         />
@@ -371,6 +387,87 @@ export const Delete: Story = {
         await userEvent.keyboard("{Delete}");
         await waitFor(() => expect(args.onDelete).toHaveBeenCalledWith(["a5"]));
         await expect(canvas.queryByText("campaign.mp4")).toBeNull();
+    },
+};
+
+/**
+ * With `onRename`, F2 renames the focused item in place; a file's extension stays unselected, so typing replaces only the name. Enter
+ * or leaving the field saves, Escape cancels.
+ */
+export const Rename: Story = {
+    args: { view: "list", onRename: fn() },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("option", { name: /lobby\.jpg/ }));
+        await userEvent.keyboard("{F2}");
+        const field = canvas.getByRole("textbox", { name: "Rename" });
+        await expect(field).toHaveFocus();
+        await expect([(field as HTMLInputElement).selectionStart, (field as HTMLInputElement).selectionEnd]).toStrictEqual([0, 5]);
+        await userEvent.keyboard("entrance{Enter}");
+        await waitFor(() => expect(args.onRename).toHaveBeenCalledWith("a2", "entrance.jpg"));
+        await waitFor(() => expect(canvas.getByRole("option", { name: /entrance\.jpg/ })).toHaveFocus());
+
+        await userEvent.keyboard("{F2}x{Escape}");
+        await expect(canvas.queryByRole("textbox", { name: "Rename" })).toBeNull();
+        await expect(args.onRename).toHaveBeenCalledTimes(1);
+        await expect(canvas.getByRole("option", { name: /entrance\.jpg/ })).toHaveFocus();
+    },
+};
+
+/**
+ * With `onCreateFolder`, the toolbar's New folder button, or New folder in the context menu of the empty area, adds a folder named in
+ * place; the application creates it and adds it to `folders`.
+ */
+export const NewFolder: Story = {
+    args: { view: "icons", folderId: "campaigns", onCreateFolder: fn() },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "New folder" }));
+        const field = canvas.getByRole("textbox", { name: "New folder" });
+        await expect(field).toHaveFocus();
+        await expect(field).toHaveValue("Untitled folder");
+        await userEvent.keyboard("Press kit{Enter}");
+        await waitFor(() => expect(args.onCreateFolder).toHaveBeenCalledWith("Press kit", "campaigns"));
+        await expect(canvas.getByRole("option", { name: /Press kit/ })).toBeInTheDocument();
+    },
+};
+
+/**
+ * A right-click, Shift+F10, or the context menu key opens the context menu of the selected items – selecting the item first if it
+ * isn't – with Open, Rename, the application's `contextMenuItems`, and Delete. On the empty area, it offers New folder.
+ */
+export const ContextMenu: Story = {
+    args: {
+        view: "icons",
+        onRename: fn(),
+        onCreateFolder: fn(),
+        contextMenuItems: (ids) => (
+            <MenuItem label={ids.length === 1 ? "Download" : `Download ${ids.length} items`} icon={<Icon name="download" />} />
+        ),
+    },
+    play: async ({ args, canvas }) => {
+        fireEvent.contextMenu(canvas.getByRole("option", { name: /lobby\.jpg/ }));
+        const menu = await screen.findByRole("menu");
+        await expect(
+            within(menu)
+                .getAllByRole("menuitem")
+                .map((item) => item.textContent),
+        ).toStrictEqual(["Open", "Rename", "Download", "Delete"]);
+        await expect(args.onSelectionChange).toHaveBeenLastCalledWith(["a2"]);
+        await userEvent.click(within(menu).getByRole("menuitem", { name: "Rename" }));
+        const field = await canvas.findByRole("textbox", { name: "Rename" });
+        await waitFor(() => expect(field).toHaveFocus());
+        await userEvent.keyboard("{Escape}");
+
+        fireEvent.contextMenu(canvas.getByRole("listbox", { name: "Items" }));
+        const emptyAreaMenu = await screen.findByRole("menu");
+        await expect(
+            within(emptyAreaMenu)
+                .getAllByRole("menuitem")
+                .map((item) => item.textContent),
+        ).toStrictEqual(["New folder"]);
+        await userEvent.click(within(emptyAreaMenu).getByRole("menuitem", { name: "New folder" }));
+        await waitFor(() => expect(canvas.getByRole("textbox", { name: "New folder" })).toHaveFocus());
+        await userEvent.keyboard("{Escape}");
+        await expect(args.onCreateFolder).not.toHaveBeenCalled();
     },
 };
 

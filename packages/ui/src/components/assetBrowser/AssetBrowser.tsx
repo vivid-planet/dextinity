@@ -1,3 +1,4 @@
+import { ContextMenu } from "@base-ui/react/context-menu";
 import { clsx } from "clsx";
 import {
     type ChangeEvent,
@@ -17,10 +18,13 @@ import {
 } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
+import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { AssetThumbnail, type AssetThumbnailBadge, type FocalPoint } from "../assetThumbnail/AssetThumbnail";
 import { Breadcrumbs } from "../breadcrumbs/Breadcrumbs";
 import { Icon } from "../icon/Icon";
 import { IconButton } from "../iconButton/IconButton";
+import { MenuItem } from "../menu/MenuItem";
+import { MenuSeparator } from "../menu/MenuSeparator";
 import { SegmentedControl } from "../segmentedControl/SegmentedControl";
 import { Spinner } from "../spinner/Spinner";
 import { type TreeNode, TreeView } from "../treeView/TreeView";
@@ -113,6 +117,16 @@ export interface AssetBrowserLabels {
     noResults: (search: string) => string;
     /** The number of search results. */
     resultCount: (count: number) => string;
+    /** The context menu item that opens the item. */
+    open: string;
+    /** The context menu item that renames the item in place; also the accessible name of the name field. */
+    rename: string;
+    /** The context menu item that deletes the selection. */
+    delete: string;
+    /** The button and context menu item that create a folder in place. */
+    newFolder: string;
+    /** The name of a new folder whose name was left empty. */
+    untitledFolder: string;
 }
 
 const defaultLabels: AssetBrowserLabels = {
@@ -139,6 +153,11 @@ const defaultLabels: AssetBrowserLabels = {
     searching: "Searching…",
     noResults: (search) => `No results for “${search}”`,
     resultCount: (count) => (count === 1 ? "1 result" : `${count} results`),
+    open: "Open",
+    rename: "Rename",
+    delete: "Delete",
+    newFolder: "New folder",
+    untitledFolder: "Untitled folder",
 };
 
 // Keeps the content usable when the sidebar is dragged wide in a narrow browser
@@ -201,8 +220,23 @@ export interface AssetBrowserProps extends Omit<HTMLAttributes<HTMLDivElement>, 
     onQuickLook?: (asset: AssetBrowserAsset) => void;
     /** Called when items are dragged onto a folder, in the content or the tree. Only in `manage` mode. */
     onMove?: (ids: string[], folderId: string) => void;
-    /** Called with the selected ids on Delete or Backspace. Only in `manage` mode. */
+    /** Called with the selected ids on Delete or Backspace, or from the context menu. Only in `manage` mode. */
     onDelete?: (ids: string[]) => void;
+    /**
+     * Called with an item's new name after it was renamed in place: F2 on the item, or Rename in its context menu. Enter or leaving the
+     * field saves, Escape cancels. Only in `manage` mode.
+     */
+    onRename?: (id: string, name: string) => void;
+    /**
+     * Called with the name of a folder created in place in the open folder, from the toolbar's New folder button or the context menu of
+     * the empty area; add it to `folders`. Only in `manage` mode.
+     */
+    onCreateFolder?: (name: string, parentId: string) => void;
+    /**
+     * Further items in the context menu of the selected items, e.g. `MenuItem`s to download or move them. The context menu opens on a
+     * right-click, Shift+F10, or the context menu key, and selects the item first if it isn't selected.
+     */
+    contextMenuItems?: (ids: string[]) => ReactNode;
     /** Further controls in the toolbar, e.g. "New folder" and "Upload". */
     toolbar?: ReactNode;
     /**
@@ -279,6 +313,82 @@ function byName(first: { name: string }, second: { name: string }) {
     return first.name.localeCompare(second.name);
 }
 
+function stopPropagation(event: { stopPropagation: () => void }) {
+    event.stopPropagation();
+}
+
+/**
+ * The field that renames an item or names a new folder in place. Enter or leaving it saves, Escape cancels.
+ */
+function NameField({
+    initialName,
+    label,
+    selectStem,
+    className,
+    onCommit,
+    onCancel,
+}: {
+    initialName: string;
+    label: string;
+    selectStem: boolean;
+    className?: string;
+    onCommit: (name: string) => void;
+    onCancel: () => void;
+}) {
+    const [name, setName] = useState(initialName);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const done = useRef(false);
+
+    useLayoutEffect(() => {
+        const input = inputRef.current;
+        if (input == null) {
+            return;
+        }
+        input.focus();
+        // Like the Finder, a file's extension stays unselected, so typing replaces only the name
+        const extensionStart = initialName.lastIndexOf(".");
+        input.setSelectionRange(0, selectStem && extensionStart > 0 ? extensionStart : initialName.length);
+    }, [initialName, selectStem]);
+
+    const finish = (save: boolean) => {
+        if (done.current) {
+            return;
+        }
+        done.current = true;
+        if (save) {
+            onCommit(name);
+        } else {
+            onCancel();
+        }
+    };
+
+    return (
+        <input
+            ref={inputRef}
+            className={clsx(styles.nameField, className)}
+            aria-label={label}
+            value={name}
+            autoComplete="off"
+            spellCheck={false}
+            onChange={(event) => setName(event.target.value)}
+            onKeyDown={(event) => {
+                event.stopPropagation();
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    finish(true);
+                } else if (event.key === "Escape") {
+                    event.preventDefault();
+                    finish(false);
+                }
+            }}
+            onBlur={() => finish(true)}
+            onClick={stopPropagation}
+            onDoubleClick={stopPropagation}
+            onContextMenu={stopPropagation}
+        />
+    );
+}
+
 /**
  * The finder for assets: a folder tree, the folder's items as icons, a list, columns, or a gallery, and a path bar. Behaves like the
  * macOS Finder for selecting, opening, and moving items. With a search, it lists the matching assets across all folders.
@@ -298,6 +408,9 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         onQuickLook,
         onMove,
         onDelete,
+        onRename,
+        onCreateFolder,
+        contextMenuItems,
         toolbar,
         scrollToItemId,
         search = "",
@@ -326,6 +439,12 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
     const [collapsedIds, setCollapsedIds] = useState<string[]>([]);
     const [draggedIds, setDraggedIds] = useState<string[]>();
+    const [renamingId, setRenamingId] = useState<string>();
+    const [creatingFolder, setCreatingFolder] = useState(false);
+    const [contextMenuOpen, setContextMenuOpen] = useState(false);
+    const [contextMenuIds, setContextMenuIds] = useState<string[]>([]);
+    const contextMenuIdsRef = useRef<string[]>([]);
+    const { container: portalContainer, anchorRef: portalAnchorRef } = useThemePortalContainer<HTMLDivElement>();
     const [dropFolderId, setDropFolderId] = useState<string>();
     const treeRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
@@ -341,13 +460,14 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
     const setRootRef = useCallback(
         (element: HTMLDivElement | null) => {
             rootRef.current = element;
+            portalAnchorRef(element);
             if (typeof ref === "function") {
                 ref(element);
             } else if (ref != null) {
                 ref.current = element;
             }
         },
-        [ref],
+        [ref, portalAnchorRef],
     );
 
     const folderById = new Map(folders.map((folder) => [folder.id, folder]));
@@ -388,11 +508,16 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
     const itemIds = items.map(itemId);
     const selected = new Set(selectedIds);
     const canManage = ownerState.mode === "manage";
+    const canRename = canManage && onRename != null;
+    const canCreateFolder = canManage && onCreateFolder != null && !isSearching;
+    const showsNewFolder = creatingFolder && canCreateFolder;
     const tabStopId = activeId != null && itemIds.includes(activeId) ? activeId : (itemIds.find((id) => selected.has(id)) ?? itemIds[0]);
 
     useEffect(() => {
         setActiveId(undefined);
         setAnchorId(undefined);
+        setRenamingId(undefined);
+        setCreatingFolder(false);
         if (focusContentAfterNavigation.current) {
             focusContentAfterNavigation.current = false;
             const firstOption = contentRef.current?.querySelector<HTMLElement>("[role='option'][tabindex='0']");
@@ -635,6 +760,11 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
             openItem(items[index]);
             return;
         }
+        if (event.key === "F2" && canRename) {
+            event.preventDefault();
+            setRenamingId(currentId);
+            return;
+        }
         if (modifier && event.key.toLowerCase() === "a") {
             event.preventDefault();
             onSelectionChange([...itemIds]);
@@ -700,7 +830,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
 
     const dragProps = (item: Item) => {
         const id = itemId(item);
-        if (!canManage || onMove == null) {
+        if (!canManage || onMove == null || renamingId === id) {
             return {};
         }
         return {
@@ -759,6 +889,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
             "data-selected": selected.has(id) ? "" : undefined,
             "data-drop-target": item.kind === "folder" && dropFolderId === item.folder.id ? "" : undefined,
             "data-dragging": draggedIds?.includes(id) ? "" : undefined,
+            "data-id": id,
             ref: (element: HTMLElement | null) => {
                 if (element == null) {
                     optionRefs.current.delete(id);
@@ -773,6 +904,68 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
             ...(item.kind === "folder" ? dropProps(item.folder.id) : {}),
         };
     };
+
+    const commitRename = (item: Item, name: string) => {
+        const id = itemId(item);
+        const trimmed = name.trim();
+        setRenamingId(undefined);
+        if (trimmed !== "" && trimmed !== itemName(item)) {
+            onRename?.(id, trimmed);
+        }
+        focusItem(id);
+    };
+
+    const cancelRename = (item: Item) => {
+        setRenamingId(undefined);
+        focusItem(itemId(item));
+    };
+
+    const focusTabStop = () => {
+        const option = contentRef.current?.querySelector<HTMLElement>("[role='option'][tabindex='0']");
+        (option ?? contentRef.current)?.focus();
+    };
+
+    const startCreatingFolder = () => {
+        setRenamingId(undefined);
+        onSelectionChange([]);
+        setCreatingFolder(true);
+    };
+
+    const commitNewFolder = (name: string) => {
+        setCreatingFolder(false);
+        onCreateFolder?.(name.trim() === "" ? labels.untitledFolder : name.trim(), folderId);
+        focusTabStop();
+    };
+
+    const cancelNewFolder = () => {
+        setCreatingFolder(false);
+        focusTabStop();
+    };
+
+    const renderName = (item: Item, className: string) =>
+        renamingId === itemId(item) ? (
+            <NameField
+                initialName={itemName(item)}
+                label={labels.rename}
+                selectStem={item.kind === "asset"}
+                className={className}
+                onCommit={(name) => commitRename(item, name)}
+                onCancel={() => cancelRename(item)}
+            />
+        ) : (
+            <span className={className}>{itemName(item)}</span>
+        );
+
+    const renderNewFolderField = (className: string) => (
+        <NameField
+            initialName={labels.untitledFolder}
+            label={labels.newFolder}
+            selectStem={false}
+            className={className}
+            onCommit={commitNewFolder}
+            onCancel={cancelNewFolder}
+        />
+    );
 
     const renderThumbnail = (item: Item, compact = false) =>
         item.kind === "folder" ? (
@@ -830,14 +1023,20 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
     }
 
     const renderIcons = () =>
-        items.length === 0 ? (
+        items.length === 0 && !showsNewFolder ? (
             emptyState
         ) : (
             <ul {...listboxProps} className={styles.grid}>
+                {showsNewFolder && (
+                    <li role="none" className={styles.tile}>
+                        <AssetThumbnail type="folder" />
+                        {renderNewFolderField(styles.tileName)}
+                    </li>
+                )}
                 {items.map((item, index) => (
                     <li key={itemId(item)} {...optionProps(item, index)} className={styles.tile}>
                         {renderThumbnail(item)}
-                        <span className={styles.tileName}>{itemName(item)}</span>
+                        {renderName(item, styles.tileName)}
                         <span className={styles.tileMeta}>{isSearching ? folderById.get(containerOf(item) ?? "")?.name : itemMeta(item)}</span>
                     </li>
                 ))}
@@ -852,15 +1051,25 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                 <span>{labels.details}</span>
                 {!isSearching && <span>{labels.modified}</span>}
             </div>
-            {items.length === 0 ? (
+            {items.length === 0 && !showsNewFolder ? (
                 emptyState
             ) : (
                 <ul {...listboxProps} className={styles.rows}>
+                    {showsNewFolder && (
+                        <li role="none" className={styles.row}>
+                            <span className={styles.rowName}>
+                                <span className={styles.rowThumbnail}>
+                                    <AssetThumbnail type="folder" />
+                                </span>
+                                {renderNewFolderField(styles.ellipsis)}
+                            </span>
+                        </li>
+                    )}
                     {items.map((item, index) => (
                         <li key={itemId(item)} {...optionProps(item, index)} className={styles.row}>
                             <span className={styles.rowName}>
                                 <span className={styles.rowThumbnail}>{renderThumbnail(item, true)}</span>
-                                <span className={styles.ellipsis}>{itemName(item)}</span>
+                                {renderName(item, styles.ellipsis)}
                             </span>
                             {isSearching && (
                                 <span className={styles.rowMeta} title={locationOf(item)}>
@@ -914,13 +1123,18 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                         </ul>
                     );
                 })}
-                {items.length === 0 ? (
+                {items.length === 0 && !showsNewFolder ? (
                     <div className={styles.column}>{emptyState}</div>
                 ) : (
                     <ul {...listboxProps} className={styles.column}>
+                        {showsNewFolder && (
+                            <li role="none" className={styles.columnRow}>
+                                {renderNewFolderField(styles.ellipsis)}
+                            </li>
+                        )}
                         {items.map((item, index) => (
                             <li key={itemId(item)} {...optionProps(item, index)} className={styles.columnRow}>
-                                <span className={styles.ellipsis}>{itemName(item)}</span>
+                                {renderName(item, styles.ellipsis)}
                                 {item.kind === "folder" && <Icon name="chevron-right" className={styles.columnChevron} />}
                             </li>
                         ))}
@@ -944,7 +1158,11 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         return (
             <div className={styles.gallery}>
                 <div className={styles.galleryStage}>
-                    {shown == null ? (
+                    {showsNewFolder ? (
+                        <span className={styles.galleryFallback}>
+                            <AssetThumbnail type="folder" />
+                        </span>
+                    ) : shown == null ? (
                         emptyState
                     ) : shown.kind === "asset" && shown.asset.src != null ? (
                         <img className={styles.galleryImage} src={shown.asset.src} alt={shown.asset.alt ?? ""} />
@@ -952,11 +1170,15 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                         <span className={styles.galleryFallback}>{renderThumbnail(shown)}</span>
                     )}
                 </div>
-                {shown != null && (
-                    <div className={styles.galleryInfo}>
-                        <span className={styles.previewName}>{itemName(shown)}</span>
-                        <span className={styles.tileMeta}>{itemMeta(shown)}</span>
-                    </div>
+                {showsNewFolder ? (
+                    <div className={styles.galleryInfo}>{renderNewFolderField(styles.previewName)}</div>
+                ) : (
+                    shown != null && (
+                        <div className={styles.galleryInfo}>
+                            {renderName(shown, styles.previewName)}
+                            <span className={styles.tileMeta}>{itemMeta(shown)}</span>
+                        </div>
+                    )
                 )}
                 {items.length > 0 && (
                     <ul {...listboxProps} aria-orientation="horizontal" className={styles.strip}>
@@ -992,6 +1214,84 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
     const findTreeFolderId = (event: DragEvent<HTMLElement>) => {
         const treeItem = (event.target as HTMLElement).closest<HTMLElement>("[role='treeitem']");
         return treeItem?.dataset.id;
+    };
+
+    const singleContextItem = contextMenuIds.length === 1 ? items.find((item) => itemId(item) === contextMenuIds[0]) : undefined;
+    const contextMenuHasEntries = (ids: string[]) => {
+        if (ids.length === 0) {
+            return canCreateFolder;
+        }
+        const single = ids.length === 1 ? items.find((item) => itemId(item) === ids[0]) : undefined;
+        return (
+            (single != null && (single.kind === "folder" || onOpen != null || canRename)) ||
+            contextMenuItems != null ||
+            (canManage && onDelete != null)
+        );
+    };
+
+    const handleContextMenuCapture = (event: MouseEvent<HTMLElement>) => {
+        const target = event.target as HTMLElement;
+        const option = target.closest<HTMLElement>("[role='option'][data-id]");
+        const id = option?.dataset.id;
+        let ids: string[] = [];
+        if (id != null && itemIds.includes(id)) {
+            ids = selected.has(id) ? itemIds.filter((candidate) => selected.has(candidate)) : [id];
+            if (!selected.has(id)) {
+                onSelectionChange([id]);
+                setAnchorId(id);
+            }
+            setActiveId(id);
+        } else if (selectedIds.length > 0) {
+            onSelectionChange([]);
+        }
+        contextMenuIdsRef.current = ids;
+        setContextMenuIds(ids);
+    };
+
+    // An action that moves the focus into a name field keeps the closing menu from taking it back
+    const keepFocusAfterContextMenu = useRef(false);
+    const contextMenuEntries = () => {
+        if (contextMenuIds.length === 0) {
+            return canCreateFolder ? (
+                <MenuItem
+                    label={labels.newFolder}
+                    icon={<Icon name="add-folder" />}
+                    onClick={() => {
+                        keepFocusAfterContextMenu.current = true;
+                        startCreatingFolder();
+                    }}
+                />
+            ) : null;
+        }
+        const itemEntries = [
+            singleContextItem != null && (singleContextItem.kind === "folder" || onOpen != null) && (
+                <MenuItem key="open" label={labels.open} onClick={() => openItem(singleContextItem)} />
+            ),
+            singleContextItem != null && canRename && (
+                <MenuItem
+                    key="rename"
+                    label={labels.rename}
+                    icon={<Icon name="edit" />}
+                    onClick={() => {
+                        keepFocusAfterContextMenu.current = true;
+                        setRenamingId(itemId(singleContextItem));
+                    }}
+                />
+            ),
+        ].filter(Boolean);
+        const customEntries = contextMenuItems?.(contextMenuIds);
+        const deleteEntry = canManage && onDelete != null && (
+            <MenuItem label={labels.delete} icon={<Icon name="delete" />} color="error" onClick={() => onDelete(contextMenuIds)} />
+        );
+        return (
+            <>
+                {itemEntries}
+                {itemEntries.length > 0 && customEntries != null && <MenuSeparator />}
+                {customEntries}
+                {(itemEntries.length > 0 || customEntries != null) && deleteEntry && <MenuSeparator />}
+                {deleteEntry}
+            </>
+        );
     };
 
     const sidebarId = `${baseId}-sidebar`;
@@ -1038,6 +1338,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                     onSelectionChange([]);
                 }
             },
+            onContextMenuCapture: handleContextMenuCapture,
             ...(isSearching ? {} : dropProps(folderId)),
         },
         slotProps: slotProps?.content,
@@ -1212,6 +1513,18 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                             )}
                         </label>
                     )}
+                    {canManage && onCreateFolder != null && (
+                        <IconButton
+                            variant="text"
+                            color="secondary"
+                            size="small"
+                            aria-label={labels.newFolder}
+                            disabled={!canCreateFolder}
+                            onClick={startCreatingFolder}
+                        >
+                            <Icon name="add-folder" />
+                        </IconButton>
+                    )}
                     {toolbar}
                     <SegmentedControl<AssetBrowserView>
                         size="small"
@@ -1226,12 +1539,32 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                         ]}
                     />
                 </div>
-                <div {...contentProps}>
-                    {renderedView === "icons" && renderIcons()}
-                    {renderedView === "list" && renderList()}
-                    {renderedView === "columns" && renderColumns()}
-                    {renderedView === "gallery" && renderGallery()}
-                </div>
+                <ContextMenu.Root
+                    open={contextMenuOpen}
+                    onOpenChange={(open) => {
+                        if (open && !contextMenuHasEntries(contextMenuIdsRef.current)) {
+                            return;
+                        }
+                        if (open) {
+                            keepFocusAfterContextMenu.current = false;
+                        }
+                        setContextMenuOpen(open);
+                    }}
+                >
+                    <ContextMenu.Trigger render={<div {...contentProps} />}>
+                        {renderedView === "icons" && renderIcons()}
+                        {renderedView === "list" && renderList()}
+                        {renderedView === "columns" && renderColumns()}
+                        {renderedView === "gallery" && renderGallery()}
+                    </ContextMenu.Trigger>
+                    <ContextMenu.Portal container={portalContainer}>
+                        <ContextMenu.Positioner className={styles.contextMenuPositioner} collisionPadding={8}>
+                            <ContextMenu.Popup className={styles.contextMenu} finalFocus={() => !keepFocusAfterContextMenu.current}>
+                                {contextMenuEntries()}
+                            </ContextMenu.Popup>
+                        </ContextMenu.Positioner>
+                    </ContextMenu.Portal>
+                </ContextMenu.Root>
                 <div {...pathBarProps}>
                     {!isSearching ? (
                         <Breadcrumbs

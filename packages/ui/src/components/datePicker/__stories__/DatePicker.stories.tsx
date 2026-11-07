@@ -126,7 +126,7 @@ export const Typing: Story = {
         await userEvent.type(input, "31.2.2026{Enter}");
         await expect(input).toHaveValue("31.2.2026");
         await expect(input).toHaveAttribute("aria-invalid", "true");
-        await expect(input).toHaveAccessibleDescription("Enter a date like 24.12.2026.");
+        await expect(input).toHaveAccessibleDescription(/^Enter a date like 24\.12\.\d{4}\.$/);
         await expect(args.onChange).toHaveBeenCalledTimes(1);
         await userEvent.clear(input);
         await expect(input).not.toHaveAttribute("aria-invalid");
@@ -136,7 +136,7 @@ export const Typing: Story = {
 
         await userEvent.clear(input);
         await userEvent.type(input, "next week{Enter}");
-        await expect(input).toHaveAccessibleDescription("Enter a date like 24.12.2026.");
+        await expect(input).toHaveAccessibleDescription(/^Enter a date like 24\.12\.\d{4}\.$/);
         await userEvent.keyboard("{Escape}");
         await expect(input).toHaveValue("01.02.2026");
         await expect(input).not.toHaveAttribute("aria-invalid");

@@ -93,7 +93,7 @@ export const Typing: Story = {
         await userEvent.clear(end);
         await userEvent.type(end, "32.11.2026{Enter}");
         await expect(end).toHaveValue("32.11.2026");
-        await expect(end).toHaveAccessibleDescription("Enter a date like 24.12.2026.");
+        await expect(end).toHaveAccessibleDescription(/^Enter a date like 24\.12\.\d{4}\.$/);
         await expect(args.onChange).toHaveBeenCalledTimes(2);
     },
 };

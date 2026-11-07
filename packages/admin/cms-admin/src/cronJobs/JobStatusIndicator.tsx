@@ -10,7 +10,7 @@ const jobStatusIndicator: Record<GQLKubernetesJobStatus, StatusIndicatorStatus> 
     failed: "critical",
 };
 
-export const jobStatusLabels = defineMessages({
+const jobStatusLabels = defineMessages({
     pending: { id: "dextinity.jobStatus.pending", defaultMessage: "Pending" },
     active: { id: "dextinity.jobStatus.active", defaultMessage: "Running" },
     succeeded: { id: "dextinity.jobStatus.succeeded", defaultMessage: "Succeeded" },

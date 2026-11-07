@@ -1,10 +1,10 @@
-import { RouteWithErrorBoundary } from "@dextinity/admin";
 import { EditLayout, type EditLayoutPane, Icon, Panel, SegmentedControl } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import { type PropsWithChildren, type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
 import { Switch } from "react-router";
 
+import { RouteWithContentErrorBoundary } from "../../common/errorBoundary/RouteWithContentErrorBoundary";
 import { UnsavedChangesPrompt } from "../../pages/editor/UnsavedChangesPrompt";
 import { useEditorTabRoute } from "../../pages/editor/useEditorTabRoute";
 import { useSavePageShortcut } from "../../pages/useSavePageShortcut";
@@ -99,11 +99,11 @@ export function BlockContentEditor({
             <TabContent {...scrollRestoration}>
                 <Switch>
                     {tabs.slice(1).map((tab) => (
-                        <RouteWithErrorBoundary key={tab.key} path={getTabUrl(tab.key)}>
+                        <RouteWithContentErrorBoundary key={tab.key} path={getTabUrl(tab.key)}>
                             {tab.content}
-                        </RouteWithErrorBoundary>
+                        </RouteWithContentErrorBoundary>
                     ))}
-                    {tabs.length > 0 && <RouteWithErrorBoundary path={editorUrl}>{tabs[0].content}</RouteWithErrorBoundary>}
+                    {tabs.length > 0 && <RouteWithContentErrorBoundary path={editorUrl}>{tabs[0].content}</RouteWithContentErrorBoundary>}
                 </Switch>
             </TabContent>
         </EditorPanel>

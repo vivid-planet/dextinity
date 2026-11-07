@@ -1,6 +1,6 @@
 import { useApolloClient, useMutation } from "@apollo/client";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
-import type { ContentScope } from "@dextinity/cms-admin";
+import { type ContentScope, useDateTimePickerLabels } from "@dextinity/cms-admin";
 import { Button, ConfirmDialog, Icon, type NewToast } from "@dextinity/ui";
 import { ComboboxField, DateTimeField } from "@dextinity/ui-react-final-form";
 import { useId, useState } from "react";
@@ -38,6 +38,7 @@ function toIsoDate(date: Date) {
 
 export function EmailCampaignSendingTab({ baseUrl, scope, savedCampaign, hasUnsavedChanges, addToast }: EmailCampaignSendingTabProps) {
     const intl = useIntl();
+    const dateTimePickerLabels = useDateTimePickerLabels();
     const client = useApolloClient();
     const history = useHistory();
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -149,6 +150,7 @@ export function EmailCampaignSendingTab({ baseUrl, scope, savedCampaign, hasUnsa
                     clearable
                     min={toIsoDate(new Date())}
                     locale={intl.locale}
+                    labels={dateTimePickerLabels}
                     disabled={!hasTargetGroups}
                     helperText={
                         hasTargetGroups

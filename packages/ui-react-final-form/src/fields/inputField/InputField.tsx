@@ -17,7 +17,8 @@ export interface InputFieldProps<FieldValue = string>
 }
 
 /**
- * An `Input` connected to a React Final Form field. Shows the field's error once it was touched or the form was submitted.
+ * An `Input` connected to a React Final Form field. Shows the field's error once it was touched or the form was submitted. An
+ * emptied field counts as unchanged when its initial value is `""`, `null`, or `undefined`.
  */
 export const InputField = forwardRef(function InputField<FieldValue = string>(
     { name, actions, onFocus, ...props }: InputFieldProps<FieldValue>,

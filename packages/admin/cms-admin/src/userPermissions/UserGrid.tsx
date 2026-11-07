@@ -88,8 +88,12 @@ export const UserPermissionsUserGrid = ({ toolbarAction, rowAction, onRowClick }
     });
     const { search, filters } = listState;
     const [permissionMenuOpen, setPermissionMenuOpen] = useState(false);
+    const isAllowed = useUserPermissionCheck();
 
-    const { data: availablePermissionsData } = useQuery<GQLUserGridAvailablePermissionsQuery>(availablePermissionsQuery);
+    // The list is also open to users who may only impersonate, but only the userPermissions permission may read the permissions
+    const { data: availablePermissionsData } = useQuery<GQLUserGridAvailablePermissionsQuery>(availablePermissionsQuery, {
+        skip: !isAllowed("userPermissions"),
+    });
     const permissionOptions = (availablePermissionsData?.availablePermissions ?? []).map((permission) => ({
         value: permission,
         label: camelCaseToHumanReadable(permission),

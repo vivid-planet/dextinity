@@ -25,6 +25,18 @@ export function isEmptyValue(value: unknown) {
     return value === undefined || value === null || value === "" || value === false || (Array.isArray(value) && value.length === 0);
 }
 
+// Only into an object the default values already have: a row added to a field array has no default values, and creating them for
+// its fields would leave the form dirty after the row was removed again
+function setMissingDefaultValue(defaultValues: object, name: string, value: unknown) {
+    const parentPathEnd = name.lastIndexOf(".");
+    const parent = parentPathEnd === -1 ? defaultValues : get(defaultValues, name.slice(0, parentPathEnd));
+    if (parent == null || typeof parent !== "object" || get(defaultValues, name) !== undefined) {
+        return false;
+    }
+    set(defaultValues, name, value);
+    return true;
+}
+
 type Rules<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>> = UseControllerProps<TFieldValues, TName>["rules"];
 
 // React Hook Form keeps only string messages, so the required rule fails without one and the adapter shows `requiredMessage` for it
@@ -123,18 +135,17 @@ export function useFieldAdapter<TFieldValues extends FieldValues, TName extends 
     // set, even back to empty: the field gets an empty entry in the default values, too, and the control's empty value once it's set
     // to that, e.g. `false` for an unchecked checkbox.
     useEffect(() => {
-        if (formControl == null || get(formControl._defaultValues, name) !== undefined) {
+        if (formControl == null || !setMissingDefaultValue(formControl._defaultValues, name, undefined)) {
             return;
         }
-        set(formControl._defaultValues, name, undefined);
         if (get(formControl._formValues, name) === undefined) {
             set(formControl._formValues, name, undefined);
         }
     }, [formControl, name]);
 
     const change = (value: unknown) => {
-        if (formControl != null && isEmptyValue(value) && get(formControl._defaultValues, name) === undefined) {
-            set(formControl._defaultValues, name, value);
+        if (formControl != null && isEmptyValue(value)) {
+            setMissingDefaultValue(formControl._defaultValues, name, value);
         }
         field.onChange(value);
     };

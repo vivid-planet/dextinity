@@ -8,7 +8,7 @@ import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { deepEqual } from "fast-equals";
 import { type ComponentType, type CSSProperties, type HTMLAttributes, type ReactNode, useEffect, useRef, useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface, type ReadOnlyBlockRenderInterface } from "../types";
@@ -689,6 +689,12 @@ export interface TipTapEditorProps {
     listLevelMax?: number;
     minHeight?: number;
     readOnly?: boolean;
+    /**
+     * The editor's accessible name.
+     *
+     * @defaultValue `"Rich text"`
+     */
+    label?: string;
 }
 
 export const TipTapEditor = ({
@@ -703,7 +709,10 @@ export const TipTapEditor = ({
     listLevelMax,
     minHeight = 200,
     readOnly,
+    label,
 }: TipTapEditorProps) => {
+    const intl = useIntl();
+    const accessibleName = label ?? intl.formatMessage({ id: "dextinity.blocks.tipTapRichText.editorLabel", defaultMessage: "Rich text" });
     const childBlocksByKey: Record<string, BlockInterface> = Object.fromEntries(Object.entries(childBlocks).map(([key, { block }]) => [key, block]));
 
     // Content the editor holds that hasn't come back through state yet. Matched by identity, not by
@@ -730,6 +739,7 @@ export const TipTapEditor = ({
         extensions,
         content: state.tipTapContent,
         editable: !readOnly,
+        editorProps: { attributes: { "aria-label": accessibleName, "aria-multiline": "true" } },
         onUpdate: ({ editor }) => {
             if (maxTextBlocks !== undefined && editor.state.doc.childCount > maxTextBlocks) {
                 // Remove excess text blocks (e.g. from paste)

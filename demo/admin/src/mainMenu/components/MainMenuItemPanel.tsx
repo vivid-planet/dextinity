@@ -213,7 +213,7 @@ export function MainMenuItemPanel({ pageTreeNodeId, onClose, onUnsavedChangesCha
                             <MainMenuItemPreviewSection aria-label={intl.formatMessage({ id: "mainMenu.panel.preview", defaultMessage: "Preview" })}>
                                 <MainMenuItemPreview
                                     url={`${siteConfig.blockPreviewBaseUrl}/main-menu`}
-                                    siteUrl={`${siteConfig.url}${item.node.path}`}
+                                    siteUrl={`${siteConfig.url}/${scope.language}${item.node.path}`}
                                     previewState={previewState}
                                     previewApi={previewApi}
                                 />

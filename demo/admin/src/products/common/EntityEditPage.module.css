@@ -1,0 +1,6 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-panel-gap);
+    min-inline-size: 0;
+}

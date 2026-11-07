@@ -6,9 +6,7 @@ import type { GQLProductsGridFutureFragment } from "@src/products/generator/gene
 import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 
-import type { GQLProductsListManualFragment } from "./ProductsGrid.generated";
-
-type Props = GridCellParams<GQLProductsListManualFragment | GQLProductsGridFutureFragment>;
+type Props = GridCellParams<GQLProductsGridFutureFragment>;
 
 export const ProductsGridPreviewAction = ({ row }: Props) => {
     const [showDetails, setShowDetails] = useState(false);

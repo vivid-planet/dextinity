@@ -1,0 +1,67 @@
+.aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-panel-gap);
+}
+
+.asideBody {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+}
+
+.metaLine {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+}
+
+.mono {
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-mono-size);
+}
+
+.sections {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+}
+
+.sectionHead h3 {
+    margin: 0;
+    font-size: var(--dextinity-typography-section-size);
+    font-weight: var(--dextinity-typography-section-font-weight);
+}
+
+.sectionHead p {
+    margin: 4px 0 0;
+    color: var(--dextinity-color-text-tertiary);
+    font-size: 13px;
+}
+
+.fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+    gap: var(--dextinity-density-form-gap);
+}
+
+.fullWidth {
+    grid-column: 1 / -1;
+}
+
+.block {
+    min-inline-size: 0;
+}
+
+.threeColumns {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr));
+    gap: var(--dextinity-density-form-gap);
+}

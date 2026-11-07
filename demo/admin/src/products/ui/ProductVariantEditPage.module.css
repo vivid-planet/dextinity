@@ -1,0 +1,18 @@
+.fields {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+    min-inline-size: 0;
+}
+
+.block h3 {
+    margin: 0;
+    font-size: var(--dextinity-typography-section-size);
+    font-weight: var(--dextinity-typography-section-font-weight);
+}

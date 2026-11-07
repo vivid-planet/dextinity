@@ -41,7 +41,7 @@ import { ProductsWithLowPricePage } from "@src/products/generator/ProductsWithLo
 import { ProductTagsPage } from "@src/products/generator/ProductTagsPage";
 import { ProductHighlightsPage as ProductHighlightsHandmadePage } from "@src/products/highlights/ProductHighlightsPage";
 import { ManufacturersPage as ManufacturersHandmadePage } from "@src/products/ManufacturersPage";
-import { ProductCategoriesPage as ProductCategoriesHandmadePage } from "@src/products/ProductCategoriesPage";
+import { ProductCategoriesPage as ProductCategoriesHandmadePage } from "@src/products/categories/ProductCategoriesPage";
 import { ProductTagsPage as ProductTagsHandmadePage } from "@src/products/tags/ProductTagsPage";
 import { ProductsUiPage } from "@src/products/ui/ProductsUiPage";
 import { RedirectsPage } from "@src/redirects/RedirectsPage";

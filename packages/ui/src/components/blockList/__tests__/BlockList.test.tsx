@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { createRef } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -21,6 +21,28 @@ describe("BlockList", () => {
         expect(plain.className).toContain("dextinityBlockList");
         expect([plain.hasAttribute("data-reorderable"), plain.hasAttribute("data-addable")]).toStrictEqual([false, false]);
         expect([editable.dataset.reorderable, editable.dataset.addable]).toStrictEqual(["", ""]);
+    });
+
+    it("offers inserting before the first block, between blocks, and at the end", () => {
+        const onAdd = vi.fn();
+        render(
+            <BlockList aria-label="Blocks" onAdd={onAdd}>
+                <Block title="Hero" visible />
+                <Block title="Form" visible />
+            </BlockList>,
+        );
+
+        screen.getAllByRole("button", { name: "Insert block here" }).forEach((button) => fireEvent.click(button));
+        fireEvent.click(screen.getByRole("button", { name: "Add block" }));
+
+        expect(onAdd.mock.calls).toStrictEqual([[0], [1], [2]]);
+    });
+
+    it("offers only the add button without blocks", () => {
+        render(<BlockList aria-label="Blocks" onAdd={vi.fn()} />);
+
+        expect(screen.queryByRole("button", { name: "Insert block here" })).toBeNull();
+        expect(screen.getByRole("button", { name: "Add block" })).toBeTruthy();
     });
 });
 

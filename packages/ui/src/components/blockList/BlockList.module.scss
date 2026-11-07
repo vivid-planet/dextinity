@@ -15,9 +15,8 @@
 }
 
 .header {
-    .root[data-addable] > & {
-        margin-block-end: var(--dextinity-block-list-insert-height);
-    }
+    // The insert row before the first block, or the add button, keeps it apart from the blocks
+    margin-block-end: 0;
 }
 
 .insert {

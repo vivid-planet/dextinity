@@ -23,7 +23,7 @@ export const DataGridSecondaryText = styled("span")`
 export const DataGridMonoText = styled("span")`
     overflow: hidden;
     font-family: var(--dextinity-font-family-mono);
-    font-size: var(--dextinity-font-size-label);
+    font-size: var(--dextinity-typography-mono-size);
     text-overflow: ellipsis;
     white-space: nowrap;
 `;

@@ -1616,9 +1616,9 @@ importers:
       '@dextinity/ui-react-final-form':
         specifier: workspace:*
         version: link:../../ui-react-final-form
-      date-fns:
-        specifier: ^4.4.0
-        version: 4.4.0
+      fast-equals:
+        specifier: ^5.4.0
+        version: 5.4.5
       react-dropzone:
         specifier: ^20.2.0
         version: 20.2.0(@types/react@19.3.0)(react@19.3.1)

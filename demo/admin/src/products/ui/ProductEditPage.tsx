@@ -93,7 +93,8 @@ interface ManufacturerOption {
 interface ProductFormValues {
     title: string;
     slug: string;
-    description: string;
+    /** Missing once the field is emptied, as React Final Form parses an empty input as `undefined` */
+    description?: string;
     status: GQLProductStatus;
     inStock: boolean;
     type: GQLProductType | null;
@@ -149,7 +150,7 @@ function toFormValues(product?: ProductEdit): ProductFormValues {
     return {
         title: product?.title ?? "",
         slug: product?.slug ?? "",
-        description: product?.description ?? "",
+        description: product?.description ?? undefined,
         status: product?.status ?? "Unpublished",
         inStock: product?.inStock ?? true,
         type: product?.type ?? null,
@@ -176,7 +177,7 @@ function toFormValues(product?: ProductEdit): ProductFormValues {
 }
 
 function toProductInput(values: ProductFormValues, type: GQLProductType) {
-    const description = values.description.trim();
+    const description = values.description?.trim() ?? "";
     return {
         title: values.title.trim(),
         slug: values.slug.trim(),
@@ -197,9 +198,9 @@ function toProductInput(values: ProductFormValues, type: GQLProductType) {
         dimensions:
             values.width != null && values.height != null && values.depth != null
                 ? { width: values.width, height: values.height, depth: values.depth }
-                : undefined,
+                : null,
         price: values.price,
-        priceRange: values.minPrice != null && values.maxPrice != null ? { min: values.minPrice, max: values.maxPrice } : undefined,
+        priceRange: values.minPrice != null && values.maxPrice != null ? { min: values.minPrice, max: values.maxPrice } : null,
     } satisfies Partial<GQLProductInput>;
 }
 

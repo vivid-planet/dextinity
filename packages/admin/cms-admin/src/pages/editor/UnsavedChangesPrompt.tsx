@@ -31,6 +31,7 @@ export function UnsavedChangesPrompt({ hasChanges, onSave, onDiscard, allowWithi
     const [pendingNavigation, setPendingNavigation] = useState<PendingNavigation>();
     const [saving, setSaving] = useState(false);
     const isLeavingConfirmedRef = useRef(false);
+    const historyKeys = useHistoryKeys();
 
     useEffect(() => {
         if (!hasChanges) {
@@ -44,6 +45,16 @@ export function UnsavedChangesPrompt({ hasChanges, onSave, onDiscard, allowWithi
     const leave = (navigation: PendingNavigation) => {
         isLeavingConfirmedRef.current = true;
         setPendingNavigation(undefined);
+        if (navigation.action === "POP") {
+            // The browser's back and forward buttons go through the history again instead of adding the target as a new entry. The
+            // navigation happens asynchronously, so leaving stays confirmed until it did.
+            const stopListening = history.listen(() => {
+                stopListening();
+                isLeavingConfirmedRef.current = false;
+            });
+            history.go(historyKeys.getDelta(navigation.location.key));
+            return;
+        }
         if (navigation.action === "REPLACE") {
             history.replace(navigation.location);
         } else {
@@ -113,4 +124,47 @@ export function UnsavedChangesPrompt({ hasChanges, onSave, onDiscard, allowWithi
             />
         </>
     );
+}
+
+/**
+ * Follows the history entries visited while the editor is open, to find how far back or forward a blocked back or forward navigation
+ * went. An entry from before the editor opened is taken to be the one right before the first entry seen.
+ */
+function useHistoryKeys() {
+    const history = useHistory();
+    const keysRef = useRef<Array<string | undefined>>([history.location.key]);
+    const indexRef = useRef(0);
+
+    useEffect(
+        () =>
+            history.listen((location, action) => {
+                const keys = keysRef.current;
+                // Reverting a blocked back or forward navigation notifies again with the current entry and the previous action
+                if (location.key === keys[indexRef.current]) {
+                    return;
+                }
+                if (action === "PUSH") {
+                    keys.splice(indexRef.current + 1, keys.length, location.key);
+                    indexRef.current = keys.length - 1;
+                } else if (action === "REPLACE") {
+                    keys[indexRef.current] = location.key;
+                } else {
+                    const index = keys.indexOf(location.key);
+                    if (index === -1) {
+                        keys.splice(0, indexRef.current, location.key);
+                        indexRef.current = 0;
+                    } else {
+                        indexRef.current = index;
+                    }
+                }
+            }),
+        [history],
+    );
+
+    return {
+        getDelta: (key: string | undefined) => {
+            const index = key != null ? keysRef.current.indexOf(key) : -1;
+            return index === -1 ? -(indexRef.current + 1) : index - indexRef.current;
+        },
+    };
 }

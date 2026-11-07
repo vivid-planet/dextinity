@@ -168,7 +168,7 @@ A dev story serves any development, testing, or debugging need, so add them free
 
 #### Pattern pages
 
-A pattern page is an MDX page in [`src/docs/patterns/`](src/docs/patterns) with the title `Patterns/<Name>`, named in sentence case after the part of an application it covers. It explains when to use which component and how to combine them, and links to the docs pages of the components it uses. It states what to do, not why. Its examples are stories in `src/docs/patterns/__stories__/`, tagged `["!dev", "!autodocs", "!manifest"]`.
+A pattern page is an MDX page in `src/docs/patterns/` with the title `Patterns/<Name>`, named in sentence case after the part of an application it covers. It explains when to use which component and how to combine them, and links to the docs pages of the components it uses. It states what to do, not why. Its examples are stories in `src/docs/patterns/__stories__/`, tagged `["!dev", "!autodocs", "!manifest"]`.
 
 ## Development
 

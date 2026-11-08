@@ -3,6 +3,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../Icon";
 import { defaultIconNames } from "../iconRegistry";
+import colorStyles from "./iconColor.module.scss";
+import sizeStyles from "./iconSize.module.scss";
 
 const meta = {
     component: Icon,
@@ -49,17 +51,7 @@ export const ColoredIcon: Story = {
  * Set `width` and `height` in CSS, through `className`.
  */
 export const Size: Story = {
-    render: (args) => (
-        <>
-            <style>{`
-                .largeIcon {
-                    width: 32px;
-                    height: 32px;
-                }
-            `}</style>
-            <Icon {...args} className="largeIcon" />
-        </>
-    ),
+    render: (args) => <Icon {...args} className={sizeStyles.largeIcon} />,
 };
 
 /**
@@ -67,15 +59,8 @@ export const Size: Story = {
  */
 export const Color: Story = {
     render: (args) => (
-        <>
-            <style>{`
-                .blueText {
-                    color: royalblue;
-                }
-            `}</style>
-            <span className="blueText">
-                <Icon {...args} />
-            </span>
-        </>
+        <span className={colorStyles.blueText}>
+            <Icon {...args} />
+        </span>
     ),
 };

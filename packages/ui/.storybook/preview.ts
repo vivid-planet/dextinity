@@ -8,6 +8,7 @@ import type { Preview } from "@storybook/react-vite";
 
 import { brandDecorator } from "../src/storybook/brandDecorator";
 import { colorSchemeBackgroundDecorator } from "../src/storybook/colorSchemeBackgroundDecorator";
+import { renderSourceWithArgs } from "../src/storybook/renderSourceWithArgs";
 
 const preview: Preview = {
     tags: ["autodocs"],
@@ -20,6 +21,7 @@ const preview: Preview = {
         },
         docs: {
             codePanel: true,
+            source: { type: "dynamic", transform: renderSourceWithArgs },
         },
     },
 };

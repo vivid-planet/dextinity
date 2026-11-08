@@ -1,6 +1,8 @@
 import type { StorybookConfig } from "@storybook/react-vite";
 import { mergeConfig } from "vite";
 
+import { storyCodePlugin } from "./storyCodePlugin";
+
 const config: StorybookConfig = {
     stories: ["../src/**/*.mdx", "../src/**/__stories__/*.stories.tsx"],
     addons: ["@storybook/addon-docs", "@storybook/addon-mcp", "@storybook/addon-vitest", "storybook-addon-tag-badges"],
@@ -12,6 +14,7 @@ const config: StorybookConfig = {
     features: { componentsManifest: true },
     viteFinal: (viteConfig) =>
         mergeConfig(viteConfig, {
+            plugins: [storyCodePlugin()],
             build: {
                 // Base UI marks its modules with "use client", which has no meaning in the client-only Storybook bundle
                 rolldownOptions: { checks: { moduleLevelDirective: false } },

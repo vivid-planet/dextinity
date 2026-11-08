@@ -19,12 +19,8 @@ type Story = StoryObj<typeof meta>;
 export const MainAction: Story = {
     render: () => (
         <div className={styles.actions}>
-            <Button variant="outlined" color="secondary">
-                Cancel
-            </Button>
-            <Button variant="outlined" color="secondary">
-                Save as draft
-            </Button>
+            <Button variant="outlined">Cancel</Button>
+            <Button variant="outlined">Save as draft</Button>
             <Button>Publish</Button>
         </div>
     ),
@@ -33,10 +29,10 @@ export const MainAction: Story = {
 export const IconButtons: Story = {
     render: () => (
         <div className={styles.actions}>
-            <IconButton variant="text" color="secondary" aria-label="Edit">
+            <IconButton variant="text" aria-label="Edit">
                 <Icon name="edit" />
             </IconButton>
-            <IconButton variant="text" color="secondary" aria-label="Duplicate">
+            <IconButton variant="text" aria-label="Duplicate">
                 <Icon name="copy" />
             </IconButton>
             <IconButton variant="text" color="error" aria-label="Delete">
@@ -49,9 +45,7 @@ export const IconButtons: Story = {
 export const Loading: Story = {
     render: () => (
         <div className={styles.actions}>
-            <Button variant="outlined" color="secondary">
-                Cancel
-            </Button>
+            <Button variant="outlined">Cancel</Button>
             <Button loading>Publish</Button>
         </div>
     ),

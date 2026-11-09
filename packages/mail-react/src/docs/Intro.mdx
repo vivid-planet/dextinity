@@ -8,6 +8,17 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 This Storybook is for developing and previewing components in isolation. For the full guide — installation, the theme system, MJML layout rules, and integrating with the Mail Templates Module — see the [Building HTML Emails](https://cms-docs.dextinity.com/docs/features-modules/building-html-emails/) documentation.
 
+## Installation
+
+```sh
+npm install @dextinity/mail-react
+```
+
+- `react` is a required peer dependency.
+- `storybook` is an optional peer dependency, needed only for the Storybook addon.
+
+MJML (`mjml` and `mjml-browser`) comes with the package. A framework that bundles server code, such as Next.js, must list `mjml` in the application's own `package.json` too, or rendering fails at runtime. Nothing imports it directly, so add `mjml` to `ignoreDependencies` in `knip.json` rather than removing it as unused.
+
 ## MCP
 
 The Storybook serves an MCP server, so that AI agents can look up the components, their props, and examples. Connect it to your agent, for example to Claude Code:

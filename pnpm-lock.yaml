@@ -1316,8 +1316,8 @@ importers:
         specifier: ^9.1.1
         version: 9.1.1(graphql@16.14.2)
       '@graphql-tools/load':
-        specifier: ^9.1.1
-        version: 9.1.1(graphql@16.14.2)
+        specifier: ^9.1.2
+        version: 9.1.2(graphql@16.14.2)
       '@mui/material':
         specifier: ^7.3.11
         version: 7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -5764,8 +5764,8 @@ packages:
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
-  '@graphql-tools/load@9.1.1':
-    resolution: {integrity: sha512-Mx07NfJI/ZXu1kPR+0YnDTaBYaxZJzMD53czgAeHvzIAxbTLhNDI/9XmX7aj/Pnijl20tLaPuGJKeALw9W9ywg==}
+  '@graphql-tools/load@9.1.2':
+    resolution: {integrity: sha512-r0AEpbR6vxhLKwzqjzpwqxUI6u71ykfaGTJSCK5muLun/zNB/ihm1eTDaKIkIiadtlI3XciVxikr+RCLIW36oA==}
     engines: {node: '>=22.18.0'}
     peerDependencies:
       graphql: ^16.0.0 || ^17.0.0
@@ -23177,12 +23177,11 @@ snapshots:
       p-limit: 3.1.0
       tslib: 2.8.1
 
-  '@graphql-tools/load@9.1.1(graphql@16.14.2)':
+  '@graphql-tools/load@9.1.2(graphql@16.14.2)':
     dependencies:
       '@graphql-tools/schema': 11.0.8(graphql@16.14.2)
       '@graphql-tools/utils': 13.2.1(graphql@16.14.2)
       graphql: 16.14.2
-      p-limit: 3.1.0
       tslib: 2.8.1
 
   '@graphql-tools/merge@10.0.8(graphql@16.14.2)':

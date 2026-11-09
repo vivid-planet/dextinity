@@ -23,4 +23,12 @@ describe("ActionLogsUserLoaderService", () => {
         expect(findUsersByIds).toHaveBeenCalledTimes(1);
         expect(findUsersByIds).toHaveBeenCalledWith(["a", "missing"]);
     });
+
+    it("doesn't look up users when a request loads only system users", async () => {
+        const findUsersByIds = vi.fn();
+        const loader = new ActionLogsUserLoaderService(createMock<UserPermissionsService>({ findUsersByIds, isSystemUser: () => true }));
+
+        await expect(loader.load("system-user")).resolves.toEqual({ id: "system-user", name: "system-user" });
+        expect(findUsersByIds).not.toHaveBeenCalled();
+    });
 });

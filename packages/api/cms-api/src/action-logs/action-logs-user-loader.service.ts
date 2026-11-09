@@ -10,9 +10,8 @@ export class ActionLogsUserLoaderService {
 
     constructor(private readonly userPermissionsService: UserPermissionsService) {
         this.dataLoader = new DataLoader<string, ActionLogsUser>(async (userIds) => {
-            const users = await this.userPermissionsService.findUsersByIds(
-                userIds.filter((userId) => !this.userPermissionsService.isSystemUser(userId)),
-            );
+            const nonSystemUserIds = userIds.filter((userId) => !this.userPermissionsService.isSystemUser(userId));
+            const users = nonSystemUserIds.length > 0 ? await this.userPermissionsService.findUsersByIds(nonSystemUserIds) : [];
             return userIds.map((userId) => {
                 if (this.userPermissionsService.isSystemUser(userId)) {
                     return { id: userId, name: userId };

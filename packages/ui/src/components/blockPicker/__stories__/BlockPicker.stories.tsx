@@ -4,6 +4,7 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
+import { Checkbox } from "../../checkbox/Checkbox";
 import { Drawer } from "../../drawer/Drawer";
 import { Icon } from "../../icon/Icon";
 import { BlockPicker, type BlockPickerCategory, type BlockPickerItem, type BlockPickerProps } from "../BlockPicker";
@@ -140,7 +141,7 @@ export const WithoutCategories: Story = {
 function DrawerBlockPicker(props: BlockPickerProps) {
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState("");
-    const [category, setCategory] = useState<string | null>(null);
+    const [editAfterAdding, setEditAfterAdding] = useState(true);
     return (
         <>
             <Button startIcon={<Icon name="plus" />} onClick={() => setOpen(true)}>
@@ -151,21 +152,27 @@ function DrawerBlockPicker(props: BlockPickerProps) {
                     {...props}
                     query={query}
                     onQueryChange={setQuery}
-                    category={category}
-                    onCategoryChange={setCategory}
+                    category={undefined}
+                    onCategoryChange={undefined}
                     onSelect={(value) => {
                         props.onSelect(value);
                         setOpen(false);
                         setQuery("");
                     }}
-                />
+                >
+                    <Checkbox checked={editAfterAdding} onChange={setEditAfterAdding}>
+                        Edit after adding
+                    </Checkbox>
+                    <p className={styles.insertionHint}>Will be inserted at the end of the page.</p>
+                </BlockPicker>
             </Drawer>
         </>
     );
 }
 
 /**
- * In the page editor, the add buttons of the `BlockList` open the picker in a `Drawer`; choosing a block type closes it.
+ * In the page editor, the add buttons of the `BlockList` open the picker in a `Drawer`; choosing a block type closes it. The
+ * categories group the block types without filters, and the children offer to edit the new block right away and tell where it goes.
  */
 export const InDrawer: Story = {
     render: (args) => <DrawerBlockPicker {...args} />,

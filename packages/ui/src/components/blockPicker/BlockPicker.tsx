@@ -75,6 +75,8 @@ export interface BlockPickerSlotProps {
 }
 
 export interface BlockPickerProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onSelect"> {
+    /** Shown between the search field and the block types, e.g. a `Checkbox` "Edit after adding" and where the block will be inserted. */
+    children?: ReactNode;
     /** The block types that can be added here. */
     items: BlockPickerItem[];
     /** Called with the `value` of the chosen block type. */
@@ -128,6 +130,7 @@ export const BlockPicker = forwardRef<HTMLDivElement, BlockPickerProps>(function
         labels: labelsProp,
         className,
         slotProps,
+        children,
         ...restProps
     },
     ref,
@@ -230,6 +233,7 @@ export const BlockPicker = forwardRef<HTMLDivElement, BlockPickerProps>(function
                 <Icon name="search" className={styles.searchIcon} />
                 <input {...searchProps} />
             </div>
+            {children}
             {categories != null && categories.length > 0 && onCategoryChange != null && (
                 <div {...categoriesProps}>
                     <FilterChip selected={category == null} onClick={() => onCategoryChange(null)}>
@@ -277,6 +281,7 @@ export const BlockPicker = forwardRef<HTMLDivElement, BlockPickerProps>(function
                                                 <span className={styles.itemLabel}>{item.label}</span>
                                                 {item.description != null && <span className={styles.itemDescription}>{item.description}</span>}
                                             </span>
+                                            <Icon name="plus" className={styles.itemAddIcon} />
                                         </button>
                                     </li>
                                 );

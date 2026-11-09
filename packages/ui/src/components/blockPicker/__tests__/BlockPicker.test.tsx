@@ -70,4 +70,18 @@ describe("BlockPicker", () => {
         expect((container.firstElementChild as HTMLElement).dataset.empty).toBe("");
         expect(screen.getByRole("status").textContent).toBe("No block matches your search.");
     });
+
+    it("shows its children between the search field and the block types", () => {
+        render(
+            <BlockPicker items={items} query="" onQueryChange={vi.fn()} onSelect={vi.fn()}>
+                <p>Will be inserted at the end of the page.</p>
+            </BlockPicker>,
+        );
+
+        const hint = screen.getByText("Will be inserted at the end of the page.");
+        const search = screen.getByRole("searchbox", { name: "Search blocks" });
+        const firstItem = screen.getByRole("button", { name: /^Text/ });
+        expect(search.compareDocumentPosition(hint) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+        expect(hint.compareDocumentPosition(firstItem) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
 });

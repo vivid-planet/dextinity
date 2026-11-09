@@ -12,6 +12,8 @@ export const MailImageBlock = createCompositeBlock({
     name: "MailImage",
     displayName: <FormattedMessage id="mail.imageBlock.displayName" defaultMessage="Image" />,
     category: BlockCategory.Media,
+    iconName: "image",
+    description: <FormattedMessage id="mail.imageBlock.description" defaultMessage="Image from the assets" />,
     blocks: {
         image: {
             block: PixelImageBlock,

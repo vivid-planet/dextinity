@@ -6,6 +6,8 @@ export const MailSpacerBlock = createCompositeBlock({
     name: "MailSpacer",
     displayName: <FormattedMessage id="mail.spacerBlock.displayName" defaultMessage="Spacer" />,
     category: BlockCategory.Layout,
+    iconName: "density-comfortable",
+    description: <FormattedMessage id="mail.spacerBlock.description" defaultMessage="Empty space between blocks" />,
     blocks: {
         spacing: {
             block: createCompositeBlockSelectField<MailSpacerBlockData["spacing"]>({

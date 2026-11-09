@@ -16,4 +16,6 @@ export const MediaBlock: BlockInterface = createOneOfBlock({
     allowEmpty: false,
     variant: "toggle",
     category: BlockCategory.Media,
+    iconName: "play",
+    description: <FormattedMessage id="mediaBlock.description" defaultMessage="Image or video" />,
 });

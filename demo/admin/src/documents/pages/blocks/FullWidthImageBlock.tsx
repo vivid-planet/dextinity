@@ -26,6 +26,8 @@ export const FullWidthImageBlock = createCompositeBlock(
     },
     (block) => {
         block.category = customBlockCategory;
+        block.iconName = "maximize";
+        block.description = <FormattedMessage id="blocks.fullWidthImage.description" defaultMessage="Image across the full width" />;
         return block;
     },
 );

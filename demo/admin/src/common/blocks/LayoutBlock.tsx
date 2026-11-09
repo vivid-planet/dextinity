@@ -160,6 +160,8 @@ export const LayoutBlock = createCompositeBlock(
     },
     (block) => {
         block.category = BlockCategory.Layout;
+        block.iconName = "columns-3";
+        block.description = <FormattedMessage id="layoutBlock.description" defaultMessage="Media and text in a chosen arrangement" />;
         return block;
     },
 );

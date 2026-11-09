@@ -62,6 +62,8 @@ export const ContentGroupBlock = createCompositeBlock(
     },
     (block) => {
         block.category = BlockCategory.Layout;
+        block.iconName = "columns-1";
+        block.description = <FormattedMessage id="contentGroupBlock.description" defaultMessage="Blocks on a shared background color" />;
         return block;
     },
 );

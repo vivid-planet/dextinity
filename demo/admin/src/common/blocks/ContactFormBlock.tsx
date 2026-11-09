@@ -8,4 +8,6 @@ export const ContactFormBlock: BlockInterface<ContactFormBlockData, Record<strin
     displayName: <FormattedMessage id="blocks.contactForm" defaultMessage="Contact Form" />,
     defaultValues: () => ({}),
     category: BlockCategory.Form,
+    iconName: "contact",
+    description: <FormattedMessage id="blocks.contactForm.description" defaultMessage="Form to get in touch" />,
 };

@@ -7,6 +7,8 @@ export const StandaloneRichTextBlock = createCompositeBlock(
     {
         name: "StandaloneRichText",
         displayName: RichTextBlock.displayName,
+        iconName: RichTextBlock.iconName,
+        description: RichTextBlock.description,
         blocks: {
             richText: {
                 block: RichTextBlock,

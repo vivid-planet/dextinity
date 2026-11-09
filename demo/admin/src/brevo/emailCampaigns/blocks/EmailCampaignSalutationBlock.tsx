@@ -5,5 +5,7 @@ export const EmailCampaignSalutationBlock = createCompositeBlock({
     name: "EmailCampaignSalutation",
     displayName: <FormattedMessage id="emailCampaign.salutationBlock.displayName" defaultMessage="Salutation" />,
     category: BlockCategory.TextAndContent,
+    iconName: "contact",
+    description: <FormattedMessage id="emailCampaign.salutationBlock.description" defaultMessage="Greeting with the recipient’s name" />,
     blocks: {},
 });

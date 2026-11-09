@@ -54,6 +54,8 @@ export const BillboardTeaserBlock = createCompositeBlock(
     },
     (block) => {
         block.category = BlockCategory.Teaser;
+        block.iconName = "format-landscape";
+        block.description = <FormattedMessage id="billboardTeaserBlock.description" defaultMessage="Large image with title, text and link" />;
         return block;
     },
 );

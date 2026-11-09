@@ -7,6 +7,8 @@ export const StandaloneHeadingBlock = createCompositeBlock(
     {
         name: "StandaloneHeading",
         displayName: HeadingBlock.displayName,
+        iconName: HeadingBlock.iconName,
+        description: HeadingBlock.description,
         blocks: {
             heading: {
                 block: HeadingBlock,

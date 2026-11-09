@@ -40,6 +40,8 @@ export const NewsListBlock: BlockInterface<NewsListBlockData, State, NewsListBlo
     ...createBlockSkeleton(),
     name: "NewsList",
     displayName: <FormattedMessage id="blocks.newsList.name" defaultMessage="News List" />,
+    iconName: "list",
+    description: <FormattedMessage id="blocks.newsList.description" defaultMessage="Selected news articles" />,
     defaultValues: () => ({ ids: [] }),
     AdminComponent: ({ state, updateState }) => {
         const { scope } = useContentScope();

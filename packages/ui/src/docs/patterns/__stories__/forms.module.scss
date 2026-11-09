@@ -1,0 +1,53 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-unit-6);
+    max-inline-size: 640px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-unit-1);
+}
+
+.fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-unit-4);
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-unit-4);
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.sectionTitle {
+    margin-block-end: var(--dextinity-unit-3);
+    padding: 0;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-unit-4);
+
+    > * {
+        flex: 1 1 200px;
+    }
+
+    > :first-child {
+        flex-grow: 2;
+    }
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--dextinity-unit-2);
+}

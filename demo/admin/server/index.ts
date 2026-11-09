@@ -9,6 +9,8 @@ const app = express();
 const port = Number(process.env.ADMIN_PORT ?? 3000);
 const host = process.env.SERVER_HOST ?? "localhost";
 const previewUrls = process.env.PREVIEW_URL ? [process.env.PREVIEW_URL] : [];
+// An unset ADMIN_URL keeps the upgrade to https, so that a deployment which doesn't set it is never silently downgraded
+const isServedOverHttp = process.env.ADMIN_URL?.startsWith("http://") ?? false;
 
 let indexFile = fs.readFileSync("./build/index.html", "utf8");
 
@@ -33,7 +35,7 @@ app.use(
                 "img-src": ["'self'", "data:", "blob:"],
                 "media-src": ["'self'", "data:"],
                 "frame-src": previewUrls,
-                upgradeInsecureRequests: process.env.NODE_ENV === "development" ? null : [], // Upgrade all requests to HTTPS on production
+                upgradeInsecureRequests: isServedOverHttp ? null : [], // Upgrade all requests to HTTPS, unless the admin is served over http (no https listener on the same port)
             },
             useDefaults: false, // Avoid default values for not explicitly set directives
         },

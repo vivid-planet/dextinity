@@ -1,3 +1,4 @@
+import { getHostByHeaders, getSiteConfigForHost } from "@src/util/siteConfig";
 import type { NextRequest } from "next/server";
 
 import type { CustomMiddleware } from "./chain";
@@ -25,19 +26,27 @@ const contentSecurityPolicyDirectives: ContentSecurityPolicyDirective[] = [
 
 if (process.env.NODE_ENV === "development") {
     contentSecurityPolicyDirectives.push({ directive: "script-src", values: ["'unsafe-eval'"] });
-} else {
-    contentSecurityPolicyDirectives.push({ directive: "upgrade-insecure-requests", values: [] });
 }
 
-const contentSecurityPolicy = contentSecurityPolicyDirectives
-    .map((directive) => `${directive.directive} ${directive.values.filter((value) => value !== undefined).join(" ")}`)
-    .join("; ");
+function toContentSecurityPolicy(directives: ContentSecurityPolicyDirective[]) {
+    return directives.map((directive) => `${directive.directive} ${directive.values.filter((value) => value !== undefined).join(" ")}`).join("; ");
+}
+
+const contentSecurityPolicy = toContentSecurityPolicy(contentSecurityPolicyDirectives);
+const contentSecurityPolicyWithUpgradeInsecureRequests = toContentSecurityPolicy([
+    ...contentSecurityPolicyDirectives,
+    { directive: "upgrade-insecure-requests", values: [] },
+]);
 
 export function withContentSecurityPolicyHeadersMiddleware(middleware: CustomMiddleware) {
     return async (request: NextRequest) => {
         const response = await middleware(request);
 
-        response.headers.set("Content-Security-Policy", contentSecurityPolicy);
+        // Upgrading same-origin requests of a site served over http would hit https on the same port, where nothing listens.
+        // Unknown hosts keep the upgrade, so they are never silently downgraded.
+        const siteConfig = await getSiteConfigForHost(getHostByHeaders(request.headers));
+        const isServedOverHttp = siteConfig?.url.startsWith("http://") ?? false;
+        response.headers.set("Content-Security-Policy", isServedOverHttp ? contentSecurityPolicy : contentSecurityPolicyWithUpgradeInsecureRequests);
 
         if (process.env.ADMIN_URL) {
             response.headers.set("Access-Control-Allow-Origin", process.env.ADMIN_URL);

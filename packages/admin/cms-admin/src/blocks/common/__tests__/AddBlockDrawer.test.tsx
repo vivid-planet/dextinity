@@ -1,8 +1,9 @@
 import { StackPage, StackSwitch } from "@dextinity/admin";
 import { createMemoryHistory } from "history";
+import { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { Route, Router } from "react-router";
-import { cleanup, fireEvent, render, screen } from "test-utils";
+import { cleanup, fireEvent, render, screen, waitFor } from "test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createBlockSkeleton } from "../../helpers/createBlockSkeleton";
@@ -50,6 +51,28 @@ describe("AddBlockDrawer", () => {
         expect(screen.getByText("Title for a section")).toBeTruthy();
         expect(screen.getByText("Image with focal point and crop")).toBeTruthy();
         expect(screen.queryByRole("group", { name: "Categories" })).toBeNull();
+    });
+
+    it("focuses the search field when opened and returns the focus to the add button when closed", async () => {
+        function DrawerWithButton() {
+            const [open, setOpen] = useState(false);
+            return (
+                <>
+                    <button onClick={() => setOpen(true)}>Add block</button>
+                    <AddBlockDrawer open={open} onClose={() => setOpen(false)} blocks={blocks} onAddNewBlock={vi.fn()} />
+                </>
+            );
+        }
+        render(<DrawerWithButton />);
+        const addButton = screen.getByRole("button", { name: "Add block" });
+        addButton.focus();
+        fireEvent.click(addButton);
+
+        await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("searchbox", { name: "Search blocks" })));
+
+        fireEvent.keyDown(document.activeElement!, { key: "Escape" });
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        await waitFor(() => expect(document.activeElement).toBe(addButton));
     });
 
     it("finds blocks by their description and adds the first match on Enter", () => {

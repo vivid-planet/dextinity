@@ -20,6 +20,7 @@ export const DetailTitle = styled("h3")`
     font-weight: var(--dextinity-typography-display-font-weight);
     line-height: 1.1;
     letter-spacing: var(--dextinity-typography-display-letter-spacing);
+    text-transform: var(--dextinity-typography-display-text-transform);
     overflow-wrap: anywhere;
 `;
 

@@ -163,7 +163,12 @@ export const createDamVideoBlock = (
             const { isVideoTooLarge } = useVideoPerformanceWarning();
 
             return (
-                <Box padding={isInPaper ? 3 : 0} pb={0}>
+                <Box
+                    sx={{
+                        padding: isInPaper ? 3 : 0,
+                        pb: 0,
+                    }}
+                >
                     <BlocksFinalForm onSubmit={updateState} initialValues={state}>
                         {state.damFile && isVideoTooLarge(state.damFile) && <VideoPerformanceWarningAlert sx={{ marginBottom: 2 }} />}
                         <Field

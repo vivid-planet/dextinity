@@ -21,7 +21,7 @@ export const useSnackbarApi = () => {
     return context;
 };
 
-type SnackbarCloseEvent = SyntheticEvent<any> | Event;
+type SnackbarCloseEvent = SyntheticEvent<any> | Event | null;
 type HandleClose = (event: SnackbarCloseEvent, reason: SnackbarCloseReason, onClose?: SnackbarProps["onClose"]) => void;
 
 export const SnackbarProvider = ({ children }: { children?: ReactNode }) => {

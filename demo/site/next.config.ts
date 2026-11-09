@@ -6,14 +6,14 @@ import { fileURLToPath } from "url";
 import dextinityConfig from "./src/dextinity-config.json" with { type: "json" };
 
 const withBundleAnalyzer = nextBundleAnalyzer({
-    // eslint-disable-next-line no-restricted-syntax -- ANALYZE is a build-time-only dev tool flag, not environment-specific
+    // eslint-disable-next-line no-restricted-properties -- ANALYZE is a build-time-only dev tool flag, not environment-specific
     enabled: process.env.ANALYZE === "true",
 });
 
 const nextConfig: NextConfig = {
     images: dextinityConfig.images,
     typescript: {
-        // eslint-disable-next-line no-restricted-syntax -- NODE_ENV is set by Next.js itself, not environment-specific
+        // eslint-disable-next-line no-restricted-properties -- NODE_ENV is set by Next.js itself, not environment-specific
         ignoreBuildErrors: process.env.NODE_ENV === "production",
     },
     experimental: {
@@ -60,9 +60,9 @@ const nextConfig: NextConfig = {
             ],
         },
     ],
-    // eslint-disable-next-line no-restricted-syntax -- VALKEY_ENABLED is a server-start-time flag for cache handler setup
-    cacheHandler: process.env.VALKEY_ENABLED === "true" ? import.meta.resolve("./dist/cache-handler.js").replace("file://", "") : undefined,
-    // eslint-disable-next-line no-restricted-syntax -- VALKEY_ENABLED is a server-start-time flag for cache handler setup
+    // eslint-disable-next-line no-restricted-properties -- VALKEY_ENABLED is a server-start-time flag for cache handler setup
+    cacheHandler: process.env.VALKEY_ENABLED === "true" ? import.meta.resolve("./cache-handler.ts").replace("file://", "") : undefined,
+    // eslint-disable-next-line no-restricted-properties -- VALKEY_ENABLED is a server-start-time flag for cache handler setup
     cacheMaxMemorySize: process.env.VALKEY_ENABLED === "true" ? 0 : undefined, // disable default in-memory caching
     rewrites: async () => {
         return {

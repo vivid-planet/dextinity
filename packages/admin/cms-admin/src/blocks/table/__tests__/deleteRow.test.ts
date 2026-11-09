@@ -8,14 +8,14 @@ vi.mock("../../context/useBlockContext", () => ({
 afterEach(cleanup);
 
 import { mockStates } from "../__mocks__/TableBlockData.mocks";
-import { clickButtonOfRowAtIndex, renderTableBlock } from "./utils";
+import { clickButtonOfRowAtIndex, getBodyRowgroup, renderTableBlock } from "./utils";
 
 describe("TableBlock: Delete row", () => {
     it("should delete a certain row", async () => {
         const targetRowIndex = 2;
 
         const rendered = renderTableBlock(mockStates.default);
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const rowsBeforeDeleting = within(rowgroup).getAllByRole("row");
 
         clickButtonOfRowAtIndex(rendered, targetRowIndex, /delete/i);

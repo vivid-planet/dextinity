@@ -107,6 +107,37 @@ describe("createTipTapRichTextBlock with migrateFromDraftJs", () => {
                 ],
             });
         });
+
+        it("keeps the bold on soft hyphens and non-breaking spaces within bold text", () => {
+            const data = block.blockDataFactory({
+                draftContent: {
+                    blocks: [
+                        draftBlock({
+                            type: "unstyled",
+                            text: "Wonder­ful world",
+                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 16 }],
+                        }),
+                    ],
+                    entityMap: {},
+                },
+            });
+            expect(data.tipTapContent).toEqual({
+                type: "doc",
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph" },
+                        content: [
+                            { type: "text", text: "Wonder", marks: [{ type: "bold" }] },
+                            { type: "softHyphen", marks: [{ type: "bold" }] },
+                            { type: "text", text: "ful", marks: [{ type: "bold" }] },
+                            { type: "nonBreakingSpace", marks: [{ type: "bold" }] },
+                            { type: "text", text: "world", marks: [{ type: "bold" }] },
+                        ],
+                    },
+                ],
+            });
+        });
     });
 
     describe("with link block", () => {

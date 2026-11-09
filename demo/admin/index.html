@@ -1,16 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Dextinity Demo Admin</title>
-        <script type="text/javascript">
-            (function() {
-                <%- environmentValues.map((env) => `window.EXTERNAL__${env.key}__ = ${env.value ? `'${env.value}'` : undefined};`).join("\n") %>
-            })();
-        </script>
     </head>
     <body>
         <div id="root"></div>
+        <script type="module" src="/src/loader.ts"></script>
     </body>
 </html>

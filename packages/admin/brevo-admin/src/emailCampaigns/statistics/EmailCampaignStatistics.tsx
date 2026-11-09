@@ -31,7 +31,7 @@ export const EmailCampaignStatistics = ({ id }: Props): ReactElement => {
                 <ToolbarBackButton />
                 <ToolbarFillSpace />
                 <ToolbarActions>
-                    <Button startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add" variant="primary">
+                    <Button startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add" variant="primary">
                         <FormattedMessage id="dextinity.emailCampaign.newEmailCampaign" defaultMessage="New email campaign" />
                     </Button>
                 </ToolbarActions>

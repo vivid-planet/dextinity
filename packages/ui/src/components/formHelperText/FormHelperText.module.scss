@@ -1,0 +1,29 @@
+.root {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--dextinity-form-helper-text-gap-internal);
+    margin: 0;
+    color: var(--dextinity-form-helper-text-type-hint-foreground);
+    font-family: var(--dextinity-brand-font-family-sans);
+    font-size: var(--dextinity-form-helper-text-font-size);
+    font-weight: var(--dextinity-form-helper-text-font-weight);
+    line-height: var(--dextinity-form-helper-text-font-line-height);
+    letter-spacing: var(--dextinity-font-letter-spacing-normal);
+
+    &[data-error] {
+        color: var(--dextinity-form-helper-text-type-error-foreground);
+    }
+}
+
+.icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    block-size: var(--dextinity-form-helper-text-font-line-height);
+}
+
+.text {
+    flex-grow: 1;
+    min-inline-size: 0;
+    overflow-wrap: break-word;
+}

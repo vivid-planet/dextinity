@@ -31,7 +31,11 @@ export const AllPickers = {
         };
 
         return (
-            <Box width={550}>
+            <Box
+                sx={{
+                    width: 550,
+                }}
+            >
                 <Form<FormValues>
                     onSubmit={() => {}}
                     initialValues={

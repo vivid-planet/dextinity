@@ -63,8 +63,10 @@ export const BaseChooseDamFileDialog = ({
             title={title}
             slotProps={{
                 root: {
-                    PaperProps: {
-                        sx: { height: "100%" }, // The fixed height prevents the height of the dialog from changing when navigating between folders which may have different heights depending on the number of items in the folder
+                    slotProps: {
+                        paper: {
+                            sx: { height: "100%" }, // The fixed height prevents the height of the dialog from changing when navigating between folders which may have different heights depending on the number of items in the folder
+                        },
                     },
                 },
             }}
@@ -94,7 +96,7 @@ export const BaseChooseDamFileDialog = ({
                             hideContextMenu={true}
                             hideMultiselect={hideMultiselect}
                             hideArchiveFilter={true}
-                            toolbarOptions={{ hideSelectiveActions: true }}
+                            toolbarOptions={{ hideSelectiveActions: true, hideSettingsAction: true }}
                             disableFolderSelection={disableFolderSelection}
                             keepNonExistentRowsSelected={keepNonExistentRowsSelected}
                             initialSelection={initialFileIds ? new Map(initialFileIds.map((id) => [id, "file"])) : undefined}

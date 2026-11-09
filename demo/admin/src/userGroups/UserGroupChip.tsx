@@ -22,7 +22,11 @@ function UserGroupChip({ item }: Props): JSX.Element | null {
     }
 
     return (
-        <Box paddingTop={2}>
+        <Box
+            sx={{
+                paddingTop: 2,
+            }}
+        >
             <Chip label={label} />
         </Box>
     );

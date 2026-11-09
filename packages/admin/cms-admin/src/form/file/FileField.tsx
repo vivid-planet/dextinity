@@ -13,9 +13,9 @@ import { useDamScope } from "../../dam/config/useDamScope";
 import { ChooseDamFileDialog } from "./chooseFile/ChooseDamFileDialog";
 import { ChooseDamFilesDialog } from "./chooseFile/ChooseDamFilesDialog";
 import { DamPathLazy } from "./DamPathLazy";
+import type { GQLDamFileFieldFileFragment } from "./FileField.fragment.generated";
 import { damFileFieldFileQuery, damFileFieldFilesByIdsQuery } from "./FileField.gql";
 import type {
-    GQLDamFileFieldFileFragment,
     GQLDamFileFieldFileQuery,
     GQLDamFileFieldFileQueryVariables,
     GQLDamFileFieldFilesByIdsQuery,
@@ -24,7 +24,7 @@ import type {
 import { type ActionItem, FileFieldMenu, useHasFileFieldMenu } from "./FileFieldMenu";
 import { FileFieldRow } from "./FileFieldRow";
 
-export type { GQLDamFileFieldFileFragment } from "./FileField.gql.generated";
+export type { GQLDamFileFieldFileFragment } from "./FileField.fragment.generated";
 
 type CommonProps = {
     buttonText?: ReactNode;
@@ -68,8 +68,18 @@ const SingleFileField = ({ buttonText, input, allowedMimetypes, preview, menuAct
         return (
             <>
                 <BlockAdminComponentPaper disablePadding>
-                    <Box padding={3}>
-                        <Grid container alignItems="center" spacing={3}>
+                    <Box
+                        sx={{
+                            padding: 3,
+                        }}
+                    >
+                        <Grid
+                            container
+                            spacing={3}
+                            sx={{
+                                alignItems: "center",
+                            }}
+                        >
                             {preview && <Grid>{preview}</Grid>}
                             <Grid size="grow">
                                 <Typography variant="subtitle1">{damFile.name}</Typography>

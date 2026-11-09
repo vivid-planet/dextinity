@@ -272,8 +272,32 @@ export type BlockMetaField =
            * The link block used for links in the rich text content. Undefined if links are disabled.
            */
           linkBlock?: Block;
+          /**
+           * The editor schema and options the content is validated against, so tools outside the
+           * editor can build valid content.
+           */
+          tipTap?: BlockMetaTipTap;
           nullable: boolean;
       };
+
+export interface BlockMetaTipTapStyledNode {
+    styles: string[];
+    defaultStyle: string | null;
+}
+
+export interface BlockMetaTipTap {
+    nodes: string[];
+    marks: string[];
+    textBlocks: Array<{ name: string; tag: string } & BlockMetaTipTapStyledNode>;
+    defaultTextBlock: string;
+    orderedList: BlockMetaTipTapStyledNode | null;
+    unorderedList: BlockMetaTipTapStyledNode | null;
+    inlineStyles: Array<{ name: string; appliesTo: string[] | null }>;
+    placeholders: string[];
+    link: string | null;
+    maxTextBlocks: number | null;
+    listLevelMax: number | null;
+}
 
 export interface BlockMetaInterface {
     fields: BlockMetaField[];

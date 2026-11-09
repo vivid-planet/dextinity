@@ -18,6 +18,11 @@
             "entry": [],
             "project": []
         },
+        "packages/oxlint-config": {
+            "ignore": ["*"],
+            "entry": [],
+            "project": []
+        },
         "codemods": {
             "ignore": ["*"],
             "entry": [],
@@ -84,6 +89,10 @@
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/*.generated.ts"]
         },
+        "packages/ui": {
+            "project": ["./src/**/*.{ts,tsx}"],
+            "ignoreDependencies": ["sass"]
+        },
         "demo/admin": {
             "entry": ["./src/loader.ts", "./src/**/*.dextinityGen.{ts,tsx}"],
             "project": ["./src/**/*.{ts,tsx}"],
@@ -108,7 +117,7 @@
             "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
         },
         "demo/site": {
-            "entry": ["./src/app/**", "./cache-handler.ts", "./server.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],
+            "entry": ["./src/app/**", "./cache-handler.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@babel/core", "@types/grecaptcha", "mjml"],
             "ignore": ["**/*.generated.ts"]

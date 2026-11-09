@@ -1,5 +1,15 @@
 # Agent Instructions
 
+## Keeping This File Up to Date
+
+When making changes that affect project structure, commands, architecture, ports, conventions, or configuration, update the relevant section of this file to reflect the new state. This includes:
+
+- Adding or removing packages or demo services
+- Changing commands or scripts
+- Introducing new patterns or conventions
+- Modifying ports, environment files, or Docker services
+- Updating tooling or linting configuration
+
 ## Local Usage (IDE / CLI)
 
 - you can expect setup is already done: all dependencies are installed and builds are done
@@ -38,7 +48,7 @@ Run the appropriate checks after every change and fix all reported errors.
 
 ### Post-Change Workflow
 
-After making changes to any package (`packages/*`) or the demo project (`demo/*`), run `lint:fix` to auto-fix ESLint and Prettier issues:
+After making changes to any package (`packages/*`) or the demo project (`demo/*`), run `lint:fix` to auto-fix linter and Prettier issues:
 
 ```bash
 # Fix a single package (from the package folder or repo root)
@@ -56,8 +66,9 @@ pnpm run lint:fix
 
 Every package and demo service exposes these scripts:
 
-- `lint:fix` — runs `lint:fix:eslint` and `lint:fix:prettier` in parallel (plus `lint:fix:style` in `demo/site`)
-- `lint:fix:eslint` — runs ESLint with `--fix` (also applies Prettier formatting via `eslint-plugin-prettier`)
+- `lint:fix` — runs the linters' fix scripts and `lint:fix:prettier` in parallel (plus `lint:fix:style` in `demo/site`)
+- `lint:fix:eslint` — runs ESLint with `--fix`; in packages it also applies Prettier formatting via `eslint-plugin-prettier`, in `demo/*` it only lints JSON files
+- `lint:fix:oxlint` — runs oxlint with `--fix`; `demo/*` only (Prettier formatting is covered by `lint:fix:prettier`)
 - `lint:fix:prettier` — runs Prettier with `--write` for any remaining formatting issues
 - `lint:fix:style` — runs Stylelint with `--fix` (`demo/site` only)
 
@@ -157,6 +168,8 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 | `@dextinity/eslint-config` | Shared ESLint configurations                                     |
 | `@dextinity/eslint-plugin` | Custom ESLint rules for Dextinity projects                       |
 | `@dextinity/mail-react`    | Utilities for building HTML emails with React (MJML-based)       |
+| `@dextinity/oxlint-config` | Shared oxlint configurations, an alternative to `eslint-config`  |
+| `@dextinity/ui`            | UI-only React component library (Base UI, CSS Modules)           |
 
 ### Docs & Storybook
 
@@ -192,13 +205,13 @@ Fix description here
 ## Commit messages
 
 - Do not use Conventional Commits.
-- If a change is scoped to one package, prefix the commit message with the affected package name. Don't include `@dextinity/` in the package name.
+- If a change is scoped to one package or top-level directory, prefix the commit message with its name. Don't include `@dextinity/` in the package name.
 
 ## Pull request descriptions
 
 - Fill in `.github/pull_request_template.md`. Don't add sections beyond it, and delete the sections and instruction comments that don't apply.
 - End the description with the template's task line as plain visible text, not as an HTML comment: `Task: …` (only when there is a task). Only the attribution may follow it.
-- Add the Claude Code attribution once, at the very end. When a session link is available (`https://claude.ai/code/session_…`), use that as the attribution instead of the generic "Generated with Claude Code" line. Before updating an existing description, remove its attribution first so it never appears twice.
+- Add an attribution for the AI tool you used once, at the very end. For Claude Code, when a session link is available (`https://claude.ai/code/session_…`), use that as the attribution instead of the generic "Generated with Claude Code" line. Before updating an existing description, remove its attribution first so it never appears twice.
 - Describe why the change is needed, not what changed. Never restate the diff: no file-by-file list of changes, no summary of the code the reviewer is about to read.
 - Don't document how you arrived at the change: which files you read, which documentation you checked, which checks you ran to verify it. Only the outcome belongs in the description.
 - Delete the "Example" section when a unit test is the example — the reviewer finds it in the diff, and a bare file path is worthless in the commit message. Fill it in only for an example the diff doesn't lead to: a linked Storybook story or the implementation in Demo, with a sentence on what it shows.

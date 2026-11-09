@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { DiscoverService } from "../dependencies/discover.service";
 import { AbstractAccessControlService } from "../user-permissions/access-control.service";
 import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
+import { ScopedEntity } from "../user-permissions/decorators/scoped-entity.decorator";
 import { CurrentUser } from "../user-permissions/dto/current-user";
 import { UserPermissionsService } from "../user-permissions/user-permissions.service";
 import { Permission } from "../user-permissions/user-permissions.types";
@@ -18,6 +19,7 @@ import { PreviousActionLogLoaderService } from "./previous-action-log-loader.ser
 @Entity()
 @ActionLogs()
 @RequiredPermission("news" as Permission)
+@ScopedEntity(() => ({ domain: "main", language: "en" }))
 class LoggedEntity {
     @PrimaryKey()
     id: number;
@@ -42,6 +44,7 @@ class UnscopedLoggedEntity {
 @Entity()
 @ActionLogs()
 @RequiredPermission("news" as Permission)
+@ScopedEntity(() => ({ domain: "main", language: "en" }))
 class UnregisteredLoggedEntity {
     @PrimaryKey()
     id: number;
@@ -60,7 +63,7 @@ const createActionLogsService = (entities: unknown[]): ActionLogsService => {
     const service = new ActionLogsService(
         createMock(),
         createMock(),
-        createMock<DiscoverService>({ discoverTargetEntities: () => entities.map((entity) => ({ entity })) as never }),
+        createMock<DiscoverService>({ discoverTargetEntities: () => entities.map((entity) => ({ entity, metadata: { properties: {} } })) as never }),
     );
     service.onModuleInit();
     return service;

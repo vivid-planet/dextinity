@@ -1,9 +1,13 @@
-import { type AnyEntity, EntityManager, type EntityName } from "@mikro-orm/postgresql";
+import { type AnyEntity, EntityManager, type EntityMetadata, type EntityName } from "@mikro-orm/postgresql";
 import { Injectable, type OnModuleInit, type Type } from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 
 import { DiscoverService } from "../dependencies/discover.service";
-import { REQUIRED_PERMISSION_METADATA_KEY } from "../user-permissions/decorators/required-permission.decorator";
+import {
+    DisablePermissionCheck,
+    REQUIRED_PERMISSION_METADATA_KEY,
+    type RequiredPermissionMetadata,
+} from "../user-permissions/decorators/required-permission.decorator";
 import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator";
 import { getScopesForScopedEntity } from "../user-permissions/get-scopes-for-scoped-entity";
 import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
@@ -20,15 +24,24 @@ export class ActionLogsService implements OnModuleInit {
     ) {}
 
     onModuleInit(): void {
-        this.loggedEntities = this.discoverService
+        const loggedTargetEntities = this.discoverService
             .discoverTargetEntities()
-            .map(({ entity }) => entity as Type<AnyEntity>)
-            .filter((entity) => Reflect.hasOwnMetadata(ACTION_LOGS_METADATA_KEY, entity.prototype));
+            .filter(({ entity }) => Reflect.hasOwnMetadata(ACTION_LOGS_METADATA_KEY, entity.prototype));
+        this.loggedEntities = loggedTargetEntities.map(({ entity }) => entity as Type<AnyEntity>);
 
-        for (const entity of this.loggedEntities) {
-            if (!Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, entity)) {
+        for (const { entity, metadata } of loggedTargetEntities) {
+            const permissionMetadata = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, entity) as RequiredPermissionMetadata | undefined;
+            if (!permissionMetadata) {
                 throw new Error(
                     `${entity.name} is decorated with @ActionLogs() but is missing a @RequiredPermission decorator. The actionLogs query decides access from the entity's permission.`,
+                );
+            }
+
+            const checksScope =
+                !permissionMetadata.requiredPermission.includes(DisablePermissionCheck) && !permissionMetadata.options?.skipScopeCheck;
+            if (checksScope && !hasScope(entity, metadata)) {
+                throw new Error(
+                    `${entity.name} is decorated with @ActionLogs() and its @RequiredPermission checks the scope, but ${entity.name} has no scope. Add a scope property or @ScopedEntity, or set skipScopeCheck in @RequiredPermission.`,
                 );
             }
         }
@@ -55,4 +68,8 @@ export class ActionLogsService implements OnModuleInit {
         }
         return undefined;
     }
+}
+
+function hasScope(entity: object, metadata: EntityMetadata): boolean {
+    return "scope" in metadata.properties || Reflect.hasMetadata(SCOPED_ENTITY_METADATA_KEY, entity);
 }

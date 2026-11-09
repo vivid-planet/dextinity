@@ -15,6 +15,7 @@ import { registerStyles } from "../registerStyles.js";
 
 const config: Meta = {
     title: "Diagnostics/Gmail CSS Character Limit",
+    tags: ["!manifest"],
     parameters: { mailRoot: false },
 };
 

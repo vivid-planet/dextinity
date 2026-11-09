@@ -52,6 +52,7 @@
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@storybook/addon-docs": "^10.6.5",
+        "@storybook/addon-mcp": "^10.6.5",
         "@storybook/addon-vitest": "10.6.5",
         "@storybook/react-vite": "^10.6.5",
         "@types/csso": "^5.0.5",

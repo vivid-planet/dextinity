@@ -12,6 +12,7 @@ import { css } from "../../utils/css.js";
 
 const config: Meta = {
     title: "Diagnostics/Image Border Radius",
+    tags: ["!manifest"],
 };
 
 export default config;

@@ -23,7 +23,7 @@ The `@mail-react` group starts `mail-react`. Start `storybook-dextinity-mail-rea
 
 ## Storybook
 
-Storybook runs on a fixed port: `http://localhost:6066`.
+Storybook runs on a fixed port, `http://localhost:6066`, and serves an MCP server at `http://localhost:6066/mcp`.
 
 ### Story index API
 

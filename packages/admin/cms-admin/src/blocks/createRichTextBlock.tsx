@@ -149,6 +149,8 @@ export const createRichTextBlock = (options: RichTextBlockFactoryOptions, overri
         defaultValues: () => ({ editorState: createEmptyState() }),
 
         category: BlockCategory.TextAndContent,
+        iconName: "rte-bold",
+        description: <FormattedMessage id="dextinity.blocks.richtext.description" defaultMessage="Formatted text with lists and links" />,
 
         tags: options.tags,
 

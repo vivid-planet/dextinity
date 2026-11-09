@@ -74,6 +74,8 @@ export function createExternalLinkBlock<const Options extends ExternalLinkBlockF
         }),
 
         category: BlockCategory.Navigation,
+        iconName: "link-external",
+        description: <FormattedMessage id="dextinity.blocks.externalLink.description" defaultMessage="Link to another website" />,
 
         input2State: (state) => {
             return state;

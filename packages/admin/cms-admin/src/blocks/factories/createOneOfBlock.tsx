@@ -1,3 +1,4 @@
+import type { IconName } from "@dextinity/ui";
 import { RadioGroupField, SegmentedControlField, SelectField } from "@dextinity/ui-react-final-form";
 import { styled } from "@mui/material/styles";
 import { deepEqual } from "fast-equals";
@@ -65,6 +66,15 @@ export interface CreateOneOfBlockOptions<T extends boolean> {
     displayName?: ReactNode;
     supportedBlocks: Record<BlockType, BlockInterface>;
     category?: BlockCategory | CustomBlockCategory;
+    /**
+     * The block type's icon, shown next to it in the Add Block Drawer and in a block list when `icon` returns none.
+     * Falls back to an icon for the block's category.
+     */
+    iconName?: IconName;
+    /**
+     * What the block is for, in a few words, shown under its name in the Add Block Drawer.
+     */
+    description?: ReactNode;
     variant?: "select" | "radio" | "toggle";
     /**
      * The label of the control that chooses the block. Visible for the `select` variant, the accessible name of the other variants.
@@ -82,6 +92,8 @@ export const createOneOfBlock = <T extends boolean = boolean>(
         name,
         displayName = "Switch",
         category = BlockCategory.Other,
+        iconName,
+        description,
         variant = "select",
         label = <FormattedMessage id="dextinity.blocks.oneOfBlock.blockType" defaultMessage="Block type" />,
         allowEmpty: passedAllowEmpty,
@@ -143,6 +155,10 @@ export const createOneOfBlock = <T extends boolean = boolean>(
         tags: tags ? tags : childTags,
 
         category,
+
+        iconName,
+
+        description,
 
         defaultValues: () => {
             if (allowEmpty) {

@@ -66,6 +66,8 @@ export const createDamVideoBlock = (
         defaultValues: () => ({ showControls: true, ...(supportsPreviewImage ? { previewImage: PixelImageBlock.defaultValues() } : {}) }),
 
         category: BlockCategory.Media,
+        iconName: "video",
+        description: <FormattedMessage id="dextinity.blocks.damVideo.description" defaultMessage="Video uploaded to the assets" />,
 
         input2State: ({ previewImage, ...input }) => ({
             ...input,

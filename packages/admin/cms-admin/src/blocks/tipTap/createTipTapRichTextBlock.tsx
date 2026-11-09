@@ -942,6 +942,8 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
         defaultValues: () => ({ tipTapContent: emptyContent }),
 
         category: BlockCategory.TextAndContent,
+        iconName: "rte-bold",
+        description: <FormattedMessage id="dextinity.blocks.tipTapRichText.description" defaultMessage="Formatted text with lists and links" />,
 
         input2State: ({ tipTapContent }) => {
             let content = tipTapContent ?? emptyContent;

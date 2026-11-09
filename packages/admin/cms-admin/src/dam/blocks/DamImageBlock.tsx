@@ -20,6 +20,8 @@ const DamImageBlock = createOneOfBlock({
     name: "DamImage",
     displayName: <FormattedMessage id="dextinity.blocks.damImage" defaultMessage="Image" />,
     category: BlockCategory.Media,
+    iconName: "image",
+    description: <FormattedMessage id="dextinity.blocks.damImage.description" defaultMessage="Image or SVG from the assets" />,
     supportedBlocks,
     allowEmpty: false,
     tags: [defineMessage({ id: "dextinity.damImageBlock.tag.image", defaultMessage: "Image" })],

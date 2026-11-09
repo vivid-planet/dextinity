@@ -7,6 +7,7 @@ import { useIntl } from "react-intl";
 import { useBlockContext } from "../../context/useBlockContext";
 import { useHoverPreviewComponent } from "../../iframebridge/useHoverPreviewComponent";
 import { type BlockInterface, isPreviewContentImageRule, isPreviewContentTextRule } from "../../types";
+import { blockIconName } from "../blockIconName";
 import { usePromise } from "../usePromise";
 import { useBlockRowLabels } from "./useBlockRowLabels";
 
@@ -140,7 +141,7 @@ export function BlockRow({
                 onMouseLeave={onMouseLeave}
                 title={firstText ?? typeName}
                 summary={summary}
-                icon={image ? <PreviewImage src={image.content.src} alt="" /> : (block.icon?.(state) ?? <Icon name="blocks" />)}
+                icon={image ? <PreviewImage src={image.content.src} alt="" /> : (block.icon?.(state) ?? <Icon name={blockIconName(block)} />)}
                 visible={visible}
                 onVisibleChange={visibilityRestriction ? undefined : onVisibleChange}
                 selected={isHovered}

@@ -41,6 +41,8 @@ export function createTextLinkBlock(
         tags: tags ? tags : LinkBlock.tags,
 
         category: BlockCategory.Navigation,
+        iconName: "link",
+        description: <FormattedMessage id="dextinity.blocks.textLink.description" defaultMessage="Link with its text" />,
 
         definesOwnPadding: true,
 

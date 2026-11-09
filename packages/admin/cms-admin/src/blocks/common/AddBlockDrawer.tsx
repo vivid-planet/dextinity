@@ -1,24 +1,27 @@
-import { useStoredState } from "@dextinity/admin";
-import { BlockPicker, type BlockPickerCategory, type BlockPickerItem, Checkbox, Drawer } from "@dextinity/ui";
+import { useStackApi, useStoredState } from "@dextinity/admin";
+import { BlockPicker, type BlockPickerCategory, type BlockPickerItem, Checkbox, Drawer, Icon } from "@dextinity/ui";
 import { useMemo, useState } from "react";
-import { useIntl } from "react-intl";
+import { type IntlShape, useIntl } from "react-intl";
 
 import { messageText } from "../form/messageText";
 import { BlockCategory, blockCategoryLabels, type BlockInterface, type CustomBlockCategory } from "../types";
+import { blockIconName } from "./blockIconName";
 
 interface Props {
     open: boolean;
     onClose: () => void;
     blocks: Record<string, BlockInterface>;
     onAddNewBlock: (type: string, addAndEdit: boolean) => void;
+    /** The block the new block is inserted before. Without it, the new block is added at the end. */
+    insertBefore?: BlockInterface;
 }
 
 const maxRecentBlockTypes = 4;
 
-export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) {
+export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock, insertBefore }: Props) {
     const intl = useIntl();
+    const stackApi = useStackApi();
     const [query, setQuery] = useState("");
-    const [category, setCategory] = useState<string | null>(null);
     const [addAndEdit, setAddAndEdit] = useStoredState<boolean>("addAndEdit", true);
     const [recentBlockTypes, setRecentBlockTypes] = useStoredState<string[]>("addBlockDrawerRecentBlockTypes", []);
 
@@ -74,6 +77,8 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) 
             items.push({
                 value: type,
                 label,
+                description: messageText(intl, block.description),
+                icon: <Icon name={blockIconName(block)} />,
                 category: id,
                 keywords: block.tags?.map((tag) => (typeof tag === "string" ? tag : intl.formatMessage(tag))),
             });
@@ -85,9 +90,14 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) 
         return { items, categories };
     }, [intl, blocks]);
 
+    const containerTitle = stackApi?.breadCrumbs[stackApi.breadCrumbs.length - 1]?.title;
+    const insertionHint = getInsertionHint(intl, {
+        beforeBlockName: insertBefore ? messageText(intl, insertBefore.displayName) : undefined,
+        containerName: containerTitle != null ? messageText(intl, containerTitle) : undefined,
+    });
+
     const close = () => {
         setQuery("");
-        setCategory(null);
         onClose();
     };
 
@@ -107,6 +117,7 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) 
             }}
             modal
             title={intl.formatMessage({ id: "dextinity.blocks.drawer.header", defaultMessage: "Add new block" })}
+            description={insertionHint}
             footer={
                 <Checkbox checked={addAndEdit} onChange={setAddAndEdit}>
                     {intl.formatMessage({ id: "dextinity.blocks.drawer.editAfterAdding", defaultMessage: "Edit the block after adding it" })}
@@ -119,14 +130,10 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) 
                 query={query}
                 onQueryChange={setQuery}
                 categories={categories.length > 1 ? categories : undefined}
-                category={category}
-                onCategoryChange={setCategory}
                 recent={recentBlockTypes}
                 slotProps={{ search: { autoFocus: true } }}
                 labels={{
                     search: intl.formatMessage({ id: "dextinity.blocks.drawer.search", defaultMessage: "Search blocks" }),
-                    categories: intl.formatMessage({ id: "dextinity.blocks.drawer.categories", defaultMessage: "Categories" }),
-                    all: intl.formatMessage({ id: "dextinity.blocks.drawer.allCategories", defaultMessage: "All" }),
                     recent: intl.formatMessage({ id: "dextinity.blocks.drawer.recent", defaultMessage: "Recently used" }),
                     other: intl.formatMessage({ id: "dextinity.blocks.category.other", defaultMessage: "Other" }),
                     empty: intl.formatMessage({ id: "dextinity.blocks.drawer.noResults", defaultMessage: "No block matches your search." }),
@@ -134,6 +141,24 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock }: Props) 
             />
         </Drawer>
     );
+}
+
+function getInsertionHint(intl: IntlShape, { beforeBlockName, containerName }: { beforeBlockName?: string; containerName?: string }) {
+    if (beforeBlockName !== undefined) {
+        return intl.formatMessage(
+            { id: "dextinity.blocks.drawer.insertionHint.before", defaultMessage: "Will be inserted before “{blockName}”." },
+            { blockName: beforeBlockName },
+        );
+    }
+
+    if (containerName !== undefined && containerName !== "") {
+        return intl.formatMessage(
+            { id: "dextinity.blocks.drawer.insertionHint.endOf", defaultMessage: "Will be inserted at the end of “{containerName}”." },
+            { containerName },
+        );
+    }
+
+    return intl.formatMessage({ id: "dextinity.blocks.drawer.insertionHint.end", defaultMessage: "Will be inserted at the end of the list." });
 }
 
 function isCustomBlockCategory(category: BlockCategory | CustomBlockCategory): category is CustomBlockCategory {

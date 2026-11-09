@@ -40,6 +40,8 @@ export const iconSearchTerms: Record<DefaultIconName, string[]> = {
     "chevron-left": ["ArrowBack"],
     "chevron-right": ["ArrowNext"],
     "chevron-up": ["ArrowUp"],
+    "chevrons-collapse": ["CollapseAll", "Fold", "Less"],
+    "chevrons-expand": ["ExpandAll", "Unfold", "More"],
     clear: ["Cancel", "CloseFilled", "Cross"],
     close: ["Cancel", "Clear", "Cross"],
     "columns-1": ["Content", "DataGrid"],

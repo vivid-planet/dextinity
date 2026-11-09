@@ -38,6 +38,8 @@ export const defaultIconNames = {
     "chevron-left": true,
     "chevron-right": true,
     "chevron-up": true,
+    "chevrons-collapse": true,
+    "chevrons-expand": true,
     clear: true,
     close: true,
     "columns-1": true,

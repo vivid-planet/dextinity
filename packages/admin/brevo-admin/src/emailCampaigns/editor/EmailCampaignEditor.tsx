@@ -441,7 +441,7 @@ function EmailCampaignFormContent({
                     label: intl.formatMessage({ id: "dextinity.emailCampaigns.content", defaultMessage: "Content" }),
                     invalid: isContentInvalid,
                     content: (
-                        <BlockAdminComponentRoot>
+                        <BlockAdminComponentRoot contentKind="email">
                             <Field name="content" component={FinalFormContentBlock} isEqual={deepEqual} />
                         </BlockAdminComponentRoot>
                     ),

@@ -234,7 +234,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
                     key: "content",
                     label: intl.formatMessage(messages.content),
                     content: (
-                        <BlockAdminComponentRoot>
+                        <BlockAdminComponentRoot contentKind="email">
                             <WelcomeEmailContentBlock.AdminComponent state={welcomeEmailState} updateState={setWelcomeEmailState} />
                         </BlockAdminComponentRoot>
                     ),

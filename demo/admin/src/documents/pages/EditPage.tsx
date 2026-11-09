@@ -162,6 +162,7 @@ export const EditPage = ({ id }: Props) => {
                         content: (
                             <BlockAdminComponentRoot
                                 title={intl.formatMessage({ id: "pages.pages.page.edit.pageBlocks.title", defaultMessage: "Page" })}
+                                contentKind="page"
                             >
                                 {rootBlocksApi.content.adminUI}
                             </BlockAdminComponentRoot>

@@ -53,7 +53,7 @@
     },
     "devDependencies": {
         "@babel/cli": "^7.29.7",
-        "@babel/core": "^7.29.7",
+        "@babel/core": "^7.29.13",
         "@dextinity/admin-babel-preset": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@mui/material": "^7.3.11",

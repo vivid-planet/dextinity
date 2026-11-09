@@ -1,10 +1,17 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
-<Meta title="Docs/Email Client Pitfalls" />
+<Meta
+    title="Docs/Email Client Pitfalls"
+    summary="Client bugs and their fixes, grouped by client: raw HTML in MJML, classic Outlook (VML, line-height), Gmail (selectors, 16 kB), Yahoo/Outlook.com (calc, height, box-sizing), Outlook web, Apple Mail."
+/>
 
 # Email Client Pitfalls
 
-## Start Raw Content Inside a Column With `<tr>`
+Known mail client bugs and the fix for each, grouped by the client they affect.
+
+## Raw HTML in MJML
+
+### Start Raw Content Inside a Column With `<tr>`
 
 `mj-column` wraps every child in its own `<tr><td>` — except `MjmlRaw` content, which goes straight into the column's table unwrapped. A `<table>`, `<div>`, or `<img>` in that position ends up outside the column's table instead, and MJML reports no error. This covers the `Html*` components. Open with a `<tr>` and put the markup in a `<td>`:
 
@@ -22,26 +29,32 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 `MjmlColumn` and `MjmlHero` are both affected — `MjmlSection` and `MjmlWrapper` already place their children inside a shared cell, so any root element is safe there. `MjmlDivider` supplies both the row and the cell; use it instead of a hand-wrapped `HtmlDivider` whenever you are in an `MjmlColumn`.
 
-## Avoid Block-Level HTML Elements Inside Ending Tags
+### Avoid Block-Level HTML Elements Inside Ending Tags
 
 Don't use `<p>`, `<h1>`, `<h2>`, or other block-level HTML elements inside ending tags. They have wildly inconsistent default margins and spacing across email clients and add no rendering value in email HTML. Instead, use `<td>`, `<div>`, and `<span>` for structure, and build your typography hierarchy through `MjmlText`/`HtmlText` variants rather than HTML semantics. If a block-level element is truly unavoidable, always reset its margins inline: `style={{ margin: 0 }}`.
 
-## Set `mso-line-height-rule: exactly` on Every Manual `line-height`
+### MJML Sets `word-break: break-word` on Column Content
+
+MJML writes `word-break: break-word` on the `<td>` around each child of a column, except `MjmlRaw`, and nested cells inherit it. In Outlook on the web, this breaks short content onto several lines when its cell sits next to a `width="100%"` cell, such as the marker cell of a list item. Set `word-break: normal` inline on the cell of the short content, together with `white-space: nowrap`. `white-space: nowrap` alone does not help: Outlook on the web removes it from inline styles, and it also removes the `nowrap` attribute. Resetting `overflow-wrap` does not help either.
+
+## Classic Outlook
+
+### Set `mso-line-height-rule: exactly` on Every Manual `line-height`
 
 Outlook calculates line-height using its own rules, causing unexpected vertical spacing. **Every time** you set `line-height` on a raw HTML element inside an ending tag (`MjmlRaw`, `MjmlText`, etc.), you must also set `mso-line-height-rule: exactly` as an inline style on the same element. This applies to `<span>`, `<td>`, `<div>`, or any other element where you manually control line height. `HtmlText` and built-in MJML components handle this automatically — but any hand-written HTML needs it explicitly.
 
-## Do Not Set `line-height: 0` Around Images
+### Do Not Set `line-height: 0` Around Images
 
 Classic Outlook cuts off the top of an image when `line-height: 0` is set on the `<td>` that holds the image, or on its `<table>`: about `3px` with `font-size: 0`, about `20px` with the default font size. A `line-height: 0` on a `<span>` or link inside that `<td>` does not prevent it.
 
 - Use `1px` instead of `0`, or leave `line-height` unset. Without `mso-line-height-rule: exactly`, any other `line-height` smaller than the image does not cut it: classic Outlook treats the value as a minimum. `MjmlTable` has a default `line-height` of `22px`, and that value does no harm. Do not set `lineHeight={0}` on `MjmlTable`.
 - With `mso-line-height-rule: exactly`, a `line-height` smaller than the image cuts the image to that height. `HtmlText` sets the theme `line-height` (`20px` by default) with `mso-line-height-rule: exactly`, so do not put images in it.
 
-## No CSS `background-image` in Outlook
+### No CSS `background-image` in Outlook
 
 Classic Outlook ignores `background-image` entirely. Use a VML-based workaround for Outlook support, or provide a `background-color` fallback for graceful degradation. See [Bulletproof Backgrounds](https://www.backgrounds.cm/).
 
-## No CSS `border-radius` in Outlook
+### No CSS `border-radius` in Outlook
 
 Classic Outlook ignores `border-radius` entirely — rounded corners on buttons, containers, or any other element render as sharp rectangles.
 
@@ -67,7 +80,41 @@ More rules for a hand-written VML shape:
 
 See the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
 
-## No CSS `calc()`
+## Gmail
+
+### Selectors That Reach Every Client
+
+Gmail applies class, element and id selectors, and descendant and child combinators. It drops the whole rule for a pseudo-class or a pseudo-element, and of the attribute selectors it applies only `[class~="value"]`. Its mobile webmail is narrower still: no combinators, no attribute selectors, and no media queries, so no responsive rule reaches it.
+
+`:hover` is the exception, but only in Gmail's desktop webmail and its Android app, and not there on a non-Google account. Its iOS app and mobile webmail drop it, so keep state styles decorative.
+
+Where a rule depends on an item's position, set a modifier class while rendering instead of using a positional selector:
+
+```tsx
+<td className={`stackedList__item ${isLastItem ? "stackedList__item--last" : ""}`}>
+```
+
+```css
+.stackedList__item {
+    margin-bottom: 24px !important;
+}
+
+.stackedList__item--last {
+    margin-bottom: 0 !important;
+}
+```
+
+A flex `gap` does not stand in for this — see [Multi-Column Symmetric Layouts](?path=/docs/docs-layout-patterns--docs#multi-column-symmetric-layouts-3-columns).
+
+Target the mail's body with `#body`. Some clients replace the `<body>` tag with a `<div>`, which a `body` selector no longer reaches.
+
+### Gmail Drops Head CSS Past 16 kB
+
+Gmail counts the content of all `<style>` tags together, MJML's own included. Past `16 kB` (`16,384` characters), Gmail removes the `<style>` tag that passes the limit. mail-react puts the registered styles and the CSS from the `head` slot of `MjmlMailRoot` in one `<style>` tag, placed last, so the mail loses all of that CSS. `registerStyles` emits the CSS of every imported module, used or not; mail-react minifies the registered CSS. Keep unused variants and modules out of the mail, and check the size: count the characters in all `<style>` tags of a full rendered mail. See [email-bugs#90](https://github.com/hteumeuleu/email-bugs/issues/90).
+
+## Yahoo Mail and Outlook.com
+
+### No CSS `calc()`
 
 Yahoo Mail (webmail and both mobile apps) and Outlook.com drop every declaration whose value contains a `calc()`, single-unit expressions such as `calc(300px - 200px)` included. The declaration disappears, so the element keeps the value the `calc()` was meant to override — a plausible wrong width rather than no width.
 
@@ -82,26 +129,32 @@ Where an element has to fill the space next to a fixed-width one, let the table 
 
 The [asymmetric two-column layout](?path=/docs/docs-layout-patterns--docs#asymmetric-two-column-layout-fixed--fluid) uses this fallback.
 
-## `height` Becomes `min-height` in Yahoo Mail
+### `height` Becomes `min-height` in Yahoo Mail
 
 Yahoo Mail rewrites `height` into `min-height`, which is only a lower limit — it can make an element taller, never shorter — and does nothing at all on a `<td>`:
 
 - An `<img>` that a media query shrinks with `height` keeps its original size — use `max-height`.
 - A row whose height comes only from `height` on a `<td>` collapses to nothing, and the cell's background disappears with it — put the height on a `<div>` inside the cell, or use padding.
 
-## Keep `}}` Out of the Head CSS
+### No CSS `box-sizing` in Yahoo Mail
+
+For a hand-written full-width button, `display: block` on the `<a>` makes it fill its `<td>`. Do not add `width: 100%` and `box-sizing: border-box`: Yahoo Mail does not support `box-sizing`, so it adds the padding to the full width and the anchor overflows its container.
+
+## Outlook on the Web
+
+### Keep `}}` Out of the Head CSS
 
 Outlook on the web (Outlook.com) and the Outlook iOS and Android apps drop everything after the first `}}` in a `<style>` tag. Minified `@media` blocks end in `}}`. mail-react separates the braces in the registered styles, but not in CSS that you add through the `head` slot of `MjmlMailRoot`; write `} }` there. See [email-bugs#92](https://github.com/hteumeuleu/email-bugs/issues/92).
 
-## Gmail Drops Head CSS Past 16 kB
+## Apple Mail
 
-Gmail counts the content of all `<style>` tags together, MJML's own included. Past `16 kB` (`16,384` characters), Gmail removes the `<style>` tag that passes the limit. mail-react puts the registered styles and the CSS from the `head` slot of `MjmlMailRoot` in one `<style>` tag, placed last, so the mail loses all of that CSS. `registerStyles` emits the CSS of every imported module, used or not; mail-react minifies the registered CSS. Keep unused variants and modules out of the mail, and check the size: count the characters in all `<style>` tags of a full rendered mail. See [email-bugs#90](https://github.com/hteumeuleu/email-bugs/issues/90).
+### Fixed-Width Cells in a Row
 
-## MJML Sets `word-break: break-word` on Column Content
+`MjmlTable` writes `width: 100%` by default. When the cells of a row are narrower than the table together, Apple Mail and Safari spread the free table width over all cells, so fixed-width cells become wider than declared. An empty filler cell at the end of the row does not help. For a row of fixed-width items, such as icons, set `width="auto"` on the table.
 
-MJML writes `word-break: break-word` on the `<td>` around each child of a column, except `MjmlRaw`, and nested cells inherit it. In Outlook on the web, this breaks short content onto several lines when its cell sits next to a `width="100%"` cell, such as the marker cell of a list item. Set `word-break: normal` inline on the cell of the short content, together with `white-space: nowrap`. `white-space: nowrap` alone does not help: Outlook on the web removes it from inline styles, and it also removes the `nowrap` attribute. Resetting `overflow-wrap` does not help either.
+## All Clients
 
-## Style the Links That Mail Clients Create
+### Style the Links That Mail Clients Create
 
 Clients turn plain-text mail addresses, URLs and phone numbers into links of their own, without the mail's inline styles:
 

@@ -1,19 +1,65 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
-<Meta title="Docs/Blocks" />
+<Meta
+    title="Docs/Blocks"
+    summary="Render Dextinity CMS block data in mails: block lists, pixel images, Tip-Tap and draft-js rich text, and the block preview that makes mail blocks selectable in the admin."
+/>
 
 # Blocks
 
-`@dextinity/mail-react` ships components that render Dextinity CMS block data — currently pixel-image blocks and the two rich-text blocks, draft-js and Tip-Tap. Reach for these instead of hand-rolled markup whenever the source is a CMS block-data record.
+Use these components, not hand-written markup, to render Dextinity CMS block data in a mail: block lists, pixel images, and Tip-Tap and draft-js rich text.
 
-## Pixel-image blocks
+## Rendering a Blocks List
 
-| Component             | Renders                 | Use within                                     |
-| --------------------- | ----------------------- | ---------------------------------------------- |
-| `MjmlPixelImageBlock` | re-exported `MjmlImage` | an `MjmlColumn` (standard MJML layout)         |
-| `HtmlPixelImageBlock` | raw `<img>`             | raw HTML or MJML ending tags such as `MjmlRaw` |
+`BlocksBlock` renders the blocks of a blocks-block data record. `supportedBlocks` maps each block type name to a function that renders the data of that block. Type each mail block with `PropsWithData`:
 
-Inside `MjmlRaw` in an `MjmlColumn`, `HtmlPixelImageBlock` needs its own `<tr>` and `<td>` — see [Start Raw Content Inside a Column With `<tr>`](?path=/docs/docs-email-client-pitfalls--docs#start-raw-content-inside-a-column-with-tr).
+```tsx
+import { BlocksBlock, type SupportedBlocks } from "@dextinity/mail-react";
+import type { WelcomeEmailContentBlockData } from "@src/blocks.generated";
+import { MailDividerBlock } from "@src/mail/blocks/MailDividerBlock";
+import { MailImageBlock } from "@src/mail/blocks/MailImageBlock";
+import { MailRichTextBlock } from "@src/mail/blocks/MailRichTextBlock";
+
+const supportedBlocks: SupportedBlocks = {
+    text: (data) => <MailRichTextBlock data={data} />,
+    image: (data) => <MailImageBlock data={data} />,
+    divider: (data) => <MailDividerBlock data={data} />,
+};
+
+interface Props {
+    content: WelcomeEmailContentBlockData;
+}
+
+export const WelcomeEmailContentBlock = ({ content }: Props) => {
+    return <BlocksBlock data={content} supportedBlocks={supportedBlocks} />;
+};
+```
+
+```tsx
+import { MjmlColumn, MjmlSection, MjmlText, type PropsWithData } from "@dextinity/mail-react";
+import type { MailTextBlockData } from "@src/blocks.generated";
+
+export const MailTextBlock = ({ data }: PropsWithData<MailTextBlockData>) => (
+    <MjmlSection indent>
+        <MjmlColumn>
+            <MjmlText>{data.text}</MjmlText>
+        </MjmlColumn>
+    </MjmlSection>
+);
+```
+
+- `ListBlock` renders each item of a list-block record with the function in `block`. `OneOfBlock` renders the selected block with `supportedBlocks`. `OptionalBlock` renders its `block` function only when the block is visible and set.
+- A block type that has no entry in `supportedBlocks` renders as an `MjmlText` with its type and props in development, and renders nothing in production. This applies to `BlocksBlock` and `OneOfBlock`.
+- Pass the block data as the API outputs it. The pixel-image blocks need the `damFile` and `urlTemplate` that the API adds.
+
+## Pixel-Image Blocks
+
+| Component             | Renders                 | Use within                                     | CSS class              |
+| --------------------- | ----------------------- | ---------------------------------------------- | ---------------------- |
+| `MjmlPixelImageBlock` | re-exported `MjmlImage` | an `MjmlColumn` (standard MJML layout)         | `.mjmlPixelImageBlock` |
+| `HtmlPixelImageBlock` | raw `<img>`             | raw HTML or MJML ending tags such as `MjmlRaw` | `.htmlPixelImageBlock` |
+
+Inside `MjmlRaw` in an `MjmlColumn`, `HtmlPixelImageBlock` needs its own `<tr>` and `<td>`. See [Start Raw Content Inside a Column With `<tr>`](?path=/docs/docs-email-client-pitfalls--docs#start-raw-content-inside-a-column-with-tr).
 
 ```tsx
 <MjmlSection indent>
@@ -25,18 +71,28 @@ Inside `MjmlRaw` in an `MjmlColumn`, `HtmlPixelImageBlock` needs its own `<tr>` 
 
 ### Configuration
 
-Both blocks require `config.pixelImageBlock` and throw without it. Wire it once on `MjmlMailRoot.config`:
+Both blocks require `config.pixelImageBlock` and throw without it. Set it once on `MjmlMailRoot.config`, or on a `ConfigProvider`:
+
+- `validSizes`: the image widths that the API supports. The block picks the render width from them.
+- `baseUrl`: the origin that prefixes relative image URLs. It must be reachable from the mail client of the recipient. The block builds the image URL from the `urlTemplate` of the block data, and adds `baseUrl` only when that URL starts with `/`.
 
 ```tsx
-const config: Config = {
-    pixelImageBlock: {
-        validSizes: [...dextinityConfig.images.imageSizes, ...dextinityConfig.images.deviceSizes],
-        baseUrl: process.env.API_URL,
-    },
-};
+import type { Config } from "@dextinity/mail-react";
+import dextinityConfig from "@src/dextinity-config.json" with { type: "json" };
+
+export function getMailConfig(siteUrl: string): Config {
+    return {
+        pixelImageBlock: {
+            validSizes: [...dextinityConfig.images.imageSizes, ...dextinityConfig.images.deviceSizes],
+            baseUrl: siteUrl,
+        },
+    };
+}
 ```
 
-### Render width
+The Demo uses the site URL as `baseUrl`, because the site forwards `/dam/` paths to the API. Without such a forward, use the API URL.
+
+### Render Width
 
 `width` is the width of the image at the default breakpoint. The block picks the source size from the configured `validSizes`, accounting for retina displays. Use `largestPossibleRenderWidth` when the image stretches wider on a narrower breakpoint than its desktop width — e.g. a two-column layout that stacks on mobile.
 
@@ -44,7 +100,7 @@ const config: Config = {
 <MjmlPixelImageBlock data={pixelImageData} width={300} largestPossibleRenderWidth={420} />
 ```
 
-### Aspect ratio
+### Aspect Ratio
 
 Without `aspectRatio`, the rendered ratio comes from the DAM crop area. Pass `aspectRatio` to override it, as a number or as a `"WxH"`, `"W:H"` or `"W/H"` string.
 
@@ -52,11 +108,12 @@ Without `aspectRatio`, the rendered ratio comes from the DAM crop area. Pass `as
 <MjmlPixelImageBlock data={pixelImageData} width={536} aspectRatio="16x9" />
 ```
 
-When `data.damFile?.image` is absent, both blocks render nothing — no element, no error. Render a placeholder at the call site if you need one.
+### Behavior
 
-On viewports narrower than the default body width, both blocks scale the image down to fit its container.
+- When `data.damFile?.image` is absent, both blocks render nothing — no element, no error. Render a placeholder at the call site if you need one.
+- On viewports narrower than the default body width, both blocks scale the image down to fit its container.
 
-## Rich-text blocks
+## Rich-Text Blocks
 
 Two factories render CMS rich text: `createTipTapRichTextBlock` for TipTapRichText block data, and `createRichTextBlock` for RichText block data (draft-js). Each returns an MJML and an HTML component, driven by one configuration. **Call the factory once per configuration — at the top level of a file, never inside a component** — and export the returned pair. The factories work without any options.
 
@@ -74,7 +131,7 @@ export const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTap
 | `MjmlTipTapRichTextBlock` / `MjmlRichTextBlock` | `MjmlText`                 | an `MjmlColumn` (standard MJML layout)         |
 | `HtmlTipTapRichTextBlock` / `HtmlRichTextBlock` | `HtmlText` (`<div>`)       | raw HTML or MJML ending tags such as `MjmlRaw` |
 
-Inside `MjmlRaw` in an `MjmlColumn`, the `Html*` component needs its own `<tr>` and `<td>` — see [Start Raw Content Inside a Column With `<tr>`](?path=/docs/docs-email-client-pitfalls--docs#start-raw-content-inside-a-column-with-tr).
+Inside `MjmlRaw` in an `MjmlColumn`, the `Html*` component needs its own `<tr>` and `<td>`. See [Start Raw Content Inside a Column With `<tr>`](?path=/docs/docs-email-client-pitfalls--docs#start-raw-content-inside-a-column-with-tr).
 
 Usage sites pass only `data`:
 
@@ -86,79 +143,139 @@ Usage sites pass only `data`:
 </MjmlSection>
 ```
 
-Both factories:
+The sections below apply to both factories, up to [Tip-Tap Content](#tip-tap-content).
 
-- **Text style entries are text-component props**: a theme `variant`, plain (non-responsive) style values (`color`, `fontSize`, `fontWeight`, …), and a `className`. Text no entry covers renders with the theme's `text.defaultVariant`, or the base `theme.text` styles. For responsive styling without a variant, set a `className` and register CSS via `registerStyles`:
+### Text Styles
 
-    ```tsx
-    const { MjmlTipTapRichTextBlock } = createTipTapRichTextBlock({
-        textBlockStyles: { title: { className: "richTextTitle" } },
-    });
+Text style entries are text-component props: a theme `variant`, plain (non-responsive) style values (`color`, `fontSize`, `fontWeight`, …), and a `className`. Text that no entry covers renders with the theme's `text.defaultVariant`, or with the base `theme.text` styles.
 
-    registerStyles(
-        (theme) => css`
-            ${theme.breakpoints.default.belowMediaQuery} {
-                .richTextTitle > div {
-                    font-size: 24px !important;
-                }
+For responsive styling without a variant, set a `className` and register CSS with `registerStyles`:
+
+```tsx
+const { MjmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+    textBlockStyles: { title: { className: "richTextTitle" } },
+});
+
+registerStyles(
+    (theme) => css`
+        ${theme.breakpoints.default.belowMediaQuery} {
+            .richTextTitle > div {
+                font-size: 24px !important;
             }
-        `,
-    );
-    ```
+        }
+    `,
+);
+```
 
-    For a list, target `.<className> .richTextBlock__listItemText` instead of `> div` — the list's cells carry their own font styles.
+For a list, target `.<className> .richTextBlock__listItemText` instead of `> div`, because the list cells carry their own font styles.
 
-- **Multiple configurations**: each factory call is independent — rename the destructured components per use case:
+The `textClassName` prop of the rendered component sets a class on each text element that the block renders.
 
-    ```tsx
-    export const { MjmlTipTapRichTextBlock: MjmlHeadlineRichTextBlock, HtmlTipTapRichTextBlock: HtmlHeadlineRichTextBlock } =
-        createTipTapRichTextBlock({
-            textBlockStyles: { title: { variant: "title" }, header: { variant: "header" } },
-        });
-    ```
+### Multiple Configurations
 
-- **Links**: the `external` link type is built in and renders as `HtmlInlineLink`. Add other link types via `linkTypes`, a resolver per link block type that receives the link block's props and returns the `href` (or `undefined` for no link). Type the parameter with the app's generated block-data type. Link types without a resolver render as plain text:
+Each factory call is independent. Rename the destructured components per use case:
 
-    ```tsx
-    import type { PhoneLinkBlockData } from "@src/blocks.generated";
+```tsx
+export const { MjmlTipTapRichTextBlock: MjmlHeadlineRichTextBlock, HtmlTipTapRichTextBlock: HtmlHeadlineRichTextBlock } = createTipTapRichTextBlock({
+    textBlockStyles: { title: { variant: "title" }, header: { variant: "header" } },
+});
+```
 
-    const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
-        linkTypes: {
-            phone: (props: PhoneLinkBlockData) => (props.phone ? `tel:${props.phone}` : undefined),
-        },
-    });
-    ```
+### Links
 
-- **Inline styles**: bold, italic and the other built-in formats render by default. Override one via `marks` (Tip-Tap) or `inline` (draft-js). Render a custom inline style the app adds to its RTE via `inlineStyles` (Tip-Tap) or `inline` (draft-js). Register under the exact style name, use `<span>`, `<strong>` or `<em>` (not `<mark>`), and set explicit styles:
+The `external` link type is built in and renders as `HtmlInlineLink`. Add other link types with `linkTypes`: a resolver per link block type that receives the props of the link block and returns the `href`, or `undefined` for no link. Type the parameter with the generated block-data type of the app. Link types without a resolver render as plain text:
 
-    ```tsx
-    const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
-        inlineStyles: {
-            highlight: (children, { key }) => (
-                <span key={key} style={{ backgroundColor: "#ff0000", color: "#ffffff" }}>
-                    {children}
-                </span>
-            ),
-        },
-    });
-    ```
+```tsx
+import type { PhoneLinkBlockData } from "@src/blocks.generated";
 
-- **Lists** render as a table inside one text component, with a row per item, a marker cell and a text cell.
-- **List spacing** comes from the theme's `list.indent` (before the marker), `list.markerGap` (between the marker and the text) and `list.itemSpacing` (between items, and above a nested level's first item), all responsive and all applying to every list the block renders. To override it, register a rule scoped to a list's type, depth or variant modifier with `{ inline: true }`, so it also reaches Outlook.
-- **List markers** come from the theme's `list.unorderedMarker` and `list.orderedMarker`, each either a fixed node (`unorderedMarker: "▪"`) or a function of the item's `index` and its list's `depth`. A marker wider than the others widens the marker column and moves the text edge with it.
+const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+    linkTypes: {
+        phone: (props: PhoneLinkBlockData) => (props.phone ? `tel:${props.phone}` : undefined),
+    },
+});
+```
+
+### Inline Styles
+
+Bold, italic and the other built-in formats render by default. Override one with `marks` (Tip-Tap) or `inline` (draft-js). To render a custom inline style that the app adds to its RTE, use `inlineStyles` (Tip-Tap) or `inline` (draft-js). Register it under the exact style name, use `<span>`, `<strong>` or `<em>` (not `<mark>`), and set explicit styles:
+
+```tsx
+const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+    inlineStyles: {
+        highlight: (children, { key }) => (
+            <span key={key} style={{ backgroundColor: "#ff0000", color: "#ffffff" }}>
+                {children}
+            </span>
+        ),
+    },
+});
+```
+
+### Lists
+
+A list renders as a table inside one text component, with a row per item, a marker cell and a text cell.
+
+The theme's `list` tokens set the indent, the marker gap, the item spacing and the markers of every list. See [Lists](?path=/docs/docs-theme-and-configuration--docs#lists) in Theme and Configuration. To override the spacing for some lists only, register a rule scoped to a type, depth or variant modifier of the list with `{ inline: true }`, so that it also reaches Outlook. See [Spacing per Variant](#spacing-per-variant).
+
+### Spacing per Variant
+
+`theme.list` applies to every list. For one variant, scope a rule to that variant's modifier on the list table:
+
+```tsx
+registerStyles(
+    css`
+        .richTextBlock__list--variantCopySmall .richTextBlock__listItem--itemSpacing > td {
+            padding-bottom: 4px !important;
+        }
+
+        .richTextBlock__list--variantCopySmall .richTextBlock__listItemMarker {
+            padding-right: 8px !important;
+        }
+    `,
+    { inline: true },
+);
+```
+
+- A row with `richTextBlock__listItem--itemSpacing` carries `list.itemSpacing` as `padding-bottom` on both of its cells. Target `> td` to keep the marker level with the text. The last row of a list carries no such class, so the spacing below the list stays with the theme.
+- The marker cell carries `list.markerGap` as `padding-right`, and `list.indent` as `padding-left`.
+- `{ inline: true }` writes the declaration into each cell's `style` attribute at compile time, which Outlook needs. Every rule needs `!important`, because the cells carry their own spacing inline.
+
+### Empty Content and Spacing
+
 - Empty text blocks are skipped. When the data contains no text at all, the block renders nothing.
-- Spacing between text blocks comes from the theme's `bottomSpacing` (the last block gets none); headings are styled text, not semantic `<h1>` elements.
-- Rendered elements carry `richTextBlock__text`, `richTextBlock__list`, `richTextBlock__listItem`, `richTextBlock__listItemMarker`, `richTextBlock__listItemText`, and `richTextBlock__link` class names for targeting with `registerStyles`. The list table also carries `richTextBlock__list--ordered` or `richTextBlock__list--unordered`, and `richTextBlock__list--depth<Level>` naming its nesting level, counting the outermost as zero, with `richTextBlock__list--nested` on every level below that one. The outermost table also names the text variant of its items, such as `richTextBlock__list--variantBody`, and each row names the variant of its own item, such as `richTextBlock__listItem--variantBody`. The rows carry `richTextBlock__listItem--itemSpacing`, or `richTextBlock__listItem--blockSpacing` on the last row when spacing follows the list, and `richTextBlock__listItem--itemSpacingAbove` on a nested level's first row, which carries the item spacing as `padding-top`. The cells restate the text styles inline, so a rule targeting list text needs `!important`.
+- Spacing between text blocks comes from the theme's `bottomSpacing`. The last block gets none.
+- Headings are styled text, not semantic `<h1>` elements.
 
-### Tip-Tap content
+### CSS Class Names
+
+Use these class names to target the rendered elements with `registerStyles`. The cells restate the text styles inline, so a rule that targets list text needs `!important`.
+
+| Class name                                    | Set on                                                                           |
+| --------------------------------------------- | -------------------------------------------------------------------------------- |
+| `richTextBlock__text`                         | each text element                                                                |
+| `richTextBlock__link`                         | each link                                                                        |
+| `richTextBlock__list`                         | each list table                                                                  |
+| `richTextBlock__list--ordered`, `--unordered` | each list table, by list kind                                                    |
+| `richTextBlock__list--depth<Level>`           | each list table, by nesting level; the outermost list is `0`                     |
+| `richTextBlock__list--nested`                 | each list table below the outermost one                                          |
+| `richTextBlock__list--variant<Variant>`       | the outermost list table, by the text variant of its items, e.g. `--variantBody` |
+| `richTextBlock__listItem`                     | each list row                                                                    |
+| `richTextBlock__listItem--variant<Variant>`   | each list row, by the text variant of its item, e.g. `--variantBody`             |
+| `richTextBlock__listItem--itemSpacing`        | each row followed by an item                                                     |
+| `richTextBlock__listItem--blockSpacing`       | the last row, when spacing follows the list                                      |
+| `richTextBlock__listItem--itemSpacingAbove`   | the first row of a nested level; carries the item spacing as `padding-top`       |
+| `richTextBlock__listItemMarker`               | the marker cell                                                                  |
+| `richTextBlock__listItemText`                 | the text cell                                                                    |
+
+### Tip-Tap Content
 
 Options of `createTipTapRichTextBlock`:
 
-- `textBlockStyles` — text styles per style the content editor picks.
+- `textBlockStyles` — text styles per style the content editor picks. The keys are the `name` values of the `styles` that the CMS `createTipTapRichTextBlock` in the admin declares for text blocks and lists.
 - `textBlocks` — text styles per text block or list for text without a style. Only needed when that text must look different from the theme's `text.defaultVariant`, e.g. `{ "unordered-list": { variant: "list" } }`.
 - `marks` — renderers for Tip-Tap's marks. `bold`, `italic`, `underline`, `strike`, `superscript` and `subscript` are built in.
 - `inlineStyles` — renderers for the inline styles the app declares in the CMS block's `inlineStyles` option.
-- `linkTypes` — see _Links_ above.
+- `linkTypes` — see [Links](#links).
 
 Rendering:
 
@@ -166,28 +283,26 @@ Rendering:
 - **Placeholders render as their literal `{{name}}` text**, for the sending system to substitute. Declare them in the CMS block's `placeholders` option instead of letting authors type the braces.
 - **Child blocks don't render in the mail**, so don't enable `childBlocks` on a CMS block that mails use.
 
-### Draft-js content
+### Draft-js Content
 
 Options of `createRichTextBlock`:
 
 - `blockTypes` — text styles per draft block type, plus a `list` kind.
 - `inline` — renderers for draft-js inline styles, including the custom ones from `customInlineStyles` on `IRteOptions`. `BOLD`, `ITALIC`, `SUB`, `SUP` and `STRIKETHROUGH` are built in.
-- `linkTypes` — see _Links_ above.
+- `linkTypes` — see [Links](#links).
 
 Lists:
 
 - **A block type is a list when it declares a kind**: `{ variant: "copyLarge", list: "unordered" }`. `unordered-list-item` and `ordered-list-item` are draft-js's own list types and default to their kind. Every other block type is a paragraph unless it sets `list`.
-- A list in a second text variant needs a custom block type.
 - Two adjacent list block types render as two lists, and the numbered one starts again at `1.`
-- Draft-js indents `unordered-list-item` and `ordered-list-item` only, so a content editor cannot nest a custom list block type.
 
-## Custom List Block Types
+#### Custom List Block Types (draft-js)
 
 A list in a second text variant needs a custom block type, for example `unordered-list-item-small`. Register it in the admin RTE and in the mail block.
 
-### 1. Admin RTE
+##### 1. Admin RTE
 
-Add the block type to `rte.blocktypeMap` on the CMS `createRichTextBlock`. For the surrounding options, see the `dextinity-block` skill's [rich-text reference](https://github.com/vivid-planet/dextinity/blob/main/skills/dextinity-block/references/rich-text.md).
+Add the block type to `rte.blocktypeMap` in the options of `createRichTextBlock` from `@dextinity/cms-admin`. Optional: the `dextinity-block` skill's [rich-text reference](https://github.com/vivid-planet/dextinity/blob/main/skills/dextinity-block/references/rich-text.md) describes the other `rte` options.
 
 ```tsx
 blocktypeMap: {
@@ -219,7 +334,7 @@ blocktypeMap: {
 - Set `element` to the plain string `"li"`. A component in its place loses draft-js's list styling.
 - Do not set `supportedBy` on a custom block type. Its values are a closed union, and a block type without it is always available.
 
-### 2. Mail block
+##### 2. Mail Block
 
 Map the same names in `createRichTextBlock`, each with its list kind and a theme text variant:
 
@@ -236,31 +351,64 @@ const { MjmlRichTextBlock } = createRichTextBlock({
 
 The variant must exist in `text.variants` and in the `TextVariants` module augmentation. `unordered-list-item` and `ordered-list-item` take no `list`.
 
-### Spacing per variant
-
-`theme.list` applies to every list. For one variant, scope a rule to that variant's modifier on the list table:
-
-```tsx
-registerStyles(
-    css`
-        .richTextBlock__list--variantCopySmall .richTextBlock__listItem--itemSpacing > td {
-            padding-bottom: 4px !important;
-        }
-
-        .richTextBlock__list--variantCopySmall .richTextBlock__listItemMarker {
-            padding-right: 8px !important;
-        }
-    `,
-    { inline: true },
-);
-```
-
-- A row with `richTextBlock__listItem--itemSpacing` carries `list.itemSpacing` as `padding-bottom` on both of its cells. Target `> td` to keep the marker level with the text. The last row of a list carries no such class, so the spacing below the list stays with the theme.
-- The marker cell carries `list.markerGap` as `padding-right`, and `list.indent` as `padding-left`.
-- `{ inline: true }` writes the declaration into each cell's `style` attribute at compile time, which Outlook needs. Every rule needs `!important`, because the cells carry their own spacing inline.
-
-### Limits
+##### Limits
 
 - An editor cannot indent a custom list block type. Draft-js and the RTE's indent controls handle `unordered-list-item` and `ordered-list-item` only.
 - A nested level takes the font styles of the list that contains it. It cannot have its own variant.
 - A custom ordered list uses the browser's `<ol>` numbering in the editor, not draft-js's counters.
+
+## Block Preview in the Admin
+
+Wrap each mail block in `withPreview` and put the `className` it passes on the component that spans the whole block, usually the outer `MjmlSection`:
+
+```tsx
+import { MjmlColumn, MjmlSection, MjmlText, type PropsWithData, withPreview } from "@dextinity/mail-react";
+import type { MailTextBlockData } from "@src/blocks.generated";
+
+export const MailTextBlock = withPreview<PropsWithData<MailTextBlockData>>(
+    ({ data, className }) => (
+        <MjmlSection className={className}>
+            <MjmlColumn>
+                <MjmlText>{data.text}</MjmlText>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+    { label: "Text" },
+);
+```
+
+- The rich-text components have no root element of their own. For a rich text inside a column, pass the `className` to the `textClassName` of `MjmlRichTextBlock` or `MjmlTipTapRichTextBlock`, which puts it on each of their text elements.
+- Register a block without data of its own with its data anyway, `divider: (data) => <MailDividerBlock data={data} />`. In the block preview, the admin adds the block's route to the data.
+- The block preview page renders the mail on the client and puts the ref from `useRefToRegisterMailBlocksForPreview(useIFrameBridge())` on the element that contains the mail HTML. Pass the whole mail, with its root and `config`, as `mail`:
+
+```tsx
+import { useRefToRegisterMailBlocksForPreview } from "@dextinity/mail-react";
+import { useIFrameBridge } from "@dextinity/site-nextjs";
+import { type FC, type ReactElement, useEffect, useState } from "react";
+
+interface Props {
+    mail: ReactElement;
+    /** Applied to the rendered HTML, for mails whose placeholders need substituting before display. */
+    transformHtml?: (html: string) => string;
+}
+
+export const RenderedMailForBlockPreview: FC<Props> = ({ mail, transformHtml }) => {
+    const [mailHtml, setMailHtml] = useState<string>("");
+    const mailContainerRef = useRefToRegisterMailBlocksForPreview<HTMLSpanElement>(useIFrameBridge());
+
+    useEffect(() => {
+        (async () => {
+            const { renderMailHtml } = await import("@dextinity/mail-react/client");
+            const { html, mjmlWarnings } = renderMailHtml(mail);
+
+            if (process.env.NODE_ENV === "development" && mjmlWarnings.length) {
+                console.warn(`${mjmlWarnings.length} MJML warnings`, mjmlWarnings);
+            }
+
+            setMailHtml(transformHtml ? transformHtml(html) : html);
+        })();
+    }, [mail, transformHtml]);
+
+    return <span ref={mailContainerRef} dangerouslySetInnerHTML={{ __html: mailHtml }} />;
+};
+```

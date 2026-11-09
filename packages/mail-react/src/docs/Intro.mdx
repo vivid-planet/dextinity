@@ -1,14 +1,17 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
-<Meta title="Docs/Intro" />
+<Meta
+    title="Docs/Intro"
+    summary="Start here: install, set up a project theme and the Storybook addon, write a first mail, render it in the Mail Templates Module, and find which page answers which question."
+/>
 
 # @dextinity/mail-react
 
-`@dextinity/mail-react` lets you build responsive, themed HTML emails using React components. Under the hood it uses [MJML](https://documentation.mjml.io/) to generate cross-client-compatible HTML. The library provides a theme system, higher-level wrapper components, a style utility layer, and Storybook integration for live previewing emails during development.
-
-This Storybook is for developing and previewing components in isolation. For the full guide — installation, the theme system, MJML layout rules, and integrating with the Mail Templates Module — see the [Building HTML Emails](https://cms-docs.dextinity.com/docs/features-modules/building-html-emails/) documentation.
+`@dextinity/mail-react` builds responsive, themed HTML emails from React components, and uses [MJML](https://documentation.mjml.io/) to generate HTML that works across mail clients. It adds a theme system, higher-level components, a style layer, and a Storybook addon that previews the mails.
 
 ## Installation
+
+Install the package in each project package that renders mails: `api` when it sends mails with the Mail Templates Module, and `site` when it renders mails too, for example for the block preview in the admin.
 
 ```sh
 npm install @dextinity/mail-react
@@ -18,6 +21,174 @@ npm install @dextinity/mail-react
 - `storybook` is an optional peer dependency, needed only for the Storybook addon.
 
 MJML (`mjml` and `mjml-browser`) comes with the package. A framework that bundles server code, such as Next.js, must list `mjml` in the application's own `package.json` too, or rendering fails at runtime. Nothing imports it directly, so add `mjml` to `ignoreDependencies` in `knip.json` rather than removing it as unused.
+
+## Getting Started
+
+These steps set up a project and send a first mail. Each step links to the page with the full reference.
+
+### Create the Project Theme
+
+Put the theme and its `declare module` blocks in one module. The mail code and `.storybook/preview.ts` both import it.
+
+```ts
+// src/mail/theme.ts
+import { createTheme } from "@dextinity/mail-react";
+
+export const theme = createTheme({
+    text: {
+        defaultVariant: "body",
+        variants: {
+            heading: { fontSize: "22px", lineHeight: "28px", fontWeight: "bold" },
+            body: { fontSize: "16px", lineHeight: "24px" },
+        },
+    },
+});
+
+declare module "@dextinity/mail-react" {
+    interface TextVariants {
+        heading: true;
+        body: true;
+    }
+}
+```
+
+See [Theme and Configuration](?path=/docs/docs-theme-and-configuration--docs#creating-a-theme) for all theme keys and variants.
+
+### Add the Storybook Addon
+
+Add the addon to `.storybook/main.ts`:
+
+```ts
+const config = {
+    addons: [
+        // ... other addons
+        "@dextinity/mail-react/storybook",
+    ],
+};
+```
+
+Set the project theme as a global parameter in `.storybook/preview.ts`. The addon wraps each story in `MjmlMailRoot` with this theme:
+
+```ts
+import type { Preview } from "@storybook/react-vite";
+
+import { theme } from "../src/mail/theme";
+
+const preview: Preview = {
+    parameters: { theme },
+};
+
+export default preview;
+```
+
+See [Rendering and Preview](?path=/docs/docs-rendering-and-preview--docs#setup) for what the addon adds, and [Story Parameters](?path=/docs/docs-rendering-and-preview--docs#story-parameters) for all parameters.
+
+### Write the First Mail and Its Story
+
+Write one project root component that sets the theme and the configuration. Every mail renders it:
+
+```tsx
+// src/mail/MailRoot.tsx
+import { type Config, MjmlMailRoot } from "@dextinity/mail-react";
+import type { PropsWithChildren } from "react";
+
+import { theme } from "./theme";
+
+export function MailRoot({ children, config }: PropsWithChildren<{ config?: Config }>) {
+    return (
+        <MjmlMailRoot theme={theme} config={config}>
+            {children}
+        </MjmlMailRoot>
+    );
+}
+```
+
+Pass `config` when the mail renders pixel-image blocks. See [Blocks](?path=/docs/docs-blocks--docs#configuration).
+
+The mail component renders its own root, because `generateMail` renders the mail component and nothing else:
+
+```tsx
+// src/mail/WelcomeMail.tsx
+import { MjmlColumn, MjmlSection, MjmlText } from "@dextinity/mail-react";
+
+import { MailRoot } from "./MailRoot";
+
+export type WelcomeMailProps = { recipient: { name: string; email: string } };
+
+export function WelcomeMail({ recipient }: WelcomeMailProps) {
+    return (
+        <MailRoot>
+            <MjmlSection indent>
+                <MjmlColumn>
+                    <MjmlText variant="heading" bottomSpacing>
+                        Hello {recipient.name}
+                    </MjmlText>
+                    <MjmlText>Welcome to our service.</MjmlText>
+                </MjmlColumn>
+            </MjmlSection>
+        </MailRoot>
+    );
+}
+```
+
+In its story, set `mailRoot: false`. Otherwise the addon wraps the mail in a second `MjmlMailRoot`:
+
+```tsx
+// src/mail/WelcomeMail.stories.tsx
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+import { WelcomeMail } from "./WelcomeMail";
+
+const config: Meta<typeof WelcomeMail> = {
+    title: "Mails/WelcomeMail",
+    component: WelcomeMail,
+    parameters: { mailRoot: false },
+};
+
+export default config;
+
+export const Default: StoryObj<typeof WelcomeMail> = {
+    args: { recipient: { name: "John Doe", email: "john.doe@example.com" } },
+};
+```
+
+The [Notification Email](?path=/story/examples-notification-email--default) story shows a complete mail with its own root. See [Components](?path=/docs/docs-components--docs) for the components to use in a mail.
+
+### Render It in the Mail Templates Module
+
+Call `renderMailHtml` in the `generateMail` method of the mail template class:
+
+```tsx
+async generateMail(props: WelcomeMailProps) {
+    const { renderMailHtml } = await import("@dextinity/mail-react/server");
+    const { html } = renderMailHtml(<WelcomeMail {...props} />);
+
+    return { mailTypeForLogging: "WelcomeMail", subject: "Welcome", to: props.recipient.email, html };
+}
+```
+
+See [Rendering and Preview](?path=/docs/docs-rendering-and-preview--docs#using-it-in-the-mail-templates-module) for the setup in the Mail Templates Module and for [logging MJML warnings](?path=/docs/docs-rendering-and-preview--docs#logging-mjml-warnings).
+
+## Where to Find What
+
+| Page                                                                          | Read it to                                                                                                                                 |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| [Email Basics](?path=/docs/docs-email-basics--docs)                           | learn the rules before you write mail markup: client research, the section → column → content model, ending tags, and inline-first styling |
+| [Email Client Pitfalls](?path=/docs/docs-email-client-pitfalls--docs)         | find the fix for a bug in one mail client                                                                                                  |
+| [Theme and Configuration](?path=/docs/docs-theme-and-configuration--docs)     | set up `createTheme`, variants, breakpoints, responsive values, colors, list tokens, scoped themes, and `Config`                           |
+| [Components](?path=/docs/docs-components--docs)                               | look up where a component may be placed, its CSS class names, and the MJML re-exports                                                      |
+| [Styling and Customization](?path=/docs/docs-styling-and-customization--docs) | add CSS with `registerStyles`, target the MJML output, name classes, and write a custom component                                          |
+| [Layout Patterns](?path=/docs/docs-layout-patterns--docs)                     | build column layouts with gaps and mobile stacking, and sections with a shared background                                                  |
+| [Dark Mode](?path=/docs/docs-dark-mode--docs)                                 | keep backgrounds, logos, lines, and colors readable in dark mode                                                                           |
+| [Blocks](?path=/docs/docs-blocks--docs)                                       | render Dextinity CMS block data and show the block preview in the admin                                                                    |
+| [Rendering and Preview](?path=/docs/docs-rendering-and-preview--docs)         | render HTML on the server or client, preview mails in Storybook, and test in real mail clients                                             |
+
+| Story group     | Contains                                                                                   |
+| --------------- | ------------------------------------------------------------------------------------------ |
+| Examples        | Complete mails, such as a notification mail and footers with their own background or theme |
+| Layout Patterns | The column layouts from the Layout Patterns page, with their stacking CSS                  |
+| Components      | One page per component, with its props and stories                                         |
+| Blocks          | The pixel-image and rich-text block components with sample block data                      |
 
 ## MCP
 

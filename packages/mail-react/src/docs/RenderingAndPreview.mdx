@@ -1,8 +1,15 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
-<Meta title="Docs/Rendering and Preview" />
+<Meta
+    title="Docs/Rendering and Preview"
+    summary="renderMailHtml on the server or client, use in the Mail Templates Module, MJML warnings, the Storybook addon and its story parameters, and cross-client testing."
+/>
 
 # Rendering and Preview
+
+This page shows how to render a mail to HTML, and how to preview and test it.
+
+## Rendering to HTML
 
 Use `renderMailHtml` to convert the React tree to final HTML for sending:
 
@@ -26,8 +33,24 @@ const { html, mjmlWarnings } = renderMailHtml(
 - `renderMailHtml` is **not** on the main `@dextinity/mail-react` barrel — always import from `/server` or `/client`
 - Returns `{ html: string; mjmlWarnings: MjmlWarning[] }` — warnings are collected, not thrown
 - The server `renderMailHtml` turns off `mj-include` by default, because an include can read files on the server. To use it, pass `{ ignoreIncludes: false }`.
+- Outside Storybook, wrap the content in `MjmlMailRoot` yourself. In Storybook, the decorator does it for you.
 
-With the [Mail Templates Module](https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/), call `renderMailHtml` in the `generateMail` method of the `.mail.tsx` file. See [Using React](https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/#using-react) for a complete example.
+## Using It in the Mail Templates Module
+
+With the [Mail Templates Module](https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/), call `renderMailHtml` in the `generateMail` method of the `.mail.tsx` file. See [Create a mail template class](https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/#create-a-mail-template-class) for a complete example.
+
+Import the server renderer inside `generateMail`, not at the top of the file. Then the API does not load MJML and jsdom at startup, only when it renders a mail:
+
+```tsx
+async generateMail(props: MailProps) {
+    const { renderMailHtml } = await import("@dextinity/mail-react/server");
+
+    const { html, mjmlWarnings } = renderMailHtml(<Mail {...props} />);
+    // ...
+}
+```
+
+If the mail renders pixel-image blocks, pass `config` to `MjmlMailRoot`. Without `config.pixelImageBlock`, these blocks throw an error. See [Blocks › Configuration](?path=/docs/docs-blocks--docs#configuration).
 
 ## Logging MJML Warnings
 
@@ -41,36 +64,11 @@ if (process.env.NODE_ENV === "development" && mjmlWarnings.length) {
 }
 ```
 
-**Never log MJML warnings in production.** These warnings flag structural MJML issues (e.g., content outside the section → column → content hierarchy) and are useful during development, but the rendered HTML is always produced successfully regardless of warnings. In rare cases, achieving a specific layout intentionally requires a technically invalid MJML structure — logging these in production would spam error trackers like Sentry with noise that cannot be acted upon.
-
-Outside Storybook, wrap content in `MjmlMailRoot` yourself (the Storybook decorator handles it automatically).
+**Never log MJML warnings in production.** The warnings flag structural MJML issues, such as content outside the section → column → content hierarchy. The HTML is always rendered, also when there are warnings. Some layouts need a technically invalid MJML structure on purpose. In production, these warnings only add noise to error trackers such as Sentry.
 
 ## Block Preview in the Admin
 
-Wrap each mail block in `withPreview` and put the `className` it passes on the component that spans the whole block, usually the outer `MjmlSection`:
-
-```tsx
-export const MailTextBlock = withPreview<PropsWithData<MailTextBlockData>>(
-    ({ data, className }) => (
-        <MjmlSection className={className}>
-            <MjmlColumn>
-                <MjmlText>{data.text}</MjmlText>
-            </MjmlColumn>
-        </MjmlSection>
-    ),
-    { label: "Text" },
-);
-```
-
-- The rich-text components have no root element of their own: for a rich text inside a column, pass the `className` to the `textClassName` of `MjmlRichTextBlock` or `MjmlTipTapRichTextBlock`, which put it on each of their text elements.
-- Register a block without data of its own with its data anyway, `divider: (data) => <MailDividerBlock data={data} />`. In the block preview, the admin adds the block's route to the data.
-- The block preview page must put the ref from `useRefToRegisterMailBlocksForPreview(useIFrameBridge())` on the element that contains the mail HTML:
-
-    ```tsx
-    const mailContainerRef = useRefToRegisterMailBlocksForPreview<HTMLSpanElement>(useIFrameBridge());
-
-    return <span ref={mailContainerRef} dangerouslySetInnerHTML={{ __html: mailHtml }} />;
-    ```
+See [Blocks › Block Preview in the Admin](?path=/docs/docs-blocks--docs#block-preview-in-the-admin).
 
 ## Previewing in Storybook
 
@@ -116,7 +114,14 @@ export const Basic: StoryObj = {
 };
 ```
 
-Pass a custom theme via `parameters.theme`:
+### Story Parameters
+
+The decorator reads two parameters:
+
+- `theme` — the theme that the decorator passes to `MjmlMailRoot`. Without it, the default theme is used.
+- `mailRoot` — set it to `false` when the story renders its own `MjmlMailRoot`, for example a mail component that contains its project root. Then the decorator does not add a second root, and `theme` has no effect.
+
+Set `theme` on one story:
 
 ```tsx
 export const CustomTheme: StoryObj = {
@@ -131,14 +136,35 @@ export const CustomTheme: StoryObj = {
 };
 ```
 
+To use the project theme in all stories, set it in `.storybook/preview.ts`:
+
+```ts
+import type { Preview } from "@storybook/react-vite";
+
+import { theme } from "../src/mail/theme";
+
+const preview: Preview = {
+    parameters: { theme },
+};
+
+export default preview;
+```
+
+Set `mailRoot: false` on a story or on the whole file:
+
+```tsx
+const config: Meta = {
+    title: "Mails/WelcomeEmail",
+    parameters: { mailRoot: false },
+};
+```
+
 ### Development Workflow
 
 1. Write email templates as Storybook stories
 2. Preview rendered HTML in the Storybook canvas
 3. Check the **MJML Warnings** panel for validation issues
-4. Use **Copy Mail HTML** to test in external services (Litmus, Email on Acid)
-5. Enable **Use Public Image URLs** when testing on services that can't reach localhost (e.g., Litmus, Email on Acid)
 
-### Cross-Client Testing
+## Cross-Client Testing
 
 Storybook previews show how the email renders in a web browser, but email clients vary dramatically. Use services like [Litmus](https://www.litmus.com/) or [Email on Acid](https://www.emailonacid.com/) to test the rendered HTML across real email clients and devices. The **Copy Mail HTML** button and **Use Public Image URLs** toggle in Storybook are designed for this workflow.

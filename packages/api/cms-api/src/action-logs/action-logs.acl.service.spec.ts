@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { DiscoverService } from "../dependencies/discover.service";
 import { AbstractAccessControlService } from "../user-permissions/access-control.service";
 import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
+import { ScopedEntity } from "../user-permissions/decorators/scoped-entity.decorator";
 import { CurrentUser, CurrentUserPermission } from "../user-permissions/dto/current-user";
 import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
 import { UserPermissionsService } from "../user-permissions/user-permissions.service";
@@ -17,6 +18,7 @@ import { ActionLogsService } from "./action-logs.service";
 @Entity()
 @ActionLogs()
 @RequiredPermission("news" as Permission)
+@ScopedEntity(() => ({ domain: "main", language: "en" }))
 class News {
     @PrimaryKey()
     id: number;
@@ -82,7 +84,9 @@ const createAclService = ({
     const actionLogsService = new ActionLogsService(
         createMock(),
         createMock(),
-        createMock<DiscoverService>({ discoverTargetEntities: () => [News, Product, PublicEntity].map((entity) => ({ entity })) as never }),
+        createMock<DiscoverService>({
+            discoverTargetEntities: () => [News, Product, PublicEntity].map((entity) => ({ entity, metadata: { properties: {} } })) as never,
+        }),
     );
     actionLogsService.onModuleInit();
     return new ActionLogsAclService(

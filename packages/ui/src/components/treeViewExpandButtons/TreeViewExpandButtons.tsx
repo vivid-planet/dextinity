@@ -5,6 +5,13 @@ import { Icon } from "../icon/Icon";
 import { IconButton, type IconButtonProps } from "../iconButton/IconButton";
 import styles from "./TreeViewExpandButtons.module.scss";
 
+export type TreeViewExpandButtonsOwnerState = {
+    /** Whether "Expand all" is enabled. */
+    expandable: boolean;
+    /** Whether "Collapse all" is enabled. */
+    collapsible: boolean;
+};
+
 export interface TreeViewExpandButtonsLabels {
     /** The accessible name and tooltip of the button that expands every node. */
     expandAll: string;
@@ -57,9 +64,16 @@ export const TreeViewExpandButtons = forwardRef<HTMLDivElement, TreeViewExpandBu
     ref,
 ) {
     const labels = { ...defaultLabels, ...labelsProp };
+    const ownerState: TreeViewExpandButtonsOwnerState = { expandable: !expandAllDisabled, collapsible: !collapseAllDisabled };
 
     return (
-        <div {...restProps} ref={ref} className={clsx(styles.root, className)}>
+        <div
+            {...restProps}
+            ref={ref}
+            data-expandable={ownerState.expandable ? "" : undefined}
+            data-collapsible={ownerState.collapsible ? "" : undefined}
+            className={clsx(styles.root, className)}
+        >
             <IconButton
                 variant="text"
                 color="secondary"

@@ -13,7 +13,10 @@ describe("TreeViewExpandButtons", () => {
             <TreeViewExpandButtons onExpandAll={noop} onCollapseAll={noop} collapseAllDisabled labels={{ expandAll: "Alle aufklappen" }} />,
         );
 
-        expect((container.firstElementChild as HTMLElement).className).toContain("dextinityTreeViewExpandButtons");
+        const root = container.firstElementChild as HTMLElement;
+        expect(root.className).toContain("dextinityTreeViewExpandButtons");
+        expect(root.hasAttribute("data-expandable")).toBe(true);
+        expect(root.hasAttribute("data-collapsible")).toBe(false);
         expect(screen.getByRole("button", { name: "Alle aufklappen" }).className).toContain("dextinityTreeViewExpandButtons__expandAllButton");
         const collapseAll = screen.getByRole("button", { name: "Collapse all" });
         expect(collapseAll.className).toContain("dextinityTreeViewExpandButtons__collapseAllButton");

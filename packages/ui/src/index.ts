@@ -231,7 +231,11 @@ export { type TreeDetailLayoutSlotProps } from "./components/treeDetailLayout/Tr
 export { type TreeNode, TreeView, type TreeViewLabels, type TreeViewMove, type TreeViewSlotProps } from "./components/treeView/TreeView";
 export { defaultTreeViewLabels, getExpandableTreeNodeIds, type TreeViewOwnerState, type TreeViewProps } from "./components/treeView/TreeView";
 export { TreeViewExpandButtons, type TreeViewExpandButtonsLabels } from "./components/treeViewExpandButtons/TreeViewExpandButtons";
-export { type TreeViewExpandButtonsProps, type TreeViewExpandButtonsSlotProps } from "./components/treeViewExpandButtons/TreeViewExpandButtons";
+export {
+    type TreeViewExpandButtonsOwnerState,
+    type TreeViewExpandButtonsProps,
+    type TreeViewExpandButtonsSlotProps,
+} from "./components/treeViewExpandButtons/TreeViewExpandButtons";
 export { Typography, type TypographyOwnerState, type TypographyProps } from "./components/typography/Typography";
 export { type UndoableAction, type UndoToastLabels, type UndoToastOptions, useUndoToast } from "./components/undoToast/useUndoToast";
 export { UserMenu, type UserMenuLabels, type UserMenuOwnerState, type UserMenuProps } from "./components/userMenu/UserMenu";

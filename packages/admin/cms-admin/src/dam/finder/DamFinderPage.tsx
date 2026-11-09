@@ -7,6 +7,7 @@ import {
     ConfirmDialog,
     FinderLayout,
     Icon,
+    MenuItem,
     PageHeader,
     QuickLook,
     type QuickLookItem,
@@ -569,6 +570,20 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
             .filter((part) => part != null)
             .join(" · "),
     }));
+    const contextMenuItems = (ids: string[]) => {
+        const fileEditUrl = ids.length === 1 && fileById.has(ids[0]) ? editFileUrl?.(ids[0]) : undefined;
+        if (fileEditUrl == null) {
+            return null;
+        }
+        return (
+            <MenuItem
+                label={intl.formatMessage({ id: "dextinity.damFinder.contextMenu.edit", defaultMessage: "Edit" })}
+                icon={<Icon name="edit" />}
+                onClick={() => history.push(fileEditUrl)}
+            />
+        );
+    };
+
     const quickLookFile = quickLookIndex != null ? currentFiles[quickLookIndex] : undefined;
     const quickLookEditUrl = quickLookFile != null ? editFileUrl?.(quickLookFile.id) : undefined;
     const renderQuickLookPreview = (item: QuickLookItem) => {
@@ -716,6 +731,7 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
                             onQuickLook={(asset) => openQuickLook(asset.id)}
                             onMove={handleMove}
                             onDelete={setPendingDeleteIds}
+                            contextMenuItems={contextMenuItems}
                             scrollToItemId={scrollToItemId}
                             search={search}
                             onSearchChange={setSearch}

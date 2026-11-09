@@ -1,3 +1,5 @@
+"use client";
+
 import { isWithPreviewPropsData, type PropsWithData, usePreview, withPreview } from "@dextinity/site-nextjs";
 import type { AccordionBlockData } from "@src/blocks.generated";
 import { AccordionItemBlock } from "@src/common/blocks/AccordionItemBlock";

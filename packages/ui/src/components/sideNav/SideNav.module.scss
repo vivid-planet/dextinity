@@ -75,6 +75,8 @@
 }
 
 .scroll {
+    // Contains the visually hidden group labels of the collapsed rail, which would otherwise extend the window's scroll height
+    position: relative;
     flex: 1;
     min-block-size: 0;
     padding: 2px 12px 12px;

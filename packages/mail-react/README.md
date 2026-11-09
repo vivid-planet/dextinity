@@ -55,11 +55,10 @@ When a custom component replaces a re-export, describe the change against the pr
 
 ## Usage documentation
 
-Two artifacts document how to _use_ this package, for two readers:
+The MDX pages in [src/docs/](src/docs/) are the guide to _using_ this package: what it is for, how to build emails with it, the patterns to reach for, and the email-client pitfalls — markup that's fine in a browser can render wrong in clients like Outlook. People read them in the Storybook, and AI agents through its MCP server. The component pages and their props come from the stories and the TSDoc, so the guide doesn't restate type signatures, prop lists, or defaults.
 
-- **Docs** — [docs/docs/3-features-modules/13-building-html-emails/](../../docs/docs/3-features-modules/13-building-html-emails/) — for people building emails with the package.
-- **Agent skill** — [skills/dextinity-mail-react/SKILL.md](../../skills/dextinity-mail-react/SKILL.md) — the same guidance for AI agents working in a project that uses this package.
+Put every code example in a fenced code block or a `<Source code="…">` string, not in `<Canvas of>` or an import.
 
-Both teach the same things: what the package is for, how to build emails with it, the patterns to reach for, and the email-client pitfalls — markup that's fine in a browser can render wrong in clients like Outlook. They differ in one respect — an agent already has the package's types and TSDoc in its project, so the skill doesn't restate type signatures, prop lists, or defaults; those live in the types and TSDoc, and it spends its words on everything they can't convey on their own.
+When a change affects how the package is used — components added/removed/renamed, changed behavior, new usage patterns, or styling conventions — update the pages in the same PR.
 
-When a change affects how the package is used — components added/removed/renamed, changed behavior, new usage patterns, or styling conventions — update both in the same PR; consider a separate docs commit so reviewers can take them on their own.
+The [docs site page](../../docs/docs/3-features-modules/13-building-html-emails/index.md) and the [`dextinity-mail-react` skill](../../skills/dextinity-mail-react/SKILL.md) only point to the Storybook.

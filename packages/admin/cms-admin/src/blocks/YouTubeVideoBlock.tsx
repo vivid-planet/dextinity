@@ -98,7 +98,10 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
                         <PixelImageBlock.AdminComponent
                             state={state.previewImage}
                             updateState={(setStateAction) => {
-                                updateState({ ...state, previewImage: resolveNewState({ prevState: state.previewImage, setStateAction }) });
+                                updateState((prevState) => ({
+                                    ...prevState,
+                                    previewImage: resolveNewState({ prevState: prevState.previewImage, setStateAction }),
+                                }));
                             }}
                         />
                     </BlockAdminComponentSection>

@@ -7,7 +7,6 @@ const docsLink = "https://cms-docs.dextinity.com/docs/faqs/environment-variables
 export default defineConfig([
     globalIgnores([
         "**/**/*.generated.ts",
-        "dist/**",
         "lang/**",
         "lang-compiled/**",
         "lang-extracted/**",

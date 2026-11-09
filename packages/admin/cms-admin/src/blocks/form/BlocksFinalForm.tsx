@@ -1,28 +1,46 @@
 import { FinalFormContextProvider, type FinalFormContextProviderProps, renderFinalFormChildren } from "@dextinity/admin";
-import type { JSX } from "react";
+import { type JSX, useEffect, useLayoutEffect, useRef } from "react";
 import { flushSync } from "react-dom";
-import { type AnyObject, Form, type FormProps, type FormRenderProps, FormSpy } from "react-final-form";
+import { type AnyObject, Form, type FormProps, type FormRenderProps, useForm, useFormState } from "react-final-form";
 
 interface AutoSaveSpyProps<FormValues> {
     onSubmit: FormProps<FormValues>["onSubmit"];
 }
 function AutosaveSpy<FormValues>({ onSubmit }: AutoSaveSpyProps<FormValues>) {
-    return (
-        <FormSpy<FormValues> subscription={{ dirty: true }}>
-            {({ form, dirty }) => {
-                if (dirty) {
-                    // works around endless loop when using setState from inside render
-                    setTimeout(() => {
-                        flushSync(() => {
-                            form.submit(); // to show validation errors, form.submit does not update anything
-                            onSubmit(form.getState().values, form); // call passed onSubmit manually, also when validation errors are present
-                        });
-                    }, 1);
-                }
-                return null;
-            }}
-        </FormSpy>
-    );
+    const form = useForm<FormValues>();
+    const { dirty, values } = useFormState<FormValues>({ subscription: { dirty: true, values: true } });
+    const onSubmitRef = useRef(onSubmit);
+    const pendingSubmitTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+    const lastSubmittedValuesRef = useRef<FormValues>(undefined);
+
+    useLayoutEffect(() => {
+        onSubmitRef.current = onSubmit;
+    });
+
+    useEffect(() => {
+        if (!dirty || pendingSubmitTimeoutRef.current !== undefined) {
+            return;
+        }
+
+        // The timeout isn't cleared on unmount so that a change made right before closing the block is still saved
+        pendingSubmitTimeoutRef.current = setTimeout(() => {
+            pendingSubmitTimeoutRef.current = undefined;
+
+            const latestValues = form.getState().values;
+            // The form stays dirty when the parent doesn't reinitialize it with the submitted values
+            if (latestValues === lastSubmittedValuesRef.current) {
+                return;
+            }
+            lastSubmittedValuesRef.current = latestValues;
+
+            flushSync(() => {
+                form.submit(); // to show validation errors, form.submit does not update anything
+                onSubmitRef.current(latestValues, form); // call passed onSubmit manually, also when validation errors are present
+            });
+        }, 1);
+    }, [dirty, values, form]);
+
+    return null;
 }
 
 const noop = () => {

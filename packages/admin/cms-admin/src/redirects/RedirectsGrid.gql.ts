@@ -14,6 +14,7 @@ const redirectTableFragment = gql`
         target
         comment
         generationType
+        redirectType
         ...RedirectActiveness
     }
     ${redirectActivenessFragment}

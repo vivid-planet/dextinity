@@ -3,20 +3,33 @@ import { describe, expect, it } from "vitest";
 import { FocalPoint } from "../../../file-utils/focal-point.enum";
 import type { DamConfig } from "../../dam.config";
 import type { FileInterface } from "../../files/entities/file.entity";
+import type { ImageCropArea } from "../entities/image-crop-area.entity";
 import { ImagesService } from "../images.service";
 
 function createImagesService(config: Partial<DamConfig> = {}) {
     return new ImagesService({ secret: "secret", basePath: "dam", ...config } as DamConfig);
 }
 
-function createImageFile({ name, mimetype }: { name: string; mimetype: string }) {
+function createImageFile({
+    name,
+    mimetype,
+    cropArea = { focalPoint: FocalPoint.SMART },
+}: {
+    name: string;
+    mimetype: string;
+    cropArea?: Partial<ImageCropArea>;
+}) {
     return {
         id: "11111111-1111-1111-1111-111111111111",
         name,
         mimetype,
         contentHash: "0123456789abcdef0123456789abcdef",
-        image: { width: 4000, height: 2000, cropArea: { focalPoint: FocalPoint.SMART } },
+        image: { width: 4000, height: 2000, cropArea },
     } as FileInterface;
+}
+
+function cropSegment(urlTemplate: string): string {
+    return urlTemplate.split("/").find((segment) => segment.startsWith("crop:")) as string;
 }
 
 describe("ImagesService.createUrlTemplate", () => {
@@ -45,5 +58,34 @@ describe("ImagesService.createUrlTemplate", () => {
         const imagesService = createImagesService({ includeFormatExtensionInImageUrls: true });
 
         expect(imagesService.createUrlTemplate({ file }, { previewDamUrls: true })).toMatch(/^\/dam\/images\/preview\/.*\/photo\.png$/);
+    });
+
+    it("uses the given crop area", () => {
+        const file = createImageFile({ name: "photo.png", mimetype: "image/png" });
+        const cropArea = { focalPoint: FocalPoint.CENTER, width: 50, height: 25, x: 10, y: 5 };
+
+        expect(cropSegment(createImagesService().createUrlTemplate({ file, cropArea }, {}))).toBe("crop:50:25:CENTER:10:5");
+    });
+
+    it("uses the DAM crop area when none is given", () => {
+        const file = createImageFile({
+            name: "photo.png",
+            mimetype: "image/png",
+            cropArea: { focalPoint: FocalPoint.NORTHWEST, width: 80, height: 60, x: 0, y: 0 },
+        });
+
+        expect(cropSegment(createImagesService().createUrlTemplate({ file }, {}))).toBe("crop:80:60:NORTHWEST:0:0");
+    });
+
+    // Crop areas without dimensions can't be applied and would result in an URL the image route rejects
+    it("falls back to the DAM crop area when the given one is unusable", () => {
+        const file = createImageFile({
+            name: "photo.png",
+            mimetype: "image/png",
+            cropArea: { focalPoint: FocalPoint.NORTHWEST, width: 80, height: 60, x: 0, y: 0 },
+        });
+        const cropArea = { focalPoint: FocalPoint.CENTER, x: 86, y: 78 };
+
+        expect(cropSegment(createImagesService().createUrlTemplate({ file, cropArea }, {}))).toBe("crop:80:60:NORTHWEST:0:0");
     });
 });

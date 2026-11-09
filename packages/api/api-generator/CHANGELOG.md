@@ -1,5 +1,36 @@
 # @comet/api-generator
 
+## 10.14.0
+
+### Patch Changes
+
+- Updated dependencies [bbd5b81]
+- Updated dependencies [5db7734]
+- Updated dependencies [a5e4799]
+- Updated dependencies [1595266]
+    - @dextinity/cms-api@10.14.0
+
+## 10.13.1
+
+### Patch Changes
+
+- 9f07f46: Keep `generate --watch` running when generating a changed entity fails
+
+    Previously, the failure caused an unhandled promise rejection that terminated the watcher instead of logging the error.
+
+- Updated dependencies [795901f]
+- Updated dependencies [94991f8]
+    - @dextinity/cms-api@10.13.1
+
+## 10.13.0
+
+### Patch Changes
+
+- Updated dependencies [7d8cbff]
+- Updated dependencies [ad3f6d5]
+- Updated dependencies [a476170]
+    - @dextinity/cms-api@10.13.0
+
 ## 10.12.0
 
 ### Patch Changes

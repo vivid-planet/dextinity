@@ -1,5 +1,132 @@
 # @comet/cms-api
 
+## 10.14.0
+
+### Minor Changes
+
+- bbd5b81: Add default descriptions to `createOneOfBlock`, `createLinkBlock`, `createListBlock`, `createBlocksBlock` and `createOptionalBlock`
+
+    The descriptions state the rules of the block input that the fields in `block-meta.json` don't show, for instance that `activeType` of a one-of block must name an entry in `attachedBlocks`.
+    This lets tools outside the admin, such as AI agents, build valid input for these blocks from the block meta alone.
+    Pass `description` in the options to replace the default:
+
+    ```ts
+    createListBlock({ block: TeaserItemBlock }, { name: "Teaser", description: "Teaser items, shown side by side." });
+    ```
+
+- 5db7734: Add an optional redirect type to choose between temporary and permanent redirects
+
+    Redirects have a new `redirectType` field (`temporary` or `permanent`), which defaults to `temporary` for new and existing redirects.
+    The site must handle the redirect type, so the setting is hidden in the admin by default. To enable it, first respect the redirect type in the site:
+
+    ```tsx
+    const { redirectBySource } = await graphQLFetch(/* query including redirectBySource { target redirectType } */);
+
+    if (redirectBySource.redirectType === "permanent") {
+        permanentRedirect(destination); // 308
+    } else {
+        redirect(destination); // 307
+    }
+    ```
+
+    Then enable the setting in the admin:
+
+    ```tsx title="App.tsx"
+    <DextinityConfigProvider
+        redirects={{
+            scopeParts: ["domain"],
+            enableRedirectType: true,
+        }}
+    >
+    ```
+
+    The redirect type only applies to path redirects.
+
+- 1595266: Add a `textAlign` option to `createTipTapRichTextBlock`
+
+    Editors can align paragraphs and headings left, center, right, or justified, using the toolbar or the shortcuts `Mod-Shift-L`, `Mod-Shift-E`, `Mod-Shift-R`, and `Mod-Shift-J`.
+    The alignment is stored in the text block's `textAlign` attribute.
+    The option is disabled by default and must be enabled in both the API and the Admin:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: true });
+    ```
+
+    To enable only some of the alignments, pass an object:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: { left: true, center: true } });
+    ```
+
+    `renderTipTapRichText` renders the alignment as the text block's `text-align` style.
+    A custom `textBlock` handler has to apply `node.attrs.textAlign` itself.
+
+### Patch Changes
+
+- a5e4799: Support `@sentry/node` v10 and v11
+
+    The peer dependency now allows `^9.0.0 || ^10.0.0 || ^11.0.0`.
+
+    **Upgrading to v11**
+
+    Review the [Sentry v10 to v11 migration guide](https://github.com/getsentry/sentry-javascript/blob/master/MIGRATION.md) before upgrading. Changes that affect projects using `SentryModule`:
+
+    - `sendDefaultPii` was replaced by `dataCollection`, which collects more data by default (user info, cookies, request/response bodies and headers, database queries). Pass `dataCollection` to `SentryModule.forRootAsync()` to restrict it.
+    - `skipOpenTelemetrySetup` was replaced by `enableOpenTelemetrySetup` with inverted meaning.
+    - `Sentry.setupExpressErrorHandler(app)` is deprecated, but keep calling it. Sentry's automatic Express error capturing only works when Sentry is initialized before Express is loaded, and `SentryModule` initializes it afterwards.
+    - v11 supports self-hosted Sentry 26.4.2 or later.
+
+## 10.13.1
+
+### Patch Changes
+
+- 795901f: Support `@kubernetes/client-node` v2
+
+    The peer dependency now allows `^1.0.0 || ^2.0.0`. Note that v2 requires Node.js 22.19.0 or later.
+
+- 94991f8: Update `jose` to v6
+
+## 10.13.0
+
+### Minor Changes
+
+- 7d8cbff: Add `formatValidationErrors()` for readable validation errors
+
+    It turns the tree of class-validator errors into a list of `{ path, message }`, with paths like `content.blocks[3].props.height`, so that an API client, for instance an AI agent, can fix its input.
+    Use it, for instance, in a query that only validates an input:
+
+    ```ts
+    const errors = await validate(plainToInstance(PageInput, input), { whitelist: true, forbidNonWhitelisted: true });
+
+    return formatValidationErrors(errors);
+    // [{ path: "content.blocks[3].props.height", message: "height must be an integer number" }]
+    ```
+
+- ad3f6d5: Make blocking files with an invalid license opt-in with `blockFilesWithInvalidLicense`
+
+    A project decides whether files whose license has expired or isn't valid yet are blocked. While the option is off, which is the default, such files are delivered as before blocking was added: their URLs don't answer `410 Gone`, blocks don't hide them or replace them with the fallback image, and the DAM hides its "Settings" action, where the fallback image is chosen.
+
+    A project that blocks such files since blocking was added needs to enable the option in the API and in the Admin:
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            enableLicenseFeature: true,
+            blockFilesWithInvalidLicense: true,
+            // ...
+        },
+    });
+    ```
+
+    ```tsx
+    <DextinityConfigProvider dam={{ enableLicenseFeature: true, blockFilesWithInvalidLicense: true /* ... */ }}>
+    ```
+
+- a476170: Never treat a royalty-free license as expired or not valid yet
+
+    Switching a file's license from rights managed to royalty free keeps its duration. Such a file was still blocked once the duration ended: the DAM answered `410 Gone`, blocks replaced it with the invalid-license fallback image, and the warnings reported an expired license.
+    A royalty-free license now ignores its duration: `isLicenseValid` returns `true`, `expirationDate` is `null`, and no license warning is created.
+
 ## 10.12.0
 
 ### Minor Changes

@@ -29,5 +29,5 @@ slightly differ or behavior may not feel perfect. Depending on the feature or de
 Everything supported by the current version of the browsers above can be used.
 
 :::note
-HTML emails are not browsers. Email clients have their own, much smaller feature set — see [Building HTML Emails](../3-features-modules/13-building-html-emails/1-email-basics.md).
+HTML emails are not browsers. Email clients have their own, much smaller feature set — see [Building HTML Emails](../3-features-modules/13-building-html-emails/index.md).
 :::

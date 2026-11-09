@@ -1,7 +1,7 @@
 import { MjmlColumn, MjmlSection, MjmlSpacer, type PropsWithData, withPreview } from "@dextinity/mail-react";
 import type { MailSpacerBlockData } from "@src/blocks.generated";
 
-const spacingToHeight: Record<MailSpacerBlockData["spacing"], string> = {
+export const spacingToHeight: Record<MailSpacerBlockData["spacing"], string> = {
     small: "16px",
     medium: "32px",
     large: "48px",

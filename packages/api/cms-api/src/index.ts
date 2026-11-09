@@ -205,7 +205,7 @@ export { ImageCropAreaInput } from "./dam/images/dto/image-crop-area.input.js";
 export { ImageCropArea } from "./dam/images/entities/image-crop-area.entity.js";
 export { FileImagesResolver } from "./dam/images/file-image.resolver.js";
 export { ImagesService } from "./dam/images/images.service.js";
-export { calculateInheritAspectRatio } from "./dam/images/images.util.js";
+export { calculateInheritAspectRatio, isUsableCropArea } from "./dam/images/images.util.js";
 export { IsAllowedImageAspectRatio, IsAllowedImageAspectRatioConstraint } from "./dam/images/validators/is-allowed-aspect-ratio.validator.js";
 export { IsAllowedImageSize, IsAllowedImageSizeConstraint } from "./dam/images/validators/is-allowed-image-size.validator.js";
 export { IsValidImageAspectRatio, IsValidImageAspectRatioConstraint } from "./dam/images/validators/is-valid-aspect-ratio.validator.js";
@@ -280,7 +280,7 @@ export { PageExists, PageExistsConstraint } from "./page-tree/validators/page-ex
 export type { RedirectInterface } from "./redirects/entities/redirect-entity.factory.js";
 export type { RedirectTargetUrlServiceInterface } from "./redirects/redirect-target-url.service.js";
 export { REDIRECTS_LINK_BLOCK } from "./redirects/redirects.constants.js";
-export { RedirectGenerationType, RedirectSourceType } from "./redirects/redirects.enum.js";
+export { RedirectGenerationType, RedirectSourceType, RedirectType } from "./redirects/redirects.enum.js";
 export { type RedirectsLinkBlock, RedirectsModule } from "./redirects/redirects.module.js";
 export { createRedirectsResolver } from "./redirects/redirects.resolver.js";
 export { RedirectsService } from "./redirects/redirects.service.js";

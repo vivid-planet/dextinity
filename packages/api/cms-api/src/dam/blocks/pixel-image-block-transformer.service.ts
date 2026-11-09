@@ -5,6 +5,7 @@ import type { DamFileAiContentType } from "../files/entities/ai-content-type.enu
 import { FilesService } from "../files/files.service.js";
 import type { ImageCropArea } from "../images/entities/image-crop-area.entity.js";
 import { ImagesService } from "../images/images.service.js";
+import { isUsableCropArea } from "../images/images.util.js";
 import type { DamScopeInterface } from "../types.js";
 import type { PixelImageBlockData } from "./pixel-image.block.js";
 
@@ -52,7 +53,8 @@ export class PixelImageBlockTransformerService implements BlockTransformerServic
             return {};
         }
 
-        const image = await this.filesService.findImageToDeliver({ file: blockFile, cropArea: block.cropArea }, { previewDamUrls });
+        const blockCropArea = block.cropArea && isUsableCropArea(block.cropArea) ? block.cropArea : undefined;
+        const image = await this.filesService.findImageToDeliver({ file: blockFile, cropArea: blockCropArea }, { previewDamUrls });
 
         if (!image) {
             return {};

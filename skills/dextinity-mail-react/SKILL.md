@@ -263,10 +263,11 @@ Clients turn plain-text mail addresses, URLs and phone numbers into links of the
 
 ### Dark Mode Repaints Colors, Not Most Images
 
-In dark mode, Gmail iOS, Yahoo Mail on the web, classic Outlook, Outlook on the web, Outlook iOS and Outlook Mac change the colors of the mail but leave most images alone. So a color that must stay is safest inside an image. Gmail Android is the exception: it inverts images with few colors that it shows at about `64px` or less.
+In dark mode, Gmail iOS, Yahoo Mail on the web, classic Outlook, Outlook on the web, Outlook iOS and Outlook Mac change the colors of the mail but leave most images alone. So a color that must stay is safest inside an image. Gmail Android is the exception: it inverts images with few colors that phones show at about `55px` or less.
 
 - Keep a background color: set `background-color` and a `background-image` of a `100×100` px solid PNG in the same color. Use this technique behind images only, not behind text: some clients keep the background but still change the text color, so the text disappears.
 - Keep a logo readable: put a light background into the image file of the logo, not behind it. Some Gmail Android phones invert only the logo or only a separate background; in one image, both change together. On a dark section, put a background image in the section color behind the logo only, not behind the whole section (Gmail iOS, Outlook on the web).
+- Keep a line visible: draw it as a border on a cell with a light background, not as a dark background like `MjmlDivider` and `HtmlDivider` do.
 - Classic Outlook ignores CSS background images; use a VML shape with `fillcolor` there.
 
 → For per-client behavior, placement rules and size limits, read [`references/dark-mode.md`](references/dark-mode.md).
@@ -728,6 +729,7 @@ export const MailTextBlock = withPreview<PropsWithData<MailTextBlockData>>(
 );
 ```
 
+- The rich-text components have no root element of their own: for a rich text inside a column, pass the `className` to the `textClassName` of `MjmlRichTextBlock` or `MjmlTipTapRichTextBlock`, which put it on each of their text elements.
 - Register a block without data of its own with its data anyway, `divider: (data) => <MailDividerBlock data={data} />`, or it gets no route.
 - The block preview page must put the ref from `useRefToRegisterMailBlocksForPreview(useIFrameBridge())` on the element that contains the mail HTML.
 

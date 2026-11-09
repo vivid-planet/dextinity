@@ -112,7 +112,7 @@ export function JobsGrid(props: JobsGridProps) {
                         {
                             field: "runtime",
                             headerName: intl.formatMessage({ id: "dextinity.pages.jobs.runtime", defaultMessage: "Runtime" }),
-                            flex: 1,
+                            flex: 2,
                             ...disableFieldOptions,
                             valueGetter: (params, row) => {
                                 return {

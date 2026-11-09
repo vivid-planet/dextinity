@@ -2,6 +2,59 @@
 title: Redirects
 ---
 
+## Temporary and permanent redirects
+
+By default, path redirects are temporary (HTTP status code 307).
+Editors can additionally create permanent redirects (HTTP status code 308) once the site respects the `redirectType` of a redirect.
+
+First, query the `redirectType` and use `permanentRedirect` for permanent redirects in the site:
+
+```tsx title="app/[visibility]/[domain]/[language]/[[...path]]/page.tsx"
+import { notFound, permanentRedirect, redirect } from "next/navigation";
+
+const documentTypeQuery = gql`
+    query DocumentType(/* ... */) {
+        # ...
+        redirectBySource(source: $redirectSource, sourceType: path, scope: $redirectScope) {
+            target
+            // highlight-next-line
+            redirectType
+        }
+    }
+`;
+
+// ...
+
+if (destination) {
+    // highlight-start
+    if (data.redirectBySource.redirectType === "permanent") {
+        permanentRedirect(destination);
+    } else {
+        redirect(destination);
+    }
+    // highlight-end
+}
+```
+
+Then enable the redirect type setting in the admin:
+
+```tsx title="App.tsx"
+<DextinityConfigProvider
+    redirects={{
+        scopeParts: ["domain"],
+        // highlight-next-line
+        enableRedirectType: true,
+    }}
+>
+```
+
+:::warning
+
+Browsers, search engines and CDNs cache permanent redirects for a long time.
+A permanent redirect that was created by mistake can't be undone for visitors who were already redirected.
+
+:::
+
 ## Custom redirect targets
 
 Custom redirect targets (e.g., a news site) are supported via the `customTargets`-option.

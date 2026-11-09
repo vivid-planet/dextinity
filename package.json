@@ -61,9 +61,9 @@
         "setup:download-oauth2-proxy": "dotenv -- sh -c 'pnpm exec dextinity download-oauth2-proxy -v $OAUTH2_PROXY_VERSION'"
     },
     "devDependencies": {
-        "@changesets/cli": "^2.31.1",
+        "@changesets/cli": "^3.0.3",
         "@dextinity/cli": "workspace:*",
-        "@formatjs/cli": "^6.16.36",
+        "@formatjs/cli": "^6.18.0",
         "@types/node": "^24.19.2",
         "dev-oidc-provider": "^2.1.2",
         "dev-process-manager": "^4.1.0",
@@ -74,12 +74,12 @@
         "npm-run-all2": "^9.0.4",
         "open-cli": "^9.0.0",
         "prettier": "^3.9.10",
-        "rimraf": "^6.1.3",
+        "rimraf": "^6.1.4",
         "typescript": "^6.0.3"
     },
-    "packageManager": "pnpm@12.16.1",
+    "packageManager": "pnpm@12.17.0",
     "engines": {
         "node": "24",
-        "pnpm": "12.16.1"
+        "pnpm": "12.17.0"
     }
 }

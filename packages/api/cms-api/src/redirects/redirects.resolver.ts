@@ -19,7 +19,7 @@ import type { RedirectInterface } from "./entities/redirect-entity.factory.js";
 import { resolveRedirectEntity } from "./entities/resolve-redirect-entity.js";
 import type { RedirectTargetUrlServiceInterface } from "./redirect-target-url.service.js";
 import { REDIRECTS_TARGET_URL_SERVICE } from "./redirects.constants.js";
-import { RedirectSourceType } from "./redirects.enum.js";
+import { RedirectSourceType, RedirectType } from "./redirects.enum.js";
 import type { RedirectsLinkBlock } from "./redirects.module.js";
 import { RedirectsService } from "./redirects.service.js";
 import { isEmptyFilter, redirectMatchesFilter } from "./redirects.util.js";
@@ -217,6 +217,7 @@ export function createRedirectsResolver({
                 scope: nonEmptyScopeOrNothing(scope),
                 activatedAt: new Date(),
                 ...input,
+                redirectType: input.redirectType ?? RedirectType.temporary,
                 target: input.target.transformToBlockData(),
             });
             await this.entityManager.persist(entity).flush();
@@ -239,7 +240,11 @@ export function createRedirectsResolver({
                 throw new DextinityValidationException("Validation failed");
             }
 
-            wrap(redirect).assign({ ...input, target: input.target.transformToBlockData() });
+            wrap(redirect).assign({
+                ...input,
+                redirectType: input.redirectType ?? redirect.redirectType,
+                target: input.target.transformToBlockData(),
+            });
             await this.entityManager.persist(redirect).flush();
             return this.entityManager.findOneOrFail(resolveRedirectEntity(), id);
         }

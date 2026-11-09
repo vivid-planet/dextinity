@@ -34,7 +34,7 @@ services:
           ./demo/api/intl-update.sh &&
           pnpm --filter dextinity-demo-api run build
       environment_slug: node-js
-      run_command: cd demo/api && node dist/console.js migrate && node --import ./dist/tracing.js dist/main.js
+      run_command: cd demo/api && node dist/console.js migrate && node dist/console.js createBlockIndexViews && node --import ./dist/tracing.js dist/main.js
       source_dir: /
       github:
           branch: ${DEPLOY_BRANCH}
@@ -301,6 +301,10 @@ services:
           - key: PUBLIC_SITE_CONFIGS
             scope: RUN_TIME
             value: "{{ site://configs/public/digitalocean }}"
+          - key: MUI_LICENSE_KEY
+            scope: RUN_TIME
+            type: SECRET
+            value: ${MUI_LICENSE_KEY}
       http_port: 3000
       instance_count: 1
       instance_size_slug: apps-s-1vcpu-0.5gb

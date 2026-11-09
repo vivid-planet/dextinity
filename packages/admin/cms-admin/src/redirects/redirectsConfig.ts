@@ -3,9 +3,14 @@ import { useContentScope } from "../contentScope/Provider";
 
 export interface RedirectsConfig {
     scopeParts?: string[];
+    /**
+     * Allows choosing between temporary and permanent redirects in the admin.
+     * Only enable this if the site respects the `redirectType` of a redirect, e.g., by using `permanentRedirect()` for permanent redirects.
+     */
+    enableRedirectType?: boolean;
 }
 
-function useRedirectsConfig(): RedirectsConfig {
+export function useRedirectsConfig(): RedirectsConfig {
     const dextinityConfig = useDextinityConfig();
 
     if (!dextinityConfig.redirects) {

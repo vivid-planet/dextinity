@@ -12,7 +12,11 @@
     &:is(button, a, [tabindex], [role="option"]) {
         cursor: pointer;
 
-        &:hover .preview {
+        &:is(:disabled, [aria-disabled="true"], [data-disabled]) {
+            cursor: not-allowed;
+        }
+
+        &:not(:disabled, [aria-disabled="true"], [data-disabled]):hover .preview {
             box-shadow: var(--dextinity-asset-thumbnail-shadow-hover);
             transform: translateY(var(--dextinity-asset-thumbnail-hover-lift));
         }

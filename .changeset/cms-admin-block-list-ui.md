@@ -21,5 +21,5 @@ Show the items of blocks, list, and columns blocks in the `BlockList` of `@dexti
 - `AdditionalItemContent` is shown in the item's header, next to its actions, e.g. as a `Chip` of `@dextinity/ui`.
 - `BlockRow` renders a `Block` of `@dextinity/ui` and must be placed in a `BlockList`. Its props changed: it takes the `block` and its `state` and the callbacks of the menu (`onOpen`, `onCopy`, `onPaste`, `onDuplicate`, `onDelete`, `onVisibleChange`, `onCheckedChange`) instead of `renderPreviewContent`, `index`, `moveBlock`, `visibilityButton` and `onAddNewBlock`.
 - The blocks no longer use react-dnd. Blocks can't be dragged between different lists anymore. Keep the `DndProvider` only if your project still uses react-dnd elsewhere (e.g. the page tree).
-- `AddBlockDrawer` shows the `BlockPicker` of `@dextinity/ui` in a `Drawer`, with category filters and the recently used block types. MUI `Drawer` props and theme overrides no longer apply.
+- `AddBlockDrawer` shows the `BlockPicker` of `@dextinity/ui` in a `Drawer`: the block types grouped by category as cards, the recently used ones first, and the "Edit the block after adding it" option and where the block will be inserted under the search field. MUI `Drawer` props and theme overrides no longer apply.
 - The dialog shown when the clipboard can't be pasted is a `Dialog` of `@dextinity/ui`.

@@ -1,10 +1,12 @@
 import { useStackApi, useStoredState } from "@dextinity/admin";
-import { BlockPicker, type BlockPickerCategory, type BlockPickerItem, Checkbox, Drawer, Icon } from "@dextinity/ui";
-import { useMemo, useState } from "react";
+import { BlockPicker, type BlockPickerCategory, type BlockPickerItem, Checkbox, Drawer, Icon, Typography } from "@dextinity/ui";
+import { styled } from "@mui/material/styles";
+import { useId, useMemo, useState } from "react";
 import { type IntlShape, useIntl } from "react-intl";
 
 import { messageText } from "../form/messageText";
 import { BlockCategory, blockCategoryLabels, type BlockInterface, type CustomBlockCategory } from "../types";
+import { type BlockAdminComponentRootContentKind, useBlockAdminComponentRootContentKind } from "./BlockAdminComponentRoot";
 import { blockIconName } from "./blockIconName";
 
 interface Props {
@@ -21,6 +23,8 @@ const maxRecentBlockTypes = 4;
 export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock, insertBefore }: Props) {
     const intl = useIntl();
     const stackApi = useStackApi();
+    const rootContentKind = useBlockAdminComponentRootContentKind();
+    const insertionHintId = useId();
     const [query, setQuery] = useState("");
     const [addAndEdit, setAddAndEdit] = useStoredState<boolean>("addAndEdit", true);
     const [recentBlockTypes, setRecentBlockTypes] = useStoredState<string[]>("addBlockDrawerRecentBlockTypes", []);
@@ -90,10 +94,12 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock, insertBef
         return { items, categories };
     }, [intl, blocks]);
 
-    const containerTitle = stackApi?.breadCrumbs[stackApi.breadCrumbs.length - 1]?.title;
+    const breadCrumbs = stackApi?.breadCrumbs ?? [];
+    const containerTitle = breadCrumbs[breadCrumbs.length - 1]?.title;
     const insertionHint = getInsertionHint(intl, {
         beforeBlockName: insertBefore ? messageText(intl, insertBefore.displayName) : undefined,
         containerName: containerTitle != null ? messageText(intl, containerTitle) : undefined,
+        rootContentKind: breadCrumbs.length <= 1 ? rootContentKind : undefined,
     });
 
     const close = () => {
@@ -117,12 +123,7 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock, insertBef
             }}
             modal
             title={intl.formatMessage({ id: "dextinity.blocks.drawer.header", defaultMessage: "Add new block" })}
-            description={insertionHint}
-            footer={
-                <Checkbox checked={addAndEdit} onChange={setAddAndEdit}>
-                    {intl.formatMessage({ id: "dextinity.blocks.drawer.editAfterAdding", defaultMessage: "Edit the block after adding it" })}
-                </Checkbox>
-            }
+            aria-describedby={insertionHintId}
         >
             <BlockPicker
                 items={items}
@@ -138,17 +139,47 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock, insertBef
                     other: intl.formatMessage({ id: "dextinity.blocks.category.other", defaultMessage: "Other" }),
                     empty: intl.formatMessage({ id: "dextinity.blocks.drawer.noResults", defaultMessage: "No block matches your search." }),
                 }}
-            />
+            >
+                <Options>
+                    <Checkbox checked={addAndEdit} onChange={setAddAndEdit}>
+                        {intl.formatMessage({ id: "dextinity.blocks.drawer.editAfterAdding", defaultMessage: "Edit the block after adding it" })}
+                    </Checkbox>
+                    <Typography variant="small" id={insertionHintId}>
+                        {insertionHint}
+                    </Typography>
+                </Options>
+            </BlockPicker>
         </Drawer>
     );
 }
 
-function getInsertionHint(intl: IntlShape, { beforeBlockName, containerName }: { beforeBlockName?: string; containerName?: string }) {
+function getInsertionHint(
+    intl: IntlShape,
+    {
+        beforeBlockName,
+        containerName,
+        rootContentKind,
+    }: { beforeBlockName?: string; containerName?: string; rootContentKind?: BlockAdminComponentRootContentKind },
+) {
     if (beforeBlockName !== undefined) {
         return intl.formatMessage(
             { id: "dextinity.blocks.drawer.insertionHint.before", defaultMessage: "Will be inserted before “{blockName}”." },
             { blockName: beforeBlockName },
         );
+    }
+
+    if (rootContentKind === "page") {
+        return intl.formatMessage({
+            id: "dextinity.blocks.drawer.insertionHint.endOfPage",
+            defaultMessage: "Will be inserted at the end of the page.",
+        });
+    }
+
+    if (rootContentKind === "email") {
+        return intl.formatMessage({
+            id: "dextinity.blocks.drawer.insertionHint.endOfEmail",
+            defaultMessage: "Will be inserted at the end of the email.",
+        });
     }
 
     if (containerName !== undefined && containerName !== "") {
@@ -164,3 +195,10 @@ function getInsertionHint(intl: IntlShape, { beforeBlockName, containerName }: {
 function isCustomBlockCategory(category: BlockCategory | CustomBlockCategory): category is CustomBlockCategory {
     return typeof category === "object";
 }
+
+const Options = styled("div")`
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-1);
+    padding-block: var(--dextinity-space-1) var(--dextinity-space-2);
+`;

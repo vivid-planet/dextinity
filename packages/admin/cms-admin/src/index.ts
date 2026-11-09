@@ -4,7 +4,7 @@ export { AnchorBlock } from "./blocks/AnchorBlock";
 export { BlockAdminComponentButton } from "./blocks/common/BlockAdminComponentButton";
 export { BlockAdminComponentNestedButton } from "./blocks/common/BlockAdminComponentNestedButton";
 export { BlockAdminComponentPaper, useBlockAdminComponentPaper } from "./blocks/common/BlockAdminComponentPaper";
-export { BlockAdminComponentRoot } from "./blocks/common/BlockAdminComponentRoot";
+export { BlockAdminComponentRoot, type BlockAdminComponentRootContentKind } from "./blocks/common/BlockAdminComponentRoot";
 export { BlockAdminComponentSection } from "./blocks/common/BlockAdminComponentSection";
 export { BlockAdminComponentSectionGroup } from "./blocks/common/BlockAdminComponentSectionGroup";
 export { BlockAdminTabLabel } from "./blocks/common/BlockAdminTabLabel";

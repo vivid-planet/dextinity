@@ -81,6 +81,7 @@ export class BrevoContactsService {
             attributes,
             scope,
             brevoIds,
+            listIds,
             mainListBrevoId: mainTargetGroupForScope.brevoId,
             existingContact,
             responsibleUserId,
@@ -93,6 +94,7 @@ export class BrevoContactsService {
         attributes,
         scope,
         brevoIds,
+        listIds,
         mainListBrevoId,
         existingContact,
         responsibleUserId,
@@ -102,6 +104,7 @@ export class BrevoContactsService {
         attributes?: BrevoContactAttributesInterface;
         scope: EmailCampaignScopeInterface;
         brevoIds: number[];
+        listIds?: number[];
         mainListBrevoId: number;
         existingContact: BrevoContactInterface | null;
         responsibleUserId: string;
@@ -127,7 +130,8 @@ export class BrevoContactsService {
         }
 
         if (existingContact) {
-            await this.brevoContactsApiService.updateContact(existingContact.id, { listIds: brevoIds, attributes }, scope);
+            const updatedContact = await this.brevoContactsApiService.updateContact(existingContact.id, { listIds: brevoIds, attributes }, scope);
+            await this.updateTargetGroupsOfSubscribedScopes({ contact: updatedContact, scope, keptListIds: listIds ?? [] });
         } else {
             const created = await this.brevoContactsApiService.createBrevoContactWithoutDoubleOptIn({ email, attributes }, brevoIds, scope);
             if (!created) {
@@ -137,6 +141,59 @@ export class BrevoContactsService {
 
         await this.brevoEmailImportLogService.addContactToLogs(email, responsibleUserId, scope, contactSource);
         return SubscribeResponse.SUCCESSFUL;
+    }
+
+    // The attributes are shared by all scopes, so changing them can change the contact's target groups in every scope the contact subscribed to.
+    private async updateTargetGroupsOfSubscribedScopes({
+        contact,
+        scope,
+        keptListIds,
+    }: {
+        contact: BrevoContactInterface;
+        scope: EmailCampaignScopeInterface;
+        keptListIds: number[];
+    }): Promise<void> {
+        const [subscribedMainLists] = await this.targetGroupService.findTargetGroups({
+            offset: 0,
+            limit: contact.listIds.length,
+            where: { isMainList: true, brevoId: { $in: contact.listIds } },
+        });
+
+        let offset = 0;
+        let totalCount = 0;
+        const listIdsToLink: number[] = [];
+        const listIdsToUnlink: number[] = [];
+        const limit = 50;
+        const where = { isMainList: false, isTestList: false, $or: subscribedMainLists.map((mainList) => ({ scope: mainList.scope })) };
+
+        do {
+            const [targetGroups, totalContactLists] = await this.targetGroupService.findTargetGroups({ offset, limit, where });
+            totalCount = totalContactLists;
+            offset += targetGroups.length;
+
+            for (const targetGroup of targetGroups) {
+                if (keptListIds.includes(targetGroup.brevoId)) {
+                    continue;
+                }
+
+                const isManuallyAssigned =
+                    targetGroup.assignedContactsTargetGroupBrevoId !== undefined &&
+                    contact.listIds.includes(targetGroup.assignedContactsTargetGroupBrevoId);
+                const belongsToTargetGroup =
+                    isManuallyAssigned || this.targetGroupService.checkIfContactIsInTargetGroupByAttributes(contact.attributes, targetGroup.filters);
+                const isInTargetGroup = contact.listIds.includes(targetGroup.brevoId);
+
+                if (belongsToTargetGroup && !isInTargetGroup) {
+                    listIdsToLink.push(targetGroup.brevoId);
+                } else if (!belongsToTargetGroup && isInTargetGroup) {
+                    listIdsToUnlink.push(targetGroup.brevoId);
+                }
+            }
+        } while (offset < totalCount);
+
+        if (listIdsToLink.length > 0 || listIdsToUnlink.length > 0) {
+            await this.brevoContactsApiService.updateContact(contact.id, { listIds: listIdsToLink, unlinkListIds: listIdsToUnlink }, scope);
+        }
     }
 
     public async createTestContact({

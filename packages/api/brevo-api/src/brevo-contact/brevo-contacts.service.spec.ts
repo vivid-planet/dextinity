@@ -19,6 +19,7 @@ const templateId = 7;
 const redirectionUrl = "https://example.com/confirm";
 const mainListBrevoId = 10;
 const attributeTargetGroupBrevoId = 20;
+const otherScope = { domain: "secondary" };
 const otherScopeMainListBrevoId = 99;
 
 describe("BrevoContactsService", () => {
@@ -106,6 +107,12 @@ describe("BrevoContactsService", () => {
 
         it("adds a contact that exists in another scope to the scope's lists without double opt-in", async () => {
             brevoApiContactsService.getContactInfoByEmail.mockResolvedValue({ id: 1, email, listIds: [otherScopeMainListBrevoId] });
+            brevoApiContactsService.updateContact.mockResolvedValue({
+                id: 1,
+                email,
+                listIds: [otherScopeMainListBrevoId, mainListBrevoId, attributeTargetGroupBrevoId],
+                attributes,
+            });
 
             const response = await service.createContact({
                 email,
@@ -126,6 +133,87 @@ describe("BrevoContactsService", () => {
             expect(brevoApiContactsService.createBrevoContactWithoutDoubleOptIn).not.toHaveBeenCalled();
             expect(brevoApiContactsService.createDoubleOptInBrevoContact).not.toHaveBeenCalled();
             expect(brevoEmailImportLogService.addContactToLogs).toHaveBeenCalledWith(email, "user-1", scope, ContactSource.manualCreation);
+        });
+
+        it("updates the target groups of the other subscribed scopes to the new attributes without double opt-in", async () => {
+            const newAttributes = { SALUTATION: "MR" };
+            const otherScopeMrsTargetGroupBrevoId = 98;
+            const otherScopeMrTargetGroupBrevoId = 97;
+            const otherScopeManuallyAssignedTargetGroupBrevoId = 96;
+            const otherScopeManuallyAssignedContactsBrevoId = 95;
+            brevoApiContactsService.getContactInfoByEmail.mockResolvedValue({
+                id: 1,
+                email,
+                listIds: [
+                    otherScopeMainListBrevoId,
+                    otherScopeMrsTargetGroupBrevoId,
+                    otherScopeManuallyAssignedTargetGroupBrevoId,
+                    otherScopeManuallyAssignedContactsBrevoId,
+                ],
+            });
+            brevoApiContactsService.updateContact.mockResolvedValueOnce({
+                id: 1,
+                email,
+                listIds: [
+                    otherScopeMainListBrevoId,
+                    otherScopeMrsTargetGroupBrevoId,
+                    otherScopeManuallyAssignedTargetGroupBrevoId,
+                    otherScopeManuallyAssignedContactsBrevoId,
+                    mainListBrevoId,
+                    attributeTargetGroupBrevoId,
+                ],
+                attributes: newAttributes,
+            });
+            const mrTargetGroup = { brevoId: attributeTargetGroupBrevoId, scope, filters: { SALUTATION: ["MR"] } };
+            targetGroupsService.findTargetGroups
+                .mockResolvedValueOnce([[mrTargetGroup], 1])
+                .mockResolvedValueOnce([
+                    [
+                        { brevoId: mainListBrevoId, scope },
+                        { brevoId: otherScopeMainListBrevoId, scope: otherScope },
+                    ],
+                    2,
+                ])
+                .mockResolvedValueOnce([
+                    [
+                        mrTargetGroup,
+                        { brevoId: otherScopeMrsTargetGroupBrevoId, scope: otherScope, filters: { SALUTATION: ["MRS"] } },
+                        { brevoId: otherScopeMrTargetGroupBrevoId, scope: otherScope, filters: { SALUTATION: ["MR"] } },
+                        {
+                            brevoId: otherScopeManuallyAssignedTargetGroupBrevoId,
+                            scope: otherScope,
+                            filters: { SALUTATION: ["MRS"] },
+                            assignedContactsTargetGroupBrevoId: otherScopeManuallyAssignedContactsBrevoId,
+                        },
+                    ],
+                    4,
+                ]);
+            targetGroupsService.checkIfContactIsInTargetGroupByAttributes.mockImplementation(
+                (contactAttributes?: Record<string, string>, filters?: Record<string, string[]>) =>
+                    filters?.SALUTATION?.includes(contactAttributes?.SALUTATION ?? "") ?? false,
+            );
+
+            const response = await service.createContact({
+                email,
+                attributes: newAttributes,
+                scope,
+                templateId,
+                sendDoubleOptIn: false,
+                responsibleUserId: "user-1",
+                contactSource: ContactSource.manualCreation,
+            });
+
+            expect(response).toBe(SubscribeResponse.SUCCESSFUL);
+            expect(targetGroupsService.findTargetGroups).toHaveBeenLastCalledWith({
+                offset: 0,
+                limit: 50,
+                where: { isMainList: false, isTestList: false, $or: [{ scope }, { scope: otherScope }] },
+            });
+            expect(brevoApiContactsService.updateContact).toHaveBeenLastCalledWith(
+                1,
+                { listIds: [otherScopeMrTargetGroupBrevoId], unlinkListIds: [otherScopeMrsTargetGroupBrevoId] },
+                scope,
+            );
         });
 
         it("returns ERROR_CONTACT_IS_BLACKLISTED for a blacklisted existing contact without double opt-in", async () => {

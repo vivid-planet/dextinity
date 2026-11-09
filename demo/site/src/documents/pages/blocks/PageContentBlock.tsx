@@ -3,9 +3,9 @@ import { BlocksBlock, type PropsWithData, type SupportedBlocks } from "@dextinit
 import type { PageContentBlockData } from "@src/blocks.generated";
 import { PageContentAccordionBlock } from "@src/common/blocks/AccordionBlock";
 import { AnchorBlock } from "@src/common/blocks/AnchorBlock";
-import { ContactFormBlock } from "@src/common/blocks/ContactFormBlock";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 import { LayoutBlock } from "@src/common/blocks/LayoutBlock";
+import { LazyContactFormBlock } from "@src/common/blocks/LazyContactFormBlock";
 import { PageContentMediaGalleryBlock } from "@src/common/blocks/MediaGalleryBlock";
 import { PageTreeIndexBlock } from "@src/common/blocks/PageTreeIndexBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
@@ -53,7 +53,7 @@ const supportedBlocks: SupportedBlocks = {
     tipTapTable: (props) => <TipTapTableBlock data={props} />,
     tipTapRichText: (props) => <PageContentTipTapRichTextBlock data={props} />,
     pageTreeIndex: (props) => <PageTreeIndexBlock data={props} />,
-    contactForm: (props) => <ContactFormBlock data={props} />,
+    contactForm: (props) => <LazyContactFormBlock data={props} />,
 };
 
 export const PageContentBlock = ({ data }: PropsWithData<PageContentBlockData>) => {

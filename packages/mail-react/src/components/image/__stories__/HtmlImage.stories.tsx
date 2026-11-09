@@ -1,6 +1,6 @@
-import { MjmlColumn, MjmlRaw } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { MjmlColumn, MjmlRaw } from "../../../index.js";
 import { defaultTheme } from "../../../theme/defaultTheme.js";
 import { getDefaultFromResponsiveValue } from "../../../theme/responsiveValue.js";
 import { MjmlSection } from "../../section/MjmlSection.js";

@@ -1,6 +1,6 @@
-import { MjmlColumn, MjmlRaw, MjmlSpacer } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { MjmlColumn, MjmlRaw, MjmlSpacer } from "../../../index.js";
 import { createTheme } from "../../../theme/createTheme.js";
 import { MjmlSection } from "../../section/MjmlSection.js";
 import { HtmlDivider } from "../HtmlDivider.js";

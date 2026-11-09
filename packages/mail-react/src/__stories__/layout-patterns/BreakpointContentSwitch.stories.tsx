@@ -1,11 +1,10 @@
-import { MjmlColumn, MjmlSpacer } from "@faire/mjml-react";
-import { MjmlHtml } from "@faire/mjml-react/extensions/index.js";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ReactNode } from "react";
 
 import { MjmlImage } from "../../components/image/MjmlImage.js";
 import { MjmlSection } from "../../components/section/MjmlSection.js";
 import { MjmlText } from "../../components/text/MjmlText.js";
+import { MjmlColumn, MjmlHtml, MjmlSpacer } from "../../index.js";
 import { registerStyles } from "../../styles/registerStyles.js";
 import { createTheme } from "../../theme/createTheme.js";
 import { getDefaultFromResponsiveValue } from "../../theme/responsiveValue.js";

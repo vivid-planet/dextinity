@@ -1,7 +1,7 @@
-import { MjmlColumn } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { MjmlSection } from "../../../../components/section/MjmlSection.js";
+import { MjmlColumn } from "../../../../index.js";
 import { createTheme } from "../../../../theme/createTheme.js";
 import { createTipTapRichTextBlock } from "../createTipTapRichTextBlock.js";
 import { exampleBlockData, inlineStyleBlockData, listBlockData, listVariantsBlockData, textBlockStylesBlockData } from "./exampleBlockData.js";

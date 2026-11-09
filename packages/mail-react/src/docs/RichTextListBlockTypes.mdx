@@ -1,10 +1,14 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Docs/Rich-Text List Block Types" />
+
 # Rich-text list block types
 
 A list in a second text variant needs a custom block type, for example `unordered-list-item-small`. Register it in the admin RTE and in the mail block.
 
 ## 1. Admin RTE
 
-Add the block type to `rte.blocktypeMap` on the CMS `createRichTextBlock`. For the surrounding options, see the `dextinity-block` skill's [rich-text reference](../../dextinity-block/references/rich-text.md).
+Add the block type to `rte.blocktypeMap` on the CMS `createRichTextBlock`. For the surrounding options, see the `dextinity-block` skill's [rich-text reference](https://github.com/vivid-planet/dextinity/blob/main/skills/dextinity-block/references/rich-text.md).
 
 ```tsx
 blocktypeMap: {

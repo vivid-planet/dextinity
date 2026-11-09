@@ -5,6 +5,7 @@ import { type ComponentType, type PropsWithChildren, useCallback, useMemo, useSt
 import { useIntl } from "react-intl";
 import { useHistory } from "react-router-dom";
 
+import { ViewportFillingEditLayout } from "../../blocks/editor/ViewportFillingEditLayout";
 import { useShowAppToast } from "../../common/toasts/AppToasts";
 import { DamScopeProvider } from "../../dam/config/DamScopeProvider";
 import type { DocumentInterface, DocumentType } from "../../documents/types";
@@ -73,7 +74,7 @@ export function PageEditorRoute({
 
     if (data == null && loading) {
         return (
-            <EditLayout
+            <ViewportFillingEditLayout
                 variant="page"
                 loading
                 header={
@@ -86,7 +87,7 @@ export function PageEditorRoute({
                 }
             >
                 {null}
-            </EditLayout>
+            </ViewportFillingEditLayout>
         );
     }
 

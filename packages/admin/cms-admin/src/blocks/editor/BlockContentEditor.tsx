@@ -1,4 +1,4 @@
-import { EditLayout, type EditLayoutPane, Icon, Panel, SegmentedControl } from "@dextinity/ui";
+import { type EditLayoutPane, Icon, Panel, SegmentedControl } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import { type PropsWithChildren, type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
@@ -13,6 +13,7 @@ import { type BlockPreviewApi, useBlockPreview } from "../../preview/block/useBl
 import { useScrollRestoration } from "../common/useScrollRestoration";
 import { IFrameBridgeProvider } from "../iframebridge/IFrameBridge";
 import { EditorTabBar } from "./EditorTabBar";
+import { ViewportFillingEditLayout } from "./ViewportFillingEditLayout";
 
 /** What the preview of a block editor shows: the site's block preview page and the unsaved state of the root block shown there. */
 export interface BlockContentEditorPreview {
@@ -67,7 +68,7 @@ export interface BlockContentEditorProps {
 
 /**
  * The editor of content made of blocks in the edit layout of `@dextinity/ui`: the header, the live preview on the left, and the panel with
- * the tabs on the right. Each tab is a route, so blocks can open nested routes and tabs can be deep-linked. Used by the page editor and
+ * the tabs on the right. With a preview, the editor fills the window below the top bar, and the preview and the panel each scroll their own content. Each tab is a route, so blocks can open nested routes and tabs can be deep-linked. Used by the page editor and
  * for other block documents, e.g. emails. The children are rendered after the layout, e.g. dialogs and a `ToastViewport`.
  */
 export function BlockContentEditor({
@@ -94,7 +95,7 @@ export function BlockContentEditor({
     const scrollRestoration = useScrollRestoration<HTMLDivElement>(`pageContentEditor-${selectedKey}`);
 
     const editor = (
-        <EditorPanel padding="none" data-preview={activePreview != null ? "" : undefined}>
+        <EditorPanel padding="none">
             {tabs.length > 1 && <EditorTabBar tabs={tabs} selectedKey={selectedKey} getTabUrl={getTabUrl} />}
             <TabContent {...scrollRestoration}>
                 <Switch>
@@ -114,7 +115,7 @@ export function BlockContentEditor({
             {save != null && (
                 <UnsavedChangesPrompt hasChanges={save.hasChanges} onSave={save.onSave} onDiscard={save.onDiscard} allowWithin={editorUrl} />
             )}
-            <EditLayout
+            <ViewportFillingEditLayout
                 variant={preview != null || tabs.some((tab) => tab.preview != null) ? "page" : "form"}
                 header={header}
                 loading={loading}
@@ -152,7 +153,7 @@ export function BlockContentEditor({
                 }
             >
                 {editor}
-            </EditLayout>
+            </ViewportFillingEditLayout>
             {children}
         </IFrameBridgeProvider>
     );
@@ -171,13 +172,6 @@ const EditorPanel = styled(Panel)`
         flex: 1;
         flex-direction: column;
         min-block-size: 0;
-    }
-
-    &[data-preview] {
-        position: sticky;
-        inset-block-start: var(--dextinity-edit-layout-sticky-offset);
-        block-size: calc(100dvh - var(--dextinity-edit-layout-sticky-offset) - var(--dextinity-edit-layout-preview-spacing));
-        min-block-size: var(--dextinity-edit-layout-preview-min-height);
     }
 `;
 

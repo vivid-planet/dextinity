@@ -149,8 +149,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * The page tree with an active page ("Open positions") and a marked one ("Benefits"). A click shows the detail; Enter opens the edit
- * view.
+ * The page tree with an active page ("Open positions") and a marked one ("Benefits"). A click shows the detail; a double-click or
+ * Enter opens the edit view.
  *
  * **Rules**
  *
@@ -219,6 +219,10 @@ export const Keyboard: Story = {
         await waitFor(() => expect(args.onSelect).toHaveBeenLastCalledWith("imprint"));
         await waitFor(() => expect(args.onOpen).toHaveBeenLastCalledWith("imprint"));
         await expect(canvas.getByRole("treeitem", { name: /^Imprint/ })).toHaveAttribute("aria-selected", "true");
+
+        await userEvent.dblClick(canvas.getByText("Careers"));
+        await waitFor(() => expect(args.onOpen).toHaveBeenLastCalledWith("careers"));
+        await expect(careers).toHaveAttribute("aria-expanded", "true");
     },
 };
 

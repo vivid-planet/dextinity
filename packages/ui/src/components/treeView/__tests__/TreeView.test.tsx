@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { type TreeNode, TreeView } from "../TreeView";
 
@@ -73,5 +73,29 @@ describe("TreeView", () => {
         expect(screen.queryByRole("treeitem", { name: "Archive" })).toBeNull();
         expect(screen.getByRole("treeitem", { name: "Home" }).firstElementChild?.hasAttribute("data-context")).toBe(true);
         expect(screen.getByRole("treeitem", { name: "About" }).firstElementChild?.hasAttribute("data-context")).toBe(false);
+    });
+
+    it("opens a node on double-click, but not on a double-click on its expand toggle or actions", () => {
+        const onSelect = vi.fn();
+        const onOpen = vi.fn();
+        render(
+            <TreeView
+                aria-label="Pages"
+                nodes={nodes}
+                expandedIds={["home"]}
+                onExpandedChange={noop}
+                onSelect={onSelect}
+                onOpen={onOpen}
+                renderActions={(node) => <button type="button">{`Actions for ${node.label}`}</button>}
+            />,
+        );
+
+        const home = screen.getByRole("treeitem", { name: "Home" });
+        fireEvent.doubleClick(home.querySelector("[class*='toggle']") as HTMLElement);
+        fireEvent.doubleClick(screen.getByRole("button", { name: "Actions for Home" }));
+        expect(onOpen).not.toHaveBeenCalled();
+
+        fireEvent.doubleClick(screen.getByText("About"));
+        expect(onOpen).toHaveBeenCalledExactlyOnceWith("about");
     });
 });

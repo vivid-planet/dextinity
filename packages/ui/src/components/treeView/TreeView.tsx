@@ -96,7 +96,10 @@ export interface TreeViewProps extends Omit<HTMLAttributes<HTMLUListElement>, "c
     selectedId?: string;
     /** Called when a node is clicked, or Enter is pressed on it. */
     onSelect?: (id: string) => void;
-    /** Called on Enter on a node, after `onSelect`; usually opens the edit view. A click only selects. */
+    /**
+     * Called on Enter or a double-click on a node, after `onSelect`; usually opens the edit view. A single click only selects. A double-click
+     * on the expand toggle, the checkbox or the actions doesn't open.
+     */
     onOpen?: (id: string) => void;
     /**
      * Shows checkboxes to mark several nodes, e.g. for bulk actions. Space toggles the focused node, Shift+Arrow extends the marking.
@@ -196,6 +199,10 @@ function getDropPosition(event: DragEvent<HTMLElement>, allowInside: boolean): T
 
 function stopPropagation(event: MouseEvent | KeyboardEvent) {
     event.stopPropagation();
+}
+
+function isWithinRowControl(target: EventTarget) {
+    return target instanceof Element && target.closest(`.${styles.toggle}, .${styles.checkbox}, .${styles.actions}`) != null;
 }
 
 const focusableSelector = "a[href], button, input, select, textarea, [tabindex]";
@@ -478,6 +485,13 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                         focusNode(node.id);
                         onSelect?.(node.id);
                     },
+                    onDoubleClick: onOpen
+                        ? (event: MouseEvent<HTMLDivElement>) => {
+                              if (!isWithinRowControl(event.target)) {
+                                  onOpen(node.id);
+                              }
+                          }
+                        : undefined,
                     onPointerEnter: (event: PointerEvent<HTMLDivElement>) => {
                         if (event.pointerType === "mouse") {
                             showFullLabel(node.id, readTooltipDelay(event.currentTarget));

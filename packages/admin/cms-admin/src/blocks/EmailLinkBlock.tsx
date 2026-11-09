@@ -18,6 +18,8 @@ export const EmailLinkBlock: BlockInterface<EmailLinkBlockData, EmailLinkBlockDa
     defaultValues: () => ({ email: undefined }),
 
     category: BlockCategory.Navigation,
+    iconName: "letter",
+    description: <FormattedMessage id="dextinity.blocks.link.email.description" defaultMessage="Link that writes an email" />,
 
     isValid: (state) => {
         return state.email ? isEmail(state.email) : true;

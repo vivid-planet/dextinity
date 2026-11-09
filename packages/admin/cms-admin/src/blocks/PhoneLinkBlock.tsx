@@ -19,6 +19,8 @@ export const PhoneLinkBlock: BlockInterface<PhoneLinkBlockData, PhoneLinkBlockDa
     defaultValues: () => ({ phone: undefined }),
 
     category: BlockCategory.Navigation,
+    iconName: "phone",
+    description: <FormattedMessage id="dextinity.blocks.link.phone.description" defaultMessage="Link that calls a phone number" />,
 
     isValid: (state) => {
         return state.phone ? isPhoneNumber(state.phone) : true;

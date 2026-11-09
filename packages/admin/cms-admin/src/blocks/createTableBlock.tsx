@@ -122,6 +122,8 @@ export const createTableBlock = <RichText extends RichTextBlockInterface = RichT
         name,
         displayName: <FormattedMessage id="dextinity.blocks.table.displayName" defaultMessage="Table" />,
         category: BlockCategory.TextAndContent,
+        iconName: "grid",
+        description: <FormattedMessage id="dextinity.blocks.table.description" defaultMessage="Rows and columns of text" />,
 
         defaultValues: getInitialTableState,
 

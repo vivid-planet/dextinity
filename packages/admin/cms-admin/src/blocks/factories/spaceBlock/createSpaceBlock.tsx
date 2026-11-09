@@ -47,6 +47,8 @@ export const createSpaceBlock = <T extends string | number>({
         displayName: <FormattedMessage id="dextinity.blocks.space" defaultMessage="Space" />,
 
         category: BlockCategory.Layout,
+        iconName: "density-comfortable",
+        description: <FormattedMessage id="dextinity.blocks.space.description" defaultMessage="Empty space between blocks" />,
 
         tags,
 

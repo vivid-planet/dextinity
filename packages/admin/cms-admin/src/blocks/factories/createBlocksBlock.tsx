@@ -643,6 +643,11 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                                                 open={showAddBlockDrawer}
                                                 onClose={handleCloseAddBlockDrawer}
                                                 blocks={filteredSupportedBlocks}
+                                                insertBefore={
+                                                    beforeIndex !== undefined && state.blocks[beforeIndex]
+                                                        ? (blockForType(state.blocks[beforeIndex].type) ?? undefined)
+                                                        : undefined
+                                                }
                                                 onAddNewBlock={(type, addAndEdit) => {
                                                     const key = addNewBlock(type, beforeIndex);
 

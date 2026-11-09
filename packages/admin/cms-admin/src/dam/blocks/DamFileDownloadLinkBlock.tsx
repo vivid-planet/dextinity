@@ -21,6 +21,8 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
     previewContent: (state) => (state.file ? [{ type: "text", content: state.file?.name }] : []),
 
     category: BlockCategory.Media,
+    iconName: "download",
+    description: <FormattedMessage id="dextinity.blocks.damFileDownloadLink.description" defaultMessage="Link that downloads a file" />,
 
     defaultValues: () => ({
         openFileType: "Download",

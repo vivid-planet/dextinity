@@ -61,6 +61,8 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
     }),
 
     category: BlockCategory.Media,
+    iconName: "image-raster",
+    description: <FormattedMessage id="dextinity.blocks.image.description" defaultMessage="Image with focal point and crop" />,
 
     createPreviewState: (state, previewContext) => ({
         ...state,

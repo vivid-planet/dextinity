@@ -1,4 +1,5 @@
 import { StackPage, StackSwitch, StackSwitchApiContext } from "@dextinity/admin";
+import type { IconName } from "@dextinity/ui";
 import { Fragment, type FunctionComponent, type ReactNode } from "react";
 import { FormattedMessage, type MessageDescriptor, useIntl } from "react-intl";
 import { v4 as uuid } from "uuid";
@@ -78,6 +79,14 @@ interface CreateListBlockOptions<T extends BlockInterface, AdditionalItemFields 
     }>;
     AdditionalItemContent?: FunctionComponent<{ item: ListBlockItem<T, AdditionalItemFields> }>;
     tags?: Array<MessageDescriptor | string>;
+    /**
+     * The icon shown next to the block in the Add Block Drawer. Defaults to the `iconName` of `block`.
+     */
+    iconName?: IconName;
+    /**
+     * What the block is for, in a few words, shown under its name in the Add Block Drawer.
+     */
+    description?: ReactNode;
 }
 
 export function createListBlock<T extends BlockInterface, AdditionalItemFields extends Record<string, unknown> = DefaultAdditionalItemFields>(
@@ -94,6 +103,8 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
         AdditionalItemContextMenuItems,
         AdditionalItemContent,
         tags,
+        iconName = block.iconName,
+        description,
     }: CreateListBlockOptions<T, AdditionalItemFields>,
     override?: (
         block: BlockInterface<
@@ -146,6 +157,10 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
         }),
 
         category: block.category,
+
+        iconName,
+
+        description,
 
         input2State: (input) => {
             return {

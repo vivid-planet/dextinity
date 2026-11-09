@@ -17,6 +17,8 @@ const AnchorBlock: BlockInterface<AnchorBlockData, AnchorBlockData, AnchorBlockI
     displayName: <FormattedMessage id="dextinity.blocks.anchor.displayName" defaultMessage="Anchor" />,
 
     category: BlockCategory.Navigation,
+    iconName: "locate",
+    description: <FormattedMessage id="dextinity.blocks.anchor.description" defaultMessage="Jump target that links can point to" />,
 
     AdminComponent: ({ state: { name }, updateState }) => {
         const intl = useIntl();

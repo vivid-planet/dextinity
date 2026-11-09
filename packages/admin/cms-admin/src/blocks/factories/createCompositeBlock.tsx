@@ -1,4 +1,5 @@
 import { StackPage, StackSwitch, StackSwitchApiContext, SubRoute, useSubRoutePrefix } from "@dextinity/admin";
+import type { IconName } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import { Fragment, type ReactNode } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
@@ -78,6 +79,15 @@ interface CreateCompositeBlockOptionsBase {
      * Category under which the block appears in the Add Block Drawer.
      */
     category?: BlockCategory | CustomBlockCategory;
+    /**
+     * The block type's icon, shown next to it in the Add Block Drawer and in a block list when `icon` returns none.
+     * Falls back to an icon for the block's category.
+     */
+    iconName?: IconName;
+    /**
+     * What the block is for, in a few words, shown under its name in the Add Block Drawer.
+     */
+    description?: ReactNode;
     adminLayout?: "stacked";
     blocks: Record<string, BlockConfiguration>;
     /**
@@ -124,7 +134,7 @@ export const createCompositeBlock = <Options extends CreateCompositeBlockOptions
         block: CompositeBlockInterface<ExtractCompositeBlocksConfig<Options>>,
     ) => CompositeBlockInterface<ExtractCompositeBlocksConfig<Options>>,
 ): CompositeBlockInterface<ExtractCompositeBlocksConfig<Options>> => {
-    const { name, displayName, category = BlockCategory.Other, tags, visibleOrderedBlocksForState } = options;
+    const { name, displayName, category = BlockCategory.Other, iconName, description, tags, visibleOrderedBlocksForState } = options;
 
     let groups: Record<string, GroupConfiguration>;
 
@@ -175,6 +185,10 @@ export const createCompositeBlock = <Options extends CreateCompositeBlockOptions
         displayName,
 
         category,
+
+        iconName,
+
+        description,
 
         tags: tags ? tags : childTags,
 

@@ -26,6 +26,8 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
     defaultValues: () => ({ targetPage: undefined }),
 
     category: BlockCategory.Navigation,
+    iconName: "link",
+    description: <FormattedMessage id="dextinity.blocks.internalLink.description" defaultMessage="Link to a page of this site" />,
 
     input2State: (state) => {
         return state;

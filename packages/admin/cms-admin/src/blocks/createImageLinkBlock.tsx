@@ -19,6 +19,8 @@ export function createImageLinkBlock(
         {
             name,
             displayName: <FormattedMessage id="dextinity.blocks.imageLink" defaultMessage="Image/Link" />,
+            iconName: "image",
+            description: <FormattedMessage id="dextinity.blocks.imageLink.description" defaultMessage="Image with a link" />,
             blocks: {
                 link: {
                     block: LinkBlock,

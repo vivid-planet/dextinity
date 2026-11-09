@@ -24,6 +24,8 @@ function createLinkBlock(
         label = <FormattedMessage id="dextinity.blocks.link.linkType" defaultMessage="Link type" />,
         allowEmpty = false,
         tags,
+        iconName = "link",
+        description = <FormattedMessage id="dextinity.blocks.link.description" defaultMessage="Link to a page or another website" />,
         ...oneOfBlockOptions
     }: CreateLinkBlockOptions,
     override?: (block: BlockInterface & LinkBlockInterface) => BlockInterface & LinkBlockInterface,
@@ -36,6 +38,8 @@ function createLinkBlock(
             label,
             allowEmpty,
             tags,
+            iconName,
+            description,
             ...oneOfBlockOptions,
         },
         override,

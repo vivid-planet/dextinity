@@ -1,4 +1,5 @@
 import { StackPage, StackPageTitle, StackSwitch, StackSwitchApiContext } from "@dextinity/admin";
+import type { IconName } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { FormattedMessage, type IntlShape, type MessageDescriptor, useIntl } from "react-intl";
@@ -57,13 +58,31 @@ interface CreateColumnsBlockOptions<T extends BlockInterface> {
     name: string;
     displayName: ReactNode;
     category?: BlockCategory | CustomBlockCategory;
+    /**
+     * The block type's icon, shown next to it in the Add Block Drawer and in a block list when `icon` returns none.
+     * Falls back to an icon for the block's category.
+     */
+    iconName?: IconName;
+    /**
+     * What the block is for, in a few words, shown under its name in the Add Block Drawer.
+     */
+    description?: ReactNode;
     contentBlock: T;
     layouts: ColumnsBlockLayout[];
     tags?: Array<MessageDescriptor | string>;
 }
 
 export function createColumnsBlock<T extends BlockInterface>(
-    { name, displayName, category = BlockCategory.Layout, contentBlock, layouts, tags }: CreateColumnsBlockOptions<T>,
+    {
+        name,
+        displayName,
+        category = BlockCategory.Layout,
+        iconName = "columns-2",
+        description = <FormattedMessage id="dextinity.blocks.columns.description" defaultMessage="Columns with their own blocks" />,
+        contentBlock,
+        layouts,
+        tags,
+    }: CreateColumnsBlockOptions<T>,
     override?: (
         block: BlockInterface<ColumnsBlockFragment<T>, ColumnsBlockState<T>, ColumnsBlockFragment<T>>,
     ) => BlockInterface<ColumnsBlockFragment<T>, ColumnsBlockState<T>, ColumnsBlockFragment<T>>,
@@ -93,6 +112,10 @@ export function createColumnsBlock<T extends BlockInterface>(
         tags: tags ? tags : contentBlock.tags,
 
         category,
+
+        iconName,
+
+        description,
 
         defaultValues: () => {
             const defaultLayout = layouts[0];

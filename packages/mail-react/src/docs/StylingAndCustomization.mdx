@@ -1,3 +1,7 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Docs/Styling and Customization" />
+
 # Styling & Customization Reference
 
 Deep dive into the desktop-first styling model, `registerStyles`, BEM naming, custom component patterns, and overriding built-in components.
@@ -30,7 +34,7 @@ This means:
 
 The base email must look correct with zero CSS from `<style>` blocks. Media queries are layered on top as progressive enhancement for mobile viewports.
 
-MJML's column widths are the exception: they live in a `min-width` media query, not inline. A section with more than one column needs `disableResponsiveBehavior` — see [`layout-patterns.md`](layout-patterns.md) → Column Widths Must Be Inline.
+MJML's column widths are the exception: they live in a `min-width` media query, not inline. A section with more than one column needs `disableResponsiveBehavior` — see [`layout-patterns.md`](?path=/docs/docs-layout-patterns--docs) → Column Widths Must Be Inline.
 
 ### Why `!important`?
 
@@ -133,7 +137,7 @@ Where a rule depends on an item's position, set a modifier class while rendering
 }
 ```
 
-A flex `gap` does not stand in for this — see [`layout-patterns.md`](layout-patterns.md) → Multi-Column Symmetric Layouts.
+A flex `gap` does not stand in for this — see [`layout-patterns.md`](?path=/docs/docs-layout-patterns--docs) → Multi-Column Symmetric Layouts.
 
 Target the mail's body with `#body`. Some clients replace the `<body>` tag with a `<div>`, which a `body` selector no longer reaches.
 
@@ -280,7 +284,7 @@ registerStyles(
 
 This keeps responsive styles in sync with the theme's breakpoint configuration.
 
-Two client behaviors matter for responsive overrides: Yahoo Mail and Outlook.com drop any declaration that contains a [`calc()`](../SKILL.md#no-css-calc), and Yahoo Mail rewrites [`height` into `min-height`](../SKILL.md#height-becomes-min-height-in-yahoo-mail).
+Two client behaviors matter for responsive overrides: Yahoo Mail and Outlook.com drop any declaration that contains a [`calc()`](?path=/docs/docs-guide--docs#no-css-calc), and Yahoo Mail rewrites [`height` into `min-height`](?path=/docs/docs-guide--docs#height-becomes-min-height-in-yahoo-mail).
 
 ---
 

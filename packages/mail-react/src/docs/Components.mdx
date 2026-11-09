@@ -48,6 +48,8 @@ Root element for every email template. Renders the full MJML skeleton (`<mjml>`,
 - Zero default padding on all components
 - Renders all registered styles (`registerStyles`) in the `<head>`
 
+Without a `theme` prop, `MjmlMailRoot` uses the default theme, the same as `createTheme()` without arguments.
+
 **In Storybook:** the decorator wraps stories automatically — pass a custom theme via `parameters.theme`. **Outside Storybook:** wrap content in `MjmlMailRoot` yourself.
 
 ### Contributing to `<MjmlHead>` and `<MjmlAttributes>`
@@ -87,6 +89,8 @@ Full-width horizontal row with theme integration.
 `disableResponsiveBehavior` wraps the columns in an `MjmlGroup`. Every multi-column section needs it, because the group is what makes MJML write the column widths inline — see [Column Widths Must Be Inline](?path=/docs/docs-layout-patterns--docs#column-widths-must-be-inline).
 
 Indentation values come from `theme.sizes.contentIndentation`, which supports responsive values.
+
+The section takes `theme.colors.background.content` as its background color. Change the default in the theme, or set `backgroundColor` on one section.
 
 **Inside `MjmlWrapper`:** the theme-default `backgroundColor` is suppressed so the wrapper's background shows through. An explicit `backgroundColor` prop still wins.
 
@@ -172,6 +176,8 @@ The base spacing value comes from `theme.text.bottomSpacing`. Variants can overr
 `<a>` element for use inside `MjmlText` or `HtmlText`. Inherits parent's font styles — even on Outlook Desktop, which normally overrides link typography with its own defaults.
 
 **CSS class:** `.htmlInlineLink`.
+
+Links have no theme configuration of their own. To change their typography, change the styles or variants of the parent text.
 
 ```tsx
 <MjmlText variant="body">

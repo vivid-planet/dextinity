@@ -26,8 +26,8 @@ const { html, mjmlWarnings } = renderMailHtml(
 - `renderMailHtml` is **not** on the main `@dextinity/mail-react` barrel — always import from `/server` or `/client`
 - Returns `{ html: string; mjmlWarnings: MjmlWarning[] }` — warnings are collected, not thrown
 - The server `renderMailHtml` turns off `mj-include` by default, because an include can read files on the server. To use it, pass `{ ignoreIncludes: false }`.
-- A framework that bundles server code (Next.js) must list `mjml` in the application's own `package.json` too, or rendering fails at runtime
-- Nothing imports it directly — add `mjml` to `ignoreDependencies` in `knip.json` rather than removing it as unused
+
+With the [Mail Templates Module](https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/), call `renderMailHtml` in the `generateMail` method of the `.mail.tsx` file. See [Using React](https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/#using-react) for a complete example.
 
 ## Logging MJML Warnings
 
@@ -63,8 +63,14 @@ export const MailTextBlock = withPreview<PropsWithData<MailTextBlockData>>(
 ```
 
 - The rich-text components have no root element of their own: for a rich text inside a column, pass the `className` to the `textClassName` of `MjmlRichTextBlock` or `MjmlTipTapRichTextBlock`, which put it on each of their text elements.
-- Register a block without data of its own with its data anyway, `divider: (data) => <MailDividerBlock data={data} />`, or it gets no route.
-- The block preview page must put the ref from `useRefToRegisterMailBlocksForPreview(useIFrameBridge())` on the element that contains the mail HTML.
+- Register a block without data of its own with its data anyway, `divider: (data) => <MailDividerBlock data={data} />`. In the block preview, the admin adds the block's route to the data.
+- The block preview page must put the ref from `useRefToRegisterMailBlocksForPreview(useIFrameBridge())` on the element that contains the mail HTML:
+
+    ```tsx
+    const mailContainerRef = useRefToRegisterMailBlocksForPreview<HTMLSpanElement>(useIFrameBridge());
+
+    return <span ref={mailContainerRef} dangerouslySetInnerHTML={{ __html: mailHtml }} />;
+    ```
 
 ## Previewing in Storybook
 

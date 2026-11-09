@@ -9,12 +9,15 @@ import { Meta } from "@storybook/addon-docs/blocks";
 Create a theme with `createTheme()` and pass it to `MjmlMailRoot`:
 
 ```tsx
-import { createTheme, MjmlMailRoot } from "@dextinity/mail-react";
+import { createBreakpoint, createTheme, MjmlMailRoot } from "@dextinity/mail-react";
 
 const theme = createTheme({
     sizes: {
         bodyWidth: 700,
         contentIndentation: { default: 40, mobile: 20 },
+    },
+    breakpoints: {
+        mobile: createBreakpoint(480),
     },
     text: {
         fontFamily: "Georgia, serif",

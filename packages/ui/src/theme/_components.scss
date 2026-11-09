@@ -3,6 +3,7 @@
 @use "../components/formHelperText/FormHelperText.tokens" as formHelperText;
 @use "../components/iconButton/IconButton.tokens" as iconButton;
 @use "../components/mainNavigationItem/MainNavigationItem.tokens" as mainNavigationItem;
+@use "../components/menuSectionHeader/MenuSectionHeader.tokens" as menuSectionHeader;
 
 @layer dextinity {
     [data-dextinity-color-scheme] {
@@ -11,6 +12,7 @@
         @include formHelperText.tokens;
         @include iconButton.tokens;
         @include mainNavigationItem.tokens;
+        @include menuSectionHeader.tokens;
 
         --dextinity-checkbox-size: 20px;
         --dextinity-checkbox-radius: var(--dextinity-radius-sm);
@@ -116,23 +118,6 @@
         --dextinity-input-height: var(--dextinity-unit-10);
         --dextinity-input-radius: var(--dextinity-brand-radius-forms);
         --dextinity-input-gap: var(--dextinity-unit-2);
-
-        --dextinity-main-navigation-section-header-padding-horizontal: var(--dextinity-unit-3);
-        --dextinity-main-navigation-section-header-padding-vertical: var(--dextinity-unit-2);
-
-        --dextinity-main-navigation-section-header-gap: var(--dextinity-unit-1);
-
-        --dextinity-main-navigation-section-header-font-size: var(--dextinity-typography-body-sm-size);
-        --dextinity-main-navigation-section-header-font-line-height: var(--dextinity-typography-body-sm-line-height);
-        --dextinity-main-navigation-section-header-font-weight: var(--dextinity-font-weight-semibold);
-
-        --dextinity-main-navigation-section-header-font-weight-style: var(--dextinity-font-weight-bold-style);
-
-        --dextinity-main-navigation-section-header-default-foreground: var(--dextinity-color-foreground-subtle);
-        --dextinity-main-navigation-section-header-default-icon: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-main-navigation-section-header-hover-foreground: var(--dextinity-color-foreground-muted);
-        --dextinity-main-navigation-section-header-hover-icon: var(--dextinity-color-foreground-muted);
 
         --dextinity-input-border-width: 1px;
 

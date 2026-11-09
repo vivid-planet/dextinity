@@ -1,7 +1,6 @@
 import { Injectable, Scope } from "@nestjs/common";
 import DataLoader from "dataloader";
 
-import { User } from "../user-permissions/interfaces/user";
 import { UserPermissionsService } from "../user-permissions/user-permissions.service";
 import { ActionLogsUser } from "./dto/action-logs-user";
 
@@ -11,20 +10,14 @@ export class ActionLogsUserLoaderService {
 
     constructor(private readonly userPermissionsService: UserPermissionsService) {
         this.dataLoader = new DataLoader<string, ActionLogsUser>(async (userIds) => {
-            const idsToLookUp = userIds.filter((userId) => !this.userPermissionsService.isSystemUser(userId));
-            const users = await this.userPermissionsService.findUsersByIds(idsToLookUp);
-            const usersById = new Map<string, User>();
-            for (const [index, userId] of idsToLookUp.entries()) {
-                const user = users[index];
-                if (user) {
-                    usersById.set(userId, user);
-                }
-            }
+            const users = await this.userPermissionsService.findUsersByIds(
+                userIds.filter((userId) => !this.userPermissionsService.isSystemUser(userId)),
+            );
             return userIds.map((userId) => {
                 if (this.userPermissionsService.isSystemUser(userId)) {
                     return { id: userId, name: userId };
                 }
-                const user = usersById.get(userId);
+                const user = users.find((user) => user?.id === userId);
                 return user ? { id: user.id, name: user.name } : { id: userId };
             });
         });

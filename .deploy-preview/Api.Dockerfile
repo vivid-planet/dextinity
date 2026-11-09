@@ -9,14 +9,16 @@ RUN corepack enable && mkdir -p /app && chown node:node /app
 WORKDIR /app
 USER node
 
-COPY --chown=node:node --parents package.json pnpm-lock.yaml pnpm-workspace.yaml packages/**/package.json demo/**/package.json docs/package.json storybook/package.json ./
+COPY --chown=node:node --parents package.json pnpm-lock.yaml pnpm-workspace.yaml packages/**/package.json demo/**/package.json demo/*/intl-update.sh docs/package.json storybook/package.json ./
+# pnpm install runs the prepare scripts of the demo packages, which clone the translations.
 # Cache mounts belong to root unless uid/gid say otherwise.
 RUN --mount=type=cache,id=dextinity-demo-deploy-preview-pnpm-store,target=/pnpm-store,uid=1000,gid=1000 \
     pnpm install --frozen-lockfile --store-dir /pnpm-store --filter='dextinity-demo-api...'
 
 COPY --chown=node:node . .
 # CI=true makes copy-project-files.js copy instead of symlink.
-RUN node copy-project-files.js && sh demo/api/intl-update.sh
+# The translations are cloned again, because the install step above stays cached until a package.json or the lockfile changes.
+RUN node copy-project-files.js && pnpm --dir demo/api run intl:update
 RUN pnpm --recursive --filter='dextinity-demo-api^...' run build
 
 WORKDIR /app/demo/api

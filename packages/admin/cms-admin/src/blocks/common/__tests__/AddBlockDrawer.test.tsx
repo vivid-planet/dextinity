@@ -68,9 +68,10 @@ describe("AddBlockDrawer", () => {
         addButton.focus();
         fireEvent.click(addButton);
 
-        await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("searchbox", { name: "Search blocks" })));
+        const search = screen.getByRole("searchbox", { name: "Search blocks" });
+        await waitFor(() => expect(document.activeElement).toBe(search));
 
-        fireEvent.keyDown(document.activeElement!, { key: "Escape" });
+        fireEvent.keyDown(search, { key: "Escape" });
         await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
         await waitFor(() => expect(document.activeElement).toBe(addButton));
     });

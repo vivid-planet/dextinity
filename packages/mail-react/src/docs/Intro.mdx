@@ -4,7 +4,7 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # @dextinity/mail-react
 
-`@dextinity/mail-react` is Dextinity's library for building responsive, themed HTML emails with React and MJML.
+`@dextinity/mail-react` lets you build responsive, themed HTML emails using React components. Under the hood it uses [MJML](https://documentation.mjml.io/) to generate cross-client-compatible HTML. The library provides a theme system, higher-level wrapper components, a style utility layer, and Storybook integration for live previewing emails during development.
 
 This Storybook is for developing and previewing components in isolation. For the full guide — installation, the theme system, MJML layout rules, and integrating with the Mail Templates Module — see the [Building HTML Emails](https://cms-docs.dextinity.com/docs/features-modules/building-html-emails/) documentation.
 
@@ -15,3 +15,10 @@ The Storybook serves an MCP server, so that AI agents can look up the components
 ```sh
 claude mcp add --transport http dextinity-mail-react https://main--69df33e9280a36be495d6521.chromatic.com/mcp
 ```
+
+## Related Modules
+
+The `@dextinity/mail-react` package focuses on building email markup. For sending emails and managing templates in a Dextinity project:
+
+- **Mail Templates Module** — server-side template registration, dependency injection, and sending. Integrates with `@dextinity/mail-react` via `renderMailHtml`. Docs: https://cms-docs.dextinity.com/docs/features-modules/mail-templates-module/
+- **Mailer Module** — lower-level mail sending service. Docs: https://cms-docs.dextinity.com/docs/features-modules/mailer-module/

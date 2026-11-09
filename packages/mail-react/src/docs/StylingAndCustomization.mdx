@@ -2,45 +2,7 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 <Meta title="Docs/Styling and Customization" />
 
-# Styling & Customization Reference
-
-Deep dive into the desktop-first styling model, `registerStyles`, BEM naming, custom component patterns, and overriding built-in components.
-
-## Table of Contents
-
-1. [Desktop-First Styling Model](#desktop-first-styling-model)
-2. [The `css` Helper](#the-css-helper)
-3. [Registering Responsive Styles](#registering-responsive-styles)
-4. [Selectors That Reach Every Client](#selectors-that-reach-every-client)
-5. [BEM Class Naming Convention](#bem-class-naming-convention)
-6. [Custom Component Pattern](#custom-component-pattern)
-7. [The `belowMediaQuery` Pattern](#the-belowmediaquery-pattern)
-8. [Overriding Built-In Components](#overriding-built-in-components)
-9. [Forwarding Props via `slotProps`](#forwarding-props-via-slotprops)
-10. [MJML Table Structure](#mjml-table-structure)
-
----
-
-## Desktop-First Styling Model
-
-Email clients that lack CSS support are almost exclusively desktop clients (Outlook 2007–2019, older Lotus Notes). Mobile email clients — Apple Mail, Gmail app, Outlook mobile — all support `<style>` blocks and media queries.
-
-Reading a `<style>` block is not the same as applying everything in it. Gmail reads the block and then drops each rule whose selector it does not take — see [Selectors That Reach Every Client](#selectors-that-reach-every-client).
-
-This means:
-
-- **Desktop/default rendering** → inline styles only (MJML props compile to inline styles)
-- **Mobile/responsive overrides** → `<style>` blocks with media queries via `registerStyles`
-
-The base email must look correct with zero CSS from `<style>` blocks. Media queries are layered on top as progressive enhancement for mobile viewports.
-
-MJML's column widths are the exception: they live in a `min-width` media query, not inline. A section with more than one column needs `disableResponsiveBehavior` — see [`layout-patterns.md`](?path=/docs/docs-layout-patterns--docs) → Column Widths Must Be Inline.
-
-### Why `!important`?
-
-Email clients inline all styles during processing. Since inline styles have higher CSS specificity than `<style>` block rules, responsive overrides must use `!important` to win. Every property inside a media query override should have `!important`.
-
----
+# Styling and Customization
 
 ## The `css` Helper
 
@@ -113,7 +75,36 @@ registerStyles(css`
 - An entry registered with `{ inline: true }` as the second argument has its rules written into `style` attributes. It keeps no `@media` rules: MJML drops them without a warning.
 - Do not write `//` comments inside a `css` template: CSS has no line comments, so mail-react throws an error when it minifies the registered styles. In an `{ inline: true }` entry there is no error, and the rule after the comment is lost. Use `/* */`, or a JS comment in an expression: `${/* note */ ""}`
 
----
+## The `belowMediaQuery` Pattern
+
+Every breakpoint in the theme has a `belowMediaQuery` property — a ready-to-use CSS media query string targeting viewports below that breakpoint:
+
+```ts
+theme.breakpoints.mobile.belowMediaQuery;
+// → "@media (max-width: 419px)"   (for mobile breakpoint at 420px)
+
+theme.breakpoints.tablet.belowMediaQuery;
+// → "@media (max-width: 539px)"   (for tablet breakpoint at 540px, if augmented)
+```
+
+Always use `belowMediaQuery` instead of hardcoding media query values:
+
+```ts
+registerStyles(
+    (theme) => css`
+        ${theme.breakpoints.mobile.belowMediaQuery} {
+            .myComponent {
+                font-size: 14px !important;
+                padding: 10px !important;
+            }
+        }
+    `,
+);
+```
+
+This keeps responsive styles in sync with the theme's breakpoint configuration. If a breakpoint value is needed repeatedly but doesn't exist in the theme, add it via `createBreakpoint` and module augmentation rather than duplicating raw media queries. Reserve hardcoded media queries for genuinely one-off values.
+
+Two client behaviors matter for responsive overrides: Yahoo Mail and Outlook.com drop any declaration that contains a [`calc()`](?path=/docs/docs-email-client-pitfalls--docs#no-css-calc), and Yahoo Mail rewrites [`height` into `min-height`](?path=/docs/docs-email-client-pitfalls--docs#height-becomes-min-height-in-yahoo-mail).
 
 ## Selectors That Reach Every Client
 
@@ -137,11 +128,9 @@ Where a rule depends on an item's position, set a modifier class while rendering
 }
 ```
 
-A flex `gap` does not stand in for this — see [`layout-patterns.md`](?path=/docs/docs-layout-patterns--docs) → Multi-Column Symmetric Layouts.
+A flex `gap` does not stand in for this — see [Multi-Column Symmetric Layouts](?path=/docs/docs-layout-patterns--docs#multi-column-symmetric-layouts-3-columns).
 
 Target the mail's body with `#body`. Some clients replace the `<body>` tag with a `<div>`, which a `body` selector no longer reaches.
-
----
 
 ## BEM Class Naming Convention
 
@@ -160,11 +149,11 @@ Built-in components follow this convention:
 - `htmlText`, `htmlText--body`
 - `htmlInlineLink`
 
----
-
 ## Custom Component Pattern
 
-The complete pattern for building email-safe custom components:
+When built-in components don't cover your needs, create custom components. **Always try to compose layouts using MJML components first** (`MjmlSection`, `MjmlColumn`, `MjmlText`, `MjmlImage`, etc.) — they handle cross-client compatibility automatically. Only drop into raw HTML (`MjmlRaw`, `MjmlTable`) when the MJML layout model genuinely can't express the structure you need. Raw HTML is an escape hatch, not the default approach.
+
+When raw HTML is necessary, follow these conventions:
 
 1. **Inline styles** for base/desktop rendering — set via `style` props on HTML elements
 2. **BEM class names** on elements that need responsive overrides
@@ -252,41 +241,6 @@ registerStyles(
 - Always reset margins on block-level elements: `style={{ margin: 0 }}`
 - **Every element with a manual `line-height`** must also have `mso-line-height-rule: exactly` as an inline style — Outlook ignores standard line-height calculations and produces unexpected vertical spacing without it. This is easy to forget on `<span>` and `<td>` elements inside custom components.
 - `borderRadius` won't render in Outlook — provide a visually acceptable fallback
-
----
-
-## The `belowMediaQuery` Pattern
-
-Every breakpoint in the theme has a `belowMediaQuery` property — a ready-to-use CSS media query string targeting viewports below that breakpoint:
-
-```ts
-theme.breakpoints.mobile.belowMediaQuery;
-// → "@media (max-width: 419px)"   (for mobile breakpoint at 420px)
-
-theme.breakpoints.tablet.belowMediaQuery;
-// → "@media (max-width: 539px)"   (for tablet breakpoint at 540px, if augmented)
-```
-
-Always use `belowMediaQuery` instead of hardcoding media query values:
-
-```ts
-registerStyles(
-    (theme) => css`
-        ${theme.breakpoints.mobile.belowMediaQuery} {
-            .myComponent {
-                font-size: 14px !important;
-                padding: 10px !important;
-            }
-        }
-    `,
-);
-```
-
-This keeps responsive styles in sync with the theme's breakpoint configuration.
-
-Two client behaviors matter for responsive overrides: Yahoo Mail and Outlook.com drop any declaration that contains a [`calc()`](?path=/docs/docs-guide--docs#no-css-calc), and Yahoo Mail rewrites [`height` into `min-height`](?path=/docs/docs-guide--docs#height-becomes-min-height-in-yahoo-mail).
-
----
 
 ## Overriding Built-In Components
 

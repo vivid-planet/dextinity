@@ -116,6 +116,7 @@ function MailHeaderMobileLayout(): ReactNode {
     );
 }
 
+/** Two layouts in one mail: a media query hides the desktop layout and shows the mobile layout below the body width. */
 export const Default: StoryObj = {
     parameters: { theme },
     render: () => (

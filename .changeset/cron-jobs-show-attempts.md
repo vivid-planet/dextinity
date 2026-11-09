@@ -12,3 +12,8 @@ For this, `KubernetesJob` has new fields `attempts` (the Job's Pods with `podNam
 
 The logs returned by `kubernetesJobLogs` are now sorted by attempt, and each attempt's log is wrapped in a header and footer line stating the Pod, when it started and why it ended (e.g. `OOMKilled, exit code 137`).
 If the Job failed, the reason of the `Failed` condition is appended.
+
+A Job is no longer reported as `failed` while it waits for a retry.
+After a failed attempt, Kubernetes waits for a backoff delay before it retries the Job, and no Pod is active in the meantime.
+The Job was reported as `failed` during this delay, so a CronJob or build could be started a second time while the retry was pending.
+The Job is now `pending` until it has the `Failed` condition.

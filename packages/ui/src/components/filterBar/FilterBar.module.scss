@@ -8,6 +8,13 @@
     font-family: var(--dextinity-font-family-text);
 }
 
+.start {
+    display: flex;
+    flex: none;
+    gap: var(--dextinity-filter-bar-gap);
+    align-items: center;
+}
+
 .search {
     display: flex;
     flex: 0 1 var(--dextinity-filter-bar-search-width);

@@ -32,6 +32,8 @@ const defaultLabels: FilterBarLabels = {
 };
 
 export interface FilterBarSlotProps {
+    /** Props for the `start` slot, the box around `start`. */
+    start?: SlotPropsValue<FilterBarOwnerState, "div">;
     /** Props for the `search` slot, the box around the search input. */
     search?: SlotPropsValue<FilterBarOwnerState, "label">;
     /** Props for the `input` slot, the search input. */
@@ -49,6 +51,8 @@ export interface FilterBarProps extends Omit<HTMLAttributes<HTMLDivElement>, "cl
     searchValue: string;
     /** Called with the new search text; with `""` when Escape clears it. */
     onSearchChange: (value: string) => void;
+    /** Before the search, e.g. a `Checkbox` that marks all items. */
+    start?: ReactNode;
     /** The filters, usually a `FilterChip` per status, a "More filters" menu, and a chip per active filter. */
     children?: ReactNode;
     /** Shows the number of results after the filters, announced to screen readers as it changes. */
@@ -74,7 +78,19 @@ export interface FilterBarProps extends Omit<HTMLAttributes<HTMLDivElement>, "cl
  * clears it.
  */
 export const FilterBar = forwardRef<HTMLDivElement, FilterBarProps>(function FilterBar(
-    { searchValue, onSearchChange, children, resultCount, actions, searchShortcut = "/", labels: labelsProp, className, slotProps, ...restProps },
+    {
+        searchValue,
+        onSearchChange,
+        start,
+        children,
+        resultCount,
+        actions,
+        searchShortcut = "/",
+        labels: labelsProp,
+        className,
+        slotProps,
+        ...restProps
+    },
     ref,
 ) {
     const ownerState: FilterBarOwnerState = { searching: searchValue !== "" };
@@ -83,6 +99,11 @@ export const FilterBar = forwardRef<HTMLDivElement, FilterBarProps>(function Fil
 
     useKeyboardShortcut(searchShortcut === false ? "" : searchShortcut, () => inputRef.current?.focus(), { enabled: searchShortcut !== false });
 
+    const startProps = resolveSlotProps<FilterBarOwnerState, "div", "div">({
+        ownProps: { className: styles.start },
+        slotProps: slotProps?.start,
+        ownerState,
+    });
     const searchProps = resolveSlotProps<FilterBarOwnerState, "label", "label">({
         ownProps: { className: styles.search },
         slotProps: slotProps?.search,
@@ -126,6 +147,7 @@ export const FilterBar = forwardRef<HTMLDivElement, FilterBarProps>(function Fil
 
     return (
         <div role="search" {...restProps} ref={ref} data-searching={ownerState.searching ? "" : undefined} className={clsx(styles.root, className)}>
+            {start != null && <div {...startProps}>{start}</div>}
             <label {...searchProps}>
                 <Icon name="search" />
                 <input {...inputProps} />

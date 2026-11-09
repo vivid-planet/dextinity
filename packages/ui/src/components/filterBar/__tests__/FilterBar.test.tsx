@@ -21,4 +21,12 @@ describe("FilterBar", () => {
         expect(screen.getByRole("group", { name: "Filters" }).className).toContain("dextinityFilterBar__filters");
         expect(screen.getByRole("status")).toHaveTextContent("2 results");
     });
+
+    it("puts start before the search, in its contract part", () => {
+        render(<FilterBar searchValue="" onSearchChange={() => {}} start={<input type="checkbox" aria-label="Select all" />} />);
+
+        const start = screen.getByRole("checkbox", { name: "Select all" }).parentElement as HTMLElement;
+        expect(start.className).toContain("dextinityFilterBar__start");
+        expect(start.nextElementSibling?.contains(screen.getByRole("searchbox"))).toBe(true);
+    });
 });

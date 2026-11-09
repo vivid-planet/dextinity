@@ -5,6 +5,7 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { jobAds, type JobAdStatus } from "../../../storybook/patterns/jobAds";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
+import { Checkbox } from "../../checkbox/Checkbox";
 import { FilterChip } from "../../filterChip/FilterChip";
 import { Icon } from "../../icon/Icon";
 import { FilterBar, type FilterBarProps } from "../FilterBar";
@@ -61,6 +62,7 @@ const meta = {
     },
     argTypes: {
         searchShortcut: { control: "text" },
+        start: { control: false },
         children: { control: false },
         actions: { control: false },
         labels: { control: false },
@@ -122,5 +124,14 @@ export const WithActions: Story = {
                 Export
             </Button>
         ),
+    },
+};
+
+/**
+ * A checkbox that marks all items sits before the search, e.g. in the toolbar of the page tree.
+ */
+export const WithStart: Story = {
+    args: {
+        start: <Checkbox aria-label="Select all job ads" checked={false} onChange={fn()} />,
     },
 };

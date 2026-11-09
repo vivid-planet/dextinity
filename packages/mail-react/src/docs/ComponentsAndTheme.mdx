@@ -1,3 +1,7 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Docs/Components and Theme" />
+
 # Components & Theme Reference
 
 Theme system, module augmentation, scoped theming, and the component behavior for `@dextinity/mail-react` that its types and TSDoc don't capture on their own. For prop names, types, and defaults, read the types and their TSDoc.
@@ -242,7 +246,7 @@ Full-width horizontal row with theme integration.
 </MjmlSection>
 ```
 
-`disableResponsiveBehavior` wraps the columns in an `MjmlGroup`. Every multi-column section needs it, because the group is what makes MJML write the column widths inline — see [`layout-patterns.md`](layout-patterns.md) → Column Widths Must Be Inline.
+`disableResponsiveBehavior` wraps the columns in an `MjmlGroup`. Every multi-column section needs it, because the group is what makes MJML write the column widths inline — see [`layout-patterns.md`](?path=/docs/docs-layout-patterns--docs) → Column Widths Must Be Inline.
 
 Indentation values come from `theme.sizes.contentIndentation`, which supports responsive values.
 
@@ -271,7 +275,7 @@ The wrapper takes the theme's content background by default. Inner `MjmlSection`
 </MjmlWrapper>
 ```
 
-Typical uses: multi-section footers with their own color, or grouping sections behind a shared outer padding (e.g., the `direction="rtl"` workaround in [`layout-patterns.md`](layout-patterns.md)). For a region that also needs different default text color or variants, combine `MjmlWrapper` with a scoped `ThemeProvider` — see Scoped Theming below.
+Typical uses: multi-section footers with their own color, or grouping sections behind a shared outer padding (e.g., the `direction="rtl"` workaround in [`layout-patterns.md`](?path=/docs/docs-layout-patterns--docs)). For a region that also needs different default text color or variants, combine `MjmlWrapper` with a scoped `ThemeProvider` — see Scoped Theming below.
 
 ---
 
@@ -365,7 +369,7 @@ Use `!important` when setting a custom link color — the responsive reset uses 
 
 Themed horizontal line, styled from `theme.divider` (base styles plus variants). Falls back to a built-in default when no theme is in scope; only `variant` requires a theme.
 
-A dark divider can almost disappear in dark mode, see [Keep a Line Visible](dark-mode.md#keep-a-line-visible).
+A dark divider can almost disappear in dark mode, see [Keep a Line Visible](?path=/docs/docs-dark-mode--docs#keep-a-line-visible).
 
 - **`MjmlDivider`** — inside `MjmlColumn`. Classes `.mjmlDivider`, `.mjmlDivider--{variant}`.
 - **`HtmlDivider`** — inside ending tags (`MjmlRaw`) or raw HTML. Classes `.htmlDivider`, `.htmlDivider--{variant}`.

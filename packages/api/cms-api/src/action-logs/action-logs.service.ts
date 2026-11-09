@@ -42,8 +42,8 @@ export class ActionLogsService implements OnModuleInit {
         if ("scope" in entity) {
             return Array.isArray(entity.scope) ? entity.scope : [entity.scope];
         }
-        if (Reflect.hasOwnMetadata(SCOPED_ENTITY_METADATA_KEY, entity.constructor.prototype)) {
-            const scoped: ScopedEntityMeta = Reflect.getMetadata(SCOPED_ENTITY_METADATA_KEY, entity.constructor.prototype);
+        const scoped = Reflect.getMetadata(SCOPED_ENTITY_METADATA_KEY, entity.constructor) as ScopedEntityMeta | undefined;
+        if (scoped) {
             const scopedEntityScope = await getScopesForScopedEntity({
                 scoped,
                 entity: entity.constructor as EntityName<AnyEntity>,

@@ -1,9 +1,23 @@
 import type { StorybookConfig } from "@storybook/react-vite";
+import remarkGfm from "remark-gfm";
 import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
     stories: ["../src/**/*.mdx", "../src/**/*.stories.tsx"],
-    addons: ["@storybook/addon-docs", "@storybook/addon-mcp", "@storybook/addon-vitest"],
+    addons: [
+        {
+            name: "@storybook/addon-docs",
+            options: {
+                mdxPluginOptions: {
+                    mdxCompileOptions: {
+                        remarkPlugins: [remarkGfm],
+                    },
+                },
+            },
+        },
+        "@storybook/addon-mcp",
+        "@storybook/addon-vitest",
+    ],
     framework: "@storybook/react-vite",
     features: { componentsManifest: true },
     viteFinal: (viteConfig) =>

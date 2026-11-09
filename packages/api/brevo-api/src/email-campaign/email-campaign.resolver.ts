@@ -16,6 +16,7 @@ import { EmailCampaignInputInterface } from "./dto/email-campaign-input.factory"
 import { SendTestEmailCampaignArgs } from "./dto/send-test-email-campaign.args";
 import { EmailCampaignsService } from "./email-campaigns.service";
 import { EmailCampaignInterface } from "./entities/email-campaign-entity.factory";
+import { getScheduledCampaignSendingState } from "./scheduled-sending-state";
 import { SendingState } from "./sending-state.enum";
 
 export function createEmailCampaignsResolver({
@@ -225,8 +226,10 @@ export function createEmailCampaignsResolver({
                 try {
                     const entityManager = this.entityManager.fork();
                     const failedCampaign = await entityManager.findOneOrFail<EmailCampaignInterface>(this.repository.getEntityName(), id);
-                    wrap(failedCampaign).assign({ sendingState: SendingState.FAILED });
-                    await entityManager.flush();
+                    if (failedCampaign.sendingState === SendingState.SCHEDULED) {
+                        wrap(failedCampaign).assign({ sendingState: SendingState.FAILED });
+                        await entityManager.flush();
+                    }
                 } catch (updateError) {
                     this.logger.error(`Failed to update sending state to FAILED for email campaign ${id}`, updateError);
                 }
@@ -274,12 +277,16 @@ export function createEmailCampaignsResolver({
 
         @ResolveField(() => SendingState)
         async sendingState(@Parent() campaign: EmailCampaignInterface): Promise<SendingState> {
-            if (campaign.sendingState === SendingState.SCHEDULED && campaign.scheduledAt && campaign.scheduledAt < new Date() && campaign.brevoId) {
-                const brevoCampaign = await this.brevoApiCampaignsService.loadBrevoCampaignById(campaign);
+            if (campaign.sendingState === SendingState.SCHEDULED && campaign.scheduledAt && campaign.scheduledAt < new Date()) {
+                const brevoSendingState = campaign.brevoId
+                    ? this.brevoApiCampaignsService.getSendingInformationFromBrevoCampaign(
+                          await this.brevoApiCampaignsService.loadBrevoCampaignById(campaign),
+                      )
+                    : undefined;
 
-                const state = this.brevoApiCampaignsService.getSendingInformationFromBrevoCampaign(brevoCampaign);
+                const state = getScheduledCampaignSendingState({ scheduledAt: campaign.scheduledAt, brevoSendingState });
 
-                if (state) {
+                if (state !== campaign.sendingState) {
                     wrap(campaign).assign({ sendingState: state });
                     await this.entityManager.flush();
                 }

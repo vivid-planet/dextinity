@@ -13,6 +13,7 @@ import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
 import { EmailCampaignFilter } from "./dto/email-campaign.filter";
 import { EmailCampaignInterface } from "./entities/email-campaign-entity.factory";
+import { getScheduledCampaignSendingState } from "./scheduled-sending-state";
 import { SendingState } from "./sending-state.enum";
 
 const CAMPAIGN_CONTENT_REQUEST_TIMEOUT = 5000;
@@ -116,25 +117,27 @@ export class EmailCampaignsService {
         campaigns: EmailCampaignInterface[],
         scope: EmailCampaignScopeInterface,
     ): Promise<EmailCampaignInterface[]> {
-        const potentiallySentCampaigns = campaigns.filter(
-            (campaign) => campaign.sendingState === SendingState.SCHEDULED && campaign.scheduledAt && campaign.scheduledAt < new Date(),
+        const now = new Date();
+        const pastScheduledCampaigns = campaigns.filter(
+            (campaign): campaign is EmailCampaignInterface & { scheduledAt: Date } =>
+                campaign.sendingState === SendingState.SCHEDULED && !!campaign.scheduledAt && campaign.scheduledAt < now,
         );
 
-        const brevoIds = potentiallySentCampaigns.map((campaign) => campaign?.brevoId).filter((campaign) => campaign) as number[];
-
-        if (brevoIds.length > 0) {
-            const brevoCampaigns = await this.brevoApiCampaignService.loadBrevoCampaignsByIds(brevoIds, scope);
-
-            for (const brevoCampaign of brevoCampaigns) {
-                const sendingState = this.brevoApiCampaignService.getSendingInformationFromBrevoCampaign(brevoCampaign);
-
-                const campaign = campaigns.find((campaign) => campaign.brevoId === brevoCampaign.id);
-                if (campaign && sendingState) {
-                    wrap(campaign).assign({ sendingState });
-                }
-            }
-            this.entityManager.flush();
+        if (pastScheduledCampaigns.length === 0) {
+            return campaigns;
         }
+
+        const brevoIds = pastScheduledCampaigns.map((campaign) => campaign.brevoId).filter((brevoId): brevoId is number => !!brevoId);
+        const brevoCampaigns = brevoIds.length > 0 ? await this.brevoApiCampaignService.loadBrevoCampaignsByIds(brevoIds, scope) : [];
+
+        for (const campaign of pastScheduledCampaigns) {
+            const brevoCampaign = brevoCampaigns.find((brevoCampaign) => brevoCampaign.id === campaign.brevoId);
+            const brevoSendingState = brevoCampaign ? this.brevoApiCampaignService.getSendingInformationFromBrevoCampaign(brevoCampaign) : undefined;
+
+            wrap(campaign).assign({ sendingState: getScheduledCampaignSendingState({ scheduledAt: campaign.scheduledAt, brevoSendingState, now }) });
+        }
+
+        await this.entityManager.flush();
 
         return campaigns;
     }
@@ -168,11 +171,21 @@ export class EmailCampaignsService {
                 } while (currentOffset < totalContacts);
 
                 if (brevoCampaign.brevoId) {
+                    if (!(await this.isStillScheduledForSending(brevoCampaign))) {
+                        throw new Error(`Email campaign ${campaignId} is no longer scheduled for sending, e.g., because sending timed out`);
+                    }
+
                     return this.brevoApiCampaignService.sendBrevoCampaign(brevoCampaign);
                 }
             }
         }
 
         return false;
+    }
+
+    private async isStillScheduledForSending(campaign: EmailCampaignInterface): Promise<boolean> {
+        const currentCampaign = await this.entityManager.fork().findOne<EmailCampaignInterface>(this.repository.getEntityName(), campaign.id);
+
+        return currentCampaign?.sendingState === SendingState.SCHEDULED && currentCampaign.brevoId === campaign.brevoId;
     }
 }

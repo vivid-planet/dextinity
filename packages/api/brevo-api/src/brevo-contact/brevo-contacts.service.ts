@@ -9,6 +9,7 @@ import { BrevoEmailImportLogService } from "../brevo-email-import-log/brevo-emai
 import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory";
 import { TargetGroupsService } from "../target-group/target-groups.service";
 import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../types";
 import { hashEmail } from "../util/hash.util";
@@ -153,17 +154,29 @@ export class BrevoContactsService {
         scope: EmailCampaignScopeInterface;
         keptListIds: number[];
     }): Promise<void> {
-        const [subscribedMainLists] = await this.targetGroupService.findTargetGroups({
-            offset: 0,
-            limit: contact.listIds.length,
-            where: { isMainList: true, brevoId: { $in: contact.listIds } },
-        });
-
+        const limit = 50;
+        const { apiKey } = this.config.brevo.resolveConfig(scope);
+        const subscribedMainLists: TargetGroupInterface[] = [];
         let offset = 0;
         let totalCount = 0;
+
+        do {
+            const [mainLists, totalMainLists] = await this.targetGroupService.findTargetGroups({
+                offset,
+                limit,
+                where: { isMainList: true, brevoId: { $in: contact.listIds } },
+            });
+            totalCount = totalMainLists;
+            offset += mainLists.length;
+
+            // Scopes can use different Brevo accounts, whose list IDs can overlap.
+            subscribedMainLists.push(...mainLists.filter((mainList) => this.config.brevo.resolveConfig(mainList.scope).apiKey === apiKey));
+        } while (offset < totalCount);
+
+        offset = 0;
+        totalCount = 0;
         const listIdsToLink: number[] = [];
         const listIdsToUnlink: number[] = [];
-        const limit = 50;
         const where = { isMainList: false, isTestList: false, $or: subscribedMainLists.map((mainList) => ({ scope: mainList.scope })) };
 
         do {

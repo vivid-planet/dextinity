@@ -20,6 +20,7 @@ const redirectionUrl = "https://example.com/confirm";
 const mainListBrevoId = 10;
 const attributeTargetGroupBrevoId = 20;
 const otherScope = { domain: "secondary" };
+const otherAccountScope = { domain: "foreign" };
 const otherScopeMainListBrevoId = 99;
 
 describe("BrevoContactsService", () => {
@@ -45,7 +46,10 @@ describe("BrevoContactsService", () => {
         vi.clearAllMocks();
 
         targetGroupsService.createIfNotExistMainTargetGroupForScope.mockResolvedValue({ brevoId: mainListBrevoId });
-        targetGroupsService.findTargetGroups.mockResolvedValue([[{ brevoId: attributeTargetGroupBrevoId, filters: { SALUTATION: ["MRS"] } }], 1]);
+        targetGroupsService.findTargetGroups.mockResolvedValue([
+            [{ brevoId: attributeTargetGroupBrevoId, scope, filters: { SALUTATION: ["MRS"] } }],
+            1,
+        ]);
         targetGroupsService.checkIfContactIsInTargetGroupByAttributes.mockReturnValue(true);
         brevoApiContactsService.createDoubleOptInBrevoContact.mockResolvedValue(true);
         brevoApiContactsService.createBrevoContactWithoutDoubleOptIn.mockResolvedValue(true);
@@ -54,7 +58,14 @@ describe("BrevoContactsService", () => {
         ecgRtrListService.getContainedEcgRtrListEmails.mockResolvedValue([]);
 
         service = new BrevoContactsService(
-            { brevo: {}, contactsWithoutDoi: { emailHashKey: "abcdef" } } as unknown as BrevoModuleConfig,
+            {
+                brevo: {
+                    resolveConfig: (configScope: { domain: string }) => ({
+                        apiKey: configScope.domain === otherAccountScope.domain ? "other" : "shared",
+                    }),
+                },
+                contactsWithoutDoi: { emailHashKey: "abcdef" },
+            } as unknown as BrevoModuleConfig,
             brevoConfigRepository as unknown as EntityRepository<BrevoConfigInterface>,
             blacklistedContactsRepository as unknown as EntityRepository<BlacklistedContactsInterface>,
             brevoApiContactsService as unknown as BrevoApiContactsService,
@@ -214,6 +225,44 @@ describe("BrevoContactsService", () => {
                 { listIds: [otherScopeMrTargetGroupBrevoId], unlinkListIds: [otherScopeMrsTargetGroupBrevoId] },
                 scope,
             );
+        });
+
+        it("does not update the target groups of scopes in another Brevo account with an overlapping main list ID", async () => {
+            brevoApiContactsService.getContactInfoByEmail.mockResolvedValue({ id: 1, email, listIds: [otherScopeMainListBrevoId] });
+            brevoApiContactsService.updateContact.mockResolvedValueOnce({
+                id: 1,
+                email,
+                listIds: [otherScopeMainListBrevoId, mainListBrevoId, attributeTargetGroupBrevoId],
+                attributes,
+            });
+            targetGroupsService.findTargetGroups
+                .mockResolvedValueOnce([[{ brevoId: attributeTargetGroupBrevoId, scope, filters: { SALUTATION: ["MRS"] } }], 1])
+                .mockResolvedValueOnce([
+                    [
+                        { brevoId: mainListBrevoId, scope },
+                        { brevoId: otherScopeMainListBrevoId, scope: otherAccountScope },
+                    ],
+                    2,
+                ])
+                .mockResolvedValueOnce([[{ brevoId: attributeTargetGroupBrevoId, scope, filters: { SALUTATION: ["MRS"] } }], 1]);
+
+            const response = await service.createContact({
+                email,
+                attributes,
+                scope,
+                templateId,
+                sendDoubleOptIn: false,
+                responsibleUserId: "user-1",
+                contactSource: ContactSource.manualCreation,
+            });
+
+            expect(response).toBe(SubscribeResponse.SUCCESSFUL);
+            expect(targetGroupsService.findTargetGroups).toHaveBeenLastCalledWith({
+                offset: 0,
+                limit: 50,
+                where: { isMainList: false, isTestList: false, $or: [{ scope }] },
+            });
+            expect(brevoApiContactsService.updateContact).toHaveBeenCalledTimes(1);
         });
 
         it("returns ERROR_CONTACT_IS_BLACKLISTED for a blacklisted existing contact without double opt-in", async () => {

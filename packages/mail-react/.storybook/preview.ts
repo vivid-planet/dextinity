@@ -7,10 +7,30 @@ export const parameters = {
     layout: "fullscreen",
     options: {
         storySort: {
-            order: ["Docs", "Examples", "Layout Patterns", "Components", "Blocks", "*"],
+            order: [
+                "Docs",
+                [
+                    "Intro",
+                    "Email Basics",
+                    "Email Client Pitfalls",
+                    "Theme and Configuration",
+                    "Components",
+                    "Styling and Customization",
+                    "Layout Patterns",
+                    "Dark Mode",
+                    "Blocks",
+                    "Rendering and Preview",
+                ],
+                "Examples",
+                "Layout Patterns",
+                "Components",
+                "Blocks",
+                "*",
+            ],
         },
     },
     docs: {
+        toc: true,
         source: {
             // Regenerate the "Show code" snippet from the rendered JSX; the default shows the whole
             // story object literal for stories with a custom render function.

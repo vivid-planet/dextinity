@@ -103,7 +103,8 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
                 title: brevoEmailCampaign?.title,
                 subject: brevoEmailCampaign?.subject,
                 content: EmailCampaignContentBlock.input2State(brevoEmailCampaign.content),
-                scheduledAt: brevoEmailCampaign?.scheduledAt ? new Date(brevoEmailCampaign.scheduledAt) : null,
+                scheduledAt:
+                    brevoEmailCampaign?.scheduledAt && brevoEmailCampaign.sendingState !== "FAILED" ? new Date(brevoEmailCampaign.scheduledAt) : null,
                 sendingState: brevoEmailCampaign?.sendingState,
                 brevoTargetGroups: brevoEmailCampaign?.brevoTargetGroups,
             };
@@ -226,7 +227,9 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
     };
 
     const isScheduledDateInPast = state.scheduledAt != undefined && isBefore(new Date(state.scheduledAt), new Date());
-    const isCampaignCreated = state.sendingState === "SENT" || mode === "add" || state.brevoTargetGroups.length === 0 || isScheduledDateInPast;
+    const isCampaignCreated =
+        state.sendingState === "SENT" ||
+        (state.sendingState !== "FAILED" && (mode === "add" || state.brevoTargetGroups.length === 0 || isScheduledDateInPast));
 
     return (
         <>

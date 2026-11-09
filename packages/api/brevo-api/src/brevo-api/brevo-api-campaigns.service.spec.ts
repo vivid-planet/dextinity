@@ -38,7 +38,11 @@ describe("BrevoApiCampaignsService", () => {
             expect(service.getSendingInformationFromBrevoCampaign(campaignWithStatus(Brevo.GetEmailCampaignResponse.Status.InProcess))).toBe(
                 SendingState.SCHEDULED,
             );
-            expect(service.getSendingInformationFromBrevoCampaign(campaignWithStatus(Brevo.GetEmailCampaignResponse.Status.Draft))).toBe(
+            expect(service.getSendingInformationFromBrevoCampaign(campaignWithStatus(Brevo.GetEmailCampaignResponse.Status.Draft))).toBeUndefined();
+            expect(service.getSendingInformationFromBrevoCampaign(campaignWithStatus(Brevo.GetEmailCampaignResponse.Status.Suspended))).toBe(
+                SendingState.DRAFT,
+            );
+            expect(service.getSendingInformationFromBrevoCampaign(campaignWithStatus(Brevo.GetEmailCampaignResponse.Status.Archive))).toBe(
                 SendingState.DRAFT,
             );
         });

@@ -78,24 +78,24 @@ export const DamSettings = ({ contentScopeIndicator }: DamSettingsProps) => {
                         </ToolbarActions>
                     </Toolbar>
                     <MainContent>
-                        {!blockFilesWithInvalidLicense && (
-                            <Alert
-                                severity="info"
-                                title={
-                                    <FormattedMessage
-                                        id="dextinity.dam.settings.blockingFilesWithInvalidLicenseDisabled.title"
-                                        defaultMessage="Blocking files with invalid licenses isn't active yet"
-                                    />
-                                }
-                                sx={{ marginBottom: 4 }}
-                            >
-                                <FormattedMessage
-                                    id="dextinity.dam.settings.blockingFilesWithInvalidLicenseDisabled.text"
-                                    defaultMessage="Files with an invalid license are still shown on the site, so the fallback image isn't used yet. You can already choose it now. To activate blocking, contact your website administrator."
-                                />
-                            </Alert>
-                        )}
                         <FieldSet title={<FormattedMessage id="dextinity.dam.settings.licenses" defaultMessage="Licenses" />}>
+                            {!blockFilesWithInvalidLicense && (
+                                <Alert
+                                    severity="info"
+                                    title={
+                                        <FormattedMessage
+                                            id="dextinity.dam.settings.blockingFilesWithInvalidLicenseDisabled.title"
+                                            defaultMessage="Blocking files with invalid licenses isn't active yet"
+                                        />
+                                    }
+                                    sx={{ marginBottom: 4 }}
+                                >
+                                    <FormattedMessage
+                                        id="dextinity.dam.settings.blockingFilesWithInvalidLicenseDisabled.text"
+                                        defaultMessage="Files with an invalid license are still shown on the site, so the fallback image isn't used yet. You can already choose it now. To activate blocking, contact your website administrator."
+                                    />
+                                </Alert>
+                            )}
                             <Field
                                 name="invalidLicenseFallbackImage"
                                 component={FileField}

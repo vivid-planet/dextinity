@@ -1,7 +1,7 @@
 import { useStackApi, useStoredState } from "@dextinity/admin";
 import { BlockPicker, type BlockPickerCategory, type BlockPickerItem, Checkbox, Drawer, Icon, Typography } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
-import { useId, useMemo, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { type IntlShape, useIntl } from "react-intl";
 
 import { messageText } from "../form/messageText";
@@ -25,6 +25,7 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock, insertBef
     const stackApi = useStackApi();
     const rootContentKind = useBlockAdminComponentRootContentKind();
     const insertionHintId = useId();
+    const searchRef = useRef<HTMLInputElement>(null);
     const [query, setQuery] = useState("");
     const [addAndEdit, setAddAndEdit] = useStoredState<boolean>("addAndEdit", true);
     const [recentBlockTypes, setRecentBlockTypes] = useStoredState<string[]>("addBlockDrawerRecentBlockTypes", []);
@@ -124,6 +125,7 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock, insertBef
             modal
             title={intl.formatMessage({ id: "dextinity.blocks.drawer.header", defaultMessage: "Add new block" })}
             aria-describedby={insertionHintId}
+            initialFocus={searchRef}
         >
             <BlockPicker
                 items={items}
@@ -132,7 +134,7 @@ export function AddBlockDrawer({ open, onClose, blocks, onAddNewBlock, insertBef
                 onQueryChange={setQuery}
                 categories={categories.length > 1 ? categories : undefined}
                 recent={recentBlockTypes}
-                slotProps={{ search: { autoFocus: true } }}
+                slotProps={{ search: { ref: searchRef } }}
                 labels={{
                     search: intl.formatMessage({ id: "dextinity.blocks.drawer.search", defaultMessage: "Search blocks" }),
                     recent: intl.formatMessage({ id: "dextinity.blocks.drawer.recent", defaultMessage: "Recently used" }),

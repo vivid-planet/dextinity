@@ -8,9 +8,6 @@
 
 # Unprivileged, so no port below 1024.
 :8080 {
-	# upgrade-insecure-requests of admin and site would turn every request over http into https.
-	header >Content-Security-Policy ";?\s*upgrade-insecure-requests" ""
-
 	@admin header_regexp Host ^admin--
 	handle @admin {
 		reverse_proxy oauth2-proxy:4180

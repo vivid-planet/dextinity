@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { exampleSupportInfo } from "../exampleSupportInfo";
-import { Mail } from "../Mail";
+import { exampleSupportInfo } from "../exampleSupportInfo.js";
+import { Mail } from "../Mail.js";
 
 type Story = StoryObj<typeof Mail>;
 

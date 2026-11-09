@@ -1,9 +1,9 @@
-import { DamVideoBlock, ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { DamVideoBlock, ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
+import { faker } from "@src/db/fixtures/faker.js";
 
-import { VideoFixtureService } from "../../video-fixture.service";
-import { PixelImageBlockFixtureService } from "./pixel-image-block-fixture.service";
+import { VideoFixtureService } from "../../video-fixture.service.js";
+import { PixelImageBlockFixtureService } from "./pixel-image-block-fixture.service.js";
 
 @Injectable()
 export class DamVideoBlockFixtureService {

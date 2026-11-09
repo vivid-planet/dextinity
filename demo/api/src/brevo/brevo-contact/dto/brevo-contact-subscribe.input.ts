@@ -2,8 +2,8 @@ import { IsValidRedirectURL } from "@dextinity/brevo-api";
 import { Type } from "class-transformer";
 import { IsEmail, IsNotEmpty, IsUrl, ValidateNested } from "class-validator";
 
-import { BrevoContactAttributes } from "./brevo-contact-attributes";
-import { EmailContactSubscribeScope } from "./brevo-contact-subscribe.scope";
+import { BrevoContactAttributes } from "./brevo-contact-attributes.js";
+import { EmailContactSubscribeScope } from "./brevo-contact-subscribe.scope.js";
 
 export class BrevoContactSubscribeInput {
     @IsEmail()

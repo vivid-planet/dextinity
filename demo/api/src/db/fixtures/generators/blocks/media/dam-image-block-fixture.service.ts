@@ -1,9 +1,9 @@
-import { DamImageBlock, ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { DamImageBlock, ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
+import { faker } from "@src/db/fixtures/faker.js";
 
-import { PixelImageBlockFixtureService } from "./pixel-image-block-fixture.service";
-import { SvgImageBlockFixtureService } from "./svg-image-block-fixture.service";
+import { PixelImageBlockFixtureService } from "./pixel-image-block-fixture.service.js";
+import { SvgImageBlockFixtureService } from "./svg-image-block-fixture.service.js";
 
 interface GenerateDamImageBlockInputProps {
     generateSvgImage?: boolean;

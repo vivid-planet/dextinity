@@ -2,16 +2,16 @@ import {
     AnnotationBlockMeta,
     BlockData,
     BlockField,
-    BlockIndexData,
+    type BlockIndexData,
     BlockInput,
     blockInputToData,
-    BlockMetaField,
+    type BlockMetaField,
     BlockMetaFieldKind,
     createBlock,
 } from "@dextinity/cms-api";
 import { IsOptional, IsUUID } from "class-validator";
 
-import { NewsLinkBlockTransformerService } from "./news-link-block-transformer.service";
+import { NewsLinkBlockTransformerService } from "./news-link-block-transformer.service.js";
 
 class NewsLinkBlockData extends BlockData {
     @BlockField({ nullable: true })

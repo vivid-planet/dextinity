@@ -1,9 +1,9 @@
-import { ExtractBlockInputFactoryProps, SitemapPageChangeFrequency, SitemapPagePriority } from "@dextinity/cms-api";
+import { type ExtractBlockInputFactoryProps, SitemapPageChangeFrequency, SitemapPagePriority } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
-import { SeoBlock } from "@src/documents/pages/blocks/seo.block";
+import { faker } from "@src/db/fixtures/faker.js";
+import type { SeoBlock } from "@src/documents/pages/blocks/seo.block.js";
 
-import { PixelImageBlockFixtureService } from "./blocks/media/pixel-image-block-fixture.service";
+import { PixelImageBlockFixtureService } from "./blocks/media/pixel-image-block-fixture.service.js";
 
 @Injectable()
 export class SeoBlockFixtureService {

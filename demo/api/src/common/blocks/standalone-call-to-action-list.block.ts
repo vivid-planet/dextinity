@@ -1,15 +1,15 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { CallToActionListBlock } from "@src/common/blocks/call-to-action-list.block";
+import { CallToActionListBlock } from "@src/common/blocks/call-to-action-list.block.js";
 import { IsEnum } from "class-validator";
 
 export enum Alignment {

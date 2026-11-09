@@ -21,7 +21,7 @@ import {
     SvgImageBlock,
     VimeoVideoBlock,
     YouTubeVideoBlock,
-} from "./lib";
+} from "./lib/index.js";
 
 async function generateBlockMeta(): Promise<void> {
     console.info("Generating block-meta.json...");

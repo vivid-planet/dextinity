@@ -1,10 +1,10 @@
 import type { EntityManager } from "@mikro-orm/postgresql";
 import { describe, expect, it } from "vitest";
 
-import type { DamConfig } from "../dam.config";
-import type { FileInterface } from "./entities/file.entity";
-import { LicenseType } from "./entities/license.embeddable";
-import { FileWarningService } from "./file-warning.service";
+import type { DamConfig } from "../dam.config.js";
+import type { FileInterface } from "./entities/file.entity.js";
+import { LicenseType } from "./entities/license.embeddable.js";
+import { FileWarningService } from "./file-warning.service.js";
 
 const service = new FileWarningService({ enableLicenseFeature: true } as DamConfig, {} as EntityManager);
 

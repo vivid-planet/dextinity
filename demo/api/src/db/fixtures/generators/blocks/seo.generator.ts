@@ -1,5 +1,5 @@
 import { type BlockInputInterface, SitemapPageChangeFrequency, SitemapPagePriority } from "@dextinity/cms-api";
-import { SeoBlock } from "@src/documents/pages/blocks/seo.block";
+import { SeoBlock } from "@src/documents/pages/blocks/seo.block.js";
 
 export const generateSeoBlock = (): BlockInputInterface => {
     // @TODO Introduce randomness

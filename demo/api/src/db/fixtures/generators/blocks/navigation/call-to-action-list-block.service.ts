@@ -1,9 +1,9 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { CallToActionListBlock } from "@src/common/blocks/call-to-action-list.block";
-import { faker } from "@src/db/fixtures/faker";
+import type { CallToActionListBlock } from "@src/common/blocks/call-to-action-list.block.js";
+import { faker } from "@src/db/fixtures/faker.js";
 
-import { CallToActionBlockFixtureService } from "./call-to-action-block-fixture.service";
+import { CallToActionBlockFixtureService } from "./call-to-action-block-fixture.service.js";
 
 @Injectable()
 export class CallToActionListBlockFixtureService {

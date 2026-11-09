@@ -1,11 +1,11 @@
-import { BlockDataInterface, CrudSingleGenerator, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
+import { type BlockDataInterface, CrudSingleGenerator, RootBlock, RootBlockDataScalar, RootBlockEntity, RootBlockType } from "@dextinity/cms-api";
 import { Embedded, Entity, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 
-import { FooterContentBlock } from "../blocks/footer-content.block";
-import { FooterScope } from "../dto/footer-scope";
+import { FooterContentBlock } from "../blocks/footer-content.block.js";
+import { FooterScope } from "../dto/footer-scope.js";
 
 @Entity()
 @ObjectType()

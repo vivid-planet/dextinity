@@ -71,8 +71,8 @@ describe("GenerateCrudRelationsNestedOtherDirectory", () => {
                 const source = parseSource(file.content);
 
                 const importPaths = source.getImportDeclarations().map((importDeclaration) => importDeclaration.getModuleSpecifierValue());
-                expect(importPaths).toContain("../../variants/entities/test-entity-variant.entity");
-                expect(importPaths).toContain("../entities/test-entity-product.entity");
+                expect(importPaths).toContain("../../variants/entities/test-entity-variant.entity.js");
+                expect(importPaths).toContain("../entities/test-entity-product.entity.js");
             } finally {
                 await orm.close();
                 await rm(projectDirectory, { recursive: true });

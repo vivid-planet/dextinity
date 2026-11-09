@@ -1,7 +1,7 @@
-import { MjmlColumn, MjmlText } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { MjmlSection } from "../../components/section/MjmlSection.js";
+import { MjmlColumn, MjmlText } from "../../index.js";
 import { createBreakpoint } from "../createBreakpoint.js";
 import { createTheme } from "../createTheme.js";
 import { ThemeProvider } from "../ThemeProvider.js";

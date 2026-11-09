@@ -1,8 +1,8 @@
-import { MjmlColumn } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { MjmlMailRoot } from "../../../components/mailRoot/MjmlMailRoot.js";
 import { MjmlSection } from "../../../components/section/MjmlSection.js";
+import { MjmlColumn } from "../../../index.js";
 import { MjmlPixelImageBlock } from "../MjmlPixelImageBlock.js";
 import { exampleBlockData } from "./exampleBlockData.js";
 

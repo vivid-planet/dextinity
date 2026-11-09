@@ -1,14 +1,19 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
-<Meta title="Docs/Email Basics" />
+<Meta
+    title="Docs/Email Basics"
+    summary="Read before writing mail markup: client research, the section → column → content model, ending tags, and inline-first styling."
+/>
 
 # Email Basics
 
+Read this page before you write mail markup: it explains how to research client support, how MJML nests content, and why base styles must be inline.
+
 ## Research Before You Code
 
-Email development is fundamentally different from web development. There is no shared rendering engine across email clients — the most constrained major client, Outlook on Windows (2007–2019), uses **Microsoft Word** to render HTML, supporting only a fraction of modern CSS. Its global market share is small, but it is the main client in enterprise and B2B environments. What works perfectly in a browser will often break in email clients, sometimes in surprising ways.
+Email development is different from web development. Email clients do not share a rendering engine. The most constrained major client, Outlook on Windows (2007–2019), uses **Microsoft Word** to render HTML and supports only a small part of modern CSS. Its global market share is small, but it is the main client in enterprise and B2B environments. Markup that works in a browser often breaks in email clients.
 
-Before implementing any visual technique — even things that seem basic like rounded corners, background images, custom fonts, or flexbox layouts — **verify support across email clients**. Many common CSS properties are partially or fully unsupported.
+Before you implement a visual technique, **verify its support across email clients**. This includes techniques that seem basic, such as rounded corners, background images, custom fonts, or flexbox layouts. Many common CSS properties have partial or no support.
 
 ### Essential Resources
 
@@ -26,26 +31,26 @@ Keep these open during email development:
 
 ### The Research Habit
 
-When implementing any visual feature:
+When you implement a visual feature:
 
-1. Check [Can I email](https://www.caniemail.com/) for the CSS properties and selectors involved
-2. If the property isn't supported in Outlook, search for VML workarounds or provide a graceful fallback (skipping border-radius is generally acceptable)
-3. Test in Storybook with the MJML Warnings panel open
-4. When uncertain, consult the Litmus blog or Campaign Monitor guide for known patterns
+1. Check [Can I email](https://www.caniemail.com/) for the CSS properties and selectors involved.
+2. If Outlook does not support a property, search for a VML workaround or provide a graceful fallback. Square corners are acceptable unless the design requires rounded ones; then add VML (see [No CSS `border-radius` in Outlook](?path=/docs/docs-email-client-pitfalls--docs#no-css-border-radius-in-outlook)).
+3. Test in Storybook with the MJML Warnings panel open.
+4. When you are not sure, look in the Litmus blog or the Campaign Monitor guide for known patterns.
 
-This applies to seemingly simple things: `border-radius`, `background-image`, `flexbox`, `gap`, custom fonts — all have partial or no support in major email clients.
+This also applies to properties that seem simple: `border-radius`, `background-image`, `flexbox`, `gap`, and custom fonts all have partial or no support in major email clients.
 
-For which selectors reach which clients, see [Selectors That Reach Every Client](?path=/docs/docs-styling-and-customization--docs#selectors-that-reach-every-client).
+For which selectors reach which clients, see [Selectors That Reach Every Client](?path=/docs/docs-email-client-pitfalls--docs#selectors-that-reach-every-client).
 
 ## The MJML Layout Model
 
 MJML enforces a strict **section → column → content** nesting hierarchy:
 
 - **`MjmlSection`** — a full-width horizontal row
-- **`MjmlColumn`** — divides a section into vertical columns (stacking on mobile by default)
+- **`MjmlColumn`** — divides a section into vertical columns
 - **Content components** (`MjmlText`, `MjmlImage`, `MjmlButton`, etc.) — placed inside a column
 
-Content components placed outside this hierarchy produce MJML validation warnings and broken layouts. The MJML Warnings panel in Storybook surfaces these during development.
+Content components outside this hierarchy cause MJML validation warnings and broken layouts. The MJML Warnings panel in Storybook shows these warnings during development.
 
 ```tsx
 <MjmlSection indent>
@@ -61,15 +66,13 @@ Content components placed outside this hierarchy produce MJML validation warning
 
 ### Multi-Column Layouts
 
-MJML has no `gap` property. Column padding reduces the content area _inside_ the column — it doesn't add space between column cells. To create a visual gap between columns, apply padding to the inner edges of adjacent columns (`paddingRight` on the left column, `paddingLeft` on the right column). Their sum becomes the visible gap.
-
-For two equal columns, apply half the desired gap to each column's inner edge. Both columns have the same total padding, so MJML's equal-width split produces equal content areas without explicit `width` props:
+MJML has no `gap` property: padding on the inner edges of adjacent columns makes the gap (see [How Column Gaps Work](?path=/docs/docs-layout-patterns--docs#how-column-gaps-work)). Set `disableResponsiveBehavior` on **every** section with more than one column, and write the mobile stacking with `registerStyles` (see [Column Widths Must Be Inline](?path=/docs/docs-layout-patterns--docs#column-widths-must-be-inline)).
 
 ```tsx
 const columnGap = 20;
 const halfGap = columnGap / 2;
 
-<MjmlSection indent className="twoColumnsSection">
+<MjmlSection indent disableResponsiveBehavior className="twoColumnsSection">
     <MjmlColumn className="twoColumnsSection__leftColumn" paddingRight={halfGap}>
         <MjmlText>Left column</MjmlText>
     </MjmlColumn>
@@ -79,44 +82,32 @@ const halfGap = columnGap / 2;
 </MjmlSection>;
 ```
 
-**Do not** apply equal padding on all sides of every column — this adds extra outer-edge spacing that compounds with `indent`/`contentIndentation`, pushing content inward beyond the theme's intended margins.
-
-On mobile, reset the gap padding so content stretches full-width, and add a vertical margin between the stacked columns. Column padding compiles to an inner `<td>`, so target it via `.className > table > tbody > tr > td`.
-
-Set `disableResponsiveBehavior` on **every** section with more than one column. It wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline; without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX, Web.de and the Gmail apps with a non-Google account, for example — show the columns stacked. The group never stacks by itself, so write the mobile stacking into `registerStyles`, and target the column container one level deeper (`… > td > div`).
-
 For complete patterns — two columns, three or more, fixed+fluid — with responsive styles, CSS targeting rules, the stacking strategies, and the `direction="rtl"` technique for controlling mobile stack order, see [Layout Patterns](?path=/docs/docs-layout-patterns--docs).
 
 ### Ending Tags
 
 Some MJML components are [**ending tags**](https://documentation.mjml.io/#ending-tags) — they accept raw HTML as children but **cannot** contain other MJML components. The most common: `MjmlText`, `MjmlButton`, `MjmlTable`, `MjmlRaw`.
 
-Once inside an ending tag, you are in **HTML-land for the entire subtree**. Use HTML elements (`<span>`, `<a>`, `<table>`, `<td>`) but not MJML components. The library provides `HtmlText` and `HtmlInlineLink` for themed text and links inside ending tags.
+Inside an ending tag, the **entire subtree is HTML**. Use HTML elements (`<span>`, `<a>`, `<table>`, `<td>`), not MJML components. The library provides `HtmlText` and `HtmlInlineLink` for themed text and links inside ending tags.
 
-For raw HTML layouts outside text, use `MjmlRaw` (or `MjmlTable`). These are escape hatches for cases MJML components can't handle — use them as a last resort.
+For raw HTML layouts outside text, use `MjmlRaw` (or `MjmlTable`). These are escape hatches for cases that MJML components cannot handle. Use them only as a last resort.
 
 ## The Styling Model
 
-Email clients that lack CSS support are almost exclusively desktop clients (Outlook 2007–2019, older Lotus Notes). Mobile email clients — Apple Mail, Gmail app, Outlook mobile — all support `<style>` blocks and media queries. So email styling follows a **desktop-first** approach:
+Email clients that lack CSS support are almost all desktop clients (Outlook 2007–2019, older Lotus Notes). Apple Mail, the Gmail app with a Google account, and Outlook mobile support `<style>` blocks and media queries. Gmail's mobile webmail and the Gmail apps with a non-Google account drop media queries. So email styling follows a **desktop-first** approach:
 
 1. **Base/default styles are inline** — applied through MJML component props or explicit `style` attributes on HTML elements. Desktop clients like Outlook ignore `<style>` blocks entirely, so the base rendering must look correct with inline styles alone.
 
-2. **Responsive overrides are progressive enhancement** — registered via `registerStyles` with media queries targeting mobile viewports. Clients that support media queries also support modern CSS, so properties like `flex`, and CSS custom properties are safe inside media queries.
+2. **Responsive overrides are progressive enhancement** — registered via `registerStyles` with media queries targeting mobile viewports. Most clients that support media queries also support modern CSS, so properties like `flex` are safe inside media queries. `calc()` is an exception: Yahoo Mail and Outlook.com drop it (see [No CSS `calc()`](?path=/docs/docs-email-client-pitfalls--docs#no-css-calc)).
 
 3. **`!important` is required** in media query overrides — because inline styles take precedence over `<style>` block rules, responsive overrides need `!important` to win.
 
-Never rely on `<style>` blocks for base/desktop layout. Set all default styles inline via MJML component props.
+Never rely on `<style>` blocks for base/desktop layout. Set all default styles inline via MJML component props. MJML breaks this rule for column widths, see [Multi-Column Layouts](#multi-column-layouts).
 
-MJML breaks this rule for column widths: it puts them in a `min-width` media query, so a multi-column section stacks in any client that drops that query — GMX, Web.de and the Gmail apps with a non-Google account, for example. See [Multi-Column Layouts](#multi-column-layouts).
+Reading a `<style>` block is not the same as applying everything in it. Gmail reads the block and then drops each rule whose selector it does not take — see [Selectors That Reach Every Client](?path=/docs/docs-email-client-pitfalls--docs#selectors-that-reach-every-client).
 
-Reading a `<style>` block is not the same as applying everything in it. Gmail reads the block and then drops each rule whose selector it does not take — see [Selectors That Reach Every Client](?path=/docs/docs-styling-and-customization--docs#selectors-that-reach-every-client).
+For the `registerStyles` API, the `css` helper, and custom components, see [Styling and Customization](?path=/docs/docs-styling-and-customization--docs).
 
 ### Switching Content by Breakpoint
 
-Sometimes you cannot make both views from the same HTML, because the mobile view needs a different structure than the desktop view. Then put both layouts in the email and hide one of them: inline styles hide the mobile layout, and a media query in `registerStyles` switches the two.
-
-Two layouts make twice as much markup, so first try to make one layout that works at each width. The column patterns already stack on mobile.
-
-The default layout is the one that shows when the `<style>` block is gone, so if it has columns its section needs `disableResponsiveBehavior` as well.
-
-For the hiding styles, the extra step classic Outlook needs, and what to avoid, see [Breakpoint Content Switch](?path=/docs/docs-layout-patterns--docs#breakpoint-content-switch).
+When the mobile view needs a different structure than the desktop view, put both layouts in the email and hide one of them, as shown in [Breakpoint Content Switch](?path=/docs/docs-layout-patterns--docs#breakpoint-content-switch).

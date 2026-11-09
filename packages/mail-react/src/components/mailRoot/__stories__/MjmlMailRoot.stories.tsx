@@ -1,6 +1,6 @@
-import { MjmlColumn, MjmlText } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { MjmlColumn, MjmlText } from "../../../index.js";
 import { createTheme } from "../../../theme/createTheme.js";
 import { MjmlSection } from "../../section/MjmlSection.js";
 import { MjmlMailRoot } from "../MjmlMailRoot.js";

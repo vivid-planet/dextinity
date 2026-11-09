@@ -1,8 +1,13 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
-<Meta title="Docs/Layout Patterns" />
+<Meta
+    title="Docs/Layout Patterns"
+    summary="Column layouts with gaps and mobile stacking: two, three or more, fixed + fluid, stack order, breakpoint content switch, and sections with a shared background such as footers."
+/>
 
 # Layout Patterns
+
+Tested patterns for column layouts in MJML: gaps, inline widths, mobile stacking, and sections that share a background.
 
 ## How Column Gaps Work
 
@@ -17,15 +22,7 @@ MJML has no `gap` property. Column padding reduces the content area _inside_ the
 - **`!important`** is required on all responsive overrides — MJML inlines styles that take precedence over `<style>` block rules.
 - Prefer `theme.breakpoints.mobile.belowMediaQuery` and `theme.breakpoints.default.belowMediaQuery` over hardcoded media queries.
 
-### BEM Class Naming
-
-Follow the BEM convention with camelCase blocks. Adapt the block name to the component context:
-
-| Element                | Example class name                                               |
-| ---------------------- | ---------------------------------------------------------------- |
-| Section/layout wrapper | `twoColumnsSection`, `imageTextLayout`                           |
-| Left/small column      | `twoColumnsSection__leftColumn`, `imageTextLayout__smallColumn`  |
-| Right/fluid column     | `twoColumnsSection__rightColumn`, `imageTextLayout__fluidColumn` |
+Name the classes after the BEM convention in [Styling and Customization](?path=/docs/docs-styling-and-customization--docs#bem-class-naming-convention).
 
 ---
 
@@ -39,6 +36,8 @@ Two things follow:
 - Target the column container one level deeper. The group adds a `<div>`, so a flex container is `… > td > div`.
 
 Inside a group, a column without a `width` prop gets `parseInt(100 / siblings)%` — `33%` for three columns, not `33.33%`. Set explicit widths when the count does not divide 100 evenly.
+
+Classic Outlook keeps the inline percentage widths and never stacks the columns.
 
 Pixel widths on columns inside `MjmlGroup` work, although MJML's documentation asks for percentages. MJML converts them to percentages inline, but MJML's head CSS keeps the pixel width with `!important` above the mobile breakpoint. So the columns do not shrink between the mobile breakpoint and the body width of the mail (`sizes.bodyWidth`). Override their widths with `registerStyles` in `theme.breakpoints.default.belowMediaQuery`, or use percentages.
 
@@ -101,7 +100,9 @@ registerStyles(
 );
 ```
 
-The margin sits on `.twoColumnsSection__leftColumn`, a class the section writes on every render. `.column:not(.column--last)` says the same thing and reads better, and Gmail drops it, taking the gap with it — see [Selectors That Reach Every Client](?path=/docs/docs-styling-and-customization--docs#selectors-that-reach-every-client).
+The margin sits on `.twoColumnsSection__leftColumn`, a class the section writes on every render. `.column:not(.column--last)` says the same thing and reads better, and Gmail drops it, taking the gap with it — see [Selectors That Reach Every Client](?path=/docs/docs-email-client-pitfalls--docs#selectors-that-reach-every-client).
+
+See the [Symmetric Two-Column Layout story](?path=/story/layout-patterns-symmetric-two-column-layout--default).
 
 For three or more equal-width columns, see [Multi-Column Symmetric Layouts](#multi-column-symmetric-layouts-3-columns).
 
@@ -114,6 +115,10 @@ Three or more equal-width columns need explicit `width` props because inner colu
 ### N-Column Width Formula
 
 ```ts
+import { getDefaultFromResponsiveValue, useTheme } from "@dextinity/mail-react";
+
+const theme = useTheme();
+const numberOfColumns = 3;
 const columnGap = 20;
 const halfColumnGap = columnGap / 2;
 const availableContentWidth = theme.sizes.bodyWidth - 2 * getDefaultFromResponsiveValue(theme.sizes.contentIndentation);
@@ -161,44 +166,48 @@ All three strategies share the same flex reset on the `MjmlGroup` `<div>` that d
 **Strategy A** — keep the horizontal intermediate state, stack at mobile:
 
 ```ts
-${theme.breakpoints.default.belowMediaQuery} {
-    .multiColumnSection > table > tbody > tr > td > div {
-        display: flex !important;
-        column-gap: 20px !important;
-    }
-    .multiColumnSection__column {
-        flex: 1 1 0% !important;
-        width: auto !important;
-        max-width: none !important;
-        display: block !important;
-    }
-    .multiColumnSection__column > table > tbody > tr > td {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
-}
+registerStyles(
+    (theme) => css`
+        ${theme.breakpoints.default.belowMediaQuery} {
+            .multiColumnSection > table > tbody > tr > td > div {
+                display: flex !important;
+                column-gap: 20px !important;
+            }
+            .multiColumnSection__column {
+                flex: 1 1 0% !important;
+                width: auto !important;
+                max-width: none !important;
+                display: block !important;
+            }
+            .multiColumnSection__column > table > tbody > tr > td {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+        }
 
-${theme.breakpoints.mobile.belowMediaQuery} {
-    .multiColumnSection > table > tbody > tr > td > div {
-        flex-direction: column !important;
-    }
-    .multiColumnSection__column {
-        flex: none !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        margin-bottom: 20px !important;
-    }
-    .multiColumnSection__column--last {
-        margin-bottom: 0 !important;
-    }
-}
+        ${theme.breakpoints.mobile.belowMediaQuery} {
+            .multiColumnSection > table > tbody > tr > td > div {
+                flex-direction: column !important;
+            }
+            .multiColumnSection__column {
+                flex: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-bottom: 20px !important;
+            }
+            .multiColumnSection__column--last {
+                margin-bottom: 0 !important;
+            }
+        }
+    `,
+);
 ```
 
 The horizontal gap is `column-gap` rather than the `gap` shorthand, and the stacked gap is a margin that `multiColumnSection__column--last` clears on the final column, because Gmail applies `column-gap` and not `row-gap`. The shorthand would set both, so the stack would space itself in every client except Gmail.
 
 **Strategy B** — collapse the two blocks: put `flex-direction: column`, `width: 100%` and both margin rules in the `default.belowMediaQuery` block, drop the `mobile.belowMediaQuery` block, and drop `column-gap`, which a stack never uses.
 
-**Strategy C** — keep Strategy A's `default.belowMediaQuery` block and drop the `mobile.belowMediaQuery` block. The columns then hold their flex widths at every viewport.
+**Strategy C** — keep Strategy A's `default.belowMediaQuery` block and drop the `mobile.belowMediaQuery` block. The columns then hold their flex widths at every viewport. See the [three-column story that never stacks](?path=/story/layout-patterns-symmetric-three-column-layout--never-stacks).
 
 ---
 
@@ -237,6 +246,8 @@ Gap is created by padding on the fluid column's inner edge:
 ```
 
 To place the small column on the right, swap column order and move padding to `paddingRight` on the fluid column.
+
+See the stories [Small Column Left](?path=/story/layout-patterns-asymmetric-two-column-layout--small-column-left) and [Small Column Right](?path=/story/layout-patterns-asymmetric-two-column-layout--small-column-right).
 
 ### Two-Breakpoint Responsive Behavior
 
@@ -311,6 +322,8 @@ When using `direction="rtl"`:
 
 - **Use `MjmlWrapper` instead of `indent`** — applying `indent` on a `direction="rtl"` section causes a 1px line artifact in Outlook. Wrap the section in `MjmlWrapper` with ``padding={`0 ${sectionIndent}px`}`` and set `backgroundColor` to match.
 - **Source order = mobile stack order** — the small column is first in the JSX, so it stacks on top on mobile. `direction="rtl"` only affects the visual left-to-right order on desktop.
+
+See the [Reversed Mobile Stack Order story](?path=/story/layout-patterns-asymmetric-two-column-layout--reversed-mobile-stack-order).
 
 ---
 
@@ -411,8 +424,8 @@ Key behaviors:
 - An explicit `backgroundColor` on an inner `MjmlSection` still wins — use that only when a single section inside the wrapper needs to stand out.
 - For a region that also needs different default text color or variants, combine `MjmlWrapper` with a scoped `ThemeProvider` (see [Scoped Theming](?path=/docs/docs-theme-and-configuration--docs#scoped-theming)). Text components pick up the scoped theme while the wrapper provides the background.
 
----
+In dark mode, classic Outlook inverts a dark wrapper background, and Outlook on the web and Outlook iOS make it lighter. See [Client Behavior](?path=/docs/docs-dark-mode--docs#client-behavior).
 
-## Fixed-Width Cells in a Row
+For a row of fixed-width icons in a footer, see [Fixed-Width Cells in a Row](?path=/docs/docs-email-client-pitfalls--docs#fixed-width-cells-in-a-row).
 
-`MjmlTable` writes `width: 100%` by default. When the cells of a row are narrower than the table together, Apple Mail and Safari spread the free table width over all cells, so fixed-width cells become wider than declared. An empty filler cell at the end of the row does not help. For a row of fixed-width items, such as icons, set `width="auto"` on the table.
+See the stories [Custom Background for Footer](?path=/story/examples-custom-background-for-footer--default) and [Custom Nested Footer Theme](?path=/story/examples-custom-nested-footer-theme--default).

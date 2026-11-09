@@ -10,14 +10,18 @@ import styles from "./TreeDetailLayout.module.scss";
 export type TreeDetailLayoutOwnerState = {
     /** Whether the page has a toolbar above the tree. */
     toolbar: boolean;
+    /** The surface of the card around the toolbar and the tree. */
+    surface: TreeDetailLayoutSurface;
 };
+
+type TreeDetailLayoutSurface = "glass" | "solid" | "none";
 
 export interface TreeDetailLayoutSlotProps {
     /** Props for the `header` slot. */
     header?: SlotPropsValue<TreeDetailLayoutOwnerState, "div">;
     /** Props for the `body` slot, which holds the tree column and the detail. */
     body?: SlotPropsValue<TreeDetailLayoutOwnerState, "div">;
-    /** Props for the `main` slot, the column with the toolbar and the tree. */
+    /** Props for the `main` slot, the card with the toolbar and the tree. */
     main?: SlotPropsValue<TreeDetailLayoutOwnerState, "div">;
     /** Props for the `toolbar` slot. */
     toolbar?: SlotPropsValue<TreeDetailLayoutOwnerState, "div">;
@@ -30,9 +34,16 @@ export interface TreeDetailLayoutSlotProps {
 export interface TreeDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
     /** The page header with the scope, the count, and the primary action, e.g. a `PageHeader`. */
     header: ReactNode;
-    /** Above the tree: select all, search, status filter, expand and collapse all. */
+    /** At the top of the tree's card: select all, search, status filter, expand and collapse all, e.g. a `FilterBar`. */
     toolbar?: ReactNode;
-    /** The tree, e.g. a `TreeView`. Selecting a node shows it in the detail; checking nodes is separate from that. */
+    /**
+     * The card around the toolbar and the tree: `glass` over the light field, `solid` over a busy background, `none` to place them on
+     * the page, e.g. inside a card of your own.
+     *
+     * @defaultValue `"glass"`
+     */
+    surface?: TreeDetailLayoutSurface;
+    /** The tree, e.g. a `TreeView`, without a card of its own. Selecting a node shows it in the detail; checking nodes is separate from that. */
     children: ReactNode;
     /** The detail of the selected node: path, edit button, published switch, properties. Stays in view while the tree scrolls. */
     detail: ReactNode;
@@ -45,14 +56,14 @@ export interface TreeDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElemen
 }
 
 /**
- * The layout of a tree page, e.g. the page tree: the page header, a toolbar, and the tree, with the detail of the selected node next to
- * it. In narrow layouts the detail moves below the tree.
+ * The layout of a tree page, e.g. the page tree: the page header, and a card with a toolbar and the tree, with the detail of the selected
+ * node next to it. In narrow layouts the detail moves below the tree.
  */
 export const TreeDetailLayout = forwardRef<HTMLDivElement, TreeDetailLayoutProps>(function TreeDetailLayout(
-    { header, toolbar, children, detail, detailLabel, className, slotProps, ...restProps },
+    { header, toolbar, surface = "glass", children, detail, detailLabel, className, slotProps, ...restProps },
     ref,
 ) {
-    const ownerState: TreeDetailLayoutOwnerState = { toolbar: toolbar != null };
+    const ownerState: TreeDetailLayoutOwnerState = { toolbar: toolbar != null, surface };
 
     const headerProps = resolveSlotProps<TreeDetailLayoutOwnerState, "div", "div">({
         ownProps: { className: styles.header },
@@ -86,7 +97,13 @@ export const TreeDetailLayout = forwardRef<HTMLDivElement, TreeDetailLayoutProps
     });
 
     return (
-        <div {...restProps} ref={ref} data-toolbar={ownerState.toolbar ? "" : undefined} className={clsx(styles.root, className)}>
+        <div
+            {...restProps}
+            ref={ref}
+            data-toolbar={ownerState.toolbar ? "" : undefined}
+            data-surface={ownerState.surface}
+            className={clsx(styles.root, className)}
+        >
             <div {...headerProps}>{header}</div>
             <div {...bodyProps}>
                 <div {...mainProps}>

@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     container-type: inline-size;
     display: flex;
@@ -17,7 +19,36 @@
     display: flex;
     flex-direction: column;
     gap: var(--dextinity-tree-detail-layout-gap);
+    box-sizing: border-box;
     min-inline-size: 0;
+
+    .root:not([data-surface="none"]) & {
+        gap: 0;
+        padding: var(--dextinity-tree-detail-layout-card-padding);
+        border-radius: var(--dextinity-tree-detail-layout-card-radius);
+        color: var(--dextinity-color-text);
+
+        @include forced-colors.edge;
+
+        > .toolbar {
+            padding: var(--dextinity-tree-detail-layout-card-toolbar-padding);
+        }
+
+        > .tree {
+            padding: var(--dextinity-tree-detail-layout-card-tree-padding);
+        }
+    }
+
+    .root[data-surface="glass"] & {
+        background: var(--dextinity-tree-detail-layout-card-glass-background);
+        box-shadow: var(--dextinity-tree-detail-layout-card-glass-shadow);
+        backdrop-filter: blur(var(--dextinity-tree-detail-layout-card-glass-blur)) saturate(1.6);
+    }
+
+    .root[data-surface="solid"] & {
+        background: var(--dextinity-tree-detail-layout-card-solid-background);
+        box-shadow: var(--dextinity-tree-detail-layout-card-solid-shadow);
+    }
 }
 
 .header,

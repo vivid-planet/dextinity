@@ -8,6 +8,7 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { BulkActionBar } from "../../bulkActionBar/BulkActionBar";
 import { Button } from "../../button/Button";
 import { Checkbox } from "../../checkbox/Checkbox";
+import { CopyField } from "../../copyField/CopyField";
 import { FilterBar } from "../../filterBar/FilterBar";
 import { FilterChip } from "../../filterChip/FilterChip";
 import { Icon } from "../../icon/Icon";
@@ -18,8 +19,10 @@ import { PageHeader } from "../../pageHeader/PageHeader";
 import { Panel } from "../../panel/Panel";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { Switch } from "../../switch/Switch";
-import { type TreeNode, TreeView } from "../../treeView/TreeView";
-import { TreeDetailLayout } from "../TreeDetailLayout";
+import { getExpandableTreeNodeIds, type TreeNode, TreeView } from "../../treeView/TreeView";
+import { TreeViewExpandButtons } from "../../treeViewExpandButtons/TreeViewExpandButtons";
+import { Typography } from "../../typography/Typography";
+import { TreeDetailLayout, type TreeDetailLayoutProps } from "../TreeDetailLayout";
 import treeDetailLayoutTokens from "../TreeDetailLayout.tokens.scss?raw";
 import styles from "./TreeDetailLayout.stories.module.scss";
 
@@ -36,7 +39,6 @@ const pageTree: TreeNode[] = [
             {
                 id: "careers",
                 label: "Careers",
-                type: "folder",
                 status: "published",
                 path: "/careers",
                 children: [
@@ -49,7 +51,6 @@ const pageTree: TreeNode[] = [
             {
                 id: "about",
                 label: "About us",
-                type: "folder",
                 status: "published",
                 path: "/about-us",
                 children: [
@@ -69,8 +70,25 @@ function flatten(nodes: TreeNode[]): TreeNode[] {
     return nodes.flatMap((node) => [node, ...flatten(node.children ?? [])]);
 }
 
+function countDescendants(node: TreeNode): number {
+    return (node.children ?? []).reduce((count, child) => count + 1 + countDescendants(child), 0);
+}
+
+function findTrail(nodes: TreeNode[], id: string): TreeNode[] | undefined {
+    for (const node of nodes) {
+        if (node.id === id) {
+            return [];
+        }
+        const trail = findTrail(node.children ?? [], id);
+        if (trail != null) {
+            return [node, ...trail];
+        }
+    }
+    return undefined;
+}
+
 const allNodes = flatten(pageTree);
-const folderIds = allNodes.filter((node) => node.children != null).map((node) => node.id);
+const expandableIds = getExpandableTreeNodeIds(pageTree);
 
 const statusFilters: { value: PageStatus | "all"; label: string }[] = [
     { value: "all", label: "All" },
@@ -80,16 +98,33 @@ const statusFilters: { value: PageStatus | "all"; label: string }[] = [
 ];
 
 function PageDetail({ node, published, onPublishedChange }: { node: TreeNode; published: boolean; onPublishedChange: (published: boolean) => void }) {
+    const trail = findTrail(pageTree, node.id) ?? [];
     return (
-        <Panel title={node.label} description={<span className={styles.path}>{node.path}</span>}>
+        <Panel
+            title="Selected"
+            actions={
+                <IconButton color="secondary" variant="text" size="small" aria-label="Actions">
+                    <Icon name="more-horizontal" />
+                </IconButton>
+            }
+        >
             <div className={styles.detail}>
+                <div className={styles.detailHeading}>
+                    {trail.length > 0 && <Typography variant="label">{trail.map((ancestor) => ancestor.label).join(" › ")}</Typography>}
+                    <h3 className={styles.detailTitle}>{node.label}</h3>
+                    <CopyField value={`example.com${node.path ?? ""}`} />
+                </div>
                 <div className={styles.detailActions}>
                     <Button startIcon={<Icon name="edit" />}>Edit</Button>
-                    <Button variant="outlined" color="secondary" startIcon={<Icon name="open-new-tab" />}>
-                        Open
+                    <Button variant="outlined" color="secondary" startIcon={<Icon name="visible" />}>
+                        Preview
                     </Button>
                 </div>
-                <Switch checked={published} onChange={onPublishedChange} description="Visible on the website">
+                <Switch
+                    checked={published}
+                    onChange={onPublishedChange}
+                    description={published ? "Live at the address above." : "Only visible in the admin."}
+                >
                     Published
                 </Switch>
                 <KeyValueList
@@ -97,7 +132,7 @@ function PageDetail({ node, published, onPublishedChange }: { node: TreeNode; pu
                         { key: "Status", value: <StatusIndicator status={published ? "published" : "unpublished"} /> },
                         { key: "Template", value: "Content page" },
                         { key: "Last edited", value: "12 min ago by Anna Klein" },
-                        { key: "In menu", value: node.hiddenInMenu === true ? "No" : "Yes" },
+                        { key: "Subpages", value: countDescendants(node) },
                     ]}
                 />
                 <LinkedContent href="#job-ads" icon={<Icon name="layout" />} title="Job ads" description="This page lists 47 job ads" />
@@ -106,7 +141,7 @@ function PageDetail({ node, published, onPublishedChange }: { node: TreeNode; pu
     );
 }
 
-function PageTreePage() {
+function PageTreePage({ surface }: Pick<TreeDetailLayoutProps, "surface">) {
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState<PageStatus | "all">("all");
     const [expandedIds, setExpandedIds] = useState(["home", "careers"]);
@@ -123,18 +158,27 @@ function PageTreePage() {
     const filtered = search !== "" || status !== "all";
     const nodes = allNodes.length;
 
+    const unpublishedCount = allNodes.filter((node) => statusOf(node) === "unpublished").length;
+    const archivedCount = allNodes.filter((node) => statusOf(node) === "archived").length;
+
     function withStatus(list: TreeNode[]): TreeNode[] {
-        return list.map((node) => ({ ...node, status: statusOf(node), children: node.children && withStatus(node.children) }));
+        return list.map((node) => ({
+            ...node,
+            status: statusOf(node),
+            count: node.children != null ? countDescendants(node) : undefined,
+            children: node.children && withStatus(node.children),
+        }));
     }
 
     return (
         <>
             <TreeDetailLayout
+                surface={surface}
                 header={
                     <PageHeader
-                        eyebrow="Website"
+                        eyebrow={`Austria · German · ${nodes} pages`}
                         title="Page tree"
-                        subtitle={`${nodes} pages in Austria · German`}
+                        subtitle={`${unpublishedCount} unpublished · ${archivedCount} archived`}
                         actions={<Button startIcon={<Icon name="plus" />}>New page</Button>}
                     />
                 }
@@ -142,23 +186,24 @@ function PageTreePage() {
                     <FilterBar
                         searchValue={search}
                         onSearchChange={setSearch}
+                        labels={{ search: "Filter pages", searchPlaceholder: "Filter pages" }}
+                        start={
+                            <Checkbox
+                                aria-label="Select all pages"
+                                checked={checkedIds.length === nodes}
+                                indeterminate={checkedIds.length > 0 && checkedIds.length < nodes}
+                                onChange={(checked) => setCheckedIds(checked ? allNodes.map((node) => node.id) : [])}
+                            />
+                        }
                         actions={
-                            <>
-                                <IconButton color="secondary" aria-label="Expand all" variant="text" onClick={() => setExpandedIds(folderIds)}>
-                                    <Icon name="maximize" />
-                                </IconButton>
-                                <IconButton color="secondary" aria-label="Collapse all" variant="text" onClick={() => setExpandedIds([])}>
-                                    <Icon name="minimize" />
-                                </IconButton>
-                            </>
+                            <TreeViewExpandButtons
+                                onExpandAll={() => setExpandedIds(expandableIds)}
+                                onCollapseAll={() => setExpandedIds([])}
+                                expandAllDisabled={expandedIds.length === expandableIds.length}
+                                collapseAllDisabled={expandedIds.length === 0}
+                            />
                         }
                     >
-                        <Checkbox
-                            aria-label="Select all pages"
-                            checked={checkedIds.length === nodes}
-                            indeterminate={checkedIds.length > 0 && checkedIds.length < nodes}
-                            onChange={(checked) => setCheckedIds(checked ? allNodes.map((node) => node.id) : [])}
-                        />
                         {statusFilters.map((filter) => (
                             <FilterChip
                                 key={filter.value}
@@ -183,20 +228,18 @@ function PageTreePage() {
                 }
                 detailLabel={selected.label}
             >
-                <Panel padding="none" className={styles.treePanel}>
-                    <TreeView
-                        aria-label="Pages"
-                        nodes={withStatus(pageTree)}
-                        expandedIds={expandedIds}
-                        onExpandedChange={setExpandedIds}
-                        selectedId={selectedId}
-                        onSelect={setSelectedId}
-                        checkable
-                        checkedIds={checkedIds}
-                        onCheckedChange={setCheckedIds}
-                        filter={filtered ? (node) => matchesSearch(node) && (status === "all" || statusOf(node) === status) : undefined}
-                    />
-                </Panel>
+                <TreeView
+                    aria-label="Pages"
+                    nodes={withStatus(pageTree)}
+                    expandedIds={expandedIds}
+                    onExpandedChange={setExpandedIds}
+                    selectedId={selectedId}
+                    onSelect={setSelectedId}
+                    checkable
+                    checkedIds={checkedIds}
+                    onCheckedChange={setCheckedIds}
+                    filter={filtered ? (node) => matchesSearch(node) && (status === "all" || statusOf(node) === status) : undefined}
+                />
             </TreeDetailLayout>
             {checkedIds.length > 0 && (
                 <BulkActionBar
@@ -229,7 +272,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    "The page tree with the detail of the active page. The page header has the scope, the count, and “New page”; the toolbar selects all, searches, filters by status, and expands or collapses. The tree selects on the left, the detail shows on the right with path, edit button, published switch, and properties, and stays in view while scrolling. Checked pages get the bulk action bar.",
+                    "The page tree with the detail of the active page. The page header has the scope, the count, and “New page”; the tree's card starts with the toolbar that selects all, searches, filters by status, and expands or collapses. The tree selects on the left, the detail shows on the right with path, edit button, published switch, and properties, and stays in view while scrolling. Checked pages get the bulk action bar.",
             },
             story: { inline: false, height: "960px" },
         },
@@ -242,6 +285,7 @@ const meta = {
     argTypes: {
         header: { control: false },
         toolbar: { control: false },
+        surface: { control: "radio", options: ["glass", "solid", "none"] },
         children: { control: false },
         detail: { control: false },
         detailLabel: { control: "text" },
@@ -263,9 +307,9 @@ type Story = StoryObj<typeof meta>;
  * - Don't: show the detail as a dialog; offer a tree of more than 50 pages without a filter.
  */
 export const Default: Story = {
-    render: () => (
+    render: (args) => (
         <PageTypeShell activeId="page-tree">
-            <PageTreePage />
+            <PageTreePage surface={args.surface} />
         </PageTypeShell>
     ),
     play: async ({ canvas }) => {
@@ -275,6 +319,22 @@ export const Default: Story = {
         await userEvent.click(within(detail).getByRole("switch", { name: /Published/ }));
         await waitFor(() => expect(within(detail).getByRole("switch", { name: /Published/ })).toBeChecked());
     },
+};
+
+/**
+ * The tree's card on a solid surface, e.g. over a busy background.
+ */
+export const SolidSurface: Story = {
+    args: { surface: "solid" },
+    render: Default.render,
+};
+
+/**
+ * Without the card, the toolbar and the tree sit on the page, e.g. inside a card of your own.
+ */
+export const WithoutSurface: Story = {
+    args: { surface: "none" },
+    render: Default.render,
 };
 
 /**
@@ -290,7 +350,7 @@ export const Structure: Story = {
                         <TreeDetailLayout
                             className={styles.structureLayout}
                             header={<StructureRegion number={1} label="Page header" variant="dashed" />}
-                            toolbar={<StructureRegion number={2} label="Select all · search · status" />}
+                            toolbar={<StructureRegion number={2} label="Select all · search · status · expand" />}
                             detail={
                                 <StructureRegion number={4} label="Detail of the active page" variant="accent" className={styles.structureDetail} />
                             }
@@ -301,7 +361,10 @@ export const Structure: Story = {
                     <PatternLegend
                         items={[
                             { title: "Page header", description: "Scope, count, new page." },
-                            { title: "Toolbar", description: "Select all, search, status filter, expand and collapse." },
+                            {
+                                title: "Toolbar",
+                                description: "At the top of the tree's card: select all, search, status filter, expand and collapse all.",
+                            },
                             { title: "Tree", description: "Selection on the left, detail on the right. Bulk action bar when pages are checked." },
                             { title: "Detail", description: "Path, edit, published switch, properties. Sticks while scrolling." },
                         ]}

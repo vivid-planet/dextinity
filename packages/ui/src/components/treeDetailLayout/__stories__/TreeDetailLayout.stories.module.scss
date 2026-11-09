@@ -1,7 +1,3 @@
-.treePanel {
-    padding: 8px;
-}
-
 .path {
     font-family: var(--dextinity-font-family-mono);
     font-size: var(--dextinity-typography-mono-size);
@@ -11,6 +7,21 @@
     display: flex;
     flex-direction: column;
     gap: 18px;
+}
+
+.detailHeading {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.detailTitle {
+    margin: 0;
+    font-family: var(--dextinity-font-family-display);
+    font-size: 30px;
+    font-weight: var(--dextinity-typography-display-font-weight);
+    line-height: 1.1;
+    letter-spacing: var(--dextinity-typography-display-letter-spacing);
 }
 
 .detailActions {

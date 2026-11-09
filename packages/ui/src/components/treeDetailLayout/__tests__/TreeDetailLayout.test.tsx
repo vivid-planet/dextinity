@@ -35,4 +35,24 @@ describe("TreeDetailLayout", () => {
         expect(root.hasAttribute("data-toolbar")).toBe(false);
         expect(root.querySelector(".dextinityTreeDetailLayout__toolbar")).toBeNull();
     });
+
+    it("puts the toolbar and the tree in a glass card by default, and in none with surface none", () => {
+        const { container, rerender } = render(
+            <TreeDetailLayout header="Header" toolbar="Toolbar" detail="Detail">
+                Tree
+            </TreeDetailLayout>,
+        );
+        const root = container.firstElementChild as HTMLElement;
+        const main = screen.getByText("Toolbar").parentElement as HTMLElement;
+        expect(main.className).toContain("dextinityTreeDetailLayout__main");
+        expect(main.contains(screen.getByText("Tree"))).toBe(true);
+        expect(root.dataset.surface).toBe("glass");
+
+        rerender(
+            <TreeDetailLayout header="Header" toolbar="Toolbar" detail="Detail" surface="none">
+                Tree
+            </TreeDetailLayout>,
+        );
+        expect(root.dataset.surface).toBe("none");
+    });
 });

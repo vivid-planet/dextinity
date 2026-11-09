@@ -71,6 +71,7 @@ registerStyles(
     `,
 );
 
+/** A fixed-width column on the left and a fluid column that takes the rest of the width. */
 export const SmallColumnLeft: StoryObj = {
     parameters: { theme },
     render: () => (
@@ -158,6 +159,7 @@ registerStyles(
     `,
 );
 
+/** A fluid column and a fixed-width column on the right. */
 export const SmallColumnRight: StoryObj = {
     parameters: { theme },
     render: () => (
@@ -245,6 +247,7 @@ registerStyles(
     `,
 );
 
+/** The small column is on the right on desktop and on top on mobile, through `direction="rtl"` on the group. */
 export const ReversedMobileStackOrder: StoryObj = {
     parameters: { theme },
     render: () => (

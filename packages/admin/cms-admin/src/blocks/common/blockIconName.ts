@@ -3,7 +3,7 @@ import type { IconName } from "@dextinity/ui";
 import { BlockCategory, type BlockInterface } from "../types";
 
 const categoryIconNames: Record<BlockCategory, IconName> = {
-    [BlockCategory.TextAndContent]: "rte-text-placeholder",
+    [BlockCategory.TextAndContent]: "rte-heading",
     [BlockCategory.Media]: "image",
     [BlockCategory.Navigation]: "link",
     [BlockCategory.Teaser]: "layout",

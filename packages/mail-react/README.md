@@ -49,6 +49,8 @@ Every custom component has a story in `src/components/<concern>/__stories__/<Com
 
 Placeholder images use the `picsum.photos` seed URL pattern — `https://picsum.photos/seed/<seed>/<width>/<height>` — so the same seed renders the same image on every build.
 
+Stories under `Diagnostics/` reproduce email-client bugs, not usage. They set `tags: ["!manifest"]`, so that the MCP server does not serve them.
+
 ### Changesets
 
 When a custom component replaces a re-export, describe the change against the previous re-export — the added props, features, or behavior. Consumers don't need to know the internal component is new; they only see what's different in the API they use.

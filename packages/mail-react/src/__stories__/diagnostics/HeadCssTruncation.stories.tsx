@@ -11,6 +11,7 @@ import { css } from "../../utils/css.js";
 
 const config: Meta = {
     title: "Diagnostics/Head CSS Truncation",
+    tags: ["!manifest"],
     parameters: { mailRoot: false },
 };
 

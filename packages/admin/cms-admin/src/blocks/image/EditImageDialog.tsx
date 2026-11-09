@@ -24,6 +24,7 @@ import type { ChangeEvent } from "react";
 import { Form } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
+import { fullCropArea } from "../../common/image/cropArea";
 import { ImageCrop } from "../../common/image/ImageCrop";
 import { useContentScope } from "../../contentScope/Provider";
 import { CropSettingsFields } from "../../dam/FileForm/CropSettingsFields";
@@ -90,13 +91,18 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                     width: undefined,
                     height: undefined,
                 };
-            } else {
+            } else if (values.crop.width && values.crop.height) {
                 cropArea = {
-                    focalPoint: values.focalPoint ?? undefined,
+                    focalPoint: values.focalPoint,
                     x: values.crop.x,
                     y: values.crop.y,
-                    width: values.crop.width ? Math.ceil(values.crop.width) : undefined,
-                    height: values.crop.height ? Math.ceil(values.crop.height) : undefined,
+                    width: Math.ceil(values.crop.width),
+                    height: Math.ceil(values.crop.height),
+                };
+            } else {
+                cropArea = {
+                    focalPoint: values.focalPoint,
+                    ...fullCropArea,
                 };
             }
 

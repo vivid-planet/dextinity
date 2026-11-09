@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import type { ComponentType, ReactNode } from "react";
 import type { Renderers, TextBlockRenderFn } from "redraft";
 
@@ -91,6 +92,7 @@ interface CreateRichTextRenderersOptions {
     linkTypes: Record<string, RichTextLinkHrefResolver>;
     inline: Record<string, RichTextInlineRenderer>;
     blockTextComponent: ComponentType<BlockTextProps>;
+    textClassName: string | undefined;
     lastBlockKey: string;
 }
 
@@ -99,6 +101,7 @@ export function createRichTextRenderers({
     linkTypes,
     inline,
     blockTextComponent,
+    textClassName,
     lastBlockKey,
 }: CreateRichTextRenderersOptions): Renderers {
     const blocks: Renderers["blocks"] = {};
@@ -106,7 +109,8 @@ export function createRichTextRenderers({
     // "unstyled" is redraft's blockFallback: registering it makes every block type the caller did not configure render with base theme styles.
     for (const blockType of new Set(["unstyled", ...Object.keys(builtInListKinds), ...Object.keys(blockTypes)])) {
         // `list` selects the renderer; the text component must not receive it.
-        const { list, ...blockTypeProps } = blockTypes[blockType] ?? {};
+        const { list, ...blockTypeOptions } = blockTypes[blockType] ?? {};
+        const blockTypeProps = { ...blockTypeOptions, className: clsx(blockTypeOptions.className, textClassName) };
         const listKind = list ?? builtInListKinds[blockType];
 
         blocks[blockType] =

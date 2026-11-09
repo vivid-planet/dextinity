@@ -2,15 +2,17 @@ import { IsOptional, IsString } from "class-validator";
 
 import type { Block, BlockDataInterface, BlockInputInterface } from "../block.js";
 import { BlockField } from "../decorators/field.js";
-import type { BlockFactoryNameOrOptions } from ".//types.js";
 import {
     BaseOneOfBlockData,
     BaseOneOfBlockInput,
     BaseOneOfBlockItemData,
     BaseOneOfBlockItemInput,
     createOneOfBlock,
+    createOneOfBlockDescription,
     type CreateOneOfBlockOptions,
 } from "./createOneOfBlock.js";
+import type { BlockFactoryNameOrOptions } from "./types.js";
+import { withDefaultDescription } from "./withDefaultDescription.js";
 
 function createLinkBlock<BlockMap extends Record<string, Block<BlockDataInterface, BlockInputInterface>>>(
     { supportedBlocks, allowEmpty = false }: CreateOneOfBlockOptions<BlockMap>,
@@ -37,7 +39,10 @@ function createLinkBlock<BlockMap extends Record<string, Block<BlockDataInterfac
         title?: string;
     }
 
-    return createOneOfBlock({ supportedBlocks, allowEmpty, OneOfBlockData: LinkBlockData, OneOfBlockInput: LinkBlockInput }, nameOrOptions);
+    return createOneOfBlock(
+        { supportedBlocks, allowEmpty, OneOfBlockData: LinkBlockData, OneOfBlockInput: LinkBlockInput },
+        withDefaultDescription(nameOrOptions, `A link to one of several targets. ${createOneOfBlockDescription({ allowEmpty })}`),
+    );
 }
 
 export { createLinkBlock };

@@ -171,6 +171,7 @@ Every editor feature has its own option in the root options object, similar to [
 | `unorderedList`    | `true`  | API + Admin  |
 | `nonBreakingSpace` | `true`  | API + Admin  |
 | `softHyphen`       | `true`  | API + Admin  |
+| `textAlign`        | `false` | API + Admin  |
 | `undoRedoButtons`  | `true`  | Admin only   |
 
 The text block types the content may consist of are configured separately, through [`textBlocks`](#text-blocks).
@@ -523,6 +524,32 @@ The API rejects content the configuration doesn't allow: a text block that isn't
 Content written before the text blocks became one node — paragraphs and headings with a `level` — does not fit the current schema either. How it is converted is still being decided; until then this block only reads content the current editor wrote.
 
 :::
+
+### Text alignment
+
+The `textAlign` option adds toolbar buttons that align paragraphs and headings left, center, right, or justified, with the shortcuts `Mod-Shift-L`, `Mod-Shift-E`, `Mod-Shift-R`, and `Mod-Shift-J`. A text block without an alignment counts as left-aligned, and clicking the button of the active alignment changes nothing.
+
+Not every site supports every alignment, for instance justified text. An object enables only the alignments it sets to `true`:
+
+```ts title="tip-tap-rich-text.block.ts"
+export const TipTapRichTextBlock = createTipTapRichTextBlock({
+    link: LinkBlock,
+    textAlign: { left: true, center: true },
+});
+```
+
+The `textAlign` option must match between the API and the Admin, otherwise the API rejects content the editor produces. The API also rejects content that uses an alignment that isn't enabled, so disabling an alignment for a block that already holds content requires a [migration](./5-migrations.mdx).
+
+The alignment is stored in the text block's `textAlign` attribute, and the default `textBlock` handler of `renderTipTapRichText` renders it as a `text-align` style. A custom `textBlock` handler has to apply the alignment itself:
+
+```tsx title="TipTapRichTextBlock.tsx (Site)"
+const nodeMapping: Record<string, TipTapNodeHandler> = {
+    textBlock: ({ node, children }) => {
+        const textAlign = node.attrs?.textAlign as CSSProperties["textAlign"] | null | undefined;
+        return <p style={textAlign ? { textAlign } : undefined}>{children}</p>;
+    },
+};
+```
 
 ### Child blocks
 

@@ -155,10 +155,10 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 ### Site (`packages/site/`)
 
-| Package                  | Description                                                   |
-| ------------------------ | ------------------------------------------------------------- |
-| `@dextinity/site-react`  | React components and utilities for the frontend/site layer    |
-| `@dextinity/site-nextjs` | Next.js-specific site layer components (extends `site-react`) |
+| Package                  | Description                                                                                                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@dextinity/site-react`  | React components and utilities for the frontend/site layer                                                                                                          |
+| `@dextinity/site-nextjs` | Next.js-specific site layer components (extends `site-react`), serves build assets of other builds during rolling deployments (`dextinity-upload-build-assets` bin) |
 
 ### Utilities
 

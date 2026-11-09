@@ -33,7 +33,7 @@ import { InlineStyleMark } from "./extensions/InlineStyleMark.js";
 import { NonBreakingSpace } from "./extensions/NonBreakingSpace.js";
 import { Placeholder } from "./extensions/Placeholder.js";
 import { SoftHyphen } from "./extensions/SoftHyphen.js";
-import { createTextBlock } from "./extensions/TextBlock.js";
+import { createTextBlock, resolveTextAlign, type TipTapTextAlign } from "./extensions/TextBlock.js";
 import { TextBlockListItem } from "./extensions/TextBlockListItem.js";
 import { buildDraftJsToTipTapMigration } from "./migrations/buildDraftJsToTipTapMigration.js";
 import { buildNoopMigration } from "./migrations/buildNoopMigration.js";
@@ -78,6 +78,7 @@ export interface TipTapResolvedOptions {
     defaultTextBlock: TipTapResolvedTextBlock;
     orderedList: false | TipTapResolvedList;
     unorderedList: false | TipTapResolvedList;
+    textAlign: TipTapTextAlign[];
     nonBreakingSpace: boolean;
     softHyphen: boolean;
     link: boolean;
@@ -157,6 +158,14 @@ export interface CreateTipTapRichTextBlockOptions {
      */
     unorderedList?: boolean | TipTapListOptions;
     /**
+     * Enables aligning text blocks left, center, right or justified, stored in the content's
+     * `textAlign` attribute. Defaults to `false`. Pass an object such as `{ left: true, center: true }`
+     * to enable only some of the alignments.
+     *
+     * Must match the Admin's `textAlign`, otherwise the API rejects content the editor produces.
+     */
+    textAlign?: boolean | Partial<Record<TipTapTextAlign, boolean>>;
+    /**
      * Enables non-breaking spaces. Defaults to `true`.
      */
     nonBreakingSpace?: boolean;
@@ -232,6 +241,7 @@ export function resolveTipTapOptions({
     defaultTextBlock,
     orderedList,
     unorderedList,
+    textAlign = false,
     nonBreakingSpace = true,
     softHyphen = true,
     link,
@@ -255,6 +265,7 @@ export function resolveTipTapOptions({
         // Lists are enabled by default, but cannot exist without a paragraph to build their items from.
         orderedList: resolveList({ list: orderedList ?? hasParagraph, name: orderedListName }),
         unorderedList: resolveList({ list: unorderedList ?? hasParagraph, name: unorderedListName }),
+        textAlign: resolveTextAlign(textAlign),
         nonBreakingSpace,
         softHyphen,
         link: !!link,
@@ -541,6 +552,7 @@ function IsTipTapContent(
         defaultTextBlock,
         orderedList,
         unorderedList,
+        textAlign,
     }: {
         inlineStyles: TipTapInlineStyle[];
         linkBlock?: Block;
@@ -552,6 +564,7 @@ function IsTipTapContent(
         defaultTextBlock: TipTapResolvedTextBlock;
         orderedList: false | TipTapResolvedList;
         unorderedList: false | TipTapResolvedList;
+        textAlign: TipTapTextAlign[];
     },
     validationOptions?: ValidationOptions,
 ) {
@@ -597,7 +610,16 @@ function IsTipTapContent(
                         }
 
                         // Enforce the configured text blocks
-                        if (containsInvalidTextBlock({ content: value as JSONContent, textBlocks, defaultTextBlock, orderedList, unorderedList })) {
+                        if (
+                            containsInvalidTextBlock({
+                                content: value as JSONContent,
+                                textBlocks,
+                                defaultTextBlock,
+                                orderedList,
+                                unorderedList,
+                                textAlign,
+                            })
+                        ) {
                             return false;
                         }
 
@@ -843,6 +865,7 @@ export function createTipTapRichTextBlock(
             defaultTextBlock: resolvedOptions.defaultTextBlock,
             orderedList: resolvedOptions.orderedList,
             unorderedList: resolvedOptions.unorderedList,
+            textAlign: resolvedOptions.textAlign,
         })
         @BlockField({ type: "tipTapRichTextBlock", childBlocks, linkBlock: LinkBlock, tipTap })
         tipTapContent: JSONContent;

@@ -58,9 +58,17 @@ interface RenderRichTextContentOptions {
     linkTypes: Record<string, RichTextLinkHrefResolver>;
     inline: Record<string, RichTextInlineRenderer>;
     blockTextComponent: ComponentType<BlockTextProps>;
+    textClassName: string | undefined;
 }
 
-function renderRichTextContent({ draftContent, blockTypes, linkTypes, inline, blockTextComponent }: RenderRichTextContentOptions): ReactNode {
+function renderRichTextContent({
+    draftContent,
+    blockTypes,
+    linkTypes,
+    inline,
+    blockTextComponent,
+    textClassName,
+}: RenderRichTextContentOptions): ReactNode {
     if (!isDraftContent(draftContent)) {
         return null;
     }
@@ -72,7 +80,7 @@ function renderRichTextContent({ draftContent, blockTypes, linkTypes, inline, bl
         return null;
     }
 
-    const renderers = createRichTextRenderers({ blockTypes, linkTypes, inline, blockTextComponent, lastBlockKey });
+    const renderers = createRichTextRenderers({ blockTypes, linkTypes, inline, blockTextComponent, textClassName, lastBlockKey });
 
     return redraft({ ...draftContent, blocks: withoutSkippedDepthLevels(blocksWithText) }, renderers);
 }
@@ -115,12 +123,26 @@ export function createRichTextBlock<TLinkTypes extends Record<string, unknown> =
     const linkTypes = mergeLinkTypes<TLinkTypes>(options.linkTypes);
     const inline = options.inline ?? {};
 
-    function MjmlRichTextBlock({ data }: RichTextBlockProps): ReactNode {
-        return renderRichTextContent({ draftContent: data.draftContent, blockTypes, linkTypes, inline, blockTextComponent: MjmlBlockText });
+    function MjmlRichTextBlock({ data, textClassName }: RichTextBlockProps): ReactNode {
+        return renderRichTextContent({
+            draftContent: data.draftContent,
+            blockTypes,
+            linkTypes,
+            inline,
+            blockTextComponent: MjmlBlockText,
+            textClassName,
+        });
     }
 
-    function HtmlRichTextBlock({ data }: RichTextBlockProps): ReactNode {
-        return renderRichTextContent({ draftContent: data.draftContent, blockTypes, linkTypes, inline, blockTextComponent: HtmlBlockText });
+    function HtmlRichTextBlock({ data, textClassName }: RichTextBlockProps): ReactNode {
+        return renderRichTextContent({
+            draftContent: data.draftContent,
+            blockTypes,
+            linkTypes,
+            inline,
+            blockTextComponent: HtmlBlockText,
+            textClassName,
+        });
     }
 
     return { MjmlRichTextBlock, HtmlRichTextBlock };

@@ -7,7 +7,10 @@ export interface TipTapRichTextBlockData {
     tipTapContent: unknown;
 }
 
-export type TipTapRichTextBlockProps = PropsWithData<TipTapRichTextBlockData>;
+export type TipTapRichTextBlockProps = PropsWithData<TipTapRichTextBlockData> & {
+    /** Set on each text element the block renders. */
+    textClassName?: string;
+};
 
 export interface CreateTipTapRichTextBlockOptions<TLinkTypes extends Record<string, unknown> = Record<string, unknown>> {
     /** Default look per text block or list, used when the editor picks no style, e.g. `{ "unordered-list": { variant: "list" } }`. */

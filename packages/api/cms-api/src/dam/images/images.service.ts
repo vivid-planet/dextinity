@@ -10,6 +10,7 @@ import { DAM_CONFIG } from "../dam.constants.js";
 import type { FileInterface } from "../files/entities/file.entity.js";
 import type { ImageInterface } from "./dto/image.interface.js";
 import type { ImageParams } from "./dto/image.params.js";
+import { isUsableCropArea } from "./images.util.js";
 
 @Injectable()
 export class ImagesService {
@@ -25,7 +26,7 @@ export class ImagesService {
     }
 
     createUrlTemplate({ file, cropArea }: ImageInterface, { previewDamUrls = false }: { previewDamUrls?: boolean }): string {
-        const imageCropArea = cropArea !== undefined ? cropArea : file.image!.cropArea;
+        const imageCropArea = cropArea !== undefined && isUsableCropArea(cropArea) ? cropArea : file.image!.cropArea;
         const filename = this.createFilename(file);
 
         const baseUrl = [`/${this.config.basePath}/images`];

@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/site-nextjs",
-    "version": "10.13.0",
+    "version": "10.14.0",
     "description": "Dextinity Site Next.js package",
     "repository": {
         "type": "git",
@@ -17,6 +17,10 @@
             "types": "./lib/index.d.ts",
             "import": "./lib/index.js"
         },
+        "./build-assets": {
+            "types": "./lib/buildAssets.d.ts",
+            "default": "./lib/buildAssets.js"
+        },
         "./css": "./lib/style.css",
         "./intl": {
             "types": "./lib/intl/server.d.ts",
@@ -29,7 +33,11 @@
         },
         "./webpackPersistedQueriesLoader": "./lib/persistedQueries/webpackPersistedQueriesLoader.js"
     },
+    "bin": {
+        "dextinity-upload-build-assets": "bin/upload-build-assets.mjs"
+    },
     "files": [
+        "bin/**/*.mjs",
         "lib/*"
     ],
     "scripts": {
@@ -52,38 +60,57 @@
     },
     "dependencies": {
         "@dextinity/site-react": "workspace:*",
-        "jose": "^5.10.0",
-        "server-only": "^0.0.1"
+        "clsx": "^2.1.1",
+        "commander": "^15.0.0",
+        "fast-equals": "^6.2.2",
+        "jose": "^6.2.15",
+        "mime": "^4.1.2",
+        "scroll-into-view-if-needed": "^3.1.0",
+        "server-only": "^0.0.1",
+        "usehooks-ts": "^3.1.1"
     },
     "devDependencies": {
+        "@aws-sdk/client-s3": "^3.1161.0",
+        "@azure/storage-blob": "^12.34.0",
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
-        "@vitejs/plugin-react": "^6.1.2",
+        "@vitejs/plugin-react": "^6.2.1",
+        "aws-sdk-client-mock": "^4.1.0",
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.5",
         "jsdom": "^30.1.2",
-        "next": "^16.4.3",
+        "next": "^16.4.4",
         "npm-run-all2": "^9.0.4",
         "prettier": "^3.9.10",
         "react": "^19.3.1",
         "react-dom": "^19.3.1",
         "react-intl": "^12.1.4",
-        "rimraf": "^6.1.3",
-        "rollup": "^4.67.2",
+        "rimraf": "^6.1.4",
+        "rollup": "^4.67.4",
         "rollup-plugin-preserve-directives": "^0.4.0",
         "sass": "^1.107.1",
         "typescript": "^6.0.3",
         "unplugin-dts": "^1.1.2",
         "vite": "^8.3.5",
-        "vitest": "^5.0.5"
+        "vitest": "^5.1.0"
     },
     "peerDependencies": {
+        "@aws-sdk/client-s3": "^3.0.0",
+        "@azure/storage-blob": "^12.0.0",
         "next": "^14.2.0 || ^15.0.0 || ^16.0.0",
         "react": "^18.0.0 || ^19.0.0",
         "react-dom": "^18.0.0 || ^19.0.0",
         "react-intl": "^12.0.0"
+    },
+    "peerDependenciesMeta": {
+        "@aws-sdk/client-s3": {
+            "optional": true
+        },
+        "@azure/storage-blob": {
+            "optional": true
+        }
     },
     "engines": {
         "node": ">=24.15.0"

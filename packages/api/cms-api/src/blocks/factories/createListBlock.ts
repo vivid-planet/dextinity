@@ -19,6 +19,7 @@ import {
 } from "../block.js";
 import { BlockField } from "../decorators/field.js";
 import type { BlockFactoryNameOrOptions } from "./types.js";
+import { withDefaultDescription } from "./withDefaultDescription.js";
 
 interface ListBlockItemDataInterface extends BlockData {
     key: string;
@@ -110,7 +111,7 @@ interface Options<B extends Block> {
 
 export function createListBlock<B extends Block>(
     { block, ListBlockItemData = BaseListBlockItemData(block), ListBlockItemInput = BaseListBlockItemInput(block, ListBlockItemData) }: Options<B>,
-    name: BlockFactoryNameOrOptions,
+    nameOrOptions: BlockFactoryNameOrOptions,
 ): Block<BlockDataInterface, ListBlockInputInterface<ExtractBlockInput<B>>> {
     if (!block) {
         throw new Error("Provided 'block' is undefined. This is most likely due to a circular import");
@@ -153,5 +154,12 @@ export function createListBlock<B extends Block>(
         }
     }
 
-    return createBlock(ListBlockData, ListBlockInput, name);
+    return createBlock(
+        ListBlockData,
+        ListBlockInput,
+        withDefaultDescription(
+            nameOrOptions,
+            'A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{"blocks":[]}`.',
+        ),
+    );
 }

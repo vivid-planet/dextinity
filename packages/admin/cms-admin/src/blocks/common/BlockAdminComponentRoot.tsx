@@ -1,23 +1,35 @@
 import { Stack, useStackApi } from "@dextinity/admin";
 import { Breadcrumbs } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
-import { type PropsWithChildren, type ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createContext, type PropsWithChildren, type ReactNode, useContext, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useHistory } from "react-router";
 
 import { stickyTopVariable } from "./stickyTopVariable";
 
+export type BlockAdminComponentRootContentKind = "page" | "email";
+
 interface Props {
     title?: ReactNode;
+    /** What the blocks make up. The Add Block Drawer names it on the top level, e.g. "Will be inserted at the end of the page.", instead of the `title`. */
+    contentKind?: BlockAdminComponentRootContentKind;
+}
+
+const ContentKindContext = createContext<BlockAdminComponentRootContentKind | undefined>(undefined);
+
+export function useBlockAdminComponentRootContentKind() {
+    return useContext(ContentKindContext);
 }
 
 const BlockAdminComponentRoot = (props: PropsWithChildren<Props>) => {
-    const { children, title = <FormattedMessage id="dextinity.blocks" defaultMessage="Blocks" /> } = props;
+    const { children, title = <FormattedMessage id="dextinity.blocks" defaultMessage="Blocks" />, contentKind } = props;
 
     return (
-        <Stack topLevelTitle={title}>
-            <BlockAdminComponentRootContent>{children}</BlockAdminComponentRootContent>
-        </Stack>
+        <ContentKindContext.Provider value={contentKind}>
+            <Stack topLevelTitle={title}>
+                <BlockAdminComponentRootContent>{children}</BlockAdminComponentRootContent>
+            </Stack>
+        </ContentKindContext.Provider>
     );
 };
 

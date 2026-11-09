@@ -1,4 +1,3 @@
-import { MjmlColumn, MjmlSpacer, MjmlTable } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { HtmlInlineLink } from "../../components/inlineLink/HtmlInlineLink.js";
@@ -6,6 +5,7 @@ import { MjmlMailRoot } from "../../components/mailRoot/MjmlMailRoot.js";
 import { MjmlSection } from "../../components/section/MjmlSection.js";
 import { HtmlText } from "../../components/text/HtmlText.js";
 import { MjmlText } from "../../components/text/MjmlText.js";
+import { MjmlColumn, MjmlSpacer, MjmlTable } from "../../index.js";
 import { createTheme } from "../../theme/createTheme.js";
 import { ThemeProvider } from "../../theme/ThemeProvider.js";
 import type { Theme } from "../../theme/themeTypes.js";

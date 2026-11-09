@@ -1,4 +1,3 @@
-import { MjmlColumn } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ReactElement } from "react";
 import { expect } from "storybook/test";
@@ -8,6 +7,7 @@ import { renderMailHtml } from "../../client/renderMailHtml.js";
 import { MjmlMailRoot } from "../../components/mailRoot/MjmlMailRoot.js";
 import { MjmlSection } from "../../components/section/MjmlSection.js";
 import { MjmlText } from "../../components/text/MjmlText.js";
+import { MjmlColumn } from "../../index.js";
 import { createTheme } from "../../theme/createTheme.js";
 import type { TextVariantStyles, Theme } from "../../theme/themeTypes.js";
 import { css } from "../../utils/css.js";

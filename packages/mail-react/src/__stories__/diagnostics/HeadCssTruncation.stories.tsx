@@ -1,10 +1,10 @@
-import { MjmlColumn } from "@faire/mjml-react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { ReactElement } from "react";
 
 import { MjmlMailRoot } from "../../components/mailRoot/MjmlMailRoot.js";
 import { MjmlSection } from "../../components/section/MjmlSection.js";
 import { MjmlText } from "../../components/text/MjmlText.js";
+import { MjmlColumn } from "../../index.js";
 import { registerStyles } from "../../styles/registerStyles.js";
 import { createTheme } from "../../theme/createTheme.js";
 import { css } from "../../utils/css.js";

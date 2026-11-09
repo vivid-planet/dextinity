@@ -94,7 +94,7 @@
         "@nestjs/jwt": "^11.0.2",
         "@nestjs/platform-express": "^11.2.8",
         "@nestjs/testing": "^11.2.8",
-        "@sentry/node": "^11.10.0",
+        "@sentry/node": "^11.11.0",
         "@smithy/types": "^4.19.0",
         "@swc/core": "^1.16.22",
         "@types/draft-js": "^0.11.20",

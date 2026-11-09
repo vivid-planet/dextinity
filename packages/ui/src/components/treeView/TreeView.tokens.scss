@@ -7,6 +7,17 @@
     --dextinity-tree-view-foreground: var(--dextinity-color-text);
     --dextinity-tree-view-icon-color: var(--dextinity-color-text-tertiary);
     --dextinity-tree-view-meta-color: var(--dextinity-color-text-subtle);
+    // The node's count after its name
+    --dextinity-tree-view-count-color: var(--dextinity-color-text-subtle);
+    --dextinity-tree-view-count-font-size: 11px;
+
+    // The line along the children of an expanded node
+    --dextinity-tree-view-guide-color: var(--dextinity-color-line-strong);
+    --dextinity-tree-view-guide-width: var(--dextinity-line-width);
+    // From the start of the parent's row, just after the center of its expand toggle
+    --dextinity-tree-view-guide-offset: 39px;
+    // Space above the first and below the last child
+    --dextinity-tree-view-guide-inset-block: 2px 10px;
 
     --dextinity-tree-view-row-background-hover: color-mix(in oklch, var(--dextinity-color-text) 5%, transparent);
     --dextinity-tree-view-row-shadow-hover: 0 0 transparent;

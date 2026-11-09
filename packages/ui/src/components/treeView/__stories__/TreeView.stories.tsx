@@ -16,13 +16,14 @@ const pageTree: TreeNode[] = [
         icon: <Icon name="home" />,
         status: "published",
         path: "/",
+        count: 8,
         children: [
             {
                 id: "careers",
                 label: "Careers",
-                type: "folder",
                 status: "published",
                 path: "/careers",
+                count: 3,
                 children: [
                     { id: "jobs", label: "Open positions", status: "published", path: "/careers/jobs" },
                     { id: "benefits", label: "Benefits", status: "archived", path: "/careers/benefits" },
@@ -32,9 +33,9 @@ const pageTree: TreeNode[] = [
             {
                 id: "products",
                 label: "Products",
-                type: "folder",
                 status: "published",
                 path: "/products",
+                count: 2,
                 children: [
                     { id: "cms", label: "CMS", status: "published", path: "/products/cms" },
                     { id: "shop", label: "Shop", type: "link", status: "published", path: "https://shop.example.com" },
@@ -150,10 +151,12 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * The page tree with an active page ("Open positions") and a marked one ("Benefits"). A click shows the detail; a double-click or
- * Enter opens the edit view.
+ * Enter opens the edit view. Guide lines connect the children of an expanded node; a node with children shows a folder and the number
+ * of pages below it.
  *
  * **Rules**
  *
+ * - Show the start page with a house, a node with children with a folder, a link with a link symbol, every other page with a page.
  * - Show the status as a dot at the end of the row, with the text in its tooltip.
  * - Show actions on hover and on the active row.
  * - Never put more than one icon before the name.
@@ -185,6 +188,16 @@ export const Default: Story = {
         await userEvent.keyboard("{ArrowDown}");
         await userEvent.tab();
         await expect(canvas.getByRole("button", { name: "Add page below Benefits" })).toHaveFocus();
+    },
+};
+
+/**
+ * Without the guide lines along the children, e.g. in a narrow picker where the indentation alone is clear enough.
+ */
+export const WithoutGuideLines: Story = {
+    args: {
+        guideLines: false,
+        selectedId: "jobs",
     },
 };
 

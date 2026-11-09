@@ -78,6 +78,7 @@
 @use "../components/topBar/TopBar.tokens" as topBar;
 @use "../components/treeDetailLayout/TreeDetailLayout.tokens" as treeDetailLayout;
 @use "../components/treeView/TreeView.tokens" as treeView;
+@use "../components/treeViewExpandButtons/TreeViewExpandButtons.tokens" as treeViewExpandButtons;
 @use "../components/userMenu/UserMenu.tokens" as userMenu;
 
 @include scope.component-tokens {
@@ -159,6 +160,7 @@
     @include topBar.tokens;
     @include treeDetailLayout.tokens;
     @include treeView.tokens;
+    @include treeViewExpandButtons.tokens;
     @include userMenu.tokens;
 }
 

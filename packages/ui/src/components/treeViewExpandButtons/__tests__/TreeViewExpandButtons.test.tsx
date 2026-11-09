@@ -1,0 +1,22 @@
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
+
+import { TreeViewExpandButtons } from "../TreeViewExpandButtons";
+
+afterEach(cleanup);
+
+function noop() {}
+
+describe("TreeViewExpandButtons", () => {
+    it("renders the contract classes, with the buttons named by their labels", () => {
+        const { container } = render(
+            <TreeViewExpandButtons onExpandAll={noop} onCollapseAll={noop} collapseAllDisabled labels={{ expandAll: "Alle aufklappen" }} />,
+        );
+
+        expect((container.firstElementChild as HTMLElement).className).toContain("dextinityTreeViewExpandButtons");
+        expect(screen.getByRole("button", { name: "Alle aufklappen" }).className).toContain("dextinityTreeViewExpandButtons__expandAllButton");
+        const collapseAll = screen.getByRole("button", { name: "Collapse all" });
+        expect(collapseAll.className).toContain("dextinityTreeViewExpandButtons__collapseAllButton");
+        expect(collapseAll).toBeDisabled();
+    });
+});

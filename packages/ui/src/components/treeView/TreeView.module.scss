@@ -15,6 +15,58 @@
     font-size: var(--dextinity-tree-view-font-size);
 }
 
+.groupFrame {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 1fr;
+
+    &[data-opening],
+    &[data-closing] {
+        > .group {
+            min-block-size: 0;
+            overflow: hidden;
+        }
+    }
+
+    &[data-opening] {
+        animation: expand var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+    }
+
+    &[data-closing] {
+        grid-template-rows: 0fr;
+        animation: collapse var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+    }
+}
+
+@keyframes expand {
+    from {
+        grid-template-rows: 0fr;
+    }
+}
+
+@keyframes collapse {
+    from {
+        grid-template-rows: 1fr;
+    }
+}
+
+.group {
+    position: relative;
+
+    // The guide line along the children, starting below the parent's expand toggle
+    .root[data-guide-lines] &::before {
+        position: absolute;
+        inset-block: var(--dextinity-tree-view-guide-inset-block);
+        inset-inline-start: calc(var(--dextinity-tree-view-guide-offset) + var(--dextinity-tree-view-node-level) * var(--dextinity-tree-view-indent));
+        inline-size: var(--dextinity-tree-view-guide-width);
+        background: var(--dextinity-tree-view-guide-color);
+        content: "";
+        pointer-events: none;
+
+        @include forced-colors.fill(GrayText);
+    }
+}
+
 .item {
     position: relative;
     outline: none;
@@ -215,6 +267,13 @@
     --dextinity-icon-size: 14px;
 }
 
+.count {
+    flex: none;
+    color: var(--dextinity-tree-view-count-color);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-tree-view-count-font-size);
+}
+
 .path {
     flex: 1;
     min-inline-size: 0;
@@ -261,7 +320,8 @@
 .row[data-context] {
     > .icon,
     > .label,
-    > .hiddenInMenu {
+    > .hiddenInMenu,
+    > .count {
         opacity: var(--dextinity-tree-view-context-opacity);
     }
 

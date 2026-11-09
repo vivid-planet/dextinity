@@ -31,7 +31,7 @@ export interface TreeNode {
     /**
      * Sets the icon before the name.
      *
-     * @defaultValue `"page"`
+     * @defaultValue `"folder"` for a node with children, `"page"` otherwise
      */
     type?: "page" | "link" | "folder";
     /** Replaces the icon of `type`, e.g. `<Icon name="home" />` for the home page. */
@@ -46,6 +46,8 @@ export interface TreeNode {
      * @defaultValue `false`
      */
     hiddenInMenu?: boolean;
+    /** Shown after the name in small print, e.g. the number of pages below a page; announced with `labels.count`. */
+    count?: number;
     /** The child nodes. */
     children?: TreeNode[];
 }
@@ -67,15 +69,19 @@ export type TreeViewOwnerState = {
     checkable: boolean;
     draggable: boolean;
     filtered: boolean;
+    guideLines: boolean;
 };
 
 export interface TreeViewLabels {
     /** The accessible name of the "hidden in menu" symbol. */
     hiddenInMenu: string;
+    /** Describes a node's `count` to screen readers, e.g. "3 items inside". */
+    count: (count: number) => string;
 }
 
 export const defaultTreeViewLabels: TreeViewLabels = {
     hiddenInMenu: "Hidden in menu",
+    count: (count) => (count === 1 ? "1 item inside" : `${count} items inside`),
 };
 
 export interface TreeViewSlotProps {
@@ -130,6 +136,12 @@ export interface TreeViewProps extends Omit<HTMLAttributes<HTMLUListElement>, "c
     onMove?: (move: TreeViewMove) => void;
     /** Whether a dragged or cut node may be moved there; by default anywhere except on itself and its descendants. */
     canDrop?: (move: TreeViewMove) => boolean;
+    /**
+     * Draws a vertical line along the children of each expanded node, connecting them to their parent.
+     *
+     * @defaultValue `true`
+     */
+    guideLines?: boolean;
     /** Actions at the end of a row, shown on hover, focus, and on the active node. */
     renderActions?: (node: TreeNode) => ReactNode;
     /** Texts for translation; missing keys fall back to `defaultTreeViewLabels`. */
@@ -146,7 +158,20 @@ interface VisibleNode {
     level: number;
     hasChildren: boolean;
     expanded: boolean;
+    /** Its children are still shown while they collapse. */
+    closing: boolean;
 }
+
+interface Expansion {
+    expandedIds: string[];
+    /** Collapsed nodes whose children are shown until the collapse animation ends. */
+    closingIds: string[];
+    /** Expanded nodes whose children are animated in. */
+    openingIds: string[];
+}
+
+/** Long enough for the collapse animation to end; clears it where `animationend` never comes, e.g. without rendering. */
+const expansionAnimationTimeout = 1000;
 
 const typeIcons = { page: "file", link: "link", folder: "folder" } as const;
 
@@ -171,6 +196,11 @@ function isDescendantOrSelf(parents: Map<string, string | undefined>, id: string
     return false;
 }
 
+/** Returns the ids of the nodes with children, e.g. to expand all of them. */
+export function getExpandableTreeNodeIds(nodes: TreeNode[]): string[] {
+    return nodes.flatMap((node) => (node.children != null && node.children.length > 0 ? [node.id, ...getExpandableTreeNodeIds(node.children)] : []));
+}
+
 /** Returns the ids of the nodes matching `filter` and of their ancestors. */
 function collectIncluded(nodes: TreeNode[], filter: (node: TreeNode) => boolean, included: Set<string>, matching: Set<string>) {
     let anyIncluded = false;
@@ -186,6 +216,11 @@ function collectIncluded(nodes: TreeNode[], filter: (node: TreeNode) => boolean,
         }
     }
     return anyIncluded;
+}
+
+function haveSameIds(a: string[], b: string[]) {
+    const setOfA = new Set(a);
+    return a.length === b.length && b.every((id) => setOfA.has(id));
 }
 
 function getDropPosition(event: DragEvent<HTMLElement>, allowInside: boolean): TreeViewMove["position"] {
@@ -244,6 +279,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
         draggable = false,
         onMove,
         canDrop,
+        guideLines = true,
         renderActions,
         labels: labelsProp,
         className,
@@ -254,7 +290,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
     ref,
 ) {
     const labels = { ...defaultTreeViewLabels, ...labelsProp };
-    const ownerState: TreeViewOwnerState = { checkable, draggable, filtered: filter != null };
+    const ownerState: TreeViewOwnerState = { checkable, draggable, filtered: filter != null, guideLines };
     const baseId = useId();
     const rootRef = useRef<HTMLUListElement>(null);
     useImperativeHandle(ref, () => rootRef.current as HTMLUListElement);
@@ -266,6 +302,18 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
     const labelRefs = useRef(new Map<string, HTMLSpanElement>());
     const [fullLabelId, setFullLabelId] = useState<string>();
     const fullLabelTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+    const [expansion, setExpansion] = useState<Expansion>({ expandedIds, closingIds: [], openingIds: [] });
+    if (expansion.expandedIds !== expandedIds && !haveSameIds(expansion.expandedIds, expandedIds)) {
+        const previous = new Set(expansion.expandedIds);
+        const current = new Set(expandedIds);
+        setExpansion({
+            expandedIds,
+            closingIds: [...expansion.closingIds.filter((id) => !current.has(id)), ...expansion.expandedIds.filter((id) => !current.has(id))],
+            openingIds: [...expansion.openingIds.filter((id) => current.has(id)), ...expandedIds.filter((id) => !previous.has(id))],
+        });
+    }
+    const closing = new Set(expansion.closingIds);
+    const opening = new Set(expansion.openingIds);
 
     const expanded = new Set(expandedIds);
     const checked = new Set(checkedIds);
@@ -277,22 +325,28 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
     const parents = collectParents(nodes, undefined, new Map());
 
     const visibleNodes: VisibleNode[] = [];
-    const collectVisible = (levelNodes: TreeNode[], parentId: string | undefined, level: number) => {
+    // Also holds the children of collapsing nodes, which are rendered but can't be reached
+    const renderedById = new Map<string, VisibleNode>();
+    const collectVisible = (levelNodes: TreeNode[], parentId: string | undefined, level: number, collapsing: boolean) => {
         for (const node of levelNodes) {
             if (filter != null && !included.has(node.id)) {
                 continue;
             }
             const children = node.children?.filter((child) => filter == null || included.has(child.id)) ?? [];
             const isExpanded = children.length > 0 && (expanded.has(node.id) || (filter != null && !matching.has(node.id)));
-            visibleNodes.push({ node, parentId, level, hasChildren: children.length > 0, expanded: isExpanded });
-            if (isExpanded) {
-                collectVisible(children, node.id, level + 1);
+            const isClosing = !collapsing && !isExpanded && children.length > 0 && closing.has(node.id);
+            const visibleNode = { node, parentId, level, hasChildren: children.length > 0, expanded: isExpanded, closing: isClosing };
+            renderedById.set(node.id, visibleNode);
+            if (!collapsing) {
+                visibleNodes.push(visibleNode);
+            }
+            if (isExpanded || isClosing) {
+                collectVisible(children, node.id, level + 1, collapsing || isClosing);
             }
         }
     };
-    collectVisible(nodes, undefined, 1);
+    collectVisible(nodes, undefined, 1, false);
 
-    const visibleById = new Map(visibleNodes.map((visibleNode) => [visibleNode.node.id, visibleNode]));
     const visibleIds = visibleNodes.map((visibleNode) => visibleNode.node.id);
     const tabStopId =
         focusedId != null && visibleIds.includes(focusedId)
@@ -308,6 +362,24 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
     });
 
     useEffect(() => () => clearTimeout(fullLabelTimeout.current), []);
+
+    const hasExpansionAnimation = expansion.closingIds.length > 0 || expansion.openingIds.length > 0;
+    useEffect(() => {
+        if (!hasExpansionAnimation) {
+            return;
+        }
+        const timeout = setTimeout(() => setExpansion((previous) => ({ ...previous, closingIds: [], openingIds: [] })), expansionAnimationTimeout);
+        return () => clearTimeout(timeout);
+    }, [hasExpansionAnimation, expansion]);
+
+    const endExpansionAnimation = (id: string) => {
+        setExpansion((previous) => ({
+            ...previous,
+            // Nodes collapsed inside it ended with it
+            closingIds: previous.closingIds.filter((closingId) => !isDescendantOrSelf(parents, closingId, id)),
+            openingIds: previous.openingIds.filter((openingId) => openingId !== id),
+        }));
+    };
 
     const isLabelTruncated = (id: string) => {
         const label = labelRefs.current.get(id);
@@ -460,17 +532,21 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
 
     const renderNodes = (levelNodes: TreeNode[], level: number): ReactNode =>
         levelNodes.map((node) => {
-            const visibleNode = visibleById.get(node.id);
+            const visibleNode = renderedById.get(node.id);
             if (visibleNode == null) {
                 return null;
             }
-            const { hasChildren, expanded: isExpanded } = visibleNode;
+            const { hasChildren, expanded: isExpanded, closing: isClosing } = visibleNode;
             const isSelected = node.id === selectedId;
             const isChecked = checked.has(node.id);
             const isContext = filter != null && !matching.has(node.id);
             const drop = dropTarget?.targetId === node.id ? dropTarget.position : undefined;
-            const childNodes = isExpanded ? node.children : undefined;
+            const childNodes = isExpanded || isClosing ? node.children : undefined;
+            const isOpening = isExpanded && opening.has(node.id);
             const partId = (part: string) => `${baseId}-${encodeURIComponent(node.id)}-${part}`;
+            const describedBy = [node.status != null ? partId("status") : undefined, node.count != null ? partId("count") : undefined]
+                .filter((id) => id != null)
+                .join(" ");
 
             const rowProps = resolveSlotProps<TreeViewOwnerState, "div", "div">({
                 ownProps: {
@@ -573,7 +649,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                     data-id={node.id}
                     data-drop={drop === "before" || drop === "after" ? drop : undefined}
                     aria-labelledby={node.hiddenInMenu ? `${partId("label")} ${partId("hidden")}` : partId("label")}
-                    aria-describedby={node.status != null ? partId("status") : undefined}
+                    aria-describedby={describedBy !== "" ? describedBy : undefined}
                     aria-level={level}
                     aria-expanded={hasChildren ? isExpanded : undefined}
                     aria-selected={isSelected}
@@ -641,7 +717,9 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                             </span>
                         )}
                         <span className={styles.icon} aria-hidden>
-                            {node.icon ?? <Icon name={typeIcons[node.type ?? "page"]} />}
+                            {node.icon ?? (
+                                <Icon name={typeIcons[node.type ?? (node.children != null && node.children.length > 0 ? "folder" : "page")]} />
+                            )}
                         </span>
                         {fullLabelId === node.id ? (
                             <Tooltip
@@ -661,6 +739,14 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                                 <Icon name="invisible" />
                             </span>
                         )}
+                        {node.count != null && (
+                            <span className={styles.count}>
+                                <span aria-hidden>{node.count}</span>
+                                <span id={partId("count")} hidden>
+                                    {labels.count(node.count)}
+                                </span>
+                            </span>
+                        )}
                         <span className={styles.path} aria-hidden>
                             {node.path}
                         </span>
@@ -678,9 +764,22 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                         {node.status != null && <StatusIndicator id={partId("status")} className={styles.status} status={node.status} dotOnly />}
                     </div>
                     {childNodes != null && (
-                        <ul role="group" className={styles.group}>
-                            {renderNodes(childNodes, level + 1)}
-                        </ul>
+                        <div
+                            className={styles.groupFrame}
+                            data-opening={isOpening ? "" : undefined}
+                            data-closing={isClosing ? "" : undefined}
+                            aria-hidden={isClosing || undefined}
+                            inert={isClosing}
+                            onAnimationEnd={(event) => {
+                                if (event.target === event.currentTarget) {
+                                    endExpansionAnimation(node.id);
+                                }
+                            }}
+                        >
+                            <ul role="group" className={styles.group}>
+                                {renderNodes(childNodes, level + 1)}
+                            </ul>
+                        </div>
                     )}
                 </li>
             );
@@ -695,6 +794,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
             data-checkable={ownerState.checkable ? "" : undefined}
             data-draggable={ownerState.draggable ? "" : undefined}
             data-filtered={ownerState.filtered ? "" : undefined}
+            data-guide-lines={ownerState.guideLines ? "" : undefined}
             className={clsx(styles.root, className)}
             onKeyDown={handleKeyDown}
         >

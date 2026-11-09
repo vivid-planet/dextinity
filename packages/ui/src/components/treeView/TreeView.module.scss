@@ -36,6 +36,31 @@
         grid-template-rows: 0fr;
         animation: collapse var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
     }
+
+    // Reduced motion keeps only crossfades: the children fade in and out instead of growing and shrinking
+    @media (prefers-reduced-motion: reduce) {
+        &[data-opening] {
+            animation-name: fade-in;
+        }
+
+        &[data-closing] {
+            grid-template-rows: 1fr;
+            opacity: 0;
+            animation-name: fade-out;
+        }
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 1;
+    }
 }
 
 @keyframes expand {

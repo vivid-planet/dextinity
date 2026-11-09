@@ -1,4 +1,5 @@
 import { ClickAwayListener } from "@mui/material";
+import { useForkRef } from "@mui/material/utils";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 
 import type { Breadcrumb, BreadcrumbsProps, BreadcrumbsSlotProps } from "./Breadcrumbs";
@@ -75,6 +76,7 @@ export const MobileBreadcrumbs = ({
 }: MobileBreadcrumbsProps) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const toggleButtonRef = useRef<HTMLButtonElement>(null);
+    const mobileRootButtonRef = useForkRef(toggleButtonRef, slotProps?.mobileRootButton?.ref);
     const currentItem = items[items.length - 1];
 
     useEffect(() => {
@@ -98,7 +100,7 @@ export const MobileBreadcrumbs = ({
             <Root {...slotProps?.root} {...restProps}>
                 {Boolean(startAdornment) && <StartAdornment {...slotProps?.startAdornment}>{startAdornment}</StartAdornment>}
 
-                <MobileRootButton ref={toggleButtonRef} onClick={() => setIsMenuOpen((prev) => !prev)} {...slotProps?.mobileRootButton}>
+                <MobileRootButton onClick={() => setIsMenuOpen((prev) => !prev)} {...slotProps?.mobileRootButton} ref={mobileRootButtonRef}>
                     <ToolbarContainer {...slotProps?.toolbarContainer}>
                         {items.length > 1 && (
                             <>

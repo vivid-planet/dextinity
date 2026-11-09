@@ -1,4 +1,5 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "test-utils";
+import { createRef } from "react";
+import { act, cleanup, fireEvent, render, screen } from "test-utils";
 import { afterEach, expect, test } from "vitest";
 
 import { MobileBreadcrumbs } from "./MobileBreadcrumbs";
@@ -11,7 +12,7 @@ const items = [
 
 afterEach(cleanup);
 
-function renderOpenMenu() {
+async function renderOpenMenu() {
     render(
         <>
             <MobileBreadcrumbs items={items} separatorIcon=">" openMenuIcon="open" closeMenuIcon="close" />
@@ -20,10 +21,13 @@ function renderOpenMenu() {
     );
     fireEvent.click(screen.getByRole("button"));
     expect(screen.getByText("Products")).toBeTruthy();
+
+    // ClickAwayListener ignores clicks until it has activated in a timeout after mounting.
+    await act(() => new Promise((resolve) => setTimeout(resolve)));
 }
 
-test("closes the menu on Escape and moves focus back to the toggle button", () => {
-    renderOpenMenu();
+test("closes the menu on Escape and moves focus back to the toggle button", async () => {
+    await renderOpenMenu();
 
     fireEvent.keyDown(document.activeElement ?? document.body, { key: "Escape" });
 
@@ -32,19 +36,36 @@ test("closes the menu on Escape and moves focus back to the toggle button", () =
 });
 
 test("closes the menu on a click outside", async () => {
-    renderOpenMenu();
+    await renderOpenMenu();
 
-    // ClickAwayListener ignores clicks until it has activated after mounting.
-    await waitFor(() => {
-        fireEvent.click(screen.getByText("Outside"));
-        expect(screen.queryByText("Products")).toBeNull();
-    });
+    fireEvent.click(screen.getByText("Outside"));
+
+    expect(screen.queryByText("Products")).toBeNull();
 });
 
-test("keeps the menu open on a click inside", () => {
-    renderOpenMenu();
+test("keeps the menu open on a click inside", async () => {
+    await renderOpenMenu();
 
     fireEvent.click(screen.getByText("Product 1", { selector: "*:not(button *)" }));
 
     expect(screen.getByText("Products")).toBeTruthy();
+});
+
+test("returns focus to the toggle button on Escape when a custom ref is passed", async () => {
+    const customRef = createRef<HTMLButtonElement>();
+    render(
+        <MobileBreadcrumbs
+            items={items}
+            separatorIcon=">"
+            openMenuIcon="open"
+            closeMenuIcon="close"
+            slotProps={{ mobileRootButton: { ref: customRef } }}
+        />,
+    );
+    fireEvent.click(screen.getByRole("button"));
+
+    fireEvent.keyDown(document.body, { key: "Escape" });
+
+    expect(customRef.current).toBe(screen.getByRole("button"));
+    expect(document.activeElement).toBe(screen.getByRole("button"));
 });

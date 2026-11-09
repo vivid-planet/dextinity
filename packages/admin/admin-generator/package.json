@@ -44,7 +44,7 @@
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",
         "@graphql-tools/graphql-file-loader": "^9.1.1",
-        "@graphql-tools/load": "^9.1.1",
+        "@graphql-tools/load": "^9.1.2",
         "@mui/material": "^9.5.0",
         "@mui/x-data-grid": "^9.15.0",
         "change-case": "^5.4.4",
@@ -70,7 +70,7 @@
         "react": "^19.3.1",
         "react-dom": "^19.3.1",
         "react-intl": "^12.1.4",
-        "tsdown": "0.23.4",
+        "tsdown": "0.23.5",
         "vitest": "^5.1.0"
     },
     "peerDependencies": {

@@ -9,6 +9,7 @@ import { BrevoEmailImportLogService } from "../brevo-email-import-log/brevo-emai
 import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
 import { BrevoModuleConfig } from "../config/brevo-module.config";
 import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
+import { TargetGroupInterface } from "../target-group/entity/target-group-entity.factory";
 import { TargetGroupsService } from "../target-group/target-groups.service";
 import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../types";
 import { hashEmail } from "../util/hash.util";
@@ -57,59 +58,163 @@ export class BrevoContactsService {
         contactSource?: ContactSource;
     }): Promise<SubscribeResponse> {
         const existingContact = await this.brevoContactsApiService.getContactInfoByEmail(email, scope);
-        if (existingContact) {
+        const mainTargetGroupForScope = await this.targetGroupService.createIfNotExistMainTargetGroupForScope(scope);
+
+        if (existingContact?.listIds.includes(mainTargetGroupForScope.brevoId)) {
             return SubscribeResponse.ERROR_CONTACT_ALREADY_EXISTS;
         }
 
-        const mainTargetGroupForScope = await this.targetGroupService.createIfNotExistMainTargetGroupForScope(scope);
         const targetGroupIds = await this.getTargetGroupIdsForNewContact({ scope, contactAttributes: attributes });
-        const brevoIds = [mainTargetGroupForScope.brevoId, ...targetGroupIds];
+        const brevoIds = [mainTargetGroupForScope.brevoId, ...targetGroupIds, ...(listIds ?? [])];
 
-        if (listIds) {
-            brevoIds.push(...listIds);
-        }
-
-        if (!sendDoubleOptIn && responsibleUserId) {
-            if (!this.secretKey) {
-                throw new Error("There is no `emailHashKey` defined in the environment variables.");
-            }
-
-            const hashedEmail = hashEmail(email, this.secretKey);
-            const blacklistedContactAvailable = await this.blacklistedContactsRepository.findOne({ hashedEmail: hashedEmail });
-
-            if (blacklistedContactAvailable) {
-                return SubscribeResponse.ERROR_CONTACT_IS_BLACKLISTED;
-            }
-
-            if (contactSource) {
-                const created = await this.brevoContactsApiService.createBrevoContactWithoutDoubleOptIn(
-                    { email, attributes },
-                    brevoIds,
-                    templateId,
-                    scope,
-                );
-                if (created) {
-                    await this.brevoEmailImportLogService.addContactToLogs(email, responsibleUserId, scope, contactSource);
-                    return SubscribeResponse.SUCCESSFUL;
-                } else {
-                    return SubscribeResponse.ERROR_UNKNOWN;
-                }
-            }
-        } else {
+        if (sendDoubleOptIn || !responsibleUserId) {
             const created = await this.brevoContactsApiService.createDoubleOptInBrevoContact(
                 { email, redirectionUrl, attributes },
                 brevoIds,
                 templateId,
                 scope,
             );
-            if (created) {
-                return SubscribeResponse.SUCCESSFUL;
-            } else {
+            return created ? SubscribeResponse.SUCCESSFUL : SubscribeResponse.ERROR_UNKNOWN;
+        }
+
+        return this.addContactWithoutDoubleOptIn({
+            email,
+            attributes,
+            scope,
+            brevoIds,
+            templateId,
+            listIds,
+            mainListBrevoId: mainTargetGroupForScope.brevoId,
+            existingContact,
+            responsibleUserId,
+            contactSource,
+        });
+    }
+
+    private async addContactWithoutDoubleOptIn({
+        email,
+        attributes,
+        scope,
+        brevoIds,
+        templateId,
+        listIds,
+        mainListBrevoId,
+        existingContact,
+        responsibleUserId,
+        contactSource,
+    }: {
+        email: string;
+        attributes?: BrevoContactAttributesInterface;
+        scope: EmailCampaignScopeInterface;
+        brevoIds: number[];
+        templateId: number;
+        listIds?: number[];
+        mainListBrevoId: number;
+        existingContact: BrevoContactInterface | null;
+        responsibleUserId: string;
+        contactSource?: ContactSource;
+    }): Promise<SubscribeResponse> {
+        if (!this.secretKey) {
+            throw new Error("There is no `emailHashKey` defined in the environment variables.");
+        }
+
+        const hashedEmail = hashEmail(email, this.secretKey);
+        const blacklistedContactAvailable = await this.blacklistedContactsRepository.findOne({ hashedEmail: hashedEmail });
+
+        if (blacklistedContactAvailable) {
+            return SubscribeResponse.ERROR_CONTACT_IS_BLACKLISTED;
+        }
+
+        if (existingContact && (existingContact.emailBlacklisted || existingContact.listUnsubscribed?.includes(mainListBrevoId))) {
+            return SubscribeResponse.ERROR_CONTACT_IS_BLACKLISTED;
+        }
+
+        if (!contactSource) {
+            return SubscribeResponse.ERROR_UNKNOWN;
+        }
+
+        if (existingContact) {
+            const updatedContact = await this.brevoContactsApiService.updateContact(existingContact.id, { listIds: brevoIds, attributes }, scope);
+            await this.updateTargetGroupsOfSubscribedScopes({ contact: updatedContact, scope, keptListIds: listIds ?? [] });
+        } else {
+            const created = await this.brevoContactsApiService.createBrevoContactWithoutDoubleOptIn(
+                { email, attributes },
+                brevoIds,
+                templateId,
+                scope,
+            );
+            if (!created) {
                 return SubscribeResponse.ERROR_UNKNOWN;
             }
         }
 
-        return SubscribeResponse.ERROR_UNKNOWN;
+        await this.brevoEmailImportLogService.addContactToLogs(email, responsibleUserId, scope, contactSource);
+        return SubscribeResponse.SUCCESSFUL;
+    }
+
+    // The attributes are shared by all scopes, so changing them can change the contact's target groups in every scope the contact subscribed to.
+    private async updateTargetGroupsOfSubscribedScopes({
+        contact,
+        scope,
+        keptListIds,
+    }: {
+        contact: BrevoContactInterface;
+        scope: EmailCampaignScopeInterface;
+        keptListIds: number[];
+    }): Promise<void> {
+        const limit = 50;
+        const { apiKey } = this.config.brevo.resolveConfig(scope);
+        const subscribedMainLists: TargetGroupInterface[] = [];
+        let offset = 0;
+        let totalCount = 0;
+
+        do {
+            const [mainLists, totalMainLists] = await this.targetGroupService.findTargetGroups({
+                offset,
+                limit,
+                where: { isMainList: true, brevoId: { $in: contact.listIds } },
+            });
+            totalCount = totalMainLists;
+            offset += mainLists.length;
+
+            // Scopes can use different Brevo accounts, whose list IDs can overlap.
+            subscribedMainLists.push(...mainLists.filter((mainList) => this.config.brevo.resolveConfig(mainList.scope).apiKey === apiKey));
+        } while (offset < totalCount);
+
+        offset = 0;
+        totalCount = 0;
+        const listIdsToLink: number[] = [];
+        const listIdsToUnlink: number[] = [];
+        const where = { isMainList: false, isTestList: false, $or: subscribedMainLists.map((mainList) => ({ scope: mainList.scope })) };
+
+        do {
+            const [targetGroups, totalContactLists] = await this.targetGroupService.findTargetGroups({ offset, limit, where });
+            totalCount = totalContactLists;
+            offset += targetGroups.length;
+
+            for (const targetGroup of targetGroups) {
+                if (keptListIds.includes(targetGroup.brevoId)) {
+                    continue;
+                }
+
+                const isManuallyAssigned =
+                    targetGroup.assignedContactsTargetGroupBrevoId !== undefined &&
+                    contact.listIds.includes(targetGroup.assignedContactsTargetGroupBrevoId);
+                const belongsToTargetGroup =
+                    isManuallyAssigned || this.targetGroupService.checkIfContactIsInTargetGroupByAttributes(contact.attributes, targetGroup.filters);
+                const isInTargetGroup = contact.listIds.includes(targetGroup.brevoId);
+
+                if (belongsToTargetGroup && !isInTargetGroup) {
+                    listIdsToLink.push(targetGroup.brevoId);
+                } else if (!belongsToTargetGroup && isInTargetGroup) {
+                    listIdsToUnlink.push(targetGroup.brevoId);
+                }
+            }
+        } while (offset < totalCount);
+
+        if (listIdsToLink.length > 0 || listIdsToUnlink.length > 0) {
+            await this.brevoContactsApiService.updateContact(contact.id, { listIds: listIdsToLink, unlinkListIds: listIdsToUnlink }, scope);
+        }
     }
 
     public async createTestContact({
@@ -167,18 +272,15 @@ export class BrevoContactsService {
 
         const brevoConfig = await this.brevoConfigRepository.findOneOrFail({ scope });
 
-        const created = await this.createContact({
+        const response = await this.createContact({
             ...data,
             scope,
             templateId: brevoConfig.doubleOptInTemplateId,
             sendDoubleOptIn: true,
         });
 
-        if (created) {
-            return SubscribeResponse.SUCCESSFUL;
-        }
-
-        return SubscribeResponse.ERROR_UNKNOWN;
+        // The site endpoint is public, so an existing subscription must not be distinguishable from a new one.
+        return response === SubscribeResponse.ERROR_CONTACT_ALREADY_EXISTS ? SubscribeResponse.SUCCESSFUL : response;
     }
 
     public async getTargetGroupIdsForExistingContact({ contact }: { contact?: BrevoContactInterface }): Promise<number[]> {

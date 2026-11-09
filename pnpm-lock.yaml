@@ -2219,9 +2219,6 @@ importers:
       '@nestjs/mapped-types':
         specifier: ^12.0.0
         version: 12.0.0(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)
-      '@opentelemetry/api':
-        specifier: ^1.9.1
-        version: 1.10.0
       '@tiptap/core':
         specifier: ^3.32.2
         version: 3.32.2(@tiptap/pm@3.32.2)
@@ -2355,6 +2352,9 @@ importers:
       '@nestjs/testing':
         specifier: ^12.0.4
         version: 12.2.0(@nestjs/common@12.2.0(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@8.1.1))(@nestjs/core@12.2.0)(@nestjs/platform-express@12.2.0)
+      '@opentelemetry/api':
+        specifier: ^1.10.0
+        version: 1.10.0
       '@sentry/node':
         specifier: ^11.10.0
         version: 11.11.0(rollup@4.67.4)(webpack@5.112.2(@swc/core@1.16.21(@swc/helpers@0.5.23))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.32))(csso@5.0.5)(esbuild@0.28.2)(html-minifier-terser@7.2.0)(lightningcss@1.33.0)(postcss@8.5.32)(sharp@0.35.5(@types/node@24.19.2))(svgo@3.3.5)(uglify-js@3.19.3))

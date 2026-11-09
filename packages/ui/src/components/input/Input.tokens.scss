@@ -1,0 +1,62 @@
+@mixin tokens {
+    --dextinity-input-border-width: 1px;
+    --dextinity-input-height: var(--dextinity-unit-10);
+    --dextinity-input-radius: var(--dextinity-brand-radius-forms);
+    --dextinity-input-gap: var(--dextinity-unit-2);
+    --dextinity-input-padding-horizontal: var(--dextinity-unit-3);
+    --dextinity-input-padding-vertical: var(--dextinity-unit-2);
+    --dextinity-input-icon-size: 16px;
+
+    --dextinity-input-font-size: var(--dextinity-typography-body-md-size);
+    --dextinity-input-font-line-height: var(--dextinity-typography-body-md-line-height);
+    --dextinity-input-font-weight: var(--dextinity-font-weight-regular);
+    --dextinity-input-font-weight-style: var(--dextinity-font-weight-regular-style);
+
+    --dextinity-input-state-default-background: var(--dextinity-color-background-default);
+    --dextinity-input-state-default-foreground: var(--dextinity-color-foreground-default);
+    --dextinity-input-state-default-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    --dextinity-input-state-default-border: var(--dextinity-color-border-field);
+
+    --dextinity-input-state-hover-background: var(--dextinity-color-background-default);
+    --dextinity-input-state-hover-foreground: var(--dextinity-color-foreground-default);
+    --dextinity-input-state-hover-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    --dextinity-input-state-hover-border: var(--dextinity-color-border-strong);
+
+    --dextinity-input-state-focus-background: var(--dextinity-color-background-default);
+    --dextinity-input-state-focus-foreground: var(--dextinity-color-foreground-default);
+    --dextinity-input-state-focus-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    --dextinity-input-state-focus-border: var(--dextinity-color-border-focus);
+
+    --dextinity-input-state-error-background: var(--dextinity-color-background-default);
+    --dextinity-input-state-error-foreground: var(--dextinity-color-foreground-default);
+    --dextinity-input-state-error-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    --dextinity-input-state-error-border: var(--dextinity-color-feedback-danger-border-strong);
+
+    --dextinity-input-state-success-background: var(--dextinity-color-background-default);
+    --dextinity-input-state-success-foreground: var(--dextinity-color-foreground-default);
+    --dextinity-input-state-success-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    --dextinity-input-state-success-border: var(--dextinity-color-feedback-success-border-strong);
+
+    --dextinity-input-state-warning-background: var(--dextinity-color-background-default);
+    --dextinity-input-state-warning-foreground: var(--dextinity-color-foreground-default);
+    --dextinity-input-state-warning-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    --dextinity-input-state-warning-border: var(--dextinity-color-feedback-warning-border-strong);
+
+    --dextinity-input-state-loading-background: var(--dextinity-color-background-default);
+    --dextinity-input-state-loading-foreground: var(--dextinity-color-foreground-default);
+    --dextinity-input-state-loading-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    --dextinity-input-state-loading-border: var(--dextinity-color-border-field);
+    --dextinity-input-state-loading-spinner: var(--dextinity-color-foreground-muted);
+
+    --dextinity-input-state-disabled-background: var(--dextinity-color-background-muted);
+    --dextinity-input-state-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    --dextinity-input-state-disabled-foreground-placeholder: var(--dextinity-color-foreground-subtle);
+    --dextinity-input-state-disabled-border: var(--dextinity-color-border-subtle);
+
+    --dextinity-input-state-read-only-background: var(--dextinity-color-background-subtle);
+    --dextinity-input-state-read-only-foreground: var(--dextinity-color-foreground-default);
+    --dextinity-input-state-read-only-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    --dextinity-input-state-read-only-border: var(--dextinity-color-border-subtle);
+
+    --dextinity-input-adornment-foreground: var(--dextinity-color-foreground-muted);
+}

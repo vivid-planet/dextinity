@@ -5,6 +5,7 @@ export { FormLabel, type FormLabelOwnerState, type FormLabelProps } from "./comp
 export { Icon, type IconProps } from "./components/icon/Icon";
 export type { DefaultIconName, DefaultIconRegistry, IconName, IconRegistry } from "./components/icon/iconRegistry";
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";
+export { Input, type InputOwnerState, type InputProps } from "./components/input/Input";
 export {
     MainNavigationItem,
     type MainNavigationItemOwnerState,

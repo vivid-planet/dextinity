@@ -37,6 +37,10 @@ alwaysApply: false
 
 - See [browser-support.instructions.md](browser-support.instructions.md).
 
+## Accessibility
+
+- See [accessibility.instructions.md](accessibility.instructions.md).
+
 ## Responsive
 
 - Mobile-first. Write the mobile layout first, then add breakpoint overrides upward.

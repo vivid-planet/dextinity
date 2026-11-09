@@ -49,6 +49,7 @@ registerStyles(
     `,
 );
 
+/** Two equal columns with a gap between them. They stack below the mobile breakpoint. */
 export const Default: StoryObj = {
     parameters: { theme },
     render: () => {

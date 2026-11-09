@@ -7,7 +7,7 @@ import { MjmlText } from "../../components/text/MjmlText.js";
 import { createTheme } from "../../theme/createTheme.js";
 
 const config: Meta = {
-    title: "Examples/NotificationEmail",
+    title: "Examples/Notification Email",
     parameters: { mailRoot: false },
 };
 
@@ -15,6 +15,7 @@ export default config;
 
 type Story = StoryObj;
 
+/** A complete mail with a header, a heading and body text, rendered with its own theme. */
 export const Default: Story = {
     render: () => {
         const theme = createTheme({

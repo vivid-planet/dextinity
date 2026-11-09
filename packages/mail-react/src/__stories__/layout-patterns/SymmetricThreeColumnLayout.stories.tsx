@@ -65,6 +65,7 @@ registerStyles(
     `,
 );
 
+/** Three equal columns that stay side by side below the body width and stack below the mobile breakpoint. */
 export const Default: StoryObj = {
     parameters: { theme },
     render: () => {
@@ -169,6 +170,7 @@ registerStyles(
     `,
 );
 
+/** Three equal columns that never stack, for short content such as numbers or icons. */
 export const NeverStacks: StoryObj = {
     parameters: { theme },
     render: () => {

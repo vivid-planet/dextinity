@@ -11,6 +11,8 @@ const NewsDetailBlock: BlockInterface<NewsDetailBlockData, State, NewsDetailBloc
     name: "NewsDetail",
 
     displayName: "News Detail",
+    iconName: "news",
+    description: <FormattedMessage id="blocks.newsDetail.description" defaultMessage="One news article" />,
 
     defaultValues: () => ({}),
 

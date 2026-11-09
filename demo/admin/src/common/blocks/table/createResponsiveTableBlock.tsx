@@ -55,6 +55,8 @@ export function createResponsiveTableBlock({
         },
         (block) => {
             block.category = BlockCategory.TextAndContent;
+            block.iconName = "grid";
+            block.description = <FormattedMessage id="responsiveTableBlock.description" defaultMessage="Rows and columns of text" />;
             return block;
         },
     );

@@ -8,6 +8,8 @@ export const StandaloneMediaBlock = createCompositeBlock(
     {
         name: "Media",
         displayName: MediaBlock.displayName,
+        iconName: MediaBlock.iconName,
+        description: MediaBlock.description,
         blocks: {
             media: {
                 block: MediaBlock,

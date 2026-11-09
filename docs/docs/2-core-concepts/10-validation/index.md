@@ -121,15 +121,33 @@ if (!(await this.redirectService.isRedirectSourceAvailable(input.source, scope))
 
 ### Error response
 
-The `ExceptionFilter` catches every `DextinityException` and converts it into a `400 Bad Request`. For a `DextinityValidationException`, the collected `ValidationError`s are exposed under `validationErrors`:
+The `ExceptionFilter` catches every `DextinityException` and converts it into a `400 Bad Request`. For a `DextinityValidationException`, `validationErrors` lists each failed check with the path of the invalid value in the input, so that a client can fix its input:
 
 ```json
 {
     "statusCode": 400,
     "message": "Validation failed",
     "error": "DextinityValidationException",
-    "validationErrors": [{ "property": "source" }]
+    "validationErrors": [
+        { "path": "name", "message": "name must be a string" },
+        { "path": "variants[1].price", "message": "price must be a positive number" }
+    ]
 }
+```
+
+The list is created by `formatValidationErrors()`. Call it yourself to get the same list without throwing, for instance in a query that only validates an input:
+
+```ts
+import { formatValidationErrors } from "@dextinity/cms-api";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
+
+const errors = await validate(plainToInstance(CreateProductInput, input), {
+    whitelist: true,
+    forbidNonWhitelisted: true,
+});
+
+return formatValidationErrors(errors);
 ```
 
 The same shape is returned for both GraphQL and REST requests. Register the `ExceptionFilter` globally (see the `main.ts` example above) so these exceptions are translated consistently across the API.

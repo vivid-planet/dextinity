@@ -66,8 +66,10 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
         content: EmailCampaignContentBlock,
     };
 
-    type EmailCampaignState = Omit<GQLEmailCampaignFormFragment, "content"> & {
+    type EmailCampaignState = Omit<GQLEmailCampaignFormFragment, "content" | "scheduledAt"> & {
         [key in keyof typeof rootBlocks]: BlockState<(typeof rootBlocks)[key]>;
+    } & {
+        scheduledAt?: Date | null;
     };
 
     const { previewUrl } = useBrevoConfig();
@@ -109,7 +111,7 @@ export function EmailCampaignForm({ id, EmailCampaignContentBlock, scope }: Form
         state2Output: (state) => ({
             ...state,
             content: EmailCampaignContentBlock.state2Output(state.content),
-            scheduledAt: state.brevoTargetGroups.length > 0 ? (state.scheduledAt ?? null) : null,
+            scheduledAt: state.brevoTargetGroups.length > 0 ? (state.scheduledAt?.toISOString() ?? null) : null,
             sendingState: undefined,
             brevoTargetGroups: state.brevoTargetGroups.map((brevoTargetGroup) => brevoTargetGroup.id),
         }),

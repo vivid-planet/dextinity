@@ -55,7 +55,7 @@ export const ClickableRows = () => {
                 headerName: "",
                 width: 52,
                 renderCell: (params) => (
-                    <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                    <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                         <Edit />
                     </IconButton>
                 ),

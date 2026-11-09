@@ -1,19 +1,27 @@
-import { useState } from "react";
+import { gridClasses } from "@mui/x-data-grid";
+// eslint-disable-next-line no-restricted-imports
+import { DataGridPro } from "@mui/x-data-grid-pro";
+import { type ComponentProps, useState } from "react";
 import { fireEvent, render, type RenderResult, waitFor, within } from "test-utils";
 import { expect } from "vitest";
 
+import { DextinityConfigProvider } from "../../../config/DextinityConfigContext";
 import type { TableBlockState } from "../../createTableBlock";
 import { MockRichTextBlock } from "../__mocks__/TableBlockData.mocks";
 import { TableBlockContextProvider } from "../TableBlockContext";
 import { TableBlockGrid } from "../TableBlockGrid";
 
-export const renderTableBlock = (initialState: TableBlockState) => {
+type DataGridConfig = ComponentProps<typeof DextinityConfigProvider>["dataGrid"];
+
+export const renderTableBlock = (initialState: TableBlockState, dataGrid: DataGridConfig = { component: DataGridPro }) => {
     const Component = () => {
         const [state, setState] = useState<TableBlockState>(initialState);
         return (
-            <TableBlockContextProvider RichTextBlock={MockRichTextBlock}>
-                <TableBlockGrid state={state} updateState={setState} />
-            </TableBlockContextProvider>
+            <DextinityConfigProvider apiUrl="" graphQLApiUrl="" adminUrl="" dataGrid={dataGrid}>
+                <TableBlockContextProvider RichTextBlock={MockRichTextBlock}>
+                    <TableBlockGrid state={state} updateState={setState} />
+                </TableBlockContextProvider>
+            </DextinityConfigProvider>
         );
     };
     return render(<Component />);
@@ -41,6 +49,14 @@ export const clickButtonOfColumnAtIndex = (rendered: RenderResult, index: number
     fireEvent.click(button);
 };
 
+export const getBodyRowgroup = (rendered: RenderResult) => {
+    const bodyRowgroup = rendered.getAllByRole("rowgroup").find((rowgroup) => !rowgroup.classList.contains(gridClasses.columnHeaders));
+    if (!bodyRowgroup) {
+        throw new Error("The body rowgroup of the data grid was not found");
+    }
+    return bodyRowgroup;
+};
+
 export const waitForClipboardToHaveValue = async () => {
     await waitFor(async () => {
         await expect(navigator.clipboard.readText()).resolves.not.toBe("");
@@ -48,7 +64,7 @@ export const waitForClipboardToHaveValue = async () => {
 };
 
 export const getCellValuesPerColumn = (rendered: RenderResult) => {
-    const rowgroup = rendered.getByRole("rowgroup");
+    const rowgroup = getBodyRowgroup(rendered);
     const rows = within(rowgroup).getAllByRole("row");
 
     const rowCells = rows.map((row) => within(row).getAllByRole("gridcell"));

@@ -72,7 +72,7 @@ function RedirectsGridToolbar({ selectedIds = [], onDeleteSelected }: RedirectsG
                     },
                 ]}
             />
-            <Button startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+            <Button startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
                 <FormattedMessage id="dextinity.pages.redirects.add" defaultMessage="New redirect" />
             </Button>
         </DataGridToolbar>
@@ -191,7 +191,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
             headerName: "",
             renderCell: (params) => (
                 <IconWrapper>
-                    <IconButton color="primary" component={StackLink} pageName="edit" payload={params.id.toString()}>
+                    <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.id.toString()}>
                         <Edit />
                     </IconButton>
                     <TableDeleteButton

@@ -121,6 +121,26 @@ enum DamMediaAlternativeType {
   captions
 }
 
+type DamFileLicense {
+  type: LicenseType
+  details: String
+  author: String
+  durationFrom: DateTime
+  durationTo: DateTime
+
+  """The expirationDate is the durationTo + 1 day"""
+  expirationDate: DateTime
+  isNotValidYet: Boolean!
+  expiresWithinThirtyDays: Boolean!
+  hasExpired: Boolean!
+  isValid: Boolean!
+}
+
+enum LicenseType {
+  ROYALTY_FREE
+  RIGHTS_MANAGED
+}
+
 type ImageCropArea {
   focalPoint: FocalPoint!
   width: Float
@@ -149,24 +169,9 @@ type DamFileImage {
   url(width: Int!, height: Int!): String
 }
 
-type DamFileLicense {
-  type: LicenseType
-  details: String
-  author: String
-  durationFrom: DateTime
-  durationTo: DateTime
-
-  """The expirationDate is the durationTo + 1 day"""
-  expirationDate: DateTime
-  isNotValidYet: Boolean!
-  expiresWithinThirtyDays: Boolean!
-  hasExpired: Boolean!
-  isValid: Boolean!
-}
-
-enum LicenseType {
-  ROYALTY_FREE
-  RIGHTS_MANAGED
+type DamSettings {
+  id: ID!
+  invalidLicenseFallbackImage: DamFile
 }
 
 type BuildTemplate {
@@ -536,8 +541,8 @@ type Query {
   redirect(id: ID!): Redirect!
   redirectBySource(scope: RedirectScopeInput! = {}, source: String!, sourceType: RedirectSourceType!): Redirect
   redirectSourceAvailable(scope: RedirectScopeInput! = {}, source: String!): Boolean!
-  damItemsList(offset: Int! = 0, limit: Int! = 25, sortColumnName: String, sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, folderId: ID, includeArchived: Boolean, filter: DamItemFilterInput): PaginatedDamItems!
-  damItemListPosition(sortColumnName: String, sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, id: ID!, type: DamItemType!, folderId: ID, includeArchived: Boolean, filter: DamItemFilterInput): Int!
+  damItemsList(offset: Int! = 0, limit: Int! = 25, sortColumnName: String = "name", sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, folderId: ID, includeArchived: Boolean, filter: DamItemFilterInput): PaginatedDamItems!
+  damItemListPosition(sortColumnName: String = "name", sortDirection: SortDirection! = ASC, scope: DamScopeInput! = {}, id: ID!, type: DamItemType!, folderId: ID, includeArchived: Boolean, filter: DamItemFilterInput): Int!
   damFilesList(
     offset: Int! = 0
     limit: Int! = 25
@@ -588,6 +593,7 @@ type Query {
   warnings(offset: Int! = 0, limit: Int! = 25, status: [WarningStatus!]! = [open], search: String, scopes: [JSONObject!]!, filter: WarningFilter, sort: [WarningSort!]): PaginatedWarnings!
   damMediaAlternative(id: ID!): DamMediaAlternative!
   damMediaAlternatives(offset: Int! = 0, limit: Int! = 25, search: String, sort: [DamMediaAlternativeSort!], for: ID, alternative: ID, type: DamMediaAlternativeType): PaginatedDamMediaAlternatives!
+  damSettings(scope: DamScopeInput! = {}): DamSettings
   myFullTextSearch(search: String!, offset: Int! = 0, limit: Int! = 25, scope: JSONObject): PaginatedEntityInfo!
 }
 
@@ -838,6 +844,7 @@ type Mutation {
   createDamMediaAlternative(for: ID!, alternative: ID!, input: DamMediaAlternativeInput!): DamMediaAlternative!
   updateDamMediaAlternative(id: ID!, input: DamMediaAlternativeUpdateInput!): DamMediaAlternative!
   deleteDamMediaAlternative(id: ID!): Boolean!
+  updateDamSettings(scope: DamScopeInput! = {}, input: DamSettingsInput!): DamSettings!
 }
 
 input CreateBuildsInput {
@@ -958,4 +965,8 @@ input DamMediaAlternativeUpdateInput {
   type: DamMediaAlternativeType
   for: ID
   alternative: ID
+}
+
+input DamSettingsInput {
+  invalidLicenseFallbackImageId: ID
 }

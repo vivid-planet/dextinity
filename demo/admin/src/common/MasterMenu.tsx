@@ -1,4 +1,4 @@
-import { Assets, Dashboard, Data, Mail, PageTree, Snips, Wrench } from "@dextinity/admin-icons";
+import { Assets, Dashboard, Data, DextinityIcon, Mail, PageTree, Snips, Wrench } from "@dextinity/admin-icons";
 import {
     BrevoConfigPage,
     createBrevoContactsPage,
@@ -20,11 +20,13 @@ import {
     UserPermissionsPage,
     WarningsPage,
 } from "@dextinity/cms-admin";
+import { Chip } from "@mui/material";
 import { type BrevoContactConfig, getBrevoContactConfig } from "@src/brevo/brevoModuleConfig/brevoContactsPageAttributesConfig";
 import { additionalFormConfig } from "@src/brevo/brevoModuleConfig/targetGroupFormConfig";
 import { EmailCampaignContentBlock } from "@src/brevo/emailCampaigns/blocks/EmailCampaignContentBlock";
 import { ImportFromPicsum } from "@src/dam/ImportFromPicsum";
 import { DashboardPage } from "@src/dashboard/DashboardPage";
+import { DextinityUiPage } from "@src/dextinityUi/DextinityUiPage";
 import { Link } from "@src/documents/links/Link";
 import { Page } from "@src/documents/pages/Page";
 import { PredefinedPage } from "@src/documents/predefinedPages/PredefinedPage";
@@ -423,6 +425,22 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                 },
             ],
             requiredPermission: "products",
+        },
+        {
+            type: "group",
+            title: <FormattedMessage id="menu.examples" defaultMessage="Examples" />,
+            items: [
+                {
+                    type: "route",
+                    primary: <FormattedMessage id="menu.dextinityUi" defaultMessage="Dextinity UI" />,
+                    icon: <DextinityIcon />,
+                    secondaryAction: <Chip size="small" label={<FormattedMessage id="menu.experimental" defaultMessage="Experimental" />} />,
+                    route: {
+                        path: "/dextinity-ui",
+                        component: DextinityUiPage,
+                    },
+                },
+            ],
         },
     ];
 };

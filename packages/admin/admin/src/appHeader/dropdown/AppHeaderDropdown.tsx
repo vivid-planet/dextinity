@@ -88,9 +88,11 @@ export function AppHeaderDropdown(inProps: AppHeaderDropdownProps) {
                 transformOrigin={{ vertical: "top", horizontal: "center" }}
                 onClose={() => _onOpenChange(false)}
                 marginThreshold={0}
-                PaperProps={{
-                    sx: {
-                        minWidth: itemWidth,
+                slotProps={{
+                    paper: {
+                        sx: {
+                            minWidth: itemWidth,
+                        },
                     },
                 }}
                 {...slotProps?.popover}

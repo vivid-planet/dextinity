@@ -47,6 +47,7 @@ import { liftOutOfList } from "./liftOutOfList";
 import {
     findTextBlock,
     getStyledNodes,
+    hasTextBlockStyles,
     isTextBlockAllowedInListItem,
     orderedListName,
     type TipTapResolvedList,
@@ -436,11 +437,12 @@ export const TipTapToolbar = ({
                     </FormControl>
                 </ToolbarGroup>
             )}
-            {applicableTextBlockStyles.length > 0 && (
+            {hasTextBlockStyles(styledNodes) && (
                 <ToolbarGroup>
                     <FormControl sx={selectFormControlSx}>
                         <Select
                             value={editorState.activeTextBlockStyle}
+                            disabled={applicableTextBlockStyles.length === 0}
                             onChange={handleTextBlockStyleChange}
                             displayEmpty
                             variant="filled"
@@ -680,7 +682,7 @@ export const TipTapToolbar = ({
                                     defaultMessage="Insert a non-breaking space"
                                 />
                             }
-                            onToggle={() => editor.chain().focus().insertContent({ type: "nonBreakingSpace" }).run()}
+                            onToggle={() => editor.chain().focus().insertNonBreakingSpace().run()}
                         />
                     )}
                     {resolvedOptions.softHyphen && (
@@ -690,7 +692,7 @@ export const TipTapToolbar = ({
                             tooltip={
                                 <FormattedMessage id="dextinity.blocks.tipTapRichText.softHyphen.tooltip" defaultMessage="Insert a soft hyphen" />
                             }
-                            onToggle={() => editor.chain().focus().insertContent({ type: "softHyphen" }).run()}
+                            onToggle={() => editor.chain().focus().insertSoftHyphen().run()}
                         />
                     )}
                 </ToolbarGroup>

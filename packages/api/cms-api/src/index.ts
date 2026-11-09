@@ -31,6 +31,8 @@ export {
     BlockMetaFieldKind,
     type BlockMetaInterface,
     type BlockMetaLiteralFieldKind,
+    type BlockMetaTipTap,
+    type BlockMetaTipTapStyledNode,
     type BlockTransformerServiceInterface,
     type BlockWarning,
     type ChildBlockInfo,
@@ -140,6 +142,7 @@ export { DextinityException } from "./common/errors/dextinity.exception.js";
 export { DextinityEntityNotFoundException } from "./common/errors/entity-not-found.exception.js";
 export { ExceptionFilter } from "./common/errors/exception.filter.js";
 export { ExceptionInterceptor } from "./common/errors/exception.interceptor.js";
+export { type FormattedValidationError, formatValidationErrors } from "./common/errors/format-validation-errors.js";
 export { DextinityValidationException } from "./common/errors/validation.exception.js";
 export { ValidationExceptionFactory } from "./common/errors/validation.exception-factory.js";
 export { BooleanFilter } from "./common/filter/boolean.filter.js";

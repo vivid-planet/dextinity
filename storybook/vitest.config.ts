@@ -14,9 +14,11 @@ export default defineConfig({
                 },
                 optimizeDeps: {
                     include: ["storybook/internal/csf", "@storybook/react-vite"],
-                    esbuildOptions: {
-                        define: {
-                            global: "globalThis",
+                    rolldownOptions: {
+                        transform: {
+                            define: {
+                                global: "globalThis",
+                            },
                         },
                     },
                 },

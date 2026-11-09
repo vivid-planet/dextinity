@@ -24,6 +24,8 @@ import { createFoldersResolver } from "./files/folders.resolver.js";
 import { FoldersService } from "./files/folders.service.js";
 import { ImageCropArea } from "./images/entities/image-crop-area.entity.js";
 import { DamScopeAccessControlService } from "./scope-access-control.service.js";
+import { createDamSettingsResolver } from "./settings/dam-settings.resolver.js";
+import { DamSettings } from "./settings/entities/dam-settings.entity.js";
 import type { DamScopeInterface } from "./types.js";
 
 interface DamFilesModuleOptions {
@@ -87,6 +89,7 @@ export class DamFilesModule {
         const FilesResolver = createFilesResolver({ File, Folder, Scope });
         const FoldersResolver = createFoldersResolver({ Folder, Scope });
         const DamMediaAlternativeResolver = createDamMediaAlternativeResolver({ File, Scope });
+        const DamSettingsResolver = createDamSettingsResolver({ File, Scope });
 
         if (Scope) {
             validateScopeTypeNames(Scope, { label: "DAM", objectTypeName: "DamScope", inputTypeName: "DamScopeInput" });
@@ -94,7 +97,7 @@ export class DamFilesModule {
 
         return {
             module: DamFilesModule,
-            imports: [MikroOrmModule.forFeature([File, Folder, DamFileImage, ImageCropArea, DamMediaAlternative])],
+            imports: [MikroOrmModule.forFeature([File, Folder, DamFileImage, ImageCropArea, DamMediaAlternative, DamSettings])],
             providers: [
                 damConfigProvider,
                 disableScopeAccessControlProvider,
@@ -109,6 +112,7 @@ export class DamFilesModule {
                 HasValidFilenameConstraint,
                 FileWarningService,
                 DamMediaAlternativeResolver,
+                DamSettingsResolver,
                 DamScopeAccessControlService,
             ],
             controllers: [

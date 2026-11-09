@@ -47,7 +47,12 @@ export function FilterBarActiveFilterBadge(inProps: FilterBarActiveFilterBadgePr
     if (countValue > 0) {
         return (
             <HasValueCount {...slotProps?.hasValueCount} {...restProps}>
-                <Typography variant="inherit" display="block">
+                <Typography
+                    variant="inherit"
+                    sx={{
+                        display: "block",
+                    }}
+                >
                     {countValue}
                 </Typography>
             </HasValueCount>

@@ -1,0 +1,49 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Intro" />
+
+# @dextinity/ui
+
+`@dextinity/ui` is a UI-only React component library, built on `@base-ui/react` and CSS Modules.
+
+## Experimental
+
+This package is experimental. Any component, prop, or other export may change or be removed at any time, without notice.
+
+## MCP
+
+The Storybook serves an MCP server, so that AI agents can look up the components, their props, and examples. Connect it to your agent, for example to Claude Code:
+
+{/* TODO: Use the `main--` URL once `next` becomes `main` */}
+
+```sh
+claude mcp add --transport http dextinity-ui https://next--6adb09e1f667e1e0e9a4a772.chromatic.com/mcp
+```
+
+## Installation and setup
+
+Install the package and the Inter font:
+
+```sh
+npm install @dextinity/ui @fontsource-variable/inter
+```
+
+Import the font, the styles, and the icons once, wrap the application in `Theme`, and import the components from the package root:
+
+```tsx
+import "@fontsource-variable/inter";
+import "@dextinity/ui/css";
+import "@dextinity/ui/css/icons";
+
+import { Button, Theme } from "@dextinity/ui";
+
+export function App() {
+    return (
+        <Theme>
+            <Button>Save</Button>
+        </Theme>
+    );
+}
+```
+
+To use the theme in your own styles, or to customize it, see [Theme → Overview](?path=/docs/theme-overview--docs).

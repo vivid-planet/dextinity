@@ -352,6 +352,30 @@ describe("createTipTapRichTextBlock validation", () => {
             expect(errors).toHaveLength(1);
         });
 
+        it("should reject a horizontalRule (disabled in config)", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [{ type: "textBlock", content: [{ type: "text", text: "Above" }] }, { type: "horizontalRule" }],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(1);
+        });
+
+        it("should accept a hardBreak", async () => {
+            const input = block.blockInputFactory({
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        { type: "textBlock", content: [{ type: "text", text: "First" }, { type: "hardBreak" }, { type: "text", text: "Second" }] },
+                    ],
+                },
+            });
+            const errors = await validate(input);
+            expect(errors).toHaveLength(0);
+        });
+
         it("should reject null content", async () => {
             // Cast required because the typed input rejects invalid content at compile time; here we test the runtime guard.
             const input = block.blockInputFactory({ tipTapContent: null as unknown as TipTapRichTextBlockContent });
@@ -1778,6 +1802,7 @@ describe("createTipTapRichTextBlock block meta", () => {
                 kind: BlockMetaFieldKind.TipTapRichTextBlock,
                 childBlocks: { externalLink: ExternalLinkBlock },
                 linkBlock: LinkBlock,
+                tipTap: expect.any(Object),
                 nullable: false,
             },
         ];
@@ -1797,6 +1822,7 @@ describe("createTipTapRichTextBlock block meta", () => {
                 kind: "TipTapRichTextBlock",
                 childBlocks: { externalLink: "ExternalLink" },
                 linkBlock: "TestMetaLink",
+                tipTap: expect.any(Object),
                 nullable: false,
             },
         ]);
@@ -1806,7 +1832,14 @@ describe("createTipTapRichTextBlock block meta", () => {
         const block = createTipTapRichTextBlock({}, "TestMetaWithoutLink");
 
         expect(block.blockMeta.fields).toEqual([
-            { name: "tipTapContent", kind: BlockMetaFieldKind.TipTapRichTextBlock, childBlocks: {}, linkBlock: undefined, nullable: false },
+            {
+                name: "tipTapContent",
+                kind: BlockMetaFieldKind.TipTapRichTextBlock,
+                childBlocks: {},
+                linkBlock: undefined,
+                tipTap: expect.any(Object),
+                nullable: false,
+            },
         ]);
     });
 });

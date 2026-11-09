@@ -16,7 +16,7 @@
             ]
         }
     },
-    "ignoreKeywords": "Merge main\nMerge `main`\nMerge next\nMerge `next`",
+    "ignoreKeywords": "Merge main\nMerge `main`\nMerge next\nMerge `next`\nMerge feature/\nMerge `feature/",
     "excludeAuthors": ["vivid-planet-bot", "github-actions[bot]", "renovate[bot]"],
     "ignorePatterns": "pnpm-lock.yaml\n**/CHANGELOG.md\nCHANGELOG.old.md\n**/__snapshots__/**\n**/generated/**\n**/schema.gql\n**/block-meta.json"
 }

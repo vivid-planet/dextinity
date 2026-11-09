@@ -3,8 +3,7 @@ import { ListItem, type SvgIconProps } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { type CSSProperties, type ForwardRefExoticComponent, type ReactNode, type RefAttributes, useEffect, useRef } from "react";
 import { FormattedMessage } from "react-intl";
-import { AutoSizer } from "react-virtualized-auto-sizer";
-import { FixedSizeList as List } from "react-window";
+import { List, type ListImperativeAPI, type RowComponentProps } from "react-window";
 
 import { MarkedMatches } from "../../common/MarkedMatches";
 import type { FolderTreeMap } from "./useFolderTree";
@@ -39,84 +38,94 @@ export const ChooseFolder = ({
 
         const index = foldersToRenderWithMatches.findIndex((folder) => folder.id === focusedFolderId) + 1; // + 1 is necessary because we artificially add the "Asset Manager" as the first item
 
-        refList.current?.scrollToItem(index, "smart");
+        refList.current?.scrollToRow({ index, align: "smart" });
 
         // This should only be executed if the focusedFolderId changes
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [focusedFolderId]);
 
-    const refList = useRef<List>(null);
+    const refList = useRef<ListImperativeAPI>(null);
 
     return (
-        <AutoSizer
-            style={{ height: 0, width: 0, overflow: "visible" }}
-            renderProp={({ height, width }) => {
-                if (height === undefined || width === undefined) {
-                    return null;
-                }
-
-                return (
-                    <List
-                        ref={refList}
-                        height={height}
-                        width={width}
-                        itemCount={foldersToRenderWithMatches.length + 1}
-                        itemSize={56}
-                        overscanCount={1} // do not increase this for performance reasons
-                        style={{ scrollBehavior: "smooth" }}
-                    >
-                        {({ index, style }) => {
-                            if (loading) {
-                                return (
-                                    <StyledListItem offset={20 + 36} style={style}>
-                                        <div>
-                                            <BallTriangle sx={{ marginRight: "20px" }} />
-                                            <FormattedMessage id="dextinity.dam.moveDamItemDialog.loading" defaultMessage="Loading ..." />
-                                        </div>
-                                    </StyledListItem>
-                                );
-                            }
-
-                            if (index === 0) {
-                                return (
-                                    <ChooseFolderItem
-                                        Icon={PageTree}
-                                        message={<FormattedMessage id="dextinity.pages.dam.assetManager" defaultMessage="Asset Manager" />}
-                                        offset={20}
-                                        isChosen={selectedId === null}
-                                        onClick={() => {
-                                            onFolderClick(null);
-                                        }}
-                                        style={style}
-                                    />
-                                );
-                            }
-
-                            const folder = foldersToRenderWithMatches[index - 1];
-
-                            return (
-                                <ChooseFolderItem
-                                    key={folder.id}
-                                    Icon={folderTree.has(folder.id) ? (folder.expanded ? TreeCollapse : TreeExpand) : undefined}
-                                    onIconClick={() => {
-                                        toggleExpand(folder.id);
-                                    }}
-                                    message={folder.matches ? <MarkedMatches text={folder.name} matches={folder.matches} /> : folder.name}
-                                    offset={20 + 36 * folder.level}
-                                    isChosen={selectedId === folder.id}
-                                    onClick={() => {
-                                        onFolderClick(folder.id);
-                                    }}
-                                    style={style}
-                                />
-                            );
-                        }}
-                    </List>
-                );
-            }}
-        />
+        <Root>
+            <List
+                listRef={refList}
+                rowCount={foldersToRenderWithMatches.length + 1}
+                rowHeight={56}
+                rowComponent={ChooseFolderRow}
+                rowProps={{ folderTree, foldersToRenderWithMatches, loading, toggleExpand, selectedId, onFolderClick }}
+                overscanCount={1} // do not increase this for performance reasons
+                style={{ position: "absolute", inset: 0, scrollBehavior: "smooth" }}
+            />
+        </Root>
     );
 };
+
+type ChooseFolderRowProps = Pick<
+    ChooseFolderProps,
+    "folderTree" | "foldersToRenderWithMatches" | "loading" | "toggleExpand" | "selectedId" | "onFolderClick"
+>;
+
+function ChooseFolderRow({
+    index,
+    style,
+    folderTree,
+    foldersToRenderWithMatches,
+    loading,
+    toggleExpand,
+    selectedId,
+    onFolderClick,
+}: RowComponentProps<ChooseFolderRowProps>) {
+    if (loading) {
+        return (
+            <StyledListItem offset={20 + 36} style={style}>
+                <div>
+                    <BallTriangle sx={{ marginRight: "20px" }} />
+                    <FormattedMessage id="dextinity.dam.moveDamItemDialog.loading" defaultMessage="Loading ..." />
+                </div>
+            </StyledListItem>
+        );
+    }
+
+    if (index === 0) {
+        return (
+            <ChooseFolderItem
+                Icon={PageTree}
+                message={<FormattedMessage id="dextinity.pages.dam.assetManager" defaultMessage="Asset Manager" />}
+                offset={20}
+                isChosen={selectedId === null}
+                onClick={() => {
+                    onFolderClick(null);
+                }}
+                style={style}
+            />
+        );
+    }
+
+    const folder = foldersToRenderWithMatches[index - 1];
+
+    return (
+        <ChooseFolderItem
+            Icon={folderTree.has(folder.id) ? (folder.expanded ? TreeCollapse : TreeExpand) : undefined}
+            onIconClick={() => {
+                toggleExpand(folder.id);
+            }}
+            message={folder.matches ? <MarkedMatches text={folder.name} matches={folder.matches} /> : folder.name}
+            offset={20 + 36 * folder.level}
+            isChosen={selectedId === folder.id}
+            onClick={() => {
+                onFolderClick(folder.id);
+            }}
+            style={style}
+        />
+    );
+}
+
+// Positions the list absolutely so its content height doesn't stretch the surrounding flex layout
+const Root = styled("div")`
+    position: relative;
+    height: 100%;
+`;
 
 const StyledListItem = styled(ListItem)<{ offset: number; isChosen?: boolean }>`
     display: flex;

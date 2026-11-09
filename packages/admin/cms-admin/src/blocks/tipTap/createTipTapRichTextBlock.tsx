@@ -530,6 +530,7 @@ export function buildTipTapExtensions({
             blockquote: false,
             code: false,
             codeBlock: false,
+            horizontalRule: false,
             link: false,
             // Enter at the end of a text block creates the next one, and Enter in an empty last list item
             // leaves the list, so only a trailing atom node (e.g. a child block) needs TrailingNode's empty

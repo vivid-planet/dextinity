@@ -100,7 +100,7 @@ function EmailCampaignsGridToolbar() {
             </ToolbarItem>
             <ToolbarFillSpace />
             <ToolbarActions>
-                <Button startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add" variant="primary">
+                <Button startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add" variant="primary">
                     <FormattedMessage id="dextinity.emailCampaign.newEmailCampaign" defaultMessage="New email campaign" />
                 </Button>
             </ToolbarActions>
@@ -191,17 +191,17 @@ export function EmailCampaignsGrid({
                 return (
                     <>
                         {row.sendingState !== "SENT" && !isScheduledDateInPast && (
-                            <IconButton component={StackLink} pageName="edit" payload={row.id}>
+                            <IconButton component={StackLink} nativeButton={false} pageName="edit" payload={row.id}>
                                 <Edit color="primary" />
                             </IconButton>
                         )}
                         {row.sendingState === "SENT" && (
-                            <IconButton component={StackLink} pageName="statistics" payload={row.id}>
+                            <IconButton component={StackLink} nativeButton={false} pageName="statistics" payload={row.id}>
                                 <Statistics color="primary" />
                             </IconButton>
                         )}
                         {(row.sendingState === "SENT" || (row.sendingState == "SCHEDULED" && isScheduledDateInPast)) && (
-                            <IconButton component={StackLink} pageName="view" payload={row.id}>
+                            <IconButton component={StackLink} nativeButton={false} pageName="view" payload={row.id}>
                                 <Visible color="primary" />
                             </IconButton>
                         )}

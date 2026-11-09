@@ -76,7 +76,12 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
         const isInPaper = useBlockAdminComponentPaper();
 
         return (
-            <Box padding={isInPaper ? 3 : 0} pb={0}>
+            <Box
+                sx={{
+                    padding: isInPaper ? 3 : 0,
+                    pb: 0,
+                }}
+            >
                 <SelectPreviewComponent>
                     <BlocksFinalForm onSubmit={updateState} initialValues={state}>
                         <Field

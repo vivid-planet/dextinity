@@ -201,16 +201,18 @@ export function ContentScopeSelect({
                 popover: {
                     anchorOrigin: { vertical: "bottom", horizontal: "left" },
                     transformOrigin: { vertical: "top", horizontal: "left" },
-                    PaperProps: {
-                        sx: (theme) => ({
-                            minWidth: "350px",
-                            maxHeight: "calc(100vh - 60px)",
-                            [theme.breakpoints.down("md")]: {
-                                width: "100%",
-                                maxWidth: "none",
-                                bottom: 0,
-                            },
-                        }),
+                    slotProps: {
+                        paper: {
+                            sx: (theme) => ({
+                                minWidth: "350px",
+                                maxHeight: "calc(100vh - 60px)",
+                                [theme.breakpoints.down("md")]: {
+                                    width: "100%",
+                                    maxWidth: "none",
+                                    bottom: 0,
+                                },
+                            }),
+                        },
                     },
                 },
             }}

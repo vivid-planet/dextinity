@@ -4,5 +4,6 @@
         "noEmit": true,
         "rootDir": "./"
     },
-    "extends": "./tsconfig.json"
+    "extends": "./tsconfig.json",
+    "include": ["src", "*.ts", "*.mts"]
 }

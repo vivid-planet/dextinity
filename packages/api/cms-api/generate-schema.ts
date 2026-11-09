@@ -35,6 +35,7 @@ import { createFolderEntity } from "./lib/dam/files/entities/folder.entity";
 import { FileLicensesResolver } from "./lib/dam/files/file-licenses.resolver";
 import { createFilesResolver } from "./lib/dam/files/files.resolver";
 import { createFoldersResolver } from "./lib/dam/files/folders.resolver";
+import { createDamSettingsResolver } from "./lib/dam/settings/dam-settings.resolver";
 import { FileUploadsResolver } from "./lib/file-uploads/file-uploads.resolver";
 import { FullTextSearchResolver } from "./lib/full-text-search/full-text-search.resolver";
 import { SitePreviewResolver } from "./lib/page-tree/site-preview.resolver";
@@ -132,6 +133,7 @@ async function generateSchema(): Promise<void> {
         SitePreviewResolver,
         WarningResolver,
         createDamMediaAlternativeResolver({ File }),
+        createDamSettingsResolver({ File }),
         FullTextSearchResolver,
     ]);
 

@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/admin-babel-preset",
-    "version": "10.10.0",
+    "version": "10.13.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -10,19 +10,28 @@
     "description": "Babel preset for Dextinity Admin packages",
     "license": "BSD-2-Clause",
     "main": "index.js",
+    "files": [
+        "index.js"
+    ],
+    "scripts": {
+        "test": "pnpm run test:unit",
+        "test:unit": "vitest --run",
+        "test:watch": "vitest --watch"
+    },
     "dependencies": {
-        "@babel/cli": "^7.29.7",
-        "@babel/core": "^7.29.7",
-        "@babel/preset-env": "^7.29.7",
-        "@babel/preset-react": "^7.29.7",
-        "@babel/preset-typescript": "^7.29.7",
+        "@babel/cli": "^8.0.6",
+        "@babel/core": "^8.0.10",
+        "@babel/preset-env": "^8.0.7",
+        "@babel/preset-react": "^8.0.1",
+        "@babel/preset-typescript": "^8.0.7",
         "@emotion/babel-plugin": "^11.13.5"
     },
     "devDependencies": {
-        "@babel/cli": "^7.29.7"
+        "@babel/cli": "^8.0.6",
+        "vitest": "^5.0.4"
     },
     "peerDependencies": {
-        "@babel/cli": ">= 7"
+        "@babel/cli": ">= 8"
     },
     "publishConfig": {
         "access": "public",

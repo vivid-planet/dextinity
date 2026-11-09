@@ -143,7 +143,11 @@ export function createSeoBlock(
                         }}
                     >
                         {/* Meta */}
-                        <Box marginBottom={8}>
+                        <Box
+                            sx={{
+                                marginBottom: 8,
+                            }}
+                        >
                             <Typography variant="h4" gutterBottom>
                                 <FormattedMessage id="dextinity.blocks.seo.meta.sectionTitle" defaultMessage="Meta Tags" />
                             </Typography>
@@ -174,7 +178,12 @@ export function createSeoBlock(
                         </Box>
 
                         {/* Open Graph */}
-                        <Box marginTop={8} marginBottom={8}>
+                        <Box
+                            sx={{
+                                marginTop: 8,
+                                marginBottom: 8,
+                            }}
+                        >
                             <Typography variant="h4" gutterBottom>
                                 <FormattedMessage id="dextinity.blocks.seo.openGraph.sectionTitle" defaultMessage="Open Graph" />
                             </Typography>
@@ -204,7 +213,12 @@ export function createSeoBlock(
                         </Box>
 
                         {/* Structured Data */}
-                        <Box marginTop={8} marginBottom={8}>
+                        <Box
+                            sx={{
+                                marginTop: 8,
+                                marginBottom: 8,
+                            }}
+                        >
                             <Typography variant="h4" gutterBottom>
                                 <FormattedMessage id="dextinity.blocks.seo.structuredData.sectionTitle" defaultMessage="Structured Data" />
                             </Typography>
@@ -212,7 +226,12 @@ export function createSeoBlock(
                         </Box>
 
                         {/* Sitemap */}
-                        <Box marginTop={8} marginBottom={8}>
+                        <Box
+                            sx={{
+                                marginTop: 8,
+                                marginBottom: 8,
+                            }}
+                        >
                             <Typography variant="h4" gutterBottom>
                                 <FormattedMessage id="dextinity.blocks.seo.sitemap.sectionTitle" defaultMessage="Sitemap" />
                             </Typography>
@@ -242,7 +261,11 @@ export function createSeoBlock(
                                                 onChange={onChange}
                                             >
                                                 <Divider />
-                                                <Box padding={4}>
+                                                <Box
+                                                    sx={{
+                                                        padding: 4,
+                                                    }}
+                                                >
                                                     <SelectField
                                                         label={intl.formatMessage({
                                                             id: "dextinity.blocks.seo.sitemap.priority",
@@ -272,7 +295,12 @@ export function createSeoBlock(
                         </Box>
 
                         {/* Canonical Tag */}
-                        <Box marginTop={8} marginBottom={8}>
+                        <Box
+                            sx={{
+                                marginTop: 8,
+                                marginBottom: 8,
+                            }}
+                        >
                             <Typography variant="h4" gutterBottom>
                                 <FormattedMessage id="dextinity.blocks.seo.canonicalTag.sectionTitle" defaultMessage="Canonical Tag" />
                             </Typography>
@@ -280,7 +308,12 @@ export function createSeoBlock(
                         </Box>
 
                         {/* Alternate Hreflang */}
-                        <Box marginTop={8} marginBottom={8}>
+                        <Box
+                            sx={{
+                                marginTop: 8,
+                                marginBottom: 8,
+                            }}
+                        >
                             <BlockAdminComponentSectionGroup
                                 title={<FormattedMessage id="dextinity.blocks.seo.alternativeLinks.sectionTitle" defaultMessage="Alternate links" />}
                             >
@@ -312,7 +345,11 @@ export function createSeoBlock(
                                                                 validate={(url) => validateUrl(url)}
                                                             />
                                                         </Grid>
-                                                        <Grid alignSelf="flex-start">
+                                                        <Grid
+                                                            sx={{
+                                                                alignSelf: "flex-start",
+                                                            }}
+                                                        >
                                                             <DeleteButtonWrapper>
                                                                 <IconButton onClick={() => fields.remove(i)} size="large">
                                                                     <Delete />

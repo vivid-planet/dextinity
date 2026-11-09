@@ -1,0 +1,52 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as OverviewStories from "./__stories__/Overview.stories";
+
+<Meta title="Theme/Overview" />
+
+# Theme
+
+The components take their colors, space, corner radii, fonts, and icons from CSS variables whose names start with `--dextinity-`. You can use these variables in your own styles, and change them in your own stylesheet.
+
+Wrap your application in [`Theme`](?path=/docs/components-theme--docs). Outside it, the components have no styles, and the color variables have no value.
+
+- To give the components your colors, corner radii, and font, see [Customize brand](?path=/docs/theme-customize-brand--docs).
+- To replace or add icons, see [Customize icons](?path=/docs/theme-customize-icons--docs).
+- To look up an icon, see [All icons](?path=/docs/theme-all-icons--docs).
+
+## Use tokens in your styles
+
+Use the tokens with `var()` in your own styles:
+
+- **Colors** of backgrounds, text, and borders. They change with the color scheme.
+    - `--dextinity-color-background-*`, `--dextinity-color-foreground-*`, `--dextinity-color-border-*`
+    - For actions and feedback, such as errors: `--dextinity-color-action-*`, `--dextinity-color-feedback-*`
+- **Space** between and around sections.
+    - `--dextinity-space-layout-xs` to `--dextinity-space-layout-2xl`
+- **Space** in small groups, such as chips.
+    - `--dextinity-unit-*`
+- **Corner radius** of surfaces, such as cards.
+    - `--dextinity-brand-radius-surface`, `--dextinity-brand-radius-card`
+
+Arrange the components with flexbox or grid, and set the space between them with `gap`:
+
+```css
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-layout-xs);
+    padding: var(--dextinity-space-layout-md);
+    border: 1px solid var(--dextinity-color-border-default);
+    border-radius: var(--dextinity-brand-radius-card);
+    background-color: var(--dextinity-color-background-subtle);
+    color: var(--dextinity-color-foreground-default);
+}
+```
+
+## Color schemes
+
+Set the color scheme with the `colorScheme` prop of `Theme`: `"light"`, `"dark"`, or `"high-contrast"`. To use another color scheme in a part of the application, wrap that part in another `Theme` with its own `colorScheme`. To use another brand in a part, see [Customize a part of the application](?path=/docs/theme-customize-brand--docs#customize-a-part-of-the-application).
+
+To follow the color scheme of the operating system, read `prefers-color-scheme` with `matchMedia`, and pass the result to `colorScheme`:
+
+<Canvas of={OverviewStories.SwitchSystemColorScheme} />

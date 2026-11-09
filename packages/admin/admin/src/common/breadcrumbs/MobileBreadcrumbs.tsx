@@ -1,4 +1,6 @@
-import { type ReactNode, useState } from "react";
+import { ClickAwayListener } from "@mui/material";
+import { useForkRef } from "@mui/material/utils";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 
 import type { Breadcrumb, BreadcrumbsProps, BreadcrumbsSlotProps } from "./Breadcrumbs";
 import {
@@ -73,39 +75,59 @@ export const MobileBreadcrumbs = ({
     ...restProps
 }: MobileBreadcrumbsProps) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const toggleButtonRef = useRef<HTMLButtonElement>(null);
+    const mobileRootButtonRef = useForkRef(toggleButtonRef, slotProps?.mobileRootButton?.ref);
     const currentItem = items[items.length - 1];
 
+    useEffect(() => {
+        if (!isMenuOpen) {
+            return;
+        }
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                setIsMenuOpen(false);
+                toggleButtonRef.current?.focus();
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [isMenuOpen]);
+
     return (
-        <Root {...slotProps?.root} {...restProps}>
-            {Boolean(startAdornment) && <StartAdornment {...slotProps?.startAdornment}>{startAdornment}</StartAdornment>}
+        <ClickAwayListener onClickAway={() => setIsMenuOpen(false)}>
+            <Root {...slotProps?.root} {...restProps}>
+                {Boolean(startAdornment) && <StartAdornment {...slotProps?.startAdornment}>{startAdornment}</StartAdornment>}
 
-            <MobileRootButton onClick={() => setIsMenuOpen((prev) => !prev)} {...slotProps?.mobileRootButton}>
-                <ToolbarContainer {...slotProps?.toolbarContainer}>
-                    {items.length > 1 && (
-                        <>
-                            <Ellipsis {...slotProps?.ellipsis}>{ellipsisLabel}</Ellipsis>
-                            <Separator {...slotProps?.separator}>{separatorIcon}</Separator>
-                        </>
-                    )}
-                    <ActiveItem {...slotProps?.activeItem}>{currentItem.title}</ActiveItem>
-                </ToolbarContainer>
-                <MobileMenuIcon {...slotProps?.mobileMenuIcon}>{isMenuOpen ? closeMenuIcon : openMenuIcon}</MobileMenuIcon>
-            </MobileRootButton>
+                <MobileRootButton onClick={() => setIsMenuOpen((prev) => !prev)} {...slotProps?.mobileRootButton} ref={mobileRootButtonRef}>
+                    <ToolbarContainer {...slotProps?.toolbarContainer}>
+                        {items.length > 1 && (
+                            <>
+                                <Ellipsis {...slotProps?.ellipsis}>{ellipsisLabel}</Ellipsis>
+                                <Separator {...slotProps?.separator}>{separatorIcon}</Separator>
+                            </>
+                        )}
+                        <ActiveItem {...slotProps?.activeItem}>{currentItem.title}</ActiveItem>
+                    </ToolbarContainer>
+                    <MobileMenuIcon {...slotProps?.mobileMenuIcon}>{isMenuOpen ? closeMenuIcon : openMenuIcon}</MobileMenuIcon>
+                </MobileRootButton>
 
-            {isMenuOpen && (
-                <ExpandedMenu {...slotProps?.expandedMenu}>
-                    {items.map((item, index) => (
-                        <ExpandedMenuEntry
-                            key={item.url}
-                            item={item}
-                            indentation={index}
-                            isCurrentItem={index === items.length - 1}
-                            onClick={() => setIsMenuOpen(false)}
-                            slotProps={slotProps}
-                        />
-                    ))}
-                </ExpandedMenu>
-            )}
-        </Root>
+                {isMenuOpen && (
+                    <ExpandedMenu {...slotProps?.expandedMenu}>
+                        {items.map((item, index) => (
+                            <ExpandedMenuEntry
+                                key={item.url}
+                                item={item}
+                                indentation={index}
+                                isCurrentItem={index === items.length - 1}
+                                onClick={() => setIsMenuOpen(false)}
+                                slotProps={slotProps}
+                            />
+                        ))}
+                    </ExpandedMenu>
+                )}
+            </Root>
+        </ClickAwayListener>
     );
 };

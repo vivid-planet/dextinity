@@ -2,6 +2,8 @@
 @use "../components/chip/Chip.tokens" as chip;
 @use "../components/formHelperText/FormHelperText.tokens" as formHelperText;
 @use "../components/iconButton/IconButton.tokens" as iconButton;
+@use "../components/mainNavigationItem/MainNavigationItem.tokens" as mainNavigationItem;
+@use "../components/menuSectionHeader/MenuSectionHeader.tokens" as menuSectionHeader;
 
 @layer dextinity {
     [data-dextinity-color-scheme] {
@@ -9,6 +11,8 @@
         @include chip.tokens;
         @include formHelperText.tokens;
         @include iconButton.tokens;
+        @include mainNavigationItem.tokens;
+        @include menuSectionHeader.tokens;
 
         --dextinity-checkbox-size: 20px;
         --dextinity-checkbox-radius: var(--dextinity-radius-sm);
@@ -114,59 +118,6 @@
         --dextinity-input-height: var(--dextinity-unit-10);
         --dextinity-input-radius: var(--dextinity-brand-radius-forms);
         --dextinity-input-gap: var(--dextinity-unit-2);
-
-        --dextinity-main-navigation-item-height: var(--dextinity-unit-12);
-        --dextinity-main-navigation-item-gap: var(--dextinity-unit-2);
-        --dextinity-main-navigation-item-radius: var(--dextinity-radius-md);
-
-        --dextinity-main-navigation-item-padding-horizontal: var(--dextinity-unit-3);
-
-        --dextinity-main-navigation-item-icon-size: 16px;
-
-        --dextinity-main-navigation-item-indicator-width: 3px;
-        --dextinity-main-navigation-item-indicator-height: 24px;
-
-        --dextinity-main-navigation-item-indent-level-1: var(--dextinity-unit-3);
-        --dextinity-main-navigation-item-indent-level-2: var(--dextinity-unit-9);
-        --dextinity-main-navigation-item-indent-level-3: var(--dextinity-unit-15);
-
-        --dextinity-main-navigation-item-font-size: var(--dextinity-typography-body-md-size);
-        --dextinity-main-navigation-item-font-line-height: var(--dextinity-typography-body-md-line-height);
-        --dextinity-main-navigation-item-font-weight: var(--dextinity-font-weight-medium);
-
-        --dextinity-main-navigation-item-font-weight-style: var(--dextinity-font-weight-medium-style);
-
-        --dextinity-main-navigation-item-default-background: var(--dextinity-color-transparent);
-        --dextinity-main-navigation-item-default-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-main-navigation-item-default-icon: var(--dextinity-color-foreground-default);
-        --dextinity-main-navigation-item-default-indicator: var(--dextinity-color-transparent);
-
-        --dextinity-main-navigation-item-hover-background: var(--dextinity-color-background-subtle);
-        --dextinity-main-navigation-item-hover-foreground: var(--dextinity-color-foreground-default);
-        --dextinity-main-navigation-item-hover-icon: var(--dextinity-color-foreground-default);
-        --dextinity-main-navigation-item-hover-indicator: var(--dextinity-color-transparent);
-
-        --dextinity-main-navigation-item-active-background: var(--dextinity-color-action-primary-subtle);
-        --dextinity-main-navigation-item-active-foreground: var(--dextinity-color-action-primary-default);
-        --dextinity-main-navigation-item-active-icon: var(--dextinity-color-action-primary-default);
-        --dextinity-main-navigation-item-active-indicator: var(--dextinity-color-action-primary-default);
-
-        --dextinity-main-navigation-section-header-padding-horizontal: var(--dextinity-unit-3);
-        --dextinity-main-navigation-section-header-padding-vertical: var(--dextinity-unit-2);
-
-        --dextinity-main-navigation-section-header-gap: var(--dextinity-unit-1);
-
-        --dextinity-main-navigation-section-header-font-size: var(--dextinity-typography-body-sm-size);
-        --dextinity-main-navigation-section-header-font-line-height: var(--dextinity-typography-body-sm-line-height);
-        --dextinity-main-navigation-section-header-font-weight: var(--dextinity-font-weight-semibold);
-
-        --dextinity-main-navigation-section-header-font-weight-style: var(--dextinity-font-weight-bold-style);
-
-        --dextinity-main-navigation-section-header-default-foreground: var(--dextinity-color-foreground-subtle);
-        --dextinity-main-navigation-section-header-default-icon: var(--dextinity-color-foreground-subtle);
-
-        --dextinity-main-navigation-section-header-hover-foreground: var(--dextinity-color-foreground-muted);
-        --dextinity-main-navigation-section-header-hover-icon: var(--dextinity-color-foreground-muted);
 
         --dextinity-input-border-width: 1px;
 

@@ -62,4 +62,37 @@ describe("serverIntl", () => {
 
         expect(html).toBe('Accept the <a href="/terms">terms</a> and <strong>privacy</strong>');
     });
+
+    it("formats dates and times", async () => {
+        const { setServerIntl, ServerFormattedDate, ServerFormattedDateTimeRange, ServerFormattedTime } = await importServerIntl();
+        setServerIntl("de", {});
+        const date = new Date(Date.UTC(2026, 10, 9, 14, 30));
+
+        expect(renderToStaticMarkup(<ServerFormattedDate value={date} dateStyle="medium" timeZone="UTC" />)).toBe("09.11.2026");
+        expect(renderToStaticMarkup(<ServerFormattedTime value={date} timeZone="UTC" />)).toBe("14:30");
+        expect(
+            renderToStaticMarkup(
+                <ServerFormattedDateTimeRange from={date} to={new Date(Date.UTC(2026, 10, 12))} day="numeric" month="long" timeZone="UTC" />,
+            ),
+        ).toBe("9.–12. November");
+    });
+
+    it("formats numbers, plurals, lists, display names and durations", async () => {
+        const {
+            setServerIntl,
+            ServerFormattedDisplayName,
+            ServerFormattedDuration,
+            ServerFormattedList,
+            ServerFormattedNumber,
+            ServerFormattedPlural,
+        } = await importServerIntl();
+        setServerIntl("en", {});
+
+        expect(renderToStaticMarkup(<ServerFormattedNumber value={1234.5} style="currency" currency="EUR" />)).toBe("€1,234.50");
+        expect(renderToStaticMarkup(<ServerFormattedPlural value={1} one="item" other="items" />)).toBe("item");
+        expect(renderToStaticMarkup(<ServerFormattedPlural value={2} one="item" other="items" />)).toBe("items");
+        expect(renderToStaticMarkup(<ServerFormattedList value={["a", "b", "c"]} type="conjunction" />)).toBe("a, b, and c");
+        expect(renderToStaticMarkup(<ServerFormattedDisplayName value="de" type="language" />)).toBe("German");
+        expect(renderToStaticMarkup(<ServerFormattedDuration value={{ hours: 1, minutes: 30 }} style="long" />)).toBe("1 hour, 30 minutes");
+    });
 });

@@ -1,9 +1,9 @@
 "use client";
+import { FormattedDate } from "@dextinity/site-nextjs/intl";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { FormattedDate } from "react-intl";
 
 import { fetchNewsList } from "./NewsPage.loader";
 import type { GQLNewsIndexPageQuery } from "./NewsPage.loader.generated";

@@ -8,8 +8,8 @@ import {
     EmptyState,
     FilterBar,
     FilterChip,
+    getExpandableTreeNodeIds,
     Icon,
-    IconButton,
     matchesShortcut,
     MenuItem,
     PageHeader,
@@ -19,6 +19,7 @@ import {
     TreeDetailLayout,
     type TreeNode,
     TreeView,
+    TreeViewExpandButtons,
     useToasts,
     useUndoToast,
 } from "@dextinity/ui";
@@ -129,17 +130,22 @@ export function PageTreeDetailPage(props: PageTreeDetailPageProps) {
     );
 }
 
+function countDescendants(nodes: TreeNode[]): number {
+    return nodes.reduce((count, node) => count + 1 + countDescendants(node.children ?? []), 0);
+}
+
 function createTreeNodes(structure: PageTreeStructure, parentId: string | null = null): TreeNode[] {
     return (structure.childrenByParentId.get(parentId) ?? []).map((page) => {
         const children = createTreeNodes(structure, page.id);
         return {
             id: page.id,
             label: page.name,
-            type: children.length > 0 ? "folder" : "page",
+            type: page.documentType === "Link" ? "link" : undefined,
             icon: parentId == null && isHomePage(page) ? <Icon name="home" /> : undefined,
             status: visibilityStatus[page.visibility],
             path: page.path,
             hiddenInMenu: page.hideInMenu,
+            count: children.length > 0 ? countDescendants(children) : undefined,
             children: children.length > 0 ? children : undefined,
         };
     });
@@ -492,7 +498,7 @@ function PageTreeDetailView({
     const visiblePageIds = pages.filter((page) => matchesFilters(page, statusFilter)).map((page) => page.id);
     const areAllVisiblePagesChecked =
         visiblePageIds.length > 0 && checkedIds.length === visiblePageIds.length && visiblePageIds.every((id) => checkedIds.includes(id));
-    const folderIds = pages.filter((page) => structure.childrenByParentId.has(page.id)).map((page) => page.id);
+    const expandableIds = useMemo(() => getExpandableTreeNodeIds(treeNodes), [treeNodes]);
     const unpublishedCount = pages.filter((page) => page.visibility === "Unpublished").length;
     const archivedCount = pages.filter((page) => page.visibility === "Archived").length;
 
@@ -670,6 +676,11 @@ function PageTreeDetailView({
                 canDrop={(move) => canMove(move, checkedIds)}
                 labels={{
                     hiddenInMenu: intl.formatMessage({ id: "dextinity.pageTreeDetail.hiddenInMenu", defaultMessage: "Hidden in menu" }),
+                    count: (count) =>
+                        intl.formatMessage(
+                            { id: "dextinity.pageTreeDetail.subpageCount", defaultMessage: "{count, plural, one {# subpage} other {# subpages}}" },
+                            { count },
+                        ),
                 }}
             />
         );
@@ -687,18 +698,34 @@ function PageTreeDetailView({
             <TreeDetailLayout
                 header={
                     <PageHeader
-                        eyebrow={eyebrow}
+                        eyebrow={
+                            isInitialLoad ? (
+                                eyebrow
+                            ) : (
+                                <>
+                                    {eyebrow != null && (
+                                        <>
+                                            {eyebrow}
+                                            {" · "}
+                                        </>
+                                    )}
+                                    {intl.formatMessage(
+                                        { id: "dextinity.pageTreeDetail.pageCount", defaultMessage: "{count, plural, one {# page} other {# pages}}" },
+                                        { count: pages.length },
+                                    )}
+                                </>
+                            )
+                        }
                         title={title ?? intl.formatMessage({ id: "dextinity.pageTreeDetail.title", defaultMessage: "Page tree" })}
                         subtitle={
                             isInitialLoad
                                 ? undefined
                                 : intl.formatMessage(
                                       {
-                                          id: "dextinity.pageTreeDetail.subtitle",
-                                          defaultMessage:
-                                              "{count, plural, one {# page} other {# pages}}{unpublished, plural, =0 {} other { · # unpublished}}{archived, plural, =0 {} other { · # archived}}",
+                                          id: "dextinity.pageTreeDetail.statusSummary",
+                                          defaultMessage: "{unpublished} unpublished · {archived} archived",
                                       },
-                                      { count: pages.length, unpublished: unpublishedCount, archived: archivedCount },
+                                      { unpublished: unpublishedCount, archived: archivedCount },
                                   )
                         }
                         actions={newPageButton}
@@ -722,35 +749,28 @@ function PageTreeDetailView({
                                     { count },
                                 ),
                         }}
+                        start={
+                            <Checkbox
+                                aria-label={intl.formatMessage({ id: "dextinity.pageTreeDetail.selectAll", defaultMessage: "Select all pages" })}
+                                checked={areAllVisiblePagesChecked}
+                                indeterminate={checkedIds.length > 0 && !areAllVisiblePagesChecked}
+                                onChange={(checked) => setCheckedIds(checked ? visiblePageIds : [])}
+                                disabled={visiblePageIds.length === 0}
+                            />
+                        }
                         actions={
-                            <>
-                                <IconButton
-                                    variant="text"
-                                    color="secondary"
-                                    aria-label={intl.formatMessage({ id: "dextinity.pageTreeDetail.expandAll", defaultMessage: "Expand all" })}
-                                    onClick={() => setExpandedIds(folderIds)}
-                                >
-                                    <Icon name="maximize" />
-                                </IconButton>
-                                <IconButton
-                                    variant="text"
-                                    color="secondary"
-                                    aria-label={intl.formatMessage({ id: "dextinity.pageTreeDetail.collapseAll", defaultMessage: "Collapse all" })}
-                                    onClick={() => setExpandedIds([])}
-                                    disabled={expandedIds.length === 0}
-                                >
-                                    <Icon name="minimize" />
-                                </IconButton>
-                            </>
+                            <TreeViewExpandButtons
+                                onExpandAll={() => setExpandedIds(expandableIds)}
+                                onCollapseAll={() => setExpandedIds([])}
+                                expandAllDisabled={expandableIds.length === 0 || expandableIds.every((id) => expandedIds.includes(id))}
+                                collapseAllDisabled={!expandableIds.some((id) => expandedIds.includes(id))}
+                                labels={{
+                                    expandAll: intl.formatMessage({ id: "dextinity.pageTreeDetail.expandAll", defaultMessage: "Expand all" }),
+                                    collapseAll: intl.formatMessage({ id: "dextinity.pageTreeDetail.collapseAll", defaultMessage: "Collapse all" }),
+                                }}
+                            />
                         }
                     >
-                        <Checkbox
-                            aria-label={intl.formatMessage({ id: "dextinity.pageTreeDetail.selectAll", defaultMessage: "Select all pages" })}
-                            checked={areAllVisiblePagesChecked}
-                            indeterminate={checkedIds.length > 0 && !areAllVisiblePagesChecked}
-                            onChange={(checked) => setCheckedIds(checked ? visiblePageIds : [])}
-                            disabled={visiblePageIds.length === 0}
-                        />
                         {statusFilters.map((status) => (
                             <FilterChip
                                 key={status}
@@ -768,6 +788,9 @@ function PageTreeDetailView({
                     selectedPage != null ? (
                         <PageTreeNodeDetail
                             page={selectedPage}
+                            ancestorNames={getAncestorIds(structure, selectedPage.id)
+                                .reverse()
+                                .flatMap((id) => structure.pagesById.get(id)?.name ?? [])}
                             documentType={documentTypes[selectedPage.documentType]}
                             siteUrl={siteConfig.url}
                             editUrl={editUrl(selectedPage.id)}
@@ -814,7 +837,7 @@ function PageTreeDetailView({
                 }
                 detailLabel={selectedPage?.name}
             >
-                <Panel>{renderTree()}</Panel>
+                {renderTree()}
             </TreeDetailLayout>
             <BulkActionBar
                 count={checkedIds.length}

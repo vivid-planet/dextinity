@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { Button, CopyField, Icon, KeyValueList, type KeyValueListItem, Panel, Skeleton, StatusIndicator, Switch } from "@dextinity/ui";
+import { Button, CopyField, Icon, KeyValueList, type KeyValueListItem, Panel, Skeleton, StatusIndicator, Switch, Typography } from "@dextinity/ui";
 import type { MouseEvent, ReactNode } from "react";
 import { useIntl } from "react-intl";
 
@@ -7,7 +7,7 @@ import type { DocumentInterface } from "../../documents/types";
 import type { GQLPageTreeNodeVisibility } from "../../graphql.generated";
 import type { GQLPageTreePageFragment } from "../pageTree/usePageTree";
 import type { GQLPageTreeNodeDetailQuery, GQLPageTreeNodeDetailQueryVariables } from "./PageTreeNodeDetail.generated";
-import { DetailActions, DetailContent } from "./PageTreeNodeDetail.sc";
+import { DetailActions, DetailContent, DetailHeading, DetailTitle } from "./PageTreeNodeDetail.sc";
 import { usePageTreeStatusLabels, visibilityStatus } from "./pageTreeStatus";
 import { canChangeVisibility } from "./usePageTreeDetailActions";
 
@@ -23,6 +23,8 @@ const pageTreeNodeDetailQuery = gql`
 
 interface PageTreeNodeDetailProps {
     page: GQLPageTreePageFragment;
+    /** The names of the page's ancestors, from the topmost one down to its parent. */
+    ancestorNames: string[];
     documentType?: DocumentInterface;
     siteUrl: string;
     editUrl: string;
@@ -35,6 +37,7 @@ interface PageTreeNodeDetailProps {
 
 export function PageTreeNodeDetail({
     page,
+    ancestorNames,
     documentType,
     siteUrl,
     editUrl,
@@ -65,20 +68,6 @@ export function PageTreeNodeDetail({
             value: documentType?.displayName ?? page.documentType,
         },
         {
-            key: intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.slug", defaultMessage: "Slug" }),
-            value: page.slug,
-        },
-        {
-            key: intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.inMenu", defaultMessage: "In menu" }),
-            value: page.hideInMenu
-                ? intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.hiddenInMenu", defaultMessage: "Hidden" })
-                : intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.shownInMenu", defaultMessage: "Shown" }),
-        },
-        {
-            key: intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.subpages", defaultMessage: "Subpages" }),
-            value: node != null ? intl.formatNumber(node.numberOfDescendants) : loading ? <Skeleton width={40} /> : "–",
-        },
-        {
             key: intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.updatedAt", defaultMessage: "Last updated" }),
             value:
                 node != null ? (
@@ -89,35 +78,42 @@ export function PageTreeNodeDetail({
                     "–"
                 ),
         },
+        {
+            key: intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.subpages", defaultMessage: "Subpages" }),
+            value: node != null ? intl.formatNumber(node.numberOfDescendants) : loading ? <Skeleton width={40} /> : "–",
+        },
+        {
+            key: intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.slug", defaultMessage: "Slug" }),
+            value: page.slug,
+        },
+        {
+            key: intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.inMenu", defaultMessage: "In menu" }),
+            value: page.hideInMenu
+                ? intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.hiddenInMenu", defaultMessage: "Hidden" })
+                : intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.shownInMenu", defaultMessage: "Shown" }),
+        },
     ];
 
     return (
-        <Panel
-            title={page.name}
-            actions={menu}
-            description={
-                <CopyField
-                    value={`${siteUrl}${page.path}`}
-                    labels={{
-                        copy: intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.copyUrl", defaultMessage: "Copy URL" }),
-                        copied: intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.urlCopied", defaultMessage: "URL copied" }),
-                    }}
-                />
-            }
-        >
+        <Panel title={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.selected", defaultMessage: "Selected" })} actions={menu}>
             <DetailContent>
+                <DetailHeading>
+                    {ancestorNames.length > 0 && <Typography variant="label">{ancestorNames.join(" › ")}</Typography>}
+                    <DetailTitle>{page.name}</DetailTitle>
+                    <CopyField
+                        value={`${siteUrl}${page.path}`}
+                        labels={{
+                            copy: intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.copyUrl", defaultMessage: "Copy URL" }),
+                            copied: intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.urlCopied", defaultMessage: "URL copied" }),
+                        }}
+                    />
+                </DetailHeading>
                 <DetailActions>
                     <Button startIcon={<Icon name="edit" />} href={editUrl} onClick={onEditClick} disabled={!isEditable}>
-                        {intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.editContent", defaultMessage: "Edit content" })}
+                        {intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.edit", defaultMessage: "Edit" })}
                     </Button>
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        startIcon={<Icon name="open-new-tab" />}
-                        onClick={onPreviewClick}
-                        disabled={!hasPreview}
-                    >
-                        {intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.openPreview", defaultMessage: "Open preview" })}
+                    <Button variant="outlined" color="secondary" startIcon={<Icon name="visible" />} onClick={onPreviewClick} disabled={!hasPreview}>
+                        {intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.preview", defaultMessage: "Preview" })}
                     </Button>
                 </DetailActions>
                 <Switch
@@ -130,10 +126,15 @@ export function PageTreeNodeDetail({
                                   id: "dextinity.pageTreeDetail.detail.archivedDescription",
                                   defaultMessage: "Archived pages are hidden and can't be edited",
                               })
-                            : intl.formatMessage({
-                                  id: "dextinity.pageTreeDetail.detail.publishedDescription",
-                                  defaultMessage: "Visible on the website",
-                              })
+                            : page.visibility === "Published"
+                              ? intl.formatMessage({
+                                    id: "dextinity.pageTreeDetail.detail.liveDescription",
+                                    defaultMessage: "Live at the address above.",
+                                })
+                              : intl.formatMessage({
+                                    id: "dextinity.pageTreeDetail.detail.adminOnlyDescription",
+                                    defaultMessage: "Only visible in the admin.",
+                                })
                     }
                 >
                     {statusLabels.published}

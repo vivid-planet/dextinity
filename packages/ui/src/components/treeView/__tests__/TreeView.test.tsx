@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { createPortal } from "react-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { type TreeNode, TreeView } from "../TreeView";
@@ -75,7 +76,7 @@ describe("TreeView", () => {
         expect(screen.getByRole("treeitem", { name: "About" }).firstElementChild?.hasAttribute("data-context")).toBe(false);
     });
 
-    it("opens a node on double-click, but not on a double-click on its expand toggle or actions", () => {
+    it("opens a node on double-click, but not on a double-click on its expand toggle, its actions or their popup", () => {
         const onSelect = vi.fn();
         const onOpen = vi.fn();
         render(
@@ -86,13 +87,19 @@ describe("TreeView", () => {
                 onExpandedChange={noop}
                 onSelect={onSelect}
                 onOpen={onOpen}
-                renderActions={(node) => <button type="button">{`Actions for ${node.label}`}</button>}
+                renderActions={(node) => (
+                    <>
+                        <button type="button">{`Actions for ${node.label}`}</button>
+                        {node.id === "home" && createPortal(<button type="button">Move to</button>, document.body)}
+                    </>
+                )}
             />,
         );
 
         const home = screen.getByRole("treeitem", { name: "Home" });
         fireEvent.doubleClick(home.querySelector("[class*='toggle']") as HTMLElement);
         fireEvent.doubleClick(screen.getByRole("button", { name: "Actions for Home" }));
+        fireEvent.doubleClick(screen.getByRole("button", { name: "Move to" }));
         expect(onOpen).not.toHaveBeenCalled();
 
         fireEvent.doubleClick(screen.getByText("About"));

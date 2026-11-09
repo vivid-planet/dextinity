@@ -201,10 +201,6 @@ function stopPropagation(event: MouseEvent | KeyboardEvent) {
     event.stopPropagation();
 }
 
-function isWithinRowControl(target: EventTarget) {
-    return target instanceof Element && target.closest(`.${styles.toggle}, .${styles.checkbox}, .${styles.actions}`) != null;
-}
-
 const focusableSelector = "a[href], button, input, select, textarea, [tabindex]";
 const savedTabIndexAttribute = "data-dextinity-tree-view-tabindex";
 
@@ -485,13 +481,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                         focusNode(node.id);
                         onSelect?.(node.id);
                     },
-                    onDoubleClick: onOpen
-                        ? (event: MouseEvent<HTMLDivElement>) => {
-                              if (!isWithinRowControl(event.target)) {
-                                  onOpen(node.id);
-                              }
-                          }
-                        : undefined,
+                    onDoubleClick: onOpen ? () => onOpen(node.id) : undefined,
                     onPointerEnter: (event: PointerEvent<HTMLDivElement>) => {
                         if (event.pointerType === "mouse") {
                             showFullLabel(node.id, readTooltipDelay(event.currentTarget));
@@ -621,6 +611,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                             className={styles.toggle}
                             data-hidden={hasChildren ? undefined : ""}
                             aria-hidden
+                            onDoubleClick={stopPropagation}
                             onClick={(event) => {
                                 event.stopPropagation();
                                 focusNode(node.id);
@@ -632,7 +623,13 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                             <Icon name="chevron-right" />
                         </span>
                         {checkable && (
-                            <span className={styles.checkbox} aria-hidden onClick={stopPropagation} onMouseDown={(event) => event.preventDefault()}>
+                            <span
+                                className={styles.checkbox}
+                                aria-hidden
+                                onClick={stopPropagation}
+                                onDoubleClick={stopPropagation}
+                                onMouseDown={(event) => event.preventDefault()}
+                            >
                                 <Checkbox
                                     checked={isChecked}
                                     onChange={(nextChecked) => {
@@ -668,7 +665,13 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                             {node.path}
                         </span>
                         {renderActions != null && (
-                            <span className={styles.actions} data-actions-for={node.id} onClick={stopPropagation} onKeyDown={stopPropagation}>
+                            <span
+                                className={styles.actions}
+                                data-actions-for={node.id}
+                                onClick={stopPropagation}
+                                onDoubleClick={stopPropagation}
+                                onKeyDown={stopPropagation}
+                            >
                                 {renderActions(node)}
                             </span>
                         )}

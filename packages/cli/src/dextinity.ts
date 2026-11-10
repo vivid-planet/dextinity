@@ -1,10 +1,10 @@
 import { Command } from "commander";
 
-import { downloadMitmproxyCommand } from "./commands/download-mitmproxy";
-import { downloadOAuth2ProxyCommand } from "./commands/download-oauth2-proxy";
-import { generateBlockTypes } from "./commands/generate-block-types";
-import { installAgentFeaturesCommand } from "./commands/install-agent-features";
-import { injectSiteConfigsCommand } from "./commands/site-configs";
+import { downloadMitmproxyCommand } from "./commands/download-mitmproxy.js";
+import { downloadOAuth2ProxyCommand } from "./commands/download-oauth2-proxy.js";
+import { generateBlockTypes } from "./commands/generate-block-types.js";
+import { installAgentFeaturesCommand } from "./commands/install-agent-features.js";
+import { injectSiteConfigsCommand } from "./commands/site-configs.js";
 
 const program = new Command();
 

@@ -8,9 +8,13 @@
         "url": "https://github.com/vivid-planet/dextinity"
     },
     "license": "BSD-2-Clause",
-    "type": "commonjs",
-    "main": "lib/index.js",
-    "typings": "lib/index.d.ts",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./lib/index.d.ts",
+            "default": "./lib/index.js"
+        }
+    },
     "bin": {
         "dextinity": "bin/dextinity.js"
     },
@@ -30,16 +34,16 @@
         "lint:fix:eslint": "pnpm run lint:eslint --fix",
         "lint:fix:prettier": "pnpm run lint:prettier --write",
         "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}'",
-        "lint:tsc": "tsc",
+        "lint:tsc": "tsc --noEmit",
         "test": "pnpm run test:unit",
         "test:unit": "vitest --run",
         "test:watch": "vitest --watch"
     },
     "dependencies": {
         "commander": "^15.0.0",
+        "jiti": "^2.7.0",
         "js-yaml": "^5.5.0",
-        "prettier": "^3.9.10",
-        "ts-node": "^10.9.2"
+        "prettier": "^3.9.10"
     },
     "devDependencies": {
         "@dextinity/eslint-config": "workspace:*",

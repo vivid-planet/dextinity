@@ -3,10 +3,11 @@ import { execFileSync, execSync } from "child_process";
 import { Command } from "commander";
 import { randomUUID } from "crypto";
 import fs from "fs";
+import { createJiti } from "jiti";
 import os from "os";
 import { join, resolve } from "path";
 
-import type { BaseSiteConfig, ExtractPrivateSiteConfig, ExtractPublicSiteConfig } from "../site-configs.types";
+import type { BaseSiteConfig, ExtractPrivateSiteConfig, ExtractPublicSiteConfig } from "../site-configs.types.js";
 
 export const injectSiteConfigsCommand = new Command("inject-site-configs")
     .description("Inject site-configs into a file")
@@ -16,7 +17,7 @@ export const injectSiteConfigsCommand = new Command("inject-site-configs")
     .option("-f, --site-config-file <file>", "Path to ts-file which provides a default export with (env: string) => SiteConfig[]")
     .action(async (options) => {
         const configFile = `${process.cwd()}/${options.siteConfigFile || "site-configs.ts"}`;
-        const getSiteConfigs: (env: string) => BaseSiteConfig[] = (await import(configFile)).default;
+        const getSiteConfigs = await createJiti(import.meta.url).import<(env: string) => BaseSiteConfig[]>(configFile, { default: true });
 
         const siteConfigsCache = new Map<string, BaseSiteConfig[]>();
         const getCachedSiteConfigs = async (env: string): Promise<BaseSiteConfig[]> => {

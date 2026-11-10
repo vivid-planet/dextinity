@@ -1,8 +1,13 @@
 {
     "compilerOptions": {
+        "lib": ["ES2023"],
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
         "outDir": "lib",
         "rootDir": "src",
-        "strict": true
+        "strict": true,
+        "target": "ES2023",
+        "verbatimModuleSyntax": true
     },
     "exclude": ["node_modules", "lib"],
     "extends": "../../tsconfig.core.json",

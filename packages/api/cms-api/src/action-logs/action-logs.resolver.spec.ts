@@ -1,7 +1,7 @@
 import { createMock } from "@golevelup/ts-vitest";
 import { Entity, EntityManager, PostgreSqlDriver, PrimaryKey } from "@mikro-orm/postgresql";
 import { BadRequestException, ForbiddenException } from "@nestjs/common";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { DiscoverService } from "../dependencies/discover.service";
 import { AbstractAccessControlService } from "../user-permissions/access-control.service";
@@ -79,6 +79,9 @@ const user = (permission: Permission, contentScopes: Array<Record<string, string
 
 describe("ActionLogsResolver", () => {
     let resolver: ActionLogsResolver;
+    let findAndCount: ReturnType<typeof vi.fn>;
+
+    const getScopeCondition = () => (findAndCount.mock.calls[0][1] as { $and: Array<Record<string, unknown>> }).$and[1];
 
     const args = {
         entity: LoggedEntity.name,
@@ -90,8 +93,9 @@ describe("ActionLogsResolver", () => {
     beforeEach(() => {
         const userPermissionsService = createMock<UserPermissionsService>({ isSystemUser: (id: string) => id === "system-user" });
         const actionLogsService = createActionLogsService([LoggedEntity, UnscopedLoggedEntity]);
+        findAndCount = vi.fn(async () => [[], 0] as [never[], number]);
         resolver = new ActionLogsResolver(
-            createMock<EntityManager<PostgreSqlDriver>>({ findAndCount: async () => [[], 0] as [never[], number] }),
+            createMock<EntityManager<PostgreSqlDriver>>({ findAndCount: findAndCount as never }),
             userPermissionsService,
             createMock<PreviousActionLogLoaderService>(),
             createActionLogsService([LoggedEntity, PublicLoggedEntity, UnscopedLoggedEntity]),
@@ -130,6 +134,19 @@ describe("ActionLogsResolver", () => {
 
     it("allows a system user", async () => {
         await expect(resolver.actionLogs(args, "system-user")).resolves.toMatchObject({ totalCount: 0 });
+    });
+
+    it("does not return the unscoped rows of an entity that checks the scope", async () => {
+        await resolver.actionLogs(args, user("news" as Permission, [args.scope]));
+
+        expect(getScopeCondition()).not.toHaveProperty("$or");
+        expect(getScopeCondition()).toHaveProperty("scope.$contains", [args.scope]);
+    });
+
+    it("returns the unscoped rows of an entity that skips the scope check", async () => {
+        await resolver.actionLogs({ ...args, entity: UnscopedLoggedEntity.name }, user("products" as Permission, []));
+
+        expect(getScopeCondition().$or).toContainEqual({ scope: null });
     });
 
     it("ignores the requested scope when the entity skips the scope check", async () => {

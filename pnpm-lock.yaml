@@ -853,7 +853,7 @@ importers:
         specifier: ^3.9.10
         version: 3.9.10
       sass:
-        specifier: ^1.107.1
+        specifier: ^1.108.1
         version: 1.108.1
       schema-dts:
         specifier: ^2.1.0
@@ -2779,7 +2779,7 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0(rollup@4.68.0)
       sass:
-        specifier: ^1.107.1
+        specifier: ^1.108.1
         version: 1.108.1
       typescript:
         specifier: ^5.9.3
@@ -2861,7 +2861,7 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0(rollup@4.68.0)
       sass:
-        specifier: ^1.107.1
+        specifier: ^1.108.1
         version: 1.108.1
       schema-dts:
         specifier: ^2.1.0

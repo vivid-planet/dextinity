@@ -145,7 +145,7 @@ Swiper's accessibility isn't complete out of the box. Wrap Swiper in one shared 
     ```
 
 - **Arrow keys:** The `Keyboard` module reacts to the arrow keys anywhere on the page, so all carousels in view move at once. Handle the arrow keys on the element of each carousel instead and call `swiper.slidePrev()` and `swiper.slideNext()`, like `useArrowKeyNavigation` of the Embla `Carousel` component.
-- **Hidden slides:** Swiper doesn't make hidden slides unfocusable. Set `inert` on all slides that aren't visible, and update it on `slideChange`.
+- **Hidden slides:** Swiper doesn't make hidden slides unfocusable. Set `inert` on all slides that aren't visible when the slider initializes, and update it whenever the visible slides change, for example on the `slideChange` and `resize` events.
 - **Reduced motion:** Set `speed` to `0` for users who prefer reduced motion, and don't start the `Autoplay` module for them.
 
 ## Testing

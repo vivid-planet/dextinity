@@ -23,7 +23,7 @@ function Page1() {
 function Story() {
     return (
         <Stack topLevelTitle="Stack">
-            <StackBreadcrumbs separator={<DextinityIcon />} />
+            <StackBreadcrumbs iconMapping={{ separator: <DextinityIcon /> }} />
             <StackSwitch>
                 <StackPage name="page1">
                     <Page1 />

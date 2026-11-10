@@ -93,4 +93,12 @@ describe("getUsedBlocks", () => {
 
         expect(usedBlocks.length).toBe(new Set(usedBlocks).size);
     });
+
+    it("throws if two different blocks have the same name", () => {
+        const FirstBlock = createTestBlock("UsedBlocksTestDuplicate");
+        const SecondBlock = createTestBlock("UsedBlocksTestDuplicate");
+        const BlocksBlock = createBlocksBlock({ supportedBlocks: { first: FirstBlock, second: SecondBlock } }, "UsedBlocksTestDuplicates");
+
+        expect(() => getUsedBlocks([BlocksBlock])).toThrow('Two different blocks are named "UsedBlocksTestDuplicate"');
+    });
 });

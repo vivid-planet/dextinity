@@ -176,6 +176,7 @@ function getBlocksOfMeta(meta: BlockMetaInterface): Block[] {
  */
 export function getUsedBlocks(rootBlocks: Block[]): Block[] {
     const usedBlocks = new Set<Block>();
+    const usedBlocksByName = new Map<string, Block>();
     const blocksToVisit = [...rootBlocks];
 
     while (blocksToVisit.length > 0) {
@@ -184,7 +185,15 @@ export function getUsedBlocks(rootBlocks: Block[]): Block[] {
         if (!block || usedBlocks.has(block)) {
             continue;
         }
+
+        if (usedBlocksByName.has(block.name)) {
+            throw new Error(
+                `Two different blocks are named "${block.name}". Block names must be unique, otherwise the generated block types and the block clipboard mix them up. Pass a different name to one of the blocks.`,
+            );
+        }
+
         usedBlocks.add(block);
+        usedBlocksByName.set(block.name, block);
 
         blocksToVisit.push(...getBlocksOfMeta(block.blockMeta), ...getBlocksOfMeta(block.blockInputMeta));
     }

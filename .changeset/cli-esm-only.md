@@ -11,3 +11,5 @@ The package only exports types (`BaseSiteConfig`, `ExtractPrivateSiteConfig`, `E
 The `dextinity` command works as before.
 `inject-site-configs` now loads the site-configs file with [jiti](https://github.com/unjs/jiti) instead of `ts-node`.
 TypeScript site configs with extensionless relative imports keep working, but `ts-node` is no longer installed with the CLI.
+`inject-site-configs` no longer fails on type errors in the site configs, because jiti only strips the types.
+Type-check them with your project's `tsc` or lint step instead.

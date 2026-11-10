@@ -1328,7 +1328,7 @@ importers:
         specifier: ^5.4.4
         version: 5.4.4
       commander:
-        specifier: ^15.0.0
+        specifier: ^15.1.0
         version: 15.1.0
       glob:
         specifier: ^14.0.4
@@ -1989,7 +1989,7 @@ importers:
         specifier: ^4.0.3
         version: 4.0.3
       commander:
-        specifier: ^15.0.0
+        specifier: ^15.1.0
         version: 15.1.0
       pluralize:
         specifier: ^8.0.0
@@ -2080,7 +2080,7 @@ importers:
         specifier: ^0.15.1
         version: 0.15.1
       commander:
-        specifier: ^15.0.0
+        specifier: ^15.1.0
         version: 15.1.0
       graphql-scalars:
         specifier: ^1.26.0 || ^2.0.0
@@ -2421,7 +2421,7 @@ importers:
   packages/cli:
     dependencies:
       commander:
-        specifier: ^15.0.0
+        specifier: ^15.1.0
         version: 15.1.0
       js-yaml:
         specifier: ^5.5.0
@@ -2679,7 +2679,7 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       commander:
-        specifier: ^15.0.0
+        specifier: ^15.1.0
         version: 15.1.0
       fast-equals:
         specifier: ^6.2.2

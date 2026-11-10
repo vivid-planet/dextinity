@@ -3,15 +3,12 @@ import { Injectable, type OnModuleInit, type Type } from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 
 import { DiscoverService } from "../dependencies/discover.service";
-import {
-    DisablePermissionCheck,
-    REQUIRED_PERMISSION_METADATA_KEY,
-    type RequiredPermissionMetadata,
-} from "../user-permissions/decorators/required-permission.decorator";
+import { REQUIRED_PERMISSION_METADATA_KEY, type RequiredPermissionMetadata } from "../user-permissions/decorators/required-permission.decorator";
 import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator";
 import { getScopesForScopedEntity } from "../user-permissions/get-scopes-for-scoped-entity";
 import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
 import { ACTION_LOGS_METADATA_KEY } from "./action-logs.decorator";
+import { entityChecksScope } from "./entity-checks-scope";
 
 @Injectable()
 export class ActionLogsService implements OnModuleInit {
@@ -37,9 +34,7 @@ export class ActionLogsService implements OnModuleInit {
                 );
             }
 
-            const checksScope =
-                !permissionMetadata.requiredPermission.includes(DisablePermissionCheck) && !permissionMetadata.options?.skipScopeCheck;
-            if (checksScope && !hasScope(entity, metadata)) {
+            if (entityChecksScope(entity) && !hasScope(entity, metadata)) {
                 throw new Error(
                     `${entity.name} is decorated with @ActionLogs() and its @RequiredPermission checks the scope, but ${entity.name} has no scope. Add a scope property or @ScopedEntity, or set skipScopeCheck in @RequiredPermission.`,
                 );

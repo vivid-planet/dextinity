@@ -34,7 +34,7 @@ To improve the user experience, make sure that the user can save the block witho
 class HeadlineBlockInput extends BlockData {
     @BlockField({ nullable: true })
     @IsString()
-    @IsOptional()
+    @IsUndefinable()
     eyebrow?: string;
 
     ...
@@ -43,7 +43,8 @@ class HeadlineBlockInput extends BlockData {
 
 Make sure to consider all three aspects of the field:
 First, add `nullable: true` to the `@BlockField` decorator for the block meta (and, therefore, the generated TypeScript interfaces).
-Second, add a `@IsOptional` decorator for the validation of the block input.
+Second, add a `@IsUndefinable` decorator for the validation of the block input.
+Don't use `@IsOptional` from `class-validator`, as it also allows `null`, which the generated TypeScript interfaces don't permit.
 Finally, denote the property as optional using `?` for TypeScript.
 
 :::note

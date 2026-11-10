@@ -26,11 +26,5 @@
         "types": ["*"]
     },
     "exclude": ["node_modules"],
-    "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
-    "ts-node": {
-        "compilerOptions": {
-            "module": "commonjs"
-        },
-        "ignoreDiagnostics": [5011]
-    }
+    "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"]
 }

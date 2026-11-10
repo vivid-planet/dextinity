@@ -3,7 +3,7 @@ import os from "os";
 import { join } from "path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { resolveOpReferences } from "./site-configs";
+import { resolveOpReferences } from "./site-configs.js";
 
 const { execSyncMock, execFileSyncMock } = vi.hoisted(() => ({ execSyncMock: vi.fn(), execFileSyncMock: vi.fn() }));
 
@@ -162,7 +162,7 @@ describe("inject-site-configs", () => {
 
         // Commander keeps parsed option values on the command instance, so each run needs a fresh one.
         vi.resetModules();
-        const { injectSiteConfigsCommand } = await import("./site-configs");
+        const { injectSiteConfigsCommand } = await import("./site-configs.js");
         try {
             await injectSiteConfigsCommand.parseAsync(["-i", "template.env", "-o", "out.env", "-f", "site-configs.mjs", ...args], { from: "user" });
             return fs.readFileSync(join(workingDirectory, "out.env")).toString();

@@ -61,17 +61,16 @@ interface DamVideoBlockInputInterface extends SimpleBlockInputInterface {
     previewImage?: ExtractBlockInput<typeof PixelImageBlock>;
 }
 
-export function createDamVideoBlock(
-    options: CreateDamVideoBlockOptions = {},
-    nameOrOptions: BlockFactoryNameOrOptions = "DamVideo",
-): Block<DamVideoBlockDataInterface, DamVideoBlockInputInterface> {
-    return buildDamVideoBlock(options, nameOrOptions);
-}
+const migrateVendor: MigrateVendorOptions = {
+    version: 1,
+    migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
+    // The migration counted in the block's version before it moved into the vendor chain
+    legacyVersions: 1,
+};
 
-function buildDamVideoBlock(
-    { controls: supportsControls = true, previewImage: supportsPreviewImage = true }: CreateDamVideoBlockOptions,
-    nameOrOptions: BlockFactoryNameOrOptions,
-    migrateVendor?: MigrateVendorOptions,
+export function createDamVideoBlock(
+    { controls: supportsControls = true, previewImage: supportsPreviewImage = true }: CreateDamVideoBlockOptions = {},
+    nameOrOptions: BlockFactoryNameOrOptions = "DamVideo",
 ): Block<DamVideoBlockDataInterface, DamVideoBlockInputInterface> {
     const name = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
     const migrate = typeof nameOrOptions === "string" ? undefined : nameOrOptions.migrate;
@@ -294,9 +293,4 @@ function buildDamVideoBlock(
     });
 }
 
-export const DamVideoBlock = buildDamVideoBlock({}, "DamVideo", {
-    version: 1,
-    migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration]),
-    // The migration counted in the block's version before it moved into the vendor chain
-    legacyVersions: 1,
-});
+export const DamVideoBlock = createDamVideoBlock();

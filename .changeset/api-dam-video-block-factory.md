@@ -26,8 +26,8 @@ export const TeaserVideoBlock = createDamVideoBlock({ controls: false, previewIm
 
 Use the same options and the same name for the Admin block.
 
-**Preview image of existing content**
+**Migrations**
 
-A block created by the factory defaults a missing preview image to an empty one when the preview image is enabled. This matters when the factory replaces a block a project already has: content stored before the block had a preview image loads as a child block instead of leaving the field undefined, which the block's own meta declares as always present.
+A block created by the factory carries the migrations shipped with the `DamVideoBlock` as vendor migrations, so it can replace the `DamVideoBlock` in an existing project: it reads the content the `DamVideoBlock` stored, and its own migrations start with version 1.
 
-The default applies on read, so it also reaches content whose version is already the block's latest — for instance content stored while the preview image was disabled, before it was enabled again.
+When the preview image is enabled, a missing one is defaulted to an empty one when the block loads content. This also covers content no migration reaches, for instance content stored while the preview image was disabled, before it was enabled again.

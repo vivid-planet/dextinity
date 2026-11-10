@@ -266,22 +266,12 @@ Enabling it again only brings back the values of blocks that nobody saved while 
 
 :::
 
-#### Preview image of existing content
+#### Migrations
 
-A block that supports the preview image defaults a missing one to an empty preview image when it loads content.
-So replacing a block a project already has works without a migration: content stored before the preview image existed loads as a child block instead of leaving the field undefined.
+A block created by the factory carries the migrations shipped with the `DamVideoBlock` as [vendor migrations](./5-migrations.mdx#vendor-migrations).
+So it can replace the `DamVideoBlock` in an existing project: it reads the content the `DamVideoBlock` stored, and its own migrations start with version 1, like for any other block.
 
-The default applies on read, which also covers content that no migration reaches — for instance content stored while the preview image was disabled, before it was enabled again.
-
-Run `migrateBlocks` to write the defaulted data back:
-
-```bash
-pnpm console migrateBlocks
-```
-
-Without it the default still applies whenever a block is loaded, it just isn't persisted until the content is saved.
-
-Own migrations are passed via `migrate` and start with version 1, like for any other block:
+Own migrations are passed via `migrate`:
 
 ```ts title="teaser-video.block.ts"
 import { createDamVideoBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
@@ -292,55 +282,41 @@ export const TeaserVideoBlock = createDamVideoBlock(
 );
 ```
 
+A block that supports the preview image also defaults a missing one to an empty preview image when it loads content.
+That covers content no migration reaches, for instance content stored while the preview image was disabled, before it was enabled again.
+Run `migrateBlocks` to write the migrated and defaulted data back:
+
+```bash
+pnpm console migrateBlocks
+```
+
 #### Replacing the DamVideoBlock
 
 A project replacing the exported `DamVideoBlock` with a block that disables options keeps their stored values, as described above.
-To remove them, add a migration.
-
-Content the `DamVideoBlock` saved before its preview image migration moved into its [vendor chain](./5-migrations.mdx#vendor-migrations) carries that migration as `$$version: 1`.
-The new block reads that counter as its own version, so a migration to version 1 would take this content for migrated and skip it.
-Start the chain with a migration that mirrors the preview image migration instead, and remove the options in version 2:
+To remove them, add a migration:
 
 ```ts title="video.block.ts"
 import { BlockMigration, type BlockMigrationInterface, createDamVideoBlock, typeSafeBlockMigrationPipe } from "@dextinity/cms-api";
 
-interface WithoutPreviewImage {
+interface DamVideoBlockData {
     damFileId?: string;
     autoplay?: boolean;
     showControls?: boolean;
     loop?: boolean;
-}
-
-interface WithPreviewImage extends WithoutPreviewImage {
     previewImage: unknown;
 }
 
-// Mirrors the DamVideoBlock's former version 1
-class AddPreviewImageMigration extends BlockMigration<(from: WithoutPreviewImage) => WithPreviewImage> implements BlockMigrationInterface {
+class RemoveControlsAndPreviewImageMigration extends BlockMigration<(from: DamVideoBlockData) => { damFileId?: string }> implements BlockMigrationInterface {
     public readonly toVersion = 1;
 
-    protected migrate(props: WithoutPreviewImage): WithPreviewImage {
-        return { ...props, previewImage: {} };
-    }
-}
-
-class RemoveControlsAndPreviewImageMigration extends BlockMigration<(from: WithPreviewImage) => { damFileId?: string }> implements BlockMigrationInterface {
-    public readonly toVersion = 2;
-
-    protected migrate({ damFileId }: WithPreviewImage) {
+    protected migrate({ damFileId }: DamVideoBlockData) {
         return { damFileId };
     }
 }
 
 export const VideoBlock = createDamVideoBlock(
     { controls: false, previewImage: false },
-    {
-        name: "Video",
-        migrate: {
-            version: 2,
-            migrations: typeSafeBlockMigrationPipe([AddPreviewImageMigration, RemoveControlsAndPreviewImageMigration]),
-        },
-    },
+    { name: "Video", migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([RemoveControlsAndPreviewImageMigration]) } },
 );
 ```
 

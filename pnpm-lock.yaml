@@ -358,7 +358,7 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0
       '@swc/plugin-emotion':
-        specifier: ^20.0.1
+        specifier: ^20.0.2
         version: 20.0.2
       '@types/lodash.isequal':
         specifier: ^4.5.8

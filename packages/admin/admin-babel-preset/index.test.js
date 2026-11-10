@@ -12,6 +12,18 @@ describe("@dextinity/admin-babel-preset", () => {
         vi.unstubAllEnvs();
     });
 
+    it("can be referenced by package name", async () => {
+        const result = await transformAsync("export const identity = <T>(value: T): T => value;", {
+            babelrc: false,
+            configFile: false,
+            cwd: import.meta.dirname,
+            filename: "identity.ts",
+            presets: ["@dextinity/admin-babel-preset"],
+        });
+
+        expect(result.code).toContain("export const identity = value => value;");
+    });
+
     it("parses generic arrow functions in .ts files", async () => {
         const result = await transform("export const identity = <T>(value: T): T => value;", { filename: "identity.ts" });
 

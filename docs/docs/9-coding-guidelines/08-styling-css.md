@@ -311,3 +311,5 @@ An inline style is fine for passing a runtime value (from props or state) to the
 ```
 
 :::
+
+Inline styles are also fine in Storybook stories and tests, for instance in a story decorator or a wrapper used for demonstration. The rule above targets production code.

@@ -21,10 +21,5 @@
         "target": "ESNext",
         "types": ["*"]
     },
-    "include": ["src/**/*"],
-    "ts-node": {
-        "compilerOptions": {
-            "module": "commonjs"
-        }
-    }
+    "include": ["src/**/*"]
 }

@@ -847,7 +847,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       playwright:
-        specifier: ^1.64.1
+        specifier: ^1.65.0
         version: 1.65.0
       prettier:
         specifier: ^3.9.10
@@ -1107,7 +1107,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       playwright:
-        specifier: ^1.64.1
+        specifier: ^1.65.0
         version: 1.65.0
       prettier:
         specifier: ^3.9.10
@@ -1951,7 +1951,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       playwright:
-        specifier: ^1.64.1
+        specifier: ^1.65.0
         version: 1.65.0
       prettier:
         specifier: ^3.9.10
@@ -2664,7 +2664,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       playwright:
-        specifier: ^1.64.1
+        specifier: ^1.65.0
         version: 1.65.0
       prettier:
         specifier: ^3.9.10
@@ -3048,7 +3048,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       playwright:
-        specifier: ^1.64.1
+        specifier: ^1.65.0
         version: 1.65.0
       prettier:
         specifier: ^3.9.10

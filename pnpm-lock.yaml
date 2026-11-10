@@ -273,7 +273,7 @@ importers:
         specifier: ^4.20.10
         version: 4.20.10
       graphql:
-        specifier: ^16.14.2
+        specifier: ^16.15.0
         version: 16.15.0
       lodash.isequal:
         specifier: ^4.5.0
@@ -536,7 +536,7 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0(supports-color@10.2.2)
       graphql:
-        specifier: ^16.14.2
+        specifier: ^16.15.0
         version: 16.15.0
       graphql-scalars:
         specifier: ^2.0.1
@@ -838,7 +838,7 @@ importers:
         specifier: ^10.6.4
         version: 10.6.6(eslint@9.39.5(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@5.9.3)
       graphql:
-        specifier: ^16.14.2
+        specifier: ^16.15.0
         version: 16.15.0
       jsdom:
         specifier: ^28.1.0
@@ -1092,7 +1092,7 @@ importers:
         specifier: ^4.20.10
         version: 4.20.10
       graphql:
-        specifier: ^16.14.2
+        specifier: ^16.15.0
         version: 16.15.0
       history:
         specifier: ^4.10.1
@@ -1355,7 +1355,7 @@ importers:
         specifier: ^14.0.4
         version: 14.0.4
       graphql:
-        specifier: ^16.14.2
+        specifier: ^16.15.0
         version: 16.15.0
       jiti:
         specifier: ^2.7.0
@@ -1665,7 +1665,7 @@ importers:
         specifier: ^4.20.10
         version: 4.20.10
       graphql:
-        specifier: ^16.14.2
+        specifier: ^16.15.0
         version: 16.15.0
       prettier:
         specifier: ^3.9.10
@@ -1936,7 +1936,7 @@ importers:
         specifier: ^4.20.10
         version: 4.20.10
       graphql:
-        specifier: ^16.14.2
+        specifier: ^16.15.0
         version: 16.15.0
       history:
         specifier: ^4.10.1
@@ -2162,7 +2162,7 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0(supports-color@10.2.2)
       graphql:
-        specifier: ^16.14.2
+        specifier: ^16.15.0
         version: 16.15.0
       prettier:
         specifier: ^3.9.10
@@ -2409,7 +2409,7 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0(supports-color@10.2.2)
       graphql:
-        specifier: ^16.14.2
+        specifier: ^16.15.0
         version: 16.15.0
       nest-commander:
         specifier: ^3.21.0
@@ -2945,7 +2945,7 @@ importers:
         specifier: ^4.20.10
         version: 4.20.10
       graphql:
-        specifier: ^16.14.2
+        specifier: ^16.15.0
         version: 16.15.0
       history:
         specifier: ^4.10.1

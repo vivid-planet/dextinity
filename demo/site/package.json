@@ -96,7 +96,7 @@
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.5",
         "eslint-plugin-storybook": "^10.6.4",
-        "graphql": "^16.14.2",
+        "graphql": "^16.15.0",
         "jsdom": "^28.1.0",
         "npm-run-all2": "^9.0.4",
         "playwright": "^1.65.0",

@@ -124,10 +124,6 @@ describe("createDamVideoBlock", () => {
 
         expect(errors.map((error) => error.property)).toEqual(["previewImage"]);
     });
-
-    it("should reject a name that is already registered", () => {
-        expect(() => createDamVideoBlock({ controls: false, previewImage: false })).toThrow(/already registered/);
-    });
 });
 
 describe("createDamVideoBlock preview image default", () => {

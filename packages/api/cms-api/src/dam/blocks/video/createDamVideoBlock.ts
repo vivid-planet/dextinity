@@ -11,7 +11,6 @@ import {
     BlockMetaFieldKind,
     createBlock,
     type ExtractBlockInput,
-    getRegisteredBlocks,
     isBlockDataInterface,
     type SimpleBlockInputInterface,
 } from "../../../blocks/block";
@@ -69,17 +68,11 @@ const migrateVendor: MigrateVendorOptions = {
 };
 
 export function createDamVideoBlock(
-    { controls: supportsControls = true, previewImage: supportsPreviewImage = true }: CreateDamVideoBlockOptions = {},
-    nameOrOptions: BlockFactoryNameOrOptions = "DamVideo",
+    { controls: supportsControls = true, previewImage: supportsPreviewImage = true }: CreateDamVideoBlockOptions,
+    nameOrOptions: BlockFactoryNameOrOptions,
 ): Block<DamVideoBlockDataInterface, DamVideoBlockInputInterface> {
     const name = typeof nameOrOptions === "string" ? nameOrOptions : nameOrOptions.name;
     const migrate = typeof nameOrOptions === "string" ? undefined : nameOrOptions.migrate;
-
-    if (getRegisteredBlocks().some((block) => block.name === name)) {
-        throw new Error(
-            `A block named "${name}" is already registered. @dextinity/cms-api exports a ready-made DamVideoBlock, so a block created with createDamVideoBlock needs its own name, for instance createDamVideoBlock({ controls: false, previewImage: false }, "TeaserVideo").`,
-        );
-    }
 
     class DamVideoBlockData extends BlockData {
         damFileId?: string;
@@ -289,4 +282,4 @@ export function createDamVideoBlock(
     });
 }
 
-export const DamVideoBlock = createDamVideoBlock();
+export const DamVideoBlock = createDamVideoBlock({}, "DamVideo");

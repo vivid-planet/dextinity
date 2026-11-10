@@ -8,9 +8,12 @@ import {
     createBlock,
     createListBlock,
     ExtractBlockInput,
+    typeSafeBlockMigrationPipe,
 } from "@dextinity/cms-api";
 import { MediaBlock } from "@src/common/blocks/media.block";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
+
+import { RemoveSliderListMigration } from "./slider/migrations/1-remove-slider-list.migration";
 
 class SliderItemBlockData extends BlockData {
     @ChildBlock(MediaBlock)
@@ -32,26 +35,15 @@ class SliderItemBlockInput extends BlockInput {
     }
 }
 
-const SliderItemBlock = createBlock(SliderItemBlockData, SliderItemBlockInput, {
-    name: "SliderItem",
-});
+const SliderItemBlock = createBlock(SliderItemBlockData, SliderItemBlockInput, "SliderItem");
 
-const SliderListBlock = createListBlock({ block: SliderItemBlock }, "SliderList");
-
-class SliderBlockData extends BlockData {
-    @ChildBlock(SliderListBlock)
-    sliderList: BlockDataInterface;
-}
-
-class SliderBlockInput extends BlockInput {
-    @ChildBlockInput(SliderListBlock)
-    sliderList: ExtractBlockInput<typeof SliderListBlock>;
-
-    transformToBlockData(): SliderBlockData {
-        return blockInputToData(SliderBlockData, this);
-    }
-}
-
-export const SliderBlock = createBlock(SliderBlockData, SliderBlockInput, {
-    name: "Slider",
-});
+export const SliderBlock = createListBlock(
+    { block: SliderItemBlock },
+    {
+        name: "Slider",
+        migrate: {
+            migrations: typeSafeBlockMigrationPipe([RemoveSliderListMigration]),
+            version: 1,
+        },
+    },
+);

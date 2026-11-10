@@ -14,12 +14,12 @@ Before adding a new changeset, check `.changeset/` at the repo root for an exist
 
 This package has two dev-pm scripts (see the `dev-pm` skill for command usage):
 
-| Name                   | What it does                              |
-| ---------------------- | ----------------------------------------- |
-| `mail-react`           | `tsc --watch` — rebuilds `lib/` on change |
-| `mail-react-storybook` | `storybook dev -p 6066 --no-open`         |
+| Name                             | What it does                              |
+| -------------------------------- | ----------------------------------------- |
+| `mail-react`                     | `tsc --watch` — rebuilds `lib/` on change |
+| `storybook-dextinity-mail-react` | `storybook dev -p 6066 --no-open`         |
 
-The `@mail-react` group starts both.
+The `@mail-react` group starts `mail-react`. Start `storybook-dextinity-mail-react` on its own, or with the `@storybook` group.
 
 ## Storybook
 

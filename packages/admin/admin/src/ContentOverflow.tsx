@@ -30,19 +30,18 @@ export type ContentOverflowClassKey =
     | "dialogContent"
     | "innerDialogContent";
 
-export interface ContentOverflowProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        clickableContent: typeof ButtonBase;
-        contentContainer: "div";
-        openDialogIcon: "div";
-        dialog: typeof MuiDialog;
-        dialogPaper: typeof Paper;
-        dialogTitle: typeof MuiDialogTitle;
-        closeDialogButton: typeof IconButton;
-        dialogContent: typeof MuiDialogContent;
-        innerDialogContent: "div";
-    }> {
+export interface ContentOverflowProps extends ThemedComponentBaseProps<{
+    root: "div";
+    clickableContent: typeof ButtonBase;
+    contentContainer: "div";
+    openDialogIcon: "div";
+    dialog: typeof MuiDialog;
+    dialogPaper: typeof Paper;
+    dialogTitle: typeof MuiDialogTitle;
+    closeDialogButton: typeof IconButton;
+    dialogContent: typeof MuiDialogContent;
+    innerDialogContent: "div";
+}> {
     dialogTitle?: ReactNode;
     iconMapping?: {
         openDialog?: ReactNode;

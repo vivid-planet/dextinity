@@ -29,9 +29,7 @@ export type SingleEntityScopeMapping = string | Record<string, string>;
 export type EntityScopeMapping = SingleEntityScopeMapping | SingleEntityScopeMapping[];
 
 export type ScopedEntityMeta<Entity extends AnyEntity = AnyEntity> =
-    | EntityScopeFunction<Entity>
-    | Type<EntityScopeServiceInterface<Entity>>
-    | EntityScopeMapping;
+    EntityScopeFunction<Entity> | Type<EntityScopeServiceInterface<Entity>> | EntityScopeMapping;
 
 export const SCOPED_ENTITY_METADATA_KEY = "scopedEntity";
 

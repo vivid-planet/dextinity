@@ -69,7 +69,12 @@ function resolveDeviceConfig(device: Device): DeviceConfig | null {
     return devicesConfig[device];
 }
 
-function calcScaleFactor(width: number, height: number, deviceConfig: DeviceConfig) {
+// react-cool-dimensions v3 returns null before the first measurement, although its return type claims number
+function calcScaleFactor(width: number | null, height: number | null, deviceConfig: DeviceConfig) {
+    if (width === null || height === null) {
+        return 0;
+    }
+
     if (width >= deviceConfig.outerFrame.width + 40 && height >= deviceConfig.outerFrame.height + 40) {
         return 1;
     }
@@ -117,15 +122,6 @@ const IFrame = styled("iframe", { shouldForwardProp: (prop) => prop !== "deviceC
     width: 100%;
     height: 100%;
     background-color: ${({ theme }) => theme.palette.common.white};
-
-    ${OuterFrame}:not(:hover):not(:active) & {
-        /**
-        * Remove iFrame pointer-events while not interacting with the parent to fix a chrome-bug that prevents
-        * drag-and-drop from working in a modal over the iFrame when using an external URL as the source.
-        * Source: https://medium.com/@marcmintel/most-weird-bug-or-security-feature-with-iframes-and-native-drag-and-drop-13ffbc26107a
-        */
-        pointer-events: none;
-    }
 `;
 
 export { IFrameViewer };

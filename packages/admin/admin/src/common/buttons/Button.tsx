@@ -141,30 +141,36 @@ const Root = createComponentSlot(MuiButton)<ButtonClassKey, OwnerState>({
     },
 })(
     ({ ownerState, theme }) => css`
-        ${ownerState.usingResponsiveBehavior &&
-        css`
-            min-width: 0;
-        `}
+        ${
+            ownerState.usingResponsiveBehavior &&
+            css`
+                min-width: 0;
+            `
+        }
 
-        ${ownerState.variant === "textLight" &&
-        css`
-            color: ${theme.palette.common.white};
-            &:focus {
-                color: ${theme.palette.primary.main};
-            }
+        ${
+            ownerState.variant === "textLight" &&
+            css`
+                color: ${theme.palette.common.white};
+                &:focus {
+                    color: ${theme.palette.primary.main};
+                }
 
-            &.Mui-disabled {
-                color: ${theme.palette.grey[200]};
-            }
-        `}
+                &.Mui-disabled {
+                    color: ${theme.palette.grey[200]};
+                }
+            `
+        }
 
-        ${ownerState.variant === "textDark" &&
-        css`
-            color: ${theme.palette.common.black};
-            &.Mui-disabled {
-                color: ${theme.palette.grey[200]};
-            }
-        `}
+        ${
+            ownerState.variant === "textDark" &&
+            css`
+                color: ${theme.palette.common.black};
+                &.Mui-disabled {
+                    color: ${theme.palette.grey[200]};
+                }
+            `
+        }
     `,
 );
 

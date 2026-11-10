@@ -106,6 +106,8 @@ registerStyles(css`
 - Duplicate registrations with the same function/string reference overwrite (stored in a `Map`)
 - Theme-aware entries always resolve against the **root theme** from `MjmlMailRoot` — nested `ThemeProvider` scopes do not affect them
 - Optional second argument: partial `MjmlStyle` props (forwarded to the underlying `<mj-style>`)
+- An entry registered with `{ inline: true }` as the second argument has its rules written into `style` attributes. It keeps no `@media` rules: MJML drops them without a warning.
+- Do not write `//` comments inside a `css` template: CSS has no line comments, so mail-react throws an error when it minifies the registered styles. In an `{ inline: true }` entry there is no error, and the rule after the comment is lost. Use `/* */`, or a JS comment in an expression: `${/* note */ ""}`
 
 ---
 

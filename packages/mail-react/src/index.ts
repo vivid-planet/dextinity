@@ -10,10 +10,14 @@ export type { MjmlPixelImageBlockProps } from "./blocks/pixelImage/MjmlPixelImag
 export { MjmlPixelImageBlock } from "./blocks/pixelImage/MjmlPixelImageBlock.js";
 export type { CreateRichTextBlockOptions, RichTextBlockProps } from "./blocks/richText/draftJs/common.js";
 export { createRichTextBlock } from "./blocks/richText/draftJs/createRichTextBlock.js";
+export type { CreateTipTapRichTextBlockOptions, TipTapRichTextBlockProps } from "./blocks/richText/tipTap/common.js";
+export { createTipTapRichTextBlock } from "./blocks/richText/tipTap/createTipTapRichTextBlock.js";
 export type { HtmlButtonProps } from "./components/button/HtmlButton.js";
 export { HtmlButton } from "./components/button/HtmlButton.js";
 export type { MjmlButtonProps } from "./components/button/MjmlButton.js";
 export { MjmlButton } from "./components/button/MjmlButton.js";
+export { MjmlComment } from "./components/comment/MjmlComment.js";
+export { MjmlConditionalComment } from "./components/comment/MjmlConditionalComment.js";
 export type { HtmlDividerProps } from "./components/divider/HtmlDivider.js";
 export { HtmlDivider } from "./components/divider/HtmlDivider.js";
 export type { MjmlDividerProps } from "./components/divider/MjmlDivider.js";
@@ -27,6 +31,8 @@ export { HtmlInlineLink } from "./components/inlineLink/HtmlInlineLink.js";
 export { MjmlMailRoot } from "./components/mailRoot/MjmlMailRoot.js";
 export type { MjmlSectionProps } from "./components/section/MjmlSection.js";
 export { MjmlSection } from "./components/section/MjmlSection.js";
+export { MjmlStyle } from "./components/style/MjmlStyle.js";
+export { MjmlYahooStyle } from "./components/style/MjmlYahooStyle.js";
 export type { HtmlTextProps } from "./components/text/HtmlText.js";
 export { HtmlText } from "./components/text/HtmlText.js";
 export type { MjmlTextProps } from "./components/text/MjmlText.js";
@@ -34,6 +40,8 @@ export { MjmlText } from "./components/text/MjmlText.js";
 export type { MjmlWrapperProps } from "./components/wrapper/MjmlWrapper.js";
 export { MjmlWrapper } from "./components/wrapper/MjmlWrapper.js";
 export { type Config, ConfigProvider, type PixelImageBlockConfig, useConfig } from "./config/ConfigProvider.js";
+export { useRefToRegisterMailBlocksForPreview } from "./preview/useRefToRegisterMailBlocksForPreview.js";
+export { withPreview } from "./preview/withPreview.js";
 export { registerStyles } from "./styles/registerStyles.js";
 export { createBreakpoint } from "./theme/createBreakpoint.js";
 export { createTheme } from "./theme/createTheme.js";
@@ -121,12 +129,11 @@ export {
     type IMjmlSocialProps as MjmlSocialProps,
     MjmlSpacer,
     type IMjmlSpacerProps as MjmlSpacerProps,
-    MjmlStyle,
     type IMjmlStyleProps as MjmlStyleProps,
     MjmlTable,
     type IMjmlTableProps as MjmlTableProps,
     MjmlTitle,
     type IMjmlTitleProps as MjmlTitleProps,
 } from "@faire/mjml-react";
-export { MjmlComment, MjmlConditionalComment, MjmlHtml, MjmlTrackingPixel, MjmlYahooStyle } from "@faire/mjml-react/extensions/index.js";
+export { MjmlHtml, MjmlTrackingPixel } from "@faire/mjml-react/extensions/index.js";
 export { renderToMjml } from "@faire/mjml-react/utils/renderToMjml.js";

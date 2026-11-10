@@ -31,10 +31,12 @@ const Content = createComponentSlot("div")<RouterTabsClassKey, OwnerState>({
     },
 })(
     ({ ownerState }) => css`
-        ${ownerState.contentHidden &&
-        css`
-            display: none;
-        `}
+        ${
+            ownerState.contentHidden &&
+            css`
+                display: none;
+            `
+        }
     `,
 );
 
@@ -54,12 +56,11 @@ export const RouterTab = (props: TabProps) => null;
 type RouterTabsChild = ReactElement<TabProps> | boolean | null | undefined;
 type RouterTabsChildren = RouterTabsChild | Array<RouterTabsChild | Array<RouterTabsChild>>;
 
-interface Props
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        tabs: typeof Tabs;
-        content: "div";
-    }> {
+interface Props extends ThemedComponentBaseProps<{
+    root: "div";
+    tabs: typeof Tabs;
+    content: "div";
+}> {
     children: RouterTabsChildren;
     tabComponent?: ComponentType<MuiTabProps>;
     tabsProps?: Partial<TabsProps>;

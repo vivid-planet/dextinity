@@ -83,12 +83,12 @@ Exception: the upsert pattern may additionally use `defaultRaw`/`onUpdate` as a 
 
 ### GraphQL enums
 
-- Keys **must equal** values; both use PascalCase — not lowercase, not SCREAMING_CASE. This is **different from TS-only enums** in [typescript.instructions.md](typescript.instructions.md).
+- Keys **must equal** values; both use camelCase, same as TS-only enums in [typescript.instructions.md](typescript.instructions.md#enums).
 
     ```ts
     enum Category {
-        Main = "Main",
-        Secondary = "Secondary",
+        main = "main",
+        secondary = "secondary",
     }
     ```
 

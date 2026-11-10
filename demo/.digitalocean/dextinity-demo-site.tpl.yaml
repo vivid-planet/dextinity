@@ -1,0 +1,85 @@
+alerts:
+    - rule: DEPLOYMENT_FAILED
+    - rule: DOMAIN_FAILED
+features:
+    - buildpack-stack=ubuntu-22
+domains:
+    - domain: demo.digitalocean.dextinity.com
+      type: PRIMARY
+    - domain: secondary.demo.digitalocean.dextinity.com
+      type: ALIAS
+    - domain: preview.demo.digitalocean.dextinity.com
+      type: ALIAS
+ingress:
+    rules:
+        - component:
+              name: site
+          match:
+              path:
+                  prefix: /
+name: dextinity-demo-site
+region: fra
+services:
+    # Next.js loads the contact form route while building, which requires the mailer, contact form and reCAPTCHA variables. They're read again at runtime.
+    # The build assets are uploaded at the end of the build, before App Platform replaces the running instance, so that the storage holds the files of every deployed build.
+    # The variables are read with printenv, because the deploy action replaces $VARIABLE in the app spec.
+    - build_command: |-
+          CI=true node copy-project-files.js &&
+          pnpm --filter "dextinity-demo-site^..." run build &&
+          ./demo/site/intl-update.sh &&
+          MAILER_HOST=build MAILER_PORT=25 CONTACT_FORM_FROM_EMAIL=build@example.com CONTACT_FORM_TO_EMAIL=build@example.com RECAPTCHA_SERVICE_ACCOUNT=eyJwcm9qZWN0X2lkIjoiYnVpbGQifQ== pnpm --filter dextinity-demo-site run build &&
+          pnpm --filter dextinity-demo-site exec dextinity-upload-build-assets --driver s3 --storage-key-prefix demo-site --bucket "$(printenv BUILD_ASSETS_S3_BUCKET)" \
+          --region "$(printenv BUILD_ASSETS_S3_REGION)" --endpoint "$(printenv BUILD_ASSETS_S3_ENDPOINT)" \
+          --access-key-id "$(printenv BUILD_ASSETS_S3_ACCESS_KEY_ID)" --secret-access-key "$(printenv BUILD_ASSETS_S3_SECRET_ACCESS_KEY)"
+      environment_slug: node-js
+      run_command: cd demo/site && node server.ts
+      source_dir: /
+      github:
+          branch: ${DEPLOY_BRANCH}
+          deploy_on_push: false
+          repo: vivid-planet/dextinity
+      envs:
+          # Used by the build to upload the build assets and by the running site to load the build assets of other builds
+          - key: BUILD_ASSETS_S3_BUCKET
+            scope: RUN_AND_BUILD_TIME
+            value: dextinity-demo
+          - key: BUILD_ASSETS_S3_REGION
+            scope: RUN_AND_BUILD_TIME
+            value: fra1
+          - key: BUILD_ASSETS_S3_ENDPOINT
+            scope: RUN_AND_BUILD_TIME
+            value: https://fra1.digitaloceanspaces.com
+          - key: BUILD_ASSETS_S3_ACCESS_KEY_ID
+            scope: RUN_AND_BUILD_TIME
+            type: SECRET
+            value: ${BUILD_ASSETS_S3_ACCESS_KEY_ID}
+          - key: BUILD_ASSETS_S3_SECRET_ACCESS_KEY
+            scope: RUN_AND_BUILD_TIME
+            type: SECRET
+            value: ${BUILD_ASSETS_S3_SECRET_ACCESS_KEY}
+          - key: SERVER_HOST
+            scope: RUN_TIME
+            value: "0.0.0.0"
+          - key: SITE_PORT
+            scope: RUN_TIME
+            value: "3000"
+          - key: ADMIN_URL
+            scope: RUN_TIME
+            value: https://admin.demo.digitalocean.dextinity.com
+          - key: API_URL_INTERNAL
+            scope: RUN_TIME
+            value: https://admin.demo.digitalocean.dextinity.com/public-api/api
+          - key: API_BASIC_AUTH_SYSTEM_USER_PASSWORD
+            scope: RUN_TIME
+            type: SECRET
+            value: ${API_BASIC_AUTH_SYSTEM_USER_PASSWORD}
+          - key: PUBLIC_SITE_CONFIGS
+            scope: RUN_TIME
+            value: "{{ site://configs/public/digitalocean }}"
+          - key: PREVIEW_DOMAIN
+            scope: RUN_TIME
+            value: preview.demo.digitalocean.dextinity.com
+      http_port: 3000
+      instance_count: 1
+      instance_size_slug: apps-s-1vcpu-0.5gb
+      name: site

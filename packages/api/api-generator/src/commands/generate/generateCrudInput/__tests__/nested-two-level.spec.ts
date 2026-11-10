@@ -1,6 +1,6 @@
 import { BaseEntity, Collection, defineConfig, Entity, ManyToOne, MikroORM, OneToMany, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
 import { LazyMetadataStorage } from "@nestjs/graphql/dist/schema-builder/storages/lazy-metadata.storage.js";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { generateInputHandling } from "../../generateCrud/generate-crud";
@@ -10,7 +10,7 @@ import { generateCrudInput } from "../generate-crud-input";
 @Entity()
 export class Foo extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     title: string;
@@ -22,7 +22,7 @@ export class Foo extends BaseEntity {
 @Entity()
 export class Bar extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     name: string;
@@ -37,7 +37,7 @@ export class Bar extends BaseEntity {
 @Entity()
 export class Baz extends BaseEntity {
     @PrimaryKey({ type: "uuid" })
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property()
     description: string;

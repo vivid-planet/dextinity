@@ -1,3 +1,4 @@
+import { validateSync } from "class-validator";
 import { describe, expect, it } from "vitest";
 
 import { transformToBlockSave } from "../../../blocks/block";
@@ -117,7 +118,9 @@ describe("createDamVideoBlock", () => {
     it("should require a preview image in the input when it is supported", () => {
         const block = createDamVideoBlock({}, "InputRequiringPreviewImage");
 
-        expect(() => block.blockInputFactory({ damFileId })).toThrow(/Missing child block input for 'previewImage'/);
+        const errors = validateSync(block.blockInputFactory({ damFileId }));
+
+        expect(errors.map((error) => error.property)).toEqual(["previewImage"]);
     });
 
     it("should reject a name that is already registered", () => {

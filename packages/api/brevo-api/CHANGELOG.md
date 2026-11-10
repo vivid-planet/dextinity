@@ -1,5 +1,135 @@
 # @comet/brevo-api
 
+## 10.14.0
+
+### Patch Changes
+
+- Updated dependencies [bbd5b81]
+- Updated dependencies [5db7734]
+- Updated dependencies [a5e4799]
+- Updated dependencies [1595266]
+    - @dextinity/cms-api@10.14.0
+
+## 10.13.1
+
+### Patch Changes
+
+- 7342211: Add migration to fix Brevo table constraints and column types
+
+    - Rename constraints of `BrevoEmailCampaign`, `BrevoTargetGroup` and `BrevoEmailCampaign_targetGroups` to match the `Brevo`-prefixed table names
+    - Add nullable to `BrevoEmailImportLog.importId` Property and Field
+    - Remove Property decorator from `BrevoEmailImportLog.contactSource` since it already has Enum decorator
+    - Change `BrevoTargetGroup.isMainList` column to not null
+    - Add missing primary keys to `BrevoEmailImportLog` and `BrevoBlacklistedContacts`
+
+- Updated dependencies [795901f]
+- Updated dependencies [94991f8]
+    - @dextinity/cms-api@10.13.1
+
+## 10.13.0
+
+### Patch Changes
+
+- Updated dependencies [7d8cbff]
+- Updated dependencies [ad3f6d5]
+- Updated dependencies [a476170]
+    - @dextinity/cms-api@10.13.0
+
+## 10.12.0
+
+### Patch Changes
+
+- Updated dependencies [2735896]
+- Updated dependencies [a3ba4c9]
+- Updated dependencies [6d552f0]
+    - @dextinity/cms-api@10.12.0
+
+## 10.11.0
+
+### Patch Changes
+
+- 97b3b42: Allow `graphql-scalars` v2
+
+    v2 only drops support for `graphql` below v16 and for Node 20, so projects can update to it whenever they want.
+
+- 80298a2: Remove the `uuid` dependency
+
+    Random UUIDs are now generated with `randomUUID()` from Node's `crypto` module.
+
+- Updated dependencies [97b3b42]
+- Updated dependencies [22bd832]
+- Updated dependencies [bc24036]
+- Updated dependencies [79c2746]
+- Updated dependencies [05ea45d]
+- Updated dependencies [79c2746]
+- Updated dependencies [75ebfd4]
+- Updated dependencies [9a5fd29]
+- Updated dependencies [c5f02ac]
+- Updated dependencies [a6050c4]
+    - @dextinity/cms-api@10.11.0
+
+## 10.10.0
+
+### Patch Changes
+
+- Updated dependencies [3862673]
+- Updated dependencies [b6441cb]
+- Updated dependencies [b6bca3b]
+- Updated dependencies [d5d2a85]
+- Updated dependencies [7a121f1]
+- Updated dependencies [ad1ad05]
+    - @dextinity/cms-api@10.10.0
+
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/cms-api@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- Updated dependencies [fa3c71f]
+- Updated dependencies [d32c558]
+- Updated dependencies [13838dc]
+- Updated dependencies [d32c558]
+- Updated dependencies [4446a81]
+- Updated dependencies [8c8f1c4]
+- Updated dependencies [e9067c3]
+- Updated dependencies [1c29104]
+- Updated dependencies [070b357]
+- Updated dependencies [e84ba03]
+    - @dextinity/cms-api@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- b855b96: Assign the target groups passed to `createBrevoEmailCampaign` to the campaign
+
+    The `brevoTargetGroups` input field was spread into the entity as-is, but the entity property is named `targetGroups`, so newly created campaigns ended up without any target groups.
+
+- 4a1da4e: Exclude the TypeScript build cache from the published packages
+
+    The published tarballs contained the `.tsbuildinfo` files that TypeScript writes next to the build output for incremental builds — 1.3 MB of build cache in `@dextinity/cms-api` alone, which has no use outside the repository.
+
+- 36f7f17: Replace the deprecated `lodash.isequal` dependency with Node's built-in `util`
+
+    `lodash.isequal` is deprecated and isn't needed — Node's `isDeepStrictEqual` from `util` covers the deep comparisons we use it for, with the same results for the compared values (plain JSON block data and content scopes). Both packages drop the `lodash.isequal` dependency.
+
+- Updated dependencies [44125b9]
+- Updated dependencies [383e9ed]
+- Updated dependencies [0076f28]
+- Updated dependencies [8538d98]
+- Updated dependencies [5d9bf35]
+- Updated dependencies [4a1da4e]
+- Updated dependencies [dddb222]
+- Updated dependencies [8fbfbce]
+- Updated dependencies [36f7f17]
+- Updated dependencies [9109aa3]
+    - @dextinity/cms-api@10.8.0
+
 ## 10.7.0
 
 ### Patch Changes

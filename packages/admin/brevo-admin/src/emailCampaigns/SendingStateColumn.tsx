@@ -39,6 +39,14 @@ export const SendingStateColumn = ({ sendingState }: Props) => {
                     </Typography>
                 </>
             )}
+            {sendingState === "FAILED" && (
+                <>
+                    <FailedIndicator title={intl.formatMessage({ id: "dextinity.emailCampaigns.sendingState.failed", defaultMessage: "Failed" })} />
+                    <Typography variant="body2">
+                        <FormattedMessage id="dextinity.emailCampaigns.sendingState.failed" defaultMessage="Failed" />
+                    </Typography>
+                </>
+            )}
         </Root>
     );
 };
@@ -65,4 +73,8 @@ const ScheduledIndicator = styled(AbstractIndicator)`
 
 const DraftIndicator = styled(AbstractIndicator)`
     border: ${({ theme }) => `2px solid ${theme.palette.warning.main}`};
+`;
+
+const FailedIndicator = styled(AbstractIndicator)`
+    background-color: ${({ theme }) => theme.palette.error.main};
 `;

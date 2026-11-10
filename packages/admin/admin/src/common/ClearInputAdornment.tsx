@@ -16,7 +16,8 @@ import { createComponentSlot } from "../helpers/createComponentSlot";
 import type { ThemedComponentBaseProps } from "../helpers/ThemedComponentBaseProps";
 
 export interface ClearInputAdornmentProps
-    extends InputAdornmentProps,
+    extends
+        InputAdornmentProps,
         ThemedComponentBaseProps<{
             root: typeof InputAdornment;
             buttonBase: typeof ButtonBase;
@@ -64,24 +65,28 @@ const Root = createComponentSlot(InputAdornment)<ClearInputAdornmentClassKey, Ow
     slotName: "root",
 })(
     ({ theme, ownerState }) => css`
-        ${ownerState.position === "start" &&
-        css`
-            &:last-child {
-                margin-left: ${theme.spacing(-2)};
-            }
-        `}
+        ${
+            ownerState.position === "start" &&
+            css`
+                &:last-child {
+                    margin-left: ${theme.spacing(-2)};
+                }
+            `
+        }
 
-        ${ownerState.position === "end" &&
-        css`
-            &:last-child {
-                margin-right: ${theme.spacing(-2)};
-            }
+        ${
+            ownerState.position === "end" &&
+            css`
+                &:last-child {
+                    margin-right: ${theme.spacing(-2)};
+                }
 
-            .${selectClasses.select} ~ &:last-child {
-                // Reset the margin when used inside a MuiSelect, as MuiSelect-icon is moved to the end of the input using 'order' and is, therefore, the "real" last-child.
-                margin-right: 0;
-            }
-        `}
+                .${selectClasses.select} ~ &:last-child {
+                    // Reset the margin when used inside a MuiSelect, as MuiSelect-icon is moved to the end of the input using 'order' and is, therefore, the "real" last-child.
+                    margin-right: 0;
+                }
+            `
+        }
     `,
 );
 

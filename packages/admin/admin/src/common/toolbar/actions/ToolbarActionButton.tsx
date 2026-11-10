@@ -33,26 +33,30 @@ const StyledIconButton = createComponentSlot(IconButton)<ToolbarActionButtonClas
     },
 })(
     ({ theme, ownerState }) => css`
-        ${ownerState.variant === "contained" &&
-        css`
-            background: ${theme.palette.primary.main};
-            color: ${theme.palette.primary.contrastText};
-            border-radius: 4px;
-            &:hover {
-                background: ${theme.palette.primary.dark};
-            }
-        `}
-        ${ownerState.variant === "outlined" &&
-        css`
-            border-radius: 4px;
-            border-width: 1px;
-            border-style: solid;
-            border-color: ${theme.palette.grey[200]};
-            &:hover {
-                background-color: ${theme.palette.grey[50]};
+        ${
+            ownerState.variant === "contained" &&
+            css`
+                background: ${theme.palette.primary.main};
+                color: ${theme.palette.primary.contrastText};
+                border-radius: 4px;
+                &:hover {
+                    background: ${theme.palette.primary.dark};
+                }
+            `
+        }
+        ${
+            ownerState.variant === "outlined" &&
+            css`
+                border-radius: 4px;
+                border-width: 1px;
+                border-style: solid;
                 border-color: ${theme.palette.grey[200]};
-            }
-        `}
+                &:hover {
+                    background-color: ${theme.palette.grey[50]};
+                    border-color: ${theme.palette.grey[200]};
+                }
+            `
+        }
     `,
 );
 

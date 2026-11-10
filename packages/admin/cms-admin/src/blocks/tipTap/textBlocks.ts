@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -8,7 +8,53 @@ type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
  */
 export type TipTapTextBlockTag = "p" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
-export interface TipTapTextBlock {
+export type TipTapListTag = "ol" | "ul";
+
+/**
+ * Props a text block's (or style's) `element` must spread onto the element it renders.
+ */
+export interface TipTapTextBlockElementProps extends HTMLAttributes<HTMLElement> {
+    "data-text-block-style"?: string;
+}
+
+/**
+ * Renders a text block in the editor. Receives the `tag` of the text block it is applied to, so one
+ * function can be shared by several text blocks: `(props, Tag) => <Tag {...props} />`.
+ */
+export type TipTapTextBlockElement = (props: TipTapTextBlockElementProps, tag: TipTapTextBlockTag) => ReactNode;
+
+export interface TipTapTextBlockStyle {
+    /**
+     * Identifies the style. Stored in the content's `textBlockStyle` attribute.
+     */
+    name: string;
+    /**
+     * Label shown in the toolbar's styling select.
+     */
+    label: ReactNode;
+    element: TipTapTextBlockElement;
+}
+
+/**
+ * How a text block (or a list) is rendered: either through the `styles` it lets the editor choose
+ * from, or - for one that needs no style choice - through a single `element` of its own. The two
+ * exclude each other, and leaving both out renders the plain tag.
+ */
+type TipTapStyling =
+    | {
+          styles: TipTapTextBlockStyle[];
+          /**
+           * Name of the style applied to a newly created or converted text block. Must be one of
+           * `styles`, otherwise an error is thrown. With it the styling select loses its "Default"
+           * entry, so the editor always picks one of the styles.
+           */
+          defaultStyle?: string;
+          element?: never;
+      }
+    | { element: TipTapTextBlockElement; styles?: never; defaultStyle?: never }
+    | { styles?: never; element?: never; defaultStyle?: never };
+
+interface TipTapTextBlockBase {
     /**
      * Identifies the text block. Stored in the content's `textBlock` attribute, so content can tell
      * two text blocks sharing a tag apart (e.g. a lead paragraph next to a regular one).
@@ -25,18 +71,57 @@ export interface TipTapTextBlock {
     tag: TipTapTextBlockTag;
 }
 
-export interface TipTapResolvedTextBlock extends TipTapTextBlock {
+export type TipTapTextBlock = TipTapTextBlockBase & TipTapStyling;
+
+export interface TipTapResolvedStyledNode {
+    name: string;
+    styles: TipTapTextBlockStyle[];
+    defaultStyle: string | null;
+    element?: TipTapTextBlockElement;
+}
+
+export interface TipTapResolvedTextBlock extends TipTapTextBlockBase, TipTapResolvedStyledNode {
     /**
      * Heading level of the text block's tag, `undefined` for a paragraph.
      */
     level?: HeadingLevel;
 }
 
+export type TipTapListOptions = TipTapStyling;
+
+export interface TipTapResolvedList extends TipTapResolvedStyledNode {
+    tag: TipTapListTag;
+}
+
+export const orderedListName = "ordered-list";
+export const unorderedListName = "unordered-list";
+
 const headingLevelByTag: Record<string, HeadingLevel> = { h1: 1, h2: 2, h3: 3, h4: 4, h5: 5, h6: 6 };
 
 const textBlockTags: TipTapTextBlockTag[] = ["p", "h1", "h2", "h3", "h4", "h5", "h6"];
 
 export const allHeadingLevels: HeadingLevel[] = [1, 2, 3, 4, 5, 6];
+
+/**
+ * Checks that the styled node offers no style twice, since a style's name identifies it in the
+ * content.
+ */
+function resolveStyles({ name, styles = [], defaultStyle }: { name: string; styles?: TipTapTextBlockStyle[]; defaultStyle?: string }): {
+    styles: TipTapTextBlockStyle[];
+    defaultStyle: string | null;
+} {
+    const styleNames = styles.map((style) => style.name);
+    const duplicate = styleNames.find((styleName, index) => styleNames.indexOf(styleName) !== index);
+    if (duplicate !== undefined) {
+        throw new Error(`"${name}" offers the text block style "${duplicate}" twice`);
+    }
+
+    if (defaultStyle !== undefined && !styleNames.includes(defaultStyle)) {
+        throw new Error(`"${name}" has the defaultStyle "${defaultStyle}", which is not one of its styles`);
+    }
+
+    return { styles, defaultStyle: defaultStyle ?? null };
+}
 
 /**
  * Applies the defaults to the configured text blocks and validates them against each other.
@@ -58,8 +143,48 @@ export function resolveTextBlocks(textBlocks: TipTapTextBlock[]): TipTapResolved
         }
     }
 
-    return textBlocks.map((textBlock) => ({ ...textBlock, level: headingLevelByTag[textBlock.tag] }));
+    return textBlocks.map((textBlock) => ({ ...textBlock, level: headingLevelByTag[textBlock.tag], ...resolveStyles(textBlock) }));
 }
+
+/**
+ * Applies the defaults to a list's options and validates its styles. Returns `false` for a disabled
+ * list.
+ */
+export function resolveList({
+    list,
+    name,
+    tag,
+}: {
+    list: boolean | TipTapListOptions | undefined;
+    name: string;
+    tag: TipTapListTag;
+}): TipTapResolvedList | false {
+    if (!list) {
+        return false;
+    }
+    const listOptions = list === true ? {} : list;
+    return { name, tag, ...listOptions, ...resolveStyles({ name, ...listOptions }) };
+}
+
+/**
+ * The text blocks and lists that carry styles, so a style can be looked up across all of them.
+ */
+export const getStyledNodes = ({
+    textBlocks,
+    orderedList,
+    unorderedList,
+}: {
+    textBlocks: TipTapResolvedTextBlock[];
+    orderedList: false | TipTapResolvedList;
+    unorderedList: false | TipTapResolvedList;
+}): TipTapResolvedStyledNode[] => [...textBlocks, ...(orderedList ? [orderedList] : []), ...(unorderedList ? [unorderedList] : [])];
+
+/**
+ * Whether anything offers a style at all, which decides whether the text block node carries a
+ * `textBlockStyle` attribute.
+ */
+export const hasTextBlockStyles = (styledNodes: Array<{ styles: TipTapTextBlockStyle[] }>): boolean =>
+    styledNodes.some((styledNode) => styledNode.styles.length > 0);
 
 /**
  * The text block new content starts with: the configured `defaultTextBlock`, or the first one.
@@ -125,5 +250,17 @@ export function findTextBlockPerTag(textBlocks: TipTapResolvedTextBlock[]): TipT
  * the same node type as one, so the schema can't refuse it - the editor has to.
  */
 export const isTextBlockAllowedInListItem = (textBlock: TipTapResolvedTextBlock): boolean => textBlock.tag === "p";
+
+/**
+ * Whether the styled node offers the style.
+ */
+export const hasStyle = (styledNode: TipTapResolvedStyledNode, style: string): boolean => styledNode.styles.some(({ name }) => name === style);
+
+/**
+ * Keeps the applied style if the text block (or list) offers it, and falls back to its default style
+ * otherwise.
+ */
+export const resolveStyle = (styledNode: TipTapResolvedStyledNode, activeStyle: string | null): string | null =>
+    activeStyle !== null && hasStyle(styledNode, activeStyle) ? activeStyle : styledNode.defaultStyle;
 
 export const hasParagraphTextBlock = (textBlocks: TipTapResolvedTextBlock[]): boolean => textBlocks.some((textBlock) => textBlock.tag === "p");

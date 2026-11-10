@@ -1,7 +1,7 @@
 import type { FieldRenderProps } from "react-final-form";
 
 import { Field, type FieldProps } from "../../form/Field";
-import { DateTimePicker as DateTimePicker, type DateTimePickerProps as DateTimePickerProps } from "../dateTimePicker/DateTimePicker";
+import { DateTimePicker, type DateTimePickerProps } from "../dateTimePicker/DateTimePicker";
 
 const FinalFormDateTimePicker = ({ meta, input, ...restProps }: DateTimePickerProps & FieldRenderProps<Date, HTMLInputElement>) => {
     return <DateTimePicker {...input} {...restProps} />;

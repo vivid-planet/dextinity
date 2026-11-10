@@ -200,8 +200,7 @@ function queryHasPaging(gridQueryType: IntrospectionField, gqlIntrospection: Int
     if (returnType.kind === "OBJECT") {
         const typeName = returnType.name;
         const objectType = gqlIntrospection.__schema.types.find((type: IntrospectionType) => type.kind === "OBJECT" && type.name === typeName) as
-            | IntrospectionObjectType
-            | undefined;
+            IntrospectionObjectType | undefined;
         if (objectType) {
             const hasNodes = objectType.fields.some((f) => f.name === "nodes");
             const hasTotalCount = objectType.fields.some((f) => f.name === "totalCount");
@@ -431,8 +430,7 @@ export function generateGrid<T extends { __typename?: string }>(
         }
         const sortTypeName = sortArgType.ofType.ofType.name;
         const sortType = gqlIntrospection.__schema.types.find((type) => type.kind === "INPUT_OBJECT" && type.name === sortTypeName) as
-            | IntrospectionInputObjectType
-            | undefined;
+            IntrospectionInputObjectType | undefined;
         if (!sortType) {
             throw new Error("Can't find sort type");
         }
@@ -448,8 +446,7 @@ export function generateGrid<T extends { __typename?: string }>(
         }
         const sortFieldEnumName = sortField.type.ofType.name;
         const sortInputEnum = gqlIntrospection.__schema.types.find((type) => type.kind === "ENUM" && type.name === sortFieldEnumName) as
-            | IntrospectionEnumType
-            | undefined;
+            IntrospectionEnumType | undefined;
         if (!sortInputEnum) {
             throw new Error("Can't find sortInputEnum");
         }
@@ -462,8 +459,7 @@ export function generateGrid<T extends { __typename?: string }>(
     const hasSearch = gridQueryType.args.some((arg) => arg.name === "search") && !allowRowReordering;
 
     const schemaEntity = gqlIntrospection.__schema.types.find((type) => type.kind === "OBJECT" && type.name === gqlType) as
-        | IntrospectionObjectType
-        | undefined;
+        IntrospectionObjectType | undefined;
     if (!schemaEntity) {
         throw new Error("didn't find entity in schema types");
     }

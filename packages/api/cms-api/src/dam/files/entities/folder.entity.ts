@@ -13,21 +13,14 @@ import {
 } from "@mikro-orm/postgresql";
 import { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { DamScopeInterface } from "../../types";
 import { FileInterface } from "./file.entity";
 
 export interface FolderInterface extends BaseEntity {
     [OptionalProps]?:
-        | "createdAt"
-        | "updatedAt"
-        | "archived"
-        | "children"
-        | "numberOfFiles"
-        | "files"
-        | "numberOfChildFolders"
-        | "isInboxFromOtherScope";
+        "createdAt" | "updatedAt" | "archived" | "children" | "numberOfFiles" | "files" | "numberOfChildFolders" | "isInboxFromOtherScope";
     id: string;
     name: string;
     parent: FolderInterface | null;
@@ -48,18 +41,11 @@ export function createFolderEntity({ Scope }: { Scope?: Type<DamScopeInterface> 
     @ObjectType({ isAbstract: true })
     class FolderBase extends BaseEntity implements FolderInterface {
         [OptionalProps]?:
-            | "createdAt"
-            | "updatedAt"
-            | "archived"
-            | "children"
-            | "numberOfFiles"
-            | "files"
-            | "numberOfChildFolders"
-            | "isInboxFromOtherScope";
+            "createdAt" | "updatedAt" | "archived" | "children" | "numberOfFiles" | "files" | "numberOfChildFolders" | "isInboxFromOtherScope";
 
         @PrimaryKey({ columnType: "uuid" })
         @Field(() => ID)
-        id: string = uuid();
+        id: string = randomUUID();
 
         @Property({ columnType: "text" })
         @Field()

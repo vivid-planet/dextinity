@@ -2,7 +2,7 @@ import type { JSONContent } from "@tiptap/core";
 
 import type { Block } from "../../block";
 import type { TipTapResolvedOptions } from "../createTipTapRichTextBlock";
-import { findTextBlockForTag, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
+import { findTextBlockForTag, type TipTapResolvedStyledNode, type TipTapResolvedTextBlock, type TipTapTextBlockTag } from "../textBlocks";
 
 interface DraftJsInlineStyleRange {
     style: string;
@@ -53,6 +53,18 @@ interface TextBlockMapping {
     textBlockStyle?: string;
 }
 
+interface ListItemMapping {
+    /**
+     * The TipTap list the DraftJS block becomes an item of.
+     */
+    list: "ordered" | "unordered";
+    /**
+     * TipTap `textBlockStyle` attribute value applied to the item's text block. Must be one of the
+     * list's `styles`.
+     */
+    textBlockStyle: string;
+}
+
 interface ConvertOptions {
     resolvedOptions: TipTapResolvedOptions;
     link?: Block;
@@ -63,6 +75,12 @@ interface ConvertOptions {
      * heading level, everything else becomes a paragraph.
      */
     textBlockMap?: Record<string, TextBlockMapping>;
+    /**
+     * Maps custom DraftJS list block types (e.g. `unordered-list-item-small`) to the TipTap list
+     * they become items of, and to the `textBlockStyle` applied to the item's text block. Items of
+     * the same list stay in one list, whatever their style.
+     */
+    listItemMap?: Record<string, ListItemMapping>;
     /**
      * Maps DraftJS custom inline style names (e.g. `highlight` from a DraftJS `customInlineStyles`
      * configuration) to TipTap `inlineStyle` mark type values.
@@ -138,6 +156,15 @@ function clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value));
 }
 
+function createCodePointOffsetToCodeUnitIndex(text: string): (codePointOffset: number) => number {
+    const codeUnitIndices: number[] = [];
+    for (let index = 0; index < text.length; index += (text.codePointAt(index) ?? 0) > 0xffff ? 2 : 1) {
+        codeUnitIndices.push(index);
+    }
+    codeUnitIndices.push(text.length);
+    return (codePointOffset) => codeUnitIndices[clamp(codePointOffset, 0, codeUnitIndices.length - 1)];
+}
+
 interface InlineSegment {
     text: string;
     marks: NonNullable<JSONContent["marks"]>;
@@ -162,11 +189,12 @@ function buildInlineContent({
     }
 
     const splitPoints = new Set<number>([0, text.length]);
+    const toCodeUnitIndex = createCodePointOffsetToCodeUnitIndex(text);
 
     const styleRanges = (block.inlineStyleRanges ?? []).map((range) => ({
         style: range.style,
-        start: clamp(range.offset, 0, text.length),
-        end: clamp(range.offset + range.length, 0, text.length),
+        start: toCodeUnitIndex(range.offset),
+        end: toCodeUnitIndex(range.offset + range.length),
     }));
     for (const range of styleRanges) {
         splitPoints.add(range.start);
@@ -175,8 +203,8 @@ function buildInlineContent({
 
     const entityRanges = (block.entityRanges ?? []).map((range) => ({
         key: String(range.key),
-        start: clamp(range.offset, 0, text.length),
-        end: clamp(range.offset + range.length, 0, text.length),
+        start: toCodeUnitIndex(range.offset),
+        end: toCodeUnitIndex(range.offset + range.length),
     }));
     for (const range of entityRanges) {
         splitPoints.add(range.start);
@@ -237,6 +265,8 @@ function buildInlineContent({
 
 const NBSP_CHAR = "\u00a0";
 const SOFT_HYPHEN_CHAR = "\u00ad";
+// DraftJS stores a soft line break (Shift+Enter) as a newline within the block's text.
+const LINE_BREAK_CHAR = "\n";
 
 function makeTextNode(text: string, marks: NonNullable<JSONContent["marks"]>): JSONContent {
     const node: JSONContent = { type: "text", text };
@@ -246,14 +276,25 @@ function makeTextNode(text: string, marks: NonNullable<JSONContent["marks"]>): J
     return node;
 }
 
-// Splits a text segment so each U+00A0/U+00AD character (the way the DraftJS
-// RTE persists non-breaking-spaces and soft-hyphens) becomes a dedicated TipTap atom node
-// when the corresponding feature is supported. Otherwise the characters are preserved as-is
-// inside the surrounding text node.
+function makeAtomNode(type: "nonBreakingSpace" | "softHyphen", marks: NonNullable<JSONContent["marks"]>): JSONContent {
+    const node: JSONContent = { type };
+    if (marks.length > 0) {
+        node.marks = marks;
+    }
+    return node;
+}
+
+// Splits a text segment so each newline becomes a hardBreak node, and each U+00A0/U+00AD
+// character (the way the DraftJS RTE persists non-breaking-spaces and soft-hyphens) becomes a
+// dedicated TipTap atom node when the corresponding feature is supported. Otherwise the
+// characters are preserved as-is inside the surrounding text node. The hardBreak node comes
+// with the StarterKit and is always part of the schema.
 function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, resolvedOptions: TipTapResolvedOptions): JSONContent[] {
     const { nonBreakingSpace, softHyphen } = resolvedOptions;
 
-    if ((!nonBreakingSpace && !softHyphen) || (!text.includes(NBSP_CHAR) && !text.includes(SOFT_HYPHEN_CHAR))) {
+    const hasAtomChars =
+        text.includes(LINE_BREAK_CHAR) || (nonBreakingSpace && text.includes(NBSP_CHAR)) || (softHyphen && text.includes(SOFT_HYPHEN_CHAR));
+    if (!hasAtomChars) {
         return text.length === 0 ? [] : [makeTextNode(text, marks)];
     }
 
@@ -267,12 +308,15 @@ function splitAtomChars(text: string, marks: NonNullable<JSONContent["marks"]>, 
     };
 
     for (const char of text) {
-        if (char === NBSP_CHAR && nonBreakingSpace) {
+        if (char === LINE_BREAK_CHAR) {
             flushBuffer();
-            nodes.push({ type: "nonBreakingSpace" });
+            nodes.push({ type: "hardBreak" });
+        } else if (char === NBSP_CHAR && nonBreakingSpace) {
+            flushBuffer();
+            nodes.push(makeAtomNode("nonBreakingSpace", marks));
         } else if (char === SOFT_HYPHEN_CHAR && softHyphen) {
             flushBuffer();
-            nodes.push({ type: "softHyphen" });
+            nodes.push(makeAtomNode("softHyphen", marks));
         } else {
             buffer += char;
         }
@@ -312,12 +356,14 @@ function resolveTargetTextBlock({
 
 function makeTextBlockNode(
     inlineContent: JSONContent[],
-    { textBlock, textBlockStyle }: { textBlock: TipTapResolvedTextBlock; textBlockStyle?: string },
+    { styledNode, textBlock, textBlockStyle }: { styledNode?: TipTapResolvedStyledNode; textBlock: TipTapResolvedTextBlock; textBlockStyle?: string },
 ): JSONContent {
     const node: JSONContent = { type: "textBlock", attrs: { textBlock: textBlock.name } };
 
-    if (textBlockStyle !== undefined) {
-        node.attrs = { ...node.attrs, textBlockStyle };
+    // A list item's text block draws its style from the list, not from its own text block.
+    const style = textBlockStyle ?? (styledNode ?? textBlock).defaultStyle ?? undefined;
+    if (style !== undefined) {
+        node.attrs = { ...node.attrs, textBlockStyle: style };
     }
     if (inlineContent.length > 0) {
         node.content = inlineContent;
@@ -325,19 +371,43 @@ function makeTextBlockNode(
     return node;
 }
 
-function makeListItem(inlineContent: JSONContent[], resolvedOptions: TipTapResolvedOptions): JSONContent {
+function makeListItem({
+    inlineContent,
+    resolvedOptions,
+    list,
+    textBlockStyle,
+}: {
+    inlineContent: JSONContent[];
+    resolvedOptions: TipTapResolvedOptions;
+    list: TipTapResolvedStyledNode;
+    textBlockStyle?: string;
+}): JSONContent {
     return {
         type: "listItem",
-        content: [makeTextBlockNode(inlineContent, { textBlock: resolveTargetTextBlock({ resolvedOptions }) })],
+        content: [makeTextBlockNode(inlineContent, { styledNode: list, textBlock: resolveTargetTextBlock({ resolvedOptions }), textBlockStyle })],
     };
 }
 
 type ListType = "orderedList" | "bulletList";
 
-const LIST_BLOCK_TYPE_TO_LIST: Record<string, { listType: ListType; option: "orderedList" | "unorderedList" }> = {
-    "unordered-list-item": { listType: "bulletList", option: "unorderedList" },
-    "ordered-list-item": { listType: "orderedList", option: "orderedList" },
+interface ListTarget {
+    listType: ListType;
+    option: "orderedList" | "unorderedList";
+}
+
+export const LIST_TARGETS: Record<ListItemMapping["list"], ListTarget> = {
+    unordered: { listType: "bulletList", option: "unorderedList" },
+    ordered: { listType: "orderedList", option: "orderedList" },
 };
+
+const LIST_BLOCK_TYPE_TO_LIST: Record<string, ListTarget> = {
+    "unordered-list-item": LIST_TARGETS.unordered,
+    "ordered-list-item": LIST_TARGETS.ordered,
+};
+
+export function isBuiltInDraftJsListBlockType(draftJsBlockType: string): boolean {
+    return Object.hasOwn(LIST_BLOCK_TYPE_TO_LIST, draftJsBlockType);
+}
 
 interface OpenList {
     type: ListType;
@@ -353,6 +423,7 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
 
     const hasLink = !!options.link;
     const textBlockMap = options.textBlockMap ?? {};
+    const listItemMap = options.listItemMap ?? {};
     const inlineStyleMap = options.inlineStyleMap ?? {};
     const entityMap = draftContent.entityMap ?? {};
     const maxListLevels = options.listLevelMax !== undefined ? Math.max(options.listLevelMax, 1) : undefined;
@@ -386,7 +457,19 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
         }
     };
 
-    const addListItem = (listType: ListType, depth: number, inlineContent: JSONContent[]) => {
+    const addListItem = ({
+        listType,
+        depth,
+        inlineContent,
+        list,
+        textBlockStyle,
+    }: {
+        listType: ListType;
+        depth: number;
+        inlineContent: JSONContent[];
+        list: TipTapResolvedStyledNode;
+        textBlockStyle?: string;
+    }) => {
         // A list item may only be indented one level deeper than its predecessor, no matter how
         // large the gap in Draft.js is. `listLevelMax` limits the nesting further.
         let level = Math.min(Math.max(depth, 0), openLists.length);
@@ -404,15 +487,23 @@ export function convertDraftJsToTipTap(draftContent: DraftJsContent | undefined 
             openLists.push({ type: listType, items: [] });
         }
 
-        openLists[openLists.length - 1].items.push(makeListItem(inlineContent, resolvedOptions));
+        openLists[openLists.length - 1].items.push(makeListItem({ inlineContent, resolvedOptions, list, textBlockStyle }));
     };
 
     for (const block of draftContent.blocks) {
         const inlineContent = buildInlineContent({ block, entityMap, resolvedOptions, hasLink, inlineStyleMap });
 
-        const listMapping = LIST_BLOCK_TYPE_TO_LIST[block.type];
-        if (listMapping && resolvedOptions[listMapping.option]) {
-            addListItem(listMapping.listType, block.depth ?? 0, inlineContent);
+        const listItemMapping = listItemMap[block.type];
+        const listTarget = LIST_BLOCK_TYPE_TO_LIST[block.type] ?? (listItemMapping ? LIST_TARGETS[listItemMapping.list] : undefined);
+        const list = listTarget ? resolvedOptions[listTarget.option] : false;
+        if (listTarget && list) {
+            addListItem({
+                listType: listTarget.listType,
+                depth: block.depth ?? 0,
+                inlineContent,
+                list,
+                textBlockStyle: listItemMapping?.textBlockStyle,
+            });
             continue;
         }
 
@@ -458,4 +549,4 @@ export function buildStrippedTipTapDoc(draftContent: DraftJsContent | undefined 
     return { type: "doc", content };
 }
 
-export type { ConvertOptions, DraftJsContent, TextBlockMapping };
+export type { ConvertOptions, DraftJsContent, ListItemMapping, TextBlockMapping };

@@ -27,14 +27,7 @@ export type FileDropzoneProps = ThemedComponentBaseProps<{
 } & DropzoneOptions;
 
 export type FileDropzoneClassKey =
-    | "root"
-    | "disabled"
-    | "error"
-    | "focused"
-    | "dropzone"
-    | "errorIconContainer"
-    | "dropzoneText"
-    | "selectFileButton";
+    "root" | "disabled" | "error" | "focused" | "dropzone" | "errorIconContainer" | "dropzoneText" | "selectFileButton";
 
 type OwnerState = {
     disabled: boolean;
@@ -129,10 +122,12 @@ const Root = createComponentSlot("div")<FileDropzoneClassKey, OwnerState>({
             outline: none;
         }
 
-        ${ownerState.disabled &&
-        css`
-            pointer-events: none;
-        `}
+        ${
+            ownerState.disabled &&
+            css`
+                pointer-events: none;
+            `
+        }
     `,
 );
 
@@ -160,34 +155,42 @@ const Dropzone = createComponentSlot("div")<FileDropzoneClassKey, OwnerState>({
             background-color: ${theme.palette.grey[50]};
         }
 
-        ${ownerState.dragging &&
-        css`
-            border-color: ${theme.palette.grey[400]};
-            background-color: ${theme.palette.grey[50]};
-        `}
-
-        ${ownerState.focused &&
-        css`
-            border-color: ${theme.palette.primary.main};
-            background-color: ${theme.palette.grey[50]};
-        `}
-
-        ${ownerState.hasError &&
-        css`
-            border-color: ${theme.palette.error.main};
-
-            &:hover {
-                border-color: ${theme.palette.error.dark};
+        ${
+            ownerState.dragging &&
+            css`
+                border-color: ${theme.palette.grey[400]};
                 background-color: ${theme.palette.grey[50]};
-            }
-        `}
+            `
+        }
 
-        ${ownerState.disabled &&
-        css`
-            cursor: default;
-            border-color: ${theme.palette.grey[100]};
-            background-color: ${theme.palette.grey[50]};
-        `}
+        ${
+            ownerState.focused &&
+            css`
+                border-color: ${theme.palette.primary.main};
+                background-color: ${theme.palette.grey[50]};
+            `
+        }
+
+        ${
+            ownerState.hasError &&
+            css`
+                border-color: ${theme.palette.error.main};
+
+                &:hover {
+                    border-color: ${theme.palette.error.dark};
+                    background-color: ${theme.palette.grey[50]};
+                }
+            `
+        }
+
+        ${
+            ownerState.disabled &&
+            css`
+                cursor: default;
+                border-color: ${theme.palette.grey[100]};
+                background-color: ${theme.palette.grey[50]};
+            `
+        }
     `,
 );
 
@@ -213,10 +216,12 @@ const DropzoneText = createComponentSlot(Typography)<FileDropzoneClassKey, Owner
         color: ${theme.palette.grey[400]};
         text-align: center;
 
-        ${ownerState.disabled &&
-        css`
-            color: ${theme.palette.grey[200]};
-        `}
+        ${
+            ownerState.disabled &&
+            css`
+                color: ${theme.palette.grey[200]};
+            `
+        }
     `,
 );
 

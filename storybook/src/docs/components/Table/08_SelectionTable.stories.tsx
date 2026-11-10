@@ -2,35 +2,45 @@ import { gql } from "@apollo/client";
 import { Field, FinalForm, FinalFormInput, Selected, Table, TableQuery, useSelectionRoute, useTableQuery } from "@dextinity/admin";
 import { Grid } from "@mui/material";
 
-import { apolloRestStoryDecorator } from "../../../apollo-rest-story.decorator";
+import type { LaunchesPastResult } from "../../../../.storybook/mocks/handlers";
+import { apolloStoryDecorator } from "../../../apollo-story.decorator";
 import { storyRouterDecorator } from "../../../story-router.decorator";
 
-const gqlRest = gql;
-
-const usersQuery = gqlRest`
-query users {
-    users @rest(type: "User", path: "users") {
-        id
-        name
-        username
-        email
+const launchFormFragment = gql`
+    fragment LaunchForm on Launch {
+        mission_name
+        launch_date_local
     }
-}
 `;
 
-interface User {
-    id: number;
-    name: string;
-    username: string;
-    email: string;
+interface LaunchFormFragment {
+    mission_name: string;
+    launch_date_local: Date;
 }
 
-interface UserQueryData {
-    users: User[];
+const launchesQuery = gql`
+    query LaunchesPast {
+        launchesPastResult {
+            data {
+                id
+                mission_name
+                launch_date_local
+                ...LaunchForm
+            }
+            result {
+                totalCount
+            }
+        }
+    }
+    ${launchFormFragment}
+`;
+
+interface LaunchesQueryData {
+    launchesPastResult: LaunchesPastResult;
 }
 
 interface ExampleFormProps {
-    user: User;
+    launch: LaunchFormFragment;
     mode: "add" | "edit";
 }
 
@@ -41,27 +51,26 @@ const ExampleForm = (props: ExampleFormProps) => {
             onSubmit={(values) => {
                 // submit here
             }}
-            initialValues={props.user}
+            initialValues={props.launch}
         >
-            <Field label="Name" name="name" defaultOptions required component={FinalFormInput} />
-            <Field label="Username" name="username" defaultOptions required component={FinalFormInput} />
-            <Field label="E-Mail" name="email" defaultOptions required component={FinalFormInput} />
+            <Field label="Mission Name" name="mission_name" defaultOptions required component={FinalFormInput} />
+            <Field label="Launch Date" name="launch_date_local" defaultOptions required component={FinalFormInput} />
         </FinalForm>
     );
 };
 
 export default {
     title: "Docs/Components/Table/Selection Table",
-    decorators: [apolloRestStoryDecorator(), storyRouterDecorator()],
+    decorators: [apolloStoryDecorator("/graphql"), storyRouterDecorator()],
 };
 
 export const SelectionTable = () => {
     // step 1
     const [SelectionRoute, selection, selectionApi] = useSelectionRoute();
-    const { tableData, api, loading, error } = useTableQuery<UserQueryData, never>()(usersQuery, {
+    const { tableData, api, loading, error } = useTableQuery<LaunchesQueryData, never>()(launchesQuery, {
         resolveTableData: (data) => ({
-            data: data.users,
-            totalCount: data.users.length,
+            data: data.launchesPastResult.data,
+            totalCount: data.launchesPastResult.result.totalCount,
         }),
     });
 
@@ -83,8 +92,8 @@ export const SelectionTable = () => {
                             selectable={true}
                             columns={[
                                 {
-                                    name: "name",
-                                    header: "Name",
+                                    name: "mission_name",
+                                    header: "Mission Name",
                                 },
                             ]}
                         />
@@ -92,12 +101,12 @@ export const SelectionTable = () => {
                     <Grid size={4}>
                         {/* step 4 */}
                         <Selected selectionMode={selection.mode} selectedId={selection.id} rows={tableData.data}>
-                            {(user, { selectionMode: selectedSelectionMode }) => {
-                                if (user === undefined) {
+                            {(launch, { selectionMode: selectedSelectionMode }) => {
+                                if (launch === undefined) {
                                     return null;
                                 }
 
-                                return <ExampleForm mode={selectedSelectionMode} user={user} />;
+                                return <ExampleForm mode={selectedSelectionMode} launch={launch} />;
                             }}
                         </Selected>
                     </Grid>

@@ -10,8 +10,10 @@ import {
     type TipTapResolvedTextBlock,
     type TipTapTextBlockTag,
 } from "../textBlocks";
-import { textBlockAttribute, textBlockStyleAttribute } from "./textBlockAttributes";
+import { textAlignAttribute, textBlockAttribute, textBlockStyleAttribute, type TipTapTextAlign } from "./textBlockAttributes";
 import { createTextBlockNodeView } from "./TextBlockNodeView";
+
+const textAlignShortcutKeys: Record<TipTapTextAlign, string> = { left: "l", center: "e", right: "r", justify: "j" };
 
 /**
  * The single node every paragraph and heading is stored as. Which of the configured text blocks it
@@ -23,16 +25,21 @@ import { createTextBlockNodeView } from "./TextBlockNodeView";
 export function createTextBlock({
     textBlocks,
     defaultTextBlock,
+    hasTextBlockStyles,
     styled,
+    textAlign,
 }: {
     textBlocks: TipTapResolvedTextBlock[];
     defaultTextBlock: TipTapResolvedTextBlock;
+    hasTextBlockStyles: boolean;
     styled: boolean;
+    textAlign: TipTapTextAlign[];
 }) {
     const tagOf = (name: unknown): TipTapTextBlockTag => (textBlocks.find((textBlock) => textBlock.name === name) ?? defaultTextBlock).tag;
 
     return Node.create({
         name: "textBlock",
+        priority: 1000,
         group: "block",
         content: "inline*",
         defining: true,
@@ -40,7 +47,8 @@ export function createTextBlock({
         addAttributes() {
             return {
                 ...textBlockAttribute(defaultTextBlock.name),
-                ...(styled ? textBlockStyleAttribute : {}),
+                ...(hasTextBlockStyles ? textBlockStyleAttribute : {}),
+                ...(textAlign.length > 0 ? textAlignAttribute(textAlign) : {}),
             };
         },
 
@@ -69,7 +77,14 @@ export function createTextBlock({
                 },
             });
 
-            return Object.assign({}, ...findTextBlockPerTag(textBlocks).map(shortcut));
+            const textAlignShortcuts = Object.fromEntries(
+                textAlign.map((alignment) => [
+                    `Mod-Shift-${textAlignShortcutKeys[alignment]}`,
+                    () => this.editor.commands.updateAttributes(this.name, { textAlign: alignment }),
+                ]),
+            );
+
+            return Object.assign(textAlignShortcuts, ...findTextBlockPerTag(textBlocks).map(shortcut));
         },
 
         addInputRules() {
@@ -136,7 +151,7 @@ export function createTextBlock({
         ...(styled
             ? {
                   addNodeView() {
-                      return ReactNodeViewRenderer(createTextBlockNodeView(textBlocks));
+                      return ReactNodeViewRenderer(createTextBlockNodeView(defaultTextBlock));
                   },
               }
             : {}),

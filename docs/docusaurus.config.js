@@ -5,9 +5,9 @@ const lightCodeTheme = themes.github;
 const darkCodeTheme = themes.dracula;
 
 // Both this docs site and the Storybook composition are deployed via Netlify with wildcard DNS
-// for `*.cms-storybook.dextinity.com`. Mirror the runtime mapping in StorybookAdminComponentDocsIframe
-// so the navbar link follows the docs deploy context: a PR's deploy-preview links to its matching
-// Storybook deploy-preview, `next` to `next.cms-storybook.dextinity.com`, and main to production.
+// for `*.cms-storybook.dextinity.com`. The navbar link follows the docs deploy context: a PR's
+// deploy-preview links to its matching Storybook deploy-preview, `next` to `next.cms-storybook.dextinity.com`,
+// and main to production.
 function getStorybookUrl() {
     if (process.env.CONTEXT === "deploy-preview" && process.env.REVIEW_ID) {
         return `https://deploy-preview-${process.env.REVIEW_ID}.cms-storybook.dextinity.com/`;

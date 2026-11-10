@@ -41,6 +41,4 @@ class StandaloneRichTextBlockInput extends BlockInput {
     }
 }
 
-export const StandaloneRichTextBlock = createBlock(StandaloneRichTextBlockData, StandaloneRichTextBlockInput, {
-    name: "StandaloneRichText",
-});
+export const StandaloneRichTextBlock = createBlock(StandaloneRichTextBlockData, StandaloneRichTextBlockInput, "StandaloneRichText");

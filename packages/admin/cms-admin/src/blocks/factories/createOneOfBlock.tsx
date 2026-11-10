@@ -33,12 +33,12 @@ export interface OneOfBlockFragment {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         props: any;
     }[];
-    activeType?: string;
+    activeType?: string | null;
     block?: {
         type: string;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         props: any;
-    };
+    } | null;
 }
 
 export interface OneOfBlockPreviewState extends BlockPreviewStateInterface {
@@ -49,7 +49,7 @@ export interface OneOfBlockPreviewState extends BlockPreviewStateInterface {
     };
 }
 
-type ActiveType<Config extends boolean> = Config extends false ? { activeType: string } : { activeType?: string };
+type ActiveType<Config extends boolean> = Config extends false ? { activeType: string } : { activeType?: string | null };
 
 export type OneOfBlockOutput<Config extends boolean> = {
     attachedBlocks: {
@@ -193,7 +193,7 @@ export const createOneOfBlock = <T extends boolean = boolean>(
         output2State: async ({ attachedBlocks, activeType, ...additionalFields }, context) => {
             const state: OneOfBlockState = {
                 attachedBlocks: [],
-                activeType,
+                activeType: activeType ?? undefined,
             };
 
             for (const item of attachedBlocks) {

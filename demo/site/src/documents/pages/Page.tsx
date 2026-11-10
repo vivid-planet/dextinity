@@ -83,8 +83,8 @@ export async function generateMetadata({ pageTreeNodeId, scope }: Props, parent:
         title: document.seo.htmlTitle || data.pageContent.name,
         description: document.seo.metaDescription,
         openGraph: {
-            title: document.seo.openGraphTitle,
-            description: document.seo.openGraphDescription,
+            title: document.seo.openGraphTitle ?? undefined,
+            description: document.seo.openGraphDescription ?? undefined,
             type: "website",
             url: canonicalUrl,
             images: document.seo.openGraphImage.block?.urlTemplate

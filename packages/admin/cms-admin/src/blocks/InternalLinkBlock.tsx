@@ -39,7 +39,7 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
     },
 
     output2State: async (output, { apolloClient, pageTreeScope }) => {
-        if (output.targetPageId === undefined) {
+        if (!output.targetPageId) {
             return {};
         }
 
@@ -171,7 +171,7 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
         return [
             {
                 type: "text",
-                content: state.targetPageAnchor === undefined ? state.targetPage.name : `${state.targetPage.name}#${state.targetPageAnchor}`,
+                content: state.targetPageAnchor ? `${state.targetPage.name}#${state.targetPageAnchor}` : state.targetPage.name,
             },
         ];
     },

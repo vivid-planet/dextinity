@@ -52,7 +52,7 @@ const ProductTeaserBlock: BlockInterface<ProductTeaserBlockData, State, ProductT
     }),
 
     output2State: async (output, { apolloClient }) => {
-        if (output.productId === undefined) {
+        if (!output.productId) {
             return {};
         }
 

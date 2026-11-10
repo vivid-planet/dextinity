@@ -61,7 +61,7 @@ function OpenLinkDialog({ open, onClose, link }: OpenLinkDialogProps) {
                 <Button
                     onClick={() => {
                         onClose?.();
-                        window.open(link?.targetUrl);
+                        window.open(link?.targetUrl ?? undefined);
                     }}
                     variant="contained"
                     color="primary"

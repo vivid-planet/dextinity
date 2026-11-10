@@ -91,7 +91,7 @@ function calculateAspectRatio(image: ImageDimensions, cropArea: CropArea): numbe
         return image.width / image.height;
     }
 
-    if (cropArea.width === undefined || cropArea.height === undefined) {
+    if (cropArea.width == null || cropArea.height == null) {
         throw new Error("Missing crop dimensions");
     }
 

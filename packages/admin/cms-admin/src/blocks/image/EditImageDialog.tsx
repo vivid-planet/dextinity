@@ -35,10 +35,10 @@ import type { GQLFocalPoint } from "../../graphql.generated";
 
 type CropArea = {
     focalPoint: GQLFocalPoint;
-    width?: number;
-    height?: number;
-    x?: number;
-    y?: number;
+    width?: number | null;
+    height?: number | null;
+    x?: number | null;
+    y?: number | null;
 };
 
 const imageStyle = { maxWidth: "60vw", maxHeight: "70vh" };

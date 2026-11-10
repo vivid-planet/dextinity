@@ -775,6 +775,46 @@ If your project has to keep its own consumer, handle the new kind wherever you s
   }
 ```
 
+### Allow `null` in optional block fields
+
+Optional block fields, i.e., fields with `@BlockField({ nullable: true })`, can be `undefined` or `null` now. Type the properties of your block data and input classes accordingly and let the input accept `null`:
+
+```diff
+  class HeadlineBlockData extends BlockData {
+-     @BlockField({ nullable: true })
+-     eyebrow?: string;
++     @BlockField({ type: "string", nullable: true })
++     eyebrow?: string | null;
+  }
+
+  class HeadlineBlockInput extends BlockInput {
+      @IsUndefinable()
++     @IsNullable()
+      @IsString()
+-     @BlockField({ nullable: true })
+-     eyebrow?: string;
++     @BlockField({ type: "string", nullable: true })
++     eyebrow?: string | null;
+  }
+```
+
+Pass the `type` (`"string"`, `"number"` or `"boolean"`) to `@BlockField` explicitly. TypeScript emits `Object` as the design type of a union with `null`, so `@BlockField` can't infer it anymore, and the API fails to start with "Can't infer the type of …".
+
+Find the fields with:
+
+```sh
+grep -rn -A4 "nullable: true" api/src --include=*.block.ts
+```
+
+Then replace strict comparisons with `undefined` on these fields, which miss `null`, for instance in `indexData()`:
+
+```diff
+- if (this.productId === undefined) {
++ if (!this.productId) {
+      return {};
+  }
+```
+
 ### Read `validationErrors` as a list of paths and messages
 
 The `ExceptionFilter` returns `validationErrors` of a `DextinityValidationException` as the list of `formatValidationErrors()` instead of the tree of class-validator errors. Only clients that read `validationErrors` are affected, for instance a custom client that shows the errors of a failed mutation.
@@ -1276,12 +1316,59 @@ The details passed to the callbacks of the Data Grid require `apiRef` now. Add i
 
 MUI X v9 requires a new license key for the Pro and Premium packages. Regenerate it in the [MUI Store](https://mui.com/store/) and replace the key wherever your project sets it, for example, in the environment variables of the admin.
 
+### Handle `null` in optional block fields
+
+The generated block types (`dextinity generate-block-types`) type optional block fields as `?: T | null` instead of `?: T`, matching the API. Regenerate the block types and fix the type errors:
+
+```diff title="src/blocks.generated.ts"
+  export interface HeadlineBlockData {
+-     eyebrow?: string;
++     eyebrow?: string | null;
+  }
+```
+
+Values of optional fields can't be passed to props that only accept `undefined` anymore. Convert them where needed, e.g., `eyebrow ?? undefined`.
+Type checks don't catch these runtime pitfalls, so search for them as well:
+
+- Strict comparisons with `undefined` (`eyebrow === undefined`) miss `null`. Use `!eyebrow` or `eyebrow == null` instead.
+- Default values (`{ eyebrow = "" }` or `function f(eyebrow = "")`) don't apply to `null`. Use `eyebrow ?? ""` instead.
+
 <!-- "Verify lint passes" must always be the last step for this service. -->
 
 ### Verify lint passes
 
 ```sh
 cd admin
+npm run lint
+```
+
+Repeat this step, fixing all lint errors, until the lint passes.
+
+## Site
+
+### Handle `null` in optional block fields
+
+The generated block types (`dextinity generate-block-types`) type optional block fields as `?: T | null` instead of `?: T`, matching the API. Regenerate the block types and fix the type errors:
+
+```diff title="src/blocks.generated.ts"
+  export interface HeadlineBlockData {
+-     eyebrow?: string;
++     eyebrow?: string | null;
+  }
+```
+
+Values of optional fields can't be passed to props that only accept `undefined` anymore. Convert them where needed, e.g., `eyebrow ?? undefined`.
+Type checks don't catch these runtime pitfalls, so search for them as well:
+
+- Strict comparisons with `undefined` (`eyebrow === undefined`) miss `null`. Use `!eyebrow` or `eyebrow == null` instead.
+- Default values (`{ eyebrow = "" }` or `function f(eyebrow = "")`) don't apply to `null`. Use `eyebrow ?? ""` instead.
+
+<!-- "Verify lint passes" must always be the last step for this service. -->
+
+### Verify lint passes
+
+```sh
+cd site
 npm run lint
 ```
 

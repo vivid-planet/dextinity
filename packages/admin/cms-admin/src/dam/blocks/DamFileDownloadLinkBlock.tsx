@@ -37,7 +37,7 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
             openFileType: output.openFileType,
         };
 
-        if (output.fileId === undefined) {
+        if (!output.fileId) {
             return ret;
         }
 

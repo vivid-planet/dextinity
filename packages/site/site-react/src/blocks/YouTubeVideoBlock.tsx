@@ -101,11 +101,11 @@ export const YouTubeVideoBlock = withPreview(
             searchParams.append("mute", "1");
         }
 
-        if (showControls !== undefined) {
+        if (showControls != null) {
             searchParams.append("controls", Number(showControls).toString());
         }
 
-        if (loop !== undefined) {
+        if (loop != null) {
             searchParams.append("loop", Number(loop).toString());
         }
         if (loop && identifier) {

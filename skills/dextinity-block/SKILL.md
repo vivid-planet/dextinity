@@ -115,7 +115,7 @@ Ask the user before creating a migration if they haven't mentioned it. Explain t
 
 **Migration is NOT needed:**
 
-- Adding an **optional/nullable** field (`@IsUndefinable()` + `@BlockField({ nullable: true })`).
+- Adding an **optional/nullable** field (`@IsUndefinable()` + `@IsNullable()` + `@BlockField({ type, nullable: true })`).
 - Adding a new supported block to a `BlocksBlock` or `OneOfBlock`.
 - Adding new enum values (existing data unaffected).
 

@@ -18,15 +18,16 @@ On the API side, the entity reference is stored as a **nullable string field** c
 
 ```ts
 class MyBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    productId?: string;
+    @BlockField({ type: "string", nullable: true })
+    productId?: string | null;
 }
 
 class MyBlockInput extends BlockInput {
     @IsUndefinable()
+    @IsNullable()
     @IsString()
-    @BlockField({ nullable: true })
-    productId?: string;
+    @BlockField({ type: "string", nullable: true })
+    productId?: string | null;
 
     transformToBlockData(): MyBlockData {
         return blockInputToData(MyBlockData, this);
@@ -36,7 +37,7 @@ class MyBlockInput extends BlockInput {
 
 Rules:
 
-- Use `@BlockField({ nullable: true })` and `@IsUndefinable()` so the block is savable without a selection.
+- Use `@BlockField({ type: "string", nullable: true })`, `@IsUndefinable()` and `@IsNullable()` so the block is savable without a selection.
 - Name the field `{entityName}Id` (e.g., `productId`, `categoryId`) to clarify it stores a reference, not the entity itself.
 - The site resolves the ID to full entity data via a block loader (see [block-loader.md](block-loader.md)).
 

@@ -2,11 +2,11 @@ import { BlockData, BlockField, type BlockIndexData, BlockInput, blockInputToDat
 import { IsOptional, IsUUID } from "class-validator";
 
 class NewsDetailBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    id?: string;
+    @BlockField({ type: "string", nullable: true })
+    id?: string | null;
 
     indexData(): BlockIndexData {
-        if (this.id === undefined) {
+        if (!this.id) {
             return {};
         }
 
@@ -22,10 +22,10 @@ class NewsDetailBlockData extends BlockData {
 }
 
 class NewsDetailBlockInput extends BlockInput {
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsUUID()
     @IsOptional()
-    id?: string;
+    id?: string | null;
 
     transformToBlockData(): NewsDetailBlockData {
         return blockInputToData(NewsDetailBlockData, this);

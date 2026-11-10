@@ -12,7 +12,7 @@ type TransformResponse = {
         documentType: string;
         scope: Record<string, string> | null;
     } | null;
-    targetPageAnchor?: string;
+    targetPageAnchor?: string | null;
 };
 
 @Injectable()

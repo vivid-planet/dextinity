@@ -4,15 +4,15 @@ import { BlockData, BlockInput, blockInputToData, createBlock } from "./block.js
 import { BlockField } from "./decorators/field.js";
 
 class EmailLinkBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    email?: string;
+    @BlockField({ type: "string", nullable: true })
+    email?: string | null;
 }
 
 class EmailLinkBlockInput extends BlockInput {
     @IsOptional()
     @IsEmail()
-    @BlockField({ nullable: true })
-    email?: string;
+    @BlockField({ type: "string", nullable: true })
+    email?: string | null;
 
     transformToBlockData(): EmailLinkBlockData {
         return blockInputToData(EmailLinkBlockData, this);

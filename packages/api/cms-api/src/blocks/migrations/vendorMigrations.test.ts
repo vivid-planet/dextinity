@@ -252,13 +252,13 @@ describe("block extending a block with vendor migrations", () => {
 
     // The application extends that block and brings migrations of its own
     class ExtendedBlockData extends LibraryBlockData {
-        @BlockField({ nullable: true })
-        subtitle?: string;
+        @BlockField({ type: "string", nullable: true })
+        subtitle?: string | null;
     }
 
     class ExtendedBlockInput extends LibraryBlockInput {
-        @BlockField({ nullable: true })
-        subtitle?: string;
+        @BlockField({ type: "string", nullable: true })
+        subtitle?: string | null;
 
         transformToBlockData(): ExtendedBlockData {
             return blockInputToData(ExtendedBlockData, this);

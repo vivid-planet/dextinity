@@ -24,7 +24,7 @@
         "build:babel": "pnpm exec babel ./src -x \".ts,.tsx\" -d lib",
         "build:types": "tsc --project ./tsconfig.json --emitDeclarationOnly",
         "clean": "rimraf lib",
-        "generate-icons": "ts-node generate-icons.ts",
+        "generate-icons": "node generate-icons.ts",
         "lint": "run-p lint:prettier lint:eslint lint:tsc",
         "lint:ci": "pnpm run lint",
         "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",
@@ -60,7 +60,6 @@
         "react": "^19.3.1",
         "react-dom": "^19.3.1",
         "rimraf": "^6.1.4",
-        "ts-node": "^10.9.2",
         "typescript": "^6.0.3"
     },
     "peerDependencies": {

@@ -53,7 +53,7 @@ export class ActionLogsService implements OnModuleInit {
 
     async getScopeFromEntity<T extends AnyEntity>(entity: T): Promise<ContentScope[] | undefined> {
         if ("scope" in entity) {
-            return Array.isArray(entity.scope) ? entity.scope : [entity.scope];
+            return toScopes(entity.scope);
         }
         const scoped = Reflect.getMetadata(SCOPED_ENTITY_METADATA_KEY, entity.constructor) as ScopedEntityMeta | undefined;
         if (scoped) {
@@ -64,10 +64,16 @@ export class ActionLogsService implements OnModuleInit {
                 entityManager: this.entityManager,
                 moduleRef: this.moduleRef,
             });
-            return Array.isArray(scopedEntityScope) ? scopedEntityScope : [scopedEntityScope];
+            return toScopes(scopedEntityScope);
         }
         return undefined;
     }
+}
+
+// A missing scope is stored as no scope and never as an array holding null: `isAllowed` passes for a null scope.
+function toScopes(scope: ContentScope | Array<ContentScope | null | undefined> | null | undefined): ContentScope[] | undefined {
+    const scopes = (Array.isArray(scope) ? scope : [scope]).filter((item): item is ContentScope => item != null);
+    return scopes.length > 0 ? scopes : undefined;
 }
 
 function hasScope(entity: object, metadata: EntityMetadata): boolean {

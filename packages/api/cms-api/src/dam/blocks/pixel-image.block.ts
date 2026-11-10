@@ -23,10 +23,10 @@ import { PixelImageBlockTransformerService } from "./pixel-image-block-transform
 
 // @TODO: make factory to support flexible validation
 class PixelImageBlockData extends BlockData {
-    damFileId?: string;
+    damFileId?: string | null;
 
     @Type(() => ImageCropArea)
-    cropArea?: ImageCropArea;
+    cropArea?: ImageCropArea | null;
 
     async transformToPlain() {
         return PixelImageBlockTransformerService;
@@ -46,13 +46,13 @@ class PixelImageBlockData extends BlockData {
             return undefined;
         }
 
-        const image = await filesService.findImageToDeliver({ file, cropArea: this.cropArea }, { previewDamUrls });
+        const image = await filesService.findImageToDeliver({ file, cropArea: this.cropArea ?? undefined }, { previewDamUrls });
 
         return image ? imagesService.createUrlTemplate(image, { previewDamUrls }) : undefined;
     }
 
     indexData(): BlockIndexData {
-        if (this.damFileId === undefined) {
+        if (!this.damFileId) {
             return {};
         }
 
@@ -70,12 +70,12 @@ class PixelImageBlockData extends BlockData {
 class PixelImageBlockInput extends BlockInput {
     @IsOptional()
     @IsUUID()
-    damFileId?: string;
+    damFileId?: string | null;
 
     @Type(() => ImageCropAreaInput)
     @IsOptional()
     @ValidateNested()
-    cropArea?: ImageCropAreaInput;
+    cropArea?: ImageCropAreaInput | null;
 
     transformToBlockData(): PixelImageBlockData {
         return blockInputToData(PixelImageBlockData, this);

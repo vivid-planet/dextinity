@@ -2,11 +2,11 @@ import { BlockData, BlockField, type BlockIndexData, BlockInput, blockInputToDat
 import { IsOptional, IsUUID } from "class-validator";
 
 class ProductTeaserBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    productId?: string;
+    @BlockField({ type: "string", nullable: true })
+    productId?: string | null;
 
     indexData(): BlockIndexData {
-        if (this.productId === undefined) {
+        if (!this.productId) {
             return {};
         }
 
@@ -22,10 +22,10 @@ class ProductTeaserBlockData extends BlockData {
 }
 
 class ProductTeaserBlockInput extends BlockInput {
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsUUID()
     @IsOptional()
-    productId?: string;
+    productId?: string | null;
 
     transformToBlockData(): ProductTeaserBlockData {
         return blockInputToData(ProductTeaserBlockData, this);

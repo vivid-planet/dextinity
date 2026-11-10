@@ -12,7 +12,7 @@ import type {
     GQLProductPriceSelectQueryVariables,
 } from "./ProductPriceBlock.generated";
 
-type ProductOption = { id: string; title: string; price?: number };
+type ProductOption = { id: string; title: string; price?: number | null };
 
 type State = {
     product?: ProductOption;
@@ -58,7 +58,7 @@ const ProductPriceBlock: BlockInterface<ProductPriceBlockData, State, ProductPri
     }),
 
     output2State: async (output, { apolloClient }) => {
-        if (output.productId === undefined) {
+        if (!output.productId) {
             return {};
         }
 

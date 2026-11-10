@@ -99,7 +99,7 @@ function getRedirectTargetUrl(block: RedirectsLinkBlockData["block"], targetBase
             break;
         }
         case "external":
-            return (block.props as ExternalLinkBlockData).targetUrl;
+            return (block.props as ExternalLinkBlockData).targetUrl ?? undefined;
         case "news": {
             const newsLink = block.props as NewsLinkBlockData;
             if (newsLink.news) {

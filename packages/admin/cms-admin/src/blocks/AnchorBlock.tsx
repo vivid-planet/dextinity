@@ -37,15 +37,15 @@ const AnchorBlock: BlockInterface<AnchorBlockData, AnchorBlockData, AnchorBlockI
     },
 
     anchors: (state) => {
-        return state.name !== undefined ? [state.name] : [];
+        return state.name ? [state.name] : [];
     },
 
     previewContent: (state) => {
-        return state.name !== undefined ? [{ type: "text", content: `#${state.name}` }] : [];
+        return state.name ? [{ type: "text", content: `#${state.name}` }] : [];
     },
 
     extractTextContents: (state) => {
-        return state.name !== undefined ? [state.name] : [];
+        return state.name ? [state.name] : [];
     },
 };
 

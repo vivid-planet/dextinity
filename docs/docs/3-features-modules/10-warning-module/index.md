@@ -117,8 +117,8 @@ Example:
 
 ```typescript
 class NewsBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    title?: string;
+    @BlockField({ type: "string", nullable: true })
+    title?: string | null;
 
     warnings(): BlockWarning[] {
         const warnings: BlockWarning[] = [];
@@ -140,8 +140,8 @@ When you need dependency injection, you can also add your own WarningsService li
 
 ```typescript
 class NewsBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    id?: string;
+    @BlockField({ type: "string", nullable: true })
+    id?: string | null;
 
     warnings() {
         return NewsBlockWarningsService;

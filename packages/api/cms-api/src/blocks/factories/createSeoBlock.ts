@@ -51,16 +51,16 @@ interface CreateSeoBlockOptions<ImageBlock extends Block> {
 }
 
 export interface SeoBlockInputInterface<ImageBlockInput extends BlockInputInterface> extends SimpleBlockInputInterface {
-    htmlTitle?: string;
-    metaDescription?: string;
-    openGraphTitle?: string;
-    openGraphDescription?: string;
+    htmlTitle?: string | null;
+    metaDescription?: string | null;
+    openGraphTitle?: string | null;
+    openGraphDescription?: string | null;
     openGraphImage: OptionalBlockInputInterface<ImageBlockInput>;
-    structuredData?: string;
+    structuredData?: string | null;
     noIndex: boolean;
     priority: SitemapPagePriority;
     changeFrequency: SitemapPageChangeFrequency;
-    canonicalUrl?: string;
+    canonicalUrl?: string | null;
     alternativeLinks: AlternativeLink[];
 }
 
@@ -72,26 +72,26 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
     const OptionalImageBlock = createOptionalBlock(image);
 
     class SeoBlockData extends BlockData {
-        @BlockField({ nullable: true })
-        htmlTitle?: string;
+        @BlockField({ type: "string", nullable: true })
+        htmlTitle?: string | null;
 
         // Meta
-        @BlockField({ nullable: true })
-        metaDescription?: string;
+        @BlockField({ type: "string", nullable: true })
+        metaDescription?: string | null;
 
         // Open Graph
-        @BlockField({ nullable: true })
-        openGraphTitle?: string;
+        @BlockField({ type: "string", nullable: true })
+        openGraphTitle?: string | null;
 
-        @BlockField({ nullable: true })
-        openGraphDescription?: string;
+        @BlockField({ type: "string", nullable: true })
+        openGraphDescription?: string | null;
 
         @ChildBlock(OptionalImageBlock)
         openGraphImage: BlockDataInterface;
 
         //Structured Data
-        @BlockField({ nullable: true })
-        structuredData?: string;
+        @BlockField({ type: "string", nullable: true })
+        structuredData?: string | null;
 
         // Sitemap
         @BlockField()
@@ -110,8 +110,8 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
         changeFrequency: SitemapPageChangeFrequency;
 
         //Canonical Tag
-        @BlockField({ nullable: true })
-        canonicalUrl?: string;
+        @BlockField({ type: "string", nullable: true })
+        canonicalUrl?: string | null;
 
         //Alternate Hreflang
         alternativeLinks: AlternativeLink[] = [];
@@ -148,25 +148,25 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
     class SeoBlockInput extends BlockInput {
         @IsString()
         @IsOptional()
-        @BlockField({ nullable: true })
-        htmlTitle?: string;
+        @BlockField({ type: "string", nullable: true })
+        htmlTitle?: string | null;
 
         // Meta
         @IsString()
         @IsOptional()
-        @BlockField({ nullable: true })
-        metaDescription?: string;
+        @BlockField({ type: "string", nullable: true })
+        metaDescription?: string | null;
 
         // Open Graph
         @IsString()
         @IsOptional()
-        @BlockField({ nullable: true })
-        openGraphTitle?: string;
+        @BlockField({ type: "string", nullable: true })
+        openGraphTitle?: string | null;
 
         @IsString()
         @IsOptional()
-        @BlockField({ nullable: true })
-        openGraphDescription?: string;
+        @BlockField({ type: "string", nullable: true })
+        openGraphDescription?: string | null;
 
         @ChildBlockInput(OptionalImageBlock)
         openGraphImage: OptionalBlockInputInterface<ExtractBlockInput<ImageBlock>>;
@@ -174,8 +174,8 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
         //Structured Data
         @IsJSON()
         @IsOptional()
-        @BlockField({ nullable: true })
-        structuredData?: string;
+        @BlockField({ type: "string", nullable: true })
+        structuredData?: string | null;
 
         // Sitemap
         @IsBoolean()
@@ -193,8 +193,8 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
         //Canonical Tag
         @IsUrl()
         @IsOptional()
-        @BlockField({ nullable: true })
-        canonicalUrl?: string;
+        @BlockField({ type: "string", nullable: true })
+        canonicalUrl?: string | null;
 
         //Alternate Hreflang
         @Type(() => AlternativeLink)
@@ -216,16 +216,16 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
 }
 
 class AlternativeLink {
-    [key: string]: string | undefined;
+    [key: string]: string | null | undefined;
 
     @IsString()
     @IsOptional()
-    code?: string;
+    code?: string | null;
 
     @IsString()
     @IsOptional()
     @IsUrl()
-    url?: string;
+    url?: string | null;
 }
 
 const alternativeLinksField: BlockMetaField = {

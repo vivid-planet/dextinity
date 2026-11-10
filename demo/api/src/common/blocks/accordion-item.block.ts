@@ -9,6 +9,7 @@ import {
     createBlock,
     createBlocksBlock,
     type ExtractBlockInput,
+    IsNullable,
     IsUndefinable,
 } from "@dextinity/cms-api";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
@@ -42,8 +43,8 @@ export enum AccordionItemTitleHtmlTag {
 }
 
 class AccordionItemBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    title?: string;
+    @BlockField({ type: "string", nullable: true })
+    title?: string | null;
 
     @ChildBlock(AccordionContentBlock)
     content: BlockDataInterface;
@@ -57,9 +58,10 @@ class AccordionItemBlockData extends BlockData {
 
 class AccordionItemBlockInput extends BlockInput {
     @IsUndefinable()
-    @BlockField({ nullable: true })
+    @IsNullable()
+    @BlockField({ type: "string", nullable: true })
     @IsString()
-    title?: string;
+    title?: string | null;
 
     @ChildBlockInput(AccordionContentBlock)
     content: ExtractBlockInput<typeof AccordionContentBlock>;

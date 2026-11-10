@@ -8,6 +8,7 @@ import {
     ChildBlockInput,
     createBlock,
     type ExtractBlockInput,
+    IsNullable,
     IsUndefinable,
 } from "@dextinity/cms-api";
 import { MediaBlock } from "@src/common/blocks/media.block.js";
@@ -17,8 +18,8 @@ class MediaGalleryItemBlockData extends BlockData {
     @ChildBlock(MediaBlock)
     media: BlockDataInterface;
 
-    @BlockField({ nullable: true })
-    caption?: string;
+    @BlockField({ type: "string", nullable: true })
+    caption?: string | null;
 }
 
 class MediaGalleryItemBlockInput extends BlockInput {
@@ -26,9 +27,10 @@ class MediaGalleryItemBlockInput extends BlockInput {
     media: ExtractBlockInput<typeof MediaBlock>;
 
     @IsUndefinable()
-    @BlockField({ nullable: true })
+    @IsNullable()
+    @BlockField({ type: "string", nullable: true })
     @IsString()
-    caption?: string;
+    caption?: string | null;
 
     transformToBlockData(): MediaGalleryItemBlockData {
         return blockInputToData(MediaGalleryItemBlockData, this);

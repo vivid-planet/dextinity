@@ -7,8 +7,8 @@ import { IsLinkTarget } from "../validator/is-link-target.validator.js";
 import { AddNoFollowMigration } from "./migrations/1-add-no-follow.migration.js";
 
 class ExternalLinkBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    targetUrl?: string;
+    @BlockField({ type: "string", nullable: true })
+    targetUrl?: string | null;
 
     @BlockField()
     openInNewWindow: boolean;
@@ -20,8 +20,8 @@ class ExternalLinkBlockData extends BlockData {
 class ExternalLinkBlockInput extends BlockInput {
     @IsOptional()
     @IsLinkTarget()
-    @BlockField({ nullable: true })
-    targetUrl?: string;
+    @BlockField({ type: "string", nullable: true })
+    targetUrl?: string | null;
 
     @IsBoolean()
     @BlockField()

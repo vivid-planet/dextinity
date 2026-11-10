@@ -197,7 +197,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
                         }}
                         damFileId={state.damFile.id}
                         initialValues={{
-                            useInheritedDamSettings: state.cropArea === undefined,
+                            useInheritedDamSettings: !state.cropArea,
                             cropArea: state.cropArea ?? state.damFile.image.cropArea,
                         }}
                         inheritedDamSettings={{ cropArea: state.damFile.image.cropArea }}

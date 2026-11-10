@@ -1,6 +1,6 @@
-import noNextPublicEnv from "./rules/no-next-public-env";
-import noOtherModuleRelativeImport from "./rules/no-other-module-relative-import";
-import noPrivateSiblingImport from "./rules/no-private-sibling-import";
+import noNextPublicEnv from "./rules/no-next-public-env.js";
+import noOtherModuleRelativeImport from "./rules/no-other-module-relative-import.js";
+import noPrivateSiblingImport from "./rules/no-private-sibling-import.js";
 
 const plugin = {
     rules: {
@@ -11,4 +11,4 @@ const plugin = {
 };
 export type Plugin = typeof plugin;
 
-module.exports = plugin;
+export default plugin;

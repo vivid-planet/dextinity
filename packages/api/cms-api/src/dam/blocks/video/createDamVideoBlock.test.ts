@@ -1,4 +1,4 @@
-import { validateSync } from "class-validator";
+import { validate, validateSync } from "class-validator";
 import { describe, expect, it } from "vitest";
 
 import { transformToBlockSave } from "../../../blocks/block";
@@ -78,6 +78,14 @@ describe("createDamVideoBlock", () => {
         const input = block.blockInputFactory({ damFileId, autoplay: true, showControls: true, loop: true, previewImage: {} });
 
         expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, $$vendorVersion: 1 });
+    });
+
+    it("should accept and discard the preview image the Admin sends for a block without one", async () => {
+        const block = createDamVideoBlock({ previewImage: false }, "ValidatingInputWithoutPreviewImage");
+        const input = block.blockInputFactory({ damFileId, autoplay: true, previewImage: {} });
+
+        expect(await validate(input, { whitelist: true, forbidNonWhitelisted: true })).toEqual([]);
+        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, autoplay: true, $$vendorVersion: 1 });
     });
 
     it("should create input for a block without a preview image", () => {

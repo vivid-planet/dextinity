@@ -1,5 +1,5 @@
 import { Expose, Transform } from "class-transformer";
-import { IsBoolean, IsOptional, IsUUID } from "class-validator";
+import { Allow, IsBoolean, IsOptional, IsUUID } from "class-validator";
 
 import {
     type Block,
@@ -172,6 +172,10 @@ export function createDamVideoBlock(
             DamVideoBlockData.prototype,
             "previewImage",
         );
+    } else {
+        // The Admin can't know whether the API block has a preview image and always sends one, so it has to pass
+        // the whitelist validation. transformToBlockData discards it.
+        Allow()(DamVideoBlockInput.prototype, "previewImage");
     }
 
     class Meta extends AnnotationBlockMeta {

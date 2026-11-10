@@ -253,6 +253,7 @@ export const TeaserVideoBlock = createDamVideoBlock({ controls: false, previewIm
 ```
 
 Disabled options are part of neither the block's data nor its input, so they don't show up in `blocks.generated.ts` and aren't stored for new content.
+Sending them as input is rejected by validation.
 
 Values that were stored before an option was disabled survive reading: the block loads them unchanged, and `migrateBlocks` writes them back as they are.
 They don't survive editing, though — saving a block in the Admin rebuilds its data from the input, which no longer carries the disabled options.
@@ -332,11 +333,11 @@ import { createDamVideoBlock } from "@dextinity/cms-admin";
 export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", controls: false, previewImage: false });
 ```
 
-Disabled options are hidden from the editor.
-As long as the API block still has them, their stored values are kept — the Admin passes them through unchanged — so enabling them again shows them in the editor.
-Once the API block disables them too, they are dropped as described above.
+Disabled options are neither offered in the editor nor sent to the API, so disable the same options as in the API block.
 
-The `supports` array the Admin factory took before is deprecated. Replace it with the options:
+The `supports` array the Admin factory took before is deprecated.
+It only hides options from the editor and still sends them, as the `DamVideoBlock` exported by the API requires.
+Replace it with the options together with an API block created with the same options:
 
 ```diff
 -createDamVideoBlock({ name: "TeaserVideo", supports: ["controls"] });

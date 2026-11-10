@@ -1,5 +1,5 @@
 import { Expose, Transform } from "class-transformer";
-import { Allow, IsBoolean, IsOptional, IsUUID } from "class-validator";
+import { IsBoolean, IsOptional, IsUUID } from "class-validator";
 
 import {
     type Block,
@@ -81,19 +81,13 @@ export function createDamVideoBlock(
         );
     }
 
-    const unsupportedFields = supportsControls ? [] : ["autoplay", "showControls", "loop"];
-    const isSupported = (field: BlockMetaField) => !unsupportedFields.includes(field.name);
-
     class DamVideoBlockData extends BlockData {
         damFileId?: string;
 
-        @BlockField({ type: "boolean", nullable: true })
         autoplay?: boolean;
 
-        @BlockField({ type: "boolean", nullable: true })
         showControls?: boolean;
 
-        @BlockField({ type: "boolean", nullable: true })
         loop?: boolean;
 
         previewImage?: BlockDataInterface;
@@ -119,19 +113,10 @@ export function createDamVideoBlock(
     }
 
     class DamVideoBlockInput extends BlockInput {
-        @IsBoolean()
-        @IsOptional()
-        @BlockField({ type: "boolean", nullable: true })
         autoplay?: boolean;
 
-        @IsBoolean()
-        @IsOptional()
-        @BlockField({ type: "boolean", nullable: true })
         showControls?: boolean;
 
-        @IsBoolean()
-        @IsOptional()
-        @BlockField({ type: "boolean", nullable: true })
         loop?: boolean;
 
         previewImage?: ExtractBlockInput<typeof PixelImageBlock>;
@@ -159,7 +144,18 @@ export function createDamVideoBlock(
         }
     }
 
-    // The child block decorators reject a missing preview image, so they may only be applied when it is supported.
+    // Applied imperatively, so that a disabled option has no field at all: it is absent from the block meta, and
+    // the whitelist validation rejects input for it. The order they are applied in is the order of the block meta.
+    if (supportsControls) {
+        for (const field of ["autoplay", "showControls", "loop"]) {
+            BlockField({ type: "boolean", nullable: true })(DamVideoBlockData.prototype, field);
+
+            BlockField({ type: "boolean", nullable: true })(DamVideoBlockInput.prototype, field);
+            IsBoolean()(DamVideoBlockInput.prototype, field);
+            IsOptional()(DamVideoBlockInput.prototype, field);
+        }
+    }
+
     if (supportsPreviewImage) {
         ChildBlock(PixelImageBlock)(DamVideoBlockData.prototype, "previewImage");
         ChildBlockInput(PixelImageBlock)(DamVideoBlockInput.prototype, "previewImage");
@@ -172,16 +168,12 @@ export function createDamVideoBlock(
             DamVideoBlockData.prototype,
             "previewImage",
         );
-    } else {
-        // The Admin can't know whether the API block has a preview image and always sends one, so it has to pass
-        // the whitelist validation. transformToBlockData discards it.
-        Allow()(DamVideoBlockInput.prototype, "previewImage");
     }
 
     class Meta extends AnnotationBlockMeta {
         get fields(): BlockMetaField[] {
             return [
-                ...super.fields.filter(isSupported),
+                ...super.fields,
                 {
                     name: "damFile",
                     kind: BlockMetaFieldKind.NestedObject,
@@ -278,7 +270,7 @@ export function createDamVideoBlock(
     class InputMeta extends AnnotationBlockMeta {
         get fields(): BlockMetaField[] {
             return [
-                ...super.fields.filter(isSupported),
+                ...super.fields,
                 {
                     name: "damFileId",
                     kind: BlockMetaFieldKind.String,

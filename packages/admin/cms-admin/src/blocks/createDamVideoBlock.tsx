@@ -26,9 +26,8 @@ type DamVideoBlockSupports = "controls" | "previewImage";
 /**
  * What the editor can set besides the video file itself. Disable anything the site implementation doesn't use.
  *
- * As long as the API block still has an option, its stored values are kept as they are and the editor just
- * can't change them anymore. Whether an option is part of the block's data at all is decided by the API block,
- * so disable the same options there.
+ * A disabled option is neither offered in the editor nor sent to the API, so disable the same options in the
+ * API block, which rejects input for an option it doesn't have.
  */
 interface DamVideoBlockFactoryOptions {
     /**
@@ -48,6 +47,7 @@ interface DamVideoBlockFactoryOptions {
      */
     previewImage?: boolean;
     /**
+     * Options left out are only hidden from the editor and still sent to the API, for the `DamVideoBlock` the API exports.
      * @deprecated Use `controls` and `previewImage` instead, which only have to state what is disabled.
      */
     supports?: DamVideoBlockSupports[];
@@ -72,6 +72,8 @@ export const createDamVideoBlock = (
 
     const supportsControls = supports?.includes("controls") ?? controls ?? true;
     const supportsPreviewImage = supports?.includes("previewImage") ?? previewImage ?? true;
+    const hasControlsInData = controls ?? true;
+    const hasPreviewImageInData = previewImage ?? true;
 
     const DamVideoBlock: BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput> = {
         ...createBlockSkeleton(),
@@ -86,13 +88,16 @@ export const createDamVideoBlock = (
 
         input2State: (input) => ({ ...input, previewImage: PixelImageBlock.input2State(input.previewImage ?? {}) }),
 
-        state2Output: (state) => ({
-            damFileId: state.damFile?.id,
-            previewImage: PixelImageBlock.state2Output(state.previewImage ?? {}),
-            autoplay: state.autoplay,
-            loop: state.loop,
-            showControls: state.showControls,
-        }),
+        state2Output: (state) => {
+            const output = {
+                damFileId: state.damFile?.id,
+                ...(hasPreviewImageInData ? { previewImage: PixelImageBlock.state2Output(state.previewImage ?? {}) } : {}),
+                ...(hasControlsInData ? { autoplay: state.autoplay, loop: state.loop, showControls: state.showControls } : {}),
+            };
+
+            // DamVideoBlockInput is generated from the exported DamVideoBlock, which always has a preview image
+            return output as DamVideoBlockInput;
+        },
 
         output2State: async (output, context) => {
             if (!output.damFileId) {
@@ -170,7 +175,9 @@ export const createDamVideoBlock = (
                 clonedOutput.damFileId = replacement.replaceWithId;
             }
 
-            clonedOutput.previewImage = PixelImageBlock.replaceDependenciesInOutput(output.previewImage ?? {}, replacements);
+            if (hasPreviewImageInData) {
+                clonedOutput.previewImage = PixelImageBlock.replaceDependenciesInOutput(output.previewImage ?? {}, replacements);
+            }
 
             return clonedOutput;
         },

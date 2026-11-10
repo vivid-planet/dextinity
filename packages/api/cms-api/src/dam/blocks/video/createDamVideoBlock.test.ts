@@ -80,12 +80,20 @@ describe("createDamVideoBlock", () => {
         expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, $$vendorVersion: 1 });
     });
 
-    it("should accept and discard the preview image the Admin sends for a block without one", async () => {
-        const block = createDamVideoBlock({ previewImage: false }, "ValidatingInputWithoutPreviewImage");
-        const input = block.blockInputFactory({ damFileId, autoplay: true, previewImage: {} });
+    it("should reject input for a disabled option", async () => {
+        const block = createDamVideoBlock({ controls: false, previewImage: false }, "ValidatingFileOnlyVideo");
+        const input = block.blockInputFactory({ damFileId, autoplay: true, showControls: true, loop: true, previewImage: {} });
+
+        const errors = await validate(input, { whitelist: true, forbidNonWhitelisted: true });
+
+        expect(errors.map((error) => error.property)).toEqual(["autoplay", "showControls", "loop", "previewImage"]);
+    });
+
+    it("should accept input for the enabled options", async () => {
+        const block = createDamVideoBlock({}, "ValidatingFullVideo");
+        const input = block.blockInputFactory({ damFileId, autoplay: true, showControls: true, loop: true, previewImage: {} });
 
         expect(await validate(input, { whitelist: true, forbidNonWhitelisted: true })).toEqual([]);
-        expect(transformToBlockSave(input.transformToBlockData())).toEqual({ damFileId, autoplay: true, $$vendorVersion: 1 });
     });
 
     it("should create input for a block without a preview image", () => {

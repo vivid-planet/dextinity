@@ -4,7 +4,7 @@
 
 Add `createDamVideoBlock` factory
 
-The `DamVideoBlock` always stores everything it has (autoplay, loop, show controls, preview image), even for sites that don't use any of it. `createDamVideoBlock` is the API counterpart of the Admin factory of the same name: disable what the site doesn't use, and it is part of neither the block's data nor its input, so it doesn't show up in `blocks.generated.ts` and isn't stored for new content.
+The `DamVideoBlock` always stores everything it has (autoplay, loop, show controls, preview image), even for sites that don't use any of it. `createDamVideoBlock` is the API counterpart of the Admin factory of the same name: disable what the site doesn't use, and it is part of neither the block's data nor its input, so it doesn't show up in `blocks.generated.ts` and isn't stored for new content. Sending it as input is rejected by validation.
 Values that were stored before an option was disabled survive reading, so disabling an option leaves existing content untouched, but they are dropped the next time an editor saves the block.
 
 The options are enabled by default and disabled by passing `false`:

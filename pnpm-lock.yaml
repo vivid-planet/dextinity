@@ -726,7 +726,7 @@ importers:
         specifier: 9.0.0-rc04
         version: 9.0.0-rc04(react@19.3.1)
       filesize:
-        specifier: ^11.0.29
+        specifier: ^11.0.30
         version: 11.0.30
       ioredis:
         specifier: ^6.0.0
@@ -1465,7 +1465,7 @@ importers:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)(supports-color@10.2.2)
       fast-xml-parser:
-        specifier: ^5.11.2
+        specifier: ^5.12.0
         version: 5.12.0
       npm-run-all2:
         specifier: ^9.0.4

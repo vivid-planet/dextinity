@@ -65,6 +65,61 @@ describe("createOneOfBlock", () => {
             expect(errors[0]).toMatchObject({ property: "attachedBlocks", constraints: { isArray: expect.any(String) } });
         });
 
+        const externalLinkItem = {
+            type: "external" as const,
+            props: { targetUrl: "https://example.com", openInNewWindow: false, noFollow: false },
+        };
+
+        it("should accept an activeType with a matching entry in attachedBlocks", async () => {
+            const input = OneOfBlock.blockInputFactory({ attachedBlocks: [externalLinkItem], activeType: "external" });
+
+            const errors = await validate(input, validationOptions);
+
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should report an activeType without a matching entry in attachedBlocks", async () => {
+            const input = OneOfBlock.blockInputFactory({ attachedBlocks: [], activeType: "external" });
+
+            const errors = await validate(input, validationOptions);
+
+            expect(errors).toHaveLength(1);
+            expect(errors[0]).toMatchObject({
+                property: "activeType",
+                constraints: { isAttachedBlockType: 'activeType "external" has no matching entry in attachedBlocks' },
+            });
+        });
+
+        it("should accept a missing activeType when allowEmpty is true", async () => {
+            const input = OneOfBlock.blockInputFactory({ attachedBlocks: [] } as never);
+
+            const errors = await validate(input, validationOptions);
+
+            expect(errors).toHaveLength(0);
+        });
+
+        it("should report a null activeType when allowEmpty is true", async () => {
+            const input = OneOfBlock.blockInputFactory({ attachedBlocks: [], activeType: null } as never);
+
+            const errors = await validate(input, validationOptions);
+
+            expect(errors).toHaveLength(1);
+            expect(errors[0]).toMatchObject({ property: "activeType", constraints: { isIn: expect.any(String) } });
+        });
+
+        it("should report a null activeType when allowEmpty is false", async () => {
+            const NonEmptyOneOfBlock = createOneOfBlock(
+                { supportedBlocks: { internal: InternalLinkBlock, external: ExternalLinkBlock }, allowEmpty: false },
+                "NonEmptyOneOfBlockInputValidationTest",
+            );
+            const input = NonEmptyOneOfBlock.blockInputFactory({ attachedBlocks: [externalLinkItem], activeType: null } as never);
+
+            const errors = await validate(input, validationOptions);
+
+            expect(errors).toHaveLength(1);
+            expect(errors[0]).toMatchObject({ property: "activeType", constraints: { isIn: expect.any(String) } });
+        });
+
         it("should report an item that is an array", async () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const input = OneOfBlock.blockInputFactory({ attachedBlocks: [[]] } as any);

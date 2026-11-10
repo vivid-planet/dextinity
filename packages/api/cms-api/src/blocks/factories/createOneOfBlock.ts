@@ -1,8 +1,18 @@
 import { Type } from "@nestjs/common";
 import { plainToInstance, Transform } from "class-transformer";
-import { ArrayMinSize, IsArray, IsIn, IsObject, ValidateIf, ValidateNested } from "class-validator";
+import {
+    ArrayMinSize,
+    IsArray,
+    IsIn,
+    IsObject,
+    Validate,
+    ValidateIf,
+    ValidateNested,
+    ValidationArguments,
+    ValidatorConstraint,
+    ValidatorConstraintInterface,
+} from "class-validator";
 
-import { IsUndefinable } from "../../common/validators/is-undefinable";
 import {
     Block,
     BlockContext,
@@ -201,6 +211,22 @@ export function BaseOneOfBlockItemInput<BlockMap extends BaseBlockMap>({
     return OneOfBlockItemInput;
 }
 
+@ValidatorConstraint({ name: "isAttachedBlockType" })
+class IsAttachedBlockTypeConstraint implements ValidatorConstraintInterface {
+    validate(activeType: unknown, { object }: ValidationArguments): boolean {
+        if (activeType == null) {
+            return true;
+        }
+
+        const { attachedBlocks } = object as { attachedBlocks?: unknown };
+        return Array.isArray(attachedBlocks) && attachedBlocks.some((attachedBlock) => attachedBlock?.type === activeType);
+    }
+
+    defaultMessage({ value }: ValidationArguments): string {
+        return `activeType "${value}" has no matching entry in attachedBlocks`;
+    }
+}
+
 export function BaseOneOfBlockInput<
     BlockMap extends BaseBlockMap,
     Data extends BlockDataInterface = BlockDataInterface,
@@ -232,8 +258,9 @@ export function BaseOneOfBlockInput<
         @ValidateNested({ each: true })
         attachedBlocks: OneOfBlockInputInterface<BlockMap, Data, Input>["attachedBlocks"];
 
-        @IsUndefinable()
+        @ValidateIf((_, activeType) => !allowEmpty || activeType !== undefined)
         @IsIn(supportedBlockTypes)
+        @Validate(IsAttachedBlockTypeConstraint)
         @BlockField({ nullable: allowEmpty })
         activeType?: string;
 

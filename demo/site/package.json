@@ -57,7 +57,7 @@
         "embla-carousel-accessibility": "9.0.0-rc04",
         "embla-carousel-auto-height": "9.0.0-rc04",
         "embla-carousel-react": "9.0.0-rc04",
-        "filesize": "^11.0.29",
+        "filesize": "^11.0.30",
         "ioredis": "^6.0.0",
         "lru-cache": "^11.5.3",
         "mjml": "^4.18.0",

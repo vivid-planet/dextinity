@@ -112,7 +112,7 @@
         "class-validator": "^0.15.1",
         "eslint": "^9.39.5",
         "express": "^5.3.0",
-        "graphql": "^16.14.2",
+        "graphql": "^16.15.0",
         "nest-commander": "^3.21.0",
         "npm-run-all2": "^9.0.4",
         "prettier": "^3.9.10",

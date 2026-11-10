@@ -1,5 +1,55 @@
 # @comet/site-react
 
+## 10.14.0
+
+### Minor Changes
+
+- 1000778: Allow rendering `PreviewSkeleton` as a server component
+
+    `PreviewSkeleton` is no longer a client component. When `hasContent` is `true`, it renders its children directly, so no client reference carrying `title` and `children` is added to the RSC payload. The placeholder shown for empty content is still rendered on the client, and its behavior in the block and site preview is unchanged.
+
+- 1595266: Add a `textAlign` option to `createTipTapRichTextBlock`
+
+    Editors can align paragraphs and headings left, center, right, or justified, using the toolbar or the shortcuts `Mod-Shift-L`, `Mod-Shift-E`, `Mod-Shift-R`, and `Mod-Shift-J`.
+    The alignment is stored in the text block's `textAlign` attribute.
+    The option is disabled by default and must be enabled in both the API and the Admin:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: true });
+    ```
+
+    To enable only some of the alignments, pass an object:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: { left: true, center: true } });
+    ```
+
+    `renderTipTapRichText` renders the alignment as the text block's `text-align` style.
+    A custom `textBlock` handler has to apply `node.attrs.textAlign` itself.
+
+### Patch Changes
+
+- 9ed0039: Treat a document with only empty lists as empty in `hasTipTapRichTextContent`
+
+    An empty list renders nothing but a bullet or a number, so a TipTap rich text that contains only empty lists, list items and text blocks no longer counts as content.
+
+## 10.13.1
+
+### Patch Changes
+
+- 94991f8: Update `jose` to v6
+
+## 10.13.0
+
+## 10.12.0
+
+### Patch Changes
+
+- ea0ad37: Reload changed persisted queries during development
+
+    `persistedQueryRoute` loaded the persisted queries file only once. Queries and fragments that changed while the dev server was running were ignored until a restart: a changed query failed with `PersistedQueryNotFound`, and a changed fragment silently sent the old fragment to the API.
+    Outside production, the route now reloads the file whenever it changes.
+
 ## 10.11.0
 
 ### Minor Changes

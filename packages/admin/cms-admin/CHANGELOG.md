@@ -1,5 +1,171 @@
 # @comet/cms-admin
 
+## 10.14.0
+
+### Minor Changes
+
+- da2f8e6: Show a "No pages yet" message in `PagesPage` when the page tree is empty
+- 5db7734: Add an optional redirect type to choose between temporary and permanent redirects
+
+    Redirects have a new `redirectType` field (`temporary` or `permanent`), which defaults to `temporary` for new and existing redirects.
+    The site must handle the redirect type, so the setting is hidden in the admin by default. To enable it, first respect the redirect type in the site:
+
+    ```tsx
+    const { redirectBySource } = await graphQLFetch(/* query including redirectBySource { target redirectType } */);
+
+    if (redirectBySource.redirectType === "permanent") {
+        permanentRedirect(destination); // 308
+    } else {
+        redirect(destination); // 307
+    }
+    ```
+
+    Then enable the setting in the admin:
+
+    ```tsx title="App.tsx"
+    <DextinityConfigProvider
+        redirects={{
+            scopeParts: ["domain"],
+            enableRedirectType: true,
+        }}
+    >
+    ```
+
+    The redirect type only applies to path redirects.
+
+- 1595266: Add a `textAlign` option to `createTipTapRichTextBlock`
+
+    Editors can align paragraphs and headings left, center, right, or justified, using the toolbar or the shortcuts `Mod-Shift-L`, `Mod-Shift-E`, `Mod-Shift-R`, and `Mod-Shift-J`.
+    The alignment is stored in the text block's `textAlign` attribute.
+    The option is disabled by default and must be enabled in both the API and the Admin:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: true });
+    ```
+
+    To enable only some of the alignments, pass an object:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: { left: true, center: true } });
+    ```
+
+    `renderTipTapRichText` renders the alignment as the text block's `text-align` style.
+    A custom `textBlock` handler has to apply `node.attrs.textAlign` itself.
+
+### Patch Changes
+
+- de4cc90: Prevent lost updates when several forms in a block change before the next render
+
+    `createFinalFormBlock` resolved each update against the field value of the render that created the handler.
+    When two forms in the block saved one after the other before the next render, for instance after a text edit and a link type change in a `createTextLinkBlock`, the second update overwrote the first one, and both changes could be lost.
+    The preview image of `createDamVideoBlock`, `YouTubeVideoBlock` and `VimeoVideoBlock` had the same problem together with the video options form.
+
+- de4cc90: Prevent an endless autosave loop in `BlocksFinalForm`
+
+    `BlocksFinalForm` scheduled an autosave on every render while the form was dirty, and each autosave called the `onSubmit` of the render that scheduled it.
+    In large blocks, these outdated autosaves wrote old block states, which made other forms dirty again, and the admin stopped responding.
+    Now each form has at most one pending autosave, which calls the latest `onSubmit` and only runs when the form values changed since the last autosave.
+
+- c586a3d: Fix page tree crashing when switching the category while a search without matches is active
+- def6e3e: Fix the page select dialog crashing when it opens with a selected page that isn't in the list yet
+- e6909e2: Prevent the runtime of a job from being truncated in the jobs grid of the CronJobs module
+
+    The runtime column is now as wide as in the CronJobs grid and the publisher, so start time, completion time and duration fit without being cut off.
+
+- e131e00: Show an error inside `LatestBuildsDashboardWidget` when the builds can't be loaded
+
+    Previously, a failing `builds` query replaced the whole dashboard with an error and opened the global error dialog. On deployments without Kubernetes, where the query is always forbidden, the dialog wrongly reported an expired login session.
+
+- Updated dependencies [1595266]
+- Updated dependencies [45cb8e2]
+    - @dextinity/admin-icons@10.14.0
+    - @dextinity/admin@10.14.0
+    - @dextinity/admin-rte@10.14.0
+
+## 10.13.1
+
+### Patch Changes
+
+- Updated dependencies [b6fde8f]
+    - @dextinity/admin@10.13.1
+    - @dextinity/admin-rte@10.13.1
+    - @dextinity/admin-icons@10.13.1
+
+## 10.13.0
+
+### Minor Changes
+
+- ad3f6d5: Make blocking files with an invalid license opt-in with `blockFilesWithInvalidLicense`
+
+    A project decides whether files whose license has expired or isn't valid yet are blocked. While the option is off, which is the default, such files are delivered as before blocking was added: their URLs don't answer `410 Gone`, blocks don't hide them or replace them with the fallback image, and the DAM hides its "Settings" action, where the fallback image is chosen.
+
+    A project that blocks such files since blocking was added needs to enable the option in the API and in the Admin:
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            enableLicenseFeature: true,
+            blockFilesWithInvalidLicense: true,
+            // ...
+        },
+    });
+    ```
+
+    ```tsx
+    <DextinityConfigProvider dam={{ enableLicenseFeature: true, blockFilesWithInvalidLicense: true /* ... */ }}>
+    ```
+
+### Patch Changes
+
+- 46a1a08: Render list items in `createTipTapRichTextBlock` through the list's `element`
+
+    The editor ignored the `element` of `orderedList` and `unorderedList`. A list item was rendered through the style its text block kept from before it was turned into a list item, or as a plain `p` without a style.
+    A text block in a list item is now rendered through the list's style, then the list's `element`, then the text block's style, then the text block's `element`.
+
+- b16df0b: Update `react-hotkeys-hook` to v5
+    - @dextinity/admin@10.13.0
+    - @dextinity/admin-icons@10.13.0
+    - @dextinity/admin-rte@10.13.0
+
+## 10.12.0
+
+### Minor Changes
+
+- ffcbdd7: Keep the text block style select of `createTipTapRichTextBlock` in the toolbar where the selected node has no styles
+
+    Previously, the toolbar hid the select where the selected node had no styles, for instance in a list without styles, and the toolbar buttons to its right moved to the left.
+    Now the select stays in the toolbar and is disabled there.
+    Blocks without any text block styles still show no select.
+
+### Patch Changes
+
+- 1b288ab: Copy referenced DAM assets to the target scope when pasting blocks
+
+    Previously, only pasting pages in the page tree copied the referenced DAM assets. Blocks pasted into another scope kept referencing the assets of the source scope, so deleting an asset in the source scope broke the page it was pasted into.
+
+    Pasting blocks now behaves like pasting pages: assets that don't live in the target DAM scope are copied into an inbox folder of the target scope (reusing an existing copy if there is one) and the pasted blocks reference the copies. Pasting within the same scope is unchanged.
+
+    Like when pasting pages, dependencies that can't be carried over to another scope are removed when pasting blocks into another content scope, e.g., links to pages of the source scope.
+
+- 2735896: TipTap Rich Text Block: disable the horizontal rule
+
+    The schema contained StarterKit's `horizontalRule` node, so the editor inserted one when typing `---`, `___ ` or `*** ` at the start of a text block. Neither the site nor the mail renderer renders it, so it silently disappeared on the site. The API now rejects content containing a `horizontalRule`, and the editor no longer creates one.
+
+    Remove horizontal rules from existing content before saving it again, as saving fails otherwise.
+
+- eb77fc2: Clarify the error thrown by `createOneOfBlock` when `activeType` has no entry in `attachedBlocks`
+
+    The message now names the active type and the types that `attachedBlocks` holds.
+    A missing `x-include-invisible-content` HTTP header is mentioned only as one possible cause, since the state can also come from malformed input to `output2State`.
+
+- 3d1fb7c: Keep the target of links and the data of child blocks when copying and pasting in `createTipTapRichTextBlock`
+
+    The editor wrote the data of links and child blocks into the clipboard as `[object Object]`, so a pasted link had no target and a pasted child block lost its content.
+    Saving a rich text with such a link failed.
+    - @dextinity/admin@10.12.0
+    - @dextinity/admin-icons@10.12.0
+    - @dextinity/admin-rte@10.12.0
+
 ## 10.11.0
 
 ### Minor Changes

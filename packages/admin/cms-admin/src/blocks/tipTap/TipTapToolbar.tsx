@@ -2,6 +2,10 @@ import { greyPalette, Tooltip } from "@dextinity/admin";
 import {
     Add,
     MoreHorizontal,
+    RteAlignCenter,
+    RteAlignJustify,
+    RteAlignLeft,
+    RteAlignRight,
     RteBold,
     RteClearLink,
     RteIndentDecrease,
@@ -37,16 +41,18 @@ import {
 import { grey as muiGreyPalette } from "@mui/material/colors";
 import { type Editor, useEditorState } from "@tiptap/react";
 import { type ForwardRefExoticComponent, type MouseEvent, type ReactNode, type RefAttributes, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
 import type { BlockInterface, BlockState, LinkBlockInterface } from "../types";
 import type { TipTapChildBlock, TipTapInlineStyle, TipTapPlaceholder, TipTapResolvedOptions } from "./createTipTapRichTextBlock";
+import type { TipTapTextAlign } from "./extensions/textBlockAttributes";
 import { toggleTextBlockList } from "./extensions/TextBlockList";
 import { findListNodeType } from "./findListNodeType";
 import { liftOutOfList } from "./liftOutOfList";
 import {
     findTextBlock,
     getStyledNodes,
+    hasTextBlockStyles,
     isTextBlockAllowedInListItem,
     orderedListName,
     type TipTapResolvedList,
@@ -93,6 +99,7 @@ const ToolbarButton = ({
     editor,
     icon: Icon,
     tooltip,
+    ariaLabel,
     isActive,
     disabled,
     onToggle,
@@ -100,6 +107,7 @@ const ToolbarButton = ({
     editor: Editor;
     icon: ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>;
     tooltip: ReactNode;
+    ariaLabel?: string;
     isActive?: string | boolean;
     disabled?: boolean;
     onToggle: () => void;
@@ -108,6 +116,7 @@ const ToolbarButton = ({
         <Box
             component="button"
             type="button"
+            aria-label={ariaLabel}
             disabled={disabled}
             onMouseDown={(e: MouseEvent) => {
                 e.preventDefault();
@@ -142,6 +151,33 @@ const toolbarSlotSx = {
 } as const;
 
 const ToolbarGroup = ({ children }: { children: ReactNode }) => <Box sx={toolbarSlotSx}>{children}</Box>;
+
+const textAlignMessages = defineMessages({
+    left: { id: "dextinity.blocks.tipTapRichText.alignLeft.tooltip", defaultMessage: "Align left" },
+    center: { id: "dextinity.blocks.tipTapRichText.alignCenter.tooltip", defaultMessage: "Align center" },
+    right: { id: "dextinity.blocks.tipTapRichText.alignRight.tooltip", defaultMessage: "Align right" },
+    justify: { id: "dextinity.blocks.tipTapRichText.alignJustify.tooltip", defaultMessage: "Justify" },
+});
+
+const textAlignIcons: Record<TipTapTextAlign, ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>> = {
+    left: RteAlignLeft,
+    center: RteAlignCenter,
+    right: RteAlignRight,
+    justify: RteAlignJustify,
+};
+
+const textAlignOf = (attrs: Record<string, unknown>): TipTapTextAlign => (attrs.textAlign as TipTapTextAlign | null) ?? "left";
+
+function isSelectionAligned(editor: Editor, textAlign: TipTapTextAlign) {
+    const { from, to } = editor.state.selection;
+    let isAligned = true;
+    editor.state.doc.nodesBetween(from, to, (node) => {
+        if (node.type.name === "textBlock" && textAlignOf(node.attrs) !== textAlign) {
+            isAligned = false;
+        }
+    });
+    return isAligned;
+}
 
 const selectFormControlSx = {
     [`& .${inputBaseClasses.root}`]: {
@@ -240,6 +276,7 @@ export const TipTapToolbar = ({
                 activeTextBlock: activeTextBlock.name,
                 activeStyledNode,
                 activeTextBlockStyle: (attrs.textBlockStyle as string) ?? "",
+                activeTextAlign: textAlignOf(attrs),
                 canUndo: e.can().undo(),
                 canRedo: e.can().redo(),
                 canIndent,
@@ -436,11 +473,12 @@ export const TipTapToolbar = ({
                     </FormControl>
                 </ToolbarGroup>
             )}
-            {applicableTextBlockStyles.length > 0 && (
+            {hasTextBlockStyles(styledNodes) && (
                 <ToolbarGroup>
                     <FormControl sx={selectFormControlSx}>
                         <Select
                             value={editorState.activeTextBlockStyle}
+                            disabled={applicableTextBlockStyles.length === 0}
                             onChange={handleTextBlockStyleChange}
                             displayEmpty
                             variant="filled"
@@ -574,6 +612,25 @@ export const TipTapToolbar = ({
                                 </Menu>
                             </>
                         ))}
+                </ToolbarGroup>
+            )}
+            {resolvedOptions.textAlign.length > 0 && (
+                <ToolbarGroup>
+                    {resolvedOptions.textAlign.map((textAlign) => (
+                        <ToolbarButton
+                            key={textAlign}
+                            editor={editor}
+                            icon={textAlignIcons[textAlign]}
+                            tooltip={<FormattedMessage {...textAlignMessages[textAlign]} />}
+                            ariaLabel={intl.formatMessage(textAlignMessages[textAlign])}
+                            isActive={editorState.activeTextAlign === textAlign}
+                            onToggle={() => {
+                                if (!isSelectionAligned(editor, textAlign)) {
+                                    editor.chain().focus().updateAttributes("textBlock", { textAlign }).run();
+                                }
+                            }}
+                        />
+                    ))}
                 </ToolbarGroup>
             )}
             {lists && (

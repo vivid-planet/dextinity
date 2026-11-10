@@ -1,4 +1,4 @@
 {
     "extends": "./tsconfig.json",
-    "include": ["next-env.d.ts", ".storybook/**/*.ts", ".storybook/**/*.tsx", "vitest.config.ts"]
+    "include": ["next-env.d.ts", ".storybook/**/*.ts", ".storybook/**/*.tsx"]
 }

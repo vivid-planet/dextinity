@@ -22,8 +22,8 @@ import {
     TraversableTransformBlockResponse,
 } from "../block";
 import { AnnotationBlockMeta, BlockField } from "../decorators/field";
-import type { MigrateOptions } from "../migrations/types";
 import { BlockFactoryNameOrOptions } from "./types";
+import { withDefaultDescription } from "./withDefaultDescription";
 
 type BaseBlockMap = Record<string, Block<BlockDataInterface, BlockInputInterface>>;
 
@@ -257,6 +257,17 @@ export type OneOfBlock<
     Input extends SimpleBlockInputInterface<Data> = SimpleBlockInputInterface<Data>,
 > = Block<OneOfBlockDataInterface<BlockMap, Data>, OneOfBlockInputInterface<BlockMap, Data, Input>>;
 
+export function createOneOfBlockDescription({ allowEmpty }: { allowEmpty: boolean }): string {
+    return [
+        "`attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field.",
+        "`activeType` names the entry in use, so an entry with that `type` must be in the list.",
+        "Entries of other types may stay in the list and aren't shown.",
+        allowEmpty
+            ? '`activeType` `null` means the block is empty, e.g. `{"attachedBlocks":[],"activeType":null}`.'
+            : "The block can't be empty, so `activeType` must be set.",
+    ].join(" ");
+}
+
 export interface CreateOneOfBlockOptions<
     BlockMap extends BaseBlockMap,
     Data extends BlockDataInterface = BlockDataInterface,
@@ -330,17 +341,10 @@ export function createOneOfBlock<
         }
     }
 
-    let name: string;
-    let description: string | undefined;
-    let migrate: MigrateOptions | undefined;
-
-    if (typeof nameOrOptions === "string") {
-        name = nameOrOptions;
-    } else {
-        name = nameOrOptions.name;
-        description = nameOrOptions.description;
-        migrate = nameOrOptions.migrate;
-    }
+    const { name, description, migrate } = withDefaultDescription(
+        nameOrOptions,
+        `One of several blocks. ${createOneOfBlockDescription({ allowEmpty })}`,
+    );
 
     return createBlock(OneOfBlockData, OneOfBlockInput, {
         name,

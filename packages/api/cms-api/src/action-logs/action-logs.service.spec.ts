@@ -14,6 +14,15 @@ import { ActionLogsService } from "./action-logs.service";
 @ScopedEntity(() => ({ domain: "main", language: "en" }))
 class ScopedByCallback {}
 
+@ScopedEntity(() => undefined as never)
+class ScopedByCallbackReturningNothing {}
+
+@ScopedEntity(() => [])
+class ScopedByCallbackReturningEmptyList {}
+
+@ScopedEntity(() => [undefined, { domain: "main", language: "en" }] as never)
+class ScopedByCallbackReturningListWithEmptyEntry {}
+
 @ActionLogs()
 @RequiredPermission("news" as Permission)
 class WithoutScope {}
@@ -86,5 +95,21 @@ describe("ActionLogsService.getScopeFromEntity", () => {
 
     it("returns undefined for an entity without a scope", async () => {
         await expect(service.getScopeFromEntity(new WithoutScope())).resolves.toBeUndefined();
+    });
+
+    it("returns undefined when the scope property is empty", async () => {
+        await expect(service.getScopeFromEntity(Object.assign(new WithScopeProperty(), { scope: undefined }))).resolves.toBeUndefined();
+        await expect(service.getScopeFromEntity(Object.assign(new WithScopeProperty(), { scope: null }))).resolves.toBeUndefined();
+    });
+
+    it("returns undefined when @ScopedEntity resolves to nothing", async () => {
+        await expect(service.getScopeFromEntity(new ScopedByCallbackReturningNothing())).resolves.toBeUndefined();
+        await expect(service.getScopeFromEntity(new ScopedByCallbackReturningEmptyList())).resolves.toBeUndefined();
+    });
+
+    it("drops empty entries from the resolved scopes", async () => {
+        await expect(service.getScopeFromEntity(new ScopedByCallbackReturningListWithEmptyEntry())).resolves.toEqual([
+            { domain: "main", language: "en" },
+        ]);
     });
 });

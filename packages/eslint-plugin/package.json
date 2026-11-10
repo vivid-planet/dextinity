@@ -2,8 +2,13 @@
     "name": "@dextinity/eslint-plugin",
     "version": "10.14.0",
     "description": "A set of ESLint rules and configurations for Dextinity projects",
-    "type": "commonjs",
-    "main": "lib/index.js",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./lib/index.d.ts",
+            "default": "./lib/index.js"
+        }
+    },
     "license": "BSD-2-Clause",
     "sideEffects": false,
     "files": [

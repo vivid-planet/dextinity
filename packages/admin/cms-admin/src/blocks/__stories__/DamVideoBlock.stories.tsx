@@ -121,8 +121,8 @@ export const FileOnly: StoryObj<typeof FileOnlyStory> = {
             expect(canvas.queryByRole("button", { name: "Choose image" })).not.toBeInTheDocument();
         });
 
-        await step("The preview image stays part of the data, it is only hidden from the editor", async () => {
-            expect(readState(canvas).previewImage).toEqual(FileOnlyBlock.defaultValues().previewImage);
+        await step("The preview image isn't part of the data", async () => {
+            expect(readState(canvas)).not.toHaveProperty("previewImage");
         });
     },
 };

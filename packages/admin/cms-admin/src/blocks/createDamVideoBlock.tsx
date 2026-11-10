@@ -16,10 +16,10 @@ import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { VideoOptionsFields } from "./helpers/VideoOptionsFields";
 import { PixelImageBlock } from "./PixelImageBlock";
-import { BlockCategory, type BlockDependency, type BlockInterface, type BlockState } from "./types";
+import { BlockCategory, type BlockDependency, type BlockInterface, type BlockPreviewStateInterface, type BlockState } from "./types";
 import { resolveNewState } from "./utils";
 
-export type DamVideoBlockState = Omit<DamVideoBlockData, "previewImage"> & { previewImage: BlockState<typeof PixelImageBlock> };
+export type DamVideoBlockState = Omit<DamVideoBlockData, "previewImage"> & { previewImage?: BlockState<typeof PixelImageBlock> };
 
 type DamVideoBlockSupports = "controls" | "previewImage";
 
@@ -82,16 +82,19 @@ export const createDamVideoBlock = (
 
         displayName: <FormattedMessage id="dextinity.blocks.damVideo" defaultMessage="Video (CMS Asset)" />,
 
-        defaultValues: () => ({ showControls: true, previewImage: PixelImageBlock.defaultValues() }),
+        defaultValues: () => ({ showControls: true, ...(hasPreviewImageInData ? { previewImage: PixelImageBlock.defaultValues() } : {}) }),
 
         category: BlockCategory.Media,
 
-        input2State: (input) => ({ ...input, previewImage: PixelImageBlock.input2State(input.previewImage ?? {}) }),
+        input2State: ({ previewImage, ...input }) => ({
+            ...input,
+            ...(hasPreviewImageInData ? { previewImage: PixelImageBlock.input2State(previewImage) } : {}),
+        }),
 
         state2Output: (state) => {
             const output = {
                 damFileId: state.damFile?.id,
-                ...(hasPreviewImageInData ? { previewImage: PixelImageBlock.state2Output(state.previewImage ?? {}) } : {}),
+                ...(hasPreviewImageInData && state.previewImage ? { previewImage: PixelImageBlock.state2Output(state.previewImage) } : {}),
                 ...(hasControlsInData ? { autoplay: state.autoplay, loop: state.loop, showControls: state.showControls } : {}),
             };
 
@@ -105,7 +108,7 @@ export const createDamVideoBlock = (
                     autoplay: output.autoplay,
                     loop: output.loop,
                     showControls: output.showControls,
-                    previewImage: await PixelImageBlock.output2State(output.previewImage ?? {}, context),
+                    ...(hasPreviewImageInData ? { previewImage: await PixelImageBlock.output2State(output.previewImage, context) } : {}),
                 };
             }
 
@@ -137,17 +140,22 @@ export const createDamVideoBlock = (
                 autoplay: output.autoplay,
                 loop: output.loop,
                 showControls: output.showControls,
-                previewImage: await PixelImageBlock.output2State(output.previewImage ?? {}, context),
+                ...(hasPreviewImageInData ? { previewImage: await PixelImageBlock.output2State(output.previewImage, context) } : {}),
             };
         },
 
-        createPreviewState: (state, previewContext) => ({
-            ...state,
-            autoplay: false,
-            loop: false,
-            previewImage: PixelImageBlock.createPreviewState(state.previewImage ?? {}, previewContext),
-            adminMeta: { route: previewContext.parentUrl },
-        }),
+        createPreviewState: ({ previewImage, ...state }, previewContext) => {
+            const previewState = {
+                ...state,
+                autoplay: false,
+                loop: false,
+                ...(previewImage ? { previewImage: PixelImageBlock.createPreviewState(previewImage, previewContext) } : {}),
+                adminMeta: { route: previewContext.parentUrl },
+            };
+
+            // DamVideoBlockData is generated from the exported DamVideoBlock, which always has a preview image
+            return previewState as DamVideoBlockData & BlockPreviewStateInterface;
+        },
 
         dependencies: (state) => {
             const dependencies: BlockDependency[] = [];
@@ -162,7 +170,9 @@ export const createDamVideoBlock = (
                 });
             }
 
-            dependencies.push(...(PixelImageBlock.dependencies?.(state.previewImage ?? {}) ?? []));
+            if (state.previewImage) {
+                dependencies.push(...(PixelImageBlock.dependencies?.(state.previewImage) ?? []));
+            }
 
             return dependencies;
         },
@@ -176,7 +186,7 @@ export const createDamVideoBlock = (
             }
 
             if (hasPreviewImageInData) {
-                clonedOutput.previewImage = PixelImageBlock.replaceDependenciesInOutput(output.previewImage ?? {}, replacements);
+                clonedOutput.previewImage = PixelImageBlock.replaceDependenciesInOutput(output.previewImage, replacements);
             }
 
             return clonedOutput;
@@ -200,7 +210,7 @@ export const createDamVideoBlock = (
                             preview={<Video fontSize="large" color="primary" />}
                         />
                         {supportsControls && <VideoOptionsFields />}
-                        {supportsPreviewImage && (
+                        {supportsPreviewImage && state.previewImage && (
                             <BlockAdminComponentSection
                                 title={<FormattedMessage id="dextinity.blocks.video.previewImage" defaultMessage="Preview Image" />}
                             >
@@ -209,7 +219,10 @@ export const createDamVideoBlock = (
                                     updateState={(setStateAction) => {
                                         updateState((prevState) => ({
                                             ...prevState,
-                                            previewImage: resolveNewState({ prevState: prevState.previewImage, setStateAction }),
+                                            previewImage: resolveNewState({
+                                                prevState: prevState.previewImage ?? PixelImageBlock.defaultValues(),
+                                                setStateAction,
+                                            }),
                                         }));
                                     }}
                                 />

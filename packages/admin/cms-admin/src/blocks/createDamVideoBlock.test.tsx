@@ -76,13 +76,12 @@ describe("createDamVideoBlock", () => {
     });
 
     describe("when the API block doesn't support a preview image", () => {
-        // Its stored data has no previewImage at all, so every state and output of the Admin block has to cope
-        // with a missing one.
         const block = createDamVideoBlock({ name: "TeaserVideo", controls: false, previewImage: false });
         const storedInput = { damFileId: "video-1" } as unknown as Parameters<typeof block.input2State>[0];
 
-        it("should turn a missing preview image into an empty one", () => {
-            expect(block.input2State(storedInput).previewImage).toEqual({});
+        it("should have no preview image in its state", () => {
+            expect(block.defaultValues()).not.toHaveProperty("previewImage");
+            expect(block.input2State(storedInput)).not.toHaveProperty("previewImage");
         });
 
         it("should create a preview state", () => {
@@ -109,7 +108,7 @@ describe("createDamVideoBlock", () => {
             const apolloClient = { query: async () => ({ data: { damFile: videoDamFile } }) };
             const context = { apolloClient } as unknown as Parameters<typeof block.output2State>[1];
 
-            await expect(block.output2State(storedInput, context)).resolves.toMatchObject({ previewImage: {} });
+            await expect(block.output2State(storedInput, context)).resolves.not.toHaveProperty("previewImage");
         });
 
         it("should replace the video file without a preview image", () => {

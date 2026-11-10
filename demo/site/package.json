@@ -101,7 +101,7 @@
         "npm-run-all2": "^9.0.4",
         "playwright": "^1.65.0",
         "prettier": "^3.9.10",
-        "sass": "^1.107.1",
+        "sass": "^1.108.1",
         "schema-dts": "^2.1.0",
         "storybook": "^10.6.4",
         "stylelint": "^17.16.0",

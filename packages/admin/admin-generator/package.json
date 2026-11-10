@@ -50,7 +50,7 @@
         "change-case": "^5.4.4",
         "commander": "^15.1.0",
         "glob": "^14.0.4",
-        "graphql": "^16.14.2",
+        "graphql": "^16.15.0",
         "jiti": "^2.7.0",
         "object-path": "^0.11.8",
         "pluralize": "^8.0.0",
@@ -71,7 +71,7 @@
         "react": "^19.3.1",
         "react-dom": "^19.3.1",
         "react-intl": "^7.1.14",
-        "tsdown": "0.23.5",
+        "tsdown": "0.23.7",
         "vitest": "^5.1.0"
     },
     "peerDependencies": {

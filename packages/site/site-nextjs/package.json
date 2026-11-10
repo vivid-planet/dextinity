@@ -60,14 +60,10 @@
     },
     "dependencies": {
         "@dextinity/site-react": "workspace:*",
-        "clsx": "^2.1.1",
         "commander": "^15.0.0",
-        "fast-equals": "^6.2.2",
         "jose": "^6.2.15",
         "mime": "^4.1.2",
-        "scroll-into-view-if-needed": "^3.1.0",
-        "server-only": "^0.0.1",
-        "usehooks-ts": "^3.1.1"
+        "server-only": "^0.0.1"
     },
     "devDependencies": {
         "@aws-sdk/client-s3": "^3.1161.0",

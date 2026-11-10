@@ -6,10 +6,13 @@
         "url": "https://github.com/vivid-planet/dextinity",
         "directory": "packages/admin/admin-babel-preset"
     },
-    "type": "commonjs",
+    "type": "module",
     "description": "Babel preset for Dextinity Admin packages",
     "license": "BSD-2-Clause",
     "main": "index.js",
+    "exports": {
+        ".": "./index.js"
+    },
     "files": [
         "index.js"
     ],

@@ -1,5 +1,6 @@
-import { IsEmail, IsOptional } from "class-validator";
+import { IsEmail } from "class-validator";
 
+import { IsUndefinable } from "../common/validators/is-undefinable";
 import { BlockData, BlockInput, blockInputToData, createBlock } from "./block";
 import { BlockField } from "./decorators/field";
 
@@ -9,7 +10,7 @@ class EmailLinkBlockData extends BlockData {
 }
 
 class EmailLinkBlockInput extends BlockInput {
-    @IsOptional()
+    @IsUndefinable()
     @IsEmail()
     @BlockField({ nullable: true })
     email?: string;

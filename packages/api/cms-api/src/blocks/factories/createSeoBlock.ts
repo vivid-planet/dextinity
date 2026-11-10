@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
-import { IsBoolean, IsEnum, IsJSON, IsOptional, IsString, IsUrl, ValidateNested } from "class-validator";
+import { IsBoolean, IsEnum, IsJSON, IsString, IsUrl, ValidateNested } from "class-validator";
 
+import { IsUndefinable } from "../../common/validators/is-undefinable";
 import { PixelImageBlock } from "../../dam/blocks/pixel-image.block";
 import {
     Block,
@@ -147,24 +148,24 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
 
     class SeoBlockInput extends BlockInput {
         @IsString()
-        @IsOptional()
+        @IsUndefinable()
         @BlockField({ nullable: true })
         htmlTitle?: string;
 
         // Meta
         @IsString()
-        @IsOptional()
+        @IsUndefinable()
         @BlockField({ nullable: true })
         metaDescription?: string;
 
         // Open Graph
         @IsString()
-        @IsOptional()
+        @IsUndefinable()
         @BlockField({ nullable: true })
         openGraphTitle?: string;
 
         @IsString()
-        @IsOptional()
+        @IsUndefinable()
         @BlockField({ nullable: true })
         openGraphDescription?: string;
 
@@ -173,7 +174,7 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
 
         //Structured Data
         @IsJSON()
-        @IsOptional()
+        @IsUndefinable()
         @BlockField({ nullable: true })
         structuredData?: string;
 
@@ -192,7 +193,7 @@ export function createSeoBlock<ImageBlock extends Block = typeof PixelImageBlock
 
         //Canonical Tag
         @IsUrl()
-        @IsOptional()
+        @IsUndefinable()
         @BlockField({ nullable: true })
         canonicalUrl?: string;
 
@@ -219,11 +220,11 @@ class AlternativeLink {
     [key: string]: string | undefined;
 
     @IsString()
-    @IsOptional()
+    @IsUndefinable()
     code?: string;
 
     @IsString()
-    @IsOptional()
+    @IsUndefinable()
     @IsUrl()
     url?: string;
 }

@@ -1,5 +1,6 @@
-import { IsBoolean, IsOptional } from "class-validator";
+import { IsBoolean } from "class-validator";
 
+import { IsUndefinable } from "../../common/validators/is-undefinable";
 import { BlockData, BlockInput, blockInputToData, createBlock } from "../block";
 import { BlockField } from "../decorators/field";
 import { typeSafeBlockMigrationPipe } from "../migrations/typeSafeBlockMigrationPipe";
@@ -18,7 +19,7 @@ class ExternalLinkBlockData extends BlockData {
 }
 
 class ExternalLinkBlockInput extends BlockInput {
-    @IsOptional()
+    @IsUndefinable()
     @IsLinkTarget()
     @BlockField({ nullable: true })
     targetUrl?: string;

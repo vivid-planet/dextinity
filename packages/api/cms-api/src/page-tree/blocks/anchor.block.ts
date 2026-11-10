@@ -1,7 +1,8 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsString } from "class-validator";
 
 import { BlockData, BlockInput, blockInputToData, createBlock } from "../../blocks/block";
 import { BlockField } from "../../blocks/decorators/field";
+import { IsUndefinable } from "../../common/validators/is-undefinable";
 
 class AnchorBlockData extends BlockData {
     @BlockField({ nullable: true })
@@ -10,7 +11,7 @@ class AnchorBlockData extends BlockData {
 
 class AnchorBlockInput extends BlockInput {
     @BlockField({ nullable: true })
-    @IsOptional()
+    @IsUndefinable()
     @IsString()
     name?: string;
 

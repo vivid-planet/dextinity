@@ -1,7 +1,8 @@
-import { IsOptional, IsString, IsUUID } from "class-validator";
+import { IsString, IsUUID } from "class-validator";
 
 import { BlockData, BlockIndexData, BlockInput, blockInputToData, BlockMetaField, BlockMetaFieldKind, createBlock } from "../../blocks/block";
 import { AnnotationBlockMeta, BlockField } from "../../blocks/decorators/field";
+import { IsUndefinable } from "../../common/validators/is-undefinable";
 import { PAGE_TREE_ENTITY } from "../page-tree.constants";
 import { PageExists } from "../validators/page-exists.validator";
 import { InternalLinkBlockTransformerService } from "./internal-link-block-transformer.service";
@@ -39,13 +40,13 @@ class InternalLinkBlockData extends BlockData {
 
 class InternalLinkBlockInput extends BlockInput {
     @BlockField({ nullable: true })
-    @IsOptional()
+    @IsUndefinable()
     @IsUUID()
     @PageExists()
     targetPageId?: string;
 
     @BlockField({ nullable: true })
-    @IsOptional()
+    @IsUndefinable()
     @IsString()
     targetPageAnchor?: string;
 

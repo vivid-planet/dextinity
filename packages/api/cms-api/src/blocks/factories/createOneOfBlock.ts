@@ -1,7 +1,8 @@
 import { Type } from "@nestjs/common";
 import { plainToInstance, Transform } from "class-transformer";
-import { ArrayMinSize, IsArray, IsIn, IsObject, IsOptional, ValidateIf, ValidateNested } from "class-validator";
+import { ArrayMinSize, IsArray, IsIn, IsObject, ValidateIf, ValidateNested } from "class-validator";
 
+import { IsUndefinable } from "../../common/validators/is-undefinable";
 import {
     Block,
     BlockContext,
@@ -231,7 +232,7 @@ export function BaseOneOfBlockInput<
         @ValidateNested({ each: true })
         attachedBlocks: OneOfBlockInputInterface<BlockMap, Data, Input>["attachedBlocks"];
 
-        @IsOptional()
+        @IsUndefinable()
         @IsIn(supportedBlockTypes)
         @BlockField({ nullable: allowEmpty })
         activeType?: string;

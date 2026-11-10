@@ -251,11 +251,11 @@ function getDirectiveInfoFromField(field: FieldNode, variables: Record<string, a
 // Copied and adapted from https://github.com/apollographql/apollo-client/blob/release-3.x/src/utilities/graphql
 function createFragmentMap(document: DocumentNode): FragmentMap {
     const fragmentMap: FragmentMap = {};
-    document.definitions.forEach((definition) => {
+    for (const definition of document.definitions) {
         if (definition.kind === Kind.FRAGMENT_DEFINITION) {
             fragmentMap[definition.name.value] = definition;
         }
-    });
+    }
     return fragmentMap;
 }
 
@@ -266,9 +266,9 @@ function resultKeyNameFromField(field: FieldNode): string {
 function argumentsObjectFromField(field: FieldNode | DirectiveNode, variables: VariableMap): Record<string, any> | null {
     if (field.arguments && field.arguments.length) {
         const argObj: Record<string, any> = {};
-        field.arguments.forEach((argument) => {
+        for (const argument of field.arguments) {
             argObj[argument.name.value] = valueFromASTUntyped(argument.value, variables);
-        });
+        }
         return argObj;
     }
     return null;

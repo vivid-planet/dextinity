@@ -1,7 +1,8 @@
-import { IsOptional, IsUUID } from "class-validator";
+import { IsUUID } from "class-validator";
 
 import { BlockData, BlockIndexData, BlockInput, blockInputToData, BlockMetaField, BlockMetaFieldKind, createBlock } from "../../blocks/block";
 import { AnnotationBlockMeta } from "../../blocks/decorators/field";
+import { IsUndefinable } from "../../common/validators/is-undefinable";
 import { FILE_ENTITY } from "../files/entities/file.entity";
 import { SvgImageBlockTransformerService } from "./svg-image-block-transformer.service";
 
@@ -29,7 +30,7 @@ class SvgImageBlockData extends BlockData {
 }
 
 class SvgImageBlockInput extends BlockInput {
-    @IsOptional()
+    @IsUndefinable()
     @IsUUID()
     damFileId?: string;
 

@@ -48,7 +48,7 @@
         "@mui/material": "^7.3.11",
         "@mui/x-data-grid": "^8.29.5",
         "change-case": "^5.4.4",
-        "commander": "^15.0.0",
+        "commander": "^15.1.0",
         "glob": "^14.0.4",
         "graphql": "^16.14.2",
         "jiti": "^2.7.0",

@@ -215,7 +215,8 @@ export function createEmailCampaignsResolver({
                 wrap(campaign).assign({ brevoId: null });
             }
 
-            wrap(campaign).assign({ scheduledAt: new Date(), sendingState: SendingState.SCHEDULED });
+            const attemptScheduledAt = new Date();
+            wrap(campaign).assign({ scheduledAt: attemptScheduledAt, sendingState: SendingState.SCHEDULED });
             await this.entityManager.flush();
 
             const markAsFailed = async (error?: unknown) => {
@@ -226,7 +227,9 @@ export function createEmailCampaignsResolver({
                 try {
                     const entityManager = this.entityManager.fork();
                     const failedCampaign = await entityManager.findOneOrFail<EmailCampaignInterface>(this.repository.getEntityName(), id);
-                    if (failedCampaign.sendingState === SendingState.SCHEDULED) {
+                    // A newer send attempt sets a new scheduledAt and must not be failed by this one
+                    const isSameAttempt = failedCampaign.scheduledAt?.getTime() === attemptScheduledAt.getTime();
+                    if (failedCampaign.sendingState === SendingState.SCHEDULED && isSameAttempt) {
                         wrap(failedCampaign).assign({ sendingState: SendingState.FAILED });
                         await entityManager.flush();
                     }
@@ -238,10 +241,14 @@ export function createEmailCampaignsResolver({
             // Not awaited because sending large campaigns can exceed the request timeout
             this.campaignsService
                 .sendEmailCampaignNow(id)
-                .then(async (sent) => {
-                    if (!sent) {
+                .then(async (result) => {
+                    if (result === "notSent") {
                         this.logger.error(`Email campaign ${id} was not sent because it has no eligible target groups`);
                         await markAsFailed();
+                    } else if (result === "cancelled") {
+                        this.logger.warn(
+                            `Sending email campaign ${id} was cancelled because the campaign is no longer scheduled, e.g., because sending timed out`,
+                        );
                     }
                 })
                 .catch(markAsFailed);

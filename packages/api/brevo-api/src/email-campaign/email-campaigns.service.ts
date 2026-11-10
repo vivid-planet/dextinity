@@ -18,6 +18,8 @@ import { SendingState } from "./sending-state.enum";
 
 const CAMPAIGN_CONTENT_REQUEST_TIMEOUT = 5000;
 
+export type SendEmailCampaignNowResult = "sent" | "notSent" | "cancelled";
+
 @Injectable()
 export class EmailCampaignsService {
     constructor(
@@ -132,6 +134,12 @@ export class EmailCampaignsService {
 
         for (const campaign of pastScheduledCampaigns) {
             const brevoCampaign = brevoCampaigns.find((brevoCampaign) => brevoCampaign.id === campaign.brevoId);
+
+            // The batch lookup can miss existing campaigns; the sendingState field resolver loads them by ID instead
+            if (campaign.brevoId && !brevoCampaign) {
+                continue;
+            }
+
             const brevoSendingState = brevoCampaign ? this.brevoApiCampaignService.getSendingInformationFromBrevoCampaign(brevoCampaign) : undefined;
 
             wrap(campaign).assign({ sendingState: getScheduledCampaignSendingState({ scheduledAt: campaign.scheduledAt, brevoSendingState, now }) });
@@ -142,7 +150,7 @@ export class EmailCampaignsService {
         return campaigns;
     }
 
-    public async sendEmailCampaignNow(campaignId: string): Promise<boolean> {
+    public async sendEmailCampaignNow(campaignId: string): Promise<SendEmailCampaignNowResult> {
         const brevoCampaign = await this.saveEmailCampaignInBrevo(campaignId);
 
         const targetGroups = await brevoCampaign.targetGroups.loadItems();
@@ -172,15 +180,16 @@ export class EmailCampaignsService {
 
                 if (brevoCampaign.brevoId) {
                     if (!(await this.isStillScheduledForSending(brevoCampaign))) {
-                        throw new Error(`Email campaign ${campaignId} is no longer scheduled for sending, e.g., because sending timed out`);
+                        return "cancelled";
                     }
 
-                    return this.brevoApiCampaignService.sendBrevoCampaign(brevoCampaign);
+                    await this.brevoApiCampaignService.sendBrevoCampaign(brevoCampaign);
+                    return "sent";
                 }
             }
         }
 
-        return false;
+        return "notSent";
     }
 
     private async isStillScheduledForSending(campaign: EmailCampaignInterface): Promise<boolean> {

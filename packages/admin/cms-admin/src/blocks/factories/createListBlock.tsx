@@ -2,7 +2,7 @@ import { StackPage, StackSwitch, StackSwitchApiContext, Tooltip } from "@dextini
 import { Add, Copy, Delete, Invisible, Paste, Visible } from "@dextinity/admin-icons";
 import { Box, Checkbox, FormControlLabel, IconButton, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import type { FunctionComponent, ReactNode } from "react";
+import { Fragment, type FunctionComponent, type ReactNode } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 import { v4 as uuid } from "uuid";
 
@@ -271,6 +271,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
         AdminComponent: ({ state, updateState }) => {
             const {
                 cannotPasteBlockErrorDialog,
+                clipboardProgressDialog,
                 createUpdateSubBlocksFn,
                 totalVisibleBlocks,
                 updateClipboardContent,
@@ -466,7 +467,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                                                 <FormattedMessage
                                                                     id="dextinity.blocks.list.add"
                                                                     defaultMessage="Add {itemName}"
-                                                                    values={{ itemName }}
+                                                                    values={{ itemName: <Fragment key="itemName">{itemName}</Fragment> }}
                                                                 />
                                                             </Typography>
                                                         </LargeAddButtonContent>
@@ -485,7 +486,7 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                                             <FormattedMessage
                                                                 id="dextinity.blocks.list.add"
                                                                 defaultMessage="Add {itemName}"
-                                                                values={{ itemName }}
+                                                                values={{ itemName: <Fragment key="itemName">{itemName}</Fragment> }}
                                                             />
                                                         </BlockAdminComponentButton>
                                                     </AdminComponentStickyFooter>
@@ -506,13 +507,16 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                                             return;
                                         }
 
-                                        return <block.AdminComponent state={match.props} updateState={createUpdateSubBlocksFn(itemId)} />;
+                                        return (
+                                            <block.AdminComponent key={itemId} state={match.props} updateState={createUpdateSubBlocksFn(itemId)} />
+                                        );
                                     }}
                                 </StackSwitchApiContext.Consumer>
                             )}
                         </StackPage>
                     </StackSwitch>
                     {cannotPasteBlockErrorDialog}
+                    {clipboardProgressDialog}
                 </SelectPreviewComponent>
             );
         },
@@ -521,7 +525,13 @@ export function createListBlock<T extends BlockInterface, AdditionalItemFields e
                 return [
                     {
                         type: "text",
-                        content: <FormattedMessage id="dextinity.blocks.list.noBlocks" defaultMessage="No {itemsName}" values={{ itemsName }} />,
+                        content: (
+                            <FormattedMessage
+                                id="dextinity.blocks.list.noBlocks"
+                                defaultMessage="No {itemsName}"
+                                values={{ itemsName: <Fragment key="itemsName">{itemsName}</Fragment> }}
+                            />
+                        ),
                     },
                 ];
             }

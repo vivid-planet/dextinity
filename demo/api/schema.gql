@@ -313,6 +313,11 @@ type BuildTemplate {
   name: String!
 }
 
+type ContentScopeDimension {
+  label: String!
+  name: String!
+}
+
 type ContentScopeWithLabel {
   label: JSONObject!
   scope: JSONObject!
@@ -514,6 +519,15 @@ input DamScopeInput {
   domain: String!
 }
 
+type DamSettings {
+  id: ID!
+  invalidLicenseFallbackImage: DamFile
+}
+
+input DamSettingsInput {
+  invalidLicenseFallbackImageId: ID
+}
+
 input DateFilter {
   equal: LocalDate
   greaterThan: LocalDate
@@ -547,6 +561,11 @@ type Dependency {
   rootColumnName: String!
   rootGraphqlObjectType: String!
   rootId: String!
+
+  """
+  Scope of the root entity for dependents, of the target entity for dependencies. Entities with multiple scopes return their first.
+  """
+  scope: JSONObject
   secondaryInformation: String
   targetGraphqlObjectType: String!
   targetId: String!
@@ -653,6 +672,7 @@ type EntityInfo {
   id: String!
   name: String!
   secondaryInformation: String
+  visible: Boolean!
 }
 
 input FileFilterInput {
@@ -1028,6 +1048,7 @@ type Mutation {
   updateDamFile(id: ID!, input: UpdateDamFileInput!): DamFile!
   updateDamFolder(id: ID!, input: UpdateDamFolderInput!): DamFolder!
   updateDamMediaAlternative(id: ID!, input: DamMediaAlternativeUpdateInput!): DamMediaAlternative!
+  updateDamSettings(input: DamSettingsInput!, scope: DamScopeInput!): DamSettings!
   updateMainMenuItem(input: MainMenuItemInput!, lastUpdatedAt: DateTime, pageTreeNodeId: ID!): MainMenuItem!
   updateManufacturer(id: ID!, input: ManufacturerUpdateInput!): Manufacturer!
   updateNews(id: ID!, input: NewsUpdateInput!): News!
@@ -1983,10 +2004,11 @@ type Query {
   damFoldersFlat(scope: DamScopeInput!): [DamFolder!]!
   damFoldersList(filter: FolderFilterInput, includeArchived: Boolean, limit: Int! = 25, offset: Int! = 0, parentId: ID, scope: DamScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC): PaginatedDamFolders!
   damIsFilenameOccupied(filename: String!, folderId: String, scope: DamScopeInput!): Boolean!
-  damItemListPosition(filter: DamItemFilterInput, folderId: ID, id: ID!, includeArchived: Boolean, scope: DamScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC, type: DamItemType!): Int!
-  damItemsList(filter: DamItemFilterInput, folderId: ID, includeArchived: Boolean, limit: Int! = 25, offset: Int! = 0, scope: DamScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC): PaginatedDamItems!
+  damItemListPosition(filter: DamItemFilterInput, folderId: ID, id: ID!, includeArchived: Boolean, scope: DamScopeInput!, sortColumnName: String = "name", sortDirection: SortDirection! = ASC, type: DamItemType!): Int!
+  damItemsList(filter: DamItemFilterInput, folderId: ID, includeArchived: Boolean, limit: Int! = 25, offset: Int! = 0, scope: DamScopeInput!, sortColumnName: String = "name", sortDirection: SortDirection! = ASC): PaginatedDamItems!
   damMediaAlternative(id: ID!): DamMediaAlternative!
   damMediaAlternatives(alternative: ID, for: ID, limit: Int! = 25, offset: Int! = 0, search: String, sort: [DamMediaAlternativeSort!], type: DamMediaAlternativeType): PaginatedDamMediaAlternatives!
+  damSettings(scope: DamScopeInput!): DamSettings
   findCopiesOfFileInScope(id: ID!, imageCropArea: ImageCropAreaInput, scope: DamScopeInput!): [DamFile!]!
   footer(scope: FooterScopeInput!): Footer
   isBrevoConfigDefined(scope: EmailCampaignContentScopeInput!): Boolean!
@@ -2036,6 +2058,7 @@ type Query {
   redirects(active: Boolean, query: String, scope: RedirectScopeInput!, sortColumnName: String, sortDirection: SortDirection! = ASC, type: RedirectGenerationType): [Redirect!]! @deprecated(reason: "Use paginatedRedirects instead. Will be removed in the next version.")
   sitePreviewJwt(includeInvisible: Boolean!, path: String!, scope: JSONObject!): String!
   topMenu(scope: PageTreeNodeScopeInput!): [PageTreeNode!]!
+  userPermissionsAvailableContentScopeDimensions: [ContentScopeDimension!]!
   userPermissionsAvailableContentScopes: [ContentScopeWithLabel!]!
   userPermissionsAvailablePermissions: [String!]!
   userPermissionsContentScopes(skipManual: Boolean, userId: String!): [JSONObject!]!
@@ -2056,6 +2079,7 @@ type Redirect {
   dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
   generationType: RedirectGenerationType!
   id: ID!
+  redirectType: RedirectType!
   scope: RedirectScope!
   source: String!
   sourceType: RedirectSourceType!
@@ -2070,6 +2094,7 @@ input RedirectFilter {
   createdAt: DateTimeFilter
   generationType: StringFilter
   or: [RedirectFilter!]
+  redirectType: RedirectTypeEnumFilter
   source: StringFilter
   sourceType: RedirectSourceTypeEnumFilter
   target: StringFilter
@@ -2085,6 +2110,7 @@ input RedirectInput {
   active: Boolean
   comment: String
   generationType: RedirectGenerationType!
+  redirectType: RedirectType
   source: String!
   sourceType: RedirectSourceType!
   target: JSONObject!
@@ -2120,6 +2146,17 @@ input RedirectSourceTypeEnumFilter {
   notEqual: RedirectSourceType
 }
 
+enum RedirectType {
+  permanent
+  temporary
+}
+
+input RedirectTypeEnumFilter {
+  equal: RedirectType
+  isAnyOf: [RedirectType!]
+  notEqual: RedirectType
+}
+
 input RedirectUpdateActivenessInput {
   active: Boolean!
 }
@@ -2146,6 +2183,7 @@ input SendTestEmailCampaignArgs {
 
 enum SendingState {
   DRAFT
+  FAILED
   SCHEDULED
   SENT
 }
@@ -2362,6 +2400,7 @@ input WarningFilter {
   status: WarningStatusEnumFilter
   type: StringFilter
   updatedAt: DateTimeFilter
+  visible: BooleanFilter
 }
 
 enum WarningSeverity {
@@ -2389,6 +2428,7 @@ enum WarningSortField {
   status
   type
   updatedAt
+  visible
 }
 
 type WarningSourceInfo {

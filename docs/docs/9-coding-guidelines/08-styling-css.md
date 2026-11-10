@@ -256,7 +256,7 @@ When styling a site, block or component, always start with the mobile layout. [T
 
 ### Inline Styles
 
-If possible, don’t use inline styles, use Emotion or Styled Components instead.
+If possible, don’t use inline styles. Put static styles into the project's styling solution instead, e.g. Emotion, Styled Components or CSS/SCSS modules.
 
 :::warning Bad
 
@@ -292,6 +292,22 @@ const DeleteButton = styled(IconButton)(() => ({
 }));
 
 <DeleteButton onClick={() => handleDelete(key)} />;
+```
+
+:::
+
+An inline style is fine for passing a runtime value (from props or state) to the stylesheet as a CSS custom property. Keep the actual styling in the stylesheet and only set the variable inline.
+
+:::tip Good
+
+```tsx
+<div className={styles.root} style={{ "--aspect-ratio": aspectRatio }}>
+```
+
+```scss
+.root {
+    aspect-ratio: var(--aspect-ratio);
+}
 ```
 
 :::

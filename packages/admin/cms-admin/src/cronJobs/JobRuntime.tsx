@@ -17,13 +17,18 @@ export function JobRuntime(props: RuntimeProps) {
                 id="dextinity.jobRuntime.startCompletionTime"
                 defaultMessage="{start} - {completion} ({runtime} min)"
                 values={{
-                    start: <FormattedDate value={startTime} dateStyle="short" timeStyle="short" />,
+                    start: <FormattedDate key="start" value={startTime} dateStyle="short" timeStyle="short" />,
                     completion: isSameDay(new Date(), completionTime) ? (
-                        <FormattedTime value={completionTime} />
+                        <FormattedTime key="completion" value={completionTime} />
                     ) : (
-                        <FormattedDate value={completionTime} dateStyle="short" timeStyle="short" />
+                        <FormattedDate key="completion" value={completionTime} dateStyle="short" timeStyle="short" />
                     ),
-                    runtime: runtime <= 0 ? <FormattedMessage id="dextinity.jobRuntime.runtimeSmallerThanOneMinute" defaultMessage="< 1" /> : runtime,
+                    runtime:
+                        runtime <= 0 ? (
+                            <FormattedMessage key="runtime" id="dextinity.jobRuntime.runtimeSmallerThanOneMinute" defaultMessage="< 1" />
+                        ) : (
+                            runtime
+                        ),
                 }}
             />
         );

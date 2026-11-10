@@ -94,7 +94,7 @@ const halfGap = columnGap / 2;
 
 On mobile, reset the gap padding so content stretches full-width, and add a vertical margin between the stacked columns. Column padding compiles to an inner `<td>`, so target it via `.className > table > tbody > tr > td`.
 
-Set `disableResponsiveBehavior` on **every** section with more than one column. It wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline; without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX and Web.de, for example — show the columns stacked. The group never stacks by itself, so write the mobile stacking into `registerStyles`, and target the column container one level deeper (`… > td > div`).
+Set `disableResponsiveBehavior` on **every** section with more than one column. It wraps the columns in an `MjmlGroup`, which is what makes MJML write their widths inline; without it the widths exist only in a `min-width` media query, and clients that drop that query — GMX, Web.de and the Gmail apps with a non-Google account, for example — show the columns stacked. The group never stacks by itself, so write the mobile stacking into `registerStyles`, and target the column container one level deeper (`… > td > div`).
 
 → For complete patterns — two columns, three or more, fixed+fluid — with responsive styles, CSS targeting rules, the stacking strategies, and the `direction="rtl"` technique for controlling mobile stack order, read [`references/layout-patterns.md`](references/layout-patterns.md).
 
@@ -120,7 +120,7 @@ Email styling follows a **desktop-first** approach:
 
 Never rely on `<style>` blocks for base/desktop layout. Set all default styles inline via MJML component props.
 
-MJML breaks this rule for column widths: it puts them in a `min-width` media query, so a multi-column section stacks in any client that drops that query — GMX and Web.de, for example. See [Multi-Column Layouts](#multi-column-layouts).
+MJML breaks this rule for column widths: it puts them in a `min-width` media query, so a multi-column section stacks in any client that drops that query — GMX, Web.de and the Gmail apps with a non-Google account, for example. See [Multi-Column Layouts](#multi-column-layouts).
 
 ### Prefer Theme Breakpoints
 
@@ -168,6 +168,13 @@ Don't use `<p>`, `<h1>`, `<h2>`, or other block-level HTML elements inside endin
 
 Outlook calculates line-height using its own rules, causing unexpected vertical spacing. **Every time** you set `line-height` on a raw HTML element inside an ending tag (`MjmlRaw`, `MjmlText`, etc.), you must also set `mso-line-height-rule: exactly` as an inline style on the same element. This applies to `<span>`, `<td>`, `<div>`, or any other element where you manually control line height. `HtmlText` and built-in MJML components handle this automatically — but any hand-written HTML needs it explicitly.
 
+### Do Not Set `line-height: 0` Around Images
+
+Classic Outlook cuts off the top of an image when `line-height: 0` is set on the `<td>` that holds the image, or on its `<table>`: about `3px` with `font-size: 0`, about `20px` with the default font size. A `line-height: 0` on a `<span>` or link inside that `<td>` does not prevent it.
+
+- Use `1px` instead of `0`, or leave `line-height` unset. Without `mso-line-height-rule: exactly`, any other `line-height` smaller than the image does not cut it: classic Outlook treats the value as a minimum. `MjmlTable` has a default `line-height` of `22px`, and that value does no harm. Do not set `lineHeight={0}` on `MjmlTable`.
+- With `mso-line-height-rule: exactly`, a `line-height` smaller than the image cuts the image to that height. `HtmlText` sets the theme `line-height` (`20px` by default) with `mso-line-height-rule: exactly`, so do not put images in it.
+
 ### No CSS `background-image` in Outlook
 
 Classic Outlook ignores `background-image` entirely. Use a VML-based workaround for Outlook support, or provide a `background-color` fallback for graceful degradation. See [Bulletproof Backgrounds](https://www.backgrounds.cm/).
@@ -182,13 +189,19 @@ Everything else, buttons and containers included, needs a VML `v:roundrect` writ
 
 ```html
 <!--[if mso]>
-    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="18%" stroked="f" style="width:200px;height:44px;">
+    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" arcsize="19%" stroked="f" style="width:199px;height:43px;">
         <center>Button label</center>
     </v:roundrect>
 <![endif]-->
 ```
 
-Set `arcsize` to the corner radius divided by the shorter side, capped at `50%` — `8px` on a `44px`-high button gives `18%`. Do not take the value from the VML specification; it is twice what Outlook needs.
+Set `arcsize` to the corner radius divided by the shorter declared side, capped at `50%` — `8px` on a `44px`-high button, declared `43px`, gives `19%`. Do not take the value from the VML specification; it is twice what Outlook needs.
+
+More rules for a hand-written VML shape:
+
+- Declare a `v:roundrect` or `v:oval` `1px` smaller in `width` and `height` than the size it must have, and compute `arcsize` from that declared size. Classic Outlook draws the shape `1px` larger, even with `stroked="f"`.
+- Copy the link (`href` on the shape), the alignment and the padding from the HTML element that the shape replaces, and hide that element from classic Outlook with `<!--[if !mso]><!-->…<!--<![endif]-->`.
+- Give the shape a width that fits its column. Classic Outlook does not shrink VML to its container, so a wider shape makes the whole mail wider.
 
 See the [Litmus VML button snippet](https://litmus.com/community/snippets/7-bulletproof-button-vml-approach).
 
@@ -213,6 +226,51 @@ Yahoo Mail rewrites `height` into `min-height`, which is only a lower limit — 
 
 - An `<img>` that a media query shrinks with `height` keeps its original size — use `max-height`.
 - A row whose height comes only from `height` on a `<td>` collapses to nothing, and the cell's background disappears with it — put the height on a `<div>` inside the cell, or use padding.
+
+### Keep `}}` Out of the Head CSS
+
+Outlook on the web (Outlook.com) and the Outlook iOS and Android apps drop everything after the first `}}` in a `<style>` tag. Minified `@media` blocks end in `}}`. mail-react separates the braces in the registered styles, but not in CSS that you add through the `head` slot of `MjmlMailRoot`; write `} }` there. See [email-bugs#92](https://github.com/hteumeuleu/email-bugs/issues/92).
+
+### Gmail Drops Head CSS Past 16 kB
+
+Gmail counts the content of all `<style>` tags together, MJML's own included. Past `16 kB` (`16,384` characters), Gmail removes the `<style>` tag that passes the limit. mail-react puts the registered styles and the CSS from the `head` slot of `MjmlMailRoot` in one `<style>` tag, placed last, so the mail loses all of that CSS. `registerStyles` emits the CSS of every imported module, used or not; mail-react minifies the registered CSS. Keep unused variants and modules out of the mail, and check the size: count the characters in all `<style>` tags of a full rendered mail. See [email-bugs#90](https://github.com/hteumeuleu/email-bugs/issues/90).
+
+### MJML Sets `word-break: break-word` on Column Content
+
+MJML writes `word-break: break-word` on the `<td>` around each child of a column, except `MjmlRaw`, and nested cells inherit it. In Outlook on the web, this breaks short content onto several lines when its cell sits next to a `width="100%"` cell, such as the marker cell of a list item. Set `word-break: normal` inline on the cell of the short content, together with `white-space: nowrap`. `white-space: nowrap` alone does not help: Outlook on the web removes it from inline styles, and it also removes the `nowrap` attribute. Resetting `overflow-wrap` does not help either.
+
+### Style the Links That Mail Clients Create
+
+Clients turn plain-text mail addresses, URLs and phone numbers into links of their own, without the mail's inline styles:
+
+- Gmail (iOS and web), Outlook iOS, Apple Mail iOS: a CSS rule in the mail head for links inside text components restores the text style: `.mjmlText a, .htmlText a { color: inherit !important; font-family: inherit !important; font-size: inherit !important; line-height: inherit !important; font-weight: inherit !important; text-decoration: underline !important; }`. The rule also changes links you write yourself, because `inherit !important` wins over their inline styles. To keep a custom color, font or `text-decoration` on such a link, set it with `!important` (see `HtmlInlineLink` → Custom Color in [`references/components-and-theme.md`](references/components-and-theme.md)).
+- Classic Outlook: colors these links blue, and accepts only one color for them in the whole mail. Set the color in the mail head, inside `<!--[if mso]><style>…</style><![endif]-->`, and choose a color with enough contrast on every background of the mail (`#767677` is an example):
+
+    ```css
+    a:link,
+    span.MsoHyperlink {
+        mso-style-priority: 99;
+        color: #767677;
+        text-decoration: underline;
+    }
+    a:visited,
+    span.MsoHyperlinkFollowed {
+        mso-style-priority: 99;
+        color: #767677;
+        text-decoration: underline;
+    }
+    ```
+
+### Dark Mode Repaints Colors, Not Most Images
+
+In dark mode, Gmail iOS, Yahoo Mail on the web, classic Outlook, Outlook on the web, Outlook iOS and Outlook Mac change the colors of the mail but leave most images alone. So a color that must stay is safest inside an image. Gmail Android is the exception: it inverts images with few colors that phones show at about `55px` or less.
+
+- Keep a background color: set `background-color` and a `background-image` of a `100×100` px solid PNG in the same color. Use this technique behind images only, not behind text: some clients keep the background but still change the text color, so the text disappears.
+- Keep a logo readable: put a light background into the image file of the logo, not behind it. Some Gmail Android phones invert only the logo or only a separate background; in one image, both change together. On a dark section, put a background image in the section color behind the logo only, not behind the whole section (Gmail iOS, Outlook on the web).
+- Keep a line visible: draw it as a border on a cell with a light background, not as a dark background like `MjmlDivider` and `HtmlDivider` do.
+- Classic Outlook ignores CSS background images; use a VML shape with `fillcolor` there.
+
+→ For per-client behavior, placement rules and size limits, read [`references/dark-mode.md`](references/dark-mode.md).
 
 ---
 
@@ -367,7 +425,7 @@ All components are imported from `@dextinity/mail-react` — never from `@faire/
 
 ## Blocks
 
-`@dextinity/mail-react` ships components that render Dextinity CMS block data — currently pixel-image and rich-text blocks. Reach for these instead of hand-rolled markup whenever the source is a CMS block-data record.
+`@dextinity/mail-react` ships components that render Dextinity CMS block data — currently pixel-image blocks and the two rich-text blocks, draft-js and Tip-Tap. Reach for these instead of hand-rolled markup whenever the source is a CMS block-data record.
 
 ### Pixel-image blocks
 
@@ -419,49 +477,47 @@ When `data.damFile?.image` is absent, both blocks render nothing — no element,
 
 ### Rich-text blocks
 
-`createRichTextBlock` renders CMS RichText block data (draft-js raw content). **Call the factory once per configuration — at the top level of a file, never inside a component** — and export the returned pair; one configuration drives both rendering contexts.
+Two factories render CMS rich text: `createTipTapRichTextBlock` for TipTapRichText block data, and `createRichTextBlock` for RichText block data (draft-js). Each returns an MJML and an HTML component, driven by one configuration. **Call the factory once per configuration — at the top level of a file, never inside a component** — and export the returned pair.
 
-```tsx title="src/emails/blocks/richText.ts"
-export const { MjmlRichTextBlock, HtmlRichTextBlock } = createRichTextBlock({
-    blockTypes: {
-        "header-one": { variant: "heading1" },
-        "header-two": { variant: "heading2" },
-        "paragraph-standard": { variant: "body" },
+```tsx title="src/emails/blocks/tipTapRichText.ts"
+export const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+    textBlockStyles: {
+        title: { variant: "title" },
+        header: { variant: "header" },
     },
 });
 ```
 
-| Component           | Renders each draft block as | Use within                                     |
-| ------------------- | --------------------------- | ---------------------------------------------- |
-| `MjmlRichTextBlock` | `MjmlText`                  | an `MjmlColumn` (standard MJML layout)         |
-| `HtmlRichTextBlock` | `HtmlText` (`<div>`)        | raw HTML or MJML ending tags such as `MjmlRaw` |
+| Component                                       | Renders each text block as | Use within                                     |
+| ----------------------------------------------- | -------------------------- | ---------------------------------------------- |
+| `MjmlTipTapRichTextBlock` / `MjmlRichTextBlock` | `MjmlText`                 | an `MjmlColumn` (standard MJML layout)         |
+| `HtmlTipTapRichTextBlock` / `HtmlRichTextBlock` | `HtmlText` (`<div>`)       | raw HTML or MJML ending tags such as `MjmlRaw` |
 
-Inside `MjmlRaw` in an `MjmlColumn`, `HtmlRichTextBlock` needs its own `<tr>` and `<td>` — see _Start Raw Content Inside a Column With `<tr>`_ above.
+Inside `MjmlRaw` in an `MjmlColumn`, the `Html*` component needs its own `<tr>` and `<td>` — see _Start Raw Content Inside a Column With `<tr>`_ above.
 
 Usage sites pass only `data`:
 
 ```tsx
 <MjmlSection indent>
     <MjmlColumn>
-        <MjmlRichTextBlock data={richTextData} />
+        <MjmlTipTapRichTextBlock data={richTextData} />
     </MjmlColumn>
 </MjmlSection>
 ```
 
-Key behaviors:
+Both factories:
 
-- **Works without variants.** `createRichTextBlock()` with no options renders every draft block with the base `theme.text` styles — map block types to variants later as the theme grows. Unmapped block types also fall back to base styles.
-- **`blockTypes` values are text-component props**: a theme `variant`, plain (non-responsive) style values (`color`, `fontSize`, `fontWeight`, …), and a `className`. For responsive styling without a variant, set a `className` and register CSS via `registerStyles`:
+- **Text style entries are text-component props**: a theme `variant`, plain (non-responsive) style values (`color`, `fontSize`, `fontWeight`, …), and a `className`. Text no entry covers renders with the theme's `text.defaultVariant`, or the base `theme.text` styles. For responsive styling without a variant, set a `className` and register CSS via `registerStyles`:
 
     ```tsx
-    const { MjmlRichTextBlock } = createRichTextBlock({
-        blockTypes: { "header-one": { className: "richTextHeadlineOne" } },
+    const { MjmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+        textBlockStyles: { title: { className: "richTextTitle" } },
     });
 
     registerStyles(
         (theme) => css`
             ${theme.breakpoints.default.belowMediaQuery} {
-                .richTextHeadlineOne > div {
+                .richTextTitle > div {
                     font-size: 24px !important;
                 }
             }
@@ -469,34 +525,35 @@ Key behaviors:
     );
     ```
 
-    For a list block type, target `.<className> .richTextBlock__listItemText` instead of `> div` — the list's cells carry their own font styles, which outrank a rule on the block's element.
+    For a list, target `.<className> .richTextBlock__listItemText` instead of `> div` — the list's cells carry their own font styles.
 
-- **Multiple configurations per app.** Each factory call is independent — rename the destructured components per use case:
+- **Multiple configurations**: each factory call is independent — rename the destructured components per use case:
 
     ```tsx
-    export const { MjmlRichTextBlock: MjmlHeadlineRichTextBlock, HtmlRichTextBlock: HtmlHeadlineRichTextBlock } = createRichTextBlock({
-        blockTypes: { "header-one": { variant: "heading1" }, "header-two": { variant: "heading2" } },
-    });
+    export const { MjmlTipTapRichTextBlock: MjmlHeadlineRichTextBlock, HtmlTipTapRichTextBlock: HtmlHeadlineRichTextBlock } =
+        createTipTapRichTextBlock({
+            textBlockStyles: { title: { variant: "title" }, header: { variant: "header" } },
+        });
     ```
 
-- **Links**: the `external` link type is built in — `LINK` entities with an `external` link block render as `HtmlInlineLink`. Add the application's other link types via `linkTypes`, a resolver per link block type that receives the link block's props and returns the `href` (or `undefined` for no link). Annotate the resolver parameter with the app's generated block-data type so the props are typed without redeclaring their shape. Unconfigured link types render as plain text:
+- **Links**: the `external` link type is built in and renders as `HtmlInlineLink`. Add other link types via `linkTypes`, a resolver per link block type that receives the link block's props and returns the `href` (or `undefined` for no link). Type the parameter with the app's generated block-data type. Link types without a resolver render as plain text:
 
     ```tsx
     import type { PhoneLinkBlockData } from "@src/blocks.generated";
 
-    const { MjmlRichTextBlock, HtmlRichTextBlock } = createRichTextBlock({
+    const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
         linkTypes: {
             phone: (props: PhoneLinkBlockData) => (props.phone ? `tel:${props.phone}` : undefined),
         },
     });
     ```
 
-- **Inline styles**: built-in styles (`BOLD`, `ITALIC`, `SUB`, `SUP`, `STRIKETHROUGH`) render out of the box. The `inline` option maps a draft-js inline style name to a renderer and merges over the built-ins — override one, or render a custom style the app adds to its RTE (`customInlineStyles` on `IRteOptions`). The RTE stores only the style name, so the email defines the appearance. Register under the exact style name, use an inline element known to render across email clients (`<span>`, `<strong>`, `<em>` — not `<mark>`), and set explicit styles (email clients apply little of their own):
+- **Inline styles**: bold, italic and the other built-in formats render by default. Override one via `marks` (Tip-Tap) or `inline` (draft-js). Render a custom inline style the app adds to its RTE via `inlineStyles` (Tip-Tap) or `inline` (draft-js). Register under the exact style name, use `<span>`, `<strong>` or `<em>` (not `<mark>`), and set explicit styles:
 
     ```tsx
-    const { MjmlRichTextBlock, HtmlRichTextBlock } = createRichTextBlock({
-        inline: {
-            HIGHLIGHT: (children, { key }) => (
+    const { MjmlTipTapRichTextBlock, HtmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+        inlineStyles: {
+            highlight: (children, { key }) => (
                 <span key={key} style={{ backgroundColor: "#ff0000", color: "#ffffff" }}>
                     {children}
                 </span>
@@ -505,12 +562,42 @@ Key behaviors:
     });
     ```
 
-- **Lists** render as a table inside one text component, with a row per item, a marker cell and a text cell — the indent and the marker gap are cell padding, which is the only spacing Outlook on Windows applies reliably.
-- **A block type is a list when it declares a kind**: `{ variant: "copyLarge", list: "unordered" }`. `unordered-list-item` and `ordered-list-item` are draft-js's own list types, and they default to their kind. Every other block type is a paragraph unless it sets `list`. Use it for a list in a second text variant. A draft block has only one block type, so that list needs a custom block type. One `createRichTextBlock` call renders every variant. Two adjacent list block types render as two tables, and the numbered one starts again at `1.` Draft-js indents `unordered-list-item` and `ordered-list-item` only, so an editor cannot nest a custom list block type.
-- **List spacing** comes from the theme's `list.indent` (before the marker), `list.markerGap` (between the marker and the text) and `list.itemSpacing` (between items, and above a nested level's first item), all responsive and all applying to every list the block renders. To override it, register a rule scoped to a list's type, depth or variant modifier with `{ inline: true }`, which has MJML write the declaration into the cell's `style` attribute at compile time so it also reaches Outlook.
+- **Lists** render as a table inside one text component, with a row per item, a marker cell and a text cell.
+- **List spacing** comes from the theme's `list.indent` (before the marker), `list.markerGap` (between the marker and the text) and `list.itemSpacing` (between items, and above a nested level's first item), all responsive and all applying to every list the block renders. To override it, register a rule scoped to a list's type, depth or variant modifier with `{ inline: true }`, so it also reaches Outlook.
 - **List markers** come from the theme's `list.unorderedMarker` and `list.orderedMarker`, each either a fixed node (`unorderedMarker: "▪"`) or a function of the item's `index` and its list's `depth`.
-- Spacing between blocks comes from the theme's `bottomSpacing` (the last block gets none); headings are styled text, not semantic `<h1>` elements.
-- Rendered elements carry `richTextBlock__text`, `richTextBlock__list`, `richTextBlock__listItem`, `richTextBlock__listItemMarker`, `richTextBlock__listItemText`, and `richTextBlock__link` class names for targeting with `registerStyles`. The list table also carries `richTextBlock__list--ordered` or `richTextBlock__list--unordered`, and `richTextBlock__list--depth<Level>` naming its nesting level, counting the outermost as zero, with `richTextBlock__list--nested` on every level below that one. Only the outermost table names the text variant its items render with, such as `richTextBlock__list--variantBody`, and a rule scoped to that modifier applies to the nested levels as well. The rows carry `richTextBlock__listItem--itemSpacing`, or `richTextBlock__listItem--blockSpacing` on the last row when spacing follows the list, and `richTextBlock__listItem--itemSpacingAbove` on a nested level's first row, which carries the item spacing as `padding-top`. The cells restate the text styles inline, so a rule targeting list text needs `!important`.
+- Spacing between text blocks comes from the theme's `bottomSpacing` (the last block gets none); headings are styled text, not semantic `<h1>` elements.
+- Rendered elements carry `richTextBlock__text`, `richTextBlock__list`, `richTextBlock__listItem`, `richTextBlock__listItemMarker`, `richTextBlock__listItemText`, and `richTextBlock__link` class names for targeting with `registerStyles`. The list table also carries `richTextBlock__list--ordered` or `richTextBlock__list--unordered`, and `richTextBlock__list--depth<Level>` naming its nesting level, counting the outermost as zero, with `richTextBlock__list--nested` on every level below that one. The outermost table also names the text variant of its items, such as `richTextBlock__list--variantBody`, and each row names the variant of its own item, such as `richTextBlock__listItem--variantBody`. The rows carry `richTextBlock__listItem--itemSpacing`, or `richTextBlock__listItem--blockSpacing` on the last row when spacing follows the list, and `richTextBlock__listItem--itemSpacingAbove` on a nested level's first row, which carries the item spacing as `padding-top`. The cells restate the text styles inline, so a rule targeting list text needs `!important`.
+
+#### Tip-Tap content
+
+Options of `createTipTapRichTextBlock`:
+
+- `textBlockStyles` — text styles per style the content editor picks.
+- `textBlocks` — text styles per text block or list for text without a style. Only needed when that text must look different from the theme's `text.defaultVariant`, e.g. `{ "unordered-list": { variant: "list" } }`.
+- `marks` — renderers for Tip-Tap's marks.
+- `inlineStyles` — renderers for the inline styles the app declares in the CMS block's `inlineStyles` option.
+- `linkTypes` — see _Links_ above.
+
+Rendering:
+
+- Each list item renders with the style of its text block. A numbered list keeps counting across items with different styles.
+- **Placeholders render as their literal `{{name}}` text**, for the sending system to substitute. Declare them in the CMS block's `placeholders` option instead of letting authors type the braces.
+- **Child blocks don't render in the mail**, so don't enable `childBlocks` on a CMS block that mails use.
+
+#### Draft-js content
+
+Options of `createRichTextBlock`:
+
+- `blockTypes` — text styles per draft block type, plus a `list` kind.
+- `inline` — renderers for draft-js inline styles, including the custom ones from `customInlineStyles` on `IRteOptions`.
+- `linkTypes` — see _Links_ above.
+
+Lists:
+
+- **A block type is a list when it declares a kind**: `{ variant: "copyLarge", list: "unordered" }`. `unordered-list-item` and `ordered-list-item` are draft-js's own list types and default to their kind. Every other block type is a paragraph unless it sets `list`.
+- A list in a second text variant needs a custom block type.
+- Two adjacent list block types render as two lists, and the numbered one starts again at `1.`
+- Draft-js indents `unordered-list-item` and `ordered-list-item` only, so a content editor cannot nest a custom list block type.
 
 → To register a custom list block type across the admin RTE and the mail block, read [`references/rich-text-list-block-types.md`](references/rich-text-list-block-types.md).
 
@@ -605,6 +692,7 @@ const { html, mjmlWarnings } = renderMailHtml(
 - **Client** (`@dextinity/mail-react/client`) — uses `mjml-browser`, works without `fs`
 - `renderMailHtml` is **not** on the main `@dextinity/mail-react` barrel — always import from `/server` or `/client`
 - Returns `{ html: string; mjmlWarnings: MjmlWarning[] }` — warnings are collected, not thrown
+- The server `renderMailHtml` turns off `mj-include` by default, because an include can read files on the server. To use it, pass `{ ignoreIncludes: false }`.
 - A framework that bundles server code (Next.js) must list `mjml` in the application's own `package.json` too, or rendering fails at runtime
 - Nothing imports it directly — add `mjml` to `ignoreDependencies` in `knip.json` rather than removing it as unused
 
@@ -623,6 +711,27 @@ if (process.env.NODE_ENV === "development" && mjmlWarnings.length) {
 **Never log MJML warnings in production.** These warnings flag structural MJML issues (e.g., content outside the section → column → content hierarchy) and are useful during development, but the rendered HTML is always produced successfully regardless of warnings. In rare cases, achieving a specific layout intentionally requires a technically invalid MJML structure — logging these in production would spam error trackers like Sentry with noise that cannot be acted upon.
 
 Outside Storybook, wrap content in `MjmlMailRoot` yourself (the Storybook decorator handles it automatically).
+
+### Block Preview in the Admin
+
+Wrap each mail block in `withPreview` and put the `className` it passes on the component that spans the whole block, usually the outer `MjmlSection`:
+
+```tsx
+export const MailTextBlock = withPreview<PropsWithData<MailTextBlockData>>(
+    ({ data, className }) => (
+        <MjmlSection className={className}>
+            <MjmlColumn>
+                <MjmlText>{data.text}</MjmlText>
+            </MjmlColumn>
+        </MjmlSection>
+    ),
+    { label: "Text" },
+);
+```
+
+- The rich-text components have no root element of their own: for a rich text inside a column, pass the `className` to the `textClassName` of `MjmlRichTextBlock` or `MjmlTipTapRichTextBlock`, which put it on each of their text elements.
+- Register a block without data of its own with its data anyway, `divider: (data) => <MailDividerBlock data={data} />`, or it gets no route.
+- The block preview page must put the ref from `useRefToRegisterMailBlocksForPreview(useIFrameBridge())` on the element that contains the mail HTML.
 
 ---
 

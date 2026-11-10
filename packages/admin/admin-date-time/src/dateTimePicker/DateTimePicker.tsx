@@ -76,14 +76,13 @@ const TimePicker = createComponentSlot(TimePickerBase)<DateTimePickerClassKey>({
     `,
 );
 
-export interface DateTimePickerProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        dateFormControl: typeof FormControl;
-        timeFormControl: typeof FormControl;
-        datePicker: typeof DatePickerBase;
-        timePicker: typeof TimePickerBase;
-    }> {
+export interface DateTimePickerProps extends ThemedComponentBaseProps<{
+    root: "div";
+    dateFormControl: typeof FormControl;
+    timeFormControl: typeof FormControl;
+    datePicker: typeof DatePickerBase;
+    timePicker: typeof TimePickerBase;
+}> {
     onChange?: (value?: Date) => void;
     value?: Date;
     required?: boolean;

@@ -19,7 +19,6 @@ class DataTransformer extends StreamTransform {
         private readonly inputClass: ImporterInputClass,
     ) {
         super({ writableObjectMode: true, objectMode: true });
-        this.logger = logger;
     }
 
     async _transform(inputData: { data: PipeData; metadata: PipeMetadata }, encoding: BufferEncoding, callback: TransformCallback) {

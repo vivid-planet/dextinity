@@ -516,6 +516,229 @@ describe("convertDraftJsToTipTap", () => {
         });
     });
 
+    describe("listItemMap", () => {
+        const listSizes = { styles: [{ name: "small" }, { name: "large" }] };
+        const sizedLists = resolveTipTapOptions({ unorderedList: listSizes, orderedList: listSizes });
+        const listItemMap = {
+            "unordered-list-item-small": { list: "unordered", textBlockStyle: "small" },
+            "unordered-list-item-large": { list: "unordered", textBlockStyle: "large" },
+            "ordered-list-item-small": { list: "ordered", textBlockStyle: "small" },
+            "ordered-list-item-large": { list: "ordered", textBlockStyle: "large" },
+        } as const;
+
+        function listItem({ text, textBlockStyle, subList }: { text: string; textBlockStyle?: string; subList?: object }) {
+            return {
+                type: "listItem",
+                content: [
+                    {
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph", ...(textBlockStyle !== undefined ? { textBlockStyle } : {}) },
+                        content: [{ type: "text", text }],
+                    },
+                    ...(subList ? [subList] : []),
+                ],
+            };
+        }
+
+        it("converts a custom list type to an item of the mapped list carrying the mapped style", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "unordered-list-item-small", text: "a" })], entityMap: {} },
+                { resolvedOptions: sizedLists, listItemMap },
+            );
+            expect(result.content).toEqual([{ type: "bulletList", content: [listItem({ text: "a", textBlockStyle: "small" })] }]);
+        });
+
+        it("converts a custom ordered list type to an item of an ordered list", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "ordered-list-item-large", text: "1" })], entityMap: {} },
+                { resolvedOptions: sizedLists, listItemMap },
+            );
+            expect(result.content).toEqual([{ type: "orderedList", content: [listItem({ text: "1", textBlockStyle: "large" })] }]);
+        });
+
+        it("keeps items of the same list with different styles in one list", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "standard" }),
+                        makeBlock({ type: "unordered-list-item-small", text: "small" }),
+                        makeBlock({ type: "unordered-list-item", text: "standard again" }),
+                        makeBlock({ type: "unordered-list-item-large", text: "large" }),
+                    ],
+                    entityMap: {},
+                },
+                { resolvedOptions: sizedLists, listItemMap },
+            );
+            expect(result.content).toEqual([
+                {
+                    type: "bulletList",
+                    content: [
+                        listItem({ text: "standard" }),
+                        listItem({ text: "small", textBlockStyle: "small" }),
+                        listItem({ text: "standard again" }),
+                        listItem({ text: "large", textBlockStyle: "large" }),
+                    ],
+                },
+            ]);
+        });
+
+        it("splits the list where a mapped item belongs to the other list type", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item-small", text: "a" }),
+                        makeBlock({ type: "ordered-list-item-small", text: "1" }),
+                        makeBlock({ type: "ordered-list-item", text: "2" }),
+                    ],
+                    entityMap: {},
+                },
+                { resolvedOptions: sizedLists, listItemMap },
+            );
+            expect(result.content).toEqual([
+                { type: "bulletList", content: [listItem({ text: "a", textBlockStyle: "small" })] },
+                { type: "orderedList", content: [listItem({ text: "1", textBlockStyle: "small" }), listItem({ text: "2" })] },
+            ]);
+        });
+
+        it("nests mapped items via depth like the built-in list types", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item-large", text: "a", depth: 0 }),
+                        makeBlock({ type: "unordered-list-item-small", text: "a.1", depth: 1 }),
+                        makeBlock({ type: "ordered-list-item-small", text: "a.1.1", depth: 2 }),
+                        makeBlock({ type: "unordered-list-item", text: "b", depth: 0 }),
+                    ],
+                    entityMap: {},
+                },
+                { resolvedOptions: sizedLists, listItemMap },
+            );
+            expect(result.content).toEqual([
+                {
+                    type: "bulletList",
+                    content: [
+                        listItem({
+                            text: "a",
+                            textBlockStyle: "large",
+                            subList: {
+                                type: "bulletList",
+                                content: [
+                                    listItem({
+                                        text: "a.1",
+                                        textBlockStyle: "small",
+                                        subList: { type: "orderedList", content: [listItem({ text: "a.1.1", textBlockStyle: "small" })] },
+                                    }),
+                                ],
+                            },
+                        }),
+                        listItem({ text: "b" }),
+                    ],
+                },
+            ]);
+        });
+
+        it("limits the nesting of mapped items to listLevelMax", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "a", depth: 0 }),
+                        makeBlock({ type: "unordered-list-item-small", text: "a.1", depth: 1 }),
+                    ],
+                    entityMap: {},
+                },
+                { resolvedOptions: sizedLists, listItemMap, listLevelMax: 1 },
+            );
+            expect(result.content).toEqual([
+                { type: "bulletList", content: [listItem({ text: "a" }), listItem({ text: "a.1", textBlockStyle: "small" })] },
+            ]);
+        });
+
+        it("closes the list when a non-list block follows a mapped item", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [makeBlock({ type: "unordered-list-item-small", text: "a" }), makeBlock({ type: "unstyled", text: "after" })],
+                    entityMap: {},
+                },
+                { resolvedOptions: sizedLists, listItemMap },
+            );
+            expect(result.content).toEqual([
+                { type: "bulletList", content: [listItem({ text: "a", textBlockStyle: "small" })] },
+                { type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "after" }] },
+            ]);
+        });
+
+        it("keeps inline styles and links of a mapped item", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({
+                            type: "unordered-list-item-small",
+                            text: "bold link",
+                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 4 }],
+                            entityRanges: [{ key: 0, offset: 5, length: 4 }],
+                        }),
+                    ],
+                    entityMap: { "0": { type: "LINK", data: { url: "https://example.com" } } },
+                },
+                { resolvedOptions: sizedLists, listItemMap, link: dummyLinkBlock },
+            );
+            expect(result.content?.[0].content?.[0].content?.[0]).toEqual({
+                type: "textBlock",
+                attrs: { textBlock: "paragraph", textBlockStyle: "small" },
+                content: [
+                    { type: "text", text: "bold", marks: [{ type: "bold" }] },
+                    { type: "text", text: " " },
+                    { type: "text", text: "link", marks: [{ type: "link", attrs: { data: { url: "https://example.com" } } }] },
+                ],
+            });
+        });
+
+        it("falls back to paragraph without the list style when the mapped list is disabled", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "unordered-list-item-small", text: "a" })], entityMap: {} },
+                { resolvedOptions: allDisabled, listItemMap },
+            );
+            expect(result.content).toEqual([{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "a" }] }]);
+        });
+
+        it("applies the list's defaultStyle to items of the built-in type and the mapped style to mapped items", () => {
+            const listSizesWithDefault = { styles: [{ name: "standard" }, { name: "small" }, { name: "large" }], defaultStyle: "standard" };
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({ type: "unordered-list-item", text: "standard" }),
+                        makeBlock({ type: "unordered-list-item-small", text: "small" }),
+                        makeBlock({ type: "ordered-list-item", text: "1" }),
+                        makeBlock({ type: "ordered-list-item-large", text: "2" }),
+                    ],
+                    entityMap: {},
+                },
+                {
+                    resolvedOptions: resolveTipTapOptions({ unorderedList: listSizesWithDefault, orderedList: listSizesWithDefault }),
+                    listItemMap,
+                },
+            );
+            expect(result.content).toEqual([
+                {
+                    type: "bulletList",
+                    content: [listItem({ text: "standard", textBlockStyle: "standard" }), listItem({ text: "small", textBlockStyle: "small" })],
+                },
+                {
+                    type: "orderedList",
+                    content: [listItem({ text: "1", textBlockStyle: "standard" }), listItem({ text: "2", textBlockStyle: "large" })],
+                },
+            ]);
+        });
+
+        it("leaves a DraftJS type that is in neither map a paragraph", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "unordered-list-item-huge", text: "a" })], entityMap: {} },
+                { resolvedOptions: sizedLists, listItemMap },
+            );
+            expect(result.content).toEqual([{ type: "textBlock", attrs: { textBlock: "paragraph" }, content: [{ type: "text", text: "a" }] }]);
+        });
+    });
+
     describe("inline style ranges", () => {
         it("maps a full-text BOLD range to a single marked text node", () => {
             const result = convertDraftJsToTipTap(
@@ -664,6 +887,32 @@ describe("convertDraftJsToTipTap", () => {
             ).not.toThrow();
         });
 
+        it("counts range offsets in code points, so a range after an emoji keeps its text", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({
+                            type: "unstyled",
+                            text: "🔗 bold 🎉 end",
+                            inlineStyleRanges: [
+                                { style: "BOLD", offset: 2, length: 4 },
+                                { style: "ITALIC", offset: 7, length: 1 },
+                            ],
+                        }),
+                    ],
+                    entityMap: {},
+                },
+                { resolvedOptions: allEnabled },
+            );
+            expect(result.content?.[0].content).toEqual([
+                { type: "text", text: "🔗 " },
+                { type: "text", text: "bold", marks: [{ type: "bold" }] },
+                { type: "text", text: " " },
+                { type: "text", text: "🎉", marks: [{ type: "italic" }] },
+                { type: "text", text: " end" },
+            ]);
+        });
+
         it("maps a custom inline style via inlineStyleMap to an inlineStyle mark", () => {
             const result = convertDraftJsToTipTap(
                 {
@@ -741,7 +990,7 @@ describe("convertDraftJsToTipTap", () => {
             expect(result.content?.[0].content).toEqual([{ type: "text", text: "long" }, { type: "softHyphen" }, { type: "text", text: "word" }]);
         });
 
-        it("preserves marks on text fragments adjacent to atom characters", () => {
+        it("keeps the marks of the surrounding text on atom nodes", () => {
             const result = convertDraftJsToTipTap(
                 {
                     blocks: [
@@ -757,8 +1006,52 @@ describe("convertDraftJsToTipTap", () => {
             );
             expect(result.content?.[0].content).toEqual([
                 { type: "text", text: "a", marks: [{ type: "bold" }] },
-                { type: "nonBreakingSpace" },
+                { type: "nonBreakingSpace", marks: [{ type: "bold" }] },
                 { type: "text", text: "b", marks: [{ type: "bold" }] },
+            ]);
+        });
+
+        it("keeps a bold link across a soft hyphen", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({
+                            type: "unstyled",
+                            text: "Wonder­ful",
+                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 10 }],
+                            entityRanges: [{ key: 0, offset: 0, length: 10 }],
+                        }),
+                    ],
+                    entityMap: { "0": { type: "LINK", mutability: "MUTABLE", data: { href: "https://example.com" } } },
+                },
+                { resolvedOptions: allEnabled, link: dummyLinkBlock },
+            );
+            const marks = [{ type: "bold" }, { type: "link", attrs: { data: { href: "https://example.com" } } }];
+            expect(result.content?.[0].content).toEqual([
+                { type: "text", text: "Wonder", marks },
+                { type: "softHyphen", marks },
+                { type: "text", text: "ful", marks },
+            ]);
+        });
+
+        it("doesn't apply a mark to an atom node outside of its range", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({
+                            type: "unstyled",
+                            text: "ab­c",
+                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 2 }],
+                        }),
+                    ],
+                    entityMap: {},
+                },
+                { resolvedOptions: allEnabled },
+            );
+            expect(result.content?.[0].content).toEqual([
+                { type: "text", text: "ab", marks: [{ type: "bold" }] },
+                { type: "softHyphen" },
+                { type: "text", text: "c" },
             ]);
         });
 
@@ -792,6 +1085,80 @@ describe("convertDraftJsToTipTap", () => {
         });
     });
 
+    describe("soft line breaks", () => {
+        it("converts a newline into a hardBreak node", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "unstyled", text: "First line\nSecond line" })], entityMap: {} },
+                { resolvedOptions: allEnabled },
+            );
+            expect(result.content?.[0].content).toEqual([
+                { type: "text", text: "First line" },
+                { type: "hardBreak" },
+                { type: "text", text: "Second line" },
+            ]);
+        });
+
+        it("converts a newline when all optional features are disabled", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "unstyled", text: "a\nb" })], entityMap: {} },
+                { resolvedOptions: allDisabled },
+            );
+            expect(result.content?.[0].content).toEqual([{ type: "text", text: "a" }, { type: "hardBreak" }, { type: "text", text: "b" }]);
+        });
+
+        it("keeps the marks of a style and a link spanning the line break on both sides", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({
+                            type: "unstyled",
+                            text: "ab\ncd",
+                            inlineStyleRanges: [{ style: "BOLD", offset: 0, length: 4 }],
+                            entityRanges: [{ key: 0, offset: 1, length: 4 }],
+                        }),
+                    ],
+                    entityMap: { "0": { type: "LINK", mutability: "MUTABLE", data: { href: "https://example.com" } } },
+                },
+                { resolvedOptions: allEnabled, link: dummyLinkBlock },
+            );
+            const linkMark = { type: "link", attrs: { data: { href: "https://example.com" } } };
+            expect(result.content?.[0].content).toEqual([
+                { type: "text", text: "a", marks: [{ type: "bold" }] },
+                { type: "text", text: "b", marks: [{ type: "bold" }, linkMark] },
+                { type: "hardBreak" },
+                { type: "text", text: "c", marks: [{ type: "bold" }, linkMark] },
+                { type: "text", text: "d", marks: [linkMark] },
+            ]);
+        });
+
+        it("emits no empty text nodes for leading, trailing and consecutive newlines", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "unstyled", text: "\na\n\nb\n" })], entityMap: {} },
+                { resolvedOptions: allEnabled },
+            );
+            expect(result.content?.[0].content).toEqual([
+                { type: "hardBreak" },
+                { type: "text", text: "a" },
+                { type: "hardBreak" },
+                { type: "hardBreak" },
+                { type: "text", text: "b" },
+                { type: "hardBreak" },
+            ]);
+        });
+
+        it("converts a newline within a list item", () => {
+            const result = convertDraftJsToTipTap(
+                { blocks: [makeBlock({ type: "unordered-list-item", text: "a\nb" })], entityMap: {} },
+                { resolvedOptions: allEnabled },
+            );
+            expect(result.content?.[0].content?.[0].content?.[0].content).toEqual([
+                { type: "text", text: "a" },
+                { type: "hardBreak" },
+                { type: "text", text: "b" },
+            ]);
+        });
+    });
+
     describe("link entities", () => {
         it("emits a link mark for a LINK entity when link block is provided", () => {
             const result = convertDraftJsToTipTap(
@@ -809,6 +1176,26 @@ describe("convertDraftJsToTipTap", () => {
             );
             expect(result.content?.[0].content).toEqual([
                 { type: "text", text: "click", marks: [{ type: "link", attrs: { data: { href: "https://example.com" } } }] },
+            ]);
+        });
+
+        it("keeps the whole link text when the link follows an emoji", () => {
+            const result = convertDraftJsToTipTap(
+                {
+                    blocks: [
+                        makeBlock({
+                            type: "unstyled",
+                            text: "🔗 https://example.com/",
+                            entityRanges: [{ key: 0, offset: 2, length: 20 }],
+                        }),
+                    ],
+                    entityMap: { "0": { type: "LINK", mutability: "MUTABLE", data: { href: "https://example.com/" } } },
+                },
+                { resolvedOptions: allEnabled, link: dummyLinkBlock },
+            );
+            expect(result.content?.[0].content).toEqual([
+                { type: "text", text: "🔗 " },
+                { type: "text", text: "https://example.com/", marks: [{ type: "link", attrs: { data: { href: "https://example.com/" } } }] },
             ]);
         });
 

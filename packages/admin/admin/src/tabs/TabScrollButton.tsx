@@ -20,11 +20,13 @@ const Root = createComponentSlot(ButtonBase)<TabScrollButtonClassKey, OwnerState
         width: 40px;
         flex-shrink: 0;
 
-        ${ownerState.orientation === "vertical" &&
-        css`
-            width: 100%;
-            height: 40px;
-        `}
+        ${
+            ownerState.orientation === "vertical" &&
+            css`
+                width: 100%;
+                height: 40px;
+            `
+        }
 
         &:disabled {
             opacity: 0.25;

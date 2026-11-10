@@ -1,5 +1,150 @@
 # @comet/brevo-admin
 
+## 10.14.0
+
+### Patch Changes
+
+- edd15dd: Show an alert on the Brevo config page when the data from Brevo can't be loaded
+
+    Previously, the config page opened an error dialog saying only "Internal Server Error" when the senders or double opt-in templates couldn't be loaded from Brevo, for instance because the API key is invalid.
+    Now the page shows an alert that points to the API key and the authorized IP addresses in Brevo instead.
+
+- Updated dependencies [de4cc90]
+- Updated dependencies [de4cc90]
+- Updated dependencies [c586a3d]
+- Updated dependencies [def6e3e]
+- Updated dependencies [e6909e2]
+- Updated dependencies [e131e00]
+- Updated dependencies [da2f8e6]
+- Updated dependencies [5db7734]
+- Updated dependencies [1595266]
+- Updated dependencies [1595266]
+- Updated dependencies [45cb8e2]
+    - @dextinity/cms-admin@10.14.0
+    - @dextinity/admin-icons@10.14.0
+    - @dextinity/admin@10.14.0
+
+## 10.13.1
+
+### Patch Changes
+
+- Updated dependencies [b6fde8f]
+    - @dextinity/admin@10.13.1
+    - @dextinity/cms-admin@10.13.1
+    - @dextinity/admin-icons@10.13.1
+
+## 10.13.0
+
+### Patch Changes
+
+- Updated dependencies [ad3f6d5]
+- Updated dependencies [46a1a08]
+- Updated dependencies [b16df0b]
+    - @dextinity/cms-admin@10.13.0
+    - @dextinity/admin@10.13.0
+    - @dextinity/admin-icons@10.13.0
+
+## 10.12.0
+
+### Patch Changes
+
+- Updated dependencies [1b288ab]
+- Updated dependencies [2735896]
+- Updated dependencies [eb77fc2]
+- Updated dependencies [ffcbdd7]
+- Updated dependencies [3d1fb7c]
+    - @dextinity/cms-admin@10.12.0
+    - @dextinity/admin@10.12.0
+    - @dextinity/admin-icons@10.12.0
+
+## 10.11.0
+
+### Patch Changes
+
+- Updated dependencies [05ea45d]
+- Updated dependencies [3e0526b]
+- Updated dependencies [5bb4070]
+- Updated dependencies [75ebfd4]
+- Updated dependencies [a6f647b]
+- Updated dependencies [43ee19a]
+- Updated dependencies [8a645b7]
+- Updated dependencies [43ee19a]
+- Updated dependencies [96bf6f1]
+- Updated dependencies [c5f02ac]
+- Updated dependencies [f423240]
+    - @dextinity/cms-admin@10.11.0
+    - @dextinity/admin@10.11.0
+    - @dextinity/admin-icons@10.11.0
+
+## 10.10.0
+
+### Patch Changes
+
+- Updated dependencies [d44bdd0]
+- Updated dependencies [7f5eefe]
+- Updated dependencies [bfc162a]
+- Updated dependencies [c1ac227]
+- Updated dependencies [245faa3]
+- Updated dependencies [c6b573b]
+- Updated dependencies [98499dd]
+- Updated dependencies [43461dd]
+- Updated dependencies [4bd97fa]
+- Updated dependencies [8ca42f5]
+- Updated dependencies [6683f95]
+- Updated dependencies [a607533]
+- Updated dependencies [fdce21f]
+- Updated dependencies [7a121f1]
+- Updated dependencies [ad1ad05]
+    - @dextinity/cms-admin@10.10.0
+    - @dextinity/admin@10.10.0
+    - @dextinity/admin-icons@10.10.0
+
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/cms-admin@10.9.1
+- @dextinity/admin@10.9.1
+- @dextinity/admin-icons@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- Updated dependencies [13838dc]
+- Updated dependencies [58aef82]
+- Updated dependencies [f899c6b]
+- Updated dependencies [f486058]
+- Updated dependencies [847b2a0]
+- Updated dependencies [fad8ab4]
+- Updated dependencies [013a03f]
+- Updated dependencies [be674a9]
+- Updated dependencies [e9067c3]
+- Updated dependencies [1c29104]
+- Updated dependencies [e84ba03]
+    - @dextinity/cms-admin@10.9.0
+    - @dextinity/admin@10.9.0
+    - @dextinity/admin-icons@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- 8c41f26: Allow typing the email campaign schedule date
+
+    The schedule field used the deprecated `FinalFormDateTimePicker` from `@dextinity/admin-date-time`, which renders a read-only input, so the date and time could only be picked from the calendar. It now uses `DateTimePickerField` from `@dextinity/admin`, which accepts keyboard input.
+
+    `@dextinity/brevo-admin` no longer depends on `@dextinity/admin-date-time`.
+
+- Updated dependencies [f9ba8df]
+- Updated dependencies [350294d]
+- Updated dependencies [748dd34]
+- Updated dependencies [9109aa3]
+- Updated dependencies [f9ba8df]
+    - @dextinity/cms-admin@10.8.0
+    - @dextinity/admin@10.8.0
+    - @dextinity/admin-icons@10.8.0
+
 ## 10.7.0
 
 ### Patch Changes

@@ -17,26 +17,18 @@ import { RowActionsMenu } from "../rowActions/RowActionsMenu";
 import { useSnackbarApi } from "../snackbar/SnackbarProvider";
 
 export type CrudContextMenuClassKey =
-    | "root"
-    | "itemsMenu"
-    | "copyUrlItem"
-    | "deleteItem"
-    | "copyItem"
-    | "pasteItem"
-    | "itemsDivider"
-    | "deleteDialog";
+    "root" | "itemsMenu" | "copyUrlItem" | "deleteItem" | "copyItem" | "pasteItem" | "itemsDivider" | "deleteDialog";
 
-export interface CrudContextMenuProps<CopyData>
-    extends ThemedComponentBaseProps<{
-        root: typeof RowActionsMenu;
-        itemsMenu: typeof RowActionsMenu;
-        copyUrlItem: typeof RowActionsItem;
-        copyItem: typeof RowActionsItem;
-        pasteItem: typeof RowActionsItem;
-        itemsDivider: typeof Divider;
-        deleteItem: typeof RowActionsItem;
-        deleteDialog: typeof CommonDeleteDialog;
-    }> {
+export interface CrudContextMenuProps<CopyData> extends ThemedComponentBaseProps<{
+    root: typeof RowActionsMenu;
+    itemsMenu: typeof RowActionsMenu;
+    copyUrlItem: typeof RowActionsItem;
+    copyItem: typeof RowActionsItem;
+    pasteItem: typeof RowActionsItem;
+    itemsDivider: typeof Divider;
+    deleteItem: typeof RowActionsItem;
+    deleteDialog: typeof CommonDeleteDialog;
+}> {
     iconMapping?: {
         copyUrl?: ReactNode;
         copy?: ReactNode;

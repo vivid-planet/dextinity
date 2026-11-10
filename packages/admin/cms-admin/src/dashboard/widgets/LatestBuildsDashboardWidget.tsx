@@ -1,5 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
-import type { GridColDef } from "@dextinity/admin";
+import { type GridColDef, InlineAlert, LocalErrorScopeApolloContext } from "@dextinity/admin";
+import { styled } from "@mui/material/styles";
 import { parseISO } from "date-fns";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -10,13 +11,11 @@ import { DashboardWidgetRoot } from "./DashboardWidgetRoot";
 import type { GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables } from "./LatestBuildsDashboardWidget.generated";
 
 export const LatestBuildsDashboardWidget = () => {
-    const { data, loading, error } = useQuery<GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables>(latestBuildsQuery);
+    const { data, loading, error } = useQuery<GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables>(latestBuildsQuery, {
+        context: LocalErrorScopeApolloContext,
+    });
 
     const intl = useIntl();
-
-    if (error) {
-        throw error;
-    }
 
     const columns: GridColDef<GQLLatestBuildsQuery["builds"][number]>[] = [
         {
@@ -42,7 +41,15 @@ export const LatestBuildsDashboardWidget = () => {
 
     return (
         <DashboardWidgetRoot header={<FormattedMessage id="dextinity.dashboard.latestBuildsWidget.title" defaultMessage="Latest Builds" />}>
-            <DataGrid disableColumnMenu hideFooter autoHeight columns={columns} rows={data?.builds ?? []} loading={loading} />
+            {error ? (
+                <ErrorAlert
+                    description={
+                        <FormattedMessage id="dextinity.dashboard.latestBuildsWidget.error" defaultMessage="The latest builds couldn't be loaded." />
+                    }
+                />
+            ) : (
+                <DataGrid disableColumnMenu hideFooter autoHeight columns={columns} rows={data?.builds ?? []} loading={loading} />
+            )}
         </DashboardWidgetRoot>
     );
 };
@@ -64,4 +71,8 @@ const latestBuildsQuery = gql`
             completionTime
         }
     }
+`;
+
+const ErrorAlert = styled(InlineAlert)`
+    padding: ${({ theme }) => theme.spacing(4)};
 `;

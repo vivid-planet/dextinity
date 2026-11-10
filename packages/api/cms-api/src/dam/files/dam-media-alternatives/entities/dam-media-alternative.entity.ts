@@ -1,6 +1,6 @@
 import { BaseEntity, Entity, Enum, ManyToOne, PrimaryKey, Property, Ref } from "@mikro-orm/core";
 import { Field, ID, ObjectType, registerEnumType } from "@nestjs/graphql";
-import { v4 as uuid } from "uuid";
+import { randomUUID } from "crypto";
 
 import { ScopedEntity } from "../../../../user-permissions/decorators/scoped-entity.decorator";
 import { FILE_ENTITY, FileInterface } from "../../entities/file.entity";
@@ -19,7 +19,7 @@ registerEnumType(DamMediaAlternativeType, { name: "DamMediaAlternativeType" });
 export class DamMediaAlternative extends BaseEntity {
     @PrimaryKey({ columnType: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ columnType: "text" })
     @Field()

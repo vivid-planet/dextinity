@@ -1,7 +1,7 @@
 import { BaseEntity, Entity, Enum, Index, OptionalProps, PrimaryKey, Property } from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
+import { randomUUID } from "crypto";
 import { GraphQLJSONObject } from "graphql-scalars";
-import { v4 as uuid } from "uuid";
 
 import { ContentScope } from "../../user-permissions/interfaces/content-scope.interface";
 import { WarningSourceInfo } from "../dto/warning-source-info";
@@ -22,7 +22,7 @@ export class Warning extends BaseEntity {
 
     @PrimaryKey({ type: "uuid" })
     @Field(() => ID)
-    id: string = uuid();
+    id: string = randomUUID();
 
     @Property({ columnType: "timestamp with time zone" })
     @Field()

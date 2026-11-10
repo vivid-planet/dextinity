@@ -73,15 +73,14 @@ const Popover = createComponentSlot(MuiPopover)<FilterBarPopoverFilterClassKey>(
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
-export interface FilterBarPopoverFilterProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        fieldBarWrapper: "div";
-        popoverContentContainer: "div";
-        buttonsContainer: "div";
-        contentContainer: "div";
-        popover: typeof Popover;
-    }> {
+export interface FilterBarPopoverFilterProps extends ThemedComponentBaseProps<{
+    root: "div";
+    fieldBarWrapper: "div";
+    popoverContentContainer: "div";
+    buttonsContainer: "div";
+    contentContainer: "div";
+    popover: typeof Popover;
+}> {
     label: string;
     dirtyFieldsBadge?: ComponentType<FilterBarActiveFilterBadgeProps>;
     calcNumberDirtyFields?: (values: Record<string, any>, registeredFields: string[]) => number;

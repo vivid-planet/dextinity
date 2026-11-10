@@ -24,11 +24,13 @@ export const Root = createComponentSlot("div")<MainNavigationCollapsibleItemClas
     },
 })(
     ({ theme, ownerState }) => css`
-        ${ownerState.childSelected &&
-        css`
-            color: ${theme.palette.primary.main};
-            font-weight: ${theme.typography.fontWeightMedium};
-        `}
+        ${
+            ownerState.childSelected &&
+            css`
+                color: ${theme.palette.primary.main};
+                font-weight: ${theme.typography.fontWeightMedium};
+            `
+        }
     `,
 );
 
@@ -38,39 +40,47 @@ export const CollapsibleItemMainNavigationItem = createComponentSlot(MainNavigat
 })(
     ({ theme, ownerState }) => css`
         background-color: ${theme.palette.common.white};
-        ${!ownerState.menuOpen &&
-        ownerState.level === 1 &&
-        css`
-            justify-content: space-between;
-        `}
+        ${
+            !ownerState.menuOpen &&
+            ownerState.level === 1 &&
+            css`
+                justify-content: space-between;
+            `
+        }
 
-        ${ownerState.level === 2 &&
-        ownerState.menuOpen &&
-        ownerState.variant === "temporary" &&
-        ownerState.subMenuOpen &&
-        css`
-            border-top: 1px solid ${theme.palette.grey[100]};
-            background-color: ${theme.palette.grey[50]};
+        ${
+            ownerState.level === 2 &&
+            ownerState.menuOpen &&
+            ownerState.variant === "temporary" &&
+            ownerState.subMenuOpen &&
+            css`
+                border-top: 1px solid ${theme.palette.grey[100]};
+                background-color: ${theme.palette.grey[50]};
 
-            :hover {
-                background-color: ${theme.palette.grey[100]} !important;
-            }
-        `}
+                :hover {
+                    background-color: ${theme.palette.grey[100]} !important;
+                }
+            `
+        }
 
-        ${ownerState.childSelected &&
-        css`
-            .DextinityAdminMainNavigationItem-text,
-            .DextinityAdminMainNavigationItem-icon {
-                color: ${theme.palette.primary.main};
-            }
+        ${
+            ownerState.childSelected &&
+            css`
+                .DextinityAdminMainNavigationItem-text,
+                .DextinityAdminMainNavigationItem-icon {
+                    color: ${theme.palette.primary.main};
+                }
 
-            .DextinityAdminMainNavigationItem-primary {
-                ${(ownerState.level === 2 || ownerState.level === 3) &&
-                css`
-                    font-weight: 600;
-                `};
-            }
-        `}
+                .DextinityAdminMainNavigationItem-primary {
+                    ${
+                        (ownerState.level === 2 || ownerState.level === 3) &&
+                        css`
+                            font-weight: 600;
+                        `
+                    };
+                }
+            `
+        }
     `,
 );
 
@@ -97,16 +107,20 @@ export const CollapsibleIndicator = createComponentSlot("div")<MainNavigationCol
         color: ${theme.palette.grey[900]};
         margin-left: 8px;
 
-        ${ownerState.level === 1 &&
-        !ownerState.menuOpen &&
-        css`
-            font-size: 12px;
-            color: ${theme.palette.grey[200]};
-
-            ${ownerState.subMenuOpen &&
+        ${
+            ownerState.level === 1 &&
+            !ownerState.menuOpen &&
             css`
-                color: ${theme.palette.common.white};
-            `}
-        `}
+                font-size: 12px;
+                color: ${theme.palette.grey[200]};
+
+                ${
+                    ownerState.subMenuOpen &&
+                    css`
+                        color: ${theme.palette.common.white};
+                    `
+                }
+            `
+        }
     `,
 );

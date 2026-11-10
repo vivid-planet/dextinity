@@ -7,7 +7,7 @@ Everything from [Clean Code concepts adapted for TypeScript](https://github.com/
 
 ## General
 
-Prefer using an options object instead of multiple parameters
+Prefer using an options object when the arguments' meaning isn't clear at the call site, for instance boolean flags, parameters of the same type that are easily mixed up, or optional parameters in the middle
 (Explanation: [Clean Code concepts adapted for TypeScript](https://github.com/labs42io/clean-code-typescript#function-arguments-2-or-fewer-ideally))
 
 :::warning Bad
@@ -38,10 +38,13 @@ getSortedJobs({
 
 :::
 
+Positional parameters are fine when their meaning is obvious from the function name and argument values, even with more than two parameters, e.g. `clamp(value, min, max)` or `addToCart(cart, product, quantity)`.
+
 - Use named exports only (Exception: Default exports are allowed only if technically required)  
   **Reason:** They are harder to locate and refactor.
 
-- Use relative imports only for sibling or child files within a module (for anything else, use imports via @src)
+- Use relative imports only for sibling or child files within a module (for anything else, use imports via @src)  
+  This only applies to projects that define the `@src` path alias. Library packages compiled with plain `tsc` can't use it, because `tsc` doesn't rewrite path aliases in its output, so they use relative imports, including for ancestor files.
 
 - Prefer async/await over callbacks
 

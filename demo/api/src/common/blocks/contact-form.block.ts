@@ -8,4 +8,7 @@ class ContactFormBlockInput extends BlockInput {
     }
 }
 
-export const ContactFormBlock = createBlock(ContactFormBlockData, ContactFormBlockInput, "ContactForm");
+export const ContactFormBlock = createBlock(ContactFormBlockData, ContactFormBlockInput, {
+    name: "ContactForm",
+    description: "A contact form that visitors can use to get in touch.",
+});

@@ -12,10 +12,10 @@ describe("generateRichTextListStyles", () => {
         });
         const styles = generateRichTextListStyles(theme);
 
-        expect(styles).toContain(".richTextBlock__list--variantBody .richTextBlock__listItemMarker");
-        expect(styles).toContain(".richTextBlock__list--variantBody .richTextBlock__listItemText");
+        expect(styles).toContain(".richTextBlock__listItem--variantBody > .richTextBlock__listItemMarker");
+        expect(styles).toContain(".richTextBlock__listItem--variantBody > .richTextBlock__listItemText");
         expect(styles).toContain("font-size: 14px !important");
-        expect(styles).toContain(".richTextBlock__list--variantBody .richTextBlock__listItem--blockSpacing > td");
+        expect(styles).toContain(".richTextBlock__listItem--variantBody.richTextBlock__listItem--blockSpacing > td");
         expect(styles).toContain("padding-bottom: 12px !important");
     });
 

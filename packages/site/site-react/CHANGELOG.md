@@ -1,5 +1,205 @@
 # @comet/site-react
 
+## 10.14.0
+
+### Minor Changes
+
+- 1000778: Allow rendering `PreviewSkeleton` as a server component
+
+    `PreviewSkeleton` is no longer a client component. When `hasContent` is `true`, it renders its children directly, so no client reference carrying `title` and `children` is added to the RSC payload. The placeholder shown for empty content is still rendered on the client, and its behavior in the block and site preview is unchanged.
+
+- 1595266: Add a `textAlign` option to `createTipTapRichTextBlock`
+
+    Editors can align paragraphs and headings left, center, right, or justified, using the toolbar or the shortcuts `Mod-Shift-L`, `Mod-Shift-E`, `Mod-Shift-R`, and `Mod-Shift-J`.
+    The alignment is stored in the text block's `textAlign` attribute.
+    The option is disabled by default and must be enabled in both the API and the Admin:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: true });
+    ```
+
+    To enable only some of the alignments, pass an object:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: { left: true, center: true } });
+    ```
+
+    `renderTipTapRichText` renders the alignment as the text block's `text-align` style.
+    A custom `textBlock` handler has to apply `node.attrs.textAlign` itself.
+
+### Patch Changes
+
+- 9ed0039: Treat a document with only empty lists as empty in `hasTipTapRichTextContent`
+
+    An empty list renders nothing but a bullet or a number, so a TipTap rich text that contains only empty lists, list items and text blocks no longer counts as content.
+
+## 10.13.1
+
+### Patch Changes
+
+- 94991f8: Update `jose` to v6
+
+## 10.13.0
+
+## 10.12.0
+
+### Patch Changes
+
+- ea0ad37: Reload changed persisted queries during development
+
+    `persistedQueryRoute` loaded the persisted queries file only once. Queries and fragments that changed while the dev server was running were ignored until a restart: a changed query failed with `PersistedQueryNotFound`, and a changed fragment silently sent the old fragment to the API.
+    Outside production, the route now reloads the file whenever it changes.
+
+## 10.11.0
+
+### Minor Changes
+
+- a4cc3bb: Make mail blocks selectable in the admin's block preview
+
+    Mail blocks now work in the block preview like site blocks: a hover highlights them, and a click opens their form. The sent mail does not change.
+
+    Wrap each mail block in `withPreview` and apply the `className` it passes to the block's root element:
+
+    ```tsx
+    export const MailButtonBlock = withPreview<PropsWithData<MailButtonBlockData>>(
+        ({ data, className }) => (
+            <MjmlSection className={className}>
+                <MjmlColumn>
+                    <MjmlButton href={data.link.targetUrl}>{data.text}</MjmlButton>
+                </MjmlColumn>
+            </MjmlSection>
+        ),
+        { label: "Button" },
+    );
+    ```
+
+    Pass the block's props as the type argument of `withPreview`, as in `withPreview<PropsWithData<MailButtonBlockData>>`, and it adds the `className` to them.
+
+    In the block preview page, pass the result of `useIFrameBridge` to `useRefToRegisterMailBlocksForPreview`, and put the ref it returns on the element that contains the mail HTML:
+
+    ```tsx
+    const mailContainerRef = useRefToRegisterMailBlocksForPreview<HTMLSpanElement>(useIFrameBridge());
+
+    return <span ref={mailContainerRef} dangerouslySetInnerHTML={{ __html: mailHtml }} />;
+    ```
+
+### Patch Changes
+
+- 85eecab: Keep the headers of a `Request` passed to `fetch` in the block preview
+
+    `BlockPreviewProvider` wraps `window.fetch` to add the `X-Block-Preview` header.
+    When `fetch` was called with a `Request` object, as `openapi-fetch` and other libraries do, the wrapper dropped all headers set on the `Request`.
+    Now the headers of the `Request` and of `init` are merged, with `init` taking precedence.
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+## 10.10.0
+
+### Patch Changes
+
+- 9d65d08: Fix the selection in the block preview for blocks that a page renders more than once
+
+    When one copy of such a block unmounted, the other copies could not be selected in the block preview until it was reloaded.
+
+- 41b3249: Respect the `autoplay` setting of `YouTubeVideoBlock` when no preview image is set
+
+    Previously the video only started playing after the preview image was clicked, so blocks without a preview image (e.g. in a kiosk) never autoplayed.
+
+    The embedded player is now also loaded lazily, so a video further down the page doesn't start playing before it is anywhere near the viewport.
+
+- 3ba43d6: Play the video unmuted in `YouTubeVideoBlock`, `VimeoVideoBlock` and `DamVideoBlock` when it is started by clicking the preview image
+
+    Autoplaying videos still start muted, since browsers block unmuted autoplay without a user interaction. The click on the preview image is such an interaction, so muting is no longer necessary from that point on.
+
+## 10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- 6caa864: Stop forwarding preview headers from the client in `persistedQueryRoute`
+
+    Previously, `persistedQueryRoute` forwarded the `x-include-invisible-content` and `x-preview-dam-urls` headers of the incoming request to the API.
+    Since the route usually authenticates against the API with a system user, any visitor could request unpublished pages and invisible blocks.
+
+    The headers are now only set based on the new `previewData` option, which must come from a verified source such as the site preview cookie:
+
+    ```ts
+    import { persistedQueryRoute, previewParams } from "@dextinity/site-nextjs/server";
+
+    async function handler(request: Request) {
+        const preview = await previewParams();
+        return persistedQueryRoute(request, {
+            // ...
+            previewData: preview?.previewData,
+        });
+    }
+    ```
+
+    Responses for preview requests are sent with `Cache-Control: private, no-store`.
+
+## 10.8.0
+
+### Minor Changes
+
+- 9109aa3: TipTap Rich Text Block: replace the `paragraph` and `heading` options with `textBlocks`
+
+    The text block type select could only ever offer a fixed paragraph entry plus every enabled heading level, in a fixed order. `textBlocks` configures the text block types explicitly, which decouples a text block from the tag it is stored as and lets several text blocks share a tag, for instance a display headline next to a regular heading 1.
+
+    **Example**
+
+    ```tsx
+    createTipTapRichTextBlock({
+        textBlocks: [
+            { name: "paragraph", label: "Paragraph", tag: "p" },
+            { name: "display", label: "Display", tag: "h1" },
+            { name: "heading-1", label: "Heading 1", tag: "h1" },
+            { name: "heading-2", label: "Heading 2", tag: "h2" },
+        ],
+        defaultTextBlock: "paragraph",
+    });
+    ```
+
+    The API takes the same option without the labels.
+
+    **Migrating an existing configuration**
+    - `paragraph`/`heading` → one `textBlocks` entry per text block type (`tag: "p"` for the paragraph, `h1`-`h6` for the headings). It defaults to a paragraph plus a heading for every level, so only a restricted set needs to be configured. Leaving the paragraph out replaces `paragraph: false`.
+    - `heading: { levels }` → the `textBlocks` entries for those levels.
+    - `heading: { defaultLevel }` → `defaultTextBlock`, which names the text block new content starts with and defaults to the first one.
+    - `migrateFromDraftJs`' `textBlockStyleMap` → `textBlockMap`, which now takes a `{ textBlock, textBlockStyle }` object for every DraftJS block type: `textBlock` names the text block the block becomes (instead of the tag the previous `textBlockType` named), `textBlockStyle` stays optional. Where two text blocks share a heading tag, `textBlockMap` has to name the one a DraftJS `header-one`…`header-six` becomes, unless it is the `defaultTextBlock` — the block throws otherwise, because the conversion runs once and the DraftJS content is gone afterwards.
+
+    **The stored format changes**
+
+    Every paragraph and heading is now one `textBlock` node that names its text block, instead of a `paragraph`/`heading` node with a `level`:
+
+    ```json
+    { "type": "textBlock", "attrs": { "textBlock": "heading-2" }, "content": [{ "type": "text", "text": "Headline" }] }
+    ```
+
+    The tag lives in the configuration, so changing a text block's `tag` takes effect without a migration, while renaming or removing one invalidates the content that names it.
+
+    Content stored by an earlier version holds `paragraph` and `heading` nodes. A vendor migration converts it when the block is loaded, so a project needs no migration of its own. It resolves the text block from the node's tag, which is unambiguous for that content: two text blocks could not share a tag before `textBlocks` existed.
+
+    A project migration sees the converted nodes, because the vendor migrations run before the block's own. A migration written against `{ type: "heading", attrs: { level } }` has to be changed to match `{ type: "textBlock", attrs: { textBlock } }`.
+
+    On the site, `renderTipTapRichText` renders a `textBlock` by its name: `heading-1` to `heading-6` — the default text blocks — as `<h1>` to `<h6>`, anything else as `<p>`. A block that renames a text block or adds one needs its own handler, which reads the name:
+
+    ```tsx
+    const nodeMapping: Record<string, TipTapNodeHandler> = {
+        textBlock: ({ node, children }) => <Headline variant={node.attrs?.textBlock}>{children}</Headline>,
+    };
+    ```
+
+### Patch Changes
+
+- ccffc10: Replace the deprecated `lodash.isequal` dependency with `fast-equals`
+
 ## 10.7.0
 
 ### Patch Changes

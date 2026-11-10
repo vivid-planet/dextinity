@@ -8,13 +8,12 @@ import { ToolbarItem } from "../item/ToolbarItem";
 
 export type ToolbarTitleItemClassKey = "root" | "typography";
 
-export interface ToolbarTitleItemProps
-    extends PropsWithChildren<
-        ThemedComponentBaseProps<{
-            root: typeof ToolbarItem;
-            typography: typeof MuiTypography;
-        }>
-    > {
+export interface ToolbarTitleItemProps extends PropsWithChildren<
+    ThemedComponentBaseProps<{
+        root: typeof ToolbarItem;
+        typography: typeof MuiTypography;
+    }>
+> {
     /**
      * @deprecated Use `slotProps` instead.
      */

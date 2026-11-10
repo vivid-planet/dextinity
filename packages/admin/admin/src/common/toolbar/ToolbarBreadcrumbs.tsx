@@ -23,22 +23,21 @@ export type ToolbarBreadcrumbsClassKey =
     | "mobileMenuItemText"
     | "mobileMenuItemNestingIndicator";
 
-export interface ToolbarBreadcrumbsProps
-    extends ThemedComponentBaseProps<{
-        root: "div";
-        breadcrumbsList: "div";
-        mobileBreadcrumbsButton: typeof ButtonBase;
-        currentBreadcrumbsItem: typeof Typography;
-        breadcrumbsItem: typeof Typography;
-        mobileStandaloneCurrentBreadcrumbItem: "div";
-        breadcrumbsItemSeparator: "div";
-        breadcrumbsEllipsisItem: typeof Typography;
-        mobileMenu: typeof Menu;
-        mobileMenuIcon: "div";
-        mobileMenuItem: typeof MenuItem;
-        mobileMenuItemText: typeof ListItemText;
-        mobileMenuItemNestingIndicator: "div";
-    }> {
+export interface ToolbarBreadcrumbsProps extends ThemedComponentBaseProps<{
+    root: "div";
+    breadcrumbsList: "div";
+    mobileBreadcrumbsButton: typeof ButtonBase;
+    currentBreadcrumbsItem: typeof Typography;
+    breadcrumbsItem: typeof Typography;
+    mobileStandaloneCurrentBreadcrumbItem: "div";
+    breadcrumbsItemSeparator: "div";
+    breadcrumbsEllipsisItem: typeof Typography;
+    mobileMenu: typeof Menu;
+    mobileMenuIcon: "div";
+    mobileMenuItem: typeof MenuItem;
+    mobileMenuItemText: typeof ListItemText;
+    mobileMenuItemNestingIndicator: "div";
+}> {
     iconMapping?: {
         itemSeparator?: ReactNode;
         openMobileMenu?: ReactNode;

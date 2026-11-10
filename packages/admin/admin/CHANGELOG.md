@@ -1,5 +1,92 @@
 # @comet/admin
 
+## 10.14.0
+
+### Patch Changes
+
+- Updated dependencies [1595266]
+- Updated dependencies [45cb8e2]
+    - @dextinity/admin-icons@10.14.0
+
+## 10.13.1
+
+### Patch Changes
+
+- b6fde8f: Wait for the Excel file in the export hooks
+
+    The Excel export hooks (`useExportTableQuery`, `useExportPagedTableQuery`, `useExportDisplayedTableData` and `useDataGridExcelExport`) didn't wait for the Excel file to be written.
+    As a result, the loading state was reset before the file was downloaded, and errors thrown while writing the file weren't caught by the hooks' error handling.
+    - @dextinity/admin-icons@10.13.1
+
+## 10.13.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.13.0
+
+## 10.12.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.12.0
+
+## 10.11.0
+
+### Patch Changes
+
+- 3e0526b: Add the selected files up to `maxFiles` in `FileSelect` and `FinalFormFileSelect`
+
+    When more files are selected than `maxFiles` allows, the files up to the limit are added and only the remaining files are shown as rejected.
+    Before, none of the selected files were added.
+    The same applies when several files are selected in a single-file `FileSelect`: the first file is added.
+
+- 5bb4070: Fix styling of `Switch` with `size="small"`
+
+    Previously, the thumb was too large and overflowed the track.
+
+- 75ebfd4: Require Node.js 22.12.0 or later
+
+    `@dextinity/cms-api` is a CommonJS package that loads dependencies which are only available as ES modules, for instance `content-disposition`.
+    Node.js supports loading ES modules with `require()` without a flag only from version 22.12.0.
+    On older versions, the API fails at startup with `ERR_REQUIRE_ESM`.
+    The other packages require the same version, so that all packages have the same Node.js minimum.
+    For `@dextinity/site-react` and `@dextinity/site-nextjs`, this drops support for Node.js 18 and 20, which no longer receive security updates.
+
+- Updated dependencies [75ebfd4]
+- Updated dependencies [43ee19a]
+    - @dextinity/admin-icons@10.11.0
+
+## 10.10.0
+
+### Patch Changes
+
+- c6b573b: Prevent `GridToolbarQuickFilter` and `DataGridPagination` from interfering with a surrounding form field
+
+    Previously, when a data grid was rendered inside a form field, for instance in a dialog opened from a field, the quick filter's search input and the pagination's page size select registered with the field's `FormControl`.
+    This caused a console error about multiple inputs inside a `FormControl`, and the field and the data grid shared their focused, filled, disabled, and error state.
+    - @dextinity/admin-icons@10.10.0
+
+## 10.9.1
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.9.1
+
+## 10.9.0
+
+### Patch Changes
+
+- 847b2a0: Restore the search field's `searchbox` role in `GridToolbarQuickFilter`
+
+    The role and id that MUI's `QuickFilterControl` supplies for the input element were dropped, leaving the placeholder as the only way to address the field — for assistive technology as well as for end-to-end tests.
+    - @dextinity/admin-icons@10.9.0
+
+## 10.8.0
+
+### Patch Changes
+
+- @dextinity/admin-icons@10.8.0
+
 ## 10.7.0
 
 ### Patch Changes

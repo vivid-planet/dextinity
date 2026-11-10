@@ -1,7 +1,7 @@
 import { AnyEntity, Connection, EntityManager, type FindOptions, type ObjectQuery } from "@mikro-orm/postgresql";
 import { Injectable, Logger, Optional } from "@nestjs/common";
+import { randomUUID } from "crypto";
 import { subMinutes } from "date-fns";
-import { v4 as uuid } from "uuid";
 
 import { filtersToMikroOrmQuery, gqlSortToMikroOrmOrderBy } from "../common/filter/mikro-orm";
 import { StringFilter } from "../common/filter/string.filter";
@@ -238,7 +238,7 @@ export class DependenciesService {
                     }
                 }
 
-                const id = uuid();
+                const id = randomUUID();
                 this.logger.log(`Starting block index refresh ${id}`);
 
                 await trx("BlockIndexRefresh").insert({ id, startedAt: new Date(), finishedAt: null });
@@ -276,7 +276,7 @@ export class DependenciesService {
                 await trx.raw(`SELECT pg_advisory_xact_lock(?)`, [BLOCK_INDEX_REFRESH_LOCK_KEY]);
                 await trx("BlockIndexRefresh").truncate();
                 await trx.raw(`REFRESH MATERIALIZED VIEW block_index_dependencies`);
-                await trx("BlockIndexRefresh").insert({ id: uuid(), startedAt: new Date(), finishedAt: new Date() });
+                await trx("BlockIndexRefresh").insert({ id: randomUUID(), startedAt: new Date(), finishedAt: new Date() });
             });
 
             return "refreshed";
@@ -441,6 +441,7 @@ export class DependenciesService {
     private mapToResult(entity: BlockIndexDependencyObject, context: "dependencies" | "dependents"): Dependency {
         const result = new Dependency();
         Object.assign(result, entity);
+        result.context = context;
         result.name = context === "dependents" ? entity.rootName : entity.targetName;
         result.secondaryInformation = context === "dependents" ? entity.rootSecondaryInformation : entity.targetSecondaryInformation;
         return result;

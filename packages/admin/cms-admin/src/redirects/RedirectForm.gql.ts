@@ -8,6 +8,7 @@ const redirectDetailFragment = gql`
         target
         comment
         generationType
+        redirectType
         updatedAt
     }
 `;

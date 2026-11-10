@@ -10,5 +10,5 @@
     },
     "exclude": [],
     "extends": "../tsconfig.base.json",
-    "include": ["./src", "./.storybook"]
+    "include": ["./src", "./.storybook", "./vitest.setup.ts"]
 }

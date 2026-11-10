@@ -31,6 +31,8 @@ export {
     BlockMetaFieldKind,
     BlockMetaInterface,
     BlockMetaLiteralFieldKind,
+    BlockMetaTipTap,
+    BlockMetaTipTapStyledNode,
     BlockTransformerServiceInterface,
     BlockWarning,
     ChildBlockInfo,
@@ -109,6 +111,7 @@ export {
     type CreateTipTapRichTextBlockOptions,
     type TipTapRichTextBlockContent,
     type TipTapTextBlock,
+    type TipTapTextBlockStyle,
     type TipTapTextBlockTag,
 } from "./blocks/tipTap/createTipTapRichTextBlock";
 export { transformToBlockSaveIndex } from "./blocks/transformToBlockSaveIndex/transformToBlockSaveIndex";
@@ -140,6 +143,7 @@ export { DextinityException } from "./common/errors/dextinity.exception";
 export { DextinityEntityNotFoundException } from "./common/errors/entity-not-found.exception";
 export { ExceptionFilter } from "./common/errors/exception.filter";
 export { ExceptionInterceptor } from "./common/errors/exception.interceptor";
+export { FormattedValidationError, formatValidationErrors } from "./common/errors/format-validation-errors";
 export { DextinityValidationException } from "./common/errors/validation.exception";
 export { ValidationExceptionFactory } from "./common/errors/validation.exception-factory";
 export { BooleanFilter } from "./common/filter/boolean.filter";
@@ -202,7 +206,7 @@ export { ImageCropAreaInput } from "./dam/images/dto/image-crop-area.input";
 export { ImageCropArea } from "./dam/images/entities/image-crop-area.entity";
 export { FileImagesResolver } from "./dam/images/file-image.resolver";
 export { ImagesService } from "./dam/images/images.service";
-export { calculateInheritAspectRatio } from "./dam/images/images.util";
+export { calculateInheritAspectRatio, isUsableCropArea } from "./dam/images/images.util";
 export { IsAllowedImageAspectRatio, IsAllowedImageAspectRatioConstraint } from "./dam/images/validators/is-allowed-aspect-ratio.validator";
 export { IsAllowedImageSize, IsAllowedImageSizeConstraint } from "./dam/images/validators/is-allowed-image-size.validator";
 export { IsValidImageAspectRatio, IsValidImageAspectRatioConstraint } from "./dam/images/validators/is-valid-aspect-ratio.validator";
@@ -277,7 +281,7 @@ export { PageExists, PageExistsConstraint } from "./page-tree/validators/page-ex
 export { RedirectInterface } from "./redirects/entities/redirect-entity.factory";
 export { RedirectTargetUrlServiceInterface } from "./redirects/redirect-target-url.service";
 export { REDIRECTS_LINK_BLOCK } from "./redirects/redirects.constants";
-export { RedirectGenerationType, RedirectSourceType } from "./redirects/redirects.enum";
+export { RedirectGenerationType, RedirectSourceType, RedirectType } from "./redirects/redirects.enum";
 export { RedirectsLinkBlock, RedirectsModule } from "./redirects/redirects.module";
 export { createRedirectsResolver } from "./redirects/redirects.resolver";
 export { RedirectsService } from "./redirects/redirects.service";

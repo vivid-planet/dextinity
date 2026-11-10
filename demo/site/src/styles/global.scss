@@ -4,6 +4,8 @@
 :root {
     @include global-theme-default;
 
+    --page-grid-column-count: 24;
+
     --spacing-s100: 4px;
     --spacing-s200: 8px;
     --spacing-s300: 12px;

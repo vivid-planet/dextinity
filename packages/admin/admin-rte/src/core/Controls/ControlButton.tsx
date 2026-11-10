@@ -50,26 +50,29 @@ const Root = createComponentSlot("button")<RteControlButtonClassKey, OwnerState>
             }
         }
 
-        ${ownerState.selected &&
-        css`
-            &:not(:disabled),
-            &:not(:disabled):hover {
-                border-color: ${rteTheme.colors?.buttonBorderHover};
-                background-color: white;
-            }
-        `}
+        ${
+            ownerState.selected &&
+            css`
+                &:not(:disabled),
+                &:not(:disabled):hover {
+                    border-color: ${rteTheme.colors?.buttonBorderHover};
+                    background-color: white;
+                }
+            `
+        }
 
-        ${Boolean(ownerState.Icon) &&
-        css`
-            width: 24px;
-        `}
+        ${
+            Boolean(ownerState.Icon) &&
+            css`
+                width: 24px;
+            `
+        }
     `;
 });
 
-export interface IProps
-    extends ThemedComponentBaseProps<{
-        root: "button";
-    }> {
+export interface IProps extends ThemedComponentBaseProps<{
+    root: "button";
+}> {
     disabled?: boolean;
     selected?: boolean;
     onButtonClick?: (e: MouseEvent) => void;

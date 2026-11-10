@@ -32,7 +32,7 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
-        "@aws-sdk/client-s3": "^3.1161.0",
+        "@aws-sdk/client-s3": "^3.1164.0",
         "@base-ui/react": "^1.9.0",
         "@dextinity/mail-react": "workspace:*",
         "@dextinity/site-nextjs": "workspace:*",

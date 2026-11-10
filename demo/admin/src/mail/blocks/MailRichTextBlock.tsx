@@ -41,5 +41,6 @@ const baseMailRichTextBlock = createRichTextBlock({
 
 export const MailRichTextBlock = {
     ...baseMailRichTextBlock,
+    name: "MailRichText",
     displayName: <FormattedMessage id="mail.richText.displayName" defaultMessage="Rich Text (DraftJS)" />,
 };

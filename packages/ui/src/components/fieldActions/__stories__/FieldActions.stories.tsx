@@ -3,8 +3,8 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import { Input } from "../../input/Input";
 import { Textarea } from "../../textarea/Textarea";
+import { TextField } from "../../textField/TextField";
 import { FieldActions, type FieldActionsProps } from "../FieldActions";
 import fieldActionsTokens from "../FieldActions.tokens.scss?raw";
 import styles from "./FieldActions.stories.module.scss";
@@ -168,7 +168,7 @@ export const SuggestionFails: Story = {
 export const OnInput: Story = {
     render: (args) => (
         <div className={styles.form}>
-            <Input
+            <TextField
                 name="metaTitle"
                 label="Meta title"
                 value="Open positions · Example Inc."

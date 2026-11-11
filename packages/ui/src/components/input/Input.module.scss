@@ -1,30 +1,125 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
-    min-inline-size: 0;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    gap: var(--dextinity-input-gap);
+    block-size: var(--dextinity-input-height);
+    padding-block: calc(var(--dextinity-input-padding-vertical) - var(--dextinity-input-border-width));
+    padding-inline: calc(var(--dextinity-input-padding-horizontal) - var(--dextinity-input-border-width));
+    border: var(--dextinity-input-border-width) solid var(--dextinity-input-state-default-border);
+    border-radius: var(--dextinity-input-radius);
+    background: var(--dextinity-input-state-default-background);
+    color: var(--dextinity-input-state-default-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-input-font-size);
+    font-weight: var(--dextinity-input-font-weight);
+    line-height: var(--dextinity-input-font-line-height);
+    cursor: text;
+    transition:
+        border-color var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        box-shadow var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    --dextinity-icon-size: var(--dextinity-input-icon-size);
+
+    --placeholder-color: var(--dextinity-input-state-default-foreground-placeholder);
+
+    &:hover {
+        border-color: var(--dextinity-input-state-hover-border);
+        background: var(--dextinity-input-state-hover-background);
+        color: var(--dextinity-input-state-hover-foreground);
+
+        --placeholder-color: var(--dextinity-input-state-hover-foreground-placeholder);
+    }
+
+    &:has(> :focus) {
+        border-color: var(--dextinity-input-state-focus-border);
+        background: var(--dextinity-input-state-focus-background);
+        color: var(--dextinity-input-state-focus-foreground);
+        box-shadow: 0 0 0 4px var(--dextinity-input-state-focus-halo);
+
+        @include forced-colors.focus-ring;
+
+        --placeholder-color: var(--dextinity-input-state-focus-foreground-placeholder);
+    }
+
+    &[data-readonly] {
+        border-color: var(--dextinity-input-state-read-only-border);
+        background: var(--dextinity-input-state-read-only-background);
+    }
+
+    &[data-status="error"] {
+        border-color: var(--dextinity-input-state-error-border);
+
+        &:has(> :focus) {
+            box-shadow: 0 0 0 4px var(--dextinity-input-state-error-halo);
+        }
+    }
+
+    &[data-status="success"] {
+        border-color: var(--dextinity-input-state-success-border);
+
+        &:has(> :focus) {
+            box-shadow: 0 0 0 4px var(--dextinity-input-state-success-halo);
+        }
+    }
+
+    &[data-status="warning"] {
+        border-color: var(--dextinity-input-state-warning-border);
+
+        &:has(> :focus) {
+            box-shadow: 0 0 0 4px var(--dextinity-input-state-warning-halo);
+        }
+    }
+
+    &[data-disabled] {
+        opacity: var(--dextinity-input-state-disabled-opacity);
+        cursor: not-allowed;
+    }
 }
 
-.control {
-    flex: 1;
-    align-self: stretch;
+.input {
+    flex-grow: 1;
     min-inline-size: 0;
-    margin: 0;
     padding: 0;
-    border: 0;
-    outline: none;
+    border: none;
     background: transparent;
     color: inherit;
     font: inherit;
-    caret-color: var(--dextinity-input-caret-color);
+    letter-spacing: inherit;
+    outline: none;
+    appearance: none;
 
     &::placeholder {
-        color: var(--dextinity-input-placeholder-color);
+        color: var(--placeholder-color);
         opacity: 1;
+    }
+
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-decoration {
+        appearance: none;
     }
 
     &:disabled {
         cursor: not-allowed;
     }
+}
 
-    &::-webkit-search-cancel-button {
-        appearance: none;
+.startAdornment,
+.endAdornment {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    color: var(--dextinity-input-adornment-foreground);
+
+    > svg {
+        inline-size: var(--dextinity-input-icon-size);
+        block-size: var(--dextinity-input-icon-size);
     }
+
+}
+
+.loadingSpinner {
+    color: var(--dextinity-input-state-loading-spinner);
 }

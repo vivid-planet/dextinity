@@ -1,0 +1,30 @@
+.root {
+    min-inline-size: 0;
+}
+
+.control {
+    flex: 1;
+    align-self: stretch;
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    caret-color: var(--dextinity-text-field-caret-color);
+
+    &::placeholder {
+        color: var(--dextinity-text-field-placeholder-color);
+        opacity: 1;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+
+    &::-webkit-search-cancel-button {
+        appearance: none;
+    }
+}

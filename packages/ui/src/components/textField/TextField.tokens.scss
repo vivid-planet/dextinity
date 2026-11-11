@@ -1,0 +1,5 @@
+// The frame (label, box, message) comes from the Field tokens.
+@mixin tokens {
+    --dextinity-text-field-placeholder-color: var(--dextinity-field-placeholder);
+    --dextinity-text-field-caret-color: var(--dextinity-color-accent);
+}

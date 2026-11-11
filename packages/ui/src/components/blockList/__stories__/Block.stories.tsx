@@ -5,7 +5,7 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
-import { Input } from "../../input/Input";
+import { TextField } from "../../textField/TextField";
 import { Block, type BlockProps } from "../Block";
 import { BlockList } from "../BlockList";
 import blockListTokens from "../BlockList.tokens.scss?raw";
@@ -16,8 +16,8 @@ function HeroFields() {
     const [text, setText] = useState("Careers at Example Inc.");
     return (
         <>
-            <Input label="Title" name="title" value={title} onChange={(event) => setTitle(event.target.value)} />
-            <Input label="Text" name="text" value={text} onChange={(event) => setText(event.target.value)} />
+            <TextField label="Title" name="title" value={title} onChange={(event) => setTitle(event.target.value)} />
+            <TextField label="Text" name="text" value={text} onChange={(event) => setText(event.target.value)} />
         </>
     );
 }

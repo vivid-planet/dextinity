@@ -1,110 +1,187 @@
+import { Input as BaseInput } from "@base-ui/react/input";
 import { clsx } from "clsx";
-import { type ChangeEvent, forwardRef, type InputHTMLAttributes } from "react";
+import {
+    type ComponentPropsWithRef,
+    type CSSProperties,
+    type ElementType,
+    type ForwardedRef,
+    forwardRef,
+    type JSXElementConstructor,
+    type MouseEvent,
+    type ReactNode,
+    type RefAttributes,
+} from "react";
 
-import { Field, type FieldBaseProps, type FieldOwnerState, type FieldProps } from "../field/Field";
+import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
+import { Spinner } from "../spinner/Spinner";
 import styles from "./Input.module.scss";
 
-type InputType = "text" | "email" | "password" | "number" | "search" | "tel" | "url" | "date";
+type InputStatus = "error" | "success" | "warning";
+type InputSlotElement = "input" | JSXElementConstructor<ComponentPropsWithRef<"input">>;
+
+type InputElementProps<InputElement extends InputSlotElement> = ComponentPropsWithRef<InputElement> & { className?: string };
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
  */
-export type InputOwnerState = FieldOwnerState & {
-    type: InputType;
+export type InputOwnerState = {
+    status: InputStatus | undefined;
+    disabled: boolean;
+    readOnly: boolean;
+    loading: boolean;
 };
 
-export interface InputProps
-    extends
-        FieldBaseProps,
-        Omit<
-            InputHTMLAttributes<HTMLInputElement>,
-            "className" | "size" | "prefix" | "value" | "defaultValue" | "onChange" | "type" | "disabled" | "readOnly" | "required"
-        > {
-    /** Field name. Describes the data, not the UI. */
-    name: string;
-    /** The value. Fields are always controlled. */
-    value: string;
-    /** Called on every change; set `value` from it. */
-    onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+interface InputSlots<InputElement extends InputSlotElement, LoadingSpinner extends ElementType> {
     /**
-     * Controls validation and the on-screen keyboard; `date` shows the browser's date picker and takes the value as `YYYY-MM-DD`.
+     * Element for the `input` slot.
      *
-     * @defaultValue `"text"`
+     * @defaultValue base-ui `Input`
      */
-    type?: InputType;
+    input?: InputElement;
     /**
-     * Shows the character count at the label, as `count / maxLength` when `maxLength` is set.
+     * Element for the `loadingSpinner` slot.
+     *
+     * @defaultValue `Spinner`
+     */
+    loadingSpinner?: LoadingSpinner;
+}
+
+interface InputSlotProps<InputElement extends InputSlotElement, LoadingSpinner extends ElementType> {
+    /** Props for the field around the input, other than `className` and `style`. */
+    root?: SlotPropsValue<InputOwnerState, "div">;
+    /** Props for the `input` slot. */
+    input?: InputElementProps<InputElement> | ((ownerState: InputOwnerState) => InputElementProps<InputElement>);
+    /** Props for the `loadingSpinner` slot. */
+    loadingSpinner?: SlotPropsValue<InputOwnerState, LoadingSpinner>;
+}
+
+export interface InputProps<
+    InputElement extends InputSlotElement = typeof BaseInput,
+    LoadingSpinner extends ElementType = typeof Spinner,
+> extends Omit<BaseInput.Props, "className" | "style" | "ref"> {
+    /** Shows the result of validating the value. `error` also marks the input as invalid. */
+    status?: InputStatus;
+    /**
+     * Prevents interaction with the input.
      *
      * @defaultValue `false`
      */
-    showCount?: boolean;
-    /** Added alongside the component's own classes, on the root. */
+    disabled?: boolean;
+    /**
+     * Shows the value without letting the user change it.
+     *
+     * @defaultValue `false`
+     */
+    readOnly?: boolean;
+    /**
+     * Shows a spinner after the value.
+     *
+     * @defaultValue `false`
+     */
+    loading?: boolean;
+    /** Content before the value, such as an icon or a currency symbol. */
+    startAdornment?: ReactNode;
+    /** Content after the value, such as a unit or an icon button. */
+    endAdornment?: ReactNode;
+    /** Added alongside the component's own classes on the field around the input. */
     className?: string;
-    /** Props for each slot of the field frame, merged with the slot's own props rather than replacing them. */
-    slotProps?: FieldProps["slotProps"];
+    /** Inline styles for the field around the input. */
+    style?: CSSProperties;
+    /** Sets which element a named inner part renders as. */
+    slots?: InputSlots<InputElement, LoadingSpinner>;
+    /** Props for each slot, merged with the slot's own props rather than replacing them. */
+    slotProps?: InputSlotProps<InputElement, LoadingSpinner>;
+}
+
+const interactiveElementSelector = "input, textarea, select, button, a[href], [tabindex]";
+
+function hasContent(node: ReactNode) {
+    return node !== null && node !== undefined && typeof node !== "boolean" && node !== "";
+}
+
+function isClickOnInteractiveElementInField(event: MouseEvent<HTMLDivElement>) {
+    if (!(event.target instanceof Element)) {
+        return false;
+    }
+    const interactiveElement = event.target.closest(interactiveElementSelector);
+    return interactiveElement !== null && event.currentTarget.contains(interactiveElement);
+}
+
+function focusInputOnFieldClick(event: MouseEvent<HTMLDivElement>) {
+    const input = event.currentTarget.querySelector("input");
+    if (isClickOnInteractiveElementInField(event) || input === null) {
+        return;
+    }
+    event.preventDefault();
+    input.focus();
 }
 
 /**
- * A single-line text field. For several lines, use `Textarea`. Props not listed are passed to the input element.
+ * A single-line text field.
  */
-export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+export const Input: <InputElement extends InputSlotElement = typeof BaseInput, LoadingSpinner extends ElementType = typeof Spinner>(
+    props: InputProps<InputElement, LoadingSpinner> & RefAttributes<HTMLInputElement>,
+) => ReactNode = forwardRef(function Input<
+    InputElement extends InputSlotElement = typeof BaseInput,
+    LoadingSpinner extends ElementType = typeof Spinner,
+>(
     {
-        label,
-        required,
-        helperText,
-        validationMessage,
-        state,
+        status,
         disabled,
         readOnly,
         loading,
-        size,
-        prefix,
-        suffix,
-        actions,
-        type = "text",
-        showCount = false,
-        id,
-        value,
-        maxLength,
+        startAdornment,
+        endAdornment,
         className,
+        style,
+        slots,
         slotProps,
-        "aria-describedby": ariaDescribedBy,
         ...restProps
-    },
-    ref,
+    }: InputProps<InputElement, LoadingSpinner>,
+    ref: ForwardedRef<HTMLInputElement>,
 ) {
+    const ownerState: InputOwnerState = { status, disabled: disabled === true, readOnly: readOnly === true, loading: loading === true };
+
+    const InputSlot: ElementType = slots?.input ?? BaseInput;
+    const LoadingSpinnerSlot: ElementType = slots?.loadingSpinner ?? Spinner;
+
+    const inputProps = resolveSlotProps<InputOwnerState, InputElement, typeof BaseInput>({
+        ownProps: {
+            ...restProps,
+            ref,
+            disabled: ownerState.disabled,
+            readOnly: ownerState.readOnly,
+            "aria-invalid": ownerState.status === "error" || restProps["aria-invalid"],
+            "aria-busy": ownerState.loading || restProps["aria-busy"],
+            className: styles.input,
+        },
+        slotProps: slotProps?.input,
+        ownerState,
+    });
+    const loadingSpinnerProps = resolveSlotProps<InputOwnerState, LoadingSpinner, typeof Spinner>({
+        ownProps: { className: styles.loadingSpinner },
+        slotProps: slotProps?.loadingSpinner,
+        ownerState,
+    });
+
+    const rootProps = resolveSlotProps<InputOwnerState, "div", "div">({
+        ownProps: { className: clsx(styles.root, className), style, onMouseDown: focusInputOnFieldClick },
+        slotProps: slotProps?.root,
+        ownerState,
+    });
+
     return (
-        <Field
-            className={clsx(styles.root, className)}
-            data-type={type}
-            controlId={id}
-            label={label}
-            required={required}
-            helperText={helperText}
-            validationMessage={validationMessage}
-            state={state}
-            disabled={disabled}
-            readOnly={readOnly}
-            loading={loading}
-            size={size}
-            prefix={prefix}
-            suffix={suffix}
-            actions={actions}
-            counter={showCount ? (maxLength != null ? `${value.length} / ${maxLength}` : `${value.length}`) : undefined}
-            slotProps={slotProps}
+        <div
+            {...rootProps}
+            data-status={ownerState.status}
+            data-disabled={ownerState.disabled ? "" : undefined}
+            data-readonly={ownerState.readOnly ? "" : undefined}
+            data-loading={ownerState.loading ? "" : undefined}
         >
-            {(control) => (
-                <input
-                    {...restProps}
-                    {...control}
-                    ref={ref}
-                    type={type}
-                    value={value}
-                    maxLength={maxLength}
-                    aria-describedby={clsx(control["aria-describedby"], ariaDescribedBy) || undefined}
-                    className={styles.control}
-                />
-            )}
-        </Field>
+            {hasContent(startAdornment) && <span className={styles.startAdornment}>{startAdornment}</span>}
+            <InputSlot {...inputProps} />
+            {hasContent(endAdornment) && <span className={styles.endAdornment}>{endAdornment}</span>}
+            {ownerState.loading && <LoadingSpinnerSlot {...loadingSpinnerProps} />}
+        </div>
     );
 });

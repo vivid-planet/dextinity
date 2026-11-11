@@ -5,7 +5,7 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
-import { Input } from "../../input/Input";
+import { TextField } from "../../textField/TextField";
 import { Drawer, type DrawerProps } from "../Drawer";
 import drawerTokens from "../Drawer.tokens.scss?raw";
 import styles from "./Drawer.stories.module.scss";
@@ -17,8 +17,8 @@ function RedirectForm({ source }: { source: string }) {
     const [target, setTarget] = useState("/careers");
     return (
         <>
-            <Input name="source" label="Source" value={value} onChange={(event) => setValue(event.target.value)} />
-            <Input name="target" label="Target" value={target} onChange={(event) => setTarget(event.target.value)} />
+            <TextField name="source" label="Source" value={value} onChange={(event) => setValue(event.target.value)} />
+            <TextField name="target" label="Target" value={target} onChange={(event) => setTarget(event.target.value)} />
         </>
     );
 }

@@ -212,6 +212,7 @@ export { Switch, type SwitchOwnerState, type SwitchProps, type SwitchSlotProps }
 export { Tabs, type TabsItem, type TabsOwnerState, type TabsProps, type TabsSlotProps } from "./components/tabs/Tabs";
 export { type TabsLabels, type TabsSlots } from "./components/tabs/Tabs";
 export { Textarea, type TextareaOwnerState, type TextareaProps } from "./components/textarea/Textarea";
+export { TextField, type TextFieldOwnerState, type TextFieldProps } from "./components/textField/TextField";
 export { Theme, type ThemeProps } from "./components/theme/Theme";
 export { Toast, type ToastAction, type ToastOwnerState, type ToastProps, type ToastSlotProps, type ToastTone } from "./components/toast/Toast";
 export { ToastViewport, type ToastViewportOwnerState, type ToastViewportProps } from "./components/toast/ToastViewport";

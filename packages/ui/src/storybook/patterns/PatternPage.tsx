@@ -147,7 +147,7 @@ export function PatternSpec({ label, caption, children }: { label: string; capti
 
 const pageDocs = {
     Buttons: "building-blocks-buttons-button--docs",
-    "Form fields": "building-blocks-form-fields-input--docs",
+    "Form fields": "building-blocks-form-fields-textfield--docs",
     "Selection & toggles": "building-blocks-selection-toggles-checkbox--docs",
     "Status, tags & badges": "building-blocks-status-tags-badges-statusindicator--docs",
     "Tables & paging": "building-blocks-tables-paging-datagrid--docs",

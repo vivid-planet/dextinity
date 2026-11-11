@@ -3,8 +3,8 @@ import { useState } from "react";
 import { expect, userEvent, waitFor } from "storybook/test";
 
 import { FieldActions } from "../../../components/fieldActions/FieldActions";
-import { Input } from "../../../components/input/Input";
 import { Textarea } from "../../../components/textarea/Textarea";
+import { TextField } from "../../../components/textField/TextField";
 import { ToastViewport } from "../../../components/toast/ToastViewport";
 import { useToasts } from "../../../components/toast/useToasts";
 import { PatternExample, PatternPage, PatternRules, PatternSection, PatternSteps, PatternUses } from "../../../storybook/patterns/PatternPage";
@@ -30,7 +30,7 @@ function FieldsExample() {
     return (
         <PatternExample>
             <div className={styles.fields}>
-                <Input
+                <TextField
                     name="metaTitle"
                     label="Meta title"
                     helperText="Recommended: up to 60 characters."

@@ -4,8 +4,8 @@ import { clsx } from "clsx";
 import { type CSSProperties, forwardRef, type HTMLAttributes, type KeyboardEvent, useId, useState } from "react";
 
 import { Icon } from "../icon/Icon";
-import { Input } from "../input/Input";
 import { Popover, type PopoverPlacement } from "../popover/Popover";
+import { TextField } from "../textField/TextField";
 import styles from "./ScopeSwitcher.module.scss";
 
 /**
@@ -190,7 +190,7 @@ export const ScopeSwitcher = forwardRef<HTMLButtonElement, ScopeSwitcherProps>(f
             }
         >
             {ownerState.searchable && (
-                <Input
+                <TextField
                     name="scope-search"
                     type="search"
                     label={labels.search}

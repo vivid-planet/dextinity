@@ -72,6 +72,7 @@
 @use "../components/switch/Switch.tokens" as switch;
 @use "../components/tabs/Tabs.tokens" as tabs;
 @use "../components/textarea/Textarea.tokens" as textarea;
+@use "../components/textField/TextField.tokens" as textField;
 @use "../components/toast/Toast.tokens" as toast;
 @use "../components/toolbar/Toolbar.tokens" as toolbar;
 @use "../components/tooltip/Tooltip.tokens" as tooltip;
@@ -154,6 +155,7 @@
     @include switch.tokens;
     @include tabs.tokens;
     @include textarea.tokens;
+    @include textField.tokens;
     @include toast.tokens;
     @include toolbar.tokens;
     @include tooltip.tokens;

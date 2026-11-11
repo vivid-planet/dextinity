@@ -6,9 +6,9 @@ import { Banner } from "../../../components/banner/Banner";
 import { Button } from "../../../components/button/Button";
 import { EmptyState } from "../../../components/emptyState/EmptyState";
 import { Icon } from "../../../components/icon/Icon";
-import { Input } from "../../../components/input/Input";
 import { Skeleton } from "../../../components/skeleton/Skeleton";
 import { StatusIndicator } from "../../../components/statusIndicator/StatusIndicator";
+import { TextField } from "../../../components/textField/TextField";
 import { Toast } from "../../../components/toast/Toast";
 import { jobAds } from "../../../storybook/patterns/jobAds";
 import {
@@ -81,7 +81,7 @@ function TitleFieldExample() {
     const [title, setTitle] = useState("");
     return (
         <div className={styles.field}>
-            <Input
+            <TextField
                 label="Title"
                 name="title"
                 required

@@ -2,7 +2,7 @@ import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { Input } from "../../input/Input";
+import { TextField } from "../../textField/TextField";
 import { FieldActions } from "../FieldActions";
 
 afterEach(cleanup);
@@ -18,7 +18,7 @@ describe("FieldActions", () => {
     });
 
     it("disables the actions of a disabled field", () => {
-        render(<Input name="title" label="Title" value="" onChange={vi.fn()} disabled actions={<FieldActions translate aiAssist />} />);
+        render(<TextField name="title" label="Title" value="" onChange={vi.fn()} disabled actions={<FieldActions translate aiAssist />} />);
 
         for (const button of screen.getAllByRole("button")) {
             expect(button).toHaveProperty("disabled", true);
@@ -29,7 +29,7 @@ describe("FieldActions", () => {
         let finish: () => void = () => undefined;
         const onTranslate = vi.fn(() => new Promise<void>((resolve) => (finish = resolve)));
         render(
-            <Input
+            <TextField
                 name="title"
                 label="Title"
                 value="Vorteile"
@@ -49,7 +49,13 @@ describe("FieldActions", () => {
         let finish: () => void = () => undefined;
         const onTranslate = vi.fn(() => new Promise<void>((resolve) => (finish = resolve)));
         render(
-            <Input name="title" label="Title" value="Vorteile" onChange={vi.fn()} actions={<FieldActions translate onTranslate={onTranslate} />} />,
+            <TextField
+                name="title"
+                label="Title"
+                value="Vorteile"
+                onChange={vi.fn()}
+                actions={<FieldActions translate onTranslate={onTranslate} />}
+            />,
         );
 
         await userEvent.click(screen.getByRole("button", { name: "Translate" }));
@@ -65,7 +71,7 @@ describe("FieldActions", () => {
         const onTranslate = vi.fn(() => Promise.reject(failure));
         const onTranslateError = vi.fn();
         render(
-            <Input
+            <TextField
                 name="title"
                 label="Title"
                 value="Vorteile"
@@ -84,7 +90,7 @@ describe("FieldActions", () => {
     it("offers a translation from onTranslateSuggest to accept", async () => {
         const onTranslateAccept = vi.fn();
         render(
-            <Input
+            <TextField
                 name="title"
                 label="Title"
                 value="Vorteile"

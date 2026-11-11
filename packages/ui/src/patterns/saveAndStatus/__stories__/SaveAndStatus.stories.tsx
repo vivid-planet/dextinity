@@ -5,11 +5,11 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Button } from "../../../components/button/Button";
 import { ConfirmDialog } from "../../../components/confirmDialog/ConfirmDialog";
 import { Icon } from "../../../components/icon/Icon";
-import { Input } from "../../../components/input/Input";
 import { formatShortcut, isApplePlatform, useKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
 import { SaveState, type SaveStateValue } from "../../../components/saveState/SaveState";
 import { StatusIndicator } from "../../../components/statusIndicator/StatusIndicator";
 import { Switch } from "../../../components/switch/Switch";
+import { TextField } from "../../../components/textField/TextField";
 import { ToastViewport } from "../../../components/toast/ToastViewport";
 import { useToasts } from "../../../components/toast/useToasts";
 import { Tooltip } from "../../../components/tooltip/Tooltip";
@@ -116,7 +116,7 @@ function EditPageExample() {
                         </>
                     )}
                 </div>
-                <Input
+                <TextField
                     label="Title"
                     name="title"
                     value={title}

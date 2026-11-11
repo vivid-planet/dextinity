@@ -11,7 +11,6 @@ import { Button } from "../../button/Button";
 import { DevicePreview, type DevicePreviewDevice } from "../../devicePreview/DevicePreview";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
-import { Input } from "../../input/Input";
 import { KeyValueList } from "../../keyValueList/KeyValueList";
 import { PageHeader } from "../../pageHeader/PageHeader";
 import { Panel } from "../../panel/Panel";
@@ -22,6 +21,7 @@ import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { Switch } from "../../switch/Switch";
 import { Tabs } from "../../tabs/Tabs";
 import { Textarea } from "../../textarea/Textarea";
+import { TextField } from "../../textField/TextField";
 import { EditLayout, type EditLayoutProps } from "../EditLayout";
 import editLayoutTokens from "../EditLayout.tokens.scss?raw";
 import styles from "./EditLayout.stories.module.scss";
@@ -137,7 +137,7 @@ function JobAdFields() {
                     <p>These details appear in the list and on job boards.</p>
                 </div>
                 <div className={styles.fields}>
-                    <Input
+                    <TextField
                         className={styles.full}
                         name="title"
                         label="Title"
@@ -157,7 +157,7 @@ function JobAdFields() {
                             { value: "remote", label: "Remote" },
                         ]}
                     />
-                    <Input
+                    <TextField
                         name="salary"
                         label="Salary from"
                         value={salary}

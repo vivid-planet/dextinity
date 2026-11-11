@@ -4,9 +4,9 @@ import { expect, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
-import { Input } from "../../input/Input";
 import { Kbd } from "../../kbd/Kbd";
 import { SaveState, type SaveStateValue } from "../../saveState/SaveState";
+import { TextField } from "../../textField/TextField";
 import { formatShortcut, isApplePlatform, useKeyboardShortcut } from "../useKeyboardShortcut";
 import styles from "./useKeyboardShortcut.stories.module.scss";
 
@@ -17,7 +17,7 @@ function SaveShortcutDemo() {
 
     return (
         <div className={styles.demo}>
-            <Input
+            <TextField
                 label="Title"
                 name="title"
                 value={title}
@@ -45,7 +45,7 @@ function SearchShortcutDemo() {
 
     return (
         <div className={styles.demo}>
-            <Input
+            <TextField
                 ref={searchRef}
                 label="Search"
                 name="search"

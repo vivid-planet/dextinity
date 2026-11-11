@@ -56,6 +56,7 @@ const exportApi = useDataGridExcelExport<
     columns,
     variables: {
         ...muiGridFilterToGql(columns, dataGridProps.filterModel),
+        sort: muiGridSortToGql(dataGridProps.sortModel, columns) ?? [],
         // include any extra required variables (e.g. parent ID for sub-entity grids)
     },
     query: entitiesQuery,
@@ -91,6 +92,7 @@ return (
 - The toolbar interface extends `GridToolbarProps` and adds `exportApi: ExportApi`
 - Pass the toolbar props via `slotProps.toolbar` with a type assertion
 - The `Omit<..., "offset" | "limit">` generic removes pagination vars from the export query
+- Pass `sort` like the grid query does, so the export keeps the grid's sort order and satisfies a required `$sort` variable
 - For sub-entity grids, include the parent ID in the `variables` object
 - Columns with `disableExport: true` are excluded from the export (e.g. actions column, overview columns)
 - Use `messages.downloadAsExcel` from `@dextinity/admin` for the i18n label

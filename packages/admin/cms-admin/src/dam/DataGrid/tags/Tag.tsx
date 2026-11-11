@@ -1,16 +1,15 @@
 import { styled } from "@mui/material/styles";
-import type { ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 type TagType = "warning" | "error" | "info" | "neutral";
 
 interface TagProps {
     type?: TagType;
     icon?: ReactNode;
-    children: ReactNode;
     className?: string;
 }
 
-export const Tag = ({ type, icon, children, className }: TagProps) => {
+export const Tag = ({ type, icon, children, className }: PropsWithChildren<TagProps>) => {
     return (
         <Root type={type} className={className}>
             {icon}

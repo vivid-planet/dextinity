@@ -6,6 +6,8 @@ import type { GQLBrevoContactBranch, GQLBrevoContactSalutation } from "@src/grap
 import type { ReactNode } from "react";
 import { FormattedMessage } from "react-intl";
 
+import type { GQLTargetGroupFiltersFragment } from "./targetGroupFormConfig.generated";
+
 const salutationOptions: Array<{ label: ReactNode; value: GQLBrevoContactSalutation }> = [
     {
         label: <FormattedMessage id="targetGroup.filters.salutation.male" defaultMessage="Male" />,
@@ -44,20 +46,21 @@ const additionalPageTreeNodeFieldsFragment = {
     name: "TargetGroupFilters",
 };
 
-interface AdditionalFormConfigInputProps extends EditTargetGroupFinalFormValues {
-    filters: {
-        SALUTATION: Array<GQLBrevoContactSalutation>;
-        BRANCH: Array<GQLBrevoContactBranch>;
-    };
+// The filters are guaranteed by additionalPageTreeNodeFieldsFragment, which is passed to brevo-admin as nodeFragment
+function hasTargetGroupFilters(
+    values: EditTargetGroupFinalFormValues | undefined,
+): values is EditTargetGroupFinalFormValues & GQLTargetGroupFiltersFragment {
+    return typeof values?.filters === "object";
 }
 
 export const additionalFormConfig = {
-    input2State: (values?: AdditionalFormConfigInputProps) => {
+    input2State: (values?: EditTargetGroupFinalFormValues): EditTargetGroupFinalFormValues => {
+        const filters = hasTargetGroupFilters(values) ? values.filters : undefined;
         return {
             title: values?.title ?? "",
             filters: {
-                SALUTATION: values?.filters?.SALUTATION ?? [],
-                BRANCH: values?.filters?.BRANCH ?? [],
+                SALUTATION: filters?.SALUTATION ?? [],
+                BRANCH: filters?.BRANCH ?? [],
             },
         };
     },

@@ -258,6 +258,7 @@ export function EmailCampaignsListPage({ baseUrl, scope, scopeLabel, addToast, E
         DRAFT: shownData?.draftEmailCampaigns.totalCount,
         SCHEDULED: shownData?.scheduledEmailCampaigns.totalCount,
         SENT: shownData?.sentEmailCampaigns.totalCount,
+        FAILED: shownData?.failedEmailCampaigns.totalCount,
     };
     const title = intl.formatMessage({ id: "dextinity.emailCampaigns.emailCampaigns", defaultMessage: "Email campaigns" });
 

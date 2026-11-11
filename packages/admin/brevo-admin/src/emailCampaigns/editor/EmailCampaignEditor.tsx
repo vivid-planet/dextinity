@@ -167,7 +167,8 @@ function toFormValues(EmailCampaignContentBlock: BlockInterface, campaign?: GQLE
         title: campaign.title,
         subject: campaign.subject,
         targetGroups: campaign.brevoTargetGroups,
-        scheduledAt: campaign.scheduledAt ?? null,
+        // The schedule of a failed sending is in the past, so it must be chosen again
+        scheduledAt: campaign.sendingState === "FAILED" ? null : (campaign.scheduledAt ?? null),
         content: EmailCampaignContentBlock.input2State(campaign.content),
     };
 }

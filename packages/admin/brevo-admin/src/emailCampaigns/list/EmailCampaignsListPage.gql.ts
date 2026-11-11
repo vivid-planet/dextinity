@@ -43,6 +43,9 @@ export const emailCampaignsListQuery = gql`
         sentEmailCampaigns: brevoEmailCampaigns(limit: 1, search: $search, filter: { sendingState: { equal: SENT } }, scope: $scope) {
             totalCount
         }
+        failedEmailCampaigns: brevoEmailCampaigns(limit: 1, search: $search, filter: { sendingState: { equal: FAILED } }, scope: $scope) {
+            totalCount
+        }
     }
     ${emailCampaignsListFragment}
 `;

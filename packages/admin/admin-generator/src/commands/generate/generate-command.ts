@@ -87,9 +87,13 @@ type AsyncSelectFilter =
           rootQueryArg?: string;
       };
 
+type ValidateConfig<FieldValue> = {
+    validate?: FieldValidator<FieldValue | null | undefined>;
+};
+
 export type FormFieldConfig<T> = (
-    | ({ type: "text"; name: UsableFormFields<T>; multiline?: boolean; initialValue?: string } & InputBaseFieldConfig)
-    | ({ type: "number"; name: UsableFormFields<T>; decimals?: number; initialValue?: number } & InputBaseFieldConfig)
+    | ({ type: "text"; name: UsableFormFields<T>; multiline?: boolean; initialValue?: string } & InputBaseFieldConfig & ValidateConfig<string>)
+    | ({ type: "number"; name: UsableFormFields<T>; decimals?: number; initialValue?: number } & InputBaseFieldConfig & ValidateConfig<number>)
     | ({
           type: "numberRange";
           name: UsableFormFields<T>;
@@ -97,17 +101,24 @@ export type FormFieldConfig<T> = (
           maxValue: number;
           disableSlider?: boolean;
           initialValue?: { min: number; max: number };
-      } & InputBaseFieldConfig)
-    | { type: "boolean"; name: UsableFormFields<T>; initialValue?: boolean; checkboxLabel?: string | FormattedMessageElement }
-    | ({ type: "date"; name: UsableFormFields<T>; initialValue?: string } & InputBaseFieldConfig)
-    | ({ type: "dateTime"; name: UsableFormFields<T>; initialValue?: Date } & InputBaseFieldConfig)
+      } & InputBaseFieldConfig &
+          ValidateConfig<{ min: number; max: number }>)
+    | ({
+          type: "boolean";
+          name: UsableFormFields<T>;
+          initialValue?: boolean;
+          checkboxLabel?: string | FormattedMessageElement;
+      } & ValidateConfig<boolean>)
+    | ({ type: "date"; name: UsableFormFields<T>; initialValue?: string } & InputBaseFieldConfig & ValidateConfig<string>)
+    | ({ type: "dateTime"; name: UsableFormFields<T>; initialValue?: Date } & InputBaseFieldConfig & ValidateConfig<Date>)
     | ({
           type: "staticSelect";
           name: UsableFormFields<T>;
           values?: StaticSelectValue[];
           inputType?: "select" | "radio";
           initialValue?: string;
-      } & Omit<InputBaseFieldConfig, "endAdornment">)
+      } & Omit<InputBaseFieldConfig, "endAdornment"> &
+          ValidateConfig<string | string[]>)
     | ({
           type: "asyncSelect";
           name: UsableFormFields<T>;
@@ -151,7 +162,6 @@ export type FormFieldConfig<T> = (
 ) & {
     label?: string | FormattedMessageElement;
     required?: boolean;
-    validate?: FieldValidator<unknown>;
     helperText?: string | FormattedMessageElement;
     readOnly?: boolean;
 };
@@ -212,7 +222,14 @@ export type InjectedFormVariables = {
     formApi: FormApi<unknown, Partial<unknown>>;
     scope: ContentScope;
 };
-export function injectFormVariables<T>(fn: (injectedVariables: InjectedFormVariables) => T): T {
+/**
+ * Additional props of the generated form (e.g. a `formProp` filter's `propName`) can be declared by extending `InjectedFormVariables`:
+ *
+ * ```ts
+ * injectFormVariables(({ manufacturerCountry }: InjectedFormVariables & { manufacturerCountry: string }) => ...)
+ * ```
+ */
+export function injectFormVariables<TInjectedVariables extends InjectedFormVariables, T>(fn: (injectedVariables: TInjectedVariables) => T): T {
     // this function is only used in config but never called at runtime
     return fn({} as any);
 }

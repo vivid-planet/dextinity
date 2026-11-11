@@ -72,14 +72,13 @@ export function generateFormField({
     let finalFormConfig: GenerateFieldsReturn["finalFormConfig"];
 
     let validateCode = "";
-    if (config.validate) {
-        if (isGeneratorConfigImport(config.validate)) {
-            imports.push(convertConfigImport(config.validate));
-            validateCode = `validate={${config.validate.name}}`;
-        } else if (isGeneratorConfigCode(config.validate)) {
-            validateCode = `validate={${config.validate.code}}`;
-            imports.push(...config.validate.imports.map((imprt) => convertConfigImport(imprt)));
-        }
+    const validate = "validate" in config ? config.validate : undefined;
+    if (isGeneratorConfigImport(validate)) {
+        imports.push(convertConfigImport(validate));
+        validateCode = `validate={${validate.name}}`;
+    } else if (isGeneratorConfigCode(validate)) {
+        validateCode = `validate={${validate.code}}`;
+        imports.push(...validate.imports.map((imprt) => convertConfigImport(imprt)));
     }
 
     let code = "";

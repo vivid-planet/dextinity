@@ -11,10 +11,6 @@ export class BlocksMetaService implements OnModuleInit {
     constructor(private readonly discoverService: DiscoverService) {}
 
     async onModuleInit(): Promise<void> {
-        const rootBlocks = this.discoverService.discoverRootBlocks().map(({ block }) => block);
-        // Generated also when block-meta.json can't be written (e.g., in production) to fail on duplicate block names
-        const metaJson = getBlocksMeta(rootBlocks);
-
         let canWrite: boolean;
 
         try {
@@ -26,6 +22,8 @@ export class BlocksMetaService implements OnModuleInit {
         }
 
         if (canWrite) {
+            const rootBlocks = this.discoverService.discoverRootBlocks().map(({ block }) => block);
+            const metaJson = getBlocksMeta(rootBlocks);
             await fs.writeFile("block-meta.json", JSON.stringify(metaJson, null, 4));
         }
     }

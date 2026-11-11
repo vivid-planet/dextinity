@@ -1,28 +1,41 @@
 @mixin tokens {
+    --dextinity-button-height: var(--dextinity-density-control-height);
+    --dextinity-button-height-small: var(--dextinity-density-control-height-small);
+    --dextinity-button-padding: var(--dextinity-density-control-padding);
+    --dextinity-button-padding-small: var(--dextinity-density-control-padding-small);
+    --dextinity-button-gap: var(--dextinity-space-2);
+    --dextinity-button-radius: var(--dextinity-radius-control);
+    --dextinity-button-font-size: var(--dextinity-typography-body-size);
+    --dextinity-button-font-size-small: 13px;
+    --dextinity-button-font-weight: 500;
+    --dextinity-button-icon-size: 16px;
+    --dextinity-button-disabled-opacity: 0.42;
+    // Darkens the button while it is pressed
+    --dextinity-button-active-brightness: 0.93;
+
+    --dextinity-button-primary-background: var(--dextinity-gradient-brand);
+    --dextinity-button-primary-background-hover: var(--dextinity-color-accent);
+    --dextinity-button-primary-foreground: var(--dextinity-color-accent-foreground);
+    --dextinity-button-primary-shadow: inset 0 1px 0 oklch(1 0 0 / 0.2), 0 8px 18px -10px var(--dextinity-color-accent-glow);
+    --dextinity-button-primary-shadow-hover: inset 0 1px 0 oklch(1 0 0 / 0.2), 0 10px 22px -10px var(--dextinity-color-accent-glow);
+
+    --dextinity-button-secondary-background: var(--dextinity-color-surface);
+    --dextinity-button-secondary-foreground: var(--dextinity-color-text);
+    --dextinity-button-secondary-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-1);
+    --dextinity-button-secondary-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle), var(--dextinity-shadow-2);
+
+    --dextinity-button-text-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-button-text-foreground-hover: var(--dextinity-color-text);
+    --dextinity-button-text-background-hover: color-mix(in oklch, var(--dextinity-color-text) 6%, transparent);
+
+    --dextinity-button-danger-foreground: var(--dextinity-color-danger-text);
+    --dextinity-button-danger-background: var(--dextinity-color-danger);
+    --dextinity-button-danger-background-foreground: var(--dextinity-color-danger-foreground);
+    --dextinity-button-success-foreground: var(--dextinity-color-success-text);
+    --dextinity-button-success-background: var(--dextinity-color-success);
+
+    // Read by `IconButton` until it moves to the design system draft
     --dextinity-button-border-width: 1px;
-
-    --dextinity-button-default-height: var(--dextinity-density-field-height);
-    --dextinity-button-default-radius: var(--dextinity-brand-radius-control);
-    --dextinity-button-default-gap: var(--dextinity-space-2);
-    --dextinity-button-default-padding-horizontal: var(--dextinity-space-4);
-    --dextinity-button-default-padding-vertical: var(--dextinity-space-2);
-    --dextinity-button-default-icon-size: 16px;
-    --dextinity-button-default-font-size: var(--dextinity-typography-body-size);
-    --dextinity-button-default-font-line-height: var(--dextinity-typography-body-line-height);
-    --dextinity-button-default-font-weight: var(--dextinity-font-weight-medium);
-    --dextinity-button-default-font-weight-style: medium;
-
-    --dextinity-button-small-height: var(--dextinity-space-8);
-    --dextinity-button-small-radius: var(--dextinity-radius-item);
-    --dextinity-button-small-gap: var(--dextinity-space-1);
-    --dextinity-button-small-padding-horizontal: var(--dextinity-space-3);
-    --dextinity-button-small-padding-vertical: var(--dextinity-space-1);
-    --dextinity-button-small-icon-size: 16px;
-    --dextinity-button-small-font-size: var(--dextinity-typography-small-size);
-    --dextinity-button-small-font-line-height: var(--dextinity-typography-small-line-height);
-    --dextinity-button-small-font-weight: var(--dextinity-font-weight-medium);
-    --dextinity-button-small-font-weight-style: medium;
-
     --dextinity-button-color-primary-contained-default-background: var(--dextinity-color-accent);
     --dextinity-button-color-primary-contained-default-foreground: var(--dextinity-color-accent-foreground);
     --dextinity-button-color-primary-contained-default-border: var(--dextinity-color-accent);
@@ -41,7 +54,6 @@
     --dextinity-button-color-primary-contained-loading-background: var(--dextinity-color-accent);
     --dextinity-button-color-primary-contained-loading-foreground: var(--dextinity-color-accent-foreground);
     --dextinity-button-color-primary-contained-loading-border: var(--dextinity-color-accent);
-
     --dextinity-button-color-primary-outlined-default-background: transparent;
     --dextinity-button-color-primary-outlined-default-foreground: var(--dextinity-color-accent);
     --dextinity-button-color-primary-outlined-default-border: var(--dextinity-color-accent);
@@ -60,7 +72,6 @@
     --dextinity-button-color-primary-outlined-loading-background: transparent;
     --dextinity-button-color-primary-outlined-loading-foreground: var(--dextinity-color-accent);
     --dextinity-button-color-primary-outlined-loading-border: var(--dextinity-color-accent);
-
     --dextinity-button-color-primary-text-default-background: transparent;
     --dextinity-button-color-primary-text-default-foreground: var(--dextinity-color-accent);
     --dextinity-button-color-primary-text-default-border: transparent;
@@ -79,7 +90,6 @@
     --dextinity-button-color-primary-text-loading-background: transparent;
     --dextinity-button-color-primary-text-loading-foreground: var(--dextinity-color-accent);
     --dextinity-button-color-primary-text-loading-border: transparent;
-
     --dextinity-button-color-secondary-contained-default-background: var(--dextinity-color-surface-sunken);
     --dextinity-button-color-secondary-contained-default-foreground: var(--dextinity-color-text);
     --dextinity-button-color-secondary-contained-default-border: var(--dextinity-color-surface-sunken);
@@ -98,7 +108,6 @@
     --dextinity-button-color-secondary-contained-loading-background: var(--dextinity-color-surface-sunken);
     --dextinity-button-color-secondary-contained-loading-foreground: var(--dextinity-color-text);
     --dextinity-button-color-secondary-contained-loading-border: var(--dextinity-color-surface-sunken);
-
     --dextinity-button-color-secondary-outlined-default-background: transparent;
     --dextinity-button-color-secondary-outlined-default-foreground: var(--dextinity-color-text);
     --dextinity-button-color-secondary-outlined-default-border: var(--dextinity-color-line-strong);
@@ -117,7 +126,6 @@
     --dextinity-button-color-secondary-outlined-loading-background: transparent;
     --dextinity-button-color-secondary-outlined-loading-foreground: var(--dextinity-color-text);
     --dextinity-button-color-secondary-outlined-loading-border: var(--dextinity-color-line-strong);
-
     --dextinity-button-color-secondary-text-default-background: transparent;
     --dextinity-button-color-secondary-text-default-foreground: var(--dextinity-color-text);
     --dextinity-button-color-secondary-text-default-border: transparent;
@@ -136,7 +144,6 @@
     --dextinity-button-color-secondary-text-loading-background: transparent;
     --dextinity-button-color-secondary-text-loading-foreground: var(--dextinity-color-text);
     --dextinity-button-color-secondary-text-loading-border: transparent;
-
     --dextinity-button-color-error-contained-default-background: var(--dextinity-color-danger);
     --dextinity-button-color-error-contained-default-foreground: var(--dextinity-color-danger-foreground);
     --dextinity-button-color-error-contained-default-border: var(--dextinity-color-danger);
@@ -155,7 +162,6 @@
     --dextinity-button-color-error-contained-loading-background: var(--dextinity-color-danger);
     --dextinity-button-color-error-contained-loading-foreground: var(--dextinity-color-danger-foreground);
     --dextinity-button-color-error-contained-loading-border: var(--dextinity-color-danger);
-
     --dextinity-button-color-error-outlined-default-background: transparent;
     --dextinity-button-color-error-outlined-default-foreground: var(--dextinity-color-danger);
     --dextinity-button-color-error-outlined-default-border: var(--dextinity-color-danger);
@@ -174,7 +180,6 @@
     --dextinity-button-color-error-outlined-loading-background: transparent;
     --dextinity-button-color-error-outlined-loading-foreground: var(--dextinity-color-danger);
     --dextinity-button-color-error-outlined-loading-border: var(--dextinity-color-danger);
-
     --dextinity-button-color-error-text-default-background: transparent;
     --dextinity-button-color-error-text-default-foreground: var(--dextinity-color-danger);
     --dextinity-button-color-error-text-default-border: transparent;
@@ -193,7 +198,6 @@
     --dextinity-button-color-error-text-loading-background: transparent;
     --dextinity-button-color-error-text-loading-foreground: var(--dextinity-color-danger);
     --dextinity-button-color-error-text-loading-border: transparent;
-
     --dextinity-button-color-success-contained-default-background: var(--dextinity-color-success);
     --dextinity-button-color-success-contained-default-foreground: var(--dextinity-color-canvas);
     --dextinity-button-color-success-contained-default-border: var(--dextinity-color-success);
@@ -212,7 +216,6 @@
     --dextinity-button-color-success-contained-loading-background: var(--dextinity-color-success);
     --dextinity-button-color-success-contained-loading-foreground: var(--dextinity-color-canvas);
     --dextinity-button-color-success-contained-loading-border: var(--dextinity-color-success);
-
     --dextinity-button-color-success-outlined-default-background: transparent;
     --dextinity-button-color-success-outlined-default-foreground: var(--dextinity-color-success);
     --dextinity-button-color-success-outlined-default-border: var(--dextinity-color-success);
@@ -231,7 +234,6 @@
     --dextinity-button-color-success-outlined-loading-background: transparent;
     --dextinity-button-color-success-outlined-loading-foreground: var(--dextinity-color-success);
     --dextinity-button-color-success-outlined-loading-border: var(--dextinity-color-success);
-
     --dextinity-button-color-success-text-default-background: transparent;
     --dextinity-button-color-success-text-default-foreground: var(--dextinity-color-success);
     --dextinity-button-color-success-text-default-border: transparent;

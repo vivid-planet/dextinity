@@ -1,10 +1,9 @@
 import { dialogClasses } from "@mui/material";
-import type { Components } from "@mui/material/styles";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
 import type { GetMuiComponentTheme } from "./getComponentsTheme";
 
-export const getMuiDialog: GetMuiComponentTheme<"MuiDialog"> = (component, { spacing }): Components["MuiDialog"] => ({
+export const getMuiDialog: GetMuiComponentTheme<"MuiDialog"> = (component, { spacing }) => ({
     ...component,
     styleOverrides: mergeOverrideStyles<"MuiDialog">(component?.styleOverrides, {
         paper: {

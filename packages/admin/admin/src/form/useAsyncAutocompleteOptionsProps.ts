@@ -1,6 +1,6 @@
 import type { UseAutocompleteProps } from "@mui/material";
 import { debounce } from "@mui/material/utils";
-import { type ChangeEvent, useCallback, useMemo, useState } from "react";
+import { type SyntheticEvent, useCallback, useMemo, useState } from "react";
 
 export interface AsyncAutocompleteOptionsProps<T> {
     isAsync: boolean;
@@ -8,8 +8,8 @@ export interface AsyncAutocompleteOptionsProps<T> {
     options: T[];
     loadingError: Error | null;
     loading?: boolean;
-    onOpen: (event: ChangeEvent) => void;
-    onClose: (event: ChangeEvent) => void;
+    onOpen: (event: SyntheticEvent) => void;
+    onClose: (event: SyntheticEvent) => void;
     onInputChange: UseAutocompleteProps<any, any, any, any>["onInputChange"];
 }
 
@@ -31,7 +31,7 @@ export function useAsyncAutocompleteOptionsProps<T>(loadOptions: (search?: strin
                 const newOptions = await loadOptions(search);
                 setOptions(newOptions);
             } catch (e) {
-                setError(e);
+                setError(e instanceof Error ? e : new Error(String(e)));
             } finally {
                 setLoading(false);
             }

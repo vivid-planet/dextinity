@@ -1,6 +1,17 @@
 import { ChevronDown, ChevronRight, ChevronUp } from "@dextinity/admin-icons";
 import { Collapse, type ComponentsOverrides, Fade, List, Menu, type Theme, type Typography, useThemeProps } from "@mui/material";
-import { Children, cloneElement, type MouseEvent, type ReactElement, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import {
+    Children,
+    cloneElement,
+    isValidElement,
+    type MouseEvent,
+    type ReactElement,
+    type ReactNode,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import { matchPath, useLocation } from "react-router";
 
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
@@ -97,8 +108,8 @@ export const MainNavigationCollapsibleItem = (inProps: MainNavigationCollapsible
             // sub child is selected
             const subChildElements =
                 "children" in child.props
-                    ? Children.map(child?.props?.children, (child: MainNavigationChild) => child)
-                    : ([] as MainNavigationChild[]);
+                    ? Children.toArray(child.props.children).filter((subChild) => isValidElement<MainNavigationChild["props"]>(subChild))
+                    : [];
             if (subChildElements?.some((child: MainNavigationChild) => child.props && checkIfPathInLocation(child))) {
                 hasSelectedChild.current = true;
                 setIsSubmenuOpen(true);

@@ -116,7 +116,8 @@ export const FinalFormAutocomplete = <
     return (
         <Autocomplete
             popupIcon={popupIcon}
-            disableClearable
+            // MUI's clear button is replaced by ClearInputAdornment, so MUI never emits a cleared value regardless of DisableClearable
+            disableClearable={true as DisableClearable}
             // Opens the dropdown when the (multiple) end adornment container is clicked, which focuses the input
             // but swallows the click before it reaches the input root.
             openOnFocus
@@ -137,7 +138,7 @@ export const FinalFormAutocomplete = <
                     {loadingText}
                 </Typography>
             }
-            isOptionEqualToValue={(option: T, value: T) => {
+            isOptionEqualToValue={(option, value) => {
                 if (!value) {
                     return false;
                 }

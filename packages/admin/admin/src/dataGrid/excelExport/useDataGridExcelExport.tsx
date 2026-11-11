@@ -29,7 +29,7 @@ export function useDataGridExcelExport<Row extends GridValidRowModel, GQLQuery, 
 }): ExportApi {
     const { columns, variables, query, resolveQueryNodes, totalCount, exportOptions, hasPaging = true } = params;
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | undefined>();
+    const [error, setError] = useState<unknown>();
     const client = useApolloClient();
     const intl = useIntl();
 

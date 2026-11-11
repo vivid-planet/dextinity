@@ -1,6 +1,6 @@
 import { type ComponentsOverrides, type Drawer as MuiDrawer, type Theme, useThemeProps } from "@mui/material";
 import { mergeSlotProps } from "@mui/material/utils";
-import { Children, cloneElement, type ReactNode, useContext, useEffect, useMemo, useRef } from "react";
+import { Children, cloneElement, isValidElement, type ReactNode, useContext, useEffect, useMemo, useRef } from "react";
 import { useHistory } from "react-router";
 
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
@@ -86,7 +86,10 @@ export const MainNavigation = (inProps: MainNavigationProps) => {
 
     const childElements = useMemo(
         () =>
-            Children.map(children, (child: MainNavigationChild) => {
+            Children.map(children, (child) => {
+                if (!isValidElement<MainNavigationChild["props"]>(child)) {
+                    return child;
+                }
                 return cloneElement<MainNavigationCollapsibleItemProps | MainNavigationItemRouterLinkProps | MainNavigationItemProps>(child, {
                     isMenuOpen: open,
                 });

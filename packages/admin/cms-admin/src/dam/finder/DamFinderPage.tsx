@@ -91,10 +91,7 @@ export interface DamFinderPageProps {
     eyebrow?: ReactNode;
     /** The URL of a file's full settings, e.g. in the `DamPage`. Without it, the details panel links nowhere. */
     editFileUrl?: (fileId: string) => string;
-    /**
-     * The URL of the DAM settings, e.g. in the `DamPage`. They are only linked with `enableLicenseFeature` and
-     * `blockFilesWithInvalidLicense` in the DAM config.
-     */
+    /** The URL of the DAM settings, e.g. in the `DamPage`. They are only linked with `enableLicenseFeature` in the DAM config. */
     settingsUrl?: string;
     /**
      * Further actions in the page header, e.g. an import from an image service. They can upload with `useDamFileUpload` into the
@@ -603,7 +600,7 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
 
     const isCurrentFolderLoading = loadingFolderIds.includes(folderId) || foldersQuery.loading;
     const shownAdditionalToolbarItems = additionalToolbarItems ?? damConfig.additionalToolbarItems;
-    const isSettingsLinkShown = settingsUrl != null && damConfig.enableLicenseFeature === true && damConfig.blockFilesWithInvalidLicense === true;
+    const isSettingsLinkShown = settingsUrl != null && damConfig.enableLicenseFeature === true;
 
     const renderDetails = () => {
         if (selectedFile != null) {

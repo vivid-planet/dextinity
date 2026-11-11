@@ -68,7 +68,7 @@ export const Default: Story = {
     },
 };
 
-const WithoutControlsBlock = createDamVideoBlock({ supports: ["previewImage"] });
+const WithoutControlsBlock = createDamVideoBlock({ controls: false });
 
 function WithoutControlsStory() {
     const [state, setState] = useState<DamVideoBlockState>(WithoutControlsBlock.defaultValues());
@@ -97,7 +97,7 @@ export const WithoutControls: StoryObj<typeof WithoutControlsStory> = {
     },
 };
 
-const FileOnlyBlock = createDamVideoBlock({ supports: [] });
+const FileOnlyBlock = createDamVideoBlock({ controls: false, previewImage: false });
 
 function FileOnlyStory() {
     const [state, setState] = useState<DamVideoBlockState>(FileOnlyBlock.defaultValues());
@@ -121,8 +121,8 @@ export const FileOnly: StoryObj<typeof FileOnlyStory> = {
             expect(canvas.queryByRole("button", { name: "Choose image" })).not.toBeInTheDocument();
         });
 
-        await step("The preview image stays part of the data, it is only hidden from the editor", async () => {
-            expect(readState(canvas).previewImage).toEqual(FileOnlyBlock.defaultValues().previewImage);
+        await step("The preview image isn't part of the data", async () => {
+            expect(readState(canvas)).not.toHaveProperty("previewImage");
         });
     },
 };

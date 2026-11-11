@@ -1,5 +1,24 @@
 # @comet/brevo-admin
 
+## 10.15.0
+
+### Minor Changes
+
+- 9918560: Send Brevo email campaigns in the background and add a `FAILED` sending state
+
+    Sending a large campaign with `sendBrevoEmailCampaignNow` could exceed the gateway timeout. The mutation now returns right after setting the campaign to `SCHEDULED`, and the campaign is sent in the background. If sending fails, or the campaign has no target group to send to, the campaign is set to `FAILED`.
+
+    The admin shows failed campaigns with a red indicator, and they can be edited and sent again.
+
+### Patch Changes
+
+- Updated dependencies [c6ce8a8]
+- Updated dependencies [41492ce]
+- Updated dependencies [d9c1a9b]
+    - @dextinity/cms-admin@10.15.0
+    - @dextinity/admin@10.15.0
+    - @dextinity/admin-icons@10.15.0
+
 ## 10.14.0
 
 ### Patch Changes

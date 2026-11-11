@@ -104,7 +104,7 @@ export const ProductToolbar: FunctionComponent<ProductToolbarProps> = ({ id, add
 
                 {data?.product.status && (
                     <ToolbarItem>
-                        <ProductStatusChip status={data.product.status} />
+                        <ProductStatusChip value={data.product.status} />
                     </ToolbarItem>
                 )}
 
@@ -152,7 +152,7 @@ export const ProductToolbar: FunctionComponent<ProductToolbarProps> = ({ id, add
 
 ## Status Chip
 
-- When the entity has a status or type enum, display a chip next to the title using the entity's chip component (e.g. `<ProductStatusChip />`).
+- When the entity has a status or type enum, display a chip next to the title using the entity's chip component (e.g. `<ProductStatusChip value={data.product.status} />`).
 - Render the chip in a separate `<ToolbarItem>` after the title block.
 - Only render the chip when data is available (`data?.entity.status && ...`).
 - If no chip component exists yet, use the `dextinity-admin-enum` skill to create one first.

@@ -31,7 +31,7 @@ export const Default: Story = {
                         <Icon name="chevron-right" />
                     </li>
                     <li>
-                        <Typography variant="label" aria-current="page">
+                        <Typography variant="small" aria-current="page">
                             All campaigns
                         </Typography>
                     </li>
@@ -69,7 +69,7 @@ export const DetailPage: Story = {
                         <Icon name="chevron-right" />
                     </li>
                     <li>
-                        <Typography variant="label" aria-current="page">
+                        <Typography variant="small" aria-current="page">
                             Spring campaign 2027
                         </Typography>
                     </li>
@@ -131,7 +131,7 @@ export const SmallScreen: Story = {
                             <Icon name="chevron-right" />
                         </li>
                         <li>
-                            <Typography variant="label" aria-current="page">
+                            <Typography variant="small" aria-current="page">
                                 All campaigns
                             </Typography>
                         </li>

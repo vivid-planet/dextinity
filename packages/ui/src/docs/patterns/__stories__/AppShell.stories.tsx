@@ -63,7 +63,7 @@ export const AppShell: Story = {
                                     <Icon name="chevron-right" />
                                 </li>
                                 <li>
-                                    <Typography variant="label" aria-current="page">
+                                    <Typography variant="small" aria-current="page">
                                         All campaigns
                                     </Typography>
                                 </li>

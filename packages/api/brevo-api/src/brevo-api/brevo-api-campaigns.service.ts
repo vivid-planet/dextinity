@@ -200,18 +200,24 @@ export class BrevoApiCampaignsService {
         scope: EmailCampaignScopeInterface,
         status?: "suspended" | "archive" | "sent" | "queued" | "draft" | "inProcess",
     ): AsyncGenerator<BrevoApiCampaign, void, undefined> {
+        const remainingIds = new Set(ids);
         let offset = 0;
         const limit = 100;
 
-        while (true) {
+        while (remainingIds.size > 0) {
             try {
                 const campaignsResponse = await this.clientFactory.getClient(scope).emailCampaigns.getEmailCampaigns({ status, limit, offset });
-                const campaignArray = (campaignsResponse.campaigns ?? []).filter((item) => ids.includes(item.id));
+                const campaigns = campaignsResponse.campaigns ?? [];
 
-                if (campaignArray.length === 0) {
+                for (const campaign of campaigns) {
+                    if (remainingIds.delete(campaign.id)) {
+                        yield campaign;
+                    }
+                }
+
+                if (campaigns.length < limit) {
                     break;
                 }
-                yield* campaignArray;
 
                 offset += limit;
             } catch (error) {

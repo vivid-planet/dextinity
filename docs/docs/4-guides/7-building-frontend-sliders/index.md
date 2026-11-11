@@ -152,9 +152,9 @@ Swiper's accessibility isn't complete out of the box. Wrap Swiper in one shared 
 
 Test every slider, with Embla and with Swiper:
 
-- [ ] Navigate with the keyboard only: all slides are reachable, the arrow keys only move the carousel that has the focus, and the focus never gets lost or ends up in a hidden slide.
-- [ ] Use a screen reader, for example VoiceOver: it doesn't read slides that aren't visible, and all labels are translated.
-- [ ] Check with one slide, with exactly as many slides as fit into the viewport, and with many slides: the controls are hidden when all slides fit.
-- [ ] Reload the page: the slider doesn't jump, also with centered slides.
-- [ ] Enable reduced motion in the operating system: there are no animations, and autoplay doesn't start.
-- [ ] Automated tools such as Stark or axe often report wrong contrast errors for text on images. Check these manually.
+- Navigate with the keyboard only: all slides are reachable, the arrow keys only move the carousel that has the focus, and the focus never gets lost or ends up in a hidden slide.
+- Use a screen reader, for example VoiceOver: it doesn't read slides that aren't visible, and all labels are translated.
+- Check with one slide, with exactly as many slides as fit into the viewport, and with many slides: the controls are hidden when all slides fit.
+- Reload the page: the slider doesn't jump, also with centered slides.
+- Enable reduced motion in the operating system: there are no animations, and autoplay doesn't start.
+- Automated tools such as Stark or axe often report wrong contrast errors for text on images. Check these manually.

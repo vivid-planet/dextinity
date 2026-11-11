@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/cli",
-    "version": "10.14.0",
+    "version": "10.15.0",
     "description": "A collection of CLI tools for Dextinity projects",
     "repository": {
         "directory": "packages/cli",
@@ -36,7 +36,7 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
-        "commander": "^15.0.0",
+        "commander": "^15.1.0",
         "js-yaml": "^5.5.0",
         "prettier": "^3.9.10",
         "ts-node": "^10.9.2"

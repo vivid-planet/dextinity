@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/admin-babel-preset",
-    "version": "10.14.0",
+    "version": "10.15.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -12,7 +12,7 @@
     "main": "index.js",
     "dependencies": {
         "@babel/cli": "^7.29.7",
-        "@babel/core": "^7.29.7",
+        "@babel/core": "^7.29.13",
         "@babel/preset-env": "^7.29.7",
         "@babel/preset-react": "^7.29.7",
         "@babel/preset-typescript": "^7.29.7",

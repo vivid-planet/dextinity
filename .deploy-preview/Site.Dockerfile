@@ -20,12 +20,9 @@ RUN node copy-project-files.js && sh demo/site/intl-update.sh
 RUN pnpm --recursive --filter='dextinity-demo-site^...' run build
 
 WORKDIR /app/demo/site
-# BuildKit creates the parent of a cache mount as root, but next writes .next/trace next to it.
-RUN mkdir -p .next
 # next build evaluates the route modules, which fail without the defaults of .env and placeholders for
 # what .env leaves empty. Valkey is not reachable while building.
-RUN --mount=type=cache,id=dextinity-demo-deploy-preview-next-cache,target=/app/demo/site/.next/cache,uid=1000,gid=1000 \
-    cp ../../.env .env \
+RUN cp ../../.env .env \
     && NODE_OPTIONS=--max-old-space-size=4096 \
     CONTACT_FORM_FROM_EMAIL=placeholder@example.com \
     CONTACT_FORM_TO_EMAIL=placeholder@example.com \

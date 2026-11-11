@@ -61,6 +61,7 @@ export { AnnotationBlockMeta, BlockField } from "./blocks/decorators/field";
 export { RootBlock } from "./blocks/decorators/root-block";
 export { RootBlockEntity } from "./blocks/decorators/root-block-entity";
 export { EmailLinkBlock } from "./blocks/email-link.block";
+export { createExternalLinkBlock } from "./blocks/externalLink/create-external-link.block";
 export { ExternalLinkBlock } from "./blocks/externalLink/external-link.block";
 export { ColumnsBlockFactory } from "./blocks/factories/columns-block.factory";
 export {
@@ -183,7 +184,7 @@ export { DamFileDownloadLinkBlock } from "./dam/blocks/dam-file-download-link.bl
 export { DamImageBlock } from "./dam/blocks/dam-image.block";
 export { PixelImageBlock } from "./dam/blocks/pixel-image.block";
 export { SvgImageBlock } from "./dam/blocks/svg-image.block";
-export { DamVideoBlock } from "./dam/blocks/video/dam-video.block";
+export { createDamVideoBlock, DamVideoBlock } from "./dam/blocks/video/createDamVideoBlock";
 export { DextinityImageResolutionException } from "./dam/common/errors/image-resolution.exception";
 export { damDefaultAcceptedMimetypes } from "./dam/common/mimeTypes/dam-default-accepted-mimetypes";
 export { type DamFileCategory, getDamFileCategory } from "./dam/common/mimeTypes/dam-file-category";

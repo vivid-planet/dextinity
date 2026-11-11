@@ -82,7 +82,7 @@ export default async function Page({ params }: PageProps<"/[visibility]/[domain]
     const predefinedPageMatch = await fetchPredefinedPageMatch(params);
 
     if (predefinedPageMatch) {
-        return <PredefinedPageRoute predefinedPage={predefinedPageMatch.predefinedPage} segments={predefinedPageMatch.segments} />;
+        return <PredefinedPageRoute predefinedPage={predefinedPageMatch.predefinedPage} path={predefinedPageMatch.path} />;
     }
 
     const data = await fetchPageTreeNode(params);

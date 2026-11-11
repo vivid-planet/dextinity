@@ -1,20 +1,33 @@
 import type { GQLPredefinedPageType } from "@src/graphql.generated";
-import { NewsPredefinedPage } from "@src/news/NewsPredefinedPage";
+import { newsRoutes } from "@src/news/newsRoutes";
+import { notFound } from "next/navigation";
 import type { JSX } from "react";
 
+import { matchRoute } from "./matchRoute";
 import type { PredefinedPage } from "./predefinedPages";
 
-type PredefinedPageRouteProps = {
+export type PredefinedPageRouteProps = {
     predefinedPage: PredefinedPage;
-    segments: string[];
+    params: Record<string, string>;
 };
 
-const predefinedPageRoutes: Record<GQLPredefinedPageType, (props: PredefinedPageRouteProps) => Promise<JSX.Element>> = {
-    news: NewsPredefinedPage,
+export type PredefinedPageRouteDefinition = {
+    path: string;
+    component: (props: PredefinedPageRouteProps) => Promise<JSX.Element>;
 };
 
-export function PredefinedPageRoute({ predefinedPage, segments }: PredefinedPageRouteProps) {
-    const Route = predefinedPageRoutes[predefinedPage.type];
+const predefinedPageRoutes: Record<GQLPredefinedPageType, PredefinedPageRouteDefinition[]> = {
+    news: newsRoutes,
+};
 
-    return <Route predefinedPage={predefinedPage} segments={segments} />;
+export function PredefinedPageRoute({ predefinedPage, path }: { predefinedPage: PredefinedPage; path: string }) {
+    const match = matchRoute(predefinedPageRoutes[predefinedPage.type], path);
+
+    if (!match) {
+        notFound();
+    }
+
+    const { component: Component } = match.route;
+
+    return <Component predefinedPage={predefinedPage} params={match.params} />;
 }

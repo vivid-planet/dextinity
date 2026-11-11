@@ -11,13 +11,13 @@ const predefinedPages: PredefinedPage[] = [
 
 describe("matchPredefinedPage", () => {
     it("should match the predefined page itself", () => {
-        expect(matchPredefinedPage(predefinedPages, { path: "/company/news", scope })).toEqual({ predefinedPage: predefinedPages[0], segments: [] });
+        expect(matchPredefinedPage(predefinedPages, { path: "/company/news", scope })).toEqual({ predefinedPage: predefinedPages[0], path: "/" });
     });
 
     it("should match a sub path of the predefined page", () => {
         expect(matchPredefinedPage(predefinedPages, { path: "/company/news/my-article", scope })).toEqual({
             predefinedPage: predefinedPages[0],
-            segments: ["my-article"],
+            path: "/my-article",
         });
     });
 
@@ -33,7 +33,7 @@ describe("matchPredefinedPage", () => {
         const rootPredefinedPage: PredefinedPage = { type: "news", path: "/", scope };
         expect(matchPredefinedPage([rootPredefinedPage], { path: "/my-article", scope })).toEqual({
             predefinedPage: rootPredefinedPage,
-            segments: ["my-article"],
+            path: "/my-article",
         });
     });
 });

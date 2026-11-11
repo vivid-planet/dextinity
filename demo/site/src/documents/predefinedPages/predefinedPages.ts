@@ -43,10 +43,7 @@ export function matchPredefinedPage(predefinedPages: PredefinedPage[], { path, s
 
     const subPath = predefinedPage.path === "/" ? path : path.substring(predefinedPage.path.length);
 
-    return {
-        predefinedPage,
-        segments: subPath.split("/").filter((segment) => segment !== ""),
-    };
+    return { predefinedPage, path: subPath === "" ? "/" : subPath };
 }
 
 /**

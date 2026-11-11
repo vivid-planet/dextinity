@@ -1,5 +1,6 @@
 import { gql } from "@dextinity/site-nextjs";
-import { createSitePathForPredefinedPage, type PredefinedPage } from "@src/documents/predefinedPages/predefinedPages";
+import type { PredefinedPageRouteProps } from "@src/documents/predefinedPages/PredefinedPageRoute";
+import { createSitePathForPredefinedPage } from "@src/documents/predefinedPages/predefinedPages";
 import type { GQLNewsContentScopeInput } from "@src/graphql.generated";
 import { createGraphQLFetch } from "@src/util/graphQLClient";
 import { notFound } from "next/navigation";
@@ -9,13 +10,8 @@ import { NewsDetail } from "./NewsDetail";
 import { newsDetailFragment } from "./NewsDetail.fragment";
 import type { GQLNewsDetailPageQuery, GQLNewsDetailPageQueryVariables } from "./NewsDetailPage.generated";
 
-type Props = {
-    slug: string;
-    newsPredefinedPage: PredefinedPage;
-};
-
-export async function NewsDetailPage({ slug, newsPredefinedPage }: Props) {
-    const { scope } = newsPredefinedPage;
+export async function NewsDetailPage({ predefinedPage, params: { slug } }: PredefinedPageRouteProps) {
+    const { scope } = predefinedPage;
     const graphqlFetch = createGraphQLFetch();
 
     const data = await graphqlFetch<GQLNewsDetailPageQuery, GQLNewsDetailPageQueryVariables>(
@@ -37,7 +33,7 @@ export async function NewsDetailPage({ slug, newsPredefinedPage }: Props) {
 
     return (
         <>
-            <NewsArticleJsonLd news={data.newsBySlug} scope={scope} sitePath={createSitePathForPredefinedPage(newsPredefinedPage, `/${slug}`)} />
+            <NewsArticleJsonLd news={data.newsBySlug} scope={scope} sitePath={createSitePathForPredefinedPage(predefinedPage, `/${slug}`)} />
             <NewsDetail news={data.newsBySlug} />
         </>
     );

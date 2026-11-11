@@ -23,6 +23,12 @@ class ScopedByCallbackReturningEmptyList {}
 @ScopedEntity(() => [undefined, { domain: "main", language: "en" }] as never)
 class ScopedByCallbackReturningListWithEmptyEntry {}
 
+@ScopedEntity(() => ({ domain: undefined, language: null }) as never)
+class ScopedByCallbackReturningEmptyDimensions {}
+
+@ScopedEntity(() => ({}) as never)
+class ScopedByCallbackReturningScopeWithoutDimensions {}
+
 @ActionLogs()
 @RequiredPermission("news" as Permission)
 class WithoutScope {}
@@ -105,6 +111,14 @@ describe("ActionLogsService.getScopeFromEntity", () => {
     it("returns undefined when @ScopedEntity resolves to nothing", async () => {
         await expect(service.getScopeFromEntity(new ScopedByCallbackReturningNothing())).resolves.toBeUndefined();
         await expect(service.getScopeFromEntity(new ScopedByCallbackReturningEmptyList())).resolves.toBeUndefined();
+    });
+
+    it("returns undefined when every dimension of the resolved scope is empty", async () => {
+        await expect(service.getScopeFromEntity(new ScopedByCallbackReturningEmptyDimensions())).resolves.toBeUndefined();
+    });
+
+    it("keeps a scope without dimensions", async () => {
+        await expect(service.getScopeFromEntity(new ScopedByCallbackReturningScopeWithoutDimensions())).resolves.toEqual([{}]);
     });
 
     it("drops empty entries from the resolved scopes", async () => {

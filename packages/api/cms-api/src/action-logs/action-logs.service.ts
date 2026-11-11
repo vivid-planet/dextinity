@@ -65,10 +65,16 @@ export class ActionLogsService implements OnModuleInit {
     }
 }
 
-// A missing scope is stored as no scope and never as an array holding null: `isAllowed` passes for a null scope.
+// A missing scope is stored as no scope, never as an array holding null or a scope with only empty dimensions:
+// `isAllowed` passes for both. A scope without any dimension stays, because applications without scope dimensions use it.
 function toScopes(scope: ContentScope | Array<ContentScope | null | undefined> | null | undefined): ContentScope[] | undefined {
-    const scopes = (Array.isArray(scope) ? scope : [scope]).filter((item): item is ContentScope => item != null);
+    const scopes = (Array.isArray(scope) ? scope : [scope]).filter((item): item is ContentScope => item != null && !hasOnlyEmptyDimensions(item));
     return scopes.length > 0 ? scopes : undefined;
+}
+
+function hasOnlyEmptyDimensions(scope: ContentScope): boolean {
+    const dimensions = Object.values(scope);
+    return dimensions.length > 0 && dimensions.every((dimension) => dimension == null);
 }
 
 function hasScope(entity: object, metadata: EntityMetadata): boolean {

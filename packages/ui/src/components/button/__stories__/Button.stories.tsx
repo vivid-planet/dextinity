@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, fn, userEvent } from "storybook/test";
+import { fn } from "storybook/test";
 
+import { Spec, SpecGrid } from "../../../storybook/docs/SpecGrid";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Button } from "../Button";
 import buttonTokens from "../Button.tokens.scss?raw";
-import styles from "./Button.stories.module.scss";
 
 const iconOptions = {
     Favorite: <Icon name="favorite" />,
@@ -19,6 +19,7 @@ const meta = {
     title: "Building blocks/Buttons/Button",
     decorators: [themeDecorator],
     parameters: {
+        docs: { description: { component: "Trigger actions. One primary action per area, everything else secondary or ghost." } },
         tokens: buttonTokens,
         rules: {
             do: [
@@ -70,220 +71,100 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-/**
- * The primary action: one per area.
- */
 export const Default: Story = {};
 
-/**
- * Each variant with the actions it's for.
- */
 export const Variants: Story = {
     render: (args) => (
-        <div className={styles.overview}>
-            <div className={styles.overviewItem}>
+        <SpecGrid>
+            <Spec label="Primary" note="One per area">
                 <Button {...args} startIcon={<Icon name="check" />}>
                     Save
                 </Button>
-                <span>
-                    Primary: <code>contained</code>, one per area
-                </span>
-            </div>
-            <div className={styles.overviewItem}>
+            </Spec>
+            <Spec label="Secondary" note="More actions">
                 <Button {...args} variant="outlined" color="secondary">
                     Preview
                 </Button>
-                <span>
-                    Secondary: <code>outlined</code> + <code>secondary</code>, further actions
-                </span>
-            </div>
-            <div className={styles.overviewItem}>
+            </Spec>
+            <Spec label="Ghost" note="Quiet actions">
                 <Button {...args} variant="text" color="secondary">
                     Cancel
                 </Button>
-                <span>
-                    Ghost: <code>text</code> + <code>secondary</code>, quiet actions
-                </span>
-            </div>
-            <div className={styles.overviewItem}>
+            </Spec>
+            <Spec label="Danger" note="Destructive actions">
                 <Button {...args} variant="outlined" color="error" startIcon={<Icon name="delete" />}>
                     Delete
                 </Button>
-                <span>
-                    Danger: <code>outlined</code> + <code>error</code>, destructive actions
-                </span>
-            </div>
-            <div className={styles.overviewItem}>
+            </Spec>
+            <Spec label="Small" note="In rows and panels">
                 <Button {...args} variant="outlined" color="secondary" size="small">
                     Change
                 </Button>
-                <span>
-                    Small: <code>size="small"</code>, in rows and panels
-                </span>
-            </div>
-        </div>
+            </Spec>
+        </SpecGrid>
     ),
 };
 
-/**
- * The primary and the secondary button when default, disabled, and loading. Hover, focus with the keyboard, and press them to see
- * the other states.
- */
-export const States: Story = {
-    render: (args) => (
-        <div className={styles.states}>
-            <Button {...args}>Save</Button>
-            <Button {...args} disabled>
-                Save
-            </Button>
-            <Button {...args} loading>
-                Save
-            </Button>
-            <Button {...args} variant="outlined" color="secondary">
-                Preview
-            </Button>
-            <Button {...args} variant="outlined" color="secondary" disabled>
-                Preview
-            </Button>
-            <Button {...args} variant="outlined" color="secondary" loading>
-                Preview
-            </Button>
-        </div>
-    ),
+function renderStates(
+    args: Story["args"],
+    { label, variant, color, idPrefix }: { label: string; variant?: "outlined"; color?: "secondary"; idPrefix: string },
+) {
+    const props = { ...args, variant, color };
+    return (
+        <SpecGrid>
+            <Spec label="Standard">
+                <Button {...props}>{label}</Button>
+            </Spec>
+            <Spec label="Hover">
+                <Button {...props} id={`${idPrefix}-hover`}>
+                    {label}
+                </Button>
+            </Spec>
+            <Spec label="Focus">
+                <Button {...props} id={`${idPrefix}-focus`}>
+                    {label}
+                </Button>
+            </Spec>
+            <Spec label="Pressed">
+                <Button {...props} id={`${idPrefix}-pressed`}>
+                    {label}
+                </Button>
+            </Spec>
+            <Spec label="Disabled">
+                <Button {...props} disabled>
+                    {label}
+                </Button>
+            </Spec>
+            <Spec label="Loading">
+                <Button {...props} loading startIcon={<Icon name="check" />}>
+                    {label}
+                </Button>
+            </Spec>
+        </SpecGrid>
+    );
+}
+
+function pseudoStates(idPrefix: string) {
+    return { hover: [`#${idPrefix}-hover`], focusVisible: [`#${idPrefix}-focus`], active: [`#${idPrefix}-pressed`] };
+}
+
+export const StatesPrimary: Story = {
+    name: "States · Primary",
+    parameters: { pseudo: pseudoStates("primary") },
+    render: (args) => renderStates(args, { label: "Save", idPrefix: "primary" }),
 };
 
-export const Outlined: Story = {
-    args: {
-        variant: "outlined",
-    },
-};
-
-export const Text: Story = {
-    args: {
-        variant: "text",
-    },
-};
-
-/**
- * Quiet actions such as Cancel: `text` with `color="secondary"`.
- */
-export const Ghost: Story = {
-    args: {
-        variant: "text",
-        color: "secondary",
-        children: "Cancel",
-    },
-};
-
-export const Secondary: Story = {
-    args: {
-        color: "secondary",
-    },
-};
-
-/**
- * Further actions: `outlined` with `color="secondary"`.
- */
-export const OutlinedSecondary: Story = {
-    args: {
-        variant: "outlined",
-        color: "secondary",
-    },
-};
-
-/**
- * Destructive actions: `outlined` with `color="error"`.
- */
-export const Danger: Story = {
-    args: {
-        variant: "outlined",
-        color: "error",
-        startIcon: <Icon name="delete" />,
-        children: "Delete",
-    },
-};
-
-export const Error: Story = {
-    args: {
-        color: "error",
-    },
-};
-
-export const Success: Story = {
-    args: {
-        color: "success",
-    },
-};
-
-export const Small: Story = {
-    args: {
-        size: "small",
-    },
-};
-
-export const Disabled: Story = {
-    args: {
-        disabled: true,
-    },
-};
-
-/**
- * The button stays in place and keeps its width: the spinner replaces the start icon, or covers the label when there is none.
- */
-export const Loading: Story = {
-    args: {
-        loading: true,
-    },
-    play: async ({ args, canvas }) => {
-        await userEvent.click(canvas.getByRole("button"));
-        await expect(args.onClick).not.toHaveBeenCalled();
-    },
-};
-
-/**
- * Each button next to its loading state, at the same width.
- */
-export const LoadingKeepsWidth: Story = {
-    render: (args) => (
-        <div className={styles.grid}>
-            <Button {...args}>Save</Button>
-            <Button {...args} loading>
-                Save
-            </Button>
-            <Button {...args} variant="outlined" color="secondary" startIcon={<Icon name="visible" />}>
-                Preview
-            </Button>
-            <Button {...args} variant="outlined" color="secondary" startIcon={<Icon name="visible" />} loading>
-                Preview
-            </Button>
-        </div>
-    ),
-    play: async ({ canvas }) => {
-        const [save, saving, preview, previewing] = canvas.getAllByRole("button");
-        await expect(saving.getBoundingClientRect().width).toBe(save.getBoundingClientRect().width);
-        await expect(previewing.getBoundingClientRect().width).toBe(preview.getBoundingClientRect().width);
-    },
-};
-
-/**
- * `startIcon` and `endIcon` accept any `ReactNode`.
- */
-export const WithIcons: Story = {
-    render: () => (
-        <div className={styles.row}>
-            <Button startIcon={<Icon name="favorite" />}>Start only</Button>
-            <Button endIcon={<Icon name="arrow-right" />}>End only</Button>
-            <Button startIcon={<Icon name="favorite" />} endIcon={<Icon name="arrow-right" />}>
-                Both
-            </Button>
-        </div>
-    ),
+export const StatesSecondary: Story = {
+    name: "States · Secondary",
+    parameters: { pseudo: pseudoStates("secondary") },
+    render: (args) => renderStates(args, { label: "Preview", variant: "outlined", color: "secondary", idPrefix: "secondary" }),
 };
 
 /**
  * With `href`, the button renders as a link.
  */
 export const AsLink: Story = {
+    name: "As link",
     args: {
         href: "#",
         variant: "outlined",

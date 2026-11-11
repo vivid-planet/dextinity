@@ -160,7 +160,7 @@ type Story = StoryObj<typeof meta>;
 
 `meta.args` holds only what a practical example needs: required content such as `children`, and the event handlers that make it interactive. It omits any prop that has a component default — a defaulted prop is set in the story that demonstrates it instead.
 
-The first story is `Default`: it sets no args of its own, showing the smallest practical example, and drives the controls on the canvas; the docs page leaves it out. The other stories mirror the sections of the component's page in the design system draft, in its order and with its names, e.g. `Variants`, `StatesPrimary`, `StatesSecondary` for `Button`. A story that only tests behavior, such as a click on a loading button, is a dev story.
+The first story is `Default`: it sets no args of its own, showing the smallest practical example, and drives the controls on the canvas; the docs page leaves it out. The other stories mirror the sections of the component's page in the design system draft, in its order and with its names, e.g. `Variants`, `StatesPrimary`, `StatesSecondary` for `Button`, and lay out their examples as cards with [`SpecGrid` and `Spec`](src/storybook/docs/SpecGrid.tsx). A state that needs interaction, such as hover, is shown with the `pseudo` parameter of [`storybook-addon-pseudo-states`](https://github.com/chromaui/storybook-addon-pseudo-states). A story that only tests behavior, such as a click on a loading button, is a dev story.
 
 Each declared prop is exposed as a control through `argTypes`, by kind:
 

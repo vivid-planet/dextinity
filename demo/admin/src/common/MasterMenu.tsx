@@ -11,7 +11,6 @@ import {
     CronJobsPage,
     DamPage,
     type DocumentInterface,
-    type DocumentType,
     MasterMenu,
     type MasterMenuData,
     MasterMenuRoutes,
@@ -57,6 +56,19 @@ export const pageTreeDocumentTypes: Record<string, DocumentInterface<any, any>> 
     PredefinedPage,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const topMenuDocumentTypes: Record<string, DocumentInterface<any, any>> = {
+    Page,
+    PredefinedPage,
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const pagesPageDocumentTypes: Record<string, DocumentInterface<any, any>> = {
+    Page,
+    PredefinedPage,
+    Link,
+};
+
 function PageTreePage() {
     const { category: categoryParam = "" } = useParams<{ category: string }>();
     const { match: contentScopeMatch } = useContentScope();
@@ -69,20 +81,7 @@ function PageTreePage() {
     return (
         <PagesPage
             path={`/pages/pagetree/${categoryParam}`}
-            documentTypes={(category): Record<DocumentType, DocumentInterface> => {
-                if (category === "TopMenu") {
-                    return {
-                        Page,
-                        PredefinedPage,
-                    };
-                }
-
-                return {
-                    Page,
-                    PredefinedPage,
-                    Link,
-                };
-            }}
+            documentTypes={(category) => (category === "TopMenu" ? topMenuDocumentTypes : pagesPageDocumentTypes)}
             editPageNode={EditPageNode}
             category={category}
             renderContentScopeIndicator={(scope: ContentScope) => <ContentScopeIndicator scope={scope} />}

@@ -8,7 +8,6 @@
         "module": "preserve",
         "moduleResolution": "bundler",
         "noEmit": true,
-        "noImplicitAny": true,
         "noUncheckedSideEffectImports": false,
         "paths": {
             "@src/*": ["./src/*"]
@@ -16,8 +15,7 @@
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "sourceMap": true,
-        "strict": false,
-        "strictNullChecks": true,
+        "strict": true,
         "target": "ESNext",
         "types": ["*"]
     },

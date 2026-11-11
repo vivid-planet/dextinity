@@ -265,11 +265,8 @@
 
 .sendButton {
     flex: none;
-
-    &:not([data-disabled]) {
-        background: var(--dextinity-ai-panel-send-background);
-        color: var(--dextinity-ai-panel-send-foreground);
-    }
+    --dextinity-button-primary-background: var(--dextinity-ai-panel-send-background);
+    --dextinity-button-primary-foreground: var(--dextinity-ai-panel-send-foreground);
 }
 
 .note {

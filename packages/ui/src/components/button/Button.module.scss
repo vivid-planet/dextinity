@@ -1,3 +1,5 @@
+@use "../../theme/hoverLayer" as hover-layer;
+
 .root {
     position: relative;
     display: inline-flex;
@@ -18,7 +20,8 @@
     cursor: pointer;
     transition:
         transform var(--dextinity-motion-duration-short) var(--dextinity-motion-easing),
-        background var(--dextinity-motion-duration-short),
+        background-color var(--dextinity-motion-duration-short),
+        #{hover-layer.$transition-property} var(--dextinity-motion-duration-short),
         color var(--dextinity-motion-duration-short),
         box-shadow var(--dextinity-motion-duration-medium);
 
@@ -49,12 +52,12 @@
 
     // Contained: the primary action — one per area
     &[data-variant="contained"] {
-        background: var(--dextinity-button-primary-background);
+        @include hover-layer.background(var(--dextinity-button-primary-background), var(--dextinity-button-primary-background-hover));
         color: var(--dextinity-button-primary-foreground);
         box-shadow: var(--dextinity-button-primary-shadow);
 
-        &:hover:not([data-disabled], [data-loading]) {
-            background: var(--dextinity-button-primary-background-hover);
+        &[data-color="primary"]:hover:not([data-disabled], [data-loading]) {
+            @include hover-layer.hovered;
             box-shadow: var(--dextinity-button-primary-shadow-hover);
         }
 

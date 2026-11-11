@@ -138,7 +138,17 @@
     block-size: 16px;
     border-radius: var(--dextinity-radius-pill);
     background: var(--dextinity-top-bar-ai-track);
-    transition: background var(--dextinity-motion-duration-medium);
+
+    // The on track is a gradient, which can't transition to the off color, so it fades in on a layer above it
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: var(--dextinity-top-bar-ai-track-on);
+        opacity: 0;
+        transition: opacity var(--dextinity-motion-duration-medium);
+    }
 
     &::after {
         content: "";
@@ -155,8 +165,11 @@
     }
 
     .aiToggle[aria-checked="true"] & {
-        background: var(--dextinity-top-bar-ai-track-on);
         @include forced-colors.fill(Highlight);
+
+        &::before {
+            opacity: 1;
+        }
 
         &::after {
             transform: translateX(12px);

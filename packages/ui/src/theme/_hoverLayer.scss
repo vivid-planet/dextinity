@@ -1,0 +1,23 @@
+// A background that is a gradient can't transition to a color: the gradient disappears at once and the color fades in from
+// transparent, so the element is see-through for a moment. These mixins keep the resting background and fade the hover color in
+// on a layer above it. Registering the amount lets it transition; without support, the hover color appears at once.
+@property --_dextinity-hover-layer-amount {
+    syntax: "<percentage>";
+    inherits: false;
+    initial-value: 0%;
+}
+
+/// The property that fades the hover layer, to add to the element's `transition`.
+$transition-property: --_dextinity-hover-layer-amount;
+
+/// The resting background with the hover color layered above it, faded in by `hovered`.
+@mixin background($background, $hover-color) {
+    background:
+        linear-gradient(color-mix(in oklch, #{$hover-color} var(--_dextinity-hover-layer-amount), transparent) 0 0),
+        #{$background};
+}
+
+/// Shows the hover color of `background`.
+@mixin hovered {
+    --_dextinity-hover-layer-amount: 100%;
+}

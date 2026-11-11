@@ -247,8 +247,8 @@ export const AIPanel = forwardRef<HTMLElement, AIPanelProps>(function AIPanel(
                         className={styles.input}
                     />
                     <IconButton
-                        variant="text"
-                        color="secondary"
+                        variant={canSend ? "contained" : "text"}
+                        color={canSend ? "primary" : "secondary"}
                         aria-label={labels.send}
                         disabled={!canSend}
                         onClick={send}

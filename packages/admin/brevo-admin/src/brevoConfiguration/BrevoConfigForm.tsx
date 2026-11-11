@@ -287,7 +287,8 @@ function BrevoConfigFormContent({
                                 <Banner tone="error">
                                     {intl.formatMessage({
                                         id: "dextinity.brevoConfig.sendersFailed",
-                                        defaultMessage: "The senders couldn't be loaded from Brevo.",
+                                        defaultMessage:
+                                            "The senders couldn't be loaded from Brevo. Make sure a valid Brevo API key is configured and the API's IP address is authorized in Brevo.",
                                     })}
                                 </Banner>
                             ) : null}
@@ -304,7 +305,8 @@ function BrevoConfigFormContent({
                                 <Banner tone="error">
                                     {intl.formatMessage({
                                         id: "dextinity.brevoConfig.doubleOptInTemplatesFailed",
-                                        defaultMessage: "The email templates couldn't be loaded from Brevo.",
+                                        defaultMessage:
+                                            "The email templates couldn't be loaded from Brevo. Make sure a valid Brevo API key is configured and the API's IP address is authorized in Brevo.",
                                     })}
                                 </Banner>
                             ) : null}

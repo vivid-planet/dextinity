@@ -80,10 +80,8 @@ function useCopyPastePages(): UseCopyPastePagesApi {
 
     const prepareForClipboard = useCallback(
         async (pages: GQLPageTreePageFragment[]): Promise<PagesClipboard> => {
-            const pagesWithDocuments: Array<PageClipboard> = [];
-
-            await Promise.all(
-                pages.map(async (page) => {
+            const pagesWithDocuments = await Promise.all(
+                pages.map(async (page): Promise<PageClipboard | undefined> => {
                     const documentType = documentTypes[page.documentType];
 
                     if (!documentType) {
@@ -102,8 +100,7 @@ function useCopyPastePages(): UseCopyPastePagesApi {
                                 context: LocalErrorScopeApolloContext,
                             });
 
-                            const clipboardPage: PageClipboard = { ...page, document: data?.page?.document };
-                            pagesWithDocuments.push(clipboardPage);
+                            return { ...page, document: data?.page?.document };
                         }
                     } catch {
                         throw new Error(`Error while fetching page`);
@@ -112,7 +109,7 @@ function useCopyPastePages(): UseCopyPastePagesApi {
             );
 
             const clipboardPages: PagesClipboard = {
-                pages: [...pagesWithDocuments],
+                pages: pagesWithDocuments.filter((page) => page !== undefined),
                 scope,
             };
             return clipboardPages;

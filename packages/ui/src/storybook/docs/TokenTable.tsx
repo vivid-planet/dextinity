@@ -1,3 +1,4 @@
+import { Theme } from "../../components/theme/Theme";
 import { parseTokens, type TokenDefinition } from "./parseTokens";
 import { useResolvedTokens } from "./ThemedProbe";
 import styles from "./TokenTable.module.scss";
@@ -23,36 +24,39 @@ export function TokenTable({ tokens }: TokenTableProps) {
     const { values, probe } = useResolvedTokens(definitions.map((token) => token.name));
 
     return (
-        <div className={styles.wrapper}>
-            {probe}
-            <table className={styles.table}>
-                <thead>
-                    <tr>
-                        <th>Variable</th>
-                        <th>Description</th>
-                        <th>Value (live)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {definitions.map((token) => {
-                        const value = values[token.name] ?? "";
-                        return (
-                            <tr key={token.name}>
-                                <td>
-                                    <code className={styles.variable}>{token.name}</code>
-                                </td>
-                                <td>{token.description != null && <Description text={token.description} />}</td>
-                                <td>
-                                    <span className={styles.value}>
-                                        {colorPattern.test(value) && <span className={styles.swatch} style={{ background: value }} />}
-                                        <code>{value}</code>
-                                    </span>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-        </div>
+        // The docs page stays light whatever the toolbar picks, so the table's own colors do too
+        <Theme colorScheme="light">
+            <div className={styles.wrapper}>
+                {probe}
+                <table className={styles.table}>
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>Description</th>
+                            <th>Value (live)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {definitions.map((token) => {
+                            const value = values[token.name] ?? "";
+                            return (
+                                <tr key={token.name}>
+                                    <td>
+                                        <code className={styles.variable}>{token.name}</code>
+                                    </td>
+                                    <td>{token.description != null && <Description text={token.description} />}</td>
+                                    <td>
+                                        <span className={styles.value}>
+                                            {colorPattern.test(value) && <span className={styles.swatch} style={{ background: value }} />}
+                                            <code>{value}</code>
+                                        </span>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+        </Theme>
     );
 }

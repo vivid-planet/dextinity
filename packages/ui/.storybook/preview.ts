@@ -8,6 +8,7 @@ import type { Preview } from "@storybook/react-vite";
 
 import { CanvasWithStyleSource } from "../src/storybook/CanvasWithStyleSource";
 import { colorSchemeBackgroundDecorator } from "../src/storybook/colorSchemeBackgroundDecorator";
+import { DocsPage } from "../src/storybook/docs/DocsPage";
 import { renderSourceWithArgs } from "../src/storybook/renderSourceWithArgs";
 
 const preview: Preview = {
@@ -30,6 +31,7 @@ const preview: Preview = {
         },
         docs: {
             codePanel: true,
+            page: DocsPage,
             components: { Canvas: CanvasWithStyleSource },
             source: { type: "dynamic", transform: renderSourceWithArgs },
         },

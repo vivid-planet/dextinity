@@ -10,6 +10,7 @@ const meta = {
     title: "Foundations/Typography",
     decorators: [themeDecorator],
     parameters: {
+        docs: { description: { component: "Type styles with size, weight and usage. Font families come from the brand." } },
         tokens: typographyTokens,
         rules: {
             do: ["Exactly one display title per view.", "Tabular figures for numbers in tables.", "Short labels, in mono and uppercase."],
@@ -40,92 +41,37 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-/**
- * 72 / 1.02 · display font — the greeting on an overview.
- */
-export const DisplayXl: Story = {
-    args: {
-        variant: "displayXl",
-    },
-};
-
-/**
- * 54 / 1.02 · display font — the page title, one per view.
- */
-export const DisplayL: Story = {
-    args: {
-        variant: "displayL",
-    },
-};
-
-/**
- * 17 / 1.3 · 500 — panel and card titles.
- */
-export const Title: Story = {
-    args: {
-        variant: "title",
-    },
-};
-
-/**
- * 15 / 1.35 · 550 — sections in forms.
- */
-export const Section: Story = {
-    args: {
-        variant: "section",
-    },
-};
-
-/**
- * 12.5 / 1.4 — help texts and metadata.
- */
-export const Small: Story = {
-    args: {
-        variant: "small",
-    },
-};
-
-/**
- * 10.5 · mono · uppercase — groups, sections, markers.
- */
-export const Label: Story = {
-    args: {
-        variant: "label",
-    },
-};
-
-/**
- * 12 · mono — paths, IDs, shortcuts.
- */
-export const Mono: Story = {
-    args: {
-        variant: "mono",
-    },
-};
-
-const specimen = [
-    { variant: "displayXl", sample: "Good morning, Max", metrics: "72 / 1.02 · display", usage: "Greeting on an overview" },
-    { variant: "displayL", sample: "Job postings", metrics: "54 / 1.02 · display", usage: "Page title" },
-    { variant: "title", sample: "Recently edited", metrics: "17 / 1.3 · 500", usage: "Panel and card titles" },
-    { variant: "section", sample: "General", metrics: "15 / 1.35 · 550", usage: "Sections in forms" },
+const typeStyles = [
+    { variant: "displayXl", name: "Display XL", sample: "Good morning, Max", metrics: "72 / 1.02 · Display", usage: "Greeting on the overview" },
+    { variant: "displayL", name: "Display L", sample: "Job postings", metrics: "54 / 1.02 · Display", usage: "Page title" },
+    { variant: "title", name: "Title", sample: "Recently edited", metrics: "17 / 1.3 · 500", usage: "Panel and card titles" },
+    { variant: "section", name: "Section", sample: "Basics", metrics: "15 / 1.35 · 550", usage: "Sections in forms" },
     {
         variant: "body",
+        name: "Body",
         sample: "We build digital products that stay in use for many years.",
         metrics: "14 / 1.45 · 400",
         usage: "Default for UI and tables",
     },
-    { variant: "small", sample: "Use inclusive language.", metrics: "12.5 / 1.4 · 400", usage: "Help texts, metadata" },
-    { variant: "label", sample: "Structured content", metrics: "10.5 · mono · uppercase", usage: "Groups, sections, markers" },
-    { variant: "mono", sample: "/careers/open-positions", metrics: "12 · mono", usage: "Paths, IDs, shortcuts" },
+    {
+        variant: "small",
+        name: "Small",
+        sample: "Use gender-inclusive wording, e.g. with a colon.",
+        metrics: "12.5 / 1.4 · 400",
+        usage: "Help texts, metadata",
+    },
+    { variant: "label", name: "Label", sample: "Structured content", metrics: "10.5 · Mono · Uppercase", usage: "Groups, sections, markers" },
+    { variant: "mono", name: "Mono", sample: "/careers/open-positions", metrics: "12 · Mono", usage: "Paths, IDs, shortcuts" },
 ] as const;
 
 /**
- * All styles with their metrics and use. Hierarchy comes from size and weight, not color; font families come from the brand.
+ * Hierarchy comes from size and weight, not color.
  */
-export const Specimen: Story = {
+export const TypeStyles: Story = {
+    name: "Type styles",
     render: () => (
         <div className={styles.specimen}>
-            {specimen.map(({ variant, sample, metrics, usage }) => (
+            {typeStyles.map(({ variant, name, sample, metrics, usage }) => (
                 <div key={variant} className={styles.row}>
                     <div className={styles.sample}>
                         <Typography variant={variant} element="span">
@@ -134,7 +80,7 @@ export const Specimen: Story = {
                     </div>
                     <div className={styles.meta}>
                         <Typography variant="section" element="span">
-                            {variant}
+                            {name}
                         </Typography>
                         <Typography variant="mono" element="span">
                             {metrics}

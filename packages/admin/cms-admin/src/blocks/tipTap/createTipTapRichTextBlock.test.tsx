@@ -520,7 +520,7 @@ describe("createTipTapRichTextBlock", () => {
         it("should align the text block of the selection", () => {
             const { getByLabelText, updateState } = renderEditor(null);
 
-            fireEvent.mouseDown(getByLabelText("Align center"));
+            fireEvent.click(getByLabelText("Align center"));
 
             expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [alignedParagraph("center")] } });
         });
@@ -528,7 +528,7 @@ describe("createTipTapRichTextBlock", () => {
         it("should switch from another alignment to left", () => {
             const { getByLabelText, updateState } = renderEditor("center");
 
-            fireEvent.mouseDown(getByLabelText("Align left"));
+            fireEvent.click(getByLabelText("Align left"));
 
             expect(updateState).toHaveBeenLastCalledWith({ tipTapContent: { type: "doc", content: [alignedParagraph("left")] } });
         });
@@ -540,7 +540,7 @@ describe("createTipTapRichTextBlock", () => {
             const { getByLabelText, updateState } = renderEditor(textAlign);
             updateState.mockClear();
 
-            fireEvent.mouseDown(getByLabelText(buttonLabel));
+            fireEvent.click(getByLabelText(buttonLabel));
 
             expect(updateState).not.toHaveBeenCalled();
         });
@@ -551,7 +551,7 @@ describe("createTipTapRichTextBlock", () => {
                 editor.commands.setTextSelection({ from: 1, to: editor.state.doc.content.size - 1 });
             });
 
-            fireEvent.mouseDown(getByLabelText("Align right"));
+            fireEvent.click(getByLabelText("Align right"));
 
             expect(updateState).toHaveBeenLastCalledWith({
                 tipTapContent: { type: "doc", content: [alignedParagraph("right"), alignedParagraph("right")] },

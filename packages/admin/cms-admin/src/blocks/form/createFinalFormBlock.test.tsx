@@ -9,8 +9,8 @@ import type { BlockInterface } from "../types";
 import { createFinalFormBlock } from "./createFinalFormBlock";
 
 const { api: composedApi, block: composedBlock } = composeBlocks({
-    first: createCompositeBlockTextField({ placeholder: "First" }),
-    second: createCompositeBlockTextField({ placeholder: "Second" }),
+    first: createCompositeBlockTextField({ label: "First", placeholder: "First" }),
+    second: createCompositeBlockTextField({ label: "Second", placeholder: "Second" }),
 });
 
 const TwoFormsBlock: BlockInterface = {

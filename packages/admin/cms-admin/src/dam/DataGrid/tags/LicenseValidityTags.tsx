@@ -1,24 +1,25 @@
 import { WarningSolid } from "@dextinity/admin-icons";
+import { Chip } from "@mui/material";
 import { formatDistanceToNow } from "date-fns";
 import { FormattedMessage } from "react-intl";
 
-import { Tag } from "./Tag";
-
 const LicenseNotValidYetTag = () => {
     return (
-        <Tag type="error">
-            <WarningSolid />
-            <FormattedMessage id="dextinity.pages.dam.tag.licenseNotValidYet" defaultMessage="License not valid yet" />
-        </Tag>
+        <Chip
+            color="error"
+            icon={<WarningSolid />}
+            label={<FormattedMessage id="dextinity.pages.dam.tag.licenseNotValidYet" defaultMessage="License not valid yet" />}
+        />
     );
 };
 
 const LicenseExpiredTag = () => {
     return (
-        <Tag type="error">
-            <WarningSolid />
-            <FormattedMessage id="dextinity.pages.dam.tag.licenseExpired" defaultMessage="License expired" />
-        </Tag>
+        <Chip
+            color="error"
+            icon={<WarningSolid />}
+            label={<FormattedMessage id="dextinity.pages.dam.tag.licenseExpired" defaultMessage="License expired" />}
+        />
     );
 };
 
@@ -28,16 +29,19 @@ interface LicenseExpiresSoonTagProps {
 
 const LicenseExpiresSoonTag = ({ expirationDate }: LicenseExpiresSoonTagProps) => {
     return (
-        <Tag type="warning">
-            <WarningSolid />
-            <FormattedMessage
-                id="dextinity.pages.dam.tag.licenseExpiresSoon"
-                defaultMessage="License expires in {distance}"
-                values={{
-                    distance: formatDistanceToNow(expirationDate),
-                }}
-            />
-        </Tag>
+        <Chip
+            color="warning"
+            icon={<WarningSolid />}
+            label={
+                <FormattedMessage
+                    id="dextinity.pages.dam.tag.licenseExpiresSoon"
+                    defaultMessage="License expires in {distance}"
+                    values={{
+                        distance: formatDistanceToNow(expirationDate),
+                    }}
+                />
+            }
+        />
     );
 };
 

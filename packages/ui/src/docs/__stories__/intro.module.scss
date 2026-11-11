@@ -39,8 +39,8 @@
     color: var(--dextinity-color-foreground-on-accent);
 }
 
-// Typography variants set their own colors, which text on the primary color has to override
-.taskCard :is(.taskDate, .taskTitle, .taskMeta) {
+// Outweighs the colors of the Typography variants, which don't fit text on the primary color
+.taskCard :is(.taskDate, .taskTitle, .taskMeta):is([class]) {
     color: inherit;
 }
 

@@ -25,7 +25,7 @@ export const AppShell: Story = {
     render: () => (
         <div className={styles.shell}>
             <header className={styles.appBar}>
-                <Typography variant="title" className={styles.appBarTitle}>
+                <Typography variant="title" element="span" className={styles.appBarTitle}>
                     Application title
                 </Typography>
             </header>

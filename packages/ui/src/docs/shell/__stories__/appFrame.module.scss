@@ -68,7 +68,8 @@
     text-decoration: none;
 }
 
-.breadcrumbCurrent {
+// Outweighs the muted color of Typography's `small` variant
+.breadcrumb .breadcrumbCurrent[aria-current] {
     color: var(--dextinity-color-foreground-default);
 }
 

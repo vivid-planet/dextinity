@@ -1,4 +1,4 @@
-import { createElement } from "react";
+import { createElement, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import { App } from "./App";
@@ -10,7 +10,7 @@ const loadHtml = () => {
     }
 
     const root = createRoot(rootElement);
-    root.render(createElement(App));
+    root.render(createElement(StrictMode, null, createElement(App)));
 };
 
 if (["interactive", "complete"].includes(document.readyState)) {

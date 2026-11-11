@@ -57,7 +57,7 @@ export const Showcase: Story = {
                             <FormHelperText id="showcase-title-hint">Shown in the browser tab and in search results.</FormHelperText>
                         </div>
                         <div className={styles.actions}>
-                            <Button variant="outlined">Cancel</Button>
+                            <Button variant="secondary">Cancel</Button>
                             <Button>Save</Button>
                         </div>
                     </section>
@@ -106,19 +106,19 @@ export const Showcase: Story = {
                                 </Typography>
                             </div>
                             <div className={styles.iconActions}>
-                                <IconButton variant="text" aria-label="Edit">
+                                <IconButton aria-label="Edit">
                                     <Icon name="edit" />
                                 </IconButton>
-                                <IconButton variant="text" aria-label="Duplicate">
+                                <IconButton aria-label="Duplicate">
                                     <Icon name="copy" />
                                 </IconButton>
-                                <IconButton variant="text" color="error" aria-label="Delete">
+                                <IconButton variant="danger" aria-label="Delete">
                                     <Icon name="delete" />
                                 </IconButton>
                             </div>
                         </div>
                         <div className={styles.actions}>
-                            <Button variant="outlined" disabled>
+                            <Button variant="secondary" disabled>
                                 Cancel
                             </Button>
                             <Button loading>Publish</Button>

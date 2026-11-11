@@ -32,7 +32,7 @@ export const CustomizationViaWrapperGlobalSelectors: Story = {
     render: () => (
         <div className={styles.wrapper}>
             <Button startIcon={<Icon name="favorite" />}>Themed via wrapper</Button>
-            <Button color="secondary" endIcon={<Icon name="arrow-right" />}>
+            <Button variant="secondary" endIcon={<Icon name="arrow-right" />}>
                 Secondary in the same wrapper
             </Button>
         </div>

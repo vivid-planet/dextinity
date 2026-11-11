@@ -23,7 +23,7 @@
         text-transform: uppercase;
     }
 
-    :global(.dextinityButton)[data-color="primary"] {
+    :global(.dextinityButton)[data-variant="primary"] {
         background: var(--dextinity-color-violet-700);
     }
 

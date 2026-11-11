@@ -30,7 +30,7 @@ export const MainNavigation: Story = {
                 <MenuSectionHeader
                     slotProps={{ label: { id: "navigation-content" } }}
                     action={
-                        <IconButton variant="text" color="secondary" size="small" aria-label="Add page">
+                        <IconButton size="small" aria-label="Add page">
                             <Icon name="add" />
                         </IconButton>
                     }

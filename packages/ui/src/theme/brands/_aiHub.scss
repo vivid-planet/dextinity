@@ -1,4 +1,4 @@
-// The AI Hub brand: like Dextinity, with the violet of the AI Hub logo as the primary color.
+// The AI Hub brand: like Dextinity, with the violet and the coral of the AI Hub logo as the primary and the second color.
 @layer dextinity {
     [data-dextinity-brand="ai-hub"] {
         --dextinity-brand-color-primary-50: var(--dextinity-color-amethyst-50);
@@ -12,5 +12,7 @@
         --dextinity-brand-color-primary-800: var(--dextinity-color-amethyst-800);
         --dextinity-brand-color-primary-900: var(--dextinity-color-amethyst-900);
         --dextinity-brand-color-primary-950: var(--dextinity-color-amethyst-950);
+        --dextinity-brand-color-gradient-400: var(--dextinity-color-coral-300);
+        --dextinity-brand-color-gradient-500: var(--dextinity-color-coral-400);
     }
 }

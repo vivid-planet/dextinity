@@ -1,55 +1,49 @@
-@use "../button/buttonColors";
+@use "../button/buttonLooks";
 
 .root {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    block-size: var(--dextinity-icon-button-default-height);
-    padding-block: calc(var(--dextinity-icon-button-default-padding-vertical) - var(--dextinity-button-border-width));
-    padding-inline: calc(var(--dextinity-icon-button-default-padding-horizontal) - var(--dextinity-button-border-width));
-    border: var(--dextinity-button-border-width) solid;
-    border-radius: var(--dextinity-icon-button-default-radius);
+    inline-size: var(--dextinity-icon-button-default-size);
+    block-size: var(--dextinity-icon-button-default-size);
+    padding: 0;
+    border: 0;
+    border-radius: var(--dextinity-icon-button-radius);
     cursor: pointer;
-
-    &:focus-visible {
-        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
-        outline-offset: var(--dextinity-focus-ring-offset);
-    }
-
-    &[data-disabled] {
-        cursor: not-allowed;
-    }
-
-    &[data-loading] {
-        cursor: progress;
-    }
+    transition:
+        background-color var(--dextinity-icon-button-transition-duration),
+        color var(--dextinity-icon-button-transition-duration);
 
     .loadingSpinner {
+        --dextinity-spinner-md-size: var(--dextinity-icon-button-icon-size);
+
         color: inherit;
     }
 
     &[data-size="small"] {
-        block-size: var(--dextinity-icon-button-small-height);
-        padding-block: calc(var(--dextinity-icon-button-small-padding-vertical) - var(--dextinity-button-border-width));
-        padding-inline: calc(var(--dextinity-icon-button-small-padding-horizontal) - var(--dextinity-button-border-width));
-        border-radius: var(--dextinity-icon-button-small-radius);
+        inline-size: var(--dextinity-icon-button-small-size);
+        block-size: var(--dextinity-icon-button-small-size);
     }
 
-    @include buttonColors.colors;
+    @include buttonLooks.looks(icon-button);
+
+    &:is([aria-expanded="true"], [data-popup-open]):not([data-disabled]) {
+        background: var(--dextinity-icon-button-open-background);
+        color: var(--dextinity-color-foreground-default);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
 }
 
 .icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: var(--dextinity-icon-button-default-icon-size);
-    block-size: var(--dextinity-icon-button-default-icon-size);
-
-    .root[data-size="small"] & {
-        inline-size: var(--dextinity-icon-button-small-icon-size);
-        block-size: var(--dextinity-icon-button-small-icon-size);
-    }
+    inline-size: var(--dextinity-icon-button-icon-size);
+    block-size: var(--dextinity-icon-button-icon-size);
 
     > :is(svg, :global(.dextinityIcon)) {
         inline-size: 100%;

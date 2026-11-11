@@ -1,490 +1,91 @@
 @mixin tokens {
-    // Border width of all variants. Contained and text buttons have a border in the color of their background.
-    --dextinity-button-border-width: var(--dextinity-border-width-thin);
-
     // Height of a default-size button.
     --dextinity-button-default-height: var(--dextinity-density-button-height);
-    // Corner radius of a default-size button.
-    --dextinity-button-default-radius: var(--dextinity-brand-radius-control);
-    // Space between the icon and the label of a default-size button.
-    --dextinity-button-default-gap: var(--dextinity-unit-2);
     // Space at the start and the end of a default-size button.
-    --dextinity-button-default-padding-horizontal: var(--dextinity-unit-4);
-    // Space at the top and the bottom of a default-size button.
-    --dextinity-button-default-padding-vertical: var(--dextinity-unit-2);
-    // Size of the icons of a default-size button.
-    --dextinity-button-default-icon-size: var(--dextinity-unit-4);
+    --dextinity-button-default-padding-horizontal: var(--dextinity-density-button-padding-horizontal);
     // Font size of the label of a default-size button.
     --dextinity-button-default-font-size: var(--dextinity-typography-body-font-size);
-    // Line height of the label of a default-size button.
-    --dextinity-button-default-font-line-height: var(--dextinity-typography-body-line-height);
-    // Font weight of the label of a default-size button.
-    --dextinity-button-default-font-weight: var(--dextinity-font-weight-medium);
-    // Name of the label's font weight in the design files, for a default-size button.
-    --dextinity-button-default-font-weight-style: var(--dextinity-font-weight-medium-style);
 
-    // Height of a small-size button.
+    // Height of a small button.
     --dextinity-button-small-height: var(--dextinity-density-button-small-height);
-    // Corner radius of a small-size button.
-    --dextinity-button-small-radius: var(--dextinity-brand-radius-control-small);
-    // Space between the icon and the label of a small-size button.
-    --dextinity-button-small-gap: var(--dextinity-unit-1);
-    // Space at the start and the end of a small-size button.
-    --dextinity-button-small-padding-horizontal: var(--dextinity-unit-3);
-    // Space at the top and the bottom of a small-size button.
-    --dextinity-button-small-padding-vertical: var(--dextinity-unit-1);
-    // Size of the icons of a small-size button.
-    --dextinity-button-small-icon-size: var(--dextinity-unit-4);
-    // Font size of the label of a small-size button.
-    --dextinity-button-small-font-size: var(--dextinity-typography-small-font-size);
-    // Line height of the label of a small-size button.
-    --dextinity-button-small-font-line-height: var(--dextinity-typography-small-line-height);
-    // Font weight of the label of a small-size button.
-    --dextinity-button-small-font-weight: var(--dextinity-font-weight-medium);
-    // Name of the label's font weight in the design files, for a small-size button.
-    --dextinity-button-small-font-weight-style: var(--dextinity-font-weight-medium-style);
+    // Space at the start and the end of a small button.
+    --dextinity-button-small-padding-horizontal: var(--dextinity-density-button-small-padding-horizontal);
+    // Font size of the label of a small button.
+    --dextinity-button-small-font-size: 13px;
 
-    // Background of a contained primary button at rest.
-    --dextinity-button-color-primary-contained-default-background: var(--dextinity-color-action-primary-default);
-    // Text and icon color of a contained primary button at rest.
-    --dextinity-button-color-primary-contained-default-foreground: var(--dextinity-color-action-primary-foreground);
-    // Border color of a contained primary button at rest.
-    --dextinity-button-color-primary-contained-default-border: var(--dextinity-color-action-primary-default);
-    // Background of a contained primary button on hover.
-    --dextinity-button-color-primary-contained-hover-background: var(--dextinity-color-action-primary-hover);
-    // Text and icon color of a contained primary button on hover.
-    --dextinity-button-color-primary-contained-hover-foreground: var(--dextinity-color-action-primary-foreground);
-    // Border color of a contained primary button on hover.
-    --dextinity-button-color-primary-contained-hover-border: var(--dextinity-color-action-primary-hover);
-    // Background of a contained primary button while pressed.
-    --dextinity-button-color-primary-contained-active-background: var(--dextinity-color-action-primary-active);
-    // Text and icon color of a contained primary button while pressed.
-    --dextinity-button-color-primary-contained-active-foreground: var(--dextinity-color-action-primary-foreground);
-    // Border color of a contained primary button while pressed.
-    --dextinity-button-color-primary-contained-active-border: var(--dextinity-color-action-primary-active);
-    // Background of a contained primary button with keyboard focus.
-    --dextinity-button-color-primary-contained-focus-background: var(--dextinity-color-action-primary-default);
-    // Text and icon color of a contained primary button with keyboard focus.
-    --dextinity-button-color-primary-contained-focus-foreground: var(--dextinity-color-action-primary-foreground);
-    // Border color of a contained primary button with keyboard focus.
-    --dextinity-button-color-primary-contained-focus-border: var(--dextinity-color-action-primary-default);
-    // Background of a contained primary button when disabled.
-    --dextinity-button-color-primary-contained-disabled-background: var(--dextinity-color-action-primary-disabled);
-    // Text and icon color of a contained primary button when disabled.
-    --dextinity-button-color-primary-contained-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    // Border color of a contained primary button when disabled.
-    --dextinity-button-color-primary-contained-disabled-border: var(--dextinity-color-action-primary-disabled);
-    // Background of a contained primary button while loading.
-    --dextinity-button-color-primary-contained-loading-background: var(--dextinity-color-action-primary-default);
-    // Text and icon color of a contained primary button while loading.
-    --dextinity-button-color-primary-contained-loading-foreground: var(--dextinity-color-action-primary-foreground);
-    // Border color of a contained primary button while loading.
-    --dextinity-button-color-primary-contained-loading-border: var(--dextinity-color-action-primary-default);
+    // Corner radius of both sizes.
+    --dextinity-button-radius: var(--dextinity-brand-radius-control);
+    // Space between the icons and the label.
+    --dextinity-button-gap: var(--dextinity-unit-2);
+    // Size of the icons and the loading spinner.
+    --dextinity-button-icon-size: 15px;
+    // Line height of the label.
+    --dextinity-button-font-line-height: var(--dextinity-typography-body-line-height);
+    // Font weight of the label.
+    --dextinity-button-font-weight: var(--dextinity-font-weight-regular);
+    // Name of the label's font weight in the design files.
+    --dextinity-button-font-weight-style: var(--dextinity-font-weight-regular-style);
 
-    // Background of a outlined primary button at rest.
-    --dextinity-button-color-primary-outlined-default-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined primary button at rest.
-    --dextinity-button-color-primary-outlined-default-foreground: var(--dextinity-color-action-primary-default);
-    // Border color of a outlined primary button at rest.
-    --dextinity-button-color-primary-outlined-default-border: var(--dextinity-color-action-primary-default);
-    // Background of a outlined primary button on hover.
-    --dextinity-button-color-primary-outlined-hover-background: var(--dextinity-color-action-primary-subtle);
-    // Text and icon color of a outlined primary button on hover.
-    --dextinity-button-color-primary-outlined-hover-foreground: var(--dextinity-color-action-primary-hover);
-    // Border color of a outlined primary button on hover.
-    --dextinity-button-color-primary-outlined-hover-border: var(--dextinity-color-action-primary-hover);
-    // Background of a outlined primary button while pressed.
-    --dextinity-button-color-primary-outlined-active-background: var(--dextinity-color-action-primary-subtle);
-    // Text and icon color of a outlined primary button while pressed.
-    --dextinity-button-color-primary-outlined-active-foreground: var(--dextinity-color-action-primary-active);
-    // Border color of a outlined primary button while pressed.
-    --dextinity-button-color-primary-outlined-active-border: var(--dextinity-color-action-primary-active);
-    // Background of a outlined primary button with keyboard focus.
-    --dextinity-button-color-primary-outlined-focus-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined primary button with keyboard focus.
-    --dextinity-button-color-primary-outlined-focus-foreground: var(--dextinity-color-action-primary-default);
-    // Border color of a outlined primary button with keyboard focus.
-    --dextinity-button-color-primary-outlined-focus-border: var(--dextinity-color-action-primary-default);
-    // Background of a outlined primary button when disabled.
-    --dextinity-button-color-primary-outlined-disabled-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined primary button when disabled.
-    --dextinity-button-color-primary-outlined-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    // Border color of a outlined primary button when disabled.
-    --dextinity-button-color-primary-outlined-disabled-border: var(--dextinity-color-border-subtle);
-    // Background of a outlined primary button while loading.
-    --dextinity-button-color-primary-outlined-loading-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined primary button while loading.
-    --dextinity-button-color-primary-outlined-loading-foreground: var(--dextinity-color-action-primary-default);
-    // Border color of a outlined primary button while loading.
-    --dextinity-button-color-primary-outlined-loading-border: var(--dextinity-color-action-primary-default);
+    // Scale of a pressed button.
+    --dextinity-button-pressed-scale: 0.98;
+    // Opacity of a disabled button. It keeps the colors of its look.
+    --dextinity-button-disabled-opacity: 0.42;
+    // Duration of the press feedback.
+    --dextinity-button-press-duration: 140ms;
+    // Duration of the shadow change on hover.
+    --dextinity-button-shadow-duration: 260ms;
+    // Easing of the press feedback.
+    --dextinity-button-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-    // Background of a text primary button at rest.
-    --dextinity-button-color-primary-text-default-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text primary button at rest.
-    --dextinity-button-color-primary-text-default-foreground: var(--dextinity-color-action-primary-default);
-    // Border color of a text primary button at rest.
-    --dextinity-button-color-primary-text-default-border: var(--dextinity-color-transparent);
-    // Background of a text primary button on hover.
-    --dextinity-button-color-primary-text-hover-background: var(--dextinity-color-action-primary-subtle);
-    // Text and icon color of a text primary button on hover.
-    --dextinity-button-color-primary-text-hover-foreground: var(--dextinity-color-action-primary-hover);
-    // Border color of a text primary button on hover.
-    --dextinity-button-color-primary-text-hover-border: var(--dextinity-color-transparent);
-    // Background of a text primary button while pressed.
-    --dextinity-button-color-primary-text-active-background: var(--dextinity-color-action-primary-subtle);
-    // Text and icon color of a text primary button while pressed.
-    --dextinity-button-color-primary-text-active-foreground: var(--dextinity-color-action-primary-active);
-    // Border color of a text primary button while pressed.
-    --dextinity-button-color-primary-text-active-border: var(--dextinity-color-transparent);
-    // Background of a text primary button with keyboard focus.
-    --dextinity-button-color-primary-text-focus-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text primary button with keyboard focus.
-    --dextinity-button-color-primary-text-focus-foreground: var(--dextinity-color-action-primary-default);
-    // Border color of a text primary button with keyboard focus.
-    --dextinity-button-color-primary-text-focus-border: var(--dextinity-color-transparent);
-    // Background of a text primary button when disabled.
-    --dextinity-button-color-primary-text-disabled-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text primary button when disabled.
-    --dextinity-button-color-primary-text-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    // Border color of a text primary button when disabled.
-    --dextinity-button-color-primary-text-disabled-border: var(--dextinity-color-transparent);
-    // Background of a text primary button while loading.
-    --dextinity-button-color-primary-text-loading-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text primary button while loading.
-    --dextinity-button-color-primary-text-loading-foreground: var(--dextinity-color-action-primary-default);
-    // Border color of a text primary button while loading.
-    --dextinity-button-color-primary-text-loading-border: var(--dextinity-color-transparent);
+    // Background of a primary button at rest: the main action: a gradient in the primary color, with a glow.
+    --dextinity-button-primary-default-background: var(--dextinity-color-action-primary-gradient);
+    // Text and icon color of a primary button at rest.
+    --dextinity-button-primary-default-foreground: var(--dextinity-color-action-primary-on-accent);
+    // Hairline, shadow, and glow of a primary button at rest.
+    --dextinity-button-primary-default-shadow: inset 0 1px 0 color-mix(in oklch, var(--dextinity-color-white) 20%, transparent), 0 8px 18px -10px var(--dextinity-color-action-primary-glow);
+    // Background of a primary button on hover.
+    --dextinity-button-primary-hover-background: var(--dextinity-color-action-primary-accent);
+    // Text and icon color of a primary button on hover.
+    --dextinity-button-primary-hover-foreground: var(--dextinity-color-action-primary-on-accent);
+    // Hairline, shadow, and glow of a primary button on hover.
+    --dextinity-button-primary-hover-shadow: inset 0 1px 0 color-mix(in oklch, var(--dextinity-color-white) 20%, transparent), 0 10px 22px -10px var(--dextinity-color-action-primary-glow);
 
-    // Background of a contained secondary button at rest.
-    --dextinity-button-color-secondary-contained-default-background: var(--dextinity-color-action-secondary-default);
-    // Text and icon color of a contained secondary button at rest.
-    --dextinity-button-color-secondary-contained-default-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a contained secondary button at rest.
-    --dextinity-button-color-secondary-contained-default-border: var(--dextinity-color-action-secondary-default);
-    // Background of a contained secondary button on hover.
-    --dextinity-button-color-secondary-contained-hover-background: var(--dextinity-color-action-secondary-hover);
-    // Text and icon color of a contained secondary button on hover.
-    --dextinity-button-color-secondary-contained-hover-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a contained secondary button on hover.
-    --dextinity-button-color-secondary-contained-hover-border: var(--dextinity-color-action-secondary-hover);
-    // Background of a contained secondary button while pressed.
-    --dextinity-button-color-secondary-contained-active-background: var(--dextinity-color-action-secondary-active);
-    // Text and icon color of a contained secondary button while pressed.
-    --dextinity-button-color-secondary-contained-active-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a contained secondary button while pressed.
-    --dextinity-button-color-secondary-contained-active-border: var(--dextinity-color-action-secondary-active);
-    // Background of a contained secondary button with keyboard focus.
-    --dextinity-button-color-secondary-contained-focus-background: var(--dextinity-color-action-secondary-default);
-    // Text and icon color of a contained secondary button with keyboard focus.
-    --dextinity-button-color-secondary-contained-focus-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a contained secondary button with keyboard focus.
-    --dextinity-button-color-secondary-contained-focus-border: var(--dextinity-color-action-secondary-default);
-    // Background of a contained secondary button when disabled.
-    --dextinity-button-color-secondary-contained-disabled-background: var(--dextinity-color-action-secondary-disabled);
-    // Text and icon color of a contained secondary button when disabled.
-    --dextinity-button-color-secondary-contained-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    // Border color of a contained secondary button when disabled.
-    --dextinity-button-color-secondary-contained-disabled-border: var(--dextinity-color-action-secondary-disabled);
-    // Background of a contained secondary button while loading.
-    --dextinity-button-color-secondary-contained-loading-background: var(--dextinity-color-action-secondary-default);
-    // Text and icon color of a contained secondary button while loading.
-    --dextinity-button-color-secondary-contained-loading-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a contained secondary button while loading.
-    --dextinity-button-color-secondary-contained-loading-border: var(--dextinity-color-action-secondary-default);
+    // Background of a secondary button at rest: further actions: a surface with a hairline and a soft shadow.
+    --dextinity-button-secondary-default-background: var(--dextinity-color-background-default);
+    // Text and icon color of a secondary button at rest.
+    --dextinity-button-secondary-default-foreground: var(--dextinity-color-foreground-default);
+    // Hairline, shadow, and glow of a secondary button at rest.
+    --dextinity-button-secondary-default-shadow: inset 0 0 0 var(--dextinity-border-width-hairline) var(--dextinity-color-border-hairline), var(--dextinity-shadow-1);
+    // Background of a secondary button on hover.
+    --dextinity-button-secondary-hover-background: var(--dextinity-color-background-default);
+    // Text and icon color of a secondary button on hover.
+    --dextinity-button-secondary-hover-foreground: var(--dextinity-color-foreground-default);
+    // Hairline, shadow, and glow of a secondary button on hover.
+    --dextinity-button-secondary-hover-shadow: inset 0 0 0 var(--dextinity-border-width-hairline) var(--dextinity-color-border-hairline-hover), var(--dextinity-shadow-2);
 
-    // Background of a outlined secondary button at rest.
-    --dextinity-button-color-secondary-outlined-default-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined secondary button at rest.
-    --dextinity-button-color-secondary-outlined-default-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a outlined secondary button at rest.
-    --dextinity-button-color-secondary-outlined-default-border: var(--dextinity-color-border-strong);
-    // Background of a outlined secondary button on hover.
-    --dextinity-button-color-secondary-outlined-hover-background: var(--dextinity-color-action-secondary-subtle);
-    // Text and icon color of a outlined secondary button on hover.
-    --dextinity-button-color-secondary-outlined-hover-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a outlined secondary button on hover.
-    --dextinity-button-color-secondary-outlined-hover-border: var(--dextinity-color-border-strong);
-    // Background of a outlined secondary button while pressed.
-    --dextinity-button-color-secondary-outlined-active-background: var(--dextinity-color-action-secondary-subtle);
-    // Text and icon color of a outlined secondary button while pressed.
-    --dextinity-button-color-secondary-outlined-active-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a outlined secondary button while pressed.
-    --dextinity-button-color-secondary-outlined-active-border: var(--dextinity-color-border-strong);
-    // Background of a outlined secondary button with keyboard focus.
-    --dextinity-button-color-secondary-outlined-focus-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined secondary button with keyboard focus.
-    --dextinity-button-color-secondary-outlined-focus-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a outlined secondary button with keyboard focus.
-    --dextinity-button-color-secondary-outlined-focus-border: var(--dextinity-color-border-strong);
-    // Background of a outlined secondary button when disabled.
-    --dextinity-button-color-secondary-outlined-disabled-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined secondary button when disabled.
-    --dextinity-button-color-secondary-outlined-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    // Border color of a outlined secondary button when disabled.
-    --dextinity-button-color-secondary-outlined-disabled-border: var(--dextinity-color-border-subtle);
-    // Background of a outlined secondary button while loading.
-    --dextinity-button-color-secondary-outlined-loading-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined secondary button while loading.
-    --dextinity-button-color-secondary-outlined-loading-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a outlined secondary button while loading.
-    --dextinity-button-color-secondary-outlined-loading-border: var(--dextinity-color-border-strong);
+    // Background of a ghost button at rest: quiet actions: no surface until hover.
+    --dextinity-button-ghost-default-background: var(--dextinity-color-transparent);
+    // Text and icon color of a ghost button at rest.
+    --dextinity-button-ghost-default-foreground: var(--dextinity-color-foreground-muted);
+    // Hairline, shadow, and glow of a ghost button at rest.
+    --dextinity-button-ghost-default-shadow: none;
+    // Background of a ghost button on hover.
+    --dextinity-button-ghost-hover-background: var(--dextinity-color-action-neutral-hover);
+    // Text and icon color of a ghost button on hover.
+    --dextinity-button-ghost-hover-foreground: var(--dextinity-color-foreground-default);
+    // Hairline, shadow, and glow of a ghost button on hover.
+    --dextinity-button-ghost-hover-shadow: none;
 
-    // Background of a text secondary button at rest.
-    --dextinity-button-color-secondary-text-default-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text secondary button at rest.
-    --dextinity-button-color-secondary-text-default-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a text secondary button at rest.
-    --dextinity-button-color-secondary-text-default-border: var(--dextinity-color-transparent);
-    // Background of a text secondary button on hover.
-    --dextinity-button-color-secondary-text-hover-background: var(--dextinity-color-action-secondary-subtle);
-    // Text and icon color of a text secondary button on hover.
-    --dextinity-button-color-secondary-text-hover-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a text secondary button on hover.
-    --dextinity-button-color-secondary-text-hover-border: var(--dextinity-color-transparent);
-    // Background of a text secondary button while pressed.
-    --dextinity-button-color-secondary-text-active-background: var(--dextinity-color-action-secondary-subtle);
-    // Text and icon color of a text secondary button while pressed.
-    --dextinity-button-color-secondary-text-active-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a text secondary button while pressed.
-    --dextinity-button-color-secondary-text-active-border: var(--dextinity-color-transparent);
-    // Background of a text secondary button with keyboard focus.
-    --dextinity-button-color-secondary-text-focus-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text secondary button with keyboard focus.
-    --dextinity-button-color-secondary-text-focus-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a text secondary button with keyboard focus.
-    --dextinity-button-color-secondary-text-focus-border: var(--dextinity-color-transparent);
-    // Background of a text secondary button when disabled.
-    --dextinity-button-color-secondary-text-disabled-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text secondary button when disabled.
-    --dextinity-button-color-secondary-text-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    // Border color of a text secondary button when disabled.
-    --dextinity-button-color-secondary-text-disabled-border: var(--dextinity-color-transparent);
-    // Background of a text secondary button while loading.
-    --dextinity-button-color-secondary-text-loading-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text secondary button while loading.
-    --dextinity-button-color-secondary-text-loading-foreground: var(--dextinity-color-action-secondary-foreground);
-    // Border color of a text secondary button while loading.
-    --dextinity-button-color-secondary-text-loading-border: var(--dextinity-color-transparent);
-
-    // Background of a contained error button at rest.
-    --dextinity-button-color-error-contained-default-background: var(--dextinity-color-action-error-default);
-    // Text and icon color of a contained error button at rest.
-    --dextinity-button-color-error-contained-default-foreground: var(--dextinity-color-action-error-foreground);
-    // Border color of a contained error button at rest.
-    --dextinity-button-color-error-contained-default-border: var(--dextinity-color-action-error-default);
-    // Background of a contained error button on hover.
-    --dextinity-button-color-error-contained-hover-background: var(--dextinity-color-action-error-hover);
-    // Text and icon color of a contained error button on hover.
-    --dextinity-button-color-error-contained-hover-foreground: var(--dextinity-color-action-error-foreground);
-    // Border color of a contained error button on hover.
-    --dextinity-button-color-error-contained-hover-border: var(--dextinity-color-action-error-hover);
-    // Background of a contained error button while pressed.
-    --dextinity-button-color-error-contained-active-background: var(--dextinity-color-action-error-active);
-    // Text and icon color of a contained error button while pressed.
-    --dextinity-button-color-error-contained-active-foreground: var(--dextinity-color-action-error-foreground);
-    // Border color of a contained error button while pressed.
-    --dextinity-button-color-error-contained-active-border: var(--dextinity-color-action-error-active);
-    // Background of a contained error button with keyboard focus.
-    --dextinity-button-color-error-contained-focus-background: var(--dextinity-color-action-error-default);
-    // Text and icon color of a contained error button with keyboard focus.
-    --dextinity-button-color-error-contained-focus-foreground: var(--dextinity-color-action-error-foreground);
-    // Border color of a contained error button with keyboard focus.
-    --dextinity-button-color-error-contained-focus-border: var(--dextinity-color-action-error-default);
-    // Background of a contained error button when disabled.
-    --dextinity-button-color-error-contained-disabled-background: var(--dextinity-color-action-error-disabled);
-    // Text and icon color of a contained error button when disabled.
-    --dextinity-button-color-error-contained-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    // Border color of a contained error button when disabled.
-    --dextinity-button-color-error-contained-disabled-border: var(--dextinity-color-action-error-disabled);
-    // Background of a contained error button while loading.
-    --dextinity-button-color-error-contained-loading-background: var(--dextinity-color-action-error-default);
-    // Text and icon color of a contained error button while loading.
-    --dextinity-button-color-error-contained-loading-foreground: var(--dextinity-color-action-error-foreground);
-    // Border color of a contained error button while loading.
-    --dextinity-button-color-error-contained-loading-border: var(--dextinity-color-action-error-default);
-
-    // Background of a outlined error button at rest.
-    --dextinity-button-color-error-outlined-default-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined error button at rest.
-    --dextinity-button-color-error-outlined-default-foreground: var(--dextinity-color-action-error-default);
-    // Border color of a outlined error button at rest.
-    --dextinity-button-color-error-outlined-default-border: var(--dextinity-color-action-error-default);
-    // Background of a outlined error button on hover.
-    --dextinity-button-color-error-outlined-hover-background: var(--dextinity-color-action-error-subtle);
-    // Text and icon color of a outlined error button on hover.
-    --dextinity-button-color-error-outlined-hover-foreground: var(--dextinity-color-action-error-hover);
-    // Border color of a outlined error button on hover.
-    --dextinity-button-color-error-outlined-hover-border: var(--dextinity-color-action-error-hover);
-    // Background of a outlined error button while pressed.
-    --dextinity-button-color-error-outlined-active-background: var(--dextinity-color-action-error-subtle);
-    // Text and icon color of a outlined error button while pressed.
-    --dextinity-button-color-error-outlined-active-foreground: var(--dextinity-color-action-error-active);
-    // Border color of a outlined error button while pressed.
-    --dextinity-button-color-error-outlined-active-border: var(--dextinity-color-action-error-active);
-    // Background of a outlined error button with keyboard focus.
-    --dextinity-button-color-error-outlined-focus-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined error button with keyboard focus.
-    --dextinity-button-color-error-outlined-focus-foreground: var(--dextinity-color-action-error-default);
-    // Border color of a outlined error button with keyboard focus.
-    --dextinity-button-color-error-outlined-focus-border: var(--dextinity-color-action-error-default);
-    // Background of a outlined error button when disabled.
-    --dextinity-button-color-error-outlined-disabled-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined error button when disabled.
-    --dextinity-button-color-error-outlined-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    // Border color of a outlined error button when disabled.
-    --dextinity-button-color-error-outlined-disabled-border: var(--dextinity-color-border-subtle);
-    // Background of a outlined error button while loading.
-    --dextinity-button-color-error-outlined-loading-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined error button while loading.
-    --dextinity-button-color-error-outlined-loading-foreground: var(--dextinity-color-action-error-default);
-    // Border color of a outlined error button while loading.
-    --dextinity-button-color-error-outlined-loading-border: var(--dextinity-color-action-error-default);
-
-    // Background of a text error button at rest.
-    --dextinity-button-color-error-text-default-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text error button at rest.
-    --dextinity-button-color-error-text-default-foreground: var(--dextinity-color-action-error-default);
-    // Border color of a text error button at rest.
-    --dextinity-button-color-error-text-default-border: var(--dextinity-color-transparent);
-    // Background of a text error button on hover.
-    --dextinity-button-color-error-text-hover-background: var(--dextinity-color-action-error-subtle);
-    // Text and icon color of a text error button on hover.
-    --dextinity-button-color-error-text-hover-foreground: var(--dextinity-color-action-error-hover);
-    // Border color of a text error button on hover.
-    --dextinity-button-color-error-text-hover-border: var(--dextinity-color-transparent);
-    // Background of a text error button while pressed.
-    --dextinity-button-color-error-text-active-background: var(--dextinity-color-action-error-subtle);
-    // Text and icon color of a text error button while pressed.
-    --dextinity-button-color-error-text-active-foreground: var(--dextinity-color-action-error-active);
-    // Border color of a text error button while pressed.
-    --dextinity-button-color-error-text-active-border: var(--dextinity-color-transparent);
-    // Background of a text error button with keyboard focus.
-    --dextinity-button-color-error-text-focus-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text error button with keyboard focus.
-    --dextinity-button-color-error-text-focus-foreground: var(--dextinity-color-action-error-default);
-    // Border color of a text error button with keyboard focus.
-    --dextinity-button-color-error-text-focus-border: var(--dextinity-color-transparent);
-    // Background of a text error button when disabled.
-    --dextinity-button-color-error-text-disabled-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text error button when disabled.
-    --dextinity-button-color-error-text-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    // Border color of a text error button when disabled.
-    --dextinity-button-color-error-text-disabled-border: var(--dextinity-color-transparent);
-    // Background of a text error button while loading.
-    --dextinity-button-color-error-text-loading-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text error button while loading.
-    --dextinity-button-color-error-text-loading-foreground: var(--dextinity-color-action-error-default);
-    // Border color of a text error button while loading.
-    --dextinity-button-color-error-text-loading-border: var(--dextinity-color-transparent);
-
-    // Background of a contained success button at rest.
-    --dextinity-button-color-success-contained-default-background: var(--dextinity-color-action-success-default);
-    // Text and icon color of a contained success button at rest.
-    --dextinity-button-color-success-contained-default-foreground: var(--dextinity-color-action-success-foreground);
-    // Border color of a contained success button at rest.
-    --dextinity-button-color-success-contained-default-border: var(--dextinity-color-action-success-default);
-    // Background of a contained success button on hover.
-    --dextinity-button-color-success-contained-hover-background: var(--dextinity-color-action-success-hover);
-    // Text and icon color of a contained success button on hover.
-    --dextinity-button-color-success-contained-hover-foreground: var(--dextinity-color-action-success-foreground);
-    // Border color of a contained success button on hover.
-    --dextinity-button-color-success-contained-hover-border: var(--dextinity-color-action-success-hover);
-    // Background of a contained success button while pressed.
-    --dextinity-button-color-success-contained-active-background: var(--dextinity-color-action-success-active);
-    // Text and icon color of a contained success button while pressed.
-    --dextinity-button-color-success-contained-active-foreground: var(--dextinity-color-action-success-foreground);
-    // Border color of a contained success button while pressed.
-    --dextinity-button-color-success-contained-active-border: var(--dextinity-color-action-success-active);
-    // Background of a contained success button with keyboard focus.
-    --dextinity-button-color-success-contained-focus-background: var(--dextinity-color-action-success-default);
-    // Text and icon color of a contained success button with keyboard focus.
-    --dextinity-button-color-success-contained-focus-foreground: var(--dextinity-color-action-success-foreground);
-    // Border color of a contained success button with keyboard focus.
-    --dextinity-button-color-success-contained-focus-border: var(--dextinity-color-action-success-default);
-    // Background of a contained success button when disabled.
-    --dextinity-button-color-success-contained-disabled-background: var(--dextinity-color-action-success-disabled);
-    // Text and icon color of a contained success button when disabled.
-    --dextinity-button-color-success-contained-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    // Border color of a contained success button when disabled.
-    --dextinity-button-color-success-contained-disabled-border: var(--dextinity-color-action-success-disabled);
-    // Background of a contained success button while loading.
-    --dextinity-button-color-success-contained-loading-background: var(--dextinity-color-action-success-default);
-    // Text and icon color of a contained success button while loading.
-    --dextinity-button-color-success-contained-loading-foreground: var(--dextinity-color-action-success-foreground);
-    // Border color of a contained success button while loading.
-    --dextinity-button-color-success-contained-loading-border: var(--dextinity-color-action-success-default);
-
-    // Background of a outlined success button at rest.
-    --dextinity-button-color-success-outlined-default-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined success button at rest.
-    --dextinity-button-color-success-outlined-default-foreground: var(--dextinity-color-action-success-default);
-    // Border color of a outlined success button at rest.
-    --dextinity-button-color-success-outlined-default-border: var(--dextinity-color-action-success-default);
-    // Background of a outlined success button on hover.
-    --dextinity-button-color-success-outlined-hover-background: var(--dextinity-color-action-success-subtle);
-    // Text and icon color of a outlined success button on hover.
-    --dextinity-button-color-success-outlined-hover-foreground: var(--dextinity-color-action-success-hover);
-    // Border color of a outlined success button on hover.
-    --dextinity-button-color-success-outlined-hover-border: var(--dextinity-color-action-success-hover);
-    // Background of a outlined success button while pressed.
-    --dextinity-button-color-success-outlined-active-background: var(--dextinity-color-action-success-subtle);
-    // Text and icon color of a outlined success button while pressed.
-    --dextinity-button-color-success-outlined-active-foreground: var(--dextinity-color-action-success-active);
-    // Border color of a outlined success button while pressed.
-    --dextinity-button-color-success-outlined-active-border: var(--dextinity-color-action-success-active);
-    // Background of a outlined success button with keyboard focus.
-    --dextinity-button-color-success-outlined-focus-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined success button with keyboard focus.
-    --dextinity-button-color-success-outlined-focus-foreground: var(--dextinity-color-action-success-default);
-    // Border color of a outlined success button with keyboard focus.
-    --dextinity-button-color-success-outlined-focus-border: var(--dextinity-color-action-success-default);
-    // Background of a outlined success button when disabled.
-    --dextinity-button-color-success-outlined-disabled-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined success button when disabled.
-    --dextinity-button-color-success-outlined-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    // Border color of a outlined success button when disabled.
-    --dextinity-button-color-success-outlined-disabled-border: var(--dextinity-color-border-subtle);
-    // Background of a outlined success button while loading.
-    --dextinity-button-color-success-outlined-loading-background: var(--dextinity-color-transparent);
-    // Text and icon color of a outlined success button while loading.
-    --dextinity-button-color-success-outlined-loading-foreground: var(--dextinity-color-action-success-default);
-    // Border color of a outlined success button while loading.
-    --dextinity-button-color-success-outlined-loading-border: var(--dextinity-color-action-success-default);
-
-    // Background of a text success button at rest.
-    --dextinity-button-color-success-text-default-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text success button at rest.
-    --dextinity-button-color-success-text-default-foreground: var(--dextinity-color-action-success-default);
-    // Border color of a text success button at rest.
-    --dextinity-button-color-success-text-default-border: var(--dextinity-color-transparent);
-    // Background of a text success button on hover.
-    --dextinity-button-color-success-text-hover-background: var(--dextinity-color-action-success-subtle);
-    // Text and icon color of a text success button on hover.
-    --dextinity-button-color-success-text-hover-foreground: var(--dextinity-color-action-success-hover);
-    // Border color of a text success button on hover.
-    --dextinity-button-color-success-text-hover-border: var(--dextinity-color-transparent);
-    // Background of a text success button while pressed.
-    --dextinity-button-color-success-text-active-background: var(--dextinity-color-action-success-subtle);
-    // Text and icon color of a text success button while pressed.
-    --dextinity-button-color-success-text-active-foreground: var(--dextinity-color-action-success-active);
-    // Border color of a text success button while pressed.
-    --dextinity-button-color-success-text-active-border: var(--dextinity-color-transparent);
-    // Background of a text success button with keyboard focus.
-    --dextinity-button-color-success-text-focus-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text success button with keyboard focus.
-    --dextinity-button-color-success-text-focus-foreground: var(--dextinity-color-action-success-default);
-    // Border color of a text success button with keyboard focus.
-    --dextinity-button-color-success-text-focus-border: var(--dextinity-color-transparent);
-    // Background of a text success button when disabled.
-    --dextinity-button-color-success-text-disabled-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text success button when disabled.
-    --dextinity-button-color-success-text-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    // Border color of a text success button when disabled.
-    --dextinity-button-color-success-text-disabled-border: var(--dextinity-color-transparent);
-    // Background of a text success button while loading.
-    --dextinity-button-color-success-text-loading-background: var(--dextinity-color-transparent);
-    // Text and icon color of a text success button while loading.
-    --dextinity-button-color-success-text-loading-foreground: var(--dextinity-color-action-success-default);
-    // Border color of a text success button while loading.
-    --dextinity-button-color-success-text-loading-border: var(--dextinity-color-transparent);
+    // Background of a danger button at rest: destructive actions: the secondary look with text in the danger color.
+    --dextinity-button-danger-default-background: var(--dextinity-color-background-default);
+    // Text and icon color of a danger button at rest.
+    --dextinity-button-danger-default-foreground: var(--dextinity-color-action-error-text);
+    // Hairline, shadow, and glow of a danger button at rest.
+    --dextinity-button-danger-default-shadow: inset 0 0 0 var(--dextinity-border-width-hairline) var(--dextinity-color-border-hairline), var(--dextinity-shadow-1);
+    // Background of a danger button on hover.
+    --dextinity-button-danger-hover-background: var(--dextinity-color-background-default);
+    // Text and icon color of a danger button on hover.
+    --dextinity-button-danger-hover-foreground: var(--dextinity-color-action-error-text);
+    // Hairline, shadow, and glow of a danger button on hover.
+    --dextinity-button-danger-hover-shadow: inset 0 0 0 var(--dextinity-border-width-hairline) var(--dextinity-color-border-hairline-hover), var(--dextinity-shadow-2);
 }

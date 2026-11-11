@@ -6,8 +6,7 @@ import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./Button.module.scss";
 
-type ButtonVariant = "contained" | "outlined" | "text";
-type ButtonColor = "primary" | "secondary" | "error" | "success";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 type ButtonSize = "default" | "small";
 
 /**
@@ -15,7 +14,6 @@ type ButtonSize = "default" | "small";
  */
 export type ButtonOwnerState = {
     variant: ButtonVariant;
-    color: ButtonColor;
     size: ButtonSize;
     disabled: boolean;
     loading: boolean;
@@ -57,17 +55,16 @@ export interface ButtonProps<
     LoadingSpinner extends ElementType = typeof Spinner,
 > extends Omit<BaseButton.Props, "className" | "ref"> {
     /**
-     * Visual emphasis: `contained` for the main action, `outlined` and `text` for less important ones.
+     * The look of the button:
      *
-     * @defaultValue `"contained"`
-     */
-    variant?: ButtonVariant;
-    /**
-     * Use `error` for destructive actions and `success` for confirming ones.
+     * - `primary`: the main action, one per area.
+     * - `secondary`: further actions.
+     * - `ghost`: quiet actions, such as Cancel.
+     * - `danger`: destructive actions, such as Delete.
      *
      * @defaultValue `"primary"`
      */
-    color?: ButtonColor;
+    variant?: ButtonVariant;
     /**
      * `small` for buttons in rows, panels, and toolbars.
      *
@@ -120,8 +117,7 @@ export const Button: <
         disabled,
         loading,
         type = "button",
-        variant = "contained",
-        color = "primary",
+        variant = "primary",
         size = "default",
         className,
         slots,
@@ -134,7 +130,7 @@ export const Button: <
     }: ButtonProps<StartIcon, EndIcon, LoadingSpinner>,
     ref: ForwardedRef<HTMLButtonElement>,
 ) {
-    const ownerState: ButtonOwnerState = { variant, color, size, disabled: disabled === true, loading: loading === true };
+    const ownerState: ButtonOwnerState = { variant, size, disabled: disabled === true, loading: loading === true };
 
     const StartIconSlot: ElementType = slots?.startIcon ?? "span";
     const EndIconSlot: ElementType = slots?.endIcon ?? "span";
@@ -163,7 +159,6 @@ export const Button: <
             type={type}
             disabled={ownerState.disabled}
             data-variant={ownerState.variant}
-            data-color={ownerState.color}
             data-size={ownerState.size}
             data-loading={ownerState.loading ? "" : undefined}
             aria-busy={ownerState.loading || undefined}

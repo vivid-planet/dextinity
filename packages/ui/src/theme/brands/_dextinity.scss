@@ -3,7 +3,7 @@
     :root,
     [data-dextinity-brand="dextinity"] {
         // Corner radius of controls, such as buttons.
-        --dextinity-brand-radius-control: var(--dextinity-radius-lg);
+        --dextinity-brand-radius-control: 10px;
         // Corner radius of form fields.
         --dextinity-brand-radius-forms: var(--dextinity-radius-md);
         // Corner radius of surfaces, such as panels.
@@ -22,12 +22,16 @@
         --dextinity-brand-radius-pill: var(--dextinity-radius-full);
 
         // Corner radius of small controls.
-        --dextinity-brand-radius-control-small: var(--dextinity-radius-md);
+        --dextinity-brand-radius-control-small: var(--dextinity-brand-radius-control);
 
         // Font of all text.
         --dextinity-brand-font-family-sans: var(--dextinity-font-family-inter);
         // Font of code, paths, and IDs.
         --dextinity-brand-font-family-mono: var(--dextinity-font-family-mono);
+        // The brand's second color at step 400: the end of the primary gradient in the dark color scheme.
+        --dextinity-brand-color-gradient-400: var(--dextinity-color-teal-400);
+        // The brand's second color at step 500: the end of the primary gradient.
+        --dextinity-brand-color-gradient-500: var(--dextinity-color-teal-500);
         // Font weight of the display styles.
         --dextinity-brand-display-font-weight: var(--dextinity-font-weight-medium);
         // Letter spacing of the display styles.

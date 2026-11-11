@@ -72,10 +72,10 @@ export const AppShell: Story = {
                         <div className={styles.titleRow}>
                             <Typography variant="displayL">Dashboard</Typography>
                             <div className={styles.actions}>
-                                <Button variant="outlined">Filter</Button>
+                                <Button variant="secondary">Filter</Button>
                                 <Button>Export</Button>
                             </div>
-                            <IconButton variant="text" color="secondary" aria-label="More actions" className={styles.moreActions}>
+                            <IconButton aria-label="More actions" className={styles.moreActions}>
                                 <Icon name="more-vertical" />
                             </IconButton>
                         </div>

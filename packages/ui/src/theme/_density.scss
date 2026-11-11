@@ -5,8 +5,12 @@
         --dextinity-density-input-height: 40px;
         // Height of a button.
         --dextinity-density-button-height: 34px;
+        // Space at the start and the end of a button.
+        --dextinity-density-button-padding-horizontal: 15px;
         // Height of a small button, such as in rows and panels.
         --dextinity-density-button-small-height: 30px;
+        // Space at the start and the end of a small button.
+        --dextinity-density-button-small-padding-horizontal: 11px;
         // Height and width of an icon button.
         --dextinity-density-icon-button-height: 34px;
         // Height and width of a small icon button.
@@ -24,7 +28,9 @@
     [data-dextinity-density="comfortable"] {
         --dextinity-density-input-height: 46px;
         --dextinity-density-button-height: 40px;
+        --dextinity-density-button-padding-horizontal: 18px;
         --dextinity-density-button-small-height: 34px;
+        --dextinity-density-button-small-padding-horizontal: 13px;
         --dextinity-density-icon-button-height: 40px;
         --dextinity-density-icon-button-small-height: 32px;
         --dextinity-density-table-row-height: 66px;
@@ -38,7 +44,9 @@
         [data-dextinity-density="compact"] {
             --dextinity-density-input-height: 34px;
             --dextinity-density-button-height: 30px;
+            --dextinity-density-button-padding-horizontal: 12px;
             --dextinity-density-button-small-height: 26px;
+            --dextinity-density-button-small-padding-horizontal: 9px;
             --dextinity-density-icon-button-height: 30px;
             --dextinity-density-icon-button-small-height: 24px;
             --dextinity-density-table-row-height: 44px;

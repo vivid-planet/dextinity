@@ -55,17 +55,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
  * The resolved configuration that influences the component's appearance or behavior.
  */
 export type ButtonOwnerState = {
-    variant: "contained" | "outlined" | "text";
+    variant: "primary" | "secondary" | "ghost" | "danger";
     disabled: boolean;
 };
 
 export interface ButtonProps {
     /**
-     * Visual emphasis: `contained` for the main action, `outlined` and `text` for less important ones.
+     * The look of the button: `primary` for the main action, `secondary` and `ghost` for less important ones.
      *
-     * @defaultValue `"contained"`
+     * @defaultValue `"primary"`
      */
-    variant?: "contained" | "outlined" | "text";
+    variant?: "primary" | "secondary" | "ghost" | "danger";
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -107,7 +107,7 @@ The contract has two parts: **structural class names** for a component's element
 
 **Owner-state styling** uses `data-*` attributes on the root element, following base-ui's own conversion of an owner-state object:
 
-- **Enum state** → a single valued attribute: `data-variant="contained"`.
+- **Enum state** → a single valued attribute: `data-variant="primary"`.
 - **Boolean state** → presence only: `data-disabled` (absent when false).
 - The attribute name is `data-` + the owner-state key in lowercase: `readOnly` becomes `data-readonly`.
 
@@ -123,7 +123,7 @@ The contract has two parts: **structural class names** for a component's element
 | `startIcon`  | `dextinityButton__startIcon` |
 
 - A component with no single dominant element names no class `root`.
-- Owner-state styles use attribute selectors nested under `.root` with `&` (`.root { &[data-variant="contained"] { … } }`).
+- Owner-state styles use attribute selectors nested under `.root` with `&` (`.root { &[data-variant="primary"] { … } }`).
 
 ### Stories
 

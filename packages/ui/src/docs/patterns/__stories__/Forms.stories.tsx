@@ -63,7 +63,7 @@ export const Form: Story = {
                 </div>
             </fieldset>
             <div className={styles.actions}>
-                <Button variant="outlined">Cancel</Button>
+                <Button variant="secondary">Cancel</Button>
                 <Button type="submit">Save</Button>
             </div>
         </form>

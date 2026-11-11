@@ -1,0 +1,12 @@
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-unit-4);
+}
+
+.grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-unit-4);
+}

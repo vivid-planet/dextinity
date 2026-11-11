@@ -10,7 +10,7 @@ export function ThemeExampleContent() {
             <Typography variant="body">Body text follows the active theme.</Typography>
             <div className={styles.actions}>
                 <Button startIcon={<Icon name="add" />}>Primary</Button>
-                <Button color="secondary" startIcon={<Icon name="edit" />}>
+                <Button variant="secondary" startIcon={<Icon name="edit" />}>
                     Secondary
                 </Button>
             </div>

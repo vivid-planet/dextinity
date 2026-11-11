@@ -1,23 +1,66 @@
 @mixin tokens {
-    // Height of a default-size icon button, square in every density. The colors come from the button tokens.
-    --dextinity-icon-button-default-height: var(--dextinity-density-icon-button-height);
-    // Corner radius of a default-size icon button, square in every density. The colors come from the button tokens.
-    --dextinity-icon-button-default-radius: var(--dextinity-brand-radius-control);
-    // Space at the start and the end of a default-size icon button, square in every density. The colors come from the button tokens.
-    --dextinity-icon-button-default-padding-horizontal: calc((var(--dextinity-icon-button-default-height) - var(--dextinity-icon-button-default-icon-size)) / 2);
-    // Space at the top and the bottom of a default-size icon button, square in every density. The colors come from the button tokens.
-    --dextinity-icon-button-default-padding-vertical: calc((var(--dextinity-icon-button-default-height) - var(--dextinity-icon-button-default-icon-size)) / 2);
-    // Size of the icon of a default-size icon button, square in every density. The colors come from the button tokens.
-    --dextinity-icon-button-default-icon-size: var(--dextinity-unit-4);
+    // Width and height of a default-size icon button.
+    --dextinity-icon-button-default-size: var(--dextinity-density-icon-button-height);
+    // Width and height of a small icon button.
+    --dextinity-icon-button-small-size: var(--dextinity-density-icon-button-small-height);
+    // Corner radius of both sizes.
+    --dextinity-icon-button-radius: var(--dextinity-brand-radius-control);
+    // Size of the icon and the loading spinner, in both sizes.
+    --dextinity-icon-button-icon-size: 18px;
+    // Duration of the color change on hover.
+    --dextinity-icon-button-transition-duration: 140ms;
+    // Background while the menu or panel that the icon button opens is open.
+    --dextinity-icon-button-open-background: var(--dextinity-color-action-neutral-selected);
 
-    // Height of a small-size icon button, square in every density. The colors come from the button tokens.
-    --dextinity-icon-button-small-height: var(--dextinity-density-icon-button-small-height);
-    // Corner radius of a small-size icon button, square in every density. The colors come from the button tokens.
-    --dextinity-icon-button-small-radius: var(--dextinity-brand-radius-control-small);
-    // Space at the start and the end of a small-size icon button, square in every density. The colors come from the button tokens.
-    --dextinity-icon-button-small-padding-horizontal: calc((var(--dextinity-icon-button-small-height) - var(--dextinity-icon-button-small-icon-size)) / 2);
-    // Space at the top and the bottom of a small-size icon button, square in every density. The colors come from the button tokens.
-    --dextinity-icon-button-small-padding-vertical: calc((var(--dextinity-icon-button-small-height) - var(--dextinity-icon-button-small-icon-size)) / 2);
-    // Size of the icon of a small-size icon button, square in every density. The colors come from the button tokens.
-    --dextinity-icon-button-small-icon-size: var(--dextinity-unit-4);
+    // Background of a primary icon button at rest. Like the button of the same look.
+    --dextinity-icon-button-primary-default-background: var(--dextinity-button-primary-default-background);
+    // Icon color of a primary icon button at rest. Like the button of the same look.
+    --dextinity-icon-button-primary-default-foreground: var(--dextinity-button-primary-default-foreground);
+    // Hairline, shadow, and glow of a primary icon button at rest. Like the button of the same look.
+    --dextinity-icon-button-primary-default-shadow: var(--dextinity-button-primary-default-shadow);
+    // Background of a primary icon button on hover. Like the button of the same look.
+    --dextinity-icon-button-primary-hover-background: var(--dextinity-button-primary-hover-background);
+    // Icon color of a primary icon button on hover. Like the button of the same look.
+    --dextinity-icon-button-primary-hover-foreground: var(--dextinity-button-primary-hover-foreground);
+    // Hairline, shadow, and glow of a primary icon button on hover. Like the button of the same look.
+    --dextinity-icon-button-primary-hover-shadow: var(--dextinity-button-primary-hover-shadow);
+
+    // Background of a secondary icon button at rest. Like the button of the same look.
+    --dextinity-icon-button-secondary-default-background: var(--dextinity-button-secondary-default-background);
+    // Icon color of a secondary icon button at rest. Like the button of the same look.
+    --dextinity-icon-button-secondary-default-foreground: var(--dextinity-button-secondary-default-foreground);
+    // Hairline, shadow, and glow of a secondary icon button at rest. Like the button of the same look.
+    --dextinity-icon-button-secondary-default-shadow: var(--dextinity-button-secondary-default-shadow);
+    // Background of a secondary icon button on hover. Like the button of the same look.
+    --dextinity-icon-button-secondary-hover-background: var(--dextinity-button-secondary-hover-background);
+    // Icon color of a secondary icon button on hover. Like the button of the same look.
+    --dextinity-icon-button-secondary-hover-foreground: var(--dextinity-button-secondary-hover-foreground);
+    // Hairline, shadow, and glow of a secondary icon button on hover. Like the button of the same look.
+    --dextinity-icon-button-secondary-hover-shadow: var(--dextinity-button-secondary-hover-shadow);
+
+    // Background of a ghost icon button at rest. Like the button of the same look.
+    --dextinity-icon-button-ghost-default-background: var(--dextinity-button-ghost-default-background);
+    // Icon color of a ghost icon button at rest. Unlike the ghost button, the icon has the full text color at rest.
+    --dextinity-icon-button-ghost-default-foreground: var(--dextinity-color-foreground-default);
+    // Hairline, shadow, and glow of a ghost icon button at rest. Like the button of the same look.
+    --dextinity-icon-button-ghost-default-shadow: var(--dextinity-button-ghost-default-shadow);
+    // Background of a ghost icon button on hover. Like the button of the same look.
+    --dextinity-icon-button-ghost-hover-background: var(--dextinity-button-ghost-hover-background);
+    // Icon color of a ghost icon button on hover. Like the button of the same look.
+    --dextinity-icon-button-ghost-hover-foreground: var(--dextinity-button-ghost-hover-foreground);
+    // Hairline, shadow, and glow of a ghost icon button on hover. Like the button of the same look.
+    --dextinity-icon-button-ghost-hover-shadow: var(--dextinity-button-ghost-hover-shadow);
+
+    // Background of a danger icon button at rest. Like the button of the same look.
+    --dextinity-icon-button-danger-default-background: var(--dextinity-button-danger-default-background);
+    // Icon color of a danger icon button at rest. Like the button of the same look.
+    --dextinity-icon-button-danger-default-foreground: var(--dextinity-button-danger-default-foreground);
+    // Hairline, shadow, and glow of a danger icon button at rest. Like the button of the same look.
+    --dextinity-icon-button-danger-default-shadow: var(--dextinity-button-danger-default-shadow);
+    // Background of a danger icon button on hover. Like the button of the same look.
+    --dextinity-icon-button-danger-hover-background: var(--dextinity-button-danger-hover-background);
+    // Icon color of a danger icon button on hover. Like the button of the same look.
+    --dextinity-icon-button-danger-hover-foreground: var(--dextinity-button-danger-hover-foreground);
+    // Hairline, shadow, and glow of a danger icon button on hover. Like the button of the same look.
+    --dextinity-icon-button-danger-hover-shadow: var(--dextinity-button-danger-hover-shadow);
 }

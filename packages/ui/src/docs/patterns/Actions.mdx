@@ -16,14 +16,14 @@ How to choose the button for an action.
 
 ## Main action
 
-- Use `variant="contained"` for the main action, and `variant="outlined"` for the other actions.
+- Use the default `variant="primary"` for the main action, `variant="secondary"` for the other actions, and `variant="ghost"` for quiet ones, such as Cancel.
 - Put the main action last.
 
 <Canvas of={ActionsStories.MainAction} />
 
 ## Icon buttons
 
-You can use an icon button when the icon makes the action clear without a visible label, for example in a toolbar or a table row. For a destructive action, such as Delete, set `color="error"`.
+You can use an icon button when the icon makes the action clear without a visible label, for example in a toolbar or a table row. For a destructive action, such as Delete, set `variant="danger"`.
 
 <Canvas of={ActionsStories.IconButtons} />
 

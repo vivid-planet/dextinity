@@ -8,14 +8,8 @@
         --dextinity-brand-color-secondary-#{$step}: var(--dextinity-color-orange-#{$step});
     }
 
-    @each $state, $from, $to in (default, 500, 600), (focus, 500, 600), (hover, 600, 700), (active, 700, 800) {
-        --dextinity-button-color-primary-contained-#{$state}-background: linear-gradient(
-            135deg,
-            var(--dextinity-color-orange-#{$from}),
-            var(--dextinity-color-fuchsia-#{$to})
-        );
-        --dextinity-button-color-primary-contained-#{$state}-border: transparent;
-    }
+    --dextinity-button-primary-default-background: linear-gradient(135deg, var(--dextinity-color-orange-500), var(--dextinity-color-fuchsia-600));
+    --dextinity-button-primary-hover-background: linear-gradient(135deg, var(--dextinity-color-orange-600), var(--dextinity-color-fuchsia-700));
 
     --dextinity-icon-add: url("./custom-add.svg#icon");
     --dextinity-icon-edit: url("./custom-edit.svg#icon");

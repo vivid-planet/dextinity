@@ -5,6 +5,7 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../IconButton";
 import tokens from "../IconButton.tokens.scss?raw";
+import styles from "./iconButton.module.scss";
 
 const iconOptions = {
     Favorite: <Icon name="favorite" />,
@@ -37,12 +38,8 @@ const meta = {
     },
     argTypes: {
         variant: {
-            control: "radio",
-            options: ["contained", "outlined", "text"],
-        },
-        color: {
             control: "select",
-            options: ["primary", "secondary", "error", "success"],
+            options: ["primary", "secondary", "ghost", "danger"],
         },
         size: {
             control: "radio",
@@ -65,35 +62,23 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const Outlined: Story = {
+export const Primary: Story = {
     args: {
-        variant: "outlined",
-    },
-};
-
-export const Text: Story = {
-    args: {
-        variant: "text",
+        variant: "primary",
     },
 };
 
 export const Secondary: Story = {
     args: {
-        color: "secondary",
+        variant: "secondary",
     },
 };
 
-export const Error: Story = {
+export const Danger: Story = {
     args: {
-        color: "error",
         "aria-label": "Delete",
         children: <Icon name="delete" />,
-    },
-};
-
-export const Success: Story = {
-    args: {
-        color: "success",
+        variant: "danger",
     },
 };
 
@@ -117,4 +102,40 @@ export const Loading: Story = {
         await userEvent.click(canvas.getByRole("button"));
         await expect(args.onClick).not.toHaveBeenCalled();
     },
+};
+
+/**
+ * Shows that the menu or panel that the icon button opens is open, through `aria-expanded`.
+ */
+export const Open: Story = {
+    args: {
+        "aria-label": "More actions",
+        "aria-expanded": true,
+        children: <Icon name="more-vertical" />,
+    },
+};
+
+/**
+ * Every look in both sizes, at rest, disabled, and loading. Switch the color scheme, the brand, and the density in the toolbar.
+ */
+export const Overview: Story = {
+    render: () => (
+        <div className={styles.grid}>
+            {(["ghost", "secondary", "primary", "danger"] as const).map((variant) =>
+                (["default", "small"] as const).map((size) => (
+                    <div key={`${variant}-${size}`} className={styles.row}>
+                        <IconButton aria-label={`${variant} ${size}`} variant={variant} size={size}>
+                            <Icon name="favorite" />
+                        </IconButton>
+                        <IconButton aria-label={`${variant} ${size} disabled`} variant={variant} size={size} disabled>
+                            <Icon name="favorite" />
+                        </IconButton>
+                        <IconButton aria-label={`${variant} ${size} loading`} variant={variant} size={size} loading>
+                            <Icon name="favorite" />
+                        </IconButton>
+                    </div>
+                )),
+            )}
+        </div>
+    ),
 };

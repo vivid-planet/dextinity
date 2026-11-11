@@ -42,10 +42,10 @@ export const Default: Story = {
                     <Typography variant="displayL">Campaigns</Typography>
                 </div>
                 <div className={styles.actions}>
-                    <Button variant="outlined">Filter</Button>
+                    <Button variant="secondary">Filter</Button>
                     <Button>Export</Button>
                 </div>
-                <IconButton variant="text" color="secondary" aria-label="More actions" className={styles.moreActions}>
+                <IconButton aria-label="More actions" className={styles.moreActions}>
                     <Icon name="more-vertical" />
                 </IconButton>
             </div>
@@ -74,13 +74,13 @@ export const DetailPage: Story = {
                 </ol>
             </nav>
             <div className={styles.titleRow}>
-                <IconButton variant="text" color="secondary" aria-label="Back">
+                <IconButton aria-label="Back">
                     <Icon name="arrow-left" />
                 </IconButton>
                 <div className={styles.titleGroup}>
                     <div className={styles.titleLine}>
                         <Typography variant="displayL">Spring campaign 2027</Typography>
-                        <IconButton variant="text" color="secondary" size="small" aria-label="More information">
+                        <IconButton size="small" aria-label="More information">
                             <Icon name="info-filled" />
                         </IconButton>
                     </div>
@@ -89,10 +89,10 @@ export const DetailPage: Story = {
                     </Typography>
                 </div>
                 <div className={styles.actions}>
-                    <Button variant="outlined">Filter</Button>
+                    <Button variant="secondary">Filter</Button>
                     <Button>Export</Button>
                 </div>
-                <IconButton variant="text" color="secondary" aria-label="More actions" className={styles.moreActions}>
+                <IconButton aria-label="More actions" className={styles.moreActions}>
                     <Icon name="more-vertical" />
                 </IconButton>
             </div>
@@ -136,10 +136,10 @@ export const SmallScreen: Story = {
                         <Typography variant="displayL">Campaigns</Typography>
                     </div>
                     <div className={styles.actions}>
-                        <Button variant="outlined">Filter</Button>
+                        <Button variant="secondary">Filter</Button>
                         <Button>Export</Button>
                     </div>
-                    <IconButton variant="text" color="secondary" aria-label="More actions" className={styles.moreActions}>
+                    <IconButton aria-label="More actions" className={styles.moreActions}>
                         <Icon name="more-vertical" />
                     </IconButton>
                 </div>

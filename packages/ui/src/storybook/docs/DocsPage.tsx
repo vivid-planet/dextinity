@@ -1,4 +1,4 @@
-import { Controls, Description, Heading, Markdown, Primary, Source, Stories, Subtitle, Title, useOf } from "@storybook/addon-docs/blocks";
+import { ArgTypes, Description, Heading, Markdown, Source, Stories, Subtitle, Title, useOf } from "@storybook/addon-docs/blocks";
 
 import { parseTokens } from "./parseTokens";
 import { isRules, RulesTable } from "./RulesTable";
@@ -55,8 +55,8 @@ function ComponentTokens() {
 }
 
 /**
- * The autodocs page: description, primary example, the component's rules (from `parameters.rules`), props, its tokens (from
- * `parameters.tokens`), and the remaining stories.
+ * The autodocs page, in the order of the design system draft: description, the component's sections (its stories after the first,
+ * which drives the controls), its tokens (from `parameters.tokens`), props, and rules (from `parameters.rules`).
  */
 export function DocsPage() {
     return (
@@ -64,12 +64,11 @@ export function DocsPage() {
             <Title />
             <Subtitle />
             <Description />
-            <Primary />
-            <ComponentRules />
-            <Heading>Props</Heading>
-            <Controls />
+            <Stories title={<span hidden />} includePrimary={false} />
             <ComponentTokens />
-            <Stories />
+            <Heading>Props</Heading>
+            <ArgTypes />
+            <ComponentRules />
         </>
     );
 }

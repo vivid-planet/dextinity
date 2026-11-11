@@ -127,7 +127,7 @@ The contract has two parts: **structural class names** for a component's element
 
 ### Stories
 
-The Storybook sidebar mirrors the design system's areas — Foundations, Building blocks, Shell, Patterns: a story title is `<Area>/<Page>/<Component>`, e.g. `Building blocks/Buttons/IconButton`. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it. `parameters.tokens`, set to the component's `<ComponentName>.tokens.scss` imported with `?raw`, adds its token table with live values to the page; a `//` comment directly above a token becomes its description. `parameters.rules`, `{ do: string[]; dont: string[] }`, adds the component's do's and don'ts.
+The Storybook sidebar mirrors the design system's areas — Foundations, Building blocks, Shell, Patterns: a story title is `<Area>/<Page>/<Component>`, e.g. `Building blocks/Buttons/IconButton`. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it. The page follows the draft's order: description, the component's sections, tokens, props, and rules. `parameters.tokens`, set to the component's `<ComponentName>.tokens.scss` imported with `?raw`, adds its token table with live values to the page; a `//` comment directly above a token becomes its description. `parameters.rules`, `{ do: string[]; dont: string[] }`, adds the component's do's and don'ts.
 
 The docs show only the body of a story's `render` function, so everything the example needs goes inside it. A `render` function names its parameter `args`. To show a story's full source instead of its `render` body, set `parameters.docs.source.type` to `"code"`.
 
@@ -160,7 +160,7 @@ type Story = StoryObj<typeof meta>;
 
 `meta.args` holds only what a practical example needs: required content such as `children`, and the event handlers that make it interactive. It omits any prop that has a component default — a defaulted prop is set in the story that demonstrates it instead.
 
-The first story is `Default`, the autodocs example: it sets no args of its own, showing that smallest practical example. Each prop that changes the component visibly then gets one story per option; a prop that changes only semantics, such as `Typography`'s `element`, stays a control, since a story per value would look the same.
+The first story is `Default`: it sets no args of its own, showing the smallest practical example, and drives the controls on the canvas; the docs page leaves it out. The other stories mirror the sections of the component's page in the design system draft, in its order and with its names, e.g. `Variants`, `StatesPrimary`, `StatesSecondary` for `Button`. A story that only tests behavior, such as a click on a loading button, is a dev story.
 
 Each declared prop is exposed as a control through `argTypes`, by kind:
 

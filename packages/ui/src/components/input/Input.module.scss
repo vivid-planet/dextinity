@@ -31,8 +31,8 @@
         border-color: var(--dextinity-input-state-focus-border);
         background: var(--dextinity-input-state-focus-background);
         color: var(--dextinity-input-state-focus-foreground);
-        outline: 2px solid var(--dextinity-color-focus);
-        outline-offset: 2px;
+        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-focus);
+        outline-offset: var(--dextinity-focus-ring-offset);
 
         --placeholder-color: var(--dextinity-input-state-focus-foreground-placeholder);
     }

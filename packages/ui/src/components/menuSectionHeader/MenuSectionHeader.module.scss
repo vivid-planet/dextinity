@@ -48,8 +48,8 @@
     }
 
     &:focus-visible {
-        outline: 2px solid var(--dextinity-color-focus);
-        outline-offset: calc(2px * -1);
+        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-focus);
+        outline-offset: calc(var(--dextinity-focus-ring-width) * -1);
     }
 }
 

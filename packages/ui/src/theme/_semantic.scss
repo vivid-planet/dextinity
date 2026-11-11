@@ -19,6 +19,8 @@ $danger-hue: var(--dextinity-brand-danger-hue);
             color-mix(in oklch, var(--dextinity-color-accent) 35%, var(--dextinity-color-accent-secondary)) 100%
         );
         --dextinity-focus-ring: 0 0 0 2px var(--dextinity-color-canvas), 0 0 0 4px var(--dextinity-color-focus);
+        --dextinity-focus-ring-width: 2px;
+        --dextinity-focus-ring-offset: 2px;
         --dextinity-icon-duotone-opacity: 0.16;
 
         --dextinity-font-family-text: var(--dextinity-brand-font-family-text);
@@ -141,6 +143,7 @@ $danger-hue: var(--dextinity-brand-danger-hue);
 
         --dextinity-line-width: 1px;
         --dextinity-gradient-brand: var(--dextinity-color-accent);
+        --dextinity-focus-ring-width: 3px;
         --dextinity-icon-duotone-opacity: 0;
 
         --dextinity-color-canvas: oklch(0 0 0);

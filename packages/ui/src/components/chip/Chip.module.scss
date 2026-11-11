@@ -18,8 +18,8 @@
     --icon-size: var(--dextinity-chip-size-default-icon-size);
 
     &:focus-visible {
-        outline: 2px solid var(--dextinity-color-focus);
-        outline-offset: 2px;
+        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-focus);
+        outline-offset: var(--dextinity-focus-ring-offset);
     }
 
     &[data-disabled] {
@@ -359,7 +359,7 @@
     }
 
     &:focus-visible {
-        outline: 2px solid var(--dextinity-color-focus);
+        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-focus);
     }
 
     &:disabled {

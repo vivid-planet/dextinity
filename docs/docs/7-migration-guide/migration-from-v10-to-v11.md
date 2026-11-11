@@ -750,6 +750,37 @@ Name the blocks to generate the meta for instead. `getBlocksMeta()` requires the
 + const metaJson = getBlocksMeta([PageContentBlock, SeoBlock]);
 ```
 
+### Give every block a unique name
+
+The API fails to generate `block-meta.json`, and therefore to start locally, when two different blocks it uses have the same name:
+
+```
+Error: Two different blocks are named "RichText". Block names must be unique, otherwise the generated block types and the block clipboard mix them up. Pass a different name to one of the blocks.
+```
+
+This usually happens when a block factory is called twice without a name, so both blocks get the factory's default name, for instance a second rich text block for mails:
+
+```diff title="api/src/mail/blocks/mail-rich-text.block.ts"
+- export const MailRichTextBlock = createRichTextBlock({ link: MailLinkBlock });
++ export const MailRichTextBlock = createRichTextBlock({ link: MailLinkBlock }, "MailRichText");
+```
+
+Give the block the same name in the admin, so the block clipboard keeps the blocks apart:
+
+```diff title="admin/src/mail/blocks/MailRichTextBlock.tsx"
+  export const MailRichTextBlock = {
+      ...baseMailRichTextBlock,
++     name: "MailRichText",
+  };
+```
+
+The renamed block gets types of its own in `blocks.generated.ts`. Use them in your site packages:
+
+```diff title="site/src/mail/blocks/MailRichTextBlock.tsx"
+- import type { RichTextBlockData } from "@src/blocks.generated";
++ import type { MailRichTextBlockData } from "@src/blocks.generated";
+```
+
 ### Update custom `block-meta.json` consumers
 
 Only projects that read `block-meta.json` themselves are affected — for instance a [custom client](../4-guides/1-how-to-build-a-custom-client/index.md) or a script that walks the block tree.

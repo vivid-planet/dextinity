@@ -60,14 +60,10 @@
     },
     "dependencies": {
         "@dextinity/site-react": "workspace:*",
-        "clsx": "^2.1.1",
         "commander": "^15.0.0",
-        "fast-equals": "^6.2.2",
         "jose": "^6.2.15",
         "mime": "^4.1.2",
-        "scroll-into-view-if-needed": "^3.1.0",
-        "server-only": "^0.0.1",
-        "usehooks-ts": "^3.1.1"
+        "server-only": "^0.0.1"
     },
     "devDependencies": {
         "@aws-sdk/client-s3": "^3.1161.0",
@@ -80,7 +76,7 @@
         "aws-sdk-client-mock": "^4.1.0",
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.5",
-        "jsdom": "^30.1.2",
+        "jsdom": "^31.0.0",
         "next": "^16.4.4",
         "npm-run-all2": "^9.0.4",
         "prettier": "^3.9.10",

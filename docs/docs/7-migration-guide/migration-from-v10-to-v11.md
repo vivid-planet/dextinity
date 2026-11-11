@@ -1383,6 +1383,36 @@ Type checks don't catch these runtime pitfalls, so search for them as well:
 - Strict comparisons with `undefined` (`eyebrow === undefined`) miss `null`. Use `!eyebrow` or `eyebrow === null` instead.
 - Default values (`{ eyebrow = "" }` or `function f(eyebrow = "")`) don't apply to `null`. Use `eyebrow ?? ""` instead.
 
+### Rename `middleware.ts` to `proxy.ts`
+
+Skip this step if your project doesn't use `@dextinity/site-nextjs`.
+
+`@dextinity/site-nextjs` no longer bundles `@dextinity/site-react`. As a consequence, a middleware running in the Edge runtime fails to build as soon as it imports from `@dextinity/site-nextjs`:
+
+```
+Attempted import error: 'useContext' is not exported from 'react'
+```
+
+Run the middleware in the Node.js runtime instead. Since Next.js 16, the middleware is called proxy and always runs in the Node.js runtime. Check whether the site still has a middleware:
+
+```sh
+ls src/middleware.ts middleware.ts
+```
+
+If it does, update the site to Next.js 16 if it isn't yet (see the [Next.js 16 upgrade guide](https://nextjs.org/docs/app/guides/upgrading/version-16)), then rename the middleware with the codemod:
+
+```sh
+npx @next/codemod@canary middleware-to-proxy .
+```
+
+The codemod renames `middleware.ts` to `proxy.ts` and the exported `middleware` function to `proxy`. Remove `runtime: "edge"` from the exported `config` if it's set, since the proxy doesn't support the Edge runtime.
+
+Then verify that the site builds:
+
+```sh
+npm run build
+```
+
 ### Verify lint passes
 
 ```sh

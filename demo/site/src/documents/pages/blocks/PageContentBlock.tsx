@@ -1,4 +1,3 @@
-"use client";
 import { BlocksBlock, type PropsWithData, type SupportedBlocks } from "@dextinity/site-nextjs";
 import type { PageContentBlockData } from "@src/blocks.generated";
 import { PageContentAccordionBlock } from "@src/common/blocks/AccordionBlock";

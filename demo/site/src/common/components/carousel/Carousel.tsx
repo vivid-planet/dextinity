@@ -1,3 +1,5 @@
+"use client";
+
 import clsx from "clsx";
 import type { EmblaOptionsType } from "embla-carousel";
 import Accessibility from "embla-carousel-accessibility";

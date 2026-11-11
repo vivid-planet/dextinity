@@ -1,7 +1,7 @@
 .toolbar {
     container-type: inline-size;
-    border-block-end: 1px solid var(--dextinity-color-border-default);
-    background-color: var(--dextinity-color-background-default);
+    border-block-end: 1px solid var(--dextinity-color-line-strong);
+    background-color: var(--dextinity-color-surface);
 }
 
 .narrow {
@@ -11,35 +11,35 @@
 .breadcrumb {
     display: flex;
     align-items: center;
-    gap: var(--dextinity-unit-2);
+    gap: var(--dextinity-space-2);
     margin: 0;
-    padding: var(--dextinity-unit-2) var(--dextinity-unit-4);
-    border-block-end: 1px solid var(--dextinity-color-border-default);
+    padding: var(--dextinity-space-2) var(--dextinity-space-4);
+    border-block-end: 1px solid var(--dextinity-color-line-strong);
     list-style: none;
 
     @container (min-width: 600px) {
-        padding-inline: var(--dextinity-unit-6);
+        padding-inline: var(--dextinity-space-6);
     }
 }
 
 .breadcrumbLink {
-    color: var(--dextinity-color-foreground-muted);
+    color: var(--dextinity-color-text-tertiary);
     text-decoration: none;
 }
 
 .breadcrumbSeparator {
     display: flex;
-    color: var(--dextinity-color-foreground-muted);
+    color: var(--dextinity-color-text-tertiary);
 }
 
 .titleRow {
     display: flex;
     align-items: center;
-    gap: var(--dextinity-unit-4);
-    padding: var(--dextinity-unit-3) var(--dextinity-unit-4);
+    gap: var(--dextinity-space-4);
+    padding: var(--dextinity-space-3) var(--dextinity-space-4);
 
     @container (min-width: 600px) {
-        padding-inline: var(--dextinity-unit-6);
+        padding-inline: var(--dextinity-space-6);
     }
 }
 
@@ -47,23 +47,23 @@
     display: flex;
     flex-grow: 1;
     flex-direction: column;
-    gap: var(--dextinity-unit-1);
+    gap: var(--dextinity-space-1);
     min-inline-size: 0;
 }
 
 .titleLine {
     display: flex;
     align-items: center;
-    gap: var(--dextinity-unit-2);
+    gap: var(--dextinity-space-2);
 }
 
 .supportText {
-    color: var(--dextinity-color-foreground-muted);
+    color: var(--dextinity-color-text-tertiary);
 }
 
 .actions {
     display: none;
-    gap: var(--dextinity-unit-2);
+    gap: var(--dextinity-space-2);
 
     @container (min-width: 600px) {
         display: flex;

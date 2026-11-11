@@ -10,14 +10,14 @@ How to build a form from fields, sections, and buttons, and how to show the resu
 
 ## When to use which component
 
-- [`FormLabel`](?path=/docs/components-formlabel--docs): names a field.
-- [`Input`](?path=/docs/components-input--docs): a single line of text.
-- [`FormHelperText`](?path=/docs/components-formhelpertext--docs): a hint below a field when the field needs one, or, with `error`, the message that says what is wrong.
-- [`Button`](?path=/docs/components-button--docs): `type="submit"` saves the form. For the other buttons, see [Actions](?path=/docs/patterns-actions--docs).
+- [`FormLabel`](?path=/docs/building-blocks-form-fields-formlabel--docs): names a field.
+- [`Input`](?path=/docs/building-blocks-form-fields-input--docs): a single line of text.
+- [`FormHelperText`](?path=/docs/building-blocks-form-fields-formhelpertext--docs): a hint below a field when the field needs one, or, with `error`, the message that says what is wrong.
+- [`Button`](?path=/docs/building-blocks-buttons-button--docs): `type="submit"` saves the form. For the other buttons, see [Actions](?path=/docs/patterns-actions--docs).
 
 ## Fields
 
-- The label is above the input, and the hint is below it, with a space of `var(--dextinity-unit-1)` between them.
+- The label is above the input, and the hint is below it, with a space of `var(--dextinity-space-1)` between them.
 - Give the `Input` an `id`, and set the same value as `htmlFor` on the `FormLabel`.
 - Give the `FormHelperText` an `id`, and set it as `aria-describedby` on the `Input`.
 - For a required field, set `required` on the `FormLabel` and on the `Input`.

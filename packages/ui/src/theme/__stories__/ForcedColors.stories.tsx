@@ -163,7 +163,7 @@ function DialogGallery() {
 const meta = {
     title: "Foundations/Forced colors",
     decorators: [themeDecorator],
-    tags: ["forced-colors", "!autodocs"],
+    tags: ["forced-colors", "development", "!autodocs", "!manifest"],
     render: () => <Gallery />,
 } satisfies Meta;
 

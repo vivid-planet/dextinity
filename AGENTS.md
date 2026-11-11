@@ -207,6 +207,10 @@ Example:
 Fix description here
 ```
 
+## Branches
+
+- `next` is protected and can't be pushed to directly. When a session targets `next` (e.g. it was started on `next` or a task asks for a breaking change), always create a new branch from `next` before committing, push that branch, and open the pull request against `next`.
+
 ## Commit messages
 
 - Do not use Conventional Commits.

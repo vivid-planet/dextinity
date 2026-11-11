@@ -8,8 +8,8 @@ import { FormLabel } from "../../components/formLabel/FormLabel";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Input } from "../../components/input/Input";
-import { MainNavigationItem } from "../../components/mainNavigationItem/MainNavigationItem";
 import { MenuSectionHeader } from "../../components/menuSectionHeader/MenuSectionHeader";
+import { NavItem } from "../../components/navItem/NavItem";
 import { Typography } from "../../components/typography/Typography";
 import { themeDecorator } from "../../storybook/themeDecorator";
 import styles from "./intro.module.scss";
@@ -75,13 +75,13 @@ export const Showcase: Story = {
                         <ul aria-labelledby="showcase-content" className={styles.list}>
                             {contentPages.map(({ name, icon }) => (
                                 <li key={name}>
-                                    <MainNavigationItem
+                                    <NavItem
                                         icon={icon}
                                         active={name === activePage}
                                         render={<button type="button" onClick={() => setActivePage(name)} />}
                                     >
                                         {name}
-                                    </MainNavigationItem>
+                                    </NavItem>
                                 </li>
                             ))}
                         </ul>

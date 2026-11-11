@@ -1,179 +1,342 @@
 @mixin tokens {
-    --dextinity-chip-border-width: 1px;
+    // Border width of both variants.
+    --dextinity-chip-border-width: var(--dextinity-border-width-thin);
 
+    // Height of a default-size chip.
     --dextinity-chip-size-default-height: var(--dextinity-unit-8);
+    // Corner radius of a default-size chip.
     --dextinity-chip-size-default-radius: var(--dextinity-brand-radius-pill);
+    // Space between the icon, the label, and the delete button of a default-size chip.
     --dextinity-chip-size-default-gap: var(--dextinity-unit-1-5);
+    // Space at the start and the end of a default-size chip.
     --dextinity-chip-size-default-padding-horizontal: var(--dextinity-unit-3);
-    --dextinity-chip-size-default-icon-size: 16px;
+    // Size of the icons of a default-size chip.
+    --dextinity-chip-size-default-icon-size: var(--dextinity-unit-4);
+    // Font size of the label of a default-size chip.
     --dextinity-chip-size-default-font-size: var(--dextinity-typography-body-sm-size);
+    // Line height of the label of a default-size chip.
     --dextinity-chip-size-default-font-line-height: var(--dextinity-typography-body-sm-line-height);
+    // Font weight of the label of a default-size chip.
     --dextinity-chip-size-default-font-weight: var(--dextinity-font-weight-medium);
+    // Name of the label's font weight in the design files, for a default-size chip.
     --dextinity-chip-size-default-font-weight-style: var(--dextinity-font-weight-medium-style);
 
+    // Height of a small-size chip.
     --dextinity-chip-size-small-height: var(--dextinity-unit-6);
+    // Corner radius of a small-size chip.
     --dextinity-chip-size-small-radius: var(--dextinity-brand-radius-pill);
+    // Space between the icon, the label, and the delete button of a small-size chip.
     --dextinity-chip-size-small-gap: var(--dextinity-unit-1);
+    // Space at the start and the end of a small-size chip.
     --dextinity-chip-size-small-padding-horizontal: var(--dextinity-unit-2);
+    // Size of the icons of a small-size chip.
     --dextinity-chip-size-small-icon-size: 14px;
+    // Font size of the label of a small-size chip.
     --dextinity-chip-size-small-font-size: var(--dextinity-typography-body-xs-size);
+    // Line height of the label of a small-size chip.
     --dextinity-chip-size-small-font-line-height: var(--dextinity-typography-body-xs-line-height);
+    // Font weight of the label of a small-size chip.
     --dextinity-chip-size-small-font-weight: var(--dextinity-font-weight-medium);
+    // Name of the label's font weight in the design files, for a small-size chip.
     --dextinity-chip-size-small-font-weight-style: var(--dextinity-font-weight-medium-style);
 
+    // Background of a contained primary chip at rest.
     --dextinity-chip-variant-contained-primary-default-background: var(--dextinity-color-action-primary-default);
+    // Text and icon color of a contained primary chip at rest.
     --dextinity-chip-variant-contained-primary-default-foreground: var(--dextinity-color-action-primary-foreground);
+    // Border color of a contained primary chip at rest.
     --dextinity-chip-variant-contained-primary-default-border: var(--dextinity-color-action-primary-default);
+    // Background of a contained primary chip on hover when clickable.
     --dextinity-chip-variant-contained-primary-hover-background: var(--dextinity-color-action-primary-hover);
+    // Text and icon color of a contained primary chip on hover when clickable.
     --dextinity-chip-variant-contained-primary-hover-foreground: var(--dextinity-color-action-primary-foreground);
+    // Border color of a contained primary chip on hover when clickable.
     --dextinity-chip-variant-contained-primary-hover-border: var(--dextinity-color-action-primary-hover);
+    // Background of a contained primary chip with keyboard focus.
     --dextinity-chip-variant-contained-primary-focus-background: var(--dextinity-color-action-primary-default);
+    // Text and icon color of a contained primary chip with keyboard focus.
     --dextinity-chip-variant-contained-primary-focus-foreground: var(--dextinity-color-action-primary-foreground);
+    // Border color of a contained primary chip with keyboard focus.
     --dextinity-chip-variant-contained-primary-focus-border: var(--dextinity-color-action-primary-default);
+    // Background of a contained primary chip when disabled.
     --dextinity-chip-variant-contained-primary-disabled-background: var(--dextinity-color-action-primary-disabled);
+    // Text and icon color of a contained primary chip when disabled.
     --dextinity-chip-variant-contained-primary-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Border color of a contained primary chip when disabled.
     --dextinity-chip-variant-contained-primary-disabled-border: var(--dextinity-color-action-primary-disabled);
 
+    // Background of a contained secondary chip at rest.
     --dextinity-chip-variant-contained-secondary-default-background: var(--dextinity-color-background-muted);
+    // Text and icon color of a contained secondary chip at rest.
     --dextinity-chip-variant-contained-secondary-default-foreground: var(--dextinity-color-foreground-default);
+    // Border color of a contained secondary chip at rest.
     --dextinity-chip-variant-contained-secondary-default-border: var(--dextinity-color-background-muted);
+    // Background of a contained secondary chip on hover when clickable.
     --dextinity-chip-variant-contained-secondary-hover-background: var(--dextinity-color-border-default);
+    // Text and icon color of a contained secondary chip on hover when clickable.
     --dextinity-chip-variant-contained-secondary-hover-foreground: var(--dextinity-color-foreground-default);
+    // Border color of a contained secondary chip on hover when clickable.
     --dextinity-chip-variant-contained-secondary-hover-border: var(--dextinity-color-border-default);
+    // Background of a contained secondary chip with keyboard focus.
     --dextinity-chip-variant-contained-secondary-focus-background: var(--dextinity-color-background-muted);
+    // Text and icon color of a contained secondary chip with keyboard focus.
     --dextinity-chip-variant-contained-secondary-focus-foreground: var(--dextinity-color-foreground-default);
+    // Border color of a contained secondary chip with keyboard focus.
     --dextinity-chip-variant-contained-secondary-focus-border: var(--dextinity-color-background-muted);
+    // Background of a contained secondary chip when disabled.
     --dextinity-chip-variant-contained-secondary-disabled-background: var(--dextinity-color-background-muted);
+    // Text and icon color of a contained secondary chip when disabled.
     --dextinity-chip-variant-contained-secondary-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Border color of a contained secondary chip when disabled.
     --dextinity-chip-variant-contained-secondary-disabled-border: var(--dextinity-color-background-muted);
 
+    // Background of a contained error chip at rest.
     --dextinity-chip-variant-contained-error-default-background: var(--dextinity-color-feedback-danger-strong);
+    // Text and icon color of a contained error chip at rest.
     --dextinity-chip-variant-contained-error-default-foreground: var(--dextinity-color-feedback-danger-on-strong);
+    // Border color of a contained error chip at rest.
     --dextinity-chip-variant-contained-error-default-border: var(--dextinity-color-feedback-danger-strong);
+    // Background of a contained error chip on hover when clickable.
     --dextinity-chip-variant-contained-error-hover-background: var(--dextinity-color-feedback-danger-strong-hover);
+    // Text and icon color of a contained error chip on hover when clickable.
     --dextinity-chip-variant-contained-error-hover-foreground: var(--dextinity-color-feedback-danger-on-strong);
+    // Border color of a contained error chip on hover when clickable.
     --dextinity-chip-variant-contained-error-hover-border: var(--dextinity-color-feedback-danger-strong-hover);
+    // Background of a contained error chip with keyboard focus.
     --dextinity-chip-variant-contained-error-focus-background: var(--dextinity-color-feedback-danger-strong);
+    // Text and icon color of a contained error chip with keyboard focus.
     --dextinity-chip-variant-contained-error-focus-foreground: var(--dextinity-color-feedback-danger-on-strong);
+    // Border color of a contained error chip with keyboard focus.
     --dextinity-chip-variant-contained-error-focus-border: var(--dextinity-color-feedback-danger-strong);
+    // Background of a contained error chip when disabled.
     --dextinity-chip-variant-contained-error-disabled-background: var(--dextinity-color-action-error-disabled);
+    // Text and icon color of a contained error chip when disabled.
     --dextinity-chip-variant-contained-error-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Border color of a contained error chip when disabled.
     --dextinity-chip-variant-contained-error-disabled-border: var(--dextinity-color-action-error-disabled);
 
+    // Background of a contained info chip at rest.
     --dextinity-chip-variant-contained-info-default-background: var(--dextinity-color-feedback-info-strong);
+    // Text and icon color of a contained info chip at rest.
     --dextinity-chip-variant-contained-info-default-foreground: var(--dextinity-color-feedback-info-on-strong);
+    // Border color of a contained info chip at rest.
     --dextinity-chip-variant-contained-info-default-border: var(--dextinity-color-feedback-info-strong);
+    // Background of a contained info chip on hover when clickable.
     --dextinity-chip-variant-contained-info-hover-background: var(--dextinity-color-feedback-info-strong-hover);
+    // Text and icon color of a contained info chip on hover when clickable.
     --dextinity-chip-variant-contained-info-hover-foreground: var(--dextinity-color-feedback-info-on-strong);
+    // Border color of a contained info chip on hover when clickable.
     --dextinity-chip-variant-contained-info-hover-border: var(--dextinity-color-feedback-info-strong-hover);
+    // Background of a contained info chip with keyboard focus.
     --dextinity-chip-variant-contained-info-focus-background: var(--dextinity-color-feedback-info-strong);
+    // Text and icon color of a contained info chip with keyboard focus.
     --dextinity-chip-variant-contained-info-focus-foreground: var(--dextinity-color-feedback-info-on-strong);
+    // Border color of a contained info chip with keyboard focus.
     --dextinity-chip-variant-contained-info-focus-border: var(--dextinity-color-feedback-info-strong);
+    // Background of a contained info chip when disabled.
     --dextinity-chip-variant-contained-info-disabled-background: var(--dextinity-color-feedback-info-subtle);
+    // Text and icon color of a contained info chip when disabled.
     --dextinity-chip-variant-contained-info-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Border color of a contained info chip when disabled.
     --dextinity-chip-variant-contained-info-disabled-border: var(--dextinity-color-feedback-info-subtle);
 
+    // Background of a contained success chip at rest.
     --dextinity-chip-variant-contained-success-default-background: var(--dextinity-color-feedback-success-strong);
+    // Text and icon color of a contained success chip at rest.
     --dextinity-chip-variant-contained-success-default-foreground: var(--dextinity-color-feedback-success-on-strong);
+    // Border color of a contained success chip at rest.
     --dextinity-chip-variant-contained-success-default-border: var(--dextinity-color-feedback-success-strong);
+    // Background of a contained success chip on hover when clickable.
     --dextinity-chip-variant-contained-success-hover-background: var(--dextinity-color-feedback-success-strong-hover);
+    // Text and icon color of a contained success chip on hover when clickable.
     --dextinity-chip-variant-contained-success-hover-foreground: var(--dextinity-color-feedback-success-on-strong);
+    // Border color of a contained success chip on hover when clickable.
     --dextinity-chip-variant-contained-success-hover-border: var(--dextinity-color-feedback-success-strong-hover);
+    // Background of a contained success chip with keyboard focus.
     --dextinity-chip-variant-contained-success-focus-background: var(--dextinity-color-feedback-success-strong);
+    // Text and icon color of a contained success chip with keyboard focus.
     --dextinity-chip-variant-contained-success-focus-foreground: var(--dextinity-color-feedback-success-on-strong);
+    // Border color of a contained success chip with keyboard focus.
     --dextinity-chip-variant-contained-success-focus-border: var(--dextinity-color-feedback-success-strong);
+    // Background of a contained success chip when disabled.
     --dextinity-chip-variant-contained-success-disabled-background: var(--dextinity-color-feedback-success-subtle);
+    // Text and icon color of a contained success chip when disabled.
     --dextinity-chip-variant-contained-success-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Border color of a contained success chip when disabled.
     --dextinity-chip-variant-contained-success-disabled-border: var(--dextinity-color-feedback-success-subtle);
 
+    // Background of a contained warning chip at rest.
     --dextinity-chip-variant-contained-warning-default-background: var(--dextinity-color-feedback-warning-strong);
+    // Text and icon color of a contained warning chip at rest.
     --dextinity-chip-variant-contained-warning-default-foreground: var(--dextinity-color-feedback-warning-on-strong);
+    // Border color of a contained warning chip at rest.
     --dextinity-chip-variant-contained-warning-default-border: var(--dextinity-color-feedback-warning-strong);
+    // Background of a contained warning chip on hover when clickable.
     --dextinity-chip-variant-contained-warning-hover-background: var(--dextinity-color-feedback-warning-strong-hover);
+    // Text and icon color of a contained warning chip on hover when clickable.
     --dextinity-chip-variant-contained-warning-hover-foreground: var(--dextinity-color-feedback-warning-on-strong);
+    // Border color of a contained warning chip on hover when clickable.
     --dextinity-chip-variant-contained-warning-hover-border: var(--dextinity-color-feedback-warning-strong-hover);
+    // Background of a contained warning chip with keyboard focus.
     --dextinity-chip-variant-contained-warning-focus-background: var(--dextinity-color-feedback-warning-strong);
+    // Text and icon color of a contained warning chip with keyboard focus.
     --dextinity-chip-variant-contained-warning-focus-foreground: var(--dextinity-color-feedback-warning-on-strong);
+    // Border color of a contained warning chip with keyboard focus.
     --dextinity-chip-variant-contained-warning-focus-border: var(--dextinity-color-feedback-warning-strong);
+    // Background of a contained warning chip when disabled.
     --dextinity-chip-variant-contained-warning-disabled-background: var(--dextinity-color-feedback-warning-subtle);
+    // Text and icon color of a contained warning chip when disabled.
     --dextinity-chip-variant-contained-warning-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Border color of a contained warning chip when disabled.
     --dextinity-chip-variant-contained-warning-disabled-border: var(--dextinity-color-feedback-warning-subtle);
 
+    // Background of a outlined primary chip at rest.
     --dextinity-chip-variant-outlined-primary-default-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined primary chip at rest.
     --dextinity-chip-variant-outlined-primary-default-foreground: var(--dextinity-color-action-primary-standalone);
+    // Border color of a outlined primary chip at rest.
     --dextinity-chip-variant-outlined-primary-default-border: var(--dextinity-color-action-primary-default);
+    // Background of a outlined primary chip on hover when clickable.
     --dextinity-chip-variant-outlined-primary-hover-background: var(--dextinity-color-action-primary-subtle);
+    // Text and icon color of a outlined primary chip on hover when clickable.
     --dextinity-chip-variant-outlined-primary-hover-foreground: var(--dextinity-color-action-primary-hover);
+    // Border color of a outlined primary chip on hover when clickable.
     --dextinity-chip-variant-outlined-primary-hover-border: var(--dextinity-color-action-primary-hover);
+    // Background of a outlined primary chip with keyboard focus.
     --dextinity-chip-variant-outlined-primary-focus-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined primary chip with keyboard focus.
     --dextinity-chip-variant-outlined-primary-focus-foreground: var(--dextinity-color-action-primary-standalone);
+    // Border color of a outlined primary chip with keyboard focus.
     --dextinity-chip-variant-outlined-primary-focus-border: var(--dextinity-color-action-primary-default);
+    // Background of a outlined primary chip when disabled.
     --dextinity-chip-variant-outlined-primary-disabled-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined primary chip when disabled.
     --dextinity-chip-variant-outlined-primary-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Border color of a outlined primary chip when disabled.
     --dextinity-chip-variant-outlined-primary-disabled-border: var(--dextinity-color-action-primary-disabled);
 
+    // Background of a outlined secondary chip at rest.
     --dextinity-chip-variant-outlined-secondary-default-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined secondary chip at rest.
     --dextinity-chip-variant-outlined-secondary-default-foreground: var(--dextinity-color-foreground-default);
+    // Border color of a outlined secondary chip at rest.
     --dextinity-chip-variant-outlined-secondary-default-border: var(--dextinity-color-border-default);
+    // Background of a outlined secondary chip on hover when clickable.
     --dextinity-chip-variant-outlined-secondary-hover-background: var(--dextinity-color-background-muted);
+    // Text and icon color of a outlined secondary chip on hover when clickable.
     --dextinity-chip-variant-outlined-secondary-hover-foreground: var(--dextinity-color-foreground-default);
+    // Border color of a outlined secondary chip on hover when clickable.
     --dextinity-chip-variant-outlined-secondary-hover-border: var(--dextinity-color-border-strong);
+    // Background of a outlined secondary chip with keyboard focus.
     --dextinity-chip-variant-outlined-secondary-focus-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined secondary chip with keyboard focus.
     --dextinity-chip-variant-outlined-secondary-focus-foreground: var(--dextinity-color-foreground-default);
+    // Border color of a outlined secondary chip with keyboard focus.
     --dextinity-chip-variant-outlined-secondary-focus-border: var(--dextinity-color-border-default);
+    // Background of a outlined secondary chip when disabled.
     --dextinity-chip-variant-outlined-secondary-disabled-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined secondary chip when disabled.
     --dextinity-chip-variant-outlined-secondary-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Border color of a outlined secondary chip when disabled.
     --dextinity-chip-variant-outlined-secondary-disabled-border: var(--dextinity-color-border-subtle);
 
+    // Background of a outlined error chip at rest.
     --dextinity-chip-variant-outlined-error-default-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined error chip at rest.
     --dextinity-chip-variant-outlined-error-default-foreground: var(--dextinity-color-feedback-danger-foreground);
+    // Border color of a outlined error chip at rest.
     --dextinity-chip-variant-outlined-error-default-border: var(--dextinity-color-feedback-danger-border);
+    // Background of a outlined error chip on hover when clickable.
     --dextinity-chip-variant-outlined-error-hover-background: var(--dextinity-color-feedback-danger-subtle);
+    // Text and icon color of a outlined error chip on hover when clickable.
     --dextinity-chip-variant-outlined-error-hover-foreground: var(--dextinity-color-feedback-danger-foreground);
+    // Border color of a outlined error chip on hover when clickable.
     --dextinity-chip-variant-outlined-error-hover-border: var(--dextinity-color-feedback-danger-default);
+    // Background of a outlined error chip with keyboard focus.
     --dextinity-chip-variant-outlined-error-focus-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined error chip with keyboard focus.
     --dextinity-chip-variant-outlined-error-focus-foreground: var(--dextinity-color-feedback-danger-foreground);
+    // Border color of a outlined error chip with keyboard focus.
     --dextinity-chip-variant-outlined-error-focus-border: var(--dextinity-color-feedback-danger-border);
+    // Background of a outlined error chip when disabled.
     --dextinity-chip-variant-outlined-error-disabled-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined error chip when disabled.
     --dextinity-chip-variant-outlined-error-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Border color of a outlined error chip when disabled.
     --dextinity-chip-variant-outlined-error-disabled-border: var(--dextinity-color-feedback-danger-subtle);
 
+    // Background of a outlined info chip at rest.
     --dextinity-chip-variant-outlined-info-default-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined info chip at rest.
     --dextinity-chip-variant-outlined-info-default-foreground: var(--dextinity-color-feedback-info-foreground);
+    // Border color of a outlined info chip at rest.
     --dextinity-chip-variant-outlined-info-default-border: var(--dextinity-color-feedback-info-border);
+    // Background of a outlined info chip on hover when clickable.
     --dextinity-chip-variant-outlined-info-hover-background: var(--dextinity-color-feedback-info-subtle);
+    // Text and icon color of a outlined info chip on hover when clickable.
     --dextinity-chip-variant-outlined-info-hover-foreground: var(--dextinity-color-feedback-info-foreground);
+    // Border color of a outlined info chip on hover when clickable.
     --dextinity-chip-variant-outlined-info-hover-border: var(--dextinity-color-feedback-info-default);
+    // Background of a outlined info chip with keyboard focus.
     --dextinity-chip-variant-outlined-info-focus-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined info chip with keyboard focus.
     --dextinity-chip-variant-outlined-info-focus-foreground: var(--dextinity-color-feedback-info-foreground);
+    // Border color of a outlined info chip with keyboard focus.
     --dextinity-chip-variant-outlined-info-focus-border: var(--dextinity-color-feedback-info-border);
+    // Background of a outlined info chip when disabled.
     --dextinity-chip-variant-outlined-info-disabled-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined info chip when disabled.
     --dextinity-chip-variant-outlined-info-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Border color of a outlined info chip when disabled.
     --dextinity-chip-variant-outlined-info-disabled-border: var(--dextinity-color-feedback-info-subtle);
 
+    // Background of a outlined success chip at rest.
     --dextinity-chip-variant-outlined-success-default-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined success chip at rest.
     --dextinity-chip-variant-outlined-success-default-foreground: var(--dextinity-color-feedback-success-foreground);
+    // Border color of a outlined success chip at rest.
     --dextinity-chip-variant-outlined-success-default-border: var(--dextinity-color-feedback-success-border);
+    // Background of a outlined success chip on hover when clickable.
     --dextinity-chip-variant-outlined-success-hover-background: var(--dextinity-color-feedback-success-subtle);
+    // Text and icon color of a outlined success chip on hover when clickable.
     --dextinity-chip-variant-outlined-success-hover-foreground: var(--dextinity-color-feedback-success-foreground);
+    // Border color of a outlined success chip on hover when clickable.
     --dextinity-chip-variant-outlined-success-hover-border: var(--dextinity-color-feedback-success-default);
+    // Background of a outlined success chip with keyboard focus.
     --dextinity-chip-variant-outlined-success-focus-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined success chip with keyboard focus.
     --dextinity-chip-variant-outlined-success-focus-foreground: var(--dextinity-color-feedback-success-foreground);
+    // Border color of a outlined success chip with keyboard focus.
     --dextinity-chip-variant-outlined-success-focus-border: var(--dextinity-color-feedback-success-border);
+    // Background of a outlined success chip when disabled.
     --dextinity-chip-variant-outlined-success-disabled-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined success chip when disabled.
     --dextinity-chip-variant-outlined-success-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Border color of a outlined success chip when disabled.
     --dextinity-chip-variant-outlined-success-disabled-border: var(--dextinity-color-feedback-success-subtle);
 
+    // Background of a outlined warning chip at rest.
     --dextinity-chip-variant-outlined-warning-default-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined warning chip at rest.
     --dextinity-chip-variant-outlined-warning-default-foreground: var(--dextinity-color-feedback-warning-foreground);
+    // Border color of a outlined warning chip at rest.
     --dextinity-chip-variant-outlined-warning-default-border: var(--dextinity-color-feedback-warning-border);
+    // Background of a outlined warning chip on hover when clickable.
     --dextinity-chip-variant-outlined-warning-hover-background: var(--dextinity-color-feedback-warning-subtle);
+    // Text and icon color of a outlined warning chip on hover when clickable.
     --dextinity-chip-variant-outlined-warning-hover-foreground: var(--dextinity-color-feedback-warning-foreground);
+    // Border color of a outlined warning chip on hover when clickable.
     --dextinity-chip-variant-outlined-warning-hover-border: var(--dextinity-color-feedback-warning-default);
+    // Background of a outlined warning chip with keyboard focus.
     --dextinity-chip-variant-outlined-warning-focus-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined warning chip with keyboard focus.
     --dextinity-chip-variant-outlined-warning-focus-foreground: var(--dextinity-color-feedback-warning-foreground);
+    // Border color of a outlined warning chip with keyboard focus.
     --dextinity-chip-variant-outlined-warning-focus-border: var(--dextinity-color-feedback-warning-border);
+    // Background of a outlined warning chip when disabled.
     --dextinity-chip-variant-outlined-warning-disabled-background: var(--dextinity-color-transparent);
+    // Text and icon color of a outlined warning chip when disabled.
     --dextinity-chip-variant-outlined-warning-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Border color of a outlined warning chip when disabled.
     --dextinity-chip-variant-outlined-warning-disabled-border: var(--dextinity-color-feedback-warning-subtle);
 }

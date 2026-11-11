@@ -1,21 +1,21 @@
 import { useSyncExternalStore } from "react";
 
-type ToolbarBrand = "dextinity" | "crimson";
+import type { ThemeBrand } from "../theme/types";
 
-const toolbarBrandTitles: Record<ToolbarBrand, string> = {
-    dextinity: "Dextinity brand",
-    crimson: "Crimson brand",
+const toolbarBrandTitles: Record<ThemeBrand, string> = {
+    dextinity: "Dextinity",
+    "ai-hub": "AI Hub",
 };
 
 export const toolbarBrandOptions = Object.entries(toolbarBrandTitles).map(([value, title]) => ({ value, title }));
 
 const toolbarBrandStorageKey = "dextinity-ui-brand";
 
-function isToolbarBrand(value: unknown): value is ToolbarBrand {
+function isToolbarBrand(value: unknown): value is ThemeBrand {
     return typeof value === "string" && value in toolbarBrandTitles;
 }
 
-export function getToolbarBrand(): ToolbarBrand {
+export function getToolbarBrand(): ThemeBrand {
     const storedValue = localStorage.getItem(toolbarBrandStorageKey);
     return isToolbarBrand(storedValue) ? storedValue : "dextinity";
 }
@@ -37,6 +37,6 @@ function subscribeToToolbarBrand(onChange: () => void) {
     return () => window.removeEventListener("storage", handleStorage);
 }
 
-export function useToolbarBrand(): ToolbarBrand {
+export function useToolbarBrand(): ThemeBrand {
     return useSyncExternalStore(subscribeToToolbarBrand, getToolbarBrand);
 }

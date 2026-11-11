@@ -127,7 +127,7 @@ The contract has two parts: **structural class names** for a component's element
 
 ### Stories
 
-Component stories live under the "Components" section. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it.
+The Storybook mirrors the structure of the design system draft (the "Dextinity Admin" prototype): **Foundations**, **Building blocks**, **Shell**, and **Patterns**, in the order set in [`.storybook/preview.ts`](.storybook/preview.ts). A component's story title is `<Section>/<ComponentName>`, such as `Building blocks/Button`; each component has its own entry, even when the draft shows several components on one page. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it.
 
 The docs show only the body of a story's `render` function, so everything the example needs goes inside it. A `render` function names its parameter `args`. To show a story's full source instead of its `render` body, set `parameters.docs.source.type` to `"code"`.
 
@@ -172,15 +172,24 @@ Each declared prop is exposed as a control through `argTypes`, by kind:
 
 #### Dev story
 
-`__stories__/<name>.dev.stories.tsx`, optional, shares the main story's title (`Components/<Component>`) and sets `tags: ["development", "!autodocs", "!manifest"]` in its meta. `!autodocs` and `!manifest` keep its stories out of the consumer docs and out of what the MCP server serves. `development` hides them from the sidebar by default — select the tag in the sidebar's tag filter to show them — and marks them with a "Dev" badge. Storybook merges files with the same title into one entry, so a dev story's export name must differ from the main story's and carry its context, e.g. `CustomizationViaSlotPropsClassName` in `customization.dev.stories.tsx`.
+`__stories__/<name>.dev.stories.tsx`, optional, shares the main story's title (`<Section>/<Component>`) and sets `tags: ["development", "!autodocs", "!manifest"]` in its meta. `!autodocs` and `!manifest` keep its stories out of the consumer docs and out of what the MCP server serves. `development` hides them from the sidebar by default — select the tag in the sidebar's tag filter to show them — and marks them with a "Dev" badge. Storybook merges files with the same title into one entry, so a dev story's export name must differ from the main story's and carry its context, e.g. `CustomizationViaSlotPropsClassName` in `customization.dev.stories.tsx`.
 
 The tag is `development` rather than `dev` because Storybook already uses `dev` as a built-in tag on every story.
 
 A dev story serves any development, testing, or debugging need, so add them freely — e.g. reproduce a bug in a dev story and use it to confirm the fix, rather than reaching for the Dextinity demo or a consuming project.
 
+#### Docs page
+
+Every autodocs page has the same order as a page of the design system draft: description, examples, CSS variables, props, and rules. The story's `meta.parameters` provide the parts that the TSDoc can't:
+
+- **`tokens`**: the component's token file, imported with `?raw` (`import tokens from "../Button.tokens.scss?raw"`). The "CSS variables" table lists each token with its description and its value in the brand and color scheme picked in the toolbar. The description is the `//` comment directly above the token's declaration, so every token in a token file has one.
+- **`rules`**: `{ dos: string[], donts: string[] }`, the rules for using the component, taken from the draft. Text in backticks shows as code.
+
+The props table comes from the TSDoc of the props, so every prop has a description.
+
 #### Pattern pages
 
-A pattern page is an MDX page in `src/docs/patterns/` with the title `Patterns/<Name>`, named in sentence case after the part of an application it covers. It explains when to use which component and how to combine them, and links to the docs pages of the components it uses. It states what to do, not why. Its examples are stories in `src/docs/patterns/__stories__/`, tagged `["!dev", "!autodocs", "!manifest"]`.
+A pattern page is an MDX page in `src/docs/patterns/` with the title `Patterns/<Name>` (or in `src/docs/shell/` with the title `Shell/<Name>` for the parts of the app frame), named in sentence case after the part of an application it covers. It explains when to use which component and how to combine them, and links to the docs pages of the components it uses. It states what to do, not why. Its examples are stories in the `__stories__/` folder next to it, tagged `["!dev", "!autodocs", "!manifest"]`.
 
 ## Development
 
@@ -214,15 +223,19 @@ Run from `packages/ui`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pn
 
 ## Theme
 
-Components read their colors, metrics, and font family from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-typography-…)`, `var(--dextinity-brand-font-family-sans)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object. How applications use and override the tokens is in [Theme → Overview](src/docs/theme/Overview.mdx).
+Components read their colors, metrics, and font family from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-typography-…)`, `var(--dextinity-brand-font-family-sans)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object. How applications use and override the tokens is in [Tokens → Overview](src/docs/foundations/tokens/Overview.mdx).
 
 ### Token layers
 
-The tokens are defined in five SCSS partials under [`src/theme/`](src/theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. `_components.scss` includes the `tokens` mixin of each component's `<ComponentName>.tokens.scss`. A token is defined in the folder of the component its name starts with, and other components can read it: `IconButton` uses the `--dextinity-button-…` colors from `Button.tokens.scss`. Tokens of components that don't exist yet stay in `_components.scss` until the component is added. The prop-value types live in [`src/theme/types.ts`](src/theme/types.ts).
+The tokens are defined in SCSS partials under [`src/theme/`](src/theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), the brands in `brands/`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. Each brand has its own file: `brands/_dextinity.scss` defines all brand tokens on `:root` and `[data-dextinity-brand="dextinity"]`, and `brands/_aiHub.scss` overrides only the tokens in which AI Hub differs. Media and container queries can't read custom properties, so the breakpoints are SCSS variables in `_breakpoints.scss`. `_components.scss` includes the `tokens` mixin of each component's `<ComponentName>.tokens.scss`. A token is defined in the folder of the component its name starts with, and other components can read it: `IconButton` uses the `--dextinity-button-…` colors from `Button.tokens.scss`. Tokens of components that don't exist yet stay in `_components.scss` until the component is added. The prop-value types live in [`src/theme/types.ts`](src/theme/types.ts).
 
-### Selecting a color scheme
+### Styles without hard-coded values
 
-`Theme` selects the active color scheme. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code.
+Stylesheets — of components, stories, and docs — use tokens (`var(--dextinity-…)`) or, in queries, the variables of `_breakpoints.scss` instead of literal sizes, colors, and durations. Literal values belong in the token files only. `0`, unitless flex factors, and percentages are fine.
+
+### Selecting a color scheme and a brand
+
+`Theme` selects the active color scheme and, with `brand`, one of the two brands: `dextinity` or `ai-hub`. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code. The Storybook toolbar offers the three color schemes and the two brands, and no option that follows the operating system.
 
 ## Icons
 

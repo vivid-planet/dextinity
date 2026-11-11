@@ -3,10 +3,10 @@ import "./colorSchemeBackground.scss";
 import type { Decorator } from "@storybook/react-vite";
 import { type PropsWithChildren, useEffect } from "react";
 
-import { useAppliedColorScheme } from "./colorScheme";
+import { useToolbarColorScheme } from "./colorScheme";
 
 function ColorSchemeBackground({ children }: PropsWithChildren) {
-    const colorScheme = useAppliedColorScheme();
+    const colorScheme = useToolbarColorScheme();
 
     useEffect(() => {
         document.body.dataset.dextinityColorScheme = colorScheme;

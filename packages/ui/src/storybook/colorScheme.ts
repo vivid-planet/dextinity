@@ -2,24 +2,21 @@ import { useSyncExternalStore } from "react";
 
 import type { ThemeColorScheme } from "../theme/types";
 
-type ToolbarColorScheme = ThemeColorScheme | "system";
-
-const toolbarColorSchemeTitles: Record<ToolbarColorScheme, string> = {
+const toolbarColorSchemeTitles: Record<ThemeColorScheme, string> = {
     light: "Light mode",
     dark: "Dark mode",
     "high-contrast": "High contrast mode",
-    system: "Follow system",
 };
 
 export const toolbarColorSchemeOptions = Object.entries(toolbarColorSchemeTitles).map(([value, title]) => ({ value, title }));
 
 const toolbarColorSchemeStorageKey = "dextinity-ui-color-scheme";
 
-function isToolbarColorScheme(value: unknown): value is ToolbarColorScheme {
+function isToolbarColorScheme(value: unknown): value is ThemeColorScheme {
     return typeof value === "string" && value in toolbarColorSchemeTitles;
 }
 
-export function getToolbarColorScheme(): ToolbarColorScheme {
+export function getToolbarColorScheme(): ThemeColorScheme {
     const storedValue = localStorage.getItem(toolbarColorSchemeStorageKey);
     return isToolbarColorScheme(storedValue) ? storedValue : "light";
 }
@@ -30,25 +27,7 @@ export function storeToolbarColorScheme(value: unknown) {
     }
 }
 
-const moreContrastQuery = window.matchMedia("(prefers-contrast: more)");
-const darkColorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-function getSystemColorScheme(): ThemeColorScheme {
-    if (moreContrastQuery.matches) {
-        return "high-contrast";
-    }
-    if (darkColorSchemeQuery.matches) {
-        return "dark";
-    }
-    return "light";
-}
-
-function getAppliedColorScheme(): ThemeColorScheme {
-    const toolbarColorScheme = getToolbarColorScheme();
-    return toolbarColorScheme === "system" ? getSystemColorScheme() : toolbarColorScheme;
-}
-
-function subscribeToAppliedColorScheme(onChange: () => void) {
+function subscribeToToolbarColorScheme(onChange: () => void) {
     function handleStorage(event: StorageEvent) {
         if (event.key === toolbarColorSchemeStorageKey) {
             onChange();
@@ -56,15 +35,9 @@ function subscribeToAppliedColorScheme(onChange: () => void) {
     }
 
     window.addEventListener("storage", handleStorage);
-    moreContrastQuery.addEventListener("change", onChange);
-    darkColorSchemeQuery.addEventListener("change", onChange);
-    return () => {
-        window.removeEventListener("storage", handleStorage);
-        moreContrastQuery.removeEventListener("change", onChange);
-        darkColorSchemeQuery.removeEventListener("change", onChange);
-    };
+    return () => window.removeEventListener("storage", handleStorage);
 }
 
-export function useAppliedColorScheme(): ThemeColorScheme {
-    return useSyncExternalStore(subscribeToAppliedColorScheme, getAppliedColorScheme);
+export function useToolbarColorScheme(): ThemeColorScheme {
+    return useSyncExternalStore(subscribeToToolbarColorScheme, getToolbarColorScheme);
 }

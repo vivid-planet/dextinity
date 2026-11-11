@@ -2,12 +2,19 @@
 @use "../components/chip/Chip.tokens" as chip;
 @use "../components/formHelperText/FormHelperText.tokens" as formHelperText;
 @use "../components/formLabel/FormLabel.tokens" as formLabel;
+@use "../components/icon/Icon.tokens" as icon;
 @use "../components/iconButton/IconButton.tokens" as iconButton;
 @use "../components/input/Input.tokens" as input;
-@use "../components/mainNavigationItem/MainNavigationItem.tokens" as mainNavigationItem;
+@use "../components/navItem/NavItem.tokens" as navItem;
 @use "../components/menuSectionHeader/MenuSectionHeader.tokens" as menuSectionHeader;
+@use "../components/spinner/Spinner.tokens" as spinner;
 
 @layer dextinity {
+    // Icons have no colors of their own, so they keep their size outside of a `Theme` too
+    :root {
+        @include icon.tokens;
+    }
+
     [data-dextinity-color-scheme] {
         @include button.tokens;
         @include chip.tokens;
@@ -15,8 +22,11 @@
         @include formLabel.tokens;
         @include iconButton.tokens;
         @include input.tokens;
-        @include mainNavigationItem.tokens;
+        @include navItem.tokens;
         @include menuSectionHeader.tokens;
+        @include spinner.tokens;
+
+        --dextinity-side-nav-width: 280px;
 
         --dextinity-checkbox-size: 20px;
         --dextinity-checkbox-radius: var(--dextinity-radius-sm);

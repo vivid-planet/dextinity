@@ -4,6 +4,7 @@ import { expect, fn, userEvent } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../IconButton";
+import tokens from "../IconButton.tokens.scss?raw";
 
 const iconOptions = {
     Favorite: <Icon name="favorite" />,
@@ -12,7 +13,22 @@ const iconOptions = {
 
 const meta = {
     component: IconButton,
-    title: "Components/IconButton",
+    title: "Building blocks/IconButton",
+    parameters: {
+        tokens,
+        rules: {
+            dos: [
+                "Always with a tooltip and an `aria-label` that names the action.",
+                "One icon per meaning – the globe always means scope or global.",
+                "Show the keyboard shortcut in the tooltip, if there is one.",
+            ],
+            donts: [
+                "Icons as the only information for a status.",
+                "An icon button for an action whose icon isn't clear without a label.",
+                "Mixing filled and outlined icons.",
+            ],
+        },
+    },
     decorators: [themeDecorator],
     args: {
         "aria-label": "Add to favorites",

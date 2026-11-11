@@ -1,11 +1,13 @@
+@use "../../../theme/breakpoints";
+
 .toolbar {
     container-type: inline-size;
-    border-block-end: 1px solid var(--dextinity-color-border-default);
+    border-block-end: var(--dextinity-border-width-thin) solid var(--dextinity-color-border-default);
     background-color: var(--dextinity-color-background-default);
 }
 
 .narrow {
-    max-inline-size: 390px;
+    max-inline-size: calc(var(--dextinity-unit-48) * 2);
 }
 
 .breadcrumb {
@@ -14,10 +16,10 @@
     gap: var(--dextinity-unit-2);
     margin: 0;
     padding: var(--dextinity-unit-2) var(--dextinity-unit-4);
-    border-block-end: 1px solid var(--dextinity-color-border-default);
+    border-block-end: var(--dextinity-border-width-thin) solid var(--dextinity-color-border-default);
     list-style: none;
 
-    @container (min-width: 600px) {
+    @container (min-width: #{breakpoints.$small}) {
         padding-inline: var(--dextinity-unit-6);
     }
 }
@@ -38,7 +40,7 @@
     gap: var(--dextinity-unit-4);
     padding: var(--dextinity-unit-3) var(--dextinity-unit-4);
 
-    @container (min-width: 600px) {
+    @container (min-width: #{breakpoints.$small}) {
         padding-inline: var(--dextinity-unit-6);
     }
 }
@@ -65,13 +67,13 @@
     display: none;
     gap: var(--dextinity-unit-2);
 
-    @container (min-width: 600px) {
+    @container (min-width: #{breakpoints.$small}) {
         display: flex;
     }
 }
 
 .moreActions {
-    @container (min-width: 600px) {
+    @container (min-width: #{breakpoints.$small}) {
         display: none;
     }
 }

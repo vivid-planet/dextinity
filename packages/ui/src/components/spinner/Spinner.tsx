@@ -14,7 +14,11 @@ export type SpinnerOwnerState = {
 };
 
 export interface SpinnerProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children"> {
-    /** @defaultValue `"md"` */
+    /**
+     * `md` in place of an icon, such as in a button or a field; `lg` and `xl` for larger areas that load.
+     *
+     * @defaultValue `"md"`
+     */
     size?: SpinnerSize;
     /** Names what is loading. Without a name, the spinner is hidden from assistive technology. */
     "aria-label"?: string;

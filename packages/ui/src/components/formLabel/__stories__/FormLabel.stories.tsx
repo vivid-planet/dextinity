@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { FormLabel } from "../FormLabel";
+import tokens from "../FormLabel.tokens.scss?raw";
 import styles from "./formLabel.module.scss";
 
 const helperIconOptions = {
@@ -12,7 +13,22 @@ const helperIconOptions = {
 
 const meta = {
     component: FormLabel,
-    title: "Components/FormLabel",
+    title: "Building blocks/FormLabel",
+    parameters: {
+        tokens,
+        rules: {
+            dos: [
+                "Label above the field, always visible.",
+                "Mark required fields with an asterisk (`required`).",
+                "Short labels that name the data, not the action.",
+            ],
+            donts: [
+                "A placeholder as the only label.",
+                "Marking required fields only by color.",
+                "Long explanations in the label – put them in the helper text.",
+            ],
+        },
+    },
     decorators: [themeDecorator],
     args: {
         children: "Label",

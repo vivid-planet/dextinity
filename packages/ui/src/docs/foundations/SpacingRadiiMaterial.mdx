@@ -1,0 +1,75 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Rules } from "../../storybook/docs/Rules";
+import { TokenTable } from "../../storybook/docs/TokenTable";
+
+<Meta title="Foundations/Spacing, radii & material" />
+
+# Spacing, radii & material
+
+Space follows a grid of 4 px steps. Corner radii come from the brand, so a brand can make all components rounder or sharper at once.
+
+## Space between and around sections
+
+These grow from the desktop breakpoint on.
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-space-layout-xs", description: "Between fields in dense areas." },
+        { name: "--dextinity-space-layout-sm", description: "Between related groups." },
+        { name: "--dextinity-space-layout-md", description: "Padding of panels." },
+        { name: "--dextinity-space-layout-lg", description: "Between sections." },
+        { name: "--dextinity-space-layout-xl", description: "Page margins." },
+        { name: "--dextinity-space-layout-2xl", description: "Between large sections." },
+    ]}
+/>
+
+## Units
+
+For space inside small groups, such as between an icon and its label.
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-unit-1", description: "Icon to text, tight." },
+        { name: "--dextinity-unit-2", description: "Inside controls." },
+        { name: "--dextinity-unit-3", description: "Fields in dense areas." },
+        { name: "--dextinity-unit-4", description: "Padding of small surfaces." },
+        { name: "--dextinity-unit-6", description: "Between sections of a form." },
+        { name: "--dextinity-unit-8", description: "Page margins on large screens." },
+        { name: "--dextinity-unit-12", description: "Large sections." },
+    ]}
+/>
+
+## Radii
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-brand-radius-control", description: "Controls, such as buttons." },
+        { name: "--dextinity-brand-radius-control-small", description: "Small controls." },
+        { name: "--dextinity-brand-radius-forms", description: "Fields." },
+        { name: "--dextinity-brand-radius-surface", description: "Panels." },
+        { name: "--dextinity-brand-radius-card", description: "Cards." },
+        { name: "--dextinity-brand-radius-modal", description: "Dialogs." },
+        { name: "--dextinity-brand-radius-tooltip", description: "Tooltips." },
+        { name: "--dextinity-brand-radius-pill", description: "Pill shapes, such as chips." },
+    ]}
+/>
+
+## Border widths
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-border-width-thin", description: "Borders of controls, fields, and surfaces." },
+        { name: "--dextinity-border-width-medium", description: "Focus rings and indicators." },
+        { name: "--dextinity-border-width-thick", description: "Focus rings in high contrast." },
+        { name: "--dextinity-focus-ring-width", description: "Width of the focus ring in the current color scheme." },
+        { name: "--dextinity-focus-ring-offset", description: "Space between an element and its focus ring." },
+    ]}
+/>
+
+## Rules
+
+<Rules
+    dos={["Space from the tokens, in steps of 4 px.", "Arrange components with flexbox or grid, and set the space with `gap`.", "Corner radii from the brand tokens, so that they follow the brand."]}
+    donts={["Pixel values in component styles.", "Margins on components to space them."]}
+/>

@@ -14,6 +14,18 @@
         --dextinity-color-indigo-900: rgb(13 12 48);
         --dextinity-color-indigo-950: rgb(7 6 24);
 
+        --dextinity-color-amethyst-50: rgb(238 235 249);
+        --dextinity-color-amethyst-100: rgb(220 215 242);
+        --dextinity-color-amethyst-200: rgb(185 176 229);
+        --dextinity-color-amethyst-300: rgb(150 136 217);
+        --dextinity-color-amethyst-400: rgb(115 97 204);
+        --dextinity-color-amethyst-500: rgb(80 57 191);
+        --dextinity-color-amethyst-600: rgb(64 46 153);
+        --dextinity-color-amethyst-700: rgb(48 34 115);
+        --dextinity-color-amethyst-800: rgb(32 23 76);
+        --dextinity-color-amethyst-900: rgb(16 11 38);
+        --dextinity-color-amethyst-950: rgb(8 6 19);
+
         --dextinity-color-teal-50: rgb(230 251 249);
         --dextinity-color-teal-100: rgb(194 244 240);
         --dextinity-color-teal-200: rgb(135 232 227);
@@ -132,10 +144,12 @@
         --dextinity-radius-2xl: 24px;
         --dextinity-radius-full: 9999px;
 
-        --dextinity-font-family-inter: "Inter Variable", system-ui, sans-serif;
-        --dextinity-font-family-mono: ui-monospace;
+        --dextinity-border-width-thin: 1px;
+        --dextinity-border-width-medium: 2px;
+        --dextinity-border-width-thick: 3px;
 
-        --dextinity-font-family-source-sans-pro: "Source Sans Pro";
+        --dextinity-font-family-inter: "Inter Variable", system-ui, sans-serif;
+        --dextinity-font-family-mono: ui-monospace, monospace;
 
         --dextinity-font-weight-regular: 400;
         --dextinity-font-weight-medium: 500;

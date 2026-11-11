@@ -68,7 +68,11 @@ export interface ButtonProps<
      * @defaultValue `"primary"`
      */
     color?: ButtonColor;
-    /** @defaultValue `"default"` */
+    /**
+     * `small` for buttons in rows, panels, and toolbars.
+     *
+     * @defaultValue `"default"`
+     */
     size?: ButtonSize;
     /**
      * Prevents interaction with the button.

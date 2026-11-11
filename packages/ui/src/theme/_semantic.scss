@@ -86,8 +86,8 @@
         --dextinity-color-border-tinted-strong: var(--dextinity-brand-color-neutral-tinted-500);
         --dextinity-color-border-tinted-focus: var(--dextinity-brand-color-primary-300);
 
-        --dextinity-focus-ring-width: 2px;
-        --dextinity-focus-ring-offset: 2px;
+        --dextinity-focus-ring-width: var(--dextinity-border-width-medium);
+        --dextinity-focus-ring-offset: var(--dextinity-border-width-medium);
 
         --dextinity-color-action-success-default: var(--dextinity-brand-color-success-400);
         --dextinity-color-action-success-hover: var(--dextinity-brand-color-success-300);
@@ -208,8 +208,8 @@
         --dextinity-color-border-tinted-strong: var(--dextinity-color-white);
         --dextinity-color-border-tinted-focus: var(--dextinity-color-amber-300);
 
-        --dextinity-focus-ring-width: 3px;
-        --dextinity-focus-ring-offset: 2px;
+        --dextinity-focus-ring-width: var(--dextinity-border-width-thick);
+        --dextinity-focus-ring-offset: var(--dextinity-border-width-medium);
 
         --dextinity-color-action-success-default: var(--dextinity-brand-color-success-200);
         --dextinity-color-action-success-hover: var(--dextinity-brand-color-success-100);
@@ -330,8 +330,8 @@
         --dextinity-color-border-tinted-strong: var(--dextinity-brand-color-neutral-tinted-400);
         --dextinity-color-border-tinted-focus: var(--dextinity-brand-color-primary-500);
 
-        --dextinity-focus-ring-width: 2px;
-        --dextinity-focus-ring-offset: 2px;
+        --dextinity-focus-ring-width: var(--dextinity-border-width-medium);
+        --dextinity-focus-ring-offset: var(--dextinity-border-width-medium);
 
         --dextinity-color-action-success-default: var(--dextinity-brand-color-success-500);
         --dextinity-color-action-success-hover: var(--dextinity-brand-color-success-600);

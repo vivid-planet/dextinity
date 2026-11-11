@@ -63,7 +63,11 @@ export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinn
      * @defaultValue `"primary"`
      */
     color?: IconButtonColor;
-    /** @defaultValue `"default"` */
+    /**
+     * `small` for icon buttons in rows, panels, and toolbars.
+     *
+     * @defaultValue `"default"`
+     */
     size?: IconButtonSize;
     /**
      * Prevents interaction with the button.

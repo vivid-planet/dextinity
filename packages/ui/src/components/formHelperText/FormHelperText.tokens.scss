@@ -1,13 +1,22 @@
 @mixin tokens {
+    // Space between the field and the text.
     --dextinity-form-helper-text-gap: var(--dextinity-unit-1);
+    // Space between the icon, the text, and the character count.
     --dextinity-form-helper-text-gap-internal: var(--dextinity-unit-1-5);
 
+    // Font size of the text.
     --dextinity-form-helper-text-font-size: var(--dextinity-typography-body-sm-size);
+    // Line height of the text.
     --dextinity-form-helper-text-font-line-height: var(--dextinity-typography-body-sm-line-height);
+    // Font weight of the text.
     --dextinity-form-helper-text-font-weight: var(--dextinity-font-weight-regular);
+    // Name of the text's font weight in the design files.
     --dextinity-form-helper-text-font-weight-style: var(--dextinity-font-weight-regular-style);
 
+    // Text color of a hint.
     --dextinity-form-helper-text-type-hint-foreground: var(--dextinity-color-foreground-muted);
+    // Text and icon color of an error message.
     --dextinity-form-helper-text-type-error-foreground: var(--dextinity-color-feedback-danger-default);
+    // Text color of the character count.
     --dextinity-form-helper-text-count-foreground: var(--dextinity-color-foreground-muted);
 }

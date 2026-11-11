@@ -4,6 +4,7 @@ import { expect, fn, userEvent } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Button } from "../Button";
+import tokens from "../Button.tokens.scss?raw";
 
 const iconOptions = {
     Favorite: <Icon name="favorite" />,
@@ -12,7 +13,22 @@ const iconOptions = {
 
 const meta = {
     component: Button,
-    title: "Components/Button",
+    title: "Building blocks/Button",
+    parameters: {
+        tokens,
+        rules: {
+            dos: [
+                "Label as a verb: Save, Publish.",
+                "One primary action per area; all other actions are secondary or text buttons.",
+                "For long actions, show `loading`. The button stays in place.",
+            ],
+            donts: [
+                "Two primary buttons next to each other.",
+                "Disabled buttons without explanation – show the validation instead.",
+                "“OK” or “Yes” as the label.",
+            ],
+        },
+    },
     decorators: [themeDecorator],
     args: {
         children: "Button",

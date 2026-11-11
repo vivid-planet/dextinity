@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--dextinity-unit-6);
-    max-inline-size: 640px;
+    max-inline-size: calc(var(--dextinity-unit-40) * 4);
 }
 
 .field {
@@ -38,7 +38,7 @@
     gap: var(--dextinity-unit-4);
 
     > * {
-        flex: 1 1 200px;
+        flex: 1 1 var(--dextinity-unit-48);
     }
 
     > :first-child {

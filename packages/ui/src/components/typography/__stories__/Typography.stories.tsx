@@ -1,11 +1,19 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import tokens from "../../../theme/_responsive.scss?raw";
 import { Typography } from "../Typography";
 
 const meta = {
     component: Typography,
-    title: "Components/Typography",
+    title: "Foundations/Typography",
+    parameters: {
+        tokens,
+        rules: {
+            dos: ["Exactly one display title per view.", "Tabular figures for numbers in tables.", "Hierarchy through size and weight, not color."],
+            donts: ["Text smaller than 12 px.", "Bold and color at the same time for emphasis.", "Long paragraphs in capitals."],
+        },
+    },
     decorators: [themeDecorator],
     args: {
         children: "The quick brown fox jumps over the lazy dog",

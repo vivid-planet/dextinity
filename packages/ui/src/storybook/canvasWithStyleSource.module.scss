@@ -1,7 +1,21 @@
+// The code panel continues Storybook's own source block, so it takes Storybook's colors and metrics, not the tokens of the theme
+$storybook-block-spacing: 25px 0 40px;
+$storybook-radius: 4px;
+$storybook-border: 1px solid rgb(38 85 115 / 15%);
+$storybook-code-background: #222;
+$storybook-tab-divider: 1px solid rgb(255 255 255 / 10%);
+$storybook-tab-padding: 10px 16px 8px;
+$storybook-tab-indicator-width: 2px;
+$storybook-tab-foreground: rgb(255 255 255 / 60%);
+$storybook-tab-foreground-active: #fff;
+$storybook-tab-indicator: #029cfd;
+$storybook-tab-font-size: 13px;
+$storybook-tab-font-weight: 700;
+
 .root {
     display: flex;
     flex-direction: column;
-    margin: 25px 0 40px;
+    margin: $storybook-block-spacing;
 
     :global(.sbdocs-preview) {
         margin: 0;
@@ -20,10 +34,10 @@
 
 .codePanel {
     overflow: hidden;
-    border: 1px solid rgb(38 85 115 / 15%);
+    border: $storybook-border;
     border-top: 0;
-    border-radius: 0 0 4px 4px;
-    background-color: #222;
+    border-radius: 0 0 $storybook-radius $storybook-radius;
+    background-color: $storybook-code-background;
 
     :global(.docblock-source) {
         margin: 0;
@@ -35,26 +49,26 @@
 
 .tabList {
     display: flex;
-    border-bottom: 1px solid rgb(255 255 255 / 10%);
+    border-bottom: $storybook-tab-divider;
 }
 
 .tab {
-    padding: 10px 16px 8px;
+    padding: $storybook-tab-padding;
     border: 0;
-    border-bottom: 2px solid transparent;
+    border-bottom: $storybook-tab-indicator-width solid transparent;
     background: none;
-    color: rgb(255 255 255 / 60%);
+    color: $storybook-tab-foreground;
     font: inherit;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: $storybook-tab-font-size;
+    font-weight: $storybook-tab-font-weight;
     cursor: pointer;
 
     &:hover {
-        color: #fff;
+        color: $storybook-tab-foreground-active;
     }
 
     &[aria-pressed="true"] {
-        border-bottom-color: #029cfd;
-        color: #fff;
+        border-bottom-color: $storybook-tab-indicator;
+        color: $storybook-tab-foreground-active;
     }
 }

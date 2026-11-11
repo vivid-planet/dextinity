@@ -8,7 +8,7 @@ import { Input } from "../Input";
 
 const meta = {
     component: Input,
-    title: "Components/Input",
+    title: "Building blocks/Input",
     tags: ["development", "!autodocs", "!manifest"],
     decorators: [themeDecorator],
 } satisfies Meta<typeof Input>;

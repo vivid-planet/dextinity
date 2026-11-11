@@ -28,7 +28,7 @@
     }
 
     &:active:not([data-disabled], [data-loading]) {
-        transform: scale(0.98);
+        transform: scale(var(--dextinity-button-active-scale));
         filter: brightness(var(--dextinity-button-active-brightness));
     }
 
@@ -152,11 +152,11 @@
 
     // Forced colors remove backgrounds and box shadows, which would leave the button without an edge and without a focus ring
     @media (forced-colors: active) {
-        border: 1px solid;
+        border: var(--dextinity-button-forced-colors-border-width) solid;
 
         &:focus-visible {
-            outline: 2px solid Highlight;
-            outline-offset: 2px;
+            outline: var(--dextinity-focus-ring-width) solid Highlight;
+            outline-offset: var(--dextinity-focus-ring-offset);
         }
     }
 }

@@ -12,6 +12,10 @@
     --dextinity-button-disabled-opacity: 0.42;
     // Darkens the button while it is pressed
     --dextinity-button-active-brightness: 0.93;
+    // Shrinks the button while it is pressed
+    --dextinity-button-active-scale: 0.98;
+    // The edge that replaces the background and shadow in forced colors, e.g. a Windows contrast theme
+    --dextinity-button-forced-colors-border-width: 1px;
 
     --dextinity-button-primary-background: var(--dextinity-gradient-brand);
     --dextinity-button-primary-background-hover: var(--dextinity-color-accent);

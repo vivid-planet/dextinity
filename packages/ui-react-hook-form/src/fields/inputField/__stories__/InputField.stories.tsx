@@ -11,7 +11,7 @@ function FormSaveState() {
 }
 
 const meta = {
-    title: "Forms/React Hook Form/InputField",
+    title: "Fields/InputField",
     component: InputField,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { title: "Benefits" } },

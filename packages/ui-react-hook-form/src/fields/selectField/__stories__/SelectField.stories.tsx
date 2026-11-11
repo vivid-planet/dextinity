@@ -12,7 +12,7 @@ const categories = [
 ];
 
 const meta = {
-    title: "Forms/React Hook Form/SelectField",
+    title: "Fields/SelectField",
     component: SelectField,
     decorators: [reactHookFormDecorator],
     args: { name: "category", label: "Category", options: categories, placeholder: "Choose a category" },

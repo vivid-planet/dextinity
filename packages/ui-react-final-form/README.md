@@ -2,7 +2,7 @@
 
 An **experimental** adapter package that connects the form controls of [`@dextinity/ui`](../ui/README.md) to [React Final Form](https://final-form.org/react). `@dextinity/ui` stays free of form logic: its fields are plain controlled components, and each adapter here binds one of them to a field of the surrounding `<Form>`.
 
-[`@dextinity/ui-react-hook-form`](../ui-react-hook-form/README.md) offers the same adapters for React Hook Form, with the same names and the same field-level props, so switching libraries is a matter of imports and the library-specific configuration props.
+[`@dextinity/ui-react-hook-form`](../ui-react-hook-form/README.md) offers the same adapters for React Hook Form, with the same names and the same field-level props, so switching libraries is a matter of imports and the library-specific configuration props. Every form built with `@dextinity/ui` binds its fields through one of the two packages.
 
 ## Usage
 
@@ -177,4 +177,4 @@ A new adapter gets its own folder in `src/fields/` and its export in `src/index.
 
 ## Stories and tests
 
-The stories live in `src/**/__stories__/` and are shown in the Storybook of `@dextinity/ui`, under `Forms/Final Form`, with a complete edit page as `Example form`; run them with `pnpm run test:storybook` in `packages/ui`. Unit tests (`pnpm run test:unit`, `jsdom`) in each adapter's `__tests__/` folder cover the value and error mapping.
+The stories live in `src/**/__stories__/` and are shown in this package's own Storybook (`pnpm run storybook`), with a complete edit page as `Example form` and the adapters under `Fields`. It renders them with the built `@dextinity/ui` (`lib/` and its styles) inside its `Theme`; the toolbar switches the color scheme and density. The root Storybook (`storybook/`) composes it as `@dextinity/ui-react-final-form`. Run the stories as tests with `pnpm run test:storybook`. Unit tests (`pnpm run test:unit`, `jsdom`) in each adapter's `__tests__/` folder cover the value and error mapping.

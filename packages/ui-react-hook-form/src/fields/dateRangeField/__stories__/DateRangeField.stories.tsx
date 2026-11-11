@@ -5,7 +5,7 @@ import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFra
 import { DateRangeField } from "../DateRangeField";
 
 const meta = {
-    title: "Forms/React Hook Form/DateRangeField",
+    title: "Fields/DateRangeField",
     component: DateRangeField,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { period: { start: "2026-11-06", end: "2026-11-12" } } },

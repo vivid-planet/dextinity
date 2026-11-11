@@ -5,7 +5,7 @@ import { finalFormDecorator } from "../../../storybook/FinalFormStoryFrame";
 import { CheckboxGroupField } from "../CheckboxGroupField";
 
 const meta = {
-    title: "Forms/Final Form/CheckboxGroupField",
+    title: "Fields/CheckboxGroupField",
     component: CheckboxGroupField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { scopes: ["main-de"] } },

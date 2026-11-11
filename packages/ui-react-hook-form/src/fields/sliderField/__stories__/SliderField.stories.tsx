@@ -5,7 +5,7 @@ import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFra
 import { SliderField } from "../SliderField";
 
 const meta = {
-    title: "Forms/React Hook Form/SliderField",
+    title: "Fields/SliderField",
     component: SliderField,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { opacity: 40 } },

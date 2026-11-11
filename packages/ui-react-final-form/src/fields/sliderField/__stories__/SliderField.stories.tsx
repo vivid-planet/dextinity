@@ -5,7 +5,7 @@ import { finalFormDecorator } from "../../../storybook/FinalFormStoryFrame";
 import { SliderField } from "../SliderField";
 
 const meta = {
-    title: "Forms/Final Form/SliderField",
+    title: "Fields/SliderField",
     component: SliderField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { opacity: 40 } },

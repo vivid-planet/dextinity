@@ -5,7 +5,7 @@ import { finalFormDecorator } from "../../../storybook/FinalFormStoryFrame";
 import { TextareaField } from "../TextareaField";
 
 const meta = {
-    title: "Forms/Final Form/TextareaField",
+    title: "Fields/TextareaField",
     component: TextareaField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { teaser: "We build digital products that stay in use for many years." } },

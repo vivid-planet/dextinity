@@ -6,7 +6,7 @@ import { sampleImage } from "../../../storybook/sampleImage";
 import { FocalPointPickerField } from "../FocalPointPickerField";
 
 const meta = {
-    title: "Forms/React Hook Form/FocalPointPickerField",
+    title: "Fields/FocalPointPickerField",
     component: FocalPointPickerField,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { focalPoint: { x: 0.56, y: 0.34 } } },

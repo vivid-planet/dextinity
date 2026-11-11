@@ -5,7 +5,7 @@ import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFra
 import { CheckboxField } from "../CheckboxField";
 
 const meta = {
-    title: "Forms/React Hook Form/CheckboxField",
+    title: "Fields/CheckboxField",
     component: CheckboxField,
     decorators: [reactHookFormDecorator],
     args: { name: "newsletter", children: "Subscribe to the newsletter" },

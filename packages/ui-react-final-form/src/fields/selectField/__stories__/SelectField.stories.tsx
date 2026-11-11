@@ -12,7 +12,7 @@ const categories = [
 ];
 
 const meta = {
-    title: "Forms/Final Form/SelectField",
+    title: "Fields/SelectField",
     component: SelectField,
     decorators: [finalFormDecorator],
     args: { name: "category", label: "Category", options: categories, placeholder: "Choose a category" },

@@ -5,7 +5,7 @@ import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFra
 import { SegmentedControlField } from "../SegmentedControlField";
 
 const meta = {
-    title: "Forms/React Hook Form/SegmentedControlField",
+    title: "Fields/SegmentedControlField",
     component: SegmentedControlField,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { layout: "grid" } },

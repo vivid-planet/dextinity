@@ -11,7 +11,7 @@ function FormSaveState() {
 }
 
 const meta = {
-    title: "Forms/Final Form/InputField",
+    title: "Fields/InputField",
     component: InputField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { title: "Benefits" } },

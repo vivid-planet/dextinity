@@ -5,7 +5,7 @@ import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFra
 import { RadioGroupField } from "../RadioGroupField";
 
 const meta = {
-    title: "Forms/React Hook Form/RadioGroupField",
+    title: "Fields/RadioGroupField",
     component: RadioGroupField,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { employment: "full-time" } },

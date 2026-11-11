@@ -1,17 +1,17 @@
+// The values match the group labels of `SideNav`.
 @mixin tokens {
-    --dextinity-menu-section-header-gap: var(--dextinity-unit-1);
-    --dextinity-menu-section-header-padding-horizontal: var(--dextinity-unit-3);
-    --dextinity-menu-section-header-padding-vertical: var(--dextinity-unit-2);
+    --dextinity-menu-section-header-gap: var(--dextinity-space-1);
+    --dextinity-menu-section-header-padding-horizontal: var(--dextinity-space-3);
+    --dextinity-menu-section-header-padding-vertical: var(--dextinity-space-2);
     --dextinity-menu-section-header-expand-icon-size: 12px;
 
-    --dextinity-menu-section-header-font-size: var(--dextinity-typography-body-sm-size);
-    --dextinity-menu-section-header-font-line-height: var(--dextinity-typography-body-sm-line-height);
-    --dextinity-menu-section-header-font-weight: var(--dextinity-font-weight-semibold);
-    --dextinity-menu-section-header-font-weight-style: var(--dextinity-font-weight-semibold-style);
+    --dextinity-menu-section-header-font-size: var(--dextinity-typography-label-size);
+    --dextinity-menu-section-header-font-line-height: var(--dextinity-typography-small-line-height);
+    --dextinity-menu-section-header-font-weight: 500;
 
-    --dextinity-menu-section-header-default-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-menu-section-header-default-icon: var(--dextinity-color-foreground-subtle);
+    --dextinity-menu-section-header-default-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-menu-section-header-default-icon: var(--dextinity-color-text-tertiary);
 
-    --dextinity-menu-section-header-hover-foreground: var(--dextinity-color-foreground-muted);
-    --dextinity-menu-section-header-hover-icon: var(--dextinity-color-foreground-muted);
+    --dextinity-menu-section-header-hover-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-menu-section-header-hover-icon: var(--dextinity-color-text-secondary);
 }

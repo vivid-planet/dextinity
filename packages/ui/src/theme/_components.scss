@@ -35,6 +35,7 @@
 @use "../components/finderLayout/FinderLayout.tokens" as finderLayout;
 @use "../components/focalPointPicker/FocalPointPicker.tokens" as focalPointPicker;
 @use "../components/formHelperText/FormHelperText.tokens" as formHelperText;
+@use "../components/formLabel/FormLabel.tokens" as formLabel;
 @use "../components/icon/Icon.tokens" as icon;
 @use "../components/iconButton/IconButton.tokens" as iconButton;
 @use "../components/input/Input.tokens" as input;
@@ -45,7 +46,9 @@
 @use "../components/listDetailLayout/ListDetailLayout.tokens" as listDetailLayout;
 @use "../components/listLayout/ListLayout.tokens" as listLayout;
 @use "../components/logViewer/LogViewer.tokens" as logViewer;
+@use "../components/mainNavigationItem/MainNavigationItem.tokens" as mainNavigationItem;
 @use "../components/menu/Menu.tokens" as menu;
+@use "../components/menuSectionHeader/MenuSectionHeader.tokens" as menuSectionHeader;
 @use "../components/miniChart/MiniChart.tokens" as miniChart;
 @use "../components/numberInput/NumberInput.tokens" as numberInput;
 @use "../components/overviewLayout/OverviewLayout.tokens" as overviewLayout;
@@ -118,6 +121,7 @@
     @include finderLayout.tokens;
     @include focalPointPicker.tokens;
     @include formHelperText.tokens;
+    @include formLabel.tokens;
     @include icon.tokens;
     @include iconButton.tokens;
     @include input.tokens;
@@ -128,7 +132,9 @@
     @include listDetailLayout.tokens;
     @include listLayout.tokens;
     @include logViewer.tokens;
+    @include mainNavigationItem.tokens;
     @include menu.tokens;
+    @include menuSectionHeader.tokens;
     @include miniChart.tokens;
     @include numberInput.tokens;
     @include overviewLayout.tokens;

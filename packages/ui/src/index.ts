@@ -119,6 +119,7 @@ export {
     type FocalPointPickerSlotProps,
 } from "./components/focalPointPicker/FocalPointPicker";
 export { FormHelperText, type FormHelperTextOwnerState, type FormHelperTextProps } from "./components/formHelperText/FormHelperText";
+export { FormLabel, type FormLabelOwnerState, type FormLabelProps } from "./components/formLabel/FormLabel";
 export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Icon";
 export type { DefaultIconName, DefaultIconRegistry, IconName, IconRegistry } from "./components/icon/iconRegistry";
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";
@@ -142,6 +143,11 @@ export { ListLayout, type ListLayoutOwnerState, type ListLayoutProps } from "./c
 export { type ListLayoutSlotProps } from "./components/listLayout/ListLayout";
 export { LogViewer, type LogViewerLabels, type LogViewerLineTone, type LogViewerOwnerState } from "./components/logViewer/LogViewer";
 export { type LogViewerProps, type LogViewerSlotProps } from "./components/logViewer/LogViewer";
+export {
+    MainNavigationItem,
+    type MainNavigationItemOwnerState,
+    type MainNavigationItemProps,
+} from "./components/mainNavigationItem/MainNavigationItem";
 export { Menu, type MenuOwnerState, type MenuPlacement, type MenuProps, type MenuSlotProps } from "./components/menu/Menu";
 export { MenuCheckboxItem, type MenuCheckboxItemOwnerState, type MenuCheckboxItemProps } from "./components/menu/MenuCheckboxItem";
 export { type MenuCheckboxItemSlotProps, type MenuCheckboxItemSlots } from "./components/menu/MenuCheckboxItem";
@@ -155,6 +161,7 @@ export { MenuRadioItem, type MenuRadioItemOwnerState, type MenuRadioItemProps } 
 export { type MenuRadioItemSlotProps, type MenuRadioItemSlots } from "./components/menu/MenuRadioItem";
 export { MenuSeparator, type MenuSeparatorOwnerState, type MenuSeparatorProps } from "./components/menu/MenuSeparator";
 export { MenuSubmenu, type MenuSubmenuOwnerState, type MenuSubmenuProps, type MenuSubmenuSlotProps } from "./components/menu/MenuSubmenu";
+export { MenuSectionHeader, type MenuSectionHeaderOwnerState, type MenuSectionHeaderProps } from "./components/menuSectionHeader/MenuSectionHeader";
 export { MiniChart, type MiniChartOwnerState, type MiniChartProps, type MiniChartSlotProps } from "./components/miniChart/MiniChart";
 export { NumberInput, type NumberInputLabels, type NumberInputOwnerState, type NumberInputProps } from "./components/numberInput/NumberInput";
 export { OverviewLayout, type OverviewLayoutOwnerState, type OverviewLayoutProps } from "./components/overviewLayout/OverviewLayout";

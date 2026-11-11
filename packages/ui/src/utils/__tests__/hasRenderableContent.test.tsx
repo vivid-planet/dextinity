@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { hasRenderableContent } from "./hasRenderableContent";
+import { hasRenderableContent } from "../hasRenderableContent";
 
 describe("hasRenderableContent", () => {
     it.each([

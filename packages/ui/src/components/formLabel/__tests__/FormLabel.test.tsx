@@ -2,7 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import type { LabelHTMLAttributes } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { FormLabel } from "./FormLabel";
+import { FormLabel } from "../FormLabel";
 
 function CustomLabel(props: LabelHTMLAttributes<HTMLLabelElement>) {
     return <label {...props} />;

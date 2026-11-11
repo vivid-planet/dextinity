@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { MenuSectionHeader } from "./MenuSectionHeader";
+import { MenuSectionHeader } from "../MenuSectionHeader";
 
 afterEach(cleanup);
 

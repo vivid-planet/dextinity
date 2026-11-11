@@ -1,15 +1,15 @@
+// The values match the label of `Field`, so a `FormLabel` above a custom control looks like the label of a field.
 @mixin tokens {
-    --dextinity-form-label-gap: var(--dextinity-unit-1);
+    --dextinity-form-label-gap: var(--dextinity-space-1);
 
-    --dextinity-form-label-font-size: var(--dextinity-typography-label-sm-size);
-    --dextinity-form-label-font-line-height: var(--dextinity-typography-label-sm-line-height);
-    --dextinity-form-label-font-weight: var(--dextinity-font-weight-medium);
-    --dextinity-form-label-font-weight-style: var(--dextinity-font-weight-medium-style);
+    --dextinity-form-label-font-size: var(--dextinity-field-label-font-size);
+    --dextinity-form-label-font-line-height: calc(var(--dextinity-field-label-font-size) * 1.3);
+    --dextinity-form-label-font-weight: var(--dextinity-field-label-font-weight);
 
-    --dextinity-form-label-default-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-form-label-error-foreground: var(--dextinity-color-feedback-danger-default);
-    --dextinity-form-label-required-color: var(--dextinity-color-feedback-danger-default);
+    --dextinity-form-label-default-foreground: var(--dextinity-field-label-color);
+    --dextinity-form-label-error-foreground: var(--dextinity-field-message-color-error);
+    --dextinity-form-label-required-color: var(--dextinity-field-required-color);
 
-    --dextinity-form-label-helper-icon-color: var(--dextinity-color-foreground-muted);
-    --dextinity-form-label-helper-icon-size: 16px;
+    --dextinity-form-label-helper-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-form-label-helper-icon-size: var(--dextinity-field-icon-size);
 }

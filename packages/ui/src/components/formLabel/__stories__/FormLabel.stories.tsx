@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { FormLabel } from "../FormLabel";
+import formLabelTokens from "../FormLabel.tokens.scss?raw";
 import styles from "./formLabel.module.scss";
 
 const helperIconOptions = {
@@ -12,7 +13,8 @@ const helperIconOptions = {
 
 const meta = {
     component: FormLabel,
-    title: "Components/FormLabel",
+    title: "Building blocks/Form fields/FormLabel",
+    parameters: { tokens: formLabelTokens },
     decorators: [themeDecorator],
     args: {
         children: "Label",

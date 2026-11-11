@@ -12,7 +12,7 @@ const helperIconOptions = {
 
 const meta = {
     component: FormLabel,
-    title: "Components/FormLabel",
+    title: "Building blocks/Form fields/FormLabel",
     decorators: [themeDecorator],
     args: {
         children: "Label",

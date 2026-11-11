@@ -12,7 +12,7 @@ const iconOptions = {
 
 const meta = {
     component: Chip,
-    title: "Components/Chip",
+    title: "Building blocks/Status, tags & badges/Chip",
     decorators: [themeDecorator],
     args: {
         children: "Label",

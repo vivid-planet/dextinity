@@ -12,7 +12,7 @@ const iconOptions = {
 
 const meta = {
     component: IconButton,
-    title: "Components/IconButton",
+    title: "Building blocks/Buttons/IconButton",
     decorators: [themeDecorator],
     args: {
         "aria-label": "Add to favorites",

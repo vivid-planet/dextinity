@@ -54,7 +54,7 @@ function IconList() {
 }
 
 const meta = {
-    title: "Theme/All icons",
+    title: "Foundations/Icons/All icons",
     tags: ["!dev", "!autodocs", "!manifest"],
     decorators: [themeDecorator],
 } satisfies Meta;

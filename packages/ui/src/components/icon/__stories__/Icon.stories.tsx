@@ -8,7 +8,7 @@ import sizeStyles from "./iconSize.module.scss";
 
 const meta = {
     component: Icon,
-    title: "Components/Icon",
+    title: "Foundations/Icons/Icon",
     decorators: [themeDecorator],
     args: {
         name: "favorite",

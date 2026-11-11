@@ -8,7 +8,7 @@ const colorSchemes = ["light", "dark", "high-contrast"];
 
 const meta: Meta<typeof Theme> = {
     component: Theme,
-    title: "Components/Theme",
+    title: "Foundations/Theme/Theme",
     argTypes: {
         colorScheme: { control: "select", options: colorSchemes },
     },
@@ -30,7 +30,7 @@ export const Default: Story = {
 };
 
 /**
- * A `Theme` can contain other `Theme`s, at any depth. For details, see [Theme → Overview](?path=/docs/theme-overview--docs).
+ * A `Theme` can contain other `Theme`s, at any depth. For details, see [Theme → Overview](?path=/docs/foundations-theme-overview--docs).
  */
 export const Nested: Story = {
     render: (args) => (

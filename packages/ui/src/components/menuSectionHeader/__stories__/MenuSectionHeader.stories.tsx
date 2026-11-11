@@ -16,7 +16,7 @@ const actionOptions = {
 
 const meta = {
     component: MenuSectionHeader,
-    title: "Components/MenuSectionHeader",
+    title: "Shell/Navigation/MenuSectionHeader",
     decorators: [themeDecorator],
     args: {
         children: "Section",

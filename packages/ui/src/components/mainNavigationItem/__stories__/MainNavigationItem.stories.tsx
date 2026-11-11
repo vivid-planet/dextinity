@@ -14,7 +14,7 @@ const iconOptions = {
 
 const meta = {
     component: MainNavigationItem,
-    title: "Components/MainNavigationItem",
+    title: "Shell/Navigation/MainNavigationItem",
     decorators: [themeDecorator],
     args: {
         children: "Dashboard",

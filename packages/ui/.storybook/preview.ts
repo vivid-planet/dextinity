@@ -17,7 +17,16 @@ const preview: Preview = {
     parameters: {
         options: {
             storySort: {
-                order: ["Intro", "Patterns", "*", "Theme", ["Overview", "Customize brand", "Customize icons", "All icons"], "Components"],
+                // Mirrors the structure of the design system draft
+                order: [
+                    "Intro",
+                    "Foundations",
+                    ["Typography", "Icons", ["Icon", "All icons", "Customize icons"], "Theme", ["Overview", "Customize brand", "Theme"]],
+                    "Building blocks",
+                    ["Buttons", "Form fields", "Status, tags & badges", "Loading & save state"],
+                    "Shell",
+                    "Patterns",
+                ],
             },
         },
         docs: {

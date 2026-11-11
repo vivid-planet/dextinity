@@ -2,17 +2,17 @@ import { Canvas, Meta } from "@storybook/addon-docs/blocks";
 
 import * as OverviewStories from "./__stories__/Overview.stories";
 
-<Meta title="Theme/Overview" />
+<Meta title="Foundations/Theme/Overview" />
 
 # Theme
 
 The components take their colors, space, corner radii, fonts, and icons from CSS variables whose names start with `--dextinity-`. You can use these variables in your own styles, and change them in your own stylesheet.
 
-Wrap your application in [`Theme`](?path=/docs/components-theme--docs). Outside it, the components have no styles, and the color variables have no value.
+Wrap your application in [`Theme`](?path=/docs/foundations-theme-theme--docs). Outside it, the components have no styles, and the color variables have no value.
 
-- To give the components your colors, corner radii, and font, see [Customize brand](?path=/docs/theme-customize-brand--docs).
-- To replace or add icons, see [Customize icons](?path=/docs/theme-customize-icons--docs).
-- To look up an icon, see [All icons](?path=/docs/theme-all-icons--docs).
+- To give the components your colors, corner radii, and font, see [Customize brand](?path=/docs/foundations-theme-customize-brand--docs).
+- To replace or add icons, see [Customize icons](?path=/docs/foundations-icons-customize-icons--docs).
+- To look up an icon, see [All icons](?path=/docs/foundations-icons-all-icons--docs).
 
 ## Use tokens in your styles
 
@@ -45,7 +45,7 @@ Arrange the components with flexbox or grid, and set the space between them with
 
 ## Color schemes
 
-Set the color scheme with the `colorScheme` prop of `Theme`: `"light"`, `"dark"`, or `"high-contrast"`. To use another color scheme in a part of the application, wrap that part in another `Theme` with its own `colorScheme`. To use another brand in a part, see [Customize a part of the application](?path=/docs/theme-customize-brand--docs#customize-a-part-of-the-application).
+Set the color scheme with the `colorScheme` prop of `Theme`: `"light"`, `"dark"`, or `"high-contrast"`. To use another color scheme in a part of the application, wrap that part in another `Theme` with its own `colorScheme`. To use another brand in a part, see [Customize a part of the application](?path=/docs/foundations-theme-customize-brand--docs#customize-a-part-of-the-application).
 
 To follow the color scheme of the operating system, read `prefers-color-scheme` with `matchMedia`, and pass the result to `colorScheme`:
 

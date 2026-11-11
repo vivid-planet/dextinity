@@ -12,7 +12,7 @@ const adornmentOptions = {
 
 const meta = {
     component: Input,
-    title: "Components/Input",
+    title: "Building blocks/Form fields/Input",
     decorators: [themeDecorator],
     args: {
         "aria-label": "Title",

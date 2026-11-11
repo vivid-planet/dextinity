@@ -5,7 +5,7 @@ import { Typography } from "../Typography";
 
 const meta = {
     component: Typography,
-    title: "Components/Typography",
+    title: "Foundations/Typography",
     decorators: [themeDecorator],
     args: {
         children: "The quick brown fox jumps over the lazy dog",

@@ -7,7 +7,7 @@ import styles from "./customization.dev.module.scss";
 
 const meta = {
     component: Button,
-    title: "Components/Button",
+    title: "Building blocks/Buttons/Button",
     tags: ["development", "!autodocs", "!manifest"],
     decorators: [themeDecorator],
 } satisfies Meta<typeof Button>;

@@ -5,7 +5,7 @@ import { FormHelperText } from "../FormHelperText";
 
 const meta = {
     component: FormHelperText,
-    title: "Components/FormHelperText",
+    title: "Building blocks/Form fields/FormHelperText",
     decorators: [themeDecorator],
     args: {
         children: "Additional info text",

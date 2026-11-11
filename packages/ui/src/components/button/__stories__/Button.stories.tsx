@@ -12,7 +12,7 @@ const iconOptions = {
 
 const meta = {
     component: Button,
-    title: "Components/Button",
+    title: "Building blocks/Buttons/Button",
     decorators: [themeDecorator],
     args: {
         children: "Button",

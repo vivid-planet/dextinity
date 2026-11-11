@@ -1,10 +1,10 @@
 @mixin tokens {
     --dextinity-form-helper-text-gap: var(--dextinity-space-1);
-    --dextinity-form-helper-text-gap-internal: 6px;
+    --dextinity-form-helper-text-gap-internal: var(--dextinity-space-1);
 
     --dextinity-form-helper-text-font-size: var(--dextinity-typography-small-size);
     --dextinity-form-helper-text-font-line-height: var(--dextinity-typography-small-line-height);
-    --dextinity-form-helper-text-font-weight: 400;
+    --dextinity-form-helper-text-font-weight: var(--dextinity-font-weight-regular);
     --dextinity-form-helper-text-font-weight-style: regular;
 
     --dextinity-form-helper-text-type-hint-foreground: var(--dextinity-color-text-secondary);

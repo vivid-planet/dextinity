@@ -3,12 +3,12 @@
 
     --dextinity-chip-size-default-height: var(--dextinity-space-8);
     --dextinity-chip-size-default-radius: var(--dextinity-radius-pill);
-    --dextinity-chip-size-default-gap: 6px;
+    --dextinity-chip-size-default-gap: var(--dextinity-space-1);
     --dextinity-chip-size-default-padding-horizontal: var(--dextinity-space-3);
     --dextinity-chip-size-default-icon-size: 16px;
     --dextinity-chip-size-default-font-size: var(--dextinity-typography-small-size);
     --dextinity-chip-size-default-font-line-height: var(--dextinity-typography-small-line-height);
-    --dextinity-chip-size-default-font-weight: 500;
+    --dextinity-chip-size-default-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-chip-size-default-font-weight-style: medium;
 
     --dextinity-chip-size-small-height: var(--dextinity-space-6);
@@ -18,7 +18,7 @@
     --dextinity-chip-size-small-icon-size: 14px;
     --dextinity-chip-size-small-font-size: var(--dextinity-typography-label-size);
     --dextinity-chip-size-small-font-line-height: var(--dextinity-typography-small-line-height);
-    --dextinity-chip-size-small-font-weight: 500;
+    --dextinity-chip-size-small-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-chip-size-small-font-weight-style: medium;
 
     --dextinity-chip-variant-contained-primary-default-background: var(--dextinity-color-accent);

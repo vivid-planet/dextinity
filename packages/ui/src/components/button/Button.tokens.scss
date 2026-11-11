@@ -1,7 +1,7 @@
 @mixin tokens {
     --dextinity-button-border-width: 1px;
 
-    --dextinity-button-default-height: 40px;
+    --dextinity-button-default-height: var(--dextinity-density-field-height);
     --dextinity-button-default-radius: var(--dextinity-brand-radius-control);
     --dextinity-button-default-gap: var(--dextinity-space-2);
     --dextinity-button-default-padding-horizontal: var(--dextinity-space-4);
@@ -9,7 +9,7 @@
     --dextinity-button-default-icon-size: 16px;
     --dextinity-button-default-font-size: var(--dextinity-typography-body-size);
     --dextinity-button-default-font-line-height: var(--dextinity-typography-body-line-height);
-    --dextinity-button-default-font-weight: 500;
+    --dextinity-button-default-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-button-default-font-weight-style: medium;
 
     --dextinity-button-small-height: var(--dextinity-space-8);
@@ -20,7 +20,7 @@
     --dextinity-button-small-icon-size: 16px;
     --dextinity-button-small-font-size: var(--dextinity-typography-small-size);
     --dextinity-button-small-font-line-height: var(--dextinity-typography-small-line-height);
-    --dextinity-button-small-font-weight: 500;
+    --dextinity-button-small-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-button-small-font-weight-style: medium;
 
     --dextinity-button-color-primary-contained-default-background: var(--dextinity-color-accent);

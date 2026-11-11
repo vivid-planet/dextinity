@@ -1,5 +1,5 @@
 @mixin tokens {
-    --dextinity-icon-button-default-height: 40px;
+    --dextinity-icon-button-default-height: var(--dextinity-density-field-height);
     --dextinity-icon-button-default-radius: var(--dextinity-brand-radius-control);
     --dextinity-icon-button-default-padding-horizontal: var(--dextinity-space-3);
     --dextinity-icon-button-default-padding-vertical: var(--dextinity-space-3);

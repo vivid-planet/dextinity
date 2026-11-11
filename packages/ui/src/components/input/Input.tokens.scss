@@ -1,6 +1,6 @@
 @mixin tokens {
     --dextinity-input-border-width: 1px;
-    --dextinity-input-height: 40px;
+    --dextinity-input-height: var(--dextinity-density-field-height);
     --dextinity-input-radius: var(--dextinity-radius-field);
     --dextinity-input-gap: var(--dextinity-space-2);
     --dextinity-input-padding-horizontal: var(--dextinity-space-3);
@@ -9,7 +9,7 @@
 
     --dextinity-input-font-size: var(--dextinity-typography-body-size);
     --dextinity-input-font-line-height: var(--dextinity-typography-body-line-height);
-    --dextinity-input-font-weight: 400;
+    --dextinity-input-font-weight: var(--dextinity-font-weight-regular);
     --dextinity-input-font-weight-style: regular;
 
     --dextinity-input-state-default-background: var(--dextinity-color-surface);

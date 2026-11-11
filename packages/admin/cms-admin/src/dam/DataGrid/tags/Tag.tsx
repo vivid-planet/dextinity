@@ -1,10 +1,30 @@
 import { styled } from "@mui/material/styles";
+import type { ReactNode } from "react";
 
-export const Tag = styled("div")<{ type?: "warning" | "error" | "info" | "neutral" }>`
+type TagType = "warning" | "error" | "info" | "neutral";
+
+interface TagProps {
+    type?: TagType;
+    icon?: ReactNode;
+    children: ReactNode;
+    className?: string;
+}
+
+export const Tag = ({ type, icon, children, className }: TagProps) => {
+    return (
+        <Root type={type} className={className}>
+            {icon}
+            <Text>{children}</Text>
+        </Root>
+    );
+};
+
+const Root = styled("div")<{ type?: TagType }>`
     display: flex;
-    justify-content: center;
-    gap: 6px;
     align-items: center;
+    gap: 6px;
+    width: fit-content;
+    max-width: 100%;
     height: 20px;
     border-radius: 4px;
     padding: 4px 5px;
@@ -31,4 +51,15 @@ export const Tag = styled("div")<{ type?: "warning" | "error" | "info" | "neutra
                 return theme.palette.grey["100"];
         }
     }};
+
+    & > svg {
+        flex-shrink: 0;
+    }
+`;
+
+const Text = styled("span")`
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 `;

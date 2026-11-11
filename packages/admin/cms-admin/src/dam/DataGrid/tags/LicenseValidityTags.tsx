@@ -6,8 +6,7 @@ import { Tag } from "./Tag";
 
 const LicenseNotValidYetTag = () => {
     return (
-        <Tag type="error">
-            <WarningSolid />
+        <Tag type="error" icon={<WarningSolid />}>
             <FormattedMessage id="dextinity.pages.dam.tag.licenseNotValidYet" defaultMessage="License not valid yet" />
         </Tag>
     );
@@ -15,8 +14,7 @@ const LicenseNotValidYetTag = () => {
 
 const LicenseExpiredTag = () => {
     return (
-        <Tag type="error">
-            <WarningSolid />
+        <Tag type="error" icon={<WarningSolid />}>
             <FormattedMessage id="dextinity.pages.dam.tag.licenseExpired" defaultMessage="License expired" />
         </Tag>
     );
@@ -28,8 +26,7 @@ interface LicenseExpiresSoonTagProps {
 
 const LicenseExpiresSoonTag = ({ expirationDate }: LicenseExpiresSoonTagProps) => {
     return (
-        <Tag type="warning">
-            <WarningSolid />
+        <Tag type="warning" icon={<WarningSolid />}>
             <FormattedMessage
                 id="dextinity.pages.dam.tag.licenseExpiresSoon"
                 defaultMessage="License expires in {distance}"

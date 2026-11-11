@@ -752,7 +752,7 @@ Name the blocks to generate the meta for instead. `getBlocksMeta()` requires the
 
 ### Give every block a unique name
 
-The API fails to start when two different blocks it uses have the same name:
+The API fails to generate `block-meta.json`, and therefore to start locally, when two different blocks it uses have the same name:
 
 ```
 Error: Two different blocks are named "RichText". Block names must be unique, otherwise the generated block types and the block clipboard mix them up. Pass a different name to one of the blocks.

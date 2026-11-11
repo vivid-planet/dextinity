@@ -2,96 +2,96 @@
     margin: 0;
     color: var(--dextinity-color-text);
     font-family: var(--dextinity-font-family-text);
-    letter-spacing: 0px;
+    letter-spacing: normal;
 
     &[data-variant="display"] {
         font-size: var(--dextinity-typography-display-l-size);
-        font-weight: 400;
+        font-weight: var(--dextinity-typography-display-font-weight);
         line-height: var(--dextinity-typography-display-l-line-height);
     }
 
     &[data-variant="h1"] {
-        font-size: 28px;
-        font-weight: 400;
-        line-height: 1.2;
+        font-size: var(--dextinity-typography-display-l-size);
+        font-weight: var(--dextinity-typography-display-font-weight);
+        line-height: var(--dextinity-typography-display-l-line-height);
     }
 
     &[data-variant="h2"] {
-        font-size: 22px;
-        font-weight: 400;
-        line-height: 1.25;
+        font-size: var(--dextinity-typography-title-size);
+        font-weight: var(--dextinity-typography-title-font-weight);
+        line-height: var(--dextinity-typography-title-line-height);
     }
 
     &[data-variant="h3"] {
         font-size: var(--dextinity-typography-title-size);
-        font-weight: 400;
+        font-weight: var(--dextinity-typography-title-font-weight);
         line-height: var(--dextinity-typography-title-line-height);
     }
 
     &[data-variant="h4"] {
         font-size: var(--dextinity-typography-section-size);
-        font-weight: 400;
+        font-weight: var(--dextinity-typography-section-font-weight);
         line-height: var(--dextinity-typography-section-line-height);
     }
 
     &[data-variant="bodyL"] {
         font-size: var(--dextinity-typography-section-size);
-        font-weight: 400;
+        font-weight: var(--dextinity-typography-body-font-weight);
         line-height: var(--dextinity-typography-section-line-height);
     }
 
     &[data-variant="bodyM"] {
         font-size: var(--dextinity-typography-body-size);
-        font-weight: 400;
+        font-weight: var(--dextinity-typography-body-font-weight);
         line-height: var(--dextinity-typography-body-line-height);
     }
 
     &[data-variant="bodyS"] {
         font-size: var(--dextinity-typography-small-size);
-        font-weight: 400;
+        font-weight: var(--dextinity-typography-body-font-weight);
         line-height: var(--dextinity-typography-small-line-height);
     }
 
     &[data-variant="bodyXs"] {
-        font-size: var(--dextinity-typography-label-size);
-        font-weight: 400;
+        font-size: var(--dextinity-typography-small-size);
+        font-weight: var(--dextinity-typography-body-font-weight);
         line-height: var(--dextinity-typography-small-line-height);
     }
 
     &[data-variant="caption"] {
         color: var(--dextinity-color-text-secondary);
-        font-size: var(--dextinity-typography-label-size);
-        font-weight: 400;
+        font-size: var(--dextinity-typography-small-size);
+        font-weight: var(--dextinity-typography-body-font-weight);
         line-height: var(--dextinity-typography-small-line-height);
     }
 
     &[data-variant="labelM"] {
         font-size: var(--dextinity-typography-body-size);
-        font-weight: 500;
+        font-weight: var(--dextinity-typography-title-font-weight);
         line-height: var(--dextinity-typography-body-line-height);
     }
 
     &[data-variant="labelS"] {
         font-size: var(--dextinity-typography-small-size);
-        font-weight: 500;
+        font-weight: var(--dextinity-typography-title-font-weight);
         line-height: var(--dextinity-typography-small-line-height);
     }
 
     &[data-variant="labelXs"] {
         font-size: var(--dextinity-typography-small-size);
-        font-weight: 500;
+        font-weight: var(--dextinity-typography-title-font-weight);
         line-height: var(--dextinity-typography-small-line-height);
     }
 
     &[data-variant="dataM"] {
         font-size: var(--dextinity-typography-body-size);
-        font-weight: 400;
+        font-weight: var(--dextinity-typography-body-font-weight);
         line-height: var(--dextinity-typography-body-line-height);
     }
 
     &[data-variant="dataS"] {
         font-size: var(--dextinity-typography-small-size);
-        font-weight: 400;
+        font-weight: var(--dextinity-typography-body-font-weight);
         line-height: var(--dextinity-typography-small-line-height);
     }
 }

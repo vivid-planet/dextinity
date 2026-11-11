@@ -14,7 +14,7 @@
     font-size: var(--dextinity-input-font-size);
     font-weight: var(--dextinity-input-font-weight);
     line-height: var(--dextinity-input-font-line-height);
-    letter-spacing: 0px;
+    letter-spacing: normal;
     cursor: text;
 
     --placeholder-color: var(--dextinity-input-state-default-foreground-placeholder);

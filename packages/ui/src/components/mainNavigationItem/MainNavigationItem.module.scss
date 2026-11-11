@@ -82,7 +82,7 @@
     font-size: var(--dextinity-main-navigation-item-font-size);
     font-weight: var(--dextinity-main-navigation-item-font-weight);
     line-height: var(--dextinity-main-navigation-item-font-line-height);
-    letter-spacing: -0.25px;
+    letter-spacing: var(--dextinity-main-navigation-item-letter-spacing);
     overflow: clip;
 }
 

@@ -1,7 +1,29 @@
+import { RawQueryFragment } from "@mikro-orm/postgresql";
 import { describe, expect, it } from "vitest";
 
 import { NumberFilter } from "../common/filter/number.filter";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
 import { actionLogFilterToWhere } from "./action-logs-filter.utils";
+
+// The key of a `raw()` condition holds a running index, so it's replaced by its parameters to compare whole queries.
+function withReadableRawKeys(where: unknown): unknown {
+    if (Array.isArray(where)) {
+        return where.map(withReadableRawKeys);
+    }
+    if (where === null || typeof where !== "object") {
+        return where;
+    }
+    return Object.fromEntries(
+        Object.entries(where).map(([key, value]) => {
+            const rawFragment = RawQueryFragment.getKnownFragment(key, false);
+            return [rawFragment ? `raw(${rawFragment.params.join(", ")})` : key, withReadableRawKeys(value)];
+        }),
+    );
+}
+
+function exactScopeMatch(scope: ContentScope): string {
+    return `raw(${JSON.stringify(scope)})`;
+}
 
 describe("actionLogFilterToWhere", () => {
     it("matches unscoped rows for isGlobal: true and scoped rows for isGlobal: false", () => {
@@ -10,22 +32,28 @@ describe("actionLogFilterToWhere", () => {
     });
 
     it("requires a row to hold the requested scope exactly, in addition to the containment check", () => {
-        const where = actionLogFilterToWhere({ scope: { equal: { domain: "main" } } }) as Record<string, unknown>;
-
-        expect(where.scope).toEqual({ $contains: [{ domain: "main" }] });
-        expect(Object.keys(where)).toHaveLength(2);
+        expect(withReadableRawKeys(actionLogFilterToWhere({ scope: { equal: { domain: "main" } } }))).toEqual({
+            scope: { $contains: [{ domain: "main" }] },
+            [exactScopeMatch({ domain: "main" })]: true,
+        });
     });
 
     it("negates the exact match for notEqual", () => {
-        const where = actionLogFilterToWhere({ scope: { notEqual: { domain: "main" } } }) as { $not: Record<string, unknown> };
-
-        expect(where.$not.scope).toEqual({ $contains: [{ domain: "main" }] });
+        expect(withReadableRawKeys(actionLogFilterToWhere({ scope: { notEqual: { domain: "main" } } }))).toEqual({
+            $not: {
+                scope: { $contains: [{ domain: "main" }] },
+                [exactScopeMatch({ domain: "main" })]: true,
+            },
+        });
     });
 
     it("matches any of the requested scopes for isAnyOf", () => {
-        const where = actionLogFilterToWhere({ scope: { isAnyOf: [{ domain: "main" }, { domain: "secondary" }] } }) as { $or: unknown[] };
-
-        expect(where.$or).toHaveLength(2);
+        expect(withReadableRawKeys(actionLogFilterToWhere({ scope: { isAnyOf: [{ domain: "main" }, { domain: "secondary" }] } }))).toEqual({
+            $or: [
+                { scope: { $contains: [{ domain: "main" }] }, [exactScopeMatch({ domain: "main" })]: true },
+                { scope: { $contains: [{ domain: "secondary" }] }, [exactScopeMatch({ domain: "secondary" })]: true },
+            ],
+        });
     });
 
     it("matches no rows for an empty isAnyOf, like the other isAnyOf filters", () => {
@@ -37,10 +65,8 @@ describe("actionLogFilterToWhere", () => {
     });
 
     it("combines the scope filter with the other fields", () => {
-        const where = actionLogFilterToWhere({ scope: { isGlobal: true }, version: Object.assign(new NumberFilter(), { equal: 1 }) }) as {
-            $and: unknown[];
-        };
-
-        expect(where.$and).toHaveLength(2);
+        expect(actionLogFilterToWhere({ scope: { isGlobal: true }, version: Object.assign(new NumberFilter(), { equal: 1 }) })).toEqual({
+            $and: [{ scope: null }, { version: { $eq: 1 } }],
+        });
     });
 });

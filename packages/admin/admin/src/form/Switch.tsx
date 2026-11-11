@@ -3,7 +3,7 @@ import { mergeSlotProps } from "@mui/material/utils";
 import type { FieldRenderProps } from "react-final-form";
 
 export type FinalFormSwitchProps = SwitchProps;
-type FinalFormSwitchInternalProps = FieldRenderProps<string, HTMLInputElement>;
+type FinalFormSwitchInternalProps = FieldRenderProps<boolean, HTMLInputElement>;
 
 /**
  * Final Form-compatible Switch component.

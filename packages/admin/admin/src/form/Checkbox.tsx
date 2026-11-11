@@ -4,7 +4,7 @@ import type { FieldRenderProps } from "react-final-form";
 
 export type FinalFormCheckboxProps = CheckboxProps;
 
-type FinalFormCheckboxInternalProps = FieldRenderProps<string, HTMLInputElement>;
+type FinalFormCheckboxInternalProps = FieldRenderProps<boolean, HTMLInputElement>;
 
 /**
  * Final Form-compatible Checkbox component.

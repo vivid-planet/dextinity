@@ -135,7 +135,7 @@ The adapters take any path as `name`, checked against the form values' type, so 
 - **Rows**, e.g. a list of addresses: use React Hook Form's `useFieldArray`, render one set of adapters per row with names like `addresses.1.street`, and key the rows by the `id` it provides, not the index. `append`, `remove`, and `move` keep the touched and error states with the rows.
 - **Conditional groups**: an unmounted adapter keeps its value and its rules don't run. Pass `shouldUnregister` to the adapters of a group to remove their values while it's hidden.
 
-The story `Forms/React Hook Form/Field arrays` shows both.
+The story `Field arrays` shows both.
 
 ### React Hook Form configuration
 

@@ -13,6 +13,7 @@ import { UserPermissionsService } from "../user-permissions/user-permissions.ser
 import type { AccessControlServiceInterface, Permission, SystemUser } from "../user-permissions/user-permissions.types";
 import { ActionLogsService } from "./action-logs.service";
 import { ActionLog } from "./entities/action-log.entity";
+import { entityChecksScope } from "./entity-checks-scope";
 
 @Injectable()
 export class ActionLogsAclService {
@@ -44,7 +45,7 @@ export class ActionLogsAclService {
         const scopedEntityPermissions = new Map<string, Permission[]>();
 
         for (const entityClass of this.actionLogsService.getLoggedEntities()) {
-            const { requiredPermission, options } = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, entityClass) as RequiredPermissionMetadata;
+            const { requiredPermission } = Reflect.getMetadata(REQUIRED_PERMISSION_METADATA_KEY, entityClass) as RequiredPermissionMetadata;
 
             // The application checks the access to such an entity itself, so the log of the single entity is denied too.
             if (requiredPermission.includes(DisablePermissionCheck)) {
@@ -53,7 +54,7 @@ export class ActionLogsAclService {
 
             const permissions = requiredPermission.filter((permission): permission is Permission => permission !== DisablePermissionCheck);
 
-            if (options?.skipScopeCheck) {
+            if (!entityChecksScope(entityClass)) {
                 if (permissions.some((permission) => this.accessControlService.isAllowed(user, permission))) {
                     entityFilters.push({ entityName: entityClass.name });
                 }

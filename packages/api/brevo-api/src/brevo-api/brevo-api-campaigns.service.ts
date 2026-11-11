@@ -144,7 +144,7 @@ export class BrevoApiCampaignsService {
             const nonCachedIds = [];
 
             for (const brevoId of ids) {
-                const cachedCampaign: BrevoApiCampaign | undefined = await this.cacheManager.get(`brevo-campaign-${brevoId}`);
+                const cachedCampaign: BrevoApiCampaign | undefined = await this.cacheManager.get(this.getCampaignCacheKey(brevoId, scope));
                 if (cachedCampaign) {
                     brevoCampaigns.push(cachedCampaign);
                 } else {
@@ -154,7 +154,7 @@ export class BrevoApiCampaignsService {
 
             for await (const campaign of this.getCampaignsResponse(nonCachedIds, scope)) {
                 brevoCampaigns.push(campaign);
-                await this.cacheManager.set(`brevo-campaign-${campaign.id}`, campaign);
+                await this.cacheManager.set(this.getCampaignCacheKey(campaign.id, scope), campaign);
             }
 
             return brevoCampaigns;
@@ -170,7 +170,7 @@ export class BrevoApiCampaignsService {
                 throw new Error("Campaign has no brevoId");
             }
 
-            return this.cacheManager.wrap<BrevoApiCampaign>(`brevo-campaign-${brevoId}`, async () => {
+            return this.cacheManager.wrap<BrevoApiCampaign>(this.getCampaignCacheKey(brevoId, campaign.scope), async () => {
                 return this.clientFactory.getClient(campaign.scope).emailCampaigns.getEmailCampaign({ campaignId: brevoId });
             });
         } catch (error) {
@@ -193,6 +193,11 @@ export class BrevoApiCampaignsService {
         } catch (error) {
             handleBrevoError(error);
         }
+    }
+
+    // Each scope can use a different Brevo account, and campaign IDs are only unique within an account
+    private getCampaignCacheKey(brevoId: number, scope: EmailCampaignScopeInterface): string {
+        return `brevo-campaign-${JSON.stringify(scope)}-${brevoId}`;
     }
 
     private async *getCampaignsResponse(

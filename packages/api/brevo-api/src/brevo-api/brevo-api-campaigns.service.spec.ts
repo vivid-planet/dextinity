@@ -55,6 +55,11 @@ describe("BrevoApiCampaignsService", () => {
 
     describe("loadBrevoCampaignsByIds", () => {
         const scope = { domain: "main", language: "en" };
+        const campaignCacheKey = (brevoId: number, campaignScope: object = scope) => `brevo-campaign-${JSON.stringify(campaignScope)}-${brevoId}`;
+
+        function emailCampaign(brevoId: number, campaignScope: object = scope): EmailCampaignInterface {
+            return { id: "a1b2c3d4-0000-4000-8000-000000000000", brevoId, scope: campaignScope } as unknown as EmailCampaignInterface;
+        }
 
         async function createService(campaignPages: BrevoApiCampaign[][]) {
             const getEmailCampaigns = vi.fn(async ({ offset }: { offset: number }) => ({ campaigns: campaignPages[offset / 100] ?? [] }));
@@ -95,7 +100,7 @@ describe("BrevoApiCampaignsService", () => {
 
             expect(campaigns.map((campaign) => campaign.id)).toEqual([2005]);
             expect(getEmailCampaigns).toHaveBeenCalledTimes(2);
-            expect(cacheManager.set).toHaveBeenCalledWith("brevo-campaign-2005", campaignWithId(2005));
+            expect(cacheManager.set).toHaveBeenCalledWith(campaignCacheKey(2005), campaignWithId(2005));
         });
 
         it("stops paging once all requested campaigns are found", async () => {
@@ -118,7 +123,7 @@ describe("BrevoApiCampaignsService", () => {
 
         it("doesn't request campaigns from Brevo that are cached", async () => {
             const { service, getEmailCampaigns, cacheManager } = await createService([page(1000)]);
-            await cacheManager.set("brevo-campaign-1050", campaignWithId(1050));
+            await cacheManager.set(campaignCacheKey(1050), campaignWithId(1050));
 
             const campaigns = await service.loadBrevoCampaignsByIds([1050], scope);
 
@@ -130,14 +135,19 @@ describe("BrevoApiCampaignsService", () => {
             const { service, getEmailCampaign } = await createService([page(1000)]);
             await service.loadBrevoCampaignsByIds([1050], scope);
 
-            const campaign = await service.loadBrevoCampaignById({
-                id: "a1b2c3d4-0000-4000-8000-000000000000",
-                brevoId: 1050,
-                scope,
-            } as unknown as EmailCampaignInterface);
+            const campaign = await service.loadBrevoCampaignById(emailCampaign(1050));
 
             expect(campaign.id).toBe(1050);
             expect(getEmailCampaign).not.toHaveBeenCalled();
+        });
+
+        it("doesn't share cached campaigns between scopes", async () => {
+            const { service, getEmailCampaign } = await createService([page(1000)]);
+            await service.loadBrevoCampaignsByIds([1050], scope);
+
+            await service.loadBrevoCampaignById(emailCampaign(1050, { domain: "secondary", language: "en" }));
+
+            expect(getEmailCampaign).toHaveBeenCalledWith({ campaignId: 1050 });
         });
     });
 });

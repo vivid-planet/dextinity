@@ -1,6 +1,7 @@
-import { IsOptional } from "class-validator";
+import {} from "class-validator";
 
 import { IsPhoneNumber } from "../common/validators/is-phone-number";
+import { IsUndefinable } from "../common/validators/is-undefinable";
 import { BlockData, BlockInput, blockInputToData, createBlock } from "./block";
 import { BlockField } from "./decorators/field";
 
@@ -10,7 +11,7 @@ class PhoneLinkBlockData extends BlockData {
 }
 
 class PhoneLinkBlockInput extends BlockInput {
-    @IsOptional()
+    @IsUndefinable()
     @IsPhoneNumber()
     @BlockField({ nullable: true })
     phone?: string;

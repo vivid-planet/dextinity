@@ -1,6 +1,7 @@
 import { Transform } from "class-transformer";
-import { IsBoolean, IsOptional, ValidateNested } from "class-validator";
+import { IsBoolean, ValidateNested } from "class-validator";
 
+import { IsUndefinable } from "../../common/validators/is-undefinable";
 import {
     Block,
     BlockContext,
@@ -65,7 +66,7 @@ export function createOptionalBlock<DecoratedBlock extends Block>(
             toClassOnly: true,
         })
         @ValidateNested()
-        @IsOptional()
+        @IsUndefinable()
         block?: ExtractBlockInput<DecoratedBlock>;
 
         @IsBoolean()

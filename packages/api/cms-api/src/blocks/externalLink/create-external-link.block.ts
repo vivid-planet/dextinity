@@ -1,5 +1,6 @@
-import { IsBoolean, IsOptional } from "class-validator";
+import { IsBoolean } from "class-validator";
 
+import { IsUndefinable } from "../../common/validators/is-undefinable";
 import { BlockData, BlockInput, createBlock } from "../block";
 import { BlockField } from "../decorators/field";
 import type { BlockFactoryNameOrOptions } from "../factories/types";
@@ -59,7 +60,7 @@ export function createExternalLinkBlock(options: ExternalLinkBlockFactoryOptions
     }
 
     class ExternalLinkBlockInput extends BlockInput {
-        @IsOptional()
+        @IsUndefinable()
         @IsLinkTarget()
         @BlockField({ nullable: true })
         targetUrl?: string;

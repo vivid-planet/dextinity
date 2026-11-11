@@ -1,5 +1,6 @@
-import { IsBoolean, IsOptional } from "class-validator";
+import { IsBoolean } from "class-validator";
 
+import { IsUndefinable } from "../common/validators/is-undefinable";
 import { PixelImageBlock } from "../dam/blocks/pixel-image.block";
 import { BlockData, BlockDataInterface, BlockInput, blockInputToData, ExtractBlockInput } from "./block";
 import { ChildBlock } from "./decorators/child-block";
@@ -22,17 +23,17 @@ export class BaseVideoBlockData extends BlockData {
 
 export class BaseVideoBlockInput extends BlockInput {
     @IsBoolean()
-    @IsOptional()
+    @IsUndefinable()
     @BlockField({ nullable: true })
     autoplay?: boolean;
 
     @IsBoolean()
-    @IsOptional()
+    @IsUndefinable()
     @BlockField({ nullable: true })
     showControls?: boolean;
 
     @IsBoolean()
-    @IsOptional()
+    @IsUndefinable()
     @BlockField({ nullable: true })
     loop?: boolean;
 

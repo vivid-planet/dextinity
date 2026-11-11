@@ -1,9 +1,10 @@
-import { IsOptional, IsUUID } from "class-validator";
+import { IsUUID } from "class-validator";
 
 import { BaseVideoBlockData, BaseVideoBlockInput } from "../../../blocks/base-video-block";
 import { BlockDataInterface, BlockIndexData, blockInputToData, BlockMetaField, BlockMetaFieldKind, createBlock } from "../../../blocks/block";
 import { AnnotationBlockMeta, BlockField } from "../../../blocks/decorators/field";
 import { typeSafeBlockMigrationPipe } from "../../../blocks/migrations/typeSafeBlockMigrationPipe";
+import { IsUndefinable } from "../../../common/validators/is-undefinable";
 import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum";
 import { FILE_ENTITY } from "../../files/entities/file.entity";
 import { DamVideoBlockTransformerService } from "./dam-video-block-transformer.service";
@@ -35,7 +36,7 @@ class DamVideoBlockData extends BaseVideoBlockData {
 class DamVideoBlockInput extends BaseVideoBlockInput {
     @BlockField({ nullable: true })
     @IsUUID()
-    @IsOptional()
+    @IsUndefinable()
     damFileId?: string;
 
     transformToBlockData(): BlockDataInterface {

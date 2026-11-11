@@ -1,5 +1,6 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsString } from "class-validator";
 
+import { IsUndefinable } from "../../common/validators/is-undefinable";
 import { BaseVideoBlockData, BaseVideoBlockInput } from "../base-video-block";
 import { BlockDataInterface, blockInputToData, createBlock } from "../block";
 import { BlockField } from "../decorators/field";
@@ -14,7 +15,7 @@ class YouTubeVideoBlockData extends BaseVideoBlockData {
 }
 
 class YouTubeVideoBlockInput extends BaseVideoBlockInput {
-    @IsOptional()
+    @IsUndefinable()
     @IsString()
     @BlockField({ nullable: true })
     @IsValidYouTubeIdentifier()

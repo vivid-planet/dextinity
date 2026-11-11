@@ -1,5 +1,6 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsString } from "class-validator";
 
+import { IsUndefinable } from "../../common/validators/is-undefinable";
 import { Block, BlockDataInterface, BlockInputInterface } from "../block";
 import { BlockField } from "../decorators/field";
 import {
@@ -34,7 +35,7 @@ function createLinkBlock<BlockMap extends Record<string, Block<BlockDataInterfac
         OneOfBlockItemInput: LinkBlockItemInput,
     }) {
         @BlockField({ nullable: true })
-        @IsOptional()
+        @IsUndefinable()
         @IsString()
         title?: string;
     }

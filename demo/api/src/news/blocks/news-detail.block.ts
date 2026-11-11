@@ -1,5 +1,5 @@
-import { BlockData, BlockField, BlockIndexData, BlockInput, blockInputToData, createBlock } from "@dextinity/cms-api";
-import { IsOptional, IsUUID } from "class-validator";
+import { BlockData, BlockField, BlockIndexData, BlockInput, blockInputToData, createBlock, IsUndefinable } from "@dextinity/cms-api";
+import { IsUUID } from "class-validator";
 
 class NewsDetailBlockData extends BlockData {
     @BlockField({ nullable: true })
@@ -24,7 +24,7 @@ class NewsDetailBlockData extends BlockData {
 class NewsDetailBlockInput extends BlockInput {
     @BlockField({ nullable: true })
     @IsUUID()
-    @IsOptional()
+    @IsUndefinable()
     id?: string;
 
     transformToBlockData(): NewsDetailBlockData {

@@ -90,12 +90,21 @@ describe("createOneOfBlock", () => {
             });
         });
 
-        it("should accept a null activeType when allowEmpty is true", async () => {
-            const input = OneOfBlock.blockInputFactory({ attachedBlocks: [], activeType: null } as never);
+        it("should accept a missing activeType when allowEmpty is true", async () => {
+            const input = OneOfBlock.blockInputFactory({ attachedBlocks: [] } as never);
 
             const errors = await validate(input, validationOptions);
 
             expect(errors).toHaveLength(0);
+        });
+
+        it("should report a null activeType when allowEmpty is true", async () => {
+            const input = OneOfBlock.blockInputFactory({ attachedBlocks: [], activeType: null } as never);
+
+            const errors = await validate(input, validationOptions);
+
+            expect(errors).toHaveLength(1);
+            expect(errors[0]).toMatchObject({ property: "activeType", constraints: { isIn: expect.any(String) } });
         });
 
         it("should report a null activeType when allowEmpty is false", async () => {

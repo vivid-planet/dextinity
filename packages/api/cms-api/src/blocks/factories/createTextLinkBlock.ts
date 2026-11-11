@@ -1,5 +1,6 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsString } from "class-validator";
 
+import { IsUndefinable } from "../../common/validators/is-undefinable";
 import {
     Block,
     BlockData,
@@ -43,7 +44,7 @@ export function createTextLinkBlock<LinkBlock extends Block>(
     }
 
     class TextLinkBlockInput extends BlockInput {
-        @IsOptional()
+        @IsUndefinable()
         @IsString()
         @BlockField()
         text?: string;

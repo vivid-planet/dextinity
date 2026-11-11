@@ -258,7 +258,7 @@ export function BaseOneOfBlockInput<
         @ValidateNested({ each: true })
         attachedBlocks: OneOfBlockInputInterface<BlockMap, Data, Input>["attachedBlocks"];
 
-        @ValidateIf((_, activeType) => !allowEmpty || activeType != null)
+        @ValidateIf((_, activeType) => !allowEmpty || activeType !== undefined)
         @IsIn(supportedBlockTypes)
         @Validate(IsAttachedBlockTypeConstraint)
         @BlockField({ nullable: allowEmpty })

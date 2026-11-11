@@ -31,8 +31,6 @@ export default [
             route("api/file-upload", "routes/api/fileUploadRoute.ts"),
             // Renders the not found and error pages between the header and the footer of the language layout
             layout("routes/PageErrorLayout.tsx", [
-                route("news", "routes/news/NewsIndexPage.tsx"),
-                route("news/:slug", "routes/news/NewsDetailPage.tsx"),
                 route("product", "routes/product/ProductListPage.tsx"),
                 route("product/:slug", "routes/product/ProductDetailPage.tsx"),
                 // The pages of the page tree and the predefined pages, e.g. the news below their path in the page tree.

@@ -125,7 +125,7 @@ The adapters take any path as `name`, so rows of fields and groups shown on a co
 - **Rows**, e.g. a list of addresses: render one set of adapters per item with names like `addresses[1].street`, keyed by a stable id, not the index. Add and remove items with `form.change`, or with `FieldArray` and the `push`/`remove` mutators of `react-final-form-arrays`, which also move the touched and error states with the rows.
 - **Conditional groups**: an unmounted adapter stops validating, so a hidden required field doesn't block submitting. Its value stays in the form values; remove it in `onSubmit` (or with `form.change(name, undefined)`) when hidden values must not be saved.
 
-The story `Forms/Final Form/Field arrays` shows both.
+The story `Field arrays` shows both.
 
 ### React Final Form configuration
 

@@ -1,13 +1,13 @@
 @mixin tokens {
-    --dextinity-form-helper-text-gap: var(--dextinity-unit-1);
-    --dextinity-form-helper-text-gap-internal: var(--dextinity-unit-1-5);
+    --dextinity-form-helper-text-gap: var(--dextinity-space-1);
+    --dextinity-form-helper-text-gap-internal: 6px;
 
-    --dextinity-form-helper-text-font-size: var(--dextinity-typography-body-sm-size);
-    --dextinity-form-helper-text-font-line-height: var(--dextinity-typography-body-sm-line-height);
-    --dextinity-form-helper-text-font-weight: var(--dextinity-font-weight-regular);
-    --dextinity-form-helper-text-font-weight-style: var(--dextinity-font-weight-regular-style);
+    --dextinity-form-helper-text-font-size: var(--dextinity-typography-small-size);
+    --dextinity-form-helper-text-font-line-height: var(--dextinity-typography-small-line-height);
+    --dextinity-form-helper-text-font-weight: 400;
+    --dextinity-form-helper-text-font-weight-style: regular;
 
-    --dextinity-form-helper-text-type-hint-foreground: var(--dextinity-color-foreground-muted);
-    --dextinity-form-helper-text-type-error-foreground: var(--dextinity-color-feedback-danger-default);
-    --dextinity-form-helper-text-count-foreground: var(--dextinity-color-foreground-muted);
+    --dextinity-form-helper-text-type-hint-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-form-helper-text-type-error-foreground: var(--dextinity-color-danger);
+    --dextinity-form-helper-text-count-foreground: var(--dextinity-color-text-secondary);
 }

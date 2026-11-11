@@ -13,8 +13,8 @@
     cursor: pointer;
 
     &:focus-visible {
-        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
-        outline-offset: var(--dextinity-focus-ring-offset);
+        outline: 2px solid var(--dextinity-color-focus);
+        outline-offset: 2px;
     }
 
     &[data-disabled] {

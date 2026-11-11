@@ -1,0 +1,30 @@
+// Component tokens derive from semantic and density tokens, so they are declared on every theme boundary:
+// a nested `Theme` with another brand, color scheme, or density resolves them against its own values.
+@mixin component-tokens {
+    @layer dextinity {
+        :root,
+        [data-dextinity-color-scheme],
+        [data-dextinity-density] {
+            @content;
+        }
+    }
+}
+
+// A component's values for the dark color schemes (dark and high contrast) and for the high-contrast color scheme, declared on
+// their theme boundary after the component tokens, so a nested `Theme` with another color scheme declares its own values again.
+@mixin dark-component-tokens {
+    @layer dextinity {
+        [data-dextinity-color-scheme="dark"],
+        [data-dextinity-color-scheme="high-contrast"] {
+            @content;
+        }
+    }
+}
+
+@mixin high-contrast-component-tokens {
+    @layer dextinity {
+        [data-dextinity-color-scheme="high-contrast"] {
+            @content;
+        }
+    }
+}

@@ -1,10 +1,13 @@
 import { useSyncExternalStore } from "react";
 
-type ToolbarBrand = "dextinity" | "crimson";
+import type { ThemeBrand } from "../theme/types";
+
+type ToolbarBrand = ThemeBrand;
 
 const toolbarBrandTitles: Record<ToolbarBrand, string> = {
-    dextinity: "Dextinity brand",
-    crimson: "Crimson brand",
+    dextinity: "Dextinity",
+    "ai-hub": "Dextinity AI Hub",
+    cms: "Dextinity CMS",
 };
 
 export const toolbarBrandOptions = Object.entries(toolbarBrandTitles).map(([value, title]) => ({ value, title }));

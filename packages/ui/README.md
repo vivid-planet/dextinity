@@ -214,15 +214,38 @@ Run from `packages/ui`: `pnpm run test:unit`, `pnpm run test:storybook`, and `pn
 
 ## Theme
 
-Components read their colors, metrics, and font family from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-typography-…)`, `var(--dextinity-brand-font-family-sans)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object. How applications use and override the tokens is in [Theme → Overview](src/docs/theme/Overview.mdx).
+Components read their colors, metrics, and font family from CSS custom properties (`var(--dextinity-button-…)`, `var(--dextinity-color-…)`, `var(--dextinity-typography-…)`, `var(--dextinity-font-family-text)`) with **no fallback** — an unthemed component renders visibly unstyled rather than silently drifting to a default. There is no runtime JS theme object. How applications use and override the tokens is in [Foundations → Theme → Overview](src/docs/theme/Overview.mdx).
 
 ### Token layers
 
-The tokens are defined in five SCSS partials under [`src/theme/`](src/theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), `_brand.scss`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. `_components.scss` includes the `tokens` mixin of each component's `<ComponentName>.tokens.scss`. A token is defined in the folder of the component its name starts with, and other components can read it: `IconButton` uses the `--dextinity-button-…` colors from `Button.tokens.scss`. Tokens of components that don't exist yet stay in `_components.scss` until the component is added. The prop-value types live in [`src/theme/types.ts`](src/theme/types.ts).
+The tokens live in SCSS partials under [`src/theme/`](src/theme), composed into the `Theme` module with `@use` and wrapped in a single `@layer dextinity`. Each layer references only the layers before it:
 
-### Selecting a color scheme
+1. **Brand** (`_brand.scss`) — hues and chromas (primary, secondary, neutral tint, success, danger), font families, display weight and tracking, control radius, and the radius factor. The brands `dextinity`, `ai-hub`, and `cms` are built in.
+2. **Primitives** (`_primitives.scss`) — 11-stop OKLCH scales on a fixed lightness curve, computed from the brand's hue and chroma; spacing and radii.
+3. **Semantic** (`_semantic.scss`) — surfaces, text, lines, accent, status, material (glass, blur, grain, light fields), and shadows, per color scheme (light, dark, high contrast). High contrast turns light and glass off and lines on.
+4. **Typography, motion, density** (`_typography.scss`, `_motion.scss`, `_density.scss`) — text styles, one easing with three durations (reduced motion keeps only short fades), and fixed metrics per density level.
+5. **Component tokens** (`_components.scss`) — includes the `tokens` mixin of each component's `<ComponentName>.tokens.scss` in the `scope.component-tokens` block. A token is defined in the folder of the component its name starts with, and other components can read it: `IconButton` uses the `--dextinity-button-…` colors from `Button.tokens.scss`.
 
-`Theme` selects the active color scheme. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code.
+Components use semantic, material, motion, density, and their own component tokens — never primitives. The prop-value types live in [`src/theme/types.ts`](src/theme/types.ts).
+
+Every derived token is declared on each theme boundary (`[data-dextinity-color-scheme]`), so a nested `Theme` with another brand, color scheme, or density resolves all tokens against its own values.
+
+### Brands
+
+A brand is a CSS block on `[data-dextinity-brand="<name>"]` that sets the `--dextinity-brand-*` tokens — and, optionally, replaces icons — selected through `Theme`'s `brand` prop:
+
+```css
+[data-dextinity-brand="acme"] {
+    --dextinity-brand-primary-hue: 18;
+    --dextinity-brand-primary-chroma: 0.21;
+    --dextinity-brand-font-family-text: "Source Sans 3", sans-serif;
+    --dextinity-brand-radius-control: 999px;
+}
+```
+
+### Selecting a color scheme, brand, and density
+
+`Theme` selects the color scheme, brand, and density. It stays a pure function of its props — reading no `window`, `localStorage`, or `matchMedia` — so it renders the same on server and client; switching, OS-scheme resolution, and preventing the first-paint flash on SSR stay in consumer code.
 
 ## Icons
 

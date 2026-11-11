@@ -8,13 +8,14 @@
     display: flex;
     flex-shrink: 0;
     align-items: center;
-    block-size: var(--dextinity-unit-15);
-    padding-inline: var(--dextinity-unit-4);
-    background-color: var(--dextinity-color-background-inverse);
+    block-size: 60px;
+    padding-inline: var(--dextinity-space-4);
+    border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    background-color: var(--dextinity-color-surface-raised);
 }
 
 .appBarTitle {
-    color: var(--dextinity-color-foreground-inverse);
+    color: var(--dextinity-color-text);
 }
 
 .body {
@@ -26,8 +27,8 @@
     display: none;
     flex-shrink: 0;
     inline-size: 280px;
-    padding-block: var(--dextinity-unit-4);
-    border-inline-end: 1px solid var(--dextinity-color-border-default);
+    padding-block: var(--dextinity-space-4);
+    border-inline-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
 
     @media (min-width: 1024px) {
         display: block;
@@ -48,27 +49,27 @@
 }
 
 .toolbar {
-    border-block-end: 1px solid var(--dextinity-color-border-default);
+    border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
 }
 
 .breadcrumb {
     display: flex;
     align-items: center;
-    gap: var(--dextinity-unit-2);
+    gap: var(--dextinity-space-2);
     margin: 0;
-    padding: var(--dextinity-unit-2) var(--dextinity-unit-4);
-    border-block-end: 1px solid var(--dextinity-color-border-default);
+    padding: var(--dextinity-space-2) var(--dextinity-space-4);
+    border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
     list-style: none;
 }
 
 .breadcrumbLink {
-    color: var(--dextinity-color-foreground-muted);
+    color: var(--dextinity-color-text-secondary);
     text-decoration: none;
 }
 
 .breadcrumbSeparator {
     display: flex;
-    color: var(--dextinity-color-foreground-muted);
+    color: var(--dextinity-color-text-secondary);
 }
 
 .titleRow {
@@ -76,13 +77,13 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--dextinity-unit-4);
-    padding: var(--dextinity-unit-3) var(--dextinity-unit-4);
+    gap: var(--dextinity-space-4);
+    padding: var(--dextinity-space-3) var(--dextinity-space-4);
 }
 
 .actions {
     display: none;
-    gap: var(--dextinity-unit-2);
+    gap: var(--dextinity-space-2);
 
     @media (min-width: 1024px) {
         display: flex;
@@ -97,11 +98,11 @@
 
 .content {
     flex-grow: 1;
-    padding: var(--dextinity-unit-4);
-    background-color: var(--dextinity-color-background-subtle);
+    padding: var(--dextinity-space-4);
+    background-color: var(--dextinity-color-canvas);
 
     @media (min-width: 1024px) {
-        padding: var(--dextinity-unit-6);
+        padding: var(--dextinity-space-6);
     }
 }
 
@@ -111,14 +112,14 @@
     justify-content: center;
     block-size: 100%;
     min-block-size: 240px;
-    border: 1px dashed var(--dextinity-color-border-default);
-    color: var(--dextinity-color-foreground-muted);
+    border: var(--dextinity-line-width) dashed var(--dextinity-color-line);
+    color: var(--dextinity-color-text-secondary);
 }
 
 .appBar,
 .breadcrumb,
 .titleRow {
     @media (min-width: 1024px) {
-        padding-inline: var(--dextinity-unit-6);
+        padding-inline: var(--dextinity-space-6);
     }
 }

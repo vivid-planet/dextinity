@@ -1,15 +1,15 @@
 @mixin tokens {
-    --dextinity-form-label-gap: var(--dextinity-unit-1);
+    --dextinity-form-label-gap: var(--dextinity-space-1);
 
-    --dextinity-form-label-font-size: var(--dextinity-typography-label-sm-size);
-    --dextinity-form-label-font-line-height: var(--dextinity-typography-label-sm-line-height);
-    --dextinity-form-label-font-weight: var(--dextinity-font-weight-medium);
-    --dextinity-form-label-font-weight-style: var(--dextinity-font-weight-medium-style);
+    --dextinity-form-label-font-size: var(--dextinity-typography-small-size);
+    --dextinity-form-label-font-line-height: var(--dextinity-typography-small-line-height);
+    --dextinity-form-label-font-weight: 500;
+    --dextinity-form-label-font-weight-style: medium;
 
-    --dextinity-form-label-default-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-form-label-error-foreground: var(--dextinity-color-feedback-danger-default);
-    --dextinity-form-label-required-color: var(--dextinity-color-feedback-danger-default);
+    --dextinity-form-label-default-foreground: var(--dextinity-color-text);
+    --dextinity-form-label-error-foreground: var(--dextinity-color-danger);
+    --dextinity-form-label-required-color: var(--dextinity-color-danger);
 
-    --dextinity-form-label-helper-icon-color: var(--dextinity-color-foreground-muted);
+    --dextinity-form-label-helper-icon-color: var(--dextinity-color-text-secondary);
     --dextinity-form-label-helper-icon-size: 16px;
 }

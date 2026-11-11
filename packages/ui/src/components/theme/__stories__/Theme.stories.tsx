@@ -11,6 +11,8 @@ const meta: Meta<typeof Theme> = {
     title: "Foundations/Theme/Theme",
     argTypes: {
         colorScheme: { control: "select", options: colorSchemes },
+        brand: { control: "select", options: ["dextinity", "ai-hub", "cms"] },
+        density: { control: "radio", options: ["comfortable", "standard", "compact"] },
     },
     args: {
         colorScheme: "light",
@@ -37,7 +39,7 @@ export const Nested: Story = {
         <Theme {...args}>
             <div className={styles.frame}>
                 <ThemeExampleContent />
-                <Theme className={styles.sunsetBrand}>
+                <Theme brand="sunset">
                     <div className={styles.frame}>
                         <ThemeExampleContent />
                     </div>

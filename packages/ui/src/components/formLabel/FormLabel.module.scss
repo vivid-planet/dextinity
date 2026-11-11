@@ -3,11 +3,11 @@
     align-items: flex-start;
     gap: var(--dextinity-form-label-gap);
     color: var(--dextinity-form-label-default-foreground);
-    font-family: var(--dextinity-brand-font-family-sans);
+    font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-form-label-font-size);
     font-weight: var(--dextinity-form-label-font-weight);
     line-height: var(--dextinity-form-label-font-line-height);
-    letter-spacing: var(--dextinity-font-letter-spacing-normal);
+    letter-spacing: 0px;
 
     &[data-error] {
         color: var(--dextinity-form-label-error-foreground);

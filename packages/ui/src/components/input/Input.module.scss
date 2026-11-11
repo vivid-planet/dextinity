@@ -10,11 +10,11 @@
     border-radius: var(--dextinity-input-radius);
     background: var(--dextinity-input-state-default-background);
     color: var(--dextinity-input-state-default-foreground);
-    font-family: var(--dextinity-brand-font-family-sans);
+    font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-input-font-size);
     font-weight: var(--dextinity-input-font-weight);
     line-height: var(--dextinity-input-font-line-height);
-    letter-spacing: var(--dextinity-font-letter-spacing-normal);
+    letter-spacing: 0px;
     cursor: text;
 
     --placeholder-color: var(--dextinity-input-state-default-foreground-placeholder);
@@ -31,8 +31,8 @@
         border-color: var(--dextinity-input-state-focus-border);
         background: var(--dextinity-input-state-focus-background);
         color: var(--dextinity-input-state-focus-foreground);
-        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
-        outline-offset: var(--dextinity-focus-ring-offset);
+        outline: 2px solid var(--dextinity-color-focus);
+        outline-offset: 2px;
 
         --placeholder-color: var(--dextinity-input-state-focus-foreground-placeholder);
     }

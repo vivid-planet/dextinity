@@ -1,28 +1,18 @@
-.sunsetBrand {
+:global([data-dextinity-brand="sunset"]) {
+    --dextinity-brand-primary-hue: 350;
+    --dextinity-brand-primary-chroma: 0.22;
+    --dextinity-brand-secondary-hue: 55;
+    --dextinity-brand-secondary-chroma: 0.17;
+    --dextinity-brand-font-family-text: Georgia, serif;
+    --dextinity-brand-font-family-display: Georgia, serif;
     --dextinity-brand-radius-control: 20px;
-    --dextinity-brand-radius-control-small: 16px;
-    --dextinity-brand-font-family-sans: Georgia, serif;
-
-    @each $step in 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950 {
-        --dextinity-brand-color-primary-#{$step}: var(--dextinity-color-fuchsia-#{$step});
-        --dextinity-brand-color-secondary-#{$step}: var(--dextinity-color-orange-#{$step});
-    }
-
-    @each $state, $from, $to in (default, 500, 600), (focus, 500, 600), (hover, 600, 700), (active, 700, 800) {
-        --dextinity-button-color-primary-contained-#{$state}-background: linear-gradient(
-            135deg,
-            var(--dextinity-color-orange-#{$from}),
-            var(--dextinity-color-fuchsia-#{$to})
-        );
-        --dextinity-button-color-primary-contained-#{$state}-border: transparent;
-    }
-
+    --dextinity-brand-radius-factor: 1.6;
     --dextinity-icon-add: url("./custom-add.svg#icon");
     --dextinity-icon-edit: url("./custom-edit.svg#icon");
 }
 
 .frame {
-    padding: 1rem;
-    border: 1px solid var(--dextinity-color-border-default);
-    background-color: var(--dextinity-color-background-default);
+    padding: var(--dextinity-space-4);
+    border: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    background-color: var(--dextinity-color-canvas);
 }

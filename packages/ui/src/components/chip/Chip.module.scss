@@ -8,18 +8,18 @@
     padding-inline: var(--dextinity-chip-size-default-padding-horizontal);
     border: var(--dextinity-chip-border-width) solid;
     border-radius: var(--dextinity-chip-size-default-radius);
-    font-family: var(--dextinity-brand-font-family-sans);
+    font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-chip-size-default-font-size);
     font-weight: var(--dextinity-chip-size-default-font-weight);
     line-height: var(--dextinity-chip-size-default-font-line-height);
-    letter-spacing: var(--dextinity-font-letter-spacing-normal);
+    letter-spacing: 0px;
     white-space: nowrap;
 
     --icon-size: var(--dextinity-chip-size-default-icon-size);
 
     &:focus-visible {
-        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
-        outline-offset: var(--dextinity-focus-ring-offset);
+        outline: 2px solid var(--dextinity-color-focus);
+        outline-offset: 2px;
     }
 
     &[data-disabled] {
@@ -343,12 +343,12 @@
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    inline-size: var(--dextinity-unit-6);
-    block-size: var(--dextinity-unit-6);
+    inline-size: var(--dextinity-space-6);
+    block-size: var(--dextinity-space-6);
     margin-block: calc(-1 * var(--dextinity-chip-border-width));
     padding: 0;
     border: none;
-    border-radius: var(--dextinity-brand-radius-pill);
+    border-radius: var(--dextinity-radius-pill);
     background: transparent;
     color: inherit;
     cursor: pointer;
@@ -359,7 +359,7 @@
     }
 
     &:focus-visible {
-        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
+        outline: 2px solid var(--dextinity-color-focus);
     }
 
     &:disabled {

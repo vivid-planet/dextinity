@@ -44,5 +44,6 @@ import { InputAdornment } from "@mui/material";
 
 - Import `NumberField` from `@dextinity/admin`
 - Use dot notation for nested object fields (e.g. `dimensions.width`)
+- **Nullable number fields**: a cleared `NumberField` holds `undefined`, so the field would be omitted from the update and the old value kept. Send it as `null` in `handleSubmit` (`purchasePrice: formValues.purchasePrice ?? null`), also for nested ones
 - **Currency fields**: When a number field is tentatively a currency/price (based on field name or context), always add an `endAdornment` with the currency symbol. Use `€` as default, ask the user if unclear.
 - For other units (weight, distance, percentage), also consider adding an appropriate `endAdornment` (e.g. `kg`, `m`, `%`)

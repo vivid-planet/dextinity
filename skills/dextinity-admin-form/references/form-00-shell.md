@@ -224,6 +224,8 @@ export function <EntityName>Form({ id }: FormProps) {
 
         const output = {
             ...formValues,
+            // Send cleared nullable number fields as null (NumberField stores undefined, which the update would skip):
+            // purchasePrice: formValues.purchasePrice ?? null,
             // Transform relation fields to IDs:
             // category: formValues.category ? formValues.category.id : null,
             // tags: formValues.tags.map((item) => item.id),

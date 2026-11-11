@@ -33,7 +33,7 @@ import { useLocation } from "react-router";
 
 import { createFinalFormBlock } from "../blocks/form/createFinalFormBlock";
 import type { BlockInterface, BlockState } from "../blocks/types";
-import type { GQLRedirectInput, GQLRedirectSourceType } from "../graphql.generated";
+import type { GQLRedirectInput, GQLRedirectSourceType, GQLRedirectType } from "../graphql.generated";
 import {
     createRedirectMutation,
     redirectDetailQuery,
@@ -55,7 +55,9 @@ import type {
     GQLUpdateRedirectMutationVariables,
 } from "./RedirectEditPanel.gql.generated";
 import { Footer, FooterActions, FormBody, Section, SectionTitle } from "./RedirectEditPanel.sc";
+import { useRedirectsConfig } from "./redirectsConfig";
 import { useGenerationTypeLabel } from "./useGenerationTypeLabel";
+import { useRedirectTypeLabel } from "./useRedirectTypeLabel";
 
 export interface RedirectUnsavedChanges {
     save: () => Promise<boolean>;
@@ -65,6 +67,7 @@ export interface RedirectUnsavedChanges {
 interface RedirectFormValues {
     sourceType: GQLRedirectSourceType;
     source: string;
+    redirectType: GQLRedirectType;
     target: BlockState<BlockInterface>;
     comment: string;
     active: boolean;
@@ -80,6 +83,7 @@ interface RedirectEditPanelProps {
     onUnsavedChangesChange: (unsavedChanges: RedirectUnsavedChanges | undefined) => void;
 }
 
+const redirectTypes: GQLRedirectType[] = ["temporary", "permanent"];
 const pathPattern = /^\/([a-zA-Z0-9-._~/:?=&]|%[0-9a-fA-F]{2})+$/;
 const formDecorators = [focusOnError];
 
@@ -151,6 +155,7 @@ function RedirectForm({ redirect, linkBlock, scope, closeButton, onCreated, onUn
             target: linkBlock.state2Output(values.target),
             comment: values.comment.trim() === "" ? null : values.comment,
             generationType: savedRedirect?.generationType ?? "manual",
+            redirectType: values.redirectType,
         };
         try {
             let result: GQLRedirectDetailFragment | undefined;
@@ -253,6 +258,8 @@ function RedirectFormContent({
     const saveState = useFormSaveState();
     const hasUnsavedChanges = useHasUnsavedChanges();
     const getGenerationTypeLabel = useGenerationTypeLabel();
+    const getRedirectTypeLabel = useRedirectTypeLabel();
+    const { enableRedirectType } = useRedirectsConfig();
     const { values, submitError, submitting } = useFormState<RedirectFormValues>({
         subscription: { values: true, submitError: true, submitting: true },
     });
@@ -307,6 +314,11 @@ function RedirectFormContent({
         { value: "path", label: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.source.type.path", defaultMessage: "Path" }) },
         { value: "domain", label: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.source.type.domain", defaultMessage: "Domain" }) },
     ];
+
+    const redirectTypeOptions: SelectOption<GQLRedirectType>[] = redirectTypes.map((redirectType) => ({
+        value: redirectType,
+        label: getRedirectTypeLabel(redirectType),
+    }));
 
     const validateSource = async (source: string, allValues: object) => {
         if (source === "") {
@@ -386,6 +398,26 @@ function RedirectFormContent({
                     placeholder={values.sourceType === "domain" ? "example.com" : "/example-path"}
                     spellCheck={false}
                 />
+                {enableRedirectType && values.sourceType === "path" ? (
+                    <>
+                        <SelectField<false, GQLRedirectType>
+                            name="redirectType"
+                            label={intl.formatMessage({ id: "dextinity.pages.redirects.redirect.redirectType", defaultMessage: "Redirect type" })}
+                            options={redirectTypeOptions}
+                            required
+                            requiredMessage={requiredMessage}
+                        />
+                        {values.redirectType === "permanent" ? (
+                            <Banner tone="warning">
+                                {intl.formatMessage({
+                                    id: "dextinity.pages.redirects.redirect.redirectType.permanent.warning",
+                                    defaultMessage:
+                                        "Browsers, search engines and CDNs cache permanent redirects for a long time. Changing or removing this redirect later may not take effect for visitors who have already been redirected. Only use a permanent redirect if the source will never be used again, otherwise use the standard redirect.",
+                                })}
+                            </Banner>
+                        ) : null}
+                    </>
+                ) : null}
                 <Section aria-labelledby={targetTitleId}>
                     <SectionTitle id={targetTitleId}>
                         {intl.formatMessage({ id: "dextinity.pages.redirects.redirect.target", defaultMessage: "Target" })}
@@ -479,11 +511,12 @@ function RedirectFormContent({
 
 function toFormValues(redirect: GQLRedirectDetailFragment | undefined, linkBlock: BlockInterface): RedirectFormValues {
     if (!redirect) {
-        return { sourceType: "path", source: "", target: linkBlock.defaultValues(), comment: "", active: true };
+        return { sourceType: "path", source: "", redirectType: "temporary", target: linkBlock.defaultValues(), comment: "", active: true };
     }
     return {
         sourceType: redirect.sourceType,
         source: redirect.source,
+        redirectType: redirect.redirectType,
         target: linkBlock.input2State(redirect.target),
         comment: redirect.comment ?? "",
         active: redirect.active,

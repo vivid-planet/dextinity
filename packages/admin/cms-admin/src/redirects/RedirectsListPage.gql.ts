@@ -10,6 +10,7 @@ const redirectsListFragment = gql`
         target
         comment
         generationType
+        redirectType
     }
 `;
 

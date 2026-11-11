@@ -34,8 +34,9 @@ import { toGqlSort } from "../dataGrid/remoteList/toGqlSort";
 import { useDataGridLabels } from "../dataGrid/remoteList/useDataGridLabels";
 import { useRemoteListPagination } from "../dataGrid/remoteList/useRemoteListPagination";
 import { useRemoteListState } from "../dataGrid/remoteList/useRemoteListState";
-import type { GQLRedirectFilter, GQLRedirectGenerationType, GQLRedirectSortField } from "../graphql.generated";
+import type { GQLRedirectFilter, GQLRedirectGenerationType, GQLRedirectSortField, GQLRedirectType } from "../graphql.generated";
 import { RedirectEditPanel, type RedirectUnsavedChanges } from "./RedirectEditPanel";
+import { useRedirectsConfig } from "./redirectsConfig";
 import { deleteRedirectMutation, deleteRedirectsMutation, paginatedRedirectsQuery, updateRedirectActivenessMutation } from "./RedirectsListPage.gql";
 import type {
     GQLDeleteRedirectMutation,
@@ -51,6 +52,7 @@ import type {
 import { ActiveCell, Comment, Muted, Source } from "./RedirectsListPage.sc";
 import { RedirectTargetPreview } from "./RedirectTargetPreview";
 import { useGenerationTypeLabel } from "./useGenerationTypeLabel";
+import { useRedirectTypeLabel } from "./useRedirectTypeLabel";
 
 type RedirectRow = GQLRedirectsListItemFragment;
 type StatusFilter = "active" | "inactive";
@@ -58,11 +60,12 @@ type StatusFilter = "active" | "inactive";
 const filters = {
     status: remoteListFilterParam.oneOf<StatusFilter>(["active", "inactive"]),
     generationType: remoteListFilterParam.oneOf<GQLRedirectGenerationType>(["manual", "automatic"]),
+    redirectType: remoteListFilterParam.oneOf<GQLRedirectType>(["temporary", "permanent"]),
 };
 const sortableColumns: GQLRedirectSortField[] = ["source", "createdAt", "updatedAt"];
 const selectedParam = "selected";
 const newRedirectId = "new";
-const columnsHiddenNextToPanel = ["comment", "generationType", "activatedAt"];
+const columnsHiddenNextToPanel = ["comment", "generationType", "redirectType", "activatedAt"];
 
 interface RedirectsListPageProps {
     linkBlock: BlockInterface;
@@ -80,14 +83,18 @@ export function RedirectsListPage({ linkBlock, scope }: RedirectsListPageProps):
     const location = useLocation();
     const contentScope = useContentScope();
     const getGenerationTypeLabel = useGenerationTypeLabel();
+    const getRedirectTypeLabel = useRedirectTypeLabel();
+    const { enableRedirectType } = useRedirectsConfig();
     const { labels: dataGridLabels, bulkActionLabels } = useDataGridLabels();
     const { toasts, add: addToast, dismiss: dismissToast } = useToasts();
     const listState = useRemoteListState({ filters, sortableColumns, pageSizeStorageKey: "dextinity-redirects-page-size" });
     const { status, generationType } = listState.filters;
+    const redirectType = enableRedirectType ? listState.filters.redirectType : null;
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [redirectsToDelete, setRedirectsToDelete] = useState<string[]>([]);
     const [deleting, setDeleting] = useState(false);
     const [generationTypeMenuOpen, setGenerationTypeMenuOpen] = useState(false);
+    const [redirectTypeMenuOpen, setRedirectTypeMenuOpen] = useState(false);
     const [panelUnsavedChanges, setPanelUnsavedChanges] = useState<RedirectUnsavedChanges>();
     const [pendingSelection, setPendingSelection] = useState<{ redirectId: string | null }>();
 
@@ -118,7 +125,12 @@ export function RedirectsListPage({ linkBlock, scope }: RedirectsListPageProps):
         }
     };
 
-    const countFilter: GQLRedirectFilter = generationType ? { generationType: { equal: generationType } } : {};
+    const countFilterConditions: GQLRedirectFilter[] = [
+        ...(generationType ? [{ generationType: { equal: generationType } }] : []),
+        // The redirect type only applies to path redirects
+        ...(redirectType ? [{ sourceType: { equal: "path" as const } }, { redirectType: { equal: redirectType } }] : []),
+    ];
+    const countFilter: GQLRedirectFilter = countFilterConditions.length > 0 ? { and: countFilterConditions } : {};
     const activeFilter: GQLRedirectFilter = { and: [countFilter, { active: { equal: true } }] };
     const inactiveFilter: GQLRedirectFilter = { and: [countFilter, { active: { equal: false } }] };
     const filter = status === "active" ? activeFilter : status === "inactive" ? inactiveFilter : countFilter;
@@ -266,6 +278,17 @@ export function RedirectsListPage({ linkBlock, scope }: RedirectsListPageProps):
                 </Chip>
             ),
         },
+        ...(enableRedirectType
+            ? [
+                  {
+                      key: "redirectType",
+                      header: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.redirectType", defaultMessage: "Redirect type" }),
+                      width: 130,
+                      priority: "low",
+                      render: (redirect) => (redirect.sourceType === "path" ? <Muted>{getRedirectTypeLabel(redirect.redirectType)}</Muted> : null),
+                  } satisfies DataGridColumn<RedirectRow>,
+              ]
+            : []),
         {
             key: "active",
             header: intl.formatMessage({ id: "dextinity.redirects.active", defaultMessage: "Active" }),
@@ -325,6 +348,7 @@ export function RedirectsListPage({ linkBlock, scope }: RedirectsListPageProps):
     ];
 
     const generationTypeFilterLabel = intl.formatMessage({ id: "dextinity.redirects.generationType", defaultMessage: "Origin" });
+    const redirectTypeFilterLabel = intl.formatMessage({ id: "dextinity.pages.redirects.redirect.redirectType", defaultMessage: "Redirect type" });
 
     return (
         <>
@@ -442,6 +466,53 @@ export function RedirectsListPage({ linkBlock, scope }: RedirectsListPageProps):
                                 {intl.formatMessage(
                                     { id: "dextinity.redirects.filter.generationTypeChip", defaultMessage: "Origin: {origin}" },
                                     { origin: getGenerationTypeLabel(generationType) },
+                                )}
+                            </Chip>
+                        ) : null}
+                        {enableRedirectType ? (
+                            <Menu
+                                open={redirectTypeMenuOpen}
+                                onOpenChange={setRedirectTypeMenuOpen}
+                                trigger={
+                                    <FilterChip selected={redirectType !== null} hasMenu onClick={() => undefined}>
+                                        {redirectTypeFilterLabel}
+                                    </FilterChip>
+                                }
+                            >
+                                <MenuRadioGroup
+                                    value={redirectType ?? ""}
+                                    onChange={(nextRedirectType) => {
+                                        listState.setFilter("redirectType", nextRedirectType === "" ? null : (nextRedirectType as GQLRedirectType));
+                                        setRedirectTypeMenuOpen(false);
+                                    }}
+                                >
+                                    <MenuRadioItem
+                                        value=""
+                                        label={intl.formatMessage({
+                                            id: "dextinity.redirects.filter.allRedirectTypes",
+                                            defaultMessage: "All redirect types",
+                                        })}
+                                    />
+                                    <MenuRadioItem value="temporary" label={getRedirectTypeLabel("temporary")} />
+                                    <MenuRadioItem value="permanent" label={getRedirectTypeLabel("permanent")} />
+                                </MenuRadioGroup>
+                            </Menu>
+                        ) : null}
+                        {redirectType !== null ? (
+                            <Chip
+                                color="secondary"
+                                onClear={() => listState.setFilter("redirectType", null)}
+                                clearLabel={intl.formatMessage(
+                                    {
+                                        id: "dextinity.redirects.filter.removeRedirectType",
+                                        defaultMessage: "Remove filter Redirect type: {redirectType}",
+                                    },
+                                    { redirectType: getRedirectTypeLabel(redirectType) },
+                                )}
+                            >
+                                {intl.formatMessage(
+                                    { id: "dextinity.redirects.filter.redirectTypeChip", defaultMessage: "Redirect type: {redirectType}" },
+                                    { redirectType: getRedirectTypeLabel(redirectType) },
                                 )}
                             </Chip>
                         ) : null}

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import typographyTokens from "../../../theme/_typography.scss?raw";
 import { Typography } from "../Typography";
 import styles from "./Typography.stories.module.scss";
 
@@ -8,6 +9,13 @@ const meta = {
     component: Typography,
     title: "Foundations/Typography",
     decorators: [themeDecorator],
+    parameters: {
+        tokens: typographyTokens,
+        rules: {
+            do: ["Exactly one display title per view.", "Tabular figures for numbers in tables.", "Short labels, in mono and uppercase."],
+            dont: ["Text smaller than 12px.", "Bold and color at the same time for emphasis.", "Long paragraphs in uppercase."],
+        },
+    },
     args: {
         children: "The quick brown fox jumps over the lazy dog",
     },
@@ -113,15 +121,6 @@ const specimen = [
 
 /**
  * All styles with their metrics and use. Hierarchy comes from size and weight, not color; font families come from the brand.
- *
- * **Rules**
- *
- * - Do: exactly one display title per view.
- * - Do: tabular figures for numbers in tables.
- * - Do: short labels, in mono and uppercase.
- * - Don't: text smaller than 12px.
- * - Don't: bold and color at the same time for emphasis.
- * - Don't: long paragraphs in uppercase.
  */
 export const Specimen: Story = {
     render: () => (

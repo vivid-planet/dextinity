@@ -223,7 +223,7 @@ The tokens live in SCSS partials under [`src/theme/`](src/theme), composed into 
 1. **Brand** (`_brand.scss`, one file per brand in `brands/`) — hues and chromas (primary, secondary, neutral tint, success, danger), font families, display weight and tracking, control radius, and the radius factor. The brands `dextinity` and `ai-hub` are built in.
 2. **Primitives** (`_primitives.scss`) — 11-stop OKLCH scales on a fixed lightness curve, computed from the brand's hue and chroma; spacing and radii.
 3. **Semantic** (`_semantic.scss`) — surfaces, text, lines, accent, status, material (glass, blur, grain, light fields), and shadows, per color scheme (light, dark, high contrast). High contrast turns light and glass off and lines on.
-4. **Typography, motion, density** (`_typography.scss`, `_motion.scss`, `_density.scss`) — text styles, one easing with three durations (reduced motion keeps only short fades), and fixed metrics per density level.
+4. **Typography, motion, density** (`_typography.scss`, `_motion.scss`, `_density.scss`) — font families and text styles, one easing with three durations (reduced motion keeps only short fades), and fixed metrics per density level.
 5. **Component tokens** (`_components.scss`) — includes the `tokens` mixin of each component's `<ComponentName>.tokens.scss` in the `scope.component-tokens` block. A token is defined in the folder of the component its name starts with, and other components can read it: `IconButton` uses the `--dextinity-button-…` colors from `Button.tokens.scss`.
 
 Components use semantic, material, motion, density, and their own component tokens — never primitives. The prop-value types live in [`src/theme/types.ts`](src/theme/types.ts).

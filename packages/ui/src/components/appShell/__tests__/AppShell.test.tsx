@@ -73,7 +73,8 @@ describe("AppShell", () => {
         renderShell();
 
         expect(screen.queryByRole("navigation")).toBeNull();
-        act(() => screen.getByRole("button", { name: "Open navigation" }).click());
+        // jsdom's viewport is always 1024px wide, so the stylesheet hides the menu button that only narrow windows show
+        act(() => screen.getByLabelText("Open navigation").click());
         expect(screen.getByRole("dialog", { name: "Navigation" })).toBeTruthy();
         expect(screen.getByRole("navigation").hasAttribute("data-collapsed")).toBe(false);
     });

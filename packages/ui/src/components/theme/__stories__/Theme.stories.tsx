@@ -57,7 +57,7 @@ export const Nested: Story = {
                 <Theme colorScheme="dark" brand="ai-hub">
                     <ThemeExampleContent />
                 </Theme>
-                <Theme brand="ai-hub" density="comfortable">
+                <Theme density="comfortable">
                     <ThemeExampleContent />
                 </Theme>
             </div>

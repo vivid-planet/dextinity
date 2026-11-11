@@ -2,13 +2,12 @@ import { useSyncExternalStore } from "react";
 
 import type { ThemeColorScheme } from "../theme/types";
 
-type ToolbarColorScheme = ThemeColorScheme | "system";
+type ToolbarColorScheme = ThemeColorScheme;
 
 const toolbarColorSchemeTitles: Record<ToolbarColorScheme, string> = {
     light: "Light mode",
     dark: "Dark mode",
     "high-contrast": "High contrast mode",
-    system: "Follow system",
 };
 
 export const toolbarColorSchemeOptions = Object.entries(toolbarColorSchemeTitles).map(([value, title]) => ({ value, title }));
@@ -30,25 +29,7 @@ export function storeToolbarColorScheme(value: unknown) {
     }
 }
 
-const moreContrastQuery = window.matchMedia("(prefers-contrast: more)");
-const darkColorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-function getSystemColorScheme(): ThemeColorScheme {
-    if (moreContrastQuery.matches) {
-        return "high-contrast";
-    }
-    if (darkColorSchemeQuery.matches) {
-        return "dark";
-    }
-    return "light";
-}
-
-function getAppliedColorScheme(): ThemeColorScheme {
-    const toolbarColorScheme = getToolbarColorScheme();
-    return toolbarColorScheme === "system" ? getSystemColorScheme() : toolbarColorScheme;
-}
-
-function subscribeToAppliedColorScheme(onChange: () => void) {
+function subscribeToToolbarColorScheme(onChange: () => void) {
     function handleStorage(event: StorageEvent) {
         if (event.key === toolbarColorSchemeStorageKey) {
             onChange();
@@ -56,15 +37,9 @@ function subscribeToAppliedColorScheme(onChange: () => void) {
     }
 
     window.addEventListener("storage", handleStorage);
-    moreContrastQuery.addEventListener("change", onChange);
-    darkColorSchemeQuery.addEventListener("change", onChange);
-    return () => {
-        window.removeEventListener("storage", handleStorage);
-        moreContrastQuery.removeEventListener("change", onChange);
-        darkColorSchemeQuery.removeEventListener("change", onChange);
-    };
+    return () => window.removeEventListener("storage", handleStorage);
 }
 
 export function useAppliedColorScheme(): ThemeColorScheme {
-    return useSyncExternalStore(subscribeToAppliedColorScheme, getAppliedColorScheme);
+    return useSyncExternalStore(subscribeToToolbarColorScheme, getToolbarColorScheme);
 }

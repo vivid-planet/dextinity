@@ -8,8 +8,8 @@ import { FormLabel } from "../../components/formLabel/FormLabel";
 import { Icon } from "../../components/icon/Icon";
 import { IconButton } from "../../components/iconButton/IconButton";
 import { Input } from "../../components/input/Input";
-import { MainNavigationItem } from "../../components/mainNavigationItem/MainNavigationItem";
 import { MenuSectionHeader } from "../../components/menuSectionHeader/MenuSectionHeader";
+import { NavItem } from "../../components/navItem/NavItem";
 import { Typography } from "../../components/typography/Typography";
 import { themeDecorator } from "../../storybook/themeDecorator";
 import styles from "./intro.module.scss";
@@ -37,13 +37,13 @@ export const Showcase: Story = {
             <div className={styles.showcase}>
                 <div className={styles.column}>
                     <section className={styles.taskCard}>
-                        <Typography variant="labelS" className={styles.taskDate}>
+                        <Typography variant="small" className={styles.taskDate}>
                             <Icon name="calendar-today" /> Due on Friday
                         </Typography>
-                        <Typography variant="h3" className={styles.taskTitle}>
+                        <Typography variant="title" className={styles.taskTitle}>
                             Publish the spring campaign
                         </Typography>
-                        <Typography variant="bodyS" className={styles.taskMeta}>
+                        <Typography variant="small" className={styles.taskMeta}>
                             3 of 5 pages ready
                         </Typography>
                     </section>
@@ -57,14 +57,14 @@ export const Showcase: Story = {
                             <FormHelperText id="showcase-title-hint">Shown in the browser tab and in search results.</FormHelperText>
                         </div>
                         <div className={styles.actions}>
-                            <Button variant="outlined">Cancel</Button>
+                            <Button variant="secondary">Cancel</Button>
                             <Button>Save</Button>
                         </div>
                     </section>
                     <section className={styles.card}>
-                        <Typography variant="display">Aa</Typography>
-                        <Typography variant="h4">Type scale</Typography>
-                        <Typography variant="bodyS" className={styles.muted}>
+                        <Typography variant="displayXl">Aa</Typography>
+                        <Typography variant="title">Type scale</Typography>
+                        <Typography variant="small" className={styles.muted}>
                             Headings, body text, labels, and data in one font.
                         </Typography>
                     </section>
@@ -75,20 +75,20 @@ export const Showcase: Story = {
                         <ul aria-labelledby="showcase-content" className={styles.list}>
                             {contentPages.map(({ name, icon }) => (
                                 <li key={name}>
-                                    <MainNavigationItem
+                                    <NavItem
                                         icon={icon}
                                         active={name === activePage}
                                         render={<button type="button" onClick={() => setActivePage(name)} />}
                                     >
                                         {name}
-                                    </MainNavigationItem>
+                                    </NavItem>
                                 </li>
                             ))}
                         </ul>
                     </nav>
 
                     <section className={styles.card}>
-                        <Typography variant="labelS">Status</Typography>
+                        <Typography variant="label">Status</Typography>
                         <div className={styles.chips}>
                             <Chip color="secondary">Draft</Chip>
                             <Chip color="info">In review</Chip>
@@ -100,25 +100,25 @@ export const Showcase: Story = {
                     <section className={styles.card}>
                         <div className={styles.recordRow}>
                             <div>
-                                <Typography variant="labelM">Product page</Typography>
-                                <Typography variant="bodyXs" className={styles.muted}>
+                                <Typography variant="body">Product page</Typography>
+                                <Typography variant="small" className={styles.muted}>
                                     Edited 2 hours ago
                                 </Typography>
                             </div>
                             <div className={styles.iconActions}>
-                                <IconButton variant="text" aria-label="Edit">
+                                <IconButton aria-label="Edit">
                                     <Icon name="edit" />
                                 </IconButton>
-                                <IconButton variant="text" aria-label="Duplicate">
+                                <IconButton aria-label="Duplicate">
                                     <Icon name="copy" />
                                 </IconButton>
-                                <IconButton variant="text" color="error" aria-label="Delete">
+                                <IconButton variant="danger" aria-label="Delete">
                                     <Icon name="delete" />
                                 </IconButton>
                             </div>
                         </div>
                         <div className={styles.actions}>
-                            <Button variant="outlined" disabled>
+                            <Button variant="secondary" disabled>
                                 Cancel
                             </Button>
                             <Button loading>Publish</Button>

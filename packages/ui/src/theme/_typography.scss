@@ -1,0 +1,83 @@
+@use "breakpoints";
+
+@layer dextinity {
+    // Also on each brand boundary, so that the display styles follow a nested brand
+    :root,
+    [data-dextinity-brand] {
+        // Font size of the extra-large display style: one greeting or key figure per view.
+        --dextinity-typography-display-xl-font-size: 48px;
+        // Line height of the extra-large display style.
+        --dextinity-typography-display-xl-line-height: 1.02;
+        // Font weight of the extra-large display style.
+        --dextinity-typography-display-xl-font-weight: var(--dextinity-brand-display-font-weight);
+        // Letter spacing of the extra-large display style.
+        --dextinity-typography-display-xl-letter-spacing: var(--dextinity-brand-display-letter-spacing);
+
+        // Font size of the large display style: the page title.
+        --dextinity-typography-display-l-font-size: 36px;
+        // Line height of the large display style.
+        --dextinity-typography-display-l-line-height: 1.02;
+        // Font weight of the large display style.
+        --dextinity-typography-display-l-font-weight: var(--dextinity-brand-display-font-weight);
+        // Letter spacing of the large display style.
+        --dextinity-typography-display-l-letter-spacing: var(--dextinity-brand-display-letter-spacing);
+
+        // Font size of the title style: titles of panels and cards.
+        --dextinity-typography-title-font-size: 17px;
+        // Line height of the title style.
+        --dextinity-typography-title-line-height: 1.3;
+        // Font weight of the title style.
+        --dextinity-typography-title-font-weight: var(--dextinity-font-weight-medium);
+        // Letter spacing of the title style.
+        --dextinity-typography-title-letter-spacing: -0.02em;
+
+        // Font size of the section style: sections in forms.
+        --dextinity-typography-section-font-size: 15px;
+        // Line height of the section style.
+        --dextinity-typography-section-line-height: 1.35;
+        // Font weight of the section style.
+        --dextinity-typography-section-font-weight: 550;
+        // Letter spacing of the section style.
+        --dextinity-typography-section-letter-spacing: -0.01em;
+
+        // Font size of the body style: the default for interfaces and tables.
+        --dextinity-typography-body-font-size: 14px;
+        // Line height of the body style.
+        --dextinity-typography-body-line-height: 1.45;
+        // Font weight of the body style.
+        --dextinity-typography-body-font-weight: var(--dextinity-font-weight-regular);
+
+        // Font size of the small style: help texts and metadata.
+        --dextinity-typography-small-font-size: 12.5px;
+        // Line height of the small style.
+        --dextinity-typography-small-line-height: 1.4;
+        // Font weight of the small style.
+        --dextinity-typography-small-font-weight: var(--dextinity-font-weight-regular);
+
+        // Font size of the label style: monospaced capitals that name groups and sections.
+        --dextinity-typography-label-font-size: 10.5px;
+        // Line height of the label style.
+        --dextinity-typography-label-line-height: 1.4;
+        // Font weight of the label style.
+        --dextinity-typography-label-font-weight: var(--dextinity-font-weight-regular);
+        // Letter spacing of the label style.
+        --dextinity-typography-label-letter-spacing: 0.11em;
+
+        // Font size of the mono style: paths, IDs, and keyboard shortcuts.
+        --dextinity-typography-mono-font-size: 12px;
+        // Line height of the mono style.
+        --dextinity-typography-mono-line-height: 1.4;
+        // Font weight of the mono style.
+        --dextinity-typography-mono-font-weight: var(--dextinity-font-weight-regular);
+        // Letter spacing of the mono style.
+        --dextinity-typography-mono-letter-spacing: -0.01em;
+    }
+
+    @media (min-width: breakpoints.$desktop) {
+        :root,
+        [data-dextinity-brand] {
+            --dextinity-typography-display-xl-font-size: 72px;
+            --dextinity-typography-display-l-font-size: 54px;
+        }
+    }
+}

@@ -2,21 +2,33 @@
 @use "../components/chip/Chip.tokens" as chip;
 @use "../components/formHelperText/FormHelperText.tokens" as formHelperText;
 @use "../components/formLabel/FormLabel.tokens" as formLabel;
+@use "../components/icon/Icon.tokens" as icon;
 @use "../components/iconButton/IconButton.tokens" as iconButton;
 @use "../components/input/Input.tokens" as input;
-@use "../components/mainNavigationItem/MainNavigationItem.tokens" as mainNavigationItem;
+@use "../components/navItem/NavItem.tokens" as navItem;
 @use "../components/menuSectionHeader/MenuSectionHeader.tokens" as menuSectionHeader;
+@use "../components/spinner/Spinner.tokens" as spinner;
 
 @layer dextinity {
-    [data-dextinity-color-scheme] {
+    // Icons have no colors of their own, so they keep their size outside of a `Theme` too
+    :root {
+        @include icon.tokens;
+    }
+
+    // Also on each density boundary, so that the component sizes follow a nested density
+    [data-dextinity-color-scheme],
+    [data-dextinity-density] {
         @include button.tokens;
         @include chip.tokens;
         @include formHelperText.tokens;
         @include formLabel.tokens;
         @include iconButton.tokens;
         @include input.tokens;
-        @include mainNavigationItem.tokens;
+        @include navItem.tokens;
         @include menuSectionHeader.tokens;
+        @include spinner.tokens;
+
+        --dextinity-side-nav-width: 280px;
 
         --dextinity-checkbox-size: 20px;
         --dextinity-checkbox-radius: var(--dextinity-radius-sm);
@@ -28,8 +40,8 @@
 
         --dextinity-checkbox-touch-target: var(--dextinity-unit-6);
 
-        --dextinity-checkbox-label-font-size: var(--dextinity-typography-body-md-size);
-        --dextinity-checkbox-label-font-line-height: var(--dextinity-typography-body-md-line-height);
+        --dextinity-checkbox-label-font-size: var(--dextinity-typography-body-font-size);
+        --dextinity-checkbox-label-font-line-height: var(--dextinity-typography-body-line-height);
         --dextinity-checkbox-label-font-weight: var(--dextinity-font-weight-regular);
 
         --dextinity-checkbox-label-font-weight-style: var(--dextinity-font-weight-regular-style);
@@ -111,8 +123,8 @@
 
         --dextinity-radio-button-touch-target: var(--dextinity-unit-6);
 
-        --dextinity-radio-button-label-font-size: var(--dextinity-typography-body-md-size);
-        --dextinity-radio-button-label-font-line-height: var(--dextinity-typography-body-md-line-height);
+        --dextinity-radio-button-label-font-size: var(--dextinity-typography-body-font-size);
+        --dextinity-radio-button-label-font-line-height: var(--dextinity-typography-body-line-height);
         --dextinity-radio-button-label-font-weight: var(--dextinity-font-weight-regular);
 
         --dextinity-radio-button-label-font-weight-style: var(--dextinity-font-weight-regular-style);
@@ -165,8 +177,8 @@
 
         --dextinity-search-icon-size: 16px;
 
-        --dextinity-search-font-size: var(--dextinity-typography-body-md-size);
-        --dextinity-search-font-line-height: var(--dextinity-typography-body-md-line-height);
+        --dextinity-search-font-size: var(--dextinity-typography-body-font-size);
+        --dextinity-search-font-line-height: var(--dextinity-typography-body-line-height);
         --dextinity-search-font-weight: var(--dextinity-font-weight-regular);
 
         --dextinity-search-font-weight-style: var(--dextinity-font-weight-regular-style);
@@ -218,8 +230,8 @@
 
         --dextinity-select-icon-size: 16px;
 
-        --dextinity-select-font-size: var(--dextinity-typography-body-md-size);
-        --dextinity-select-font-line-height: var(--dextinity-typography-body-md-line-height);
+        --dextinity-select-font-size: var(--dextinity-typography-body-font-size);
+        --dextinity-select-font-line-height: var(--dextinity-typography-body-line-height);
         --dextinity-select-font-weight: var(--dextinity-font-weight-regular);
 
         --dextinity-select-font-weight-style: var(--dextinity-font-weight-regular-style);
@@ -358,8 +370,8 @@
 
         --dextinity-switch-touch-target: var(--dextinity-unit-6);
 
-        --dextinity-switch-label-font-size: var(--dextinity-typography-body-md-size);
-        --dextinity-switch-label-font-line-height: var(--dextinity-typography-body-md-line-height);
+        --dextinity-switch-label-font-size: var(--dextinity-typography-body-font-size);
+        --dextinity-switch-label-font-line-height: var(--dextinity-typography-body-line-height);
         --dextinity-switch-label-font-weight: var(--dextinity-font-weight-regular);
 
         --dextinity-switch-label-font-weight-style: var(--dextinity-font-weight-regular-style);

@@ -1,0 +1,29 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import { Rules } from "../../storybook/docs/Rules";
+import * as AppFrameStories from "./__stories__/AppFrame.stories";
+
+<Meta title="Shell/App frame" />
+
+# App frame
+
+The app frame is the frame of every page of an application: the app bar at the top, the main navigation on the side, and the page in a `main` element, with a toolbar above its content.
+
+## Layout
+
+- Put the app bar at the top, over the full width.
+- Put the main navigation on the left, with a width of 280px. See [Navigation](?path=/docs/shell-navigation--docs).
+- Put the `main` element next to the main navigation: the toolbar at the top, and the content below it, with a padding of 24px, or 16px on small screens. See [Toolbar](?path=/docs/patterns-toolbar--docs).
+
+Until `@dextinity/ui` has a component for the app bar, build it with your own elements, as in the full example.
+
+## Full example
+
+<Canvas of={AppFrameStories.AppShell} />
+
+## Rules
+
+<Rules
+    dos={["The app frame stays in place when the page changes.", "Scope and language only in the app bar.", "The application name only in the navigation."]}
+    donts={["An own app bar per page.", "Colors per application – only the logo differs."]}
+/>

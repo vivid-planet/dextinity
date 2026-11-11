@@ -4,11 +4,12 @@ import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { MenuSectionHeader } from "../MenuSectionHeader";
+import tokens from "../MenuSectionHeader.tokens.scss?raw";
 import styles from "./menuSectionHeader.module.scss";
 
 const actionOptions = {
     Add: (
-        <IconButton variant="text" color="secondary" size="small" aria-label="Add page">
+        <IconButton size="small" aria-label="Add page">
             <Icon name="add" />
         </IconButton>
     ),
@@ -16,7 +17,14 @@ const actionOptions = {
 
 const meta = {
     component: MenuSectionHeader,
-    title: "Components/MenuSectionHeader",
+    title: "Shell/MenuSectionHeader",
+    parameters: {
+        tokens,
+        rules: {
+            dos: ["Group labels separate areas, such as Content, Project, Administration.", "Short labels of one or two words."],
+            donts: ["The same labels in different groups.", "A group with a single item."],
+        },
+    },
     decorators: [themeDecorator],
     args: {
         children: "Section",

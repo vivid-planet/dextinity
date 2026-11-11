@@ -1,8 +1,8 @@
 .root {
     display: inline-block;
     flex-shrink: 0;
-    inline-size: var(--dextinity-unit-4);
-    block-size: var(--dextinity-unit-4);
+    inline-size: var(--dextinity-icon-size);
+    block-size: var(--dextinity-icon-size);
     background: var(--dextinity-current-icon-image, currentColor) center / contain no-repeat;
     mask: var(--dextinity-current-icon-mask, none) center / contain no-repeat;
 

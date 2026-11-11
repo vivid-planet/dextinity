@@ -42,20 +42,20 @@ export function ButtonSlotPropsTypeContract() {
 afterEach(cleanup);
 
 describe("Button owner state", () => {
-    it("emits the variant, color, and size as data attributes, with their defaults when unset", () => {
+    it("emits the variant and the size as data attributes, with their defaults when unset", () => {
         render(
             <>
                 <Button>Save</Button>
-                <Button variant="outlined" color="error" size="small">
+                <Button variant="danger" size="small">
                     Delete
                 </Button>
             </>,
         );
 
         const save = screen.getByRole("button", { name: "Save" });
-        expect([save.dataset.variant, save.dataset.color, save.dataset.size]).toStrictEqual(["contained", "primary", "default"]);
+        expect([save.dataset.variant, save.dataset.size]).toStrictEqual(["primary", "default"]);
         const remove = screen.getByRole("button", { name: "Delete" });
-        expect([remove.dataset.variant, remove.dataset.color, remove.dataset.size]).toStrictEqual(["outlined", "error", "small"]);
+        expect([remove.dataset.variant, remove.dataset.size]).toStrictEqual(["danger", "small"]);
     });
 });
 

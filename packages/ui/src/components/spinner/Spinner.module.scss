@@ -1,36 +1,36 @@
 .root {
     display: inline-block;
     flex-shrink: 0;
-    color: var(--dextinity-color-action-primary-default);
-    animation: spin 1s linear infinite;
+    color: var(--dextinity-spinner-color);
+    animation: spin var(--dextinity-spinner-rotation-duration) linear infinite;
 
     &[data-size="md"] {
-        inline-size: 16px;
-        block-size: 16px;
+        inline-size: var(--dextinity-spinner-md-size);
+        block-size: var(--dextinity-spinner-md-size);
 
         .arc {
-            r: 6px;
-            stroke-width: 1.5px;
+            r: var(--dextinity-spinner-md-arc-radius);
+            stroke-width: var(--dextinity-spinner-md-stroke-width);
         }
     }
 
     &[data-size="lg"] {
-        inline-size: 32px;
-        block-size: 32px;
+        inline-size: var(--dextinity-spinner-lg-size);
+        block-size: var(--dextinity-spinner-lg-size);
 
         .arc {
-            r: 13.5px;
-            stroke-width: 2px;
+            r: var(--dextinity-spinner-lg-arc-radius);
+            stroke-width: var(--dextinity-spinner-lg-stroke-width);
         }
     }
 
     &[data-size="xl"] {
-        inline-size: 64px;
-        block-size: 64px;
+        inline-size: var(--dextinity-spinner-xl-size);
+        block-size: var(--dextinity-spinner-xl-size);
 
         .arc {
-            r: 30.5px;
-            stroke-width: 3px;
+            r: var(--dextinity-spinner-xl-arc-radius);
+            stroke-width: var(--dextinity-spinner-xl-stroke-width);
         }
     }
 }

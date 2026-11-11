@@ -1,5 +1,6 @@
 import { Canvas, Meta } from "@storybook/addon-docs/blocks";
 
+import { Rules } from "../../storybook/docs/Rules";
 import * as FormsStories from "./__stories__/Forms.stories";
 
 <Meta title="Patterns/Forms" />
@@ -10,10 +11,10 @@ How to build a form from fields, sections, and buttons, and how to show the resu
 
 ## When to use which component
 
-- [`FormLabel`](?path=/docs/components-formlabel--docs): names a field.
-- [`Input`](?path=/docs/components-input--docs): a single line of text.
-- [`FormHelperText`](?path=/docs/components-formhelpertext--docs): a hint below a field when the field needs one, or, with `error`, the message that says what is wrong.
-- [`Button`](?path=/docs/components-button--docs): `type="submit"` saves the form. For the other buttons, see [Actions](?path=/docs/patterns-actions--docs).
+- [`FormLabel`](?path=/docs/building-blocks-formlabel--docs): names a field.
+- [`Input`](?path=/docs/building-blocks-input--docs): a single line of text.
+- [`FormHelperText`](?path=/docs/building-blocks-formhelpertext--docs): a hint below a field when the field needs one, or, with `error`, the message that says what is wrong.
+- [`Button`](?path=/docs/building-blocks-button--docs): `type="submit"` saves the form. For the other buttons, see [Actions](?path=/docs/patterns-actions--docs).
 
 ## Fields
 
@@ -42,3 +43,10 @@ How to build a form from fields, sections, and buttons, and how to show the resu
 - An error about the whole form, for example when saving fails, goes above the buttons, in a `FormHelperText` with `error`.
 
 <Canvas of={FormsStories.Validation} />
+
+## Rules
+
+<Rules
+    dos={["Fields always controlled: `value` + `onChange`.", "Errors are specific: what is missing and how to fix it.", "On save, jump to the first field with an error."]}
+    donts={["A placeholder as the only label.", "Errors only after submitting, without a hint at the field.", "Marking required fields only by color."]}
+/>

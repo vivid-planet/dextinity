@@ -1,0 +1,41 @@
+$looks: primary, secondary, ghost, danger;
+
+@mixin _look($prefix, $look, $state) {
+    background: var(--dextinity-#{$prefix}-#{$look}-#{$state}-background);
+    color: var(--dextinity-#{$prefix}-#{$look}-#{$state}-foreground);
+    box-shadow: var(--dextinity-#{$prefix}-#{$look}-#{$state}-shadow);
+}
+
+// The looks of the design system draft, shared by Button and IconButton. `$prefix` names the token set, e.g. `button`.
+@mixin looks($prefix) {
+    @each $look in $looks {
+        &[data-variant="#{$look}"] {
+            @include _look($prefix, $look, default);
+
+            &:hover:not([data-loading], [data-disabled]) {
+                @include _look($prefix, $look, hover);
+            }
+        }
+    }
+
+    &:focus-visible {
+        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
+        outline-offset: var(--dextinity-focus-ring-offset);
+        // The focus ring replaces the hairline, the shadow, and the glow
+        box-shadow: none;
+    }
+
+    &[data-disabled] {
+        opacity: var(--dextinity-button-disabled-opacity);
+        cursor: default;
+    }
+
+    &[data-loading] {
+        cursor: progress;
+    }
+
+    // A hairline drawn as a shadow disappears in forced colors, so it gets a real border there
+    @media (forced-colors: active) {
+        border: var(--dextinity-border-width-thin) solid ButtonText;
+    }
+}

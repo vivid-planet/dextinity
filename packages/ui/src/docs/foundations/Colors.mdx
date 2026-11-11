@@ -1,0 +1,87 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Rules } from "../../storybook/docs/Rules";
+import { TokenTable } from "../../storybook/docs/TokenTable";
+
+<Meta title="Foundations/Colors" />
+
+# Colors
+
+Semantic colors come from the brand and the color scheme. The values follow the brand and the color scheme picked in the toolbar. Text needs a contrast of 4.5:1 to its background (WCAG 2.2 AA), large text and icons 3:1.
+
+## Text
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-color-foreground-default", description: "Headings and body text." },
+        { name: "--dextinity-color-foreground-muted", description: "Descriptions, values, help texts, and metadata." },
+        { name: "--dextinity-color-foreground-subtle", description: "Disabled text, icons, and decoration. Never for text that has to be read." },
+        { name: "--dextinity-color-foreground-placeholder", description: "Placeholders in empty fields." },
+        { name: "--dextinity-color-foreground-inverse", description: "Text on an inverse background." },
+        { name: "--dextinity-color-foreground-on-accent", description: "Text on the primary color." },
+    ]}
+/>
+
+## Surfaces
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-color-background-default", description: "Page background, and surfaces such as fields and menus." },
+        { name: "--dextinity-color-background-subtle", description: "Areas that recede, such as the content area behind panels." },
+        { name: "--dextinity-color-background-muted", description: "Wells, and the background of disabled fields." },
+        { name: "--dextinity-color-background-inverse", description: "Surfaces with the opposite brightness, such as an app bar." },
+        { name: "--dextinity-color-background-overlay", description: "Backdrop behind dialogs." },
+    ]}
+/>
+
+## Accent
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-color-action-primary-default", description: "The main action, selection, and the current item." },
+        { name: "--dextinity-color-action-primary-hover", description: "The main action on hover." },
+        { name: "--dextinity-color-action-primary-active", description: "The main action while pressed." },
+        { name: "--dextinity-color-action-primary-subtle", description: "Background of active elements, such as the current navigation item." },
+        { name: "--dextinity-color-action-primary-standalone", description: "The primary color as text or icon on the page background, such as links." },
+        { name: "--dextinity-color-border-focus", description: "Focus ring for keyboard focus." },
+    ]}
+/>
+
+## Status
+
+Status is always shown as a color plus text or an icon, never as a color alone.
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-color-feedback-success-default", description: "Success: dots and icons." },
+        { name: "--dextinity-color-feedback-success-foreground", description: "Success as text." },
+        { name: "--dextinity-color-feedback-success-subtle", description: "Background of a success message." },
+        { name: "--dextinity-color-feedback-warning-default", description: "Warning: dots and icons." },
+        { name: "--dextinity-color-feedback-warning-foreground", description: "Warning as text." },
+        { name: "--dextinity-color-feedback-warning-subtle", description: "Background of a warning." },
+        { name: "--dextinity-color-feedback-danger-default", description: "Error: dots, icons, and error messages at fields." },
+        { name: "--dextinity-color-feedback-danger-foreground", description: "Error as text." },
+        { name: "--dextinity-color-feedback-danger-subtle", description: "Background of an error message." },
+        { name: "--dextinity-color-feedback-info-default", description: "Info: dots and icons." },
+        { name: "--dextinity-color-feedback-info-foreground", description: "Info as text." },
+        { name: "--dextinity-color-feedback-info-subtle", description: "Background of a hint." },
+    ]}
+/>
+
+## Lines
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-color-border-subtle", description: "Dividers in lists." },
+        { name: "--dextinity-color-border-default", description: "Borders of panels and cards." },
+        { name: "--dextinity-color-border-field", description: "Borders of fields." },
+        { name: "--dextinity-color-border-strong", description: "Borders that need more contrast, such as a field on hover." },
+    ]}
+/>
+
+## Rules
+
+<Rules
+    dos={["Text that has to be read only in `foreground-default` or `foreground-muted`.", "Status as a dot or icon plus text.", "Use the accent sparingly: one primary action per area."]}
+    donts={["`foreground-subtle` for text that has to be read.", "Color as the only difference.", "Own hex values instead of tokens."]}
+/>

@@ -4,6 +4,7 @@ import { expect, fn, userEvent } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Chip } from "../Chip";
+import tokens from "../Chip.tokens.scss?raw";
 
 const iconOptions = {
     Calendar: <Icon name="calendar" />,
@@ -12,7 +13,18 @@ const iconOptions = {
 
 const meta = {
     component: Chip,
-    title: "Components/Chip",
+    title: "Building blocks/Chip",
+    parameters: {
+        tokens,
+        rules: {
+            dos: [
+                "Status words from the system: Published, Unpublished, Archived.",
+                "Badges only for real exceptions.",
+                "A short label on one line.",
+            ],
+            donts: ["A status only as a color.", "More than one badge per element."],
+        },
+    },
     decorators: [themeDecorator],
     args: {
         children: "Label",

@@ -5,6 +5,7 @@ import { defaultConfig, type TagBadgeParameters } from "storybook-addon-tag-badg
 
 import { getToolbarBrand, storeToolbarBrand, toolbarBrandOptions } from "../src/storybook/brand";
 import { getToolbarColorScheme, storeToolbarColorScheme, toolbarColorSchemeOptions } from "../src/storybook/colorScheme";
+import { getToolbarDensity, storeToolbarDensity, toolbarDensityOptions } from "../src/storybook/density";
 import { StyleSourcePanel } from "./StyleSourcePanel";
 
 addons.setConfig({
@@ -42,6 +43,16 @@ addons.register("dextinity-ui/brand", () => {
         type: types.TOOL,
         title: "Brand",
         render: () => <Select ariaLabel="Brand" options={toolbarBrandOptions} defaultOptions={getToolbarBrand()} onSelect={storeToolbarBrand} />,
+    });
+});
+
+addons.register("dextinity-ui/density", () => {
+    addons.add("dextinity-ui/density", {
+        type: types.TOOL,
+        title: "Density",
+        render: () => (
+            <Select ariaLabel="Density" options={toolbarDensityOptions} defaultOptions={getToolbarDensity()} onSelect={storeToolbarDensity} />
+        ),
     });
 });
 

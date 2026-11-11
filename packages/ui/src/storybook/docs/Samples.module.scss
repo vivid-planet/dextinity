@@ -1,0 +1,42 @@
+.root {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-unit-6);
+    padding: var(--dextinity-unit-6);
+    border-radius: var(--dextinity-brand-radius-surface);
+    background:
+        radial-gradient(circle at 20% 30%, var(--dextinity-brand-color-primary-200), var(--dextinity-color-transparent) 60%),
+        var(--dextinity-color-background-subtle);
+    color: var(--dextinity-color-foreground-default);
+    font-family: var(--dextinity-brand-font-family-sans);
+}
+
+.sample {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--dextinity-unit-2);
+    margin: 0;
+}
+
+.box,
+.glassBox {
+    inline-size: var(--dextinity-unit-20);
+    block-size: var(--dextinity-unit-16);
+    border: var(--dextinity-border-width-thin) solid var(--dextinity-color-border-default);
+}
+
+.box {
+    background-color: var(--dextinity-color-background-default);
+}
+
+.glassBox {
+    border-color: var(--dextinity-material-edge);
+    backdrop-filter: blur(var(--dextinity-material-blur));
+}
+
+.label {
+    font-family: var(--dextinity-brand-font-family-mono);
+    font-size: var(--dextinity-typography-mono-font-size);
+    line-height: var(--dextinity-typography-mono-line-height);
+}

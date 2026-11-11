@@ -6,8 +6,7 @@ import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./IconButton.module.scss";
 
-type IconButtonVariant = "contained" | "outlined" | "text";
-type IconButtonColor = "primary" | "secondary" | "error" | "success";
+type IconButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 type IconButtonSize = "default" | "small";
 
 /**
@@ -15,7 +14,6 @@ type IconButtonSize = "default" | "small";
  */
 export type IconButtonOwnerState = {
     variant: IconButtonVariant;
-    color: IconButtonColor;
     size: IconButtonSize;
     disabled: boolean;
     loading: boolean;
@@ -52,18 +50,17 @@ export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinn
     /** The icon to show. */
     children?: ReactNode;
     /**
-     * Visual emphasis: `contained` for the main action, `outlined` and `text` for less important ones.
+     * The look of the button: `ghost` for most icon buttons, such as in toolbars and rows; `secondary` and `primary` to give the
+     * action more weight; `danger` for destructive actions.
      *
-     * @defaultValue `"contained"`
+     * @defaultValue `"ghost"`
      */
     variant?: IconButtonVariant;
     /**
-     * Use `error` for destructive actions and `success` for confirming ones.
+     * `small` for icon buttons in rows, panels, and toolbars.
      *
-     * @defaultValue `"primary"`
+     * @defaultValue `"default"`
      */
-    color?: IconButtonColor;
-    /** @defaultValue `"default"` */
     size?: IconButtonSize;
     /**
      * Prevents interaction with the button.
@@ -99,8 +96,7 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
         disabled,
         loading,
         type = "button",
-        variant = "contained",
-        color = "primary",
+        variant = "ghost",
         size = "default",
         className,
         slots,
@@ -111,7 +107,7 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
     }: IconButtonProps<Icon, LoadingSpinner>,
     ref: ForwardedRef<HTMLButtonElement>,
 ) {
-    const ownerState: IconButtonOwnerState = { variant, color, size, disabled: disabled === true, loading: loading === true };
+    const ownerState: IconButtonOwnerState = { variant, size, disabled: disabled === true, loading: loading === true };
 
     const IconSlot: ElementType = slots?.icon ?? "span";
     const LoadingSpinnerSlot: ElementType = slots?.loadingSpinner ?? Spinner;
@@ -134,7 +130,6 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
             type={type}
             disabled={ownerState.disabled}
             data-variant={ownerState.variant}
-            data-color={ownerState.color}
             data-size={ownerState.size}
             data-loading={ownerState.loading ? "" : undefined}
             aria-busy={ownerState.loading || undefined}

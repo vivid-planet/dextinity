@@ -1,11 +1,24 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import tokens from "../../../theme/_typography.scss?raw";
 import { Typography } from "../Typography";
 
 const meta = {
     component: Typography,
-    title: "Components/Typography",
+    title: "Foundations/Typography",
+    parameters: {
+        tokens,
+        rules: {
+            dos: [
+                "Exactly one display title per view.",
+                "Tabular figures for numbers in tables.",
+                "Hierarchy through size and weight, not color.",
+                "Labels short, monospaced, and in capitals.",
+            ],
+            donts: ["Text smaller than 12 px, except for labels.", "Bold and color at the same time for emphasis.", "Long paragraphs in capitals."],
+        },
+    },
     decorators: [themeDecorator],
     args: {
         children: "The quick brown fox jumps over the lazy dog",
@@ -13,23 +26,7 @@ const meta = {
     argTypes: {
         variant: {
             control: "select",
-            options: [
-                "display",
-                "h1",
-                "h2",
-                "h3",
-                "h4",
-                "bodyL",
-                "bodyM",
-                "bodyS",
-                "bodyXs",
-                "caption",
-                "labelM",
-                "labelS",
-                "labelXs",
-                "dataM",
-                "dataS",
-            ],
+            options: ["displayXl", "displayL", "title", "section", "body", "small", "label", "mono"],
         },
         element: {
             control: "select",
@@ -47,110 +44,74 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-export const Display: Story = {
+export const DisplayXl: Story = {
     args: {
-        variant: "display",
+        variant: "displayXl",
+        children: "Good morning, Max",
     },
 };
 
-export const H1: Story = {
+export const DisplayL: Story = {
     args: {
-        variant: "h1",
+        variant: "displayL",
+        children: "Job ads",
     },
 };
 
-export const H2: Story = {
+export const Title: Story = {
     args: {
-        variant: "h2",
+        variant: "title",
+        children: "Recently edited",
     },
 };
 
-export const H3: Story = {
+export const Section: Story = {
     args: {
-        variant: "h3",
+        variant: "section",
+        children: "Basic data",
     },
 };
 
-export const H4: Story = {
+export const Small: Story = {
     args: {
-        variant: "h4",
+        variant: "small",
+        children: "Use gender-inclusive wording.",
     },
 };
 
-export const BodyL: Story = {
+export const Label: Story = {
     args: {
-        variant: "bodyL",
+        variant: "label",
+        children: "Structured content",
     },
 };
 
-export const BodyS: Story = {
+export const Mono: Story = {
     args: {
-        variant: "bodyS",
-    },
-};
-
-export const BodyXs: Story = {
-    args: {
-        variant: "bodyXs",
-    },
-};
-
-export const Caption: Story = {
-    args: {
-        variant: "caption",
-    },
-};
-
-export const LabelM: Story = {
-    args: {
-        variant: "labelM",
-    },
-};
-
-export const LabelS: Story = {
-    args: {
-        variant: "labelS",
-    },
-};
-
-export const LabelXs: Story = {
-    args: {
-        variant: "labelXs",
-    },
-};
-
-export const DataM: Story = {
-    args: {
-        variant: "dataM",
-    },
-};
-
-export const DataS: Story = {
-    args: {
-        variant: "dataS",
+        variant: "mono",
+        children: "/careers/open-positions",
     },
 };
 
 /**
- * Each variant maps to a default semantic element (`h2` for `h2`, `p` for
- * `bodyM`). `element` overrides it when visual level and document outline
- * disagree — for example, an `h2` rendered as an `h1`.
+ * Each variant maps to a default semantic element (`h2` for `title`, `p` for `body`). `element` overrides it when the visual
+ * style and the document outline disagree — for example, a `title` that is the only heading of a dialog.
  */
 export const WithCustomElement: Story = {
     args: {
-        variant: "h2",
+        variant: "title",
         element: "h1",
-        children: "Visually h2, semantically h1",
+        children: "Visually a title, semantically h1",
     },
 };
 
 /**
- * `render` replaces the root element while keeping Typography's styling. Here a
- * `labelS` renders as a `<label>`, with `htmlFor` typed natively.
+ * `render` replaces the root element while keeping Typography's styling. Here a `small` renders as a `<label>`, with `htmlFor`
+ * typed natively.
  */
 export const WithRender: Story = {
     args: {
-        variant: "labelS",
+        variant: "small",
         render: <label htmlFor="email" />,
         children: "Email",
     },

@@ -6,11 +6,12 @@
     inline-size: 100%;
     padding-inline: var(--dextinity-menu-section-header-padding-horizontal);
     color: var(--dextinity-menu-section-header-default-foreground);
-    font-family: var(--dextinity-brand-font-family-sans);
+    font-family: var(--dextinity-brand-font-family-mono);
     font-size: var(--dextinity-menu-section-header-font-size);
     font-weight: var(--dextinity-menu-section-header-font-weight);
     line-height: var(--dextinity-menu-section-header-font-line-height);
-    letter-spacing: var(--dextinity-font-letter-spacing-normal);
+    letter-spacing: var(--dextinity-menu-section-header-letter-spacing);
+    text-transform: uppercase;
 
     .expandIcon {
         color: var(--dextinity-menu-section-header-default-icon);

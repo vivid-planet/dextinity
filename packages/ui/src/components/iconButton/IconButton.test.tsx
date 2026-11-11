@@ -34,22 +34,22 @@ export function IconButtonSlotPropsTypeContract() {
 afterEach(cleanup);
 
 describe("IconButton owner state", () => {
-    it("emits the variant, color, and size as data attributes, with their defaults when unset", () => {
+    it("emits the variant and the size as data attributes, with their defaults when unset", () => {
         render(
             <>
                 <IconButton aria-label="Favorite">
                     <span />
                 </IconButton>
-                <IconButton aria-label="Remove" variant="outlined" color="error" size="small">
+                <IconButton aria-label="Remove" variant="danger" size="small">
                     <span />
                 </IconButton>
             </>,
         );
 
         const favorite = screen.getByRole("button", { name: "Favorite" });
-        expect([favorite.dataset.variant, favorite.dataset.color, favorite.dataset.size]).toStrictEqual(["contained", "primary", "default"]);
+        expect([favorite.dataset.variant, favorite.dataset.size]).toStrictEqual(["ghost", "default"]);
         const remove = screen.getByRole("button", { name: "Remove" });
-        expect([remove.dataset.variant, remove.dataset.color, remove.dataset.size]).toStrictEqual(["outlined", "error", "small"]);
+        expect([remove.dataset.variant, remove.dataset.size]).toStrictEqual(["danger", "small"]);
     });
 
     it("marks the button as busy only while loading", () => {

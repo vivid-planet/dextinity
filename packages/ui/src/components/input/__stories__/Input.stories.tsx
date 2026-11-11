@@ -4,6 +4,7 @@ import { fn } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Input } from "../Input";
+import tokens from "../Input.tokens.scss?raw";
 
 const adornmentOptions = {
     Euro: "€",
@@ -12,7 +13,23 @@ const adornmentOptions = {
 
 const meta = {
     component: Input,
-    title: "Components/Input",
+    title: "Building blocks/Input",
+    parameters: {
+        tokens,
+        rules: {
+            dos: [
+                "Fields always controlled: `value` + `onChange`, no `defaultValue`.",
+                "Label always visible, not only as a placeholder.",
+                "Errors are specific: what is missing and how to fix it.",
+                "On save, jump to the first field with an error.",
+            ],
+            donts: [
+                "A placeholder as the only label.",
+                "Errors only after submitting, without a hint at the field.",
+                "Marking required fields only by color.",
+            ],
+        },
+    },
     decorators: [themeDecorator],
     args: {
         "aria-label": "Title",

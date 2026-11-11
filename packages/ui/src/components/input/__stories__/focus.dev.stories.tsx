@@ -8,7 +8,7 @@ import { Input } from "../Input";
 
 const meta = {
     component: Input,
-    title: "Components/Input",
+    title: "Building blocks/Input",
     tags: ["development", "!autodocs", "!manifest"],
     decorators: [themeDecorator],
 } satisfies Meta<typeof Input>;
@@ -33,7 +33,7 @@ export const FocusOnAdornmentButtonClick: Story = {
     args: {
         "aria-label": "Search",
         endAdornment: (
-            <IconButton aria-label="Clear" variant="text" color="secondary" size="small">
+            <IconButton aria-label="Clear" size="small">
                 <Icon name="clear" />
             </IconButton>
         ),

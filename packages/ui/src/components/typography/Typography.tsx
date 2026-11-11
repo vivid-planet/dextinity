@@ -4,8 +4,7 @@ import { forwardRef, type HTMLAttributes } from "react";
 
 import styles from "./Typography.module.scss";
 
-type TypographyVariant =
-    "display" | "h1" | "h2" | "h3" | "h4" | "bodyL" | "bodyM" | "bodyS" | "bodyXs" | "caption" | "labelM" | "labelS" | "labelXs" | "dataM" | "dataS";
+type TypographyVariant = "displayXl" | "displayL" | "title" | "section" | "body" | "small" | "label" | "mono";
 type TypographyElement = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span";
 
 /**
@@ -16,28 +15,30 @@ export type TypographyOwnerState = {
 };
 
 const variantElement: Record<TypographyVariant, TypographyElement> = {
-    display: "h1",
-    h1: "h1",
-    h2: "h2",
-    h3: "h3",
-    h4: "h4",
-    bodyL: "p",
-    bodyM: "p",
-    bodyS: "p",
-    bodyXs: "p",
-    caption: "span",
-    labelM: "span",
-    labelS: "span",
-    labelXs: "span",
-    dataM: "span",
-    dataS: "span",
+    displayXl: "h1",
+    displayL: "h1",
+    title: "h2",
+    section: "h3",
+    body: "p",
+    small: "p",
+    label: "span",
+    mono: "span",
 };
 
 export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "className"> {
     /**
-     * Visual style. Each variant has a default semantic element.
+     * Visual style, each with a default semantic element:
      *
-     * @defaultValue `"bodyM"`
+     * - `displayXl`: one greeting or key figure per view.
+     * - `displayL`: the page title.
+     * - `title`: titles of panels and cards.
+     * - `section`: sections in forms.
+     * - `body`: the default for interfaces and tables.
+     * - `small`: help texts and metadata, in a muted color.
+     * - `label`: monospaced capitals that name groups and sections, in a muted color.
+     * - `mono`: paths, IDs, and keyboard shortcuts.
+     *
+     * @defaultValue `"body"`
      */
     variant?: TypographyVariant;
     /**
@@ -60,11 +61,10 @@ export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "clas
 }
 
 /**
- * Renders a single block of text in one of several visual variants, each
- * mapping to a default semantic element.
+ * Renders a single block of text in one of the styles of the type scale, each mapping to a default semantic element.
  */
 export const Typography = forwardRef<HTMLElement, TypographyProps>(function Typography(
-    { variant = "bodyM", element, className, children, render, ...restProps },
+    { variant = "body", element, className, children, render, ...restProps },
     ref,
 ) {
     const ownerState: TypographyOwnerState = { variant };

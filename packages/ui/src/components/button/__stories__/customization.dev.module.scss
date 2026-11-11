@@ -1,35 +1,34 @@
 .customRoot {
-    background: linear-gradient(135deg, #ff6b6b, #ffa94d);
-    border-radius: 999px;
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+    border-radius: var(--dextinity-radius-full);
+    background: linear-gradient(135deg, var(--dextinity-color-coral-400), var(--dextinity-color-amber-400));
+    color: var(--dextinity-color-white);
+    box-shadow: 0 var(--dextinity-unit-1) var(--dextinity-unit-3) var(--dextinity-color-coral-200);
 }
 
 .customStartIcon {
-    color: #ffe066;
-    font-size: 1.1em;
+    color: var(--dextinity-color-amber-100);
 }
 
 .wrapper {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: 1.5rem;
-    background: #f4f0fa;
-    border-radius: 12px;
+    gap: var(--dextinity-unit-2);
+    padding: var(--dextinity-unit-6);
+    border-radius: var(--dextinity-radius-lg);
+    background: var(--dextinity-color-violet-50);
 
     :global(.dextinityButton) {
-        font-weight: 700;
-        letter-spacing: 0.1em;
+        font-weight: var(--dextinity-font-weight-bold);
+        letter-spacing: var(--dextinity-font-letter-spacing-wide);
         text-transform: uppercase;
     }
 
-    :global(.dextinityButton)[data-color="primary"] {
-        background: #6750a4;
+    :global(.dextinityButton)[data-variant="primary"] {
+        background: var(--dextinity-color-violet-700);
     }
 
     :global(.dextinityButton__startIcon),
     :global(.dextinityButton__endIcon) {
-        color: #f4af3e;
+        color: var(--dextinity-color-amber-300);
     }
 }

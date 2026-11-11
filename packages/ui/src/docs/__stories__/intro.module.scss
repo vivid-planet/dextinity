@@ -1,9 +1,11 @@
+@use "../../theme/breakpoints";
+
 .showcase {
     display: grid;
     gap: var(--dextinity-unit-4);
     margin-block: var(--dextinity-unit-8);
 
-    @media (min-width: 600px) {
+    @media (min-width: breakpoints.$small) {
         grid-template-columns: 1fr 1fr;
     }
 }
@@ -28,7 +30,7 @@
 }
 
 .card {
-    border: 1px solid var(--dextinity-color-border-subtle);
+    border: var(--dextinity-border-width-thin) solid var(--dextinity-color-border-subtle);
     background-color: var(--dextinity-color-background-default);
 }
 
@@ -37,9 +39,8 @@
     color: var(--dextinity-color-foreground-on-accent);
 }
 
-.taskDate,
-.taskTitle,
-.taskMeta {
+// Outweighs the colors of the Typography variants, which don't fit text on the primary color
+.taskCard :is(.taskDate, .taskTitle, .taskMeta):is([class]) {
     color: inherit;
 }
 

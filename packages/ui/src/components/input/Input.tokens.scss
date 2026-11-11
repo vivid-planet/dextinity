@@ -1,62 +1,111 @@
 @mixin tokens {
-    --dextinity-input-border-width: 1px;
-    --dextinity-input-height: var(--dextinity-unit-10);
+    // Border width of the field.
+    --dextinity-input-border-width: var(--dextinity-border-width-thin);
+    // Height of the field.
+    --dextinity-input-height: var(--dextinity-density-input-height);
+    // Corner radius of the field.
     --dextinity-input-radius: var(--dextinity-brand-radius-forms);
+    // Space between the text and the adornments.
     --dextinity-input-gap: var(--dextinity-unit-2);
+    // Space at the start and the end of the field.
     --dextinity-input-padding-horizontal: var(--dextinity-unit-3);
+    // Space at the top and the bottom of the field.
     --dextinity-input-padding-vertical: var(--dextinity-unit-2);
-    --dextinity-input-icon-size: 16px;
+    // Size of icons in the adornments.
+    --dextinity-input-icon-size: var(--dextinity-unit-4);
 
-    --dextinity-input-font-size: var(--dextinity-typography-body-md-size);
-    --dextinity-input-font-line-height: var(--dextinity-typography-body-md-line-height);
+    // Font size of the value.
+    --dextinity-input-font-size: var(--dextinity-typography-body-font-size);
+    // Line height of the value.
+    --dextinity-input-font-line-height: var(--dextinity-typography-body-line-height);
+    // Font weight of the value.
     --dextinity-input-font-weight: var(--dextinity-font-weight-regular);
+    // Name of the value's font weight in the design files.
     --dextinity-input-font-weight-style: var(--dextinity-font-weight-regular-style);
 
+    // Background of the field at rest.
     --dextinity-input-state-default-background: var(--dextinity-color-background-default);
+    // Text color of the field at rest.
     --dextinity-input-state-default-foreground: var(--dextinity-color-foreground-default);
+    // Placeholder color of the field at rest.
     --dextinity-input-state-default-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    // Border color of the field at rest.
     --dextinity-input-state-default-border: var(--dextinity-color-border-field);
 
+    // Background of the field on hover.
     --dextinity-input-state-hover-background: var(--dextinity-color-background-default);
+    // Text color of the field on hover.
     --dextinity-input-state-hover-foreground: var(--dextinity-color-foreground-default);
+    // Placeholder color of the field on hover.
     --dextinity-input-state-hover-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    // Border color of the field on hover.
     --dextinity-input-state-hover-border: var(--dextinity-color-border-strong);
 
+    // Background of the field while focused.
     --dextinity-input-state-focus-background: var(--dextinity-color-background-default);
+    // Text color of the field while focused.
     --dextinity-input-state-focus-foreground: var(--dextinity-color-foreground-default);
+    // Placeholder color of the field while focused.
     --dextinity-input-state-focus-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    // Border color of the field while focused.
     --dextinity-input-state-focus-border: var(--dextinity-color-border-focus);
 
+    // Background of the field with an error.
     --dextinity-input-state-error-background: var(--dextinity-color-background-default);
+    // Text color of the field with an error.
     --dextinity-input-state-error-foreground: var(--dextinity-color-foreground-default);
+    // Placeholder color of the field with an error.
     --dextinity-input-state-error-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    // Border color of the field with an error.
     --dextinity-input-state-error-border: var(--dextinity-color-feedback-danger-border-strong);
 
+    // Background of the field after a successful validation.
     --dextinity-input-state-success-background: var(--dextinity-color-background-default);
+    // Text color of the field after a successful validation.
     --dextinity-input-state-success-foreground: var(--dextinity-color-foreground-default);
+    // Placeholder color of the field after a successful validation.
     --dextinity-input-state-success-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    // Border color of the field after a successful validation.
     --dextinity-input-state-success-border: var(--dextinity-color-feedback-success-border-strong);
 
+    // Background of the field with a warning.
     --dextinity-input-state-warning-background: var(--dextinity-color-background-default);
+    // Text color of the field with a warning.
     --dextinity-input-state-warning-foreground: var(--dextinity-color-foreground-default);
+    // Placeholder color of the field with a warning.
     --dextinity-input-state-warning-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    // Border color of the field with a warning.
     --dextinity-input-state-warning-border: var(--dextinity-color-feedback-warning-border-strong);
 
+    // Background of the field while loading.
     --dextinity-input-state-loading-background: var(--dextinity-color-background-default);
+    // Text color of the field while loading.
     --dextinity-input-state-loading-foreground: var(--dextinity-color-foreground-default);
+    // Placeholder color of the field while loading.
     --dextinity-input-state-loading-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    // Border color of the field while loading.
     --dextinity-input-state-loading-border: var(--dextinity-color-border-field);
+    // Spinner color of the field while loading.
     --dextinity-input-state-loading-spinner: var(--dextinity-color-foreground-muted);
 
+    // Background of the field when disabled.
     --dextinity-input-state-disabled-background: var(--dextinity-color-background-muted);
+    // Text color of the field when disabled.
     --dextinity-input-state-disabled-foreground: var(--dextinity-color-foreground-subtle);
+    // Placeholder color of the field when disabled.
     --dextinity-input-state-disabled-foreground-placeholder: var(--dextinity-color-foreground-subtle);
+    // Border color of the field when disabled.
     --dextinity-input-state-disabled-border: var(--dextinity-color-border-subtle);
 
+    // Background of the field when read-only.
     --dextinity-input-state-read-only-background: var(--dextinity-color-background-subtle);
+    // Text color of the field when read-only.
     --dextinity-input-state-read-only-foreground: var(--dextinity-color-foreground-default);
+    // Placeholder color of the field when read-only.
     --dextinity-input-state-read-only-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
+    // Border color of the field when read-only.
     --dextinity-input-state-read-only-border: var(--dextinity-color-border-subtle);
 
+    // Color of the start and end adornments, such as a unit or an icon.
     --dextinity-input-adornment-foreground: var(--dextinity-color-foreground-muted);
 }

@@ -1,0 +1,42 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Rules } from "../../storybook/docs/Rules";
+import { TokenTable } from "../../storybook/docs/TokenTable";
+
+<Meta title="Foundations/Motion" />
+
+# Motion
+
+Short durations and few curves. Motion explains where something comes from and where it goes. With "reduce motion" turned on, only crossfades remain.
+
+## Durations
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-motion-duration-xs", description: "Hover and color changes." },
+        { name: "--dextinity-motion-duration-sm", description: "Small controls, such as switches." },
+        { name: "--dextinity-motion-duration-md", description: "Menus and tooltips." },
+        { name: "--dextinity-motion-duration-lg", description: "Panels and drawers." },
+        { name: "--dextinity-motion-duration-xl", description: "Content that enters the page." },
+        { name: "--dextinity-motion-duration-2xl", description: "Page transitions. The longest duration." },
+    ]}
+/>
+
+## Easing curves
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-motion-easing-standard", description: "The default curve for movement on the page." },
+        { name: "--dextinity-motion-easing-decelerate", description: "Elements that enter." },
+        { name: "--dextinity-motion-easing-accelerate", description: "Elements that leave." },
+        { name: "--dextinity-motion-easing-emphasized", description: "Large movements that need attention." },
+        { name: "--dextinity-motion-easing-linear", description: "Continuous motion, such as a spinner." },
+    ]}
+/>
+
+## Rules
+
+<Rules
+    dos={["Motion explains the place: deeper, higher, next to.", "With \"reduce motion\", only crossfades.", "Everything stays usable during a motion."]}
+    donts={["Motion as decoration on data.", "Durations longer than `--dextinity-motion-duration-2xl`.", "Moving the app frame along with the page."]}
+/>

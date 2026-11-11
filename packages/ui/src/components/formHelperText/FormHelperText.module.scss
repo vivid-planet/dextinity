@@ -19,7 +19,8 @@
     display: flex;
     flex-shrink: 0;
     align-items: center;
-    block-size: var(--dextinity-form-helper-text-font-line-height);
+    // The line height is unitless, so it's converted to a length to make the icon box one line tall
+    block-size: calc(var(--dextinity-form-helper-text-font-line-height) * 1em);
 }
 
 .text {

@@ -1,0 +1,58 @@
+@mixin tokens {
+    // Minimum height of an item.
+    --dextinity-nav-item-height: var(--dextinity-density-nav-item-height);
+    // Corner radius of an item.
+    --dextinity-nav-item-radius: var(--dextinity-radius-md);
+    // Space between the icon, the label, and the end content.
+    --dextinity-nav-item-gap: var(--dextinity-unit-2);
+    // Space at the end of an item.
+    --dextinity-nav-item-padding-horizontal: var(--dextinity-unit-3);
+    // Size of the icon on level 1.
+    --dextinity-nav-item-icon-size: var(--dextinity-unit-4);
+    // Size of the arrow of an item with subitems.
+    --dextinity-nav-item-expand-icon-size: var(--dextinity-unit-3);
+
+    // Width of the bar at the start of the current page's item.
+    --dextinity-nav-item-active-indicator-width: var(--dextinity-border-width-thick);
+    // Height of the bar at the start of the current page's item.
+    --dextinity-nav-item-active-indicator-height: var(--dextinity-unit-6);
+
+    // Space at the start of an item on level 1.
+    --dextinity-nav-item-indent-level-1: var(--dextinity-unit-3);
+    // Space at the start of an item on level 2.
+    --dextinity-nav-item-indent-level-2: var(--dextinity-unit-9);
+    // Space at the start of an item on level 3.
+    --dextinity-nav-item-indent-level-3: var(--dextinity-unit-15);
+
+    // Font size of the label.
+    --dextinity-nav-item-font-size: var(--dextinity-typography-body-font-size);
+    // Line height of the label.
+    --dextinity-nav-item-font-line-height: var(--dextinity-typography-body-line-height);
+    // Font weight of the label.
+    --dextinity-nav-item-font-weight: var(--dextinity-font-weight-medium);
+    // Name of the label's font weight in the design files.
+    --dextinity-nav-item-font-weight-style: var(--dextinity-font-weight-medium-style);
+
+    // Background of an item at rest.
+    --dextinity-nav-item-default-background: var(--dextinity-color-transparent);
+    // Text color of an item at rest.
+    --dextinity-nav-item-default-foreground: var(--dextinity-color-foreground-default);
+    // Icon color of an item at rest.
+    --dextinity-nav-item-default-icon: var(--dextinity-color-foreground-default);
+
+    // Background of an item on hover.
+    --dextinity-nav-item-hover-background: var(--dextinity-color-background-subtle);
+    // Text color of an item on hover.
+    --dextinity-nav-item-hover-foreground: var(--dextinity-color-foreground-default);
+    // Icon color of an item on hover.
+    --dextinity-nav-item-hover-icon: var(--dextinity-color-foreground-default);
+
+    // Background of an item of the current page.
+    --dextinity-nav-item-active-background: var(--dextinity-color-action-primary-subtle);
+    // Text color of an item of the current page.
+    --dextinity-nav-item-active-foreground: var(--dextinity-color-action-primary-default);
+    // Icon color of an item of the current page.
+    --dextinity-nav-item-active-icon: var(--dextinity-color-action-primary-default);
+    // Color of the bar at the start of an item of the current page.
+    --dextinity-nav-item-active-indicator: var(--dextinity-color-action-primary-default);
+}

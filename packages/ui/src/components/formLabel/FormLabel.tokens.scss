@@ -1,15 +1,25 @@
 @mixin tokens {
+    // Space between the label, the required mark, and the helper icon.
     --dextinity-form-label-gap: var(--dextinity-unit-1);
 
-    --dextinity-form-label-font-size: var(--dextinity-typography-label-sm-size);
-    --dextinity-form-label-font-line-height: var(--dextinity-typography-label-sm-line-height);
+    // Font size of the label.
+    --dextinity-form-label-font-size: var(--dextinity-typography-small-font-size);
+    // Line height of the label.
+    --dextinity-form-label-font-line-height: var(--dextinity-typography-small-line-height);
+    // Font weight of the label.
     --dextinity-form-label-font-weight: var(--dextinity-font-weight-medium);
+    // Name of the label's font weight in the design files.
     --dextinity-form-label-font-weight-style: var(--dextinity-font-weight-medium-style);
 
+    // Text color of the label.
     --dextinity-form-label-default-foreground: var(--dextinity-color-foreground-default);
+    // Text color of the label of a field with an error.
     --dextinity-form-label-error-foreground: var(--dextinity-color-feedback-danger-default);
+    // Color of the asterisk of a required field.
     --dextinity-form-label-required-color: var(--dextinity-color-feedback-danger-default);
 
+    // Color of the icon that opens more help.
     --dextinity-form-label-helper-icon-color: var(--dextinity-color-foreground-muted);
-    --dextinity-form-label-helper-icon-size: 16px;
+    // Size of the icon that opens more help.
+    --dextinity-form-label-helper-icon-size: var(--dextinity-unit-4);
 }

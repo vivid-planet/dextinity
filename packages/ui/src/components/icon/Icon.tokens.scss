@@ -1,0 +1,4 @@
+@mixin tokens {
+    // Width and height of an icon. Components set their own icon sizes on top of it.
+    --dextinity-icon-size: var(--dextinity-unit-4);
+}

@@ -2,13 +2,25 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../Icon";
+import tokens from "../Icon.tokens.scss?raw";
 import { defaultIconNames } from "../iconRegistry";
 import colorStyles from "./iconColor.module.scss";
 import sizeStyles from "./iconSize.module.scss";
 
 const meta = {
     component: Icon,
-    title: "Components/Icon",
+    title: "Foundations/Icons/Icon",
+    parameters: {
+        tokens,
+        rules: {
+            dos: [
+                "Icon buttons always with a tooltip and an `aria-label`.",
+                "One icon per meaning – the globe always means scope or global.",
+                "New icons on the 16 px grid with the same line width.",
+            ],
+            donts: ["Icons as the only information for a status.", "Mixing filled and outlined icons.", "Emoji instead of icons."],
+        },
+    },
     decorators: [themeDecorator],
     args: {
         name: "favorite",
@@ -48,7 +60,7 @@ export const ColoredIcon: Story = {
 };
 
 /**
- * Set `width` and `height` in CSS, through `className`.
+ * Set `--dextinity-icon-size` in CSS, through `className`.
  */
 export const Size: Story = {
     render: (args) => <Icon {...args} className={sizeStyles.largeIcon} />,
@@ -59,7 +71,7 @@ export const Size: Story = {
  */
 export const Color: Story = {
     render: (args) => (
-        <span className={colorStyles.blueText}>
+        <span className={colorStyles.accentText}>
             <Icon {...args} />
         </span>
     ),

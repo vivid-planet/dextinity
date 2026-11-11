@@ -1,0 +1,27 @@
+@mixin tokens {
+    // Color of the arc. Inside a button, the spinner takes the button's text color instead.
+    --dextinity-spinner-color: var(--dextinity-color-action-primary-default);
+    // Time for one full turn.
+    --dextinity-spinner-rotation-duration: 1s;
+
+    // Width and height of a medium spinner, such as in a button or a field.
+    --dextinity-spinner-md-size: var(--dextinity-unit-4);
+    // Radius of the arc of a medium spinner.
+    --dextinity-spinner-md-arc-radius: 6px;
+    // Line width of the arc of a medium spinner.
+    --dextinity-spinner-md-stroke-width: 1.5px;
+
+    // Width and height of a large spinner.
+    --dextinity-spinner-lg-size: var(--dextinity-unit-8);
+    // Radius of the arc of a large spinner.
+    --dextinity-spinner-lg-arc-radius: 13.5px;
+    // Line width of the arc of a large spinner.
+    --dextinity-spinner-lg-stroke-width: var(--dextinity-border-width-medium);
+
+    // Width and height of an extra-large spinner.
+    --dextinity-spinner-xl-size: var(--dextinity-unit-16);
+    // Radius of the arc of an extra-large spinner.
+    --dextinity-spinner-xl-arc-radius: 30.5px;
+    // Line width of the arc of an extra-large spinner.
+    --dextinity-spinner-xl-stroke-width: var(--dextinity-border-width-thick);
+}

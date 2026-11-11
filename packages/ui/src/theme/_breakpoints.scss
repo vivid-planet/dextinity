@@ -1,0 +1,4 @@
+// Media and container queries can't read custom properties, so the breakpoints are SCSS variables. Keep `$desktop` in sync with
+// `--dextinity-breakpoint-desktop`.
+$small: 600px;
+$desktop: 1024px;

@@ -1,253 +1,91 @@
 @mixin tokens {
-    --dextinity-button-border-width: 1px;
+    // Height of a default-size button.
+    --dextinity-button-default-height: var(--dextinity-density-button-height);
+    // Space at the start and the end of a default-size button.
+    --dextinity-button-default-padding-horizontal: var(--dextinity-density-button-padding-horizontal);
+    // Font size of the label of a default-size button.
+    --dextinity-button-default-font-size: var(--dextinity-typography-body-font-size);
 
-    --dextinity-button-default-height: var(--dextinity-unit-10);
-    --dextinity-button-default-radius: var(--dextinity-brand-radius-control);
-    --dextinity-button-default-gap: var(--dextinity-unit-2);
-    --dextinity-button-default-padding-horizontal: var(--dextinity-unit-4);
-    --dextinity-button-default-padding-vertical: var(--dextinity-unit-2);
-    --dextinity-button-default-icon-size: 16px;
-    --dextinity-button-default-font-size: var(--dextinity-typography-body-md-size);
-    --dextinity-button-default-font-line-height: var(--dextinity-typography-body-md-line-height);
-    --dextinity-button-default-font-weight: var(--dextinity-font-weight-medium);
-    --dextinity-button-default-font-weight-style: var(--dextinity-font-weight-medium-style);
+    // Height of a small button.
+    --dextinity-button-small-height: var(--dextinity-density-button-small-height);
+    // Space at the start and the end of a small button.
+    --dextinity-button-small-padding-horizontal: var(--dextinity-density-button-small-padding-horizontal);
+    // Font size of the label of a small button.
+    --dextinity-button-small-font-size: 13px;
 
-    --dextinity-button-small-height: var(--dextinity-unit-8);
-    --dextinity-button-small-radius: var(--dextinity-brand-radius-control-small);
-    --dextinity-button-small-gap: var(--dextinity-unit-1);
-    --dextinity-button-small-padding-horizontal: var(--dextinity-unit-3);
-    --dextinity-button-small-padding-vertical: var(--dextinity-unit-1);
-    --dextinity-button-small-icon-size: 16px;
-    --dextinity-button-small-font-size: var(--dextinity-typography-body-sm-size);
-    --dextinity-button-small-font-line-height: var(--dextinity-typography-body-sm-line-height);
-    --dextinity-button-small-font-weight: var(--dextinity-font-weight-medium);
-    --dextinity-button-small-font-weight-style: var(--dextinity-font-weight-medium-style);
+    // Corner radius of both sizes.
+    --dextinity-button-radius: var(--dextinity-brand-radius-control);
+    // Space between the icons and the label.
+    --dextinity-button-gap: var(--dextinity-unit-2);
+    // Size of the icons and the loading spinner.
+    --dextinity-button-icon-size: 15px;
+    // Line height of the label.
+    --dextinity-button-font-line-height: var(--dextinity-typography-body-line-height);
+    // Font weight of the label.
+    --dextinity-button-font-weight: var(--dextinity-font-weight-regular);
+    // Name of the label's font weight in the design files.
+    --dextinity-button-font-weight-style: var(--dextinity-font-weight-regular-style);
 
-    --dextinity-button-color-primary-contained-default-background: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-contained-default-foreground: var(--dextinity-color-action-primary-foreground);
-    --dextinity-button-color-primary-contained-default-border: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-contained-hover-background: var(--dextinity-color-action-primary-hover);
-    --dextinity-button-color-primary-contained-hover-foreground: var(--dextinity-color-action-primary-foreground);
-    --dextinity-button-color-primary-contained-hover-border: var(--dextinity-color-action-primary-hover);
-    --dextinity-button-color-primary-contained-active-background: var(--dextinity-color-action-primary-active);
-    --dextinity-button-color-primary-contained-active-foreground: var(--dextinity-color-action-primary-foreground);
-    --dextinity-button-color-primary-contained-active-border: var(--dextinity-color-action-primary-active);
-    --dextinity-button-color-primary-contained-focus-background: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-contained-focus-foreground: var(--dextinity-color-action-primary-foreground);
-    --dextinity-button-color-primary-contained-focus-border: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-contained-disabled-background: var(--dextinity-color-action-primary-disabled);
-    --dextinity-button-color-primary-contained-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-button-color-primary-contained-disabled-border: var(--dextinity-color-action-primary-disabled);
-    --dextinity-button-color-primary-contained-loading-background: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-contained-loading-foreground: var(--dextinity-color-action-primary-foreground);
-    --dextinity-button-color-primary-contained-loading-border: var(--dextinity-color-action-primary-default);
+    // Scale of a pressed button.
+    --dextinity-button-pressed-scale: 0.98;
+    // Opacity of a disabled button. It keeps the colors of its look.
+    --dextinity-button-disabled-opacity: 0.42;
+    // Duration of the press feedback.
+    --dextinity-button-press-duration: 140ms;
+    // Duration of the shadow change on hover.
+    --dextinity-button-shadow-duration: 260ms;
+    // Easing of the press feedback.
+    --dextinity-button-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
 
-    --dextinity-button-color-primary-outlined-default-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-outlined-default-foreground: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-outlined-default-border: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-outlined-hover-background: var(--dextinity-color-action-primary-subtle);
-    --dextinity-button-color-primary-outlined-hover-foreground: var(--dextinity-color-action-primary-hover);
-    --dextinity-button-color-primary-outlined-hover-border: var(--dextinity-color-action-primary-hover);
-    --dextinity-button-color-primary-outlined-active-background: var(--dextinity-color-action-primary-subtle);
-    --dextinity-button-color-primary-outlined-active-foreground: var(--dextinity-color-action-primary-active);
-    --dextinity-button-color-primary-outlined-active-border: var(--dextinity-color-action-primary-active);
-    --dextinity-button-color-primary-outlined-focus-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-outlined-focus-foreground: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-outlined-focus-border: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-outlined-disabled-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-outlined-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-button-color-primary-outlined-disabled-border: var(--dextinity-color-border-subtle);
-    --dextinity-button-color-primary-outlined-loading-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-outlined-loading-foreground: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-outlined-loading-border: var(--dextinity-color-action-primary-default);
+    // Background of a primary button at rest: the main action: a gradient in the primary color, with a glow.
+    --dextinity-button-primary-default-background: var(--dextinity-color-action-primary-gradient);
+    // Text and icon color of a primary button at rest.
+    --dextinity-button-primary-default-foreground: var(--dextinity-color-action-primary-on-accent);
+    // Hairline, shadow, and glow of a primary button at rest.
+    --dextinity-button-primary-default-shadow: inset 0 1px 0 color-mix(in oklch, var(--dextinity-color-white) 20%, transparent), 0 8px 18px -10px var(--dextinity-color-action-primary-glow);
+    // Background of a primary button on hover.
+    --dextinity-button-primary-hover-background: var(--dextinity-color-action-primary-accent);
+    // Text and icon color of a primary button on hover.
+    --dextinity-button-primary-hover-foreground: var(--dextinity-color-action-primary-on-accent);
+    // Hairline, shadow, and glow of a primary button on hover.
+    --dextinity-button-primary-hover-shadow: inset 0 1px 0 color-mix(in oklch, var(--dextinity-color-white) 20%, transparent), 0 10px 22px -10px var(--dextinity-color-action-primary-glow);
 
-    --dextinity-button-color-primary-text-default-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-text-default-foreground: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-text-default-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-text-hover-background: var(--dextinity-color-action-primary-subtle);
-    --dextinity-button-color-primary-text-hover-foreground: var(--dextinity-color-action-primary-hover);
-    --dextinity-button-color-primary-text-hover-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-text-active-background: var(--dextinity-color-action-primary-subtle);
-    --dextinity-button-color-primary-text-active-foreground: var(--dextinity-color-action-primary-active);
-    --dextinity-button-color-primary-text-active-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-text-focus-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-text-focus-foreground: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-text-focus-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-text-disabled-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-text-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-button-color-primary-text-disabled-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-text-loading-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-primary-text-loading-foreground: var(--dextinity-color-action-primary-default);
-    --dextinity-button-color-primary-text-loading-border: var(--dextinity-color-transparent);
+    // Background of a secondary button at rest: further actions: a surface with a hairline and a soft shadow.
+    --dextinity-button-secondary-default-background: var(--dextinity-color-background-default);
+    // Text and icon color of a secondary button at rest.
+    --dextinity-button-secondary-default-foreground: var(--dextinity-color-foreground-default);
+    // Hairline, shadow, and glow of a secondary button at rest.
+    --dextinity-button-secondary-default-shadow: inset 0 0 0 var(--dextinity-border-width-hairline) var(--dextinity-color-border-hairline), var(--dextinity-shadow-1);
+    // Background of a secondary button on hover.
+    --dextinity-button-secondary-hover-background: var(--dextinity-color-background-default);
+    // Text and icon color of a secondary button on hover.
+    --dextinity-button-secondary-hover-foreground: var(--dextinity-color-foreground-default);
+    // Hairline, shadow, and glow of a secondary button on hover.
+    --dextinity-button-secondary-hover-shadow: inset 0 0 0 var(--dextinity-border-width-hairline) var(--dextinity-color-border-hairline-hover), var(--dextinity-shadow-2);
 
-    --dextinity-button-color-secondary-contained-default-background: var(--dextinity-color-action-secondary-default);
-    --dextinity-button-color-secondary-contained-default-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-contained-default-border: var(--dextinity-color-action-secondary-default);
-    --dextinity-button-color-secondary-contained-hover-background: var(--dextinity-color-action-secondary-hover);
-    --dextinity-button-color-secondary-contained-hover-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-contained-hover-border: var(--dextinity-color-action-secondary-hover);
-    --dextinity-button-color-secondary-contained-active-background: var(--dextinity-color-action-secondary-active);
-    --dextinity-button-color-secondary-contained-active-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-contained-active-border: var(--dextinity-color-action-secondary-active);
-    --dextinity-button-color-secondary-contained-focus-background: var(--dextinity-color-action-secondary-default);
-    --dextinity-button-color-secondary-contained-focus-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-contained-focus-border: var(--dextinity-color-action-secondary-default);
-    --dextinity-button-color-secondary-contained-disabled-background: var(--dextinity-color-action-secondary-disabled);
-    --dextinity-button-color-secondary-contained-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-button-color-secondary-contained-disabled-border: var(--dextinity-color-action-secondary-disabled);
-    --dextinity-button-color-secondary-contained-loading-background: var(--dextinity-color-action-secondary-default);
-    --dextinity-button-color-secondary-contained-loading-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-contained-loading-border: var(--dextinity-color-action-secondary-default);
+    // Background of a ghost button at rest: quiet actions: no surface until hover.
+    --dextinity-button-ghost-default-background: var(--dextinity-color-transparent);
+    // Text and icon color of a ghost button at rest.
+    --dextinity-button-ghost-default-foreground: var(--dextinity-color-foreground-muted);
+    // Hairline, shadow, and glow of a ghost button at rest.
+    --dextinity-button-ghost-default-shadow: none;
+    // Background of a ghost button on hover.
+    --dextinity-button-ghost-hover-background: var(--dextinity-color-action-neutral-hover);
+    // Text and icon color of a ghost button on hover.
+    --dextinity-button-ghost-hover-foreground: var(--dextinity-color-foreground-default);
+    // Hairline, shadow, and glow of a ghost button on hover.
+    --dextinity-button-ghost-hover-shadow: none;
 
-    --dextinity-button-color-secondary-outlined-default-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-outlined-default-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-outlined-default-border: var(--dextinity-color-border-strong);
-    --dextinity-button-color-secondary-outlined-hover-background: var(--dextinity-color-action-secondary-subtle);
-    --dextinity-button-color-secondary-outlined-hover-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-outlined-hover-border: var(--dextinity-color-border-strong);
-    --dextinity-button-color-secondary-outlined-active-background: var(--dextinity-color-action-secondary-subtle);
-    --dextinity-button-color-secondary-outlined-active-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-outlined-active-border: var(--dextinity-color-border-strong);
-    --dextinity-button-color-secondary-outlined-focus-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-outlined-focus-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-outlined-focus-border: var(--dextinity-color-border-strong);
-    --dextinity-button-color-secondary-outlined-disabled-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-outlined-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-button-color-secondary-outlined-disabled-border: var(--dextinity-color-border-subtle);
-    --dextinity-button-color-secondary-outlined-loading-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-outlined-loading-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-outlined-loading-border: var(--dextinity-color-border-strong);
-
-    --dextinity-button-color-secondary-text-default-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-text-default-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-text-default-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-text-hover-background: var(--dextinity-color-action-secondary-subtle);
-    --dextinity-button-color-secondary-text-hover-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-text-hover-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-text-active-background: var(--dextinity-color-action-secondary-subtle);
-    --dextinity-button-color-secondary-text-active-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-text-active-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-text-focus-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-text-focus-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-text-focus-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-text-disabled-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-text-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-button-color-secondary-text-disabled-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-text-loading-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-secondary-text-loading-foreground: var(--dextinity-color-action-secondary-foreground);
-    --dextinity-button-color-secondary-text-loading-border: var(--dextinity-color-transparent);
-
-    --dextinity-button-color-error-contained-default-background: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-contained-default-foreground: var(--dextinity-color-action-error-foreground);
-    --dextinity-button-color-error-contained-default-border: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-contained-hover-background: var(--dextinity-color-action-error-hover);
-    --dextinity-button-color-error-contained-hover-foreground: var(--dextinity-color-action-error-foreground);
-    --dextinity-button-color-error-contained-hover-border: var(--dextinity-color-action-error-hover);
-    --dextinity-button-color-error-contained-active-background: var(--dextinity-color-action-error-active);
-    --dextinity-button-color-error-contained-active-foreground: var(--dextinity-color-action-error-foreground);
-    --dextinity-button-color-error-contained-active-border: var(--dextinity-color-action-error-active);
-    --dextinity-button-color-error-contained-focus-background: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-contained-focus-foreground: var(--dextinity-color-action-error-foreground);
-    --dextinity-button-color-error-contained-focus-border: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-contained-disabled-background: var(--dextinity-color-action-error-disabled);
-    --dextinity-button-color-error-contained-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-button-color-error-contained-disabled-border: var(--dextinity-color-action-error-disabled);
-    --dextinity-button-color-error-contained-loading-background: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-contained-loading-foreground: var(--dextinity-color-action-error-foreground);
-    --dextinity-button-color-error-contained-loading-border: var(--dextinity-color-action-error-default);
-
-    --dextinity-button-color-error-outlined-default-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-outlined-default-foreground: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-outlined-default-border: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-outlined-hover-background: var(--dextinity-color-action-error-subtle);
-    --dextinity-button-color-error-outlined-hover-foreground: var(--dextinity-color-action-error-hover);
-    --dextinity-button-color-error-outlined-hover-border: var(--dextinity-color-action-error-hover);
-    --dextinity-button-color-error-outlined-active-background: var(--dextinity-color-action-error-subtle);
-    --dextinity-button-color-error-outlined-active-foreground: var(--dextinity-color-action-error-active);
-    --dextinity-button-color-error-outlined-active-border: var(--dextinity-color-action-error-active);
-    --dextinity-button-color-error-outlined-focus-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-outlined-focus-foreground: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-outlined-focus-border: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-outlined-disabled-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-outlined-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-button-color-error-outlined-disabled-border: var(--dextinity-color-border-subtle);
-    --dextinity-button-color-error-outlined-loading-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-outlined-loading-foreground: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-outlined-loading-border: var(--dextinity-color-action-error-default);
-
-    --dextinity-button-color-error-text-default-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-text-default-foreground: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-text-default-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-text-hover-background: var(--dextinity-color-action-error-subtle);
-    --dextinity-button-color-error-text-hover-foreground: var(--dextinity-color-action-error-hover);
-    --dextinity-button-color-error-text-hover-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-text-active-background: var(--dextinity-color-action-error-subtle);
-    --dextinity-button-color-error-text-active-foreground: var(--dextinity-color-action-error-active);
-    --dextinity-button-color-error-text-active-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-text-focus-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-text-focus-foreground: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-text-focus-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-text-disabled-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-text-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-button-color-error-text-disabled-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-text-loading-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-error-text-loading-foreground: var(--dextinity-color-action-error-default);
-    --dextinity-button-color-error-text-loading-border: var(--dextinity-color-transparent);
-
-    --dextinity-button-color-success-contained-default-background: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-contained-default-foreground: var(--dextinity-color-action-success-foreground);
-    --dextinity-button-color-success-contained-default-border: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-contained-hover-background: var(--dextinity-color-action-success-hover);
-    --dextinity-button-color-success-contained-hover-foreground: var(--dextinity-color-action-success-foreground);
-    --dextinity-button-color-success-contained-hover-border: var(--dextinity-color-action-success-hover);
-    --dextinity-button-color-success-contained-active-background: var(--dextinity-color-action-success-active);
-    --dextinity-button-color-success-contained-active-foreground: var(--dextinity-color-action-success-foreground);
-    --dextinity-button-color-success-contained-active-border: var(--dextinity-color-action-success-active);
-    --dextinity-button-color-success-contained-focus-background: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-contained-focus-foreground: var(--dextinity-color-action-success-foreground);
-    --dextinity-button-color-success-contained-focus-border: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-contained-disabled-background: var(--dextinity-color-action-success-disabled);
-    --dextinity-button-color-success-contained-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-button-color-success-contained-disabled-border: var(--dextinity-color-action-success-disabled);
-    --dextinity-button-color-success-contained-loading-background: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-contained-loading-foreground: var(--dextinity-color-action-success-foreground);
-    --dextinity-button-color-success-contained-loading-border: var(--dextinity-color-action-success-default);
-
-    --dextinity-button-color-success-outlined-default-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-outlined-default-foreground: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-outlined-default-border: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-outlined-hover-background: var(--dextinity-color-action-success-subtle);
-    --dextinity-button-color-success-outlined-hover-foreground: var(--dextinity-color-action-success-hover);
-    --dextinity-button-color-success-outlined-hover-border: var(--dextinity-color-action-success-hover);
-    --dextinity-button-color-success-outlined-active-background: var(--dextinity-color-action-success-subtle);
-    --dextinity-button-color-success-outlined-active-foreground: var(--dextinity-color-action-success-active);
-    --dextinity-button-color-success-outlined-active-border: var(--dextinity-color-action-success-active);
-    --dextinity-button-color-success-outlined-focus-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-outlined-focus-foreground: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-outlined-focus-border: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-outlined-disabled-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-outlined-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-button-color-success-outlined-disabled-border: var(--dextinity-color-border-subtle);
-    --dextinity-button-color-success-outlined-loading-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-outlined-loading-foreground: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-outlined-loading-border: var(--dextinity-color-action-success-default);
-
-    --dextinity-button-color-success-text-default-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-text-default-foreground: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-text-default-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-text-hover-background: var(--dextinity-color-action-success-subtle);
-    --dextinity-button-color-success-text-hover-foreground: var(--dextinity-color-action-success-hover);
-    --dextinity-button-color-success-text-hover-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-text-active-background: var(--dextinity-color-action-success-subtle);
-    --dextinity-button-color-success-text-active-foreground: var(--dextinity-color-action-success-active);
-    --dextinity-button-color-success-text-active-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-text-focus-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-text-focus-foreground: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-text-focus-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-text-disabled-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-text-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-button-color-success-text-disabled-border: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-text-loading-background: var(--dextinity-color-transparent);
-    --dextinity-button-color-success-text-loading-foreground: var(--dextinity-color-action-success-default);
-    --dextinity-button-color-success-text-loading-border: var(--dextinity-color-transparent);
+    // Background of a danger button at rest: destructive actions: the secondary look with text in the danger color.
+    --dextinity-button-danger-default-background: var(--dextinity-color-background-default);
+    // Text and icon color of a danger button at rest.
+    --dextinity-button-danger-default-foreground: var(--dextinity-color-action-error-text);
+    // Hairline, shadow, and glow of a danger button at rest.
+    --dextinity-button-danger-default-shadow: inset 0 0 0 var(--dextinity-border-width-hairline) var(--dextinity-color-border-hairline), var(--dextinity-shadow-1);
+    // Background of a danger button on hover.
+    --dextinity-button-danger-hover-background: var(--dextinity-color-background-default);
+    // Text and icon color of a danger button on hover.
+    --dextinity-button-danger-hover-foreground: var(--dextinity-color-action-error-text);
+    // Hairline, shadow, and glow of a danger button on hover.
+    --dextinity-button-danger-hover-shadow: inset 0 0 0 var(--dextinity-border-width-hairline) var(--dextinity-color-border-hairline-hover), var(--dextinity-shadow-2);
 }

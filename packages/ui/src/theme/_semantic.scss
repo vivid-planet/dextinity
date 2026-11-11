@@ -18,7 +18,7 @@
         --dextinity-color-border-subtle: var(--dextinity-brand-color-neutral-800);
         --dextinity-color-border-muted: var(--dextinity-brand-color-neutral-600);
         --dextinity-color-border-strong: var(--dextinity-brand-color-neutral-500);
-        --dextinity-color-border-focus: var(--dextinity-brand-color-primary-300);
+        --dextinity-color-border-focus: var(--dextinity-brand-color-primary-200);
         --dextinity-color-border-field: var(--dextinity-brand-color-neutral-400);
 
         --dextinity-color-action-primary-default: var(--dextinity-brand-color-primary-400);
@@ -84,10 +84,10 @@
         --dextinity-color-border-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-800);
         --dextinity-color-border-tinted-muted: var(--dextinity-brand-color-neutral-tinted-600);
         --dextinity-color-border-tinted-strong: var(--dextinity-brand-color-neutral-tinted-500);
-        --dextinity-color-border-tinted-focus: var(--dextinity-brand-color-primary-300);
+        --dextinity-color-border-tinted-focus: var(--dextinity-brand-color-primary-200);
 
-        --dextinity-focus-ring-width: 2px;
-        --dextinity-focus-ring-offset: 2px;
+        --dextinity-focus-ring-width: var(--dextinity-border-width-medium);
+        --dextinity-focus-ring-offset: var(--dextinity-border-width-medium);
 
         --dextinity-color-action-success-default: var(--dextinity-brand-color-success-400);
         --dextinity-color-action-success-hover: var(--dextinity-brand-color-success-300);
@@ -119,6 +119,29 @@
         --dextinity-color-feedback-warning-border-strong: var(--dextinity-brand-color-warning-300);
 
         --dextinity-color-feedback-info-border-strong: var(--dextinity-brand-color-info-300);
+
+        --dextinity-shadow-1: 0 1px 1px color-mix(in srgb, var(--dextinity-color-black) 30%, transparent), 0 4px 12px -4px color-mix(in srgb, var(--dextinity-color-black) 40%, transparent);
+        --dextinity-shadow-2: 0 1px 2px color-mix(in srgb, var(--dextinity-color-black) 40%, transparent), 0 24px 50px -22px color-mix(in srgb, var(--dextinity-color-black) 70%, transparent);
+        --dextinity-shadow-3: 0 2px 4px color-mix(in srgb, var(--dextinity-color-black) 40%, transparent), 0 40px 80px -30px color-mix(in srgb, var(--dextinity-color-black) 80%, transparent);
+
+        --dextinity-material-background: color-mix(in oklch, var(--dextinity-brand-color-neutral-tinted-900) 55%, transparent);
+        --dextinity-material-background-strong: color-mix(in oklch, var(--dextinity-brand-color-neutral-tinted-800) 75%, transparent);
+        --dextinity-material-highlight: color-mix(in srgb, var(--dextinity-color-white) 10%, transparent);
+        --dextinity-material-edge: color-mix(in srgb, var(--dextinity-color-white) 7%, transparent);
+        --dextinity-material-blur: 30px;
+        --dextinity-material-grain: 0.07;
+
+        --dextinity-border-width-hairline: 0.5px;
+        --dextinity-color-border-hairline: color-mix(in srgb, var(--dextinity-color-white) 13%, transparent);
+        --dextinity-color-border-hairline-hover: var(--dextinity-brand-color-neutral-600);
+
+        --dextinity-color-action-primary-accent: var(--dextinity-brand-color-primary-300);
+        --dextinity-color-action-primary-on-accent: var(--dextinity-brand-color-primary-950);
+        --dextinity-color-action-primary-glow: color-mix(in oklch, var(--dextinity-brand-color-primary-400) 45%, transparent);
+        --dextinity-color-action-primary-gradient: linear-gradient(120deg, var(--dextinity-color-action-primary-accent) 15%, color-mix(in oklch, var(--dextinity-color-action-primary-accent) 35%, var(--dextinity-brand-color-gradient-400)) 100%);
+        --dextinity-color-action-error-text: var(--dextinity-brand-color-danger-200);
+        --dextinity-color-action-neutral-hover: color-mix(in oklch, var(--dextinity-color-foreground-default) 6%, transparent);
+        --dextinity-color-action-neutral-selected: color-mix(in oklch, var(--dextinity-color-foreground-default) 8%, transparent);
     }
 
     [data-dextinity-color-scheme="high-contrast"] {
@@ -208,8 +231,8 @@
         --dextinity-color-border-tinted-strong: var(--dextinity-color-white);
         --dextinity-color-border-tinted-focus: var(--dextinity-color-amber-300);
 
-        --dextinity-focus-ring-width: 3px;
-        --dextinity-focus-ring-offset: 2px;
+        --dextinity-focus-ring-width: var(--dextinity-border-width-medium);
+        --dextinity-focus-ring-offset: var(--dextinity-border-width-medium);
 
         --dextinity-color-action-success-default: var(--dextinity-brand-color-success-200);
         --dextinity-color-action-success-hover: var(--dextinity-brand-color-success-100);
@@ -241,6 +264,30 @@
         --dextinity-color-feedback-warning-border-strong: var(--dextinity-brand-color-warning-300);
 
         --dextinity-color-feedback-info-border-strong: var(--dextinity-brand-color-info-300);
+
+        // `none` would invalidate a shadow list that a component composes with these tokens
+        --dextinity-shadow-1: 0 0 0 transparent;
+        --dextinity-shadow-2: 0 0 0 transparent;
+        --dextinity-shadow-3: 0 0 0 transparent;
+
+        --dextinity-material-background: var(--dextinity-color-black);
+        --dextinity-material-background-strong: var(--dextinity-color-black);
+        --dextinity-material-highlight: var(--dextinity-color-transparent);
+        --dextinity-material-edge: var(--dextinity-color-white);
+        --dextinity-material-blur: 0px;
+        --dextinity-material-grain: 0;
+
+        --dextinity-border-width-hairline: var(--dextinity-border-width-thin);
+        --dextinity-color-border-hairline: var(--dextinity-color-white);
+        --dextinity-color-border-hairline-hover: var(--dextinity-brand-color-neutral-200);
+
+        --dextinity-color-action-primary-accent: var(--dextinity-brand-color-primary-100);
+        --dextinity-color-action-primary-on-accent: var(--dextinity-color-black);
+        --dextinity-color-action-primary-glow: var(--dextinity-color-transparent);
+        --dextinity-color-action-primary-gradient: var(--dextinity-color-action-primary-accent);
+        --dextinity-color-action-error-text: var(--dextinity-brand-color-danger-200);
+        --dextinity-color-action-neutral-hover: color-mix(in oklch, var(--dextinity-color-foreground-default) 6%, transparent);
+        --dextinity-color-action-neutral-selected: color-mix(in oklch, var(--dextinity-color-foreground-default) 8%, transparent);
     }
 
     [data-dextinity-color-scheme="light"] {
@@ -262,7 +309,7 @@
         --dextinity-color-border-subtle: var(--dextinity-brand-color-neutral-100);
         --dextinity-color-border-muted: var(--dextinity-brand-color-neutral-200);
         --dextinity-color-border-strong: var(--dextinity-brand-color-neutral-400);
-        --dextinity-color-border-focus: var(--dextinity-brand-color-primary-500);
+        --dextinity-color-border-focus: var(--dextinity-brand-color-primary-400);
         --dextinity-color-border-field: var(--dextinity-brand-color-neutral-400);
 
         --dextinity-color-action-primary-default: var(--dextinity-brand-color-primary-500);
@@ -328,10 +375,10 @@
         --dextinity-color-border-tinted-subtle: var(--dextinity-brand-color-neutral-tinted-100);
         --dextinity-color-border-tinted-muted: var(--dextinity-brand-color-neutral-tinted-200);
         --dextinity-color-border-tinted-strong: var(--dextinity-brand-color-neutral-tinted-400);
-        --dextinity-color-border-tinted-focus: var(--dextinity-brand-color-primary-500);
+        --dextinity-color-border-tinted-focus: var(--dextinity-brand-color-primary-400);
 
-        --dextinity-focus-ring-width: 2px;
-        --dextinity-focus-ring-offset: 2px;
+        --dextinity-focus-ring-width: var(--dextinity-border-width-medium);
+        --dextinity-focus-ring-offset: var(--dextinity-border-width-medium);
 
         --dextinity-color-action-success-default: var(--dextinity-brand-color-success-500);
         --dextinity-color-action-success-hover: var(--dextinity-brand-color-success-600);
@@ -363,5 +410,47 @@
         --dextinity-color-feedback-warning-border-strong: var(--dextinity-brand-color-warning-600);
 
         --dextinity-color-feedback-info-border-strong: var(--dextinity-brand-color-info-600);
+
+        // Shadow of controls and rows that lift slightly, such as secondary buttons.
+        --dextinity-shadow-1: 0 1px 1px color-mix(in oklch, var(--dextinity-brand-color-neutral-tinted-950) 3%, transparent), 0 2px 8px -3px color-mix(in oklch, var(--dextinity-brand-color-neutral-tinted-950) 7%, transparent);
+        // Shadow of cards and panels.
+        --dextinity-shadow-2: 0 1px 2px color-mix(in oklch, var(--dextinity-brand-color-neutral-tinted-950) 4%, transparent), 0 18px 40px -18px color-mix(in oklch, var(--dextinity-brand-color-primary-900) 25%, transparent);
+        // Shadow of menus and dialogs.
+        --dextinity-shadow-3: 0 2px 4px color-mix(in oklch, var(--dextinity-brand-color-neutral-tinted-950) 4%, transparent), 0 30px 70px -30px color-mix(in oklch, var(--dextinity-brand-color-primary-900) 35%, transparent);
+
+        // Background of glass panels over the page.
+        --dextinity-material-background: color-mix(in srgb, var(--dextinity-color-white) 58%, transparent);
+        // Denser glass, such as fields and row hover on glass.
+        --dextinity-material-background-strong: color-mix(in srgb, var(--dextinity-color-white) 80%, transparent);
+        // Light on the top edge of glass.
+        --dextinity-material-highlight: color-mix(in srgb, var(--dextinity-color-white) 90%, transparent);
+        // Edge of glass panels.
+        --dextinity-material-edge: color-mix(in oklch, var(--dextinity-brand-color-neutral-tinted-950) 7%, transparent);
+        // Blur behind glass.
+        --dextinity-material-blur: 30px;
+        // Opacity of the grain on glass.
+        --dextinity-material-grain: 0.05;
+
+        // Width of hairlines, such as the outline of secondary buttons.
+        --dextinity-border-width-hairline: 0.5px;
+        // Color of hairlines.
+        --dextinity-color-border-hairline: color-mix(in oklch, var(--dextinity-brand-color-neutral-tinted-950) 24%, transparent);
+        // Color of hairlines on hover.
+        --dextinity-color-border-hairline-hover: var(--dextinity-brand-color-neutral-400);
+
+        // The solid primary color of the main action, and the start of its gradient.
+        --dextinity-color-action-primary-accent: var(--dextinity-brand-color-primary-500);
+        // Text and icons on the primary accent.
+        --dextinity-color-action-primary-on-accent: var(--dextinity-color-white);
+        // Glow below the main action.
+        --dextinity-color-action-primary-glow: color-mix(in oklch, var(--dextinity-brand-color-primary-400) 32%, transparent);
+        // Background of the main action: from the primary color to the brand's second color.
+        --dextinity-color-action-primary-gradient: linear-gradient(120deg, var(--dextinity-color-action-primary-accent) 15%, color-mix(in oklch, var(--dextinity-color-action-primary-accent) 35%, var(--dextinity-brand-color-gradient-500)) 100%);
+        // Text and icons of destructive actions.
+        --dextinity-color-action-error-text: var(--dextinity-brand-color-danger-600);
+        // Background of quiet actions on hover, such as ghost and icon buttons.
+        --dextinity-color-action-neutral-hover: color-mix(in oklch, var(--dextinity-color-foreground-default) 6%, transparent);
+        // Background of quiet actions whose menu or panel is open.
+        --dextinity-color-action-neutral-selected: color-mix(in oklch, var(--dextinity-color-foreground-default) 8%, transparent);
     }
 }

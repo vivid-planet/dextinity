@@ -12,7 +12,7 @@
     --dextinity-button-radius: var(--dextinity-radius-control);
     --dextinity-button-font-size: var(--dextinity-typography-body-size);
     --dextinity-button-font-size-small: 13px;
-    --dextinity-button-font-weight: 500;
+    --dextinity-button-font-weight: var(--dextinity-font-weight-medium);
     // Size of `startIcon` and `endIcon`
     --dextinity-button-icon-size: 16px;
     // Opacity of a disabled button

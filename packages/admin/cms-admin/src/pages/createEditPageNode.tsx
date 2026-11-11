@@ -35,14 +35,10 @@ import { transformToSlug } from "./pageTree/transformToSlug";
 
 type SerializedInitialValues = string;
 
-interface EditPageNodeFinalFormValues {
-    [key: string]: unknown;
-}
-
-interface CreateEditPageNodeProps {
+interface CreateEditPageNodeProps<AdditionalFormValues extends object> {
     additionalFormFields?: ReactNode;
     nodeFragment?: { name: string; fragment: DocumentNode };
-    valuesToInput?: (values: EditPageNodeFinalFormValues) => EditPageNodeFinalFormValues;
+    valuesToInput?: (options: { values: FormValues & AdditionalFormValues }) => Record<string, unknown>;
     disableHideInMenu?: boolean;
 }
 
@@ -53,12 +49,12 @@ export interface EditPageNodeProps {
     documentTypes: Record<DocumentType, DocumentInterface>;
 }
 
-export function createEditPageNode({
+export function createEditPageNode<AdditionalFormValues extends object = object>({
     additionalFormFields,
     nodeFragment,
     valuesToInput,
     disableHideInMenu = false,
-}: CreateEditPageNodeProps): (props: EditPageNodeProps) => JSX.Element {
+}: CreateEditPageNodeProps<AdditionalFormValues>): (props: EditPageNodeProps) => JSX.Element {
     const editPageNodeQuery = gql`
         query EditPageNode($id: ID!) {
             page: pageTreeNode(id: $id) {
@@ -250,7 +246,8 @@ export function createEditPageNode({
                         };
 
                         if (valuesToInput) {
-                            input = { ...input, ...valuesToInput({ values }) };
+                            // The values of additionalFormFields aren't known to this form
+                            input = { ...input, ...valuesToInput({ values: values as FormValues & AdditionalFormValues }) };
                         }
 
                         if (mode === "edit") {

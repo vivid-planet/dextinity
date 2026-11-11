@@ -1,6 +1,6 @@
 import type { TypedDocumentNode } from "@apollo/client";
 import type { SvgIconProps } from "@mui/material";
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentClass, ComponentType, ReactNode } from "react";
 
 import type { BlockDependency, ReplaceDependencyObject } from "../blocks/types";
 import type { GQLDocumentInterface, Maybe } from "../graphql.generated";
@@ -33,23 +33,27 @@ export interface GQLDocument extends GQLDocumentInterface {
     [key: string]: unknown;
 }
 
+// Method syntax makes the props bivariant, so document types with different page tree node additional fields can be combined in one record
+type BivariantComponentType<Props> = ComponentClass<Props> | { bivarianceHack(props: Props): ReactNode }["bivarianceHack"];
+
 export interface DocumentInterface<
     DocumentInput extends Record<string, unknown> = Record<string, unknown>,
     DocumentOutput extends Record<string, unknown> = Record<string, unknown>,
+    PageTreeNodeAdditionalFields extends object = object,
 > {
     displayName: ReactNode;
     getQuery?: TypedDocumentNode<GQLPageQuery, GQLPageQueryVariables>; // TODO better typing (see createUsePage.tsx)
     editComponent?: ComponentType<{ id: string; category: string }>;
-    updateMutation?: TypedDocumentNode<GQLUpdatePageMutation, GQLUpdatePageMutationVariables<DocumentOutput>>;
-    inputToOutput?: (input: DocumentInput) => DocumentOutput;
+    updateMutation?: TypedDocumentNode<GQLUpdatePageMutation, GQLUpdatePageMutationVariables>;
+    inputToOutput?(input: DocumentInput): DocumentOutput;
     menuIcon: (props: SvgIconProps<"svg">) => ReactNode;
     hideInMenuIcon?: (props: SvgIconProps<"svg">) => ReactNode;
-    InfoTag?: ComponentType<InfoTagProps>;
-    anchors: (input: DocumentInput) => string[];
-    dependencies: (input: DocumentInput) => BlockDependency[];
-    replaceDependenciesInOutput: (output: DocumentOutput, replacements: ReplaceDependencyObject[]) => DocumentOutput;
+    InfoTag?: BivariantComponentType<InfoTagProps<PageTreeNodeAdditionalFields>>;
+    anchors(input: DocumentInput): string[];
+    dependencies(input: DocumentInput): BlockDependency[];
+    replaceDependenciesInOutput(output: DocumentOutput, replacements: ReplaceDependencyObject[]): DocumentOutput;
     hasNoSitePreview?: true;
-    SitePreviewAction?: ComponentType<SitePreviewActionProps>;
+    SitePreviewAction?: BivariantComponentType<SitePreviewActionProps<PageTreeNodeAdditionalFields>>;
 }
 
 export type InfoTagProps<PageTreeNodeAdditionalFields extends object = object> = {

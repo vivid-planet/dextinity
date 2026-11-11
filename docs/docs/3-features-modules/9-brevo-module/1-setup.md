@@ -739,8 +739,7 @@ export const pageTreeCategories: AllCategories = [
     },
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const pageTreeDocumentTypes: Record<string, DocumentInterface<any, any>> = {
+export const pageTreeDocumentTypes: Record<string, DocumentInterface> = {
     Page,
     Link,
 };

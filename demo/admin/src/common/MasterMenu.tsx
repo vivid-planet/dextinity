@@ -56,8 +56,7 @@ import { Redirect, type RouteComponentProps } from "react-router";
 
 import { EditPageNode } from "./EditPageNode";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const pageTreeDocumentTypes: Record<string, DocumentInterface<any, any>> = {
+export const pageTreeDocumentTypes: Record<string, DocumentInterface> = {
     Page,
     Link,
     PredefinedPage,

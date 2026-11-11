@@ -10,7 +10,7 @@ const meta = {
     title: "Foundations/Theme/Theme",
     argTypes: {
         colorScheme: { control: "radio", options: ["light", "dark", "high-contrast"] },
-        brand: { control: "select", options: ["dextinity", "ai-hub", "cms"] },
+        brand: { control: "select", options: ["dextinity", "ai-hub"] },
         density: { control: "radio", options: ["comfortable", "standard", "compact"] },
         className: { control: false },
     },
@@ -57,7 +57,7 @@ export const Nested: Story = {
                 <Theme colorScheme="dark" brand="ai-hub">
                     <ThemeExampleContent />
                 </Theme>
-                <Theme brand="cms" density="comfortable">
+                <Theme brand="ai-hub" density="comfortable">
                     <ThemeExampleContent />
                 </Theme>
             </div>

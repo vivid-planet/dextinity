@@ -8,7 +8,6 @@ export const brandSetting = createToolbarSetting({
     titles: {
         dextinity: "Dextinity",
         "ai-hub": "Dextinity AI Hub",
-        cms: "Dextinity CMS",
     },
     defaultValue: "dextinity",
 });

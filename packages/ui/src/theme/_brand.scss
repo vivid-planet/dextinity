@@ -2,8 +2,7 @@
 // Brand values are set on the same element as the color scheme (`Theme`), so the derived tokens resolve against them.
 @layer dextinity {
     :root,
-    [data-dextinity-brand="dextinity"],
-    [data-dextinity-brand="cms"] {
+    [data-dextinity-brand="dextinity"] {
         --dextinity-brand-primary-hue: 275;
         --dextinity-brand-primary-chroma: 0.255;
         --dextinity-brand-secondary-hue: 185;

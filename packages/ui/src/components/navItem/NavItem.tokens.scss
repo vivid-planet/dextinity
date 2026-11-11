@@ -1,6 +1,6 @@
 @mixin tokens {
     // Minimum height of an item.
-    --dextinity-nav-item-height: var(--dextinity-unit-10);
+    --dextinity-nav-item-height: var(--dextinity-density-nav-item-height);
     // Corner radius of an item.
     --dextinity-nav-item-radius: var(--dextinity-radius-md);
     // Space between the icon, the label, and the end content.

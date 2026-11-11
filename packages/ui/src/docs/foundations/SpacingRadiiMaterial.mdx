@@ -1,17 +1,34 @@
 import { Meta } from "@storybook/addon-docs/blocks";
 
+import { DensityTable } from "../../storybook/docs/DensityTable";
 import { Rules } from "../../storybook/docs/Rules";
+import { Samples } from "../../storybook/docs/Samples";
 import { TokenTable } from "../../storybook/docs/TokenTable";
 
 <Meta title="Foundations/Spacing, radii & material" />
 
 # Spacing, radii & material
 
-Space follows a grid of 4 px steps. Corner radii come from the brand, so a brand can make all components rounder or sharper at once.
+Spacing grid, corner radii, shadows, glass, and density. The values follow the brand, the color scheme, and the density picked in the toolbar.
 
-## Space between and around sections
+## Spacing
 
-These grow from the desktop breakpoint on.
+A grid in steps of 4 px, plus 18 px for the space between glass panels.
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-unit-1", description: "Icon to text, tight." },
+        { name: "--dextinity-unit-2", description: "Inside controls." },
+        { name: "--dextinity-unit-3", description: "Fields in dense areas." },
+        { name: "--dextinity-unit-4", description: "Padding of panels." },
+        { name: "--dextinity-unit-4-5", description: "Between glass panels." },
+        { name: "--dextinity-unit-6", description: "Between sections." },
+        { name: "--dextinity-unit-8", description: "Page margin." },
+        { name: "--dextinity-unit-12", description: "Large sections." },
+    ]}
+/>
+
+For space between and around the sections of a page, use the layout spaces. They grow from the desktop breakpoint on.
 
 <TokenTable
     tokens={[
@@ -24,23 +41,19 @@ These grow from the desktop breakpoint on.
     ]}
 />
 
-## Units
+## Radii
 
-For space inside small groups, such as between an icon and its label.
+Corner radii come from the brand, so a brand can make all components rounder or sharper at once.
 
-<TokenTable
-    tokens={[
-        { name: "--dextinity-unit-1", description: "Icon to text, tight." },
-        { name: "--dextinity-unit-2", description: "Inside controls." },
-        { name: "--dextinity-unit-3", description: "Fields in dense areas." },
-        { name: "--dextinity-unit-4", description: "Padding of small surfaces." },
-        { name: "--dextinity-unit-6", description: "Between sections of a form." },
-        { name: "--dextinity-unit-8", description: "Page margins on large screens." },
-        { name: "--dextinity-unit-12", description: "Large sections." },
+<Samples
+    samples={[
+        { label: "control", style: { borderRadius: "var(--dextinity-brand-radius-control)" } },
+        { label: "forms", style: { borderRadius: "var(--dextinity-brand-radius-forms)" } },
+        { label: "surface", style: { borderRadius: "var(--dextinity-brand-radius-surface)" } },
+        { label: "modal", style: { borderRadius: "var(--dextinity-brand-radius-modal)" } },
+        { label: "pill", style: { borderRadius: "var(--dextinity-brand-radius-pill)" } },
     ]}
 />
-
-## Radii
 
 <TokenTable
     tokens={[
@@ -51,7 +64,74 @@ For space inside small groups, such as between an icon and its label.
         { name: "--dextinity-brand-radius-card", description: "Cards." },
         { name: "--dextinity-brand-radius-modal", description: "Dialogs." },
         { name: "--dextinity-brand-radius-tooltip", description: "Tooltips." },
-        { name: "--dextinity-brand-radius-pill", description: "Pill shapes, such as chips." },
+        { name: "--dextinity-brand-radius-pill", description: "Pill shapes, such as chips and switches." },
+    ]}
+/>
+
+## Shadows & material
+
+Shadows and glass are their own token layer. High contrast turns both off and shows edges instead.
+
+<Samples
+    samples={[
+        { label: "shadow-1", style: { boxShadow: "var(--dextinity-shadow-1)", borderRadius: "var(--dextinity-brand-radius-surface)" } },
+        { label: "shadow-2", style: { boxShadow: "var(--dextinity-shadow-2)", borderRadius: "var(--dextinity-brand-radius-surface)" } },
+        { label: "shadow-3", style: { boxShadow: "var(--dextinity-shadow-3)", borderRadius: "var(--dextinity-brand-radius-surface)" } },
+        {
+            label: "material",
+            variant: "glass",
+            style: { backgroundColor: "var(--dextinity-material-background)", borderRadius: "var(--dextinity-brand-radius-surface)" },
+        },
+        {
+            label: "material strong",
+            variant: "glass",
+            style: { backgroundColor: "var(--dextinity-material-background-strong)", borderRadius: "var(--dextinity-brand-radius-surface)" },
+        },
+    ]}
+/>
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-shadow-1", description: "Controls and rows that lift slightly, such as secondary buttons." },
+        { name: "--dextinity-shadow-2", description: "Cards and panels." },
+        { name: "--dextinity-shadow-3", description: "Menus and dialogs." },
+        { name: "--dextinity-material-background", description: "Glass panels over the page." },
+        { name: "--dextinity-material-background-strong", description: "Denser glass, such as fields and row hover on glass." },
+        { name: "--dextinity-material-highlight", description: "Light on the top edge of glass." },
+        { name: "--dextinity-material-edge", description: "Edge of glass panels." },
+        { name: "--dextinity-material-blur", description: "Blur behind glass." },
+        { name: "--dextinity-material-grain", description: "Opacity of the grain on glass." },
+    ]}
+/>
+
+## Density
+
+A user setting, set with the `density` prop of `Theme`. Each density has fixed sizes; text keeps its size. On touch screens, compact stays at the sizes of standard. The column of the density picked in the toolbar is highlighted.
+
+<DensityTable
+    rows={[
+        { element: "Input", token: "--dextinity-density-input-height" },
+        { element: "Button", token: "--dextinity-density-button-height" },
+        { element: "Small button", token: "--dextinity-density-button-small-height" },
+        { element: "Icon button", token: "--dextinity-density-icon-button-height" },
+        { element: "Small icon button", token: "--dextinity-density-icon-button-small-height" },
+        { element: "Table row", token: "--dextinity-density-table-row-height" },
+        { element: "Tree row", token: "--dextinity-density-tree-row-height" },
+        { element: "Navigation item", token: "--dextinity-density-nav-item-height" },
+        { element: "Space between fields", token: "--dextinity-density-form-gap" },
+    ]}
+/>
+
+## Motion
+
+Short durations, one curve. With "reduce motion", only crossfades. See [Motion](?path=/docs/foundations-motion--docs) for all tokens.
+
+<TokenTable
+    tokens={[
+        { name: "--dextinity-motion-easing-standard", description: "The curve for everything." },
+        { name: "--dextinity-motion-duration-xs", description: "Hover and colors." },
+        { name: "--dextinity-motion-duration-lg", description: "Menus, switches, and panels." },
+        { name: "--dextinity-motion-duration-2xl", description: "Content that enters the page." },
     ]}
 />
 
@@ -70,6 +150,11 @@ For space inside small groups, such as between an icon and its label.
 ## Rules
 
 <Rules
-    dos={["Space from the tokens, in steps of 4 px.", "Arrange components with flexbox or grid, and set the space with `gap`.", "Corner radii from the brand tokens, so that they follow the brand."]}
-    donts={["Pixel values in component styles.", "Margins on components to space them."]}
+    dos={[
+        "Space from the tokens, in steps of 4 px.",
+        "One panel per task, with `--dextinity-unit-4-5` between panels.",
+        "Arrange components with flexbox or grid, and set the space with `gap`.",
+        "Corner radii from the brand tokens, so that they follow the brand.",
+    ]}
+    donts={["Pixel values in component styles.", "Margins on components to space them.", "Panels in panels.", "Shadows or glass in high contrast."]}
 />

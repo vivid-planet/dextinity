@@ -15,7 +15,9 @@
         @include icon.tokens;
     }
 
-    [data-dextinity-color-scheme] {
+    // Also on each density boundary, so that the component sizes follow a nested density
+    [data-dextinity-color-scheme],
+    [data-dextinity-density] {
         @include button.tokens;
         @include chip.tokens;
         @include formHelperText.tokens;

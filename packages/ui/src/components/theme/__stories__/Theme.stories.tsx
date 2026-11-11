@@ -7,6 +7,7 @@ import styles from "./nestedTheme.module.scss";
 
 const colorSchemes = ["light", "dark", "high-contrast"];
 const brands = ["dextinity", "ai-hub"];
+const densities = ["comfortable", "standard", "compact"];
 
 const meta: Meta<typeof Theme> = {
     component: Theme,
@@ -25,6 +26,7 @@ const meta: Meta<typeof Theme> = {
     argTypes: {
         colorScheme: { control: "select", options: colorSchemes },
         brand: { control: "radio", options: brands },
+        density: { control: "radio", options: densities },
         className: { control: false },
     },
     args: {
@@ -72,6 +74,25 @@ export const Brands: Story = {
                 <ThemeExampleContent />
             </Theme>
             <Theme {...args} brand="ai-hub">
+                <ThemeExampleContent />
+            </Theme>
+        </div>
+    ),
+};
+
+/**
+ * `density` sets the size of controls, rows, and the space between fields. Text keeps its size.
+ */
+export const Densities: Story = {
+    render: (args) => (
+        <div className={styles.brands}>
+            <Theme {...args} density="comfortable">
+                <ThemeExampleContent />
+            </Theme>
+            <Theme {...args} density="standard">
+                <ThemeExampleContent />
+            </Theme>
+            <Theme {...args} density="compact">
                 <ThemeExampleContent />
             </Theme>
         </div>

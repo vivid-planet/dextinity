@@ -15,7 +15,8 @@ The tokens come in layers. Each layer only refers to the layers below it, so a n
 1. **Primitives**: color scales, units, radii, border widths, font weights, and motion, with fixed values. Use the color scales only through the brand and semantic tokens.
 2. **Brand**: the color scales, corner radii, and fonts of a brand, `--dextinity-brand-*`. See [Brands](#brands).
 3. **Semantic**: colors of backgrounds, text, borders, actions, and feedback for each color scheme, and the sizes of text and space, which grow from the desktop breakpoint on.
-4. **Components**: the tokens of each component, such as `--dextinity-button-*`. They use semantic and brand tokens, and the units, radii, and border widths of the primitives. Each component page lists them under "CSS variables".
+4. **Material and density**: shadows and glass for each color scheme, and the sizes of controls and rows for each density. See [Spacing, radii & material](?path=/docs/foundations-spacing-radii-material--docs).
+5. **Components**: the tokens of each component, such as `--dextinity-button-*`. They use semantic and brand tokens, and the units, radii, and border widths of the primitives. Each component page lists them under "CSS variables".
 
 - To give the components your colors, corner radii, and font, see [Customize brand](?path=/docs/foundations-tokens-customize-brand--docs).
 - To replace or add icons, see [Customize icons](?path=/docs/foundations-icons-customize-icons--docs).
@@ -53,6 +54,10 @@ Arrange the components with flexbox or grid, and set the space between them with
 ## Color schemes
 
 Set the color scheme with the `colorScheme` prop of `Theme`: `"light"`, `"dark"`, or `"high-contrast"`. To use another color scheme in a part of the application, wrap that part in another `Theme` with its own `colorScheme`.
+
+## Density
+
+Set the density with the `density` prop of `Theme`: `"comfortable"`, `"standard"` (the default), or `"compact"`. It changes the size of controls, rows, and the space between fields, not the size of text. On touch screens, `compact` stays at the sizes of `standard`.
 
 ## Brands
 

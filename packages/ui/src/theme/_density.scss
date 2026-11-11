@@ -1,0 +1,50 @@
+@layer dextinity {
+    :root,
+    [data-dextinity-density="standard"] {
+        // Height of a field.
+        --dextinity-density-input-height: 40px;
+        // Height of a button.
+        --dextinity-density-button-height: 34px;
+        // Height of a small button, such as in rows and panels.
+        --dextinity-density-button-small-height: 30px;
+        // Height and width of an icon button.
+        --dextinity-density-icon-button-height: 34px;
+        // Height and width of a small icon button.
+        --dextinity-density-icon-button-small-height: 28px;
+        // Height of a table row.
+        --dextinity-density-table-row-height: 58px;
+        // Height of a tree row.
+        --dextinity-density-tree-row-height: 44px;
+        // Height of a navigation item.
+        --dextinity-density-nav-item-height: 40px;
+        // Space between the fields of a form.
+        --dextinity-density-form-gap: 20px;
+    }
+
+    [data-dextinity-density="comfortable"] {
+        --dextinity-density-input-height: 46px;
+        --dextinity-density-button-height: 40px;
+        --dextinity-density-button-small-height: 34px;
+        --dextinity-density-icon-button-height: 40px;
+        --dextinity-density-icon-button-small-height: 32px;
+        --dextinity-density-table-row-height: 66px;
+        --dextinity-density-tree-row-height: 50px;
+        --dextinity-density-nav-item-height: 46px;
+        --dextinity-density-form-gap: 26px;
+    }
+
+    // Touch targets never get smaller than in the standard density
+    @media (pointer: fine) {
+        [data-dextinity-density="compact"] {
+            --dextinity-density-input-height: 34px;
+            --dextinity-density-button-height: 30px;
+            --dextinity-density-button-small-height: 26px;
+            --dextinity-density-icon-button-height: 30px;
+            --dextinity-density-icon-button-small-height: 24px;
+            --dextinity-density-table-row-height: 44px;
+            --dextinity-density-tree-row-height: 34px;
+            --dextinity-density-nav-item-height: 32px;
+            --dextinity-density-form-gap: 14px;
+        }
+    }
+}

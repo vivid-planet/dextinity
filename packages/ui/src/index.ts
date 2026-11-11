@@ -11,4 +11,4 @@ export { NavItem, type NavItemOwnerState, type NavItemProps } from "./components
 export { Spinner, type SpinnerOwnerState, type SpinnerProps } from "./components/spinner/Spinner";
 export { Theme, type ThemeProps } from "./components/theme/Theme";
 export { Typography, type TypographyOwnerState, type TypographyProps } from "./components/typography/Typography";
-export type { ThemeBrand, ThemeColorScheme } from "./theme/types";
+export type { ThemeBrand, ThemeColorScheme, ThemeDensity } from "./theme/types";

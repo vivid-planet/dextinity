@@ -11,7 +11,7 @@ export interface TokenTableProps {
 }
 
 /**
- * Lists CSS variables with their description and their value in the brand and the color scheme picked in the toolbar.
+ * Lists CSS variables with their description and their value in the brand, the color scheme, and the density picked in the toolbar.
  */
 export function TokenTable({ tokens }: TokenTableProps) {
     const definitions: Array<Partial<TokenDefinition> & Pick<TokenDefinition, "name">> = typeof tokens === "string" ? parseTokens(tokens) : tokens;

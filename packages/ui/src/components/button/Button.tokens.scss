@@ -3,7 +3,7 @@
     --dextinity-button-border-width: var(--dextinity-border-width-thin);
 
     // Height of a default-size button.
-    --dextinity-button-default-height: var(--dextinity-unit-10);
+    --dextinity-button-default-height: var(--dextinity-density-button-height);
     // Corner radius of a default-size button.
     --dextinity-button-default-radius: var(--dextinity-brand-radius-control);
     // Space between the icon and the label of a default-size button.
@@ -24,7 +24,7 @@
     --dextinity-button-default-font-weight-style: var(--dextinity-font-weight-medium-style);
 
     // Height of a small-size button.
-    --dextinity-button-small-height: var(--dextinity-unit-8);
+    --dextinity-button-small-height: var(--dextinity-density-button-small-height);
     // Corner radius of a small-size button.
     --dextinity-button-small-radius: var(--dextinity-brand-radius-control-small);
     // Space between the icon and the label of a small-size button.

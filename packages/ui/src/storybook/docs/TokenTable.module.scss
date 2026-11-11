@@ -49,3 +49,7 @@
     margin-block-start: var(--dextinity-unit-1);
     color: var(--dextinity-color-foreground-muted);
 }
+
+.highlighted {
+    background-color: var(--dextinity-color-action-primary-subtle);
+}

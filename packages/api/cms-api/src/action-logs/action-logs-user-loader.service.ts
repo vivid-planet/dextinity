@@ -16,7 +16,7 @@ export class ActionLogsUserLoaderService {
                 if (this.userPermissionsService.isSystemUser(userId)) {
                     return { id: userId, name: userId };
                 }
-                const user = users.find((user) => user?.id === userId);
+                const user = users[nonSystemUserIds.indexOf(userId)];
                 return user ? { id: user.id, name: user.name } : { id: userId };
             });
         });

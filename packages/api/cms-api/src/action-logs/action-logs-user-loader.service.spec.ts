@@ -9,7 +9,7 @@ const userA: User = { id: "a", name: "User A", email: "a@example.com" };
 
 describe("ActionLogsUserLoaderService", () => {
     it("looks up each user once per request, without system users", async () => {
-        const findUsersByIds = vi.fn().mockResolvedValue([userA]);
+        const findUsersByIds = vi.fn().mockResolvedValue([userA, null]);
         const loader = new ActionLogsUserLoaderService(
             createMock<UserPermissionsService>({ findUsersByIds, isSystemUser: (userId: string) => userId === "system-user" }),
         );

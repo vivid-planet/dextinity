@@ -1,6 +1,6 @@
 import { ArrowRight, Save } from "@dextinity/admin-icons";
 import { Box, Chip, Typography } from "@mui/material";
-import type { ReactNode } from "react";
+import type { PropsWithChildren } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { StackPage } from "../../../stack/Page";
@@ -16,7 +16,7 @@ import { ToolbarBackButton } from "../backbutton/ToolbarBackButton";
 import { ToolbarItem } from "../item/ToolbarItem";
 import { Toolbar } from "../Toolbar";
 
-function StackWrapper({ children }: { children: ReactNode }) {
+function StackWrapper({ children }: PropsWithChildren) {
     return (
         <Stack topLevelTitle="Stack Root">
             <StackSwitch initialPage="root">

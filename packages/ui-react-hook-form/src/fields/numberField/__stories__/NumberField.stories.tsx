@@ -5,7 +5,7 @@ import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFra
 import { NumberField } from "../NumberField";
 
 const meta = {
-    title: "Forms/React Hook Form/NumberField",
+    title: "Fields/NumberField",
     component: NumberField,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { price: 49.9 } },

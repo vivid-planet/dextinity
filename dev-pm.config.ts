@@ -164,6 +164,18 @@ export default defineConfig({
             script: "pnpm --filter @dextinity/ui run storybook",
             group: ["storybook", "docs"],
         },
+        {
+            name: "storybook-dextinity-ui-react-final-form",
+            script: "pnpm --filter @dextinity/ui-react-final-form run storybook",
+            group: ["storybook", "docs"],
+            waitOn: waitOnPackages("@dextinity/ui"),
+        },
+        {
+            name: "storybook-dextinity-ui-react-hook-form",
+            script: "pnpm --filter @dextinity/ui-react-hook-form run storybook",
+            group: ["storybook", "docs"],
+            waitOn: waitOnPackages("@dextinity/ui"),
+        },
 
         //group brevo
         {
@@ -309,7 +321,7 @@ export default defineConfig({
             name: "storybook",
             script: "pnpm --filter dextinity-storybook run storybook",
             group: ["storybook", "docs"],
-            waitOn: ["tcp:26646", "tcp:26647", "tcp:6066", "tcp:26648"], // storybook-dextinity-admin, storybook-dextinity-cms-admin, storybook-dextinity-mail-react, storybook-dextinity-ui
+            waitOn: ["tcp:26646", "tcp:26647", "tcp:6066", "tcp:26648", "tcp:26650", "tcp:26651"], // storybook-dextinity-admin, storybook-dextinity-cms-admin, storybook-dextinity-mail-react, storybook-dextinity-ui, storybook-dextinity-ui-react-final-form, storybook-dextinity-ui-react-hook-form
         },
         {
             name: "docs",

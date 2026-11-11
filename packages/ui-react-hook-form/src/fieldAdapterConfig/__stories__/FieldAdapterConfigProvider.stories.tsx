@@ -26,7 +26,7 @@ function TitleAndSlug() {
 }
 
 const meta = {
-    title: "Forms/React Hook Form/FieldAdapterConfigProvider",
+    title: "FieldAdapterConfigProvider",
     component: FieldAdapterConfigProvider,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { title: "Benefits", slug: "benefits" } },

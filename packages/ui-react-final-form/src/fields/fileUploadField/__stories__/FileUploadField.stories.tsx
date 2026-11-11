@@ -29,7 +29,7 @@ function fileInput(canvasElement: HTMLElement) {
 }
 
 const meta = {
-    title: "Forms/Final Form/FileUploadField",
+    title: "Fields/FileUploadField",
     component: FileUploadField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { attachments: [{ id: "terms.pdf", name: "terms.pdf", size: 84_000 }] } },

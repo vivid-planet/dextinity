@@ -5,7 +5,7 @@ import { finalFormDecorator } from "../../../storybook/FinalFormStoryFrame";
 import { CheckboxField } from "../CheckboxField";
 
 const meta = {
-    title: "Forms/Final Form/CheckboxField",
+    title: "Fields/CheckboxField",
     component: CheckboxField,
     decorators: [finalFormDecorator],
     args: { name: "newsletter", children: "Subscribe to the newsletter" },

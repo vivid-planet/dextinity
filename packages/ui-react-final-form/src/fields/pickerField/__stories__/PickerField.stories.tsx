@@ -7,7 +7,7 @@ import { type Page, PagePickerDialog } from "../../../storybook/PagePickerDialog
 import { PickerField } from "../PickerField";
 
 const meta = {
-    title: "Forms/Final Form/PickerField",
+    title: "Fields/PickerField",
     component: PickerField<Page>,
     decorators: [finalFormDecorator],
     args: {

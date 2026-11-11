@@ -7,12 +7,13 @@ Read [README.md](README.md) before working in this package, and the [README of `
 
 ## Running processes (dev-pm)
 
-| Name                           | What it does                                                      |
-| ------------------------------ | ----------------------------------------------------------------- |
-| `dextinity-ui-react-hook-form` | `vite build --watch` and `tsc --watch` — rebuild `lib/` on change |
+| Name                                     | What it does                                                      |
+| ---------------------------------------- | ----------------------------------------------------------------- |
+| `dextinity-ui-react-hook-form`           | `vite build --watch` and `tsc --watch` — rebuild `lib/` on change |
+| `storybook-dextinity-ui-react-hook-form` | This package's Storybook at `http://localhost:26651`              |
 
-The `@dextinity-ui` group starts it together with `dextinity-ui`.
+The `@dextinity-ui` group starts the build watcher together with `dextinity-ui`; the `@storybook` group starts the Storybook.
 
 ## Storybook
 
-The stories are part of the `@dextinity/ui` Storybook (`storybook-dextinity-ui`, `http://localhost:26648`), under `Forms/React Hook Form`. Storybook aliases `@dextinity/ui` to its source, so a change to a ui component shows without a build.
+The stories have their own Storybook (`storybook-dextinity-ui-react-hook-form`, `http://localhost:26651`), composed into the root Storybook. It uses the built `@dextinity/ui`, so a change to a ui component shows once `dextinity-ui` has rebuilt `lib/`.

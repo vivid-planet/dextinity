@@ -8,7 +8,7 @@ import { ComboboxField } from "../ComboboxField";
 const getOptionLabel = (category: Category) => category.title;
 
 const meta = {
-    title: "Forms/Final Form/ComboboxField",
+    title: "Fields/ComboboxField",
     component: ComboboxField<Category>,
     decorators: [finalFormDecorator],
     args: { name: "category", label: "Category", placeholder: "Search categories", loadOptions: searchCategories, getOptionLabel },

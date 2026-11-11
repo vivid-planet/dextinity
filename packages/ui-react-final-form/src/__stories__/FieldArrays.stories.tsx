@@ -98,7 +98,7 @@ function BillingAddress() {
 }
 
 const meta = {
-    title: "Forms/Final Form/Field arrays",
+    title: "Field arrays",
     decorators: [finalFormDecorator],
     parameters: {
         initialValues: {

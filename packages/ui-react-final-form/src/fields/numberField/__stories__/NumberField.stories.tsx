@@ -5,7 +5,7 @@ import { finalFormDecorator } from "../../../storybook/FinalFormStoryFrame";
 import { NumberField } from "../NumberField";
 
 const meta = {
-    title: "Forms/Final Form/NumberField",
+    title: "Fields/NumberField",
     component: NumberField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { price: 49.9 } },

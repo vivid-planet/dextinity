@@ -5,7 +5,7 @@ import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFra
 import { TextareaField } from "../TextareaField";
 
 const meta = {
-    title: "Forms/React Hook Form/TextareaField",
+    title: "Fields/TextareaField",
     component: TextareaField,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { teaser: "We build digital products that stay in use for many years." } },

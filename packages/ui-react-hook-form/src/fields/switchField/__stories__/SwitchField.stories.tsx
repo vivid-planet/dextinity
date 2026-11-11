@@ -5,7 +5,7 @@ import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFra
 import { SwitchField } from "../SwitchField";
 
 const meta = {
-    title: "Forms/React Hook Form/SwitchField",
+    title: "Fields/SwitchField",
     component: SwitchField,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { published: true } },

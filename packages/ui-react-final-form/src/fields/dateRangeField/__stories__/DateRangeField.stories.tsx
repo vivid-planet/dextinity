@@ -5,7 +5,7 @@ import { finalFormDecorator } from "../../../storybook/FinalFormStoryFrame";
 import { DateRangeField } from "../DateRangeField";
 
 const meta = {
-    title: "Forms/Final Form/DateRangeField",
+    title: "Fields/DateRangeField",
     component: DateRangeField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { period: { start: "2026-11-06", end: "2026-11-12" } } },

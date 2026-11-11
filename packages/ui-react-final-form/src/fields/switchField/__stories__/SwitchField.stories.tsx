@@ -5,7 +5,7 @@ import { finalFormDecorator } from "../../../storybook/FinalFormStoryFrame";
 import { SwitchField } from "../SwitchField";
 
 const meta = {
-    title: "Forms/Final Form/SwitchField",
+    title: "Fields/SwitchField",
     component: SwitchField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { published: true } },

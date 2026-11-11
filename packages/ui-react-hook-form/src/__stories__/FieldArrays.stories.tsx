@@ -115,7 +115,7 @@ function BillingAddress() {
 }
 
 const meta = {
-    title: "Forms/React Hook Form/Field arrays",
+    title: "Field arrays",
     decorators: [reactHookFormDecorator],
     parameters: {
         initialValues: {

@@ -5,7 +5,7 @@ import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFra
 import { RichTextEditorField } from "../RichTextEditorField";
 
 const meta = {
-    title: "Forms/React Hook Form/RichTextEditorField",
+    title: "Fields/RichTextEditorField",
     component: RichTextEditorField,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { body: "<p>We build digital products that <b>stay in use</b> for many years.</p>" } },

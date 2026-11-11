@@ -40,7 +40,7 @@ function TitleAndSlug() {
 }
 
 const meta = {
-    title: "Forms/Final Form/FieldAdapterConfigProvider",
+    title: "FieldAdapterConfigProvider",
     component: FieldAdapterConfigProvider,
     decorators: [finalFormDecorator],
     parameters: {

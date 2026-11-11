@@ -5,7 +5,7 @@ import { finalFormDecorator } from "../../../storybook/FinalFormStoryFrame";
 import { SegmentedControlField } from "../SegmentedControlField";
 
 const meta = {
-    title: "Forms/Final Form/SegmentedControlField",
+    title: "Fields/SegmentedControlField",
     component: SegmentedControlField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { layout: "grid" } },

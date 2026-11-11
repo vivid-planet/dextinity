@@ -5,7 +5,7 @@ import { finalFormDecorator } from "../../../storybook/FinalFormStoryFrame";
 import { RadioGroupField } from "../RadioGroupField";
 
 const meta = {
-    title: "Forms/Final Form/RadioGroupField",
+    title: "Fields/RadioGroupField",
     component: RadioGroupField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { employment: "full-time" } },

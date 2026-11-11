@@ -7,7 +7,7 @@ import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFra
 import { PickerField } from "../PickerField";
 
 const meta = {
-    title: "Forms/React Hook Form/PickerField",
+    title: "Fields/PickerField",
     component: PickerField<Page>,
     decorators: [reactHookFormDecorator],
     args: {

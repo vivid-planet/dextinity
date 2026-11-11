@@ -5,7 +5,7 @@ import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFra
 import { CheckboxGroupField } from "../CheckboxGroupField";
 
 const meta = {
-    title: "Forms/React Hook Form/CheckboxGroupField",
+    title: "Fields/CheckboxGroupField",
     component: CheckboxGroupField,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { scopes: ["main-de"] } },

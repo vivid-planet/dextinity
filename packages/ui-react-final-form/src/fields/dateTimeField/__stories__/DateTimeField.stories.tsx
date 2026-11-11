@@ -5,7 +5,7 @@ import { finalFormDecorator } from "../../../storybook/FinalFormStoryFrame";
 import { DateTimeField } from "../DateTimeField";
 
 const meta = {
-    title: "Forms/Final Form/DateTimeField",
+    title: "Fields/DateTimeField",
     component: DateTimeField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { publishAt: new Date(2026, 10, 6, 8, 30).toISOString() } },

@@ -5,7 +5,7 @@ import { finalFormDecorator } from "../../../storybook/FinalFormStoryFrame";
 import { RichTextEditorField } from "../RichTextEditorField";
 
 const meta = {
-    title: "Forms/Final Form/RichTextEditorField",
+    title: "Fields/RichTextEditorField",
     component: RichTextEditorField,
     decorators: [finalFormDecorator],
     parameters: { initialValues: { body: "<p>We build digital products that <b>stay in use</b> for many years.</p>" } },

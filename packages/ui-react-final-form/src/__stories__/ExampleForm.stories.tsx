@@ -212,7 +212,7 @@ function ExamplePageForm() {
 }
 
 const meta = {
-    title: "Forms/Final Form/Example form",
+    title: "Example form",
     parameters: {
         layout: "padded",
         docs: {

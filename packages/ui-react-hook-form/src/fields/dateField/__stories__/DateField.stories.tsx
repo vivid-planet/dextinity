@@ -5,7 +5,7 @@ import { reactHookFormDecorator } from "../../../storybook/ReactHookFormStoryFra
 import { DateField } from "../DateField";
 
 const meta = {
-    title: "Forms/React Hook Form/DateField",
+    title: "Fields/DateField",
     component: DateField,
     decorators: [reactHookFormDecorator],
     parameters: { initialValues: { publishedOn: "2026-11-06" } },

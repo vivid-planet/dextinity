@@ -45,7 +45,8 @@ export interface TextFieldProps
 }
 
 /**
- * A single-line text field. For several lines, use `Textarea`. Props not listed are passed to the input element.
+ * A complete single-line text field with label, helper text and validation message. For several lines, use `Textarea`; for the
+ * bare box to compose yourself, use `Input`. Props not listed are passed to the input element.
  */
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function TextField(
     {

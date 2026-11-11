@@ -117,7 +117,8 @@ function focusInputOnFieldClick(event: MouseEvent<HTMLDivElement>) {
 }
 
 /**
- * A single-line text field.
+ * The box of a single-line text field, without label or messages, to combine with `FormLabel` and `FormHelperText`.
+ * For a complete field with label, helper text and validation message, use `TextField`.
  */
 export const Input: <InputElement extends InputSlotElement = typeof BaseInput, LoadingSpinner extends ElementType = typeof Spinner>(
     props: InputProps<InputElement, LoadingSpinner> & RefAttributes<HTMLInputElement>,

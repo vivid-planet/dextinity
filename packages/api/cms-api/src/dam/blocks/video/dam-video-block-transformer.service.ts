@@ -31,6 +31,7 @@ export class DamVideoBlockTransformerService implements BlockTransformerServiceI
 
     async transformToPlain(block: DamVideoBlockData, { previewDamUrls }: BlockContext) {
         const ret: TraversableTransformBlockResponse = {
+            damFile: null,
             autoplay: block.autoplay,
             loop: block.loop,
             showControls: block.showControls,
@@ -65,11 +66,11 @@ export class DamVideoBlockTransformerService implements BlockTransformerServiceI
                 size: file.size,
                 mimetype: file.mimetype,
                 contentHash: file.contentHash,
-                title: file.title,
-                altText: file.altText,
-                aiContentType: file.aiContentType,
+                title: file.title ?? null,
+                altText: file.altText ?? null,
+                aiContentType: file.aiContentType ?? null,
                 archived: file.archived,
-                scope: file.scope,
+                scope: file.scope ?? null,
                 fileUrl: await this.filesService.createFileUrl(file, { previewDamUrls }),
                 captions: captions,
             };

@@ -161,10 +161,10 @@ type Unpacked<T> = T extends (infer U)[] ? U : T extends (...args: any[]) => inf
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NestedToPlainReturn<T extends Record<string, any>> = WithoutBlockInputMethods<{
     [Key in keyof T]: T[Key] extends
-        BlockInputInterface | undefined // value is a BlockInputInterface
-        ? ReturnType<NonNullable<T[Key]>["toPlain"]>
+        BlockInputInterface | null | undefined // value is a BlockInputInterface
+        ? ReturnType<NonNullable<T[Key]>["toPlain"]> | Extract<T[Key], null>
         : T[Key] extends
-                BlockInputInterface[] | undefined // value is an array of BlockInputInterfaces
+                BlockInputInterface[] | null | undefined // value is an array of BlockInputInterfaces
           ? ReturnType<NonNullable<Unpacked<T[Key]>>["toPlain"]>[]
           : T[Key];
 }>;
@@ -359,7 +359,9 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
     }
 
     const blockDataFactory: BlockDataFactory<BlockType> = (o) => {
-        return plainToInstance(BlockData, o);
+        const blockData = plainToInstance(BlockData, o);
+        setMissingNullableFieldsToNull(blockData, BlockData);
+        return blockData;
     };
 
     const blockInputFactory: BlockInputFactory<BlockInputType> = (o) => plainToInstance(BlockInput, o);
@@ -389,6 +391,28 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
     };
 
     return overwrite(block);
+}
+
+// Block data saved before optional fields were always stored as null omits them. Setting them to null here migrates such data on load, and the migrateBlocks command persists it.
+function setMissingNullableFieldsToNull(target: object, ctor: ClassConstructor<unknown>): void {
+    const record = target as Record<string, unknown>;
+    for (const key of getFieldKeys(ctor)) {
+        const field = getBlockFieldData(ctor, key);
+        const value = record[key];
+        if (value === undefined) {
+            if (field.nullable) {
+                record[key] = null;
+            }
+        } else if (field.kind === BlockMetaFieldKind.NestedObject && value !== null && typeof value === "object") {
+            setMissingNullableFieldsToNull(value, field.object);
+        } else if (field.kind === BlockMetaFieldKind.NestedObjectList && Array.isArray(value)) {
+            for (const item of value) {
+                if (item !== null && typeof item === "object") {
+                    setMissingNullableFieldsToNull(item, field.object);
+                }
+            }
+        }
+    }
 }
 
 export interface BlockContext {

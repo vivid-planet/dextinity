@@ -48,11 +48,11 @@ const ProductTeaserBlock: BlockInterface<ProductTeaserBlockData, State, ProductT
     defaultValues: () => ({}),
 
     state2Output: (state) => ({
-        productId: state.product?.id,
+        productId: state.product?.id ?? null,
     }),
 
     output2State: async (output, { apolloClient }) => {
-        if (output.productId === undefined) {
+        if (!output.productId) {
             return {};
         }
 

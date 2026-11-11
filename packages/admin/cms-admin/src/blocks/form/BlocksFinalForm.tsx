@@ -35,12 +35,28 @@ function AutosaveSpy<FormValues>({ onSubmit }: AutoSaveSpyProps<FormValues>) {
 
             flushSync(() => {
                 form.submit(); // to show validation errors, form.submit does not update anything
-                onSubmitRef.current(latestValues, form); // call passed onSubmit manually, also when validation errors are present
+                // call passed onSubmit manually, also when validation errors are present
+                onSubmitRef.current(setClearedFieldsToNull(latestValues, form.getState().initialValues), form);
             });
         }, 1);
     }, [dirty, values, form]);
 
     return null;
+}
+
+// Final Form removes the value of a cleared field, but block data stores null for an empty optional field
+function setClearedFieldsToNull<FormValues>(values: FormValues, initialValues: Partial<FormValues> | undefined): FormValues {
+    if (!initialValues || typeof values !== "object" || values === null) {
+        return values;
+    }
+
+    const clearedFields = Object.keys(initialValues).filter((field) => (values as Record<string, unknown>)[field] === undefined);
+
+    if (clearedFields.length === 0) {
+        return values;
+    }
+
+    return { ...values, ...Object.fromEntries(clearedFields.map((field) => [field, null])) };
 }
 
 const noop = () => {

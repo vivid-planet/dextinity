@@ -36,8 +36,8 @@ export enum HeadlineLevel {
 }
 
 class HeadlineBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    eyebrow?: string;
+    @BlockField({ type: "string", nullable: true })
+    eyebrow: string | null;
 
     @ChildBlock(RichTextBlock)
     headline: BlockDataInterface;
@@ -61,10 +61,10 @@ Once we have defined the block data, we also need to define the block input. The
 import { blockInputToData } from "@dextinity/cms-api";
 
 class HeadlineBlockInput extends BlockInput {
-    @IsUndefinable()
+    @IsNullable()
     @IsString()
-    @BlockField({ nullable: true })
-    eyebrow?: string;
+    @BlockField({ type: "string", nullable: true })
+    eyebrow: string | null;
 
     @ChildBlockInput(RichTextBlock)
     headline: ExtractBlockInput<typeof RichTextBlock>;
@@ -134,7 +134,7 @@ The complete code for our Headline API block (including all necessary imports) c
     blockInputToData,
 } from "@dextinity/cms-api";
 import { RichTextBlock } from "@src/common/blocks/rich-text.block";
-import { IsUndefinable } from "@dextinity/cms-api";
+import { IsNullable } from "@dextinity/cms-api";
 import { IsEnum, IsString } from "class-validator";\n
 export enum HeadlineLevel {
     HeaderOne = "header-one",
@@ -153,7 +153,7 @@ export class HeadlineBlockData extends BlockData {
     level: HeadlineLevel;
 }\n
 export class HeadlineBlockInput extends BlockInput {
-    @IsUndefinable()
+    @IsNullable()
     @IsString()
     @BlockField()
     eyebrow?: string;\n
@@ -189,7 +189,7 @@ export const HeadlineBlock = createCompositeBlock(
         blocks: {
             eyebrow: {
                 block: createCompositeBlockField<HeadlineBlockData["eyebrow"]>({
-                    defaultValue: undefined,
+                    defaultValue: null,
                     AdminComponent: ({ state, updateState }) => (
                         <BlocksFinalForm<Pick<HeadlineBlockData, "eyebrow">>
                             onSubmit={({ eyebrow }) => updateState(eyebrow)}
@@ -247,7 +247,7 @@ Let's take a look at how the admin component is defined in code. The text field 
 ```tsx title="HeadlineBlock.tsx"
 eyebrow: {
     block: createCompositeBlockField<HeadlineBlockData["eyebrow"]>({
-        defaultValue: undefined,
+        defaultValue: null,
         AdminComponent: ({ state, updateState }) => (
             <BlocksFinalForm<Pick<HeadlineBlockData, "eyebrow">>
                 onSubmit={({ eyebrow }) => updateState(eyebrow)}
@@ -343,7 +343,7 @@ export const HeadlineBlock = createCompositeBlock(
         blocks: {
             eyebrow: {
                 block: createCompositeBlockField<HeadlineBlockData["eyebrow"]>({
-                    defaultValue: undefined,
+                    defaultValue: null,
                     AdminComponent: ({ state, updateState }) => (
                         <BlocksFinalForm<Pick<HeadlineBlockData, "eyebrow">>
                             onSubmit={({ eyebrow }) => updateState(eyebrow)}

@@ -1,4 +1,4 @@
-import { IsOptional, IsUUID } from "class-validator";
+import { IsUUID } from "class-validator";
 
 import { BaseVideoBlockData, BaseVideoBlockInput } from "../../../blocks/base-video-block.js";
 import {
@@ -11,20 +11,21 @@ import {
 } from "../../../blocks/block.js";
 import { AnnotationBlockMeta, BlockField } from "../../../blocks/decorators/field.js";
 import { typeSafeBlockMigrationPipe } from "../../../blocks/migrations/typeSafeBlockMigrationPipe.js";
+import { IsNullable } from "../../../common/validators/is-nullable.js";
 import { DamFileAiContentType } from "../../files/entities/ai-content-type.enum.js";
 import { FILE_ENTITY } from "../../files/entities/file.entity.js";
 import { DamVideoBlockTransformerService } from "./dam-video-block-transformer.service.js";
 import { AddPreviewImageMigration } from "./migrations/1-add-preview-image.migration.js";
 
 class DamVideoBlockData extends BaseVideoBlockData {
-    damFileId?: string;
+    damFileId: string | null = null;
 
     async transformToPlain() {
         return DamVideoBlockTransformerService;
     }
 
     indexData(): BlockIndexData {
-        if (this.damFileId === undefined) {
+        if (!this.damFileId) {
             return {};
         }
 
@@ -40,10 +41,10 @@ class DamVideoBlockData extends BaseVideoBlockData {
 }
 
 class DamVideoBlockInput extends BaseVideoBlockInput {
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsUUID()
-    @IsOptional()
-    damFileId?: string;
+    @IsNullable()
+    damFileId: string | null;
 
     transformToBlockData(): BlockDataInterface {
         return blockInputToData(DamVideoBlockData, this);

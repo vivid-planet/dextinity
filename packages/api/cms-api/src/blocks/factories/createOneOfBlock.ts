@@ -1,7 +1,8 @@
 import type { Type } from "@nestjs/common";
 import { plainToInstance, Transform } from "class-transformer";
-import { ArrayMinSize, IsArray, IsIn, IsObject, IsOptional, ValidateIf, ValidateNested } from "class-validator";
+import { ArrayMinSize, IsArray, IsIn, IsObject, ValidateIf, ValidateNested } from "class-validator";
 
+import { IsNullable } from "../../common/validators/is-nullable.js";
 import {
     type Block,
     type BlockContext,
@@ -29,7 +30,7 @@ type BaseBlockMap = Record<string, Block<BlockDataInterface, BlockInputInterface
 
 type OneOfBlockDataInterface<BlockMap extends BaseBlockMap, Data extends BlockDataInterface> = Data & {
     attachedBlocks: SupportedBlocksDataInterfaces<BlockMap>[];
-    activeType?: keyof BlockMap;
+    activeType: keyof BlockMap | null;
 };
 
 type SupportedBlocksDataInterfaces<BlockMap extends BaseBlockMap> = {
@@ -45,7 +46,7 @@ type OneOfBlockInputInterface<
     Input extends SimpleBlockInputInterface<Data>,
 > = Input & {
     attachedBlocks: SupportedBlocksInputInterfaces<BlockMap>[];
-    activeType?: keyof BlockMap;
+    activeType: keyof BlockMap | null;
 };
 
 type SupportedBlocksInputInterfaces<BlockMap extends BaseBlockMap> = {
@@ -119,15 +120,15 @@ export function BaseOneOfBlockData<BlockMap extends BaseBlockMap, Data extends B
         attachedBlocks: OneOfBlockDataInterface<BlockMap, Data>["attachedBlocks"][number][];
 
         // index of blocks
-        activeType?: string;
+        activeType: string | null = null;
 
         async transformToPlain({ includeInvisibleContent }: BlockContext): Promise<TraversableTransformBlockResponse> {
             const { attachedBlocks, activeType, ...additionalFields } = this;
             const block = attachedBlocks.find((c) => c.type === this.activeType);
             return {
                 attachedBlocks: includeInvisibleContent ? attachedBlocks : [], // only admin must see inactive blocks
-                block: block,
-                activeType: activeType && supportedBlocks[activeType] ? activeType : undefined,
+                block: block ?? null,
+                activeType: activeType && supportedBlocks[activeType] ? activeType : null,
                 ...additionalFields,
             };
         }
@@ -231,17 +232,17 @@ export function BaseOneOfBlockInput<
         @ValidateNested({ each: true })
         attachedBlocks: OneOfBlockInputInterface<BlockMap, Data, Input>["attachedBlocks"];
 
-        @IsOptional()
+        @IsNullable()
         @IsIn(supportedBlockTypes)
-        @BlockField({ nullable: allowEmpty })
-        activeType?: string;
+        @BlockField({ type: "string", nullable: allowEmpty })
+        activeType: string | null;
 
         transformToBlockData(): OneOfBlockDataInterface<BlockMap, Data> {
             const { attachedBlocks, activeType, ...additionalFields } = this;
 
             return plainToInstance(OneOfBlockData, {
                 attachedBlocks: attachedBlocks.map((block) => block.transformToBlockData()),
-                activeType: this.activeType && supportedBlocks[this.activeType] ? this.activeType : undefined,
+                activeType: this.activeType && supportedBlocks[this.activeType] ? this.activeType : null,
                 ...additionalFields,
             });
         }

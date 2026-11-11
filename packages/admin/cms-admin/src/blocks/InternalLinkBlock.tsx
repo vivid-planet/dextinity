@@ -23,7 +23,7 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
 
     displayName: <FormattedMessage id="dextinity.blocks.internalLink" defaultMessage="Page Tree" />,
 
-    defaultValues: () => ({ targetPage: undefined }),
+    defaultValues: () => ({ targetPage: null, targetPageAnchor: null }),
 
     category: BlockCategory.Navigation,
 
@@ -33,14 +33,14 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
 
     state2Output: (state) => {
         return {
-            targetPageId: state.targetPage?.id,
+            targetPageId: state.targetPage?.id ?? null,
             targetPageAnchor: state.targetPageAnchor,
         };
     },
 
     output2State: async (output, { apolloClient, pageTreeScope }) => {
-        if (output.targetPageId === undefined) {
-            return {};
+        if (!output.targetPageId) {
+            return { targetPage: null, targetPageAnchor: output.targetPageAnchor };
         }
 
         const { data } = await apolloClient.query<GQLLinkBlockTargetPageQuery, GQLLinkBlockTargetPageQueryVariables>({
@@ -57,7 +57,7 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
             variables: { id: output.targetPageId },
         });
 
-        const targetPage = data.pageTreeNode ? { ...data.pageTreeNode, scope: pageTreeScope } : undefined;
+        const targetPage = data.pageTreeNode ? { ...data.pageTreeNode, scope: pageTreeScope } : null;
 
         // TODO consider throwing an error
         return { targetPage, targetPageAnchor: output.targetPageAnchor };
@@ -86,7 +86,7 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
         const replacement = replacements.find((replacement) => replacement.type === "PageTreeNode" && replacement.originalId === output.targetPageId);
 
         if (replacement) {
-            clonedOutput.targetPageId = replacement.replaceWithId;
+            clonedOutput.targetPageId = replacement.replaceWithId ?? null;
         }
 
         return clonedOutput;
@@ -106,20 +106,20 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
                             updateState((previousState) => {
                                 if (newState.targetPage == null) {
                                     return {
-                                        targetPage: undefined,
-                                        targetPageAnchor: undefined,
+                                        targetPage: null,
+                                        targetPageAnchor: null,
                                     };
                                 } else if (newState.targetPage.id !== previousState.targetPage?.id) {
                                     return {
                                         targetPage: newState.targetPage,
-                                        targetPageAnchor: undefined,
+                                        targetPageAnchor: null,
                                     };
                                 } else {
                                     return {
                                         targetPage: newState.targetPage,
                                         targetPageAnchor:
                                             newState.targetPageAnchor === "none" || newState.targetPageAnchor === ""
-                                                ? undefined
+                                                ? null
                                                 : newState.targetPageAnchor,
                                     };
                                 }
@@ -171,7 +171,7 @@ export const InternalLinkBlock: BlockInterface<InternalLinkBlockData, State, Int
         return [
             {
                 type: "text",
-                content: state.targetPageAnchor === undefined ? state.targetPage.name : `${state.targetPage.name}#${state.targetPageAnchor}`,
+                content: state.targetPageAnchor ? `${state.targetPage.name}#${state.targetPageAnchor}` : state.targetPage.name,
             },
         ];
     },

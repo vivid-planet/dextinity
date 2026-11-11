@@ -24,6 +24,15 @@ export interface TipTapNode {
 }
 `;
 
+function writeField(field: BlockMetaField, blockNamePostfix: string) {
+    content += `${field.name}: `;
+    writeFieldType(field, blockNamePostfix);
+    if (field.nullable) {
+        content += " | null";
+    }
+    content += ";\n";
+}
+
 function writeFieldType(field: BlockMetaField, blockNamePostfix: string) {
     if (field.kind === "String") {
         content += "string";
@@ -71,27 +80,11 @@ function writeFieldType(field: BlockMetaField, blockNamePostfix: string) {
         }
     } else if (field.kind === "NestedObject") {
         content += "{\n";
-        field.object.fields.forEach((f) => {
-            content += f.name;
-            if (f.nullable) {
-                content += "?";
-            }
-            content += ": ";
-            writeFieldType(f, blockNamePostfix);
-            content += ";\n";
-        });
+        field.object.fields.forEach((f) => writeField(f, blockNamePostfix));
         content += "}\n";
     } else if (field.kind === "NestedObjectList") {
         content += "Array<{\n";
-        field.object.fields.forEach((f) => {
-            content += f.name;
-            if (f.nullable) {
-                content += "?";
-            }
-            content += ": ";
-            writeFieldType(f, blockNamePostfix);
-            content += ";\n";
-        });
+        field.object.fields.forEach((f) => writeField(f, blockNamePostfix));
         content += "}>\n";
     }
 }
@@ -125,13 +118,7 @@ const generateBlockTypes = new Command("generate-block-types")
         sortedBlockMeta.forEach((block) => {
             content += `export interface ${block.name}BlockData {\n`;
             block.fields.forEach((field) => {
-                content += field.name;
-                if (field.nullable) {
-                    content += "?";
-                }
-                content += ": ";
-                writeFieldType(field, "BlockData");
-                content += ";\n";
+                writeField(field, "BlockData");
             });
             content += "}\n";
         });
@@ -140,13 +127,7 @@ const generateBlockTypes = new Command("generate-block-types")
             sortedBlockMeta.forEach((block) => {
                 content += `export interface ${block.name}BlockInput {\n`;
                 block.inputFields.forEach((field) => {
-                    content += field.name;
-                    if (field.nullable) {
-                        content += "?";
-                    }
-                    content += ": ";
-                    writeFieldType(field, "BlockInput");
-                    content += ";\n";
+                    writeField(field, "BlockInput");
                 });
                 content += "}\n";
             });

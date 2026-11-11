@@ -10,7 +10,7 @@ import {
     createBlock,
 } from "../../blocks/block.js";
 import { AnnotationBlockMeta, BlockField } from "../../blocks/decorators/field.js";
-import { IsUndefinable } from "../../common/validators/is-undefinable.js";
+import { IsNullable } from "../../common/validators/is-nullable.js";
 import { FILE_ENTITY } from "../files/entities/file.entity.js";
 import { DamFileDownloadLinkBlockTransformerService } from "./dam-file-download-link-block-transformer.service.js";
 
@@ -20,7 +20,7 @@ export enum OpenFileTypeMethod {
 }
 
 export class DamFileDownloadLinkBlockData extends BlockData {
-    fileId?: string;
+    fileId: string | null = null;
 
     @BlockField({ type: "enum", enum: OpenFileTypeMethod })
     openFileType: OpenFileTypeMethod;
@@ -30,7 +30,7 @@ export class DamFileDownloadLinkBlockData extends BlockData {
     }
 
     indexData(): BlockIndexData {
-        if (this.fileId === undefined) {
+        if (!this.fileId) {
             return {};
         }
 
@@ -46,10 +46,10 @@ export class DamFileDownloadLinkBlockData extends BlockData {
 }
 
 class DamFileDownloadLinkBlockInput extends BlockInput {
-    @IsUndefinable()
+    @IsNullable()
     @IsUUID()
-    @BlockField({ nullable: true })
-    fileId?: string;
+    @BlockField({ type: "string", nullable: true })
+    fileId: string | null;
 
     @IsEnum(OpenFileTypeMethod)
     @BlockField({ type: "enum", enum: OpenFileTypeMethod })

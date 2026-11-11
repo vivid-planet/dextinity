@@ -15,17 +15,17 @@ import { resolveNewState } from "../utils";
 // type BlockDecorator = <T extends BlockInterface>(block: T) => BlockInterface;
 
 export interface OptionalBlockState<DecoratedBlock extends BlockInterface> {
-    block?: BlockState<DecoratedBlock>;
+    block: BlockState<DecoratedBlock> | null;
     visible: boolean;
 }
 
 export interface OptionalBlockDecoratorFragment<DecoratedBlock extends BlockInterface> {
-    block?: BlockInputApi<DecoratedBlock>;
+    block: BlockInputApi<DecoratedBlock> | null;
     visible: boolean;
 }
 
 export interface OptionalBlockOutput<DecoratedBlock extends BlockInterface> {
-    block?: BlockOutputApi<DecoratedBlock>;
+    block: BlockOutputApi<DecoratedBlock> | null;
     visible: boolean;
 }
 
@@ -45,37 +45,37 @@ export function createOptionalBlock<T extends BlockInterface>(
 
         tags: decoratedBlock.tags,
 
-        defaultValues: () => ({ block: undefined, visible: false }),
+        defaultValues: () => ({ block: null, visible: false }),
 
         input2State: (input) => {
             return {
                 ...input,
-                block: input.block ? decoratedBlock.input2State(input.block) : undefined,
+                block: input.block ? decoratedBlock.input2State(input.block) : null,
             };
         },
         state2Output: (s) => {
             return {
                 ...s,
-                block: s.block ? decoratedBlock.state2Output(s.block) : undefined,
+                block: s.block ? decoratedBlock.state2Output(s.block) : null,
             };
         },
 
         output2State: async (output, context) => ({
             ...output,
-            block: output.block ? await decoratedBlock.output2State(output.block, context) : undefined,
+            block: output.block ? await decoratedBlock.output2State(output.block, context) : null,
         }),
 
         createPreviewState: (state, previewCtx) => {
             return {
                 ...state,
-                block: state.block ? decoratedBlock.createPreviewState(state.block, previewCtx) : undefined,
+                block: state.block ? decoratedBlock.createPreviewState(state.block, previewCtx) : null,
                 adminMeta: { route: previewCtx.parentUrl },
             };
         },
         isValid: async (state) => !state.block || decoratedBlock.isValid(state.block),
 
         anchors: (state) => {
-            if (state.block === undefined) {
+            if (state.block === null) {
                 return [];
             }
 
@@ -83,7 +83,7 @@ export function createOptionalBlock<T extends BlockInterface>(
         },
 
         dependencies: (state) => {
-            if (state.block === undefined) {
+            if (state.block === null) {
                 return [];
             }
 
@@ -93,7 +93,7 @@ export function createOptionalBlock<T extends BlockInterface>(
         replaceDependenciesInOutput: (output, replacements) => {
             return {
                 ...output,
-                block: output.block ? decoratedBlock.replaceDependenciesInOutput(output.block, replacements) : undefined,
+                block: output.block ? decoratedBlock.replaceDependenciesInOutput(output.block, replacements) : null,
             };
         },
 
@@ -140,7 +140,7 @@ export function createOptionalBlock<T extends BlockInterface>(
                                                 if (deepEqual(decoratedBlock.defaultValues(), prevState.block)) {
                                                     return {
                                                         ...prevState,
-                                                        block: undefined,
+                                                        block: null,
                                                         visible: open,
                                                     };
                                                 } else {
@@ -183,7 +183,7 @@ export function createOptionalBlock<T extends BlockInterface>(
         extractTextContents: (state, options) => {
             const includeInvisibleContent = options?.includeInvisibleContent ?? false;
 
-            if (state.block === undefined) {
+            if (state.block === null) {
                 return [];
             }
 
@@ -194,7 +194,7 @@ export function createOptionalBlock<T extends BlockInterface>(
             return [];
         },
         translateContent: async (state, translate) => {
-            if (state.block === undefined) {
+            if (state.block === null) {
                 return state;
             }
 

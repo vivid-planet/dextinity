@@ -3,7 +3,7 @@ import type { AnchorBlockData } from "@src/blocks.generated";
 
 export const AnchorBlock = withPreview(
     ({ data: { name } }: PropsWithData<AnchorBlockData>) => {
-        return name === undefined ? null : <div id={name} />;
+        return name ? <div id={name} /> : null;
     },
     { label: "Anchor" },
 );

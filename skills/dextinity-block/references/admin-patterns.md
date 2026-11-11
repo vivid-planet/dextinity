@@ -156,7 +156,7 @@ block.previewContent = (state) => [{ type: "text", content: state.title }];
 Guard an optional field:
 
 ```tsx
-block.previewContent = (state) => (state.title !== undefined ? [{ type: "text", content: state.title }] : []);
+block.previewContent = (state) => (state.title ? [{ type: "text", content: state.title }] : []);
 ```
 
 Show nothing:

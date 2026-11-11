@@ -151,7 +151,10 @@ export function getBlockFieldData(ctor: { prototype: any }, propertyKey: string)
                 } else if (fieldType && fieldType.kind == "oneOfBlocks") {
                     ret = { kind: BlockMetaFieldKind.OneOfBlocks, blocks: fieldType.blocks, nullable };
                 } else {
-                    throw new Error(`unknown field type '${designType.name}' for '${propertyKey}' in ${ctor}`);
+                    // TypeScript emits `Object` as design type for unions, e.g. `string | null`
+                    throw new Error(
+                        `Can't infer the type of '${propertyKey}' in ${ctor}. Pass the type to the decorator, e.g. @BlockField({ type: "string", nullable: true }).`,
+                    );
                 }
                 break;
             case "Array":

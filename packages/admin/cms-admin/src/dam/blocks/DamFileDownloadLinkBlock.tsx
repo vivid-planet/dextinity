@@ -24,20 +24,22 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
     category: BlockCategory.Media,
 
     defaultValues: () => ({
+        file: null,
         openFileType: "Download",
     }),
 
     state2Output: (state) => ({
-        fileId: state.file?.id ?? undefined,
+        fileId: state.file?.id ?? null,
         openFileType: state.openFileType,
     }),
 
     output2State: async (output, { apolloClient }): Promise<DamFileDownloadLinkBlockData> => {
         const ret: DamFileDownloadLinkBlockData = {
+            file: null,
             openFileType: output.openFileType,
         };
 
-        if (output.fileId === undefined) {
+        if (!output.fileId) {
             return ret;
         }
 
@@ -50,6 +52,8 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
                         fileUrl
                         size
                         mimetype
+                        altText
+                        title
                     }
                 }
             `,
@@ -64,6 +68,9 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
             fileUrl: damFile.fileUrl,
             size: damFile.size,
             mimetype: damFile.mimetype,
+            scope: null, // isn't needed in the Admin
+            altText: damFile.altText ?? null,
+            title: damFile.title ?? null,
         };
 
         return ret;
@@ -90,7 +97,7 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
         const replacement = replacements.find((replacement) => replacement.type === "DamFile" && replacement.originalId === output.fileId);
 
         if (replacement) {
-            clonedOutput.fileId = replacement.replaceWithId;
+            clonedOutput.fileId = replacement.replaceWithId ?? null;
         }
 
         return clonedOutput;
@@ -106,7 +113,7 @@ export const DamFileDownloadLinkBlock: BlockInterface<DamFileDownloadLinkBlockDa
             }>
                 onSubmit={(newValues) => {
                     updateState({
-                        file: newValues.file ?? undefined,
+                        file: newValues.file ?? null,
                         openFileType: newValues.openFileType,
                     });
                 }}

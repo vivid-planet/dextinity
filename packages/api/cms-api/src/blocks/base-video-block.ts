@@ -1,5 +1,6 @@
-import { IsBoolean, IsOptional } from "class-validator";
+import { IsBoolean } from "class-validator";
 
+import { IsNullable } from "../common/validators/is-nullable.js";
 import { PixelImageBlock } from "../dam/blocks/pixel-image.block.js";
 import { BlockData, type BlockDataInterface, BlockInput, blockInputToData, type ExtractBlockInput } from "./block.js";
 import { ChildBlock } from "./decorators/child-block.js";
@@ -7,14 +8,14 @@ import { ChildBlockInput } from "./decorators/child-block-input.js";
 import { BlockField } from "./decorators/field.js";
 
 export class BaseVideoBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    autoplay?: boolean;
+    @BlockField({ type: "boolean", nullable: true })
+    autoplay: boolean | null;
 
-    @BlockField({ nullable: true })
-    showControls?: boolean;
+    @BlockField({ type: "boolean", nullable: true })
+    showControls: boolean | null;
 
-    @BlockField({ nullable: true })
-    loop?: boolean;
+    @BlockField({ type: "boolean", nullable: true })
+    loop: boolean | null;
 
     @ChildBlock(PixelImageBlock)
     previewImage: BlockDataInterface;
@@ -22,19 +23,19 @@ export class BaseVideoBlockData extends BlockData {
 
 export class BaseVideoBlockInput extends BlockInput {
     @IsBoolean()
-    @IsOptional()
-    @BlockField({ nullable: true })
-    autoplay?: boolean;
+    @IsNullable()
+    @BlockField({ type: "boolean", nullable: true })
+    autoplay: boolean | null;
 
     @IsBoolean()
-    @IsOptional()
-    @BlockField({ nullable: true })
-    showControls?: boolean;
+    @IsNullable()
+    @BlockField({ type: "boolean", nullable: true })
+    showControls: boolean | null;
 
     @IsBoolean()
-    @IsOptional()
-    @BlockField({ nullable: true })
-    loop?: boolean;
+    @IsNullable()
+    @BlockField({ type: "boolean", nullable: true })
+    loop: boolean | null;
 
     @ChildBlockInput(PixelImageBlock)
     previewImage: ExtractBlockInput<typeof PixelImageBlock>;

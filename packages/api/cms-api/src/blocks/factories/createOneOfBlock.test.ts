@@ -57,7 +57,7 @@ describe("createOneOfBlock", () => {
 
         it.each(["abc", {}])("should report attachedBlocks that aren't an array (%j)", async (attachedBlocks) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const input = OneOfBlock.blockInputFactory({ attachedBlocks } as any);
+            const input = OneOfBlock.blockInputFactory({ attachedBlocks, activeType: null } as any);
 
             const errors = await validate(input, validationOptions);
 
@@ -67,7 +67,7 @@ describe("createOneOfBlock", () => {
 
         it("should report an item that is an array", async () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const input = OneOfBlock.blockInputFactory({ attachedBlocks: [[]] } as any);
+            const input = OneOfBlock.blockInputFactory({ attachedBlocks: [[]], activeType: null } as any);
 
             const errors = await validate(input, validationOptions);
 

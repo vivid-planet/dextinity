@@ -17,7 +17,7 @@ import {
     ChildBlockInput,
     createBlock,
     ExtractBlockInput,
-    IsUndefinable, // from @dextinity/cms-api, not class-validator
+    IsNullable, // from @dextinity/cms-api, not class-validator
 } from "@dextinity/cms-api";
 ```
 
@@ -31,18 +31,18 @@ Factory functions (`createListBlock`, `createBlocksBlock`, `createOneOfBlock`, `
 
 ```ts
 class MyBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    title?: string;
+    @BlockField({ type: "string", nullable: true })
+    title: string | null;
 
     @ChildBlock(DamImageBlock)
     image: BlockDataInterface;
 }
 
 class MyBlockInput extends BlockInput {
-    @IsUndefinable()
+    @IsNullable()
     @IsString()
-    @BlockField({ nullable: true })
-    title?: string;
+    @BlockField({ type: "string", nullable: true })
+    title: string | null;
 
     @ChildBlockInput(DamImageBlock)
     image: ExtractBlockInput<typeof DamImageBlock>;
@@ -90,37 +90,31 @@ When you change what a block does, which data it loads, or how it differs from a
 
 ---
 
-## @IsUndefinable vs @IsOptional
+## Optional fields
 
-**Always use `@IsUndefinable()` from `@dextinity/cms-api` for nullable fields — never `@IsOptional()`.**
-
-- `@IsUndefinable()` permits only `undefined` and enforces all other validators on non-undefined values.
-- `@IsOptional()` also allows `null` and silently skips all other validators — this can hide validation bugs.
+An optional block field without a value is always `null`, never `undefined`. Pair `@BlockField({ type, nullable: true })` with `@IsNullable()` from `@dextinity/cms-api`, and type the property as `T | null` (not `?: T`). The block input must contain the field: `@IsNullable()` skips the other validators for `null` only, so a missing field fails validation. Pass `type` for string, number and boolean fields: TypeScript emits `Object` as the design type of a union with `null`, so it can't be inferred.
 
 ```ts
-// Correct
-@IsUndefinable()
+@IsNullable()
 @IsString()
-@BlockField({ nullable: true })
-title?: string;
-
-// Wrong — @IsOptional() skips @IsString() when the value is absent
-@IsOptional()
-@IsString()
-@BlockField({ nullable: true })
-title?: string;
+@BlockField({ type: "string", nullable: true })
+title: string | null;
 ```
+
+The generated Admin and Site types declare the field as `title: string | null`, so check for absence with `!title` or `title === null`, not `title === undefined`. Default values in destructuring (`{ title = "" }`) don't apply to `null`; use `title ?? ""` instead. Use `null` as the Admin default value of an optional field.
+
+Block data saved without an optional field (e.g., before the field was added) is loaded with the field set to `null`, and the `migrateBlocks` command persists it, so adding an optional field needs no block migration.
 
 ---
 
 ## @BlockField options
 
-| Option     | Notes                                                                              |
-| ---------- | ---------------------------------------------------------------------------------- |
-| `nullable` | Allow `undefined`. Always pair with `@IsUndefinable()` on the input property.      |
-| `type`     | Required for `"enum"` and `"json"`. Auto-detected for string, number, and boolean. |
-| `enum`     | Required when `type: "enum"`. Pass the enum object or string array.                |
-| `array`    | Mark the field as an array of the given type.                                      |
+| Option     | Notes                                                                                                                                                   |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `nullable` | Allow `null`. Pair with `@IsNullable()` and type the property as `T \| null`.                                                                           |
+| `type`     | Required for `"enum"` and `"json"`, and for nullable string, number, and boolean fields. Auto-detected for required string, number, and boolean fields. |
+| `enum`     | Required when `type: "enum"`. Pass the enum object or string array.                                                                                     |
+| `array`    | Mark the field as an array of the given type.                                                                                                           |
 
 ### Enum fields — always specify `type: "enum"`
 
@@ -165,16 +159,16 @@ types: ProductType[];
 
 All blocks must be savable in their initial (empty) state and after the user clears a field — admin users must be able to add a block and save without filling in any content.
 
-| Field type        | API pattern                                                                                        | Admin default                                                | Pitfall                                                      |
-| ----------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| String            | `@IsUndefinable()` + `@IsString()` + `@BlockField({ nullable: true })` + `?`                       | `""` (automatic)                                             | `@IsString()` rejects `undefined` without `@IsUndefinable()` |
-| Enum (required)   | `@IsEnum(X)` + `@BlockField({ type: "enum", enum: X })`                                            | Must set `defaultValue` and `required: true`                 | `@IsEnum()` rejects `undefined`                              |
-| Enum (optional)   | `@IsUndefinable()` + `@IsEnum(X)` + `@BlockField({ type: "enum", enum: X, nullable: true })` + `?` | `undefined`, see [select.md](select.md#required-or-optional) | `@IsEnum()` rejects `undefined` without `@IsUndefinable()`   |
-| Enum array        | `@IsEnum(X, { each: true })` + `{ array: true }`                                                   | `[]` (automatic)                                             | Accepts empty arrays by default                              |
-| Number (required) | `@IsInt()` + `@Min()` + `@Max()` + `@BlockField()`                                                 | Must set `defaultValue` and `required: true`                 | `@IsInt()` rejects `undefined`                               |
-| Number (optional) | `@IsUndefinable()` + `@IsInt()` + `@Min()` + `@Max()` + `@BlockField({ nullable: true })` + `?`    | `undefined`, see [select.md](select.md#required-or-optional) | `@IsInt()` rejects `undefined` without `@IsUndefinable()`    |
-| Boolean           | `@IsBoolean()` + `@BlockField()`                                                                   | `false` (automatic)                                          | `@IsBoolean()` rejects `undefined`; switch sends `false`     |
-| Child block       | `@ChildBlockInput(X)` typed as `ExtractBlockInput<typeof X>`                                       | N/A                                                          | Each child block handles its own empty state                 |
+| Field type        | API pattern                                                                                                            | Admin default                                           | Pitfall                                                  |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
+| String            | `@IsNullable()` + `@IsString()` + `@BlockField({ type: "string", nullable: true })` + `: T \| null`                    | `""` (automatic)                                        | `@IsString()` rejects a missing value                    |
+| Enum (required)   | `@IsEnum(X)` + `@BlockField({ type: "enum", enum: X })`                                                                | Must set `defaultValue` and `required: true`            | `@IsEnum()` rejects `undefined`                          |
+| Enum (optional)   | `@IsNullable()` + `@IsEnum(X)` + `@BlockField({ type: "enum", enum: X, nullable: true })` + `: T \| null`              | `null`, see [select.md](select.md#required-or-optional) | `@IsEnum()` rejects `undefined`                          |
+| Enum array        | `@IsEnum(X, { each: true })` + `{ array: true }`                                                                       | `[]` (automatic)                                        | Accepts empty arrays by default                          |
+| Number (required) | `@IsInt()` + `@Min()` + `@Max()` + `@BlockField()`                                                                     | Must set `defaultValue` and `required: true`            | `@IsInt()` rejects `undefined`                           |
+| Number (optional) | `@IsNullable()` + `@IsInt()` + `@Min()` + `@Max()` + `@BlockField({ type: "number", nullable: true })` + `: T \| null` | `null`, see [select.md](select.md#required-or-optional) | `@IsInt()` rejects `undefined`                           |
+| Boolean           | `@IsBoolean()` + `@BlockField()`                                                                                       | `false` (automatic)                                     | `@IsBoolean()` rejects `undefined`; switch sends `false` |
+| Child block       | `@ChildBlockInput(X)` typed as `ExtractBlockInput<typeof X>`                                                           | N/A                                                     | Each child block handles its own empty state             |
 
 **Strings should almost always be optional** to allow saving with no content.
 

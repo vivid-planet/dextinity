@@ -9,7 +9,7 @@ interface Props extends PropsWithChildren {
             type: string;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             props: any;
-        };
+        } | null;
     };
     supportedBlocks: SupportedBlocks;
     className?: string;

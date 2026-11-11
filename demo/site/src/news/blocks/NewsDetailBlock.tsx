@@ -5,7 +5,7 @@ import type { JSX, PropsWithChildren } from "react";
 import type { LoadedData } from "./NewsDetailBlock.loader";
 
 function NewsDetailBlock({ data: { id, loaded } }: PropsWithChildren<PropsWithData<NewsLinkBlockData & { loaded: LoadedData }>>): JSX.Element | null {
-    if (id === undefined || !loaded) {
+    if (!id || !loaded) {
         return null;
     }
 

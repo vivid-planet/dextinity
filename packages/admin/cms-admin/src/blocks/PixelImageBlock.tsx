@@ -57,8 +57,8 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
     displayName: <FormattedMessage id="dextinity.blocks.image" defaultMessage="Image" />,
 
     defaultValues: () => ({
-        file: undefined,
-        cropArea: undefined,
+        damFile: null,
+        cropArea: null,
     }),
 
     category: BlockCategory.Media,
@@ -71,7 +71,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
 
     state2Output: (v) => {
         if (!v.damFile) {
-            return {};
+            return { damFileId: null, cropArea: null };
         }
 
         return {
@@ -82,7 +82,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
 
     output2State: async (output, { apolloClient }): Promise<ImageBlockState> => {
         if (!output.damFileId) {
-            return {};
+            return { damFile: null, cropArea: null };
         }
 
         const { data } = await apolloClient.query<GQLImageBlockDamFileQuery, GQLImageBlockDamFileQueryVariables>({
@@ -112,7 +112,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
         // TODO fix typing: generated GraphQL files use null, we use undefined, e.g. title: string | null vs title?: string
         const damFile = data.damFile as unknown as PixelImageBlockData["damFile"];
 
-        return { damFile, cropArea: output.cropArea && isUsableCropArea(output.cropArea) ? output.cropArea : undefined };
+        return { damFile, cropArea: output.cropArea && isUsableCropArea(output.cropArea) ? output.cropArea : null };
     },
 
     dependencies: (state) => {
@@ -136,7 +136,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
         const replacement = replacements.find((replacement) => replacement.type === "DamFile" && replacement.originalId === output.damFileId);
 
         if (replacement) {
-            clonedOutput.damFileId = replacement.replaceWithId;
+            clonedOutput.damFileId = replacement.replaceWithId ?? null;
         }
 
         return clonedOutput;
@@ -166,7 +166,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
             <SelectPreviewComponent>
                 <BlocksFinalForm<{ damFile?: ImageBlockState["damFile"] }>
                     onSubmit={(newValues) => {
-                        updateState((prevState) => ({ ...prevState, damFile: newValues.damFile || undefined, cropArea: undefined })); // reset local crop area when image changes
+                        updateState((prevState) => ({ ...prevState, damFile: newValues.damFile || null, cropArea: null })); // reset local crop area when image changes
                     }}
                     initialValues={{ damFile: state.damFile }}
                 >
@@ -197,7 +197,7 @@ export const PixelImageBlock: BlockInterface<PixelImageBlockData, ImageBlockStat
                         }}
                         damFileId={state.damFile.id}
                         initialValues={{
-                            useInheritedDamSettings: state.cropArea === undefined,
+                            useInheritedDamSettings: !state.cropArea,
                             cropArea: state.cropArea ?? state.damFile.image.cropArea,
                         }}
                         inheritedDamSettings={{ cropArea: state.damFile.image.cropArea }}

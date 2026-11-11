@@ -42,7 +42,13 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
 
     displayName: <FormattedMessage id="dextinity.blocks.youTubeVideo" defaultMessage="Video (YouTube)" />,
 
-    defaultValues: () => ({ showControls: true, previewImage: PixelImageBlock.defaultValues() }),
+    defaultValues: () => ({
+        youtubeIdentifier: null,
+        autoplay: null,
+        loop: null,
+        showControls: true,
+        previewImage: PixelImageBlock.defaultValues(),
+    }),
 
     category: BlockCategory.Media,
 

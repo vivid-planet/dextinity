@@ -17,7 +17,7 @@ export function InternalLinkBlock({ data: { targetPage, targetPageAnchor }, chil
         throw new Error("InternalLinkBlock: targetPage.scope is required");
     }
 
-    const pathWithAnchor = targetPageAnchor !== undefined ? `${targetPage.path}#${targetPageAnchor}` : targetPage.path;
+    const pathWithAnchor = targetPageAnchor ? `${targetPage.path}#${targetPageAnchor}` : targetPage.path;
 
     return (
         <Link

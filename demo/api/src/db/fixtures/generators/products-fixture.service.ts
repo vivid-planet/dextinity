@@ -102,7 +102,7 @@ export class ProductsFixtureService {
                 soldCount: faker.number.int({ min: 0, max: 100 }),
                 availableSince: format(faker.date.past(), "yyyy-MM-dd"),
                 image: DamImageBlock.blockInputFactory({
-                    attachedBlocks: [{ type: "pixelImage", props: {} }],
+                    attachedBlocks: [{ type: "pixelImage", props: { damFileId: null, cropArea: null } }],
                     activeType: "pixelImage",
                 }).transformToBlockData(),
                 manufacturer: faker.helpers.arrayElement(manufacturers),

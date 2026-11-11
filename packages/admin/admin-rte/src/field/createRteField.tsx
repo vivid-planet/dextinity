@@ -16,8 +16,10 @@ const composeValidators =
 export const createRteField = (config?: IConfig) => {
     const { RteField: RteFieldComponent, RteReadOnly } = createFinalFormRte(config);
 
+    const validateRequired = (value: string | undefined, allValues: object) => requiredValidator(value, allValues);
+
     const RteField: FunctionComponent<RteFieldProps> = ({ required, validate, ...restProps }) => {
-        const validateError = required ? (validate ? composeValidators(requiredValidator, validate) : requiredValidator) : validate;
+        const validateError = required ? (validate ? composeValidators(validateRequired, validate) : validateRequired) : validate;
         return <Field component={RteFieldComponent} required={required} validate={validateError} {...restProps} />;
     };
     return { RteField, RteReadOnly };

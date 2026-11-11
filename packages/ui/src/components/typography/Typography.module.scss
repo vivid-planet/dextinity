@@ -2,96 +2,57 @@
     margin: 0;
     color: var(--dextinity-color-text);
     font-family: var(--dextinity-font-family-text);
-    letter-spacing: normal;
+    font-size: var(--dextinity-typography-body-size);
+    font-weight: var(--dextinity-typography-body-font-weight);
+    line-height: var(--dextinity-typography-body-line-height);
 
-    &[data-variant="display"] {
-        font-size: var(--dextinity-typography-display-l-size);
+    &[data-variant="displayXl"],
+    &[data-variant="displayL"] {
+        font-family: var(--dextinity-font-family-display);
         font-weight: var(--dextinity-typography-display-font-weight);
+        letter-spacing: var(--dextinity-typography-display-letter-spacing);
+        text-transform: var(--dextinity-typography-display-text-transform);
+    }
+
+    &[data-variant="displayXl"] {
+        font-size: var(--dextinity-typography-display-xl-size);
+        line-height: var(--dextinity-typography-display-xl-line-height);
+    }
+
+    &[data-variant="displayL"] {
+        font-size: var(--dextinity-typography-display-l-size);
         line-height: var(--dextinity-typography-display-l-line-height);
     }
 
-    &[data-variant="h1"] {
-        font-size: var(--dextinity-typography-display-l-size);
-        font-weight: var(--dextinity-typography-display-font-weight);
-        line-height: var(--dextinity-typography-display-l-line-height);
-    }
-
-    &[data-variant="h2"] {
+    &[data-variant="title"] {
         font-size: var(--dextinity-typography-title-size);
         font-weight: var(--dextinity-typography-title-font-weight);
         line-height: var(--dextinity-typography-title-line-height);
     }
 
-    &[data-variant="h3"] {
-        font-size: var(--dextinity-typography-title-size);
-        font-weight: var(--dextinity-typography-title-font-weight);
-        line-height: var(--dextinity-typography-title-line-height);
-    }
-
-    &[data-variant="h4"] {
+    &[data-variant="section"] {
         font-size: var(--dextinity-typography-section-size);
         font-weight: var(--dextinity-typography-section-font-weight);
         line-height: var(--dextinity-typography-section-line-height);
     }
 
-    &[data-variant="bodyL"] {
-        font-size: var(--dextinity-typography-section-size);
-        font-weight: var(--dextinity-typography-body-font-weight);
-        line-height: var(--dextinity-typography-section-line-height);
-    }
-
-    &[data-variant="bodyM"] {
-        font-size: var(--dextinity-typography-body-size);
-        font-weight: var(--dextinity-typography-body-font-weight);
-        line-height: var(--dextinity-typography-body-line-height);
-    }
-
-    &[data-variant="bodyS"] {
+    &[data-variant="small"] {
+        color: var(--dextinity-color-text-tertiary);
         font-size: var(--dextinity-typography-small-size);
-        font-weight: var(--dextinity-typography-body-font-weight);
         line-height: var(--dextinity-typography-small-line-height);
     }
 
-    &[data-variant="bodyXs"] {
-        font-size: var(--dextinity-typography-small-size);
-        font-weight: var(--dextinity-typography-body-font-weight);
-        line-height: var(--dextinity-typography-small-line-height);
+    &[data-variant="label"] {
+        color: var(--dextinity-color-text-tertiary);
+        font-family: var(--dextinity-font-family-mono);
+        font-size: var(--dextinity-typography-label-size);
+        letter-spacing: var(--dextinity-typography-label-letter-spacing);
+        text-transform: uppercase;
     }
 
-    &[data-variant="caption"] {
-        color: var(--dextinity-color-text-secondary);
-        font-size: var(--dextinity-typography-small-size);
-        font-weight: var(--dextinity-typography-body-font-weight);
-        line-height: var(--dextinity-typography-small-line-height);
-    }
-
-    &[data-variant="labelM"] {
-        font-size: var(--dextinity-typography-body-size);
-        font-weight: var(--dextinity-typography-title-font-weight);
-        line-height: var(--dextinity-typography-body-line-height);
-    }
-
-    &[data-variant="labelS"] {
-        font-size: var(--dextinity-typography-small-size);
-        font-weight: var(--dextinity-typography-title-font-weight);
-        line-height: var(--dextinity-typography-small-line-height);
-    }
-
-    &[data-variant="labelXs"] {
-        font-size: var(--dextinity-typography-small-size);
-        font-weight: var(--dextinity-typography-title-font-weight);
-        line-height: var(--dextinity-typography-small-line-height);
-    }
-
-    &[data-variant="dataM"] {
-        font-size: var(--dextinity-typography-body-size);
-        font-weight: var(--dextinity-typography-body-font-weight);
-        line-height: var(--dextinity-typography-body-line-height);
-    }
-
-    &[data-variant="dataS"] {
-        font-size: var(--dextinity-typography-small-size);
-        font-weight: var(--dextinity-typography-body-font-weight);
-        line-height: var(--dextinity-typography-small-line-height);
+    &[data-variant="mono"] {
+        font-family: var(--dextinity-font-family-mono);
+        font-size: var(--dextinity-typography-mono-size);
+        letter-spacing: -0.01em;
     }
 }

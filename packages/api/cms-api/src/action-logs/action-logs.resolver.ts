@@ -130,7 +130,7 @@ export class ActionLogsResolver {
         return entityClass;
     }
 
-    private entityChecksScope(entityName: string): boolean {
+    private loggedEntityChecksScope(entityName: string): boolean {
         const entityClass = this.actionLogsService.getLoggedEntities().find(({ name }) => name === entityName);
         return !entityClass || entityChecksScope(entityClass);
     }
@@ -184,7 +184,7 @@ export class ActionLogsResolver {
         }
         // An unscoped row of an entity that checks the scope is listed in no scope, so it stays hidden here too.
         if (previous.scope == null) {
-            return this.entityChecksScope(previous.entityName) ? null : previous;
+            return this.loggedEntityChecksScope(previous.entityName) ? null : previous;
         }
         // Access to a row is checked against one of its own scopes. A previous version that lacks one of the
         // current row's scopes could hold content the user may not read, so it is not returned.

@@ -16,6 +16,8 @@ Now, the validator receives the field's value, which is `null` or `undefined` fo
 | `dateTime`     | `Date \| null \| undefined`                         |
 | `staticSelect` | `string \| string[] \| null \| undefined`           |
 
+A validator can't be annotated as final-form's `FieldValidator<… | null | undefined>`, as that type doesn't fit the field components' `FieldValidator`. Use a plain function instead.
+
 `validate` is no longer accepted for `asyncSelect`, `asyncSelectFilter`, `block` and `fileUpload` fields, where it was silently ignored.
 
 **Migration:** Handle empty values in your validators:

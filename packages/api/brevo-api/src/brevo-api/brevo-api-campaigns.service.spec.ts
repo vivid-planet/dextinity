@@ -3,6 +3,7 @@ import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { EmailCampaignInterface } from "../email-campaign/entities/email-campaign-entity.factory";
 import { SendingState } from "../email-campaign/sending-state.enum";
 import { BrevoApiCampaignsService } from "./brevo-api-campaigns.service";
 import { BrevoApiClientFactory } from "./brevo-api-client.factory";
@@ -57,23 +58,30 @@ describe("BrevoApiCampaignsService", () => {
 
         async function createService(campaignPages: BrevoApiCampaign[][]) {
             const getEmailCampaigns = vi.fn(async ({ offset }: { offset: number }) => ({ campaigns: campaignPages[offset / 100] ?? [] }));
+            const getEmailCampaign = vi.fn(async ({ campaignId }: { campaignId: number }) => campaignWithId(campaignId));
             const cache = new Map<string, unknown>();
             const cacheManager = {
                 get: vi.fn(async (key: string) => cache.get(key)),
                 set: vi.fn(async (key: string, value: unknown) => {
                     cache.set(key, value);
                 }),
+                wrap: vi.fn(async (key: string, fn: () => Promise<unknown>) => {
+                    if (!cache.has(key)) {
+                        cache.set(key, await fn());
+                    }
+                    return cache.get(key);
+                }),
             };
 
             const module: TestingModule = await Test.createTestingModule({
                 providers: [
                     BrevoApiCampaignsService,
-                    { provide: BrevoApiClientFactory, useValue: { getClient: () => ({ emailCampaigns: { getEmailCampaigns } }) } },
+                    { provide: BrevoApiClientFactory, useValue: { getClient: () => ({ emailCampaigns: { getEmailCampaigns, getEmailCampaign } }) } },
                     { provide: CACHE_MANAGER, useValue: cacheManager },
                 ],
             }).compile();
 
-            return { service: module.get(BrevoApiCampaignsService), getEmailCampaigns, cacheManager };
+            return { service: module.get(BrevoApiCampaignsService), getEmailCampaigns, getEmailCampaign, cacheManager };
         }
 
         function page(firstId: number, size = 100): BrevoApiCampaign[] {
@@ -116,6 +124,20 @@ describe("BrevoApiCampaignsService", () => {
 
             expect(campaigns.map((campaign) => campaign.id)).toEqual([1050]);
             expect(getEmailCampaigns).not.toHaveBeenCalled();
+        });
+
+        it("shares cached campaigns with loadBrevoCampaignById", async () => {
+            const { service, getEmailCampaign } = await createService([page(1000)]);
+            await service.loadBrevoCampaignsByIds([1050], scope);
+
+            const campaign = await service.loadBrevoCampaignById({
+                id: "a1b2c3d4-0000-4000-8000-000000000000",
+                brevoId: 1050,
+                scope,
+            } as unknown as EmailCampaignInterface);
+
+            expect(campaign.id).toBe(1050);
+            expect(getEmailCampaign).not.toHaveBeenCalled();
         });
     });
 });

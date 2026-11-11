@@ -170,7 +170,7 @@ export class BrevoApiCampaignsService {
                 throw new Error("Campaign has no brevoId");
             }
 
-            return this.cacheManager.wrap<BrevoApiCampaign>(`brevo-campaign-${campaign.id}`, async () => {
+            return this.cacheManager.wrap<BrevoApiCampaign>(`brevo-campaign-${brevoId}`, async () => {
                 return this.clientFactory.getClient(campaign.scope).emailCampaigns.getEmailCampaign({ campaignId: brevoId });
             });
         } catch (error) {

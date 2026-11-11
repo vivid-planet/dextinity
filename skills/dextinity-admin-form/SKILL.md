@@ -11,7 +11,7 @@ Generate Final Form components by reading the GraphQL schema, determining fields
 
 ## Prerequisites
 
-1. **Read the GraphQL schema** for the target entity to determine: single entity query signature, `create` and `update` mutations with their input types, all field types, and whether the create mutation returns a payload with `errors` array.
+1. **Read the GraphQL schema** for the target entity to determine: single entity query signature, `create` and `update` mutations with their input types, all field types, and whether the create and update mutations return a payload with an `errors` array.
 2. **Include all fields by default.** Unless the user specifies otherwise, every field of the entity should be added to the form — most entities require all fields to be editable.
 3. **Confirm output path** with the user if not obvious from context.
 

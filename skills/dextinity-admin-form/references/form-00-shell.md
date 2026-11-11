@@ -52,13 +52,20 @@ export const create<EntityName>Mutation = gql`
 export const update<EntityName>Mutation = gql`
     mutation Update<EntityName>($id: ID!, $input: <EntityName>UpdateInput!) {
         update<EntityName>(id: $id, input: $input) {
-            id
-            updatedAt
-            ...<EntityName>FormDetails
+            <entityName> {
+                id
+                updatedAt
+                ...<EntityName>FormDetails
+            }
+            errors {
+                code
+                field
+            }
         }
     }
     ${<entityName>FormFragment}
 `;
+// Only wrap in <entityName> { ... } errors { ... } if the update mutation returns a payload type with errors
 ```
 
 ### Form Modes
@@ -104,7 +111,8 @@ The shell template above shows the default **create + edit** mode (`id` prop is 
 - Always include `id` and `updatedAt` in the query (required for save conflict detection)
 - Use exact mutation/query names and input types from the schema — do not guess. Some entities use the same input type for both create and update
 - Only import `finalFormFileUploadFragment` / `finalFormFileUploadDownloadableFragment` when needed
-- If create mutation returns a simple type (not a payload with errors), omit the errors block and adjust the create mutation response accordingly
+- Check the return type of each mutation in the schema. If it returns the entity directly (not a payload with errors), select the entity fields directly instead of `<entityName> { ... } errors { ... }`, and drop the error handling for that mutation in `handleSubmit`
+- Create and update return a payload together when the API uses server-side validation (see `feature-02-validation.md` in the API skill) — handle errors for both
 
 ---
 
@@ -168,7 +176,7 @@ interface FormProps {
     id?: string;
 }
 
-// Only include if create mutation has errors payload:
+// Only include if a mutation returns an errors payload:
 const submissionErrorMessages: Record<GQL<EntityName>MutationErrorCode, ReactNode> = {
     // errorCode: <FormattedMessage id="..." defaultMessage="..." />,
 };
@@ -230,10 +238,26 @@ export function <EntityName>Form({ id }: FormProps) {
 
         if (mode === "edit") {
             if (!id) throw new Error();
-            await client.mutate<GQLUpdate<EntityName>Mutation, GQLUpdate<EntityName>MutationVariables>({
+            const { data: mutationResponse } = await client.mutate<GQLUpdate<EntityName>Mutation, GQLUpdate<EntityName>MutationVariables>({
                 mutation: update<EntityName>Mutation,
                 variables: { id, input: output },
             });
+
+            // Only include error handling if update mutation has errors payload:
+            if (mutationResponse?.update<EntityName>.errors.length) {
+                return mutationResponse.update<EntityName>.errors.reduce(
+                    (submissionErrors, error) => {
+                        const errorMessage = submissionErrorMessages[error.code];
+                        if (error.field) {
+                            submissionErrors[error.field] = errorMessage;
+                        } else {
+                            submissionErrors[FORM_ERROR] = errorMessage;
+                        }
+                        return submissionErrors;
+                    },
+                    {} as Record<string, ReactNode>,
+                );
+            }
         } else {
             const { data: mutationResponse } = await client.mutate<GQLCreate<EntityName>Mutation, GQLCreate<EntityName>MutationVariables>({
                 mutation: create<EntityName>Mutation,

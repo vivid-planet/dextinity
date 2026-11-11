@@ -43,8 +43,7 @@ function ComponentRules() {
 }
 
 /**
- * The autodocs page, in the order of the design system draft: description, examples, CSS variables (`parameters.tokens`), props, and
- * rules (`parameters.rules`).
+ * The autodocs page: description, examples, props, CSS variables (`parameters.tokens`), and rules (`parameters.rules`).
  */
 export function DocsPage() {
     return (
@@ -54,9 +53,9 @@ export function DocsPage() {
             <Description />
             <Primary />
             <Stories />
-            <ComponentTokens />
             <Heading>Props</Heading>
             <Controls />
+            <ComponentTokens />
             <ComponentRules />
         </>
     );

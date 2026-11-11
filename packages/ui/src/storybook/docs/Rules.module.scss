@@ -4,8 +4,8 @@
     gap: var(--dextinity-unit-4);
     color: var(--dextinity-color-foreground-default);
     font-family: var(--dextinity-brand-font-family-sans);
-    font-size: var(--dextinity-typography-body-sm-size);
-    line-height: var(--dextinity-typography-body-sm-line-height);
+    font-size: var(--dextinity-typography-small-font-size);
+    line-height: var(--dextinity-typography-small-line-height);
 }
 
 .do,
@@ -30,8 +30,8 @@
     align-items: center;
     gap: var(--dextinity-unit-2);
     margin: 0;
-    font-size: var(--dextinity-typography-label-sm-size);
-    line-height: var(--dextinity-typography-label-sm-line-height);
+    font-size: var(--dextinity-typography-small-font-size);
+    line-height: var(--dextinity-typography-small-line-height);
     font-weight: var(--dextinity-font-weight-semibold);
 
     .do & {

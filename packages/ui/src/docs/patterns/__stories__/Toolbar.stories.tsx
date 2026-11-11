@@ -23,7 +23,7 @@ export const Default: Story = {
             <nav aria-label="Breadcrumb">
                 <ol className={styles.breadcrumb}>
                     <li>
-                        <Typography variant="bodyS" render={<a href="#" className={styles.breadcrumbLink} />}>
+                        <Typography variant="small" render={<a href="#" className={styles.breadcrumbLink} />}>
                             Campaigns
                         </Typography>
                     </li>
@@ -31,7 +31,7 @@ export const Default: Story = {
                         <Icon name="chevron-right" />
                     </li>
                     <li>
-                        <Typography variant="labelS" aria-current="page">
+                        <Typography variant="small" aria-current="page" className={styles.breadcrumbCurrent}>
                             All campaigns
                         </Typography>
                     </li>
@@ -39,9 +39,7 @@ export const Default: Story = {
             </nav>
             <div className={styles.titleRow}>
                 <div className={styles.titleGroup}>
-                    <Typography variant="h3" element="h1">
-                        Campaigns
-                    </Typography>
+                    <Typography variant="displayL">Campaigns</Typography>
                 </div>
                 <div className={styles.actions}>
                     <Button variant="outlined">Filter</Button>
@@ -61,7 +59,7 @@ export const DetailPage: Story = {
             <nav aria-label="Breadcrumb">
                 <ol className={styles.breadcrumb}>
                     <li>
-                        <Typography variant="bodyS" render={<a href="#" className={styles.breadcrumbLink} />}>
+                        <Typography variant="small" render={<a href="#" className={styles.breadcrumbLink} />}>
                             Campaigns
                         </Typography>
                     </li>
@@ -69,7 +67,7 @@ export const DetailPage: Story = {
                         <Icon name="chevron-right" />
                     </li>
                     <li>
-                        <Typography variant="labelS" aria-current="page">
+                        <Typography variant="small" aria-current="page" className={styles.breadcrumbCurrent}>
                             Spring campaign 2027
                         </Typography>
                     </li>
@@ -81,14 +79,12 @@ export const DetailPage: Story = {
                 </IconButton>
                 <div className={styles.titleGroup}>
                     <div className={styles.titleLine}>
-                        <Typography variant="h3" element="h1">
-                            Spring campaign 2027
-                        </Typography>
+                        <Typography variant="displayL">Spring campaign 2027</Typography>
                         <IconButton variant="text" color="secondary" size="small" aria-label="More information">
                             <Icon name="info-filled" />
                         </IconButton>
                     </div>
-                    <Typography variant="bodyS" className={styles.supportText}>
+                    <Typography variant="small" className={styles.supportText}>
                         Last edited on October 12, 2026 by Maria Muster
                     </Typography>
                 </div>
@@ -108,9 +104,7 @@ export const TitleOnly: Story = {
     render: () => (
         <div className={styles.toolbar}>
             <div className={styles.titleRow}>
-                <Typography variant="h3" element="h1">
-                    Settings
-                </Typography>
+                <Typography variant="displayL">Settings</Typography>
             </div>
         </div>
     ),
@@ -123,7 +117,7 @@ export const SmallScreen: Story = {
                 <nav aria-label="Breadcrumb">
                     <ol className={styles.breadcrumb}>
                         <li>
-                            <Typography variant="bodyS" render={<a href="#" className={styles.breadcrumbLink} />}>
+                            <Typography variant="small" render={<a href="#" className={styles.breadcrumbLink} />}>
                                 Campaigns
                             </Typography>
                         </li>
@@ -131,7 +125,7 @@ export const SmallScreen: Story = {
                             <Icon name="chevron-right" />
                         </li>
                         <li>
-                            <Typography variant="labelS" aria-current="page">
+                            <Typography variant="small" aria-current="page" className={styles.breadcrumbCurrent}>
                                 All campaigns
                             </Typography>
                         </li>
@@ -139,9 +133,7 @@ export const SmallScreen: Story = {
                 </nav>
                 <div className={styles.titleRow}>
                     <div className={styles.titleGroup}>
-                        <Typography variant="h3" element="h1">
-                            Campaigns
-                        </Typography>
+                        <Typography variant="displayL">Campaigns</Typography>
                     </div>
                     <div className={styles.actions}>
                         <Button variant="outlined">Filter</Button>

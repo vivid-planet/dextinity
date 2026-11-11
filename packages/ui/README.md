@@ -180,7 +180,7 @@ A dev story serves any development, testing, or debugging need, so add them free
 
 #### Docs page
 
-Every autodocs page has the same order as a page of the design system draft: description, examples, CSS variables, props, and rules. The story's `meta.parameters` provide the parts that the TSDoc can't:
+Every autodocs page has the same order: description, examples, props, CSS variables, and rules. The story's `meta.parameters` provide the parts that the TSDoc can't:
 
 - **`tokens`**: the component's token file, imported with `?raw` (`import tokens from "../Button.tokens.scss?raw"`). The "CSS variables" table lists each token with its description and its value in the brand and color scheme picked in the toolbar. The description is the `//` comment directly above the token's declaration, so every token in a token file has one.
 - **`rules`**: `{ dos: string[], donts: string[] }`, the rules for using the component, taken from the draft. Text in backticks shows as code.
@@ -227,7 +227,7 @@ Components read their colors, metrics, and font family from CSS custom propertie
 
 ### Token layers
 
-The tokens are defined in SCSS partials under [`src/theme/`](src/theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), the brands in `brands/`, `_responsive.scss`, `_semantic.scss`, and `_components.scss`. Each brand has its own file: `brands/_dextinity.scss` defines all brand tokens on `:root` and `[data-dextinity-brand="dextinity"]`, and `brands/_aiHub.scss` overrides only the tokens in which AI Hub differs. Media and container queries can't read custom properties, so the breakpoints are SCSS variables in `_breakpoints.scss`. `_components.scss` includes the `tokens` mixin of each component's `<ComponentName>.tokens.scss`. A token is defined in the folder of the component its name starts with, and other components can read it: `IconButton` uses the `--dextinity-button-…` colors from `Button.tokens.scss`. Tokens of components that don't exist yet stay in `_components.scss` until the component is added. The prop-value types live in [`src/theme/types.ts`](src/theme/types.ts).
+The tokens are defined in SCSS partials under [`src/theme/`](src/theme), composed into the provider module with `@use` and wrapped in a single `@layer dextinity`: `_primitives.scss` (raw values, internal), the brands in `brands/`, `_typography.scss` (the type scale), `_responsive.scss` (layout space), `_semantic.scss`, and `_components.scss`. Each brand has its own file: `brands/_dextinity.scss` defines all brand tokens on `:root` and `[data-dextinity-brand="dextinity"]`, and `brands/_aiHub.scss` overrides only the tokens in which AI Hub differs. Media and container queries can't read custom properties, so the breakpoints are SCSS variables in `_breakpoints.scss`. `_components.scss` includes the `tokens` mixin of each component's `<ComponentName>.tokens.scss`. A token is defined in the folder of the component its name starts with, and other components can read it: `IconButton` uses the `--dextinity-button-…` colors from `Button.tokens.scss`. Tokens of components that don't exist yet stay in `_components.scss` until the component is added. The prop-value types live in [`src/theme/types.ts`](src/theme/types.ts).
 
 ### Styles without hard-coded values
 

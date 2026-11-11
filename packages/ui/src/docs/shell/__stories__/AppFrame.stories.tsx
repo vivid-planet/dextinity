@@ -25,7 +25,7 @@ export const AppShell: Story = {
     render: () => (
         <div className={styles.shell}>
             <header className={styles.appBar}>
-                <Typography variant="labelM" className={styles.appBarTitle}>
+                <Typography variant="title" className={styles.appBarTitle}>
                     Application title
                 </Typography>
             </header>
@@ -55,7 +55,7 @@ export const AppShell: Story = {
                         <nav aria-label="Breadcrumb">
                             <ol className={styles.breadcrumb}>
                                 <li>
-                                    <Typography variant="bodyS" render={<a href="#" className={styles.breadcrumbLink} />}>
+                                    <Typography variant="small" render={<a href="#" className={styles.breadcrumbLink} />}>
                                         Campaigns
                                     </Typography>
                                 </li>
@@ -63,16 +63,14 @@ export const AppShell: Story = {
                                     <Icon name="chevron-right" />
                                 </li>
                                 <li>
-                                    <Typography variant="labelS" aria-current="page">
+                                    <Typography variant="small" aria-current="page" className={styles.breadcrumbCurrent}>
                                         All campaigns
                                     </Typography>
                                 </li>
                             </ol>
                         </nav>
                         <div className={styles.titleRow}>
-                            <Typography variant="h3" element="h1">
-                                Dashboard
-                            </Typography>
+                            <Typography variant="displayL">Dashboard</Typography>
                             <div className={styles.actions}>
                                 <Button variant="outlined">Filter</Button>
                                 <Button>Export</Button>
@@ -84,7 +82,7 @@ export const AppShell: Story = {
                     </div>
                     <div className={styles.content}>
                         <div className={styles.placeholder}>
-                            <Typography variant="bodyM">Page content</Typography>
+                            <Typography variant="body">Page content</Typography>
                         </div>
                     </div>
                 </main>

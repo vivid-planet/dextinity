@@ -9,13 +9,15 @@
     --dextinity-menu-section-header-expand-icon-size: var(--dextinity-unit-3);
 
     // Font size of the label.
-    --dextinity-menu-section-header-font-size: var(--dextinity-typography-body-sm-size);
+    --dextinity-menu-section-header-font-size: var(--dextinity-typography-label-font-size);
     // Line height of the label.
-    --dextinity-menu-section-header-font-line-height: var(--dextinity-typography-body-sm-line-height);
+    --dextinity-menu-section-header-font-line-height: var(--dextinity-typography-label-line-height);
     // Font weight of the label.
-    --dextinity-menu-section-header-font-weight: var(--dextinity-font-weight-semibold);
+    --dextinity-menu-section-header-font-weight: var(--dextinity-typography-label-font-weight);
+    // Letter spacing of the label.
+    --dextinity-menu-section-header-letter-spacing: var(--dextinity-typography-label-letter-spacing);
     // Name of the label's font weight in the design files.
-    --dextinity-menu-section-header-font-weight-style: var(--dextinity-font-weight-semibold-style);
+    --dextinity-menu-section-header-font-weight-style: var(--dextinity-font-weight-regular-style);
 
     // Text color of the label.
     --dextinity-menu-section-header-default-foreground: var(--dextinity-color-foreground-subtle);

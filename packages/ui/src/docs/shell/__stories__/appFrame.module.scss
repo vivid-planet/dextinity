@@ -68,6 +68,10 @@
     text-decoration: none;
 }
 
+.breadcrumbCurrent {
+    color: var(--dextinity-color-foreground-default);
+}
+
 .breadcrumbSeparator {
     display: flex;
     color: var(--dextinity-color-foreground-muted);

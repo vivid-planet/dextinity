@@ -2,51 +2,6 @@
 
 @layer dextinity {
     :root {
-        // Font size of the display style: one title per view, such as a greeting. Larger from the desktop breakpoint on.
-        --dextinity-typography-display-size: 32px;
-        // Line height of the display style: one title per view, such as a greeting. Larger from the desktop breakpoint on.
-        --dextinity-typography-display-line-height: 40px;
-
-        // Font size of heading level 1: the page title. Larger from the desktop breakpoint on.
-        --dextinity-typography-h1-size: 24px;
-        // Line height of heading level 1: the page title. Larger from the desktop breakpoint on.
-        --dextinity-typography-h1-line-height: 32px;
-
-        // Font size of heading level 2: sections. Larger from the desktop breakpoint on.
-        --dextinity-typography-h2-size: 20px;
-        // Line height of heading level 2: sections. Larger from the desktop breakpoint on.
-        --dextinity-typography-h2-line-height: 28px;
-
-        // Font size of heading level 3: panels and cards. Larger from the desktop breakpoint on.
-        --dextinity-typography-h3-size: 18px;
-        // Line height of heading level 3: panels and cards. Larger from the desktop breakpoint on.
-        --dextinity-typography-h3-line-height: 24px;
-
-        // Font size of heading level 4: groups in a form. Larger from the desktop breakpoint on.
-        --dextinity-typography-h4-size: 16px;
-        // Line height of heading level 4: groups in a form. Larger from the desktop breakpoint on.
-        --dextinity-typography-h4-line-height: 22px;
-
-        // Font size of large body text: lead paragraphs. Larger from the desktop breakpoint on.
-        --dextinity-typography-body-lg-size: 16px;
-        // Line height of large body text: lead paragraphs. Larger from the desktop breakpoint on.
-        --dextinity-typography-body-lg-line-height: 22px;
-
-        // Font size of body text: the default for interfaces and tables. Larger from the desktop breakpoint on.
-        --dextinity-typography-body-md-size: 15px;
-        // Line height of body text: the default for interfaces and tables. Larger from the desktop breakpoint on.
-        --dextinity-typography-body-md-line-height: 22px;
-
-        // Font size of small body text: help texts and metadata. Larger from the desktop breakpoint on.
-        --dextinity-typography-body-sm-size: 13px;
-        // Line height of small body text: help texts and metadata. Larger from the desktop breakpoint on.
-        --dextinity-typography-body-sm-line-height: 18px;
-
-        // Font size of extra-small body text: captions. Larger from the desktop breakpoint on.
-        --dextinity-typography-body-xs-size: 11px;
-        // Line height of extra-small body text: captions. Larger from the desktop breakpoint on.
-        --dextinity-typography-body-xs-line-height: 14px;
-
         // Extra-small space between and around sections. Larger from the desktop breakpoint on.
         --dextinity-space-layout-xs: var(--dextinity-unit-2);
         // Small space between and around sections. Larger from the desktop breakpoint on.
@@ -59,67 +14,16 @@
         --dextinity-space-layout-xl: var(--dextinity-unit-8);
         // Largest space between and around sections. Larger from the desktop breakpoint on.
         --dextinity-space-layout-2xl: var(--dextinity-unit-12);
-
-        // Font size of labels of controls. Larger from the desktop breakpoint on.
-        --dextinity-typography-label-md-size: 15px;
-        // Line height of labels of controls. Larger from the desktop breakpoint on.
-        --dextinity-typography-label-md-line-height: 22px;
-
-        // Font size of small labels, such as form labels. Larger from the desktop breakpoint on.
-        --dextinity-typography-label-sm-size: 13px;
-        // Line height of small labels, such as form labels. Larger from the desktop breakpoint on.
-        --dextinity-typography-label-sm-line-height: 18px;
-
-        // Font size of extra-small labels. Larger from the desktop breakpoint on.
-        --dextinity-typography-label-xs-size: 11px;
-        // Line height of extra-small labels. Larger from the desktop breakpoint on.
-        --dextinity-typography-label-xs-line-height: 14px;
     }
 
     @media (min-width: breakpoints.$desktop) {
         :root {
-            --dextinity-typography-display-size: 48px;
-            --dextinity-typography-display-line-height: 56px;
-
-            --dextinity-typography-h1-size: 32px;
-            --dextinity-typography-h1-line-height: 40px;
-
-            --dextinity-typography-h2-size: 24px;
-            --dextinity-typography-h2-line-height: 32px;
-
-            --dextinity-typography-h3-size: 20px;
-            --dextinity-typography-h3-line-height: 28px;
-
-            --dextinity-typography-h4-size: 18px;
-            --dextinity-typography-h4-line-height: 24px;
-
-            --dextinity-typography-body-lg-size: 17px;
-            --dextinity-typography-body-lg-line-height: 24px;
-
-            --dextinity-typography-body-md-size: 15px;
-            --dextinity-typography-body-md-line-height: 24px;
-
-            --dextinity-typography-body-sm-size: 13px;
-            --dextinity-typography-body-sm-line-height: 20px;
-
-            --dextinity-typography-body-xs-size: 11px;
-            --dextinity-typography-body-xs-line-height: 16px;
-
             --dextinity-space-layout-xs: var(--dextinity-unit-2);
             --dextinity-space-layout-sm: var(--dextinity-unit-4);
             --dextinity-space-layout-md: var(--dextinity-unit-6);
             --dextinity-space-layout-lg: var(--dextinity-unit-8);
             --dextinity-space-layout-xl: var(--dextinity-unit-12);
             --dextinity-space-layout-2xl: var(--dextinity-unit-16);
-
-            --dextinity-typography-label-md-size: 15px;
-            --dextinity-typography-label-md-line-height: 24px;
-
-            --dextinity-typography-label-sm-size: 13px;
-            --dextinity-typography-label-sm-line-height: 20px;
-
-            --dextinity-typography-label-xs-size: 12px;
-            --dextinity-typography-label-xs-line-height: 15px;
         }
     }
 }

@@ -28,6 +28,10 @@
         --dextinity-brand-font-family-sans: var(--dextinity-font-family-inter);
         // Font of code, paths, and IDs.
         --dextinity-brand-font-family-mono: var(--dextinity-font-family-mono);
+        // Font weight of the display styles.
+        --dextinity-brand-display-font-weight: var(--dextinity-font-weight-medium);
+        // Letter spacing of the display styles.
+        --dextinity-brand-display-letter-spacing: -0.035em;
 
         // Step 50 of the primary color: main actions, selection, focus.
         --dextinity-brand-color-primary-50: var(--dextinity-color-indigo-50);

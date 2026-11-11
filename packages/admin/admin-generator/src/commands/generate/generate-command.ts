@@ -17,7 +17,7 @@ import type {
     GridValidRowModel,
 } from "@mui/x-data-grid";
 import { Command } from "commander";
-import type { FieldValidator, FormApi } from "final-form";
+import type { FieldState, FormApi } from "final-form";
 import { promises as fs } from "fs";
 import { glob } from "fs/promises";
 import { introspectionFromSchema } from "graphql";
@@ -87,8 +87,11 @@ type AsyncSelectFilter =
           rootQueryArg?: string;
       };
 
+// Not final-form's FieldValidator: it's invariant in FieldValue because of `meta`, so FieldValidator<FieldValue | null | undefined> wouldn't be assignable to the field component's FieldValidator<FieldValue>
+type FormFieldValidator<FieldValue> = (value: FieldValue | null | undefined, allValues: object, meta?: FieldState<FieldValue>) => unknown;
+
 type ValidateConfig<FieldValue> = {
-    validate?: FieldValidator<FieldValue | null | undefined>;
+    validate?: FormFieldValidator<FieldValue>;
 };
 
 export type FormFieldConfig<T> = (
@@ -118,7 +121,8 @@ export type FormFieldConfig<T> = (
           inputType?: "select" | "radio";
           initialValue?: string;
       } & Omit<InputBaseFieldConfig, "endAdornment"> &
-          ValidateConfig<string | string[]>)
+          // without `meta`, as SelectField's FieldState is typed with the literal option values that aren't known here
+          { validate?: (value: string | string[] | null | undefined, allValues: object) => unknown })
     | ({
           type: "asyncSelect";
           name: UsableFormFields<T>;

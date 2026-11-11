@@ -1,3 +1,4 @@
+import type { FieldValidator } from "final-form";
 import { describe, expect, it } from "vitest";
 
 import { defineConfig, type FormConfig, type InjectedFormVariables, injectFormVariables } from "../generate-command";
@@ -13,6 +14,8 @@ type GQLProduct = {
     type: string;
     category: { __typename?: "ProductCategory"; id: string } | null;
 };
+
+const fieldValidatorAcceptingEmptyValues: FieldValidator<string | null | undefined> = (value) => value?.length;
 
 describe("config types", () => {
     it("types validate according to the field's value", () => {
@@ -34,6 +37,8 @@ describe("config types", () => {
                 { type: "text", name: "title", validate: (value: string) => value.length },
                 // @ts-expect-error a number field's value isn't a string
                 { type: "number", name: "price", validate: (value?: string | null) => value },
+                // @ts-expect-error final-form's FieldValidator is invariant, so it wouldn't fit the generated TextField's FieldValidator<string>
+                { type: "text", name: "title", validate: fieldValidatorAcceptingEmptyValues },
                 // @ts-expect-error validate isn't supported for async selects
                 { type: "asyncSelect", name: "category", rootQuery: "productCategories", validate: () => undefined },
             ],

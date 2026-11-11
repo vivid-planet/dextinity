@@ -12,28 +12,13 @@ It builds on an unstyled foundation rather than evolving the MUI-based component
 
 When this README needs something that the Storybook already explains, it links to the explanation instead of repeating it. A change to a convention updates this README in the same change. How applications install the package and import its styles and icons is in the Storybook's Intro page.
 
-## Forms
-
-Every form uses a form library. The fields here are plain controlled components; an adapter package binds them to the library, with the same adapter names and props in both:
-
-- [`@dextinity/ui-react-final-form`](../ui-react-final-form/README.md) for React Final Form
-- [`@dextinity/ui-react-hook-form`](../ui-react-hook-form/README.md) for React Hook Form
-
-```tsx
-import { InputField } from "@dextinity/ui-react-final-form";
-
-<InputField name="title" label="Title" required />;
-```
-
-The adapters' stories are part of this package's Storybook, under `Forms`.
-
 ## Experimental
 
 Changesets are not created for changes within this package.
 
 ## Non-goals
 
-- **No non-UI logic.** Forms (`final-form`, `react-hook-form`), routing (`react-router`), data fetching (Apollo), and similar concerns stay out. Forms connect the controlled fields to a form library through an adapter package (see [Forms](#forms)).
+- **No non-UI logic.** Forms (`final-form`, `react-hook-form`), routing (`react-router`), data fetching (Apollo), and similar concerns stay out.
 - **No dependency on `@mui/material`, `@mui/system`, Emotion, or any other part of the existing `@dextinity/admin` styling stack.** This package is a fresh foundation; cross-imports reintroduce the competing system it removes.
 
 ## Folder and file names

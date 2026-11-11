@@ -170,16 +170,14 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 ### Utilities
 
-| Package                          | Description                                                      |
-| -------------------------------- | ---------------------------------------------------------------- |
-| `@dextinity/cli`                 | Central CLI entry point for Dextinity projects (`dextinity` bin) |
-| `@dextinity/eslint-config`       | Shared ESLint configurations                                     |
-| `@dextinity/eslint-plugin`       | Custom ESLint rules for Dextinity projects                       |
-| `@dextinity/mail-react`          | Utilities for building HTML emails with React (MJML-based)       |
-| `@dextinity/oxlint-config`       | Shared oxlint configurations, an alternative to `eslint-config`  |
-| `@dextinity/ui`                  | UI-only React component library (Base UI, CSS Modules)           |
-| `@dextinity/ui-react-final-form` | React Final Form adapters for the fields of `@dextinity/ui`      |
-| `@dextinity/ui-react-hook-form`  | React Hook Form adapters for the fields of `@dextinity/ui`       |
+| Package                    | Description                                                      |
+| -------------------------- | ---------------------------------------------------------------- |
+| `@dextinity/cli`           | Central CLI entry point for Dextinity projects (`dextinity` bin) |
+| `@dextinity/eslint-config` | Shared ESLint configurations                                     |
+| `@dextinity/eslint-plugin` | Custom ESLint rules for Dextinity projects                       |
+| `@dextinity/mail-react`    | Utilities for building HTML emails with React (MJML-based)       |
+| `@dextinity/oxlint-config` | Shared oxlint configurations, an alternative to `eslint-config`  |
+| `@dextinity/ui`            | UI-only React component library (Base UI, CSS Modules)           |
 
 ### Docs & Storybook
 

@@ -7,7 +7,6 @@ type ToolbarBrand = ThemeBrand;
 const toolbarBrandTitles: Record<ToolbarBrand, string> = {
     dextinity: "Dextinity",
     "ai-hub": "Dextinity AI Hub",
-    cms: "Dextinity CMS",
 };
 
 export const toolbarBrandOptions = Object.entries(toolbarBrandTitles).map(([value, title]) => ({ value, title }));

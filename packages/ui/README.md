@@ -220,7 +220,7 @@ Components read their colors, metrics, and font family from CSS custom propertie
 
 The tokens live in SCSS partials under [`src/theme/`](src/theme), composed into the `Theme` module with `@use` and wrapped in a single `@layer dextinity`. Each layer references only the layers before it:
 
-1. **Brand** (`_brand.scss`) — hues and chromas (primary, secondary, neutral tint, success, danger), font families, display weight and tracking, control radius, and the radius factor. The brands `dextinity`, `ai-hub`, and `cms` are built in.
+1. **Brand** (`_brand.scss`, one file per brand in `brands/`) — hues and chromas (primary, secondary, neutral tint, success, danger), font families, display weight and tracking, control radius, and the radius factor. The brands `dextinity` and `ai-hub` are built in.
 2. **Primitives** (`_primitives.scss`) — 11-stop OKLCH scales on a fixed lightness curve, computed from the brand's hue and chroma; spacing and radii.
 3. **Semantic** (`_semantic.scss`) — surfaces, text, lines, accent, status, material (glass, blur, grain, light fields), and shadows, per color scheme (light, dark, high contrast). High contrast turns light and glass off and lines on.
 4. **Typography, motion, density** (`_typography.scss`, `_motion.scss`, `_density.scss`) — text styles, one easing with three durations (reduced motion keeps only short fades), and fixed metrics per density level.
@@ -232,7 +232,7 @@ Every derived token is declared on each theme boundary (`[data-dextinity-color-s
 
 ### Brands
 
-A brand is a CSS block on `[data-dextinity-brand="<name>"]` that sets the `--dextinity-brand-*` tokens — and, optionally, replaces icons — selected through `Theme`'s `brand` prop:
+Each built-in brand is a complete file in [`src/theme/brands/`](src/theme/brands), setting every brand token. A brand is a CSS block on `[data-dextinity-brand="<name>"]` that sets the `--dextinity-brand-*` tokens — and, optionally, replaces icons — selected through `Theme`'s `brand` prop:
 
 ```css
 [data-dextinity-brand="acme"] {

@@ -1,0 +1,26 @@
+// The default brand, also on `:root` for components outside a `Theme`.
+@layer dextinity {
+    :root,
+    [data-dextinity-brand="dextinity"] {
+        --dextinity-brand-primary-hue: 275;
+        --dextinity-brand-primary-chroma: 0.255;
+        --dextinity-brand-secondary-hue: 185;
+        --dextinity-brand-secondary-chroma: 0.13;
+        --dextinity-brand-gradient-hue: var(--dextinity-brand-secondary-hue);
+        --dextinity-brand-neutral-hue: 285;
+        --dextinity-brand-neutral-chroma: 0.014;
+        --dextinity-brand-success-hue: 155;
+        --dextinity-brand-danger-hue: 26;
+
+        --dextinity-brand-font-family-text: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+        --dextinity-brand-font-family-display: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+        --dextinity-brand-font-family-mono: "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+        --dextinity-brand-font-size: 14px;
+        --dextinity-brand-display-font-weight: 500;
+        --dextinity-brand-display-letter-spacing: -0.035em;
+        --dextinity-brand-display-text-transform: none;
+
+        --dextinity-brand-radius-control: 10px;
+        --dextinity-brand-radius-factor: 1;
+    }
+}

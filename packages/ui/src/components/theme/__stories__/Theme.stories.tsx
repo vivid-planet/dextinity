@@ -11,7 +11,7 @@ const meta: Meta<typeof Theme> = {
     title: "Foundations/Theme/Theme",
     argTypes: {
         colorScheme: { control: "select", options: colorSchemes },
-        brand: { control: "select", options: ["dextinity", "ai-hub", "cms"] },
+        brand: { control: "select", options: ["dextinity", "ai-hub"] },
         density: { control: "radio", options: ["comfortable", "standard", "compact"] },
     },
     args: {

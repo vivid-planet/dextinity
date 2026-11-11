@@ -1710,25 +1710,25 @@ importers:
         specifier: workspace:*
         version: link:../admin-rte
       '@tiptap/core':
-        specifier: ^3.32.2
+        specifier: ^3.33.0
         version: 3.33.0(@tiptap/pm@3.33.0)
       '@tiptap/extension-subscript':
-        specifier: ^3.32.2
+        specifier: ^3.33.0
         version: 3.33.0(@tiptap/core@3.33.0(@tiptap/pm@3.33.0))(@tiptap/pm@3.33.0)
       '@tiptap/extension-superscript':
-        specifier: ^3.32.2
+        specifier: ^3.33.0
         version: 3.33.0(@tiptap/core@3.33.0(@tiptap/pm@3.33.0))(@tiptap/pm@3.33.0)
       '@tiptap/extensions':
-        specifier: ^3.32.2
+        specifier: ^3.33.0
         version: 3.33.0(@tiptap/core@3.33.0(@tiptap/pm@3.33.0))(@tiptap/pm@3.33.0)
       '@tiptap/pm':
-        specifier: ^3.32.2
+        specifier: ^3.33.0
         version: 3.33.0
       '@tiptap/react':
-        specifier: ^3.32.2
+        specifier: ^3.33.0
         version: 3.33.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.33.0(@tiptap/pm@3.33.0))(@tiptap/pm@3.33.0)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tiptap/starter-kit':
-        specifier: ^3.32.2
+        specifier: ^3.33.0
         version: 3.33.0
       change-case:
         specifier: ^5.4.4
@@ -2219,19 +2219,19 @@ importers:
         specifier: ^1.9.1
         version: 1.10.0
       '@tiptap/core':
-        specifier: ^3.32.2
+        specifier: ^3.33.0
         version: 3.33.0(@tiptap/pm@3.33.0)
       '@tiptap/extension-subscript':
-        specifier: ^3.32.2
+        specifier: ^3.33.0
         version: 3.33.0(@tiptap/core@3.33.0(@tiptap/pm@3.33.0))(@tiptap/pm@3.33.0)
       '@tiptap/extension-superscript':
-        specifier: ^3.32.2
+        specifier: ^3.33.0
         version: 3.33.0(@tiptap/core@3.33.0(@tiptap/pm@3.33.0))(@tiptap/pm@3.33.0)
       '@tiptap/pm':
-        specifier: ^3.32.2
+        specifier: ^3.33.0
         version: 3.33.0
       '@tiptap/starter-kit':
-        specifier: ^3.32.2
+        specifier: ^3.33.0
         version: 3.33.0
       base64url:
         specifier: ^3.0.1

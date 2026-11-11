@@ -53,7 +53,7 @@
         "lodash.debounce": "^4.0.8",
         "lodash.isequal": "^4.5.0",
         "query-string": "^10.0.0",
-        "react-dropzone": "^20.1.4",
+        "react-dropzone": "^20.2.0",
         "use-constant": "^2.0.0",
         "uuid": "^14.0.3"
     },

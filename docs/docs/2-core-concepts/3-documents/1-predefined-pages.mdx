@@ -170,7 +170,8 @@ The following files should be copied:
 - `predefinedPages.ts`: Helpers to match a path to a predefined page and to create paths to predefined pages
 - `predefinedPages.loader.ts`: Loads the predefined pages of a domain from the API
 - `PredefinedPagesProvider.tsx`: Provides the predefined pages to client components
-- `PredefinedPageRoute.tsx`: Renders the component of the predefined page type
+- `matchRoute.ts`: A simple router that matches a path against path patterns like `/:slug`
+- `PredefinedPageRoute.tsx`: Renders the route of the predefined page type that matches the path
 
 :::warning
 
@@ -201,15 +202,25 @@ export default async function Page({ params }: PageProps<"/[visibility]/[domain]
 +   });
 +
 +   if (predefinedPageMatch) {
-+       return <PredefinedPageRoute predefinedPage={predefinedPageMatch.predefinedPage} segments={predefinedPageMatch.segments} />;
++       return <PredefinedPageRoute predefinedPage={predefinedPageMatch.predefinedPage} path={predefinedPageMatch.path} />;
 +   }
 
     /* ... */
 }
 ```
 
-`segments` contains the path segments below the predefined page, for instance `["my-news"]` for a news detail page.
-The component of the predefined page type decides what to render for them, see [`NewsPredefinedPage`](https://github.com/vivid-planet/dextinity/blob/main/demo/site/src/news/NewsPredefinedPage.tsx).
+`path` is the path below the predefined page, for instance `/my-news` for a news detail page, or `/` for the predefined page itself.
+Each predefined page type defines its routes, and the first route whose path pattern matches is rendered:
+
+```ts title="src/news/newsRoutes.ts"
+export const newsRoutes: PredefinedPageRouteDefinition[] = [
+    { path: "/", component: NewsIndexPage },
+    { path: "/:slug", component: NewsDetailPage },
+];
+```
+
+A route component receives the predefined page and the params of the path pattern, for instance `params.slug`.
+If no route matches, a 404 page is shown.
 
 #### Providing the predefined pages for creating links
 
@@ -302,11 +313,11 @@ If you want to add another predefined page type (e.g., products), make the follo
     };
     ```
 
-3. Site: Add a component for the new type to the predefined page routes:
+3. Site: Add the routes of the new type:
 
     ```diff title="src/documents/predefinedPages/PredefinedPageRoute.tsx"
-    const predefinedPageRoutes: Record<GQLPredefinedPageType, (props: PredefinedPageRouteProps) => Promise<JSX.Element>> = {
-        News: NewsPredefinedPage,
-    +   Products: ProductsPredefinedPage,
+    const predefinedPageRoutes: Record<GQLPredefinedPageType, PredefinedPageRouteDefinition[]> = {
+        News: newsRoutes,
+    +   Products: productsRoutes,
     };
     ```

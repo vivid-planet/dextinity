@@ -46,13 +46,23 @@ category?: ManyToOneFilter;
 Include relation name in sort enum: `category = "category"`.
 Nested sort: `category_title = "category_title"` (one level deep).
 
-### Resolver — create mutation
+### Resolver — create mutation (required)
 
 ```typescript
 const { category: categoryInput, ...assignInput } = input;
 const entity = this.entityManager.create(Entity, {
     ...assignInput,
     category: Reference.create(await this.entityManager.findOneOrFail(Category, categoryInput)),
+});
+```
+
+### Resolver — create mutation (nullable)
+
+```typescript
+const { category: categoryInput, ...assignInput } = input;
+const entity = this.entityManager.create(Entity, {
+    ...assignInput,
+    category: categoryInput ? Reference.create(await this.entityManager.findOneOrFail(Category, categoryInput)) : undefined,
 });
 ```
 

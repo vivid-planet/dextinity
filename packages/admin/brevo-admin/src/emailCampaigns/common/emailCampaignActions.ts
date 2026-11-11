@@ -9,9 +9,12 @@ function isScheduledDateInPast({ scheduledAt }: EmailCampaignState, now = new Da
     return scheduledAt != null && new Date(scheduledAt) < now;
 }
 
-/** A campaign can be changed until it was sent or its scheduled date has passed, as Brevo may be sending it. */
+/**
+ * A campaign can be changed until it was sent or its scheduled date has passed, as Brevo may be sending it. A campaign whose sending
+ * failed can be changed and sent again.
+ */
 export function isEmailCampaignEditable(campaign: EmailCampaignState) {
-    return campaign.sendingState !== "SENT" && !isScheduledDateInPast(campaign);
+    return campaign.sendingState === "FAILED" || (campaign.sendingState !== "SENT" && !isScheduledDateInPast(campaign));
 }
 
 export function hasEmailCampaignStatistics(campaign: EmailCampaignState) {

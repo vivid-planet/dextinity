@@ -1,4 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
+import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 import { Button, Card, CardRow, EmptyState, Icon, Link, Skeleton } from "@dextinity/ui";
 import { parseISO } from "date-fns";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -33,6 +34,7 @@ export function LatestBuildsCard({ publisherUrl }: LatestBuildsCardProps) {
     const intl = useIntl();
     const { data, loading, error, refetch } = useQuery<GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables>(latestBuildsQuery, {
         notifyOnNetworkStatusChange: true,
+        context: LocalErrorScopeApolloContext,
     });
     const builds = data?.builds ?? [];
 

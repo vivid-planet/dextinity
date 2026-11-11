@@ -6,6 +6,8 @@ import { Icon } from "../Icon";
 import iconTokens from "../Icon.tokens.scss?raw";
 import { defaultIconNames } from "../iconRegistry";
 import styles from "./Icon.stories.module.scss";
+import colorStyles from "./iconColor.module.scss";
+import sizeStyles from "./iconSize.module.scss";
 
 const meta = {
     component: Icon,
@@ -76,17 +78,7 @@ export const Sizes: Story = {
  * For any other size, set `width` and `height` in CSS, through `className`.
  */
 export const CustomSize: Story = {
-    render: (args) => (
-        <>
-            <style>{`
-                .largeIcon {
-                    width: 32px;
-                    height: 32px;
-                }
-            `}</style>
-            <Icon {...args} className="largeIcon" />
-        </>
-    ),
+    render: (args) => <Icon {...args} className={sizeStyles.largeIcon} />,
 };
 
 /**
@@ -94,16 +86,9 @@ export const CustomSize: Story = {
  */
 export const Color: Story = {
     render: (args) => (
-        <>
-            <style>{`
-                .blueText {
-                    color: royalblue;
-                }
-            `}</style>
-            <span className="blueText">
-                <Icon {...args} />
-            </span>
-        </>
+        <span className={colorStyles.blueText}>
+            <Icon {...args} />
+        </span>
     ),
 };
 

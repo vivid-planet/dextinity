@@ -1,11 +1,12 @@
 import React from "react";
-import { Select } from "storybook/internal/components";
+import { AddonPanel, Select } from "storybook/internal/components";
 import { addons, types } from "storybook/manager-api";
 import { defaultConfig, type TagBadgeParameters } from "storybook-addon-tag-badges/manager-helpers";
 
 import { brandSetting } from "../src/storybook/brand";
 import { colorSchemeSetting } from "../src/storybook/colorScheme";
 import { densitySetting } from "../src/storybook/density";
+import { StyleSourcePanel } from "./StyleSourcePanel";
 
 addons.setConfig({
     tagBadges: [
@@ -37,3 +38,16 @@ for (const { id, title, setting } of toolbarSettings) {
         });
     });
 }
+
+addons.register("dextinity-ui/style-source", () => {
+    addons.add("dextinity-ui/style-source", {
+        type: types.PANEL,
+        title: "SCSS",
+        disabled: (parameters) => typeof parameters?.styleSource !== "string",
+        render: ({ active }) => (
+            <AddonPanel active={active ?? false}>
+                <StyleSourcePanel />
+            </AddonPanel>
+        ),
+    });
+});

@@ -133,7 +133,7 @@ The contract has two parts: **structural class names** for a component's element
 
 - **Enum state** → a single valued attribute: `data-variant="contained"`.
 - **Boolean state** → presence only: `data-disabled` (absent when false).
-- The attribute name is `data-` + the lowercased owner-state key. Owner-state keys are single lowercase words, so the name needs no kebab-casing.
+- The attribute name is `data-` + the owner-state key in lowercase: `readOnly` becomes `data-readonly`.
 
 **Emission.** These attributes cover owner-state values only; parts are class names. How a component emits them depends on its foundation: one rendered through `useRender` passes `state: ownerState` for base-ui to convert; one built on a base-ui primitive lets the primitive emit the state it owns and passes the rest inline (`data-variant={variant}`).
 
@@ -152,6 +152,18 @@ The contract has two parts: **structural class names** for a component's element
 ### Stories
 
 The Storybook sidebar mirrors the design system's areas — Foundations, Building blocks, Shell, Patterns, Page types — and each area's pages: a story title is `<Area>/<Page>/<Component>`, e.g. `Building blocks/Buttons/IconButton`. Each consumer-facing component has its own story file in an `__stories__/` directory next to its source; story-only helpers such as decorators live in [`src/storybook/`](src/storybook). The component's TSDoc and prop table (see [TSDoc](#tsdoc)) drive its autodocs page, so stories don't restate it. `parameters.tokens`, set to the component's `<ComponentName>.tokens.scss` imported with `?raw`, adds its token table with live values to the page.
+
+The docs show only the body of a story's `render` function, so everything the example needs goes inside it. A `render` function names its parameter `args`. To show a story's full source instead of its `render` body, set `parameters.docs.source.type` to `"code"`.
+
+A story that needs styles, for example to show a customization, puts them in a `.module.scss` file next to the story file and uses it in its `render` function. The file contains only styles that belong to the example: the docs show it next to the story's code.
+
+```tsx
+import sizeStyles from "./iconSize.module.scss";
+
+export const CustomSize: Story = {
+    render: (args) => <Icon {...args} className={sizeStyles.largeIcon} />,
+};
+```
 
 #### Main story
 

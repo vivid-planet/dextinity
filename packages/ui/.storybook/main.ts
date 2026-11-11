@@ -3,6 +3,9 @@ import { fileURLToPath } from "node:url";
 import type { StorybookConfig } from "@storybook/react-vite";
 import { mergeConfig } from "vite";
 
+import { addStyleSourcesToManifests } from "./addStyleSourcesToManifests";
+import { storyCodePlugin } from "./storyCodePlugin";
+
 const config: StorybookConfig = {
     stories: [
         "../src/**/*.mdx",
@@ -17,8 +20,10 @@ const config: StorybookConfig = {
         development: { defaultFilterSelection: "exclude" },
     },
     features: { componentsManifest: true },
+    experimental_manifests: addStyleSourcesToManifests,
     viteFinal: (viteConfig) =>
         mergeConfig(viteConfig, {
+            plugins: [storyCodePlugin()],
             resolve: {
                 // The adapter packages' stories share this Storybook's copy of the components, styles included, instead of the build
                 alias: [{ find: /^@dextinity\/ui$/, replacement: fileURLToPath(new URL("../src/index.ts", import.meta.url)) }],

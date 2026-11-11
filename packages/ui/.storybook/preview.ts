@@ -6,8 +6,10 @@ import "../icons.css";
 
 import type { Decorator, Preview } from "@storybook/react-vite";
 
+import { CanvasWithStyleSource } from "../src/storybook/CanvasWithStyleSource";
 import { colorSchemeBackgroundDecorator } from "../src/storybook/colorSchemeBackgroundDecorator";
 import { DocsPage } from "../src/storybook/docs/DocsPage";
+import { renderSourceWithArgs } from "../src/storybook/renderSourceWithArgs";
 import { themeDecorator } from "../src/storybook/themeDecorator";
 
 // The stories of the form adapter packages can't import this package's story helpers, so they get the toolbar theme here
@@ -20,6 +22,8 @@ const preview: Preview = {
         docs: {
             codePanel: true,
             page: DocsPage,
+            components: { Canvas: CanvasWithStyleSource },
+            source: { type: "dynamic", transform: renderSourceWithArgs },
         },
         options: {
             storySort: {
@@ -67,6 +71,10 @@ const preview: Preview = {
                         "Drag & drop",
                         "Keyboard",
                         "Actions",
+                        "Forms",
+                        "Toolbar",
+                        "Main navigation",
+                        "App shell",
                     ],
                     "Page types",
                     ["Overview", "List", "Tree + detail", "Edit", "Finder", "List + side panel"],

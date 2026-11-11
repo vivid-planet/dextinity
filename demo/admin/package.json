@@ -6,6 +6,7 @@
     "scripts": {
         "admin-generator": "rimraf --glob 'src/**/generated' && dextinity-admin-generator generate",
         "build": "run-s admin-generator intl:compile && run-p gql:types generate-block-types && NODE_ENV=production vite build",
+        "build-storybook": "storybook build --disable-telemetry",
         "check-node-version": "check-node-version --node $(cat ../../.nvmrc)",
         "generate-block-types": "dextinity generate-block-types --inputs",
         "generate-block-types:watch": "chokidar -s \"block-meta.json\" -c \"pnpm run generate-block-types\"",
@@ -17,16 +18,18 @@
         "intl:extract": "formatjs extract \"src/**/*.{ts,tsx}\" --ignore '**/*.{test,spec}.{ts,tsx}' --ignore ./**.d.ts --out-file lang-extracted/en.json --format simple",
         "lint": "run-s admin-generator intl:compile && run-p gql:types generate-block-types && run-p lint:prettier lint:eslint lint:tsc intl:extract",
         "lint:ci": "run-s admin-generator intl:compile && run-p gql:types generate-block-types && run-p lint:prettier lint:eslint lint:tsc lint:generated-files-not-modified",
-        "lint:eslint": "eslint --max-warnings 0 src/ '**/*.json' --no-warn-ignored",
+        "lint:eslint": "eslint --max-warnings 0 src/ .storybook/ vitest.config.ts '**/*.json' --no-warn-ignored",
         "lint:fix": "run-p lint:fix:eslint lint:fix:prettier",
         "lint:fix:eslint": "pnpm run lint:eslint --fix",
         "lint:fix:prettier": "pnpm run lint:prettier --write",
         "lint:generated-files-not-modified": "git diff --exit-code HEAD -- $(find src -type f -path '*/generated/*')",
         "lint:prettier": "pnpm exec prettier --check '*.{ts,js,json,md,yml,yaml}'",
-        "lint:tsc": "tsc --project . && tsc --project server",
+        "lint:tsc": "tsc --project . && tsc --project server && tsc --project tsconfig.storybook.json",
         "preview": "pnpm run build && vite preview",
         "serve": "node server/index.ts",
-        "start": "pnpm check-node-version && run-s admin-generator intl:compile && run-p gql:types generate-block-types && dotenv -e .env.secrets -e .env.local -e .env -e .env.site-configs -- vite"
+        "start": "pnpm check-node-version && run-s admin-generator intl:compile && run-p gql:types generate-block-types && dotenv -e .env.secrets -e .env.local -e .env -e .env.site-configs -- vite",
+        "storybook": "storybook dev -p 26649 --no-open --disable-telemetry",
+        "test:storybook": "vitest --run --project storybook --outputFile.junit=./junit-storybook.xml"
     },
     "dependencies": {
         "@apollo/client": "^3.14.1",
@@ -77,6 +80,10 @@
         "@graphql-codegen/typescript": "^4.1.6",
         "@graphql-codegen/typescript-operations": "^4.6.1",
         "@parcel/watcher": "^2.6.0",
+        "@storybook/addon-a11y": "10.6.6",
+        "@storybook/addon-docs": "^10.6.6",
+        "@storybook/addon-vitest": "10.6.6",
+        "@storybook/react-vite": "10.6.6",
         "@swc/plugin-emotion": "^20.0.2",
         "@types/lodash.isequal": "^4.5.8",
         "@types/node": "^24.19.2",
@@ -85,16 +92,21 @@
         "@types/react-router": "^5.1.20",
         "@types/react-router-dom": "^5.3.3",
         "@vitejs/plugin-react-swc": "^4.3.3",
+        "@vitest/browser-playwright": "5.1.0",
         "check-node-version": "^4.2.1",
         "chokidar-cli": "^3.0.0",
         "cosmiconfig-toml-loader": "^1.0.0",
         "dotenv-cli": "^11.1.0",
         "eslint": "^9.39.5",
+        "eslint-plugin-storybook": "^10.6.6",
         "npm-run-all2": "^9.0.4",
+        "playwright": "^1.65.0",
         "prettier": "^3.9.10",
         "rimraf": "^6.1.4",
+        "storybook": "^10.6.6",
         "typescript": "^5.9.3",
         "vite": "^8.3.6",
-        "vite-plugin-compression2": "^2.5.4"
+        "vite-plugin-compression2": "^2.5.4",
+        "vitest": "^5.1.0"
     }
 }

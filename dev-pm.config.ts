@@ -207,6 +207,12 @@ export default defineConfig({
             waitOn: ["tcp:$API_PORT"],
         },
         {
+            name: "demo-admin-storybook",
+            script: "pnpm --filter dextinity-demo-admin run storybook",
+            group: ["demo-admin", "demo"],
+            waitOn: waitOnPackages("@dextinity/admin"),
+        },
+        {
             name: "demo-oidc-provider",
             script: "pnpm run dev:oidc-provider",
             group: ["demo-admin", "demo"],

@@ -76,7 +76,7 @@ When one async select field should filter its options based on another field's v
 
 ### Reusable filtered component
 
-Create a reusable `<RelatedEntity>AsyncSelectField` (or `AsyncAutocompleteField` for large option sets) that accepts filter variables as a prop. Place it in the related entity's domain folder, following the same pattern as [form-field-07-many-to-one.md](form-field-07-many-to-one.md).
+Create a reusable `<RelatedEntity>AsyncSelectField` (or `AsyncAutocompleteField` for large option sets or paginated queries) that accepts filter variables as a prop. The example below assumes a non-paginated query that returns a flat list (see [form-field-13-async-select.md](form-field-13-async-select.md)). Place it in the related entity's domain folder, following the same pattern as [form-field-07-many-to-one.md](form-field-07-many-to-one.md).
 
 **GQL Definitions**
 
@@ -86,10 +86,8 @@ import { gql } from "@apollo/client";
 export const <relatedEntity>AsyncSelectFieldQuery = gql`
     query <RelatedEntity>AsyncSelectField($filter: <RelatedEntity>Filter) {
         <relatedEntity>s(filter: $filter) {
-            nodes {
-                id
-                <labelField>
-            }
+            id
+            <labelField>
         }
     }
 `;
@@ -108,7 +106,7 @@ import {
     type GQL<RelatedEntity>AsyncSelectFieldQueryVariables,
 } from "./<RelatedEntity>AsyncSelectField.gql.generated";
 
-type <RelatedEntity>AsyncSelectFieldOption = GQL<RelatedEntity>AsyncSelectFieldQuery["<relatedEntity>s"]["nodes"][number];
+type <RelatedEntity>AsyncSelectFieldOption = GQL<RelatedEntity>AsyncSelectFieldQuery["<relatedEntity>s"][number];
 
 type <RelatedEntity>AsyncSelectFieldProps = Omit<
     AsyncSelectFieldProps<<RelatedEntity>AsyncSelectFieldOption>,
@@ -139,7 +137,7 @@ export const <RelatedEntity>AsyncSelectField: FunctionComponent<<RelatedEntity>A
                     query: <relatedEntity>AsyncSelectFieldQuery,
                     variables: { filter },
                 });
-                return data.<relatedEntity>s.nodes;
+                return data.<relatedEntity>s;
             }}
         />
     );

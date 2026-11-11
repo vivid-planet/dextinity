@@ -2,7 +2,7 @@
 
 Alternative to `AsyncAutocompleteField` for relation fields. Renders a dropdown select that loads options asynchronously. Use when the number of options is small and a full autocomplete search is unnecessary.
 
-**When to use:** The API query returns **all items at once without pagination** (no `search` parameter). The option list is small (< ~50 items). If the API supports pagination and search, use [AsyncAutocompleteField](form-field-07-many-to-one.md) instead.
+**When to use:** The API query returns **all items at once as a flat list** (`[Entity!]!`, generated with `paging: false`, no `search` parameter). The option list is small (< ~50 items). If the query is paginated (returns `{ nodes, totalCount }`), use [AsyncAutocompleteField](form-field-07-many-to-one.md) instead — a paginated query returns only the first 25 items unless `limit` is set, so options would silently be missing.
 
 ## Basic usage
 
@@ -17,15 +17,13 @@ Alternative to `AsyncAutocompleteField` for relation fields. Renders a dropdown 
             query: gql`
                 query ProductCategoriesSelect {
                     productCategories {
-                        nodes {
-                            id
-                            title
-                        }
+                        id
+                        title
                     }
                 }
             `,
         });
-        return data.productCategories.nodes;
+        return data.productCategories;
     }}
     getOptionLabel={(option) => option.title}
 />
@@ -47,15 +45,13 @@ Add the `multiple` prop for ManyToMany relations:
             query: gql`
                 query ProductTagsSelect {
                     productTags {
-                        nodes {
-                            id
-                            title
-                        }
+                        id
+                        title
                     }
                 }
             `,
         });
-        return data.productTags.nodes;
+        return data.productTags;
     }}
     getOptionLabel={(option) => option.title}
 />
@@ -89,6 +85,7 @@ tags: formValues.tags ? formValues.tags.map((tag) => tag.id) : [],
 ## Rules
 
 - Import `AsyncSelectField` from `@dextinity/admin`
+- The query selects the fields directly on the flat list and `loadOptions` returns the list as is — no `nodes` wrapper
 - The `loadOptions` callback takes **no arguments** (unlike AsyncAutocompleteField which receives `search`)
 - After adding GQL queries, run codegen (codegen watcher) so the generated types become available
 - Prefer `AsyncAutocompleteField` (as reusable component) when the field is used across multiple forms

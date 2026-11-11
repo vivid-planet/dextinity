@@ -8,8 +8,13 @@ const videoDamFile = {
     size: 1000,
     mimetype: "video/mp4",
     contentHash: "video-hash",
+    title: null,
+    altText: null,
+    aiContentType: null,
     archived: false,
+    scope: null,
     fileUrl: "https://example.com/video.mp4",
+    captions: null,
 };
 
 const previewImageDamFile = {
@@ -18,12 +23,21 @@ const previewImageDamFile = {
     size: 100,
     mimetype: "image/png",
     contentHash: "image-hash",
+    title: null,
+    altText: null,
+    aiContentType: null,
     archived: false,
+    scope: null,
+    image: null,
     fileUrl: "https://example.com/preview.png",
 };
 
+const videoSettings = { autoplay: null, loop: null, showControls: null };
+
 const createState = (state: Partial<DamVideoBlockState> = {}): DamVideoBlockState => ({
-    previewImage: {},
+    damFile: null,
+    ...videoSettings,
+    previewImage: { damFile: null, cropArea: null },
     ...state,
 });
 
@@ -46,7 +60,9 @@ describe("createDamVideoBlock", () => {
         it("should return the video file and the preview image", () => {
             const block = createDamVideoBlock();
 
-            expect(block.dependencies?.(createState({ damFile: videoDamFile, previewImage: { damFile: previewImageDamFile } }))).toEqual([
+            expect(
+                block.dependencies?.(createState({ damFile: videoDamFile, previewImage: { damFile: previewImageDamFile, cropArea: null } })),
+            ).toEqual([
                 { targetGraphqlObjectType: "DamFile", id: "video-1", data: { damFile: videoDamFile } },
                 { targetGraphqlObjectType: "DamFile", id: "image-1", data: { damFile: previewImageDamFile } },
             ]);
@@ -55,7 +71,7 @@ describe("createDamVideoBlock", () => {
         it("should return the preview image even when no video file is set", () => {
             const block = createDamVideoBlock();
 
-            expect(block.dependencies?.(createState({ previewImage: { damFile: previewImageDamFile } }))).toEqual([
+            expect(block.dependencies?.(createState({ previewImage: { damFile: previewImageDamFile, cropArea: null } }))).toEqual([
                 { targetGraphqlObjectType: "DamFile", id: "image-1", data: { damFile: previewImageDamFile } },
             ]);
         });
@@ -72,21 +88,25 @@ describe("createDamVideoBlock", () => {
             const block = createDamVideoBlock();
 
             expect(
-                block.replaceDependenciesInOutput({ damFileId: "video-1", previewImage: { damFileId: "image-1" } }, [
-                    { type: "DamFile", originalId: "video-1", replaceWithId: "video-2" },
-                    { type: "DamFile", originalId: "image-1", replaceWithId: "image-2" },
-                ]),
-            ).toEqual({ damFileId: "video-2", previewImage: { damFileId: "image-2" } });
+                block.replaceDependenciesInOutput(
+                    { ...videoSettings, damFileId: "video-1", previewImage: { damFileId: "image-1", cropArea: null } },
+                    [
+                        { type: "DamFile", originalId: "video-1", replaceWithId: "video-2" },
+                        { type: "DamFile", originalId: "image-1", replaceWithId: "image-2" },
+                    ],
+                ),
+            ).toEqual({ ...videoSettings, damFileId: "video-2", previewImage: { damFileId: "image-2", cropArea: null } });
         });
 
         it("should keep ids without a replacement", () => {
             const block = createDamVideoBlock();
 
             expect(
-                block.replaceDependenciesInOutput({ damFileId: "video-1", previewImage: { damFileId: "image-1" } }, [
-                    { type: "DamFile", originalId: "image-1", replaceWithId: "image-2" },
-                ]),
-            ).toEqual({ damFileId: "video-1", previewImage: { damFileId: "image-2" } });
+                block.replaceDependenciesInOutput(
+                    { ...videoSettings, damFileId: "video-1", previewImage: { damFileId: "image-1", cropArea: null } },
+                    [{ type: "DamFile", originalId: "image-1", replaceWithId: "image-2" }],
+                ),
+            ).toEqual({ ...videoSettings, damFileId: "video-1", previewImage: { damFileId: "image-2", cropArea: null } });
         });
     });
 });

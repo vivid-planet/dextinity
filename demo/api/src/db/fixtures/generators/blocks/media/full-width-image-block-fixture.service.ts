@@ -16,7 +16,7 @@ export class FullWidthImageBlockFixtureService {
     async generateBlockInput(): Promise<ExtractBlockInputFactoryProps<typeof FullWidthImageBlock>> {
         return {
             content: {
-                ...(await this.richTextBlockFixtureService.generateBlockInput()),
+                block: await this.richTextBlockFixtureService.generateBlockInput(),
                 visible: faker.datatype.boolean({ probability: 1.0 }),
             },
             image: await this.damImageBlockFixtureService.generateBlockInput(),

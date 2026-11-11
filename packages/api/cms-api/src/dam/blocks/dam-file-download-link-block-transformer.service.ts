@@ -11,13 +11,13 @@ type File = {
     fileUrl: string;
     size: number;
     mimetype: string;
-    scope?: DamScopeInterface;
-    altText?: string;
-    title?: string;
+    scope: DamScopeInterface | null;
+    altText: string | null;
+    title: string | null;
 };
 
 type TransformResponse = {
-    file?: File;
+    file: File | null;
     openFileType: OpenFileTypeMethod;
 };
 
@@ -27,10 +27,11 @@ export class DamFileDownloadLinkBlockTransformerService implements BlockTransfor
 
     async transformToPlain(block: DamFileDownloadLinkBlockData, { includeInvisibleContent, previewDamUrls }: BlockContext) {
         const ret: TransformResponse = {
+            file: null,
             openFileType: block.openFileType,
         };
 
-        if (block.fileId === undefined) {
+        if (!block.fileId) {
             return ret;
         }
 
@@ -42,9 +43,9 @@ export class DamFileDownloadLinkBlockTransformerService implements BlockTransfor
                 name: file.name,
                 size: file.size,
                 mimetype: file.mimetype,
-                scope: file.scope,
-                altText: file.altText,
-                title: file.title,
+                scope: file.scope ?? null,
+                altText: file.altText ?? null,
+                title: file.title ?? null,
             };
 
             if (block.openFileType === "NewTab") {

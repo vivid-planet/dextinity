@@ -775,6 +775,57 @@ If your project has to keep its own consumer, handle the new kind wherever you s
   }
 ```
 
+### Use `null` for optional block fields
+
+An optional block field, i.e., a field with `@BlockField({ nullable: true })`, is now always present and `null` when it has no value, never `undefined`.
+Type the properties of your block data and input classes as `T | null` and validate the input with `@IsNullable()` instead of `@IsOptional()` or `@IsUndefinable()`:
+
+```diff
+  class HeadlineBlockData extends BlockData {
+-     @BlockField({ nullable: true })
+-     eyebrow?: string;
++     @BlockField({ type: "string", nullable: true })
++     eyebrow: string | null;
+  }
+
+  class HeadlineBlockInput extends BlockInput {
+-     @IsUndefinable()
++     @IsNullable()
+      @IsString()
+-     @BlockField({ nullable: true })
+-     eyebrow?: string;
++     @BlockField({ type: "string", nullable: true })
++     eyebrow: string | null;
+  }
+```
+
+A block input without the field fails validation, so API clients must send `null` for an empty optional field.
+
+Pass the `type` (`"string"`, `"number"` or `"boolean"`) to `@BlockField` explicitly. TypeScript emits `Object` as the design type of a union with `null`, so `@BlockField` can't infer it anymore, and the API fails to start with "Can't infer the type of …".
+
+Find the fields with:
+
+```sh
+grep -rn -A4 "nullable: true" api/src --include=*.block.ts
+```
+
+Then replace strict comparisons with `undefined` on these fields, which miss `null`, for instance in `indexData()`:
+
+```diff
+- if (this.productId === undefined) {
++ if (!this.productId) {
+      return {};
+  }
+```
+
+Block transformer services must return `null` for the optional fields of their output as well, e.g., `damFile: null` instead of leaving `damFile` out.
+
+Existing block data is migrated automatically: when block data is loaded, optional fields that are missing are set to `null`, including the fields of nested objects. Run the `migrateBlocks` command after deploying, as after every deployment, to persist the migrated data:
+
+```sh
+npm run console -- migrateBlocks
+```
+
 ### Read `validationErrors` as a list of paths and messages
 
 The `ExceptionFilter` returns `validationErrors` of a `DextinityValidationException` as the list of `formatValidationErrors()` instead of the tree of class-validator errors. Only clients that read `validationErrors` are affected, for instance a custom client that shows the errors of a failed mutation.
@@ -1276,12 +1327,66 @@ The details passed to the callbacks of the Data Grid require `apiRef` now. Add i
 
 MUI X v9 requires a new license key for the Pro and Premium packages. Regenerate it in the [MUI Store](https://mui.com/store/) and replace the key wherever your project sets it, for example, in the environment variables of the admin.
 
-<!-- "Verify lint passes" must always be the last step for this service. -->
+### Use `null` for optional block fields
+
+The generated block types (`dextinity generate-block-types`) type optional block fields as `T | null` instead of `?: T`, matching the API. The API rejects block inputs without the field, so use `null` instead of `undefined` for empty optional fields. Regenerate the block types and fix the type errors:
+
+```diff title="src/blocks.generated.ts"
+  export interface HeadlineBlockData {
+-     eyebrow?: string;
++     eyebrow: string | null;
+  }
+```
+
+Most errors are default values and `state2Output` functions that use `undefined`:
+
+```diff
+  eyebrow: {
+      block: createCompositeBlockField<HeadlineBlockData["eyebrow"]>({
+-         defaultValue: undefined,
++         defaultValue: null,
+```
+
+`BlocksFinalForm` submits a cleared field as `null`, as long as the field is part of the form's `initialValues`.
+
+Type checks don't catch these runtime pitfalls, so search for them as well:
+
+- Strict comparisons with `undefined` (`eyebrow === undefined`) miss `null`. Use `!eyebrow` or `eyebrow === null` instead.
+- Default values (`{ eyebrow = "" }` or `function f(eyebrow = "")`) don't apply to `null`. Use `eyebrow ?? ""` instead.
+- Values of optional fields can't be passed to props that only accept `undefined`. Convert them where needed, e.g., `eyebrow ?? undefined`.
 
 ### Verify lint passes
 
 ```sh
 cd admin
+npm run lint
+```
+
+Repeat this step, fixing all lint errors, until the lint passes.
+
+## Site
+
+### Handle `null` in optional block fields
+
+The generated block types (`dextinity generate-block-types`) type optional block fields as `T | null` instead of `?: T`, matching the API, which always returns `null` for an optional field without a value. Regenerate the block types and fix the type errors:
+
+```diff title="src/blocks.generated.ts"
+  export interface HeadlineBlockData {
+-     eyebrow?: string;
++     eyebrow: string | null;
+  }
+```
+
+Values of optional fields can't be passed to props that only accept `undefined` anymore. Convert them where needed, e.g., `eyebrow ?? undefined`.
+Type checks don't catch these runtime pitfalls, so search for them as well:
+
+- Strict comparisons with `undefined` (`eyebrow === undefined`) miss `null`. Use `!eyebrow` or `eyebrow === null` instead.
+- Default values (`{ eyebrow = "" }` or `function f(eyebrow = "")`) don't apply to `null`. Use `eyebrow ?? ""` instead.
+
+### Verify lint passes
+
+```sh
+cd site
 npm run lint
 ```
 

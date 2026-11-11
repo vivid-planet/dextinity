@@ -78,7 +78,7 @@ export const AccordionItemBlock = createCompositeBlock(
     },
     (block) => {
         block.category = BlockCategory.TextAndContent;
-        block.previewContent = (state) => (state.title !== undefined ? [{ type: "text", content: state.title }] : []);
+        block.previewContent = (state) => (state.title ? [{ type: "text", content: state.title }] : []);
         return block;
     },
 );

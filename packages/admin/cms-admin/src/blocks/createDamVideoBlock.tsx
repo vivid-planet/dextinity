@@ -61,14 +61,20 @@ export const createDamVideoBlock = (
 
         displayName: <FormattedMessage id="dextinity.blocks.damVideo" defaultMessage="Video (CMS Asset)" />,
 
-        defaultValues: () => ({ showControls: true, previewImage: PixelImageBlock.defaultValues() }),
+        defaultValues: () => ({
+            damFile: null,
+            autoplay: null,
+            loop: null,
+            showControls: true,
+            previewImage: PixelImageBlock.defaultValues(),
+        }),
 
         category: BlockCategory.Media,
 
         input2State: (input) => ({ ...input, previewImage: PixelImageBlock.input2State(input.previewImage) }),
 
         state2Output: (state) => ({
-            damFileId: state.damFile?.id,
+            damFileId: state.damFile?.id ?? null,
             previewImage: PixelImageBlock.state2Output(state.previewImage),
             autoplay: state.autoplay,
             loop: state.loop,
@@ -78,6 +84,7 @@ export const createDamVideoBlock = (
         output2State: async (output, context) => {
             if (!output.damFileId) {
                 return {
+                    damFile: null,
                     autoplay: output.autoplay,
                     loop: output.loop,
                     showControls: output.showControls,
@@ -148,7 +155,7 @@ export const createDamVideoBlock = (
             const replacement = replacements.find((replacement) => replacement.type === "DamFile" && replacement.originalId === output.damFileId);
 
             if (replacement) {
-                clonedOutput.damFileId = replacement.replaceWithId;
+                clonedOutput.damFileId = replacement.replaceWithId ?? null;
             }
 
             clonedOutput.previewImage = PixelImageBlock.replaceDependenciesInOutput(output.previewImage, replacements);

@@ -1,6 +1,7 @@
 import { Transform } from "class-transformer";
-import { IsBoolean, IsOptional, ValidateNested } from "class-validator";
+import { IsBoolean, ValidateNested } from "class-validator";
 
+import { IsNullable } from "../../common/validators/is-nullable.js";
 import {
     type Block,
     type BlockContext,
@@ -22,7 +23,7 @@ import type { BlockFactoryNameOrOptions } from "./types.js";
 import { withDefaultDescription } from "./withDefaultDescription.js";
 
 export interface OptionalBlockInputInterface<DecoratedBlockInput extends BlockInputInterface> extends SimpleBlockInputInterface {
-    block?: DecoratedBlockInput;
+    block: DecoratedBlockInput | null;
     visible: boolean;
 }
 
@@ -32,8 +33,8 @@ export function createOptionalBlock<DecoratedBlock extends Block>(
 ): Block<BlockDataInterface, OptionalBlockInputInterface<ExtractBlockInput<DecoratedBlock>>> {
     class BlockOptional extends BlockData {
         @BlockField({ type: "block", block, nullable: true })
-        @Transform(({ value }) => (value ? (isBlockDataInterface(value) ? value : block.blockDataFactory(value)) : undefined), { toClassOnly: true })
-        block?: BlockDataInterface;
+        @Transform(({ value }) => (value ? (isBlockDataInterface(value) ? value : block.blockDataFactory(value)) : null), { toClassOnly: true })
+        block: BlockDataInterface | null;
 
         @BlockField()
         visible: boolean;
@@ -61,12 +62,12 @@ export function createOptionalBlock<DecoratedBlock extends Block>(
 
     class BlockOptionalInput extends BlockInput {
         @BlockField({ type: "block", block, nullable: true })
-        @Transform(({ value }) => (value ? (isBlockInputInterface(value) ? value : block.blockInputFactory(value)) : undefined), {
+        @Transform(({ value }) => (value ? (isBlockInputInterface(value) ? value : block.blockInputFactory(value)) : value), {
             toClassOnly: true,
         })
         @ValidateNested()
-        @IsOptional()
-        block?: ExtractBlockInput<DecoratedBlock>;
+        @IsNullable()
+        block: ExtractBlockInput<DecoratedBlock> | null;
 
         @IsBoolean()
         @BlockField()
@@ -82,7 +83,7 @@ export function createOptionalBlock<DecoratedBlock extends Block>(
         BlockOptionalInput,
         withDefaultDescription(
             nameOrOptions,
-            'A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{"visible":false}` without `block`.',
+            'A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{"block":null,"visible":false}`.',
         ),
     );
 }

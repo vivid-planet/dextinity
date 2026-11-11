@@ -1,18 +1,19 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsString } from "class-validator";
 
 import { BlockData, BlockInput, blockInputToData, createBlock } from "../../blocks/block.js";
 import { BlockField } from "../../blocks/decorators/field.js";
+import { IsNullable } from "../../common/validators/is-nullable.js";
 
 class AnchorBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    name?: string;
+    @BlockField({ type: "string", nullable: true })
+    name: string | null;
 }
 
 class AnchorBlockInput extends BlockInput {
-    @BlockField({ nullable: true })
-    @IsOptional()
+    @BlockField({ type: "string", nullable: true })
+    @IsNullable()
     @IsString()
-    name?: string;
+    name: string | null;
 
     transformToBlockData(): AnchorBlockData {
         return blockInputToData(AnchorBlockData, this);

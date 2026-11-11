@@ -12,24 +12,22 @@ type TransformResponse = {
         documentType: string;
         scope: Record<string, string> | null;
     } | null;
-    targetPageAnchor?: string;
+    targetPageAnchor: string | null;
 };
 
 @Injectable()
 export class InternalLinkBlockTransformerService implements BlockTransformerServiceInterface<InternalLinkBlockData, TransformResponse> {
     constructor(private readonly pageTreeReadApiService: PageTreeReadApiService) {}
 
-    async transformToPlain(block: InternalLinkBlockData) {
+    async transformToPlain(block: InternalLinkBlockData): Promise<TransformResponse> {
         if (!block.targetPageId) {
-            return {
-                targetPage: null,
-            };
+            return { targetPage: null, targetPageAnchor: block.targetPageAnchor };
         }
 
         const node = await this.pageTreeReadApiService.getNode(block.targetPageId);
 
         if (!node) {
-            return { targetPage: null };
+            return { targetPage: null, targetPageAnchor: block.targetPageAnchor };
         }
 
         return {

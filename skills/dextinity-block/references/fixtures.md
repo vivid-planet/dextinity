@@ -404,7 +404,7 @@ const variant = faker.helpers.arrayElement(Object.values(Variant));
 
 return {
     variant,
-    subtitle: variant === "expanded" ? faker.lorem.words({ min: 3, max: 9 }) : undefined,
+    subtitle: variant === "expanded" ? faker.lorem.words({ min: 3, max: 9 }) : null,
     // ...
 };
 ```

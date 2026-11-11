@@ -7,8 +7,19 @@ const SeoBlock = createSeoBlock();
 
 describe("createSeoBlock", () => {
     it("should report a missing openGraphImage", async () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const input = SeoBlock.blockInputFactory({ noIndex: false, priority: "0_5", changeFrequency: "always", alternativeLinks: [] } as any);
+        const input = SeoBlock.blockInputFactory({
+            htmlTitle: null,
+            metaDescription: null,
+            openGraphTitle: null,
+            openGraphDescription: null,
+            structuredData: null,
+            noIndex: false,
+            priority: "0_5",
+            changeFrequency: "always",
+            canonicalUrl: null,
+            alternativeLinks: [],
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any);
 
         const errors = await validate(input, { whitelist: true, forbidNonWhitelisted: true });
 

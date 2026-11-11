@@ -32,10 +32,10 @@ To improve the user experience, make sure that the user can save the block witho
 
 ```ts title="headline.block.ts"
 class HeadlineBlockInput extends BlockData {
-    @BlockField({ nullable: true })
+    @BlockField({ type: "string", nullable: true })
     @IsString()
-    @IsOptional()
-    eyebrow?: string;
+    @IsNullable()
+    eyebrow: string | null;
 
     ...
 }
@@ -43,8 +43,10 @@ class HeadlineBlockInput extends BlockData {
 
 Make sure to consider all three aspects of the field:
 First, add `nullable: true` to the `@BlockField` decorator for the block meta (and, therefore, the generated TypeScript interfaces).
-Second, add a `@IsOptional` decorator for the validation of the block input.
-Finally, denote the property as optional using `?` for TypeScript.
+Also pass the `type`, as TypeScript emits `Object` as the design type of a union with `null`, so `@BlockField` can't infer it.
+Second, add the `@IsNullable` decorator for the validation of the block input.
+Finally, type the property as `string | null` for TypeScript.
+An optional field without a value is always `null`, never `undefined`: the block input must contain the field, and the generated interfaces for Admin and Site type it as `eyebrow: string | null`.
 
 :::note
 

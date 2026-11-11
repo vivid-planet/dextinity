@@ -8,11 +8,11 @@ Dextinity has a built-in content visibility system that controls which content i
 
 Every page tree node has a visibility state, which is one of:
 
-| State           | Description                                                                 |
-| --------------- | --------------------------------------------------------------------------- |
-| **Published**   | The page is live and visible to site visitors.                              |
+| State           | Description                                                                    |
+| --------------- | ------------------------------------------------------------------------------ |
+| **Published**   | The page is live and visible to site visitors.                                 |
 | **Unpublished** | The page is not yet ready for visitors. Only visible in the admin and preview. |
-| **Archived**    | The page has been retired. Only visible in the admin and preview.           |
+| **Archived**    | The page has been retired. Only visible in the admin and preview.              |
 
 New pages default to **Unpublished**. Editors can change the visibility state in the admin UI through the page tree context menu.
 
@@ -21,7 +21,6 @@ New pages default to **Unpublished**. Editors can change the visibility state in
 The home page cannot be set to Unpublished or Archived.
 
 :::
-
 
 ## Block Visibility
 
@@ -117,7 +116,6 @@ export class NewsResolver {
 
 This ensures site visitors only see visible news items while authenticated admin users can access all items regardless of their visibility state.
 
-
 ## How Block Visibility Works Internally
 
 Block factories like `createBlocksBlock`, `createListBlock`, and `createOneOfBlock` check the `includeInvisibleContent` flag in the block context during transformation:
@@ -130,9 +128,9 @@ The `BlocksTransformerService` reads the header and passes `includeInvisibleCont
 
 ## Summary
 
-| Consumer                        | Header sent                                          | Pages returned                         | Blocks returned     |
-| ------------------------------- | ---------------------------------------------------- | -------------------------------------- | ------------------- |
-| Public site                     | _(none)_                                             | Published only                         | Visible only        |
-| Site preview (toggle on)        | `Pages:Unpublished`                                  | Published + Unpublished                | Visible only        |
-| Site preview (toggle off)       | `Pages:Unpublished,Blocks:Invisible`                 | Published + Unpublished                | Visible + Invisible |
-| Admin                           | `Pages:Unpublished,Pages:Archived,Blocks:Invisible`  | All (Published, Unpublished, Archived) | All (Visible + Invisible) |
+| Consumer                  | Header sent                                         | Pages returned                         | Blocks returned           |
+| ------------------------- | --------------------------------------------------- | -------------------------------------- | ------------------------- |
+| Public site               | _(none)_                                            | Published only                         | Visible only              |
+| Site preview (toggle on)  | `Pages:Unpublished`                                 | Published + Unpublished                | Visible only              |
+| Site preview (toggle off) | `Pages:Unpublished,Blocks:Invisible`                | Published + Unpublished                | Visible + Invisible       |
+| Admin                     | `Pages:Unpublished,Pages:Archived,Blocks:Invisible` | All (Published, Unpublished, Archived) | All (Visible + Invisible) |

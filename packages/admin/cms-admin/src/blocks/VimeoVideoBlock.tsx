@@ -42,7 +42,13 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
 
     displayName: <FormattedMessage id="dextinity.blocks.vimeoVideo" defaultMessage="Video (Vimeo)" />,
 
-    defaultValues: () => ({ showControls: true, previewImage: PixelImageBlock.defaultValues() }),
+    defaultValues: () => ({
+        vimeoIdentifier: null,
+        autoplay: null,
+        loop: null,
+        showControls: true,
+        previewImage: PixelImageBlock.defaultValues(),
+    }),
 
     category: BlockCategory.Media,
 

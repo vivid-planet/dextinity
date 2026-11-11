@@ -252,13 +252,13 @@ describe("block extending a block with vendor migrations", () => {
 
     // The application extends that block and brings migrations of its own
     class ExtendedBlockData extends LibraryBlockData {
-        @BlockField({ nullable: true })
-        subtitle?: string;
+        @BlockField({ type: "string", nullable: true })
+        subtitle: string | null;
     }
 
     class ExtendedBlockInput extends LibraryBlockInput {
-        @BlockField({ nullable: true })
-        subtitle?: string;
+        @BlockField({ type: "string", nullable: true })
+        subtitle: string | null;
 
         transformToBlockData(): ExtendedBlockData {
             return blockInputToData(ExtendedBlockData, this);
@@ -273,6 +273,7 @@ describe("block extending a block with vendor migrations", () => {
     it("runs the inherited vendor migrations before its own", () => {
         expect(transformToBlockSave(ExtendedBlock.blockDataFactory({ text: "hello" }))).toEqual({
             text: "hello+vendor1+own1",
+            subtitle: null,
             $$version: 1,
             $$vendorVersion: 1,
         });
@@ -281,6 +282,7 @@ describe("block extending a block with vendor migrations", () => {
     it("doesn't re-run a chain the block instance is up to date with", () => {
         expect(transformToBlockSave(ExtendedBlock.blockDataFactory({ text: "hello+vendor1", $$vendorVersion: 1 }))).toEqual({
             text: "hello+vendor1+own1",
+            subtitle: null,
             $$version: 1,
             $$vendorVersion: 1,
         });

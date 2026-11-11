@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsOptional, IsUUID, ValidateNested } from "class-validator";
+import { IsUUID, ValidateNested } from "class-validator";
 
 import {
     type BlockContext,
@@ -12,6 +12,7 @@ import {
     createBlock,
 } from "../../blocks/block.js";
 import { AnnotationBlockMeta } from "../../blocks/decorators/field.js";
+import { IsNullable } from "../../common/validators/is-nullable.js";
 import { FocalPoint } from "../../file-utils/focal-point.enum.js";
 import { DamFileAiContentType } from "../files/entities/ai-content-type.enum.js";
 import { FILE_ENTITY } from "../files/entities/file.entity.js";
@@ -23,10 +24,10 @@ import { PixelImageBlockTransformerService } from "./pixel-image-block-transform
 
 // @TODO: make factory to support flexible validation
 class PixelImageBlockData extends BlockData {
-    damFileId?: string;
+    damFileId: string | null = null;
 
     @Type(() => ImageCropArea)
-    cropArea?: ImageCropArea;
+    cropArea: ImageCropArea | null = null;
 
     async transformToPlain() {
         return PixelImageBlockTransformerService;
@@ -46,13 +47,13 @@ class PixelImageBlockData extends BlockData {
             return undefined;
         }
 
-        const image = await filesService.findImageToDeliver({ file, cropArea: this.cropArea }, { previewDamUrls });
+        const image = await filesService.findImageToDeliver({ file, cropArea: this.cropArea ?? undefined }, { previewDamUrls });
 
         return image ? imagesService.createUrlTemplate(image, { previewDamUrls }) : undefined;
     }
 
     indexData(): BlockIndexData {
-        if (this.damFileId === undefined) {
+        if (!this.damFileId) {
             return {};
         }
 
@@ -68,14 +69,14 @@ class PixelImageBlockData extends BlockData {
 }
 
 class PixelImageBlockInput extends BlockInput {
-    @IsOptional()
+    @IsNullable()
     @IsUUID()
-    damFileId?: string;
+    damFileId: string | null;
 
     @Type(() => ImageCropAreaInput)
-    @IsOptional()
+    @IsNullable()
     @ValidateNested()
-    cropArea?: ImageCropAreaInput;
+    cropArea: ImageCropAreaInput | null;
 
     transformToBlockData(): PixelImageBlockData {
         return blockInputToData(PixelImageBlockData, this);

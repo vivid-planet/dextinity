@@ -16,7 +16,7 @@ export const PhoneLinkBlock: BlockInterface<PhoneLinkBlockData, PhoneLinkBlockDa
 
     displayName: <FormattedMessage id="dextinity.blocks.link.phone" defaultMessage="Phone Number" />,
 
-    defaultValues: () => ({ phone: undefined }),
+    defaultValues: () => ({ phone: null }),
 
     category: BlockCategory.Navigation,
 

@@ -18,15 +18,15 @@ On the API side, the entity reference is stored as a **nullable string field** c
 
 ```ts
 class MyBlockData extends BlockData {
-    @BlockField({ nullable: true })
-    productId?: string;
+    @BlockField({ type: "string", nullable: true })
+    productId: string | null;
 }
 
 class MyBlockInput extends BlockInput {
-    @IsUndefinable()
+    @IsNullable()
     @IsString()
-    @BlockField({ nullable: true })
-    productId?: string;
+    @BlockField({ type: "string", nullable: true })
+    productId: string | null;
 
     transformToBlockData(): MyBlockData {
         return blockInputToData(MyBlockData, this);
@@ -36,7 +36,7 @@ class MyBlockInput extends BlockInput {
 
 Rules:
 
-- Use `@BlockField({ nullable: true })` and `@IsUndefinable()` so the block is savable without a selection.
+- Use `@BlockField({ type: "string", nullable: true })` and `@IsNullable()` so the block is savable without a selection.
 - Name the field `{entityName}Id` (e.g., `productId`, `categoryId`) to clarify it stores a reference, not the entity itself.
 - The site resolves the ID to full entity data via a block loader (see [block-loader.md](block-loader.md)).
 
@@ -58,13 +58,13 @@ import { createCompositeBlockField } from "@dextinity/cms-admin";
 createCompositeBlockField<State>(options: Options<State>)
 ```
 
-The generic type parameter `State` is the state type for the field — typically a `string | undefined` for entity ID references or a custom object shape.
+The generic type parameter `State` is the state type for the field — typically a `string | null` for entity ID references or a custom object shape.
 
 ### Options
 
 | Option                | Type                           | Required | Description                                                                                           |
 | --------------------- | ------------------------------ | -------- | ----------------------------------------------------------------------------------------------------- |
-| `defaultValue`        | `State`                        | Yes      | Default value for new blocks. Use `undefined` for nullable entity references.                         |
+| `defaultValue`        | `State`                        | Yes      | Default value for new blocks. Use `null` for nullable entity references.                              |
 | `AdminComponent`      | `ComponentType<AdminProps>`    | Yes      | React component receiving `{ state, updateState }` that renders the admin UI for this field.          |
 | `definesOwnPadding`   | `boolean`                      | No       | Whether the component defines its own padding (skips default block padding).                          |
 | `extractTextContents` | `(state, options) => string[]` | No       | Extracts text content from the state for search indexing. Return entity name or title when available. |
@@ -105,7 +105,7 @@ export const ProductPickerBlock = createCompositeBlock(
         blocks: {
             productId: {
                 block: createCompositeBlockField<ProductPickerBlockData["productId"]>({
-                    defaultValue: undefined,
+                    defaultValue: null,
                     AdminComponent: ({ state, updateState }) => {
                         const client = useApolloClient();
                         const { scope } = useContentScope();
@@ -258,7 +258,7 @@ When `loaded.product` is `null` (entity deleted, unpublished, or ID missing), re
 
 ## Common Pitfalls
 
-1. **Forgetting `@IsUndefinable()` on the API field** — without it, the block cannot be saved in its initial empty state because validation rejects `undefined`.
+1. **Forgetting `@IsNullable()` on the API field or using `undefined` as the default value** — the block cannot be saved in its initial empty state because validation rejects a missing value. Use `null` for an empty field.
 2. **Not using `skip: !state` in `useQuery`** — querying with an undefined ID causes a GraphQL error.
 3. **Storing the entire entity object instead of just the ID** — block data is stored as JSON in the database. Store only the entity's UUID; resolve full data at render time via a block loader.
 4. **Not filtering by scope in `loadOptions`** — in multi-scope projects, entity search results must match the current content scope so editors only see relevant entities.

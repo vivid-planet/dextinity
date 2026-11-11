@@ -24,7 +24,7 @@ interface OneOfBlockItem<T extends BlockInterface = BlockInterface> {
 
 export interface OneOfBlockState {
     attachedBlocks: OneOfBlockItem[];
-    activeType?: string;
+    activeType: string | null;
 }
 
 export interface OneOfBlockFragment {
@@ -33,12 +33,12 @@ export interface OneOfBlockFragment {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         props: any;
     }[];
-    activeType?: string;
-    block?: {
+    activeType: string | null;
+    block: {
         type: string;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         props: any;
-    };
+    } | null;
 }
 
 export interface OneOfBlockPreviewState extends BlockPreviewStateInterface {
@@ -49,7 +49,7 @@ export interface OneOfBlockPreviewState extends BlockPreviewStateInterface {
     };
 }
 
-type ActiveType<Config extends boolean> = Config extends false ? { activeType: string } : { activeType?: string };
+type ActiveType<Config extends boolean> = Config extends false ? { activeType: string } : { activeType: string | null };
 
 export type OneOfBlockOutput<Config extends boolean> = {
     attachedBlocks: {
@@ -141,7 +141,7 @@ export const createOneOfBlock = <T extends boolean = boolean>(
             if (allowEmpty) {
                 return {
                     attachedBlocks: [],
-                    activeType: undefined,
+                    activeType: null,
                 };
             } else {
                 const [blockType, block] = Object.entries(supportedBlocks)[0];
@@ -157,7 +157,7 @@ export const createOneOfBlock = <T extends boolean = boolean>(
             const state: OneOfBlockState = {
                 ...additionalFields,
                 attachedBlocks: [],
-                activeType: activeType && supportedBlocks[activeType] ? activeType : undefined,
+                activeType: activeType && supportedBlocks[activeType] ? activeType : null,
             };
 
             for (const item of attachedBlocks) {
@@ -186,14 +186,15 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                         props: block.state2Output(c.props),
                     };
                 }),
-                activeType,
+                activeType: activeType ?? null,
             } as OneOfBlockOutput<T>;
         },
 
         output2State: async ({ attachedBlocks, activeType, ...additionalFields }, context) => {
             const state: OneOfBlockState = {
+                ...additionalFields,
                 attachedBlocks: [],
-                activeType,
+                activeType: activeType ?? null,
             };
 
             for (const item of attachedBlocks) {
@@ -316,7 +317,7 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                         let newState: OneOfBlockState = prevState;
                         if (blockType === "none") {
                             // unselect, no block selected
-                            newState = { ...prevState, activeType: undefined };
+                            newState = { ...prevState, activeType: null };
                         } else {
                             // check if we have a block of the same type already
                             const match = prevState.attachedBlocks.find((c) => c.type === blockType);

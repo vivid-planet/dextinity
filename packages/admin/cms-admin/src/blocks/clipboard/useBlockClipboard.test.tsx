@@ -62,7 +62,7 @@ const internalLinkClipboardContentForScope = (contentScope: Record<string, unkno
             {
                 name: "InternalLink",
                 visible: true,
-                output: { targetPageId: "page-1" },
+                output: { targetPageId: "page-1", targetPageAnchor: null },
                 dependencies: [{ targetGraphqlObjectType: "PageTreeNode", id: "page-1" }],
             },
         ],
@@ -136,7 +136,11 @@ describe("useBlockClipboard", () => {
 
         await act(async () => {
             await result.current.updateClipboardContent([
-                { name: "InternalLink", visible: true, state: { targetPage: { id: "page-1", name: "Page", path: "/page", documentType: "Page" } } },
+                {
+                    name: "InternalLink",
+                    visible: true,
+                    state: { targetPage: { id: "page-1", name: "Page", path: "/page", documentType: "Page" }, targetPageAnchor: null },
+                },
             ]);
         });
 
@@ -146,7 +150,7 @@ describe("useBlockClipboard", () => {
                 {
                     name: "InternalLink",
                     visible: true,
-                    output: { targetPageId: "page-1" },
+                    output: { targetPageId: "page-1", targetPageAnchor: null },
                     dependencies: [{ targetGraphqlObjectType: "PageTreeNode", id: "page-1" }],
                 },
             ],
@@ -160,7 +164,7 @@ describe("useBlockClipboard", () => {
         const response = await getClipboardContent(result);
 
         expect(response.canPaste).toBe(true);
-        expect(response.canPaste && response.content[0].state).toEqual({});
+        expect(response.canPaste && response.content[0].state).toEqual({ targetPage: null, targetPageAnchor: null });
         expect(query).not.toHaveBeenCalled();
     });
 

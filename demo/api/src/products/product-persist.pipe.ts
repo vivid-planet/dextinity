@@ -54,7 +54,7 @@ class ProductPersist extends Transform {
                 activeType: "pixelImage",
                 attachedBlocks: [
                     {
-                        props: {},
+                        props: { damFileId: null, cropArea: null },
                         type: "pixelImage",
                     },
                 ],

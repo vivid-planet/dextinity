@@ -18,7 +18,7 @@ export const ExternalLinkBlock: BlockInterface<ExternalLinkBlockData, State, Ext
 
     displayName: <FormattedMessage id="dextinity.blocks.externalLink" defaultMessage="External Link" />,
 
-    defaultValues: () => ({ targetUrl: undefined, openInNewWindow: false, noFollow: false }),
+    defaultValues: () => ({ targetUrl: null, openInNewWindow: false, noFollow: false }),
 
     category: BlockCategory.Navigation,
 

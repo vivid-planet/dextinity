@@ -1,14 +1,21 @@
 @mixin tokens {
+    // Height of the button; follows the density
     --dextinity-button-height: var(--dextinity-density-control-height);
+    // Height of `size="small"`, for rows and panels
     --dextinity-button-height-small: var(--dextinity-density-control-height-small);
+    // Space before and after the label
     --dextinity-button-padding: var(--dextinity-density-control-padding);
     --dextinity-button-padding-small: var(--dextinity-density-control-padding-small);
+    // Space between the icons and the label
     --dextinity-button-gap: var(--dextinity-space-2);
+    // Corner radius; follows the brand's control radius
     --dextinity-button-radius: var(--dextinity-radius-control);
     --dextinity-button-font-size: var(--dextinity-typography-body-size);
     --dextinity-button-font-size-small: 13px;
     --dextinity-button-font-weight: 500;
+    // Size of `startIcon` and `endIcon`
     --dextinity-button-icon-size: 16px;
+    // Opacity of a disabled button
     --dextinity-button-disabled-opacity: 0.42;
     // Darkens the button while it is pressed
     --dextinity-button-active-brightness: 0.93;
@@ -17,243 +24,43 @@
     // The edge that replaces the background and shadow in forced colors, e.g. a Windows contrast theme
     --dextinity-button-forced-colors-border-width: 1px;
 
+    // Background of the primary action (`contained`, `primary`): the brand gradient
     --dextinity-button-primary-background: var(--dextinity-gradient-brand);
     --dextinity-button-primary-background-hover: var(--dextinity-color-accent);
+    // Label on the primary action
     --dextinity-button-primary-foreground: var(--dextinity-color-accent-foreground);
+    // The glow below the primary action
     --dextinity-button-primary-shadow: inset 0 1px 0 oklch(1 0 0 / 0.2), 0 8px 18px -10px var(--dextinity-color-accent-glow);
     --dextinity-button-primary-shadow-hover: inset 0 1px 0 oklch(1 0 0 / 0.2), 0 10px 22px -10px var(--dextinity-color-accent-glow);
+    // Label of `outlined` and `text` buttons with `color="primary"`
+    --dextinity-button-primary-text-color: var(--dextinity-color-accent-text);
 
+    // Background of `outlined` buttons, e.g. a secondary action
     --dextinity-button-secondary-background: var(--dextinity-color-surface);
+    // Label of `outlined` buttons
     --dextinity-button-secondary-foreground: var(--dextinity-color-text);
+    // Hairline and shadow of `outlined` buttons
     --dextinity-button-secondary-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-1);
     --dextinity-button-secondary-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle), var(--dextinity-shadow-2);
+    // Background and label of `contained` buttons with `color="secondary"`
+    --dextinity-button-secondary-contained-background: var(--dextinity-color-text);
+    --dextinity-button-secondary-contained-foreground: var(--dextinity-color-canvas);
 
+    // Label of `text` buttons (ghost), for quiet actions such as Cancel
     --dextinity-button-text-foreground: var(--dextinity-color-text-secondary);
     --dextinity-button-text-foreground-hover: var(--dextinity-color-text);
     --dextinity-button-text-background-hover: color-mix(in oklch, var(--dextinity-color-text) 6%, transparent);
 
+    // Label of `outlined` and `text` buttons with `color="error"`, for destructive actions
     --dextinity-button-danger-foreground: var(--dextinity-color-danger-text);
+    // Background and label of `contained` buttons with `color="error"`
     --dextinity-button-danger-background: var(--dextinity-color-danger);
     --dextinity-button-danger-background-foreground: var(--dextinity-color-danger-foreground);
+    // Label of `outlined` and `text` buttons with `color="success"`
     --dextinity-button-success-foreground: var(--dextinity-color-success-text);
+    // Background and label of `contained` buttons with `color="success"`
     --dextinity-button-success-background: var(--dextinity-color-success);
-
-    // Read by `IconButton` until it moves to the design system draft
-    --dextinity-button-border-width: 1px;
-    --dextinity-button-color-primary-contained-default-background: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-contained-default-foreground: var(--dextinity-color-accent-foreground);
-    --dextinity-button-color-primary-contained-default-border: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-contained-hover-background: color-mix(in oklch, var(--dextinity-color-accent), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-primary-contained-hover-foreground: var(--dextinity-color-accent-foreground);
-    --dextinity-button-color-primary-contained-hover-border: color-mix(in oklch, var(--dextinity-color-accent), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-primary-contained-active-background: color-mix(in oklch, var(--dextinity-color-accent), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-primary-contained-active-foreground: var(--dextinity-color-accent-foreground);
-    --dextinity-button-color-primary-contained-active-border: color-mix(in oklch, var(--dextinity-color-accent), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-primary-contained-focus-background: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-contained-focus-foreground: var(--dextinity-color-accent-foreground);
-    --dextinity-button-color-primary-contained-focus-border: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-contained-disabled-background: var(--dextinity-color-surface-sunken);
-    --dextinity-button-color-primary-contained-disabled-foreground: var(--dextinity-color-text-subtle);
-    --dextinity-button-color-primary-contained-disabled-border: var(--dextinity-color-surface-sunken);
-    --dextinity-button-color-primary-contained-loading-background: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-contained-loading-foreground: var(--dextinity-color-accent-foreground);
-    --dextinity-button-color-primary-contained-loading-border: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-outlined-default-background: transparent;
-    --dextinity-button-color-primary-outlined-default-foreground: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-outlined-default-border: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-outlined-hover-background: var(--dextinity-color-accent-soft);
-    --dextinity-button-color-primary-outlined-hover-foreground: color-mix(in oklch, var(--dextinity-color-accent), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-primary-outlined-hover-border: color-mix(in oklch, var(--dextinity-color-accent), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-primary-outlined-active-background: var(--dextinity-color-accent-soft);
-    --dextinity-button-color-primary-outlined-active-foreground: color-mix(in oklch, var(--dextinity-color-accent), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-primary-outlined-active-border: color-mix(in oklch, var(--dextinity-color-accent), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-primary-outlined-focus-background: transparent;
-    --dextinity-button-color-primary-outlined-focus-foreground: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-outlined-focus-border: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-outlined-disabled-background: transparent;
-    --dextinity-button-color-primary-outlined-disabled-foreground: var(--dextinity-color-text-subtle);
-    --dextinity-button-color-primary-outlined-disabled-border: var(--dextinity-color-line);
-    --dextinity-button-color-primary-outlined-loading-background: transparent;
-    --dextinity-button-color-primary-outlined-loading-foreground: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-outlined-loading-border: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-text-default-background: transparent;
-    --dextinity-button-color-primary-text-default-foreground: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-text-default-border: transparent;
-    --dextinity-button-color-primary-text-hover-background: var(--dextinity-color-accent-soft);
-    --dextinity-button-color-primary-text-hover-foreground: color-mix(in oklch, var(--dextinity-color-accent), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-primary-text-hover-border: transparent;
-    --dextinity-button-color-primary-text-active-background: var(--dextinity-color-accent-soft);
-    --dextinity-button-color-primary-text-active-foreground: color-mix(in oklch, var(--dextinity-color-accent), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-primary-text-active-border: transparent;
-    --dextinity-button-color-primary-text-focus-background: transparent;
-    --dextinity-button-color-primary-text-focus-foreground: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-text-focus-border: transparent;
-    --dextinity-button-color-primary-text-disabled-background: transparent;
-    --dextinity-button-color-primary-text-disabled-foreground: var(--dextinity-color-text-subtle);
-    --dextinity-button-color-primary-text-disabled-border: transparent;
-    --dextinity-button-color-primary-text-loading-background: transparent;
-    --dextinity-button-color-primary-text-loading-foreground: var(--dextinity-color-accent);
-    --dextinity-button-color-primary-text-loading-border: transparent;
-    --dextinity-button-color-secondary-contained-default-background: var(--dextinity-color-surface-sunken);
-    --dextinity-button-color-secondary-contained-default-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-contained-default-border: var(--dextinity-color-surface-sunken);
-    --dextinity-button-color-secondary-contained-hover-background: color-mix(in oklch, var(--dextinity-color-surface-sunken), var(--dextinity-color-text) 6%);
-    --dextinity-button-color-secondary-contained-hover-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-contained-hover-border: color-mix(in oklch, var(--dextinity-color-surface-sunken), var(--dextinity-color-text) 6%);
-    --dextinity-button-color-secondary-contained-active-background: color-mix(in oklch, var(--dextinity-color-surface-sunken), var(--dextinity-color-text) 10%);
-    --dextinity-button-color-secondary-contained-active-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-contained-active-border: color-mix(in oklch, var(--dextinity-color-surface-sunken), var(--dextinity-color-text) 10%);
-    --dextinity-button-color-secondary-contained-focus-background: var(--dextinity-color-surface-sunken);
-    --dextinity-button-color-secondary-contained-focus-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-contained-focus-border: var(--dextinity-color-surface-sunken);
-    --dextinity-button-color-secondary-contained-disabled-background: var(--dextinity-color-surface-raised);
-    --dextinity-button-color-secondary-contained-disabled-foreground: var(--dextinity-color-text-subtle);
-    --dextinity-button-color-secondary-contained-disabled-border: var(--dextinity-color-surface-raised);
-    --dextinity-button-color-secondary-contained-loading-background: var(--dextinity-color-surface-sunken);
-    --dextinity-button-color-secondary-contained-loading-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-contained-loading-border: var(--dextinity-color-surface-sunken);
-    --dextinity-button-color-secondary-outlined-default-background: transparent;
-    --dextinity-button-color-secondary-outlined-default-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-outlined-default-border: var(--dextinity-color-line-strong);
-    --dextinity-button-color-secondary-outlined-hover-background: var(--dextinity-color-surface-raised);
-    --dextinity-button-color-secondary-outlined-hover-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-outlined-hover-border: var(--dextinity-color-line-strong);
-    --dextinity-button-color-secondary-outlined-active-background: var(--dextinity-color-surface-raised);
-    --dextinity-button-color-secondary-outlined-active-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-outlined-active-border: var(--dextinity-color-line-strong);
-    --dextinity-button-color-secondary-outlined-focus-background: transparent;
-    --dextinity-button-color-secondary-outlined-focus-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-outlined-focus-border: var(--dextinity-color-line-strong);
-    --dextinity-button-color-secondary-outlined-disabled-background: transparent;
-    --dextinity-button-color-secondary-outlined-disabled-foreground: var(--dextinity-color-text-subtle);
-    --dextinity-button-color-secondary-outlined-disabled-border: var(--dextinity-color-line);
-    --dextinity-button-color-secondary-outlined-loading-background: transparent;
-    --dextinity-button-color-secondary-outlined-loading-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-outlined-loading-border: var(--dextinity-color-line-strong);
-    --dextinity-button-color-secondary-text-default-background: transparent;
-    --dextinity-button-color-secondary-text-default-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-text-default-border: transparent;
-    --dextinity-button-color-secondary-text-hover-background: var(--dextinity-color-surface-raised);
-    --dextinity-button-color-secondary-text-hover-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-text-hover-border: transparent;
-    --dextinity-button-color-secondary-text-active-background: var(--dextinity-color-surface-raised);
-    --dextinity-button-color-secondary-text-active-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-text-active-border: transparent;
-    --dextinity-button-color-secondary-text-focus-background: transparent;
-    --dextinity-button-color-secondary-text-focus-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-text-focus-border: transparent;
-    --dextinity-button-color-secondary-text-disabled-background: transparent;
-    --dextinity-button-color-secondary-text-disabled-foreground: var(--dextinity-color-text-subtle);
-    --dextinity-button-color-secondary-text-disabled-border: transparent;
-    --dextinity-button-color-secondary-text-loading-background: transparent;
-    --dextinity-button-color-secondary-text-loading-foreground: var(--dextinity-color-text);
-    --dextinity-button-color-secondary-text-loading-border: transparent;
-    --dextinity-button-color-error-contained-default-background: var(--dextinity-color-danger);
-    --dextinity-button-color-error-contained-default-foreground: var(--dextinity-color-danger-foreground);
-    --dextinity-button-color-error-contained-default-border: var(--dextinity-color-danger);
-    --dextinity-button-color-error-contained-hover-background: color-mix(in oklch, var(--dextinity-color-danger), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-error-contained-hover-foreground: var(--dextinity-color-danger-foreground);
-    --dextinity-button-color-error-contained-hover-border: color-mix(in oklch, var(--dextinity-color-danger), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-error-contained-active-background: color-mix(in oklch, var(--dextinity-color-danger), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-error-contained-active-foreground: var(--dextinity-color-danger-foreground);
-    --dextinity-button-color-error-contained-active-border: color-mix(in oklch, var(--dextinity-color-danger), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-error-contained-focus-background: var(--dextinity-color-danger);
-    --dextinity-button-color-error-contained-focus-foreground: var(--dextinity-color-danger-foreground);
-    --dextinity-button-color-error-contained-focus-border: var(--dextinity-color-danger);
-    --dextinity-button-color-error-contained-disabled-background: var(--dextinity-color-surface-sunken);
-    --dextinity-button-color-error-contained-disabled-foreground: var(--dextinity-color-text-subtle);
-    --dextinity-button-color-error-contained-disabled-border: var(--dextinity-color-surface-sunken);
-    --dextinity-button-color-error-contained-loading-background: var(--dextinity-color-danger);
-    --dextinity-button-color-error-contained-loading-foreground: var(--dextinity-color-danger-foreground);
-    --dextinity-button-color-error-contained-loading-border: var(--dextinity-color-danger);
-    --dextinity-button-color-error-outlined-default-background: transparent;
-    --dextinity-button-color-error-outlined-default-foreground: var(--dextinity-color-danger);
-    --dextinity-button-color-error-outlined-default-border: var(--dextinity-color-danger);
-    --dextinity-button-color-error-outlined-hover-background: var(--dextinity-color-danger-soft);
-    --dextinity-button-color-error-outlined-hover-foreground: color-mix(in oklch, var(--dextinity-color-danger), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-error-outlined-hover-border: color-mix(in oklch, var(--dextinity-color-danger), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-error-outlined-active-background: var(--dextinity-color-danger-soft);
-    --dextinity-button-color-error-outlined-active-foreground: color-mix(in oklch, var(--dextinity-color-danger), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-error-outlined-active-border: color-mix(in oklch, var(--dextinity-color-danger), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-error-outlined-focus-background: transparent;
-    --dextinity-button-color-error-outlined-focus-foreground: var(--dextinity-color-danger);
-    --dextinity-button-color-error-outlined-focus-border: var(--dextinity-color-danger);
-    --dextinity-button-color-error-outlined-disabled-background: transparent;
-    --dextinity-button-color-error-outlined-disabled-foreground: var(--dextinity-color-text-subtle);
-    --dextinity-button-color-error-outlined-disabled-border: var(--dextinity-color-line);
-    --dextinity-button-color-error-outlined-loading-background: transparent;
-    --dextinity-button-color-error-outlined-loading-foreground: var(--dextinity-color-danger);
-    --dextinity-button-color-error-outlined-loading-border: var(--dextinity-color-danger);
-    --dextinity-button-color-error-text-default-background: transparent;
-    --dextinity-button-color-error-text-default-foreground: var(--dextinity-color-danger);
-    --dextinity-button-color-error-text-default-border: transparent;
-    --dextinity-button-color-error-text-hover-background: var(--dextinity-color-danger-soft);
-    --dextinity-button-color-error-text-hover-foreground: color-mix(in oklch, var(--dextinity-color-danger), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-error-text-hover-border: transparent;
-    --dextinity-button-color-error-text-active-background: var(--dextinity-color-danger-soft);
-    --dextinity-button-color-error-text-active-foreground: color-mix(in oklch, var(--dextinity-color-danger), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-error-text-active-border: transparent;
-    --dextinity-button-color-error-text-focus-background: transparent;
-    --dextinity-button-color-error-text-focus-foreground: var(--dextinity-color-danger);
-    --dextinity-button-color-error-text-focus-border: transparent;
-    --dextinity-button-color-error-text-disabled-background: transparent;
-    --dextinity-button-color-error-text-disabled-foreground: var(--dextinity-color-text-subtle);
-    --dextinity-button-color-error-text-disabled-border: transparent;
-    --dextinity-button-color-error-text-loading-background: transparent;
-    --dextinity-button-color-error-text-loading-foreground: var(--dextinity-color-danger);
-    --dextinity-button-color-error-text-loading-border: transparent;
-    --dextinity-button-color-success-contained-default-background: var(--dextinity-color-success);
-    --dextinity-button-color-success-contained-default-foreground: var(--dextinity-color-canvas);
-    --dextinity-button-color-success-contained-default-border: var(--dextinity-color-success);
-    --dextinity-button-color-success-contained-hover-background: color-mix(in oklch, var(--dextinity-color-success), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-success-contained-hover-foreground: var(--dextinity-color-canvas);
-    --dextinity-button-color-success-contained-hover-border: color-mix(in oklch, var(--dextinity-color-success), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-success-contained-active-background: color-mix(in oklch, var(--dextinity-color-success), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-success-contained-active-foreground: var(--dextinity-color-canvas);
-    --dextinity-button-color-success-contained-active-border: color-mix(in oklch, var(--dextinity-color-success), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-success-contained-focus-background: var(--dextinity-color-success);
-    --dextinity-button-color-success-contained-focus-foreground: var(--dextinity-color-canvas);
-    --dextinity-button-color-success-contained-focus-border: var(--dextinity-color-success);
-    --dextinity-button-color-success-contained-disabled-background: var(--dextinity-color-surface-sunken);
-    --dextinity-button-color-success-contained-disabled-foreground: var(--dextinity-color-text-subtle);
-    --dextinity-button-color-success-contained-disabled-border: var(--dextinity-color-surface-sunken);
-    --dextinity-button-color-success-contained-loading-background: var(--dextinity-color-success);
-    --dextinity-button-color-success-contained-loading-foreground: var(--dextinity-color-canvas);
-    --dextinity-button-color-success-contained-loading-border: var(--dextinity-color-success);
-    --dextinity-button-color-success-outlined-default-background: transparent;
-    --dextinity-button-color-success-outlined-default-foreground: var(--dextinity-color-success);
-    --dextinity-button-color-success-outlined-default-border: var(--dextinity-color-success);
-    --dextinity-button-color-success-outlined-hover-background: var(--dextinity-color-success-soft);
-    --dextinity-button-color-success-outlined-hover-foreground: color-mix(in oklch, var(--dextinity-color-success), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-success-outlined-hover-border: color-mix(in oklch, var(--dextinity-color-success), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-success-outlined-active-background: var(--dextinity-color-success-soft);
-    --dextinity-button-color-success-outlined-active-foreground: color-mix(in oklch, var(--dextinity-color-success), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-success-outlined-active-border: color-mix(in oklch, var(--dextinity-color-success), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-success-outlined-focus-background: transparent;
-    --dextinity-button-color-success-outlined-focus-foreground: var(--dextinity-color-success);
-    --dextinity-button-color-success-outlined-focus-border: var(--dextinity-color-success);
-    --dextinity-button-color-success-outlined-disabled-background: transparent;
-    --dextinity-button-color-success-outlined-disabled-foreground: var(--dextinity-color-text-subtle);
-    --dextinity-button-color-success-outlined-disabled-border: var(--dextinity-color-line);
-    --dextinity-button-color-success-outlined-loading-background: transparent;
-    --dextinity-button-color-success-outlined-loading-foreground: var(--dextinity-color-success);
-    --dextinity-button-color-success-outlined-loading-border: var(--dextinity-color-success);
-    --dextinity-button-color-success-text-default-background: transparent;
-    --dextinity-button-color-success-text-default-foreground: var(--dextinity-color-success);
-    --dextinity-button-color-success-text-default-border: transparent;
-    --dextinity-button-color-success-text-hover-background: var(--dextinity-color-success-soft);
-    --dextinity-button-color-success-text-hover-foreground: color-mix(in oklch, var(--dextinity-color-success), var(--dextinity-color-text) 12%);
-    --dextinity-button-color-success-text-hover-border: transparent;
-    --dextinity-button-color-success-text-active-background: var(--dextinity-color-success-soft);
-    --dextinity-button-color-success-text-active-foreground: color-mix(in oklch, var(--dextinity-color-success), var(--dextinity-color-text) 20%);
-    --dextinity-button-color-success-text-active-border: transparent;
-    --dextinity-button-color-success-text-focus-background: transparent;
-    --dextinity-button-color-success-text-focus-foreground: var(--dextinity-color-success);
-    --dextinity-button-color-success-text-focus-border: transparent;
-    --dextinity-button-color-success-text-disabled-background: transparent;
-    --dextinity-button-color-success-text-disabled-foreground: var(--dextinity-color-text-subtle);
-    --dextinity-button-color-success-text-disabled-border: transparent;
-    --dextinity-button-color-success-text-loading-background: transparent;
-    --dextinity-button-color-success-text-loading-foreground: var(--dextinity-color-success);
-    --dextinity-button-color-success-text-loading-border: transparent;
+    --dextinity-button-success-background-foreground: var(--dextinity-color-accent-foreground);
+    // Shadow of `contained` buttons with `color` `secondary`, `error`, or `success`
+    --dextinity-button-status-shadow: var(--dextinity-shadow-1);
 }

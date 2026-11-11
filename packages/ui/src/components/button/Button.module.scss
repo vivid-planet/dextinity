@@ -59,21 +59,21 @@
         }
 
         &[data-color="secondary"] {
-            background: var(--dextinity-color-text);
-            color: var(--dextinity-color-canvas);
-            box-shadow: var(--dextinity-shadow-1);
+            background: var(--dextinity-button-secondary-contained-background);
+            color: var(--dextinity-button-secondary-contained-foreground);
+            box-shadow: var(--dextinity-button-status-shadow);
         }
 
         &[data-color="error"] {
             background: var(--dextinity-button-danger-background);
             color: var(--dextinity-button-danger-background-foreground);
-            box-shadow: var(--dextinity-shadow-1);
+            box-shadow: var(--dextinity-button-status-shadow);
         }
 
         &[data-color="success"] {
             background: var(--dextinity-button-success-background);
-            color: var(--dextinity-color-accent-foreground);
-            box-shadow: var(--dextinity-shadow-1);
+            color: var(--dextinity-button-success-background-foreground);
+            box-shadow: var(--dextinity-button-status-shadow);
         }
 
         &:focus-visible {
@@ -92,7 +92,7 @@
         }
 
         &[data-color="primary"] {
-            color: var(--dextinity-color-accent-text);
+            color: var(--dextinity-button-primary-text-color);
         }
 
         &[data-color="error"] {
@@ -119,7 +119,7 @@
         }
 
         &[data-color="primary"] {
-            color: var(--dextinity-color-accent-text);
+            color: var(--dextinity-button-primary-text-color);
         }
 
         &[data-color="error"] {

@@ -4,6 +4,7 @@ import { expect, fn, userEvent } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Button } from "../Button";
+import buttonTokens from "../Button.tokens.scss?raw";
 import styles from "./Button.stories.module.scss";
 
 const iconOptions = {
@@ -17,6 +18,21 @@ const meta = {
     component: Button,
     title: "Building blocks/Buttons/Button",
     decorators: [themeDecorator],
+    parameters: {
+        tokens: buttonTokens,
+        rules: {
+            do: [
+                "Label with a verb that names the action: Save, Publish.",
+                "One primary button per area; everything else is secondary or ghost.",
+                "Show loading for long actions; the button stays in place.",
+            ],
+            dont: [
+                "Two primary buttons next to each other.",
+                "A disabled button without saying why; show the failed check instead.",
+                '"OK" or "Yes" as the label.',
+            ],
+        },
+    },
     args: {
         children: "Button",
         onClick: fn(),
@@ -56,14 +72,85 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * The primary action: one per area.
- *
- * **Rules**
- *
- * - Label with a verb: Save, Publish. Never "OK" or "Yes".
- * - One primary button per area; everything else is secondary (`outlined` + `secondary`) or ghost (`text` + `secondary`).
- * - Don't disable a button without saying why next to it; prefer showing the failed check.
  */
 export const Default: Story = {};
+
+/**
+ * Each variant with the actions it's for.
+ */
+export const Variants: Story = {
+    render: (args) => (
+        <div className={styles.overview}>
+            <div className={styles.overviewItem}>
+                <Button {...args} startIcon={<Icon name="check" />}>
+                    Save
+                </Button>
+                <span>
+                    Primary: <code>contained</code>, one per area
+                </span>
+            </div>
+            <div className={styles.overviewItem}>
+                <Button {...args} variant="outlined" color="secondary">
+                    Preview
+                </Button>
+                <span>
+                    Secondary: <code>outlined</code> + <code>secondary</code>, further actions
+                </span>
+            </div>
+            <div className={styles.overviewItem}>
+                <Button {...args} variant="text" color="secondary">
+                    Cancel
+                </Button>
+                <span>
+                    Ghost: <code>text</code> + <code>secondary</code>, quiet actions
+                </span>
+            </div>
+            <div className={styles.overviewItem}>
+                <Button {...args} variant="outlined" color="error" startIcon={<Icon name="delete" />}>
+                    Delete
+                </Button>
+                <span>
+                    Danger: <code>outlined</code> + <code>error</code>, destructive actions
+                </span>
+            </div>
+            <div className={styles.overviewItem}>
+                <Button {...args} variant="outlined" color="secondary" size="small">
+                    Change
+                </Button>
+                <span>
+                    Small: <code>size="small"</code>, in rows and panels
+                </span>
+            </div>
+        </div>
+    ),
+};
+
+/**
+ * The primary and the secondary button when default, disabled, and loading. Hover, focus with the keyboard, and press them to see
+ * the other states.
+ */
+export const States: Story = {
+    render: (args) => (
+        <div className={styles.states}>
+            <Button {...args}>Save</Button>
+            <Button {...args} disabled>
+                Save
+            </Button>
+            <Button {...args} loading>
+                Save
+            </Button>
+            <Button {...args} variant="outlined" color="secondary">
+                Preview
+            </Button>
+            <Button {...args} variant="outlined" color="secondary" disabled>
+                Preview
+            </Button>
+            <Button {...args} variant="outlined" color="secondary" loading>
+                Preview
+            </Button>
+        </div>
+    ),
+};
 
 export const Outlined: Story = {
     args: {
@@ -142,10 +229,6 @@ export const Disabled: Story = {
 
 /**
  * The button stays in place and keeps its width: the spinner replaces the start icon, or covers the label when there is none.
- *
- * **Rules**
- *
- * - Show loading for long actions instead of disabling the button.
  */
 export const Loading: Story = {
     args: {
@@ -187,7 +270,7 @@ export const LoadingKeepsWidth: Story = {
  */
 export const WithIcons: Story = {
     render: () => (
-        <div style={{ display: "flex", gap: "1rem" }}>
+        <div className={styles.row}>
             <Button startIcon={<Icon name="favorite" />}>Start only</Button>
             <Button endIcon={<Icon name="arrow-right" />}>End only</Button>
             <Button startIcon={<Icon name="favorite" />} endIcon={<Icon name="arrow-right" />}>

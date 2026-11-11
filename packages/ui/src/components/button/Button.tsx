@@ -68,7 +68,11 @@ export interface ButtonProps<
      * @defaultValue `"primary"`
      */
     color?: ButtonColor;
-    /** @defaultValue `"default"` */
+    /**
+     * `small` for buttons in rows and panels.
+     *
+     * @defaultValue `"default"`
+     */
     size?: ButtonSize;
     /**
      * Prevents interaction with the button.
@@ -89,6 +93,14 @@ export interface ButtonProps<
     slots?: ButtonSlots<StartIcon, EndIcon, LoadingSpinner>;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
     slotProps?: ButtonSlotProps<StartIcon, EndIcon, LoadingSpinner>;
+    /** The label: a verb that names the action, e.g. Save or Publish. */
+    children?: ReactNode;
+    /**
+     * The native button type. Ignored with `href`.
+     *
+     * @defaultValue `"button"`
+     */
+    type?: "button" | "submit" | "reset";
     /** The icon to render before the button's text. */
     startIcon?: ReactNode;
     /** The icon to render after the button's text. */

@@ -27,13 +27,17 @@
     --dextinity-app-shell-backdrop: oklch(0 0 0 / 0.28);
     // Width of the navigation drawer in narrow windows
     --dextinity-app-shell-drawer-width: min(320px, 86vw);
-    // Shadow of the navigation panel inside the drawer
+    // Height of the AI assistant sheet in narrow windows
+    --dextinity-app-shell-sheet-height: 86dvh;
+    // Shadow of the panel inside the navigation drawer or the AI assistant sheet
     --dextinity-app-shell-overlay-shadow: var(--dextinity-shadow-3);
 
     // Stacking order of the sticky top bar, below the navigation
     --dextinity-app-shell-top-bar-layer: 6;
     // Stacking order of the sticky navigation, above the top bar
     --dextinity-app-shell-nav-layer: 7;
+    // Stacking order of the AI assistant, above the navigation
+    --dextinity-app-shell-ai-layer: 8;
     // Stacking order of the grain texture, above the shell's content
     --dextinity-app-shell-grain-layer: 10;
 }

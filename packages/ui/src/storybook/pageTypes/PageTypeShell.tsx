@@ -41,11 +41,20 @@ export interface PageTypeShellProps {
  */
 export function PageTypeShell({ activeId, overlay, children }: PropsWithChildren<PageTypeShellProps>) {
     const [navCollapsed, setNavCollapsed] = useState(false);
+    const [aiOpen, setAiOpen] = useState(false);
     return (
         <>
             <AppShell
                 nav={<ShellNav activeId={activeId} />}
-                topBar={<TopBar onSearchClick={() => undefined} scope={<StoryScopeSwitcher />} userMenu={<StoryUserMenu />} />}
+                topBar={
+                    <TopBar
+                        onSearchClick={() => undefined}
+                        scope={<StoryScopeSwitcher />}
+                        aiOpen={aiOpen}
+                        onAiOpenChange={setAiOpen}
+                        userMenu={<StoryUserMenu />}
+                    />
+                }
                 navCollapsed={navCollapsed}
                 onNavCollapsedChange={setNavCollapsed}
                 disableShortcuts

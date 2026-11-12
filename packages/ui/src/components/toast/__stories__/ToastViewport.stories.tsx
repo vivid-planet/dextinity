@@ -125,7 +125,7 @@ export const Static: Story = {
 };
 
 /**
- * While a `BulkActionBar` is open, e.g. at the bottom of a list, the toasts move up above it, so its actions stay reachable.
+ * While a `BulkActionBar` is open, e.g. at the bottom of a `DataGrid`, the toasts move up above it, so its actions stay reachable.
  * `--dextinity-toast-viewport-offset-above-bulk-action-bar` sets the distance.
  */
 export const AboveBulkActionBar: Story = {

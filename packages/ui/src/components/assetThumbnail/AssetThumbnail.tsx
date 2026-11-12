@@ -8,7 +8,7 @@ import styles from "./AssetThumbnail.module.scss";
 
 export type AssetThumbnailType = "image" | "video" | "document" | "folder";
 export type AssetThumbnailRatio = "4:3" | "1:1" | "original";
-export type AssetThumbnailBadge = "missingAlt";
+export type AssetThumbnailBadge = "ai" | "missingAlt";
 
 /** A point in an image, as fractions of its width and height: `{ x: 0, y: 0 }` is the top left corner, `{ x: 1, y: 1 }` the bottom right. */
 export interface FocalPoint {
@@ -19,11 +19,14 @@ export interface FocalPoint {
 }
 
 export interface AssetThumbnailLabels {
+    /** The explanation of the `ai` badge. */
+    ai: string;
     /** The explanation of the `missingAlt` badge. */
     missingAlt: string;
 }
 
 const defaultLabels: AssetThumbnailLabels = {
+    ai: "AI-generated",
     missingAlt: "Alt text missing",
 };
 
@@ -68,7 +71,7 @@ export interface AssetThumbnailProps extends Omit<HTMLAttributes<HTMLDivElement>
      * @defaultValue `"4:3"`
      */
     ratio?: AssetThumbnailRatio;
-    /** Exceptions to point out in the top right corner: `missingAlt` for a missing alt text. */
+    /** Exceptions to point out in the top right corner: `ai` for AI-generated pictures (EU AI Act), `missingAlt` for a missing alt text. */
     badges?: ReadonlyArray<AssetThumbnailBadge>;
     /** The file format shown in the bottom left corner of documents, e.g. "PDF". */
     fileType?: string;
@@ -183,9 +186,13 @@ export const AssetThumbnail = forwardRef<HTMLDivElement, AssetThumbnailProps>(fu
                 {ownerState.type === "document" && fileType != null && <span className={styles.typeMark}>{fileType}</span>}
                 {badges.length > 0 && (
                     <span {...badgesProps}>
-                        {badges.map((badge) => (
-                            <Badge {...badgeProps} key={badge} variant="warning" tooltip={labels.missingAlt} />
-                        ))}
+                        {badges.map((badge) =>
+                            badge === "ai" ? (
+                                <Badge {...badgeProps} key={badge} variant="ai" tooltip={labels.ai} />
+                            ) : (
+                                <Badge {...badgeProps} key={badge} variant="warning" tooltip={labels.missingAlt} />
+                            ),
+                        )}
                     </span>
                 )}
             </div>

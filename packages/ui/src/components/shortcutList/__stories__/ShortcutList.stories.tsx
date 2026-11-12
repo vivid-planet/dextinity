@@ -14,6 +14,7 @@ const meta = {
     args: {
         shortcuts: [
             { shortcut: "mod+k", description: "Command palette" },
+            { shortcut: "mod+j", description: "AI assistant" },
             { shortcut: "mod+\\", description: "Collapse or expand the navigation" },
             { shortcut: "/", description: "Search the list" },
             { shortcut: "?", description: "Show keyboard shortcuts" },

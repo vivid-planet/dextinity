@@ -1,0 +1,666 @@
+@use "../menu/menuPopup";
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    position: relative;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: var(--dextinity-asset-browser-sidebar-width) minmax(0, 1fr);
+    block-size: var(--dextinity-asset-browser-height);
+    overflow: hidden;
+    border-radius: var(--dextinity-asset-browser-radius);
+    background: var(--dextinity-asset-browser-background);
+    box-shadow: var(--dextinity-asset-browser-shadow);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    font-size: 13px;
+
+    @include forced-colors.edge;
+}
+
+// A width remembered on a wide screen must not squeeze the content on a narrow one
+.root[data-resizable] {
+    grid-template-columns: minmax(0, min(var(--dextinity-asset-browser-sidebar-width), calc(100% - 320px))) minmax(0, 1fr);
+}
+
+.root[data-resizing] {
+    cursor: col-resize;
+    user-select: none;
+}
+
+.sidebar {
+    grid-row: 1;
+    grid-column: 1;
+    min-block-size: 0;
+    padding: 14px var(--dextinity-space-2);
+    overflow-y: auto;
+    box-shadow: inset calc(var(--dextinity-line-width) * -1) 0 0 var(--dextinity-asset-browser-divider);
+    scrollbar-width: thin;
+
+    @include forced-colors.separator(inline-end);
+}
+
+.tree {
+    :global([role="treeitem"][data-drop-target]) > div {
+        background: var(--dextinity-asset-browser-drop-background);
+        box-shadow: var(--dextinity-asset-browser-drop-shadow);
+        @include forced-colors.edge(2px, Highlight);
+    }
+}
+
+.resizeHandle {
+    position: relative;
+    z-index: 1;
+    grid-row: 1;
+    grid-column: 1;
+    justify-self: end;
+    inline-size: var(--dextinity-asset-browser-resize-handle-size);
+    margin-inline-end: calc(var(--dextinity-asset-browser-resize-handle-size) / -2);
+    cursor: col-resize;
+    outline: none;
+    touch-action: none;
+    user-select: none;
+
+    &::after {
+        position: absolute;
+        inset-block: 0;
+        inset-inline-start: calc(50% - var(--dextinity-asset-browser-resize-line-width) / 2);
+        inline-size: var(--dextinity-asset-browser-resize-line-width);
+        background: transparent;
+        content: "";
+        transition: background-color var(--dextinity-motion-duration-short);
+    }
+
+    &:hover::after,
+    .root[data-resizing] > &::after {
+        background: var(--dextinity-asset-browser-resize-line-color);
+
+        @include forced-colors.fill;
+    }
+
+    &:focus-visible::after {
+        background: var(--dextinity-color-focus);
+
+        @include forced-colors.fill(Highlight);
+    }
+}
+
+.main {
+    grid-row: 1;
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    min-block-size: 0;
+    min-inline-size: 0;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    padding: var(--dextinity-space-2) 10px;
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-asset-browser-divider);
+
+    @include forced-colors.separator;
+}
+
+.title {
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+    line-height: 1.25;
+}
+
+.titleName {
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.titleMeta {
+    color: var(--dextinity-asset-browser-meta-foreground);
+    font-size: 11.5px;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.search {
+    display: flex;
+    flex: 0 1 var(--dextinity-asset-browser-search-width);
+    gap: var(--dextinity-space-2);
+    align-items: center;
+    box-sizing: border-box;
+    min-inline-size: 120px;
+    block-size: var(--dextinity-asset-browser-search-height);
+    padding-inline: var(--dextinity-space-2);
+    border-radius: var(--dextinity-asset-browser-search-radius);
+    background: var(--dextinity-asset-browser-search-background);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-asset-browser-search-line);
+    color: var(--dextinity-asset-browser-meta-foreground);
+    cursor: text;
+    transition: box-shadow var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
+    --dextinity-icon-size: 13px;
+
+    &:hover {
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-asset-browser-search-line-hover);
+    }
+
+    &:focus-within {
+        box-shadow:
+            inset 0 0 0 calc(var(--dextinity-line-width) * 2) var(--dextinity-asset-browser-search-line-focus),
+            0 0 0 3px var(--dextinity-asset-browser-search-halo-focus);
+    }
+
+    // Forced colors remove box shadows, which would leave the field without an edge and without a focus ring
+    @media (forced-colors: active) {
+        border: 1px solid;
+
+        &:focus-within {
+            outline: 2px solid Highlight;
+            outline-offset: 2px;
+        }
+    }
+}
+
+.visuallyHidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.searchInput {
+    flex: 1;
+    min-inline-size: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--dextinity-color-text);
+    font: inherit;
+    font-size: 12.5px;
+
+    &::placeholder {
+        color: var(--dextinity-asset-browser-meta-foreground);
+    }
+
+    &::-webkit-search-cancel-button {
+        display: none;
+    }
+}
+
+.searchClear {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: 18px;
+    block-size: 18px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    --dextinity-icon-size: 12px;
+
+    &:hover {
+        background: var(--dextinity-asset-browser-hover-background);
+        color: var(--dextinity-color-text);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--dextinity-color-focus);
+        outline-offset: 1px;
+    }
+}
+
+.content {
+    position: relative;
+    outline: none;
+    flex: 1;
+    min-block-size: 0;
+    overflow: auto;
+    scrollbar-width: thin;
+
+    .root:is([data-view="columns"]:not([data-searching]), [data-view="gallery"]) & {
+        overflow: hidden;
+    }
+
+    &:focus-visible {
+        box-shadow: inset 0 0 0 2px var(--dextinity-color-focus);
+        @include forced-colors.focus-ring(-2px);
+    }
+}
+
+.empty {
+    display: flex;
+    gap: var(--dextinity-space-2);
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 18px 10px;
+    color: var(--dextinity-asset-browser-meta-foreground);
+    font-size: 12.5px;
+    text-align: center;
+}
+
+.ellipsis {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// Shared item states
+.tile,
+.row,
+.columnRow,
+.stripItem {
+    outline: none;
+    cursor: default;
+    user-select: none;
+
+    // Clicking an item selects it and a double click opens it; the row for a new folder isn't an option
+    &[role="option"] {
+        cursor: pointer;
+    }
+
+    &[data-dragging] {
+        opacity: 0.45;
+    }
+
+    &[data-drop-target] {
+        background: var(--dextinity-asset-browser-drop-background);
+        box-shadow: var(--dextinity-asset-browser-drop-shadow);
+        @include forced-colors.edge(2px, Highlight);
+    }
+}
+
+// Icons
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--dextinity-asset-browser-tile-size), 1fr));
+    align-content: start;
+    gap: var(--dextinity-space-1) var(--dextinity-space-2);
+    margin: 0;
+    padding: 14px;
+    list-style: none;
+}
+
+.tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-inline-size: 0;
+    padding: 6px 4px 8px;
+    border-radius: var(--dextinity-asset-browser-item-radius);
+
+    > :first-child {
+        inline-size: 84%;
+    }
+
+    &[data-selected] {
+        background: var(--dextinity-asset-browser-hover-background);
+        box-shadow: var(--dextinity-asset-browser-selected-shadow);
+
+        .tileName {
+            background: var(--dextinity-asset-browser-selected-strong-background);
+            color: var(--dextinity-asset-browser-selected-strong-foreground);
+            @include forced-colors.selected;
+        }
+    }
+
+    &:focus-visible {
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}
+
+.tileName {
+    display: -webkit-box;
+    max-inline-size: 100%;
+    padding: 1px 6px;
+    overflow: hidden;
+    border-radius: 5px;
+    font-size: 12.5px;
+    line-height: 1.3;
+    text-align: center;
+    word-break: break-word;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.tileMeta {
+    margin-block-start: -3px;
+    color: var(--dextinity-asset-browser-meta-foreground);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+// List
+.table {
+    min-inline-size: 100%;
+}
+
+.tableHeader,
+.row {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--dextinity-space-3);
+    padding-inline: 14px;
+}
+
+.tableHeader {
+    position: sticky;
+    z-index: 1;
+    inset-block-start: 0;
+    block-size: 34px;
+    background: var(--dextinity-asset-browser-background);
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-asset-browser-divider);
+    color: var(--dextinity-asset-browser-meta-foreground);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    @include forced-colors.separator;
+}
+
+.rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.row {
+    block-size: var(--dextinity-asset-browser-row-height);
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-asset-browser-divider);
+
+    &:hover {
+        background: var(--dextinity-asset-browser-hover-background);
+    }
+
+    &[data-selected],
+    &[data-selected]:hover {
+        background: var(--dextinity-asset-browser-selected-background);
+        @include forced-colors.selected;
+    }
+
+    &[data-selected] {
+        box-shadow:
+            inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-asset-browser-divider),
+            var(--dextinity-asset-browser-selected-shadow);
+    }
+
+    &:focus-visible {
+        box-shadow: inset 0 0 0 2px var(--dextinity-color-focus);
+        @include forced-colors.focus-ring(-2px);
+    }
+
+    @include forced-colors.separator;
+}
+
+.rowName {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    min-inline-size: 0;
+    font-weight: 500;
+}
+
+.rowThumbnail {
+    flex: none;
+    inline-size: 24px;
+
+    --dextinity-asset-thumbnail-radius: 4px;
+    --dextinity-icon-size: 12px;
+}
+
+.rowMeta {
+    overflow: hidden;
+    color: var(--dextinity-asset-browser-meta-foreground);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// Columns
+.columns {
+    display: flex;
+    block-size: 100%;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.column {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 1px;
+    inline-size: var(--dextinity-asset-browser-column-width);
+    margin: 0;
+    padding: 6px;
+    overflow-y: auto;
+    box-shadow: inset calc(var(--dextinity-line-width) * -1) 0 0 var(--dextinity-asset-browser-divider);
+    list-style: none;
+    scrollbar-width: thin;
+
+    > li:not([role="option"]) {
+        display: contents;
+    }
+
+    @include forced-colors.separator(inline-end);
+}
+
+.columnRow {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    box-sizing: border-box;
+    inline-size: 100%;
+    block-size: 30px;
+    padding: 0 6px 0 8px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+
+    &:is(button) {
+        cursor: pointer;
+    }
+
+    > :first-child {
+        flex: 1;
+    }
+
+    &:hover {
+        background: var(--dextinity-asset-browser-hover-background);
+    }
+
+    &[data-path] {
+        background: var(--dextinity-asset-browser-path-background);
+        @include forced-colors.edge;
+    }
+
+    &[data-selected],
+    &[data-selected]:hover {
+        background: var(--dextinity-asset-browser-selected-strong-background);
+        color: var(--dextinity-asset-browser-selected-strong-foreground);
+        @include forced-colors.selected;
+    }
+
+    &:focus-visible {
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}
+
+.columnChevron {
+    flex: none;
+    color: inherit;
+    opacity: 0.55;
+
+    --dextinity-icon-size: 12px;
+}
+
+.columnPreview {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    gap: 6px;
+    inline-size: 260px;
+    padding: var(--dextinity-space-4);
+}
+
+.previewName {
+    margin-block-start: var(--dextinity-space-2);
+    font-weight: 600;
+    word-break: break-all;
+}
+
+// Gallery
+.gallery {
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+}
+
+.galleryStage {
+    position: relative;
+    display: grid;
+    flex: 1;
+    place-items: center;
+    min-block-size: 0;
+    padding: 18px;
+}
+
+.galleryImage {
+    position: absolute;
+    inset: 18px;
+    inline-size: calc(100% - 36px);
+    block-size: calc(100% - 36px);
+    object-fit: contain;
+    filter: drop-shadow(var(--dextinity-asset-browser-gallery-image-shadow));
+}
+
+.galleryFallback {
+    inline-size: 200px;
+}
+
+.galleryInfo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--dextinity-space-2);
+    padding: 0 var(--dextinity-space-4) 10px;
+
+    .previewName {
+        margin: 0;
+    }
+
+    .tileMeta {
+        margin: 0;
+    }
+}
+
+.strip {
+    display: flex;
+    flex: none;
+    gap: 6px;
+    margin: 0;
+    padding: 10px 14px;
+    overflow-x: auto;
+    box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-asset-browser-divider);
+    list-style: none;
+    scrollbar-width: thin;
+
+    @include forced-colors.separator(block-start);
+}
+
+.stripItem {
+    flex: none;
+    inline-size: 76px;
+    padding: 2px;
+    border-radius: var(--dextinity-asset-browser-item-radius);
+
+    --dextinity-asset-thumbnail-radius: 6px;
+    --dextinity-icon-size: 16px;
+
+    &[data-selected] {
+        box-shadow: 0 0 0 2px var(--dextinity-color-accent);
+        @include forced-colors.edge(2px, Highlight);
+    }
+
+    &:focus-visible {
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}
+
+// Path bar
+.pathBar {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    min-block-size: 36px;
+    padding: 6px 12px;
+    box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-asset-browser-divider);
+    color: var(--dextinity-asset-browser-meta-foreground);
+    font-size: 12.5px;
+
+    @include forced-colors.separator(block-start);
+}
+
+.path {
+    flex: 1;
+    min-inline-size: 0;
+}
+
+.count {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+// Renames an item or names a new folder in place of the name
+.nameField {
+    box-sizing: border-box;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    margin: 0;
+    padding: 1px 6px;
+    border: 0;
+    border-radius: 5px;
+    outline: none;
+    background: var(--dextinity-asset-browser-name-field-background);
+    box-shadow: var(--dextinity-asset-browser-name-field-shadow);
+    color: var(--dextinity-color-text);
+    font: inherit;
+    text-align: inherit;
+    cursor: text;
+    // A clamped name would cut off the text being typed
+    display: block;
+    -webkit-line-clamp: none;
+    user-select: text;
+
+    @include forced-colors.edge(2px);
+}
+
+.contextMenuPositioner {
+    @include menuPopup.positioner;
+}
+
+.contextMenu {
+    @include menuPopup.popup;
+}

@@ -1,5 +1,5 @@
 import { createContext, createRef, type PropsWithChildren, type Ref, useCallback, useEffect, useRef, useState } from "react";
-import { Route, useHistory } from "react-router";
+import { useNavigate } from "react-router";
 
 import {
     type AdminMessage,
@@ -60,7 +60,7 @@ export const IFrameBridgeProvider = ({ children, onReceiveMessage }: PropsWithCh
 
     const [hoveredSiteRoute, setHoveredSiteRoute] = useState<string | null>(null);
 
-    const history = useHistory();
+    const navigate = useNavigate();
     const sendMessage = useCallback(
         (message: AdminMessage) => {
             if (!iFrameReady) {
@@ -81,14 +81,14 @@ export const IFrameBridgeProvider = ({ children, onReceiveMessage }: PropsWithCh
                     setIFrameReady(true);
                     break;
                 case IFrameMessageType.SelectComponent:
-                    history.push(message.data.adminRoute);
+                    navigate(message.data.adminRoute);
                     break;
                 case IFrameMessageType.HoverComponent:
                     setHoveredSiteRoute(message.data.route);
                     break;
             }
         },
-        [history, onReceiveMessage],
+        [navigate, onReceiveMessage],
     );
 
     useEffect(() => {
@@ -121,58 +121,52 @@ export const IFrameBridgeProvider = ({ children, onReceiveMessage }: PropsWithCh
     );
 
     return (
-        <Route>
-            {() => {
-                return (
-                    <IFrameBridgeContext.Provider
-                        value={{
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            sendBlockState: (blockState: any) => {
-                                const message: IAdminBlockMessage = {
-                                    dextinityType: AdminMessageType.Block,
-                                    data: {
-                                        block: blockState, // @TODO: refactor block to blockState
-                                    },
-                                };
-                                sendMessage(message);
-                            },
-                            sendShowOnlyVisible: (showOnlyVisible: boolean) => {
-                                const message: IAdminShowOnlyVisibleMessage = {
-                                    dextinityType: AdminMessageType.ShowOnlyVisible,
-                                    data: {
-                                        showOnlyVisible,
-                                    },
-                                };
-                                sendMessage(message);
-                            },
-                            iFrameRef,
-                            iFrameReady,
-                            sendSelectComponent,
-                            hoveredSiteRoute: hoveredSiteRoute,
-                            sendHoverComponent: (adminRoute) => {
-                                const message: IAdminHoverComponentMessage = { dextinityType: AdminMessageType.HoverComponent, data: { adminRoute } };
-                                sendMessage(message);
-                            },
-                            sendContentScopeJwt: (contentScopeJwt) => {
-                                const message: IAdminContentScopeMessage = {
-                                    dextinityType: AdminMessageType.ContentScope,
-                                    data: { contentScopeJwt },
-                                };
-                                sendMessage(message);
-                            },
-                            sendGraphQLApiUrl: (graphQLApiUrl) => {
-                                const message: IAdminGraphQLApiUrlMessage = {
-                                    dextinityType: AdminMessageType.GraphQLApiUrl,
-                                    data: { graphQLApiUrl },
-                                };
-                                sendMessage(message);
-                            },
-                        }}
-                    >
-                        {children}
-                    </IFrameBridgeContext.Provider>
-                );
+        <IFrameBridgeContext.Provider
+            value={{
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                sendBlockState: (blockState: any) => {
+                    const message: IAdminBlockMessage = {
+                        dextinityType: AdminMessageType.Block,
+                        data: {
+                            block: blockState, // @TODO: refactor block to blockState
+                        },
+                    };
+                    sendMessage(message);
+                },
+                sendShowOnlyVisible: (showOnlyVisible: boolean) => {
+                    const message: IAdminShowOnlyVisibleMessage = {
+                        dextinityType: AdminMessageType.ShowOnlyVisible,
+                        data: {
+                            showOnlyVisible,
+                        },
+                    };
+                    sendMessage(message);
+                },
+                iFrameRef,
+                iFrameReady,
+                sendSelectComponent,
+                hoveredSiteRoute: hoveredSiteRoute,
+                sendHoverComponent: (adminRoute) => {
+                    const message: IAdminHoverComponentMessage = { dextinityType: AdminMessageType.HoverComponent, data: { adminRoute } };
+                    sendMessage(message);
+                },
+                sendContentScopeJwt: (contentScopeJwt) => {
+                    const message: IAdminContentScopeMessage = {
+                        dextinityType: AdminMessageType.ContentScope,
+                        data: { contentScopeJwt },
+                    };
+                    sendMessage(message);
+                },
+                sendGraphQLApiUrl: (graphQLApiUrl) => {
+                    const message: IAdminGraphQLApiUrlMessage = {
+                        dextinityType: AdminMessageType.GraphQLApiUrl,
+                        data: { graphQLApiUrl },
+                    };
+                    sendMessage(message);
+                },
             }}
-        </Route>
+        >
+            {children}
+        </IFrameBridgeContext.Provider>
     );
 };

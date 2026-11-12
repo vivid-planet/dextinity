@@ -1,7 +1,6 @@
-import { Stack, StackPage, StackSwitch, SubRoute } from "@dextinity/admin";
-import { createMemoryHistory } from "history";
+import { RouterMemoryRouter, Stack, StackPage, StackSwitch, SubRoute } from "@dextinity/admin";
 import type { ReactNode } from "react";
-import { Route, Router } from "react-router";
+import { Route, Routes } from "react-router";
 import scrollIntoView from "scroll-into-view-if-needed";
 import { cleanup, fireEvent, render, screen } from "test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -17,13 +16,18 @@ function renderOnEditPage(children: ReactNode, { hoveredSiteRoute = null }: { ho
     const iFrameBridge = { iFrameReady: true, hoveredSiteRoute, sendHoverComponent } as unknown as IFrameBridgeContext;
 
     render(
-        <Router history={createMemoryHistory({ initialEntries: ["/page/edit"] })}>
-            <Route path="/page/edit">
-                <IFrameBridgeContext.Provider value={iFrameBridge}>
-                    <Stack topLevelTitle="Page">{children}</Stack>
-                </IFrameBridgeContext.Provider>
-            </Route>
-        </Router>,
+        <RouterMemoryRouter initialEntries={["/page/edit"]}>
+            <Routes>
+                <Route
+                    path="/page/edit/*"
+                    element={
+                        <IFrameBridgeContext.Provider value={iFrameBridge}>
+                            <Stack topLevelTitle="Page">{children}</Stack>
+                        </IFrameBridgeContext.Provider>
+                    }
+                />
+            </Routes>
+        </RouterMemoryRouter>,
     );
 }
 

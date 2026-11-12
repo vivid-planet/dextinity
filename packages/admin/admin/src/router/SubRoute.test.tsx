@@ -1,8 +1,6 @@
 import { createTheme } from "@mui/material/styles";
-import { createMemoryHistory } from "history";
 import { IntlProvider } from "react-intl";
-import { Route, Router, Switch, useRouteMatch } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, Route, Routes } from "react-router";
 import { cleanup, fireEvent, render, waitFor } from "test-utils";
 import { afterEach, expect, test } from "vitest";
 
@@ -15,57 +13,66 @@ test("Subrote other route hidden", async () => {
     function Cmp1() {
         const urlPrefix = useSubRoutePrefix();
         return (
-            <Switch>
-                <Route path={`${urlPrefix}/sub`}>
-                    <div>Cmp1 Sub</div>
-                </Route>
-                <SubRouteIndexRoute>
-                    <div>
-                        <Link to={`${urlPrefix}/sub`}>Cmp1 SubLink</Link>
-                    </div>
-                </SubRouteIndexRoute>
-            </Switch>
+            <Routes>
+                <Route path={`${urlPrefix}/sub/*`} element={<div>Cmp1 Sub</div>} />
+                <Route
+                    path="*"
+                    element={
+                        <SubRouteIndexRoute>
+                            <div>
+                                <Link to={`${urlPrefix}/sub`}>Cmp1 SubLink</Link>
+                            </div>
+                        </SubRouteIndexRoute>
+                    }
+                />
+            </Routes>
         );
     }
 
     function Cmp2() {
         const urlPrefix = useSubRoutePrefix();
         return (
-            <Switch>
-                <Route path={`${urlPrefix}/sub`}>
-                    <div>
-                        <Link to={`${urlPrefix}/sub`}>Sub</Link>
-                        <br />
-                        <Link to={`${urlPrefix}/sub/sub2`}>Sub2</Link>
-                    </div>
-                    <Switch>
-                        <Route path={`${urlPrefix}/sub/sub2`}>
-                            <div>Cmp2 Sub2</div>
-                        </Route>
-                        <Route>
-                            <div>Cmp2 Sub</div>
-                        </Route>
-                    </Switch>
-                </Route>
-                <SubRouteIndexRoute>
-                    <div>
-                        <Link to={`${urlPrefix}/sub`}>Cmp2 SubLink</Link>
-                    </div>
-                </SubRouteIndexRoute>
-            </Switch>
+            <Routes>
+                <Route
+                    path={`${urlPrefix}/sub/*`}
+                    element={
+                        <>
+                            <div>
+                                <Link to={`${urlPrefix}/sub`}>Sub</Link>
+                                <br />
+                                <Link to={`${urlPrefix}/sub/sub2`}>Sub2</Link>
+                            </div>
+                            <Routes>
+                                <Route path="sub2/*" element={<div>Cmp2 Sub2</div>} />
+                                <Route path="*" element={<div>Cmp2 Sub</div>} />
+                            </Routes>
+                        </>
+                    }
+                />
+                <Route
+                    path="*"
+                    element={
+                        <SubRouteIndexRoute>
+                            <div>
+                                <Link to={`${urlPrefix}/sub`}>Cmp2 SubLink</Link>
+                            </div>
+                        </SubRouteIndexRoute>
+                    }
+                />
+            </Routes>
         );
     }
 
     function Story() {
-        const match = useRouteMatch();
+        const urlPrefix = useSubRoutePrefix();
         return (
             <div>
-                <SubRoute path={`${match.url}/cmp1`}>
+                <SubRoute path={`${urlPrefix}/cmp1`}>
                     <div>
                         <Cmp1 />
                     </div>
                 </SubRoute>
-                <SubRoute path={`${match.url}/cmp2`}>
+                <SubRoute path={`${urlPrefix}/cmp2`}>
                     <div>
                         <Cmp2 />
                     </div>
@@ -74,14 +81,10 @@ test("Subrote other route hidden", async () => {
         );
     }
 
-    const history = createMemoryHistory();
-
     const rendered = render(
         <IntlProvider locale="en">
             <MuiThemeProvider theme={createTheme()}>
-                <Router history={history}>
-                    <Story />
-                </Router>
+                <Story />
             </MuiThemeProvider>
         </IntlProvider>,
     );
@@ -98,57 +101,66 @@ test("Subrote other route hidden", async () => {
     function Cmp1() {
         const urlPrefix = useSubRoutePrefix();
         return (
-            <Switch>
-                <Route path={`${urlPrefix}/sub`}>
-                    <div>Cmp1 Sub</div>
-                </Route>
-                <SubRouteIndexRoute>
-                    <div>
-                        <Link to={`${urlPrefix}/sub`}>Cmp1 SubLink</Link>
-                    </div>
-                </SubRouteIndexRoute>
-            </Switch>
+            <Routes>
+                <Route path={`${urlPrefix}/sub/*`} element={<div>Cmp1 Sub</div>} />
+                <Route
+                    path="*"
+                    element={
+                        <SubRouteIndexRoute>
+                            <div>
+                                <Link to={`${urlPrefix}/sub`}>Cmp1 SubLink</Link>
+                            </div>
+                        </SubRouteIndexRoute>
+                    }
+                />
+            </Routes>
         );
     }
 
     function Cmp2() {
         const urlPrefix = useSubRoutePrefix();
         return (
-            <Switch>
-                <Route path={`${urlPrefix}/sub`}>
-                    <div>
-                        <Link to={`${urlPrefix}/sub`}>Sub</Link>
-                        <br />
-                        <Link to={`${urlPrefix}/sub/sub2`}>Sub2</Link>
-                    </div>
-                    <Switch>
-                        <Route path={`${urlPrefix}/sub/sub2`}>
-                            <div>Cmp2 Sub2</div>
-                        </Route>
-                        <Route>
-                            <div>Cmp2 Sub</div>
-                        </Route>
-                    </Switch>
-                </Route>
-                <SubRouteIndexRoute>
-                    <div>
-                        <Link to={`${urlPrefix}/sub`}>Cmp2 SubLink</Link>
-                    </div>
-                </SubRouteIndexRoute>
-            </Switch>
+            <Routes>
+                <Route
+                    path={`${urlPrefix}/sub/*`}
+                    element={
+                        <>
+                            <div>
+                                <Link to={`${urlPrefix}/sub`}>Sub</Link>
+                                <br />
+                                <Link to={`${urlPrefix}/sub/sub2`}>Sub2</Link>
+                            </div>
+                            <Routes>
+                                <Route path="sub2/*" element={<div>Cmp2 Sub2</div>} />
+                                <Route path="*" element={<div>Cmp2 Sub</div>} />
+                            </Routes>
+                        </>
+                    }
+                />
+                <Route
+                    path="*"
+                    element={
+                        <SubRouteIndexRoute>
+                            <div>
+                                <Link to={`${urlPrefix}/sub`}>Cmp2 SubLink</Link>
+                            </div>
+                        </SubRouteIndexRoute>
+                    }
+                />
+            </Routes>
         );
     }
 
     function Story() {
-        const match = useRouteMatch();
+        const urlPrefix = useSubRoutePrefix();
         return (
             <div>
-                <SubRoute path={`${match.url}/cmp1`}>
+                <SubRoute path={`${urlPrefix}/cmp1`}>
                     <div>
                         <Cmp1 />
                     </div>
                 </SubRoute>
-                <SubRoute path={`${match.url}/cmp2`}>
+                <SubRoute path={`${urlPrefix}/cmp2`}>
                     <div>
                         <Cmp2 />
                     </div>
@@ -157,14 +169,10 @@ test("Subrote other route hidden", async () => {
         );
     }
 
-    const history = createMemoryHistory();
-
     const rendered = render(
         <IntlProvider locale="en">
             <MuiThemeProvider theme={createTheme()}>
-                <Router history={history}>
-                    <Story />
-                </Router>
+                <Story />
             </MuiThemeProvider>
         </IntlProvider>,
     );
@@ -193,9 +201,9 @@ test("Route below Subroute", async () => {
         return (
             <>
                 <Link to={`${urlPrefix}/sub`}>Sub</Link>
-                <Route path={`${urlPrefix}/sub`}>
-                    <Cmp2 />
-                </Route>
+                <Routes>
+                    <Route path={`${urlPrefix}/sub/*`} element={<Cmp2 />} />
+                </Routes>
             </>
         );
     }
@@ -207,61 +215,59 @@ test("Route below Subroute", async () => {
         );
     }
 
-    const history = createMemoryHistory();
-
     const rendered = render(
         <IntlProvider locale="en">
             <MuiThemeProvider theme={createTheme()}>
-                <Router history={history}>
-                    <Story />
-                </Router>
+                <Story />
             </MuiThemeProvider>
         </IntlProvider>,
     );
 
     fireEvent.click(rendered.getByText("Sub"));
-    expect(rendered.getByText("urlPrefix=/foo/sub")).toBeInTheDocument();
+    expect(await rendered.findByText("urlPrefix=/foo/sub")).toBeInTheDocument();
 });
 
 test("SubRouteIndexRoute nested Switch", async () => {
     function Cmp1() {
         const urlPrefix = useSubRoutePrefix();
         return (
-            <Switch>
-                <Route path={`${urlPrefix}/cmp1-sub`}>
-                    <div>Cmp1 Sub</div>
-                </Route>
-                <SubRouteIndexRoute>
-                    <div>
-                        <Link to={`${urlPrefix}/cmp1-sub`}>Cmp1 SubLink</Link>
-                    </div>
-                </SubRouteIndexRoute>
-            </Switch>
+            <Routes>
+                <Route path={`${urlPrefix}/cmp1-sub/*`} element={<div>Cmp1 Sub</div>} />
+                <Route
+                    path="*"
+                    element={
+                        <SubRouteIndexRoute>
+                            <div>
+                                <Link to={`${urlPrefix}/cmp1-sub`}>Cmp1 SubLink</Link>
+                            </div>
+                        </SubRouteIndexRoute>
+                    }
+                />
+            </Routes>
         );
     }
 
     function Story() {
         const urlPrefix = useSubRoutePrefix();
         return (
-            <Switch>
-                <Route path={`${urlPrefix}/sub1`}>
-                    <div>Sub1</div>
-                </Route>
-                <SubRouteIndexRoute>
-                    <Cmp1 />
-                </SubRouteIndexRoute>
-            </Switch>
+            <Routes>
+                <Route path={`${urlPrefix}/sub1/*`} element={<div>Sub1</div>} />
+                <Route
+                    path="*"
+                    element={
+                        <SubRouteIndexRoute>
+                            <Cmp1 />
+                        </SubRouteIndexRoute>
+                    }
+                />
+            </Routes>
         );
     }
-
-    const history = createMemoryHistory();
 
     const rendered = render(
         <IntlProvider locale="en">
             <MuiThemeProvider theme={createTheme()}>
-                <Router history={history}>
-                    <Story />
-                </Router>
+                <Story />
             </MuiThemeProvider>
         </IntlProvider>,
     );

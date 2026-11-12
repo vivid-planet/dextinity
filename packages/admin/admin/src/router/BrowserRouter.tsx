@@ -1,23 +1,21 @@
-import { useRef } from "react";
-import { BrowserRouter as ReactBrowserRouter, type BrowserRouterProps } from "react-router-dom";
+import type { PropsWithChildren } from "react";
+import { createBrowserRouter } from "react-router";
+import { RouterProvider } from "react-router/dom";
 
-import { type PromptHandlerApi, RouterPromptHandler } from "./PromptHandler";
+import { createRouterRoutes, RouterChildrenProvider, useDataRouter } from "./internal/dataRouter";
 
-// BrowserRouter that sets up a material-ui confirmation dialog
-// plus a PromptHandler that works with our Prompt (supporting multiple Prompts)
+export interface RouterBrowserRouterProps {
+    /**
+     * Only read when the router is created.
+     */
+    basename?: string;
+}
 
-export const RouterBrowserRouter = ({ children, ...props }: BrowserRouterProps) => {
-    const apiRef = useRef<PromptHandlerApi>(undefined);
+/**
+ * A data router using the browser history. Includes the `RouterPromptHandler`, which shows the confirmation dialog for `RouterPrompt`s.
+ */
+export const RouterBrowserRouter = ({ basename, children }: PropsWithChildren<RouterBrowserRouterProps>) => {
+    const router = useDataRouter(() => createBrowserRouter(createRouterRoutes(), { basename }));
 
-    const getConfirmation = (message: string, callback: (ok: boolean) => void) => {
-        if (apiRef.current) {
-            apiRef.current.showDialog(message, callback);
-        }
-    };
-
-    return (
-        <ReactBrowserRouter getUserConfirmation={getConfirmation} {...props}>
-            <RouterPromptHandler apiRef={apiRef}>{children}</RouterPromptHandler>
-        </ReactBrowserRouter>
-    );
+    return <RouterChildrenProvider value={children}>{router && <RouterProvider router={router} />}</RouterChildrenProvider>;
 };

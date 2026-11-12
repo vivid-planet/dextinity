@@ -1,9 +1,10 @@
 import { ChevronDown, ChevronRight, ChevronUp } from "@dextinity/admin-icons";
 import { Collapse, type ComponentsOverrides, Fade, List, Menu, type Theme, type Typography, useThemeProps } from "@mui/material";
 import { Children, cloneElement, type MouseEvent, type ReactElement, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { matchPath, useLocation } from "react-router";
+import { resolvePath, useLocation, useResolvedPath } from "react-router";
 
 import type { ThemedComponentBaseProps } from "../../helpers/ThemedComponentBaseProps";
+import { matchAbsolutePath } from "../../router/internal/pathMatching";
 import {
     CollapsibleIndicator,
     CollapsibleItemMainNavigationItem,
@@ -68,6 +69,7 @@ export const MainNavigationCollapsibleItem = (inProps: MainNavigationCollapsible
     const hasSelectedChild = useRef(false);
 
     const location = useLocation();
+    const currentRoutePathname = useResolvedPath(".").pathname;
 
     const [isSubmenuOpen, setIsSubmenuOpen] = useState<boolean>(openByDefault || hasSelectedChild.current);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -83,7 +85,10 @@ export const MainNavigationCollapsibleItem = (inProps: MainNavigationCollapsible
         function checkIfPathInLocation(
             child: ReactElement<MainNavigationCollapsibleItemProps | MainNavigationItemRouterLinkProps | MainNavigationItemProps>,
         ) {
-            return "to" in child.props && matchPath(location.pathname, { path: child.props.to, strict: true });
+            return (
+                "to" in child.props &&
+                matchAbsolutePath(resolvePath(child.props.to, currentRoutePathname).pathname, location.pathname, { end: false })
+            );
         }
         hasSelectedChild.current = false;
 
@@ -111,7 +116,7 @@ export const MainNavigationCollapsibleItem = (inProps: MainNavigationCollapsible
                 isMenuOpen,
             });
         });
-    }, [children, isMenuOpen, itemLevel, location.pathname]);
+    }, [children, currentRoutePathname, isMenuOpen, itemLevel, location.pathname]);
 
     const closeMenu = () => {
         setAnchorEl(null);

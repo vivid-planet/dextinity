@@ -3,7 +3,7 @@ import { messages, Tooltip } from "@dextinity/admin";
 import { ArrowRight, OpenNewTab } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
 import { FormattedMessage } from "react-intl";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 
 import { type ContentScope, useContentScope } from "../contentScope/Provider";
 import { useDependenciesConfig } from "../dependencies/dependenciesConfig";
@@ -20,7 +20,7 @@ interface Props {
 }
 
 export function WarningActions({ sourceInfo, scope }: Props) {
-    const history = useHistory();
+    const navigate = useNavigate();
     const { entityDependencyMap } = useDependenciesConfig();
     const apolloClient = useApolloClient();
     const contentScope = useContentScope();
@@ -70,7 +70,7 @@ export function WarningActions({ sourceInfo, scope }: Props) {
                     onClick={async () => {
                         const url = await loadUrl();
 
-                        history.push(url);
+                        navigate(url);
                     }}
                 >
                     <ArrowRight />

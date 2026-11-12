@@ -30,7 +30,7 @@
         content: "";
         position: absolute;
         border-radius: 50%;
-        filter: blur(40px);
+        filter: blur(var(--dextinity-app-shell-field-blur));
     }
 
     &::before {
@@ -39,7 +39,7 @@
         inline-size: 75%;
         block-size: 85%;
         background: radial-gradient(closest-side, var(--dextinity-app-shell-field-1), transparent);
-        animation: drift-1 26s ease-in-out infinite alternate;
+        animation: drift-1 calc(var(--dextinity-app-shell-field-drift-duration) * 0.8125) ease-in-out infinite alternate;
     }
 
     &::after {
@@ -48,7 +48,7 @@
         inline-size: 70%;
         block-size: 80%;
         background: radial-gradient(closest-side, var(--dextinity-app-shell-field-2), transparent);
-        animation: drift-2 32s ease-in-out infinite alternate;
+        animation: drift-2 var(--dextinity-app-shell-field-drift-duration) ease-in-out infinite alternate;
     }
 
     > span {
@@ -57,8 +57,8 @@
         inline-size: 80%;
         block-size: 70%;
         background: radial-gradient(closest-side, var(--dextinity-app-shell-field-3), transparent);
-        filter: blur(50px);
-        animation: drift-1 38s ease-in-out infinite alternate-reverse;
+        filter: blur(calc(var(--dextinity-app-shell-field-blur) * 1.25));
+        animation: drift-1 calc(var(--dextinity-app-shell-field-drift-duration) * 1.1875) ease-in-out infinite alternate-reverse;
     }
 
     @media (prefers-reduced-motion: reduce) {

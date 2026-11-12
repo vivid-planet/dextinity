@@ -12,6 +12,10 @@
     --dextinity-app-shell-field-1: var(--dextinity-material-field-1);
     --dextinity-app-shell-field-2: var(--dextinity-material-field-2);
     --dextinity-app-shell-field-3: var(--dextinity-material-field-3);
+    // Softness of the light fields; the lower one is 1.25 times as soft
+    --dextinity-app-shell-field-blur: 40px;
+    // One slow drift of the light fields; the other two take 0.8125 and 1.1875 times as long, so they never line up
+    --dextinity-app-shell-field-drift-duration: 32s;
     // Opacity of the film grain over the shell; 0 turns it off
     --dextinity-app-shell-grain: var(--dextinity-material-grain);
     --dextinity-app-shell-backdrop: oklch(0 0 0 / 0.28);

@@ -3,8 +3,12 @@
     --dextinity-checkbox-size: 17px;
     // Corner radius of the checkbox box
     --dextinity-checkbox-radius: calc(var(--dextinity-radius-item) * 0.625);
-    // Size of the check and indeterminate icons
-    --dextinity-checkbox-icon-size: var(--dextinity-icon-size-xsmall);
+    // Size of the check icon; smaller than the box so it keeps a margin to the box's edge
+    --dextinity-checkbox-icon-size: calc(var(--dextinity-checkbox-size) * 0.65);
+    // Width of the indeterminate dash; narrower than the check icon
+    --dextinity-checkbox-indeterminate-mark-width: calc(var(--dextinity-checkbox-icon-size) * 0.8);
+    // Thickness of the indeterminate dash
+    --dextinity-checkbox-indeterminate-mark-height: 2px;
     // Gap between the checkbox and its label
     --dextinity-checkbox-gap: var(--dextinity-space-2);
     // Width of the line around an unchecked checkbox

@@ -74,5 +74,5 @@
     color: var(--dextinity-linked-content-arrow-color);
     transition: transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
 
-    --dextinity-icon-size: 14px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
 }

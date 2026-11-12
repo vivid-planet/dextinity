@@ -65,7 +65,7 @@
         transform var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
     transform: scale(0.8);
 
-    --dextinity-icon-size: 14px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
 
     .insert:hover &,
     &:focus-visible {

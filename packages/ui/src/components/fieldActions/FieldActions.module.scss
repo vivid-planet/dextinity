@@ -36,7 +36,7 @@
     @include text-styles.label;
     color: var(--dextinity-field-actions-suggestion-label-color);
 
-    --dextinity-icon-size: 12px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xxsmall);
 }
 
 .suggestionText {

@@ -4,7 +4,7 @@
     --dextinity-number-input-caret-color: var(--dextinity-color-accent);
     // The increase and decrease buttons at the end of the field
     --dextinity-number-input-stepper-width: 22px;
-    --dextinity-number-input-stepper-icon-size: 14px;
+    --dextinity-number-input-stepper-icon-size: var(--dextinity-icon-size-xsmall);
     --dextinity-number-input-stepper-radius: calc(var(--dextinity-radius-item) * 0.625);
     --dextinity-number-input-stepper-color: var(--dextinity-color-text-tertiary);
     --dextinity-number-input-stepper-color-hover: var(--dextinity-color-text);

@@ -32,7 +32,7 @@
     color: var(--dextinity-filter-bar-search-icon-color);
     cursor: text;
     transition: box-shadow var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
-    --dextinity-icon-size: 14px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
 
     &:hover {
         box-shadow:

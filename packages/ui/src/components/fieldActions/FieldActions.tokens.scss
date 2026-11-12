@@ -1,6 +1,6 @@
 @mixin tokens {
     --dextinity-field-actions-button-size: var(--dextinity-density-icon-button-size-xsmall);
-    --dextinity-field-actions-icon-size: 14px;
+    --dextinity-field-actions-icon-size: var(--dextinity-icon-size-xsmall);
     --dextinity-field-actions-suggestion-background: var(--dextinity-color-accent-soft);
     --dextinity-field-actions-suggestion-line: color-mix(in oklch, var(--dextinity-color-accent) 30%, transparent);
     --dextinity-field-actions-suggestion-radius: var(--dextinity-radius-control);

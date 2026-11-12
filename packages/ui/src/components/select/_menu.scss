@@ -18,7 +18,7 @@
     white-space: nowrap;
     cursor: default;
 
-    --dextinity-icon-size: 12px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xxsmall);
 
     @include forced-colors.edge;
 }

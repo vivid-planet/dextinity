@@ -4,7 +4,7 @@
     --dextinity-badge-radius: calc(var(--dextinity-radius-item) * 0.75);
     --dextinity-badge-font-size: var(--dextinity-typography-label-size);
     --dextinity-badge-font-weight: var(--dextinity-font-weight-semibold);
-    --dextinity-badge-icon-size: 12px;
+    --dextinity-badge-icon-size: var(--dextinity-icon-size-xxsmall);
 
     --dextinity-badge-warning-background: var(--dextinity-color-warning);
     --dextinity-badge-warning-foreground: color-mix(in oklch, var(--dextinity-color-warning) 25%, black);

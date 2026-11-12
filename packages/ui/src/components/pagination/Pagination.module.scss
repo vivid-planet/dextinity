@@ -34,7 +34,7 @@
     cursor: pointer;
     transition: box-shadow var(--dextinity-motion-duration-short);
 
-    --dextinity-icon-size: 14px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
 
     &:hover {
         box-shadow: var(--dextinity-pagination-size-picker-shadow-hover);

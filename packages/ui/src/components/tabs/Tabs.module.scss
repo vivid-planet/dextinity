@@ -86,7 +86,7 @@
     display: inline-flex;
     color: var(--dextinity-tabs-error-marker-color);
 
-    --dextinity-icon-size: 14px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
 }
 
 .visuallyHidden {

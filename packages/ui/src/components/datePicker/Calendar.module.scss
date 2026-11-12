@@ -77,7 +77,7 @@
     color: var(--dextinity-date-picker-button-color);
     transition: transform var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
 
-    --dextinity-icon-size: 14px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
 
     .heading[aria-expanded="true"] > & {
         transform: rotate(180deg);

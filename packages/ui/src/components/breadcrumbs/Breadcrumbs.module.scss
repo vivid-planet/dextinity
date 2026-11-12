@@ -73,7 +73,7 @@
     cursor: pointer;
     transition: background-color var(--dextinity-motion-duration-short);
 
-    --dextinity-icon-size: 14px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
 
     &:hover,
     &[data-popup-open] {

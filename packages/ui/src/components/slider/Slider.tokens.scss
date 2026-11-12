@@ -6,7 +6,7 @@
     --dextinity-slider-thumb-size: 14px;
     // The thumb's outline against the track
     --dextinity-slider-thumb-ring-width: 2px;
-    --dextinity-slider-start-icon-size: 12px;
+    --dextinity-slider-start-icon-size: var(--dextinity-icon-size-xxsmall);
     --dextinity-slider-end-icon-size: var(--dextinity-icon-size-small);
     --dextinity-slider-disabled-opacity: var(--dextinity-opacity-disabled);
 

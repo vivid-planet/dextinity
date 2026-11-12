@@ -1,4 +1,8 @@
 @mixin tokens {
+    // Indicators inside small parts, such as a badge, a menu check mark or an expand chevron
+    --dextinity-icon-size-xxsmall: 12px;
+    // Icons inside compact controls, such as chips, checkboxes, tabs and toolbar menus
+    --dextinity-icon-size-xsmall: 14px;
     --dextinity-icon-size-small: 16px;
     --dextinity-icon-size-default: 20px;
     --dextinity-icon-size-large: 24px;

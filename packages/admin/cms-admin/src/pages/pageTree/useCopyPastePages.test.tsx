@@ -1,4 +1,6 @@
 import { useApolloClient } from "@apollo/client";
+import type { PropsWithChildren } from "react";
+import { IntlProvider } from "react-intl";
 import { renderHook } from "test-utils";
 import { describe, expect, it, type Mock, vi } from "vitest";
 
@@ -6,7 +8,6 @@ import { usePageTreeScope } from "../config/usePageTreeScope";
 import { usePageTreeConfig } from "../pageTreeConfig";
 import { useCopyPastePages } from "./useCopyPastePages";
 import type { GQLPageTreePageFragment } from "./usePageTree";
-import { usePageTreeContext } from "./usePageTreeContext";
 
 vi.mock(import("@apollo/client"), async (importOriginal) => ({ ...(await importOriginal()), useApolloClient: vi.fn() }));
 vi.mock("../../config/DextinityConfigContext", () => ({ useDextinityConfig: () => ({ apiUrl: "" }) }));
@@ -14,7 +15,10 @@ vi.mock("../../dam/config/damConfig", () => ({ useDamBasePath: () => "" }));
 vi.mock("../../dam/config/useDamScope", () => ({ useDamScope: () => ({}) }));
 vi.mock("../config/usePageTreeScope", () => ({ usePageTreeScope: vi.fn() }));
 vi.mock("../pageTreeConfig", () => ({ usePageTreeConfig: vi.fn() }));
-vi.mock("./usePageTreeContext", () => ({ usePageTreeContext: vi.fn() }));
+
+function IntlWrapper({ children }: PropsWithChildren) {
+    return <IntlProvider locale="en">{children}</IntlProvider>;
+}
 
 const page = (id: string, parentId: string | null) => ({ id, parentId, documentType: "Page" }) as GQLPageTreePageFragment;
 
@@ -29,9 +33,8 @@ describe("useCopyPastePages", () => {
         });
         (usePageTreeScope as Mock).mockReturnValue({ domain: "main" });
         (usePageTreeConfig as Mock).mockReturnValue({ documentTypes: { Page: { getQuery: {} } } });
-        (usePageTreeContext as Mock).mockReturnValue({ currentCategory: "mainNavigation" });
 
-        const { result } = renderHook(() => useCopyPastePages());
+        const { result } = renderHook(() => useCopyPastePages({ category: "mainNavigation" }), { wrapper: IntlWrapper });
         const clipboard = await result.current.prepareForClipboard([page("a", null), page("aa", "a"), page("ab", "a"), page("b", null)]);
 
         expect(clipboard.pages.map((page) => page.id)).toEqual(["a", "aa", "ab", "b"]);

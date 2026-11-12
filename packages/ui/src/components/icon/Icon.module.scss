@@ -38,7 +38,8 @@
         &::before {
             background: currentColor;
             opacity: var(--dextinity-icon-duotone-opacity);
-            mask: var(--dextinity-current-duotone-icon-mask, none) center / contain no-repeat;
+            // Without a fill for this icon, an empty mask hides the layer instead of filling the whole box
+            mask: var(--dextinity-current-duotone-icon-mask, linear-gradient(transparent, transparent)) center / contain no-repeat;
         }
 
         &::after {

@@ -177,7 +177,7 @@ importers:
         specifier: workspace:*
         version: link:packages/cli
       '@formatjs/cli':
-        specifier: ^6.18.1
+        specifier: ^6.18.2
         version: 6.18.2
       '@types/node':
         specifier: ^24.19.2
@@ -328,7 +328,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config
       '@formatjs/cli':
-        specifier: ^6.18.1
+        specifier: ^6.18.2
         version: 6.18.2
       '@graphql-codegen/add':
         specifier: ^5.0.3
@@ -579,7 +579,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config
       '@formatjs/cli':
-        specifier: ^6.18.1
+        specifier: ^6.18.2
         version: 6.18.2
       '@nestjs/cli':
         specifier: ^11.0.24
@@ -681,7 +681,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/site/site-nextjs
       '@formatjs/cli':
-        specifier: ^6.18.1
+        specifier: ^6.18.2
         version: 6.18.2
       '@google-cloud/recaptcha-enterprise':
         specifier: ^7.3.0

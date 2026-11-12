@@ -3,7 +3,7 @@
 .backdrop {
     position: fixed;
     inset: 0;
-    z-index: 1200;
+    z-index: var(--dextinity-layer-quick-look);
     background: var(--dextinity-quick-look-backdrop);
     backdrop-filter: blur(var(--dextinity-quick-look-backdrop-blur));
     transition: opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
@@ -19,7 +19,7 @@
 .viewport {
     position: fixed;
     inset: 0;
-    z-index: 1200;
+    z-index: var(--dextinity-layer-quick-look);
     display: grid;
     place-items: center;
     box-sizing: border-box;

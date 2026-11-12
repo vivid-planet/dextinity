@@ -3,7 +3,7 @@
 .backdrop {
     position: fixed;
     inset: 0;
-    z-index: 1000;
+    z-index: var(--dextinity-layer-dialog);
     background: var(--dextinity-dialog-backdrop);
     transition: opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
 
@@ -18,7 +18,7 @@
 .viewport {
     position: fixed;
     inset: 0;
-    z-index: 1000;
+    z-index: var(--dextinity-layer-dialog);
     display: grid;
     place-items: center;
     box-sizing: border-box;

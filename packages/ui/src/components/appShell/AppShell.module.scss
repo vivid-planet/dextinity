@@ -141,7 +141,7 @@
 .backdrop {
     position: fixed;
     inset: 0;
-    z-index: 900;
+    z-index: var(--dextinity-layer-drawer);
     background: var(--dextinity-app-shell-backdrop);
     transition: opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
 
@@ -155,7 +155,7 @@
 
 .navDrawer {
     position: fixed;
-    z-index: 900;
+    z-index: var(--dextinity-layer-drawer);
     display: flex;
     box-sizing: border-box;
     outline: none;

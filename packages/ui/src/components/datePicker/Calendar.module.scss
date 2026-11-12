@@ -260,7 +260,7 @@
 
 .positioner {
     // The layer of the other popups, e.g. `Menu`, so the options open above a `Dialog` or `Drawer` that holds the field
-    z-index: 1000;
+    z-index: var(--dextinity-layer-popup);
     outline: none;
 }
 

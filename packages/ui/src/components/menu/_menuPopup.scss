@@ -50,7 +50,7 @@
 }
 
 @mixin positioner {
-    z-index: 1000;
+    z-index: var(--dextinity-layer-popup);
     outline: none;
 }
 

@@ -3,7 +3,7 @@
 .backdrop {
     position: fixed;
     inset: 0;
-    z-index: 1100;
+    z-index: var(--dextinity-layer-command-palette);
     background: var(--dextinity-command-palette-backdrop);
     backdrop-filter: blur(var(--dextinity-command-palette-backdrop-blur));
     transition: opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
@@ -20,7 +20,7 @@
     position: fixed;
     inset-block-start: var(--dextinity-command-palette-offset);
     inset-inline-start: 50%;
-    z-index: 1100;
+    z-index: var(--dextinity-layer-command-palette);
     display: flex;
     flex-direction: column;
     box-sizing: border-box;

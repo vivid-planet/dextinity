@@ -2,7 +2,7 @@
     position: fixed;
     inset-inline: 0;
     inset-block-end: var(--dextinity-toast-viewport-offset);
-    z-index: 1100;
+    z-index: var(--dextinity-layer-toast);
     padding-inline: var(--dextinity-space-4);
     pointer-events: none;
     transition: inset-block-end var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);

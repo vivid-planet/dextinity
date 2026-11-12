@@ -3,7 +3,7 @@
 .backdrop {
     position: fixed;
     inset: 0;
-    z-index: 900;
+    z-index: var(--dextinity-layer-drawer);
     background: var(--dextinity-drawer-backdrop);
     transition: opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
 
@@ -19,7 +19,7 @@
     position: fixed;
     inset-block: var(--dextinity-drawer-inset);
     inset-inline-end: var(--dextinity-drawer-inset);
-    z-index: 900;
+    z-index: var(--dextinity-layer-drawer);
     display: flex;
     flex-direction: column;
     box-sizing: border-box;

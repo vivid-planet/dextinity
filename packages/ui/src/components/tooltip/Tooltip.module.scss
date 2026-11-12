@@ -1,7 +1,7 @@
 @use "../../theme/forcedColors" as forced-colors;
 
 .positioner {
-    z-index: 1000;
+    z-index: var(--dextinity-layer-tooltip);
 }
 
 .root {

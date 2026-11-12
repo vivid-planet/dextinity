@@ -6,11 +6,11 @@ import { Badge } from "../Badge";
 afterEach(cleanup);
 
 describe("Badge", () => {
-    it("emits the variant as a data attribute", () => {
-        render(<Badge variant="count">3</Badge>);
+    it("emits the variant as a data attribute and defaults the AI text", () => {
+        render(<Badge variant="ai" />);
 
-        const badge = screen.getByText("3");
-        expect([badge.className.includes("dextinityBadge"), badge.dataset.variant]).toStrictEqual([true, "count"]);
+        const badge = screen.getByText("AI");
+        expect([badge.className.includes("dextinityBadge"), badge.dataset.variant]).toStrictEqual([true, "ai"]);
     });
 
     it("names a badge without text by its tooltip and makes it focusable", () => {

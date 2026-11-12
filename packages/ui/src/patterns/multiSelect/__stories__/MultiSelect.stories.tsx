@@ -96,9 +96,9 @@ function MultiSelectPage() {
             <PatternLinks
                 title="Where"
                 links={[
-                    { label: "Job ads", docsId: "page-types-list--docs" },
+                    { label: "Job ads", docsId: "building-blocks-tables-paging-datagrid--docs" },
                     { label: "Page tree", docsId: "building-blocks-tree-treeview--docs" },
-                    { label: `Assets (${mod}/⇧ as in the Finder)`, docsId: "page-types-finder--docs" },
+                    { label: `Assets (${mod}/⇧ as in the Finder)`, docsId: "building-blocks-media-upload-assetbrowser--docs" },
                 ]}
             />
             <PatternShortcuts

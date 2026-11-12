@@ -29,8 +29,9 @@ export interface FinderLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, 
  * The layout of a finder page for files and folders, e.g. the assets: the page header, then the finder window at the viewport's height,
  * so that its own areas scroll instead of the page.
  *
- * `children`: The finder with its sidebar of places and folders, toolbar, views, and path bar. It fills the window, which takes the height
- * of the viewport below the header. Let users resize the sidebar, and remember the width per user.
+ * `children`: The finder, e.g. an `AssetBrowser` with its sidebar of places and folders, toolbar, views, and path bar. It fills the window,
+ * which takes the height of the viewport below the header. Let users resize the sidebar with the finder's own width props, e.g.
+ * `AssetBrowser`'s `sidebarWidth`, and remember the width per user.
  */
 export const FinderLayout = forwardRef<HTMLDivElement, FinderLayoutProps>(function FinderLayout(
     { header, children, className, slotProps, ...restProps },

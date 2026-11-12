@@ -14,13 +14,13 @@ describe("FieldActions", () => {
 
         const actions = screen.getByTestId("actions");
         expect(actions.className).toContain("dextinityFieldActions");
-        expect(actions.hasAttribute("data-translate")).toBe(true);
+        expect([actions.hasAttribute("data-translate"), actions.hasAttribute("data-aiassist")]).toStrictEqual([true, false]);
         expect(screen.getAllByRole("button").map((button) => button.getAttribute("aria-label"))).toStrictEqual(["Translate"]);
     });
 
     it("disables the actions of a disabled field", () => {
         render(
-            <Field label="Title" disabled actions={<FieldActions translate />}>
+            <Field label="Title" disabled actions={<FieldActions translate aiAssist />}>
                 <Input name="title" value="" onChange={vi.fn()} />
             </Field>,
         );
@@ -28,6 +28,22 @@ describe("FieldActions", () => {
         for (const button of screen.getAllByRole("button")) {
             expect(button).toHaveProperty("disabled", true);
         }
+    });
+
+    it("disables the other action while one is running, as it would be ignored", async () => {
+        let finish: () => void = () => undefined;
+        const onTranslate = vi.fn(() => new Promise<void>((resolve) => (finish = resolve)));
+        render(
+            <Field label="Title" actions={<FieldActions translate aiAssist onTranslate={onTranslate} onAiSuggest={vi.fn(async () => "Benefits")} />}>
+                <Input name="title" value="Vorteile" onChange={vi.fn()} />
+            </Field>,
+        );
+
+        await userEvent.click(screen.getByRole("button", { name: "Translate" }));
+
+        expect(screen.getByRole("button", { name: "Improve with AI" })).toHaveProperty("disabled", true);
+        await act(async () => finish());
+        await waitFor(() => expect(screen.getByRole("button", { name: "Improve with AI" })).toHaveProperty("disabled", false));
     });
 
     it("translates with a single click without target locales and shows the field as loading while it runs", async () => {

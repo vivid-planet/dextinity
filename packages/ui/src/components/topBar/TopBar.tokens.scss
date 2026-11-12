@@ -26,4 +26,45 @@
     --dextinity-top-bar-search-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line), var(--dextinity-shadow-1);
     // Color of the search field's icon and placeholder
     --dextinity-top-bar-search-foreground: var(--dextinity-color-text-subtle);
+
+    // Height of the AI assistant toggle; follows the density
+    --dextinity-top-bar-ai-height: var(--dextinity-density-control-height);
+    // Gap between the icon, label, and switch of the AI assistant toggle
+    --dextinity-top-bar-ai-gap: var(--dextinity-space-2);
+    // Space before the icon of the AI assistant toggle
+    --dextinity-top-bar-ai-padding-start: 11px;
+    // Space after the switch of the AI assistant toggle
+    --dextinity-top-bar-ai-padding-end: 7px;
+    // Corner radius of the AI assistant toggle
+    --dextinity-top-bar-ai-radius: var(--dextinity-radius-field);
+    // Text weight of the AI assistant toggle's label
+    --dextinity-top-bar-ai-font-weight: var(--dextinity-font-weight-medium);
+    // Size of the AI assistant toggle's icon
+    --dextinity-top-bar-ai-icon-size: var(--dextinity-icon-size-small);
+    // Fill of the AI assistant toggle when off
+    --dextinity-top-bar-ai-background: var(--dextinity-material-glass-strong);
+    // Fill of the AI assistant toggle when on
+    --dextinity-top-bar-ai-background-on: var(--dextinity-color-accent-soft);
+    // Outline of the AI assistant toggle; visible in high contrast
+    --dextinity-top-bar-ai-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge);
+    // Color of the AI assistant toggle's icon
+    --dextinity-top-bar-ai-icon-color: var(--dextinity-color-accent-text);
+    // Width of the switch track in the AI assistant toggle
+    --dextinity-top-bar-ai-track-width: var(--dextinity-switch-track-width-small);
+    // Height of the switch track in the AI assistant toggle
+    --dextinity-top-bar-ai-track-height: var(--dextinity-switch-track-height-small);
+    // Fill of the switch track in the AI assistant toggle when off
+    --dextinity-top-bar-ai-track: var(--dextinity-color-control-line);
+    // Fill of the switch track in the AI assistant toggle when on
+    --dextinity-top-bar-ai-track-on: var(--dextinity-gradient-brand);
+    // Gap between the thumb and the track's edge in the AI assistant toggle
+    --dextinity-top-bar-ai-thumb-inset: var(--dextinity-switch-thumb-inset-small);
+    // Fill of the switch thumb in the AI assistant toggle
+    --dextinity-top-bar-ai-thumb: oklch(1 0 0);
+    // Shadow of the switch thumb in the AI assistant toggle
+    --dextinity-top-bar-ai-thumb-shadow: 0 1px 2px oklch(0 0 0 / 0.25);
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-top-bar-ai-thumb: var(--dextinity-color-canvas);
 }

@@ -40,6 +40,13 @@ describe("TopBar render contract", () => {
         expect(search.textContent).toContain("⌘K");
     });
 
+    it("emits the AI state and reflects it on the toggle", () => {
+        render(<TopBar onSearchClick={vi.fn()} aiOpen onAiOpenChange={vi.fn()} />);
+
+        expect(screen.getByRole("banner").dataset.aiopen).toBe("");
+        expect(screen.getByRole("switch", { name: "AI assistant" }).getAttribute("aria-checked")).toBe("true");
+    });
+
     it("opens the AppShell's navigation drawer from the menu button", () => {
         const onNavDrawerOpen = vi.fn();
         render(

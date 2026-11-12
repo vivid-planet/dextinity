@@ -36,7 +36,7 @@ export interface ListLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
  * The layout of a list page, which shows the structured content of one type as a table: the page header, a toolbar with search and
  * filters, then the list.
  *
- * `children`: The list, e.g. a table with its selection, sorting, row menu, and paging. A row opens the edit page.
+ * `children`: The list, e.g. a `DataGrid` with its selection, sorting, row menu, and paging. A row opens the edit page.
  */
 export const ListLayout = forwardRef<HTMLDivElement, ListLayoutProps>(function ListLayout(
     { header, toolbar, children, className, slotProps, ...restProps },

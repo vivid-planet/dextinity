@@ -21,7 +21,7 @@ const meta = {
     argTypes: {
         type: { control: "select", options: ["image", "video", "document", "folder"] },
         ratio: { control: "radio", options: ["4:3", "1:1", "original"] },
-        badges: { control: "check", options: ["missingAlt"] },
+        badges: { control: "check", options: ["ai", "missingAlt"] },
         selected: { control: "boolean" },
         className: { control: false },
         slotProps: { control: false },
@@ -41,7 +41,7 @@ type Story = StoryObj<typeof meta>;
  * **Rules**
  *
  * - Crop around the focal point, never blindly around the center.
- * - Badges only for exceptions, e.g. a missing alt text.
+ * - Badges only for exceptions: a missing alt text, an AI-generated picture.
  */
 export const Default: Story = {};
 
@@ -63,12 +63,14 @@ export const Original: Story = {
 /**
  * **Rules**
  *
+ * - Always mark AI-generated pictures (EU AI Act).
  * - Alt texts are kept per language; a missing one shows as a badge.
  */
 export const Badges: Story = {
-    args: { src: interiorImage, name: "lobby.jpg", badges: ["missingAlt"] },
+    args: { src: interiorImage, name: "lobby.jpg", badges: ["missingAlt", "ai"] },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("img", { name: "Alt text missing" })).toBeVisible();
+        await expect(canvas.getByText("AI")).toBeVisible();
     },
 };
 
@@ -114,7 +116,7 @@ export const Overview: Story = {
     render: () => (
         <div className={styles.row}>
             <AssetThumbnail type="image" src={interiorImage} badges={["missingAlt"]} name="lobby.jpg" meta="JPG · 3.1 MB" />
-            <AssetThumbnail type="image" src={portraitImage} name="product.png" meta="PNG · 840 KB" />
+            <AssetThumbnail type="image" src={portraitImage} badges={["ai"]} name="product.png" meta="PNG · 840 KB" />
             <AssetThumbnail type="document" src={documentImage} fileType="PDF" name="annual-report.pdf" meta="PDF · 1.2 MB" />
             <AssetThumbnail type="folder" name="Campaigns" meta="12 items" />
         </div>

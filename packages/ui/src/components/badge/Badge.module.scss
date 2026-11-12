@@ -26,6 +26,11 @@
         @include forced-colors.focus-ring;
     }
 
+    &[data-variant="ai"] {
+        background: var(--dextinity-badge-ai-background);
+        color: var(--dextinity-badge-ai-foreground);
+    }
+
     &[data-variant="warning"] {
         padding-inline: var(--dextinity-space-1);
         background: var(--dextinity-badge-warning-background);

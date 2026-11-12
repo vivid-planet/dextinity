@@ -4,6 +4,7 @@ import { expect, screen, userEvent, waitFor } from "storybook/test";
 
 import { AssetThumbnail } from "../../components/assetThumbnail/AssetThumbnail";
 import { Button } from "../../components/button/Button";
+import { DataGrid } from "../../components/dataGrid/DataGrid";
 import { DateTimePicker } from "../../components/datePicker/DateTimePicker";
 import { Dialog } from "../../components/dialog/Dialog";
 import { Field } from "../../components/field/Field";
@@ -24,7 +25,6 @@ import { ToolbarButton } from "../../components/toolbar/ToolbarButton";
 import { ToolbarSeparator } from "../../components/toolbar/ToolbarSeparator";
 import { Tooltip } from "../../components/tooltip/Tooltip";
 import { TreeView } from "../../components/treeView/TreeView";
-import { StoryTable } from "../../storybook/StoryTable";
 import { themeDecorator } from "../../storybook/themeDecorator";
 import styles from "./ForcedColors.stories.module.scss";
 
@@ -138,20 +138,21 @@ interface Asset {
 function SelectedRowGallery() {
     const [selectedIds, setSelectedIds] = useState(["hero"]);
     return (
-        <StoryTable<Asset>
+        <DataGrid<Asset>
             aria-label="Assets"
             columns={[
-                { key: "preview", header: "Preview", render: () => <AssetThumbnail type="image" className={styles.rowThumbnail} /> },
-                { key: "name", header: "Name", render: (asset) => asset.name },
+                { key: "preview", header: "Preview", width: 96, render: () => <AssetThumbnail type="image" /> },
+                { key: "name", header: "Name" },
             ]}
             rows={[
                 { id: "hero", name: "hero.jpg" },
                 { id: "team", name: "team.jpg" },
             ]}
             getRowId={(asset) => asset.id}
-            getRowLabel={(asset) => asset.name}
+            selectable
             selectedIds={selectedIds}
             onSelectionChange={setSelectedIds}
+            activeRowId="hero"
         />
     );
 }
@@ -261,7 +262,7 @@ export const Separators: Story = {
 
 /**
  * A part with its own background inside a selected item, e.g. a thumbnail in a selected row, takes the highlight colors instead of
- * keeping its theme color.
+ * keeping its theme color, and the bar of the active row stays visible on the highlight.
  */
 export const InsideSelectedItems: Story = {
     render: () => <SelectedRowGallery />,
@@ -274,6 +275,7 @@ export const InsideSelectedItems: Story = {
 
         await expect(query("[data-selected] .dextinityAssetThumbnail__preview").backgroundColor).toBe(highlight);
         await expect(query("tr:not([data-selected]) .dextinityAssetThumbnail__preview").backgroundColor).toBe(systemColor("Canvas"));
+        await expect(query("[data-active] > td:first-child").boxShadow).toContain(systemColor("HighlightText"));
     },
 };
 

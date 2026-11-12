@@ -64,7 +64,7 @@ export interface ListDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElemen
  * The layout of a list whose short records are edited in a side panel next to it: the page header, a toolbar, the list, and the side
  * panel. In narrow layouts the side panel moves above the list.
  *
- * `children`: The list, e.g. a table. A click on a row opens the side panel; the list stays visible.
+ * `children`: The list, e.g. a `DataGrid`. A click on a row opens the side panel; the list stays visible.
  */
 export const ListDetailLayout = forwardRef<HTMLDivElement, ListDetailLayoutProps>(function ListDetailLayout(
     { header, toolbar, children, sidePanel, sidePanelLabel, open, onOpenChange, className, slotProps, onFocusCapture, ...restProps },

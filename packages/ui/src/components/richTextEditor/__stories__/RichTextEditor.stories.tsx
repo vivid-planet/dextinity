@@ -385,11 +385,11 @@ export const LimitedToolbar: Story = {
 };
 
 /**
- * Translate at the label, as on other fields: the field's `actions`.
+ * Translate and AI at the label, as on other fields: the field's `actions`.
  */
 export const WithActions: Story = {
     args: {
-        actions: <FieldActions translate onTranslate={() => undefined} />,
+        actions: <FieldActions translate aiAssist onAiSuggest={() => Promise.resolve("Shape the interfaces of Dextinity with us.")} />,
     },
 };
 

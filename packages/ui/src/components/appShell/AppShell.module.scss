@@ -4,7 +4,7 @@
     position: relative;
     isolation: isolate;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
     box-sizing: border-box;
     min-block-size: 100dvh;
     background: var(--dextinity-app-shell-background);
@@ -92,7 +92,8 @@
     pointer-events: none;
 }
 
-.nav {
+.nav,
+.ai {
     position: sticky;
     inset-block-start: 0;
     z-index: var(--dextinity-app-shell-nav-layer);
@@ -101,6 +102,9 @@
     align-self: start;
     block-size: 100dvh;
     min-inline-size: 0;
+}
+
+.nav {
     grid-column: 1;
     grid-row: 1;
     padding: var(--dextinity-app-shell-gap) 0 var(--dextinity-app-shell-gap) var(--dextinity-app-shell-gap);
@@ -138,6 +142,20 @@
     }
 }
 
+.ai {
+    grid-column: 3;
+    grid-row: 1;
+    z-index: var(--dextinity-app-shell-ai-layer);
+    padding: var(--dextinity-app-shell-gap) var(--dextinity-app-shell-gap) var(--dextinity-app-shell-gap) 0;
+
+    // Medium windows: the assistant lies over the content instead of pushing it aside
+    .root[data-layout="medium"] & {
+        position: fixed;
+        inset-block: 0;
+        inset-inline-end: 0;
+    }
+}
+
 .backdrop {
     position: fixed;
     inset: 0;
@@ -153,13 +171,21 @@
     }
 }
 
-.navDrawer {
+.navDrawer,
+.aiSheet {
     position: fixed;
     z-index: var(--dextinity-layer-drawer);
     display: flex;
     box-sizing: border-box;
     outline: none;
     transition: transform var(--dextinity-motion-duration-long) var(--dextinity-motion-easing);
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: opacity var(--dextinity-motion-duration-short);
+    }
+}
+
+.navDrawer {
     inset-block: 0;
     inset-inline-start: 0;
     inline-size: var(--dextinity-app-shell-drawer-width);
@@ -176,10 +202,28 @@
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .navDrawer {
-        transition: opacity var(--dextinity-motion-duration-short);
+.aiSheet {
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: var(--dextinity-app-shell-sheet-height);
+    padding: 0 var(--dextinity-space-2);
 
+    > * {
+        inline-size: 100%;
+        border-end-start-radius: 0;
+        border-end-end-radius: 0;
+        box-shadow: var(--dextinity-app-shell-overlay-shadow);
+    }
+
+    &[data-starting-style],
+    &[data-ending-style] {
+        transform: translateY(102%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .navDrawer,
+    .aiSheet {
         &[data-starting-style],
         &[data-ending-style] {
             opacity: 0;

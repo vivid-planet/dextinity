@@ -2,6 +2,8 @@
     --dextinity-link-gap: var(--dextinity-space-1-5);
     --dextinity-link-font-size: var(--dextinity-typography-ui-size);
     --dextinity-link-icon-size: var(--dextinity-icon-size-xsmall);
+    // Gap between the text and its underline, for links inside running text
+    --dextinity-link-underline-offset: 3px;
     --dextinity-link-radius: var(--dextinity-radius-item);
     --dextinity-link-secondary-foreground: var(--dextinity-color-text-tertiary);
     --dextinity-link-secondary-foreground-hover: var(--dextinity-color-text);

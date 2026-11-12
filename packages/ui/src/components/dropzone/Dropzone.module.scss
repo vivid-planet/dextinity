@@ -96,8 +96,8 @@
     color: var(--dextinity-dropzone-browse-foreground);
     font: inherit;
     text-decoration: underline;
-    text-decoration-color: color-mix(in oklch, currentcolor 40%, transparent);
-    text-underline-offset: 3px;
+    text-decoration-color: var(--dextinity-dropzone-browse-underline-color);
+    text-underline-offset: var(--dextinity-link-underline-offset);
     cursor: pointer;
 
     &:hover {

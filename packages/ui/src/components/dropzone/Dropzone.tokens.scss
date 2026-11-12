@@ -9,6 +9,8 @@
     --dextinity-dropzone-icon-size: 26px;
     --dextinity-dropzone-icon-foreground: var(--dextinity-color-accent-text);
     --dextinity-dropzone-browse-foreground: var(--dextinity-color-accent-text);
+    // Underline of the browse link until it is hovered
+    --dextinity-dropzone-browse-underline-color: color-mix(in oklch, currentcolor 40%, transparent);
 
     // While files are dragged over the drop area
     --dextinity-dropzone-active-background: color-mix(in oklch, var(--dextinity-color-accent) 16%, transparent);

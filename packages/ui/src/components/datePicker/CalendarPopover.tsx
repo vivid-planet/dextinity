@@ -6,6 +6,7 @@ import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import { Calendar, type CalendarProps } from "./Calendar";
 import styles from "./Calendar.module.scss";
+import { usePopupTabOut } from "./usePopupTabOut";
 
 interface CalendarPopoverProps extends CalendarProps {
     open: boolean;
@@ -36,6 +37,7 @@ export function CalendarPopover({
     const { anchor, anchorRef, container } = useThemePortalContainer<HTMLButtonElement>();
     const fieldBox = anchor?.parentElement ?? null;
     const popupRef = useRef<HTMLDivElement>(null);
+    const tabOut = usePopupTabOut({ trigger: anchor, finalFocus, onClose: () => onOpenChange(false) });
 
     return (
         <BasePopover.Root open={open} onOpenChange={(nextOpen) => onOpenChange(nextOpen)}>
@@ -56,8 +58,9 @@ export function CalendarPopover({
                             ref={popupRef}
                             className={styles.popup}
                             aria-labelledby={labelledBy}
+                            onKeyDown={tabOut.onKeyDown}
                             initialFocus={() => popupRef.current?.querySelector<HTMLElement>("[data-focus-target]") ?? true}
-                            finalFocus={finalFocus}
+                            finalFocus={tabOut.finalFocus}
                         >
                             <Calendar {...calendarProps} />
                         </BasePopover.Popup>

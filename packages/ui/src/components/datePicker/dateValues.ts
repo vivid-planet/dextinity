@@ -334,10 +334,18 @@ export function joinDateTime(date: IsoDate, time: TimeOfDay): string {
 }
 
 /**
+ * `stepMinutes` rounded to whole minutes, or 15 when that isn't a number of at least one minute.
+ */
+export function timeStepMinutes(stepMinutes: number): number {
+    const step = Math.round(stepMinutes);
+    return Number.isFinite(step) && step >= 1 ? step : 15;
+}
+
+/**
  * The times of a day from midnight in steps of `stepMinutes`, e.g. every 15 minutes.
  */
 export function timesOfDay(stepMinutes: number): TimeOfDay[] {
-    const step = Math.max(1, Math.round(stepMinutes));
+    const step = timeStepMinutes(stepMinutes);
     return Array.from({ length: Math.ceil((24 * 60) / step) }, (_, index) => ({
         hours: Math.floor((index * step) / 60),
         minutes: (index * step) % 60,

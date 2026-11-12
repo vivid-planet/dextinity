@@ -1,0 +1,36 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+// The popups of the date pickers: the calendar and the DateTimePicker's list of times.
+
+@mixin positioner {
+    // The layer of the other popups, e.g. `Menu`, so the popup opens above a `Dialog` or `Drawer` that holds the field
+    z-index: var(--dextinity-layer-popup);
+    outline: none;
+}
+
+@mixin popup {
+    box-sizing: border-box;
+    border-radius: var(--dextinity-date-picker-popup-radius);
+    background: var(--dextinity-date-picker-popup-background);
+    box-shadow: var(--dextinity-date-picker-popup-shadow);
+    outline: none;
+    transform-origin: var(--transform-origin);
+    transition:
+        opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    &[data-starting-style],
+    &[data-ending-style] {
+        opacity: 0;
+        transform: scale(0.96) translateY(calc(var(--dextinity-motion-distance) * -1));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &[data-starting-style],
+        &[data-ending-style] {
+            transform: none;
+        }
+    }
+
+    @include forced-colors.edge;
+}

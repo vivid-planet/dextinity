@@ -171,6 +171,13 @@ describe("timesOfDay", () => {
         expect(times[95]).toEqual({ hours: 23, minutes: 45 });
         expect(timesOfDay(90).at(-1)).toEqual({ hours: 22, minutes: 30 });
     });
+
+    it("falls back to 15 minutes for a step that isn't at least one minute", () => {
+        expect(timesOfDay(Number.NaN)).toHaveLength(96);
+        expect(timesOfDay(0)).toHaveLength(96);
+        expect(timesOfDay(-30)).toHaveLength(96);
+        expect(timesOfDay(Number.POSITIVE_INFINITY)).toHaveLength(96);
+    });
 });
 
 describe("closestTimeIndex", () => {

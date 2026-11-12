@@ -22,6 +22,8 @@
 
     // Text size of the month and year heading in the calendar
     --dextinity-date-picker-heading-font-size: 13.5px;
+    // Height of the buttons in the calendar header, and width of its previous and next buttons
+    --dextinity-date-picker-header-control-size: 30px;
     // Height of the year menu in the calendar header before it scrolls
     --dextinity-date-picker-year-menu-max-height: 240px;
     // Text color of the weekday names above the days
@@ -56,8 +58,6 @@
     --dextinity-date-picker-time-list-min-width: 120px;
     // Space around the times in the DateTimePicker's list
     --dextinity-date-picker-time-list-padding: var(--dextinity-space-1-5);
-    // Height of a time in the DateTimePicker's list
-    --dextinity-date-picker-time-option-height: 32px;
 
     // Opacity of a day that can't be selected
     --dextinity-date-picker-day-disabled-opacity: 0.36;

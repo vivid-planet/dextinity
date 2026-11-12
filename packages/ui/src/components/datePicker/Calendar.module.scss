@@ -1,4 +1,5 @@
 @use "../select/menu";
+@use "popup";
 @use "../../theme/forcedColors" as forced-colors;
 @use "../../theme/textStyles" as text-styles;
 
@@ -45,8 +46,8 @@
 
     display: inline-grid;
     place-items: center;
-    inline-size: 30px;
-    block-size: 30px;
+    inline-size: var(--dextinity-date-picker-header-control-size);
+    block-size: var(--dextinity-date-picker-header-control-size);
     border-radius: var(--dextinity-date-picker-day-radius);
     color: var(--dextinity-date-picker-button-color);
 
@@ -62,7 +63,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--dextinity-space-1);
-    block-size: 30px;
+    block-size: var(--dextinity-date-picker-header-control-size);
     margin-inline-start: auto;
     padding-inline: var(--dextinity-space-1-5);
     border-radius: var(--dextinity-date-picker-day-radius);
@@ -92,7 +93,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--dextinity-space-1);
-    block-size: 30px;
+    block-size: var(--dextinity-date-picker-header-control-size);
     margin-inline-end: auto;
     padding-inline: var(--dextinity-space-1-5);
     border-radius: var(--dextinity-date-picker-day-radius);
@@ -306,39 +307,24 @@
     }
 }
 
+.visuallyHidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 .positioner {
-    // The layer of the other popups, e.g. `Menu`, so the options open above a `Dialog` or `Drawer` that holds the field
-    z-index: var(--dextinity-layer-popup);
-    outline: none;
+    @include popup.positioner;
 }
 
 .popup {
-    box-sizing: border-box;
+    @include popup.popup;
+
     max-inline-size: var(--available-width);
     max-block-size: var(--available-height);
     overflow: auto;
     padding: var(--dextinity-date-picker-popup-padding);
-    border-radius: var(--dextinity-date-picker-popup-radius);
-    background: var(--dextinity-date-picker-popup-background);
-    box-shadow: var(--dextinity-date-picker-popup-shadow);
-    outline: none;
-    transform-origin: var(--transform-origin);
-    transition:
-        opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
-        transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
-
-    &[data-starting-style],
-    &[data-ending-style] {
-        opacity: 0;
-        transform: scale(0.96) translateY(calc(var(--dextinity-motion-distance) * -1));
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        &[data-starting-style],
-        &[data-ending-style] {
-            transform: none;
-        }
-    }
-
-    @include forced-colors.edge;
 }

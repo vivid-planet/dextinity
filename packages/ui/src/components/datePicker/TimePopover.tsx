@@ -3,8 +3,9 @@ import { type KeyboardEvent, type RefObject, useEffect, useRef, useState } from 
 
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { Icon } from "../icon/Icon";
-import { closestTimeIndex, formatTime, type TimeOfDay, timesOfDay } from "./dateValues";
+import { closestTimeIndex, formatTime, type TimeOfDay, timesOfDay, timeStepMinutes } from "./dateValues";
 import styles from "./TimePopover.module.scss";
+import { usePopupTabOut } from "./usePopupTabOut";
 
 interface TimePopoverProps {
     open: boolean;
@@ -29,9 +30,12 @@ function isSameTime(first: TimeOfDay | null, second: TimeOfDay) {
     return first != null && first.hours === second.hours && first.minutes === second.minutes;
 }
 
+const typeAheadTimeout = 750;
+
 /**
  * The button after a time input and the list of times it opens, below the end of the field box. Arrow keys move by one time, Page Up and
- * Page Down by an hour, Home and End to the first and last time, and Enter or Space chooses.
+ * Page Down by an hour, Home and End to the first and last time, typing jumps to the first time that starts with the typed text, and
+ * Enter or Space chooses.
  */
 export function TimePopover({
     open,
@@ -50,8 +54,13 @@ export function TimePopover({
     const fieldBox = anchor?.parentElement ?? null;
     const listRef = useRef<HTMLDivElement>(null);
     const times = timesOfDay(step);
+    const labels = times.map((time) => formatTime(time, locale));
     const [focusedIndex, setFocusedIndex] = useState(0);
     const moveFocusRef = useRef(false);
+    const typeAheadRef = useRef({ text: "", timeout: 0 });
+    const tabOut = usePopupTabOut({ trigger: anchor, finalFocus, onClose: () => onOpenChange(false) });
+
+    useEffect(() => () => window.clearTimeout(typeAheadRef.current.timeout), []);
 
     useEffect(() => {
         if (moveFocusRef.current) {
@@ -70,8 +79,29 @@ export function TimePopover({
         onOpenChange(nextOpen);
     };
 
+    const focusOption = (index: number) => {
+        moveFocusRef.current = true;
+        setFocusedIndex(Math.min(times.length - 1, Math.max(0, index)));
+    };
+
+    const typeAhead = (character: string) => {
+        const typed = typeAheadRef.current;
+        window.clearTimeout(typed.timeout);
+        typed.text += character.toLowerCase();
+        typed.timeout = window.setTimeout(() => {
+            typed.text = "";
+        }, typeAheadTimeout);
+        const match = labels.findIndex((label) => {
+            const normalized = label.toLowerCase();
+            return normalized.startsWith(typed.text) || normalized.replace(/^0+/, "").startsWith(typed.text);
+        });
+        if (match !== -1) {
+            focusOption(match);
+        }
+    };
+
     const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-        const hour = Math.max(1, Math.round(60 / step));
+        const hour = Math.max(1, Math.round(60 / timeStepMinutes(step)));
         const moves: Record<string, () => number> = {
             ArrowDown: () => focusedIndex + 1,
             ArrowUp: () => focusedIndex - 1,
@@ -81,13 +111,16 @@ export function TimePopover({
             End: () => times.length - 1,
         };
         const move = moves[event.key];
+        const focusedTime = times[focusedIndex] as TimeOfDay | undefined;
         if (move) {
             event.preventDefault();
-            moveFocusRef.current = true;
-            setFocusedIndex(Math.min(times.length - 1, Math.max(0, move())));
-        } else if (event.key === "Enter" || event.key === " ") {
+            focusOption(move());
+        } else if ((event.key === "Enter" || (event.key === " " && typeAheadRef.current.text === "")) && focusedTime != null) {
             event.preventDefault();
-            onSelect(times[focusedIndex]);
+            onSelect(focusedTime);
+        } else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+            event.preventDefault();
+            typeAhead(event.key);
         }
     };
 
@@ -100,12 +133,14 @@ export function TimePopover({
                 <BasePopover.Positioner className={styles.positioner} anchor={fieldBox} side="bottom" align="end" sideOffset={6} collisionPadding={8}>
                     <BasePopover.Popup
                         className={styles.popup}
+                        aria-labelledby={labelledBy}
+                        onKeyDown={tabOut.onKeyDown}
                         initialFocus={() => {
                             const option = listRef.current?.querySelector<HTMLElement>("[data-focus-target]");
                             option?.scrollIntoView({ block: "center" });
                             return option ?? true;
                         }}
-                        finalFocus={finalFocus}
+                        finalFocus={tabOut.finalFocus}
                     >
                         <div ref={listRef} role="listbox" aria-labelledby={labelledBy} className={styles.list} onKeyDown={onKeyDown}>
                             {times.map((time, index) => {
@@ -118,11 +153,13 @@ export function TimePopover({
                                         tabIndex={index === focusedIndex ? 0 : -1}
                                         className={styles.option}
                                         data-focus-target={index === focusedIndex ? "" : undefined}
+                                        data-highlighted={index === focusedIndex ? "" : undefined}
                                         data-selected={selected ? "" : undefined}
                                         onClick={() => onSelect(time)}
                                         onFocus={() => setFocusedIndex(index)}
+                                        onMouseMove={() => index !== focusedIndex && focusOption(index)}
                                     >
-                                        {formatTime(time, locale)}
+                                        <span className={styles.optionText}>{labels[index]}</span>
                                         {selected && <Icon name="check" className={styles.indicator} />}
                                     </div>
                                 );

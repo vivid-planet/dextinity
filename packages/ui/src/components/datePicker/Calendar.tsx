@@ -34,7 +34,7 @@ export interface CalendarLabels {
     previousYear: string;
     /** Accessible name of the button that shows the next year while choosing a month. */
     nextYear: string;
-    /** Accessible description of the heading, which switches to choosing a month. */
+    /** Accessible description of the heading, which switches to choosing a month; the year menu chooses the year. */
     chooseMonth: string;
     /** Accessible name of the menu that chooses the year. */
     year: string;
@@ -47,7 +47,7 @@ export const defaultCalendarLabels: CalendarLabels = {
     nextMonth: "Next month",
     previousYear: "Previous year",
     nextYear: "Next year",
-    chooseMonth: "Choose month and year",
+    chooseMonth: "Choose month",
     year: "Year",
     today: "Today",
 };
@@ -159,11 +159,14 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
 
     const monthTitle = (month: IsoDate) => formatDate(month, locale, { year: "numeric", month: "long", day: undefined });
     const yearTitle = (date: IsoDate) => formatDate(date, locale, { year: "numeric", month: undefined, day: undefined });
-    const monthNameFormat = new Intl.DateTimeFormat(locale, { month: "long", timeZone: "UTC" });
-    const heading =
-        months > 1
-            ? monthNameFormat.formatRange(new Date(`${visibleMonth}T00:00:00Z`), new Date(`${lastVisibleMonth}T00:00:00Z`))
-            : monthNameFormat.format(new Date(`${visibleMonth}T00:00:00Z`));
+    const visibleRange = (options: Intl.DateTimeFormatOptions) =>
+        new Intl.DateTimeFormat(locale, { ...options, timeZone: "UTC" }).formatRange(
+            new Date(`${visibleMonth}T00:00:00Z`),
+            new Date(`${lastVisibleMonth}T00:00:00Z`),
+        );
+    const spansYears = visibleMonth.slice(0, 4) !== lastVisibleMonth.slice(0, 4);
+    const heading = visibleRange(spansYears ? { month: "long", year: "numeric" } : { month: "long" });
+    const announcement = view === "months" ? yearTitle(visibleMonth) : visibleRange({ month: "long", year: "numeric" });
     const visibleYear = Number(visibleMonth.slice(0, 4));
     const yearOptions = calendarYears(visibleMonth, min, max, today).map((year) => ({
         value: year,
@@ -237,7 +240,6 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
                 <button
                     type="button"
                     className={styles.heading}
-                    aria-live="polite"
                     aria-describedby={headingDescriptionId}
                     aria-expanded={view === "months"}
                     onClick={() => {
@@ -294,6 +296,9 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
                     <Icon name="chevron-right" />
                 </button>
             </div>
+            <span className={styles.visuallyHidden} aria-live="polite">
+                {announcement}
+            </span>
             {view === "months" ? (
                 <div className={styles.monthList} role="group" aria-label={yearTitle(visibleMonth)}>
                     {monthButtons.map((month) => {

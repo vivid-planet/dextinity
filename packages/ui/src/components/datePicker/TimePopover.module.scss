@@ -1,90 +1,39 @@
-@use "../../theme/forcedColors" as forced-colors;
+@use "../select/menu";
+@use "popup";
 
 .positioner {
-    // The layer of the other popups, e.g. `Menu`, so the times open above a `Dialog` or `Drawer` that holds the field
-    z-index: var(--dextinity-layer-popup);
-    outline: none;
+    @include popup.positioner;
 }
 
 .popup {
-    box-sizing: border-box;
+    @include popup.popup;
+
     display: flex;
     max-block-size: min(var(--dextinity-date-picker-time-list-max-height), var(--available-height));
     padding: var(--dextinity-date-picker-time-list-padding);
-    border-radius: var(--dextinity-date-picker-popup-radius);
-    background: var(--dextinity-date-picker-popup-background);
-    box-shadow: var(--dextinity-date-picker-popup-shadow);
     color: var(--dextinity-color-text);
     font-family: var(--dextinity-font-family-text);
-    outline: none;
-    transform-origin: var(--transform-origin);
-    transition:
-        opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
-        transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
-
-    &[data-starting-style],
-    &[data-ending-style] {
-        opacity: 0;
-        transform: scale(0.96) translateY(calc(var(--dextinity-motion-distance) * -1));
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        &[data-starting-style],
-        &[data-ending-style] {
-            transform: none;
-        }
-    }
-
-    @include forced-colors.edge;
 }
 
 .list {
+    @include menu.list;
+
     display: flex;
     flex-direction: column;
-    gap: var(--dextinity-space-0-5);
     min-inline-size: var(--dextinity-date-picker-time-list-min-width);
-    overflow-y: auto;
-    outline: none;
-    scrollbar-width: thin;
 }
 
 .option {
-    display: flex;
+    @include menu.item;
+
     flex: none;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--dextinity-space-2);
-    box-sizing: border-box;
-    min-block-size: var(--dextinity-date-picker-time-option-height);
-    padding-inline: var(--dextinity-space-2-5);
-    border-radius: var(--dextinity-date-picker-day-radius);
-    font-size: var(--dextinity-date-picker-day-font-size);
     font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
+}
 
-    --dextinity-icon-size: var(--dextinity-icon-size-small);
-
-    &:hover {
-        background: var(--dextinity-date-picker-day-background-hover);
-    }
-
-    &:focus-visible {
-        outline: none;
-        box-shadow: var(--dextinity-focus-ring-inset);
-        @include forced-colors.focus-ring;
-    }
-
-    &[data-selected],
-    &[data-selected]:hover {
-        background: var(--dextinity-date-picker-day-background-selected);
-        color: var(--dextinity-date-picker-day-foreground-selected);
-        font-weight: var(--dextinity-font-weight-semibold);
-        @include forced-colors.selected;
-    }
+.optionText {
+    @include menu.itemText;
 }
 
 .indicator {
-    flex: none;
+    @include menu.itemIndicator;
 }

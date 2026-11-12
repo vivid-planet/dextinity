@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { renderHook } from "test-utils";
 import { describe, expect, it, type Mock, vi } from "vitest";
 
@@ -8,7 +8,7 @@ import { useCopyPastePages } from "./useCopyPastePages";
 import type { GQLPageTreePageFragment } from "./usePageTree";
 import { usePageTreeContext } from "./usePageTreeContext";
 
-vi.mock(import("@apollo/client"), async (importOriginal) => ({ ...(await importOriginal()), useApolloClient: vi.fn() }));
+vi.mock(import("@apollo/client/react"), async (importOriginal) => ({ ...(await importOriginal()), useApolloClient: vi.fn() }));
 vi.mock("../../config/DextinityConfigContext", () => ({ useDextinityConfig: () => ({ apiUrl: "" }) }));
 vi.mock("../../dam/config/damConfig", () => ({ useDamBasePath: () => "" }));
 vi.mock("../../dam/config/useDamScope", () => ({ useDamScope: () => ({}) }));

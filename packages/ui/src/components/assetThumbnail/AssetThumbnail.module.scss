@@ -95,6 +95,7 @@
     --dextinity-icon-size: 28px;
 }
 
+// stylelint-disable declaration-property-value-disallowed-list -- The corners of the folder illustration are part of its drawing, not component corner radii
 .folder {
     position: relative;
     inline-size: 70%;
@@ -133,6 +134,7 @@
         content: "";
     }
 }
+// stylelint-enable declaration-property-value-disallowed-list
 
 .typeMark {
     position: absolute;

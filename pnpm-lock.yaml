@@ -2998,6 +2998,9 @@ importers:
       playwright:
         specifier: ^1.65.0
         version: 1.65.0
+      postcss-scss:
+        specifier: ^4.0.9
+        version: 4.0.9(postcss@8.5.32)
       prettier:
         specifier: ^3.6.2
         version: 3.9.10
@@ -3019,6 +3022,9 @@ importers:
       storybook-addon-tag-badges:
         specifier: ^3.1.0
         version: 3.1.0(storybook@10.6.5(@types/react@19.3.0)(prettier@3.9.10)(react@19.3.1))
+      stylelint:
+        specifier: ^17.16.0
+        version: 17.16.0(supports-color@8.1.1)(typescript@6.0.3)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3

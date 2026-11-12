@@ -88,6 +88,7 @@
 .indeterminateMark {
     inline-size: 8px;
     block-size: 2px;
+    // stylelint-disable-next-line declaration-property-value-disallowed-list -- Rounds the ends of the 2px bar drawn as the indeterminate mark
     border-radius: 1px;
     background: currentColor;
 

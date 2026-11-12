@@ -1,11 +1,11 @@
-import { createRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData, withPreview } from "@dextinity/mail-react";
+import { createTipTapRichTextBlock, MjmlColumn, MjmlSection, type PropsWithData, withPreview } from "@dextinity/mail-react";
 import type { MailRichTextBlockData, PhoneLinkBlockData } from "@src/blocks.generated";
 
-export const { MjmlRichTextBlock } = createRichTextBlock({
-    blockTypes: {
+export const { MjmlTipTapRichTextBlock } = createTipTapRichTextBlock({
+    textBlockStyles: {
         title: { variant: "title" },
         header: { variant: "header" },
-        copy: { variant: "copy" },
+        small: { variant: "copySmall" },
     },
     linkTypes: {
         phone: (props: PhoneLinkBlockData) => (props.phone ? `tel:${props.phone}` : undefined),
@@ -17,7 +17,7 @@ export const MailRichTextBlock = withPreview<PropsWithData<MailRichTextBlockData
         return (
             <MjmlSection indent className={className}>
                 <MjmlColumn>
-                    <MjmlRichTextBlock data={data} />
+                    <MjmlTipTapRichTextBlock data={data} />
                 </MjmlColumn>
             </MjmlSection>
         );

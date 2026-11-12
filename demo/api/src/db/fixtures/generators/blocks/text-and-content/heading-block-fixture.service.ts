@@ -3,38 +3,29 @@ import { Injectable } from "@nestjs/common";
 import { type HeadingBlock, HeadlineTag } from "@src/common/blocks/heading.block.js";
 import { faker } from "@src/db/fixtures/faker.js";
 
-import { RichTextBlockFixtureService } from "./rich-text-block-fixture.service.js";
+import { InlineRichTextBlockFixtureService } from "./inline-rich-text-block-fixture.service.js";
 
 @Injectable()
 export class HeadingBlockFixtureService {
-    constructor(private readonly richTextBlockFixtureService: RichTextBlockFixtureService) {}
+    constructor(private readonly inlineRichTextBlockFixtureService: InlineRichTextBlockFixtureService) {}
 
     async generateBlockInput(): Promise<ExtractBlockInputFactoryProps<typeof HeadingBlock>> {
-        const possibleTypes = ["h1", "h2", "h3", "h4", "subHeadlineMedium", "subHeadlineSmall"];
-
-        const eyebrowBlock = {
-            key: faker.string.uuid(),
-            text: faker.lorem.words({ min: 3, max: 9 }),
-            type: faker.helpers.arrayElement(possibleTypes),
-            depth: 0,
-            inlineStyleRanges: [],
-            entityRanges: [],
-            data: {},
-        };
-
-        const headingBlock = {
-            key: faker.string.uuid(),
-            text: faker.lorem.words({ min: 3, max: 9 }),
-            type: faker.helpers.arrayElement(possibleTypes),
-            depth: 0,
-            inlineStyleRanges: [],
-            entityRanges: [],
-            data: {},
-        };
+        const headlineTextBlocks = ["headline600", "headline550", "headline500", "headline450", "headline400", "headline350"];
 
         return {
-            eyebrow: await this.richTextBlockFixtureService.generateBlockInput(1, [eyebrowBlock]),
-            headline: await this.richTextBlockFixtureService.generateBlockInput(1, [headingBlock]),
+            eyebrow: await this.inlineRichTextBlockFixtureService.generateBlockInput(faker.lorem.words({ min: 3, max: 9 })),
+            headline: {
+                tipTapContent: {
+                    type: "doc",
+                    content: [
+                        {
+                            type: "textBlock",
+                            attrs: { textBlock: faker.helpers.arrayElement(headlineTextBlocks) },
+                            content: [{ type: "text", text: faker.lorem.words({ min: 3, max: 9 }) }],
+                        },
+                    ],
+                },
+            },
             htmlTag: faker.helpers.arrayElement(Object.values(HeadlineTag)),
         };
     }

@@ -10,16 +10,16 @@ import { RichTextBlockFixtureService } from "../text-and-content/rich-text-block
 export class LayoutBlockFixtureService {
     constructor(
         private readonly mediaBlockFixtureService: MediaBlockFixtureService,
-        private readonly richTextFixtureService: RichTextBlockFixtureService,
+        private readonly richTextBlockFixtureService: RichTextBlockFixtureService,
     ) {}
 
     async generateBlockInput(): Promise<ExtractBlockInputFactoryProps<typeof LayoutBlock>> {
         return {
             layout: faker.helpers.arrayElement(Object.values(LayoutBlockLayout)),
             media1: await this.mediaBlockFixtureService.generateBlockInput(),
-            text1: await this.richTextFixtureService.generateBlockInput(),
+            text1: await this.richTextBlockFixtureService.generateBlockInput(),
             media2: await this.mediaBlockFixtureService.generateBlockInput(),
-            text2: await this.richTextFixtureService.generateBlockInput(),
+            text2: await this.richTextBlockFixtureService.generateBlockInput(),
         };
     }
 }

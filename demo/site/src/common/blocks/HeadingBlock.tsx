@@ -1,60 +1,48 @@
-import { hasRichTextBlockContent, PreviewSkeleton, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
+import {
+    hasTipTapRichTextContent,
+    PreviewSkeleton,
+    type PropsWithData,
+    renderTipTapRichText,
+    type TipTapNodeHandler,
+    withPreview,
+} from "@dextinity/site-nextjs";
 import type { HeadingBlockData } from "@src/blocks.generated";
-import { Typography } from "@src/common/components/Typography";
-import type { Renderers } from "redraft";
+import { Typography, type TypographyProps } from "@src/common/components/Typography";
 
-import { createTextBlockRenderFn, defaultRichTextInlineStyleMap, RichTextBlock } from "./RichTextBlock";
+import { InlineRichTextBlock } from "./InlineRichTextBlock";
 
-const eyebrowRenderers: Renderers = {
-    inline: defaultRichTextInlineStyleMap,
-};
+type TypographyVariant = TypographyProps<"p">["variant"];
 
-const getHeadlineRenderers = (htmlTag: keyof HTMLElementTagNameMap): Renderers => ({
-    inline: defaultRichTextInlineStyleMap,
-    blocks: {
-        "header-one": createTextBlockRenderFn({ variant: "headline600", as: htmlTag, bottomSpacing: true }),
-        "header-two": createTextBlockRenderFn({ variant: "headline550", as: htmlTag, bottomSpacing: true }),
-        "header-three": createTextBlockRenderFn({ variant: "headline500", as: htmlTag, bottomSpacing: true }),
-        "header-four": createTextBlockRenderFn({ variant: "headline450", as: htmlTag, bottomSpacing: true }),
-        "header-five": createTextBlockRenderFn({ variant: "headline400", as: htmlTag, bottomSpacing: true }),
-        "header-six": createTextBlockRenderFn({ variant: "headline350", as: htmlTag, bottomSpacing: true }),
-    },
+// The headline's text blocks are named after the typography variant they're rendered with.
+const createHeadlineNodeMapping = (htmlTag: HeadingBlockData["htmlTag"]): Record<string, TipTapNodeHandler> => ({
+    textBlock: ({ node, children }) => (
+        <Typography variant={node.attrs?.textBlock as TypographyVariant} as={htmlTag} bottomSpacing>
+            {children}
+        </Typography>
+    ),
 });
-
-const headlineTagMap: Record<HeadingBlockData["htmlTag"], keyof HTMLElementTagNameMap> = {
-    h1: "h1",
-    h2: "h2",
-    h3: "h3",
-    h4: "h4",
-    h5: "h5",
-    h6: "h6",
-};
 
 type HeadingBlockProps = PropsWithData<HeadingBlockData>;
 
 export const HeadingBlock = withPreview(
-    ({ data: { eyebrow, headline, htmlTag } }: HeadingBlockProps) => {
-        const headlineTag = headlineTagMap[htmlTag];
-
-        return (
-            <>
-                {hasRichTextBlockContent(eyebrow) && (
-                    <Typography variant="headline400" as="p" bottomSpacing>
-                        <RichTextBlock data={eyebrow} renderers={eyebrowRenderers} />
+    ({ data: { eyebrow, headline, htmlTag } }: HeadingBlockProps) => (
+        <>
+            {hasTipTapRichTextContent(eyebrow.tipTapContent) && (
+                <Typography variant="headline400" as="p" bottomSpacing>
+                    <InlineRichTextBlock data={eyebrow} />
+                </Typography>
+            )}
+            <PreviewSkeleton
+                hasContent={hasTipTapRichTextContent(headline.tipTapContent)}
+                title={
+                    <Typography variant="headline550" as="span">
+                        Headline
                     </Typography>
-                )}
-                <PreviewSkeleton
-                    hasContent={hasRichTextBlockContent(headline)}
-                    title={
-                        <Typography variant="headline550" as="span">
-                            Headline
-                        </Typography>
-                    }
-                >
-                    <RichTextBlock data={headline} renderers={getHeadlineRenderers(headlineTag)} />
-                </PreviewSkeleton>
-            </>
-        );
-    },
+                }
+            >
+                {renderTipTapRichText({ content: headline.tipTapContent, nodeMapping: createHeadlineNodeMapping(htmlTag) })}
+            </PreviewSkeleton>
+        </>
+    ),
     { label: "Heading" },
 );

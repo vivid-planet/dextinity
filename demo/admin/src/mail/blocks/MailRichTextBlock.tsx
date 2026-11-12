@@ -1,46 +1,39 @@
-import { createRichTextBlock } from "@dextinity/cms-admin";
+import { createTipTapRichTextBlock } from "@dextinity/cms-admin";
 import { Typography } from "@mui/material";
 import { MailLinkBlock } from "@src/mail/blocks/MailLinkBlock";
+import type { HTMLAttributes } from "react";
 import { FormattedMessage } from "react-intl";
 
-const baseMailRichTextBlock = createRichTextBlock({
+export const mailRichTextBlockOptions = {
     link: MailLinkBlock,
-    rte: {
-        supports: [
-            "bold",
-            "italic",
-            "sub",
-            "sup",
-            "strikethrough",
-            "unordered-list",
-            "ordered-list",
-            "history",
-            "link",
-            "links-remove",
-            "non-breaking-space",
-            "soft-hyphen",
-        ],
-        standardBlockType: "copy",
-        blocktypeMap: {
-            title: {
-                label: <FormattedMessage id="mail.richText.blockType.title" defaultMessage="Title" />,
-                renderConfig: {
-                    element: (props) => <Typography variant="h1" {...props} />,
+    textBlocks: [
+        {
+            name: "paragraph",
+            label: <FormattedMessage id="mail.richText.textBlock.paragraph" defaultMessage="Paragraph" />,
+            tag: "p",
+            styles: [
+                {
+                    name: "title",
+                    label: <FormattedMessage id="mail.richText.textBlockStyle.title" defaultMessage="Title" />,
+                    element: (props: HTMLAttributes<HTMLElement>) => <Typography variant="h1" {...props} />,
                 },
-            },
-            header: {
-                label: <FormattedMessage id="mail.richText.blockType.header" defaultMessage="Header" />,
-                renderConfig: {
-                    element: (props) => <Typography variant="h2" {...props} />,
+                {
+                    name: "header",
+                    label: <FormattedMessage id="mail.richText.textBlockStyle.header" defaultMessage="Header" />,
+                    element: (props: HTMLAttributes<HTMLElement>) => <Typography variant="h2" {...props} />,
                 },
-            },
-            copy: { label: <FormattedMessage id="mail.richText.blockType.copy" defaultMessage="Copy" /> },
+                {
+                    name: "small",
+                    label: <FormattedMessage id="mail.richText.textBlockStyle.small" defaultMessage="Small" />,
+                    element: (props: HTMLAttributes<HTMLElement>) => <Typography variant="body2" {...props} />,
+                },
+            ],
         },
-    },
-});
+    ],
+} satisfies NonNullable<Parameters<typeof createTipTapRichTextBlock>[0]>;
 
 export const MailRichTextBlock = {
-    ...baseMailRichTextBlock,
+    ...createTipTapRichTextBlock(mailRichTextBlockOptions),
     name: "MailRichText",
-    displayName: <FormattedMessage id="mail.richText.displayName" defaultMessage="Rich Text (DraftJS)" />,
+    displayName: <FormattedMessage id="mail.richText.displayName" defaultMessage="Rich Text" />,
 };

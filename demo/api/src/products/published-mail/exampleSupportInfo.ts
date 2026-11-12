@@ -1,28 +1,35 @@
 import type { RichTextBlockData } from "@src/blocks.generated.js";
 
 export const exampleSupportInfo: RichTextBlockData = {
-    draftContent: {
-        blocks: [
+    tipTapContent: {
+        type: "doc",
+        content: [
             {
-                key: "a",
-                text: "Call our support hotline for help or check the FAQ.",
-                type: "paragraph-standard",
-                depth: 0,
-                inlineStyleRanges: [],
-                entityRanges: [
-                    { offset: 9, length: 15, key: 0 },
-                    { offset: 47, length: 3, key: 1 },
+                type: "textBlock",
+                attrs: { textBlock: "paragraph" },
+                content: [
+                    { type: "text", text: "Call our " },
+                    {
+                        type: "text",
+                        marks: [{ type: "link", attrs: { data: { block: { type: "phone", props: { phone: "+431234567" } } } } }],
+                        text: "support hotline",
+                    },
+                    { type: "text", text: " for help or check the " },
+                    {
+                        type: "text",
+                        marks: [
+                            {
+                                type: "link",
+                                attrs: {
+                                    data: { block: { type: "external", props: { targetUrl: "https://example.com/faq", openInNewWindow: false } } },
+                                },
+                            },
+                        ],
+                        text: "FAQ",
+                    },
+                    { type: "text", text: "." },
                 ],
-                data: {},
             },
         ],
-        entityMap: {
-            "0": { type: "LINK", mutability: "MUTABLE", data: { block: { type: "phone", props: { phone: "+431234567" } } } },
-            "1": {
-                type: "LINK",
-                mutability: "MUTABLE",
-                data: { block: { type: "external", props: { targetUrl: "https://example.com/faq", openInNewWindow: false } } },
-            },
-        },
     },
 };

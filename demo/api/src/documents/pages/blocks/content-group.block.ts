@@ -19,7 +19,6 @@ import { StandaloneHeadingBlock } from "@src/common/blocks/standalone-heading.bl
 import { StandaloneMediaBlock } from "@src/common/blocks/standalone-media.block.js";
 import { StandaloneRichTextBlock } from "@src/common/blocks/standalone-rich-text.block.js";
 import { TableBlock } from "@src/common/blocks/table.block.js";
-import { TipTapTableBlock } from "@src/common/blocks/tip-tap-table.block.js";
 import { ColumnsBlock } from "@src/documents/pages/blocks/columns.block.js";
 import { KeyFactsBlock } from "@src/documents/pages/blocks/key-facts.block.js";
 import { TeaserBlock } from "@src/documents/pages/blocks/teaser.block.js";
@@ -40,7 +39,6 @@ export const ContentBlock = createBlocksBlock(
             space: SpaceBlock,
             teaser: TeaserBlock,
             table: TableBlock,
-            tipTapTable: TipTapTableBlock,
         },
     },
     "ContentGroupContent",

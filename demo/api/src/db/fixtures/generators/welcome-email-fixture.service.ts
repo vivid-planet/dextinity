@@ -15,27 +15,22 @@ interface WelcomeEmailScope {
     language: string;
 }
 
-type MailTextVariant = "title" | "header" | "copy";
+type InlineContent = Array<{ type: "text"; text: string; marks?: object[] }>;
 
-interface DraftJsBlock {
-    text: string;
-    type: MailTextVariant | "unordered-list-item";
-    entityRanges?: Array<{ offset: number; length: number; key: number }>;
+function textBlock(content: string | InlineContent, textBlockStyle?: "title" | "header" | "small") {
+    return {
+        type: "textBlock",
+        attrs: { textBlock: "paragraph", ...(textBlockStyle ? { textBlockStyle } : {}) },
+        content: typeof content === "string" ? [{ type: "text", text: content }] : content,
+    };
 }
 
-function draftContent<TEntityMap extends object>(blocks: DraftJsBlock[], entityMap: TEntityMap) {
-    return {
-        blocks: blocks.map(({ text, type, entityRanges = [] }) => ({
-            key: faker.string.uuid(),
-            text,
-            type,
-            depth: 0,
-            inlineStyleRanges: [],
-            entityRanges,
-            data: {},
-        })),
-        entityMap,
-    };
+function bulletList(items: string[]) {
+    return { type: "bulletList", content: items.map((item) => ({ type: "listItem", content: [textBlock(item)] })) };
+}
+
+function richText(...content: object[]) {
+    return { tipTapContent: { type: "doc", content } };
 }
 
 const phoneLink = {
@@ -43,7 +38,17 @@ const phoneLink = {
     attrs: { data: { attachedBlocks: [{ type: "phone", props: { phone: "+431234567" } }], activeType: "phone" } },
 };
 
-const helpWithTipTap = {
+const faqLink = {
+    type: "link",
+    attrs: {
+        data: {
+            attachedBlocks: [{ type: "external", props: { targetUrl: "https://example.com/faq", openInNewWindow: true, noFollow: false } }],
+            activeType: "external",
+        },
+    },
+};
+
+const helpText = {
     tipTapContent: {
         type: "doc",
         content: [
@@ -58,7 +63,7 @@ const helpWithTipTap = {
                 content: [
                     {
                         type: "text",
-                        text: "This text block uses the Tip-Tap editor, and renders through the same mail components as the blocks above. ",
+                        text: "Our team is happy to answer your questions. ",
                     },
                     { type: "text", marks: [phoneLink], text: "Call us" },
                     { type: "text", text: " if anything is unclear." },
@@ -121,7 +126,7 @@ export class WelcomeEmailFixtureService {
                         key: faker.string.uuid(),
                         visible: true,
                         type: "text",
-                        props: { draftContent: draftContent([{ text: "Welcome to our newsletter", type: "title" }], {}) },
+                        props: richText(textBlock("Welcome to our newsletter", "title")),
                     },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
                     {
@@ -135,59 +140,27 @@ export class WelcomeEmailFixtureService {
                         key: faker.string.uuid(),
                         visible: true,
                         type: "text",
-                        props: {
-                            draftContent: draftContent(
-                                [
-                                    { text: "Hi there, and thanks for subscribing — we're glad to have you on board.", type: "copy" },
-                                    { text: "You'll be the first to hear about:", type: "copy" },
-                                    { text: "Product updates", type: "unordered-list-item" },
-                                    { text: "Handy tips from our team", type: "unordered-list-item" },
-                                    { text: "Stories from behind the scenes", type: "unordered-list-item" },
-                                ],
-                                {},
-                            ),
-                        },
+                        props: richText(
+                            textBlock("Hi there, and thanks for subscribing — we're glad to have you on board."),
+                            textBlock("You'll be the first to hear about:"),
+                            bulletList(["Product updates", "Handy tips from our team", "Stories from behind the scenes"]),
+                        ),
                     },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.large } },
                     {
                         key: faker.string.uuid(),
                         visible: true,
                         type: "text",
-                        props: {
-                            draftContent: draftContent(
-                                [
-                                    { text: "Further information", type: "header" },
-                                    {
-                                        text: "Call our support hotline for help or check the FAQ.",
-                                        type: "copy",
-                                        entityRanges: [
-                                            { offset: 9, length: 15, key: 0 },
-                                            { offset: 47, length: 3, key: 1 },
-                                        ],
-                                    },
-                                ],
-                                {
-                                    "0": {
-                                        type: "LINK",
-                                        mutability: "MUTABLE",
-                                        data: { attachedBlocks: [{ type: "phone", props: { phone: "+431234567" } }], activeType: "phone" },
-                                    },
-                                    "1": {
-                                        type: "LINK",
-                                        mutability: "MUTABLE",
-                                        data: {
-                                            attachedBlocks: [
-                                                {
-                                                    type: "external",
-                                                    props: { targetUrl: "https://example.com/faq", openInNewWindow: true, noFollow: false },
-                                                },
-                                            ],
-                                            activeType: "external",
-                                        },
-                                    },
-                                },
-                            ),
-                        },
+                        props: richText(
+                            textBlock("Further information", "header"),
+                            textBlock([
+                                { type: "text", text: "Call our " },
+                                { type: "text", marks: [phoneLink], text: "support hotline" },
+                                { type: "text", text: " for help or check the " },
+                                { type: "text", marks: [faqLink], text: "FAQ" },
+                                { type: "text", text: "." },
+                            ]),
+                        ),
                     },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
                     {
@@ -223,15 +196,10 @@ export class WelcomeEmailFixtureService {
                                                 key: faker.string.uuid(),
                                                 visible: true,
                                                 type: "text",
-                                                props: {
-                                                    draftContent: draftContent(
-                                                        [
-                                                            { text: "Our team", type: "header" },
-                                                            { text: "Meet the people who write this newsletter.", type: "copy" },
-                                                        ],
-                                                        {},
-                                                    ),
-                                                },
+                                                props: richText(
+                                                    textBlock("Our team", "header"),
+                                                    textBlock("Meet the people who write this newsletter."),
+                                                ),
                                             },
                                             { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.small } },
                                             {
@@ -252,7 +220,7 @@ export class WelcomeEmailFixtureService {
                         },
                     },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
-                    { key: faker.string.uuid(), visible: true, type: "tipTapText", props: helpWithTipTap },
+                    { key: faker.string.uuid(), visible: true, type: "text", props: helpText },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
                     { key: faker.string.uuid(), visible: true, type: "divider", props: {} },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.small } },
@@ -260,18 +228,10 @@ export class WelcomeEmailFixtureService {
                         key: faker.string.uuid(),
                         visible: true,
                         type: "text",
-                        props: {
-                            draftContent: draftContent(
-                                [
-                                    {
-                                        text: "You receive this email because you subscribed to our newsletter.",
-                                        type: "copy",
-                                    },
-                                    { text: "Example Company, Example Street 1, 1010 Vienna", type: "copy" },
-                                ],
-                                {},
-                            ),
-                        },
+                        props: richText(
+                            textBlock("You receive this email because you subscribed to our newsletter."),
+                            textBlock("Example Company, Example Street 1, 1010 Vienna"),
+                        ),
                     },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
                 ],

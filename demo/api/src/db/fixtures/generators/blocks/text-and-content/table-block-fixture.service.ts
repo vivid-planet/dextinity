@@ -1,12 +1,14 @@
 import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
 import type { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
-import { faker } from "@src/db/fixtures/faker.js";
 import { LinkBlockFixtureService } from "@src/db/fixtures/generators/blocks/navigation/link-block-fixture.service.js";
 
 import { type DescriptionCellContent, TableBlockFixtureBase } from "./table-block-fixture-base.js";
 
 type RichTextInput = ExtractBlockInputFactoryProps<typeof RichTextBlock>;
+
+const standardParagraphStyle = "paragraph300";
+const smallParagraphStyle = "paragraph200";
 
 @Injectable()
 export class TableBlockFixtureService extends TableBlockFixtureBase<RichTextInput> {
@@ -16,59 +18,39 @@ export class TableBlockFixtureService extends TableBlockFixtureBase<RichTextInpu
 
     protected createSimpleCellRichText(text: string): RichTextInput {
         return {
-            draftContent: {
-                blocks: [
+            tipTapContent: {
+                type: "doc",
+                content: [
                     {
-                        key: faker.string.uuid(),
-                        text,
-                        type: "paragraph-standard",
-                        depth: 0,
-                        inlineStyleRanges: [],
-                        entityRanges: [],
-                        data: {},
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph", textBlockStyle: standardParagraphStyle },
+                        content: [{ type: "text", text }],
                     },
                 ],
-                entityMap: {},
             },
         };
     }
 
     protected createDescriptionCellRichText({ jobTitle, textBeforeLink, linkText, textAfterLink, link }: DescriptionCellContent): RichTextInput {
         return {
-            draftContent: {
-                blocks: [
+            tipTapContent: {
+                type: "doc",
+                content: [
                     {
-                        key: faker.string.uuid(),
-                        text: jobTitle,
-                        type: "paragraph-standard",
-                        depth: 0,
-                        inlineStyleRanges: [],
-                        entityRanges: [],
-                        data: {},
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph", textBlockStyle: standardParagraphStyle },
+                        content: [{ type: "text", text: jobTitle }],
                     },
                     {
-                        key: faker.string.uuid(),
-                        text: `${textBeforeLink}${linkText}${textAfterLink}`,
-                        type: "paragraph-small",
-                        depth: 0,
-                        inlineStyleRanges: [],
-                        entityRanges: [
-                            {
-                                offset: textBeforeLink.length,
-                                length: linkText.length,
-                                key: 0,
-                            },
+                        type: "textBlock",
+                        attrs: { textBlock: "paragraph", textBlockStyle: smallParagraphStyle },
+                        content: [
+                            { type: "text", text: textBeforeLink },
+                            { type: "text", marks: [{ type: "link", attrs: { data: link } }], text: linkText },
+                            { type: "text", text: textAfterLink },
                         ],
-                        data: {},
                     },
                 ],
-                entityMap: {
-                    "0": {
-                        type: "LINK",
-                        mutability: "MUTABLE",
-                        data: link,
-                    },
-                },
             },
         };
     }

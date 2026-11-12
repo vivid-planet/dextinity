@@ -16,6 +16,8 @@ export default defineConfig({
                     name: "unit",
                     environment: "jsdom",
                     setupFiles: "./vitest.setup.ts",
+                    // CI runs the unit tests of several packages in parallel, slowing down render-heavy tests (e.g. DataGrid, date pickers) far beyond the 5s default
+                    testTimeout: 15000,
                 },
             },
             {

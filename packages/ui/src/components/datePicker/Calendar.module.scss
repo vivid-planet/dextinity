@@ -1,3 +1,4 @@
+@use "../select/menu";
 @use "../../theme/forcedColors" as forced-colors;
 @use "../../theme/textStyles" as text-styles;
 
@@ -59,11 +60,11 @@
     @include plain-button;
 
     display: inline-flex;
-    flex: 1;
     align-items: center;
-    justify-content: center;
     gap: var(--dextinity-space-1);
     block-size: 30px;
+    margin-inline-start: auto;
+    padding-inline: var(--dextinity-space-1-5);
     border-radius: var(--dextinity-date-picker-day-radius);
     font-size: var(--dextinity-date-picker-heading-font-size);
     font-weight: var(--dextinity-font-weight-semibold);
@@ -79,9 +80,58 @@
 
     --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
 
-    .heading[aria-expanded="true"] > & {
+    .heading[aria-expanded="true"] > &,
+    &[data-popup-open] {
         transform: rotate(180deg);
     }
+}
+
+.yearTrigger {
+    @include plain-button;
+
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-1);
+    block-size: 30px;
+    margin-inline-end: auto;
+    padding-inline: var(--dextinity-space-1-5);
+    border-radius: var(--dextinity-date-picker-day-radius);
+    font-size: var(--dextinity-date-picker-heading-font-size);
+    font-weight: var(--dextinity-font-weight-semibold);
+
+    &:hover,
+    &[data-popup-open] {
+        background: var(--dextinity-date-picker-button-background-hover);
+    }
+}
+
+.yearPositioner {
+    @include menu.positioner;
+}
+
+.yearPopup {
+    @include menu.popup;
+
+    min-inline-size: var(--anchor-width);
+    max-block-size: min(var(--dextinity-date-picker-year-menu-max-height), var(--available-height));
+}
+
+.yearList {
+    @include menu.list;
+}
+
+.yearItem {
+    @include menu.item;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.yearItemText {
+    @include menu.itemText;
+}
+
+.yearItemIndicator {
+    @include menu.itemIndicator;
 }
 
 .months {

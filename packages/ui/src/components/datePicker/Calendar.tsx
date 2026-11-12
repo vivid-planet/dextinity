@@ -1,17 +1,21 @@
+import { Select as BaseSelect } from "@base-ui/react/select";
 import { clsx } from "clsx";
 import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
 
+import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { Icon } from "../icon/Icon";
 import styles from "./Calendar.module.scss";
 import {
     addDays,
     addMonths,
+    calendarYears,
     clampDate,
     endOfMonth,
     endOfWeek,
     formatDate,
     type IsoDate,
     isWithin,
+    monthsBetween,
     monthWeeks,
     startOfMonth,
     startOfWeek,
@@ -32,6 +36,8 @@ export interface CalendarLabels {
     nextYear: string;
     /** Accessible description of the heading, which switches to choosing a month. */
     chooseMonth: string;
+    /** Accessible name of the menu that chooses the year. */
+    year: string;
     /** The button that chooses today. */
     today: string;
 }
@@ -42,6 +48,7 @@ export const defaultCalendarLabels: CalendarLabels = {
     previousYear: "Previous year",
     nextYear: "Next year",
     chooseMonth: "Choose month and year",
+    year: "Year",
     today: "Today",
 };
 
@@ -72,8 +79,8 @@ function monthKey(date: IsoDate) {
 }
 
 /**
- * The month grid inside the date pickers' popup. Arrow keys move by day and week, Home and End to the start and end of the week, Page
- * Up and Page Down by month, and with Shift by year.
+ * The month grid inside the date pickers' popup, with a menu in the header that switches the year. Arrow keys move by day and week,
+ * Home and End to the start and end of the week, Page Up and Page Down by month, and with Shift by year.
  */
 export function Calendar({ start, end, range, onSelect, min, max, locale, weekStartsOn, months, showToday, labels }: CalendarProps) {
     const today = getToday();
@@ -83,7 +90,9 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
     const [hovered, setHovered] = useState<IsoDate | null>(null);
     const rootRef = useRef<HTMLDivElement>(null);
     const moveFocusRef = useRef(false);
+    const yearListRef = useRef<HTMLDivElement>(null);
     const headingDescriptionId = `${useId()}heading`;
+    const { anchorRef: yearAnchorRef, container: yearPortalContainer } = useThemePortalContainer<HTMLButtonElement>();
 
     const visibleMonths = Array.from({ length: months }, (_, index) => addMonths(visibleMonth, index));
     const lastVisibleMonth = visibleMonths[visibleMonths.length - 1];
@@ -116,6 +125,16 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
         });
     };
 
+    const showYear = (year: number) => {
+        let target = `${String(year).padStart(4, "0")}${visibleMonth.slice(4)}`;
+        if (min != null && monthKey(target) < monthKey(min)) {
+            target = startOfMonth(min);
+        } else if (max != null && monthKey(target) > monthKey(max)) {
+            target = startOfMonth(max);
+        }
+        showMonths(monthsBetween(visibleMonth, target));
+    };
+
     const onGridKeyDown = (event: KeyboardEvent<HTMLTableElement>) => {
         const moves: Record<string, () => IsoDate> = {
             ArrowLeft: () => addDays(focused, -1),
@@ -139,14 +158,17 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
     const [rangeLow, rangeHigh] = start != null && rangeEnd != null ? [start, rangeEnd].sort() : [start, start];
 
     const monthTitle = (month: IsoDate) => formatDate(month, locale, { year: "numeric", month: "long", day: undefined });
-    const yearTitle = formatDate(visibleMonth, locale, { year: "numeric", month: undefined, day: undefined });
-    const headingFormat = new Intl.DateTimeFormat(locale, { year: "numeric", month: "long", timeZone: "UTC" });
+    const yearTitle = (date: IsoDate) => formatDate(date, locale, { year: "numeric", month: undefined, day: undefined });
+    const monthNameFormat = new Intl.DateTimeFormat(locale, { month: "long", timeZone: "UTC" });
     const heading =
-        view === "months"
-            ? yearTitle
-            : months > 1
-              ? headingFormat.formatRange(new Date(`${visibleMonth}T00:00:00Z`), new Date(`${lastVisibleMonth}T00:00:00Z`))
-              : monthTitle(visibleMonth);
+        months > 1
+            ? monthNameFormat.formatRange(new Date(`${visibleMonth}T00:00:00Z`), new Date(`${lastVisibleMonth}T00:00:00Z`))
+            : monthNameFormat.format(new Date(`${visibleMonth}T00:00:00Z`));
+    const visibleYear = Number(visibleMonth.slice(0, 4));
+    const yearOptions = calendarYears(visibleMonth, min, max, today).map((year) => ({
+        value: year,
+        label: yearTitle(`${String(year).padStart(4, "0")}-01-01`),
+    }));
 
     const weekdays = Array.from({ length: 7 }, (_, index) => addDays(startOfWeek("2026-11-02", weekStartsOn), index)).map((day) => ({
         short: formatDate(day, locale, { weekday: "short", year: undefined, month: undefined, day: undefined }),
@@ -229,6 +251,39 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
                         {labels.chooseMonth}
                     </span>
                 </button>
+                <BaseSelect.Root
+                    items={yearOptions}
+                    value={visibleYear}
+                    onValueChange={(year: number | null) => year != null && showYear(year)}
+                    onOpenChangeComplete={(open) => {
+                        if (open) {
+                            yearListRef.current?.querySelector("[data-selected]")?.scrollIntoView({ block: "center" });
+                        }
+                    }}
+                >
+                    <BaseSelect.Trigger ref={yearAnchorRef} className={styles.yearTrigger} aria-label={labels.year}>
+                        <BaseSelect.Value />
+                        <BaseSelect.Icon className={styles.headingIcon}>
+                            <Icon name="chevron-down" />
+                        </BaseSelect.Icon>
+                    </BaseSelect.Trigger>
+                    <BaseSelect.Portal container={yearPortalContainer}>
+                        <BaseSelect.Positioner className={styles.yearPositioner} sideOffset={4} align="center" alignItemWithTrigger={false}>
+                            <BaseSelect.Popup className={styles.yearPopup}>
+                                <BaseSelect.List ref={yearListRef} className={styles.yearList}>
+                                    {yearOptions.map((option) => (
+                                        <BaseSelect.Item key={option.value} value={option.value} label={option.label} className={styles.yearItem}>
+                                            <BaseSelect.ItemText className={styles.yearItemText}>{option.label}</BaseSelect.ItemText>
+                                            <BaseSelect.ItemIndicator className={styles.yearItemIndicator}>
+                                                <Icon name="check" />
+                                            </BaseSelect.ItemIndicator>
+                                        </BaseSelect.Item>
+                                    ))}
+                                </BaseSelect.List>
+                            </BaseSelect.Popup>
+                        </BaseSelect.Positioner>
+                    </BaseSelect.Portal>
+                </BaseSelect.Root>
                 <button
                     type="button"
                     className={styles.navButton}
@@ -240,7 +295,7 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
                 </button>
             </div>
             {view === "months" ? (
-                <div className={styles.monthList} role="group" aria-label={yearTitle}>
+                <div className={styles.monthList} role="group" aria-label={yearTitle(visibleMonth)}>
                     {monthButtons.map((month) => {
                         const disabled = (min != null && monthKey(month) < monthKey(min)) || (max != null && monthKey(month) > monthKey(max));
                         return (

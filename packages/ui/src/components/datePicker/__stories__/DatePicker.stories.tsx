@@ -161,6 +161,10 @@ export const MinAndMax: Story = {
         await userEvent.click(before);
         await expect(args.onChange).not.toHaveBeenCalled();
         await expect(screen.getByRole("button", { name: "Previous month" })).toBeDisabled();
+        await userEvent.click(screen.getByRole("combobox", { name: "Year" }));
+        await waitFor(() => expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["2026"]));
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("option")).not.toBeInTheDocument());
         await userEvent.keyboard("{Escape}");
 
         const input = canvas.getByRole("textbox", { name: "Published on" });
@@ -186,17 +190,21 @@ export const Clearable: Story = {
 };
 
 /**
- * The heading switches to choosing a month, for days far away such as a date of birth; the arrows then move by year.
+ * The menu next to the month switches the year, for days far away such as a date of birth; it offers the years between `min` and
+ * `max`, or a hundred years around today. The month switches to choosing a month, where the arrows move by year.
  */
 export const MonthAndYear: Story = {
     args: { locale: "en-GB", name: "birthday", label: "Date of birth", value: "1990-05-17" },
     play: async ({ canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Choose date" }));
-        await userEvent.click(await screen.findByRole("button", { name: "May 1990" }));
+        await userEvent.click(await screen.findByRole("combobox", { name: "Year" }));
+        await userEvent.click(await screen.findByRole("option", { name: "1985" }));
+        await waitFor(() => expect(screen.getByRole("grid", { name: "May 1985" })).toBeInTheDocument());
+        await userEvent.click(screen.getByRole("button", { name: "May" }));
         await userEvent.click(screen.getByRole("button", { name: "Previous year" }));
         await userEvent.click(screen.getByRole("button", { name: "Aug" }));
-        await waitFor(() => expect(screen.getByRole("grid", { name: "August 1989" })).toBeInTheDocument());
-        await waitFor(() => expect(screen.getByRole("button", { name: "Thursday, 17 August 1989" })).toHaveFocus());
+        await waitFor(() => expect(screen.getByRole("grid", { name: "August 1984" })).toBeInTheDocument());
+        await waitFor(() => expect(screen.getByRole("button", { name: "Friday, 17 August 1984" })).toHaveFocus());
     },
 };
 

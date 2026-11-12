@@ -2,11 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import {
     addMonths,
+    calendarYears,
     formatDate,
     formatTime,
     isIsoDate,
     joinDateTime,
     localeWeekStart,
+    monthsBetween,
     monthWeeks,
     parseDate,
     parseTime,
@@ -134,5 +136,25 @@ describe("joinDateTime and splitDateTime", () => {
         expect(splitDateTime(null)).toBeNull();
         expect(splitDateTime("")).toBeNull();
         expect(splitDateTime("soon")).toBeNull();
+    });
+});
+
+describe("monthsBetween", () => {
+    it("counts whole months across years in both directions", () => {
+        expect(monthsBetween("2026-11-30", "2027-01-01")).toBe(2);
+        expect(monthsBetween("2026-11-06", "1990-05-17")).toBe(-438);
+    });
+});
+
+describe("calendarYears", () => {
+    it("offers the years from min to max", () => {
+        expect(calendarYears("2026-11-01", "2025-03-04", "2027-01-01", "2026-11-12")).toEqual([2025, 2026, 2027]);
+    });
+
+    it("offers the given number of years around today where a limit is missing, always including the shown year", () => {
+        expect(calendarYears("2026-11-01", undefined, "2027-12-31", "2026-11-12", 2)).toEqual([2024, 2025, 2026, 2027]);
+        const years = calendarYears("1900-01-01", undefined, undefined, "2026-11-12", 1);
+        expect(years[0]).toBe(1900);
+        expect(years.at(-1)).toBe(2027);
     });
 });

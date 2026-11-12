@@ -22,6 +22,8 @@
 
     // Text size of the month and year heading in the calendar
     --dextinity-date-picker-heading-font-size: 13.5px;
+    // Height of the year menu in the calendar header before it scrolls
+    --dextinity-date-picker-year-menu-max-height: 240px;
     // Text color of the weekday names above the days
     --dextinity-date-picker-weekday-color: var(--dextinity-color-text-tertiary);
 

@@ -133,6 +133,27 @@ export function clampDate(date: IsoDate, min: IsoDate | undefined, max: IsoDate 
 }
 
 /**
+ * The number of whole months from the month of `from` to the month of `to`, negative when `to` is earlier.
+ */
+export function monthsBetween(from: IsoDate, to: IsoDate): number {
+    const start = partsOf(from);
+    const end = partsOf(to);
+    return (end.year - start.year) * 12 + (end.month - start.month);
+}
+
+/**
+ * The years to choose from in the calendar: from the year of `min` to the year of `max`, or `yearsAround` years before and after
+ * today's year where a limit is missing, always including the shown year.
+ */
+export function calendarYears(shown: IsoDate, min: IsoDate | undefined, max: IsoDate | undefined, today: IsoDate, yearsAround = 100): number[] {
+    const shownYear = partsOf(shown).year;
+    const todayYear = partsOf(today).year;
+    const first = Math.min(min != null ? partsOf(min).year : Math.max(1, todayYear - yearsAround), shownYear);
+    const last = Math.max(max != null ? partsOf(max).year : Math.min(9999, todayYear + yearsAround), shownYear);
+    return Array.from({ length: last - first + 1 }, (_, index) => first + index);
+}
+
+/**
  * The weeks shown for a month: always six rows of seven days starting on `weekStartsOn`, with `null` for days of other months, so the
  * calendar keeps its height from month to month.
  */

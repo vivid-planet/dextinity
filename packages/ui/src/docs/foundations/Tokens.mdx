@@ -2,6 +2,8 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 import brandSource from "../../theme/_brand.scss?raw";
 import densitySource from "../../theme/_density.scss?raw";
+import layersSource from "../../theme/_layers.scss?raw";
+import layoutSource from "../../theme/_layout.scss?raw";
 import motionSource from "../../theme/_motion.scss?raw";
 import primitivesSource from "../../theme/_primitives.scss?raw";
 import semanticSource from "../../theme/_semantic.scss?raw";
@@ -16,7 +18,7 @@ import { PrimitiveScales } from "../../storybook/docs/foundations/PrimitiveScale
 
 # Tokens
 
-The token layers from brand to component, with their current values. The definition column shows the default brand, the light color scheme, and standard density; the live value follows the toolbar.
+The token layers from brand to component, with their current values. The value column follows the toolbar.
 
 ## Layers
 
@@ -40,8 +42,9 @@ Each layer references only the layers before it, so a new brand is a single CSS 
                     "Text, surfaces, lines, accent, status, material (glass, blur, grain, light field), and shadows — per color scheme: light, dark, high contrast.",
             },
             {
-                title: "Typography, motion & density",
-                description: "Text styles; one easing with three durations; fixed metrics per density level: comfortable, standard, compact.",
+                title: "Typography, motion, density & layout",
+                description:
+                    "Text styles and font weights; one easing with three durations; fixed metrics per density level: comfortable, standard, compact; page layout rhythm; the stacking order of overlays.",
             },
             {
                 title: "Components",
@@ -66,6 +69,7 @@ Each layer references only the layers before it, so a new brand is a single CSS 
         "--dextinity-brand-neutral-chroma": "Strength of the neutral tint",
         "--dextinity-brand-success-hue": "Success hue, shifted per brand to stand apart from the brand color",
         "--dextinity-brand-danger-hue": "Danger hue, shifted per brand to stand apart from the brand color",
+        "--dextinity-brand-label-text-transform": "Case of eyebrow labels",
         "--dextinity-brand-radius-control": "Radius of controls",
         "--dextinity-brand-radius-factor": "Multiplies every other radius",
     }}
@@ -81,7 +85,17 @@ Scales computed from the brand. Components never use these directly.
 
 ## Semantic
 
-<LayerTokenTable source={semanticSource} prefixes={["--dextinity-color-", "--dextinity-gradient-", "--dextinity-focus-", "--dextinity-line-"]} />
+<LayerTokenTable
+    source={semanticSource}
+    prefixes={[
+        "--dextinity-color-",
+        "--dextinity-gradient-",
+        "--dextinity-focus-",
+        "--dextinity-line-",
+        "--dextinity-indicator-",
+        "--dextinity-opacity-",
+    ]}
+/>
 
 ### Material & shadows
 
@@ -98,6 +112,16 @@ Scales computed from the brand. Components never use these directly.
 ## Density
 
 <LayerTokenTable source={densitySource} />
+
+## Layout
+
+<LayerTokenTable source={layoutSource} />
+
+## Layers
+
+The stacking order of overlays that render on top of the page.
+
+<LayerTokenTable source={layersSource} />
 
 ## Components
 

@@ -221,6 +221,9 @@ importers:
       '@apollo/client':
         specifier: ^3.14.1
         version: 3.14.1(@types/react@19.3.0)(graphql-ws@6.3.0(graphql@16.15.0)(ws@8.22.0))(graphql@16.15.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(subscriptions-transport-ws@0.11.0(graphql@16.15.0))
+      '@base-ui/react':
+        specifier: ^1.5.0
+        version: 1.9.0(@types/react@19.3.0)(date-fns@4.4.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@dextinity/admin':
         specifier: workspace:*
         version: link:../../packages/admin/admin
@@ -236,12 +239,21 @@ importers:
       '@dextinity/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@dextinity/ui-react-final-form':
+        specifier: workspace:*
+        version: link:../../packages/ui-react-final-form
+      '@dextinity/ui-react-hook-form':
+        specifier: workspace:*
+        version: link:../../packages/ui-react-hook-form
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1)
       '@emotion/styled':
         specifier: ^11.14.1
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.1)(supports-color@8.1.1)
+      '@fontsource-variable/inter':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@fontsource-variable/roboto-flex':
         specifier: ^5.3.0
         version: 5.3.0
@@ -275,9 +287,6 @@ importers:
       graphql:
         specifier: ^16.15.0
         version: 16.15.0
-      p-debounce:
-        specifier: ^6.0.0
-        version: 6.0.0
       rdndmb-html5-to-touch:
         specifier: ^9.0.0
         version: 9.0.0(dnd-core@16.0.1)
@@ -296,6 +305,9 @@ importers:
       react-final-form:
         specifier: ^6.5.9
         version: 6.5.9(final-form@4.20.10)(react@19.3.1)
+      react-hook-form:
+        specifier: ^7.91.0
+        version: 7.91.0(@types/react@19.3.0)(react@19.3.1)
       react-intl:
         specifier: ^12.1.4
         version: 12.1.5(@types/react@19.3.0)(react@19.3.1)
@@ -1592,9 +1604,6 @@ importers:
       '@dextinity/admin':
         specifier: workspace:*
         version: link:../admin
-      '@dextinity/admin-icons':
-        specifier: workspace:*
-        version: link:../admin-icons
       '@dextinity/cms-admin':
         specifier: workspace:*
         version: link:../cms-admin
@@ -1607,9 +1616,6 @@ importers:
       fast-equals:
         specifier: ^5.4.0
         version: 5.4.5
-      react-dropzone:
-        specifier: ^20.2.0
-        version: 20.2.0(@types/react@19.3.0)(react@19.3.1)
     devDependencies:
       '@apollo/client':
         specifier: ^3.14.1
@@ -1669,7 +1675,7 @@ importers:
         specifier: ^4.20.10
         version: 4.20.10
       graphql:
-        specifier: ^16.15.0
+        specifier: ^16.14.2
         version: 16.15.0
       prettier:
         specifier: ^3.9.10
@@ -1713,6 +1719,12 @@ importers:
       '@dextinity/admin-rte':
         specifier: workspace:*
         version: link:../admin-rte
+      '@dextinity/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      '@dextinity/ui-react-final-form':
+        specifier: workspace:*
+        version: link:../../ui-react-final-form
       '@tiptap/core':
         specifier: ^3.33.0
         version: 3.33.1(@tiptap/pm@3.33.1)
@@ -1767,6 +1779,9 @@ importers:
       p-debounce:
         specifier: ^6.0.0
         version: 6.0.0
+      react-cool-dimensions:
+        specifier: ^3.0.1
+        version: 3.0.1(react@19.3.1)
       react-dropzone:
         specifier: ^20.2.0
         version: 20.2.0(@types/react@19.3.0)(react@19.3.1)
@@ -1813,6 +1828,9 @@ importers:
       '@babel/core':
         specifier: ^8.0.10
         version: 8.0.10
+      '@base-ui/react':
+        specifier: ^1.5.0
+        version: 1.9.0(@types/react@19.3.0)(date-fns@4.4.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@dextinity/admin-babel-preset':
         specifier: workspace:*
         version: link:../admin-babel-preset
@@ -17691,6 +17709,11 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
+
+  react-cool-dimensions@3.0.1:
+    resolution: {integrity: sha512-DUsDB5WUN1Qh6fJJlBtqFKCktrZCPRYcVn8NTeM6hP/5AhZNjDOa2sC2Dg0EM3WUObPDNV5nFLA34vHQfahUeg==}
+    peerDependencies:
+      react: '>= 16.8.0'
 
   react-date-range@2.0.1:
     resolution: {integrity: sha512-jwKYc9zcjYMg2hWbPht+6BF2wjGG5DkRVNJLRXn2Y0B/QCOOnvQX6YXziZVujVADWmgsBaoQnILdmzYw+Bwh0g==}
@@ -37493,6 +37516,10 @@ snapshots:
     dependencies:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
+
+  react-cool-dimensions@3.0.1(react@19.3.1):
+    dependencies:
+      react: 19.3.1
 
   react-date-range@2.0.1(date-fns@4.4.0)(react@19.3.1):
     dependencies:

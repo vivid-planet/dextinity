@@ -19,9 +19,9 @@
     // Fill of an unchecked checkbox
     --dextinity-checkbox-background: var(--dextinity-color-surface);
     // Line around an unchecked checkbox
-    --dextinity-checkbox-line: var(--dextinity-color-text-subtle);
+    --dextinity-checkbox-line: var(--dextinity-color-text-disabled);
     // Line around a hovered unchecked checkbox
-    --dextinity-checkbox-line-hover: var(--dextinity-color-text-tertiary);
+    --dextinity-checkbox-line-hover: var(--dextinity-color-text-subtle);
     // Fill of a checked or indeterminate checkbox
     --dextinity-checkbox-background-checked: var(--dextinity-color-accent);
     // Color of the check or indeterminate icon

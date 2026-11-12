@@ -42,10 +42,10 @@
     // Outline and shadow of an outlined button
     --dextinity-button-secondary-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-1);
     // Outline and shadow of a hovered outlined button
-    --dextinity-button-secondary-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle), var(--dextinity-shadow-2);
+    --dextinity-button-secondary-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-disabled), var(--dextinity-shadow-2);
 
     // Label and icon color of a text button
-    --dextinity-button-text-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-button-text-foreground: var(--dextinity-color-text-subtle);
     // Label and icon color of a hovered text button
     --dextinity-button-text-foreground-hover: var(--dextinity-color-text);
     // Fill of a hovered text button

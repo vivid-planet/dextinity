@@ -17,7 +17,7 @@
     --dextinity-slider-disabled-opacity: var(--dextinity-opacity-disabled);
 
     // Color of the start and end icons
-    --dextinity-slider-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-slider-icon-color: var(--dextinity-color-text-subtle);
     // Fill of the unfilled part of the track
     --dextinity-slider-track-background: var(--dextinity-color-line-strong);
     // Line around the track; transparent normally, a full line in high contrast
@@ -38,7 +38,7 @@
     // Text weight of the label
     --dextinity-slider-label-font-weight: var(--dextinity-font-weight-medium);
     // Text color of the label
-    --dextinity-slider-label-color: var(--dextinity-color-text-secondary);
+    --dextinity-slider-label-color: var(--dextinity-color-text-subtle);
     // Text size of the validation message
     --dextinity-slider-message-font-size: var(--dextinity-typography-small-size);
     // Text color of an error message

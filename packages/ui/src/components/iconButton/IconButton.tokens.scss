@@ -13,7 +13,7 @@
     --dextinity-icon-button-disabled-opacity: var(--dextinity-opacity-disabled);
 
     // Icon color of a plain button
-    --dextinity-icon-button-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-icon-button-foreground: var(--dextinity-color-text-subtle);
     // Icon color on hover and while expanded
     --dextinity-icon-button-foreground-hover: var(--dextinity-color-text);
     // Fill of a plain button on hover
@@ -29,5 +29,5 @@
     --dextinity-icon-button-outlined-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-1);
     // Outline and shadow of an outlined button on hover
     --dextinity-icon-button-outlined-shadow-hover:
-        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle), var(--dextinity-shadow-2);
+        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-disabled), var(--dextinity-shadow-2);
 }

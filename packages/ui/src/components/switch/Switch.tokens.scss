@@ -17,7 +17,7 @@
     --dextinity-switch-disabled-opacity: var(--dextinity-opacity-disabled);
 
     // Fill of the track when off
-    --dextinity-switch-track-background: var(--dextinity-color-text-subtle);
+    --dextinity-switch-track-background: var(--dextinity-color-text-disabled);
     // Fill of the track when on
     --dextinity-switch-track-background-checked: var(--dextinity-color-accent);
     // Line around the track; transparent normally, a full line in high contrast
@@ -38,7 +38,7 @@
     // Text weight of the label
     --dextinity-switch-label-font-weight: var(--dextinity-font-weight-medium);
     // Text color of the description below the label
-    --dextinity-switch-description-color: var(--dextinity-color-text-tertiary);
+    --dextinity-switch-description-color: var(--dextinity-color-text-subtle);
     // Text size of the description below the label
     --dextinity-switch-description-font-size: var(--dextinity-typography-small-size);
     // Color of the required marker after the label

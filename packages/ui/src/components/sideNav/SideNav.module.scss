@@ -166,7 +166,7 @@
         color: var(--dextinity-color-text);
 
         .itemIcon {
-            color: var(--dextinity-color-text-secondary);
+            color: var(--dextinity-color-text-subtle);
         }
     }
 
@@ -188,7 +188,7 @@
 
     &[data-level="3"] {
         padding-inline-start: var(--dextinity-side-nav-item-indent-level-3);
-        color: var(--dextinity-color-text-tertiary);
+        color: var(--dextinity-color-text-subtle);
         font-size: var(--dextinity-typography-small-size);
     }
 

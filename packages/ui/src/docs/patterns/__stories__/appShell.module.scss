@@ -62,13 +62,13 @@
 }
 
 .breadcrumbLink {
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     text-decoration: none;
 }
 
 .breadcrumbSeparator {
     display: flex;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
 }
 
 .titleRow {
@@ -112,7 +112,7 @@
     block-size: 100%;
     min-block-size: 240px;
     border: 1px dashed var(--dextinity-color-line-strong);
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
 }
 
 .appBar,

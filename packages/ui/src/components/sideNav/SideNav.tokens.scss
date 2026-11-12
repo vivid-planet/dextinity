@@ -27,11 +27,11 @@
     // Tracking of the app name
     --dextinity-side-nav-title-letter-spacing: -0.025em;
     // Text color of the tenant and environment below the app name
-    --dextinity-side-nav-subtitle-color: var(--dextinity-color-text-tertiary);
+    --dextinity-side-nav-subtitle-color: var(--dextinity-color-text-subtle);
     // Size of the tenant and environment line
     --dextinity-side-nav-subtitle-font-size: 12px;
     // Text color of a group's label
-    --dextinity-side-nav-group-label-color: var(--dextinity-color-text-tertiary);
+    --dextinity-side-nav-group-label-color: var(--dextinity-color-text-subtle);
 
     // Minimum height of an entry
     --dextinity-side-nav-item-height: var(--dextinity-density-nav-item-height);
@@ -42,9 +42,9 @@
     // Text size of an entry's label
     --dextinity-side-nav-item-font-size: 13.5px;
     // Text color of an entry
-    --dextinity-side-nav-item-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-side-nav-item-foreground: var(--dextinity-color-text-subtle);
     // Color of an entry's icon
-    --dextinity-side-nav-item-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-side-nav-item-icon-color: var(--dextinity-color-text-subtle);
     // Icon in front of an entry's label
     --dextinity-side-nav-item-icon-size: 18px;
     // Start padding of a sub-entry, which lines its text up behind the parent's icon
@@ -64,9 +64,9 @@
     // Vertical line that leads the sub-entries
     --dextinity-side-nav-guide-color: var(--dextinity-color-line-strong);
     // Color of the chevron that expands an entry's sub-entries
-    --dextinity-side-nav-chevron-color: var(--dextinity-color-text-subtle);
+    --dextinity-side-nav-chevron-color: var(--dextinity-color-text-disabled);
     // Text and icon color of the collapse button
-    --dextinity-side-nav-collapse-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-side-nav-collapse-foreground: var(--dextinity-color-text-subtle);
     // Height of the button at the bottom that collapses and expands the navigation
     --dextinity-side-nav-collapse-button-height: 34px;
 

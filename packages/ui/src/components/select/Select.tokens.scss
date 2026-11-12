@@ -3,7 +3,7 @@
     // Text color of the placeholder when nothing is selected
     --dextinity-select-placeholder-color: var(--dextinity-field-placeholder);
     // Color of the chevron that opens the list
-    --dextinity-select-chevron-color: var(--dextinity-color-text-tertiary);
+    --dextinity-select-chevron-color: var(--dextinity-color-text-subtle);
 
     // Fill of the list of options
     --dextinity-select-popup-background: var(--dextinity-color-surface);
@@ -29,11 +29,11 @@
     // Ring around the highlighted option, drawn only in high contrast
     --dextinity-select-item-shadow-highlight: 0 0 transparent;
     // Color of an option's leading icon
-    --dextinity-select-item-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-select-item-icon-color: var(--dextinity-color-text-subtle);
     // Check mark of the selected option
     --dextinity-select-item-indicator-color: var(--dextinity-color-accent-text);
     // Header of a group of options
-    --dextinity-select-group-label-color: var(--dextinity-color-text-tertiary);
+    --dextinity-select-group-label-color: var(--dextinity-color-text-subtle);
     // Divider between groups of options
     --dextinity-select-group-line: var(--dextinity-color-line);
 

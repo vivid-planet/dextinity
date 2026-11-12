@@ -17,15 +17,15 @@
     // Halo around the dot of the published status
     --dextinity-status-indicator-published-halo: var(--dextinity-color-success-soft);
     // Label color of the published status
-    --dextinity-status-indicator-published-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-status-indicator-published-foreground: var(--dextinity-color-text-subtle);
     // Dot of the unpublished status
-    --dextinity-status-indicator-unpublished-dot: var(--dextinity-color-text-subtle);
+    --dextinity-status-indicator-unpublished-dot: var(--dextinity-color-text-disabled);
     // Label color of the unpublished status
-    --dextinity-status-indicator-unpublished-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-status-indicator-unpublished-foreground: var(--dextinity-color-text-subtle);
     // Hollow ring of the archived status
-    --dextinity-status-indicator-archived-dot: var(--dextinity-color-text-subtle);
+    --dextinity-status-indicator-archived-dot: var(--dextinity-color-text-disabled);
     // Label color of the archived status
-    --dextinity-status-indicator-archived-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-status-indicator-archived-foreground: var(--dextinity-color-text-subtle);
     // Dot of the warning status
     --dextinity-status-indicator-warning-dot: var(--dextinity-color-warning);
     // Halo around the dot of the warning status
@@ -43,7 +43,7 @@
     // Halo around the dot of the info status
     --dextinity-status-indicator-info-halo: var(--dextinity-color-info-soft);
     // Label color of the info status
-    --dextinity-status-indicator-info-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-status-indicator-info-foreground: var(--dextinity-color-text-subtle);
     // Dot of the running status
     --dextinity-status-indicator-running-dot: var(--dextinity-gradient-brand);
     // Pulses out from the dot while running; still with reduced motion

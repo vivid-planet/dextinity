@@ -10,11 +10,11 @@
     // Text color of the rows
     --dextinity-tree-view-foreground: var(--dextinity-color-text);
     // Color of the expand toggles and the node icons
-    --dextinity-tree-view-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-tree-view-icon-color: var(--dextinity-color-text-subtle);
     // Color of the drag handle and the hidden-in-menu marker
-    --dextinity-tree-view-meta-color: var(--dextinity-color-text-subtle);
+    --dextinity-tree-view-meta-color: var(--dextinity-color-text-disabled);
     // Color of the count after a node's name
-    --dextinity-tree-view-count-color: var(--dextinity-color-text-subtle);
+    --dextinity-tree-view-count-color: var(--dextinity-color-text-disabled);
     // Text size of the count after a node's name
     --dextinity-tree-view-count-font-size: var(--dextinity-typography-caption-size);
 

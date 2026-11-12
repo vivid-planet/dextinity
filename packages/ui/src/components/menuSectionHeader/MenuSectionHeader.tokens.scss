@@ -17,12 +17,12 @@
     --dextinity-menu-section-header-font-weight: var(--dextinity-font-weight-medium);
 
     // Text color of the label
-    --dextinity-menu-section-header-default-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-menu-section-header-default-foreground: var(--dextinity-color-text-subtle);
     // Color of the expand icon
-    --dextinity-menu-section-header-default-icon: var(--dextinity-color-text-tertiary);
+    --dextinity-menu-section-header-default-icon: var(--dextinity-color-text-subtle);
 
     // Text color of a hovered clickable label
-    --dextinity-menu-section-header-hover-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-menu-section-header-hover-foreground: var(--dextinity-color-text-subtle);
     // Color of the expand icon while its label is hovered
-    --dextinity-menu-section-header-hover-icon: var(--dextinity-color-text-secondary);
+    --dextinity-menu-section-header-hover-icon: var(--dextinity-color-text-subtle);
 }

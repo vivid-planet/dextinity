@@ -8,11 +8,11 @@
     // Weight of the current page, the last crumb
     --dextinity-breadcrumbs-current-font-weight: var(--dextinity-font-weight-semibold);
     // Color of the separator between crumbs
-    --dextinity-breadcrumbs-separator-color: var(--dextinity-color-text-subtle);
+    --dextinity-breadcrumbs-separator-color: var(--dextinity-color-text-disabled);
     // Corner radius of the button that reveals collapsed crumbs
     --dextinity-breadcrumbs-more-button-radius: var(--dextinity-radius-item);
     // Fill of the button that reveals collapsed crumbs on hover
     --dextinity-breadcrumbs-more-button-hover-background: var(--dextinity-color-surface-sunken);
     // Text color of the `label` variant, the mono label line above a page title
-    --dextinity-breadcrumbs-label-color: var(--dextinity-color-text-tertiary);
+    --dextinity-breadcrumbs-label-color: var(--dextinity-color-text-subtle);
 }

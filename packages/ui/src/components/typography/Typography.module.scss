@@ -39,13 +39,13 @@
     }
 
     &[data-variant="small"] {
-        color: var(--dextinity-color-text-tertiary);
+        color: var(--dextinity-color-text-subtle);
         font-size: var(--dextinity-typography-small-size);
         line-height: var(--dextinity-typography-small-line-height);
     }
 
     &[data-variant="label"] {
-        color: var(--dextinity-color-text-tertiary);
+        color: var(--dextinity-color-text-subtle);
         @include text-styles.label;
     }
 

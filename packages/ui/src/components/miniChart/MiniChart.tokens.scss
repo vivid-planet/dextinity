@@ -10,13 +10,13 @@
     // Diameter of the marked points in a line chart
     --dextinity-mini-chart-point-size: 7px;
     // Color of the usual values, which stay quiet
-    --dextinity-mini-chart-color: color-mix(in oklch, var(--dextinity-color-text-subtle) 55%, transparent);
+    --dextinity-mini-chart-color: color-mix(in oklch, var(--dextinity-color-text-disabled) 55%, transparent);
     // Color of the last value, e.g. today
     --dextinity-mini-chart-color-last: var(--dextinity-color-accent);
     // Color of the values passed in `highlighted`
     --dextinity-mini-chart-color-highlighted: var(--dextinity-color-warning);
     // Color of the labels under the chart
-    --dextinity-mini-chart-label-color: var(--dextinity-color-text-tertiary);
+    --dextinity-mini-chart-label-color: var(--dextinity-color-text-subtle);
     // Text size of the labels under the chart
     --dextinity-mini-chart-label-font-size: 12px;
 }

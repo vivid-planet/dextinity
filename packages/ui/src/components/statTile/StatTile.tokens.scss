@@ -8,15 +8,15 @@
     // Text size of the unit after the value
     --dextinity-stat-tile-unit-font-size: var(--dextinity-typography-title-size);
     // Text color of the unit after the value
-    --dextinity-stat-tile-unit-color: var(--dextinity-color-text-tertiary);
+    --dextinity-stat-tile-unit-color: var(--dextinity-color-text-subtle);
     // Size of the trend arrow
     --dextinity-stat-tile-trend-size: 18px;
     // Color of the trend; quiet, as the context line says whether the change is good or bad
-    --dextinity-stat-tile-trend-color: var(--dextinity-color-text-secondary);
+    --dextinity-stat-tile-trend-color: var(--dextinity-color-text-subtle);
     // Text color of the label below the value
-    --dextinity-stat-tile-label-color: var(--dextinity-color-text-tertiary);
+    --dextinity-stat-tile-label-color: var(--dextinity-color-text-subtle);
     // Text color of the context line at the bottom
-    --dextinity-stat-tile-context-color: var(--dextinity-color-text-secondary);
+    --dextinity-stat-tile-context-color: var(--dextinity-color-text-subtle);
     // Text size of the context line at the bottom
     --dextinity-stat-tile-context-font-size: var(--dextinity-typography-ui-size);
 }

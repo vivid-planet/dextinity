@@ -22,9 +22,9 @@
     // Text size of the label and the value
     --dextinity-progress-bar-label-font-size: var(--dextinity-typography-ui-size);
     // Color of the label
-    --dextinity-progress-bar-label-color: var(--dextinity-color-text-secondary);
+    --dextinity-progress-bar-label-color: var(--dextinity-color-text-subtle);
     // Color of the value next to the label
-    --dextinity-progress-bar-value-color: var(--dextinity-color-text-tertiary);
+    --dextinity-progress-bar-value-color: var(--dextinity-color-text-subtle);
 
     // Lowest opacity of the pulse that replaces the indeterminate animation with reduced motion
     --dextinity-progress-bar-pulse-opacity: 0.4;

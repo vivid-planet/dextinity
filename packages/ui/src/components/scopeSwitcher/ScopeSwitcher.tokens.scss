@@ -14,7 +14,7 @@
     // Text color of the current scope in the trigger
     --dextinity-scope-switcher-foreground: var(--dextinity-color-text);
     // Color of the scope icon and the chevron in the trigger
-    --dextinity-scope-switcher-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-scope-switcher-icon-color: var(--dextinity-color-text-subtle);
     // Text weight of the current scope in the trigger
     --dextinity-scope-switcher-font-weight: var(--dextinity-font-weight-medium);
 
@@ -37,7 +37,7 @@
     // Outline of the selected scope option; visible in high contrast
     --dextinity-scope-switcher-option-selected-shadow: 0 0 transparent;
     // Text color of the column and "recent" labels above the options
-    --dextinity-scope-switcher-label-color: var(--dextinity-color-text-tertiary);
+    --dextinity-scope-switcher-label-color: var(--dextinity-color-text-subtle);
     // Color of the line between the dimension columns
     --dextinity-scope-switcher-separator-color: var(--dextinity-color-line);
 }

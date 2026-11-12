@@ -33,7 +33,7 @@
     border: 0;
     border-radius: calc(var(--dextinity-select-chip-radius) - 2px);
     background: transparent;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     cursor: pointer;
 
     &:hover {
@@ -93,7 +93,7 @@
 
 @mixin empty {
     padding: var(--dextinity-space-2) var(--dextinity-select-item-padding);
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     font-size: var(--dextinity-typography-small-size);
 
     &:empty {

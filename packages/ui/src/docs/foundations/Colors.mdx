@@ -11,36 +11,14 @@ Semantic colors derived from the brand and the color scheme. Values and contrast
 
 ## Text
 
-Contrast per WCAG 2.2: body text needs 4.5 : 1 (AA), large text and icons 3 : 1.
+Four text colors: Default, Subtle, Disabled, and Accent. Status text colors are listed under [Status](#status). Contrast per WCAG 2.2: body text needs 4.5 : 1 (AA), large text and icons 3 : 1.
 
 <ColorSwatches
     swatches={[
         {
             token: "--dextinity-color-text",
-            name: "Text",
-            usage: "Headings, body text",
-            kind: "text",
-            contrast: [
-                { background: "--dextinity-color-canvas", label: "on canvas" },
-                { background: "--dextinity-material-glass", label: "on glass" },
-                { background: "--dextinity-color-surface", label: "on surface" },
-            ],
-        },
-        {
-            token: "--dextinity-color-text-secondary",
-            name: "Text secondary",
-            usage: "Descriptions, values",
-            kind: "text",
-            contrast: [
-                { background: "--dextinity-color-canvas", label: "on canvas" },
-                { background: "--dextinity-material-glass", label: "on glass" },
-                { background: "--dextinity-color-surface", label: "on surface" },
-            ],
-        },
-        {
-            token: "--dextinity-color-text-tertiary",
-            name: "Text tertiary",
-            usage: "Labels, metadata, help texts",
+            name: "Default",
+            usage: "Headings, body text, values",
             kind: "text",
             contrast: [
                 { background: "--dextinity-color-canvas", label: "on canvas" },
@@ -50,8 +28,30 @@ Contrast per WCAG 2.2: body text needs 4.5 : 1 (AA), large text and icons 3 : 1.
         },
         {
             token: "--dextinity-color-text-subtle",
-            name: "Text subtle",
-            usage: "Only placeholders, icons, decoration — never for text to read",
+            name: "Subtle",
+            usage: "Descriptions, labels, metadata, help texts",
+            kind: "text",
+            contrast: [
+                { background: "--dextinity-color-canvas", label: "on canvas" },
+                { background: "--dextinity-material-glass", label: "on glass" },
+                { background: "--dextinity-color-surface", label: "on surface" },
+            ],
+        },
+        {
+            token: "--dextinity-color-text-disabled",
+            name: "Disabled",
+            usage: "Disabled text, placeholders, decoration — never for text to read",
+            kind: "text",
+            contrast: [
+                { background: "--dextinity-color-canvas", label: "on canvas" },
+                { background: "--dextinity-material-glass", label: "on glass" },
+                { background: "--dextinity-color-surface", label: "on surface" },
+            ],
+        },
+        {
+            token: "--dextinity-color-accent-text",
+            name: "Accent",
+            usage: "Links, active navigation",
             kind: "text",
             contrast: [
                 { background: "--dextinity-color-canvas", label: "on canvas" },
@@ -80,7 +80,7 @@ Back to front: canvas, surface, glass. Glass always lies over the light field.
 
 ## Accent
 
-From the brand: primary hue and chroma. The gradient uses the secondary brand color.
+From the brand: primary hue and chroma. The gradient uses the secondary brand color. Accent as a text color is listed under [Text](#text).
 
 <ColorSwatches
     swatches={[
@@ -91,16 +91,6 @@ From the brand: primary hue and chroma. The gradient uses the secondary brand co
             usage: "Labels on the primary action",
             kind: "text",
             contrast: [{ background: "--dextinity-color-accent", label: "on accent" }],
-        },
-        {
-            token: "--dextinity-color-accent-text",
-            name: "Accent as text",
-            usage: "Links, active navigation",
-            kind: "text",
-            contrast: [
-                { background: "--dextinity-color-canvas", label: "on canvas" },
-                { background: "--dextinity-material-glass", label: "on glass" },
-            ],
         },
         { token: "--dextinity-color-accent-soft", name: "Accent soft", usage: "Background of active elements" },
         { token: "--dextinity-color-accent-secondary", name: "Secondary brand color", usage: "Light, gradient" },
@@ -163,9 +153,9 @@ Success and danger hues can be shifted per brand, so they stand apart from the b
 
 <DoDont
     dos={[
-        "Text people read only in text, text-secondary, or text-tertiary.",
+        "Text people read only in Default, Subtle, Accent, or a status text color.",
         "Status as a dot plus text.",
         "Accent sparingly: one primary action per area.",
     ]}
-    donts={["text-subtle for text people have to read.", "Color as the only distinguishing feature.", "Own hex values instead of tokens."]}
+    donts={["Disabled for text people have to read.", "Color as the only distinguishing feature.", "Own hex values instead of tokens."]}
 />

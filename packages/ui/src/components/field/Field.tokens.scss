@@ -31,11 +31,11 @@
     // Color of the value in a field
     --dextinity-field-foreground: var(--dextinity-color-text);
     // Color of the placeholder text
-    --dextinity-field-placeholder: var(--dextinity-color-text-subtle);
+    --dextinity-field-placeholder: var(--dextinity-color-text-disabled);
     // Outline of a field
     --dextinity-field-line: var(--dextinity-color-line-strong);
     // Outline of a hovered field
-    --dextinity-field-line-hover: var(--dextinity-color-text-subtle);
+    --dextinity-field-line-hover: var(--dextinity-color-text-disabled);
     // Width of the outline of a focused field or a field in a validation state
     --dextinity-field-line-width-focus: calc(var(--dextinity-line-width) * 2);
     // Outline of a focused field
@@ -64,15 +64,15 @@
     // Font weight of the label
     --dextinity-field-label-font-weight: var(--dextinity-font-weight-medium);
     // Color of the label
-    --dextinity-field-label-color: var(--dextinity-color-text-secondary);
+    --dextinity-field-label-color: var(--dextinity-color-text-subtle);
     // Color of the required marker after the label
     --dextinity-field-required-color: var(--dextinity-color-danger-text);
     // Color of the character count and other details at the end of the label
-    --dextinity-field-counter-color: var(--dextinity-color-text-tertiary);
+    --dextinity-field-counter-color: var(--dextinity-color-text-subtle);
     // Text size of the message below the field
     --dextinity-field-message-font-size: var(--dextinity-typography-small-size);
     // Color of the message below the field
-    --dextinity-field-message-color: var(--dextinity-color-text-tertiary);
+    --dextinity-field-message-color: var(--dextinity-color-text-subtle);
     // Color of the message in the error state
     --dextinity-field-message-color-error: var(--dextinity-color-danger-text);
     // Color of the message in the warning state
@@ -80,7 +80,7 @@
     // Color of the message in the success state
     --dextinity-field-message-color-success: var(--dextinity-color-success-text);
     // Color of a prefix or suffix, e.g. a domain or a unit
-    --dextinity-field-adornment-color: var(--dextinity-color-text-tertiary);
+    --dextinity-field-adornment-color: var(--dextinity-color-text-subtle);
     // Font of a prefix or suffix
     --dextinity-field-adornment-font-family: var(--dextinity-font-family-mono);
     // Text size of a prefix or suffix

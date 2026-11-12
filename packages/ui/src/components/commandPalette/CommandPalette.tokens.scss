@@ -25,16 +25,16 @@
     // Height of the result list before it scrolls
     --dextinity-command-palette-list-max-height: min(380px, 55vh);
     // Color of the group headings in the result list
-    --dextinity-command-palette-group-label-color: var(--dextinity-color-text-tertiary);
+    --dextinity-command-palette-group-label-color: var(--dextinity-color-text-subtle);
 
     // Minimum height of a result
     --dextinity-command-palette-item-height: var(--dextinity-density-list-row-height);
     // Corner radius of a result
     --dextinity-command-palette-item-radius: var(--dextinity-radius-field);
     // Text color of a result
-    --dextinity-command-palette-item-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-command-palette-item-foreground: var(--dextinity-color-text-subtle);
     // Color of the search icon and the result icons
-    --dextinity-command-palette-item-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-command-palette-item-icon-color: var(--dextinity-color-text-subtle);
     // Fill of the result chosen with the arrow keys or the pointer
     --dextinity-command-palette-item-active-background: var(--dextinity-color-accent-soft);
     // Text color of the chosen result
@@ -46,7 +46,7 @@
     // Color of the query matches highlighted in the results
     --dextinity-command-palette-match-color: var(--dextinity-color-accent-text);
     // Color of the footer hints and the empty-state message
-    --dextinity-command-palette-hint-color: var(--dextinity-color-text-tertiary);
+    --dextinity-command-palette-hint-color: var(--dextinity-color-text-subtle);
     // Size of the keyboard hints in the footer
     --dextinity-command-palette-hint-font-size: 12px;
 }

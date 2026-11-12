@@ -84,11 +84,11 @@
         }
 
         .title {
-            color: var(--dextinity-color-text-tertiary);
+            color: var(--dextinity-color-text-subtle);
         }
 
         .summary {
-            color: var(--dextinity-color-text-subtle);
+            color: var(--dextinity-color-text-disabled);
         }
 
         .visibility {
@@ -250,7 +250,7 @@
 
 .chevron {
     flex: none;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
 
     --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
 }

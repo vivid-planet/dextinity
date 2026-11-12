@@ -81,14 +81,12 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         // Fill of an inset area, e.g. a log viewer or a linked content card
         --dextinity-color-surface-sunken: oklch(0.955 0.005 #{$neutral-hue});
 
-        // Primary text and icons
+        // Default text and icons, e.g. headings, body text and values
         --dextinity-color-text: oklch(0.19 0.015 #{$neutral-hue});
-        // Secondary text, e.g. side nav entries and text buttons
-        --dextinity-color-text-secondary: oklch(0.35 0.016 #{$neutral-hue});
-        // Quieter text, e.g. descriptions, hints and labels
-        --dextinity-color-text-tertiary: oklch(0.46 0.014 #{$neutral-hue});
-        // Faintest text, e.g. placeholders and chevrons
-        --dextinity-color-text-subtle: oklch(0.63 0.012 #{$neutral-hue});
+        // Text that steps back but still has to be read, e.g. descriptions, labels, metadata and help texts
+        --dextinity-color-text-subtle: oklch(0.4 0.015 #{$neutral-hue});
+        // Disabled text, placeholders and decoration, e.g. separators and grips — never for text people have to read
+        --dextinity-color-text-disabled: oklch(0.63 0.012 #{$neutral-hue});
 
         // Hairlines, e.g. separators and the outline of a card
         --dextinity-color-line: oklch(0.25 0.02 #{$neutral-hue} / 0.13);
@@ -99,7 +97,7 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         --dextinity-color-accent: oklch(0.52 #{$primary-chroma} #{$primary-hue});
         // Text and icons on an accent fill
         --dextinity-color-accent-foreground: oklch(1 0 0);
-        // Accent-colored text and icons on a surface, e.g. links
+        // Accent-colored text and icons on a surface, e.g. links and the active navigation entry
         --dextinity-color-accent-text: oklch(0.45 #{$primary-chroma} #{$primary-hue});
         // Soft accent tint, e.g. a selected item or a focus halo
         --dextinity-color-accent-soft: oklch(0.955 calc(#{$primary-chroma} * 0.2) #{$primary-hue});
@@ -175,9 +173,8 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         --dextinity-color-surface-sunken: oklch(0.12 0.006 #{$neutral-hue});
 
         --dextinity-color-text: oklch(0.965 0.004 #{$neutral-hue});
-        --dextinity-color-text-secondary: oklch(0.78 0.008 #{$neutral-hue});
-        --dextinity-color-text-tertiary: oklch(0.62 0.01 #{$neutral-hue});
-        --dextinity-color-text-subtle: oklch(0.44 0.01 #{$neutral-hue});
+        --dextinity-color-text-subtle: oklch(0.7 0.009 #{$neutral-hue});
+        --dextinity-color-text-disabled: oklch(0.44 0.01 #{$neutral-hue});
 
         --dextinity-color-line: oklch(1 0 0 / 0.075);
         --dextinity-color-line-strong: oklch(1 0 0 / 0.13);
@@ -234,9 +231,8 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         --dextinity-color-surface-sunken: oklch(0 0 0);
 
         --dextinity-color-text: oklch(1 0 0);
-        --dextinity-color-text-secondary: oklch(0.95 0 0);
-        --dextinity-color-text-tertiary: oklch(0.9 0 0);
-        --dextinity-color-text-subtle: oklch(0.8 0 0);
+        --dextinity-color-text-subtle: oklch(0.92 0 0);
+        --dextinity-color-text-disabled: oklch(0.8 0 0);
 
         --dextinity-color-line: oklch(1 0 0 / 0.7);
         --dextinity-color-line-strong: oklch(1 0 0);

@@ -35,7 +35,7 @@
     }
 
     li > div > span {
-        color: var(--dextinity-color-text-secondary);
+        color: var(--dextinity-color-text-subtle);
         font-size: 13px;
         line-height: 1.45;
     }
@@ -79,7 +79,7 @@
     }
 
     li > div > span {
-        color: var(--dextinity-color-text-secondary);
+        color: var(--dextinity-color-text-subtle);
         font-size: 13px;
     }
 }
@@ -116,7 +116,7 @@
     ul {
         margin: 8px 0 0;
         padding-inline-start: 18px;
-        color: var(--dextinity-color-text-secondary);
+        color: var(--dextinity-color-text-subtle);
         font-size: 13.5px;
         line-height: 1.5;
     }
@@ -174,7 +174,7 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     font-size: 12px;
 
     b {

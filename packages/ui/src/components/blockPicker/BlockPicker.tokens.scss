@@ -10,7 +10,7 @@
     // Outline of the search field
     --dextinity-block-picker-search-line: var(--dextinity-color-line-strong);
     // Color of a section title
-    --dextinity-block-picker-section-title-color: var(--dextinity-color-text-tertiary);
+    --dextinity-block-picker-section-title-color: var(--dextinity-color-text-subtle);
 
     // Corner radius of a block item
     --dextinity-block-picker-item-radius: var(--dextinity-radius-field);
@@ -35,9 +35,9 @@
     // Color of the icon in a block's icon tile
     --dextinity-block-picker-item-icon-foreground: var(--dextinity-color-accent-text);
     // Color of a block's description
-    --dextinity-block-picker-item-description-color: var(--dextinity-color-text-tertiary);
+    --dextinity-block-picker-item-description-color: var(--dextinity-color-text-subtle);
     // Color of the add icon at the end of an item
-    --dextinity-block-picker-item-add-icon-color: var(--dextinity-color-text-subtle);
+    --dextinity-block-picker-item-add-icon-color: var(--dextinity-color-text-disabled);
     // Color of the add icon on a hovered or highlighted item
     --dextinity-block-picker-item-add-icon-color-hover: var(--dextinity-color-accent-text);
 }

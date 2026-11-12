@@ -96,7 +96,7 @@
     flex-direction: column;
     gap: 3px;
     padding: 12px 14px;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     font-size: 12px;
 
     b {
@@ -106,7 +106,7 @@
     }
 
     code {
-        color: var(--dextinity-color-text-secondary);
+        color: var(--dextinity-color-text-subtle);
         font-size: 11.5px;
         word-break: break-all;
     }
@@ -126,7 +126,7 @@
     font-size: 11.5px;
 
     i {
-        color: var(--dextinity-color-text-secondary);
+        color: var(--dextinity-color-text-subtle);
         font-style: normal;
     }
 
@@ -188,7 +188,7 @@
     ul {
         margin: 8px 0 0;
         padding-inline-start: 18px;
-        color: var(--dextinity-color-text-secondary);
+        color: var(--dextinity-color-text-subtle);
         font-size: 13.5px;
         line-height: 1.5;
     }
@@ -243,7 +243,7 @@
         }
 
         span:not(.number) {
-            color: var(--dextinity-color-text-secondary);
+            color: var(--dextinity-color-text-subtle);
             font-size: 13px;
         }
     }
@@ -265,7 +265,7 @@
 
 .note {
     margin: 12px 0 0;
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     font-size: 12.5px;
 }
 
@@ -282,7 +282,7 @@
     grid-template-columns: 40px auto minmax(0, 1fr) auto;
     gap: 14px;
     align-items: center;
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     font-size: 13px;
 
     i {
@@ -296,7 +296,7 @@
 }
 
 .spacingToken {
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     font-size: 11.5px;
 }
 
@@ -315,7 +315,7 @@
     padding: 14px;
     border-radius: var(--dextinity-radius-field);
     background: var(--dextinity-color-surface-raised);
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     font-size: 12px;
 
     @include hairline(var(--dextinity-color-line));
@@ -327,7 +327,7 @@
     }
 
     code {
-        color: var(--dextinity-color-text-tertiary);
+        color: var(--dextinity-color-text-subtle);
         font-size: 11px;
         word-break: break-all;
     }
@@ -376,7 +376,7 @@
         flex: 1;
         place-items: center;
         border-radius: 10px;
-        color: var(--dextinity-color-text-secondary);
+        color: var(--dextinity-color-text-subtle);
         font: 10.5px var(--dextinity-font-family-mono);
         text-align: center;
         backdrop-filter: blur(var(--dextinity-material-blur));
@@ -410,14 +410,14 @@
     }
 
     th {
-        color: var(--dextinity-color-text-secondary);
+        color: var(--dextinity-color-text-subtle);
         font-size: 12px;
         font-weight: 500;
         box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-color-line-strong);
     }
 
     code {
-        color: var(--dextinity-color-text-secondary);
+        color: var(--dextinity-color-text-subtle);
         font-size: 11.5px;
     }
 }
@@ -446,7 +446,7 @@
 }
 
 .scaleStep {
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     font-family: var(--dextinity-font-family-mono);
     text-align: center;
 }
@@ -456,7 +456,7 @@
 
     code {
         align-self: center;
-        color: var(--dextinity-color-text-secondary);
+        color: var(--dextinity-color-text-subtle);
     }
 
     i {
@@ -537,7 +537,7 @@
         var(--dextinity-shadow-1);
 
     > span:last-child {
-        color: var(--dextinity-color-text-secondary);
+        color: var(--dextinity-color-text-subtle);
     }
 
     &[data-phase="exit"] {

@@ -1,11 +1,11 @@
 .mono {
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     font-family: var(--dextinity-font-family-mono);
     font-size: var(--dextinity-typography-mono-size);
 }
 
 .muted {
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
 }
 
 .target {
@@ -13,7 +13,7 @@
     gap: 8px;
     align-items: center;
     min-inline-size: 0;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
 
     > span {
         display: flex;

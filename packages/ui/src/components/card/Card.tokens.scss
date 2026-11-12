@@ -32,7 +32,7 @@
     // Font weight of the card title
     --dextinity-card-title-font-weight: var(--dextinity-typography-title-font-weight);
     // Color of the meta text next to the title
-    --dextinity-card-meta-color: var(--dextinity-color-text-tertiary);
+    --dextinity-card-meta-color: var(--dextinity-color-text-subtle);
     // Text size of the meta text next to the title
     --dextinity-card-meta-font-size: var(--dextinity-typography-ui-size);
 
@@ -47,17 +47,17 @@
     // Font weight of a row's title
     --dextinity-card-row-title-font-weight: var(--dextinity-font-weight-medium);
     // Color of a row's subtitle
-    --dextinity-card-row-subtitle-color: var(--dextinity-color-text-tertiary);
+    --dextinity-card-row-subtitle-color: var(--dextinity-color-text-subtle);
     // Text size of a row's subtitle
     --dextinity-card-row-subtitle-font-size: var(--dextinity-typography-small-size);
     // Gap between the items in a row's end content
     --dextinity-card-row-end-gap: var(--dextinity-space-2-5);
     // Text color of a row's end content
-    --dextinity-card-row-end-color: var(--dextinity-color-text-tertiary);
+    --dextinity-card-row-end-color: var(--dextinity-color-text-subtle);
     // Text size of a row's end content
     --dextinity-card-row-end-font-size: var(--dextinity-typography-ui-size);
     // Width of the column holding a row's arrow
     --dextinity-card-row-arrow-size: 22px;
     // Color of a row's arrow
-    --dextinity-card-row-arrow-color: var(--dextinity-color-text-subtle);
+    --dextinity-card-row-arrow-color: var(--dextinity-color-text-disabled);
 }

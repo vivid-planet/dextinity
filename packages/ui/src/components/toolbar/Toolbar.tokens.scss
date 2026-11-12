@@ -25,7 +25,7 @@
     // Size of the label of a menu trigger
     --dextinity-toolbar-menu-font-size: var(--dextinity-typography-ui-size);
     // Text color of a menu trigger
-    --dextinity-toolbar-menu-foreground: var(--dextinity-color-text-secondary);
+    --dextinity-toolbar-menu-foreground: var(--dextinity-color-text-subtle);
 }
 
 @mixin high-contrast-tokens {

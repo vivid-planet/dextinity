@@ -14,21 +14,21 @@
     // Text color of the search input
     --dextinity-filter-bar-search-foreground: var(--dextinity-color-text);
     // Placeholder color of the search input
-    --dextinity-filter-bar-search-placeholder: var(--dextinity-color-text-subtle);
+    --dextinity-filter-bar-search-placeholder: var(--dextinity-color-text-disabled);
     // Outline of the search field
     --dextinity-filter-bar-search-line: var(--dextinity-color-line-strong);
     // Shadow of the search field
     --dextinity-filter-bar-search-shadow: var(--dextinity-shadow-1);
     // Outline of the hovered search field
-    --dextinity-filter-bar-search-line-hover: var(--dextinity-color-text-subtle);
+    --dextinity-filter-bar-search-line-hover: var(--dextinity-color-text-disabled);
     // Outline of the focused search field
     --dextinity-filter-bar-search-line-focus: var(--dextinity-color-accent);
     // Soft halo around the focused search
     --dextinity-filter-bar-search-halo-focus: var(--dextinity-color-accent-soft);
     // Color of the search icon
-    --dextinity-filter-bar-search-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-filter-bar-search-icon-color: var(--dextinity-color-text-subtle);
     // Text color of the result count
-    --dextinity-filter-bar-count-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-filter-bar-count-foreground: var(--dextinity-color-text-subtle);
     // Text size of the result count
     --dextinity-filter-bar-count-font-size: var(--dextinity-typography-small-size);
 }

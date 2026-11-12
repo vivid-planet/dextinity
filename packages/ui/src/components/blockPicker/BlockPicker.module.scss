@@ -20,7 +20,7 @@
 .searchIcon {
     position: absolute;
     inset-inline-start: 11px;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     pointer-events: none;
 
     --dextinity-icon-size: var(--dextinity-icon-size-small);
@@ -40,7 +40,7 @@
     appearance: none;
 
     &::placeholder {
-        color: var(--dextinity-color-text-subtle);
+        color: var(--dextinity-color-text-disabled);
     }
 
     &::-webkit-search-cancel-button {
@@ -184,7 +184,7 @@
 .empty {
     margin: 0;
     padding: var(--dextinity-space-4) var(--dextinity-space-2-5);
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     text-align: center;
 }
 

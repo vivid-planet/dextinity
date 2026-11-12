@@ -84,7 +84,7 @@ export const Default: Story = {
 };
 
 /**
- * `icon` comes before the label, in the tertiary text color.
+ * `icon` comes before the label, in the subtle text color.
  */
 export const WithIcon: Story = {
     args: { icon: <Icon name="copy" /> },

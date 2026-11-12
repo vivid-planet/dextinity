@@ -3,16 +3,23 @@ import {
     dataGridDateTimeColumn,
     DataGridToolbar,
     type GridColDef,
+    GridFilterButton,
     MainContent,
+    messages,
+    muiGridFilterToGql,
     muiGridSortToGql,
+    ToolbarItem,
     useBufferedRowCount,
     useDataGridRemote,
     usePersistentColumnState,
 } from "@dextinity/admin";
 import { Chip } from "@mui/material";
+import type { GridFilterItem } from "@mui/x-data-grid";
 import { useMemo, useState } from "react";
 import { useIntl } from "react-intl";
 
+import { type ContentScope, useContentScope } from "../../../contentScope/Provider";
+import { getContentScopeLabel } from "../../../contentScope/utils/getContentScopeLabel";
 import { DataGrid } from "../../../dataGrid/DataGrid";
 import { ActionLogShowVersionDialog } from "../../actionLog/actionLogShowVersionDialog/ActionLogShowVersionDialog";
 import { ActionLogTypeChip } from "../../components/actionLogTypeChip/ActionLogTypeChip";
@@ -25,14 +32,63 @@ import type {
     GQLGlobalActionLogGridQueryVariables,
 } from "./GlobalActionLogGrid.gql.generated";
 
+function scopeColumnToGqlFilter(filterItem: GridFilterItem) {
+    if (filterItem.operator === "isAnyOf") {
+        const scopes = ((filterItem.value as string[] | undefined) ?? []).map((value) => JSON.parse(value) as ContentScope | null);
+        const includesGlobal = scopes.some((scope) => scope === null);
+        const contentScopes = scopes.filter((scope): scope is ContentScope => scope !== null);
+        if (includesGlobal && contentScopes.length > 0) {
+            return { or: [{ scope: { isGlobal: true } }, { scope: { isAnyOf: contentScopes } }] };
+        }
+        if (includesGlobal) {
+            return { scope: { isGlobal: true } };
+        }
+        if (contentScopes.length === 0) {
+            return { scope: {} };
+        }
+        return { scope: { isAnyOf: contentScopes } };
+    }
+    if (typeof filterItem.value !== "string") {
+        return { scope: {} };
+    }
+    const scope = JSON.parse(filterItem.value) as ContentScope | null;
+    if (scope === null) {
+        return { scope: { isGlobal: filterItem.operator !== "not" } };
+    }
+    const gqlOperator = filterItem.operator === "not" ? "notEqual" : "equal";
+    return { scope: { [gqlOperator]: scope } };
+}
+
+function GlobalActionLogGridToolbar() {
+    return (
+        <DataGridToolbar>
+            <ToolbarItem>
+                <GridFilterButton />
+            </ToolbarItem>
+        </DataGridToolbar>
+    );
+}
+
 export function GlobalActionLogGrid() {
     const intl = useIntl();
+    const { values: scopeValues } = useContentScope();
     const [selectedRow, setSelectedRow] = useState<GQLGlobalActionLogGridFragment | null>(null);
 
     const dataGridProps = {
         ...useDataGridRemote({ initialSort: [{ field: "createdAt", sort: "desc" }] }),
         ...usePersistentColumnState("GlobalActionLogGrid"),
     };
+
+    const scopeValueOptions = useMemo(
+        () => [
+            { value: JSON.stringify(null), label: intl.formatMessage(messages.globalContentScope) },
+            ...scopeValues.map((item) => ({
+                value: JSON.stringify(item.scope),
+                label: getContentScopeLabel({ scope: item.scope, values: scopeValues }),
+            })),
+        ],
+        [intl, scopeValues],
+    );
 
     const columns = useMemo<GridColDef<GQLGlobalActionLogGridFragment>[]>(
         () => [
@@ -45,8 +101,9 @@ export function GlobalActionLogGrid() {
             {
                 field: "scope",
                 headerName: intl.formatMessage({ id: "dextinity.globalActionLog.columns.scope", defaultMessage: "Scope" }),
-                sortable: false,
-                filterable: false,
+                type: "singleSelect",
+                valueOptions: scopeValueOptions,
+                toGqlFilter: scopeColumnToGqlFilter,
                 width: 150,
                 renderCell: ({ row }) => <ScopeCell scopes={row.scope} />,
             },
@@ -82,13 +139,16 @@ export function GlobalActionLogGrid() {
                 renderCell: ({ row }) => <UserCell id={row.user.id} name={row.user.name ?? undefined} />,
             },
         ],
-        [intl],
+        [intl, scopeValueOptions],
     );
+
+    const { filter: gqlFilter } = muiGridFilterToGql(columns, dataGridProps.filterModel);
 
     const { data, loading, error } = useQuery<GQLGlobalActionLogGridQuery, GQLGlobalActionLogGridQueryVariables>(globalActionLogGridQuery, {
         variables: {
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
+            filter: gqlFilter,
             sort: muiGridSortToGql(dataGridProps.sortModel),
         },
     });
@@ -109,7 +169,7 @@ export function GlobalActionLogGrid() {
                 loading={loading}
                 disableRowSelectionOnClick
                 onRowClick={({ row }) => setSelectedRow(row)}
-                slots={{ toolbar: DataGridToolbar }}
+                slots={{ toolbar: GlobalActionLogGridToolbar }}
                 showToolbar
             />
             <ActionLogShowVersionDialog row={selectedRow} open={selectedRow !== null} onClose={() => setSelectedRow(null)} />

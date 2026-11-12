@@ -1,12 +1,23 @@
 import { Field, InputType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
-import { ValidateNested } from "class-validator";
+import { IsBoolean, ValidateNested } from "class-validator";
 
 import { DateTimeFilter } from "../../common/filter/date-time.filter";
 import { IdFilter } from "../../common/filter/id.filter";
 import { NumberFilter } from "../../common/filter/number.filter";
+import { ScopeFilter } from "../../common/filter/scope.filter";
 import { StringFilter } from "../../common/filter/string.filter";
+import { IsNullable } from "../../common/validators/is-nullable";
 import { IsUndefinable } from "../../common/validators/is-undefinable";
+
+@InputType({ isAbstract: true })
+class ActionLogScopeFilter extends ScopeFilter {
+    @Field(() => Boolean, { nullable: true })
+    @IsBoolean()
+    @IsNullable()
+    @IsUndefinable()
+    isGlobal?: boolean | null;
+}
 
 @InputType()
 export class ActionLogFilter {
@@ -22,6 +33,12 @@ export class ActionLogFilter {
     @IsUndefinable()
     entityId?: IdFilter;
 
+    @Field(() => StringFilter, { nullable: true })
+    @ValidateNested()
+    @Type(() => StringFilter)
+    @IsUndefinable()
+    entityName?: StringFilter;
+
     @Field(() => NumberFilter, { nullable: true })
     @ValidateNested()
     @Type(() => NumberFilter)
@@ -33,6 +50,12 @@ export class ActionLogFilter {
     @Type(() => DateTimeFilter)
     @IsUndefinable()
     createdAt?: DateTimeFilter;
+
+    @Field(() => ActionLogScopeFilter, { nullable: true })
+    @ValidateNested()
+    @Type(() => ActionLogScopeFilter)
+    @IsUndefinable()
+    scope?: ActionLogScopeFilter;
 
     @Field(() => [ActionLogFilter], { nullable: true })
     @ValidateNested({ each: true })

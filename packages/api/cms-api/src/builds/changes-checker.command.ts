@@ -1,23 +1,22 @@
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { MikroORM } from "@mikro-orm/postgresql";
 import { Logger } from "@nestjs/common";
-import { Command, CommandRunner } from "nest-commander";
 
+import { ConsoleCommand } from "../console-commands/console-command.decorators.js";
+import type { ConsoleCommandInterface } from "../console-commands/console-command.interface.js";
 import { BuildsService } from "./builds.service.js";
 
-@Command({
+@ConsoleCommand({
     name: "check-changes",
     description: "Checks if changes since last build happened and triggers a new build if so",
 })
-export class ChangesCheckerCommand extends CommandRunner {
+export class ChangesCheckerCommand implements ConsoleCommandInterface {
     private readonly logger = new Logger(ChangesCheckerCommand.name);
 
     constructor(
         private readonly orm: MikroORM, // MikroORM is injected so we can use the request context
         private readonly buildsService: BuildsService,
-    ) {
-        super();
-    }
+    ) {}
 
     @CreateRequestContext()
     async run(): Promise<void> {

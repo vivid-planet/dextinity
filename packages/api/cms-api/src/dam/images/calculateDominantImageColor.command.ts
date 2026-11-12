@@ -1,21 +1,20 @@
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Command, CommandRunner } from "nest-commander";
 
+import { ConsoleCommand } from "../../console-commands/console-command.decorators.js";
+import type { ConsoleCommandInterface } from "../../console-commands/console-command.interface.js";
 import { resolveFileEntity } from "../files/entities/resolve-dam-entity.js";
 import { DamDominantColorService } from "./dam-dominant-color.service.js";
 
-@Command({
+@ConsoleCommand({
     name: "cms.dam.calculateDominantImageColor",
     description: "Recalculate and save dominant color of image",
 })
-export class CalculateDominantImageColorCommand extends CommandRunner {
+export class CalculateDominantImageColorCommand implements ConsoleCommandInterface {
     constructor(
         private readonly dominantColorService: DamDominantColorService,
         private readonly em: EntityManager,
-    ) {
-        super();
-    }
+    ) {}
 
     @CreateRequestContext()
     async run(): Promise<void> {

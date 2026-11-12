@@ -1,20 +1,19 @@
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { MikroORM } from "@mikro-orm/postgresql";
-import { Command, CommandRunner, Option } from "nest-commander";
 
+import { ConsoleCommand, ConsoleCommandOption } from "../console-commands/console-command.decorators.js";
+import type { ConsoleCommandInterface } from "../console-commands/console-command.interface.js";
 import { DependenciesService } from "../dependencies/dependencies.service.js";
 
-@Command({
+@ConsoleCommand({
     name: "refreshBlockIndexViews",
 })
-export class RefreshBlockIndexViewsCommand extends CommandRunner {
+export class RefreshBlockIndexViewsCommand implements ConsoleCommandInterface {
     constructor(
         private readonly dependenciesService: DependenciesService,
         // orm is necessary, otherwise @CreateRequestContext() doesn't work
         private readonly orm: MikroORM,
-    ) {
-        super();
-    }
+    ) {}
 
     @CreateRequestContext()
     async run(params: string[], options: { force?: true }): Promise<void> {
@@ -29,7 +28,7 @@ export class RefreshBlockIndexViewsCommand extends CommandRunner {
         }
     }
 
-    @Option({
+    @ConsoleCommandOption({
         flags: "-f, --force",
         description: "Force a refresh (otherwise no update is made if the last refresh was less than 5 minutes ago)",
     })

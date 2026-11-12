@@ -1,28 +1,27 @@
 import { MikroORM } from "@mikro-orm/core";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { Inject, Logger } from "@nestjs/common";
-import { Command, CommandRunner, Option } from "nest-commander";
 
+import { ConsoleCommand, ConsoleCommandOption } from "../console-commands/console-command.decorators.js";
+import type { ConsoleCommandInterface } from "../console-commands/console-command.interface.js";
 import { MAILER_SERVICE_CONFIG } from "./mailer.constants.js";
 import type { MailerModuleConfig } from "./mailer.module.js";
 import { MailerService } from "./mailer.service.js";
 
-@Command({
+@ConsoleCommand({
     name: "mailer:send-test-mail",
     description: "test mail integration",
 })
-export class SendTestMailCommand extends CommandRunner {
+export class SendTestMailCommand implements ConsoleCommandInterface {
     private readonly logger = new Logger(SendTestMailCommand.name);
 
     constructor(
         private readonly orm: MikroORM,
         @Inject(MAILER_SERVICE_CONFIG) private readonly mailerConfig: MailerModuleConfig,
         private readonly mailerService: MailerService,
-    ) {
-        super();
-    }
+    ) {}
 
-    @Option({
+    @ConsoleCommandOption({
         flags: "-r, --receiver [receiver]",
     })
     parseReceiver(value: string) {

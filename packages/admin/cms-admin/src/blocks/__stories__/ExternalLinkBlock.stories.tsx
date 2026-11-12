@@ -51,14 +51,14 @@ export const Default: Story = {
     play: async ({ canvas, userEvent, step }) => {
         await step("Both link options are offered", async () => {
             await waitFor(() => {
-                expect(canvas.getByRole("checkbox", { name: "Open in new window" })).toBeInTheDocument();
+                expect(canvas.getByRole("switch", { name: "Open in new window" })).toBeInTheDocument();
             });
 
-            expect(canvas.getByRole("checkbox", { name: "No follow" })).toBeInTheDocument();
+            expect(canvas.getByRole("switch", { name: "No follow" })).toBeInTheDocument();
         });
 
         await step("Checking an option writes it to the state", async () => {
-            await userEvent.click(canvas.getByRole("checkbox", { name: "Open in new window" }));
+            await userEvent.click(canvas.getByRole("switch", { name: "Open in new window" }));
 
             await waitFor(() => {
                 expect(readState(canvas)).toMatchObject({ openInNewWindow: true });
@@ -87,7 +87,7 @@ export const WithoutOptions: StoryObj<typeof WithoutOptionsStory> = {
                 expect(canvas.getByRole("textbox")).toBeInTheDocument();
             });
 
-            expect(canvas.queryAllByRole("checkbox")).toHaveLength(0);
+            expect(canvas.queryAllByRole("switch")).toHaveLength(0);
         });
 
         await step("Neither option is part of the data", async () => {

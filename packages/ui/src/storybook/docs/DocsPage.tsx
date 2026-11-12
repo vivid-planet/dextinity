@@ -19,7 +19,7 @@ function ComponentTokens() {
 }
 
 /**
- * The autodocs page: description, primary example, props, the component's tokens (from `parameters.tokens`), and the remaining stories.
+ * The autodocs page: description, the default story with its props, the other stories, and at the very bottom the component's tokens (from `parameters.tokens`).
  */
 export function DocsPage() {
     return (
@@ -30,8 +30,8 @@ export function DocsPage() {
             <Primary />
             <Heading>Props</Heading>
             <Controls />
+            <Stories includePrimary={false} />
             <ComponentTokens />
-            <Stories />
         </>
     );
 }

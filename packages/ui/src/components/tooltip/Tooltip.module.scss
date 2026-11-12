@@ -44,11 +44,11 @@
 }
 
 .shortcut {
-    --dextinity-keyboard-key-background: transparent;
-    --dextinity-keyboard-key-foreground: currentcolor;
-    --dextinity-keyboard-key-shadow: none;
-    --dextinity-keyboard-key-padding: 0;
-    --dextinity-keyboard-key-height: auto;
+    --dextinity-keyboard-shortcut-background: transparent;
+    --dextinity-keyboard-shortcut-foreground: currentcolor;
+    --dextinity-keyboard-shortcut-shadow: none;
+    --dextinity-keyboard-shortcut-padding: 0;
+    --dextinity-keyboard-shortcut-height: auto;
 
     opacity: var(--dextinity-tooltip-shortcut-opacity);
 }

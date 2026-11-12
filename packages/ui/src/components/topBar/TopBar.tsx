@@ -4,7 +4,7 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 import { useAppShellContext } from "../appShell/appShellContext";
 import { Icon } from "../icon/Icon";
 import { IconButton } from "../iconButton/IconButton";
-import { KeyboardKey } from "../keyboardKey/KeyboardKey";
+import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
 import styles from "./TopBar.module.scss";
 import { useTopBarEditState } from "./topBarEdit";
 
@@ -129,7 +129,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
                         <button type="button" aria-label={labels.search} aria-haspopup="dialog" onClick={onSearchClick} className={styles.search}>
                             <Icon name="search" />
                             <span className={styles.searchText}>{labels.search}</span>
-                            <KeyboardKey className={styles.searchShortcut}>{labels.searchShortcut}</KeyboardKey>
+                            <KeyboardShortcut className={styles.searchShortcut}>{labels.searchShortcut}</KeyboardShortcut>
                         </button>
                     )}
                     <div className={styles.actions}>

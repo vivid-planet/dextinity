@@ -68,7 +68,7 @@ const keyNames: Record<string, string> = {
 
 /**
  * The key caps of a shortcut for display, e.g. `["⌘", "S"]` for `"mod+s"` on Apple platforms and `["Ctrl", "S"]` elsewhere. Pass
- * them to `KeyboardKey`, `ShortcutList` or a tooltip's `shortcut`.
+ * them to `KeyboardShortcut`, `ShortcutList` or a tooltip's `shortcut`.
  */
 export function formatShortcut(shortcut: string, apple = isApplePlatform()): string[] {
     const parts = shortcut.split("+");

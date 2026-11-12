@@ -5,7 +5,7 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Icon } from "../../icon/Icon";
-import { KeyboardKey } from "../../keyboardKey/KeyboardKey";
+import { KeyboardShortcut } from "../../keyboardShortcut/KeyboardShortcut";
 import { TextField, type TextFieldProps } from "../TextField";
 import textFieldTokens from "../TextField.tokens.scss?raw";
 import styles from "./TextField.stories.module.scss";
@@ -143,7 +143,7 @@ export const Search: Story = {
         value: "",
         placeholder: "Search job ads",
         prefix: <Icon name="search" />,
-        suffix: <KeyboardKey>/</KeyboardKey>,
+        suffix: <KeyboardShortcut>/</KeyboardShortcut>,
     },
 };
 

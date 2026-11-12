@@ -6,7 +6,7 @@ import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { Icon } from "../icon/Icon";
 import { IconButton } from "../iconButton/IconButton";
-import { KeyboardKey } from "../keyboardKey/KeyboardKey";
+import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
 import styles from "./QuickLook.module.scss";
 
 export interface QuickLookItem {
@@ -210,12 +210,12 @@ export const QuickLook = forwardRef<HTMLDivElement, QuickLookProps>(function Qui
                                     <div {...footerProps}>
                                         <span className={styles.position}>{labels.position(index, items.length)}</span>
                                         <span className={styles.hint}>
-                                            <KeyboardKey>{labels.previousKey}</KeyboardKey>
-                                            <KeyboardKey>{labels.nextKey}</KeyboardKey>
+                                            <KeyboardShortcut>{labels.previousKey}</KeyboardShortcut>
+                                            <KeyboardShortcut>{labels.nextKey}</KeyboardShortcut>
                                             {labels.browse}
                                         </span>
                                         <span className={styles.hint}>
-                                            <KeyboardKey>{labels.closeKey}</KeyboardKey>
+                                            <KeyboardShortcut>{labels.closeKey}</KeyboardShortcut>
                                             {labels.close}
                                         </span>
                                     </div>

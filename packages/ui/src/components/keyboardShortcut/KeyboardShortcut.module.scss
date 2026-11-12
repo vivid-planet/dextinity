@@ -1,0 +1,22 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-inline-size: var(--dextinity-keyboard-shortcut-height);
+    block-size: var(--dextinity-keyboard-shortcut-height);
+    padding-inline: var(--dextinity-keyboard-shortcut-padding);
+    border-radius: var(--dextinity-keyboard-shortcut-radius);
+    background: var(--dextinity-keyboard-shortcut-background);
+    box-shadow: var(--dextinity-keyboard-shortcut-shadow);
+    color: var(--dextinity-keyboard-shortcut-foreground);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-keyboard-shortcut-font-size);
+    font-weight: var(--dextinity-font-weight-regular);
+    line-height: 1;
+    white-space: nowrap;
+
+    @include forced-colors.edge;
+}

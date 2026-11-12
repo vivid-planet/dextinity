@@ -1,22 +1,22 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import { KeyboardKey } from "../KeyboardKey";
-import keyboardKeyTokens from "../KeyboardKey.tokens.scss?raw";
-import styles from "./KeyboardKey.stories.module.scss";
+import { KeyboardShortcut } from "../KeyboardShortcut";
+import keyboardShortcutTokens from "../KeyboardShortcut.tokens.scss?raw";
+import styles from "./KeyboardShortcut.stories.module.scss";
 
 const meta = {
-    component: KeyboardKey,
-    title: "Building blocks/Status, tags & badges/KeyboardKey",
+    component: KeyboardShortcut,
+    title: "Building blocks/Status, tags & badges/KeyboardShortcut",
     decorators: [themeDecorator],
-    parameters: { tokens: keyboardKeyTokens },
+    parameters: { tokens: keyboardShortcutTokens },
     args: {
         children: "⌘K",
     },
     argTypes: {
         className: { control: false },
     },
-} satisfies Meta<typeof KeyboardKey>;
+} satisfies Meta<typeof KeyboardShortcut>;
 
 export default meta;
 
@@ -34,13 +34,13 @@ export const NamedKey: Story = {
 };
 
 /**
- * A sequence of keys pressed one after another gets one `KeyboardKey` per key.
+ * A sequence of keys pressed one after another gets one `KeyboardShortcut` per key.
  */
 export const Sequence: Story = {
     render: () => (
         <span className={styles.row}>
-            <KeyboardKey>G</KeyboardKey>
-            <KeyboardKey>P</KeyboardKey>
+            <KeyboardShortcut>G</KeyboardShortcut>
+            <KeyboardShortcut>P</KeyboardShortcut>
         </span>
     ),
 };

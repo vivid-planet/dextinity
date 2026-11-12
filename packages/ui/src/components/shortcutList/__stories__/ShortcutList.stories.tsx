@@ -7,7 +7,7 @@ import shortcutListTokens from "../ShortcutList.tokens.scss?raw";
 
 const meta = {
     component: ShortcutList,
-    title: "Patterns/Keyboard/ShortcutList",
+    title: "Patterns/Keyboard shortcuts/ShortcutList",
     decorators: [themeDecorator],
     parameters: { tokens: shortcutListTokens },
     args: {

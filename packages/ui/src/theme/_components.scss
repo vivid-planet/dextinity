@@ -36,7 +36,7 @@
 @use "../components/icon/Icon.tokens" as icon;
 @use "../components/iconButton/IconButton.tokens" as iconButton;
 @use "../components/input/Input.tokens" as input;
-@use "../components/keyboardKey/KeyboardKey.tokens" as keyboardKey;
+@use "../components/keyboardShortcut/KeyboardShortcut.tokens" as keyboardShortcut;
 @use "../components/keyValueList/KeyValueList.tokens" as keyValueList;
 @use "../components/link/Link.tokens" as link;
 @use "../components/linkedContent/LinkedContent.tokens" as linkedContent;
@@ -119,7 +119,7 @@
     @include icon.tokens;
     @include iconButton.tokens;
     @include input.tokens;
-    @include keyboardKey.tokens;
+    @include keyboardShortcut.tokens;
     @include keyValueList.tokens;
     @include link.tokens;
     @include linkedContent.tokens;

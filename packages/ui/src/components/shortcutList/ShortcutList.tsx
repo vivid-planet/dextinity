@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import { forwardRef, type TableHTMLAttributes } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
-import { KeyboardKey } from "../keyboardKey/KeyboardKey";
+import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
 import styles from "./ShortcutList.module.scss";
 
 /**
@@ -74,7 +74,7 @@ export const ShortcutList = forwardRef<HTMLTableElement, ShortcutListProps>(func
                         <td>
                             <span {...keysProps}>
                                 {shortcut.keys.map((key, index) => (
-                                    <KeyboardKey key={index}>{key}</KeyboardKey>
+                                    <KeyboardShortcut key={index}>{key}</KeyboardShortcut>
                                 ))}
                             </span>
                         </td>

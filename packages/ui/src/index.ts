@@ -108,7 +108,7 @@ export type { DefaultIconName, DefaultIconRegistry, IconName, IconRegistry } fro
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";
 export { type IconButtonSlotProps, type IconButtonSlots } from "./components/iconButton/IconButton";
 export { Input, type InputOwnerState, type InputProps } from "./components/input/Input";
-export { KeyboardKey, type KeyboardKeyOwnerState, type KeyboardKeyProps } from "./components/keyboardKey/KeyboardKey";
+export { KeyboardShortcut, type KeyboardShortcutOwnerState, type KeyboardShortcutProps } from "./components/keyboardShortcut/KeyboardShortcut";
 export { formatShortcut, isApplePlatform, type KeyboardShortcutOptions } from "./components/keyboardShortcut/useKeyboardShortcut";
 export { matchesShortcut, useKeyboardShortcut } from "./components/keyboardShortcut/useKeyboardShortcut";
 export { KeyValueList, type KeyValueListItem, type KeyValueListOwnerState, type KeyValueListProps } from "./components/keyValueList/KeyValueList";

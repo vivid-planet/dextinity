@@ -4,12 +4,12 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "../../../components/button/Button";
 import { Dialog } from "../../../components/dialog/Dialog";
-import { KeyboardKey } from "../../../components/keyboardKey/KeyboardKey";
+import { KeyboardShortcut } from "../../../components/keyboardShortcut/KeyboardShortcut";
 import { formatShortcut, useKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
 import { ShortcutList, type ShortcutListItem } from "../../../components/shortcutList/ShortcutList";
 import { PatternPage, PatternRules, PatternSection, PatternShortcuts } from "../../../storybook/patterns/PatternPage";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import styles from "./Keyboard.stories.module.scss";
+import styles from "./KeyboardShortcuts.stories.module.scss";
 
 const keys = (shortcut: string) => formatShortcut(shortcut);
 
@@ -51,7 +51,7 @@ const rules = {
     donts: ["Shortcuts that override browser shortcuts (except ⌘S and ⌘K).", "Single letters as shortcuts while typing in a field."],
 };
 
-function KeyboardPage() {
+function KeyboardShortcutsPage() {
     return (
         <PatternPage>
             <PatternShortcuts title="Everywhere" shortcuts={everywhere} />
@@ -71,7 +71,7 @@ function ShortcutOverview() {
         <PatternPage>
             <PatternSection title="Example" description="Live: press ? anywhere outside a text field to see every shortcut.">
                 <div className={styles.hint}>
-                    <KeyboardKey>?</KeyboardKey>
+                    <KeyboardShortcut>?</KeyboardShortcut>
                     <span>Show keyboard shortcuts</span>
                     <Button variant="outlined" color="secondary" size="small" onClick={() => setOpen(true)}>
                         Show shortcuts
@@ -86,7 +86,7 @@ function ShortcutOverview() {
 }
 
 const meta = {
-    title: "Patterns/Keyboard",
+    title: "Patterns/Keyboard shortcuts",
     decorators: [themeDecorator],
     parameters: {
         docs: {
@@ -111,7 +111,7 @@ type Story = StoryObj<typeof meta>;
  * - Don't: override browser shortcuts (except ⌘S and ⌘K); use single letters as shortcuts while typing in a field.
  */
 export const Default: Story = {
-    render: () => <KeyboardPage />,
+    render: () => <KeyboardShortcutsPage />,
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("heading", { name: "Everywhere" })).toBeVisible();
         await expect(canvas.getByRole("cell", { name: "Command palette" })).toBeVisible();

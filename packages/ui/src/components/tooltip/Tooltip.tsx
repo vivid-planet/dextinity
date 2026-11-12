@@ -4,7 +4,7 @@ import { forwardRef, type HTMLAttributes, type ReactElement, useMemo } from "rea
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
-import { KeyboardKey } from "../keyboardKey/KeyboardKey";
+import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
 import styles from "./Tooltip.module.scss";
 
 type TooltipPlacement = "top" | "bottom" | "left" | "right";
@@ -24,7 +24,7 @@ export interface TooltipSlotProps {
     /** Props for the `positioner` slot, which places the tooltip next to its trigger. */
     positioner?: SlotPropsValue<TooltipOwnerState, typeof BaseTooltip.Positioner>;
     /** Props for the `shortcut` slot. */
-    shortcut?: SlotPropsValue<TooltipOwnerState, typeof KeyboardKey>;
+    shortcut?: SlotPropsValue<TooltipOwnerState, typeof KeyboardShortcut>;
 }
 
 export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "content"> {
@@ -93,7 +93,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
         slotProps: slotProps?.positioner,
         ownerState,
     });
-    const shortcutProps = resolveSlotProps<TooltipOwnerState, typeof KeyboardKey, typeof KeyboardKey>({
+    const shortcutProps = resolveSlotProps<TooltipOwnerState, typeof KeyboardShortcut, typeof KeyboardShortcut>({
         ownProps: { className: styles.shortcut, children: shortcut },
         slotProps: slotProps?.shortcut,
         ownerState,
@@ -116,7 +116,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
                         className={clsx(styles.root, className)}
                     >
                         {content}
-                        {shortcut != null && <KeyboardKey {...shortcutProps} />}
+                        {shortcut != null && <KeyboardShortcut {...shortcutProps} />}
                     </BaseTooltip.Popup>
                 </BaseTooltip.Positioner>
             </BaseTooltip.Portal>

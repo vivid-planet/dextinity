@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { type ElementType, type ForwardedRef, forwardRef, type ReactNode, type RefAttributes, useId } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
-import { KeyboardKey } from "../keyboardKey/KeyboardKey";
+import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
 import { Tooltip } from "../tooltip/Tooltip";
 import styles from "./MenuItem.module.scss";
 
@@ -32,7 +32,7 @@ export interface MenuItemSlotProps<IconElement extends ElementType> {
     /** Props for the `label` slot. */
     label?: SlotPropsValue<MenuItemOwnerState, "span">;
     /** Props for the `shortcut` slot. */
-    shortcut?: SlotPropsValue<MenuItemOwnerState, typeof KeyboardKey>;
+    shortcut?: SlotPropsValue<MenuItemOwnerState, typeof KeyboardShortcut>;
 }
 
 export interface MenuItemProps<IconElement extends ElementType = "span"> extends Omit<
@@ -104,7 +104,7 @@ export const MenuItem: <IconElement extends ElementType = "span">(props: MenuIte
             slotProps: slotProps?.label,
             ownerState,
         });
-        const shortcutProps = resolveSlotProps<MenuItemOwnerState, typeof KeyboardKey, typeof KeyboardKey>({
+        const shortcutProps = resolveSlotProps<MenuItemOwnerState, typeof KeyboardShortcut, typeof KeyboardShortcut>({
             ownProps: { className: styles.shortcut, children: shortcut },
             slotProps: slotProps?.shortcut,
             ownerState,
@@ -122,7 +122,7 @@ export const MenuItem: <IconElement extends ElementType = "span">(props: MenuIte
             >
                 {icon != null && <IconSlot {...iconProps}>{icon}</IconSlot>}
                 <span {...labelProps}>{label}</span>
-                {shortcut != null && <KeyboardKey {...shortcutProps} />}
+                {shortcut != null && <KeyboardShortcut {...shortcutProps} />}
             </BaseMenu.Item>
         );
 

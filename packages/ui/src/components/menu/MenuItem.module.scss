@@ -18,11 +18,11 @@
 }
 
 .shortcut {
-    --dextinity-keyboard-key-background: transparent;
-    --dextinity-keyboard-key-foreground: var(--dextinity-menu-item-shortcut-color);
-    --dextinity-keyboard-key-shadow: none;
-    --dextinity-keyboard-key-padding: 0;
-    --dextinity-keyboard-key-height: auto;
+    --dextinity-keyboard-shortcut-background: transparent;
+    --dextinity-keyboard-shortcut-foreground: var(--dextinity-menu-item-shortcut-color);
+    --dextinity-keyboard-shortcut-shadow: none;
+    --dextinity-keyboard-shortcut-padding: 0;
+    --dextinity-keyboard-shortcut-height: auto;
 
     margin-inline-start: auto;
     padding-inline-start: var(--dextinity-space-4);

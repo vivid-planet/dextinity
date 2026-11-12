@@ -4,9 +4,9 @@ import { expect, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
-import { KeyboardKey } from "../../keyboardKey/KeyboardKey";
 import { SaveState, type SaveStateValue } from "../../saveState/SaveState";
 import { TextField } from "../../textField/TextField";
+import { KeyboardShortcut } from "../KeyboardShortcut";
 import { formatShortcut, isApplePlatform, useKeyboardShortcut } from "../useKeyboardShortcut";
 import styles from "./useKeyboardShortcut.stories.module.scss";
 
@@ -30,7 +30,7 @@ function SaveShortcutDemo() {
                 <SaveState state={saveState} />
                 <span className={styles.keys}>
                     {formatShortcut("mod+s").map((key) => (
-                        <KeyboardKey key={key}>{key}</KeyboardKey>
+                        <KeyboardShortcut key={key}>{key}</KeyboardShortcut>
                     ))}
                 </span>
             </div>
@@ -51,7 +51,7 @@ function SearchShortcutDemo() {
                 name="search"
                 type="search"
                 prefix={<Icon name="search" />}
-                suffix={<KeyboardKey>/</KeyboardKey>}
+                suffix={<KeyboardShortcut>/</KeyboardShortcut>}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
             />
@@ -60,7 +60,7 @@ function SearchShortcutDemo() {
 }
 
 const meta = {
-    title: "Patterns/Keyboard/useKeyboardShortcut",
+    title: "Patterns/Keyboard shortcuts/useKeyboardShortcut",
     decorators: [themeDecorator],
 } satisfies Meta;
 

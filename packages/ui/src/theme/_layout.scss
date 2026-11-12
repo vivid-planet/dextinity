@@ -1,0 +1,14 @@
+// Page layout rhythm shared by the layout components. Declared on every theme boundary, like the component tokens, so a
+// nested `Theme` with another density resolves them against its own values.
+@layer dextinity {
+    :root,
+    [data-dextinity-color-scheme],
+    [data-dextinity-density] {
+        // Space between a page header and the content below it
+        --dextinity-layout-header-spacing: 30px;
+        // Gap between the panels of a page layout
+        --dextinity-layout-gap: calc(var(--dextinity-density-panel-padding) + 2px);
+        // Distance from the top of the viewport at which sticky panels stop, below the app shell's top bar
+        --dextinity-layout-sticky-offset: 84px;
+    }
+}

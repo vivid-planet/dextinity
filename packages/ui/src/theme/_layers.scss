@@ -1,0 +1,19 @@
+// Stacking order of the overlays that render in a portal on top of the page.
+@layer dextinity {
+    :root {
+        // Drawer and the app shell's navigation drawer on small screens
+        --dextinity-layer-drawer: 900;
+        // Modal dialog
+        --dextinity-layer-dialog: 1000;
+        // Popover, menu, select list, and date picker popup
+        --dextinity-layer-popup: 1000;
+        // Tooltip
+        --dextinity-layer-tooltip: 1000;
+        // Command palette
+        --dextinity-layer-command-palette: 1100;
+        // Toast notifications
+        --dextinity-layer-toast: 1100;
+        // Full-screen asset preview
+        --dextinity-layer-quick-look: 1200;
+    }
+}

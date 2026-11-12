@@ -13,13 +13,48 @@ $danger-hue: var(--dextinity-brand-danger-hue);
     :root,
     [data-dextinity-color-scheme] {
         --dextinity-line-width: 0.5px;
+        // Heavier line, e.g. checkbox and radio outlines, dashed drop areas, and the outline of a selected block
+        --dextinity-line-width-strong: 1.5px;
+        // Drop, resize, and active-item indicator line
+        --dextinity-indicator-width: 2px;
+        // Indicator line that has to stand out, e.g. the drop target between blocks
+        --dextinity-indicator-width-strong: 3px;
         --dextinity-gradient-brand: linear-gradient(
             120deg,
             var(--dextinity-color-accent) 15%,
             color-mix(in oklch, var(--dextinity-color-accent) 35%, var(--dextinity-color-accent-secondary)) 100%
         );
+        // Width of the focus ring's line
+        --dextinity-focus-ring-width: 2px;
+        // How far the focus ring reaches outside its element; a container that clips its content keeps this much room
+        --dextinity-focus-ring-extent: 4px;
         --dextinity-focus-ring: 0 0 0 2px var(--dextinity-color-canvas), 0 0 0 4px var(--dextinity-color-focus);
+        // Focus ring drawn inside the element, for items in a list or grid that clips its overflow
+        --dextinity-focus-ring-inset: inset 0 0 0 var(--dextinity-focus-ring-width) var(--dextinity-color-focus);
+        // Focus ring as an outline, for elements that use their box shadow otherwise
+        --dextinity-focus-outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-focus);
+        // Width of the soft halo around a focused or validated field
+        --dextinity-focus-halo-width: 4px;
         --dextinity-icon-duotone-opacity: 0.16;
+        // Opacity of a disabled control
+        --dextinity-opacity-disabled: 0.42;
+        // Opacity of the item left in place while it's being dragged
+        --dextinity-opacity-dragging: 0.4;
+
+        // Faintest neutral fill, e.g. a hovered row
+        --dextinity-color-fill-subtle: color-mix(in oklch, var(--dextinity-color-text) 4%, transparent);
+        // Neutral fill of a hovered control
+        --dextinity-color-fill-hover: color-mix(in oklch, var(--dextinity-color-text) 6%, transparent);
+        // Stronger neutral fill, e.g. a secondary chip or a hovered editable cell
+        --dextinity-color-fill-strong: color-mix(in oklch, var(--dextinity-color-text) 9%, transparent);
+        // Neutral fill of a track, e.g. a progress bar
+        --dextinity-color-fill-track: color-mix(in oklch, var(--dextinity-color-text) 10%, transparent);
+
+        // Saturation boost of the backdrop behind glass, applied together with the material blur
+        --dextinity-material-saturation: 1.6;
+        // Top highlight and edge line of a glass surface
+        --dextinity-material-edge-shadow:
+            inset 0 1px 0 var(--dextinity-material-highlight), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge);
 
         --dextinity-font-family-text: var(--dextinity-brand-font-family-text);
         --dextinity-font-family-display: var(--dextinity-brand-font-family-display);

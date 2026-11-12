@@ -109,6 +109,14 @@ Demo frontend site (Next.js)
 - Start using `pnpm exec dev-pm start @demo-site`
 - access at: http://localhost:3000/
 
+**Site Storybook:**
+Storybook for the demo site components (Vite, `@storybook/nextjs-vite`)
+
+- Start using `pnpm exec dev-pm start demo-site-storybook`
+- access at: http://localhost:26648/
+- stories live in `__stories__` folders next to the component
+- run the story tests with `pnpm --filter dextinity-demo-site run test:storybook`
+
 ### dev-pm
 
 Use dev-pm for managing demo processes:
@@ -201,6 +209,10 @@ Example:
 
 Fix description here
 ```
+
+## Branches
+
+- `next` is protected and can't be pushed to directly. When a session targets `next` (e.g. it was started on `next` or a task asks for a breaking change), always create a new branch from `next` before committing, push that branch, and open the pull request against `next`.
 
 ## Commit messages
 

@@ -13,8 +13,10 @@
     --dextinity-drawer-padding: 20px;
     --dextinity-drawer-title-font-size: var(--dextinity-typography-title-size);
     --dextinity-drawer-title-font-weight: var(--dextinity-font-weight-semibold);
+    // Tracking of the title
     --dextinity-drawer-title-letter-spacing: -0.01em;
     --dextinity-drawer-description-color: var(--dextinity-color-text-secondary);
+    // Text below the title
     --dextinity-drawer-description-font-size: var(--dextinity-typography-ui-size);
     // Distance of the close button from the top and end edges
     --dextinity-drawer-close-inset: 14px;

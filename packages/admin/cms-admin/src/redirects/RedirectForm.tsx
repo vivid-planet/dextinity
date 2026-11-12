@@ -117,7 +117,7 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
             value: "temporary",
             label: intl.formatMessage({
                 id: "dextinity.pages.redirects.redirect.redirectType.temporary",
-                defaultMessage: "Standard",
+                defaultMessage: "Temporary (Default)",
             }),
         },
         {
@@ -302,7 +302,7 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
                                         <Alert severity="warning">
                                             <FormattedMessage
                                                 id="dextinity.pages.redirects.redirect.redirectType.permanent.warning"
-                                                defaultMessage="Browsers, search engines and CDNs cache permanent redirects for a long time. Changing or removing this redirect later may not take effect for visitors who have already been redirected. Only use a permanent redirect if the source will never be used again, otherwise use the standard redirect."
+                                                defaultMessage="Browsers, search engines and CDNs cache permanent redirects for a long time. Changing or removing this redirect later may not take effect for visitors who have already been redirected. Only use a permanent redirect if the source will never be used again, otherwise use the temporary redirect."
                                             />
                                         </Alert>
                                     </Box>

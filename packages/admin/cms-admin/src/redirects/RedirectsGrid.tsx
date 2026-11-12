@@ -121,7 +121,7 @@ export function RedirectsGrid({ linkBlock, scope }: Props): JSX.Element {
         {
             label: intl.formatMessage({
                 id: "dextinity.pages.redirects.redirect.redirectType.temporary",
-                defaultMessage: "Standard",
+                defaultMessage: "Temporary (Default)",
             }),
             value: "temporary",
         },

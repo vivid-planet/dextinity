@@ -1,6 +1,6 @@
+import { CommandFactory } from "@dextinity/cms-api";
 import { AppModule } from "@src/app.module.js";
 import { useContainer } from "class-validator";
-import { CommandFactory } from "nest-commander";
 
 import { createConfig } from "./config/config.js";
 
@@ -10,10 +10,6 @@ const appModule = AppModule.forRoot(config);
 async function bootstrap() {
     const app = await CommandFactory.createWithoutRunning(appModule, {
         logger: ["error", "warn", "log"],
-        serviceErrorHandler: async (error) => {
-            console.error(error);
-            process.exit(1);
-        },
     });
 
     try {

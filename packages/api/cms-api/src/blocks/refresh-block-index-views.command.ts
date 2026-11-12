@@ -1,7 +1,8 @@
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { MikroORM } from "@mikro-orm/postgresql";
-import { Command, CommandRunner, Option } from "nest-commander";
 
+import { Command, Option } from "../console-commands/command.decorators.js";
+import { CommandRunner } from "../console-commands/command-runner.js";
 import { DependenciesService } from "../dependencies/dependencies.service.js";
 
 @Command({

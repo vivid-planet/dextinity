@@ -3,11 +3,12 @@ import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { ModuleRef, Reflector } from "@nestjs/core";
-import { Command, CommandRunner } from "nest-commander";
 
 import type { Block, BlockData, BlockWarning, BlockWarningsServiceInterface } from "../blocks/block.js";
 import { FlatBlocks } from "../blocks/flat-blocks/flat-blocks.js";
 import { isInjectableService } from "../common/helper/is-injectable-service.helper.js";
+import { Command } from "../console-commands/command.decorators.js";
+import { CommandRunner } from "../console-commands/command-runner.js";
 import { DiscoverService } from "../dependencies/discover.service.js";
 import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator.js";
 import { getScopesForScopedEntity } from "../user-permissions/get-scopes-for-scoped-entity.js";

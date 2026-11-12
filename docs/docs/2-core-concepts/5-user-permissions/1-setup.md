@@ -34,9 +34,12 @@ The User Permissions system does not provide users by itself, so you need to pro
 class UserService implements UserPermissionsUserServiceInterface {
     getUser: (id: string) => Promise<User> | User;
     findUsers: (args: FindUsersArgs) => Promise<Users> | Users;
+    findUsersByIds?: (ids: string[]) => Promise<Array<User | null>> | Array<User | null>;
     createUserFromRequest?: (request: Request, idToken: JwtPayload) => Promise<User> | User;
 }
 ```
+
+`findUsersByIds` is optional. Implement it to look up several users with one call, for instance one request to the identity provider. Dextinity uses it where it resolves many users in one request, such as the users of the action log entries. Without it, Dextinity calls `findUser` once per user ID.
 
 While `getUser` and `findUsers` are self-explaining, `createUserFromRequest` needs some context about the authorization strategies provided by NestJS. Dextinity provides a custom strategy that expects a signed JWT in the Authorization Header. When using `createAuthProxyJwtStrategy`, the current user has to be loaded from the information of the submitted JWT. By default the `getUser` method is called, however, by providing `createUserFromRequest` a custom implementation is possible.
 

@@ -13,6 +13,7 @@ import { ActionLogsAclService } from "./action-logs.acl.service";
 import { ActionLogs } from "./action-logs.decorator";
 import { ActionLogsResolver } from "./action-logs.resolver";
 import { ActionLogsService } from "./action-logs.service";
+import { ActionLogsUserLoaderService } from "./action-logs-user-loader.service";
 import { PreviousActionLogLoaderService } from "./previous-action-log-loader.service";
 
 @Entity()
@@ -91,6 +92,7 @@ describe("ActionLogsResolver", () => {
             createMock<EntityManager<PostgreSqlDriver>>({ findAndCount: async () => [[], 0] as [never[], number] }),
             userPermissionsService,
             createMock<PreviousActionLogLoaderService>(),
+            createMock<ActionLogsUserLoaderService>(),
             createActionLogsService([LoggedEntity, PublicLoggedEntity, UnscopedLoggedEntity]),
             new ActionLogsAclService(createMock<EntityManager>(), actionLogsService, userPermissionsService, new AccessControlService()),
             new AccessControlService(),

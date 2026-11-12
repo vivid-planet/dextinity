@@ -44,6 +44,11 @@ export interface UserPermissionsUserServiceInterface {
      */
     findUserForLoginOrThrow?: (id: string) => Promise<User> | User;
     findUserOrThrow?: (id: string) => Promise<User> | User;
+    /**
+     * Optional method to look up multiple users at once, allowing user lookups to be batched (e.g. in a single request to an identity provider).
+     * The result does not need to match the order of the passed ids; missing users may be omitted or returned as null.
+     */
+    findUsersByIds?: (ids: string[]) => Promise<Array<User | null>> | Array<User | null>;
     findUsers: (args: FindUsersArgs) => Promise<Users> | Users;
     /**
      * @deprecated Implement `findUser` and `findUserOrThrow` instead.

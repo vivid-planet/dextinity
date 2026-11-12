@@ -8,6 +8,16 @@ import { ContentScope } from "../user-permissions/interfaces/content-scope.inter
 import { KubernetesJobStatus } from "./job-status.enum";
 import { KUBERNETES_CONFIG, PARENT_CRON_JOB_LABEL } from "./kubernetes.constants";
 import { KubernetesConfig } from "./kubernetes.module";
+import {
+    formatAttemptLogFooter,
+    formatAttemptLogHeader,
+    formatJobFailedLogLine,
+    getJobAttempt,
+    getJobFailedCondition,
+    groupPodsByJobName,
+    hasTrueCondition,
+    sortPodsByCreationTimestamp,
+} from "./kubernetes-job-attempts";
 import { getAnnotation, toLegacyLabelSelector } from "./kubernetes-metadata";
 
 @Injectable()
@@ -94,19 +104,49 @@ export class KubernetesService implements OnModuleInit {
         return items;
     }
 
+    /**
+     * Returns the Pods of multiple Jobs with a single request, grouped by Job name
+     */
+    async getPodsForJobs(jobs: V1Job[]): Promise<Map<string, V1Pod[]>> {
+        const jobNames = jobs.map((job) => job.metadata?.name).filter((name) => name !== undefined);
+        if (jobNames.length === 0) {
+            return new Map();
+        }
+
+        const { items } = await this.coreApi.listNamespacedPod({ namespace: this.namespace, labelSelector: `job-name in (${jobNames.join(",")})` });
+        return groupPodsByJobName(items);
+    }
+
     async getPodLogs(pod: V1Pod): Promise<string> {
         return this.coreApi.readNamespacedPodLog({ name: pod.metadata?.name ?? "", namespace: this.namespace });
     }
 
     async getJobLogs(job: V1Job): Promise<string> {
-        let logs = "";
+        const pods = sortPodsByCreationTimestamp(await this.getPodsForJob(job));
+        const lines: string[] = [];
 
-        const pods = await this.getPodsForJob(job);
-        for (const pod of pods) {
-            logs += await this.getPodLogs(pod);
+        for (const [index, pod] of pods.entries()) {
+            const attempt = getJobAttempt(pod);
+            lines.push(formatAttemptLogHeader(attempt, index + 1, pods.length));
+
+            try {
+                const podLogs = await this.getPodLogs(pod);
+                if (podLogs) {
+                    lines.push(podLogs.replace(/\n$/, ""));
+                }
+            } catch (error) {
+                lines.push(`Logs unavailable: ${error instanceof Error ? error.message : String(error)}`);
+            }
+
+            lines.push(formatAttemptLogFooter(attempt, index + 1, pods.length));
         }
 
-        return logs;
+        const failedCondition = getJobFailedCondition(job);
+        if (failedCondition) {
+            lines.push(formatJobFailedLogLine(failedCondition));
+        }
+
+        return lines.length > 0 ? `${lines.join("\n")}\n` : "";
     }
 
     /**
@@ -146,19 +186,21 @@ export class KubernetesService implements OnModuleInit {
     }
 
     getStatusForKubernetesJob(job: V1Job): KubernetesJobStatus {
-        let status = KubernetesJobStatus.pending;
         if ((job.status?.active ?? 0) > 0) {
-            status = KubernetesJobStatus.active;
+            return KubernetesJobStatus.active;
         }
         // A job can have both succeeded = 1 and failed = 1 states. This may happend due to a job's restart policy. For instance, a job may fail on
         // the first attempt (failed = 1) and succeed on the second attempt (succeeded = 1). We therefore check the succeeded status before the failed
         // status.
-        else if ((job.status?.succeeded ?? 0) > 0) {
-            status = KubernetesJobStatus.succeeded;
-        } else if ((job.status?.failed ?? 0) > 0) {
-            status = KubernetesJobStatus.failed;
+        if ((job.status?.succeeded ?? 0) > 0) {
+            return KubernetesJobStatus.succeeded;
         }
-        return status;
+        // A failed attempt alone doesn't mean the job failed: until the backoff limit is reached, Kubernetes retries it after a backoff delay
+        // in which no pod is active. Only the Failed condition (or FailureTarget, while the last pods are still terminating) is final.
+        if (getJobFailedCondition(job) || hasTrueCondition(job, "FailureTarget")) {
+            return KubernetesJobStatus.failed;
+        }
+        return KubernetesJobStatus.pending;
     }
 
     /**

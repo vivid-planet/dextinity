@@ -15,3 +15,6 @@ src/dextinity-config.json
 src/**/*.generated.ts
 src/site-configs.d.ts
 .swc/
+
+# storybook
+/storybook-static

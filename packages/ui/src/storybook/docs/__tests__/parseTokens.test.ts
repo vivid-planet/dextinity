@@ -40,3 +40,28 @@ it("reads the dark-tokens and high-contrast-tokens mixins as the color schemes' 
         },
     ]);
 });
+
+it("joins a declaration that spans several lines", () => {
+    const source = `@mixin tokens {
+    // Distance from the bottom while a bulk action bar is open
+    --dextinity-toast-viewport-offset-above-bulk-action-bar: calc(
+        var(--dextinity-toast-viewport-offset) + var(--dextinity-space-2)
+    );
+    // Outline of an outlined button on hover
+    --dextinity-icon-button-outlined-shadow-hover:
+        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle);
+}`;
+
+    expect(parseTokens(source)).toEqual([
+        {
+            name: "--dextinity-toast-viewport-offset-above-bulk-action-bar",
+            definition: "calc(var(--dextinity-toast-viewport-offset) + var(--dextinity-space-2))",
+            description: "Distance from the bottom while a bulk action bar is open",
+        },
+        {
+            name: "--dextinity-icon-button-outlined-shadow-hover",
+            definition: "inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle)",
+            description: "Outline of an outlined button on hover",
+        },
+    ]);
+});

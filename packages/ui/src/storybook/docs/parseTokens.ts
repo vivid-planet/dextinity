@@ -9,6 +9,7 @@ export type TokenDefinition = {
 };
 
 const declarationPattern = /^\s*--([a-z0-9-]+):\s*(.+?);\s*$/;
+const declarationStartPattern = /^\s*--[a-z0-9-]+:/;
 const commentPattern = /^\s*\/\/\s?(.*)$/;
 const mixinPattern = /^\s*@mixin\s+([a-z-]+)/;
 
@@ -19,15 +20,26 @@ const colorSchemeMixins: Record<string, "darkDefinition" | "highContrastDefiniti
 
 /**
  * Reads the custom properties declared in a token partial, keeping a `//` comment directly above a declaration as its description.
- * A declaration in a `dark-tokens` or `high-contrast-tokens` mixin becomes the color scheme's definition of the token of the same
- * name.
+ * A declaration that spans several lines is joined into one line. A declaration in a `dark-tokens` or `high-contrast-tokens` mixin
+ * becomes the color scheme's definition of the token of the same name.
  */
 export function parseTokens(source: string): TokenDefinition[] {
     const tokens: TokenDefinition[] = [];
     let pendingComment: string[] = [];
     let colorSchemeField: "darkDefinition" | "highContrastDefinition" | undefined;
+    let unfinishedDeclaration: string | undefined;
 
-    for (const line of source.split("\n")) {
+    for (const sourceLine of source.split("\n")) {
+        let line = sourceLine;
+        if (unfinishedDeclaration != null) {
+            line = `${unfinishedDeclaration} ${sourceLine.trim()}`.replace(/\( /g, "(").replace(/ \)/g, ")");
+            unfinishedDeclaration = undefined;
+        }
+        if (declarationStartPattern.test(line) && !line.trimEnd().endsWith(";")) {
+            unfinishedDeclaration = line.trimEnd();
+            continue;
+        }
+
         const mixin = line.match(mixinPattern);
         if (mixin) {
             colorSchemeField = colorSchemeMixins[mixin[1]];

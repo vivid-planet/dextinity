@@ -42,7 +42,7 @@
     .root[data-surface="glass"] & {
         background: var(--dextinity-tree-detail-layout-card-glass-background);
         box-shadow: var(--dextinity-tree-detail-layout-card-glass-shadow);
-        backdrop-filter: blur(var(--dextinity-tree-detail-layout-card-glass-blur)) saturate(1.6);
+        backdrop-filter: blur(var(--dextinity-tree-detail-layout-card-glass-blur)) saturate(var(--dextinity-material-saturation));
     }
 
     .root[data-surface="solid"] & {

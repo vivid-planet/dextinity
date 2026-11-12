@@ -10,7 +10,7 @@
     min-block-size: 0;
     border-radius: var(--dextinity-side-nav-radius);
     background: var(--dextinity-side-nav-background);
-    backdrop-filter: blur(var(--dextinity-side-nav-blur)) saturate(1.6);
+    backdrop-filter: blur(var(--dextinity-side-nav-blur)) saturate(var(--dextinity-material-saturation));
     box-shadow: var(--dextinity-side-nav-shadow);
     color: var(--dextinity-color-text);
     font-family: var(--dextinity-font-family-text);

@@ -18,7 +18,7 @@
     border-radius: var(--dextinity-popover-radius);
     background: var(--dextinity-popover-background);
     box-shadow: var(--dextinity-popover-shadow);
-    backdrop-filter: blur(var(--dextinity-popover-blur)) saturate(1.6);
+    backdrop-filter: blur(var(--dextinity-popover-blur)) saturate(var(--dextinity-material-saturation));
     color: var(--dextinity-popover-foreground);
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-typography-body-size);

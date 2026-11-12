@@ -7,16 +7,13 @@
     --dextinity-card-body-padding: 0;
     --dextinity-card-background: var(--dextinity-material-glass);
     --dextinity-card-blur: var(--dextinity-material-blur);
-    --dextinity-card-shadow:
-        inset 0 1px 0 var(--dextinity-material-highlight), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge),
-        var(--dextinity-shadow-2);
+    --dextinity-card-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
 
     --dextinity-card-orb-size: 38px;
     --dextinity-card-orb-icon-size: var(--dextinity-icon-size-default);
     --dextinity-card-orb-foreground: var(--dextinity-color-accent-text);
     --dextinity-card-orb-background: var(--dextinity-material-glass-strong);
-    --dextinity-card-orb-shadow:
-        inset 0 1px 0 var(--dextinity-material-highlight), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge);
+    --dextinity-card-orb-shadow: var(--dextinity-material-edge-shadow);
 
     --dextinity-card-title-font-size: var(--dextinity-typography-title-size);
     --dextinity-card-title-font-weight: var(--dextinity-typography-title-font-weight);

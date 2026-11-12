@@ -10,7 +10,7 @@
     padding: var(--dextinity-top-bar-padding);
     border-radius: var(--dextinity-top-bar-radius);
     background: var(--dextinity-top-bar-background);
-    backdrop-filter: blur(var(--dextinity-top-bar-blur)) saturate(1.6);
+    backdrop-filter: blur(var(--dextinity-top-bar-blur)) saturate(var(--dextinity-material-saturation));
     box-shadow: var(--dextinity-top-bar-shadow);
     color: var(--dextinity-color-text);
     font-family: var(--dextinity-font-family-text);

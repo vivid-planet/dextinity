@@ -28,7 +28,7 @@
     overflow: hidden;
     border-radius: var(--dextinity-command-palette-radius);
     background: var(--dextinity-command-palette-background);
-    backdrop-filter: blur(var(--dextinity-command-palette-blur)) saturate(1.6);
+    backdrop-filter: blur(var(--dextinity-command-palette-blur)) saturate(var(--dextinity-material-saturation));
     box-shadow: var(--dextinity-command-palette-shadow);
     color: var(--dextinity-color-text);
     font-family: var(--dextinity-font-family-text);

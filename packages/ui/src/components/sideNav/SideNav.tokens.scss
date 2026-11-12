@@ -4,9 +4,7 @@
     // Glass panel over the ambient light field; solid in high contrast
     --dextinity-side-nav-background: var(--dextinity-material-glass);
     --dextinity-side-nav-blur: var(--dextinity-material-blur);
-    --dextinity-side-nav-shadow:
-        inset 0 1px 0 var(--dextinity-material-highlight), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge),
-        var(--dextinity-shadow-2);
+    --dextinity-side-nav-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
     --dextinity-side-nav-radius: var(--dextinity-radius-panel);
     // Between groups and above the footer
     --dextinity-side-nav-separator-color: var(--dextinity-material-edge);

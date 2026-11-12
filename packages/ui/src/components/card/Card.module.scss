@@ -10,7 +10,7 @@
     color: var(--dextinity-color-text);
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-typography-body-size);
-    backdrop-filter: blur(var(--dextinity-card-blur)) saturate(1.6);
+    backdrop-filter: blur(var(--dextinity-card-blur)) saturate(var(--dextinity-material-saturation));
 
     @include forced-colors.edge;
 }

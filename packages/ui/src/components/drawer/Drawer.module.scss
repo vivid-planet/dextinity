@@ -27,7 +27,7 @@
     border-radius: var(--dextinity-drawer-radius);
     background: var(--dextinity-drawer-background);
     box-shadow: var(--dextinity-drawer-shadow);
-    backdrop-filter: blur(var(--dextinity-drawer-blur)) saturate(1.6);
+    backdrop-filter: blur(var(--dextinity-drawer-blur)) saturate(var(--dextinity-material-saturation));
     color: var(--dextinity-drawer-foreground);
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-typography-body-size);

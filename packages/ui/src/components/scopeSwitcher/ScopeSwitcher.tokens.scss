@@ -1,6 +1,6 @@
 @mixin tokens {
     --dextinity-scope-switcher-height: var(--dextinity-density-control-height);
-    --dextinity-scope-switcher-padding: 12px;
+    --dextinity-scope-switcher-padding: var(--dextinity-space-3);
     --dextinity-scope-switcher-radius: var(--dextinity-radius-field);
     --dextinity-scope-switcher-background: var(--dextinity-material-glass-strong);
     --dextinity-scope-switcher-background-hover: color-mix(in oklch, var(--dextinity-color-text) 6%, var(--dextinity-material-glass-strong));
@@ -8,7 +8,7 @@
     --dextinity-scope-switcher-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge);
     --dextinity-scope-switcher-foreground: var(--dextinity-color-text);
     --dextinity-scope-switcher-icon-color: var(--dextinity-color-text-tertiary);
-    --dextinity-scope-switcher-font-weight: 500;
+    --dextinity-scope-switcher-font-weight: var(--dextinity-font-weight-medium);
 
     // Width of each dimension's column in the picker
     --dextinity-scope-switcher-column-width: 230px;

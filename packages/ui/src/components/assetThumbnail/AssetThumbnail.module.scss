@@ -142,12 +142,12 @@
     align-items: center;
     gap: 3px;
     block-size: 20px;
-    padding-inline: 6px;
+    padding-inline: var(--dextinity-space-1-5);
     border-radius: calc(var(--dextinity-radius-item) * 0.75);
     background: var(--dextinity-asset-thumbnail-mark-background);
     color: var(--dextinity-asset-thumbnail-mark-foreground);
-    font-size: 10.5px;
-    font-weight: 600;
+    font-size: var(--dextinity-typography-label-size);
+    font-weight: var(--dextinity-font-weight-semibold);
     letter-spacing: 0.02em;
     line-height: 1;
 
@@ -175,14 +175,14 @@
     flex-direction: column;
     gap: 1px;
     min-inline-size: 0;
-    padding-inline: 2px;
+    padding-inline: var(--dextinity-space-0-5);
 }
 
 .name {
     overflow: hidden;
     font-size: var(--dextinity-asset-thumbnail-name-font-size);
-    font-weight: 500;
-    line-height: 1.35;
+    font-weight: var(--dextinity-font-weight-medium);
+    line-height: var(--dextinity-typography-section-line-height);
     text-overflow: ellipsis;
     white-space: nowrap;
 }

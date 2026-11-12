@@ -29,7 +29,7 @@
     font-family: var(--dextinity-font-family-text);
     font-variant-numeric: tabular-nums;
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 }
 
 .header {
@@ -65,7 +65,7 @@
     block-size: 30px;
     border-radius: var(--dextinity-date-picker-day-radius);
     font-size: var(--dextinity-date-picker-heading-font-size);
-    font-weight: 600;
+    font-weight: var(--dextinity-font-weight-semibold);
 
     &:hover {
         background: var(--dextinity-date-picker-button-background-hover);
@@ -98,7 +98,7 @@
 .monthTitle {
     color: var(--dextinity-color-text-secondary);
     font-size: var(--dextinity-typography-small-size);
-    font-weight: 500;
+    font-weight: var(--dextinity-font-weight-medium);
     text-align: center;
 }
 
@@ -112,8 +112,8 @@
     padding: 0;
     color: var(--dextinity-date-picker-weekday-color);
     font-family: var(--dextinity-font-family-mono);
-    font-size: 10.5px;
-    font-weight: 400;
+    font-size: var(--dextinity-typography-label-size);
+    font-weight: var(--dextinity-font-weight-regular);
     letter-spacing: var(--dextinity-typography-label-letter-spacing);
     text-align: center;
     text-transform: uppercase;
@@ -187,7 +187,7 @@
     &[data-selected]:hover {
         background: var(--dextinity-date-picker-day-background-selected);
         color: var(--dextinity-date-picker-day-foreground-selected);
-        font-weight: 600;
+        font-weight: var(--dextinity-font-weight-semibold);
         @include forced-colors.selected;
 
         &::after {
@@ -229,7 +229,7 @@
     &[aria-current="true"] {
         background: var(--dextinity-date-picker-day-background-selected);
         color: var(--dextinity-date-picker-day-foreground-selected);
-        font-weight: 600;
+        font-weight: var(--dextinity-font-weight-semibold);
         @include forced-colors.selected;
     }
 }
@@ -247,11 +247,11 @@
     @include plain-button;
 
     block-size: 28px;
-    padding-inline: 10px;
+    padding-inline: var(--dextinity-space-2-5);
     border-radius: var(--dextinity-date-picker-day-radius);
     color: var(--dextinity-color-accent-text);
     font-size: var(--dextinity-typography-small-size);
-    font-weight: 500;
+    font-weight: var(--dextinity-font-weight-medium);
 
     &:hover:not(:disabled) {
         background: var(--dextinity-date-picker-day-background-hover);

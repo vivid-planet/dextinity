@@ -131,10 +131,10 @@
 
 .content {
     min-inline-size: 0;
-    padding: var(--dextinity-app-shell-content-offset) 12px 0;
+    padding: var(--dextinity-app-shell-content-offset) var(--dextinity-space-3) 0;
 
     .root[data-layout="narrow"] & {
-        padding: var(--dextinity-app-shell-content-offset-narrow) 4px 0;
+        padding: var(--dextinity-app-shell-content-offset-narrow) var(--dextinity-space-1) 0;
     }
 }
 
@@ -163,7 +163,7 @@
     inset-block: 0;
     inset-inline-start: 0;
     inline-size: var(--dextinity-app-shell-drawer-width);
-    padding: 8px 0 8px 8px;
+    padding: var(--dextinity-space-2) 0 var(--dextinity-space-2) var(--dextinity-space-2);
 
     > * {
         inline-size: 100%;

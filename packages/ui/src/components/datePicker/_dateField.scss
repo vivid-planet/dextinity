@@ -33,7 +33,7 @@
     inline-size: 26px;
     block-size: 26px;
     margin: 0;
-    margin-inline-end: -4px;
+    margin-inline-end: calc(-1 * var(--dextinity-space-1));
     padding: 0;
     border: 0;
     border-radius: calc(var(--dextinity-field-radius) - 3px);
@@ -41,7 +41,7 @@
     color: var(--dextinity-date-picker-button-color);
     cursor: pointer;
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 
     &:hover:not(:disabled) {
         background: var(--dextinity-date-picker-button-background-hover);

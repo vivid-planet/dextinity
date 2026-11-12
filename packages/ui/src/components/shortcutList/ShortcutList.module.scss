@@ -15,7 +15,7 @@
         box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-shortcut-list-header-line);
         color: var(--dextinity-shortcut-list-header-foreground);
         font-size: var(--dextinity-shortcut-list-header-font-size);
-        font-weight: 500;
+        font-weight: var(--dextinity-font-weight-medium);
         text-align: start;
         white-space: nowrap;
 

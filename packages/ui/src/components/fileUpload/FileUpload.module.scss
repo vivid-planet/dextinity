@@ -47,7 +47,7 @@
     border-radius: var(--dextinity-file-upload-file-radius);
     background: var(--dextinity-file-upload-file-background);
     box-shadow: var(--dextinity-file-upload-file-shadow);
-    font-size: 13px;
+    font-size: var(--dextinity-typography-ui-size);
 
     &[data-status="failed"],
     &[data-status="rejected"] {
@@ -89,7 +89,7 @@
 .name {
     overflow: hidden;
     color: var(--dextinity-color-text);
-    font-weight: 500;
+    font-weight: var(--dextinity-font-weight-medium);
     text-overflow: ellipsis;
     white-space: nowrap;
 
@@ -123,11 +123,11 @@
 }
 
 .progress {
-    margin-block: 4px;
+    margin-block: var(--dextinity-space-1);
 }
 
 .actions {
     display: inline-flex;
     align-items: center;
-    gap: 2px;
+    gap: var(--dextinity-space-0-5);
 }

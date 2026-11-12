@@ -56,7 +56,7 @@
 .pages {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: var(--dextinity-space-0-5);
 }
 
 .page {

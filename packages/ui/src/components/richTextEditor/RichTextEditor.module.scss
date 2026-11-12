@@ -39,7 +39,7 @@
     ul,
     ol,
     h3 {
-        margin: 0 0 10px;
+        margin: 0 0 var(--dextinity-space-2-5);
 
         &:last-child {
             margin-block-end: 0;

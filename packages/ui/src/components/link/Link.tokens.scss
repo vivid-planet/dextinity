@@ -1,6 +1,6 @@
 @mixin tokens {
-    --dextinity-link-gap: 6px;
-    --dextinity-link-font-size: 13px;
+    --dextinity-link-gap: var(--dextinity-space-1-5);
+    --dextinity-link-font-size: var(--dextinity-typography-ui-size);
     --dextinity-link-icon-size: 14px;
     --dextinity-link-radius: var(--dextinity-radius-item);
     --dextinity-link-secondary-foreground: var(--dextinity-color-text-tertiary);

@@ -12,14 +12,14 @@
 @mixin label-row {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--dextinity-space-1-5);
     min-block-size: 18px;
 }
 
 @mixin label($component) {
     font-size: var(--dextinity-#{$component}-label-font-size);
     font-weight: var(--dextinity-#{$component}-label-font-weight);
-    line-height: 1.3;
+    line-height: var(--dextinity-typography-ui-line-height);
     color: var(--dextinity-#{$component}-label-color);
 }
 

@@ -60,14 +60,14 @@
     font-size: var(--dextinity-panel-title-font-size);
     font-weight: var(--dextinity-panel-title-font-weight);
     line-height: var(--dextinity-typography-title-line-height);
-    letter-spacing: -0.02em;
+    letter-spacing: var(--dextinity-typography-title-letter-spacing);
 }
 
 .description {
     margin-block-start: var(--dextinity-space-1);
     color: var(--dextinity-panel-description-color);
     font-size: var(--dextinity-panel-description-font-size);
-    line-height: 1.45;
+    line-height: var(--dextinity-typography-body-line-height);
 }
 
 .actions {

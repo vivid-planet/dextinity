@@ -9,7 +9,7 @@
     --dextinity-tree-view-meta-color: var(--dextinity-color-text-subtle);
     // The node's count after its name
     --dextinity-tree-view-count-color: var(--dextinity-color-text-subtle);
-    --dextinity-tree-view-count-font-size: 11px;
+    --dextinity-tree-view-count-font-size: var(--dextinity-typography-caption-size);
 
     // The line along the children of an expanded node
     --dextinity-tree-view-guide-color: var(--dextinity-color-line-strong);

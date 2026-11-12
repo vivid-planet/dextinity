@@ -9,9 +9,9 @@
 
     // The card around the toolbar and the tree, like a `Panel`
     --dextinity-tree-detail-layout-card-radius: var(--dextinity-radius-panel);
-    --dextinity-tree-detail-layout-card-padding: 10px;
-    --dextinity-tree-detail-layout-card-toolbar-padding: 10px 12px 12px;
-    --dextinity-tree-detail-layout-card-tree-padding: 2px 12px 12px;
+    --dextinity-tree-detail-layout-card-padding: var(--dextinity-panel-padding);
+    --dextinity-tree-detail-layout-card-toolbar-padding: var(--dextinity-panel-header-padding);
+    --dextinity-tree-detail-layout-card-tree-padding: var(--dextinity-panel-body-padding);
     --dextinity-tree-detail-layout-card-glass-background: var(--dextinity-material-glass);
     --dextinity-tree-detail-layout-card-glass-blur: var(--dextinity-material-blur);
     --dextinity-tree-detail-layout-card-glass-shadow:

@@ -27,7 +27,7 @@
     }
 
     &[data-variant="warning"] {
-        padding-inline: 4px;
+        padding-inline: var(--dextinity-space-1);
         background: var(--dextinity-badge-warning-background);
         color: var(--dextinity-badge-warning-foreground);
     }
@@ -42,7 +42,7 @@
         font-family: var(--dextinity-font-family-mono);
         font-size: var(--dextinity-badge-count-font-size);
         font-variant-numeric: tabular-nums;
-        font-weight: 400;
+        font-weight: var(--dextinity-font-weight-regular);
         letter-spacing: 0;
     }
 

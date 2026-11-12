@@ -89,7 +89,7 @@
     margin: 0;
     overflow: hidden;
     font-size: inherit;
-    font-weight: 500;
+    font-weight: var(--dextinity-font-weight-medium);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -98,7 +98,7 @@
     margin: 0;
     overflow: hidden;
     color: var(--dextinity-quick-look-foreground-secondary);
-    font-size: 12.5px;
+    font-size: var(--dextinity-typography-small-size);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -138,7 +138,7 @@
     align-items: center;
     gap: var(--dextinity-space-2) var(--dextinity-space-4);
     color: var(--dextinity-quick-look-foreground-secondary);
-    font-size: 12.5px;
+    font-size: var(--dextinity-typography-small-size);
 }
 
 .position {

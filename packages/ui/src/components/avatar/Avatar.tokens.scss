@@ -5,7 +5,7 @@
     --dextinity-avatar-font-size: 10.5px;
     --dextinity-avatar-font-size-small: 9px;
     --dextinity-avatar-font-size-large: 13px;
-    --dextinity-avatar-font-weight: 600;
+    --dextinity-avatar-font-weight: var(--dextinity-font-weight-semibold);
     --dextinity-avatar-radius: 50%;
     --dextinity-avatar-background: var(--dextinity-color-accent-soft);
     --dextinity-avatar-foreground: var(--dextinity-color-accent-text);

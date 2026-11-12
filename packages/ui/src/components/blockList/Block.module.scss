@@ -119,7 +119,7 @@
     cursor: grab;
     transition: opacity var(--dextinity-motion-duration-short);
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 
     // Only the block's own grip: a nested block's grip shows when that block is hovered
     .root:hover > .header > &,
@@ -139,19 +139,19 @@
 }
 
 .root:not(:has(> .header > :is(.grip, .checkbox))) > .header {
-    padding-inline-start: 10px;
+    padding-inline-start: var(--dextinity-space-2-5);
 }
 
 .checkbox {
     flex: none;
-    margin-inline-start: 4px;
+    margin-inline-start: var(--dextinity-space-1);
 }
 
 .main {
     display: flex;
     flex: 1;
     align-items: center;
-    gap: 10px;
+    gap: var(--dextinity-space-2-5);
     min-inline-size: 0;
     padding: 0;
     border: 0;
@@ -183,7 +183,7 @@
     box-shadow: var(--dextinity-block-icon-shadow);
     color: var(--dextinity-block-icon-foreground);
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 }
 
 .text {
@@ -195,8 +195,8 @@
 .title {
     overflow: hidden;
     font-size: 13.5px;
-    font-weight: 500;
-    line-height: 1.35;
+    font-weight: var(--dextinity-font-weight-medium);
+    line-height: var(--dextinity-typography-section-line-height);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -204,7 +204,7 @@
 .summary {
     overflow: hidden;
     color: var(--dextinity-block-summary-foreground);
-    font-size: 12.5px;
+    font-size: var(--dextinity-typography-small-size);
     line-height: 1.35;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -219,7 +219,7 @@
     border-radius: 6px;
     color: var(--dextinity-block-invalid-marker-color);
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 
     &:focus-visible {
         outline: none;
@@ -235,8 +235,8 @@
     background: var(--dextinity-block-hidden-tag-background);
     box-shadow: var(--dextinity-block-hidden-tag-shadow);
     color: var(--dextinity-block-hidden-tag-foreground);
-    font-size: 10.5px;
-    font-weight: 500;
+    font-size: var(--dextinity-typography-label-size);
+    font-weight: var(--dextinity-font-weight-medium);
     line-height: 1.5;
 
     @include forced-colors.edge;

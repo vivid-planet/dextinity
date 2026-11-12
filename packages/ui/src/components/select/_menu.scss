@@ -5,11 +5,11 @@
 @mixin chip {
     display: inline-flex;
     align-items: center;
-    gap: 2px;
+    gap: var(--dextinity-space-0-5);
     box-sizing: border-box;
     max-inline-size: 100%;
     block-size: var(--dextinity-select-chip-height);
-    padding-inline: 8px 2px;
+    padding-inline: var(--dextinity-space-2) var(--dextinity-space-0-5);
     border-radius: var(--dextinity-select-chip-radius);
     background: var(--dextinity-select-chip-background);
     box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-select-chip-line);
@@ -61,7 +61,7 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    min-inline-size: max(var(--anchor-width), 228px);
+    min-inline-size: max(var(--anchor-width), var(--dextinity-menu-min-width));
     max-block-size: min(var(--dextinity-select-popup-max-height), var(--available-height));
     padding: var(--dextinity-select-popup-padding);
     border-radius: var(--dextinity-select-popup-radius);
@@ -103,7 +103,7 @@
 @mixin item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--dextinity-space-2-5);
     box-sizing: border-box;
     min-block-size: var(--dextinity-select-item-height);
     padding-inline: var(--dextinity-select-item-padding);
@@ -114,7 +114,7 @@
     outline: none;
     user-select: none;
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 
     &[data-highlighted] {
         background: var(--dextinity-select-item-background-highlight);
@@ -158,7 +158,7 @@
 }
 
 @mixin groupLabel {
-    padding: 8px var(--dextinity-select-item-padding) 6px;
+    padding: var(--dextinity-space-2) var(--dextinity-select-item-padding) var(--dextinity-space-1-5);
     color: var(--dextinity-select-group-label-color);
     font-family: var(--dextinity-font-family-mono);
     font-size: var(--dextinity-typography-label-size);

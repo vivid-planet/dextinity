@@ -3,13 +3,13 @@
     --dextinity-chip-height-small: 24px;
     --dextinity-chip-padding: var(--dextinity-space-3);
     --dextinity-chip-padding-small: var(--dextinity-space-2);
-    --dextinity-chip-gap: 6px;
+    --dextinity-chip-gap: var(--dextinity-space-1-5);
     --dextinity-chip-gap-small: var(--dextinity-space-1);
     --dextinity-chip-radius: var(--dextinity-radius-pill);
-    --dextinity-chip-font-size: 13px;
+    --dextinity-chip-font-size: var(--dextinity-typography-ui-size);
     --dextinity-chip-font-size-small: 12px;
-    --dextinity-chip-font-weight: 500;
-    --dextinity-chip-icon-size: 16px;
+    --dextinity-chip-font-weight: var(--dextinity-font-weight-medium);
+    --dextinity-chip-icon-size: var(--dextinity-icon-size-small);
     --dextinity-chip-icon-size-small: 14px;
     --dextinity-chip-clear-button-size: 22px;
     --dextinity-chip-clear-button-size-small: 18px;

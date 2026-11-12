@@ -2,11 +2,11 @@
     --dextinity-empty-state-padding: var(--dextinity-space-12) var(--dextinity-space-6);
     --dextinity-empty-state-gap: var(--dextinity-space-2);
     --dextinity-empty-state-max-width: 420px;
-    --dextinity-empty-state-icon-size: 20px;
+    --dextinity-empty-state-icon-size: var(--dextinity-icon-size-default);
     --dextinity-empty-state-icon-color: var(--dextinity-color-text-secondary);
     --dextinity-empty-state-title-color: var(--dextinity-color-text);
-    --dextinity-empty-state-title-font-size: 15px;
-    --dextinity-empty-state-title-font-weight: 500;
+    --dextinity-empty-state-title-font-size: var(--dextinity-typography-section-size);
+    --dextinity-empty-state-title-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-empty-state-description-color: var(--dextinity-color-text-secondary);
     --dextinity-empty-state-description-font-size: var(--dextinity-typography-body-size);
 }

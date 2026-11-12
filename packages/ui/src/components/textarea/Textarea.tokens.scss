@@ -1,7 +1,7 @@
 // The frame (label, box, message) comes from the Field tokens.
 @mixin tokens {
     --dextinity-textarea-line-height: 1.5;
-    --dextinity-textarea-padding-block: 10px;
+    --dextinity-textarea-padding-block: var(--dextinity-space-2-5);
     --dextinity-textarea-placeholder-color: var(--dextinity-field-placeholder);
     --dextinity-textarea-caret-color: var(--dextinity-color-accent);
 }

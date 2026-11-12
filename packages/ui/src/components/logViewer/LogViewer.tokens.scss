@@ -10,7 +10,7 @@
     --dextinity-log-viewer-padding-block: var(--dextinity-space-2);
     // The log scrolls once it is taller
     --dextinity-log-viewer-max-height: 420px;
-    --dextinity-log-viewer-font-size: 12px;
+    --dextinity-log-viewer-font-size: var(--dextinity-typography-mono-size);
     --dextinity-log-viewer-line-height: 1.6;
     --dextinity-log-viewer-number-color: var(--dextinity-color-text-subtle);
     --dextinity-log-viewer-line-background-hover: color-mix(in oklch, var(--dextinity-color-text) 4%, transparent);

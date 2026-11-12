@@ -164,7 +164,7 @@
         box-shadow var(--dextinity-motion-duration-short),
         opacity var(--dextinity-motion-duration-short);
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 
     &:hover {
         background: var(--dextinity-tree-view-row-background-hover);
@@ -182,7 +182,7 @@
         @include forced-colors.selected;
 
         .label {
-            font-weight: 600;
+            font-weight: var(--dextinity-font-weight-semibold);
         }
     }
 
@@ -320,7 +320,7 @@
 .actions {
     display: inline-flex;
     flex: none;
-    gap: 2px;
+    gap: var(--dextinity-space-0-5);
     opacity: var(--dextinity-tree-view-controls-idle-opacity);
     transition: opacity var(--dextinity-motion-duration-short);
 

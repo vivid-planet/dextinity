@@ -1,12 +1,12 @@
 @mixin tokens {
-    --dextinity-banner-gap: 10px;
-    --dextinity-banner-padding-block: 10px;
+    --dextinity-banner-gap: var(--dextinity-space-2-5);
+    --dextinity-banner-padding-block: var(--dextinity-space-2-5);
     --dextinity-banner-padding-inline: var(--dextinity-space-3);
     --dextinity-banner-radius: var(--dextinity-radius-field);
-    --dextinity-banner-font-size: 13px;
+    --dextinity-banner-font-size: var(--dextinity-typography-ui-size);
     --dextinity-banner-foreground: var(--dextinity-color-text);
     --dextinity-banner-shadow: 0 0 transparent;
-    --dextinity-banner-icon-size: 16px;
+    --dextinity-banner-icon-size: var(--dextinity-icon-size-small);
     --dextinity-banner-warning-background: var(--dextinity-color-warning-soft);
     --dextinity-banner-warning-icon: var(--dextinity-color-warning-text);
     --dextinity-banner-error-background: var(--dextinity-color-danger-soft);

@@ -161,7 +161,7 @@
 .text {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--dextinity-space-0-5);
     min-inline-size: 0;
 }
 
@@ -171,7 +171,7 @@
     line-height: var(--dextinity-typography-body-line-height);
 
     .root[data-variant="card"] & {
-        font-weight: 500;
+        font-weight: var(--dextinity-font-weight-medium);
     }
 }
 

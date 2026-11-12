@@ -20,7 +20,7 @@
     display: inline-flex;
     flex: none;
     align-items: center;
-    gap: 6px;
+    gap: var(--dextinity-space-1-5);
     box-sizing: border-box;
     block-size: var(--dextinity-tabs-height);
     padding-inline: var(--dextinity-tabs-padding);
@@ -106,7 +106,7 @@
     color: var(--dextinity-tabs-count-foreground);
     font-family: var(--dextinity-font-family-mono);
     font-size: var(--dextinity-tabs-count-font-size);
-    font-weight: 400;
+    font-weight: var(--dextinity-font-weight-regular);
     line-height: 1.5;
     font-variant-numeric: tabular-nums;
 

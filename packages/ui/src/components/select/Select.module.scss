@@ -97,7 +97,7 @@
     box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-select-search-line);
     color: var(--dextinity-select-item-icon-color);
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 
     @include forced-colors.separator;
 }

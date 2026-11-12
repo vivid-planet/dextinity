@@ -103,13 +103,13 @@
     background: transparent;
     color: var(--dextinity-block-list-add-foreground);
     font: inherit;
-    font-size: 13px;
+    font-size: var(--dextinity-typography-ui-size);
     cursor: pointer;
     transition:
         color var(--dextinity-motion-duration-short),
         border-color var(--dextinity-motion-duration-short);
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 
     &:hover {
         border-color: var(--dextinity-block-list-add-foreground-hover);

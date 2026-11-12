@@ -4,12 +4,12 @@
     --dextinity-field-height-small: var(--dextinity-density-control-height);
     --dextinity-field-height-large: calc(var(--dextinity-density-field-height) + var(--dextinity-space-2));
     --dextinity-field-padding: var(--dextinity-space-3);
-    --dextinity-field-padding-small: 10px;
+    --dextinity-field-padding-small: var(--dextinity-space-2-5);
     --dextinity-field-radius: var(--dextinity-radius-control);
     // The box of a multi-line control with `layout="stacked"`, e.g. a text editor
     --dextinity-field-radius-stacked: calc(12px * var(--dextinity-brand-radius-factor));
     --dextinity-field-font-size: var(--dextinity-typography-body-size);
-    --dextinity-field-font-size-small: 13px;
+    --dextinity-field-font-size-small: var(--dextinity-typography-ui-size);
     --dextinity-field-font-size-large: 15px;
 
     --dextinity-field-background: var(--dextinity-color-surface-raised);
@@ -34,8 +34,8 @@
     --dextinity-field-halo-success: var(--dextinity-color-success-soft);
     --dextinity-field-disabled-opacity: 0.55;
 
-    --dextinity-field-label-font-size: 13px;
-    --dextinity-field-label-font-weight: 500;
+    --dextinity-field-label-font-size: var(--dextinity-typography-ui-size);
+    --dextinity-field-label-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-field-label-color: var(--dextinity-color-text-secondary);
     --dextinity-field-required-color: var(--dextinity-color-danger-text);
     // Character count and other details at the end of the label
@@ -49,7 +49,7 @@
     --dextinity-field-adornment-color: var(--dextinity-color-text-tertiary);
     --dextinity-field-adornment-font-family: var(--dextinity-font-family-mono);
     --dextinity-field-adornment-font-size: var(--dextinity-typography-mono-size);
-    --dextinity-field-icon-size: 16px;
+    --dextinity-field-icon-size: var(--dextinity-icon-size-small);
     // Actions at the label, e.g. Translate, stay muted until the field is hovered or focused
     --dextinity-field-actions-idle-opacity: 0.55;
 }

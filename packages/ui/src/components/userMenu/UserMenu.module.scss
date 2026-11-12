@@ -36,21 +36,21 @@
 .header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 8px 10px 10px;
+    gap: var(--dextinity-space-3);
+    padding: var(--dextinity-space-2) var(--dextinity-space-2-5) var(--dextinity-space-2-5);
 }
 
 .identity {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--dextinity-space-0-5);
     min-inline-size: 0;
 }
 
 .name {
     overflow: hidden;
     color: var(--dextinity-user-menu-name-color);
-    font-weight: 600;
+    font-weight: var(--dextinity-font-weight-semibold);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -58,7 +58,7 @@
 .role {
     overflow: hidden;
     color: var(--dextinity-user-menu-role-color);
-    font-size: 12.5px;
+    font-size: var(--dextinity-typography-small-size);
     text-overflow: ellipsis;
     white-space: nowrap;
 }

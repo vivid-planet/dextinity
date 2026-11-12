@@ -74,6 +74,6 @@
 
 .menuIcon {
     display: inline-flex;
-    margin-inline-end: -4px;
+    margin-inline-end: calc(-1 * var(--dextinity-space-1));
     --dextinity-icon-size: var(--dextinity-filter-chip-icon-size);
 }

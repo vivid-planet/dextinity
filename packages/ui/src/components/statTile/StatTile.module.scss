@@ -10,7 +10,7 @@
 .value {
     display: flex;
     align-items: baseline;
-    gap: 6px;
+    gap: var(--dextinity-space-1-5);
 }
 
 .number {

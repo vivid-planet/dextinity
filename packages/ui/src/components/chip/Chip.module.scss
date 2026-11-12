@@ -178,6 +178,8 @@
     &:focus-visible {
         outline: none;
         box-shadow: var(--dextinity-focus-ring);
+
+        @include forced-colors.focus-ring(1px);
     }
 
     &:disabled {
@@ -187,13 +189,5 @@
     > svg {
         inline-size: var(--dextinity-icon-size);
         block-size: var(--dextinity-icon-size);
-    }
-
-    // Forced colors remove box shadows, which would leave the button without a focus ring
-    @media (forced-colors: active) {
-        &:focus-visible {
-            outline: 2px solid Highlight;
-            outline-offset: 1px;
-        }
     }
 }

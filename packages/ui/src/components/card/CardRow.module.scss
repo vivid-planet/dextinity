@@ -43,7 +43,7 @@
 
 .subtitle {
     overflow: hidden;
-    margin-block-start: 2px;
+    margin-block-start: var(--dextinity-space-0-5);
     color: var(--dextinity-card-row-subtitle-color);
     font-size: var(--dextinity-card-row-subtitle-font-size);
     text-overflow: ellipsis;

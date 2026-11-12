@@ -7,7 +7,7 @@
     color: var(--_status-foreground);
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-status-indicator-font-size);
-    line-height: 1.3;
+    line-height: var(--dextinity-typography-ui-line-height);
     white-space: nowrap;
 
     &[data-status="published"] {

@@ -42,7 +42,7 @@
     font-size: var(--dextinity-card-title-font-size);
     font-weight: var(--dextinity-card-title-font-weight);
     line-height: var(--dextinity-typography-title-line-height);
-    letter-spacing: -0.02em;
+    letter-spacing: var(--dextinity-typography-title-letter-spacing);
 }
 
 .meta {
@@ -55,7 +55,7 @@
     display: flex;
     align-items: center;
     margin-inline-start: auto;
-    padding-inline-end: 6px;
+    padding-inline-end: var(--dextinity-space-1-5);
 }
 
 .body {

@@ -23,7 +23,7 @@
     color: var(--dextinity-empty-state-title-color);
     font-size: var(--dextinity-empty-state-title-font-size);
     font-weight: var(--dextinity-empty-state-title-font-weight);
-    line-height: 1.35;
+    line-height: var(--dextinity-typography-section-line-height);
     letter-spacing: -0.005em;
 }
 
@@ -32,7 +32,7 @@
     margin: 0;
     color: var(--dextinity-empty-state-description-color);
     font-size: var(--dextinity-empty-state-description-font-size);
-    line-height: 1.45;
+    line-height: var(--dextinity-typography-body-line-height);
 }
 
 .actions {

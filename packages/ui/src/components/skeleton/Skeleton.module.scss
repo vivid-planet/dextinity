@@ -20,7 +20,7 @@
 .item {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: var(--dextinity-space-3);
 }
 
 .shape {
@@ -51,8 +51,8 @@
 
 .rowLeading {
     flex: none;
-    inline-size: 17px;
-    block-size: 17px;
+    inline-size: var(--dextinity-checkbox-size);
+    block-size: var(--dextinity-checkbox-size);
     border-radius: 5px;
 }
 

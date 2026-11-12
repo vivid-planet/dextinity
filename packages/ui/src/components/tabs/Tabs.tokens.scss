@@ -1,9 +1,9 @@
 @mixin tokens {
     --dextinity-tabs-height: var(--dextinity-density-tab-height);
-    --dextinity-tabs-padding: 6px;
-    --dextinity-tabs-gap: 16px;
+    --dextinity-tabs-padding: var(--dextinity-space-1-5);
+    --dextinity-tabs-gap: var(--dextinity-space-4);
     --dextinity-tabs-font-size: var(--dextinity-typography-body-size);
-    --dextinity-tabs-font-weight: 500;
+    --dextinity-tabs-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-tabs-radius: var(--dextinity-radius-item);
     --dextinity-tabs-disabled-opacity: 0.42;
 
@@ -26,7 +26,7 @@
     // The count after a tab's label, e.g. open issues in a section
     --dextinity-tabs-count-background: var(--dextinity-color-warning-soft);
     --dextinity-tabs-count-foreground: var(--dextinity-color-warning-text);
-    --dextinity-tabs-count-font-size: 11px;
+    --dextinity-tabs-count-font-size: var(--dextinity-typography-caption-size);
     --dextinity-tabs-count-radius: calc(var(--dextinity-radius-item) * 0.625);
     // Line around the count; transparent normally, a full line in high contrast, where soft fills are transparent
     --dextinity-tabs-count-line: transparent;

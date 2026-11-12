@@ -1,4 +1,4 @@
 // The surface comes from the Dialog tokens.
 @mixin tokens {
-    --dextinity-confirm-dialog-width: 440px;
+    --dextinity-confirm-dialog-width: var(--dextinity-dialog-width-small);
 }

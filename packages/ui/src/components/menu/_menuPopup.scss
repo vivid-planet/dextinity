@@ -65,7 +65,7 @@
     border-radius: var(--dextinity-menu-item-radius);
     color: var(--dextinity-menu-item-foreground);
     font-size: var(--dextinity-menu-item-font-size);
-    line-height: 1.3;
+    line-height: var(--dextinity-typography-ui-line-height);
     white-space: nowrap;
     cursor: pointer;
     outline: none;

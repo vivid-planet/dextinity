@@ -27,7 +27,7 @@
     --dextinity-radio-group-option-color: var(--dextinity-color-text);
     --dextinity-radio-group-option-font-size: var(--dextinity-typography-body-size);
     --dextinity-radio-group-description-color: var(--dextinity-color-text-tertiary);
-    --dextinity-radio-group-description-font-size: 12.5px;
+    --dextinity-radio-group-description-font-size: var(--dextinity-typography-small-size);
 
     // The `card` variant
     --dextinity-radio-group-card-padding: var(--dextinity-space-3);

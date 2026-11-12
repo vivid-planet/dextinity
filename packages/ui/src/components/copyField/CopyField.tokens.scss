@@ -1,5 +1,5 @@
 @mixin tokens {
-    --dextinity-copy-field-gap: 6px;
+    --dextinity-copy-field-gap: var(--dextinity-space-1-5);
     --dextinity-copy-field-color: var(--dextinity-color-text);
     --dextinity-copy-field-font-size: var(--dextinity-typography-mono-size);
     // The button's icon while it confirms the copy

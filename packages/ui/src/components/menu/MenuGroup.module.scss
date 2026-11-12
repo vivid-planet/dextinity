@@ -4,7 +4,7 @@
 }
 
 .label {
-    padding: 8px var(--dextinity-menu-item-padding) 6px;
+    padding: var(--dextinity-space-2) var(--dextinity-menu-item-padding) var(--dextinity-space-1-5);
     color: var(--dextinity-menu-group-label-color);
     font-family: var(--dextinity-font-family-mono);
     font-size: var(--dextinity-typography-label-size);

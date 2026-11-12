@@ -7,7 +7,7 @@
         var(--dextinity-shadow-2);
     --dextinity-top-bar-radius: var(--dextinity-radius-row);
     --dextinity-top-bar-padding: 7px;
-    --dextinity-top-bar-gap: 10px;
+    --dextinity-top-bar-gap: var(--dextinity-space-2-5);
 
     --dextinity-top-bar-search-height: var(--dextinity-density-control-height);
     --dextinity-top-bar-search-max-width: 520px;
@@ -19,5 +19,5 @@
 
     // What is edited, after the back button in the edit mode
     --dextinity-top-bar-title-color: var(--dextinity-color-text);
-    --dextinity-top-bar-title-font-size: 15px;
+    --dextinity-top-bar-title-font-size: var(--dextinity-typography-section-size);
 }

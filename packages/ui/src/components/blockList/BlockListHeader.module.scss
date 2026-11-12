@@ -4,10 +4,10 @@
     gap: var(--dextinity-space-2);
     box-sizing: border-box;
     min-block-size: var(--dextinity-block-list-header-height);
-    padding-inline: 10px 6px;
+    padding-inline: var(--dextinity-space-2-5) var(--dextinity-space-1-5);
     color: var(--dextinity-block-list-header-foreground);
     font-family: var(--dextinity-font-family-text);
-    font-size: 12.5px;
+    font-size: var(--dextinity-typography-small-size);
 
     &[data-selecting] {
         color: var(--dextinity-color-text);
@@ -31,5 +31,5 @@
     display: inline-flex;
     flex: none;
     align-items: center;
-    gap: 2px;
+    gap: var(--dextinity-space-0-5);
 }

@@ -9,7 +9,7 @@
         grid-template-columns: minmax(0, 1fr);
 
         .key {
-            padding-block-end: 2px;
+            padding-block-end: var(--dextinity-space-0-5);
         }
 
         .value {

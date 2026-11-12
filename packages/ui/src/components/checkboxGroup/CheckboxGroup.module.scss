@@ -86,7 +86,7 @@
     line-height: var(--dextinity-typography-small-line-height);
 
     .groupHeading > & {
-        font-weight: 400;
+        font-weight: var(--dextinity-font-weight-regular);
     }
 }
 

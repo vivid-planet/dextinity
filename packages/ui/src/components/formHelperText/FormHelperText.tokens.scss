@@ -1,7 +1,7 @@
 // The values match the message of `Field`, so a helper text below a custom control looks like the one below a field.
 @mixin tokens {
     // Between the error icon and the text
-    --dextinity-form-helper-text-gap-internal: 6px;
+    --dextinity-form-helper-text-gap-internal: var(--dextinity-space-1-5);
     --dextinity-form-helper-text-icon-size: var(--dextinity-icon-size-small);
 
     --dextinity-form-helper-text-font-size: var(--dextinity-typography-small-size);

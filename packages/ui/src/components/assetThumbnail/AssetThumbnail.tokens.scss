@@ -25,7 +25,7 @@
     --dextinity-asset-thumbnail-document-mark-background: var(--dextinity-color-danger);
     --dextinity-asset-thumbnail-document-mark-foreground: var(--dextinity-color-danger-foreground);
 
-    --dextinity-asset-thumbnail-name-font-size: 13px;
+    --dextinity-asset-thumbnail-name-font-size: var(--dextinity-typography-ui-size);
     --dextinity-asset-thumbnail-meta-font-size: 11.5px;
     --dextinity-asset-thumbnail-meta-foreground: var(--dextinity-color-text-tertiary);
 }

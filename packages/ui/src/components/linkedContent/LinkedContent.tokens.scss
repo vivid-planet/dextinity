@@ -1,5 +1,5 @@
 @mixin tokens {
-    --dextinity-linked-content-gap: 12px;
+    --dextinity-linked-content-gap: var(--dextinity-space-3);
     --dextinity-linked-content-padding: 14px;
     --dextinity-linked-content-radius: var(--dextinity-radius-field);
     --dextinity-linked-content-background: var(--dextinity-color-surface-sunken);

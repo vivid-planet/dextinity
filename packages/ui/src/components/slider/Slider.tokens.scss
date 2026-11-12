@@ -1,13 +1,13 @@
 @mixin tokens {
     // The track's minimum width; the slider grows with its container
     --dextinity-slider-width: 96px;
-    --dextinity-slider-gap: 6px;
+    --dextinity-slider-gap: var(--dextinity-space-1-5);
     --dextinity-slider-track-height: 4px;
     --dextinity-slider-thumb-size: 14px;
     // The thumb's outline against the track
     --dextinity-slider-thumb-ring-width: 2px;
     --dextinity-slider-start-icon-size: 12px;
-    --dextinity-slider-end-icon-size: 16px;
+    --dextinity-slider-end-icon-size: var(--dextinity-icon-size-small);
     --dextinity-slider-disabled-opacity: 0.42;
 
     --dextinity-slider-icon-color: var(--dextinity-color-text-tertiary);
@@ -21,8 +21,8 @@
 
     // Space between the label, the slider, and the validation message
     --dextinity-slider-row-gap: 7px;
-    --dextinity-slider-label-font-size: 13px;
-    --dextinity-slider-label-font-weight: 500;
+    --dextinity-slider-label-font-size: var(--dextinity-typography-ui-size);
+    --dextinity-slider-label-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-slider-label-color: var(--dextinity-color-text-secondary);
     --dextinity-slider-message-font-size: var(--dextinity-typography-small-size);
     --dextinity-slider-message-color-error: var(--dextinity-color-danger-text);

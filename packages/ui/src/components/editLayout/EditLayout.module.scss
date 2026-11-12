@@ -100,7 +100,7 @@
 }
 
 .blocksPlaceholder {
-    --dextinity-skeleton-gap: 6px;
+    --dextinity-skeleton-gap: var(--dextinity-space-1-5);
     --dextinity-skeleton-tile-height: 52px;
     --dextinity-skeleton-tile-radius: var(--dextinity-radius-field);
 }
@@ -108,7 +108,7 @@
 .fieldPlaceholder {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--dextinity-space-2);
 
     --dextinity-skeleton-tile-height: var(--dextinity-density-field-height);
     --dextinity-skeleton-tile-radius: var(--dextinity-radius-control);

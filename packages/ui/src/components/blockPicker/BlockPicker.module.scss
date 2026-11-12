@@ -22,7 +22,7 @@
     color: var(--dextinity-color-text-tertiary);
     pointer-events: none;
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 }
 
 .search {
@@ -62,7 +62,7 @@
 .categories {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: var(--dextinity-space-1-5);
 }
 
 .results {
@@ -74,16 +74,16 @@
 .section {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--dextinity-space-1);
 }
 
 .sectionTitle {
-    margin: 0 0 2px;
-    padding-inline: 10px;
+    margin: 0 0 var(--dextinity-space-0-5);
+    padding-inline: var(--dextinity-space-2-5);
     color: var(--dextinity-block-picker-section-title-color);
     font-family: var(--dextinity-font-family-mono);
     font-size: var(--dextinity-typography-label-size);
-    font-weight: 400;
+    font-weight: var(--dextinity-font-weight-regular);
     letter-spacing: var(--dextinity-typography-label-letter-spacing);
     text-transform: uppercase;
 }
@@ -91,7 +91,7 @@
 .list {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--dextinity-space-0-5);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -100,7 +100,7 @@
 .item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--dextinity-space-2-5);
     box-sizing: border-box;
     inline-size: 100%;
     padding: var(--dextinity-block-picker-item-padding);
@@ -145,7 +145,7 @@
     background: var(--dextinity-block-picker-item-icon-background);
     color: var(--dextinity-block-picker-item-icon-foreground);
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 }
 
 .itemText {
@@ -160,7 +160,7 @@
     color: var(--dextinity-block-picker-item-add-icon-color);
     transition: color var(--dextinity-motion-duration-short);
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 
     .item:hover &,
     .item[data-highlighted] & {
@@ -171,13 +171,13 @@
 .itemLabel {
     font-size: 13.5px;
     font-weight: var(--dextinity-font-weight-semibold);
-    line-height: 1.35;
+    line-height: var(--dextinity-typography-section-line-height);
 }
 
 .itemDescription {
     overflow: hidden;
     color: var(--dextinity-block-picker-item-description-color);
-    font-size: 12.5px;
+    font-size: var(--dextinity-typography-small-size);
     line-height: 1.35;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -185,7 +185,7 @@
 
 .empty {
     margin: 0;
-    padding: var(--dextinity-space-4) 10px;
+    padding: var(--dextinity-space-4) var(--dextinity-space-2-5);
     color: var(--dextinity-color-text-tertiary);
     text-align: center;
 }

@@ -44,7 +44,7 @@
 .text {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--dextinity-space-0-5);
     min-inline-size: 0;
 }
 

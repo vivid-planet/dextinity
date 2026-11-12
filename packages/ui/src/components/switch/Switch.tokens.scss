@@ -19,10 +19,10 @@
 
     --dextinity-switch-label-color: var(--dextinity-color-text);
     --dextinity-switch-label-font-size: var(--dextinity-typography-body-size);
-    --dextinity-switch-label-font-size-small: 13px;
-    --dextinity-switch-label-font-weight: 500;
+    --dextinity-switch-label-font-size-small: var(--dextinity-typography-ui-size);
+    --dextinity-switch-label-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-switch-description-color: var(--dextinity-color-text-tertiary);
-    --dextinity-switch-description-font-size: 12.5px;
+    --dextinity-switch-description-font-size: var(--dextinity-typography-small-size);
     --dextinity-switch-required-color: var(--dextinity-color-danger-text);
 
     // Space between the switch and its validation message

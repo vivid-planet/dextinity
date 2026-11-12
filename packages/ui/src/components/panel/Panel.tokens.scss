@@ -1,10 +1,10 @@
 @mixin tokens {
     --dextinity-panel-radius: var(--dextinity-radius-panel);
     // Between the edge and the header and body, which add their own padding
-    --dextinity-panel-padding: 10px;
-    --dextinity-panel-header-padding: 10px 12px 12px;
+    --dextinity-panel-padding: var(--dextinity-space-2-5);
+    --dextinity-panel-header-padding: var(--dextinity-space-2-5) var(--dextinity-space-3) var(--dextinity-space-3);
     --dextinity-panel-header-gap: var(--dextinity-space-3);
-    --dextinity-panel-body-padding: 2px 12px 12px;
+    --dextinity-panel-body-padding: var(--dextinity-space-0-5) var(--dextinity-space-3) var(--dextinity-space-3);
 
     --dextinity-panel-glass-background: var(--dextinity-material-glass);
     --dextinity-panel-glass-blur: var(--dextinity-material-blur);
@@ -18,5 +18,5 @@
     --dextinity-panel-title-font-size: var(--dextinity-typography-title-size);
     --dextinity-panel-title-font-weight: var(--dextinity-typography-title-font-weight);
     --dextinity-panel-description-color: var(--dextinity-color-text-tertiary);
-    --dextinity-panel-description-font-size: 13px;
+    --dextinity-panel-description-font-size: var(--dextinity-typography-ui-size);
 }

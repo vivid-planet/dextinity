@@ -1,8 +1,8 @@
 @mixin tokens {
-    --dextinity-breadcrumbs-gap: 8px;
-    --dextinity-breadcrumbs-font-size: 13px;
+    --dextinity-breadcrumbs-gap: var(--dextinity-space-2);
+    --dextinity-breadcrumbs-font-size: var(--dextinity-typography-ui-size);
     --dextinity-breadcrumbs-current-color: var(--dextinity-color-text);
-    --dextinity-breadcrumbs-current-font-weight: 600;
+    --dextinity-breadcrumbs-current-font-weight: var(--dextinity-font-weight-semibold);
     --dextinity-breadcrumbs-separator-color: var(--dextinity-color-text-subtle);
     --dextinity-breadcrumbs-more-button-radius: var(--dextinity-radius-item);
     --dextinity-breadcrumbs-more-button-hover-background: var(--dextinity-color-surface-sunken);

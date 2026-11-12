@@ -3,7 +3,7 @@
     --dextinity-icon-button-size-small: var(--dextinity-density-icon-button-size-small);
     --dextinity-icon-button-radius: var(--dextinity-radius-control);
     --dextinity-icon-button-icon-size: 18px;
-    --dextinity-icon-button-icon-size-small: 16px;
+    --dextinity-icon-button-icon-size-small: var(--dextinity-icon-size-small);
     --dextinity-icon-button-disabled-opacity: 0.42;
 
     --dextinity-icon-button-foreground: var(--dextinity-color-text-tertiary);

@@ -73,13 +73,13 @@
     position: absolute;
     inset-block-start: var(--dextinity-space-2);
     inset-inline-start: var(--dextinity-space-2);
-    padding: 3px 8px;
+    padding: 3px var(--dextinity-space-2);
     border-radius: var(--dextinity-radius-pill);
     background: var(--dextinity-focal-point-picker-auto-background);
     color: var(--dextinity-focal-point-picker-auto-foreground);
-    font-size: 11px;
-    font-weight: 500;
-    line-height: 1.4;
+    font-size: var(--dextinity-typography-caption-size);
+    font-weight: var(--dextinity-font-weight-medium);
+    line-height: var(--dextinity-typography-small-line-height);
     pointer-events: none;
 }
 
@@ -113,7 +113,7 @@
 .previewCaption {
     color: var(--dextinity-focal-point-picker-caption-foreground);
     font-family: var(--dextinity-font-family-mono);
-    font-size: 10.5px;
+    font-size: var(--dextinity-typography-label-size);
     text-align: center;
 }
 

@@ -89,7 +89,7 @@
 }
 
 .chevron {
-    margin-inline-end: -4px;
+    margin-inline-end: calc(-1 * var(--dextinity-space-1));
 
     > * {
         transition: transform var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);

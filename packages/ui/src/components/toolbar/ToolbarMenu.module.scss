@@ -14,7 +14,7 @@
     color: var(--dextinity-toolbar-menu-foreground);
     font: inherit;
     font-size: var(--dextinity-toolbar-menu-font-size);
-    font-weight: 500;
+    font-weight: var(--dextinity-font-weight-medium);
     white-space: nowrap;
     cursor: pointer;
     transition:

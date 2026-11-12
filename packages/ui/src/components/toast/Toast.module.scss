@@ -62,7 +62,7 @@
     background: var(--dextinity-toast-action-background);
     color: inherit;
     font: inherit;
-    font-weight: 500;
+    font-weight: var(--dextinity-font-weight-medium);
     white-space: nowrap;
     cursor: pointer;
     outline: none;

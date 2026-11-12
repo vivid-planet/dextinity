@@ -28,7 +28,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
+    gap: var(--dextinity-space-2);
     margin-block-end: var(--dextinity-page-header-label-spacing);
     color: var(--dextinity-page-header-label-color);
     font-family: var(--dextinity-font-family-mono);
@@ -37,7 +37,7 @@
     text-transform: uppercase;
 
     .back {
-        gap: 4px;
+        gap: var(--dextinity-space-1);
         font-family: inherit;
         font-size: inherit;
     }

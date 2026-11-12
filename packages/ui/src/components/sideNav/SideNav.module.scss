@@ -79,7 +79,7 @@
     position: relative;
     flex: 1;
     min-block-size: 0;
-    padding: 2px 12px 12px;
+    padding: var(--dextinity-space-0-5) var(--dextinity-space-3) var(--dextinity-space-3);
     overflow: hidden auto;
     scrollbar-color: var(--dextinity-color-line-strong) transparent;
     scrollbar-width: thin;
@@ -92,10 +92,10 @@
 .group {
     display: flex;
     flex-direction: column;
-    padding-block: 8px;
+    padding-block: var(--dextinity-space-2);
 
     & + & {
-        margin-block-start: 4px;
+        margin-block-start: var(--dextinity-space-1);
         padding-block-start: 14px;
         box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-side-nav-separator-color);
         @include forced-colors.separator(block-start);
@@ -103,7 +103,7 @@
 }
 
 .groupLabel {
-    padding: 2px 10px 8px;
+    padding: var(--dextinity-space-0-5) var(--dextinity-space-2-5) var(--dextinity-space-2);
     color: var(--dextinity-side-nav-group-label-color);
     font-family: var(--dextinity-font-family-mono);
     font-size: var(--dextinity-typography-label-size);
@@ -130,7 +130,7 @@
 
     .root[data-collapsed] & {
         align-items: center;
-        gap: 4px;
+        gap: var(--dextinity-space-1);
     }
 }
 
@@ -143,12 +143,12 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--dextinity-space-2-5);
     box-sizing: border-box;
     inline-size: 100%;
     min-block-size: var(--dextinity-side-nav-item-height);
     margin: 0;
-    padding: 7px 10px;
+    padding: 7px var(--dextinity-space-2-5);
     border: 0;
     border-radius: var(--dextinity-side-nav-item-radius);
     background: transparent;
@@ -185,20 +185,20 @@
 
     &[data-level="2"] {
         padding-inline-start: 40px;
-        font-size: 13px;
+        font-size: var(--dextinity-typography-ui-size);
     }
 
     &[data-level="3"] {
         padding-inline-start: 58px;
         color: var(--dextinity-color-text-tertiary);
-        font-size: 12.5px;
+        font-size: var(--dextinity-typography-small-size);
     }
 
     &[data-active],
     &[data-active]:hover {
         background: var(--dextinity-side-nav-item-active-background);
         color: var(--dextinity-side-nav-item-active-foreground);
-        font-weight: 600;
+        font-weight: var(--dextinity-font-weight-semibold);
         box-shadow: var(--dextinity-side-nav-item-active-shadow);
         @include forced-colors.selected;
 
@@ -222,7 +222,7 @@
         block-size: 50px;
         min-block-size: 0;
         padding: 0;
-        --dextinity-icon-size: 20px;
+        --dextinity-icon-size: var(--dextinity-icon-size-default);
     }
 
     // Marks entries whose sub-entries open as a menu
@@ -256,7 +256,7 @@
     flex: none;
     color: var(--dextinity-side-nav-chevron-color);
     transition: transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 }
 
 .collapsedBadge {
@@ -318,7 +318,7 @@ $children-room-end: 12px;
 .footer {
     display: flex;
     flex: none;
-    padding: 10px;
+    padding: var(--dextinity-space-2-5);
     box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-side-nav-separator-color);
     @include forced-colors.separator(block-start);
 
@@ -330,17 +330,17 @@ $children-room-end: 12px;
 .collapseButton {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--dextinity-space-2);
     block-size: 34px;
-    padding-inline: 10px;
+    padding-inline: var(--dextinity-space-2-5);
     border: 0;
     border-radius: var(--dextinity-radius-control);
     background: transparent;
     color: var(--dextinity-side-nav-collapse-foreground);
     font: inherit;
-    font-size: 13px;
+    font-size: var(--dextinity-typography-ui-size);
     cursor: pointer;
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 
     &:hover {
         background: var(--dextinity-side-nav-item-background-hover);
@@ -365,7 +365,7 @@ $children-room-end: 12px;
 
     &[aria-current="page"] {
         color: var(--dextinity-color-accent-text);
-        font-weight: 600;
+        font-weight: var(--dextinity-font-weight-semibold);
         @include forced-colors.selected;
     }
 }

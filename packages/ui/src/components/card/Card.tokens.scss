@@ -1,7 +1,7 @@
 @mixin tokens {
     --dextinity-card-radius: var(--dextinity-radius-panel);
-    --dextinity-card-padding: 10px;
-    --dextinity-card-header-padding: 10px 12px 14px;
+    --dextinity-card-padding: var(--dextinity-space-2-5);
+    --dextinity-card-header-padding: var(--dextinity-space-2-5) var(--dextinity-space-3) 14px;
     --dextinity-card-header-gap: var(--dextinity-space-3);
     // Rows in the body bring their own padding
     --dextinity-card-body-padding: 0;
@@ -12,7 +12,7 @@
         var(--dextinity-shadow-2);
 
     --dextinity-card-orb-size: 38px;
-    --dextinity-card-orb-icon-size: 20px;
+    --dextinity-card-orb-icon-size: var(--dextinity-icon-size-default);
     --dextinity-card-orb-foreground: var(--dextinity-color-accent-text);
     --dextinity-card-orb-background: var(--dextinity-material-glass-strong);
     --dextinity-card-orb-shadow:
@@ -21,18 +21,18 @@
     --dextinity-card-title-font-size: var(--dextinity-typography-title-size);
     --dextinity-card-title-font-weight: var(--dextinity-typography-title-font-weight);
     --dextinity-card-meta-color: var(--dextinity-color-text-tertiary);
-    --dextinity-card-meta-font-size: 13px;
+    --dextinity-card-meta-font-size: var(--dextinity-typography-ui-size);
 
-    --dextinity-card-row-padding: 12px 14px;
+    --dextinity-card-row-padding: var(--dextinity-space-3) 14px;
     --dextinity-card-row-gap: 14px;
     --dextinity-card-row-radius: var(--dextinity-radius-row);
     --dextinity-card-row-hover-background: color-mix(in oklch, var(--dextinity-color-text) 4%, transparent);
-    --dextinity-card-row-title-font-weight: 500;
+    --dextinity-card-row-title-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-card-row-subtitle-color: var(--dextinity-color-text-tertiary);
-    --dextinity-card-row-subtitle-font-size: 12.5px;
-    --dextinity-card-row-end-gap: 10px;
+    --dextinity-card-row-subtitle-font-size: var(--dextinity-typography-small-size);
+    --dextinity-card-row-end-gap: var(--dextinity-space-2-5);
     --dextinity-card-row-end-color: var(--dextinity-color-text-tertiary);
-    --dextinity-card-row-end-font-size: 13px;
+    --dextinity-card-row-end-font-size: var(--dextinity-typography-ui-size);
     --dextinity-card-row-arrow-size: 22px;
     --dextinity-card-row-arrow-color: var(--dextinity-color-text-subtle);
 }

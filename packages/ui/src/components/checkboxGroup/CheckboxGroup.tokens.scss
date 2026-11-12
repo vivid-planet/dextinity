@@ -17,9 +17,9 @@
     // A group's label while groups have no checkbox
     --dextinity-checkbox-group-heading-color: var(--dextinity-color-text-secondary);
     --dextinity-checkbox-group-heading-font-size: var(--dextinity-typography-small-size);
-    --dextinity-checkbox-group-heading-font-weight: 600;
+    --dextinity-checkbox-group-heading-font-weight: var(--dextinity-font-weight-semibold);
     --dextinity-checkbox-group-description-color: var(--dextinity-color-text-tertiary);
-    --dextinity-checkbox-group-description-font-size: 12.5px;
+    --dextinity-checkbox-group-description-font-size: var(--dextinity-typography-small-size);
     // Line below the "Select all" checkbox
     --dextinity-checkbox-group-divider-color: var(--dextinity-color-line);
 

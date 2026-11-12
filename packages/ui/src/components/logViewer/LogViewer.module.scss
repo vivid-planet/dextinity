@@ -29,8 +29,8 @@
 .title {
     overflow: hidden;
     color: var(--dextinity-log-viewer-title-color);
-    font-size: 13px;
-    font-weight: 600;
+    font-size: var(--dextinity-typography-ui-size);
+    font-weight: var(--dextinity-font-weight-semibold);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -160,7 +160,7 @@
     padding-inline: var(--dextinity-log-viewer-padding);
     color: var(--dextinity-log-viewer-number-color);
     font-family: var(--dextinity-font-family-text);
-    font-size: 13px;
+    font-size: var(--dextinity-typography-ui-size);
 }
 
 .spinner {

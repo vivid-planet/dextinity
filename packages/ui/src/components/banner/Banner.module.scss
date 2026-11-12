@@ -14,7 +14,7 @@
     color: var(--dextinity-banner-foreground);
     font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-banner-font-size);
-    line-height: 1.45;
+    line-height: var(--dextinity-typography-body-line-height);
 
     &[data-tone="warning"] {
         background: var(--dextinity-banner-warning-background);

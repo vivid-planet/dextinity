@@ -48,7 +48,7 @@
     background: var(--dextinity-linked-content-icon-background);
     color: var(--dextinity-linked-content-icon-color);
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 }
 
 .text {
@@ -58,7 +58,7 @@
 }
 
 .title {
-    font-weight: 500;
+    font-weight: var(--dextinity-font-weight-medium);
 }
 
 .description {

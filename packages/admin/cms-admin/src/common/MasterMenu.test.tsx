@@ -1,6 +1,6 @@
 import { MemoryRouter, Route } from "react-router-dom";
-import { render, screen } from "test-utils";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen } from "test-utils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Permission } from "../userPermissions/hooks/currentUser";
 import { MasterMenu, type MasterMenuData } from "./MasterMenu";
@@ -29,7 +29,11 @@ describe("MasterMenu", () => {
                 disconnect() {}
             },
         );
-        return () => vi.unstubAllGlobals();
+    });
+
+    afterEach(() => {
+        cleanup();
+        vi.unstubAllGlobals();
     });
 
     it("renders the navigation when all visible items are inside a single group", () => {

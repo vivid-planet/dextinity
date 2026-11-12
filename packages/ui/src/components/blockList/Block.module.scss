@@ -194,7 +194,7 @@
 
 .title {
     overflow: hidden;
-    font-size: 13.5px;
+    font-size: var(--dextinity-block-title-font-size);
     font-weight: var(--dextinity-font-weight-medium);
     line-height: var(--dextinity-typography-section-line-height);
     text-overflow: ellipsis;

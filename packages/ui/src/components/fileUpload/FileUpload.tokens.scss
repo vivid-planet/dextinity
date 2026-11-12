@@ -10,7 +10,11 @@
     --dextinity-file-upload-file-error-background: var(--dextinity-color-danger-soft);
     --dextinity-file-upload-thumbnail-size: 32px;
     --dextinity-file-upload-link-color: var(--dextinity-color-accent-text);
+    // Size and type of an uploaded file
+    --dextinity-file-upload-meta-font-size: 11.5px;
     --dextinity-file-upload-error-foreground: var(--dextinity-color-danger-text);
+    // Why an uploaded file failed, next to its name
+    --dextinity-file-upload-error-font-size: 12px;
     --dextinity-file-upload-error-outline: var(--dextinity-line-width-strong) dashed var(--dextinity-color-danger);
 
     --dextinity-file-upload-label-font-size: var(--dextinity-field-label-font-size);

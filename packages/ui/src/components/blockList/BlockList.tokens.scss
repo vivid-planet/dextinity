@@ -17,6 +17,8 @@
     --dextinity-block-selected-shadow: inset 0 0 0 var(--dextinity-line-width-strong) var(--dextinity-color-accent), var(--dextinity-shadow-1);
     --dextinity-block-padding: var(--dextinity-space-2-5) var(--dextinity-space-2-5) var(--dextinity-space-2-5) var(--dextinity-space-1-5);
     --dextinity-block-fields-padding: var(--dextinity-space-1) var(--dextinity-space-4) var(--dextinity-space-4) 58px;
+    // Name of the block in its header
+    --dextinity-block-title-font-size: 13.5px;
     --dextinity-block-icon-size: 32px;
     --dextinity-block-icon-radius: calc(var(--dextinity-radius-item) * 1.1);
     --dextinity-block-icon-background: var(--dextinity-color-accent-soft);

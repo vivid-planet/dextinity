@@ -114,12 +114,12 @@
 .meta {
     color: var(--dextinity-color-text-tertiary);
     font-family: var(--dextinity-font-family-mono);
-    font-size: 11.5px;
+    font-size: var(--dextinity-file-upload-meta-font-size);
 }
 
 .error {
     color: var(--dextinity-file-upload-error-foreground);
-    font-size: 12px;
+    font-size: var(--dextinity-file-upload-error-font-size);
 }
 
 .progress {

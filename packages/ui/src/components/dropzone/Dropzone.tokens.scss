@@ -19,6 +19,8 @@
     --dextinity-dropzone-overlay-background: color-mix(in oklch, var(--dextinity-color-surface) 78%, transparent);
 
     --dextinity-dropzone-error-foreground: var(--dextinity-color-danger-text);
+    // Why an upload failed, at the end of its row
+    --dextinity-dropzone-error-font-size: 12px;
     --dextinity-dropzone-error-outline: var(--dextinity-line-width-strong) dashed var(--dextinity-color-danger);
 
     --dextinity-dropzone-upload-gap: var(--dextinity-space-3);

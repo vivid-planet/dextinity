@@ -167,7 +167,7 @@
 }
 
 .itemLabel {
-    font-size: 13.5px;
+    font-size: var(--dextinity-block-picker-item-label-font-size);
     font-weight: var(--dextinity-font-weight-semibold);
     line-height: var(--dextinity-typography-section-line-height);
 }

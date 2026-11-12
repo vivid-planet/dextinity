@@ -111,4 +111,14 @@ describe("IconButton", () => {
 
         expect(ref.current).toBe(screen.getByRole("button", { name: "More actions" }));
     });
+
+    it("sets no `type` when rendered as a non-button element", () => {
+        render(
+            <IconButton aria-label="Back to job ads" nativeButton={false} render={<a href="#job-ads" />}>
+                <span />
+            </IconButton>,
+        );
+
+        expect(screen.getByLabelText("Back to job ads").hasAttribute("type")).toBe(false);
+    });
 });

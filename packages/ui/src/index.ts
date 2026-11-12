@@ -148,7 +148,7 @@ export { MenuSectionHeader, type MenuSectionHeaderOwnerState, type MenuSectionHe
 export { MiniChart, type MiniChartOwnerState, type MiniChartProps, type MiniChartSlotProps } from "./components/miniChart/MiniChart";
 export { NumberInput, type NumberInputLabels, type NumberInputOwnerState, type NumberInputProps } from "./components/numberInput/NumberInput";
 export { OverviewLayout, type OverviewLayoutOwnerState, type OverviewLayoutProps } from "./components/overviewLayout/OverviewLayout";
-export { type OverviewLayoutSlotProps } from "./components/overviewLayout/OverviewLayout";
+export { type OverviewLayoutBack, type OverviewLayoutSlotProps } from "./components/overviewLayout/OverviewLayout";
 export {
     PageHeader,
     type PageHeaderBack,

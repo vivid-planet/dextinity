@@ -47,7 +47,7 @@ export interface PageHeaderSlotProps {
     /** Props for the `actions` slot. */
     actions?: SlotPropsValue<PageHeaderOwnerState, "div">;
     /** Props for the back action, e.g. its `tooltip`. */
-    back?: Partial<Omit<IconButtonProps, "aria-label" | "render">>;
+    back?: Partial<Omit<IconButtonProps, "aria-label" | "render" | "nativeButton" | "role" | "children">>;
 }
 
 export interface PageHeaderProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children" | "title"> {

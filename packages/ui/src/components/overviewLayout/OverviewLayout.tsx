@@ -4,8 +4,18 @@ import { forwardRef, type HTMLAttributes, type MouseEvent, type ReactNode } from
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
 import { Link, type LinkProps } from "../link/Link";
-import type { PageHeaderBack } from "../pageHeader/PageHeader";
 import styles from "./OverviewLayout.module.scss";
+
+export interface OverviewLayoutBack {
+    /** The visible link text, naming where the link leads, e.g. "All sites". */
+    label: string;
+    /** The destination. */
+    href: string;
+    /** Called when the link is chosen, e.g. to navigate with the router. */
+    onClick?: () => void;
+    /** Render the link as a custom element, e.g. the router's link component. */
+    render?: LinkProps["render"];
+}
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -40,7 +50,7 @@ export interface OverviewLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>
     /** A mono label above the greeting, e.g. the app name. */
     eyebrow?: ReactNode;
     /** A back link before the eyebrow, for an overview below another page, e.g. the overview of one site among several. */
-    back?: PageHeaderBack;
+    back?: OverviewLayoutBack;
     /** One sentence on what happened since the last visit, with links to it. Warnings belong in their own card, not here. */
     summary?: ReactNode;
     /** Shown at the end of the greeting, e.g. a clock with the date; hidden in narrow layouts. */

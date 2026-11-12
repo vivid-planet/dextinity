@@ -25,7 +25,7 @@
 
         --dextinity-typography-section-size: 15px;
         --dextinity-typography-section-line-height: 1.35;
-        --dextinity-typography-section-font-weight: 550;
+        --dextinity-typography-section-font-weight: var(--dextinity-font-weight-semibold);
         // Tracking of section headings and dialog titles
         --dextinity-typography-section-letter-spacing: -0.01em;
 

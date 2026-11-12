@@ -180,7 +180,7 @@
 
     &[data-ancestor] {
         color: var(--dextinity-side-nav-item-ancestor-foreground);
-        font-weight: 550;
+        font-weight: var(--dextinity-font-weight-semibold);
     }
 
     &[data-level="2"] {

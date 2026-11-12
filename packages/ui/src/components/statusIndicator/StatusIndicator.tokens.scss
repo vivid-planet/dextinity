@@ -2,7 +2,7 @@
     --dextinity-status-indicator-gap: var(--dextinity-space-2);
     --dextinity-status-indicator-font-size: 13px;
     // Weight of the statuses that need attention: critical and running
-    --dextinity-status-indicator-font-weight-emphasized: 550;
+    --dextinity-status-indicator-font-weight-emphasized: var(--dextinity-font-weight-semibold);
     --dextinity-status-indicator-dot-size: 7px;
     // Soft ring around the dot; off in high contrast, where the soft colors are transparent
     --dextinity-status-indicator-halo-width: 3px;

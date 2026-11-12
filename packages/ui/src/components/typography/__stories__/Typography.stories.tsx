@@ -74,7 +74,7 @@ export const Title: Story = {
 };
 
 /**
- * 15 / 1.35 · 550 — sections in forms.
+ * 15 / 1.35 · 600 — sections in forms.
  */
 export const Section: Story = {
     args: {
@@ -113,7 +113,7 @@ const specimen = [
     { variant: "displayXl", sample: "Good morning, Max", metrics: "72 / 1.02 · display", usage: "Greeting on an overview" },
     { variant: "displayL", sample: "Job postings", metrics: "54 / 1.02 · display", usage: "Page title" },
     { variant: "title", sample: "Recently edited", metrics: "17 / 1.3 · 500", usage: "Panel and card titles" },
-    { variant: "section", sample: "General", metrics: "15 / 1.35 · 550", usage: "Sections in forms" },
+    { variant: "section", sample: "General", metrics: "15 / 1.35 · 600", usage: "Sections in forms" },
     {
         variant: "body",
         sample: "We build digital products that stay in use for many years.",

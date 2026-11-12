@@ -12,7 +12,7 @@
     --dextinity-drawer-backdrop: oklch(0 0 0 / 0.18);
     --dextinity-drawer-padding: 20px;
     --dextinity-drawer-title-font-size: 17px;
-    --dextinity-drawer-title-font-weight: 550;
+    --dextinity-drawer-title-font-weight: var(--dextinity-font-weight-semibold);
     --dextinity-drawer-description-color: var(--dextinity-color-text-secondary);
     --dextinity-drawer-body-gap: var(--dextinity-space-3);
     --dextinity-drawer-footer-line: var(--dextinity-color-line);

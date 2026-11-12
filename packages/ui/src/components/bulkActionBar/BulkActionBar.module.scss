@@ -36,7 +36,7 @@
 
 .count {
     margin-inline-end: var(--dextinity-space-3);
-    font-weight: 550;
+    font-weight: var(--dextinity-font-weight-semibold);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }

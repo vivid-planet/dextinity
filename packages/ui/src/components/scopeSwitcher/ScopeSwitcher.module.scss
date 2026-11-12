@@ -159,7 +159,7 @@
     &[aria-current="true"] {
         background: var(--dextinity-scope-switcher-option-selected-background);
         color: var(--dextinity-scope-switcher-option-selected-foreground);
-        font-weight: 550;
+        font-weight: var(--dextinity-font-weight-semibold);
         box-shadow: var(--dextinity-scope-switcher-option-selected-shadow);
         @include forced-colors.selected;
     }

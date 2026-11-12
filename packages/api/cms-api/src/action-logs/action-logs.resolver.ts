@@ -1,6 +1,6 @@
 import type { ObjectQuery } from "@mikro-orm/core/typings";
-import { EntityManager, PostgreSqlDriver, raw } from "@mikro-orm/postgresql";
-import { BadRequestException, ForbiddenException, Inject } from "@nestjs/common";
+import { type AnyEntity, EntityManager, PostgreSqlDriver, raw } from "@mikro-orm/postgresql";
+import { BadRequestException, ForbiddenException, Inject, type Type } from "@nestjs/common";
 import { Args, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
 import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
@@ -26,6 +26,7 @@ import { ActionLogsUser } from "./dto/action-logs-user";
 import { MyActionLogsArgs } from "./dto/my-action-logs.args";
 import { PaginatedActionLogs } from "./dto/paginated-action-logs";
 import { ActionLog } from "./entities/action-log.entity";
+import { entityChecksScope } from "./entity-checks-scope";
 import { PreviousActionLogLoaderService } from "./previous-action-log-loader.service";
 
 @Resolver(() => ActionLog)
@@ -51,27 +52,26 @@ export class ActionLogsResolver {
         @Args() { entity, scope, filter, offset, limit, sort }: ActionLogsArgs,
         @GetCurrentUser() user: CurrentUser | SystemUser,
     ): Promise<PaginatedActionLogs> {
-        this.checkPermission({ entity, scope, user });
+        const entityClass = this.getLoggedEntity(entity);
+        this.checkPermission({ entityClass, scope, user });
 
         const andFilters: ObjectQuery<ActionLog>[] = [{ entityName: entity }];
 
-        // Action log rows for entities without a scope have scope=NULL; match those too so
-        // unscoped entities still surface their logs when the page is rendered inside a scoped layout.
         // A scoped row must hold the requested scope exactly: `$contains` alone would also match a scope
         // with fewer dimensions, which passes the permission check for a user who holds only one of the
         // scopes it covers. `$contains` stays in the query for the GIN index.
-        andFilters.push({
-            $or: [
-                { scope: null },
-                {
-                    scope: { $contains: [scope] },
-                    [raw(
-                        (alias) => `exists (select 1 from jsonb_array_elements(${alias}."scope") as "rowScope" where "rowScope" = ?::jsonb)`,
-                        [JSON.stringify(scope)],
-                    )]: true,
-                },
-            ],
-        });
+        const rowHoldsRequestedScope: ObjectQuery<ActionLog> = {
+            scope: { $contains: [scope] },
+            [raw(
+                (alias) => `exists (select 1 from jsonb_array_elements(${alias}."scope") as "rowScope" where "rowScope" = ?::jsonb)`,
+                [JSON.stringify(scope)],
+            )]: true,
+        };
+
+        // Rows of entities that don't check the scope have scope=NULL; match those too so unscoped entities
+        // still surface their logs when the page is rendered inside a scoped layout. The scope of such a row
+        // of an entity that checks the scope is unknown, so nobody may read it.
+        andFilters.push(entityChecksScope(entityClass) ? rowHoldsRequestedScope : { $or: [{ scope: null }, rowHoldsRequestedScope] });
 
         if (filter) {
             andFilters.push(actionLogFilterToWhere(filter));
@@ -121,13 +121,31 @@ export class ActionLogsResolver {
         return new PaginatedActionLogs(entities, totalCount);
     }
 
-    private checkPermission({ entity, scope, user }: { entity: string; scope: ContentScope; user: CurrentUser | SystemUser }): void {
+    private getLoggedEntity(entity: string): Type<AnyEntity> {
         const loggedEntities = this.actionLogsService.getLoggedEntities();
         const entityClass = loggedEntities.find(({ name }) => name === entity);
         if (!entityClass) {
             const known = loggedEntities.map(({ name }) => name).join(", ");
             throw new BadRequestException(`"${entity}" is not logged. Entities decorated with @ActionLogs(): ${known || "none"}.`);
         }
+        return entityClass;
+    }
+
+    private loggedEntityChecksScope(entityName: string): boolean {
+        const entityClass = this.actionLogsService.getLoggedEntities().find(({ name }) => name === entityName);
+        return !entityClass || entityChecksScope(entityClass);
+    }
+
+    private checkPermission({
+        entityClass,
+        scope,
+        user,
+    }: {
+        entityClass: Type<AnyEntity>;
+        scope: ContentScope;
+        user: CurrentUser | SystemUser;
+    }): void {
+        const entity = entityClass.name;
 
         if (typeof user === "string" && this.userPermissionsService.isSystemUser(user)) {
             return;
@@ -165,9 +183,9 @@ export class ActionLogsResolver {
         if (!previous) {
             return null;
         }
-        // An unscoped row is listed in every scope, so the user may read it anyway.
+        // An unscoped row of an entity that checks the scope is listed in no scope, so it stays hidden here too.
         if (previous.scope == null) {
-            return previous;
+            return this.loggedEntityChecksScope(previous.entityName) ? null : previous;
         }
         // Access to a row is checked against one of its own scopes. A previous version that lacks one of the
         // current row's scopes could hold content the user may not read, so it is not returned.

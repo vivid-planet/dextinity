@@ -146,7 +146,10 @@ export const MainNavigationItemGroup = (inProps: MainNavigationItemGroupProps) =
 
     const childElements = useMemo(
         () =>
-            Children.map(children, (child: MainNavigationChild) => {
+            Children.map(children, (child) => {
+                if (!isValidElement<MainNavigationChild["props"]>(child)) {
+                    return child;
+                }
                 return cloneElement<MainNavigationCollapsibleItemProps | MainNavigationItemRouterLinkProps | MainNavigationItemProps>(child, {
                     isMenuOpen,
                 });

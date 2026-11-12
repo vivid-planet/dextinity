@@ -1,5 +1,5 @@
 import { type PropsWithChildren, type ReactNode, useCallback, useEffect, useState } from "react";
-import { Route, type RouteComponentProps, useHistory, useLocation } from "react-router";
+import { Route, type RouteChildrenProps, useHistory, useLocation } from "react-router";
 
 import { StackApiContext } from "./Api";
 import { StackBreadcrumb } from "./Breadcrumb";
@@ -172,7 +172,7 @@ export const Stack = (props: PropsWithChildren<StackProps>) => {
             }}
         >
             <Route>
-                {(routerProps: RouteComponentProps<any>) => {
+                {(routerProps: RouteChildrenProps) => {
                     const { topLevelTitle, children } = props;
                     if (!routerProps.match) {
                         return children;

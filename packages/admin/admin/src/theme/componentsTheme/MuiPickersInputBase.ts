@@ -1,13 +1,14 @@
 import { iconButtonClasses, inputAdornmentClasses } from "@mui/material";
-import type { Components, Theme } from "@mui/material/styles";
+import type { Theme } from "@mui/material/styles";
 import { pickersInputBaseClasses, pickersInputClasses, pickersSectionListClasses } from "@mui/x-date-pickers";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
+import type { ThemeComponents } from "./getComponentsTheme";
 
 export const getMuiPickersInputBase = (
-    component: Components["MuiPickersInputBase"],
+    component: ThemeComponents["MuiPickersInputBase"],
     { palette, spacing }: Theme,
-): Components["MuiPickersInputBase"] => ({
+): ThemeComponents["MuiPickersInputBase"] => ({
     ...component,
     styleOverrides: mergeOverrideStyles(component?.styleOverrides, {
         root: {

@@ -1,6 +1,6 @@
-import type { Components } from "@mui/material/styles";
+import type { ThemeComponents } from "./getComponentsTheme";
 
-export const getMuiPickersTextField = (component: Components["MuiPickersTextField"]): Components["MuiPickersTextField"] => ({
+export const getMuiPickersTextField = (component: ThemeComponents["MuiPickersTextField"]): ThemeComponents["MuiPickersTextField"] => ({
     ...component,
     defaultProps: {
         variant: "standard",

@@ -53,7 +53,7 @@ function DndOrderRow<TRow extends IRow>(props: IDndOrderRowProps<TRow>) {
         },
     });
 
-    const [, drop] = useDrop({
+    const [, drop] = useDrop<DragItem>({
         accept: "row",
         hover(item: DragItem, monitor: DropTargetMonitor) {
             // SOURCE for this code: https://codesandbox.io/s/github/react-dnd/react-dnd/tree/gh-pages/examples_hooks_ts/04-sortable/simple
@@ -195,12 +195,10 @@ export function TableDndOrder<TRow extends IRow>(inProps: TableDndOrderProps<TRo
         [dragHandleIcon, moveRow, onDragEnd],
     );
 
-    const tableProps = {
-        renderTableRow,
-        renderHeadTableRow,
-    };
+    // The styled root slot doesn't preserve the row type parameter of `Table`
+    const tableProps = { ...restProps, renderTableRow, renderHeadTableRow } as unknown as ITableProps<IRow>;
 
-    return <Root {...slotProps?.root} {...restProps} {...tableProps} />;
+    return <Root {...slotProps?.root} {...tableProps} />;
 }
 
 declare module "@mui/material/styles" {

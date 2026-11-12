@@ -7,7 +7,13 @@ import {
     type Theme,
     useThemeProps,
 } from "@mui/material";
-import { gridColumnVisibilityModelSelector, type GridPinnedColumnPosition, useGridApiContext, useGridSelector } from "@mui/x-data-grid";
+import {
+    gridColumnVisibilityModelSelector,
+    type GridPinnedColumnPosition,
+    type GridSlotProps,
+    useGridApiContext,
+    useGridSelector,
+} from "@mui/x-data-grid";
 import type { GridApiPro } from "@mui/x-data-grid-pro";
 import { type ChangeEvent, useMemo } from "react";
 import { FormattedMessage } from "react-intl";
@@ -26,7 +32,7 @@ export type DataGridColumnsManagementProps = ThemedComponentBaseProps<{
 
 export type DataGridColumnsManagementClassKey = "root" | "body" | "list" | "listHeader" | "divider";
 
-export const DataGridColumnsManagement = (inProps: DataGridColumnsManagementProps) => {
+export const DataGridColumnsManagement = (inProps: DataGridColumnsManagementProps & GridSlotProps["columnsManagement"]) => {
     const { sx, className, slotProps = {} } = useThemeProps({ props: inProps, name: "DextinityAdminDataGridColumnsManagement" });
 
     const apiRef = useGridApiContext<GridApiPro>();

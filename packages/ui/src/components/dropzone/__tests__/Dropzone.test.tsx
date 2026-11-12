@@ -1,4 +1,4 @@
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Dropzone } from "../Dropzone";
@@ -33,5 +33,19 @@ describe("Dropzone", () => {
 
         const statuses = Array.from(container.querySelectorAll<HTMLElement>(".dextinityDropzone__upload")).map((upload) => upload.dataset.status);
         expect(statuses).toStrictEqual(["uploading", "done"]);
+    });
+
+    it("shows the progress only while a file is uploading", () => {
+        render(
+            <Dropzone
+                onFiles={vi.fn()}
+                uploads={[
+                    { id: "1", name: "a.jpg", progress: 0.5 },
+                    { id: "2", name: "b.jpg", progress: 1, status: "done" },
+                ]}
+            />,
+        );
+
+        expect(screen.getAllByRole("progressbar").map((progressbar) => progressbar.getAttribute("aria-label"))).toStrictEqual(["a.jpg"]);
     });
 });

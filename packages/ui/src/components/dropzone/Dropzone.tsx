@@ -14,7 +14,7 @@ export interface DropzoneUpload {
     /** How far the upload is, from 0 to 1, or `null` while unknown. */
     progress: number | null;
     /**
-     * `done` shows a check, `error` the `error` message in place of the progress.
+     * `done` hides the progress, as in a list of uploaded files, and `error` shows the `error` message in its place.
      *
      * @defaultValue `"uploading"`
      */
@@ -295,18 +295,11 @@ export const Dropzone = forwardRef<HTMLDivElement, DropzoneProps>(function Dropz
                         const status = upload.status ?? "uploading";
                         return (
                             <li key={upload.id} className={styles.upload} data-status={status}>
-                                <Icon name={status === "done" ? "check" : status === "error" ? "error" : "file"} className={styles.uploadIcon} />
+                                <Icon name={status === "error" ? "error" : "file"} className={styles.uploadIcon} />
                                 <span className={styles.uploadName}>{upload.name}</span>
-                                {status === "error" ? (
-                                    <span className={styles.uploadError}>{upload.error}</span>
-                                ) : (
-                                    <Progress.Root
-                                        value={status === "done" ? 1 : upload.progress}
-                                        min={0}
-                                        max={1}
-                                        aria-label={upload.name}
-                                        className={styles.progress}
-                                    >
+                                {status === "error" && <span className={styles.uploadError}>{upload.error}</span>}
+                                {status === "uploading" && (
+                                    <Progress.Root value={upload.progress} min={0} max={1} aria-label={upload.name} className={styles.progress}>
                                         <Progress.Track className={styles.track}>
                                             <Progress.Indicator className={styles.indicator} />
                                         </Progress.Track>

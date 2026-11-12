@@ -145,8 +145,8 @@
     box-shadow: var(--dextinity-dropzone-upload-shadow);
     font-size: var(--dextinity-typography-ui-size);
 
-    &[data-status="done"] .uploadIcon {
-        color: var(--dextinity-dropzone-done-foreground);
+    &[data-status="done"] .uploadName {
+        grid-column: span 2;
     }
 
     &[data-status="error"] .uploadIcon {

@@ -5,7 +5,8 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 import { expectPopupStaysOpen } from "../../../storybook/expectPopupStaysOpen";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
-import { TextField } from "../../textField/TextField";
+import { Field } from "../../field/Field";
+import { Input } from "../../input/Input";
 import { Dialog, type DialogProps } from "../Dialog";
 import dialogTokens from "../Dialog.tokens.scss?raw";
 import { DialogFormActions } from "../DialogFormActions";
@@ -120,8 +121,12 @@ function RedirectForm() {
     const [target, setTarget] = useState("/careers");
     return (
         <>
-            <TextField name="source" label="Source" value={source} onChange={(event) => setSource(event.target.value)} />
-            <TextField name="target" label="Target" value={target} onChange={(event) => setTarget(event.target.value)} />
+            <Field label="Source">
+                <Input name="source" value={source} onChange={(event) => setSource(event.target.value)} />
+            </Field>
+            <Field label="Target">
+                <Input name="target" value={target} onChange={(event) => setTarget(event.target.value)} />
+            </Field>
         </>
     );
 }
@@ -290,7 +295,9 @@ function FormDialog(props: DialogProps) {
                 }
             >
                 <form id={formId} onSubmit={handleSubmit}>
-                    <TextField name="name" label="Name" required value={name} onChange={(event) => setName(event.target.value)} />
+                    <Field label="Name" required>
+                        <Input name="name" value={name} onChange={(event) => setName(event.target.value)} />
+                    </Field>
                 </form>
             </Dialog>
         </>

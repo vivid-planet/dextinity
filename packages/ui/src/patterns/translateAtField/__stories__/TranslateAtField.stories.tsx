@@ -2,9 +2,10 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, userEvent, waitFor } from "storybook/test";
 
+import { Field } from "../../../components/field/Field";
 import { FieldActions } from "../../../components/fieldActions/FieldActions";
+import { Input } from "../../../components/input/Input";
 import { Textarea } from "../../../components/textarea/Textarea";
-import { TextField } from "../../../components/textField/TextField";
 import { ToastViewport } from "../../../components/toast/ToastViewport";
 import { useToasts } from "../../../components/toast/useToasts";
 import { PatternExample, PatternPage, PatternRules, PatternSection, PatternSteps, PatternUses } from "../../../storybook/patterns/PatternPage";
@@ -26,14 +27,13 @@ function FieldsExample() {
     return (
         <PatternExample>
             <div className={styles.fields}>
-                <TextField
-                    name="metaTitle"
+                <Field
                     label="Meta title"
                     helperText="Recommended: up to 60 characters."
-                    value={metaTitle}
-                    onChange={(event) => setMetaTitle(event.target.value)}
                     actions={<FieldActions translate targetLocales={["de", "fr"]} onTranslate={translate("Meta title")} />}
-                />
+                >
+                    <Input name="metaTitle" value={metaTitle} onChange={(event) => setMetaTitle(event.target.value)} />
+                </Field>
                 <Textarea
                     name="altText"
                     label="Alt text"

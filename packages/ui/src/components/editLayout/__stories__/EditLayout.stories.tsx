@@ -9,8 +9,10 @@ import { Block } from "../../blockList/Block";
 import { BlockList } from "../../blockList/BlockList";
 import { Button } from "../../button/Button";
 import { DevicePreview, type DevicePreviewDevice } from "../../devicePreview/DevicePreview";
+import { Field } from "../../field/Field";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
+import { Input } from "../../input/Input";
 import { KeyValueList } from "../../keyValueList/KeyValueList";
 import { PageHeader } from "../../pageHeader/PageHeader";
 import { Panel } from "../../panel/Panel";
@@ -21,7 +23,6 @@ import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { Switch } from "../../switch/Switch";
 import { Tabs } from "../../tabs/Tabs";
 import { Textarea } from "../../textarea/Textarea";
-import { TextField } from "../../textField/TextField";
 import { EditLayout, type EditLayoutProps } from "../EditLayout";
 import editLayoutTokens from "../EditLayout.tokens.scss?raw";
 import styles from "./EditLayout.stories.module.scss";
@@ -137,15 +138,9 @@ function JobAdFields() {
                     <p>These details appear in the list and on job boards.</p>
                 </div>
                 <div className={styles.fields}>
-                    <TextField
-                        className={styles.full}
-                        name="title"
-                        label="Title"
-                        required
-                        value={title}
-                        onChange={(event) => setTitle(event.target.value)}
-                        helperText="Use gender-inclusive wording."
-                    />
+                    <Field className={styles.full} label="Title" required helperText="Use gender-inclusive wording.">
+                        <Input name="title" value={title} onChange={(event) => setTitle(event.target.value)} />
+                    </Field>
                     <Select
                         name="location"
                         label="Location"
@@ -157,14 +152,9 @@ function JobAdFields() {
                             { value: "remote", label: "Remote" },
                         ]}
                     />
-                    <TextField
-                        name="salary"
-                        label="Salary from"
-                        value={salary}
-                        onChange={(event) => setSalary(event.target.value)}
-                        suffix="€ gross / year"
-                        helperText="Required in Austria."
-                    />
+                    <Field label="Salary from" suffix="€ gross / year" helperText="Required in Austria.">
+                        <Input name="salary" value={salary} onChange={(event) => setSalary(event.target.value)} />
+                    </Field>
                 </div>
             </section>
             <section className={styles.section}>

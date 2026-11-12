@@ -77,6 +77,11 @@
         opacity: var(--dextinity-input-state-disabled-opacity);
         cursor: not-allowed;
     }
+
+    // The surrounding `Field` draws the box, so the input and its adornments sit directly in it.
+    &[data-in-field] {
+        display: contents;
+    }
 }
 
 .input {

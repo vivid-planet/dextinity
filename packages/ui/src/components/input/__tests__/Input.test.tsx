@@ -2,6 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import type { InputHTMLAttributes } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { Field } from "../../field/Field";
 import { Input } from "../Input";
 
 function CustomInput(props: InputHTMLAttributes<HTMLInputElement>) {
@@ -72,5 +73,22 @@ describe("Input", () => {
             field?.className.includes("slot-class"),
             field?.className.includes("dextinityInput"),
         ]).toStrictEqual(["Field", true, true, true]);
+    });
+
+    it("takes its label, description, and state from a surrounding Field", () => {
+        render(
+            <Field label="Title" helperText="Use gender-neutral wording." required disabled state="error">
+                <Input name="title" value="" onChange={() => {}} />
+            </Field>,
+        );
+
+        const input = screen.getByRole("textbox", { name: "Title" });
+        expect(input).toHaveAccessibleDescription("Use gender-neutral wording.");
+        expect([input.hasAttribute("required"), input.hasAttribute("disabled"), input.getAttribute("aria-invalid")]).toStrictEqual([
+            true,
+            true,
+            "true",
+        ]);
+        expect(input.parentElement?.dataset.inField).toBe("");
     });
 });

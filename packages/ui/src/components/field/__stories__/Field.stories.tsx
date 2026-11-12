@@ -4,15 +4,16 @@ import { expect, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
+import { Input } from "../../input/Input";
 import { Toolbar } from "../../toolbar/Toolbar";
 import { ToolbarButton } from "../../toolbar/ToolbarButton";
 import { Field, type FieldControlProps } from "../Field";
 import fieldTokens from "../Field.tokens.scss?raw";
 import styles from "./Field.stories.module.scss";
 
-function TextControl({ initialValue = "", ...control }: FieldControlProps & { initialValue?: string }) {
+function TextInput({ initialValue = "" }: { initialValue?: string }) {
     const [value, setValue] = useState(initialValue);
-    return <input {...control} className={styles.control} value={value} onChange={(event) => setValue(event.target.value)} />;
+    return <Input name="title" value={value} onChange={(event) => setValue(event.target.value)} />;
 }
 
 function RangeControl(control: FieldControlProps) {
@@ -79,7 +80,7 @@ const meta = {
     parameters: { tokens: fieldTokens },
     args: {
         label: "Title",
-        children: (control) => <TextControl {...control} initialValue="Senior UX Designer" />,
+        children: <TextInput initialValue="Senior UX Designer" />,
     },
     argTypes: {
         state: { control: "select", options: ["default", "success", "warning", "error"] },
@@ -99,7 +100,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * The frame passes the props that connect a control to its label and message to the `children` function.
+ * An `Input` in the frame makes a complete text field: it takes the label, message, and state from the field. A custom control gets
+ * the props that connect it to its label and message from the `children` function.
  *
  * **Rules**
  * - Keep the label visible; a placeholder is never the only label.
@@ -146,7 +148,7 @@ export const Error: Story = {
         state: "error",
         helperText: "Use gender-neutral wording.",
         validationMessage: "Enter a title.",
-        children: (control) => <TextControl {...control} />,
+        children: <TextInput />,
     },
     play: async ({ canvas }) => {
         const control = canvas.getByRole("textbox");
@@ -184,14 +186,14 @@ export const Large: Story = {
 export const Disabled: Story = {
     args: {
         disabled: true,
-        children: (control) => <TextControl {...control} initialValue="JOB-041" />,
+        children: <TextInput initialValue="JOB-041" />,
     },
 };
 
 export const ReadOnly: Story = {
     args: {
         readOnly: true,
-        children: (control) => <TextControl {...control} initialValue="JOB-041" />,
+        children: <TextInput initialValue="JOB-041" />,
     },
 };
 
@@ -215,13 +217,13 @@ export const PrefixAndSuffix: Story = {
     render: (args) => (
         <div className={styles.stack}>
             <Field {...args} label="URL" prefix="example.com">
-                {(control) => <TextControl {...control} initialValue="/careers/open-positions" />}
+                <TextInput initialValue="/careers/open-positions" />
             </Field>
             <Field {...args} label="Salary" suffix="€ gross / year">
-                {(control) => <TextControl {...control} initialValue="58,000" />}
+                <TextInput initialValue="58,000" />
             </Field>
             <Field {...args} label="Search" prefix={<Icon name="search" />}>
-                {(control) => <TextControl {...control} />}
+                <TextInput />
             </Field>
         </div>
     ),

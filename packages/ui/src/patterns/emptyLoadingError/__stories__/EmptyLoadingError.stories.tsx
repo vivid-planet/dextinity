@@ -5,10 +5,11 @@ import { expect, userEvent, waitFor } from "storybook/test";
 import { Banner } from "../../../components/banner/Banner";
 import { Button } from "../../../components/button/Button";
 import { EmptyState } from "../../../components/emptyState/EmptyState";
+import { Field } from "../../../components/field/Field";
 import { Icon } from "../../../components/icon/Icon";
+import { Input } from "../../../components/input/Input";
 import { Skeleton } from "../../../components/skeleton/Skeleton";
 import { StatusIndicator } from "../../../components/statusIndicator/StatusIndicator";
-import { TextField } from "../../../components/textField/TextField";
 import { Toast } from "../../../components/toast/Toast";
 import { jobAds } from "../../../storybook/patterns/jobAds";
 import {
@@ -81,15 +82,9 @@ function TitleFieldExample() {
     const [title, setTitle] = useState("");
     return (
         <div className={styles.field}>
-            <TextField
-                label="Title"
-                name="title"
-                required
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                state={title === "" ? "error" : "default"}
-                validationMessage="Enter a title."
-            />
+            <Field label="Title" required state={title === "" ? "error" : "default"} validationMessage="Enter a title.">
+                <Input name="title" value={title} onChange={(event) => setTitle(event.target.value)} />
+            </Field>
         </div>
     );
 }

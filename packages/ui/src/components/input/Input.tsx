@@ -13,6 +13,7 @@ import {
 } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
+import { useFieldContext } from "../field/fieldContext";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./Input.module.scss";
 
@@ -117,8 +118,8 @@ function focusInputOnFieldClick(event: MouseEvent<HTMLDivElement>) {
 }
 
 /**
- * The box of a single-line text field, without label or messages, to combine with `FormLabel` and `FormHelperText`.
- * For a complete field with label, helper text and validation message, use `TextField`.
+ * A single line of text. Inside a `Field`, it takes the field's label, message and state and leaves the box to the field, which
+ * makes a complete text field. On its own, it draws its own box, to combine with `FormLabel` and `FormHelperText`.
  */
 export const Input: <InputElement extends InputSlotElement = typeof BaseInput, LoadingSpinner extends ElementType = typeof Spinner>(
     props: InputProps<InputElement, LoadingSpinner> & RefAttributes<HTMLInputElement>,
@@ -141,19 +142,29 @@ export const Input: <InputElement extends InputSlotElement = typeof BaseInput, L
     }: InputProps<InputElement, LoadingSpinner>,
     ref: ForwardedRef<HTMLInputElement>,
 ) {
-    const ownerState: InputOwnerState = { status, disabled: disabled === true, readOnly: readOnly === true, loading: loading === true };
+    const field = useFieldContext();
+    const fieldControl = field?.control;
+    const ownerState: InputOwnerState = {
+        status,
+        disabled: disabled === true || fieldControl?.disabled === true,
+        readOnly: readOnly === true || fieldControl?.readOnly === true,
+        loading: loading === true,
+    };
 
     const InputSlot: ElementType = slots?.input ?? BaseInput;
     const LoadingSpinnerSlot: ElementType = slots?.loadingSpinner ?? Spinner;
 
     const inputProps = resolveSlotProps<InputOwnerState, InputElement, typeof BaseInput>({
         ownProps: {
+            ...fieldControl,
             ...restProps,
             ref,
             disabled: ownerState.disabled,
             readOnly: ownerState.readOnly,
-            "aria-invalid": ownerState.status === "error" || restProps["aria-invalid"],
-            "aria-busy": ownerState.loading || restProps["aria-busy"],
+            required: restProps.required ?? fieldControl?.required,
+            "aria-describedby": clsx(fieldControl?.["aria-describedby"], restProps["aria-describedby"]) || undefined,
+            "aria-invalid": ownerState.status === "error" || fieldControl?.["aria-invalid"] || restProps["aria-invalid"],
+            "aria-busy": ownerState.loading || fieldControl?.["aria-busy"] || restProps["aria-busy"],
             className: styles.input,
         },
         slotProps: slotProps?.input,
@@ -178,6 +189,7 @@ export const Input: <InputElement extends InputSlotElement = typeof BaseInput, L
             data-disabled={ownerState.disabled ? "" : undefined}
             data-readonly={ownerState.readOnly ? "" : undefined}
             data-loading={ownerState.loading ? "" : undefined}
+            data-in-field={field != null ? "" : undefined}
         >
             {hasContent(startAdornment) && <span className={styles.startAdornment}>{startAdornment}</span>}
             <InputSlot {...inputProps} />

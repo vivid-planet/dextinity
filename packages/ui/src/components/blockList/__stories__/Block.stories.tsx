@@ -3,9 +3,10 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Field } from "../../field/Field";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
-import { TextField } from "../../textField/TextField";
+import { Input } from "../../input/Input";
 import { Block, type BlockProps } from "../Block";
 import { BlockList } from "../BlockList";
 import blockListTokens from "../BlockList.tokens.scss?raw";
@@ -16,8 +17,12 @@ function HeroFields() {
     const [text, setText] = useState("Careers at Example Inc.");
     return (
         <>
-            <TextField label="Title" name="title" value={title} onChange={(event) => setTitle(event.target.value)} />
-            <TextField label="Text" name="text" value={text} onChange={(event) => setText(event.target.value)} />
+            <Field label="Title">
+                <Input name="title" value={title} onChange={(event) => setTitle(event.target.value)} />
+            </Field>
+            <Field label="Text">
+                <Input name="text" value={text} onChange={(event) => setText(event.target.value)} />
+            </Field>
         </>
     );
 }

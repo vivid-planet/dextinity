@@ -6,8 +6,10 @@ import { AssetThumbnail } from "../../components/assetThumbnail/AssetThumbnail";
 import { Button } from "../../components/button/Button";
 import { DateTimePicker } from "../../components/datePicker/DateTimePicker";
 import { Dialog } from "../../components/dialog/Dialog";
+import { Field } from "../../components/field/Field";
 import { FilterBar } from "../../components/filterBar/FilterBar";
 import { Icon } from "../../components/icon/Icon";
+import { Input } from "../../components/input/Input";
 import { Menu } from "../../components/menu/Menu";
 import { MenuItem } from "../../components/menu/MenuItem";
 import { MenuSeparator } from "../../components/menu/MenuSeparator";
@@ -17,7 +19,6 @@ import { SegmentedControl } from "../../components/segmentedControl/SegmentedCon
 import { Slider } from "../../components/slider/Slider";
 import { Switch } from "../../components/switch/Switch";
 import { Tabs } from "../../components/tabs/Tabs";
-import { TextField } from "../../components/textField/TextField";
 import { Toolbar } from "../../components/toolbar/Toolbar";
 import { ToolbarButton } from "../../components/toolbar/ToolbarButton";
 import { ToolbarSeparator } from "../../components/toolbar/ToolbarSeparator";
@@ -38,7 +39,9 @@ function Gallery() {
     return (
         <div className={styles.gallery}>
             <FilterBar searchValue={search} onSearchChange={setSearch} searchShortcut={false} />
-            <TextField name="title" label="Title" value={title} onChange={(event) => setTitle(event.target.value)} />
+            <Field label="Title">
+                <Input name="title" value={title} onChange={(event) => setTitle(event.target.value)} />
+            </Field>
             <Switch checked={hidden} onChange={setHidden}>
                 Hide in menu
             </Switch>

@@ -1,4 +1,4 @@
-// The values match the box of `Field`, so an `Input` composed with `FormLabel` and `FormHelperText` looks like a `TextField`.
+// The values match the box of `Field`, so an `Input` composed with `FormLabel` and `FormHelperText` looks like an `Input` in a `Field`.
 @mixin tokens {
     // Width of the border around the input
     --dextinity-input-border-width: var(--dextinity-line-width);

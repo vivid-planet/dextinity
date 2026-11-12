@@ -8,17 +8,18 @@ import { StoryTable, type StoryTableColumn } from "../../../storybook/StoryTable
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Chip } from "../../chip/Chip";
+import { Field } from "../../field/Field";
 import { FilterBar } from "../../filterBar/FilterBar";
 import { FilterChip } from "../../filterChip/FilterChip";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
+import { Input } from "../../input/Input";
 import { PageHeader } from "../../pageHeader/PageHeader";
 import { Panel } from "../../panel/Panel";
 import { SegmentedControl } from "../../segmentedControl/SegmentedControl";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { Switch } from "../../switch/Switch";
 import { Textarea } from "../../textarea/Textarea";
-import { TextField } from "../../textField/TextField";
 import { ListDetailLayout } from "../ListDetailLayout";
 import listDetailLayoutTokens from "../ListDetailLayout.tokens.scss?raw";
 import styles from "./ListDetailLayout.stories.module.scss";
@@ -136,22 +137,12 @@ function RedirectForm({ redirect, onClose, onSave }: { redirect: Redirect; onClo
             }
         >
             <div className={styles.form}>
-                <TextField
-                    name="source"
-                    label="Source"
-                    required
-                    prefix="example.com"
-                    value={draft.source}
-                    onChange={(event) => setDraft({ ...draft, source: event.target.value })}
-                />
-                <TextField
-                    name="target"
-                    label="Target"
-                    required
-                    value={draft.target}
-                    onChange={(event) => setDraft({ ...draft, target: event.target.value })}
-                    helperText="A page path or an external URL."
-                />
+                <Field label="Source" required prefix="example.com">
+                    <Input name="source" value={draft.source} onChange={(event) => setDraft({ ...draft, source: event.target.value })} />
+                </Field>
+                <Field label="Target" required helperText="A page path or an external URL.">
+                    <Input name="target" value={draft.target} onChange={(event) => setDraft({ ...draft, target: event.target.value })} />
+                </Field>
                 <div className={styles.group} role="group" aria-labelledby="redirect-type-label">
                     <span id="redirect-type-label" className={styles.groupLabel}>
                         Type

@@ -23,7 +23,7 @@ Changesets are not created for changes within this package.
 
 ## Folder and file names
 
-- **Feature folders** use camelCase (`button/`, `textField/`).
+- **Feature folders** use camelCase (`button/`, `iconButton/`).
 - **Component file**: `<ComponentName>.tsx` (PascalCase), one per component feature.
 - **Non-component code file**: `<featureName>.ts(x)` (camelCase) for utilities and hooks.
 - **Styles**: `<ComponentName>.module.scss` (CSS Modules with SCSS).
@@ -111,8 +111,8 @@ The contract has two parts: **structural class names** for a component's element
 
 **Structural class names** identify a component's root and its parts:
 
-- **Root** — `dextinity<Component>`. The outermost element of a component, camelCased. Examples: `dextinityButton`, `dextinityTextField`.
-- **Parts** — `dextinity<Component>__<partName>`. A part is a named sub-element; the part name is camelCased. Examples: `dextinityButton__startIcon`, `dextinityTextField__label`.
+- **Root** — `dextinity<Component>`. The outermost element of a component, camelCased. Examples: `dextinityButton`, `dextinityField`.
+- **Parts** — `dextinity<Component>__<partName>`. A part is a named sub-element; the part name is camelCased. Examples: `dextinityButton__startIcon`, `dextinityField__label`.
 
 **Owner-state styling** uses `data-*` attributes on the root element, following base-ui's own conversion of an owner-state object:
 

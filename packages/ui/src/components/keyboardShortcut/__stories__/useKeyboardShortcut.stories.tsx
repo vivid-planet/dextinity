@@ -3,9 +3,10 @@ import { useRef, useState } from "react";
 import { expect, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Field } from "../../field/Field";
 import { Icon } from "../../icon/Icon";
+import { Input } from "../../input/Input";
 import { SaveState, type SaveStateValue } from "../../saveState/SaveState";
-import { TextField } from "../../textField/TextField";
 import { KeyboardShortcut } from "../KeyboardShortcut";
 import { formatShortcut, isApplePlatform, useKeyboardShortcut } from "../useKeyboardShortcut";
 import styles from "./useKeyboardShortcut.stories.module.scss";
@@ -17,15 +18,16 @@ function SaveShortcutDemo() {
 
     return (
         <div className={styles.demo}>
-            <TextField
-                label="Title"
-                name="title"
-                value={title}
-                onChange={(event) => {
-                    setTitle(event.target.value);
-                    setSaveState("dirty");
-                }}
-            />
+            <Field label="Title">
+                <Input
+                    name="title"
+                    value={title}
+                    onChange={(event) => {
+                        setTitle(event.target.value);
+                        setSaveState("dirty");
+                    }}
+                />
+            </Field>
             <div className={styles.row}>
                 <SaveState state={saveState} />
                 <span className={styles.keys}>
@@ -45,16 +47,9 @@ function SearchShortcutDemo() {
 
     return (
         <div className={styles.demo}>
-            <TextField
-                ref={searchRef}
-                label="Search"
-                name="search"
-                type="search"
-                prefix={<Icon name="search" />}
-                suffix={<KeyboardShortcut>/</KeyboardShortcut>}
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-            />
+            <Field label="Search" prefix={<Icon name="search" />} suffix={<KeyboardShortcut>/</KeyboardShortcut>}>
+                <Input ref={searchRef} name="search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} />
+            </Field>
         </div>
     );
 }

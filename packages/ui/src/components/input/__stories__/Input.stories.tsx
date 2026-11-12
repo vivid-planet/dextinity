@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn } from "storybook/test";
+import { useState } from "react";
+import { expect, fn, userEvent } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Field } from "../../field/Field";
 import { Icon } from "../../icon/Icon";
 import { Input } from "../Input";
 import inputTokens from "../Input.tokens.scss?raw";
@@ -99,5 +101,29 @@ export const Search: Story = {
         "aria-label": "Search",
         placeholder: "Search",
         startAdornment: <Icon name="search" />,
+    },
+};
+
+function TitleField() {
+    const [title, setTitle] = useState("");
+    return (
+        <Field label="Title" required helperText="Use gender-neutral wording." counter={`${title.length} / 60`}>
+            <Input name="title" value={title} maxLength={60} onChange={(event) => setTitle(event.target.value)} />
+        </Field>
+    );
+}
+
+/**
+ * In a `Field`, the input takes the field's label, help, and state, and the field draws the box: together they make a complete text
+ * field. Set the label, help, validation, prefix, and suffix on the `Field`.
+ */
+export const InField: Story = {
+    render: () => <TitleField />,
+    play: async ({ canvas }) => {
+        const input = canvas.getByRole("textbox", { name: "Title" });
+        await expect(input).toBeRequired();
+        await expect(input).toHaveAccessibleDescription("Use gender-neutral wording.");
+        await userEvent.type(input, "Careers");
+        await expect(canvas.getByText("7 / 60")).toBeVisible();
     },
 };

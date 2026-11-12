@@ -281,11 +281,11 @@ A brand is a CSS block on `[data-dextinity-brand="<name>"]` that sets the `--dex
 
 `icons.css` ships as it is, outside the Vite build: Vite's library mode puts every file that a `url()` refers to into the CSS as a `data:` URL, so all icons would be in every application's CSS. The application's bundler resolves the URLs instead, and the browser loads only the icons that it shows. Each URL ends in `#icon`, because the application's Vite doesn't inline a file whose URL has a fragment either.
 
-An icon is 16px. Components size their nested icons through `--dextinity-icon-size`, and `Icon`'s `size` prop picks one of the sizes `small` (16px), `default` (20px), and `large` (24px). With `duotone`, `Icon` adds a soft fill behind the line from `--dextinity-duotone-icon-<name>` (SVG files in [`svg/duotone/`](svg/duotone)); an icon without one shows only its line.
+An icon is 18px. Components size their nested icons through `--dextinity-icon-size`, and `Icon`'s `size` prop picks one of the sizes `small` (18px), `default` (20px), and `large` (24px). With `duotone`, `Icon` adds a soft fill behind the line from `--dextinity-duotone-icon-<name>` (SVG files in [`svg/duotone/`](svg/duotone)); an icon without one shows only its line.
 
 ### Adding an icon
 
 1. Prepare the SVG file. The icons are lines on a 24×24 grid with a 1.5 stroke and round ends, so its root element is `<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">`; for any other grid, ask for a 24×24 version instead of scaling it.
-2. Save it as `svg/<name>.svg`, with the name in kebab case, for example `arrow-right.svg`. Icons from the Figma library keep their Figma name; an icon that the library doesn't have yet follows the same naming, for example the `rte-` prefix for the rich text editor.
+2. Save it as `svg/<name>.svg`, with the name in kebab case, for example `arrow-right.svg`. Existing icons keep their name; new icons follow the same kebab-case naming, for example the `rte-` prefix for the rich text editor.
 3. Add the name to `defaultIconNames` in [`iconRegistry.ts`](src/components/icon/iconRegistry.ts), its search terms to [`iconSearchTerms.ts`](src/docs/theme/__stories__/iconSearchTerms.ts), and its variable to `icons.css`: `--dextinity-colored-icon-<name>` when the icon keeps its own colors, `--dextinity-icon-<name>` otherwise. [`iconSet.test.ts`](src/components/icon/__tests__/iconSet.test.ts) fails when the SVG files, the variables, and the names don't match.
 4. Optionally, add a soft fill for `duotone` as `svg/duotone/<name>.svg`, a filled shape on the same grid, and its variable `--dextinity-duotone-icon-<name>` to `icons.css`.

@@ -12,7 +12,7 @@ const onResetFilters = fn();
 const iconOptions = {
     Search: <Icon name="search" duotone />,
     Inbox: <Icon name="inbox" duotone />,
-    Lock: <Icon name="lock" duotone />,
+    Lock: <Icon name="locked" duotone />,
 };
 
 const actionOptions = {
@@ -100,7 +100,7 @@ export const NothingYet: Story = {
 export const TitleElement: Story = {
     args: {
         title: "No access",
-        icon: <Icon name="lock" duotone />,
+        icon: <Icon name="locked" duotone />,
         description: "Ask an administrator for the editor role.",
         slots: { title: "h2" },
     },

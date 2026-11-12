@@ -1,10 +1,10 @@
 @mixin tokens {
     // Indicators inside small parts, such as a badge, a menu or checkbox check mark or an expand chevron
-    --dextinity-icon-size-xxsmall: 12px;
+    --dextinity-icon-size-xxsmall: 13px;
     // Icons inside compact controls, such as chips, tabs and toolbar menus
-    --dextinity-icon-size-xsmall: 14px;
+    --dextinity-icon-size-xsmall: 15px;
     // An icon with `size="small"` or outside a component, and icons in buttons, fields and menus
-    --dextinity-icon-size-small: 16px;
+    --dextinity-icon-size-small: 18px;
     // An icon with `size="default"`, e.g. in the command palette and the collapsed side nav
     --dextinity-icon-size-default: 20px;
     // An icon with `size="large"`

@@ -30,6 +30,9 @@
     // Pulses out from the dot while running; still with reduced motion
     --dextinity-status-indicator-running-pulse: var(--dextinity-color-accent-glow);
     --dextinity-status-indicator-running-foreground: var(--dextinity-color-accent-text);
+
+    // The mark after the label of a critical status
+    --dextinity-status-indicator-mark-font-weight: 700;
 }
 
 @mixin high-contrast-tokens {

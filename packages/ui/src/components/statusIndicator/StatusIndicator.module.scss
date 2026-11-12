@@ -48,7 +48,7 @@
         &:not([data-dotonly])::after {
             content: var(--dextinity-status-indicator-critical-mark) / "";
             margin-inline-start: calc(var(--dextinity-status-indicator-gap) * -1 + 1px);
-            font-weight: 700;
+            font-weight: var(--dextinity-status-indicator-mark-font-weight);
         }
     }
 

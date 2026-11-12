@@ -6,7 +6,7 @@
     --dextinity-pagination-page-size: var(--dextinity-density-icon-button-size-small);
     --dextinity-pagination-page-radius: var(--dextinity-radius-item);
     --dextinity-pagination-page-foreground: var(--dextinity-color-text-secondary);
-    --dextinity-pagination-page-background-hover: color-mix(in oklch, var(--dextinity-color-text) 6%, transparent);
+    --dextinity-pagination-page-background-hover: var(--dextinity-color-fill-hover);
     // Fill of the current page
     --dextinity-pagination-page-background-current: var(--dextinity-color-accent);
     --dextinity-pagination-page-foreground-current: var(--dextinity-color-accent-foreground);

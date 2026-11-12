@@ -8,7 +8,7 @@
 
     --dextinity-icon-button-foreground: var(--dextinity-color-text-tertiary);
     --dextinity-icon-button-foreground-hover: var(--dextinity-color-text);
-    --dextinity-icon-button-background-hover: color-mix(in oklch, var(--dextinity-color-text) 6%, transparent);
+    --dextinity-icon-button-background-hover: var(--dextinity-color-fill-hover);
     // While the menu or panel the button opens is open
     --dextinity-icon-button-background-expanded: color-mix(in oklch, var(--dextinity-color-text) 8%, transparent);
 

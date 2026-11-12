@@ -3,7 +3,7 @@
     --dextinity-progress-bar-gap: var(--dextinity-space-1-5);
     --dextinity-progress-bar-height: 6px;
     --dextinity-progress-bar-height-small: 4px;
-    --dextinity-progress-bar-track: color-mix(in oklch, var(--dextinity-color-text) 10%, transparent);
+    --dextinity-progress-bar-track: var(--dextinity-color-fill-track);
     --dextinity-progress-bar-track-shadow: 0 0 transparent;
     --dextinity-progress-bar-indicator-accent: var(--dextinity-gradient-brand);
     --dextinity-progress-bar-indicator-success: var(--dextinity-color-success);

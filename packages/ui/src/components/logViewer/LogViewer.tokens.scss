@@ -13,7 +13,7 @@
     --dextinity-log-viewer-font-size: var(--dextinity-typography-mono-size);
     --dextinity-log-viewer-line-height: 1.6;
     --dextinity-log-viewer-number-color: var(--dextinity-color-text-subtle);
-    --dextinity-log-viewer-line-background-hover: color-mix(in oklch, var(--dextinity-color-text) 4%, transparent);
+    --dextinity-log-viewer-line-background-hover: var(--dextinity-color-fill-subtle);
     --dextinity-log-viewer-line-error-background: var(--dextinity-color-danger-soft);
     --dextinity-log-viewer-line-error-foreground: var(--dextinity-color-danger-text);
     --dextinity-log-viewer-line-warning-background: var(--dextinity-color-warning-soft);

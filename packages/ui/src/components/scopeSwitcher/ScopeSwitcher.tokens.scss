@@ -15,7 +15,7 @@
     --dextinity-scope-switcher-column-max-height: 300px;
     --dextinity-scope-switcher-option-height: 34px;
     --dextinity-scope-switcher-option-radius: var(--dextinity-radius-item);
-    --dextinity-scope-switcher-option-background-hover: color-mix(in oklch, var(--dextinity-color-text) 6%, transparent);
+    --dextinity-scope-switcher-option-background-hover: var(--dextinity-color-fill-hover);
     --dextinity-scope-switcher-option-selected-background: var(--dextinity-color-accent-soft);
     --dextinity-scope-switcher-option-selected-foreground: var(--dextinity-color-accent-text);
     --dextinity-scope-switcher-option-selected-shadow: 0 0 transparent;

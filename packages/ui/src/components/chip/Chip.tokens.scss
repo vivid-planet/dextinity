@@ -21,7 +21,7 @@
     // Contained: a filled chip that needs attention
     --dextinity-chip-contained-primary-background: var(--dextinity-color-accent);
     --dextinity-chip-contained-primary-foreground: var(--dextinity-color-accent-foreground);
-    --dextinity-chip-contained-secondary-background: color-mix(in oklch, var(--dextinity-color-text) 9%, transparent);
+    --dextinity-chip-contained-secondary-background: var(--dextinity-color-fill-strong);
     --dextinity-chip-contained-secondary-foreground: var(--dextinity-color-text);
     --dextinity-chip-contained-info-background: var(--dextinity-color-info);
     --dextinity-chip-contained-info-foreground: var(--dextinity-color-accent-foreground);

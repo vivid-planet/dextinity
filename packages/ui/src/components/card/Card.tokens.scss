@@ -23,7 +23,7 @@
     --dextinity-card-row-padding: var(--dextinity-space-3) 14px;
     --dextinity-card-row-gap: 14px;
     --dextinity-card-row-radius: var(--dextinity-radius-row);
-    --dextinity-card-row-hover-background: color-mix(in oklch, var(--dextinity-color-text) 4%, transparent);
+    --dextinity-card-row-hover-background: var(--dextinity-color-fill-subtle);
     --dextinity-card-row-title-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-card-row-subtitle-color: var(--dextinity-color-text-tertiary);
     --dextinity-card-row-subtitle-font-size: var(--dextinity-typography-small-size);

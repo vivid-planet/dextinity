@@ -2,28 +2,13 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
-import { SaveState } from "../../saveState/SaveState";
 import { Tooltip } from "../../tooltip/Tooltip";
 import { TopBar } from "../TopBar";
 import topBarTokens from "../TopBar.tokens.scss?raw";
 import styles from "./TopBar.stories.module.scss";
 import { StoryScopeSwitcher, StoryUserMenu } from "./topBarStoryParts";
-
-const editActions = (
-    <>
-        <SaveState state="dirty" />
-        <IconButton variant="text" color="secondary" aria-label="Preview">
-            <Icon name="visible" />
-        </IconButton>
-        <IconButton variant="text" color="secondary" aria-label="More actions">
-            <Icon name="more-horizontal" />
-        </IconButton>
-        <Button startIcon={<Icon name="check" />}>Save</Button>
-    </>
-);
 
 const meta = {
     component: TopBar,
@@ -43,13 +28,9 @@ const meta = {
         userMenu: <StoryUserMenu />,
     },
     argTypes: {
-        mode: { control: "radio", options: ["browse", "edit"] },
         scope: { control: false },
         userMenu: { control: false },
         browseActions: { control: false },
-        actions: { control: false },
-        back: { control: false },
-        title: { control: "text" },
         labels: { control: false },
         className: { control: false },
     },
@@ -65,6 +46,7 @@ type Story = StoryObj<typeof meta>;
  * **Rules**
  *
  * - One top bar for the whole app; screens don't add their own.
+ * - It looks the same on every page. Back, what is edited, and Save belong in the page's `PageHeader`.
  * - The scope is always visible and lives only here.
  * - Never show the app name in the top bar; it belongs in the navigation.
  */
@@ -94,19 +76,6 @@ export const WithBrowseActions: Story = {
         const scope = canvas.getByRole("banner").querySelector(".dextinityScopeSwitcher");
         await expect(builds).toBeVisible();
         await expect(scope != null && builds.compareDocumentPosition(scope) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    },
-};
-
-/**
- * While editing, back, what is edited, and the editing actions replace search, scope, and user menu. Save is the bar's only primary action. A
- * page sets them with `useTopBarEdit`, see the `AppShell`'s `EditingPage` story.
- */
-export const Edit: Story = {
-    args: {
-        mode: "edit",
-        back: { label: "Back to job ads", onClick: fn() },
-        title: "Frontend developer",
-        actions: editActions,
     },
 };
 

@@ -4,7 +4,6 @@ import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useState } 
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
-import { TopBarEditProvider } from "../topBar/topBarEdit";
 import styles from "./AppShell.module.scss";
 import { AppShellContext, type AppShellContextValue } from "./appShellContext";
 import { useMediaQuery } from "./useMediaQuery";
@@ -41,8 +40,7 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
     /** The navigation, usually a `SideNav` without `collapsed` and `onCollapsedChange`, which then follows the shell. */
     nav: ReactNode;
     /**
-     * The top bar, usually a `TopBar`; it sticks to the top. Without `onMenuClick`, its menu button opens the navigation drawer. Without
-     * `mode`, it switches to its edit mode while a page in the content calls `useTopBarEdit`.
+     * The top bar, usually a `TopBar`; it sticks to the top. Without `onMenuClick`, its menu button opens the navigation drawer.
      */
     topBar: ReactNode;
     /** The page: page header, then panels. */
@@ -118,34 +116,32 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
             data-navcollapsed={ownerState.navCollapsed ? "" : undefined}
             className={clsx(styles.root, className)}
         >
-            <TopBarEditProvider>
-                <span ref={anchorRef} hidden />
-                <div className={styles.lightField} aria-hidden>
-                    <span />
-                </div>
-                {layout === "narrow" ? (
-                    <AppShellContext.Provider value={drawerContext}>
-                        <BaseDialog.Root open={navDrawerOpen} onOpenChange={setNavDrawerOpen}>
-                            <BaseDialog.Portal container={container}>
-                                <BaseDialog.Backdrop className={styles.backdrop} />
-                                <BaseDialog.Popup aria-label={labels.navigation} className={styles.navDrawer}>
-                                    {nav}
-                                </BaseDialog.Popup>
-                            </BaseDialog.Portal>
-                        </BaseDialog.Root>
-                    </AppShellContext.Provider>
-                ) : (
-                    <AppShellContext.Provider value={columnContext}>
-                        <div className={styles.nav}>{nav}</div>
-                    </AppShellContext.Provider>
-                )}
-                <AppShellContext.Provider value={mainContext}>
-                    <main {...mainProps}>
-                        <div className={styles.topBar}>{topBar}</div>
-                        <div className={styles.content}>{children}</div>
-                    </main>
+            <span ref={anchorRef} hidden />
+            <div className={styles.lightField} aria-hidden>
+                <span />
+            </div>
+            {layout === "narrow" ? (
+                <AppShellContext.Provider value={drawerContext}>
+                    <BaseDialog.Root open={navDrawerOpen} onOpenChange={setNavDrawerOpen}>
+                        <BaseDialog.Portal container={container}>
+                            <BaseDialog.Backdrop className={styles.backdrop} />
+                            <BaseDialog.Popup aria-label={labels.navigation} className={styles.navDrawer}>
+                                {nav}
+                            </BaseDialog.Popup>
+                        </BaseDialog.Portal>
+                    </BaseDialog.Root>
                 </AppShellContext.Provider>
-            </TopBarEditProvider>
+            ) : (
+                <AppShellContext.Provider value={columnContext}>
+                    <div className={styles.nav}>{nav}</div>
+                </AppShellContext.Provider>
+            )}
+            <AppShellContext.Provider value={mainContext}>
+                <main {...mainProps}>
+                    <div className={styles.topBar}>{topBar}</div>
+                    <div className={styles.content}>{children}</div>
+                </main>
+            </AppShellContext.Provider>
             <div className={styles.grain} aria-hidden />
         </div>
     );

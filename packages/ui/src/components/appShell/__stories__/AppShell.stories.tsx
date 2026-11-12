@@ -14,7 +14,6 @@ import { sideNavGroups } from "../../sideNav/__stories__/sideNavStoryData";
 import { getSideNavAncestorIds, SideNav } from "../../sideNav/SideNav";
 import { StoryScopeSwitcher, StoryUserMenu } from "../../topBar/__stories__/topBarStoryParts";
 import { TopBar } from "../../topBar/TopBar";
-import { useTopBarEdit } from "../../topBar/topBarEdit";
 import { AppShell, type AppShellProps } from "../AppShell";
 import appShellTokens from "../AppShell.tokens.scss?raw";
 import styles from "./AppShell.stories.module.scss";
@@ -153,25 +152,29 @@ export const NavCollapsed: Story = {
     },
 };
 
-/** An editor: while it's shown, the top bar shows its back button, title, and actions. */
+/** An editor: its page header leads back and holds the save state and Save; the top bar stays as it is. */
 function StoryEditPage({ onBack }: { onBack: () => void }) {
     const [saved, setSaved] = useState(false);
-    useTopBarEdit({
-        back: { label: "Back to job ads", onClick: onBack },
-        title: "Frontend developer",
-        actions: (
-            <>
-                <SaveState state={saved ? "saved" : "dirty"} />
-                <Button startIcon={<Icon name="check" />} disabled={saved} onClick={() => setSaved(true)}>
-                    Save
-                </Button>
-            </>
-        ),
-    });
     return (
-        <Panel title="Job ad">
-            <p className={styles.placeholder}>The fields of the job ad</p>
-        </Panel>
+        <div className={styles.editPage}>
+            <PageHeader
+                variant="compact"
+                back={{ label: "Back to job ads", onClick: onBack }}
+                eyebrow="Job ad · Austria · German"
+                title="Frontend developer"
+                actions={
+                    <>
+                        <SaveState state={saved ? "saved" : "dirty"} />
+                        <Button startIcon={<Icon name="check" />} disabled={saved} onClick={() => setSaved(true)}>
+                            Save
+                        </Button>
+                    </>
+                }
+            />
+            <Panel title="Job ad">
+                <p className={styles.placeholder}>The fields of the job ad</p>
+            </Panel>
+        </div>
     );
 }
 
@@ -185,19 +188,18 @@ function StoryEditFlow() {
 }
 
 /**
- * A page switches the top bar to its edit mode with `useTopBarEdit`: back, what is edited, and the editing actions replace search,
- * scope, and user menu while the page is shown. Leave the `TopBar`'s `mode` unset.
+ * An edit page puts back, what is edited, and Save in its `PageHeader`. The top bar keeps search, scope, and user menu on every page.
  */
 export const EditingPage: Story = {
     args: { children: <StoryEditFlow /> },
     play: async ({ canvasElement }) => {
         await userEvent.click(screen.getByRole("button", { name: "Edit “Frontend developer”" }));
+        await expect(await screen.findByRole("heading", { level: 1, name: "Frontend developer" })).toBeInTheDocument();
         const bar = canvasElement.querySelector(".dextinityTopBar");
-        await waitFor(() => expect(bar).toHaveAttribute("data-mode", "edit"));
-        await expect(bar).toHaveTextContent("Frontend developer");
+        await expect(bar).toContainElement(screen.getByRole("button", { name: "Search, jump, create …" }));
         await userEvent.click(screen.getByRole("button", { name: "Save" }));
         await expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
         await userEvent.click(screen.getByRole("button", { name: "Back to job ads" }));
-        await waitFor(() => expect(bar).toHaveAttribute("data-mode", "browse"));
+        await expect(await screen.findByRole("heading", { level: 1, name: "Job ads" })).toBeInTheDocument();
     },
 };

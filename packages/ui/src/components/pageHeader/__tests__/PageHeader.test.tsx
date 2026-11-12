@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { PageHeader } from "../PageHeader";
 
@@ -26,9 +26,11 @@ describe("PageHeader", () => {
         expect(root.dataset.hasActions).toBe("");
         const heading = screen.getByRole("heading", { level: 1, name: "Page tree" });
         expect(heading.className).toContain("dextinityPageHeader__title");
-        expect(screen.getByRole("link", { name: "Overview" }).getAttribute("href")).toBe("/");
+        const back = screen.getByRole("link", { name: "Overview" });
+        expect(back.getAttribute("href")).toBe("/");
+        expect(back.nextElementSibling).toBe(heading);
         expect(screen.getByText("3 unpublished").className).toContain("dextinityPageHeader__subtitle");
-        expect(container.querySelector(".dextinityPageHeader__labelLine")?.textContent).toBe("Overview·Austria · German");
+        expect(container.querySelector(".dextinityPageHeader__labelLine")?.textContent).toBe("Austria · German");
     });
 
     it("leaves out the label line and the actions when they are not given", () => {
@@ -37,6 +39,16 @@ describe("PageHeader", () => {
         expect(container.querySelector(".dextinityPageHeader__labelLine")).toBeNull();
         expect(container.querySelector(".dextinityPageHeader__actions")).toBeNull();
         expect((container.firstElementChild as HTMLElement).hasAttribute("data-has-back")).toBe(false);
+    });
+
+    it("shows a back button before the title that calls onClick", () => {
+        const onClick = vi.fn();
+        render(<PageHeader title="Frontend developer" back={{ label: "Back to job ads", onClick }} actions={<button type="button">Save</button>} />);
+
+        const back = screen.getByRole("button", { name: "Back to job ads" });
+        expect(back.nextElementSibling).toBe(screen.getByRole("heading", { level: 1, name: "Frontend developer" }));
+        fireEvent.click(back);
+        expect(onClick).toHaveBeenCalledTimes(1);
     });
 
     it("emits the variant", () => {

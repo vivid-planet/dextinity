@@ -81,7 +81,7 @@ function formatRelativeTime(date: Date, locale: string) {
 }
 
 /**
- * Shows in the top bar of an edit page whether everything is saved. Quiet while saved, it stands out with unsaved changes and errors.
+ * Shows in the page header of an edit page whether everything is saved. Quiet while saved, it stands out with unsaved changes and errors.
  */
 export const SaveState = forwardRef<HTMLSpanElement, SaveStateProps>(function SaveState(
     { state, savedAt, locale = "en", labels: labelsProp, className, slotProps, ...restProps },

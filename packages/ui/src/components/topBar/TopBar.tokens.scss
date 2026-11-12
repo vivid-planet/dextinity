@@ -26,9 +26,4 @@
     --dextinity-top-bar-search-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle), var(--dextinity-shadow-1);
     // Color of the search field's icon and placeholder
     --dextinity-top-bar-search-foreground: var(--dextinity-color-text-tertiary);
-
-    // Color of what is edited, after the back button in the edit mode
-    --dextinity-top-bar-title-color: var(--dextinity-color-text);
-    // Text size of what is edited, after the back button in the edit mode
-    --dextinity-top-bar-title-font-size: var(--dextinity-typography-section-size);
 }

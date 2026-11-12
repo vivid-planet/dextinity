@@ -54,7 +54,10 @@ export interface EditLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
      * @defaultValue `"form"`
      */
     variant?: EditLayoutVariant;
-    /** Back link, kind and scope, title, and status, e.g. a `PageHeader`. Saving stays the only primary action. */
+    /**
+     * A `PageHeader` with back before the title, kind and scope, status, and the save state and Save at the end. Saving stays the only
+     * primary action.
+     */
     header: ReactNode;
     /** The editor: the panel with the blocks, or the fields in sections. */
     children: ReactNode;

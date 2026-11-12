@@ -271,25 +271,6 @@ function StatusAside() {
     );
 }
 
-function EditHeader({ kind, compact }: { kind: "page" | "jobAd"; compact: boolean }) {
-    const isPage = kind === "page";
-    return (
-        <PageHeader
-            back={isPage ? { label: "Page tree", href: "#page-tree" } : { label: "Job ads", href: "#job-ads" }}
-            eyebrow={isPage ? "Page · Austria · German" : "Job ad · Austria · German"}
-            title={isPage ? "Careers" : "Senior UX Designer"}
-            subtitle={
-                <span className={styles.metaLine}>
-                    <StatusIndicator status="published" />
-                    <span>{isPage ? "/careers" : "JOB-041"}</span>
-                    <span>Last saved by Anna Klein</span>
-                </span>
-            }
-            slotProps={compact ? { title: { className: styles.compactTitle } } : undefined}
-        />
-    );
-}
-
 const editActions = (
     <>
         <SaveState state="dirty" />
@@ -299,6 +280,26 @@ const editActions = (
         <Button startIcon={<Icon name="check" />}>Save</Button>
     </>
 );
+
+function EditHeader({ kind, compact }: { kind: "page" | "jobAd"; compact: boolean }) {
+    const isPage = kind === "page";
+    return (
+        <PageHeader
+            variant={compact ? "compact" : "default"}
+            back={isPage ? { label: "Back to the page tree", href: "#page-tree" } : { label: "Back to job ads", href: "#job-ads" }}
+            eyebrow={isPage ? "Page · Austria · German" : "Job ad · Austria · German"}
+            title={isPage ? "Careers" : "Senior UX Designer"}
+            subtitle={
+                <span className={styles.metaLine}>
+                    <StatusIndicator status="published" />
+                    <span>{isPage ? "/careers" : "JOB-041"}</span>
+                    <span>Last saved by Anna Klein</span>
+                </span>
+            }
+            actions={editActions}
+        />
+    );
+}
 
 function EditPage({
     variant,
@@ -340,18 +341,7 @@ function EditPage({
     if (!inShell) {
         return layout;
     }
-    return (
-        <PageTypeShell
-            activeId={kind === "page" ? "page-tree" : "job-ads"}
-            topBar={{
-                mode: "edit",
-                back: { label: kind === "page" ? "Back to the page tree" : "Back to job ads", onClick: () => undefined },
-                actions: editActions,
-            }}
-        >
-            {layout}
-        </PageTypeShell>
-    );
+    return <PageTypeShell activeId={kind === "page" ? "page-tree" : "job-ads"}>{layout}</PageTypeShell>;
 }
 
 function Wireframe({ label, variant, regions }: { label: string; variant: Variant; regions: [string, string, string][] }) {
@@ -380,7 +370,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    "A page with preview and blocks, and structured content in three form variants. Pages always have the preview on the left and the blocks on the right; each content type picks one of the form variants. The top bar switches to its edit mode with the save state and “Save”.",
+                    "A page with preview and blocks, and structured content in three form variants. Pages always have the preview on the left and the blocks on the right; each content type picks one of the form variants. The page header leads back before the title and holds the save state and “Save”; the top bar stays the same as on every page.",
             },
             story: { inline: false, height: "960px" },
         },
@@ -429,12 +419,16 @@ export const Default: Story = {
 };
 
 /**
- * Structured content as a form: the fields in sections, with status and the danger zone in a side column.
+ * Structured content as a form: the fields in sections, with status and the danger zone in a side column. The page header leads back
+ * before the title and keeps Save at the end.
  */
 export const Form: Story = {
     args: { variant: "form" },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("complementary", { name: "Status" })).toBeVisible();
+        const header = canvas.getByRole("heading", { level: 1, name: "Senior UX Designer" }).closest("header");
+        await expect(header).toContainElement(canvas.getByRole("link", { name: "Back to job ads" }));
+        await expect(header).toContainElement(canvas.getByRole("button", { name: "Save" }));
     },
 };
 
@@ -542,7 +536,7 @@ export const Structure: Story = {
             <PatternSection title="Structure">
                 <PatternLegend
                     items={[
-                        { title: "Header", description: "Back, kind · scope, title, status. The top bar is in its edit mode." },
+                        { title: "Header", description: "Back, title, kind · scope, status; save state and Save at the end." },
                         { title: "Preview", description: "Device switch; a click selects the block." },
                         { title: "Panel", description: "Tabs Blocks, SEO, Settings. Breadcrumbs when blocks are nested." },
                         { title: "Form", description: "Fields in sections, with translate at the label." },

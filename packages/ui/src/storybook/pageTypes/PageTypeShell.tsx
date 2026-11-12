@@ -4,7 +4,7 @@ import { AppShell } from "../../components/appShell/AppShell";
 import { sideNavGroups } from "../../components/sideNav/__stories__/sideNavStoryData";
 import { getSideNavAncestorIds, SideNav } from "../../components/sideNav/SideNav";
 import { StoryScopeSwitcher, StoryUserMenu } from "../../components/topBar/__stories__/topBarStoryParts";
-import { TopBar, type TopBarProps } from "../../components/topBar/TopBar";
+import { TopBar } from "../../components/topBar/TopBar";
 import { ProductLogo, ProductSign } from "../ProductLogo";
 import styles from "./PageTypeShell.module.scss";
 
@@ -32,8 +32,6 @@ function ShellNav({ activeId }: { activeId: string }) {
 export interface PageTypeShellProps {
     /** The navigation item of the page, e.g. `job-ads`. */
     activeId: string;
-    /** Props for the top bar, e.g. its edit mode. */
-    topBar?: Partial<TopBarProps>;
     /** Content above the top bar's page, e.g. a dialog. */
     overlay?: ReactNode;
 }
@@ -41,13 +39,13 @@ export interface PageTypeShellProps {
 /**
  * A page type's live example: the page inside the app frame with navigation, top bar, and scope.
  */
-export function PageTypeShell({ activeId, topBar, overlay, children }: PropsWithChildren<PageTypeShellProps>) {
+export function PageTypeShell({ activeId, overlay, children }: PropsWithChildren<PageTypeShellProps>) {
     const [navCollapsed, setNavCollapsed] = useState(false);
     return (
         <>
             <AppShell
                 nav={<ShellNav activeId={activeId} />}
-                topBar={<TopBar onSearchClick={() => undefined} scope={<StoryScopeSwitcher />} userMenu={<StoryUserMenu />} {...topBar} />}
+                topBar={<TopBar onSearchClick={() => undefined} scope={<StoryScopeSwitcher />} userMenu={<StoryUserMenu />} />}
                 navCollapsed={navCollapsed}
                 onNavCollapsedChange={setNavCollapsed}
                 disableShortcuts

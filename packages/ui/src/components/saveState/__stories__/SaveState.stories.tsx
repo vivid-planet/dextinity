@@ -91,7 +91,7 @@ function EditorExample() {
 }
 
 /**
- * In the top bar of an edit page: editing marks unsaved changes, saving moves through "Saving …" back to saved.
+ * In the page header of an edit page: editing marks unsaved changes, saving moves through "Saving …" back to saved.
  */
 export const InEditor: Story = {
     render: () => <EditorExample />,

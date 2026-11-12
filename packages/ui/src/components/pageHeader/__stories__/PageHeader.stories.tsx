@@ -54,25 +54,29 @@ export const Default: Story = {
 };
 
 /**
- * Edit pages lead back to the list in the label line. The back link and breadcrumbs lead to the same place.
+ * Edit pages lead back before the title, e.g. to the list the edited item belongs to, and keep the save state and Save at the end. Back
+ * and the breadcrumbs lead to the same place.
  */
 export const WithBack: Story = {
     args: {
         title: "Open positions",
         eyebrow: "Page · Austria · German",
         subtitle: <StatusIndicator status="published" />,
-        back: { label: "Page tree", href: "#page-tree", onClick: fn() },
+        back: { label: "Back to the page tree", href: "#page-tree", onClick: fn() },
         actions: (
             <>
+                <SaveState state="dirty" />
                 <IconButton color="secondary" aria-label="More actions" variant="text">
                     <Icon name="more-horizontal" />
                 </IconButton>
-                <Button>Publish</Button>
+                <Button startIcon={<Icon name="check" />}>Save</Button>
             </>
         ),
     },
     play: async ({ args, canvas }) => {
-        await userEvent.click(canvas.getByRole("link", { name: "Page tree" }));
+        const back = canvas.getByRole("link", { name: "Back to the page tree" });
+        await expect(back.nextElementSibling).toBe(canvas.getByRole("heading", { level: 1, name: "Open positions" }));
+        await userEvent.click(back);
         await waitFor(() => expect(args.back?.onClick).toHaveBeenCalled());
     },
 };
@@ -125,7 +129,7 @@ export const Compact: Story = {
         actions: (
             <>
                 <SaveState state="saved" />
-                <Button>Publish</Button>
+                <Button startIcon={<Icon name="check" />}>Save</Button>
             </>
         ),
     },

@@ -145,7 +145,7 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
             <BaseButton
                 {...restProps}
                 ref={ref}
-                type={type}
+                type={restProps.nativeButton === false ? undefined : type}
                 aria-label={ariaLabel}
                 disabled={ownerState.disabled}
                 data-variant={ownerState.variant}

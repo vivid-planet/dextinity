@@ -65,7 +65,7 @@ const preview: Preview = {
                         "Empty, loading & error",
                         "Translation at the field",
                         "Drag & drop",
-                        "Keyboard",
+                        "Keyboard shortcuts",
                         "Actions",
                         "Forms",
                         "Toolbar",

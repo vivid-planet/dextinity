@@ -77,7 +77,7 @@ export function PatternLegend({ items }: { items: TitledItem[] }) {
  * The pattern's keyboard shortcuts.
  */
 export function PatternShortcuts({
-    title = "Keyboard",
+    title = "Keyboard shortcuts",
     description,
     shortcuts,
 }: {
@@ -147,7 +147,7 @@ export function PatternSpec({ label, caption, children }: { label: string; capti
 
 const pageDocs = {
     Buttons: "building-blocks-buttons-button--docs",
-    "Form fields": "building-blocks-form-fields-textfield--docs",
+    "Form fields": "building-blocks-form-fields-field--docs",
     "Selection & toggles": "building-blocks-selection-toggles-checkbox--docs",
     "Status, tags & badges": "building-blocks-status-tags-badges-statusindicator--docs",
     "Tables & paging": "building-blocks-tables-paging-pagination--docs",

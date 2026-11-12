@@ -209,6 +209,10 @@
         --dextinity-icon-reset: url("./svg/reset.svg#icon");
         --dextinity-icon-restore: url("./svg/restore.svg#icon");
         --dextinity-icon-robot: url("./svg/robot.svg#icon");
+        --dextinity-icon-rte-align-left: url("./svg/rte-align-left.svg#icon");
+        --dextinity-icon-rte-align-center: url("./svg/rte-align-center.svg#icon");
+        --dextinity-icon-rte-align-right: url("./svg/rte-align-right.svg#icon");
+        --dextinity-icon-rte-align-justify: url("./svg/rte-align-justify.svg#icon");
         --dextinity-icon-rte-bold: url("./svg/rte-bold.svg#icon");
         --dextinity-icon-rte-clear-format: url("./svg/rte-clear-format.svg#icon");
         --dextinity-icon-rte-clear-link: url("./svg/rte-clear-link.svg#icon");

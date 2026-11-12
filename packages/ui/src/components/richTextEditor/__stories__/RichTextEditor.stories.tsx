@@ -44,6 +44,17 @@ function selectText(editor: HTMLElement, text: string, offset = 0, length = 0) {
     throw new globalThis.Error(`"${text}" isn't in the editor`);
 }
 
+const modifierKey = navigator.platform.startsWith("Mac") ? "Meta" : "Control";
+
+/** Pastes once the editor has picked up the selection, which it reads on the browser's asynchronous `selectionchange`. */
+async function paste(editor: HTMLElement, html: string) {
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+    const clipboardData = new DataTransfer();
+    clipboardData.setData("text/html", html);
+    clipboardData.setData("text/plain", editor.ownerDocument.createRange().createContextualFragment(html).textContent ?? "");
+    editor.dispatchEvent(new ClipboardEvent("paste", { clipboardData, bubbles: true, cancelable: true }));
+}
+
 const meta = {
     component: RichTextEditor,
     title: "Building blocks/Form fields/RichTextEditor",
@@ -80,6 +91,7 @@ const meta = {
             ],
         },
         headingLevels: { control: "check", options: [1, 2, 3, 4, 5, 6] },
+        textAlignments: { control: "check", options: ["left", "center", "right", "justify"] },
         actions: { control: false },
         labels: { control: false },
         className: { control: false },
@@ -146,6 +158,26 @@ export const AllFormatting: Story = {
 };
 
 /**
+ * `textAlignments` limits the alignments, in the toolbar and by keyboard: ⌘⇧L, ⌘⇧E, ⌘⇧R, and ⌘⇧J.
+ */
+export const TextAlignments: Story = {
+    args: {
+        toolbar: ["bold", "italic", "textAlign"],
+        textAlignments: ["left", "center"],
+        value: "<p>You design the interfaces of <strong>Dextinity</strong> with us.</p>",
+    },
+    play: async ({ args, canvas }) => {
+        await expect(canvas.queryByRole("button", { name: "Align right" })).toBeNull();
+        selectText(canvas.getByRole("textbox"), "interfaces");
+        await userEvent.keyboard(`{${modifierKey}>}{Shift>}e{/Shift}{/${modifierKey}}`);
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringMatching(/<p style="text-align: center;?">/)));
+        await expect(canvas.getByRole("button", { name: "Align center" })).toHaveAttribute("aria-pressed", "true");
+        await userEvent.keyboard(`{${modifierKey}>}{Shift>}r{/Shift}{/${modifierKey}}`);
+        await expect(args.onChange).toHaveBeenLastCalledWith(expect.stringMatching(/<p style="text-align: center;?">/));
+    },
+};
+
+/**
  * The text style menu switches between a paragraph and the headings of `headingLevels`.
  */
 export const TextStyles: Story = {
@@ -155,10 +187,10 @@ export const TextStyles: Story = {
     },
     play: async ({ args, canvas }) => {
         selectText(canvas.getByRole("textbox"), "Your tasks");
-        await userEvent.click(canvas.getByRole("button", { name: "Text style" }));
+        await userEvent.click(canvas.getByRole("button", { name: "Text style: Paragraph" }));
         await userEvent.click(await screen.findByRole("menuitemradio", { name: "Heading 3" }));
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("<h3>Your tasks</h3>"));
-        await expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Heading 3");
+        await expect(canvas.getByRole("button", { name: "Text style: Heading 3" })).toHaveTextContent("Heading 3");
     },
 };
 
@@ -219,20 +251,39 @@ export const Link: Story = {
 };
 
 /**
- * Lists nest with Tab and the indent buttons. `listLevelMax` limits the depth, `maxBlocks` the number of top-level paragraphs,
- * headings, and lists.
+ * Lists nest with Tab and the indent buttons. `listLevelMax` limits the depth, also of an item's own sub-list and of pasted lists,
+ * whose deeper items become paragraphs. `maxBlocks` limits the number of top-level paragraphs, headings, and lists.
  */
 export const Lists: Story = {
     args: {
         listLevelMax: 2,
-        value: "<h3>Your tasks</h3><ul><li><p>Research and concept</p><ul><li><p>Interviews</p></li></ul></li><li><p>Prototypes</p></li></ul><ol><li><p>Apply</p></li><li><p>Meet the team</p></li></ol>",
+        value: "<h3>Your tasks</h3><ul><li><p>Research</p></li><li><p>Concept</p><ul><li><p>Interviews</p></li></ul></li><li><p>Prototypes</p></li></ul><ol><li><p>Apply</p></li><li><p>Meet the team</p></li></ol>",
     },
-    play: async ({ args, canvas }) => {
-        selectText(canvas.getByRole("textbox"), "Prototypes");
-        await waitFor(() => expect(canvas.getByRole("button", { name: "Increase indent" })).toHaveAttribute("aria-disabled", "false"));
-        await userEvent.click(canvas.getByRole("button", { name: "Increase indent" }));
-        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringContaining("<p>Interviews</p></li><li><p>Prototypes</p>")));
-        await expect(canvas.getByRole("button", { name: "Increase indent" })).toHaveAttribute("aria-disabled", "true");
+    play: async ({ args, canvas, step }) => {
+        const editor = canvas.getByRole("textbox");
+        await step("An item moves into the previous item's sub-list", async () => {
+            selectText(editor, "Prototypes");
+            await waitFor(() => expect(canvas.getByRole("button", { name: "Increase indent" })).toHaveAttribute("aria-disabled", "false"));
+            await userEvent.click(canvas.getByRole("button", { name: "Increase indent" }));
+            await waitFor(() =>
+                expect(args.onChange).toHaveBeenLastCalledWith(expect.stringContaining("<p>Interviews</p></li><li><p>Prototypes</p>")),
+            );
+            await expect(canvas.getByRole("button", { name: "Increase indent" })).toHaveAttribute("aria-disabled", "true");
+        });
+
+        await step("An item whose sub-list would get too deep can't be indented", async () => {
+            selectText(editor, "Concept");
+            await waitFor(() => expect(canvas.getByRole("button", { name: "Increase indent" })).toHaveAttribute("aria-disabled", "true"));
+            await userEvent.keyboard("{Tab}");
+            await expect(editor.querySelector("ul ul ul")).toBeNull();
+        });
+
+        await step("Pasted lists keep up to two levels", async () => {
+            selectText(editor, "Meet the team", 13);
+            await paste(editor, "<ul><li>One<ul><li>Two<ul><li>Three<ul><li>Four</li></ul></li></ul></li></ul></li></ul>");
+            await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringContaining("Four")));
+            await expect(editor.querySelector(":is(ul, ol) :is(ul, ol) :is(ul, ol)")).toBeNull();
+        });
     },
 };
 
@@ -268,15 +319,32 @@ export const PasteAndDrop: Story = {
         value: "",
         toolbar: ["bold", "link"],
     },
-    play: async ({ args, canvas }) => {
+    play: async ({ args, canvas, step }) => {
         const editor = canvas.getByRole("textbox");
-        const pasted = new DataTransfer();
-        pasted.setData("text/html", "<b>Bold</b> <em>italic</em><img src=x>");
-        pasted.setData("text/plain", "Bold italic");
-        await userEvent.click(editor);
-        editor.dispatchEvent(new ClipboardEvent("paste", { clipboardData: pasted, bubbles: true, cancelable: true }));
-        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("<p><strong>Bold</strong> italic</p>"));
-        await expect(editor.querySelector("img, em")).toBeNull();
+        await step("Paste", async () => {
+            await userEvent.click(editor);
+            await paste(editor, "<b>Bold</b> <em>italic</em><img src=x>");
+            await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("<p><strong>Bold</strong> italic</p>"));
+            await expect(editor.querySelector("img, em")).toBeNull();
+        });
+
+        await step("Drop", async () => {
+            const dataTransfer = new DataTransfer();
+            dataTransfer.setData("text/html", " <b>dropped</b> <em>text</em><img src=x>");
+            dataTransfer.setData("text/plain", " dropped text");
+            const paragraph = canvas.getByText("italic", { exact: false }).getBoundingClientRect();
+            editor.dispatchEvent(
+                new DragEvent("drop", {
+                    dataTransfer,
+                    clientX: paragraph.right - 1,
+                    clientY: paragraph.top + paragraph.height / 2,
+                    bubbles: true,
+                    cancelable: true,
+                }),
+            );
+            await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringContaining("<strong>dropped</strong> text")));
+            await expect(editor.querySelector("img, em")).toBeNull();
+        });
     },
 };
 
@@ -292,13 +360,21 @@ export const Placeholder: Story = {
 };
 
 /**
- * `toolbar` limits the formatting, e.g. for short teasers.
+ * `toolbar` limits the formatting, e.g. for short teasers. With `maxBlocks`, pasted content is cut off where it would exceed the
+ * limit.
  */
 export const LimitedToolbar: Story = {
     args: {
         toolbar: ["bold", "italic", "link"],
         minRows: 2,
         maxBlocks: 1,
+    },
+    play: async ({ args, canvas }) => {
+        const editor = canvas.getByRole("textbox");
+        await userEvent.click(editor);
+        await userEvent.keyboard("{Control>}a{/Control}");
+        await paste(editor, "<p>Apply now.</p><p>Second paragraph</p>");
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("<p>Apply now.</p>"));
     },
 };
 

@@ -51,6 +51,7 @@
     },
     "dependencies": {
         "@tiptap/core": "^3.33.0",
+        "@tiptap/extension-link": "^3.33.0",
         "@tiptap/extension-subscript": "^3.33.0",
         "@tiptap/extension-superscript": "^3.33.0",
         "@tiptap/extensions": "^3.33.0",

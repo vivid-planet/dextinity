@@ -24,9 +24,10 @@ import {
     createListLevelMax,
     createMaxBlocks,
     InlineStyle,
-    listDepthAt,
+    listDepthOfSelectedItems,
     NonBreakingSpace,
     type RichTextEditorTextAlign,
+    SafeLink,
     SoftHyphen,
     TextAlign,
     TextPlaceholder,
@@ -90,7 +91,7 @@ export interface RichTextEditorLabels {
     toolbar: string;
     undo: string;
     redo: string;
-    /** The accessible name of the text style menu. */
+    /** Names the text style menu, followed by the current style, e.g. "Text style: Heading 2". */
     blockType: string;
     paragraph: string;
     headingLevel: (level: RichTextEditorHeadingLevel) => string;
@@ -166,7 +167,11 @@ const defaultToolbar: RichTextEditorFormat[] = [
 
 const allHeadingLevels: RichTextEditorHeadingLevel[] = [1, 2, 3, 4, 5, 6];
 
-const textAlignments: RichTextEditorTextAlign[] = ["left", "center", "right", "justify"];
+const allTextAlignments: RichTextEditorTextAlign[] = ["left", "center", "right", "justify"];
+
+const textAlignShortcuts: Record<RichTextEditorTextAlign, string> = { left: "⌘⇧L", center: "⌘⇧E", right: "⌘⇧R", justify: "⌘⇧J" };
+
+const maxPendingEmittedValues = 20;
 
 const textAlignIcons: Record<RichTextEditorTextAlign, IconName> = {
     left: "rte-align-left",
@@ -219,6 +224,13 @@ export interface RichTextEditorProps
      * @defaultValue `[1, 2, 3, 4, 5, 6]`
      */
     headingLevels?: RichTextEditorHeadingLevel[];
+    /**
+     * The alignments the toolbar offers, also by keyboard (⌘⇧L, ⌘⇧E, ⌘⇧R, ⌘⇧J). Other alignments are removed from pasted and incoming
+     * content. Needs `"textAlign"` in `toolbar`.
+     *
+     * @defaultValue `["left", "center", "right", "justify"]`
+     */
+    textAlignments?: RichTextEditorTextAlign[];
     /** Tokens the toolbar inserts as a whole, e.g. a recipient's name. */
     textPlaceholders?: RichTextEditorTextPlaceholder[];
     /** Formatting of the project's own, offered next to subscript and superscript. */
@@ -253,6 +265,7 @@ export interface RichTextEditorProps
 interface EditorConfig {
     formats: RichTextEditorFormat[];
     headingLevels: RichTextEditorHeadingLevel[];
+    textAlignments: RichTextEditorTextAlign[];
     textPlaceholderNames: string[];
     inlineStyleNames: string[];
     maxBlocks: number | undefined;
@@ -275,14 +288,7 @@ function buildExtensions(config: EditorConfig, requestLink: () => void): Extensi
             orderedList: has("orderedList") ? {} : false,
             listItem: hasLists ? {} : false,
             listKeymap: hasLists ? {} : false,
-            link: has("link")
-                ? {
-                      openOnClick: false,
-                      autolink: false,
-                      HTMLAttributes: { target: null, rel: null, class: null },
-                      isAllowedUri: (url) => isSafeHref(url),
-                  }
-                : false,
+            link: false,
             blockquote: false,
             code: false,
             codeBlock: false,
@@ -291,10 +297,20 @@ function buildExtensions(config: EditorConfig, requestLink: () => void): Extensi
         }),
         ...(has("subscript") ? [Subscript] : []),
         ...(has("superscript") ? [Superscript] : []),
-        ...(has("textAlign") ? [TextAlign] : []),
+        ...(has("link")
+            ? [
+                  SafeLink.configure({
+                      openOnClick: false,
+                      autolink: false,
+                      HTMLAttributes: { target: null, rel: null, class: null },
+                      isAllowedUri: (url) => isSafeHref(url),
+                  }),
+              ]
+            : []),
+        ...(has("textAlign") ? [TextAlign.configure({ alignments: config.textAlignments })] : []),
         ...(has("nonBreakingSpace") ? [NonBreakingSpace] : []),
         ...(has("softHyphen") ? [SoftHyphen] : []),
-        ...(config.textPlaceholderNames.length > 0 ? [TextPlaceholder] : []),
+        ...(config.textPlaceholderNames.length > 0 ? [TextPlaceholder.configure({ names: config.textPlaceholderNames })] : []),
         ...(config.inlineStyleNames.length > 0 ? [InlineStyle.configure({ names: config.inlineStyleNames })] : []),
         ...(has("link") ? [createLinkShortcut(requestLink)] : []),
         ...(config.maxBlocks !== undefined ? [createMaxBlocks(config.maxBlocks)] : []),
@@ -302,6 +318,25 @@ function buildExtensions(config: EditorConfig, requestLink: () => void): Extensi
         Placeholder.configure({ placeholder: config.placeholder ?? "", emptyNodeClass: styles.emptyBlock }),
     ];
 }
+
+const stateWithoutEditor = {
+    blockType: "paragraph",
+    canUndo: false,
+    canRedo: false,
+    bold: false,
+    italic: false,
+    underline: false,
+    strike: false,
+    subscript: false,
+    superscript: false,
+    inlineStyle: null as string | null,
+    textAlign: "left" as RichTextEditorTextAlign,
+    bulletList: false,
+    orderedList: false,
+    canIndent: false,
+    canOutdent: false,
+    link: false,
+};
 
 function htmlOf(editor: Editor) {
     return editor.isEmpty ? "" : editor.getHTML();
@@ -365,7 +400,8 @@ function RichTextEditorBody({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const extensions = useMemo(() => buildExtensions(config, () => requestLinkRef.current()), [configKey]);
 
-    const editor = useEditor(
+    // Tiptap types the editor as always present, but under SSR and in Next.js it's created only after the first render.
+    const editor: Editor | null = useEditor(
         {
             extensions,
             content: value,
@@ -374,6 +410,9 @@ function RichTextEditorBody({
             onUpdate: ({ editor: updatedEditor }) => {
                 const html = htmlOf(updatedEditor);
                 emittedValues.current.push(html);
+                if (emittedValues.current.length > maxPendingEmittedValues) {
+                    emittedValues.current.splice(0, emittedValues.current.length - maxPendingEmittedValues);
+                }
                 onChangeRef.current(html);
             },
         },
@@ -407,14 +446,17 @@ function RichTextEditorBody({
     }, [controlId, ariaLabelledBy, ariaDescribedBy, ariaInvalid, ariaRequired, ariaBusy, readOnly, disabled]);
 
     useEffect(() => {
-        editor.setOptions({ editorProps: { attributes } });
+        editor?.setOptions({ editorProps: { attributes } });
     }, [editor, attributes]);
 
     useEffect(() => {
-        editor.setEditable(editable, false);
+        editor?.setEditable(editable, false);
     }, [editor, editable]);
 
     useEffect(() => {
+        if (editor == null) {
+            return;
+        }
         // React can render a keystroke's value after later keystrokes reached the editor; applying a value the editor emitted itself would undo them.
         const emittedIndex = emittedValues.current.indexOf(value);
         if (emittedIndex >= 0) {
@@ -430,34 +472,42 @@ function RichTextEditorBody({
         editor.commands.setTextSelection({ from, to });
     }, [editor, value]);
 
-    const state = useEditorState({
-        editor,
-        selector: ({ editor: current }) => {
-            const inList = hasLists && current.isActive("listItem");
-            return {
-                blockType: blockTypeOf(current.isActive("heading") ? (current.getAttributes("heading").level as RichTextEditorHeadingLevel) : null),
-                canUndo: current.can().undo(),
-                canRedo: current.can().redo(),
-                bold: current.isActive("bold"),
-                italic: current.isActive("italic"),
-                underline: current.isActive("underline"),
-                strike: current.isActive("strike"),
-                subscript: current.isActive("subscript"),
-                superscript: current.isActive("superscript"),
-                inlineStyle: (current.getAttributes("inlineStyle").name as string | undefined) ?? null,
-                textAlign: textAlignAt(current),
-                bulletList: current.isActive("bulletList"),
-                orderedList: current.isActive("orderedList"),
-                canIndent:
-                    inList && current.can().sinkListItem("listItem") && (listLevelMax === undefined || listDepthAt(current.state) < listLevelMax),
-                canOutdent: inList && current.can().liftListItem("listItem"),
-                link: current.isActive("link"),
-            };
-        },
-    });
+    const state =
+        useEditorState({
+            editor,
+            selector: ({ editor: current }): typeof stateWithoutEditor => {
+                if (current == null) {
+                    return stateWithoutEditor;
+                }
+                const inList = hasLists && current.isActive("listItem");
+                return {
+                    blockType: blockTypeOf(
+                        current.isActive("heading") ? (current.getAttributes("heading").level as RichTextEditorHeadingLevel) : null,
+                    ),
+                    canUndo: current.can().undo(),
+                    canRedo: current.can().redo(),
+                    bold: current.isActive("bold"),
+                    italic: current.isActive("italic"),
+                    underline: current.isActive("underline"),
+                    strike: current.isActive("strike"),
+                    subscript: current.isActive("subscript"),
+                    superscript: current.isActive("superscript"),
+                    inlineStyle: (current.getAttributes("inlineStyle").name as string | undefined) ?? null,
+                    textAlign: textAlignAt(current),
+                    bulletList: current.isActive("bulletList"),
+                    orderedList: current.isActive("orderedList"),
+                    canIndent:
+                        inList &&
+                        current.can().sinkListItem("listItem") &&
+                        (listLevelMax === undefined || listDepthOfSelectedItems(current.state) < listLevelMax),
+                    canOutdent: inList && current.can().liftListItem("listItem"),
+                    link: current.isActive("link"),
+                };
+            },
+        }) ?? stateWithoutEditor;
 
     const requestLink = async () => {
-        if (!editor.isEditable) {
+        if (editor == null || !editor.isEditable) {
             return;
         }
         const currentHref = editor.isActive("link") ? ((editor.getAttributes("link").href as string | undefined) ?? null) : null;
@@ -484,9 +534,9 @@ function RichTextEditorBody({
     const setBlockType = (blockType: string) => {
         const level = headingLevelOf(blockType);
         if (level == null) {
-            editor.chain().focus().setParagraph().run();
+            editor?.chain().focus().setParagraph().run();
         } else {
-            editor.chain().focus().clearNodes().setHeading({ level }).run();
+            editor?.chain().focus().clearNodes().setHeading({ level }).run();
         }
     };
 
@@ -500,9 +550,9 @@ function RichTextEditorBody({
     const hasMoreFormatting = scriptFormats.length > 0 || inlineStyles.length > 0;
     const moreFormattingAsButtons = enabledMarks.length === 0 && inlineStyles.every((style) => style.icon != null);
     const toggleScript = (format: ScriptFormat) =>
-        format === "subscript" ? editor.chain().focus().toggleSubscript().run() : editor.chain().focus().toggleSuperscript().run();
+        format === "subscript" ? editor?.chain().focus().toggleSubscript().run() : editor?.chain().focus().toggleSuperscript().run();
     const toggleInlineStyle = (name: string) =>
-        state.inlineStyle === name ? editor.chain().focus().unsetInlineStyle().run() : editor.chain().focus().setInlineStyle(name).run();
+        state.inlineStyle === name ? editor?.chain().focus().unsetInlineStyle().run() : editor?.chain().focus().setInlineStyle(name).run();
 
     const groups: { key: string; content: ReactNode }[] = [];
     if (has("undoRedo")) {
@@ -515,7 +565,7 @@ function RichTextEditorBody({
                         shortcut="⌘Z"
                         disabled={!state.canUndo}
                         keepFocus
-                        onClick={() => editor.chain().focus().undo().run()}
+                        onClick={() => editor?.chain().focus().undo().run()}
                     >
                         <Icon name="rte-undo" />
                     </ToolbarButton>
@@ -524,7 +574,7 @@ function RichTextEditorBody({
                         shortcut="⌘⇧Z"
                         disabled={!state.canRedo}
                         keepFocus
-                        onClick={() => editor.chain().focus().redo().run()}
+                        onClick={() => editor?.chain().focus().redo().run()}
                     >
                         <Icon name="rte-redo" />
                     </ToolbarButton>
@@ -538,7 +588,7 @@ function RichTextEditorBody({
             content: (
                 <ToolbarMenu
                     label={blockTypeLabel(state.blockType)}
-                    aria-label={labels.blockType}
+                    aria-label={`${labels.blockType}: ${blockTypeLabel(state.blockType)}`}
                     open={blockTypeMenuOpen}
                     onOpenChange={setBlockTypeMenuOpen}
                 >
@@ -563,7 +613,7 @@ function RichTextEditorBody({
                             shortcut={markShortcuts[format]}
                             pressed={state[format]}
                             keepFocus
-                            onClick={() => editor.chain().focus().toggleMark(format).run()}
+                            onClick={() => editor?.chain().focus().toggleMark(format).run()}
                         >
                             <Icon name={markIcons[format]} />
                         </ToolbarButton>
@@ -627,18 +677,19 @@ function RichTextEditorBody({
             ),
         });
     }
-    if (has("textAlign")) {
+    if (has("textAlign") && config.textAlignments.length > 0) {
         groups.push({
             key: "textAlign",
             content: (
                 <ToolbarGroup>
-                    {textAlignments.map((textAlign) => (
+                    {config.textAlignments.map((textAlign) => (
                         <ToolbarButton
                             key={textAlign}
                             aria-label={labels[textAlignLabels[textAlign]]}
+                            shortcut={textAlignShortcuts[textAlign]}
                             pressed={state.textAlign === textAlign}
                             keepFocus
-                            onClick={() => editor.chain().focus().setTextAlign(textAlign).run()}
+                            onClick={() => editor?.chain().focus().setTextAlign(textAlign).run()}
                         >
                             <Icon name={textAlignIcons[textAlign]} />
                         </ToolbarButton>
@@ -658,7 +709,7 @@ function RichTextEditorBody({
                             shortcut="⌘⇧8"
                             pressed={state.bulletList}
                             keepFocus
-                            onClick={() => editor.chain().focus().toggleBulletList().run()}
+                            onClick={() => editor?.chain().focus().toggleBulletList().run()}
                         >
                             <Icon name="rte-ul-bullet-point" />
                         </ToolbarButton>
@@ -669,7 +720,7 @@ function RichTextEditorBody({
                             shortcut="⌘⇧7"
                             pressed={state.orderedList}
                             keepFocus
-                            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                            onClick={() => editor?.chain().focus().toggleOrderedList().run()}
                         >
                             <Icon name="rte-ol" />
                         </ToolbarButton>
@@ -679,7 +730,7 @@ function RichTextEditorBody({
                         shortcut="Tab"
                         disabled={!state.canIndent}
                         keepFocus
-                        onClick={() => editor.chain().focus().sinkListItem("listItem").run()}
+                        onClick={() => editor?.chain().focus().sinkListItem("listItem").run()}
                     >
                         <Icon name="rte-indent-increase" />
                     </ToolbarButton>
@@ -688,7 +739,7 @@ function RichTextEditorBody({
                         shortcut="⇧Tab"
                         disabled={!state.canOutdent}
                         keepFocus
-                        onClick={() => editor.chain().focus().liftListItem("listItem").run()}
+                        onClick={() => editor?.chain().focus().liftListItem("listItem").run()}
                     >
                         <Icon name="rte-indent-decrease" />
                     </ToolbarButton>
@@ -708,7 +759,7 @@ function RichTextEditorBody({
                         aria-label={labels.removeLink}
                         disabled={!state.link}
                         keepFocus
-                        onClick={() => editor.chain().focus().extendMarkRange("link").unsetLink().run()}
+                        onClick={() => editor?.chain().focus().extendMarkRange("link").unsetLink().run()}
                     >
                         <Icon name="rte-clear-link" />
                     </ToolbarButton>
@@ -730,7 +781,7 @@ function RichTextEditorBody({
                         <MenuItem
                             key={textPlaceholder.name}
                             label={textPlaceholder.label}
-                            onClick={() => editor.chain().focus().insertTextPlaceholder(textPlaceholder.name).run()}
+                            onClick={() => editor?.chain().focus().insertTextPlaceholder(textPlaceholder.name).run()}
                         />
                     ))}
                 </ToolbarMenu>
@@ -746,13 +797,13 @@ function RichTextEditorBody({
                         <ToolbarButton
                             aria-label={labels.nonBreakingSpace}
                             keepFocus
-                            onClick={() => editor.chain().focus().insertNonBreakingSpace().run()}
+                            onClick={() => editor?.chain().focus().insertNonBreakingSpace().run()}
                         >
                             <Icon name="rte-non-breaking-space" />
                         </ToolbarButton>
                     )}
                     {has("softHyphen") && (
-                        <ToolbarButton aria-label={labels.softHyphen} keepFocus onClick={() => editor.chain().focus().insertSoftHyphen().run()}>
+                        <ToolbarButton aria-label={labels.softHyphen} keepFocus onClick={() => editor?.chain().focus().insertSoftHyphen().run()}>
                             <Icon name="rte-soft-hyphen" />
                         </ToolbarButton>
                     )}
@@ -764,7 +815,7 @@ function RichTextEditorBody({
     return (
         <>
             {groups.length > 0 && (
-                <Toolbar className={styles.toolbar} aria-label={labels.toolbar} disabled={!editable}>
+                <Toolbar className={styles.toolbar} aria-label={labels.toolbar} disabled={!editable || editor == null}>
                     {groups.map((group, index) => (
                         <Fragment key={group.key}>
                             {index > 0 && <ToolbarSeparator />}
@@ -773,7 +824,13 @@ function RichTextEditorBody({
                     ))}
                 </Toolbar>
             )}
-            <EditorContent editor={editor} className={styles.editor} />
+            {editor == null ? (
+                <div className={styles.editor}>
+                    <div className={styles.content} />
+                </div>
+            ) : (
+                <EditorContent editor={editor} className={styles.editor} />
+            )}
         </>
     );
 }
@@ -800,6 +857,7 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
         onChange,
         toolbar = defaultToolbar,
         headingLevels = allHeadingLevels,
+        textAlignments = allTextAlignments,
         textPlaceholders = [],
         inlineStyles = [],
         maxBlocks,
@@ -820,6 +878,7 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
     const config: EditorConfig = {
         formats: [...new Set(toolbar)].sort(),
         headingLevels,
+        textAlignments: allTextAlignments.filter((textAlign) => textAlignments.includes(textAlign)),
         textPlaceholderNames: textPlaceholders.map((textPlaceholder) => textPlaceholder.name),
         inlineStyleNames: inlineStyles.map((inlineStyle) => inlineStyle.name),
         maxBlocks,

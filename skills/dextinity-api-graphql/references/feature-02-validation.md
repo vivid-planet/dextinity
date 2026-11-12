@@ -61,9 +61,7 @@ export class ProductVariantService implements CrudGeneratorHooksService {
         }
 
         // Example: cross-field constraint
-        if (input.minQuantity && input.maxQuantity && input.minQuantity > input.maxQuantity) {
-            errors.push({ field: "minQuantity", code: ProductVariantMutationErrorCode.minExceedsMax });
-        }
+        errors.push(...this.validateQuantityRange(input.minQuantity, input.maxQuantity));
 
         return errors;
     }
@@ -85,7 +83,23 @@ export class ProductVariantService implements CrudGeneratorHooksService {
             }
         }
 
+        // Example: cross-field constraint — combine the submitted values with the stored ones, as an update may change only one side
+        errors.push(
+            ...this.validateQuantityRange(
+                input.minQuantity !== undefined ? input.minQuantity : options.entity.minQuantity,
+                input.maxQuantity !== undefined ? input.maxQuantity : options.entity.maxQuantity,
+            ),
+        );
+
         return errors;
+    }
+
+    private validateQuantityRange(minQuantity?: number | null, maxQuantity?: number | null): ProductVariantMutationError[] {
+        // Compare against null instead of truthiness, so 0 is still checked
+        if (minQuantity != null && maxQuantity != null && minQuantity > maxQuantity) {
+            return [{ field: "minQuantity", code: ProductVariantMutationErrorCode.minExceedsMax }];
+        }
+        return [];
     }
 }
 ```
@@ -185,5 +199,6 @@ async updateProductVariant(
 - **Payload types** are defined in the resolver file (they're GraphQL return types) with an optional entity field and a non-nullable `errors` array.
 - **`CurrentUser`** is extracted via `@GetCurrentUser()` in the resolver and passed to the hooks in the `options` object.
 - For updates, pass the loaded entity in `options.entity`; for creates with a dedicated resolver arg, pass it in `options.args`.
+- Cross-field constraints must run on update too. Fill fields missing from the update input from `options.entity`, and check optional numbers against `null`, not truthiness (`0` is a valid value).
 - Only apply this pattern when business logic validation is needed. Standard DTO validation (`@IsNotEmpty`, `@IsUUID`, `@Min`, etc.) covers most cases.
 - The `delete` mutation is not affected — it stays the same (no validation payload needed, just returns `boolean`).

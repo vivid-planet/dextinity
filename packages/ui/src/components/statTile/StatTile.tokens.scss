@@ -1,13 +1,22 @@
 @mixin tokens {
+    // Space between the value row, the label and the context line
     --dextinity-stat-tile-gap: var(--dextinity-space-1);
+    // Text size of the value
     --dextinity-stat-tile-value-font-size: 52px;
+    // Text color of the value
     --dextinity-stat-tile-value-color: var(--dextinity-color-text);
+    // Text size of the unit after the value
     --dextinity-stat-tile-unit-font-size: var(--dextinity-typography-title-size);
+    // Text color of the unit after the value
     --dextinity-stat-tile-unit-color: var(--dextinity-color-text-tertiary);
+    // Size of the trend arrow
     --dextinity-stat-tile-trend-size: 18px;
     // The trend stays quiet; the context line says whether the change is good or bad
     --dextinity-stat-tile-trend-color: var(--dextinity-color-text-secondary);
+    // Text color of the label below the value
     --dextinity-stat-tile-label-color: var(--dextinity-color-text-tertiary);
+    // Text color of the context line at the bottom
     --dextinity-stat-tile-context-color: var(--dextinity-color-text-secondary);
+    // Text size of the context line at the bottom
     --dextinity-stat-tile-context-font-size: var(--dextinity-typography-ui-size);
 }

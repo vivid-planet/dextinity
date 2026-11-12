@@ -1,8 +1,13 @@
 @mixin tokens {
+    // Corner rounding of the thumbnail
     --dextinity-asset-thumbnail-radius: calc(var(--dextinity-radius-field) * 0.85);
+    // Fill behind the picture, visible while it loads or around letterboxed images
     --dextinity-asset-thumbnail-background: var(--dextinity-color-surface-sunken);
+    // Outline and shadow of the thumbnail at rest
     --dextinity-asset-thumbnail-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line), var(--dextinity-shadow-1);
+    // Outline and shadow of an interactive thumbnail on hover
     --dextinity-asset-thumbnail-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle), var(--dextinity-shadow-2);
+    // Ring around a selected thumbnail
     --dextinity-asset-thumbnail-selected-shadow: 0 0 0 2px var(--dextinity-color-accent), 0 0 0 6px var(--dextinity-color-accent-soft);
     // How far the picture rises on hover when the thumbnail is interactive
     --dextinity-asset-thumbnail-hover-lift: calc(var(--dextinity-motion-distance) * -0.25);
@@ -11,22 +16,32 @@
     --dextinity-asset-thumbnail-document-background: color-mix(in oklch, var(--dextinity-color-text) 6%, var(--dextinity-color-surface));
     // The shadow under a document's first page
     --dextinity-asset-thumbnail-document-page-shadow: 0 4px 10px oklch(0 0 0 / 0.18);
+    // Icon of an asset that has no preview
     --dextinity-asset-thumbnail-placeholder-foreground: var(--dextinity-color-text-subtle);
 
+    // Fill of the folder's back panel and tab
     --dextinity-asset-thumbnail-folder-back: color-mix(in srgb, var(--dextinity-color-accent) 50%, var(--dextinity-color-surface));
+    // Fill of the folder's front panel
     --dextinity-asset-thumbnail-folder-front: color-mix(in srgb, var(--dextinity-color-accent) 36%, var(--dextinity-color-surface));
+    // Outline of the folder's panels, drawn only in high contrast
     --dextinity-asset-thumbnail-folder-line: transparent;
     // The light edge along the top of the folder's front
     --dextinity-asset-thumbnail-folder-highlight: oklch(1 0 0 / 0.35);
 
-    // The play mark of videos and the file format of documents
+    // Fill of the play mark of videos and the file format badge of documents
     --dextinity-asset-thumbnail-mark-background: oklch(0 0 0 / 0.62);
+    // Icon and text of the play mark and the file format badge
     --dextinity-asset-thumbnail-mark-foreground: oklch(1 0 0);
+    // Fill of the file format badge of a document
     --dextinity-asset-thumbnail-document-mark-background: var(--dextinity-color-danger);
+    // Text of the file format badge of a document
     --dextinity-asset-thumbnail-document-mark-foreground: var(--dextinity-color-danger-foreground);
 
+    // Text size of the file name below the thumbnail
     --dextinity-asset-thumbnail-name-font-size: var(--dextinity-typography-ui-size);
+    // Text size of the meta line (size, dimensions) below the name
     --dextinity-asset-thumbnail-meta-font-size: 11.5px;
+    // Text color of the meta line below the name
     --dextinity-asset-thumbnail-meta-foreground: var(--dextinity-color-text-tertiary);
 }
 

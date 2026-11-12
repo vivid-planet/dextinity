@@ -1,13 +1,19 @@
 // One curve, three durations. With reduced motion, components keep only crossfades.
 @layer dextinity {
     :root {
+        // The curve of every transition and animation
         --dextinity-motion-easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+        // Hover, color changes and exits
         --dextinity-motion-duration-short: 140ms;
+        // Menus, switches and panels opening
         --dextinity-motion-duration-medium: 260ms;
+        // Page transitions and content entering
         --dextinity-motion-duration-long: 520ms;
+        // Delay before a tooltip opens
         --dextinity-motion-tooltip-delay: 380ms;
         // One cycle of a looping opacity pulse, e.g. a saving indicator or a loading placeholder
         --dextinity-motion-duration-pulse: 1.4s;
+        // How far content travels when it moves in or out
         --dextinity-motion-distance: 8px;
     }
 

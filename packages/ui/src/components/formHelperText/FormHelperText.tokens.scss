@@ -2,12 +2,18 @@
 @mixin tokens {
     // Between the error icon and the text
     --dextinity-form-helper-text-gap-internal: var(--dextinity-space-1-5);
+    // Size of the error icon
     --dextinity-form-helper-text-icon-size: var(--dextinity-icon-size-small);
 
+    // Text size of the helper text
     --dextinity-form-helper-text-font-size: var(--dextinity-typography-small-size);
+    // Line height of the helper text
     --dextinity-form-helper-text-font-line-height: var(--dextinity-typography-small-line-height);
+    // Weight of the helper text
     --dextinity-form-helper-text-font-weight: var(--dextinity-typography-body-font-weight);
 
+    // Text color of a hint
     --dextinity-form-helper-text-type-hint-foreground: var(--dextinity-color-text-tertiary);
+    // Text and icon color of an error message
     --dextinity-form-helper-text-type-error-foreground: var(--dextinity-color-danger-text);
 }

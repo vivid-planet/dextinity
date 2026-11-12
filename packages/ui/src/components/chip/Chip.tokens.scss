@@ -1,48 +1,86 @@
 @mixin tokens {
+    // Height of a medium chip
     --dextinity-chip-height: var(--dextinity-density-chip-height);
+    // Height of a small chip
     --dextinity-chip-height-small: 24px;
+    // Horizontal padding of a medium chip
     --dextinity-chip-padding: var(--dextinity-space-3);
+    // Horizontal padding of a small chip
     --dextinity-chip-padding-small: var(--dextinity-space-2);
+    // Gap between the icon, the label and the clear button of a medium chip
     --dextinity-chip-gap: var(--dextinity-space-1-5);
+    // Gap between the icon, the label and the clear button of a small chip
     --dextinity-chip-gap-small: var(--dextinity-space-1);
+    // Corner rounding of a chip
     --dextinity-chip-radius: var(--dextinity-radius-pill);
+    // Label size of a medium chip
     --dextinity-chip-font-size: var(--dextinity-typography-ui-size);
+    // Label size of a small chip
     --dextinity-chip-font-size-small: 12px;
+    // Label weight of a chip
     --dextinity-chip-font-weight: var(--dextinity-font-weight-medium);
+    // Size of the leading icon of a medium chip
     --dextinity-chip-icon-size: var(--dextinity-icon-size-small);
+    // Size of the leading icon of a small chip
     --dextinity-chip-icon-size-small: var(--dextinity-icon-size-xsmall);
+    // Size of the clear button of a medium chip
     --dextinity-chip-clear-button-size: 22px;
+    // Size of the clear button of a small chip
     --dextinity-chip-clear-button-size-small: 18px;
+    // Fill of the clear button on hover, tinted with the chip's text color
     --dextinity-chip-clear-button-background-hover: color-mix(in oklch, currentColor 14%, transparent);
+    // Opacity of a disabled chip
     --dextinity-chip-disabled-opacity: var(--dextinity-opacity-disabled);
     // Mixed into a clickable chip's background on hover
     --dextinity-chip-hover-overlay: color-mix(in oklch, var(--dextinity-color-text) 8%, transparent);
 
-    // Contained: a filled chip that needs attention
+    // Fill of a contained primary chip, the filled style for chips that need attention
     --dextinity-chip-contained-primary-background: var(--dextinity-color-accent);
+    // Text and icon of a contained primary chip
     --dextinity-chip-contained-primary-foreground: var(--dextinity-color-accent-foreground);
+    // Fill of a contained secondary chip
     --dextinity-chip-contained-secondary-background: var(--dextinity-color-fill-strong);
+    // Text and icon of a contained secondary chip
     --dextinity-chip-contained-secondary-foreground: var(--dextinity-color-text);
+    // Fill of a contained info chip
     --dextinity-chip-contained-info-background: var(--dextinity-color-info);
+    // Text and icon of a contained info chip
     --dextinity-chip-contained-info-foreground: var(--dextinity-color-accent-foreground);
+    // Fill of a contained warning chip
     --dextinity-chip-contained-warning-background: var(--dextinity-color-warning);
+    // Text and icon of a contained warning chip
     --dextinity-chip-contained-warning-foreground: oklch(0.2 0 0);
+    // Fill of a contained error chip
     --dextinity-chip-contained-error-background: var(--dextinity-color-danger);
+    // Text and icon of a contained error chip
     --dextinity-chip-contained-error-foreground: var(--dextinity-color-danger-foreground);
+    // Fill of a contained success chip
     --dextinity-chip-contained-success-background: var(--dextinity-color-success);
+    // Text and icon of a contained success chip
     --dextinity-chip-contained-success-foreground: var(--dextinity-color-accent-foreground);
 
-    // Outlined: a line and colored text, for quieter chips such as a long list of filters
+    // Outline of an outlined primary chip, the quieter style for e.g. a long list of filters
     --dextinity-chip-outlined-primary-line: var(--dextinity-color-accent);
+    // Text and icon of an outlined primary chip
     --dextinity-chip-outlined-primary-foreground: var(--dextinity-color-accent-text);
+    // Outline of an outlined secondary chip
     --dextinity-chip-outlined-secondary-line: var(--dextinity-color-line-strong);
+    // Text and icon of an outlined secondary chip
     --dextinity-chip-outlined-secondary-foreground: var(--dextinity-color-text);
+    // Outline of an outlined info chip
     --dextinity-chip-outlined-info-line: var(--dextinity-color-info);
+    // Text and icon of an outlined info chip
     --dextinity-chip-outlined-info-foreground: var(--dextinity-color-info-text);
+    // Outline of an outlined warning chip
     --dextinity-chip-outlined-warning-line: var(--dextinity-color-warning);
+    // Text and icon of an outlined warning chip
     --dextinity-chip-outlined-warning-foreground: var(--dextinity-color-warning-text);
+    // Outline of an outlined error chip
     --dextinity-chip-outlined-error-line: var(--dextinity-color-danger);
+    // Text and icon of an outlined error chip
     --dextinity-chip-outlined-error-foreground: var(--dextinity-color-danger-text);
+    // Outline of an outlined success chip
     --dextinity-chip-outlined-success-line: var(--dextinity-color-success);
+    // Text and icon of an outlined success chip
     --dextinity-chip-outlined-success-foreground: var(--dextinity-color-success-text);
 }

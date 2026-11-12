@@ -1,18 +1,27 @@
 @mixin tokens {
+    // Row and column gap between the title block and the actions
     --dextinity-page-header-gap: 18px var(--dextinity-space-6);
+    // Text color of the label line above the title
     --dextinity-page-header-label-color: var(--dextinity-color-text-tertiary);
     // Space between the label line and the title
     --dextinity-page-header-label-spacing: 14px;
+    // Text color of the title
     --dextinity-page-header-title-color: var(--dextinity-color-text);
+    // Text size of the title
     --dextinity-page-header-title-font-size: var(--dextinity-typography-display-l-size);
+    // Text color of the subtitle
     --dextinity-page-header-subtitle-color: var(--dextinity-color-text-tertiary);
     // Space between the title and the subtitle
     --dextinity-page-header-subtitle-spacing: var(--dextinity-space-3);
+    // Gap between the action buttons
     --dextinity-page-header-actions-gap: var(--dextinity-space-2);
 
-    // The compact variant, for editors
+    // Row and column gap of the compact variant, for editors
     --dextinity-page-header-compact-gap: var(--dextinity-space-3) 20px;
+    // Space between the label line and the title in the compact variant
     --dextinity-page-header-compact-label-spacing: var(--dextinity-space-1-5);
+    // Text size of the title in the compact variant, growing with the viewport
     --dextinity-page-header-compact-title-font-size: clamp(22px, 2.2vw, 28px);
+    // Space between the title and the subtitle in the compact variant
     --dextinity-page-header-compact-subtitle-spacing: var(--dextinity-space-1-5);
 }

@@ -1,35 +1,54 @@
 // The frame (label, box, message) comes from the Field tokens.
 @mixin tokens {
+    // Text color of the placeholder when nothing is selected
     --dextinity-select-placeholder-color: var(--dextinity-field-placeholder);
+    // Color of the chevron that opens the list
     --dextinity-select-chevron-color: var(--dextinity-color-text-tertiary);
 
+    // Fill of the list of options
     --dextinity-select-popup-background: var(--dextinity-color-surface);
+    // Corner rounding of the list of options
     --dextinity-select-popup-radius: var(--dextinity-radius-field);
+    // Outline and shadow of the list of options
     --dextinity-select-popup-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-3);
+    // Inner padding of the list of options
     --dextinity-select-popup-padding: var(--dextinity-space-1-5);
+    // Height of the list of options before it scrolls
     --dextinity-select-popup-max-height: 320px;
 
+    // Height of an option
     --dextinity-select-item-height: var(--dextinity-density-menu-item-height);
+    // Corner rounding of an option
     --dextinity-select-item-radius: calc(9px * var(--dextinity-brand-radius-factor));
+    // Horizontal padding of an option
     --dextinity-select-item-padding: var(--dextinity-space-2-5);
+    // Text size of an option
     --dextinity-select-item-font-size: 13.5px;
     // Keyboard or pointer highlight in the list
     --dextinity-select-item-background-highlight: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+    // Ring around the highlighted option, drawn only in high contrast
     --dextinity-select-item-shadow-highlight: 0 0 transparent;
+    // Color of an option's leading icon
     --dextinity-select-item-icon-color: var(--dextinity-color-text-tertiary);
     // Check mark of the selected option
     --dextinity-select-item-indicator-color: var(--dextinity-color-accent-text);
-    // Header and divider of a group of options
+    // Header of a group of options
     --dextinity-select-group-label-color: var(--dextinity-color-text-tertiary);
+    // Divider between groups of options
     --dextinity-select-group-line: var(--dextinity-color-line);
 
-    // Selected options in a multiple select
+    // Height of a selected option's chip in a multiple select
     --dextinity-select-chip-height: 24px;
+    // Corner rounding of a selected option's chip
     --dextinity-select-chip-radius: var(--dextinity-radius-item);
+    // Fill of a selected option's chip
     --dextinity-select-chip-background: var(--dextinity-color-surface);
+    // Outline of a selected option's chip
     --dextinity-select-chip-line: var(--dextinity-color-line-strong);
+    // Text size of a selected option's chip
     --dextinity-select-chip-font-size: var(--dextinity-typography-small-size);
 
+    // Divider below the search field at the top of the list
     --dextinity-select-search-line: var(--dextinity-color-line);
 }
 

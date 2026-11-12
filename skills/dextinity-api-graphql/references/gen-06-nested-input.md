@@ -30,12 +30,14 @@ export class ProductTagNestedProductToTagInput {
 - **Include** all fields of the child entity except `id`, `createdAt`, `updatedAt`, and the back-reference to the parent.
 - **ManyToOne** in the child becomes a UUID string field (the FK ID).
 - **No UpdateInput** — nested inputs are always fully replaced (orphanRemoval).
+- **`@ValidateNested()` on the parent field** — `@Type()` only instantiates the child inputs; without `@ValidateNested()` their validators (e.g. `@IsNotEmpty()`) never run.
 
 ## Usage in Parent Input
 
 ```typescript
 @Field(() => [ProductTagNestedProductToTagInput], { defaultValue: [] })
 @IsArray()
+@ValidateNested()
 @Type(() => ProductTagNestedProductToTagInput)
 productsWithStatus: ProductTagNestedProductToTagInput[];
 ```

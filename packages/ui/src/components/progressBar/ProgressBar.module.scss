@@ -70,7 +70,7 @@
 
     .root[data-indeterminate] & {
         inline-size: 30%;
-        animation: indeterminate 1.4s var(--dextinity-motion-easing) infinite;
+        animation: indeterminate var(--dextinity-progress-bar-indeterminate-duration) var(--dextinity-motion-easing) infinite;
     }
 
     @include forced-colors.fill(Highlight);

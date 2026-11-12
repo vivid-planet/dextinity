@@ -3,6 +3,8 @@
     --dextinity-progress-bar-gap: var(--dextinity-space-1-5);
     --dextinity-progress-bar-height: 6px;
     --dextinity-progress-bar-height-small: 4px;
+    // One sweep of the indeterminate indicator, also used by the Dropzone upload progress
+    --dextinity-progress-bar-indeterminate-duration: 1.4s;
     --dextinity-progress-bar-track: var(--dextinity-color-fill-track);
     --dextinity-progress-bar-track-shadow: 0 0 transparent;
     --dextinity-progress-bar-indicator-accent: var(--dextinity-gradient-brand);

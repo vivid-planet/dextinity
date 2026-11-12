@@ -71,7 +71,7 @@
         outline: none;
 
         &::after {
-            box-shadow: inset 0 0 0 2px var(--dextinity-color-focus);
+            box-shadow: var(--dextinity-focus-ring-inset);
             @include forced-colors.focus-ring(-2px);
         }
     }

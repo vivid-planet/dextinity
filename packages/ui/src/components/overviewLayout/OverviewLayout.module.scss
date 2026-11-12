@@ -61,7 +61,7 @@
         color: var(--dextinity-overview-layout-title-color);
         font-weight: var(--dextinity-font-weight-medium);
         text-decoration: none;
-        box-shadow: inset 0 -1.5px 0 var(--dextinity-overview-layout-link-underline);
+        box-shadow: inset 0 calc(-1 * var(--dextinity-line-width-strong)) 0 var(--dextinity-overview-layout-link-underline);
     }
 }
 

@@ -29,7 +29,7 @@
         position: absolute;
         inset-inline: var(--dextinity-space-4);
         inset-block-start: 50%;
-        block-size: 2px;
+        block-size: var(--dextinity-indicator-width);
         margin-block-start: -1px;
         border-radius: 1px;
         background: var(--dextinity-block-list-drop-indicator);

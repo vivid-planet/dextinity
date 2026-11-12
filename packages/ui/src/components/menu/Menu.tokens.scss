@@ -31,5 +31,5 @@
 }
 
 @mixin high-contrast-tokens {
-    --dextinity-menu-item-shadow-highlight: inset 0 0 0 2px var(--dextinity-color-focus);
+    --dextinity-menu-item-shadow-highlight: var(--dextinity-focus-ring-inset);
 }

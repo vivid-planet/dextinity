@@ -63,7 +63,7 @@
     border-radius: var(--dextinity-dropzone-radius);
     background: var(--dextinity-dropzone-background);
     outline: var(--dextinity-dropzone-outline);
-    outline-offset: -1.5px;
+    outline-offset: calc(-1 * var(--dextinity-line-width-strong));
     color: var(--dextinity-dropzone-foreground);
     text-align: center;
     cursor: pointer;

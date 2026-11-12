@@ -3,7 +3,7 @@
     --dextinity-checkbox-radius: calc(var(--dextinity-radius-item) * 0.625);
     --dextinity-checkbox-icon-size: 14px;
     --dextinity-checkbox-gap: var(--dextinity-space-2);
-    --dextinity-checkbox-line-width: 1.5px;
+    --dextinity-checkbox-line-width: var(--dextinity-line-width-strong);
     --dextinity-checkbox-disabled-opacity: var(--dextinity-opacity-disabled);
 
     --dextinity-checkbox-background: var(--dextinity-color-surface);

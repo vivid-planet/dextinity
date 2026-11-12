@@ -101,7 +101,7 @@
     aspect-ratio: 5 / 3.4;
     border-radius: 4px 8px 8px 8px;
     background: var(--dextinity-asset-thumbnail-folder-back);
-    box-shadow: inset 0 0 0 1.5px var(--dextinity-asset-thumbnail-folder-line);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width-strong) var(--dextinity-asset-thumbnail-folder-line);
 
     &,
     &::before,
@@ -118,7 +118,7 @@
         block-size: 14%;
         border-radius: 4px 6px 0 0;
         background: inherit;
-        box-shadow: inset 0 0 0 1.5px var(--dextinity-asset-thumbnail-folder-line);
+        box-shadow: inset 0 0 0 var(--dextinity-line-width-strong) var(--dextinity-asset-thumbnail-folder-line);
         content: "";
     }
 
@@ -129,7 +129,7 @@
         background: var(--dextinity-asset-thumbnail-folder-front);
         box-shadow:
             inset 0 1px 0 var(--dextinity-asset-thumbnail-folder-highlight),
-            inset 0 0 0 1.5px var(--dextinity-asset-thumbnail-folder-line);
+            inset 0 0 0 var(--dextinity-line-width-strong) var(--dextinity-asset-thumbnail-folder-line);
         content: "";
     }
 }

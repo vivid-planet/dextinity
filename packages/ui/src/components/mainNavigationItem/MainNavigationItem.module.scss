@@ -21,8 +21,8 @@
         outline: none;
 
         .content {
-            outline: 2px solid var(--dextinity-color-focus);
-            outline-offset: -2px;
+            outline: var(--dextinity-focus-outline);
+            outline-offset: calc(-1 * var(--dextinity-focus-ring-width));
         }
     }
 

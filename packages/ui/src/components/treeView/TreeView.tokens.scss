@@ -35,9 +35,9 @@
 
     --dextinity-tree-view-drop-color: var(--dextinity-color-accent);
     --dextinity-tree-view-drop-background: var(--dextinity-color-accent-soft);
-    --dextinity-tree-view-drop-line-width: 2px;
+    --dextinity-tree-view-drop-line-width: var(--dextinity-indicator-width);
     // The outline of the node a dragged node lands in
-    --dextinity-tree-view-drop-inside-line-width: 1.5px;
+    --dextinity-tree-view-drop-inside-line-width: var(--dextinity-line-width-strong);
     --dextinity-tree-view-drop-cap-size: 6px;
 }
 
@@ -49,7 +49,7 @@
     --dextinity-tree-view-row-shadow-checked: inset 3px 0 0 var(--dextinity-color-focus);
     --dextinity-tree-view-controls-idle-opacity: 1;
     --dextinity-tree-view-drop-color: var(--dextinity-color-focus);
-    --dextinity-tree-view-drop-line-width: 3px;
+    --dextinity-tree-view-drop-line-width: var(--dextinity-indicator-width-strong);
     --dextinity-tree-view-drop-cap-size: 8px;
-    --dextinity-tree-view-drop-inside-line-width: 2px;
+    --dextinity-tree-view-drop-inside-line-width: var(--dextinity-indicator-width);
 }

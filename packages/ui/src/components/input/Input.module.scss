@@ -37,7 +37,7 @@
         border-color: var(--dextinity-input-state-focus-border);
         background: var(--dextinity-input-state-focus-background);
         color: var(--dextinity-input-state-focus-foreground);
-        box-shadow: 0 0 0 4px var(--dextinity-input-state-focus-halo);
+        box-shadow: 0 0 0 var(--dextinity-focus-halo-width) var(--dextinity-input-state-focus-halo);
 
         @include forced-colors.focus-ring;
 
@@ -53,7 +53,7 @@
         border-color: var(--dextinity-input-state-error-border);
 
         &:has(> :focus) {
-            box-shadow: 0 0 0 4px var(--dextinity-input-state-error-halo);
+            box-shadow: 0 0 0 var(--dextinity-focus-halo-width) var(--dextinity-input-state-error-halo);
         }
     }
 
@@ -61,7 +61,7 @@
         border-color: var(--dextinity-input-state-success-border);
 
         &:has(> :focus) {
-            box-shadow: 0 0 0 4px var(--dextinity-input-state-success-halo);
+            box-shadow: 0 0 0 var(--dextinity-focus-halo-width) var(--dextinity-input-state-success-halo);
         }
     }
 
@@ -69,7 +69,7 @@
         border-color: var(--dextinity-input-state-warning-border);
 
         &:has(> :focus) {
-            box-shadow: 0 0 0 4px var(--dextinity-input-state-warning-halo);
+            box-shadow: 0 0 0 var(--dextinity-focus-halo-width) var(--dextinity-input-state-warning-halo);
         }
     }
 

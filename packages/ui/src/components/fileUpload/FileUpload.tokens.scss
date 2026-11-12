@@ -11,7 +11,7 @@
     --dextinity-file-upload-thumbnail-size: 32px;
     --dextinity-file-upload-link-color: var(--dextinity-color-accent-text);
     --dextinity-file-upload-error-foreground: var(--dextinity-color-danger-text);
-    --dextinity-file-upload-error-outline: 1.5px dashed var(--dextinity-color-danger);
+    --dextinity-file-upload-error-outline: var(--dextinity-line-width-strong) dashed var(--dextinity-color-danger);
 
     --dextinity-file-upload-label-font-size: var(--dextinity-field-label-font-size);
     --dextinity-file-upload-label-font-weight: var(--dextinity-field-label-font-weight);

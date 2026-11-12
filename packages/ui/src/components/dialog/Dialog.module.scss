@@ -108,8 +108,8 @@
     gap: var(--dextinity-dialog-body-gap);
     min-block-size: 0;
     // Room for the focus rings of the fields, which the scroll container would clip
-    margin: -4px;
-    padding: 4px;
+    margin: calc(-1 * var(--dextinity-focus-ring-extent));
+    padding: var(--dextinity-focus-ring-extent);
     overflow-y: auto;
 }
 

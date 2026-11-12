@@ -14,7 +14,7 @@
 
     // The circle
     --dextinity-radio-group-size: 17px;
-    --dextinity-radio-group-line-width: 1.5px;
+    --dextinity-radio-group-line-width: var(--dextinity-line-width-strong);
     --dextinity-radio-group-background: var(--dextinity-color-surface);
     --dextinity-radio-group-line: var(--dextinity-color-text-subtle);
     --dextinity-radio-group-line-hover: var(--dextinity-color-text-tertiary);

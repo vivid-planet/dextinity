@@ -21,7 +21,7 @@
     color: var(--dextinity-color-text);
 
     &:focus-visible {
-        outline: 2px solid var(--dextinity-color-focus);
+        outline: var(--dextinity-focus-outline);
         outline-offset: 2px;
     }
 

@@ -12,7 +12,7 @@
     --dextinity-tabs-foreground-active: var(--dextinity-color-text);
     // The line under the whole tab list
     --dextinity-tabs-line: var(--dextinity-color-line-strong);
-    --dextinity-tabs-indicator-height: 2px;
+    --dextinity-tabs-indicator-height: var(--dextinity-indicator-width);
     --dextinity-tabs-indicator-background: var(--dextinity-gradient-brand);
     // How far the indicator stays from the tab's edges
     --dextinity-tabs-indicator-inset: 4px;

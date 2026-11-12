@@ -60,7 +60,7 @@
     &[data-drop]::after {
         position: absolute;
         inset-inline: 0;
-        block-size: 3px;
+        block-size: var(--dextinity-indicator-width-strong);
         border-radius: 2px;
         background: var(--dextinity-block-list-drop-indicator);
         content: "";

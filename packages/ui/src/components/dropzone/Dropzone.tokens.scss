@@ -2,7 +2,7 @@
     --dextinity-dropzone-radius: calc(var(--dextinity-radius-field) * 1.15);
     --dextinity-dropzone-padding: var(--dextinity-space-8);
     // The dashed outline of the drop area
-    --dextinity-dropzone-outline: 1.5px dashed var(--dextinity-color-line-strong);
+    --dextinity-dropzone-outline: var(--dextinity-line-width-strong) dashed var(--dextinity-color-line-strong);
     --dextinity-dropzone-background: transparent;
     --dextinity-dropzone-foreground: var(--dextinity-color-text-secondary);
     --dextinity-dropzone-hint-foreground: var(--dextinity-color-text-tertiary);
@@ -17,7 +17,7 @@
     --dextinity-dropzone-overlay-background: color-mix(in oklch, var(--dextinity-color-surface) 78%, transparent);
 
     --dextinity-dropzone-error-foreground: var(--dextinity-color-danger-text);
-    --dextinity-dropzone-error-outline: 1.5px dashed var(--dextinity-color-danger);
+    --dextinity-dropzone-error-outline: var(--dextinity-line-width-strong) dashed var(--dextinity-color-danger);
 
     --dextinity-dropzone-upload-gap: var(--dextinity-space-3);
     --dextinity-dropzone-upload-radius: var(--dextinity-radius-control);

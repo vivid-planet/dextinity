@@ -4,22 +4,22 @@ import { faker } from "@src/db/fixtures/faker.js";
 import { type LayoutBlock, LayoutBlockLayout } from "@src/documents/pages/blocks/layout.block.js";
 
 import { MediaBlockFixtureService } from "../media/media-block.fixture.service.js";
-import { RichTextBlockFixtureService } from "../text-and-content/rich-text-block-fixture.service.js";
+import { TipTapRichTextBlockFixtureService } from "../text-and-content/tip-tap-rich-text-block-fixture.service.js";
 
 @Injectable()
 export class LayoutBlockFixtureService {
     constructor(
         private readonly mediaBlockFixtureService: MediaBlockFixtureService,
-        private readonly richTextFixtureService: RichTextBlockFixtureService,
+        private readonly tipTapRichTextBlockFixtureService: TipTapRichTextBlockFixtureService,
     ) {}
 
     async generateBlockInput(): Promise<ExtractBlockInputFactoryProps<typeof LayoutBlock>> {
         return {
             layout: faker.helpers.arrayElement(Object.values(LayoutBlockLayout)),
             media1: await this.mediaBlockFixtureService.generateBlockInput(),
-            text1: await this.richTextFixtureService.generateBlockInput(),
+            text1: await this.tipTapRichTextBlockFixtureService.generateBlockInput(),
             media2: await this.mediaBlockFixtureService.generateBlockInput(),
-            text2: await this.richTextFixtureService.generateBlockInput(),
+            text2: await this.tipTapRichTextBlockFixtureService.generateBlockInput(),
         };
     }
 }

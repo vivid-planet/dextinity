@@ -44,13 +44,12 @@ import { BasicStageBlockFixtureService } from "./generators/blocks/stage/basic-s
 import { BillboardTeaserBlockFixtureService } from "./generators/blocks/teaser/billboard-teaser-block-fixture.service.js";
 import { TeaserBlockFixtureService } from "./generators/blocks/teaser/teaser-block-fixture.service.js";
 import { HeadingBlockFixtureService } from "./generators/blocks/text-and-content/heading-block-fixture.service.js";
+import { InlineTipTapRichTextBlockFixtureService } from "./generators/blocks/text-and-content/inline-tip-tap-rich-text-block-fixture.service.js";
 import { KeyFactsBlockFixtureService } from "./generators/blocks/text-and-content/key-facts-block-fixture.service.js";
-import { RichTextBlockFixtureService } from "./generators/blocks/text-and-content/rich-text-block-fixture.service.js";
 import { StandaloneHeadingBlockFixtureService } from "./generators/blocks/text-and-content/standalone-heading-block-fixture.service.js";
 import { TableBlockFixtureService } from "./generators/blocks/text-and-content/table-block-fixture.service.js";
 import { TextImageBlockFixtureService } from "./generators/blocks/text-and-content/text-image-block-fixture.service.js";
 import { TipTapRichTextBlockFixtureService } from "./generators/blocks/text-and-content/tip-tap-rich-text-block-fixture.service.js";
-import { TipTapTableBlockFixtureService } from "./generators/blocks/text-and-content/tip-tap-table-block-fixture.service.js";
 import { DocumentGeneratorService } from "./generators/document-generator.service.js";
 import { DraftJsMigrationPageFixtureService } from "./generators/draft-js-migration-page-fixture.service.js";
 import { FileUploadsFixtureService } from "./generators/file-uploads-fixture.service.js";
@@ -95,6 +94,7 @@ import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.s
         HeadingBlockFixtureService,
         ImageFileFixtureService,
         ImageFixtureService,
+        InlineTipTapRichTextBlockFixtureService,
         KeyFactsBlockFixtureService,
         LayoutBlockFixtureService,
         LinkBlockFixtureService,
@@ -107,7 +107,6 @@ import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.s
         PixelImageBlockFixtureService,
         RedirectsFixtureService,
         ProductsFixtureService,
-        RichTextBlockFixtureService,
         SeoBlockFixtureService,
         SliderBlockFixtureService,
         SpaceBlockFixtureService,
@@ -128,7 +127,6 @@ import { WelcomeEmailFixtureService } from "./generators/welcome-email-fixture.s
         NewsFixtureService,
         TableBlockFixtureService,
         TipTapRichTextBlockFixtureService,
-        TipTapTableBlockFixtureService,
         WelcomeEmailFixtureService,
     ],
 })

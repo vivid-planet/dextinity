@@ -7,8 +7,8 @@ import { createImageSizes } from "@src/util/createImageSizes";
 import clsx from "clsx";
 
 import { DamImageBlock } from "./DamImageBlock";
-import { RichTextBlock } from "./RichTextBlock";
 import styles from "./TextImageBlock.module.scss";
+import { TipTapRichTextBlock } from "./TipTapRichTextBlock";
 
 export const TextImageBlock = withPreview(
     ({ data: { text, image, imageAspectRatio, imagePosition } }: PropsWithData<TextImageBlockData>) => {
@@ -19,7 +19,7 @@ export const TextImageBlock = withPreview(
                         <DamImageBlock data={image} aspectRatio={imageAspectRatio} sizes={createImageSizes({ default: "100vw", md: "30vw" })} />
                     </AnimateBoxInOnScroll>
                     <AnimateBoxInOnScroll direction="bottom" delay={100} offset={300} className={styles.textContainer}>
-                        <RichTextBlock data={text} />
+                        <TipTapRichTextBlock data={text} />
                     </AnimateBoxInOnScroll>
                 </div>
             </AnimateGroup>

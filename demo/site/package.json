@@ -70,7 +70,6 @@
         "react-focus-lock": "^2.13.7",
         "react-hook-form": "^7.91.0",
         "react-intl": "^12.1.4",
-        "redraft": "^0.10.2",
         "usehooks-ts": "^3.1.1",
         "zod": "^4.6.7"
     },

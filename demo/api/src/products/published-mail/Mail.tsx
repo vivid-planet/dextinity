@@ -1,14 +1,14 @@
 import { MjmlColumn, MjmlMailRoot, MjmlSection, MjmlSpacer, MjmlText } from "@dextinity/mail-react";
-import type { RichTextBlockData } from "@src/blocks.generated.js";
+import type { TipTapRichTextBlockData } from "@src/blocks.generated.js";
 import { FormattedMessage } from "react-intl";
 
-import { MjmlRichTextBlock } from "./RichTextBlock.js";
 import { theme } from "./theme.js";
+import { MjmlTipTapRichTextBlock } from "./TipTapRichTextBlock.js";
 
 export type MailProps = {
     recipient: { name: string; email: string; language: string };
     countProductPublished: "all" | number;
-    supportInfo?: RichTextBlockData;
+    supportInfo?: TipTapRichTextBlockData;
 };
 
 export const Mail = ({ recipient, countProductPublished, supportInfo }: MailProps) => {
@@ -44,7 +44,7 @@ export const Mail = ({ recipient, countProductPublished, supportInfo }: MailProp
             {supportInfo ? (
                 <MjmlSection indent>
                     <MjmlColumn>
-                        <MjmlRichTextBlock data={supportInfo} />
+                        <MjmlTipTapRichTextBlock data={supportInfo} />
                     </MjmlColumn>
                 </MjmlSection>
             ) : null}

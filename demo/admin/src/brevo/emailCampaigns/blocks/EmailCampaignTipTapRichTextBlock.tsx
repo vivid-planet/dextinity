@@ -13,5 +13,5 @@ export const EmailCampaignTipTapRichTextBlock = {
             },
         ],
     }),
-    displayName: <FormattedMessage id="emailCampaign.tipTapRichText.displayName" defaultMessage="Rich Text (TipTap)" />,
+    displayName: <FormattedMessage id="emailCampaign.tipTapRichText.displayName" defaultMessage="Rich Text" />,
 };

@@ -8,16 +8,14 @@ import {
     withPreview,
 } from "@dextinity/site-nextjs";
 import type { LinkBlockData, ProductPriceBlockData, ProductTeaserBlockData, TipTapRichTextBlockData } from "@src/blocks.generated";
-import { PageLayout } from "@src/layout/PageLayout";
 import { ProductPriceBlock } from "@src/products/blocks/ProductPriceBlock";
 import { ProductTeaserBlock } from "@src/products/blocks/ProductTeaserBlock";
 import type { LoadedData as ProductTeaserLoadedData } from "@src/products/blocks/ProductTeaserBlock.loader";
-import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 
 import { Typography, type TypographyProps } from "../components/Typography";
 import { isValidLink } from "../helpers/isValidLink";
 import { LinkBlock } from "./LinkBlock";
-import styles from "./RichTextBlock.module.scss";
+import styles from "./TipTapRichTextBlock.module.scss";
 
 type TypographyVariant = TypographyProps<"p">["variant"];
 
@@ -92,15 +90,5 @@ export const TipTapRichTextBlock = withPreview(
             </PreviewSkeleton>
         );
     },
-    { label: "TipTap Rich Text" },
-);
-
-export const PageContentTipTapRichTextBlock = (props: PropsWithData<TipTapRichTextBlockData>) => (
-    <PageLayout grid>
-        <div className={styles.pageLayoutContent}>
-            <AnimateBoxInOnScroll direction="bottom" offset={300}>
-                <TipTapRichTextBlock {...props} />
-            </AnimateBoxInOnScroll>
-        </div>
-    </PageLayout>
+    { label: "Rich Text" },
 );

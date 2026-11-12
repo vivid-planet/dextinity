@@ -10,8 +10,6 @@ import { StandaloneMediaBlock } from "@src/common/blocks/standalone-media.block.
 import { StandaloneRichTextBlock } from "@src/common/blocks/standalone-rich-text.block.js";
 import { TableBlock } from "@src/common/blocks/table.block.js";
 import { TextImageBlock } from "@src/common/blocks/text-image.block.js";
-import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block.js";
-import { TipTapTableBlock } from "@src/common/blocks/tip-tap-table.block.js";
 import { BillboardTeaserBlock } from "@src/documents/pages/blocks/billboard-teaser.block.js";
 import { ColumnsBlock } from "@src/documents/pages/blocks/columns.block.js";
 import { ContentGroupBlock } from "@src/documents/pages/blocks/content-group.block.js";
@@ -49,8 +47,6 @@ const supportedBlocks = {
     textImage: TextImageBlock,
     fullWidthImage: FullWidthImageBlock,
     table: TableBlock,
-    tipTapTable: TipTapTableBlock,
-    tipTapRichText: TipTapRichTextBlock,
     pageTreeIndex: PageTreeIndexBlock,
     contactForm: ContactFormBlock,
 };

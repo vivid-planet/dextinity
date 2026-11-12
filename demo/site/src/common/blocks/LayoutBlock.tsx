@@ -4,7 +4,7 @@ import clsx from "clsx";
 
 import styles from "./LayoutBlock.module.scss";
 import { MediaBlock } from "./MediaBlock";
-import { RichTextBlock } from "./RichTextBlock";
+import { TipTapRichTextBlock } from "./TipTapRichTextBlock";
 
 const layoutOptions: Array<{ name: LayoutBlockData["layout"]; blocks: string[] }> = [
     {
@@ -45,11 +45,11 @@ const LayoutBlock = withPreview(
             key === "media1" ? (
                 <MediaBlock data={media1} aspectRatio="inherit" />
             ) : key === "text1" ? (
-                <RichTextBlock data={text1} />
+                <TipTapRichTextBlock data={text1} />
             ) : key === "media2" ? (
                 <MediaBlock data={media2} aspectRatio="inherit" />
             ) : (
-                <RichTextBlock data={text2} />
+                <TipTapRichTextBlock data={text2} />
             );
 
         return (

@@ -6,15 +6,15 @@ import { faker } from "@src/db/fixtures/faker.js";
 
 import type { BlockFixture } from "../block-fixture.js";
 import { StandaloneCallToActionListBlockFixtureService } from "../navigation/standalone-call-to-action-list-block-fixture.service.js";
-import { RichTextBlockFixtureService } from "../text-and-content/rich-text-block-fixture.service.js";
 import { StandaloneHeadingBlockFixtureService } from "../text-and-content/standalone-heading-block-fixture.service.js";
 import { TextImageBlockFixtureService } from "../text-and-content/text-image-block-fixture.service.js";
+import { TipTapRichTextBlockFixtureService } from "../text-and-content/tip-tap-rich-text-block-fixture.service.js";
 import { SpaceBlockFixtureService } from "./space-block-fixture.service.js";
 
 @Injectable()
 export class AccordionBlockFixtureService {
     constructor(
-        private readonly richTextBlockFixtureService: RichTextBlockFixtureService,
+        private readonly tipTapRichTextBlockFixtureService: TipTapRichTextBlockFixtureService,
         private readonly headingBlockFixtureService: StandaloneHeadingBlockFixtureService,
         private readonly spaceBlockFixtureService: SpaceBlockFixtureService,
         private readonly callToActionListBlockFixtureService: StandaloneCallToActionListBlockFixtureService,
@@ -24,7 +24,7 @@ export class AccordionBlockFixtureService {
     async generateAccordionContentBlock(): Promise<ExtractBlockInputFactoryProps<typeof AccordionContentBlock>> {
         const blocks: ExtractBlockInputFactoryProps<typeof AccordionContentBlock>["blocks"] = [];
         const blockCfg: Record<(typeof blocks)[number]["type"], BlockFixture> = {
-            richtext: this.richTextBlockFixtureService,
+            richtext: this.tipTapRichTextBlockFixtureService,
             heading: this.headingBlockFixtureService,
             space: this.spaceBlockFixtureService,
             callToActionList: this.callToActionListBlockFixtureService,

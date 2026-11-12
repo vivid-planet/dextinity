@@ -1,4 +1,7 @@
 import { createTextImageBlock, DamImageBlock } from "@dextinity/cms-admin";
-import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
+import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
 
-export const TextImageBlock = createTextImageBlock({ text: RichTextBlock, image: DamImageBlock });
+type TextBlock = Parameters<typeof createTextImageBlock>[0]["text"];
+
+// createTextImageBlock is typed for the DraftJS-based RichTextBlock only, but composes any text block at runtime.
+export const TextImageBlock = createTextImageBlock({ text: TipTapRichTextBlock as unknown as TextBlock, image: DamImageBlock });

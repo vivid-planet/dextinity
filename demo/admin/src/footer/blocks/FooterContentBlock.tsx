@@ -1,6 +1,6 @@
 import { createCompositeBlock, createCompositeBlockTextField, DamImageBlock } from "@dextinity/cms-admin";
 import { LinkListBlock } from "@src/common/blocks/LinkListBlock";
-import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
+import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
 import { FormattedMessage } from "react-intl";
 
 export const FooterContentBlock = createCompositeBlock({
@@ -8,7 +8,7 @@ export const FooterContentBlock = createCompositeBlock({
     displayName: null,
     blocks: {
         text: {
-            block: RichTextBlock,
+            block: TipTapRichTextBlock,
             title: <FormattedMessage id="footers.blocks.text" defaultMessage="Text" />,
             hiddenInSubroute: true,
         },

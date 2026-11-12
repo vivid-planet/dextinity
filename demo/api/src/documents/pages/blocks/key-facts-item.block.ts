@@ -10,7 +10,7 @@ import {
     type ExtractBlockInput,
     SvgImageBlock,
 } from "@dextinity/cms-api";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
+import { InlineTipTapRichTextBlock } from "@src/common/blocks/inline-tip-tap-rich-text.block.js";
 import { IsString } from "class-validator";
 
 class KeyFactsItemBlockData extends BlockData {
@@ -23,7 +23,7 @@ class KeyFactsItemBlockData extends BlockData {
     @BlockField()
     label: string;
 
-    @ChildBlock(RichTextBlock)
+    @ChildBlock(InlineTipTapRichTextBlock)
     description: BlockDataInterface;
 }
 
@@ -39,8 +39,8 @@ class KeyFactsItemBlockInput extends BlockInput {
     @IsString()
     label: string;
 
-    @ChildBlockInput(RichTextBlock)
-    description: ExtractBlockInput<typeof RichTextBlock>;
+    @ChildBlockInput(InlineTipTapRichTextBlock)
+    description: ExtractBlockInput<typeof InlineTipTapRichTextBlock>;
 
     transformToBlockData(): KeyFactsItemBlockData {
         return blockInputToData(KeyFactsItemBlockData, this);

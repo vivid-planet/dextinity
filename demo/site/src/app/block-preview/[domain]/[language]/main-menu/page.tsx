@@ -1,9 +1,9 @@
 "use client";
 import { useIFrameBridge } from "@dextinity/site-nextjs";
-import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
+import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
 import { withBlockPreview } from "@src/util/blockPreview";
 
 export default withBlockPreview(() => {
     const { block } = useIFrameBridge();
-    return block ? <RichTextBlock data={block} /> : null;
+    return block ? <TipTapRichTextBlock data={block} /> : null;
 });

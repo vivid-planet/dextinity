@@ -85,7 +85,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "richtext": "RichText",
+                                "richtext": "TipTapRichText",
                                 "heading": "StandaloneHeading",
                                 "space": "Space",
                                 "callToActionList": "StandaloneCallToActionList",
@@ -123,7 +123,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "richtext": "RichText",
+                                "richtext": "TipTapRichText",
                                 "heading": "StandaloneHeading",
                                 "space": "Space",
                                 "callToActionList": "StandaloneCallToActionList",
@@ -237,7 +237,7 @@
             {
                 "name": "text",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             },
             {
@@ -277,7 +277,7 @@
             {
                 "name": "text",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             },
             {
@@ -320,7 +320,7 @@
             {
                 "name": "text",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             },
             {
@@ -351,7 +351,7 @@
             {
                 "name": "text",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             },
             {
@@ -703,8 +703,7 @@
                                 "richtext": "StandaloneRichText",
                                 "space": "Space",
                                 "teaser": "Teaser",
-                                "table": "Table",
-                                "tipTapTable": "TipTapTable"
+                                "table": "Table"
                             },
                             "nullable": false
                         }
@@ -749,8 +748,7 @@
                                 "richtext": "StandaloneRichText",
                                 "space": "Space",
                                 "teaser": "Teaser",
-                                "table": "Table",
-                                "tipTapTable": "TipTapTable"
+                                "table": "Table"
                             },
                             "nullable": false
                         }
@@ -1100,8 +1098,6 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "MailRichText",
-                                "twoListSizesText": "MailTwoListSizesRichText",
                                 "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
                                 "tipTapText": "EmailCampaignTipTapRichText",
                                 "image": "MailImage",
@@ -1142,8 +1138,6 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "MailRichText",
-                                "twoListSizesText": "MailTwoListSizesRichText",
                                 "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
                                 "tipTapText": "EmailCampaignTipTapRichText",
                                 "image": "MailImage",
@@ -1348,7 +1342,7 @@
             {
                 "name": "text",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             },
             {
@@ -1378,7 +1372,7 @@
             {
                 "name": "text",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             },
             {
@@ -1417,7 +1411,7 @@
             {
                 "name": "content",
                 "kind": "Block",
-                "block": "OptionalRichText",
+                "block": "OptionalTipTapRichText",
                 "nullable": false
             }
         ],
@@ -1431,7 +1425,7 @@
             {
                 "name": "content",
                 "kind": "Block",
-                "block": "OptionalRichText",
+                "block": "OptionalTipTapRichText",
                 "nullable": false
             }
         ]
@@ -1442,13 +1436,13 @@
             {
                 "name": "eyebrow",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "InlineTipTapRichText",
                 "nullable": false
             },
             {
                 "name": "headline",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "HeadlineTipTapRichText",
                 "nullable": false
             },
             {
@@ -1469,13 +1463,13 @@
             {
                 "name": "eyebrow",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "InlineTipTapRichText",
                 "nullable": false
             },
             {
                 "name": "headline",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "HeadlineTipTapRichText",
                 "nullable": false
             },
             {
@@ -1490,6 +1484,236 @@
                     "h6"
                 ],
                 "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "HeadlineTipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "doc",
+                        "hardBreak",
+                        "text",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "superscript",
+                        "subscript"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "headline600",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline550",
+                            "tag": "h2",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline500",
+                            "tag": "h3",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline450",
+                            "tag": "h4",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline400",
+                            "tag": "h5",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline350",
+                            "tag": "h6",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "headline600",
+                    "orderedList": null,
+                    "unorderedList": null,
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": null,
+                    "maxTextBlocks": 1,
+                    "listLevelMax": null
+                }
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "doc",
+                        "hardBreak",
+                        "text",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "superscript",
+                        "subscript"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "headline600",
+                            "tag": "h1",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline550",
+                            "tag": "h2",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline500",
+                            "tag": "h3",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline450",
+                            "tag": "h4",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline400",
+                            "tag": "h5",
+                            "styles": [],
+                            "defaultStyle": null
+                        },
+                        {
+                            "name": "headline350",
+                            "tag": "h6",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "headline600",
+                    "orderedList": null,
+                    "unorderedList": null,
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": null,
+                    "maxTextBlocks": 1,
+                    "listLevelMax": null
+                }
+            }
+        ]
+    },
+    {
+        "name": "InlineTipTapRichText",
+        "description": "Formatted text, edited in the TipTap based rich text editor. `tipTapContent` is a TipTap JSON document. Build it from the field's `tipTap` entry, not from TipTap's defaults, otherwise the content is rejected: use only the node and mark types in `nodes` and `marks`. Store every paragraph and heading as a `textBlock` node whose `textBlock` attribute names one of `textBlocks`, and whose optional `textBlockStyle` attribute names one of that text block's `styles`. Without a `textBlock` attribute, a node becomes the `defaultTextBlock`. Use an ordered (`orderedList`) or unordered (`bulletList`) list only if `orderedList` or `unorderedList` isn't `null`. A list item holds text blocks with the tag `p`, which may also use the list's `styles`. An `inlineStyle` mark's `type` names one of `inlineStyles`, and is only allowed in the text blocks and lists of its `appliesTo`. A `placeholder` node's `name` names one of `placeholders`. A `link` mark is only allowed if `link` isn't `null`, and its `data` attribute holds that block's input (its `inputFields` in the block meta). A `cmsBlock` or `cmsInlineBlock` node's `blockType` attribute is one of the field's `childBlocks` keys, and its `data` attribute holds that block's input (its `inputFields` in the block meta). Stay within `maxTextBlocks` top-level nodes and `listLevelMax` list levels, if set.",
+        "fields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "doc",
+                        "hardBreak",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "superscript",
+                        "subscript"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": null,
+                    "unorderedList": null,
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": null,
+                    "maxTextBlocks": 1,
+                    "listLevelMax": null
+                }
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "tipTapContent",
+                "kind": "TipTapRichTextBlock",
+                "nullable": false,
+                "childBlocks": {},
+                "tipTap": {
+                    "nodes": [
+                        "textBlock",
+                        "doc",
+                        "hardBreak",
+                        "text",
+                        "listItem",
+                        "nonBreakingSpace",
+                        "softHyphen"
+                    ],
+                    "marks": [
+                        "bold",
+                        "italic",
+                        "superscript",
+                        "subscript"
+                    ],
+                    "textBlocks": [
+                        {
+                            "name": "paragraph",
+                            "tag": "p",
+                            "styles": [],
+                            "defaultStyle": null
+                        }
+                    ],
+                    "defaultTextBlock": "paragraph",
+                    "orderedList": null,
+                    "unorderedList": null,
+                    "inlineStyles": [],
+                    "placeholders": [],
+                    "link": null,
+                    "maxTextBlocks": 1,
+                    "listLevelMax": null
+                }
             }
         ]
     },
@@ -1629,7 +1853,7 @@
             {
                 "name": "description",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "InlineTipTapRichText",
                 "nullable": false
             }
         ],
@@ -1653,7 +1877,7 @@
             {
                 "name": "description",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "InlineTipTapRichText",
                 "nullable": false
             }
         ]
@@ -1684,7 +1908,7 @@
             {
                 "name": "text1",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             },
             {
@@ -1696,7 +1920,7 @@
             {
                 "name": "text2",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             }
         ],
@@ -1724,7 +1948,7 @@
             {
                 "name": "text1",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             },
             {
@@ -1736,7 +1960,7 @@
             {
                 "name": "text2",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             }
         ]
@@ -2151,26 +2375,6 @@
         ]
     },
     {
-        "name": "MailRichText",
-        "description": "Formatted text, edited in the Draft.js based rich text editor.",
-        "fields": [
-            {
-                "name": "draftContent",
-                "kind": "RichTextBlock",
-                "nullable": false,
-                "linkBlock": "MailLink"
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "draftContent",
-                "kind": "RichTextBlock",
-                "nullable": false,
-                "linkBlock": "MailLink"
-            }
-        ]
-    },
-    {
         "name": "MailSpacer",
         "fields": [
             {
@@ -2408,7 +2612,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "MailRichText",
+                                "text": "MailTipTapRichText",
                                 "image": "PixelImage",
                                 "button": "MailButton",
                                 "spacer": "MailSpacer"
@@ -2445,7 +2649,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "MailRichText",
+                                "text": "MailTipTapRichText",
                                 "image": "PixelImage",
                                 "button": "MailButton",
                                 "spacer": "MailSpacer"
@@ -2455,26 +2659,6 @@
                     ]
                 },
                 "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "MailTwoListSizesRichText",
-        "description": "Formatted text, edited in the Draft.js based rich text editor.",
-        "fields": [
-            {
-                "name": "draftContent",
-                "kind": "RichTextBlock",
-                "nullable": false,
-                "linkBlock": "MailLink"
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "draftContent",
-                "kind": "RichTextBlock",
-                "nullable": false,
-                "linkBlock": "MailLink"
             }
         ]
     },
@@ -2862,7 +3046,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "headline": "Heading",
-                                "richText": "RichText",
+                                "richText": "TipTapRichText",
                                 "image": "DamImage",
                                 "textImage": "TextImage"
                             },
@@ -2899,7 +3083,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "headline": "Heading",
-                                "richText": "RichText",
+                                "richText": "TipTapRichText",
                                 "image": "DamImage",
                                 "textImage": "TextImage"
                             },
@@ -3035,13 +3219,13 @@
         ]
     },
     {
-        "name": "OptionalRichText",
+        "name": "OptionalTipTapRichText",
         "description": "A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{\"visible\":false}` without `block`.",
         "fields": [
             {
                 "name": "block",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": true
             },
             {
@@ -3054,7 +3238,7 @@
             {
                 "name": "block",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": true
             },
             {
@@ -3113,8 +3297,6 @@
                                 "textImage": "TextImage",
                                 "fullWidthImage": "FullWidthImage",
                                 "table": "Table",
-                                "tipTapTable": "TipTapTable",
-                                "tipTapRichText": "TipTapRichText",
                                 "pageTreeIndex": "PageTreeIndex",
                                 "contactForm": "ContactForm"
                             },
@@ -3181,8 +3363,6 @@
                                 "textImage": "TextImage",
                                 "fullWidthImage": "FullWidthImage",
                                 "table": "Table",
-                                "tipTapTable": "TipTapTable",
-                                "tipTapRichText": "TipTapRichText",
                                 "pageTreeIndex": "PageTreeIndex",
                                 "contactForm": "ContactForm"
                             },
@@ -3630,26 +3810,6 @@
         ]
     },
     {
-        "name": "RichText",
-        "description": "Formatted text, edited in the Draft.js based rich text editor.",
-        "fields": [
-            {
-                "name": "draftContent",
-                "kind": "RichTextBlock",
-                "nullable": false,
-                "linkBlock": "Link"
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "draftContent",
-                "kind": "RichTextBlock",
-                "nullable": false,
-                "linkBlock": "Link"
-            }
-        ]
-    },
-    {
         "name": "Seo",
         "description": "The metadata of a page for search engines and social networks: title, description, preview image, sitemap settings and canonical URL.",
         "fields": [
@@ -3911,7 +4071,7 @@
             {
                 "name": "text",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             }
         ],
@@ -3925,7 +4085,7 @@
             {
                 "name": "text",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             }
         ]
@@ -4166,7 +4326,7 @@
             {
                 "name": "richText",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             },
             {
@@ -4185,7 +4345,7 @@
             {
                 "name": "richText",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             },
             {
@@ -4375,7 +4535,7 @@
                                     {
                                         "name": "value",
                                         "kind": "Block",
-                                        "block": "RichText",
+                                        "block": "TipTapRichText",
                                         "nullable": false
                                     }
                                 ]
@@ -4447,7 +4607,7 @@
                                     {
                                         "name": "value",
                                         "kind": "Block",
-                                        "block": "RichText",
+                                        "block": "TipTapRichText",
                                         "nullable": false
                                     }
                                 ]
@@ -4535,7 +4695,7 @@
             {
                 "name": "description",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "InlineTipTapRichText",
                 "nullable": false
             },
             {
@@ -4573,7 +4733,7 @@
             {
                 "name": "description",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "InlineTipTapRichText",
                 "nullable": false
             },
             {
@@ -4603,7 +4763,7 @@
             {
                 "name": "text",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             },
             {
@@ -4631,7 +4791,7 @@
             {
                 "name": "text",
                 "kind": "Block",
-                "block": "RichText",
+                "block": "TipTapRichText",
                 "nullable": false
             },
             {
@@ -4926,194 +5086,6 @@
         ]
     },
     {
-        "name": "TipTapTable",
-        "fields": [
-            {
-                "name": "table",
-                "kind": "Block",
-                "block": "TipTapTableContent",
-                "nullable": false
-            },
-            {
-                "name": "responsiveBehavior",
-                "kind": "Enum",
-                "enum": [
-                    "scrollSideways",
-                    "none",
-                    "listByRow",
-                    "listByColumn"
-                ],
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "table",
-                "kind": "Block",
-                "block": "TipTapTableContent",
-                "nullable": false
-            },
-            {
-                "name": "responsiveBehavior",
-                "kind": "Enum",
-                "enum": [
-                    "scrollSideways",
-                    "none",
-                    "listByRow",
-                    "listByColumn"
-                ],
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "TipTapTableContent",
-        "fields": [
-            {
-                "name": "columns",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "size",
-                            "kind": "Enum",
-                            "enum": [
-                                "extraSmall",
-                                "small",
-                                "standard",
-                                "large",
-                                "extraLarge"
-                            ],
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
-            },
-            {
-                "name": "rows",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
-                            "nullable": false
-                        },
-                        {
-                            "name": "cellValues",
-                            "kind": "NestedObjectList",
-                            "object": {
-                                "fields": [
-                                    {
-                                        "name": "columnId",
-                                        "kind": "String",
-                                        "nullable": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "kind": "Block",
-                                        "block": "TipTapRichText",
-                                        "nullable": false
-                                    }
-                                ]
-                            },
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "columns",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "size",
-                            "kind": "Enum",
-                            "enum": [
-                                "extraSmall",
-                                "small",
-                                "standard",
-                                "large",
-                                "extraLarge"
-                            ],
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
-            },
-            {
-                "name": "rows",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "id",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "highlighted",
-                            "kind": "Boolean",
-                            "nullable": false
-                        },
-                        {
-                            "name": "cellValues",
-                            "kind": "NestedObjectList",
-                            "object": {
-                                "fields": [
-                                    {
-                                        "name": "columnId",
-                                        "kind": "String",
-                                        "nullable": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "kind": "Block",
-                                        "block": "TipTapRichText",
-                                        "nullable": false
-                                    }
-                                ]
-                            },
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
-            }
-        ]
-    },
-    {
         "name": "VimeoVideo",
         "fields": [
             {
@@ -5200,8 +5172,6 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "MailRichText",
-                                "twoListSizesText": "MailTwoListSizesRichText",
                                 "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
                                 "tipTapText": "MailTipTapRichText",
                                 "image": "MailImage",
@@ -5242,8 +5212,6 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "MailRichText",
-                                "twoListSizesText": "MailTwoListSizesRichText",
                                 "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
                                 "tipTapText": "MailTipTapRichText",
                                 "image": "MailImage",

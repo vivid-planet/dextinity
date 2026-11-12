@@ -9,7 +9,6 @@ import { PageContentStandaloneHeadingBlock } from "@src/common/blocks/Standalone
 import { StandaloneMediaBlock } from "@src/common/blocks/StandaloneMediaBlock";
 import { PageContentStandaloneRichTextBlock } from "@src/common/blocks/StandaloneRichTextBlock";
 import { TableBlock } from "@src/common/blocks/TableBlock";
-import { TipTapTableBlock } from "@src/common/blocks/TipTapTableBlock";
 import { ColumnsBlock } from "@src/documents/pages/blocks/ColumnsBlock";
 import { KeyFactsBlock } from "@src/documents/pages/blocks/KeyFactsBlock";
 import { TeaserBlock } from "@src/documents/pages/blocks/TeaserBlock";
@@ -31,7 +30,6 @@ const supportedBlocks: SupportedBlocks = {
     media: (props) => <StandaloneMediaBlock data={props} />,
     mediaGallery: (props) => <PageContentMediaGalleryBlock data={props} />,
     table: (props) => <TableBlock data={props} />,
-    tipTapTable: (props) => <TipTapTableBlock data={props} />,
 };
 
 const ContentGroupContentBlock = withPreview(

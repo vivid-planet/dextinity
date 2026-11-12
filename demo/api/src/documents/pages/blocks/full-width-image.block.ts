@@ -11,9 +11,9 @@ import {
     type ExtractBlockData,
     type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
+import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block.js";
 
-const FullWidthImageContentBlock = createOptionalBlock(RichTextBlock);
+const FullWidthImageContentBlock = createOptionalBlock(TipTapRichTextBlock);
 
 class FullWidthImageBlockData extends BlockData {
     @ChildBlock(DamImageBlock)

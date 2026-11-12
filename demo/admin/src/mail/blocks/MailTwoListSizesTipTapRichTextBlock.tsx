@@ -24,5 +24,5 @@ export const MailTwoListSizesTipTapRichTextBlock = {
         orderedList: { styles: [smallStyle] },
         unorderedList: { styles: [smallStyle] },
     }),
-    displayName: <FormattedMessage id="mail.twoListSizesTipTapRichText.displayName" defaultMessage="Rich Text (TipTap, Two List Sizes)" />,
+    displayName: <FormattedMessage id="mail.twoListSizesTipTapRichText.displayName" defaultMessage="Rich Text (Two List Sizes)" />,
 };

@@ -3,7 +3,7 @@ import type { BillboardTeaserBlockData } from "@src/blocks.generated";
 import { CallToActionListBlock } from "@src/common/blocks/CallToActionListBlock";
 import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
-import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
+import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import { AnimateGroup } from "@src/util/animations/AnimateGroup";
@@ -33,7 +33,7 @@ export const BillboardTeaserBlock = withPreview(
                             <HeadingBlock data={heading} />
                         </AnimateBoxInOnScroll>
                         <AnimateBoxInOnScroll direction="bottom" delay={100}>
-                            <RichTextBlock data={text} />
+                            <TipTapRichTextBlock data={text} />
                         </AnimateBoxInOnScroll>
                         <AnimateBoxInOnScroll direction="bottom" delay={200}>
                             <CallToActionListBlock data={callToActionList} />

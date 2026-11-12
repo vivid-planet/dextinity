@@ -34,5 +34,5 @@ export const mailTipTapRichTextBlockOptions = {
 
 export const MailTipTapRichTextBlock = {
     ...createTipTapRichTextBlock(mailTipTapRichTextBlockOptions),
-    displayName: <FormattedMessage id="mail.tipTapRichText.displayName" defaultMessage="Rich Text (TipTap)" />,
+    displayName: <FormattedMessage id="mail.tipTapRichText.displayName" defaultMessage="Rich Text" />,
 };

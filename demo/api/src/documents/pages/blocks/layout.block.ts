@@ -10,7 +10,7 @@ import {
     type ExtractBlockInput,
 } from "@dextinity/cms-api";
 import { MediaBlock } from "@src/common/blocks/media.block.js";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
+import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block.js";
 import { IsEnum } from "class-validator";
 
 export enum LayoutBlockLayout {
@@ -30,13 +30,13 @@ class LayoutBlockData extends BlockData {
     @ChildBlock(MediaBlock)
     media1: BlockDataInterface;
 
-    @ChildBlock(RichTextBlock)
+    @ChildBlock(TipTapRichTextBlock)
     text1: BlockDataInterface;
 
     @ChildBlock(MediaBlock)
     media2: BlockDataInterface;
 
-    @ChildBlock(RichTextBlock)
+    @ChildBlock(TipTapRichTextBlock)
     text2: BlockDataInterface;
 }
 
@@ -48,14 +48,14 @@ class LayoutBlockInput extends BlockInput {
     @ChildBlockInput(MediaBlock)
     media1: ExtractBlockInput<typeof MediaBlock>;
 
-    @ChildBlockInput(RichTextBlock)
-    text1: ExtractBlockInput<typeof RichTextBlock>;
+    @ChildBlockInput(TipTapRichTextBlock)
+    text1: ExtractBlockInput<typeof TipTapRichTextBlock>;
 
     @ChildBlockInput(MediaBlock)
     media2: ExtractBlockInput<typeof MediaBlock>;
 
-    @ChildBlockInput(RichTextBlock)
-    text2: ExtractBlockInput<typeof RichTextBlock>;
+    @ChildBlockInput(TipTapRichTextBlock)
+    text2: ExtractBlockInput<typeof TipTapRichTextBlock>;
 
     transformToBlockData(): LayoutBlockData {
         return blockInputToData(LayoutBlockData, this);

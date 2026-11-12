@@ -11,10 +11,10 @@ import {
     type ExtractBlockInput,
     IsUndefinable,
 } from "@dextinity/cms-api";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
 import { SpaceBlock } from "@src/common/blocks/space.block.js";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/standalone-call-to-action-list.block.js";
 import { StandaloneHeadingBlock } from "@src/common/blocks/standalone-heading.block.js";
+import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block.js";
 import { IsBoolean, IsEnum, IsString } from "class-validator";
 
 import { TextImageBlock } from "./text-image.block.js";
@@ -22,7 +22,7 @@ import { TextImageBlock } from "./text-image.block.js";
 export const AccordionContentBlock = createBlocksBlock(
     {
         supportedBlocks: {
-            richtext: RichTextBlock,
+            richtext: TipTapRichTextBlock,
             heading: StandaloneHeadingBlock,
             space: SpaceBlock,
             callToActionList: StandaloneCallToActionListBlock,

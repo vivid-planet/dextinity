@@ -11,7 +11,8 @@ import {
 } from "@dextinity/cms-api";
 import { IsEnum } from "class-validator";
 
-import { RichTextBlock } from "./rich-text.block.js";
+import { HeadlineTipTapRichTextBlock } from "./headline-tip-tap-rich-text.block.js";
+import { InlineTipTapRichTextBlock } from "./inline-tip-tap-rich-text.block.js";
 
 export enum HeadlineTag {
     h1 = "h1",
@@ -23,10 +24,10 @@ export enum HeadlineTag {
 }
 
 class HeadingBlockData extends BlockData {
-    @ChildBlock(RichTextBlock)
+    @ChildBlock(InlineTipTapRichTextBlock)
     eyebrow: BlockDataInterface;
 
-    @ChildBlock(RichTextBlock)
+    @ChildBlock(HeadlineTipTapRichTextBlock)
     headline: BlockDataInterface;
 
     @BlockField({ type: "enum", enum: HeadlineTag })
@@ -34,11 +35,11 @@ class HeadingBlockData extends BlockData {
 }
 
 class HeadingBlockInput extends BlockInput {
-    @ChildBlockInput(RichTextBlock)
-    eyebrow: ExtractBlockInput<typeof RichTextBlock>;
+    @ChildBlockInput(InlineTipTapRichTextBlock)
+    eyebrow: ExtractBlockInput<typeof InlineTipTapRichTextBlock>;
 
-    @ChildBlockInput(RichTextBlock)
-    headline: ExtractBlockInput<typeof RichTextBlock>;
+    @ChildBlockInput(HeadlineTipTapRichTextBlock)
+    headline: ExtractBlockInput<typeof HeadlineTipTapRichTextBlock>;
 
     @IsEnum(HeadlineTag)
     @BlockField({ type: "enum", enum: HeadlineTag })

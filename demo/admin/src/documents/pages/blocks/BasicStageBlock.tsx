@@ -3,7 +3,7 @@ import type { BasicStageBlockData } from "@src/blocks.generated";
 import { CallToActionListBlock } from "@src/common/blocks/CallToActionListBlock";
 import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
-import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
+import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
 import { FormattedMessage } from "react-intl";
 
 const overlayOptions: Array<{ value: BasicStageBlockData["overlay"]; label: string }> = [
@@ -32,7 +32,7 @@ export const BasicStageBlock = createCompositeBlock({
             block: HeadingBlock,
         },
         text: {
-            block: RichTextBlock,
+            block: TipTapRichTextBlock,
             title: <FormattedMessage id="basicStageBlock.text" defaultMessage="Text" />,
             hiddenInSubroute: true,
         },

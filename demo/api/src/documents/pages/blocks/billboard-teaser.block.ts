@@ -12,7 +12,7 @@ import {
 import { CallToActionListBlock } from "@src/common/blocks/call-to-action-list.block.js";
 import { HeadingBlock } from "@src/common/blocks/heading.block.js";
 import { MediaBlock } from "@src/common/blocks/media.block.js";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
+import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block.js";
 import { IsInt, Max, Min } from "class-validator";
 
 class BillboardTeaserBlockData extends BlockData {
@@ -22,7 +22,7 @@ class BillboardTeaserBlockData extends BlockData {
     @ChildBlock(HeadingBlock)
     heading: BlockDataInterface;
 
-    @ChildBlock(RichTextBlock)
+    @ChildBlock(TipTapRichTextBlock)
     text: BlockDataInterface;
 
     @BlockField()
@@ -39,8 +39,8 @@ class BillboardTeaserBlockInput extends BlockInput {
     @ChildBlockInput(HeadingBlock)
     heading: ExtractBlockInput<typeof HeadingBlock>;
 
-    @ChildBlockInput(RichTextBlock)
-    text: ExtractBlockInput<typeof RichTextBlock>;
+    @ChildBlockInput(TipTapRichTextBlock)
+    text: ExtractBlockInput<typeof TipTapRichTextBlock>;
 
     @BlockField()
     @IsInt()

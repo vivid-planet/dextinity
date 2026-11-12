@@ -28,7 +28,7 @@ import {
     useSiteConfig,
 } from "@dextinity/cms-admin";
 import { Box } from "@mui/material";
-import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
+import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
 import { deepEqual } from "fast-equals";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -69,8 +69,8 @@ interface EditMainMenuItemProps {
     item: GQLEditMainMenuItemFragment;
 }
 
-type RichTextBlockState = BlockState<typeof RichTextBlock>;
-type RichTextBlockOutput = BlockOutputApi<typeof RichTextBlock>;
+type TipTapRichTextBlockState = BlockState<typeof TipTapRichTextBlock>;
+type TipTapRichTextBlockOutput = BlockOutputApi<typeof TipTapRichTextBlock>;
 
 const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
     const previewApi = useBlockPreview();
@@ -79,27 +79,27 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
         GQLUpdateMainMenuItemMutation,
         GQLUpdateMainMenuItemMutationVariables
     >(updateMainMenuItemMutation);
-    const [referenceContent, setReferenceContent] = useState<RichTextBlockOutput | null>(null);
+    const [referenceContent, setReferenceContent] = useState<TipTapRichTextBlockOutput | null>(null);
     const [hasChanges, setHasChanges] = useState(false);
-    const [content, setContent] = useState<RichTextBlockState | null>(null);
+    const [content, setContent] = useState<TipTapRichTextBlockState | null>(null);
     const { match: contentScopeMatch, scope } = useContentScope();
     const siteConfig = useSiteConfig({ scope });
     const intl = useIntl();
     const blockContext = useBlockContext();
 
     useEffect(() => {
-        setContent(item.content ? RichTextBlock.input2State(item.content) : null);
-        setReferenceContent(item.content ? RichTextBlock.state2Output(RichTextBlock.input2State(item.content)) : null);
+        setContent(item.content ? TipTapRichTextBlock.input2State(item.content) : null);
+        setReferenceContent(item.content ? TipTapRichTextBlock.state2Output(TipTapRichTextBlock.input2State(item.content)) : null);
     }, [item]);
 
     useEffect(() => {
-        const equal = deepEqual(referenceContent, content ? RichTextBlock.state2Output(content) : null);
+        const equal = deepEqual(referenceContent, content ? TipTapRichTextBlock.state2Output(content) : null);
         setHasChanges(!equal);
     }, [content, referenceContent]);
     let previewState = undefined;
 
     if (content) {
-        previewState = RichTextBlock.createPreviewState(content, {
+        previewState = TipTapRichTextBlock.createPreviewState(content, {
             ...blockContext,
             parentUrl: match.url,
             showVisibleOnly: previewApi.showOnlyVisible,
@@ -107,7 +107,7 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
     }
 
     const handleAddContentClick = () => {
-        setContent(RichTextBlock.defaultValues());
+        setContent(TipTapRichTextBlock.defaultValues());
     };
 
     const handleRemoveContentClick = () => {
@@ -118,7 +118,7 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
         await updateMainMenuItem({
             variables: {
                 pageTreeNodeId: item.node.id,
-                input: { content: content ? RichTextBlock.state2Output(content) : null },
+                input: { content: content ? TipTapRichTextBlock.state2Output(content) : null },
                 lastUpdatedAt: item.updatedAt,
             },
             refetchQueries: ["MainMenuItem"],
@@ -170,7 +170,7 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
                         <div>
                             {content ? (
                                 <BlockAdminComponentRoot title={intl.formatMessage({ id: "mainMenu.menuItem", defaultMessage: "Menu item" })}>
-                                    <RichTextBlock.AdminComponent
+                                    <TipTapRichTextBlock.AdminComponent
                                         state={content}
                                         updateState={(setStateAction) => {
                                             setContent(resolveNewState({ prevState: content, setStateAction }));

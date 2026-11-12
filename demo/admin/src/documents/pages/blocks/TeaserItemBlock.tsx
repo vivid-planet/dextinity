@@ -1,24 +1,9 @@
-import {
-    BlockCategory,
-    createCompositeBlock,
-    createCompositeBlockSelectField,
-    createCompositeBlockTextField,
-    createRichTextBlock,
-} from "@dextinity/cms-admin";
+import { BlockCategory, createCompositeBlock, createCompositeBlockSelectField, createCompositeBlockTextField } from "@dextinity/cms-admin";
 import type { TeaserItemBlockData } from "@src/blocks.generated";
-import { LinkBlock } from "@src/common/blocks/LinkBlock";
+import { InlineTipTapRichTextBlock } from "@src/common/blocks/InlineTipTapRichTextBlock";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
 import { TextLinkBlock } from "@src/common/blocks/TextLinkBlock";
 import { FormattedMessage } from "react-intl";
-
-const DescriptionRichTextBlock = createRichTextBlock({
-    link: LinkBlock,
-    rte: {
-        maxBlocks: 1,
-        supports: ["bold", "italic", "sub", "sup", "non-breaking-space", "soft-hyphen"],
-    },
-    minHeight: 0,
-});
 
 export const TeaserItemBlock = createCompositeBlock(
     {
@@ -46,7 +31,7 @@ export const TeaserItemBlock = createCompositeBlock(
                 }),
             },
             description: {
-                block: DescriptionRichTextBlock,
+                block: InlineTipTapRichTextBlock,
                 title: <FormattedMessage id="teaserItemBlock.description" defaultMessage="Description" />,
             },
             link: {

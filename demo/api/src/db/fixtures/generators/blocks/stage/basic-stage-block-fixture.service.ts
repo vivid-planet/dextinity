@@ -6,7 +6,7 @@ import { Alignment as BasicStageBlockAlignment, type BasicStageBlock } from "@sr
 import { MediaBlockFixtureService } from "../media/media-block.fixture.service.js";
 import { CallToActionListBlockFixtureService } from "../navigation/call-to-action-list-block.service.js";
 import { HeadingBlockFixtureService } from "../text-and-content/heading-block-fixture.service.js";
-import { RichTextBlockFixtureService } from "../text-and-content/rich-text-block-fixture.service.js";
+import { TipTapRichTextBlockFixtureService } from "../text-and-content/tip-tap-rich-text-block-fixture.service.js";
 
 @Injectable()
 export class BasicStageBlockFixtureService {
@@ -14,14 +14,14 @@ export class BasicStageBlockFixtureService {
         private readonly callToActionListBlockFixtureService: CallToActionListBlockFixtureService,
         private readonly headingBlockFixtureService: HeadingBlockFixtureService,
         private readonly mediaBlockFixtureService: MediaBlockFixtureService,
-        private readonly richTextBlockFixtureService: RichTextBlockFixtureService,
+        private readonly tipTapRichTextBlockFixtureService: TipTapRichTextBlockFixtureService,
     ) {}
 
     async generateBlockInput(): Promise<ExtractBlockInputFactoryProps<typeof BasicStageBlock>> {
         return {
             media: await this.mediaBlockFixtureService.generateBlockInput(),
             heading: await this.headingBlockFixtureService.generateBlockInput(),
-            text: await this.richTextBlockFixtureService.generateBlockInput(),
+            text: await this.tipTapRichTextBlockFixtureService.generateBlockInput(),
             overlay: faker.number.int({ min: 50, max: 90 }),
             alignment: faker.helpers.arrayElement(Object.values(BasicStageBlockAlignment)),
             callToActionList: await this.callToActionListBlockFixtureService.generateBlockInput(),

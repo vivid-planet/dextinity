@@ -16,12 +16,12 @@ import {
 import type {
     MailButtonBlockData,
     MailSpacerBlockData,
+    MailTipTapRichTextBlockData,
     MailTwoColumnsBlockData,
     PixelImageBlockData,
-    RichTextBlockData,
 } from "@src/blocks.generated";
-import { MjmlRichTextBlock } from "@src/mail/blocks/MailRichTextBlock";
 import { spacingToHeight } from "@src/mail/blocks/MailSpacerBlock";
+import { MjmlTipTapRichTextBlock } from "@src/mail/blocks/MailTipTapRichTextBlock";
 
 const columnGap = 20;
 
@@ -50,8 +50,8 @@ registerStyles(
     `,
 );
 
-const ColumnRichTextBlock = withPreview<PropsWithData<RichTextBlockData>>(
-    ({ data, className }) => <MjmlRichTextBlock data={data} textClassName={className} />,
+const ColumnRichTextBlock = withPreview<PropsWithData<MailTipTapRichTextBlockData>>(
+    ({ data, className }) => <MjmlTipTapRichTextBlock data={data} textClassName={className} />,
     { label: "Text" },
 );
 

@@ -2,7 +2,7 @@ import { type BlockDataInterface, RootBlock, RootBlockDataScalar, RootBlockEntit
 import { Entity, OneToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
 import { BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
+import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block.js";
 import { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity.js";
 import { randomUUID } from "crypto";
 
@@ -20,9 +20,9 @@ export class MainMenuItem extends BaseEntity {
     @Field(() => PageTreeNode)
     node: PageTreeNode;
 
-    @Property({ type: new RootBlockType(RichTextBlock), nullable: true })
-    @RootBlock(RichTextBlock)
-    @Field(() => RootBlockDataScalar(RichTextBlock), { nullable: true })
+    @Property({ type: new RootBlockType(TipTapRichTextBlock), nullable: true })
+    @RootBlock(TipTapRichTextBlock)
+    @Field(() => RootBlockDataScalar(TipTapRichTextBlock), { nullable: true })
     content: BlockDataInterface | null;
 
     @Property({

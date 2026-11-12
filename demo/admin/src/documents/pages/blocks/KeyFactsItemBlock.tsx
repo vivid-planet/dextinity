@@ -1,15 +1,6 @@
-import { BlockCategory, createCompositeBlock, createCompositeBlockTextField, createRichTextBlock, SvgImageBlock } from "@dextinity/cms-admin";
-import { LinkBlock } from "@src/common/blocks/LinkBlock";
+import { BlockCategory, createCompositeBlock, createCompositeBlockTextField, SvgImageBlock } from "@dextinity/cms-admin";
+import { InlineTipTapRichTextBlock } from "@src/common/blocks/InlineTipTapRichTextBlock";
 import { FormattedMessage } from "react-intl";
-
-const DescriptionRichTextBlock = createRichTextBlock({
-    link: LinkBlock,
-    rte: {
-        maxBlocks: 1,
-        supports: ["bold", "italic", "sub", "sup", "non-breaking-space", "soft-hyphen"],
-    },
-    minHeight: 0,
-});
 
 export const KeyFactsItemBlock = createCompositeBlock(
     {
@@ -31,7 +22,7 @@ export const KeyFactsItemBlock = createCompositeBlock(
                 }),
             },
             description: {
-                block: DescriptionRichTextBlock,
+                block: InlineTipTapRichTextBlock,
                 title: <FormattedMessage id="keyFactsItemBlock.description" defaultMessage="Description" />,
             },
         },

@@ -195,7 +195,7 @@ describe("PageTreeService", () => {
         });
     });
 
-    describe("attachDocument scope boundary", () => {
+    describe("attachDocument single attachment", () => {
         it("rejects attaching a document that is already attached to a node in a different scope", async () => {
             const { service } = createServiceForScopeChecks({
                 nodes: [
@@ -206,11 +206,11 @@ describe("PageTreeService", () => {
             });
 
             await expect(service.attachDocument({ id: "doc-1", type: "Page" }, "target-node")).rejects.toThrow(
-                "The document is already attached to a page tree node in a different scope",
+                "The document is already attached to another page tree node",
             );
         });
 
-        it("allows attaching a document that is already attached to a node in the same scope", async () => {
+        it("rejects attaching a document that is already attached to a different node in the same scope", async () => {
             const { service, persisted } = createServiceForScopeChecks({
                 nodes: [
                     createPageTreeNode({ id: "target-node", slug: "target", scope: { domain: "main" } }),
@@ -219,8 +219,20 @@ describe("PageTreeService", () => {
                 attachments: [{ pageTreeNodeId: "sibling-node", documentId: "doc-1", type: "Page" }],
             });
 
+            await expect(service.attachDocument({ id: "doc-1", type: "Page" }, "target-node")).rejects.toThrow(
+                "The document is already attached to another page tree node",
+            );
+            expect(persisted).toHaveLength(0);
+        });
+
+        it("allows attaching a document again to the node it is already attached to", async () => {
+            const { service, persisted } = createServiceForScopeChecks({
+                nodes: [createPageTreeNode({ id: "target-node", slug: "target", scope: { domain: "main" } })],
+                attachments: [{ pageTreeNodeId: "target-node", documentId: "doc-1", type: "Page" }],
+            });
+
             await expect(service.attachDocument({ id: "doc-1", type: "Page" }, "target-node")).resolves.toBeUndefined();
-            expect(persisted).toContainEqual({ pageTreeNodeId: "target-node", documentId: "doc-1", type: "Page" });
+            expect(persisted).toHaveLength(0);
         });
 
         it("allows attaching a document that is not attached anywhere yet", async () => {
@@ -233,8 +245,8 @@ describe("PageTreeService", () => {
             expect(persisted).toContainEqual({ pageTreeNodeId: "target-node", documentId: "new-doc", type: "Page" });
         });
 
-        it("does not flush a pending document change when rejecting a cross-scope attach", async () => {
-            // A savePage resolver mutates the page before calling attachDocument. The scope check must reject before a
+        it("does not flush a pending document change when rejecting an attach", async () => {
+            // A savePage resolver mutates the page before calling attachDocument. The check must reject before a
             // read on the request EntityManager auto-flushes that change, so the forked read matters here.
             const pendingPage: PendingPage = { committed: "original", pending: "overwritten" };
             const { service } = createServiceForScopeChecks({
@@ -247,7 +259,7 @@ describe("PageTreeService", () => {
             });
 
             await expect(service.attachDocument({ id: "doc-1", type: "Page" }, "target-node")).rejects.toThrow(
-                "The document is already attached to a page tree node in a different scope",
+                "The document is already attached to another page tree node",
             );
             expect(pendingPage.committed).toBe("original");
         });

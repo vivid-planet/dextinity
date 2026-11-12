@@ -55,7 +55,7 @@ export class PageTreeService {
 
         await this.validateParentScope({ parentId, scope });
         if (attachedDocumentInput.id) {
-            await this.validateAttachedDocumentScope({ documentId: attachedDocumentInput.id, targetNodeScope: scope });
+            await this.validateDocumentNotAttachedElsewhere({ documentId: attachedDocumentInput.id });
         }
 
         const siblingNodeWithHighestPosition = await this.pageTreeRepository
@@ -108,7 +108,7 @@ export class PageTreeService {
         }
 
         if (input.attachedDocument?.id) {
-            await this.validateAttachedDocumentScope({ documentId: input.attachedDocument.id, targetNodeScope: existingNode.scope });
+            await this.validateDocumentNotAttachedElsewhere({ documentId: input.attachedDocument.id, targetNodeId: id });
         }
 
         if (input.createAutomaticRedirectsOnSlugChange && existingNode.slug != input.slug) {
@@ -376,10 +376,11 @@ export class PageTreeService {
 
     async attachDocument(attachedDocumentInput: AttachedDocumentStrictInput, pageTreeId: string): Promise<void> {
         // A savePage resolver mutates the page before calling this. Read on a forked EntityManager so the default AUTO
-        // flush mode can't persist that change before the scope check rejects it.
-        const forkedEm = this.entityManager.fork();
-        const targetNode = await forkedEm.findOne<PageTreeNodeInterface>(this.pageTreeRepository.getEntityName(), pageTreeId);
-        await this.validateAttachedDocumentScope({ documentId: attachedDocumentInput.id, targetNodeScope: targetNode?.scope }, forkedEm);
+        // flush mode can't persist that change before the check rejects it.
+        await this.validateDocumentNotAttachedElsewhere(
+            { documentId: attachedDocumentInput.id, targetNodeId: pageTreeId },
+            this.entityManager.fork(),
+        );
 
         const node = await this.pageTreeRepository.findOne(pageTreeId);
         if (!node) {
@@ -474,20 +475,16 @@ export class PageTreeService {
         }
     }
 
-    // The scope check on the mutation arguments doesn't cover an attachedDocument id nested in the input, so the
-    // invariant that a document is never attached across scope boundaries is enforced here: attaching it to a node in
-    // a foreign scope would expose and allow editing of content outside the user's scope.
-    private async validateAttachedDocumentScope(
-        { documentId, targetNodeScope }: { documentId: string; targetNodeScope?: ScopeInterface },
+    // The scope check on the mutation arguments doesn't cover an attachedDocument id nested in the input. A document
+    // belongs to exactly one node, so attaching it to a second one would expose and allow editing of content that may
+    // lie outside the user's scope.
+    private async validateDocumentNotAttachedElsewhere(
+        { documentId, targetNodeId }: { documentId: string; targetNodeId?: string },
         em: EntityManager = this.entityManager,
     ): Promise<void> {
-        const nodeEntityName = this.pageTreeRepository.getEntityName();
         const existingAttachments = await em.find(AttachedDocument, { documentId });
-        for (const attachment of existingAttachments) {
-            const existingNode = await em.findOne<PageTreeNodeInterface>(nodeEntityName, attachment.pageTreeNodeId);
-            if (existingNode && !contentScopesAreEqual(existingNode.scope, targetNodeScope)) {
-                throw new DextinityValidationException("The document is already attached to a page tree node in a different scope");
-            }
+        if (existingAttachments.some((attachment) => attachment.pageTreeNodeId !== targetNodeId)) {
+            throw new DextinityValidationException("The document is already attached to another page tree node");
         }
     }
 

@@ -116,19 +116,21 @@ export class ProductCategoryResolver {
         @Args("input", { type: () => ProductCategoryInput })
         input: ProductCategoryInput,
     ): Promise<ProductCategory> {
-        const lastPosition = await this.productCategoriesService.getLastPosition();
-        let position = input.position;
-        if (position !== undefined && position < lastPosition + 1) {
-            await this.productCategoriesService.incrementPositions(position);
-        } else {
-            position = lastPosition + 1;
-        }
-        const productCategory = this.entityManager.create(ProductCategory, {
-            ...input,
-            position,
+        return this.entityManager.transactional(async () => {
+            const lastPosition = await this.productCategoriesService.getLastPosition();
+            let position = input.position;
+            if (position !== undefined && position < lastPosition + 1) {
+                await this.productCategoriesService.incrementPositions(position);
+            } else {
+                position = lastPosition + 1;
+            }
+            const productCategory = this.entityManager.create(ProductCategory, {
+                ...input,
+                position,
+            });
+            await this.entityManager.flush();
+            return productCategory;
         });
-        await this.entityManager.flush();
-        return productCategory;
     }
 
     @Mutation(() => ProductCategory)
@@ -139,23 +141,25 @@ export class ProductCategoryResolver {
         @Args("input", { type: () => ProductCategoryUpdateInput })
         input: ProductCategoryUpdateInput,
     ): Promise<ProductCategory> {
-        const productCategory = await this.entityManager.findOneOrFail(ProductCategory, id);
-        if (input.position !== undefined) {
-            const lastPosition = await this.productCategoriesService.getLastPosition();
-            if (input.position > lastPosition) {
-                input.position = lastPosition;
+        return this.entityManager.transactional(async () => {
+            const productCategory = await this.entityManager.findOneOrFail(ProductCategory, id);
+            if (input.position !== undefined) {
+                const lastPosition = await this.productCategoriesService.getLastPosition();
+                if (input.position > lastPosition) {
+                    input.position = lastPosition;
+                }
+                if (productCategory.position < input.position) {
+                    await this.productCategoriesService.decrementPositions(productCategory.position, input.position);
+                } else if (productCategory.position > input.position) {
+                    await this.productCategoriesService.incrementPositions(input.position, productCategory.position);
+                }
             }
-            if (productCategory.position < input.position) {
-                await this.productCategoriesService.decrementPositions(productCategory.position, input.position);
-            } else if (productCategory.position > input.position) {
-                await this.productCategoriesService.incrementPositions(input.position, productCategory.position);
-            }
-        }
-        productCategory.assign({
-            ...input,
+            productCategory.assign({
+                ...input,
+            });
+            await this.entityManager.flush();
+            return productCategory;
         });
-        await this.entityManager.flush();
-        return productCategory;
     }
 
     @Mutation(() => Boolean)
@@ -164,14 +168,18 @@ export class ProductCategoryResolver {
         @Args("id", { type: () => ID })
         id: string,
     ): Promise<boolean> {
-        const productCategory = await this.entityManager.findOneOrFail(ProductCategory, id);
-        this.entityManager.remove(productCategory);
-        await this.productCategoriesService.decrementPositions(productCategory.position);
-        await this.entityManager.flush();
-        return true;
+        return this.entityManager.transactional(async () => {
+            const productCategory = await this.entityManager.findOneOrFail(ProductCategory, id);
+            this.entityManager.remove(productCategory);
+            await this.productCategoriesService.decrementPositions(productCategory.position);
+            await this.entityManager.flush();
+            return true;
+        });
     }
 }
 ```
+
+Wrap each mutation in `this.entityManager.transactional()`: the position helpers update sibling rows with `nativeUpdate` right away, so without a transaction a failing `flush()` (e.g. a unique slug violation) would leave the siblings shifted. Calls to the injected `EntityManager` inside the callback, including those in the position helpers service, run in the same transaction.
 
 ## Input changes
 

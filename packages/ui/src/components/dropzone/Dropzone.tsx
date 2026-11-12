@@ -4,6 +4,7 @@ import { type ChangeEvent, type DragEvent, forwardRef, type HTMLAttributes, type
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
+import type { IconName } from "../icon/iconRegistry";
 import styles from "./Dropzone.module.scss";
 
 export interface DropzoneUpload {
@@ -46,6 +47,12 @@ const defaultLabels: DropzoneLabels = {
     or: "or",
     browse: "choose files",
     drop: "Drop files to upload",
+};
+
+const uploadIconNames: Record<NonNullable<DropzoneUpload["status"]>, IconName> = {
+    uploading: "upload",
+    done: "file",
+    error: "error",
 };
 
 /**
@@ -295,7 +302,7 @@ export const Dropzone = forwardRef<HTMLDivElement, DropzoneProps>(function Dropz
                         const status = upload.status ?? "uploading";
                         return (
                             <li key={upload.id} className={styles.upload} data-status={status}>
-                                <Icon name={status === "error" ? "error" : "file"} className={styles.uploadIcon} />
+                                <Icon name={uploadIconNames[status]} className={styles.uploadIcon} />
                                 <span className={styles.uploadName}>{upload.name}</span>
                                 {status === "error" && <span className={styles.uploadError}>{upload.error}</span>}
                                 {status === "uploading" && (

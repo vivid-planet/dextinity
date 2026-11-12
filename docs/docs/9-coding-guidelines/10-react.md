@@ -8,7 +8,7 @@ sidebar_position: -5
 - Follow the best practices described in the [official React documentation](https://react.dev/).
 - Prefer Function Components over Class Components.
 - Create one file per "logical component." Multiple Function Components per file are allowed for structuring, styling, etc.
-- Always use JSX (use React's `createElement` only for app initialization).
+- Always use JSX (use React's `createElement` only to render a component taken from a prop or variable).
 - Use React's `PropsWithChildren` instead of defining children manually.
 - How to structure folders: "Move files around until it feels right."
   Recommendation: separate by modules instead of by type ([File Structure – React](https://legacy.reactjs.org/docs/faq-structure.html#grouping-by-features-or-routes)).

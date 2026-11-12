@@ -144,7 +144,7 @@ export class BrevoApiCampaignsService {
             const nonCachedIds = [];
 
             for (const brevoId of ids) {
-                const cachedCampaign: BrevoApiCampaign | undefined = await this.cacheManager.get(`brevo-campaign-${brevoId}`);
+                const cachedCampaign: BrevoApiCampaign | undefined = await this.cacheManager.get(this.getCampaignCacheKey(brevoId, scope));
                 if (cachedCampaign) {
                     brevoCampaigns.push(cachedCampaign);
                 } else {
@@ -154,7 +154,7 @@ export class BrevoApiCampaignsService {
 
             for await (const campaign of this.getCampaignsResponse(nonCachedIds, scope)) {
                 brevoCampaigns.push(campaign);
-                await this.cacheManager.set(`brevo-campaign-${campaign.id}`, campaign);
+                await this.cacheManager.set(this.getCampaignCacheKey(campaign.id, scope), campaign);
             }
 
             return brevoCampaigns;
@@ -170,7 +170,7 @@ export class BrevoApiCampaignsService {
                 throw new Error("Campaign has no brevoId");
             }
 
-            return this.cacheManager.wrap<BrevoApiCampaign>(`brevo-campaign-${campaign.id}`, async () => {
+            return this.cacheManager.wrap<BrevoApiCampaign>(this.getCampaignCacheKey(brevoId, campaign.scope), async () => {
                 return this.clientFactory.getClient(campaign.scope).emailCampaigns.getEmailCampaign({ campaignId: brevoId });
             });
         } catch (error) {
@@ -195,23 +195,34 @@ export class BrevoApiCampaignsService {
         }
     }
 
+    // Each scope can use a different Brevo account, and campaign IDs are only unique within an account
+    private getCampaignCacheKey(brevoId: number, scope: EmailCampaignScopeInterface): string {
+        return `brevo-campaign-${JSON.stringify(scope)}-${brevoId}`;
+    }
+
     private async *getCampaignsResponse(
         ids: number[],
         scope: EmailCampaignScopeInterface,
         status?: "suspended" | "archive" | "sent" | "queued" | "draft" | "inProcess",
     ): AsyncGenerator<BrevoApiCampaign, void, undefined> {
+        const remainingIds = new Set(ids);
         let offset = 0;
         const limit = 100;
 
-        while (true) {
+        while (remainingIds.size > 0) {
             try {
                 const campaignsResponse = await this.clientFactory.getClient(scope).emailCampaigns.getEmailCampaigns({ status, limit, offset });
-                const campaignArray = (campaignsResponse.campaigns ?? []).filter((item) => ids.includes(item.id));
+                const campaigns = campaignsResponse.campaigns ?? [];
 
-                if (campaignArray.length === 0) {
+                for (const campaign of campaigns) {
+                    if (remainingIds.delete(campaign.id)) {
+                        yield campaign;
+                    }
+                }
+
+                if (campaigns.length < limit) {
                     break;
                 }
-                yield* campaignArray;
 
                 offset += limit;
             } catch (error) {

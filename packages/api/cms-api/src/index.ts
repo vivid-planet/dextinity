@@ -59,6 +59,7 @@ export { AnnotationBlockMeta, BlockField } from "./blocks/decorators/field.js";
 export { RootBlock } from "./blocks/decorators/root-block.js";
 export { RootBlockEntity } from "./blocks/decorators/root-block-entity.js";
 export { EmailLinkBlock } from "./blocks/email-link.block.js";
+export { createExternalLinkBlock } from "./blocks/externalLink/create-external-link.block.js";
 export { ExternalLinkBlock } from "./blocks/externalLink/external-link.block.js";
 export { ColumnsBlockFactory } from "./blocks/factories/columns-block.factory.js";
 export {
@@ -183,7 +184,7 @@ export { DamFileDownloadLinkBlock } from "./dam/blocks/dam-file-download-link.bl
 export { DamImageBlock } from "./dam/blocks/dam-image.block.js";
 export { PixelImageBlock } from "./dam/blocks/pixel-image.block.js";
 export { SvgImageBlock } from "./dam/blocks/svg-image.block.js";
-export { DamVideoBlock } from "./dam/blocks/video/dam-video.block.js";
+export { createDamVideoBlock, DamVideoBlock } from "./dam/blocks/video/createDamVideoBlock.js";
 export { DextinityImageResolutionException } from "./dam/common/errors/image-resolution.exception.js";
 export { damDefaultAcceptedMimetypes } from "./dam/common/mimeTypes/dam-default-accepted-mimetypes.js";
 export { type DamFileCategory, getDamFileCategory } from "./dam/common/mimeTypes/dam-file-category.js";

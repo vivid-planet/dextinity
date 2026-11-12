@@ -10,23 +10,16 @@ export class InternalLinkBlockWarningsService implements BlockWarningsServiceInt
     constructor(private readonly entityManager: EntityManager) {}
 
     async warnings(block: InternalLinkBlockData): Promise<BlockWarning[]> {
-        const warnings: BlockWarning[] = [];
-
-        if (block.targetPageId) {
-            const linkedPageTreeNode = await this.entityManager.findOne(resolvePageTreeNodeEntity(), { id: block.targetPageId });
-            if (!linkedPageTreeNode) {
-                warnings.push({
-                    message: "invalidTarget",
-                    severity: "high",
-                });
-            }
-        } else {
-            warnings.push({
-                message: "missingTarget",
-                severity: "high",
-            });
+        if (!block.targetPageId) {
+            return [];
         }
 
-        return warnings;
+        const linkedPageTreeNode = await this.entityManager.findOne(resolvePageTreeNodeEntity(), { id: block.targetPageId });
+
+        if (!linkedPageTreeNode) {
+            return [{ message: "invalidTarget", severity: "high" }];
+        }
+
+        return [];
     }
 }

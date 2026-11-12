@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import { type PropsWithChildren, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState, type TipTapTextBlockStyle } from "../createTipTapRichTextBlock";
@@ -13,7 +13,7 @@ function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     );
 }
 
-function StoryWrapper({ children, state }: { children: ReactNode; state: TipTapRichTextBlockState }) {
+function StoryWrapper({ children, state }: PropsWithChildren<{ state: TipTapRichTextBlockState }>) {
     return (
         <>
             {children}
@@ -46,7 +46,7 @@ const highlightStyle: TipTapTextBlockStyle = {
     element: (props) => <div style={{ backgroundColor: "#fff3cd", padding: 8 }} {...props} />,
 };
 
-const TextBlockStylesBlock = createTipTapRichTextBlock({
+const ApplyingAStyleBlock = createTipTapRichTextBlock({
     textBlocks: [
         { name: "paragraph", label: "Paragraph", tag: "p", styles: [introStyle, highlightStyle] },
         { name: "heading-1", label: "Heading 1", tag: "h1", styles: [largeHeadingStyle, highlightStyle] },
@@ -55,18 +55,18 @@ const TextBlockStylesBlock = createTipTapRichTextBlock({
     ],
 });
 
-function TextBlockStylesStory() {
-    const [state, setState] = useState<TipTapRichTextBlockState>(TextBlockStylesBlock.defaultValues());
+function ApplyingAStyleStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(ApplyingAStyleBlock.defaultValues());
 
     return (
         <StoryWrapper state={state}>
-            <TextBlockStylesBlock.AdminComponent state={state} updateState={setState} />
+            <ApplyingAStyleBlock.AdminComponent state={state} updateState={setState} />
         </StoryWrapper>
     );
 }
 
-export const TextBlockStyles: StoryObj<typeof TextBlockStylesStory> = {
-    render: () => <TextBlockStylesStory />,
+export const ApplyingAStyle: StoryObj<typeof ApplyingAStyleStory> = {
+    render: () => <ApplyingAStyleStory />,
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready with text block style dropdown", async () => {
             await waitFor(
@@ -124,7 +124,7 @@ const chapterHeadingStyle: TipTapTextBlockStyle = {
     element: (props) => <h1 style={{ textTransform: "uppercase", letterSpacing: "0.1em" }} {...props} />,
 };
 
-const TextBlockStyleInteractionsBlock = createTipTapRichTextBlock({
+const StylesPerTextBlockRichTextBlock = createTipTapRichTextBlock({
     textBlocks: [
         { name: "paragraph", label: "Paragraph", tag: "p", styles: [introStyle, highlightStyle] },
         { name: "heading-1", label: "Heading 1", tag: "h1", styles: [chapterHeadingStyle, largeHeadingStyle, highlightStyle] },
@@ -133,18 +133,18 @@ const TextBlockStyleInteractionsBlock = createTipTapRichTextBlock({
     ],
 });
 
-function TextBlockStyleInteractionsStory() {
-    const [state, setState] = useState<TipTapRichTextBlockState>(TextBlockStyleInteractionsBlock.defaultValues());
+function StylesPerTextBlockStory() {
+    const [state, setState] = useState<TipTapRichTextBlockState>(StylesPerTextBlockRichTextBlock.defaultValues());
 
     return (
         <StoryWrapper state={state}>
-            <TextBlockStyleInteractionsBlock.AdminComponent state={state} updateState={setState} />
+            <StylesPerTextBlockRichTextBlock.AdminComponent state={state} updateState={setState} />
         </StoryWrapper>
     );
 }
 
-export const TextBlockStyleInteractions: StoryObj<typeof TextBlockStyleInteractionsStory> = {
-    render: () => <TextBlockStyleInteractionsStory />,
+export const StylesPerTextBlock: StoryObj<typeof StylesPerTextBlockStory> = {
+    render: () => <StylesPerTextBlockStory />,
     play: async ({ canvas, userEvent, step }) => {
         await step("Editor is ready", async () => {
             await waitFor(

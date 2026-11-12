@@ -7,11 +7,9 @@ import {
     createDocumentTranslationMethods,
     type DependencyInterface,
     type DocumentInterface,
-    type InfoTagProps,
     type TranslatableInterface,
 } from "@dextinity/cms-admin";
 import { Chip } from "@mui/material";
-import type { GQLPageTreeNodeAdditionalFieldsFragment } from "@src/common/EditPageNode";
 import type { GQLPage, GQLPageInput } from "@src/graphql.generated";
 import { categoryToUrlParam } from "@src/pageTree/pageTreeCategories";
 import { FormattedMessage } from "react-intl";
@@ -66,8 +64,8 @@ export const Page: DocumentInterface<Pick<GQLPage, "content" | "seo">, GQLPageIn
             }
         }
     `,
-    InfoTag: ({ page }: InfoTagProps<GQLPageTreeNodeAdditionalFieldsFragment>) => {
-        if (page.userGroup !== "all") {
+    InfoTag: ({ page }) => {
+        if ("userGroup" in page && typeof page.userGroup === "string" && page.userGroup !== "all") {
             return <Chip size="small" label={page.userGroup} />;
         }
         return null;

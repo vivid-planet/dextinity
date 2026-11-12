@@ -11,7 +11,6 @@ import {
     CronJobsPage,
     DamPage,
     type DocumentInterface,
-    type DocumentType,
     MasterMenu,
     type MasterMenuData,
     MasterMenuRoutes,
@@ -61,6 +60,19 @@ export const pageTreeDocumentTypes: Record<string, DocumentInterface<any, any>> 
     Page,
     Link,
     PredefinedPage,
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const topMenuDocumentTypes: Record<string, DocumentInterface<any, any>> = {
+    Page,
+    PredefinedPage,
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const pagesPageDocumentTypes: Record<string, DocumentInterface<any, any>> = {
+    Page,
+    PredefinedPage,
+    Link,
 };
 
 const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoContactConfig }): MasterMenuData => {
@@ -113,8 +125,8 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
             })),
             route: {
                 path: "/pages/pagetree/:category",
-                render: ({ match }: RouteComponentProps<{ category: string }>) => {
-                    const category = urlParamToCategory(match.params.category);
+                render: ({ match }: RouteComponentProps<{ category?: string }>) => {
+                    const category = match.params.category !== undefined ? urlParamToCategory(match.params.category) : undefined;
 
                     if (category === undefined) {
                         return <Redirect to={`${match.url}/dashboard`} />;
@@ -123,20 +135,7 @@ const getMasterMenuData = ({ brevoContactConfig }: { brevoContactConfig: BrevoCo
                     return (
                         <PagesPage
                             path={`/pages/pagetree/${match.params.category}`}
-                            documentTypes={(category): Record<DocumentType, DocumentInterface> => {
-                                if (category === "TopMenu") {
-                                    return {
-                                        Page,
-                                        PredefinedPage,
-                                    };
-                                }
-
-                                return {
-                                    Page,
-                                    PredefinedPage,
-                                    Link,
-                                };
-                            }}
+                            documentTypes={(category) => (category === "TopMenu" ? topMenuDocumentTypes : pagesPageDocumentTypes)}
                             editPageNode={EditPageNode}
                             category={category}
                             renderContentScopeIndicator={(scope: ContentScope) => <ContentScopeIndicator scope={scope} />}

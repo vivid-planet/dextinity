@@ -4,8 +4,6 @@ import { createEditPageNode } from "@dextinity/cms-admin";
 import { Box, Divider, MenuItem } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 
-export type { GQLPageTreeNodeAdditionalFieldsFragment } from "./EditPageNode.generated"; //re-export
-
 const userGroupOptions = [
     {
         label: "Show for all",
@@ -32,7 +30,10 @@ export const additionalPageTreeNodeFieldsFragment = {
 
 export const EditPageNode = createEditPageNode({
     disableHideInMenu: false,
-    valuesToInput: ({ values }: { values: { userGroup: string } }) => {
+    valuesToInput: ({ values }) => {
+        if (typeof values !== "object" || values === null || !("userGroup" in values)) {
+            return {};
+        }
         return {
             userGroup: values.userGroup,
         };

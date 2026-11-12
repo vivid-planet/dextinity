@@ -6,6 +6,8 @@
         --dextinity-motion-duration-medium: 260ms;
         --dextinity-motion-duration-long: 520ms;
         --dextinity-motion-tooltip-delay: 380ms;
+        // One cycle of a looping opacity pulse, e.g. a saving indicator or a loading placeholder
+        --dextinity-motion-duration-pulse: 1.4s;
         --dextinity-motion-distance: 8px;
     }
 

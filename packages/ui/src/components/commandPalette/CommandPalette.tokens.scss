@@ -1,33 +1,53 @@
 @mixin tokens {
+    // Maximum width of the palette
     --dextinity-command-palette-width: 620px;
-    // Distance from the top of the window
+    // Distance of the palette from the top of the window
     --dextinity-command-palette-offset: 9vh;
+    // Tint over the page behind the palette
     --dextinity-command-palette-backdrop: color-mix(in oklch, var(--dextinity-color-canvas) 45%, transparent);
+    // Blur of the page behind the palette
     --dextinity-command-palette-backdrop-blur: 6px;
+    // Glass fill of the palette
     --dextinity-command-palette-background: var(--dextinity-material-glass-overlay);
+    // Blur behind the glass of the palette
     --dextinity-command-palette-blur: var(--dextinity-material-blur);
+    // Edge and shadow of the palette
     --dextinity-command-palette-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-3);
+    // Corner rounding of the palette
     --dextinity-command-palette-radius: var(--dextinity-radius-panel);
+    // Lines below the search field and above the footer
     --dextinity-command-palette-separator-color: var(--dextinity-color-line);
 
+    // Height of the search field
     --dextinity-command-palette-input-height: 60px;
+    // Size of the text typed into the search field
     --dextinity-command-palette-input-font-size: 17px;
+    // Height of the result list before it scrolls
     --dextinity-command-palette-list-max-height: min(380px, 55vh);
+    // Color of the group headings in the result list
     --dextinity-command-palette-group-label-color: var(--dextinity-color-text-tertiary);
 
+    // Minimum height of a result
     --dextinity-command-palette-item-height: var(--dextinity-density-list-row-height);
+    // Corner rounding of a result
     --dextinity-command-palette-item-radius: var(--dextinity-radius-field);
+    // Text color of a result
     --dextinity-command-palette-item-foreground: var(--dextinity-color-text-secondary);
+    // Color of the search icon and the result icons
     --dextinity-command-palette-item-icon-color: var(--dextinity-color-text-tertiary);
-    // The entry chosen with the arrow keys or the pointer
+    // Fill of the result chosen with the arrow keys or the pointer
     --dextinity-command-palette-item-active-background: var(--dextinity-color-accent-soft);
+    // Text color of the chosen result
     --dextinity-command-palette-item-active-foreground: var(--dextinity-color-text);
+    // Icon color of the chosen result
     --dextinity-command-palette-item-active-icon-color: var(--dextinity-color-accent-text);
+    // Outline of the chosen result; shown in high contrast, where the fill is gone
     --dextinity-command-palette-item-active-shadow: 0 0 transparent;
-    // Highlighted query matches in the labels
+    // Color of the query matches highlighted in the results
     --dextinity-command-palette-match-color: var(--dextinity-color-accent-text);
+    // Color of the footer hints and the empty-state message
     --dextinity-command-palette-hint-color: var(--dextinity-color-text-tertiary);
-    // Keyboard hints in the footer
+    // Size of the keyboard hints in the footer
     --dextinity-command-palette-hint-font-size: 12px;
 }
 

@@ -1,32 +1,51 @@
 @mixin tokens {
-    // Glass behind menus and submenus; solid in high contrast
+    // Glass fill of menus and submenus; solid in high contrast
     --dextinity-menu-background: var(--dextinity-material-glass-strong);
+    // Blur behind the glass of a menu
     --dextinity-menu-blur: var(--dextinity-material-blur);
+    // Corner rounding of a menu
     --dextinity-menu-radius: var(--dextinity-radius-row);
+    // Space between the edge of a menu and its items
     --dextinity-menu-padding: var(--dextinity-space-1-5);
+    // Minimum width of a menu
     --dextinity-menu-min-width: 228px;
+    // Maximum width of a menu
     --dextinity-menu-max-width: 300px;
+    // Edge and shadow of a menu
     --dextinity-menu-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-3);
 
+    // Minimum height of an item
     --dextinity-menu-item-height: var(--dextinity-density-menu-item-height);
+    // Horizontal padding of an item and a group label
     --dextinity-menu-item-padding: var(--dextinity-space-2-5);
+    // Gap between the icon, label, and shortcut of an item
     --dextinity-menu-item-gap: var(--dextinity-space-2-5);
+    // Corner rounding of an item
     --dextinity-menu-item-radius: var(--dextinity-radius-field);
+    // Size of the item labels
     --dextinity-menu-item-font-size: 13.5px;
+    // Text color of an item
     --dextinity-menu-item-foreground: var(--dextinity-color-text);
-    // Keyboard or pointer highlight
+    // Fill of the item highlighted with the keyboard or pointer
     --dextinity-menu-item-background-highlight: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+    // Outline of the highlighted item; shown in high contrast
     --dextinity-menu-item-shadow-highlight: 0 0 transparent;
+    // Color of the icon of an item
     --dextinity-menu-item-icon-color: var(--dextinity-color-text-tertiary);
+    // Size of the icon of an item
     --dextinity-menu-item-icon-size: var(--dextinity-icon-size-small);
+    // Color of the keyboard shortcut of an item
     --dextinity-menu-item-shortcut-color: var(--dextinity-color-text-tertiary);
-    // Destructive items, e.g. Delete
+    // Text color of destructive items, e.g. Delete
     --dextinity-menu-item-danger-foreground: var(--dextinity-color-danger-text);
+    // Opacity of a disabled item
     --dextinity-menu-item-disabled-opacity: var(--dextinity-opacity-disabled);
-    // Check mark of the selected radio item
+    // Color of the check mark of a checked checkbox or radio item
     --dextinity-menu-item-indicator-color: var(--dextinity-color-accent-text);
 
+    // Color of the line between groups of items
     --dextinity-menu-separator-color: var(--dextinity-color-line-strong);
+    // Color of a group label
     --dextinity-menu-group-label-color: var(--dextinity-color-text-tertiary);
 }
 

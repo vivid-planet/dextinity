@@ -1,22 +1,36 @@
 @mixin tokens {
+    // Space between the "per page" picker, the range text, and the page buttons
     --dextinity-pagination-gap: var(--dextinity-space-3);
+    // Color of the range text and the "per page" label
     --dextinity-pagination-foreground: var(--dextinity-color-text-tertiary);
+    // Size of the pagination text
     --dextinity-pagination-font-size: var(--dextinity-typography-small-size);
 
+    // Height and minimum width of a page button
     --dextinity-pagination-page-size: var(--dextinity-density-icon-button-size-small);
+    // Corner rounding of a page button
     --dextinity-pagination-page-radius: var(--dextinity-radius-item);
+    // Text color of a page button
     --dextinity-pagination-page-foreground: var(--dextinity-color-text-secondary);
+    // Fill of a hovered page button
     --dextinity-pagination-page-background-hover: var(--dextinity-color-fill-hover);
-    // Fill of the current page
+    // Fill of the current page button
     --dextinity-pagination-page-background-current: var(--dextinity-color-accent);
+    // Text color of the current page button
     --dextinity-pagination-page-foreground-current: var(--dextinity-color-accent-foreground);
+    // Glow below the current page button
     --dextinity-pagination-page-shadow-current: 0 6px 14px -8px var(--dextinity-color-accent-glow);
 
-    // The "per page" picker
+    // Height of the "per page" picker
     --dextinity-pagination-size-picker-height: var(--dextinity-density-control-height-small);
+    // Corner rounding of the "per page" picker
     --dextinity-pagination-size-picker-radius: var(--dextinity-radius-control);
+    // Fill of the "per page" picker
     --dextinity-pagination-size-picker-background: var(--dextinity-color-surface);
+    // Text color of the "per page" picker
     --dextinity-pagination-size-picker-foreground: var(--dextinity-color-text);
+    // Outline of the "per page" picker
     --dextinity-pagination-size-picker-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+    // Outline of the hovered "per page" picker
     --dextinity-pagination-size-picker-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle);
 }

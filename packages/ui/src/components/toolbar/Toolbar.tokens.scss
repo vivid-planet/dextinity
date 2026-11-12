@@ -1,13 +1,20 @@
 // The buttons come from the IconButton tokens.
 @mixin tokens {
+    // Space between the controls and groups
     --dextinity-toolbar-gap: var(--dextinity-space-0-5);
+    // Space between the edge of the toolbar and its controls
     --dextinity-toolbar-padding: 5px;
+    // Width and height of a button
     --dextinity-toolbar-button-size: 30px;
+    // Size of the icon in a button
     --dextinity-toolbar-button-icon-size: var(--dextinity-icon-size-small);
-    // A toggle that is on, e.g. bold at the cursor
+    // Fill of a toggle that is on, e.g. bold at the cursor
     --dextinity-toolbar-button-background-pressed: var(--dextinity-color-accent-soft);
+    // Icon color of a toggle that is on
     --dextinity-toolbar-button-foreground-pressed: var(--dextinity-color-accent-text);
+    // Outline of a toggle that is on; shown in high contrast
     --dextinity-toolbar-button-shadow-pressed: 0 0 transparent;
+    // Color of a separator
     --dextinity-toolbar-separator-color: var(--dextinity-color-line-strong);
     // Space between a separator and the controls next to it
     --dextinity-toolbar-separator-space: var(--dextinity-space-1);
@@ -15,7 +22,9 @@
     --dextinity-toolbar-separator-inset: 5px;
     // Horizontal padding of a menu trigger
     --dextinity-toolbar-menu-padding: var(--dextinity-space-2);
+    // Size of the label of a menu trigger
     --dextinity-toolbar-menu-font-size: var(--dextinity-typography-ui-size);
+    // Text color of a menu trigger
     --dextinity-toolbar-menu-foreground: var(--dextinity-color-text-secondary);
 }
 

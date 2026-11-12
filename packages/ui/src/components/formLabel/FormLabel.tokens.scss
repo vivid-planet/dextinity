@@ -1,15 +1,24 @@
 // The values match the label of `Field`, so a `FormLabel` above a custom control looks like the label of a field.
 @mixin tokens {
+    // Space between the label and its required marker or helper icon
     --dextinity-form-label-gap: var(--dextinity-space-1);
 
+    // Size of the label
     --dextinity-form-label-font-size: var(--dextinity-field-label-font-size);
+    // Line height of the label; also the height of the helper icon's box
     --dextinity-form-label-font-line-height: calc(var(--dextinity-field-label-font-size) * 1.3);
+    // Weight of the label
     --dextinity-form-label-font-weight: var(--dextinity-field-label-font-weight);
 
+    // Color of the label
     --dextinity-form-label-default-foreground: var(--dextinity-field-label-color);
+    // Color of the label when the field has an error
     --dextinity-form-label-error-foreground: var(--dextinity-field-message-color-error);
+    // Color of the required marker
     --dextinity-form-label-required-color: var(--dextinity-field-required-color);
 
+    // Color of the helper icon next to the label
     --dextinity-form-label-helper-icon-color: var(--dextinity-color-text-tertiary);
+    // Size of the helper icon next to the label
     --dextinity-form-label-helper-icon-size: var(--dextinity-field-icon-size);
 }

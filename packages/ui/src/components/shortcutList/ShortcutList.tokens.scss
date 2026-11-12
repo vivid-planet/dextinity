@@ -1,12 +1,20 @@
 @mixin tokens {
+    // Size of the text in the rows
     --dextinity-shortcut-list-font-size: var(--dextinity-typography-body-size);
+    // Text color of the list
     --dextinity-shortcut-list-foreground: var(--dextinity-color-text);
+    // Horizontal padding of the cells
     --dextinity-shortcut-list-cell-padding: var(--dextinity-space-3);
+    // Height of a row
     --dextinity-shortcut-list-row-height: var(--dextinity-density-list-row-height);
     // Space between the key caps of one shortcut
     --dextinity-shortcut-list-key-gap: var(--dextinity-space-1);
+    // Height of the header row
     --dextinity-shortcut-list-header-height: var(--dextinity-density-header-height);
+    // Text color of the column headings
     --dextinity-shortcut-list-header-foreground: var(--dextinity-color-text-tertiary);
+    // Size of the column headings
     --dextinity-shortcut-list-header-font-size: var(--dextinity-typography-small-size);
+    // Line below the header row
     --dextinity-shortcut-list-header-line: var(--dextinity-color-line-strong);
 }

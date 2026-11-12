@@ -63,28 +63,28 @@
     display: flex;
     flex-direction: column;
     gap: var(--dextinity-space-1);
-    padding: 20px 56px var(--dextinity-space-2-5) var(--dextinity-drawer-padding);
+    padding: var(--dextinity-drawer-padding) var(--dextinity-drawer-header-padding-end) var(--dextinity-space-2-5) var(--dextinity-drawer-padding);
 }
 
 .title {
     margin: 0;
     font-size: var(--dextinity-drawer-title-font-size);
     font-weight: var(--dextinity-drawer-title-font-weight);
-    letter-spacing: -0.01em;
+    letter-spacing: var(--dextinity-drawer-title-letter-spacing);
     line-height: var(--dextinity-typography-title-line-height);
 }
 
 .description {
     margin: 0;
     color: var(--dextinity-drawer-description-color);
-    font-size: var(--dextinity-typography-ui-size);
+    font-size: var(--dextinity-drawer-description-font-size);
     line-height: var(--dextinity-typography-body-line-height);
 }
 
 .closeButton {
     position: absolute;
-    inset-block-start: 14px;
-    inset-inline-end: 14px;
+    inset-block-start: var(--dextinity-drawer-close-inset);
+    inset-inline-end: var(--dextinity-drawer-close-inset);
 }
 
 .body {

@@ -13,7 +13,13 @@
     --dextinity-drawer-padding: 20px;
     --dextinity-drawer-title-font-size: var(--dextinity-typography-title-size);
     --dextinity-drawer-title-font-weight: var(--dextinity-font-weight-semibold);
+    --dextinity-drawer-title-letter-spacing: -0.01em;
     --dextinity-drawer-description-color: var(--dextinity-color-text-secondary);
+    --dextinity-drawer-description-font-size: var(--dextinity-typography-ui-size);
+    // Distance of the close button from the top and end edges
+    --dextinity-drawer-close-inset: 14px;
+    // Room at the end of the header that keeps the title clear of the close button
+    --dextinity-drawer-header-padding-end: 56px;
     --dextinity-drawer-body-gap: var(--dextinity-space-3);
     --dextinity-drawer-footer-line: var(--dextinity-color-line);
 }

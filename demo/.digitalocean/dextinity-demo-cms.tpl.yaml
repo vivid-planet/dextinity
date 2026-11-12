@@ -31,7 +31,6 @@ services:
     - build_command: |-
           CI=true node copy-project-files.js &&
           pnpm --filter "dextinity-demo-api^..." run build &&
-          ./demo/api/intl-update.sh &&
           pnpm --filter dextinity-demo-api run build
       environment_slug: node-js
       run_command: cd demo/api && node dist/console.js migrate && node dist/console.js createBlockIndexViews && node --import ./dist/tracing.js dist/main.js
@@ -272,7 +271,6 @@ services:
     - build_command: |-
           CI=true node copy-project-files.js &&
           pnpm --filter "dextinity-demo-admin^..." run build &&
-          ./demo/admin/intl-update.sh &&
           mkdir -p -m 700 /tmp/swc-native-cache &&
           SWC_NATIVE_BINDING_CACHE=/tmp/swc-native-cache pnpm --filter dextinity-demo-admin run build
       environment_slug: node-js

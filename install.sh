@@ -18,11 +18,6 @@ pnpm install
 
 pnpm run copy-project-files
 
-# Lang install
-sh ./demo/admin/intl-update.sh
-sh ./demo/api/intl-update.sh
-sh ./demo/site/intl-update.sh
-
 # Build the packages CLI and eslint-plugin to be used for dev startup
 pnpm --filter '@dextinity/cli' --filter '@dextinity/eslint-plugin' run build
 

@@ -11,4 +11,7 @@
     --dextinity-skeleton-tile-radius: var(--dextinity-radius-row);
     --dextinity-skeleton-block-height: 200px;
     --dextinity-skeleton-block-radius: var(--dextinity-radius-field);
+
+    // The checkbox placeholder at the start of a row
+    --dextinity-skeleton-row-leading-radius: 5px;
 }

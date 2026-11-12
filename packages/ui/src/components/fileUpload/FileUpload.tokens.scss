@@ -26,4 +26,7 @@
     --dextinity-file-upload-message-color-error: var(--dextinity-field-message-color-error);
     --dextinity-file-upload-message-color-warning: var(--dextinity-field-message-color-warning);
     --dextinity-file-upload-message-color-success: var(--dextinity-field-message-color-success);
+
+    // A file name that links to the file, for its focus ring
+    --dextinity-file-upload-link-radius: 4px;
 }

@@ -61,7 +61,7 @@
         position: absolute;
         inset-inline: 0;
         block-size: var(--dextinity-indicator-width-strong);
-        border-radius: 2px;
+        border-radius: var(--dextinity-block-drop-indicator-radius);
         background: var(--dextinity-block-list-drop-indicator);
         content: "";
         pointer-events: none;
@@ -112,7 +112,7 @@
     block-size: 28px;
     padding: 0;
     border: 0;
-    border-radius: 6px;
+    border-radius: var(--dextinity-block-handle-radius);
     background: transparent;
     color: var(--dextinity-block-grip-foreground);
     opacity: 0;
@@ -216,7 +216,7 @@
     place-items: center;
     inline-size: 24px;
     block-size: 24px;
-    border-radius: 6px;
+    border-radius: var(--dextinity-block-invalid-marker-radius);
     color: var(--dextinity-block-invalid-marker-color);
 
     --dextinity-icon-size: var(--dextinity-icon-size-small);

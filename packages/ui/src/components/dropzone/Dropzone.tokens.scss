@@ -34,6 +34,9 @@
     --dextinity-dropzone-done-foreground: var(--dextinity-color-success-text);
 
     --dextinity-dropzone-disabled-opacity: 0.5;
+
+    // The "browse" link, for its focus ring
+    --dextinity-dropzone-browse-radius: 4px;
 }
 
 @mixin high-contrast-tokens {

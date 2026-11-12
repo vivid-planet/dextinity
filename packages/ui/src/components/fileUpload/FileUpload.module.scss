@@ -94,7 +94,7 @@
     white-space: nowrap;
 
     &:is(a) {
-        border-radius: 4px;
+        border-radius: var(--dextinity-file-upload-link-radius);
         color: var(--dextinity-file-upload-link-color);
         text-decoration: none;
 

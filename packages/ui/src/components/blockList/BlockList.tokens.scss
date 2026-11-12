@@ -47,6 +47,12 @@
     // The header above the blocks with the select-all checkbox and the bulk actions
     --dextinity-block-list-header-height: var(--dextinity-density-header-height);
     --dextinity-block-list-header-foreground: var(--dextinity-color-text-tertiary);
+
+    // The line showing where a dragged block lands
+    --dextinity-block-drop-indicator-radius: 2px;
+    // The drag handle
+    --dextinity-block-handle-radius: 6px;
+    --dextinity-block-invalid-marker-radius: 6px;
 }
 
 @mixin high-contrast-tokens {

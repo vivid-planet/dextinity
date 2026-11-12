@@ -53,7 +53,7 @@
     flex: none;
     inline-size: var(--dextinity-checkbox-size);
     block-size: var(--dextinity-checkbox-size);
-    border-radius: 5px;
+    border-radius: var(--dextinity-skeleton-row-leading-radius);
 }
 
 .rowText {

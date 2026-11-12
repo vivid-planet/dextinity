@@ -91,7 +91,7 @@
 .browse {
     padding: 0;
     border: 0;
-    border-radius: 4px;
+    border-radius: var(--dextinity-dropzone-browse-radius);
     background: none;
     color: var(--dextinity-dropzone-browse-foreground);
     font: inherit;

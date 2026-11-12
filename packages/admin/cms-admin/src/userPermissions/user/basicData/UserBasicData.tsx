@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Field, FillSpace, FinalForm, FinalFormInput, Loading, ToolbarTitleItem } from "@dextinity/admin";
 import { Card, CardContent, Toolbar } from "@mui/material";
 import { styled } from "@mui/material/styles";

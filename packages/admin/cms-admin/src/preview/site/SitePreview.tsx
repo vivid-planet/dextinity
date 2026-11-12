@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Tooltip } from "@dextinity/admin";
 import { DextinityIcon, Domain, DomainLocked } from "@dextinity/admin-icons";
 import { Grid, Typography } from "@mui/material";

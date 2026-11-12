@@ -85,7 +85,7 @@ function renderUseBlockClipboard({ domain, scopeParts = ["domain"] }: { domain: 
     (useDextinityConfig as Mock).mockReturnValue({ apiUrl: "https://example.com", dam: { scopeParts } });
     (useContentScope as Mock).mockReturnValue({ scope: { domain, language: "en" } });
     (useBlockContext as Mock).mockReturnValue({
-        apolloClient: { query, mutate } as unknown as ApolloClient<unknown>,
+        apolloClient: { query, mutate } as unknown as ApolloClient,
         apiUrl: "https://example.com",
         damBasePath: "dam",
         pageTreeScope: {},

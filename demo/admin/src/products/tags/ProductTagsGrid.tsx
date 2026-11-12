@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -111,6 +112,7 @@ export function ProductTagsGrid() {
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(dataGridProps.sortModel, columns),
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.productTags.totalCount);
     if (error) {

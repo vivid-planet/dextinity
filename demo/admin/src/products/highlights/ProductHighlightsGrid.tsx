@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -91,7 +92,9 @@ export function ProductHighlightsGrid() {
             },
         },
     ];
-    const { data, loading, error } = useQuery<GQLProductHighlightsGridQuery, GQLProductHighlightsGridQueryVariables>(productHighlightsQuery);
+    const { data, loading, error } = useQuery<GQLProductHighlightsGridQuery, GQLProductHighlightsGridQueryVariables>(productHighlightsQuery, {
+        notifyOnNetworkStatusChange: false,
+    });
     if (error) {
         throw error;
     }

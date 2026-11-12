@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import {
     AsyncSelectField,
     filterByFragment,
@@ -51,7 +52,7 @@ export function ProductHighlightForm({ id }: FormProps) {
     const stackSwitchApi = useStackSwitchApi();
     const { data, error, loading, refetch } = useQuery<GQLProductHighlightQuery, GQLProductHighlightQueryVariables>(
         productHighlightQuery,
-        id ? { variables: { id } } : { skip: true },
+        id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
     );
     const initialValues = useMemo<Partial<FormValues>>(
         () =>
@@ -150,7 +151,7 @@ export function ProductHighlightForm({ id }: FormProps) {
                                         }
                                     `,
                                 });
-                                return data.productCategories.nodes;
+                                return data?.productCategories.nodes ?? [];
                             }}
                             getOptionLabel={(option) => option.title}
                         />
@@ -174,7 +175,7 @@ export function ProductHighlightForm({ id }: FormProps) {
                                     `,
                                     variables: { filter: { category: { equal: values.productCategory?.id } } },
                                 });
-                                return data.products.nodes;
+                                return data?.products.nodes ?? [];
                             }}
                             getOptionLabel={(option) => option.title}
                             disabled={!values?.productCategory}

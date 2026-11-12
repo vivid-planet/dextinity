@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -154,6 +155,7 @@ export function ProductCategoriesGrid() {
             limit: 100,
             sort: { field: "position", direction: "ASC" },
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.productCategories.totalCount);
     if (error) {

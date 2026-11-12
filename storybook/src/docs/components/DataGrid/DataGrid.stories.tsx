@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -79,7 +80,7 @@ export const UseDataGridRemote = {
 
         const dataGridProps = useDataGridRemote();
 
-        const { data, loading, error } = useQuery(
+        const { data, loading, error } = useQuery<GQLQuery, QueryVariables>(
             gql`
                 query LaunchesPast($limit: Int, $offset: Int, $sort: String, $order: String) {
                     launchesPastResult(limit: $limit, offset: $offset, sort: $sort, order: $order) {
@@ -101,6 +102,7 @@ export const UseDataGridRemote = {
                     sort: dataGridProps.sortModel[0]?.field,
                     order: dataGridProps.sortModel[0]?.sort,
                 },
+                notifyOnNetworkStatusChange: false,
             },
         );
 
@@ -138,7 +140,7 @@ export const UseDataGridRemoteInitialSort = {
 
         const dataGridProps = useDataGridRemote({ initialSort: [{ field: "mission_name", sort: "desc" }] });
 
-        const { data, loading, error } = useQuery(
+        const { data, loading, error } = useQuery<GQLQuery, QueryVariables>(
             gql`
                 query LaunchesPast($limit: Int, $offset: Int, $sort: String, $order: String) {
                     launchesPastResult(limit: $limit, offset: $offset, sort: $sort, order: $order) {
@@ -160,6 +162,7 @@ export const UseDataGridRemoteInitialSort = {
                     sort: dataGridProps.sortModel[0]?.field,
                     order: dataGridProps.sortModel[0]?.sort,
                 },
+                notifyOnNetworkStatusChange: false,
             },
         );
 
@@ -199,7 +202,7 @@ export const UseDataGridRemoteInitialFilter = {
             initialFilter: { items: [{ field: "mission_name", operator: "contains", value: "able" }] },
         });
 
-        const { data, loading, error } = useQuery(
+        const { data, loading, error } = useQuery<GQLQuery>(
             gql`
                 query LaunchesPast($limit: Int, $offset: Int, $filter: LaunchesPastFilter) {
                     launchesPastResult(limit: $limit, offset: $offset, filter: $filter) {
@@ -220,6 +223,7 @@ export const UseDataGridRemoteInitialFilter = {
                     offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
                     filter: muiGridFilterToGql(columns, dataGridProps.filterModel).filter,
                 },
+                notifyOnNetworkStatusChange: false,
             },
         );
 
@@ -438,6 +442,7 @@ export const UseDataGridExcelExport = {
 
         const { data, loading, error } = useQuery<GQLQuery, QueryVariables>(query, {
             variables,
+            notifyOnNetworkStatusChange: false,
         });
 
         const exportApi = useDataGridExcelExport<Launch, GQLQuery, QueryVariables>({
@@ -558,6 +563,7 @@ export const GridColumnTypes = {
                 sort: dataGridProps.sortModel[0]?.field,
                 order: dataGridProps.sortModel[0]?.sort,
             },
+            notifyOnNetworkStatusChange: false,
         });
 
         const rows = (data?.launchesPastResult.data ?? []).map((row) => ({

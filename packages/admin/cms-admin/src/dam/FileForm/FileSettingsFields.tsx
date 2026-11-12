@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useMutation } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useMutation } from "@apollo/client/react";
 import { DatePickerField, Field, FieldContainer, FinalFormInput, FinalFormSelect, FormSection, Loading, SelectField } from "@dextinity/admin";
 import { ArtificialIntelligence } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
@@ -66,7 +67,7 @@ export const FileSettingsFields = ({ file }: SettingsFormProps) => {
                 fetchPolicy: "network-only",
             });
 
-            return data.damIsFilenameOccupied;
+            return data?.damIsFilenameOccupied ?? false;
         },
         [apollo, folderId, scope],
     );

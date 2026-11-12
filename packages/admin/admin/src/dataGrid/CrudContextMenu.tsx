@@ -1,4 +1,5 @@
-import { type ApolloClient, type RefetchQueriesOptions, useApolloClient } from "@apollo/client";
+import type { ApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { Copy, Delete as DeleteIcon, Domain, Paste, Remove as RemoveIcon, ThreeDotSaving } from "@dextinity/admin-icons";
 import { type ComponentsOverrides, Divider, Snackbar, type Theme, useThemeProps } from "@mui/material";
 import { type ReactNode, useState } from "react";
@@ -44,11 +45,11 @@ export interface CrudContextMenuProps<CopyData> extends ThemedComponentBaseProps
         delete?: ReactNode;
     };
     url?: string;
-    onPaste?: (options: { input: CopyData; client: ApolloClient<object> }) => Promise<void>;
-    onDelete?: (options: { client: ApolloClient<object> }) => Promise<void>;
+    onPaste?: (options: { input: CopyData; client: ApolloClient }) => Promise<void>;
+    onDelete?: (options: { client: ApolloClient }) => Promise<void>;
     deleteType?: "delete" | "remove";
 
-    refetchQueries?: RefetchQueriesOptions<any, unknown>["include"];
+    refetchQueries?: ApolloClient.RefetchQueriesOptions<any, unknown>["include"];
     copyData?: () => Promise<CopyData> | CopyData;
     /**
      * Render custom `RowActionsItem` components to be added to the menu.

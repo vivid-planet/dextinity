@@ -1,4 +1,5 @@
-import { type OperationVariables, type QueryHookOptions, type QueryResult, useQuery } from "@apollo/client";
+import type { OperationVariables } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import type { DocumentNode } from "graphql";
 import { useEffect } from "react";
 
@@ -15,10 +16,11 @@ export interface ITableData<TRow extends { id: string | number } = { id: string 
     totalCount?: number;
     pagingInfo?: IPagingInfo;
 }
-interface ITableQueryHookOptions<TData, TVariables extends OperationVariables, TTableData extends ITableData> extends QueryHookOptions<
-    TData,
-    TVariables
+interface ITableQueryHookOptions<TData, TVariables extends OperationVariables, TTableData extends ITableData> extends Omit<
+    useQuery.Base.Options<TData, TVariables>,
+    "variables"
 > {
+    variables?: TVariables;
     resolveTableData: (data: TData) => TTableData;
     selectionApi?: ISelectionApi;
     globalErrorHandling?: boolean;
@@ -27,13 +29,13 @@ interface ITableQueryHookOptions<TData, TVariables extends OperationVariables, T
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
  */
-export interface ITableQueryHookResult<TData, TVariables extends OperationVariables, TTableData extends ITableData> extends QueryResult<
+export type ITableQueryHookResult<TData, TVariables extends OperationVariables, TTableData extends ITableData> = useQuery.Result<
     TData,
     TVariables
-> {
+> & {
     tableData?: TTableData;
     api: ITableQueryApi;
-}
+};
 
 /**
  * @deprecated Use MUI X Data Grid in combination with `useDataGridRemote` instead.
@@ -54,7 +56,7 @@ export function useTableQuery<TInnerData, TInnerVariables extends OperationVaria
             onRowDeleted,
         };
 
-        const innerOptions: QueryHookOptions<TInnerData, TInnerVariables> = {
+        const innerOptions: useQuery.Options<TInnerData, TInnerVariables> = {
             notifyOnNetworkStatusChange: true, // to get loading state correctly during paging
             ...restOptions,
             variables: getVariables(),
@@ -76,7 +78,9 @@ export function useTableQuery<TInnerData, TInnerVariables extends OperationVaria
         }
 
         function getInnerOptions() {
-            return innerOptions;
+            // client.query throws when watch-only options are passed
+            const { notifyOnNetworkStatusChange, pollInterval, returnPartialData, ...queryOptions } = innerOptions;
+            return queryOptions;
         }
 
         function resolveTableData(data: any) {

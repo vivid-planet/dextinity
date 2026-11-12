@@ -13,8 +13,8 @@ import { FormattedMessage } from "react-intl";
 import { FormattedNumber } from "react-intl";
 import { useIntl } from "react-intl";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { Button } from "@dextinity/admin";
 import { CrudContextMenu } from "@dextinity/admin";
 import { DataGridToolbar } from "@dextinity/admin";
@@ -177,6 +177,7 @@ export function ProductCategoriesGrid() {
             offset: 0,
             limit: 100,
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.productCategories.totalCount);
     if (error) throw error;

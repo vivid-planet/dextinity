@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { FillSpace, Stack, Toolbar, ToolbarActions, ToolbarTitleItem } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
 import { parseISO } from "date-fns";
@@ -40,7 +41,7 @@ export function PublisherPage() {
 
     const intl = useIntl();
 
-    const { data, loading, error } = useQuery<GQLBuildsQuery>(buildsQuery);
+    const { data, loading, error } = useQuery<GQLBuildsQuery>(buildsQuery, { notifyOnNetworkStatusChange: false });
 
     if (error) {
         throw error;

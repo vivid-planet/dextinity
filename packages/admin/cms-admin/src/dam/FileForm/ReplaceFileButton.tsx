@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { Alert, Button, useErrorDialog, useSnackbarApi } from "@dextinity/admin";
 import { ThreeDotSaving, Upload } from "@dextinity/admin-icons";
 import { Snackbar } from "@mui/material";

@@ -208,7 +208,7 @@ export type FormConfig<T extends { __typename?: string }> = {
 export type InjectedFormVariables = {
     id?: string;
     mode?: "edit" | "add";
-    client: ApolloClient<object>;
+    client: ApolloClient;
     formApi: FormApi<unknown, Partial<unknown>>;
     scope: ContentScope;
 };

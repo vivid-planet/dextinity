@@ -1,4 +1,5 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { ChevronDown, Invisible, Visible } from "@dextinity/admin-icons";
 import { Chip, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { green } from "@mui/material/colors";

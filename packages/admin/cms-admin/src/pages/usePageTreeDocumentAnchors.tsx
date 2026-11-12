@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { skipToken, useQuery } from "@apollo/client/react";
 
 import type { GQLPageQuery, GQLPageQueryVariables } from "../documents/types";
 import { useLocalPageTreeNodeAnchors } from "./LocalPageTreeNodeDocumentAnchors";
@@ -25,7 +26,7 @@ function usePageTreeNodeDocumentAnchors(pageTreeNode: { id: string; documentType
             ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               documentTypes[pageTreeNode.documentType].getQuery!
             : noopQuery,
-        shouldFetchRemoteAnchors ? { variables: { id: pageTreeNode.id } } : { skip: true },
+        shouldFetchRemoteAnchors ? { variables: { id: pageTreeNode.id } } : skipToken,
     );
 
     if (pageTreeNode == null) {

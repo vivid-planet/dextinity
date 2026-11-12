@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Alert, Loading } from "@dextinity/admin";
 import type { ContentScope } from "@dextinity/cms-admin";
 import { Typography } from "@mui/material";

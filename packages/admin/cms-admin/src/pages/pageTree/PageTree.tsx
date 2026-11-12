@@ -1,4 +1,5 @@
-import { gql, type ObservableQuery, useApolloClient } from "@apollo/client";
+import { gql, type ObservableQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { type IEditDialogApi, UndoSnackbar, useSnackbarApi } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
 import { deepEqual } from "fast-equals";
@@ -23,6 +24,7 @@ import { usePageTreeScope } from "../config/usePageTreeScope";
 import type { GQLPagesQuery, GQLPagesQueryVariables } from "../pagesPage/createPagesQuery";
 import type {
     GQLMovePageTreeNodesByPosMutation,
+    GQLMovePageTreeNodesByPosMutationVariables,
     GQLPagesCacheQuery,
     GQLPagesCacheQueryVariables,
     GQLPageSlugPathFragment,
@@ -111,7 +113,10 @@ const PageTree: ForwardRefRenderFunction<PageTreeRefApi, PageTreeProps> = (
                 callback: (newPagesQuery, previousPagesQuery) => {
                     if (newPagesQuery && previousPagesQuery) {
                         const existingPageIds = previousPagesQuery.result?.pages?.map((page) => page.id) ?? [];
-                        newPageIds.current = newPagesQuery.result?.pages?.map((page) => page.id).filter((id) => !existingPageIds.includes(id)) ?? [];
+                        newPageIds.current =
+                            newPagesQuery.result?.pages
+                                ?.map((page) => page?.id)
+                                .filter((id): id is string => id !== undefined && !existingPageIds.includes(id)) ?? [];
 
                         setTimeout(() => {
                             // reset newPageIds to prevent slideIn on every rerender
@@ -155,7 +160,7 @@ const PageTree: ForwardRefRenderFunction<PageTreeRefApi, PageTreeProps> = (
     const moveByPosRequest = useCallback(
         // @TODO: handle path collisions when moving pages
         async ({ ids, parentId, position }: { ids: string[]; parentId: string | null; position: number }) => {
-            await client.mutate({
+            await client.mutate<GQLMovePageTreeNodesByPosMutation, GQLMovePageTreeNodesByPosMutationVariables>({
                 mutation: movePageTreeNodesByPositionMutation,
                 variables: {
                     ids: ids,

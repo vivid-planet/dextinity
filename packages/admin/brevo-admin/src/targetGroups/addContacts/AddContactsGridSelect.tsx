@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import {
     Button,
     CancelButton,
@@ -174,6 +174,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
                 : undefined,
             scope,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     const {
@@ -192,6 +193,7 @@ export function AddContactsGridSelect({ id, scope, assignedContactsTargetGroupBr
                 targetGroupId: id,
             },
             skip: !assignedContactsTargetGroupBrevoId,
+            notifyOnNetworkStatusChange: false,
         },
     );
 

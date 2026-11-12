@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import { Field, filterByFragment, FinalForm, FinalFormInput, type FinalFormSubmitEvent, useFormApiRef } from "@dextinity/admin";
 import { queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
 import { CircularProgress } from "@mui/material";
@@ -29,6 +29,7 @@ export function ProductPriceForm({ id }: FormProps) {
 
     const { data, error, loading, refetch } = useQuery<GQLProductPriceFormQuery, GQLProductPriceFormQueryVariables>(productPriceFormQuery, {
         variables: { id },
+        notifyOnNetworkStatusChange: false,
     });
 
     const initialValues: Partial<FormValues> = data?.product

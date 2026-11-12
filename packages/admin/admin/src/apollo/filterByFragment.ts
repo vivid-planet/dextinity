@@ -1,17 +1,15 @@
-import type { FragmentMatcher } from "@apollo/client";
+import { getMainDefinition } from "@apollo/client/utilities";
 import {
-    argumentsObjectFromField,
-    createFragmentMap,
-    type DirectiveInfo,
-    type FragmentMap,
-    getFragmentDefinitions,
-    getMainDefinition,
-    isField,
-    isInlineFragment,
-    resultKeyNameFromField,
-    shouldInclude,
-} from "@apollo/client/utilities";
-import type { DirectiveNode, DocumentNode, FieldNode, FragmentDefinitionNode, InlineFragmentNode, SelectionSetNode } from "graphql";
+    type DirectiveNode,
+    type DocumentNode,
+    type FieldNode,
+    type FragmentDefinitionNode,
+    type InlineFragmentNode,
+    Kind,
+    type SelectionNode,
+    type SelectionSetNode,
+    valueFromASTUntyped,
+} from "graphql";
 
 // Copied and adapted from https://github.com/apollographql/apollo-client/blob/release-2.x/packages/graphql-anywhere/src/utilities.ts
 export function filterByFragment<FD = any, D extends FD = any>(doc: DocumentNode, data: D, variableValues: VariableMap = {}): FD {
@@ -34,6 +32,12 @@ type Resolver = (fieldName: string, rootValue: any, args: any, context: any, inf
 type VariableMap = { [name: string]: any };
 
 type ResultMapper = (values: { [fieldName: string]: any }, rootValue: any) => any;
+
+type FragmentMatcher = (rootValue: any, typeCondition: string, context: any) => boolean;
+
+type FragmentMap = { [fragmentName: string]: FragmentDefinitionNode };
+
+type DirectiveInfo = { [directiveName: string]: { [argName: string]: any } };
 
 type ExecContext = {
     fragmentMap: FragmentMap;
@@ -82,8 +86,7 @@ function graphql(
 ) {
     const mainDefinition = getMainDefinition(document);
 
-    const fragments = getFragmentDefinitions(document);
-    const fragmentMap = createFragmentMap(fragments);
+    const fragmentMap = createFragmentMap(document);
 
     const resultMapper = execOptions.resultMapper;
 
@@ -113,7 +116,7 @@ function executeSelectionSet(selectionSet: SelectionSetNode, rootValue: any, exe
             return;
         }
 
-        if (isField(selection)) {
+        if (selection.kind === Kind.FIELD) {
             const fieldResult = executeField(selection, rootValue, execContext);
 
             const resultFieldKey = resultKeyNameFromField(selection);
@@ -128,11 +131,11 @@ function executeSelectionSet(selectionSet: SelectionSetNode, rootValue: any, exe
         } else {
             let fragment: InlineFragmentNode | FragmentDefinitionNode;
 
-            if (isInlineFragment(selection)) {
+            if (selection.kind === Kind.INLINE_FRAGMENT) {
                 fragment = selection;
             } else {
                 // This is a named fragment
-                fragment = fragmentMap[selection.name.value] as FragmentDefinitionNode;
+                fragment = fragmentMap[selection.name.value];
 
                 if (!fragment) {
                     throw new Error(`No fragment named ${selection.name.value}`);
@@ -243,4 +246,51 @@ function getDirectiveInfoFromField(field: FieldNode, variables: Record<string, a
         return directiveObj;
     }
     return null;
+}
+
+// Copied and adapted from https://github.com/apollographql/apollo-client/blob/release-3.x/src/utilities/graphql
+function createFragmentMap(document: DocumentNode): FragmentMap {
+    const fragmentMap: FragmentMap = {};
+    for (const definition of document.definitions) {
+        if (definition.kind === Kind.FRAGMENT_DEFINITION) {
+            fragmentMap[definition.name.value] = definition;
+        }
+    }
+    return fragmentMap;
+}
+
+function resultKeyNameFromField(field: FieldNode): string {
+    return field.alias ? field.alias.value : field.name.value;
+}
+
+function argumentsObjectFromField(field: FieldNode | DirectiveNode, variables: VariableMap): Record<string, any> | null {
+    if (field.arguments && field.arguments.length) {
+        const argObj: Record<string, any> = {};
+        for (const argument of field.arguments) {
+            argObj[argument.name.value] = valueFromASTUntyped(argument.value, variables);
+        }
+        return argObj;
+    }
+    return null;
+}
+
+function shouldInclude({ directives }: SelectionNode, variables: VariableMap): boolean {
+    if (!directives) {
+        return true;
+    }
+    return directives.every((directive) => {
+        const directiveName = directive.name.value;
+        if (directiveName !== "skip" && directiveName !== "include") {
+            return true;
+        }
+        const ifArgument = directive.arguments?.find((argument) => argument.name.value === "if");
+        if (!ifArgument) {
+            throw new Error(`Invalid @${directiveName} directive: missing "if" argument`);
+        }
+        const evaluatedValue = valueFromASTUntyped(ifArgument.value, variables);
+        if (evaluatedValue === undefined) {
+            throw new Error(`Invalid variable referenced in @${directiveName} directive`);
+        }
+        return directiveName === "skip" ? !evaluatedValue : Boolean(evaluatedValue);
+    });
 }

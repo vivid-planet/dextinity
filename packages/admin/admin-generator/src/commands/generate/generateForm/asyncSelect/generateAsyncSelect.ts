@@ -413,7 +413,7 @@ export function generateAsyncSelect({
                             ${useAutocomplete ? `search,` : ``}
                         ${filterConfig || useAutocomplete ? " }" : ""}
                     });
-                    return data.${rootQuery}.nodes;
+                    return data?.${rootQuery}.nodes ?? [];
                 }}
                 getOptionLabel={(option) => option.${labelField}}
                 ${filterConfig?.filterField ? `disabled={!values?.${String(filterConfig.filterField.name)}}` : ``}

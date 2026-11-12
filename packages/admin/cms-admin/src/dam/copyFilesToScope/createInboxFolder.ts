@@ -9,7 +9,7 @@ export const createInboxFolder = async ({
     targetScope,
     sourceScopes,
 }: {
-    client: ApolloClient<unknown>;
+    client: ApolloClient;
     targetScope: Record<string, unknown>;
     sourceScopes: Record<string, unknown>[];
 }) => {

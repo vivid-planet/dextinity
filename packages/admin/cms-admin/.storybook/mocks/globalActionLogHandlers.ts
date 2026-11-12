@@ -83,11 +83,31 @@ const mockNodes = mockLogs.map((log) => ({
     previousVersion: mockLogs.find((previous) => previous.entityId === log.entityId && previous.version === log.version - 1) ?? null,
 }));
 
+type MockFilter = { entityId?: { equal?: string }; entityName?: { equal?: string } };
+
+const buildResponse = (filter?: MockFilter) => {
+    let nodes = mockNodes;
+    if (filter?.entityId?.equal) {
+        nodes = nodes.filter((node) => node.entityId === filter.entityId?.equal);
+    }
+    if (filter?.entityName?.equal) {
+        nodes = nodes.filter((node) => node.entityName === filter.entityName?.equal);
+    }
+    return { __typename: "PaginatedActionLogs", nodes, totalCount: nodes.length };
+};
+
 export const globalActionLogHandlers = [
     graphql.query("GlobalActionLogGrid", () =>
         HttpResponse.json({
             data: {
-                myActionLogs: { __typename: "PaginatedActionLogs", nodes: mockNodes, totalCount: mockNodes.length },
+                myActionLogs: buildResponse(),
+            },
+        }),
+    ),
+    graphql.query("MyActionLogsDialog", ({ variables }) =>
+        HttpResponse.json({
+            data: {
+                myActionLogs: buildResponse(variables.filter as MockFilter | undefined),
             },
         }),
     ),

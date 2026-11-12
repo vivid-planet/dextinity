@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
     addMonths,
     calendarYears,
+    closestTimeIndex,
     formatDate,
     formatTime,
     isIsoDate,
@@ -14,6 +15,7 @@ import {
     parseTime,
     splitDateTime,
     startOfWeek,
+    timesOfDay,
 } from "../dateValues";
 
 describe("isIsoDate", () => {
@@ -156,5 +158,28 @@ describe("calendarYears", () => {
         const years = calendarYears("1900-01-01", undefined, undefined, "2026-11-12", 1);
         expect(years[0]).toBe(1900);
         expect(years.at(-1)).toBe(2027);
+    });
+});
+
+describe("timesOfDay", () => {
+    it("lists the day's times from midnight in the given step", () => {
+        const times = timesOfDay(15);
+
+        expect(times).toHaveLength(96);
+        expect(times[0]).toEqual({ hours: 0, minutes: 0 });
+        expect(times[1]).toEqual({ hours: 0, minutes: 15 });
+        expect(times[95]).toEqual({ hours: 23, minutes: 45 });
+        expect(timesOfDay(90).at(-1)).toEqual({ hours: 22, minutes: 30 });
+    });
+});
+
+describe("closestTimeIndex", () => {
+    it("finds the closest time, the earlier one on a tie", () => {
+        const times = timesOfDay(30);
+
+        expect(closestTimeIndex(times, { hours: 8, minutes: 30 })).toBe(17);
+        expect(closestTimeIndex(times, { hours: 8, minutes: 40 })).toBe(17);
+        expect(closestTimeIndex(times, { hours: 8, minutes: 45 })).toBe(17);
+        expect(closestTimeIndex(times, { hours: 23, minutes: 59 })).toBe(47);
     });
 });

@@ -7,6 +7,7 @@ import { CalendarPopover } from "./CalendarPopover";
 import { type DatePickerCalendarProps, type DatePickerLabels, defaultDatePickerLabels } from "./DatePicker";
 import styles from "./DateTimePicker.module.scss";
 import { formatDate, formatTime, type IsoDate, joinDateTime, localeWeekStart, parseTime, splitDateTime, type TimeOfDay } from "./dateValues";
+import { TimePopover } from "./TimePopover";
 import { invalidTimeMessage, readTypedDay } from "./typedDay";
 import { useTextDraft } from "./useTextDraft";
 
@@ -16,9 +17,11 @@ import { useTextDraft } from "./useTextDraft";
 export interface DateTimePickerLabels extends DatePickerLabels {
     /** Accessible name of the time input, read after the field's label. */
     time: string;
+    /** Accessible name of the button that opens the list of times. */
+    openTimeList: string;
 }
 
-const defaultLabels: DateTimePickerLabels = { ...defaultDatePickerLabels, time: "Time" };
+const defaultLabels: DateTimePickerLabels = { ...defaultDatePickerLabels, time: "Time", openTimeList: "Choose time" };
 
 const midnight: TimeOfDay = { hours: 0, minutes: 0 };
 
@@ -47,6 +50,12 @@ export interface DateTimePickerProps
     placeholder?: string;
     /** Shown in the time input while there is no value. */
     timePlaceholder?: string;
+    /**
+     * Minutes between two times in the list of times. Any other time can still be typed.
+     *
+     * @defaultValue `15`
+     */
+    timeStep?: number;
     /** Texts of the inputs, the buttons, and the calendar, for translation. */
     labels?: Partial<DateTimePickerLabels>;
     /** The id of the date input, used to connect it with the label. */
@@ -58,7 +67,7 @@ export interface DateTimePickerProps
 }
 
 /**
- * A day and a time of day, typed in the locale's format or with the day chosen in a calendar. Choosing a day keeps the time; without
+ * A day and a time of day, typed in the locale's format or chosen in a calendar and a list of times. Choosing a day keeps the time; without
  * one, the time is midnight. Typed text is read on blur or Enter; text that can't be read, or a day outside `min` and `max`, stays in its
  * input with an error and leaves the value unchanged until it is corrected.
  */
@@ -86,6 +95,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         clearable = false,
         placeholder,
         timePlaceholder,
+        timeStep = 15,
         labels: labelsProp,
         id,
         className,
@@ -97,9 +107,11 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     const labels = { ...defaultLabels, ...labelsProp };
     const timeLabelId = `${useId()}time`;
     const [open, setOpen] = useState(false);
+    const [timeListOpen, setTimeListOpen] = useState(false);
     // A time typed before there is a day, used once a day is chosen
     const [pendingTime, setPendingTime] = useState<TimeOfDay | null>(null);
     const inputRef = useRef<HTMLInputElement | null>(null);
+    const timeInputRef = useRef<HTMLInputElement>(null);
     const setInputRef = useCallback(
         (element: HTMLInputElement | null) => {
             inputRef.current = element;
@@ -146,7 +158,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
 
     const draftError = dateDraft.error ?? timeDraft.error;
 
-    const onKeyDown = (draft: typeof dateDraft) => (event: KeyboardEvent<HTMLInputElement>) => {
+    const onKeyDown = (draft: typeof dateDraft, openPopup: (open: boolean) => void) => (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter") {
             draft.commit();
         } else if (event.key === "Escape") {
@@ -154,8 +166,18 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         } else if (event.key === "ArrowDown" && event.altKey && editable) {
             event.preventDefault();
             draft.commit();
-            setOpen(true);
+            openPopup(true);
         }
+    };
+
+    const chooseTime = (nextTime: TimeOfDay) => {
+        timeDraft.reset();
+        if (current == null) {
+            setPendingTime(nextTime);
+        } else {
+            change(current.date, nextTime);
+        }
+        setTimeListOpen(false);
     };
 
     return (
@@ -191,43 +213,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         placeholder={placeholder}
                         onChange={dateDraft.onChange}
                         onBlur={dateDraft.commit}
-                        onKeyDown={onKeyDown(dateDraft)}
+                        onKeyDown={onKeyDown(dateDraft, setOpen)}
                     />
-                    <span className={styles.separator} aria-hidden />
-                    <span id={timeLabelId} hidden>
-                        {labels.time}
-                    </span>
-                    <input
-                        type="text"
-                        autoComplete="off"
-                        className={styles.timeInput}
-                        value={timeDraft.text}
-                        placeholder={timePlaceholder}
-                        disabled={control.disabled}
-                        readOnly={control.readOnly}
-                        aria-labelledby={`${control["aria-labelledby"]} ${timeLabelId}`}
-                        aria-describedby={control["aria-describedby"]}
-                        aria-invalid={control["aria-invalid"]}
-                        onChange={timeDraft.onChange}
-                        onBlur={timeDraft.commit}
-                        onKeyDown={onKeyDown(timeDraft)}
-                    />
-                    <input type="hidden" name={name} value={current == null ? "" : joinDateTime(current.date, current.time)} />
-                    {clearable && editable && current != null && (
-                        <button
-                            type="button"
-                            className={styles.clear}
-                            aria-label={labels.clear}
-                            onClick={() => {
-                                dateDraft.reset();
-                                timeDraft.reset();
-                                change(null, null);
-                                inputRef.current?.focus();
-                            }}
-                        >
-                            <Icon name="close" />
-                        </button>
-                    )}
                     <CalendarPopover
                         open={open}
                         onOpenChange={(nextOpen) => {
@@ -256,6 +243,59 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         showToday
                         labels={labels}
                     />
+                    <span className={styles.separator} aria-hidden />
+                    <span id={timeLabelId} hidden>
+                        {labels.time}
+                    </span>
+                    <input
+                        ref={timeInputRef}
+                        type="text"
+                        autoComplete="off"
+                        className={styles.timeInput}
+                        value={timeDraft.text}
+                        placeholder={timePlaceholder}
+                        disabled={control.disabled}
+                        readOnly={control.readOnly}
+                        aria-labelledby={`${control["aria-labelledby"]} ${timeLabelId}`}
+                        aria-describedby={control["aria-describedby"]}
+                        aria-invalid={control["aria-invalid"]}
+                        onChange={timeDraft.onChange}
+                        onBlur={timeDraft.commit}
+                        onKeyDown={onKeyDown(timeDraft, setTimeListOpen)}
+                    />
+                    <TimePopover
+                        open={timeListOpen}
+                        onOpenChange={(nextOpen) => {
+                            dateDraft.commit();
+                            timeDraft.commit();
+                            setTimeListOpen(nextOpen);
+                        }}
+                        value={time}
+                        onSelect={chooseTime}
+                        step={timeStep}
+                        locale={locale}
+                        triggerLabel={labels.openTimeList}
+                        triggerClassName={styles.timeTrigger}
+                        disabled={!editable}
+                        finalFocus={timeInputRef}
+                        labelledBy={`${control["aria-labelledby"]} ${timeLabelId}`}
+                    />
+                    <input type="hidden" name={name} value={current == null ? "" : joinDateTime(current.date, current.time)} />
+                    {clearable && editable && current != null && (
+                        <button
+                            type="button"
+                            className={styles.clear}
+                            aria-label={labels.clear}
+                            onClick={() => {
+                                dateDraft.reset();
+                                timeDraft.reset();
+                                change(null, null);
+                                inputRef.current?.focus();
+                            }}
+                        >
+                            <Icon name="close" />
+                        </button>
+                    )}
                 </>
             )}
         </Field>

@@ -332,3 +332,30 @@ export function joinDateTime(date: IsoDate, time: TimeOfDay): string {
     instant.setFullYear(year);
     return instant.toISOString();
 }
+
+/**
+ * The times of a day from midnight in steps of `stepMinutes`, e.g. every 15 minutes.
+ */
+export function timesOfDay(stepMinutes: number): TimeOfDay[] {
+    const step = Math.max(1, Math.round(stepMinutes));
+    return Array.from({ length: Math.ceil((24 * 60) / step) }, (_, index) => ({
+        hours: Math.floor((index * step) / 60),
+        minutes: (index * step) % 60,
+    }));
+}
+
+/**
+ * The index of the time in `times` closest to `time`, or the earlier one when two are equally close.
+ */
+export function closestTimeIndex(times: TimeOfDay[], time: TimeOfDay): number {
+    const target = time.hours * 60 + time.minutes;
+    let closest = 0;
+    times.forEach((candidate, index) => {
+        const distance = Math.abs(candidate.hours * 60 + candidate.minutes - target);
+        const closestDistance = Math.abs(times[closest].hours * 60 + times[closest].minutes - target);
+        if (distance < closestDistance) {
+            closest = index;
+        }
+    });
+    return closest;
+}

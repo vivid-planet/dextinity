@@ -101,6 +101,47 @@ export const TypingTheTime: Story = {
 };
 
 /**
+ * The clock button opens a list of times every 15 minutes, starting at the chosen time or the time closest to now. Arrow keys move by
+ * one time, Page Up and Page Down by an hour, and Enter chooses; Alt + Arrow Down opens the list from the time input. Any other time can
+ * still be typed.
+ */
+export const TimeList: Story = {
+    args: { locale: "en-GB" },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Choose time" }));
+        const list = await screen.findByRole("listbox", { name: "Publish at Time" });
+        const chosen = within(list).getByRole("option", { name: "08:30" });
+        await expect(chosen).toHaveAttribute("aria-selected", "true");
+        await waitFor(() => expect(chosen).toHaveFocus());
+        await userEvent.keyboard("{ArrowDown}{PageDown}");
+        await waitFor(() => expect(within(list).getByRole("option", { name: "09:45" })).toHaveFocus());
+        await userEvent.keyboard("{Enter}");
+        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith(localInstant(2026, 10, 6, 9, 45)));
+        const time = canvas.getByRole("textbox", { name: "Publish at Time" });
+        await waitFor(() => expect(time).toHaveFocus());
+        await expect(time).toHaveValue("09:45");
+
+        await userEvent.keyboard("{Alt>}{ArrowDown}{/Alt}");
+        await userEvent.click(await screen.findByRole("option", { name: "13:00" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(localInstant(2026, 10, 6, 13, 0)));
+        await waitFor(() => expect(screen.queryByRole("listbox")).not.toBeInTheDocument());
+    },
+};
+
+/**
+ * `timeStep` sets the minutes between two times in the list.
+ */
+export const TimeStep: Story = {
+    args: { locale: "en-GB", timeStep: 30 },
+    play: async ({ canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Choose time" }));
+        const list = await screen.findByRole("listbox");
+        await expect(within(list).getAllByRole("option")).toHaveLength(48);
+        await userEvent.keyboard("{Escape}");
+    },
+};
+
+/**
  * Without a time, choosing a day sets midnight. A time typed first is kept for the day chosen next.
  */
 export const Empty: Story = {

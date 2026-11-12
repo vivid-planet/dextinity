@@ -14,7 +14,6 @@ jobs:
         if: github.repository == 'vivid-planet/dextinity' && github.event.pull_request.head.repo.fork != true
         runs-on: ubuntu-latest
         steps:
-            # Inlined from vivid-planet-intern/deploy-preview/github-action, which a public repository of another organization can't use
             - name: Link deploy preview
               env:
                   GH_TOKEN: ${{ github.token }}

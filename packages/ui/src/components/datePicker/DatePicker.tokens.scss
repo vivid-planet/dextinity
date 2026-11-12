@@ -52,11 +52,11 @@
     // Color of the mark below today's number
     --dextinity-date-picker-today-color: var(--dextinity-color-accent);
 
-    // Highest the DateTimePicker's list of times grows before it scrolls
+    // Height of the DateTimePicker's list of times before it scrolls
     --dextinity-date-picker-time-list-max-height: 264px;
-    // Narrowest the DateTimePicker's list of times gets
+    // Minimum width of the DateTimePicker's list of times
     --dextinity-date-picker-time-list-min-width: 120px;
-    // Space around the times in the DateTimePicker's list
+    // Padding inside the DateTimePicker's list of times
     --dextinity-date-picker-time-list-padding: var(--dextinity-space-1-5);
 
     // Opacity of a day that can't be selected

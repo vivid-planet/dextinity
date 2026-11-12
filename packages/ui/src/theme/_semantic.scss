@@ -180,7 +180,7 @@ $danger-hue: var(--dextinity-brand-danger-hue);
 
         --dextinity-color-line: oklch(1 0 0 / 0.075);
         --dextinity-color-line-strong: oklch(1 0 0 / 0.13);
-        --dextinity-color-control-line: oklch(0.44 0.01 #{$neutral-hue});
+        --dextinity-color-control-line: oklch(0.52 0.01 #{$neutral-hue});
 
         --dextinity-color-accent: oklch(0.74 calc(#{$primary-chroma} * 0.8) #{$primary-hue});
         --dextinity-color-accent-foreground: oklch(0.15 0.03 #{$primary-hue});

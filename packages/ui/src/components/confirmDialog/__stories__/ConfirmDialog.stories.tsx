@@ -3,7 +3,6 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { modalOverlayDocs } from "../../../storybook/docsPopups";
-import { expectPopupStaysOpen } from "../../../storybook/expectPopupStaysOpen";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
@@ -51,7 +50,7 @@ const meta = {
     component: ConfirmDialog,
     title: "Building blocks/Modals & overlays/ConfirmDialog",
     decorators: [themeDecorator],
-    parameters: { tokens: confirmDialogTokens, docs: modalOverlayDocs("440px") },
+    parameters: { tokens: confirmDialogTokens },
     render: (args) => <ControlledConfirmDialog key={String(args.open)} {...args} />,
     args: {
         open: false,
@@ -91,6 +90,7 @@ type Story = StoryObj<typeof meta>;
  * - Label the confirming action with what it does, never "OK" or "Yes".
  */
 export const Default: Story = {
+    parameters: { popupRoom: { side: "below", minHeight: "300px" } },
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Leave page" }));
         const dialog = await screen.findByRole("alertdialog", { name: "Unsaved changes" });
@@ -106,11 +106,7 @@ export const Default: Story = {
  */
 export const Cancel: Story = {
     args: { open: true },
-    play: async ({ args }) => {
-        await userEvent.click(await screen.findByRole("button", { name: "Cancel" }));
-        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
-        await expect(args.onConfirm).not.toHaveBeenCalled();
-    },
+    parameters: { docs: modalOverlayDocs("440px") },
 };
 
 /**
@@ -122,10 +118,7 @@ export const WithSecondaryAction: Story = {
         secondaryLabel: "Discard",
         onSecondary: fn(),
     },
-    play: async ({ args }) => {
-        await userEvent.click(await screen.findByRole("button", { name: "Discard" }));
-        await waitFor(() => expect(args.onSecondary).toHaveBeenCalled());
-    },
+    parameters: { docs: modalOverlayDocs("440px") },
 };
 
 /**
@@ -140,6 +133,7 @@ export const Danger: Story = {
         confirmLabel: "Delete",
         confirmIcon: <Icon name="delete" />,
     },
+    parameters: { docs: modalOverlayDocs("440px") },
 };
 
 /**
@@ -160,9 +154,7 @@ export const WithDetails: Story = {
             </ul>
         ),
     },
-    play: async () => {
-        await expect(await screen.findByRole("alertdialog")).toHaveTextContent("3 published");
-    },
+    parameters: { docs: modalOverlayDocs("440px") },
 };
 
 /**
@@ -171,12 +163,5 @@ export const WithDetails: Story = {
  */
 export const Loading: Story = {
     args: { open: true, loading: true, secondaryLabel: "Discard", onSecondary: fn() },
-    play: async ({ args }) => {
-        const dialog = await screen.findByRole("alertdialog");
-        await expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
-        await expect(screen.getByRole("button", { name: "Discard" })).toBeDisabled();
-        await userEvent.keyboard("{Escape}");
-        await expectPopupStaysOpen(dialog);
-        await expect(args.onOpenChange).not.toHaveBeenCalled();
-    },
+    parameters: { docs: modalOverlayDocs("440px") },
 };

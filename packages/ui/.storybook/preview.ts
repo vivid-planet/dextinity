@@ -9,8 +9,10 @@ import type { Preview } from "@storybook/react-vite";
 import { CanvasWithStyleSource } from "../src/storybook/CanvasWithStyleSource";
 import { colorSchemeBackgroundDecorator } from "../src/storybook/colorSchemeBackgroundDecorator";
 import { DocsPage } from "../src/storybook/docs/DocsPage";
-import { popupRoomDecorator } from "../src/storybook/docsPopups";
+import { popupRoomDecorator, preventFocusInDocsFramesUntilUsed } from "../src/storybook/docsPopups";
 import { renderSourceWithArgs } from "../src/storybook/renderSourceWithArgs";
+
+preventFocusInDocsFramesUntilUsed();
 
 const preview: Preview = {
     tags: ["autodocs"],

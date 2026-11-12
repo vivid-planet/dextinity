@@ -85,7 +85,7 @@ interface StoryArgs {
 const meta: Meta<StoryArgs> = {
     title: "Building blocks/Form fields/Combobox",
     decorators: [themeDecorator],
-    parameters: { tokens: `${selectTokens}\n${fieldTokens}`, popupRoom: "below" },
+    parameters: { tokens: `${selectTokens}\n${fieldTokens}`, popupRoom: { side: "below", minHeight: "400px" } },
     args: { onChange: fn() },
 };
 

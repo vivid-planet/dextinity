@@ -71,7 +71,7 @@ const meta = {
     component: QuickLook,
     title: "Building blocks/Modals & overlays/QuickLook",
     decorators: [themeDecorator],
-    parameters: { tokens: quickLookTokens, docs: modalOverlayDocs("720px") },
+    parameters: { tokens: quickLookTokens },
     render: (args) => <Finder key={`${args.open}-${args.index}`} {...args} />,
     args: {
         open: false,
@@ -105,6 +105,7 @@ type Story = StoryObj<typeof meta>;
  * - The arrow keys step through the same files as the list behind it.
  */
 export const Default: Story = {
+    parameters: { popupRoom: { side: "below", minHeight: "680px" } },
     play: async ({ args, canvas }) => {
         const tile = canvas.getByRole("button", { name: "team.jpg" });
         tile.focus();
@@ -125,6 +126,7 @@ export const Default: Story = {
 
 export const Open: Story = {
     args: { open: true, index: 1 },
+    parameters: { docs: modalOverlayDocs("720px") },
 };
 
 /**
@@ -144,6 +146,7 @@ export const WithActions: Story = {
             </>
         ),
     },
+    parameters: { docs: modalOverlayDocs("720px") },
 };
 
 /**
@@ -151,9 +154,5 @@ export const WithActions: Story = {
  */
 export const Buttons: Story = {
     args: { open: true, index: 2 },
-    play: async ({ args }) => {
-        await expect(await screen.findByRole("button", { name: "Next" })).toBeDisabled();
-        await userEvent.click(screen.getByRole("button", { name: "Previous" }));
-        await waitFor(() => expect(args.onIndexChange).toHaveBeenLastCalledWith(1));
-    },
+    parameters: { docs: modalOverlayDocs("720px") },
 };

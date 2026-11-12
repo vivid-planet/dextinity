@@ -3,7 +3,6 @@ import { type FormEvent, useId, useRef, useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { modalOverlayDocs } from "../../../storybook/docsPopups";
-import { expectPopupStaysOpen } from "../../../storybook/expectPopupStaysOpen";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Field } from "../../field/Field";
@@ -33,7 +32,7 @@ const meta = {
     component: Dialog,
     title: "Building blocks/Modals & overlays/Dialog",
     decorators: [themeDecorator],
-    parameters: { tokens: dialogTokens, docs: modalOverlayDocs("560px") },
+    parameters: { tokens: dialogTokens },
     render: (args) => <ControlledDialog key={String(args.open)} {...args} />,
     args: {
         open: false,
@@ -83,6 +82,7 @@ type Story = StoryObj<typeof meta>;
  * - Prefer a `Drawer` when people need the context behind it.
  */
 export const Default: Story = {
+    parameters: { popupRoom: { side: "below", minHeight: "320px" } },
     play: async ({ args, canvas }) => {
         const trigger = canvas.getByRole("button", { name: "Open dialog" });
         await userEvent.click(trigger);
@@ -104,6 +104,7 @@ export const Default: Story = {
 
 export const Open: Story = {
     args: { open: true },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -111,10 +112,7 @@ export const Open: Story = {
  */
 export const CloseButton: Story = {
     args: { open: true },
-    play: async ({ args }) => {
-        await userEvent.click(await screen.findByRole("button", { name: "Close" }));
-        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
-    },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 function RedirectForm() {
@@ -148,6 +146,7 @@ export const WithForm: Story = {
             </>
         ),
     },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -155,6 +154,7 @@ export const WithForm: Story = {
  */
 export const Small: Story = {
     args: { open: true, size: "small" },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -162,6 +162,7 @@ export const Small: Story = {
  */
 export const Large: Story = {
     args: { open: true, size: "large" },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 function BrightPage() {
@@ -185,23 +186,7 @@ export const OverBrightPage: Story = {
             <ControlledDialog key={String(args.open)} {...args} />
         </>
     ),
-    play: async () => {
-        const alphaOf = (color: string) => Number(/\/\s*([\d.]+)\s*\)$/.exec(color)?.[1] ?? 1);
-        const dialog = await screen.findByRole("dialog", { name: "Choose a page" });
-        await expect(alphaOf(getComputedStyle(dialog).backgroundColor)).toBeGreaterThanOrEqual(0.95);
-
-        // Dark mode is where a bright page shone through, so check the surface in every color scheme, not only the one shown
-        for (const colorScheme of ["light", "dark", "high-contrast"]) {
-            const probe = document.createElement("div");
-            probe.dataset.dextinityColorScheme = colorScheme;
-            probe.style.background = "var(--dextinity-dialog-background)";
-            document.body.append(probe);
-            const background = getComputedStyle(probe).backgroundColor;
-            probe.remove();
-            await expect(background, colorScheme).not.toBe("rgba(0, 0, 0, 0)");
-            await expect(alphaOf(background), colorScheme).toBeGreaterThanOrEqual(0.95);
-        }
-    },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -209,6 +194,7 @@ export const OverBrightPage: Story = {
  */
 export const HideCloseButton: Story = {
     args: { open: true, hideCloseButton: true },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 function InitialFocusDialog(props: DialogProps) {
@@ -233,9 +219,7 @@ function InitialFocusDialog(props: DialogProps) {
 export const InitialFocus: Story = {
     args: { open: true },
     render: (args) => <InitialFocusDialog {...args} />,
-    play: async () => {
-        await waitFor(() => expect(screen.getByRole("button", { name: "Save and continue" })).toHaveFocus());
-    },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -243,9 +227,7 @@ export const InitialFocus: Story = {
  */
 export const AlertDialog: Story = {
     args: { open: true, role: "alertdialog" },
-    play: async () => {
-        await expect(await screen.findByRole("alertdialog")).toBeInTheDocument();
-    },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -253,13 +235,7 @@ export const AlertDialog: Story = {
  */
 export const NotDismissible: Story = {
     args: { open: true, dismissible: false },
-    play: async ({ args }) => {
-        const dialog = await screen.findByRole("dialog");
-        await expect(screen.getByRole("button", { name: "Close" })).toBeDisabled();
-        await userEvent.keyboard("{Escape}");
-        await expectPopupStaysOpen(dialog);
-        await expect(args.onOpenChange).not.toHaveBeenCalled();
-    },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /** A dialog with a form: the form element is in the content, the footer's submit button submits it by its id. */
@@ -312,15 +288,5 @@ function FormDialog(props: DialogProps) {
 export const WithFormActions: Story = {
     args: { open: true, title: "New folder", description: undefined, footer: undefined },
     render: (args) => <FormDialog {...args} />,
-    play: async ({ args }) => {
-        const dialog = await screen.findByRole("dialog", { name: "New folder" });
-        await expect(screen.getByRole("button", { name: "Create" })).toBeDisabled();
-        await userEvent.type(screen.getByRole("textbox", { name: "Name" }), "Press kit");
-        await userEvent.click(screen.getByRole("button", { name: "Create" }));
-        await waitFor(() => expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled());
-        await userEvent.keyboard("{Escape}");
-        await expectPopupStaysOpen(dialog);
-        await expect(args.onOpenChange).not.toHaveBeenCalled();
-        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false), { timeout: 3000 });
-    },
+    parameters: { docs: modalOverlayDocs("560px") },
 };

@@ -109,7 +109,7 @@ export const ModifierClick: Story = {
  * Deep paths keep the first level and the last ones; the levels in between move into a menu, as links that open in a new tab too.
  */
 export const Collapsed: Story = {
-    parameters: { popupRoom: "below" },
+    parameters: { popupRoom: { side: "below", minHeight: "120px" } },
     args: {
         items: [
             { label: "Page", href: "#page" },

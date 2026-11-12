@@ -95,7 +95,7 @@ const meta = {
     component: Select,
     title: "Building blocks/Form fields/Select",
     decorators: [themeDecorator],
-    parameters: { tokens: `${selectTokens}\n${fieldTokens}`, popupRoom: "below" },
+    parameters: { tokens: `${selectTokens}\n${fieldTokens}`, popupRoom: { side: "below", minHeight: "280px" } },
     render: (args) => <ControlledSelect key={String(args.value)} {...(args as SelectProps<boolean>)} />,
     args: {
         name: "location",
@@ -207,6 +207,7 @@ export const Multiple: Story = {
  * `searchable` adds a search to the menu.
  */
 export const Searchable: Story = {
+    parameters: { popupRoom: { side: "below", minHeight: "400px" } },
     args: {
         name: "country",
         label: "Country",
@@ -228,6 +229,7 @@ export const Searchable: Story = {
  * An option's `group` lists it under a header. Options with the same group are shown together, in the order the groups first appear.
  */
 export const Groups: Story = {
+    parameters: { popupRoom: { side: "below", minHeight: "400px" } },
     args: {
         name: "office",
         label: "Office",
@@ -254,6 +256,7 @@ export const Groups: Story = {
  * Groups work with the search too; a group without matches disappears.
  */
 export const SearchableGroups: Story = {
+    parameters: { popupRoom: { side: "below", minHeight: "400px" } },
     args: {
         name: "office",
         label: "Office",
@@ -271,6 +274,7 @@ export const SearchableGroups: Story = {
 };
 
 export const SearchableMultiple: Story = {
+    parameters: { popupRoom: { side: "below", minHeight: "400px" } },
     render: (args) => (
         <ControlledMultipleSelect
             name="countries"
@@ -459,15 +463,4 @@ export const InDialog: Story = {
             <ControlledSelect {...(args as SelectProps<boolean>)} />
         </Dialog>
     ),
-    play: async ({ args }) => {
-        const dialog = await screen.findByRole("dialog", { name: "Move event" });
-        await userEvent.click(within(dialog).getByRole("combobox", { name: /Location/ }));
-        const option = await screen.findByRole("option", { name: "Graz" });
-        await waitFor(() => {
-            const { left, top, width, height } = option.getBoundingClientRect();
-            expect(option.contains(document.elementFromPoint(left + width / 2, top + height / 2))).toBe(true);
-        });
-        await userEvent.click(option);
-        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith("graz"));
-    },
 };

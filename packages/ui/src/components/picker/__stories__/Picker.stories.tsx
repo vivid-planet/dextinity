@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
-import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { landscapeImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
@@ -124,7 +123,7 @@ function PagePicker({ onChange, initialPageId = null, ...props }: StoryArgs & { 
 const meta: Meta<StoryArgs> = {
     title: "Building blocks/Form fields/Picker",
     decorators: [themeDecorator],
-    parameters: { tokens: `${pickerTokens}\n${fieldTokens}`, docs: modalOverlayDocs("560px") },
+    parameters: { tokens: `${pickerTokens}\n${fieldTokens}` },
     args: { onChange: fn() },
     render: (args) => <PagePicker {...args} />,
 };
@@ -142,6 +141,7 @@ type Story = StoryObj<StoryArgs>;
  * - Offer `onClear` when the value is optional.
  */
 export const Default: Story = {
+    parameters: { popupRoom: { side: "below", minHeight: "480px" } },
     play: async ({ args, canvas }) => {
         const trigger = canvas.getByRole("button", { name: "Link target Choose a page" });
         await userEvent.click(trigger);
@@ -156,6 +156,7 @@ export const Default: Story = {
  * With a value and `onClear`, a button clears it.
  */
 export const WithValue: Story = {
+    parameters: { popupRoom: { side: "below", minHeight: "480px" } },
     render: (args) => <PagePicker {...args} initialPageId="about" />,
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Clear" }));

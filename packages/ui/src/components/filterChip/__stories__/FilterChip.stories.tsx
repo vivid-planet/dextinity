@@ -145,7 +145,7 @@ export const WithStatus: Story = {
  * A chevron marks a chip that opens a menu to pick the filter's value, e.g. an author. Render the chip as the menu's trigger.
  */
 export const WithMenu: Story = {
-    parameters: { popupRoom: "below" },
+    parameters: { popupRoom: { side: "below", minHeight: "180px" } },
     args: { children: "Author", hasMenu: true },
     render: (args) => <AuthorFilter onClick={args.onClick} />,
     play: async ({ args, canvas }) => {

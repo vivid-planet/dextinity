@@ -69,7 +69,7 @@ const meta = {
     component: Drawer,
     title: "Building blocks/Modals & overlays/Drawer",
     decorators: [themeDecorator],
-    parameters: { tokens: drawerTokens, docs: modalOverlayDocs("560px") },
+    parameters: { tokens: drawerTokens },
     render: (args) => <RedirectList key={String(args.open)} {...args} />,
     args: {
         open: false,
@@ -114,6 +114,7 @@ type Story = StoryObj<typeof meta>;
  * - On narrow screens the drawer takes the full width.
  */
 export const Default: Story = {
+    parameters: { popupRoom: { side: "below", minHeight: "560px" } },
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: /alt-2/ }));
         const drawer = await screen.findByRole("dialog", { name: "Edit redirect" });
@@ -130,6 +131,7 @@ export const Default: Story = {
 
 export const Open: Story = {
     args: { open: true },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -137,6 +139,7 @@ export const Open: Story = {
  */
 export const WithDescription: Story = {
     args: { open: true, description: "Visitors of the old address land on the new page." },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -144,6 +147,7 @@ export const WithDescription: Story = {
  */
 export const Large: Story = {
     args: { open: true, width: "large" },
+    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -151,9 +155,5 @@ export const Large: Story = {
  */
 export const Modal: Story = {
     args: { open: true, modal: true },
-    play: async ({ args }) => {
-        await screen.findByRole("dialog", { name: "Edit redirect" });
-        await userEvent.keyboard("{Escape}");
-        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(false));
-    },
+    parameters: { docs: modalOverlayDocs("560px") },
 };

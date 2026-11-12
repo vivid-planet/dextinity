@@ -18,11 +18,6 @@ pnpm install
 
 pnpm run copy-project-files
 
-# Fetches the latest translations: pnpm install only clones missing ones, and skips even that when the dependencies are up to date
-pnpm --dir demo/admin run intl:update
-pnpm --dir demo/api run intl:update
-pnpm --dir demo/site run intl:update
-
 # Build the packages CLI and eslint-plugin to be used for dev startup
 pnpm --filter '@dextinity/cli' --filter '@dextinity/eslint-plugin' run build
 

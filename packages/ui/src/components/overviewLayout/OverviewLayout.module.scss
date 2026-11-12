@@ -1,3 +1,5 @@
+@use "../../theme/textStyles" as text-styles;
+
 .root {
     container-type: inline-size;
     display: flex;
@@ -26,10 +28,7 @@
     gap: var(--dextinity-space-2);
     margin-block-end: 18px;
     color: var(--dextinity-overview-layout-label-color);
-    font-family: var(--dextinity-font-family-mono);
-    font-size: var(--dextinity-typography-label-size);
-    letter-spacing: var(--dextinity-typography-label-letter-spacing);
-    text-transform: uppercase;
+    @include text-styles.label;
 }
 
 .back {

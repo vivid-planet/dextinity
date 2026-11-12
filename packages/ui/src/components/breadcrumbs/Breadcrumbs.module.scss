@@ -1,4 +1,5 @@
 @use "../../theme/forcedColors" as forced-colors;
+@use "../../theme/textStyles" as text-styles;
 
 .root {
     min-inline-size: 0;
@@ -7,10 +8,7 @@
 
     &[data-variant="label"] {
         color: var(--dextinity-breadcrumbs-label-color);
-        font-family: var(--dextinity-font-family-mono);
-        font-size: var(--dextinity-typography-label-size);
-        letter-spacing: var(--dextinity-typography-label-letter-spacing);
-        text-transform: uppercase;
+        @include text-styles.label;
 
         .link {
             font-family: inherit;

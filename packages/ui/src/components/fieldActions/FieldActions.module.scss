@@ -1,4 +1,5 @@
 @use "../../theme/forcedColors" as forced-colors;
+@use "../../theme/textStyles" as text-styles;
 
 .root {
     display: inline-flex;
@@ -32,10 +33,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--dextinity-space-1);
-    font-family: var(--dextinity-font-family-mono);
-    font-size: var(--dextinity-typography-label-size);
-    letter-spacing: var(--dextinity-typography-label-letter-spacing);
-    text-transform: uppercase;
+    @include text-styles.label;
     color: var(--dextinity-field-actions-suggestion-label-color);
 
     --dextinity-icon-size: 12px;

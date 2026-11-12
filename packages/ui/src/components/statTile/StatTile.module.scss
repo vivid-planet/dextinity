@@ -1,3 +1,5 @@
+@use "../../theme/textStyles" as text-styles;
+
 .root {
     display: flex;
     flex-direction: column;
@@ -38,10 +40,7 @@
 
 .label {
     color: var(--dextinity-stat-tile-label-color);
-    font-family: var(--dextinity-font-family-mono);
-    font-size: var(--dextinity-typography-label-size);
-    letter-spacing: var(--dextinity-typography-label-letter-spacing);
-    text-transform: uppercase;
+    @include text-styles.label;
 }
 
 .context {

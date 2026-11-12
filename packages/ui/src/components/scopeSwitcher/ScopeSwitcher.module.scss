@@ -1,4 +1,5 @@
 @use "../../theme/forcedColors" as forced-colors;
+@use "../../theme/textStyles" as text-styles;
 
 .root {
     display: inline-flex;
@@ -112,10 +113,7 @@
 .recentLabel {
     padding: var(--dextinity-space-1) var(--dextinity-space-2-5) var(--dextinity-space-2);
     color: var(--dextinity-scope-switcher-label-color);
-    font-family: var(--dextinity-font-family-mono);
-    font-size: var(--dextinity-typography-label-size);
-    letter-spacing: var(--dextinity-typography-label-letter-spacing);
-    text-transform: uppercase;
+    @include text-styles.label;
 }
 
 .columnOptions,

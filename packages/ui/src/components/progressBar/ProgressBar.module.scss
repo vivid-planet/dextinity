@@ -86,7 +86,7 @@
 
     @keyframes pulse {
         50% {
-            opacity: 0.4;
+            opacity: var(--dextinity-progress-bar-pulse-opacity);
         }
     }
 }

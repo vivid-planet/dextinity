@@ -18,7 +18,7 @@
     inline-size: var(--dextinity-line-width);
     block-size: 1.2em;
     background: var(--dextinity-date-picker-separator-color);
-    opacity: 0.6;
+    opacity: var(--dextinity-date-picker-separator-opacity);
 
     @include forced-colors.fill;
 }

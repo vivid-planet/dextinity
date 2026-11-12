@@ -9,4 +9,7 @@
     --dextinity-save-state-pending-dot-color: var(--dextinity-color-warning);
     --dextinity-save-state-error-color: var(--dextinity-color-danger-text);
     --dextinity-save-state-error-dot-color: var(--dextinity-color-danger);
+
+    // Lowest opacity of the dot's breathing animation while saving
+    --dextinity-save-state-breathe-opacity: 0.45;
 }

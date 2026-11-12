@@ -231,7 +231,7 @@
         inset-inline-end: 7px;
         border-block-end: 4px solid currentcolor;
         border-inline-start: 4px solid transparent;
-        opacity: 0.45;
+        opacity: var(--dextinity-side-nav-flyout-marker-opacity);
     }
 
     .root[data-collapsed] &[aria-expanded="true"]:not([data-active]) {

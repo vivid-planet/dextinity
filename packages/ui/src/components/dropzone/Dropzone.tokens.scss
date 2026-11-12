@@ -32,6 +32,8 @@
     --dextinity-dropzone-progress-track-shadow: 0 0 transparent;
     --dextinity-dropzone-progress-indicator: var(--dextinity-gradient-brand);
     --dextinity-dropzone-done-foreground: var(--dextinity-color-success-text);
+
+    --dextinity-dropzone-disabled-opacity: 0.5;
 }
 
 @mixin high-contrast-tokens {

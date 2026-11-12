@@ -29,6 +29,10 @@
     --dextinity-date-picker-day-shadow-range: 0 0 transparent;
     // The mark below today's number
     --dextinity-date-picker-today-color: var(--dextinity-color-accent);
+
+    --dextinity-date-picker-day-disabled-opacity: 0.36;
+    // The line between the date and time fields of the DateTimePicker
+    --dextinity-date-picker-separator-opacity: 0.6;
 }
 
 @mixin high-contrast-tokens {

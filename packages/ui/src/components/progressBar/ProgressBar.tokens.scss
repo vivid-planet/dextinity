@@ -14,6 +14,9 @@
     --dextinity-progress-bar-label-font-size: var(--dextinity-typography-ui-size);
     --dextinity-progress-bar-label-color: var(--dextinity-color-text-secondary);
     --dextinity-progress-bar-value-color: var(--dextinity-color-text-tertiary);
+
+    // Lowest opacity of the pulse that replaces the indeterminate animation with reduced motion
+    --dextinity-progress-bar-pulse-opacity: 0.4;
 }
 
 @mixin high-contrast-tokens {

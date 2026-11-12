@@ -51,6 +51,6 @@
 
 @keyframes breathe {
     50% {
-        opacity: 0.45;
+        opacity: var(--dextinity-save-state-breathe-opacity);
     }
 }

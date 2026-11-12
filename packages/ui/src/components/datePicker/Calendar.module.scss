@@ -196,7 +196,7 @@
     }
 
     &[data-disabled] {
-        opacity: 0.36;
+        opacity: var(--dextinity-date-picker-day-disabled-opacity);
         cursor: not-allowed;
         text-decoration: line-through;
     }

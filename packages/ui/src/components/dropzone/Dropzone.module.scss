@@ -22,7 +22,7 @@
     }
 
     &[data-disabled] .zone {
-        opacity: 0.5;
+        opacity: var(--dextinity-dropzone-disabled-opacity);
         cursor: not-allowed;
     }
 

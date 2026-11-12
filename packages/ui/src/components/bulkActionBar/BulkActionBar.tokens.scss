@@ -14,4 +14,8 @@
     --dextinity-bulk-action-bar-action-foreground-error: color-mix(in oklch, var(--dextinity-color-danger) 55%, var(--dextinity-color-canvas));
     // Focus on the inverted fill, where the regular focus ring may not stand out
     --dextinity-bulk-action-bar-focus-ring: inset 0 0 0 2px var(--dextinity-color-canvas);
+
+    --dextinity-bulk-action-bar-action-disabled-opacity: 0.45;
+    // Dims the chevron of an action that opens a menu
+    --dextinity-bulk-action-bar-menu-indicator-opacity: 0.7;
 }

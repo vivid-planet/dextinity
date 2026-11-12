@@ -68,7 +68,7 @@
     }
 
     &[data-disabled] {
-        opacity: 0.45;
+        opacity: var(--dextinity-bulk-action-bar-action-disabled-opacity);
         cursor: default;
         background: transparent;
     }
@@ -88,7 +88,7 @@
 
     &[data-menu-indicator] {
         margin-inline-start: calc(var(--dextinity-space-1) * -1);
-        opacity: 0.7;
+        opacity: var(--dextinity-bulk-action-bar-menu-indicator-opacity);
 
         --dextinity-icon-size: var(--dextinity-icon-size-xxsmall);
     }

@@ -1,4 +1,5 @@
 @use "../../theme/forcedColors" as forced-colors;
+@use "../../theme/keyframes";
 
 .root {
     display: flex;
@@ -75,15 +76,7 @@
     @include forced-colors.fill(Highlight);
 }
 
-@keyframes indeterminate {
-    from {
-        transform: translateX(-100%);
-    }
-
-    to {
-        transform: translateX(340%);
-    }
-}
+@include keyframes.indeterminate;
 
 @media (prefers-reduced-motion: reduce) {
     .root[data-indeterminate] .indicator {

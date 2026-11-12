@@ -1,4 +1,5 @@
 @use "../../theme/forcedColors" as forced-colors;
+@use "../../theme/keyframes";
 
 .root {
     position: relative;
@@ -202,12 +203,4 @@
     @include forced-colors.fill(Highlight);
 }
 
-@keyframes indeterminate {
-    from {
-        transform: translateX(-100%);
-    }
-
-    to {
-        transform: translateX(340%);
-    }
-}
+@include keyframes.indeterminate;

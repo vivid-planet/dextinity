@@ -16,7 +16,7 @@
     }
 
     &:disabled {
-        opacity: 0.42;
+        opacity: var(--dextinity-opacity-disabled);
         cursor: not-allowed;
     }
 }

@@ -8,7 +8,7 @@
     --dextinity-slider-thumb-ring-width: 2px;
     --dextinity-slider-start-icon-size: 12px;
     --dextinity-slider-end-icon-size: var(--dextinity-icon-size-small);
-    --dextinity-slider-disabled-opacity: 0.42;
+    --dextinity-slider-disabled-opacity: var(--dextinity-opacity-disabled);
 
     --dextinity-slider-icon-color: var(--dextinity-color-text-tertiary);
     --dextinity-slider-track-background: var(--dextinity-color-line-strong);

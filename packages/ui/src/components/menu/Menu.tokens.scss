@@ -22,7 +22,7 @@
     --dextinity-menu-item-shortcut-color: var(--dextinity-color-text-tertiary);
     // Destructive items, e.g. Delete
     --dextinity-menu-item-danger-foreground: var(--dextinity-color-danger-text);
-    --dextinity-menu-item-disabled-opacity: 0.42;
+    --dextinity-menu-item-disabled-opacity: var(--dextinity-opacity-disabled);
     // Check mark of the selected radio item
     --dextinity-menu-item-indicator-color: var(--dextinity-color-accent-text);
 

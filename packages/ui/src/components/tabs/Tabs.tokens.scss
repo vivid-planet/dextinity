@@ -5,7 +5,7 @@
     --dextinity-tabs-font-size: var(--dextinity-typography-body-size);
     --dextinity-tabs-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-tabs-radius: var(--dextinity-radius-item);
-    --dextinity-tabs-disabled-opacity: 0.42;
+    --dextinity-tabs-disabled-opacity: var(--dextinity-opacity-disabled);
 
     --dextinity-tabs-foreground: var(--dextinity-color-text-tertiary);
     --dextinity-tabs-foreground-hover: var(--dextinity-color-text);

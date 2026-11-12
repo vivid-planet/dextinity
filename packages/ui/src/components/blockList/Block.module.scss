@@ -53,7 +53,7 @@
     }
 
     &[data-dragging] {
-        opacity: 0.4;
+        opacity: var(--dextinity-opacity-dragging);
     }
 
     // The line showing where a dragged block lands

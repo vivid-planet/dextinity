@@ -7,7 +7,7 @@
     --dextinity-switch-thumb-inset: 3px;
     --dextinity-switch-thumb-inset-small: 2px;
     --dextinity-switch-gap: var(--dextinity-space-4);
-    --dextinity-switch-disabled-opacity: 0.42;
+    --dextinity-switch-disabled-opacity: var(--dextinity-opacity-disabled);
 
     --dextinity-switch-track-background: var(--dextinity-color-text-subtle);
     --dextinity-switch-track-background-checked: var(--dextinity-color-accent);

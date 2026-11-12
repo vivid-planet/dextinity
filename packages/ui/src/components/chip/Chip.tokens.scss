@@ -14,7 +14,7 @@
     --dextinity-chip-clear-button-size: 22px;
     --dextinity-chip-clear-button-size-small: 18px;
     --dextinity-chip-clear-button-background-hover: color-mix(in oklch, currentColor 14%, transparent);
-    --dextinity-chip-disabled-opacity: 0.42;
+    --dextinity-chip-disabled-opacity: var(--dextinity-opacity-disabled);
     // Mixed into a clickable chip's background on hover
     --dextinity-chip-hover-overlay: color-mix(in oklch, var(--dextinity-color-text) 8%, transparent);
 

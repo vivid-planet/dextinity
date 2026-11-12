@@ -193,7 +193,7 @@
 
     &[data-dragging],
     &[data-cut] {
-        opacity: 0.4;
+        opacity: var(--dextinity-opacity-dragging);
     }
 
     &[data-drop="inside"] {

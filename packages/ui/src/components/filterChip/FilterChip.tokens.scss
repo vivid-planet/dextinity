@@ -5,7 +5,7 @@
     --dextinity-filter-chip-radius: var(--dextinity-radius-control);
     --dextinity-filter-chip-font-size: var(--dextinity-typography-ui-size);
     --dextinity-filter-chip-icon-size: 14px;
-    --dextinity-filter-chip-disabled-opacity: 0.42;
+    --dextinity-filter-chip-disabled-opacity: var(--dextinity-opacity-disabled);
 
     --dextinity-filter-chip-foreground: var(--dextinity-color-text-secondary);
     --dextinity-filter-chip-foreground-hover: var(--dextinity-color-text);

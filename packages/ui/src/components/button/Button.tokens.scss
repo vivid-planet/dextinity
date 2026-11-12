@@ -9,7 +9,7 @@
     --dextinity-button-font-size-small: var(--dextinity-typography-ui-size);
     --dextinity-button-font-weight: var(--dextinity-font-weight-medium);
     --dextinity-button-icon-size: var(--dextinity-icon-size-small);
-    --dextinity-button-disabled-opacity: 0.42;
+    --dextinity-button-disabled-opacity: var(--dextinity-opacity-disabled);
     // Darkens the button while it is pressed
     --dextinity-button-active-brightness: 0.93;
 

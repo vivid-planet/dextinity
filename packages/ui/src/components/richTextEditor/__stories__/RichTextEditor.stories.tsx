@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, fn, userEvent, waitFor } from "storybook/test";
+import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { FieldActions } from "../../fieldActions/FieldActions";
 import { RichTextEditor, type RichTextEditorProps } from "../RichTextEditor";
 import richTextEditorTokens from "../RichTextEditor.tokens.scss?raw";
+import styles from "./RichTextEditor.stories.module.scss";
 
 /** Keeps the story controlled: editing updates the local value; changing the `value` control starts over from it. */
 function ControlledRichTextEditor(props: RichTextEditorProps) {
@@ -21,6 +22,26 @@ function ControlledRichTextEditor(props: RichTextEditorProps) {
             }}
         />
     );
+}
+
+/** Selects `length` characters of the editor's text from where `text` starts, plus `offset`; user-event can't place a caret in nested editable content. */
+function selectText(editor: HTMLElement, text: string, offset = 0, length = 0) {
+    const walker = editor.ownerDocument.createTreeWalker(editor, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+        const node = walker.currentNode as Text;
+        const index = node.data.indexOf(text);
+        if (index >= 0) {
+            const range = editor.ownerDocument.createRange();
+            range.setStart(node, index + offset);
+            range.setEnd(node, index + offset + length);
+            editor.focus();
+            const selection = editor.ownerDocument.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+            return;
+        }
+    }
+    throw new globalThis.Error(`"${text}" isn't in the editor`);
 }
 
 const meta = {
@@ -39,7 +60,26 @@ const meta = {
     argTypes: {
         state: { control: "select", options: ["default", "success", "warning", "error"] },
         size: { control: "radio", options: ["small", "default", "large"] },
-        toolbar: { control: "check", options: ["heading", "bold", "italic", "bulletList", "orderedList", "link"] },
+        toolbar: {
+            control: "check",
+            options: [
+                "undoRedo",
+                "blockType",
+                "bold",
+                "italic",
+                "underline",
+                "strike",
+                "subscript",
+                "superscript",
+                "textAlign",
+                "bulletList",
+                "orderedList",
+                "link",
+                "nonBreakingSpace",
+                "softHyphen",
+            ],
+        },
+        headingLevels: { control: "check", options: [1, 2, 3, 4, 5, 6] },
         actions: { control: false },
         labels: { control: false },
         className: { control: false },
@@ -52,11 +92,11 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * The value is an HTML string. The toolbar shows which formatting applies at the cursor; ⌘B, ⌘I, and ⌘K work too.
+ * The value is an HTML string. The toolbar shows which formatting applies at the cursor; the usual shortcuts work too, e.g. ⌘B,
+ * ⌘I, ⌘K, ⌘Z, and Tab in a list.
  *
  * **Limitations**
- * - Built on the browser's editing commands: one heading level, no nested lists, tables, or images.
- * - Pasting and dropping insert plain text; incoming HTML is reduced to the toolbar's formatting.
+ * - The value is HTML, not the JSON content of the CMS's rich text block.
  * - Without `onRequestLink`, the browser's prompt asks for the link target.
  */
 export const Default: Story = {
@@ -65,13 +105,101 @@ export const Default: Story = {
         await userEvent.click(editor);
         await userEvent.keyboard("{Control>}a{/Control}");
         await userEvent.click(canvas.getByRole("button", { name: "Italic" }));
-        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringMatching(/<(i|em)>/)));
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringContaining("<em>")));
         await expect(canvas.getByRole("button", { name: "Italic" })).toHaveAttribute("aria-pressed", "true");
+
+        await userEvent.click(canvas.getByRole("button", { name: "Undo" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.not.stringContaining("<em>")));
     },
 };
 
 /**
- * A link asks for its target through `onRequestLink`.
+ * Every formatting the editor offers, including underline and alignment, which are off by default.
+ */
+export const AllFormatting: Story = {
+    args: {
+        toolbar: [
+            "undoRedo",
+            "blockType",
+            "bold",
+            "italic",
+            "underline",
+            "strike",
+            "subscript",
+            "superscript",
+            "textAlign",
+            "bulletList",
+            "orderedList",
+            "link",
+            "nonBreakingSpace",
+            "softHyphen",
+        ],
+        value: '<h2>Join us</h2><p style="text-align: center">You design the <u>interfaces</u> of <s>COMET</s> <strong>Dextinity</strong>, H<sub>2</sub>O and E = mc<sup>2</sup>.</p>',
+    },
+    play: async ({ args, canvas }) => {
+        await expect(canvas.getByRole("button", { name: "Align center" })).toHaveAttribute("aria-pressed", "false");
+        selectText(canvas.getByRole("textbox"), "interfaces");
+        await waitFor(() => expect(canvas.getByRole("button", { name: "Align center" })).toHaveAttribute("aria-pressed", "true"));
+        await userEvent.click(canvas.getByRole("button", { name: "Align right" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringMatching(/<p style="text-align: right;?">/)));
+    },
+};
+
+/**
+ * The text style menu switches between a paragraph and the headings of `headingLevels`.
+ */
+export const TextStyles: Story = {
+    args: {
+        headingLevels: [2, 3],
+        value: "<p>Your tasks</p>",
+    },
+    play: async ({ args, canvas }) => {
+        selectText(canvas.getByRole("textbox"), "Your tasks");
+        await userEvent.click(canvas.getByRole("button", { name: "Text style" }));
+        await userEvent.click(await screen.findByRole("menuitemradio", { name: "Heading 3" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("<h3>Your tasks</h3>"));
+        await expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Heading 3");
+    },
+};
+
+/**
+ * Subscript, superscript, and the `inlineStyles` share a menu next to bold and italic.
+ */
+export const MoreFormatting: Story = {
+    args: {
+        value: "<p>H2O</p>",
+    },
+    play: async ({ args, canvas }) => {
+        selectText(canvas.getByRole("textbox"), "H2O", 1, 1);
+        await userEvent.click(canvas.getByRole("button", { name: "More formatting" }));
+        await userEvent.click(await screen.findByRole("menuitemcheckbox", { name: "Subscript" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("<p>H<sub>2</sub>O</p>"));
+    },
+};
+
+/**
+ * Formatting of the project's own, stored as `<span data-inline-style="…">`. The project styles it in the editor and where the text
+ * is rendered. Without bold, italic, underline, or strikethrough buttons, styles with an icon show as buttons of their own.
+ */
+export const InlineStyles: Story = {
+    render: (args) => (
+        <div className={styles.inlineStyles}>
+            <ControlledRichTextEditor key={args.value} {...args} />
+        </div>
+    ),
+    args: {
+        toolbar: ["subscript", "superscript"],
+        inlineStyles: [{ name: "productName", label: "Product name", icon: "rte-highlight" }],
+        value: '<p>You design the interfaces of <span data-inline-style="productName">Dextinity</span> with us.</p>',
+    },
+    play: async ({ canvas }) => {
+        selectText(canvas.getByRole("textbox"), "Dextinity", 2);
+        await waitFor(() => expect(canvas.getByRole("button", { name: "Product name" })).toHaveAttribute("aria-pressed", "true"));
+    },
+};
+
+/**
+ * A link asks for its target through `onRequestLink`, which receives the current target when the cursor is on a link.
  */
 export const Link: Story = {
     play: async ({ args, canvas }) => {
@@ -79,36 +207,76 @@ export const Link: Story = {
         await userEvent.click(editor);
         await userEvent.keyboard("{Control>}a{/Control}");
         await userEvent.click(canvas.getByRole("button", { name: "Link" }));
-        await waitFor(() => expect(args.onRequestLink).toHaveBeenCalled());
+        await waitFor(() => expect(args.onRequestLink).toHaveBeenLastCalledWith(null));
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringContaining('<a href="https://example.com">')));
+
+        await userEvent.click(canvas.getByRole("button", { name: "Link" }));
+        await waitFor(() => expect(args.onRequestLink).toHaveBeenLastCalledWith("https://example.com"));
+
+        await userEvent.click(canvas.getByRole("button", { name: "Remove link" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.not.stringContaining("<a")));
     },
 };
 
 /**
- * Pasted and dropped content arrives as plain text, so formatting from other sources never reaches the value.
+ * Lists nest with Tab and the indent buttons. `listLevelMax` limits the depth, `maxBlocks` the number of top-level paragraphs,
+ * headings, and lists.
+ */
+export const Lists: Story = {
+    args: {
+        listLevelMax: 2,
+        value: "<h3>Your tasks</h3><ul><li><p>Research and concept</p><ul><li><p>Interviews</p></li></ul></li><li><p>Prototypes</p></li></ul><ol><li><p>Apply</p></li><li><p>Meet the team</p></li></ol>",
+    },
+    play: async ({ args, canvas }) => {
+        selectText(canvas.getByRole("textbox"), "Prototypes");
+        await waitFor(() => expect(canvas.getByRole("button", { name: "Increase indent" })).toHaveAttribute("aria-disabled", "false"));
+        await userEvent.click(canvas.getByRole("button", { name: "Increase indent" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringContaining("<p>Interviews</p></li><li><p>Prototypes</p>")));
+        await expect(canvas.getByRole("button", { name: "Increase indent" })).toHaveAttribute("aria-disabled", "true");
+    },
+};
+
+/**
+ * `textPlaceholders` inserts tokens that the application replaces later, e.g. in a newsletter. Non-breaking spaces and soft hyphens
+ * show a marker while editing.
+ */
+export const PlaceholdersAndSpecialCharacters: Story = {
+    args: {
+        textPlaceholders: [
+            { name: "firstName", label: "First name" },
+            { name: "lastName", label: "Last name" },
+        ],
+        value: '<p>Dear <span data-type="placeholder" data-name="firstName">{{firstName}}</span>, apply until 30<span data-type="non-breaking-space"> </span>November for the Design<span data-type="soft-hyphen">­</span>system team.</p>',
+    },
+    play: async ({ args, canvas }) => {
+        selectText(canvas.getByRole("textbox"), "team.", 5);
+        await userEvent.click(canvas.getByRole("button", { name: "Insert placeholder" }));
+        await userEvent.click(await screen.findByRole("menuitem", { name: "Last name" }));
+        await waitFor(() =>
+            expect(args.onChange).toHaveBeenLastCalledWith(
+                expect.stringContaining('<span data-name="lastName" data-type="placeholder">{{lastName}}</span>'),
+            ),
+        );
+    },
+};
+
+/**
+ * Pasted and dropped content keeps the enabled formatting; everything else, e.g. an image, is left out.
  */
 export const PasteAndDrop: Story = {
     args: {
         value: "",
+        toolbar: ["bold", "link"],
     },
     play: async ({ args, canvas }) => {
         const editor = canvas.getByRole("textbox");
         const pasted = new DataTransfer();
-        pasted.setData("text/html", "<b>Bold</b><img src=x>");
-        pasted.setData("text/plain", "Pasted");
+        pasted.setData("text/html", "<b>Bold</b> <em>italic</em><img src=x>");
+        pasted.setData("text/plain", "Bold italic");
         await userEvent.click(editor);
         editor.dispatchEvent(new ClipboardEvent("paste", { clipboardData: pasted, bubbles: true, cancelable: true }));
-        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("Pasted"));
-
-        const dropped = new DataTransfer();
-        dropped.setData("text/html", "<em>Dropped</em><img src=x>");
-        dropped.setData("text/plain", " and dropped");
-        const box = editor.getBoundingClientRect();
-        editor.dispatchEvent(
-            new DragEvent("drop", { dataTransfer: dropped, clientX: box.right - 2, clientY: box.top + 2, bubbles: true, cancelable: true }),
-        );
-        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(expect.stringContaining("dropped")));
-        await expect(editor.querySelector("img, em, b")).toBeNull();
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("<p><strong>Bold</strong> italic</p>"));
+        await expect(editor.querySelector("img, em")).toBeNull();
     },
 };
 
@@ -119,7 +287,7 @@ export const Placeholder: Story = {
     },
     play: async ({ args, canvas }) => {
         await userEvent.type(canvas.getByRole("textbox"), "Hello");
-        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("Hello"));
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith("<p>Hello</p>"));
     },
 };
 
@@ -130,12 +298,7 @@ export const LimitedToolbar: Story = {
     args: {
         toolbar: ["bold", "italic", "link"],
         minRows: 2,
-    },
-};
-
-export const Lists: Story = {
-    args: {
-        value: "<h3>Your tasks</h3><ul><li>Research and concept</li><li>Prototypes</li></ul><ol><li>Apply</li><li>Meet the team</li></ol>",
+        maxBlocks: 1,
     },
 };
 

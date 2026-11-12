@@ -167,7 +167,15 @@ export { QuickLook, type QuickLookItem, type QuickLookOwnerState, type QuickLook
 export { type QuickLookSlotProps } from "./components/quickLook/QuickLook";
 export { RadioGroup, type RadioGroupOption, type RadioGroupOwnerState } from "./components/radioGroup/RadioGroup";
 export { type RadioGroupProps, type RadioGroupSlotProps } from "./components/radioGroup/RadioGroup";
-export { RichTextEditor, type RichTextEditorFormat, type RichTextEditorLabels } from "./components/richTextEditor/RichTextEditor";
+export {
+    RichTextEditor,
+    type RichTextEditorFormat,
+    type RichTextEditorHeadingLevel,
+    type RichTextEditorInlineStyle,
+    type RichTextEditorLabels,
+    type RichTextEditorTextAlign,
+    type RichTextEditorTextPlaceholder,
+} from "./components/richTextEditor/RichTextEditor";
 export { type RichTextEditorOwnerState, type RichTextEditorProps } from "./components/richTextEditor/RichTextEditor";
 export {
     SaveState,

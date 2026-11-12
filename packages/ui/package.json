@@ -50,6 +50,13 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
+        "@tiptap/core": "^3.33.0",
+        "@tiptap/extension-subscript": "^3.33.0",
+        "@tiptap/extension-superscript": "^3.33.0",
+        "@tiptap/extensions": "^3.33.0",
+        "@tiptap/pm": "^3.33.0",
+        "@tiptap/react": "^3.33.0",
+        "@tiptap/starter-kit": "^3.33.0",
         "clsx": "^2.1.1"
     },
     "devDependencies": {

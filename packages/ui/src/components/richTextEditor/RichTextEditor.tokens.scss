@@ -12,16 +12,48 @@
     --dextinity-rich-text-editor-toolbar-button-background-active: var(--dextinity-color-accent-soft);
     // Icon color of a toolbar button whose formatting applies at the cursor
     --dextinity-rich-text-editor-toolbar-button-foreground-active: var(--dextinity-color-accent-text);
+    // Padding above and below the text, also added to the minimum height
+    --dextinity-rich-text-editor-content-padding-block: 14px;
     // Padding around the text
-    --dextinity-rich-text-editor-content-padding: 14px var(--dextinity-space-4);
+    --dextinity-rich-text-editor-content-padding: var(--dextinity-rich-text-editor-content-padding-block) var(--dextinity-space-4);
     // Line height of the text
     --dextinity-rich-text-editor-line-height: 1.62;
-    // Text size of a heading in the text
-    --dextinity-rich-text-editor-heading-size: var(--dextinity-typography-section-size);
+    // Gap between paragraphs, headings, and lists
+    --dextinity-rich-text-editor-block-gap: var(--dextinity-space-2-5);
+    // Indent of a list's items, per nesting level
+    --dextinity-rich-text-editor-list-indent: 20px;
     // Text weight of a heading in the text
     --dextinity-rich-text-editor-heading-weight: var(--dextinity-typography-section-font-weight);
+    // Line height of a heading in the text
+    --dextinity-rich-text-editor-heading-line-height: var(--dextinity-typography-section-line-height);
+    // Text size of a level 1 heading in the text
+    --dextinity-rich-text-editor-heading-1-size: var(--dextinity-typography-display-l-size);
+    // Text size of a level 2 heading in the text
+    --dextinity-rich-text-editor-heading-2-size: var(--dextinity-typography-title-size);
+    // Text size of a level 3 heading in the text
+    --dextinity-rich-text-editor-heading-3-size: var(--dextinity-typography-section-size);
+    // Text size of a level 4 heading in the text
+    --dextinity-rich-text-editor-heading-4-size: var(--dextinity-typography-body-size);
+    // Text size of a level 5 heading in the text
+    --dextinity-rich-text-editor-heading-5-size: var(--dextinity-typography-ui-size);
+    // Text size of a level 6 heading in the text
+    --dextinity-rich-text-editor-heading-6-size: var(--dextinity-typography-small-size);
     // Text color of a link in the text
     --dextinity-rich-text-editor-link-color: var(--dextinity-color-accent-text);
     // Color of the placeholder of an empty editor
     --dextinity-rich-text-editor-placeholder-color: var(--dextinity-field-placeholder);
+    // Fill of an inserted placeholder token, e.g. {{firstName}}
+    --dextinity-rich-text-editor-text-placeholder-background: var(--dextinity-color-accent-soft);
+    // Text color of an inserted placeholder token
+    --dextinity-rich-text-editor-text-placeholder-foreground: var(--dextinity-color-accent-text);
+    // Corner radius of an inserted placeholder token
+    --dextinity-rich-text-editor-text-placeholder-radius: var(--dextinity-radius-item);
+    // Padding to the left and right of an inserted placeholder token's text
+    --dextinity-rich-text-editor-text-placeholder-padding-inline: var(--dextinity-space-1);
+    // Outline of a placeholder token selected as a whole
+    --dextinity-rich-text-editor-selected-outline: var(--dextinity-line-width-strong) solid var(--dextinity-color-focus);
+    // Text color of the marker that makes an invisible non-breaking space or soft hyphen visible while editing
+    --dextinity-rich-text-editor-special-character-color: var(--dextinity-color-text-secondary);
+    // Text size of the marker that makes an invisible non-breaking space or soft hyphen visible while editing
+    --dextinity-rich-text-editor-special-character-size: 0.75em;
 }

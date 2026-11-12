@@ -15,7 +15,7 @@
     --dextinity-command-palette-list-max-height: min(380px, 55vh);
     --dextinity-command-palette-group-label-color: var(--dextinity-color-text-tertiary);
 
-    --dextinity-command-palette-item-height: 42px;
+    --dextinity-command-palette-item-height: var(--dextinity-density-list-row-height);
     --dextinity-command-palette-item-radius: var(--dextinity-radius-field);
     --dextinity-command-palette-item-foreground: var(--dextinity-color-text-secondary);
     --dextinity-command-palette-item-icon-color: var(--dextinity-color-text-tertiary);

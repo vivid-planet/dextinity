@@ -43,7 +43,7 @@
     --dextinity-block-checked-background: var(--dextinity-color-accent-soft);
 
     // The header above the blocks with the select-all checkbox and the bulk actions
-    --dextinity-block-list-header-height: 40px;
+    --dextinity-block-list-header-height: var(--dextinity-density-header-height);
     --dextinity-block-list-header-foreground: var(--dextinity-color-text-tertiary);
 }
 

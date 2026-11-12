@@ -1,6 +1,6 @@
 @mixin tokens {
     --dextinity-segmented-control-height: var(--dextinity-density-segment-height);
-    --dextinity-segmented-control-height-small: calc(var(--dextinity-density-segment-height) - 4px);
+    --dextinity-segmented-control-height-small: var(--dextinity-density-segment-height-small);
     --dextinity-segmented-control-padding: var(--dextinity-space-3);
     --dextinity-segmented-control-padding-small: 9px;
     // Space between the track's edge and the options

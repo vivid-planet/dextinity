@@ -2,10 +2,10 @@
     --dextinity-shortcut-list-font-size: var(--dextinity-typography-body-size);
     --dextinity-shortcut-list-foreground: var(--dextinity-color-text);
     --dextinity-shortcut-list-cell-padding: var(--dextinity-space-3);
-    --dextinity-shortcut-list-row-height: 42px;
+    --dextinity-shortcut-list-row-height: var(--dextinity-density-list-row-height);
     // Space between the key caps of one shortcut
     --dextinity-shortcut-list-key-gap: var(--dextinity-space-1);
-    --dextinity-shortcut-list-header-height: 40px;
+    --dextinity-shortcut-list-header-height: var(--dextinity-density-header-height);
     --dextinity-shortcut-list-header-foreground: var(--dextinity-color-text-tertiary);
     --dextinity-shortcut-list-header-font-size: var(--dextinity-typography-small-size);
     --dextinity-shortcut-list-header-line: var(--dextinity-color-line-strong);

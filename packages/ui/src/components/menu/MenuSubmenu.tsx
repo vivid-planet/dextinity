@@ -4,6 +4,7 @@ import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import styles from "./MenuSubmenu.module.scss";
 
@@ -108,9 +109,11 @@ export const MenuSubmenu = forwardRef<HTMLDivElement, MenuSubmenuProps>(function
                 </span>
             </BaseMenu.SubmenuTrigger>
             <BaseMenu.Portal container={container}>
-                <BaseMenu.Positioner {...positionerProps}>
-                    <BaseMenu.Popup {...popupProps}>{children}</BaseMenu.Popup>
-                </BaseMenu.Positioner>
+                <FieldContextReset>
+                    <BaseMenu.Positioner {...positionerProps}>
+                        <BaseMenu.Popup {...popupProps}>{children}</BaseMenu.Popup>
+                    </BaseMenu.Positioner>
+                </FieldContextReset>
             </BaseMenu.Portal>
         </BaseMenu.SubmenuRoot>
     );

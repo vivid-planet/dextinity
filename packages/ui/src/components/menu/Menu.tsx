@@ -4,6 +4,7 @@ import { forwardRef, type HTMLAttributes, type ReactElement, type ReactNode } fr
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { FieldContextReset } from "../field/fieldContext";
 import styles from "./Menu.module.scss";
 
 export type MenuPlacement = "bottom-start" | "bottom-end" | "top-start" | "top-end";
@@ -69,11 +70,13 @@ export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
         <BaseMenu.Root open={open} onOpenChange={(nextOpen) => onOpenChange(nextOpen)} modal={false}>
             <BaseMenu.Trigger ref={anchorRef} render={trigger} disabled={ownerState.disabled} />
             <BaseMenu.Portal container={container}>
-                <BaseMenu.Positioner {...positionerProps}>
-                    <BaseMenu.Popup {...restProps} ref={ref} data-placement={ownerState.placement} className={clsx(styles.root, className)}>
-                        {children}
-                    </BaseMenu.Popup>
-                </BaseMenu.Positioner>
+                <FieldContextReset>
+                    <BaseMenu.Positioner {...positionerProps}>
+                        <BaseMenu.Popup {...restProps} ref={ref} data-placement={ownerState.placement} className={clsx(styles.root, className)}>
+                            {children}
+                        </BaseMenu.Popup>
+                    </BaseMenu.Positioner>
+                </FieldContextReset>
             </BaseMenu.Portal>
         </BaseMenu.Root>
     );

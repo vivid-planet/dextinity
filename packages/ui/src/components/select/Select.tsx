@@ -5,6 +5,7 @@ import { type ForwardedRef, forwardRef, Fragment, type HTMLAttributes, type Reac
 
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "../field/Field";
+import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import { groupOptions, hasGroups, type OptionGroup } from "./optionGroups";
 import { defaultGetKey } from "./optionKey";
@@ -317,27 +318,29 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                             </Combobox.Icon>
                         </Combobox.Trigger>
                         <Combobox.Portal container={container}>
-                            <Combobox.Positioner className={styles.positioner} anchor={fieldBox} sideOffset={6} align="start">
-                                <Combobox.Popup className={styles.popup}>
-                                    <div className={styles.search}>
-                                        <Icon name="search" />
-                                        <Combobox.Input className={styles.searchInput} placeholder={labels.search} />
-                                    </div>
-                                    <Combobox.Empty className={styles.empty}>{labels.noResults}</Combobox.Empty>
-                                    <Combobox.List className={styles.list}>
-                                        {grouped
-                                            ? (group: OptionGroup<SelectOption<Value>>) => (
-                                                  <Combobox.Group key={group.label ?? ""} items={group.items} className={styles.group}>
-                                                      {group.label != null && (
-                                                          <Combobox.GroupLabel className={styles.groupLabel}>{group.label}</Combobox.GroupLabel>
-                                                      )}
-                                                      <Combobox.Collection>{renderComboboxItem}</Combobox.Collection>
-                                                  </Combobox.Group>
-                                              )
-                                            : renderComboboxItem}
-                                    </Combobox.List>
-                                </Combobox.Popup>
-                            </Combobox.Positioner>
+                            <FieldContextReset>
+                                <Combobox.Positioner className={styles.positioner} anchor={fieldBox} sideOffset={6} align="start">
+                                    <Combobox.Popup className={styles.popup}>
+                                        <div className={styles.search}>
+                                            <Icon name="search" />
+                                            <Combobox.Input className={styles.searchInput} placeholder={labels.search} />
+                                        </div>
+                                        <Combobox.Empty className={styles.empty}>{labels.noResults}</Combobox.Empty>
+                                        <Combobox.List className={styles.list}>
+                                            {grouped
+                                                ? (group: OptionGroup<SelectOption<Value>>) => (
+                                                      <Combobox.Group key={group.label ?? ""} items={group.items} className={styles.group}>
+                                                          {group.label != null && (
+                                                              <Combobox.GroupLabel className={styles.groupLabel}>{group.label}</Combobox.GroupLabel>
+                                                          )}
+                                                          <Combobox.Collection>{renderComboboxItem}</Combobox.Collection>
+                                                      </Combobox.Group>
+                                                  )
+                                                : renderComboboxItem}
+                                        </Combobox.List>
+                                    </Combobox.Popup>
+                                </Combobox.Positioner>
+                            </FieldContextReset>
                         </Combobox.Portal>
                     </Combobox.Root>
                 ) : (
@@ -358,28 +361,32 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                             </BaseSelect.Icon>
                         </BaseSelect.Trigger>
                         <BaseSelect.Portal container={container}>
-                            <BaseSelect.Positioner
-                                className={styles.positioner}
-                                anchor={fieldBox}
-                                sideOffset={6}
-                                align="start"
-                                alignItemWithTrigger={false}
-                            >
-                                <BaseSelect.Popup className={styles.popup}>
-                                    <BaseSelect.List className={styles.list}>
-                                        {grouped
-                                            ? optionGroups.map((group) => (
-                                                  <BaseSelect.Group key={group.label ?? ""} className={styles.group}>
-                                                      {group.label != null && (
-                                                          <BaseSelect.GroupLabel className={styles.groupLabel}>{group.label}</BaseSelect.GroupLabel>
-                                                      )}
-                                                      {group.items.map(renderSelectItem)}
-                                                  </BaseSelect.Group>
-                                              ))
-                                            : options.map(renderSelectItem)}
-                                    </BaseSelect.List>
-                                </BaseSelect.Popup>
-                            </BaseSelect.Positioner>
+                            <FieldContextReset>
+                                <BaseSelect.Positioner
+                                    className={styles.positioner}
+                                    anchor={fieldBox}
+                                    sideOffset={6}
+                                    align="start"
+                                    alignItemWithTrigger={false}
+                                >
+                                    <BaseSelect.Popup className={styles.popup}>
+                                        <BaseSelect.List className={styles.list}>
+                                            {grouped
+                                                ? optionGroups.map((group) => (
+                                                      <BaseSelect.Group key={group.label ?? ""} className={styles.group}>
+                                                          {group.label != null && (
+                                                              <BaseSelect.GroupLabel className={styles.groupLabel}>
+                                                                  {group.label}
+                                                              </BaseSelect.GroupLabel>
+                                                          )}
+                                                          {group.items.map(renderSelectItem)}
+                                                      </BaseSelect.Group>
+                                                  ))
+                                                : options.map(renderSelectItem)}
+                                        </BaseSelect.List>
+                                    </BaseSelect.Popup>
+                                </BaseSelect.Positioner>
+                            </FieldContextReset>
                         </BaseSelect.Portal>
                     </BaseSelect.Root>
                 )

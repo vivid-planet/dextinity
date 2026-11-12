@@ -2,7 +2,9 @@ import { cleanup, render, screen } from "@testing-library/react";
 import type { InputHTMLAttributes } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { Button } from "../../button/Button";
 import { Field } from "../../field/Field";
+import { Popover } from "../../popover/Popover";
 import { Input } from "../Input";
 
 function CustomInput(props: InputHTMLAttributes<HTMLInputElement>) {
@@ -90,5 +92,35 @@ describe("Input", () => {
             "true",
         ]);
         expect(input.parentElement?.dataset.inField).toBe("");
+    });
+    it("keeps the label link and state of a surrounding Field over its own id, required, disabled, and readOnly", () => {
+        render(
+            <Field label="Title">
+                <Input name="title" id="own-id" required disabled readOnly value="" onChange={() => {}} />
+            </Field>,
+        );
+
+        const input = screen.getByRole("textbox", { name: "Title" });
+        expect([input.id, input.hasAttribute("required"), input.hasAttribute("disabled"), input.hasAttribute("readonly")]).toStrictEqual([
+            screen.getByText("Title").getAttribute("for"),
+            false,
+            false,
+            false,
+        ]);
+    });
+
+    it("ignores a Field around the popup it is portaled into", () => {
+        render(
+            <Field label="Scope" required>
+                {(control) => (
+                    <Popover open onOpenChange={() => {}} trigger={<Button {...control}>Choose</Button>}>
+                        <Input aria-label="Search" name="search" value="" onChange={() => {}} />
+                    </Popover>
+                )}
+            </Field>,
+        );
+
+        const search = screen.getByRole("textbox", { name: "Search" });
+        expect([search.hasAttribute("required"), search.parentElement?.dataset.inField]).toStrictEqual([false, undefined]);
     });
 });

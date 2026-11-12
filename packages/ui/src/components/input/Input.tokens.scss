@@ -21,6 +21,8 @@
     --dextinity-input-font-line-height: var(--dextinity-typography-body-line-height);
     // Text weight of the value and placeholder
     --dextinity-input-font-weight: var(--dextinity-typography-body-font-weight);
+    // Color of the text cursor in the input
+    --dextinity-input-caret-color: var(--dextinity-color-accent);
 
     // Fill of the input at rest
     --dextinity-input-state-default-background: var(--dextinity-field-background);

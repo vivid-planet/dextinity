@@ -4,6 +4,7 @@ import { forwardRef, type HTMLAttributes, type ReactElement, useMemo } from "rea
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { FieldContextReset } from "../field/fieldContext";
 import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
 import styles from "./Tooltip.module.scss";
 
@@ -107,18 +108,20 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
         >
             <BaseTooltip.Trigger ref={anchorRef} render={children} delay={delay ?? themeDelay} />
             <BaseTooltip.Portal container={container}>
-                <BaseTooltip.Positioner {...positionerProps}>
-                    <BaseTooltip.Popup
-                        role="tooltip"
-                        {...restProps}
-                        ref={ref}
-                        data-placement={ownerState.placement}
-                        className={clsx(styles.root, className)}
-                    >
-                        {content}
-                        {shortcut != null && <KeyboardShortcut {...shortcutProps} />}
-                    </BaseTooltip.Popup>
-                </BaseTooltip.Positioner>
+                <FieldContextReset>
+                    <BaseTooltip.Positioner {...positionerProps}>
+                        <BaseTooltip.Popup
+                            role="tooltip"
+                            {...restProps}
+                            ref={ref}
+                            data-placement={ownerState.placement}
+                            className={clsx(styles.root, className)}
+                        >
+                            {content}
+                            {shortcut != null && <KeyboardShortcut {...shortcutProps} />}
+                        </BaseTooltip.Popup>
+                    </BaseTooltip.Positioner>
+                </FieldContextReset>
             </BaseTooltip.Portal>
         </BaseTooltip.Root>
     );

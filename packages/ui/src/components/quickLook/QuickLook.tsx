@@ -4,6 +4,7 @@ import { forwardRef, type HTMLAttributes, type KeyboardEvent, type ReactNode, us
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import { IconButton } from "../iconButton/IconButton";
 import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
@@ -148,81 +149,83 @@ export const QuickLook = forwardRef<HTMLDivElement, QuickLookProps>(function Qui
             <span ref={anchorRef} hidden />
             <BaseDialog.Root open={open && item != null} onOpenChange={(nextOpen) => onOpenChange(nextOpen)}>
                 <BaseDialog.Portal container={container}>
-                    <BaseDialog.Backdrop {...backdropProps} />
-                    <BaseDialog.Viewport className={styles.viewport}>
-                        <BaseDialog.Popup
-                            {...restProps}
-                            ref={(element: HTMLDivElement | null) => {
-                                popupRef.current = element;
-                                if (typeof ref === "function") {
-                                    ref(element);
-                                } else if (ref != null) {
-                                    ref.current = element;
-                                }
-                            }}
-                            initialFocus={popupRef}
-                            onKeyDown={handleKeyDown}
-                            data-first={ownerState.first ? "" : undefined}
-                            data-last={ownerState.last ? "" : undefined}
-                            className={clsx(styles.root, className)}
-                        >
-                            {item != null && (
-                                <>
-                                    <div {...headerProps}>
-                                        <div className={styles.headings}>
-                                            <BaseDialog.Title className={styles.title}>{item.title}</BaseDialog.Title>
-                                            {item.description != null && (
-                                                <BaseDialog.Description className={styles.description}>{item.description}</BaseDialog.Description>
-                                            )}
+                    <FieldContextReset>
+                        <BaseDialog.Backdrop {...backdropProps} />
+                        <BaseDialog.Viewport className={styles.viewport}>
+                            <BaseDialog.Popup
+                                {...restProps}
+                                ref={(element: HTMLDivElement | null) => {
+                                    popupRef.current = element;
+                                    if (typeof ref === "function") {
+                                        ref(element);
+                                    } else if (ref != null) {
+                                        ref.current = element;
+                                    }
+                                }}
+                                initialFocus={popupRef}
+                                onKeyDown={handleKeyDown}
+                                data-first={ownerState.first ? "" : undefined}
+                                data-last={ownerState.last ? "" : undefined}
+                                className={clsx(styles.root, className)}
+                            >
+                                {item != null && (
+                                    <>
+                                        <div {...headerProps}>
+                                            <div className={styles.headings}>
+                                                <BaseDialog.Title className={styles.title}>{item.title}</BaseDialog.Title>
+                                                {item.description != null && (
+                                                    <BaseDialog.Description className={styles.description}>{item.description}</BaseDialog.Description>
+                                                )}
+                                            </div>
+                                            {actions != null && <div {...actionsProps}>{actions}</div>}
+                                            <BaseDialog.Close
+                                                render={
+                                                    <IconButton variant="text" color="secondary" aria-label={labels.close}>
+                                                        <Icon name="close" />
+                                                    </IconButton>
+                                                }
+                                            />
                                         </div>
-                                        {actions != null && <div {...actionsProps}>{actions}</div>}
-                                        <BaseDialog.Close
-                                            render={
-                                                <IconButton variant="text" color="secondary" aria-label={labels.close}>
-                                                    <Icon name="close" />
-                                                </IconButton>
-                                            }
-                                        />
-                                    </div>
-                                    <div className={styles.body}>
-                                        <IconButton
-                                            variant="text"
-                                            color="secondary"
-                                            aria-label={labels.previous}
-                                            disabled={ownerState.first}
-                                            onClick={() => step(-1)}
-                                        >
-                                            <Icon name="chevron-left" />
-                                        </IconButton>
-                                        <div {...previewProps}>
-                                            {renderPreview != null ? renderPreview(item) : <img src={item.src} alt={item.alt ?? item.title} />}
+                                        <div className={styles.body}>
+                                            <IconButton
+                                                variant="text"
+                                                color="secondary"
+                                                aria-label={labels.previous}
+                                                disabled={ownerState.first}
+                                                onClick={() => step(-1)}
+                                            >
+                                                <Icon name="chevron-left" />
+                                            </IconButton>
+                                            <div {...previewProps}>
+                                                {renderPreview != null ? renderPreview(item) : <img src={item.src} alt={item.alt ?? item.title} />}
+                                            </div>
+                                            <IconButton
+                                                variant="text"
+                                                color="secondary"
+                                                aria-label={labels.next}
+                                                disabled={ownerState.last}
+                                                onClick={() => step(1)}
+                                            >
+                                                <Icon name="chevron-right" />
+                                            </IconButton>
                                         </div>
-                                        <IconButton
-                                            variant="text"
-                                            color="secondary"
-                                            aria-label={labels.next}
-                                            disabled={ownerState.last}
-                                            onClick={() => step(1)}
-                                        >
-                                            <Icon name="chevron-right" />
-                                        </IconButton>
-                                    </div>
-                                    <div {...footerProps}>
-                                        <span className={styles.position}>{labels.position(index, items.length)}</span>
-                                        <span className={styles.hint}>
-                                            <KeyboardShortcut>{labels.previousKey}</KeyboardShortcut>
-                                            <KeyboardShortcut>{labels.nextKey}</KeyboardShortcut>
-                                            {labels.browse}
-                                        </span>
-                                        <span className={styles.hint}>
-                                            <KeyboardShortcut>{labels.closeKey}</KeyboardShortcut>
-                                            {labels.close}
-                                        </span>
-                                    </div>
-                                </>
-                            )}
-                        </BaseDialog.Popup>
-                    </BaseDialog.Viewport>
+                                        <div {...footerProps}>
+                                            <span className={styles.position}>{labels.position(index, items.length)}</span>
+                                            <span className={styles.hint}>
+                                                <KeyboardShortcut>{labels.previousKey}</KeyboardShortcut>
+                                                <KeyboardShortcut>{labels.nextKey}</KeyboardShortcut>
+                                                {labels.browse}
+                                            </span>
+                                            <span className={styles.hint}>
+                                                <KeyboardShortcut>{labels.closeKey}</KeyboardShortcut>
+                                                {labels.close}
+                                            </span>
+                                        </div>
+                                    </>
+                                )}
+                            </BaseDialog.Popup>
+                        </BaseDialog.Viewport>
+                    </FieldContextReset>
                 </BaseDialog.Portal>
             </BaseDialog.Root>
         </>

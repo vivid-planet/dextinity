@@ -4,6 +4,7 @@ import { type ForwardedRef, forwardRef, type HTMLAttributes, type ReactNode, typ
 
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "../field/Field";
+import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import { groupOptions, hasGroups, type OptionGroup } from "../select/optionGroups";
 import { defaultGetKey } from "../select/optionKey";
@@ -362,23 +363,27 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
                         <Icon name="chevron-down" />
                     </BaseCombobox.Trigger>
                     <BaseCombobox.Portal container={container}>
-                        <BaseCombobox.Positioner className={styles.positioner} anchor={fieldBox} sideOffset={6} align="start">
-                            <BaseCombobox.Popup className={styles.popup} aria-busy={status === "loading" ? true : undefined}>
-                                <BaseCombobox.Status className={styles.status}>{statusContent}</BaseCombobox.Status>
-                                <BaseCombobox.List className={styles.list}>
-                                    {grouped
-                                        ? (group: OptionGroup<Entry<Option>>) => (
-                                              <BaseCombobox.Group key={group.label ?? ""} items={group.items} className={styles.group}>
-                                                  {group.label != null && (
-                                                      <BaseCombobox.GroupLabel className={styles.groupLabel}>{group.label}</BaseCombobox.GroupLabel>
-                                                  )}
-                                                  <BaseCombobox.Collection>{renderEntry}</BaseCombobox.Collection>
-                                              </BaseCombobox.Group>
-                                          )
-                                        : renderEntry}
-                                </BaseCombobox.List>
-                            </BaseCombobox.Popup>
-                        </BaseCombobox.Positioner>
+                        <FieldContextReset>
+                            <BaseCombobox.Positioner className={styles.positioner} anchor={fieldBox} sideOffset={6} align="start">
+                                <BaseCombobox.Popup className={styles.popup} aria-busy={status === "loading" ? true : undefined}>
+                                    <BaseCombobox.Status className={styles.status}>{statusContent}</BaseCombobox.Status>
+                                    <BaseCombobox.List className={styles.list}>
+                                        {grouped
+                                            ? (group: OptionGroup<Entry<Option>>) => (
+                                                  <BaseCombobox.Group key={group.label ?? ""} items={group.items} className={styles.group}>
+                                                      {group.label != null && (
+                                                          <BaseCombobox.GroupLabel className={styles.groupLabel}>
+                                                              {group.label}
+                                                          </BaseCombobox.GroupLabel>
+                                                      )}
+                                                      <BaseCombobox.Collection>{renderEntry}</BaseCombobox.Collection>
+                                                  </BaseCombobox.Group>
+                                              )
+                                            : renderEntry}
+                                    </BaseCombobox.List>
+                                </BaseCombobox.Popup>
+                            </BaseCombobox.Positioner>
+                        </FieldContextReset>
                     </BaseCombobox.Portal>
                 </BaseCombobox.Root>
             )}

@@ -4,6 +4,7 @@ import { forwardRef, type HTMLAttributes, type ReactNode, type RefObject } from 
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import { IconButton, type IconButtonProps } from "../iconButton/IconButton";
 import styles from "./Drawer.module.scss";
@@ -141,36 +142,38 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(function Drawer(
                 disablePointerDismissal={!ownerState.modal}
             >
                 <BaseDialog.Portal container={container}>
-                    {ownerState.modal && <BaseDialog.Backdrop {...backdropProps} />}
-                    <BaseDialog.Popup
-                        {...restProps}
-                        ref={ref}
-                        initialFocus={initialFocus}
-                        data-width={ownerState.width}
-                        data-modal={ownerState.modal ? "" : undefined}
-                        className={clsx(styles.root, className)}
-                    >
-                        <div {...headerProps}>
-                            <BaseDialog.Title {...titleProps} />
-                            {description != null && <BaseDialog.Description {...descriptionProps} />}
-                        </div>
-                        <div {...bodyProps}>{children}</div>
-                        {footer != null && <div {...footerProps}>{footer}</div>}
-                        <BaseDialog.Close
-                            render={
-                                <IconButton
-                                    variant="text"
-                                    color="secondary"
-                                    size="small"
-                                    {...slotProps?.closeButton}
-                                    aria-label={labels.close}
-                                    className={clsx(styles.closeButton, slotProps?.closeButton?.className)}
-                                >
-                                    <Icon name="close" />
-                                </IconButton>
-                            }
-                        />
-                    </BaseDialog.Popup>
+                    <FieldContextReset>
+                        {ownerState.modal && <BaseDialog.Backdrop {...backdropProps} />}
+                        <BaseDialog.Popup
+                            {...restProps}
+                            ref={ref}
+                            initialFocus={initialFocus}
+                            data-width={ownerState.width}
+                            data-modal={ownerState.modal ? "" : undefined}
+                            className={clsx(styles.root, className)}
+                        >
+                            <div {...headerProps}>
+                                <BaseDialog.Title {...titleProps} />
+                                {description != null && <BaseDialog.Description {...descriptionProps} />}
+                            </div>
+                            <div {...bodyProps}>{children}</div>
+                            {footer != null && <div {...footerProps}>{footer}</div>}
+                            <BaseDialog.Close
+                                render={
+                                    <IconButton
+                                        variant="text"
+                                        color="secondary"
+                                        size="small"
+                                        {...slotProps?.closeButton}
+                                        aria-label={labels.close}
+                                        className={clsx(styles.closeButton, slotProps?.closeButton?.className)}
+                                    >
+                                        <Icon name="close" />
+                                    </IconButton>
+                                }
+                            />
+                        </BaseDialog.Popup>
+                    </FieldContextReset>
                 </BaseDialog.Portal>
             </BaseDialog.Root>
         </>

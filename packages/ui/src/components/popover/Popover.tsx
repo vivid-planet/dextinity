@@ -4,6 +4,7 @@ import { forwardRef, type HTMLAttributes, type ReactElement, type ReactNode, typ
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { FieldContextReset } from "../field/fieldContext";
 import styles from "./Popover.module.scss";
 
 export type PopoverPlacement = "bottom-start" | "bottom-end" | "top-start" | "top-end";
@@ -74,18 +75,20 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(function Popover
         <BasePopover.Root open={open} onOpenChange={(nextOpen) => onOpenChange(nextOpen)}>
             <BasePopover.Trigger ref={anchorRef} render={trigger} />
             <BasePopover.Portal container={container}>
-                <BasePopover.Positioner {...positionerProps}>
-                    <BasePopover.Popup
-                        {...restProps}
-                        ref={ref}
-                        initialFocus={initialFocus}
-                        data-placement={ownerState.placement}
-                        className={clsx(styles.root, className)}
-                    >
-                        {title != null && <BasePopover.Title {...titleProps} />}
-                        {children}
-                    </BasePopover.Popup>
-                </BasePopover.Positioner>
+                <FieldContextReset>
+                    <BasePopover.Positioner {...positionerProps}>
+                        <BasePopover.Popup
+                            {...restProps}
+                            ref={ref}
+                            initialFocus={initialFocus}
+                            data-placement={ownerState.placement}
+                            className={clsx(styles.root, className)}
+                        >
+                            {title != null && <BasePopover.Title {...titleProps} />}
+                            {children}
+                        </BasePopover.Popup>
+                    </BasePopover.Positioner>
+                </FieldContextReset>
             </BasePopover.Portal>
         </BasePopover.Root>
     );

@@ -2,6 +2,7 @@ import { Popover as BasePopover } from "@base-ui/react/popover";
 import { type RefObject, useRef } from "react";
 
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import { Calendar, type CalendarProps } from "./Calendar";
 import styles from "./Calendar.module.scss";
@@ -42,24 +43,26 @@ export function CalendarPopover({
                 <Icon name="calendar" />
             </BasePopover.Trigger>
             <BasePopover.Portal container={container}>
-                <BasePopover.Positioner
-                    className={styles.positioner}
-                    anchor={fieldBox}
-                    side="bottom"
-                    align="start"
-                    sideOffset={6}
-                    collisionPadding={8}
-                >
-                    <BasePopover.Popup
-                        ref={popupRef}
-                        className={styles.popup}
-                        aria-labelledby={labelledBy}
-                        initialFocus={() => popupRef.current?.querySelector<HTMLElement>("[data-focus-target]") ?? true}
-                        finalFocus={finalFocus}
+                <FieldContextReset>
+                    <BasePopover.Positioner
+                        className={styles.positioner}
+                        anchor={fieldBox}
+                        side="bottom"
+                        align="start"
+                        sideOffset={6}
+                        collisionPadding={8}
                     >
-                        <Calendar {...calendarProps} />
-                    </BasePopover.Popup>
-                </BasePopover.Positioner>
+                        <BasePopover.Popup
+                            ref={popupRef}
+                            className={styles.popup}
+                            aria-labelledby={labelledBy}
+                            initialFocus={() => popupRef.current?.querySelector<HTMLElement>("[data-focus-target]") ?? true}
+                            finalFocus={finalFocus}
+                        >
+                            <Calendar {...calendarProps} />
+                        </BasePopover.Popup>
+                    </BasePopover.Positioner>
+                </FieldContextReset>
             </BasePopover.Portal>
         </BasePopover.Root>
     );

@@ -60,16 +60,19 @@ export interface InputProps<
     InputElement extends InputSlotElement = typeof BaseInput,
     LoadingSpinner extends ElementType = typeof Spinner,
 > extends Omit<BaseInput.Props, "className" | "style" | "ref"> {
-    /** Shows the result of validating the value. `error` also marks the input as invalid. */
+    /**
+     * Shows the result of validating the value. `error` also marks the input as invalid. Inside a `Field`, set `state` on the field
+     * instead, which draws the box.
+     */
     status?: InputStatus;
     /**
-     * Prevents interaction with the input.
+     * Prevents interaction with the input. Ignored inside a `Field`, which takes it from its own `disabled`.
      *
      * @defaultValue `false`
      */
     disabled?: boolean;
     /**
-     * Shows the value without letting the user change it.
+     * Shows the value without letting the user change it. Ignored inside a `Field`, which takes it from its own `readOnly`.
      *
      * @defaultValue `false`
      */
@@ -84,9 +87,17 @@ export interface InputProps<
     startAdornment?: ReactNode;
     /** Content after the value, such as a unit or an icon button. */
     endAdornment?: ReactNode;
-    /** Added alongside the component's own classes on the field around the input. */
+    /**
+     * Requires a value before the form can be submitted. Ignored inside a `Field`, which takes it from its own `required`.
+     *
+     * @defaultValue `false`
+     */
+    required?: boolean;
+    /** The input's id. Ignored inside a `Field`, which links its label and message to its own id. */
+    id?: string;
+    /** Added alongside the component's own classes on the field around the input. Has no visible effect inside a `Field`. */
     className?: string;
-    /** Inline styles for the field around the input. */
+    /** Inline styles for the field around the input. Has no visible effect inside a `Field`. */
     style?: CSSProperties;
     /** Sets which element a named inner part renders as. */
     slots?: InputSlots<InputElement, LoadingSpinner>;
@@ -146,8 +157,8 @@ export const Input: <InputElement extends InputSlotElement = typeof BaseInput, L
     const fieldControl = field?.control;
     const ownerState: InputOwnerState = {
         status,
-        disabled: disabled === true || fieldControl?.disabled === true,
-        readOnly: readOnly === true || fieldControl?.readOnly === true,
+        disabled: (fieldControl ? fieldControl.disabled : disabled) === true,
+        readOnly: (fieldControl ? fieldControl.readOnly : readOnly) === true,
         loading: loading === true,
     };
 
@@ -161,7 +172,8 @@ export const Input: <InputElement extends InputSlotElement = typeof BaseInput, L
             ref,
             disabled: ownerState.disabled,
             readOnly: ownerState.readOnly,
-            required: restProps.required ?? fieldControl?.required,
+            id: fieldControl ? fieldControl.id : restProps.id,
+            required: fieldControl ? fieldControl.required : restProps.required,
             "aria-describedby": clsx(fieldControl?.["aria-describedby"], restProps["aria-describedby"]) || undefined,
             "aria-invalid": ownerState.status === "error" || fieldControl?.["aria-invalid"] || restProps["aria-invalid"],
             "aria-busy": ownerState.loading || fieldControl?.["aria-busy"] || restProps["aria-busy"],

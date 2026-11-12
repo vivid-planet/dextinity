@@ -11,9 +11,9 @@ import { Field, type FieldControlProps } from "../Field";
 import fieldTokens from "../Field.tokens.scss?raw";
 import styles from "./Field.stories.module.scss";
 
-function TextInput({ initialValue = "" }: { initialValue?: string }) {
+function TextInput({ name = "title", initialValue = "" }: { name?: string; initialValue?: string }) {
     const [value, setValue] = useState(initialValue);
-    return <Input name="title" value={value} onChange={(event) => setValue(event.target.value)} />;
+    return <Input name={name} value={value} onChange={(event) => setValue(event.target.value)} />;
 }
 
 function RangeControl(control: FieldControlProps) {
@@ -217,13 +217,13 @@ export const PrefixAndSuffix: Story = {
     render: (args) => (
         <div className={styles.stack}>
             <Field {...args} label="URL" prefix="example.com">
-                <TextInput initialValue="/careers/open-positions" />
+                <TextInput name="url" initialValue="/careers/open-positions" />
             </Field>
             <Field {...args} label="Salary" suffix="€ gross / year">
-                <TextInput initialValue="58,000" />
+                <TextInput name="salary" initialValue="58,000" />
             </Field>
             <Field {...args} label="Search" prefix={<Icon name="search" />}>
-                <TextInput />
+                <TextInput name="search" />
             </Field>
         </div>
     ),

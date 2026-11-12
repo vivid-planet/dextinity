@@ -19,3 +19,11 @@ export const FieldContext = createContext<FieldContextValue | null>(null);
 export function useFieldContext() {
     return useContext(FieldContext);
 }
+
+/**
+ * Hides the surrounding field from portaled content. React context passes through portals, so without it an `Input` in a popup
+ * opened from inside a `Field` would take over that field's id, label, message and state.
+ */
+export function FieldContextReset({ children }: { children?: ReactNode }) {
+    return <FieldContext.Provider value={null}>{children}</FieldContext.Provider>;
+}

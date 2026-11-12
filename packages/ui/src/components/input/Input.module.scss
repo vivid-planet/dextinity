@@ -81,6 +81,8 @@
     // The surrounding `Field` draws the box, so the input and its adornments sit directly in it.
     &[data-in-field] {
         display: contents;
+        color: inherit;
+        font: inherit;
     }
 }
 
@@ -93,6 +95,7 @@
     color: inherit;
     font: inherit;
     letter-spacing: inherit;
+    caret-color: var(--dextinity-input-caret-color);
     outline: none;
     appearance: none;
 

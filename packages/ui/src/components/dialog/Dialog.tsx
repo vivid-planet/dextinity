@@ -5,6 +5,7 @@ import { forwardRef, type HTMLAttributes, type ReactNode, type RefObject } from 
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import { IconButton, type IconButtonProps } from "../iconButton/IconButton";
 import styles from "./Dialog.module.scss";
@@ -170,41 +171,43 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
                 }}
             >
                 <BaseDialog.Portal container={container}>
-                    <BaseDialog.Backdrop {...backdropProps} />
-                    <BaseDialog.Viewport {...viewportProps}>
-                        <BaseDialog.Popup
-                            {...restProps}
-                            ref={ref}
-                            initialFocus={initialFocus}
-                            data-size={ownerState.size}
-                            data-dismissible={ownerState.dismissible ? "" : undefined}
-                            className={clsx(styles.root, className)}
-                        >
-                            <div {...headerProps}>
-                                <BaseDialog.Title {...titleProps} />
-                                {description != null && <BaseDialog.Description {...descriptionProps} />}
-                            </div>
-                            {children != null && <div {...bodyProps}>{children}</div>}
-                            {footer != null && <div {...footerProps}>{footer}</div>}
-                            {!hideCloseButton && (
-                                <BaseDialog.Close
-                                    render={
-                                        <IconButton
-                                            variant="text"
-                                            color="secondary"
-                                            size="small"
-                                            {...slotProps?.closeButton}
-                                            disabled={!ownerState.dismissible || slotProps?.closeButton?.disabled}
-                                            aria-label={labels.close}
-                                            className={clsx(styles.closeButton, slotProps?.closeButton?.className)}
-                                        >
-                                            <Icon name="close" />
-                                        </IconButton>
-                                    }
-                                />
-                            )}
-                        </BaseDialog.Popup>
-                    </BaseDialog.Viewport>
+                    <FieldContextReset>
+                        <BaseDialog.Backdrop {...backdropProps} />
+                        <BaseDialog.Viewport {...viewportProps}>
+                            <BaseDialog.Popup
+                                {...restProps}
+                                ref={ref}
+                                initialFocus={initialFocus}
+                                data-size={ownerState.size}
+                                data-dismissible={ownerState.dismissible ? "" : undefined}
+                                className={clsx(styles.root, className)}
+                            >
+                                <div {...headerProps}>
+                                    <BaseDialog.Title {...titleProps} />
+                                    {description != null && <BaseDialog.Description {...descriptionProps} />}
+                                </div>
+                                {children != null && <div {...bodyProps}>{children}</div>}
+                                {footer != null && <div {...footerProps}>{footer}</div>}
+                                {!hideCloseButton && (
+                                    <BaseDialog.Close
+                                        render={
+                                            <IconButton
+                                                variant="text"
+                                                color="secondary"
+                                                size="small"
+                                                {...slotProps?.closeButton}
+                                                disabled={!ownerState.dismissible || slotProps?.closeButton?.disabled}
+                                                aria-label={labels.close}
+                                                className={clsx(styles.closeButton, slotProps?.closeButton?.className)}
+                                            >
+                                                <Icon name="close" />
+                                            </IconButton>
+                                        }
+                                    />
+                                )}
+                            </BaseDialog.Popup>
+                        </BaseDialog.Viewport>
+                    </FieldContextReset>
                 </BaseDialog.Portal>
             </Root>
         </>

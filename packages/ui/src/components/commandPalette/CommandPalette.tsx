@@ -4,6 +4,7 @@ import { forwardRef, type HTMLAttributes, type KeyboardEvent, type ReactNode, us
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
 import styles from "./CommandPalette.module.scss";
@@ -237,87 +238,89 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
             <span ref={anchorRef} hidden />
             <BaseDialog.Root open={open} onOpenChange={(nextOpen) => onOpenChange(nextOpen)}>
                 <BaseDialog.Portal container={container}>
-                    <BaseDialog.Backdrop {...backdropProps} />
-                    <BaseDialog.Popup
-                        aria-label={labels.title}
-                        {...restProps}
-                        ref={ref}
-                        initialFocus={inputRef}
-                        data-filter={ownerState.filter ? "" : undefined}
-                        className={clsx(styles.root, className)}
-                    >
-                        <div className={styles.searchRow}>
-                            <Icon name="search" className={styles.searchIcon} />
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                role="combobox"
-                                aria-label={labels.placeholder}
-                                aria-expanded
-                                aria-controls={`${id}-list`}
-                                aria-autocomplete="list"
-                                aria-activedescendant={activeItem == null ? undefined : optionId(activeItem)}
-                                placeholder={labels.placeholder}
-                                autoComplete="off"
-                                spellCheck={false}
-                                value={query}
-                                onChange={(event) => {
-                                    onQueryChange(event.target.value);
-                                    setActiveId(null);
-                                }}
-                                onKeyDown={handleKeyDown}
-                                className={styles.input}
-                            />
-                        </div>
-                        <div ref={listRef} id={`${id}-list`} role="listbox" aria-label={labels.title} className={styles.list}>
-                            {visibleItems.length === 0 ? (
-                                <p className={styles.empty}>{labels.empty}</p>
-                            ) : (
-                                visibleGroups.map((group, groupIndex) => (
-                                    <div key={group.label} role="group" aria-labelledby={`${id}-group-${groupIndex}`} className={styles.group}>
-                                        <span id={`${id}-group-${groupIndex}`} className={styles.groupLabel}>
-                                            {group.label}
-                                        </span>
-                                        {group.items.map((item) => (
-                                            <div
-                                                key={item.id}
-                                                id={optionId(item)}
-                                                role="option"
-                                                aria-selected={item === activeItem}
-                                                data-id={item.id}
-                                                className={styles.item}
-                                                onPointerMove={() => setActiveId(item.id)}
-                                                onClick={() => select(item)}
-                                            >
-                                                {item.icon != null && <span className={styles.itemIcon}>{item.icon}</span>}
-                                                <span className={styles.itemLabel}>
-                                                    <HighlightedLabel label={item.label} terms={terms} />
-                                                </span>
-                                                {item.shortcut != null && (
-                                                    <KeyboardShortcut className={styles.itemShortcut}>{item.shortcut}</KeyboardShortcut>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                        <div {...footerProps}>
-                            <span className={styles.hint}>
-                                <KeyboardShortcut>{keyGlyphs.up}</KeyboardShortcut>
-                                <KeyboardShortcut>{keyGlyphs.down}</KeyboardShortcut>
-                                {labels.navigate}
-                            </span>
-                            <span className={styles.hint}>
-                                <KeyboardShortcut>{keyGlyphs.enter}</KeyboardShortcut>
-                                {labels.select}
-                            </span>
-                            <span className={styles.hint}>
-                                <KeyboardShortcut>{labels.escapeKey}</KeyboardShortcut>
-                                {labels.close}
-                            </span>
-                        </div>
-                    </BaseDialog.Popup>
+                    <FieldContextReset>
+                        <BaseDialog.Backdrop {...backdropProps} />
+                        <BaseDialog.Popup
+                            aria-label={labels.title}
+                            {...restProps}
+                            ref={ref}
+                            initialFocus={inputRef}
+                            data-filter={ownerState.filter ? "" : undefined}
+                            className={clsx(styles.root, className)}
+                        >
+                            <div className={styles.searchRow}>
+                                <Icon name="search" className={styles.searchIcon} />
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    role="combobox"
+                                    aria-label={labels.placeholder}
+                                    aria-expanded
+                                    aria-controls={`${id}-list`}
+                                    aria-autocomplete="list"
+                                    aria-activedescendant={activeItem == null ? undefined : optionId(activeItem)}
+                                    placeholder={labels.placeholder}
+                                    autoComplete="off"
+                                    spellCheck={false}
+                                    value={query}
+                                    onChange={(event) => {
+                                        onQueryChange(event.target.value);
+                                        setActiveId(null);
+                                    }}
+                                    onKeyDown={handleKeyDown}
+                                    className={styles.input}
+                                />
+                            </div>
+                            <div ref={listRef} id={`${id}-list`} role="listbox" aria-label={labels.title} className={styles.list}>
+                                {visibleItems.length === 0 ? (
+                                    <p className={styles.empty}>{labels.empty}</p>
+                                ) : (
+                                    visibleGroups.map((group, groupIndex) => (
+                                        <div key={group.label} role="group" aria-labelledby={`${id}-group-${groupIndex}`} className={styles.group}>
+                                            <span id={`${id}-group-${groupIndex}`} className={styles.groupLabel}>
+                                                {group.label}
+                                            </span>
+                                            {group.items.map((item) => (
+                                                <div
+                                                    key={item.id}
+                                                    id={optionId(item)}
+                                                    role="option"
+                                                    aria-selected={item === activeItem}
+                                                    data-id={item.id}
+                                                    className={styles.item}
+                                                    onPointerMove={() => setActiveId(item.id)}
+                                                    onClick={() => select(item)}
+                                                >
+                                                    {item.icon != null && <span className={styles.itemIcon}>{item.icon}</span>}
+                                                    <span className={styles.itemLabel}>
+                                                        <HighlightedLabel label={item.label} terms={terms} />
+                                                    </span>
+                                                    {item.shortcut != null && (
+                                                        <KeyboardShortcut className={styles.itemShortcut}>{item.shortcut}</KeyboardShortcut>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                            <div {...footerProps}>
+                                <span className={styles.hint}>
+                                    <KeyboardShortcut>{keyGlyphs.up}</KeyboardShortcut>
+                                    <KeyboardShortcut>{keyGlyphs.down}</KeyboardShortcut>
+                                    {labels.navigate}
+                                </span>
+                                <span className={styles.hint}>
+                                    <KeyboardShortcut>{keyGlyphs.enter}</KeyboardShortcut>
+                                    {labels.select}
+                                </span>
+                                <span className={styles.hint}>
+                                    <KeyboardShortcut>{labels.escapeKey}</KeyboardShortcut>
+                                    {labels.close}
+                                </span>
+                            </div>
+                        </BaseDialog.Popup>
+                    </FieldContextReset>
                 </BaseDialog.Portal>
             </BaseDialog.Root>
         </>

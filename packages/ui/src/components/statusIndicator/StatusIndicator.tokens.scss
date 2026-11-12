@@ -19,11 +19,11 @@
     // Label color of the published status
     --dextinity-status-indicator-published-foreground: var(--dextinity-color-text-subtle);
     // Dot of the unpublished status
-    --dextinity-status-indicator-unpublished-dot: var(--dextinity-color-text-disabled);
+    --dextinity-status-indicator-unpublished-dot: var(--dextinity-color-control-line);
     // Label color of the unpublished status
     --dextinity-status-indicator-unpublished-foreground: var(--dextinity-color-text-subtle);
     // Hollow ring of the archived status
-    --dextinity-status-indicator-archived-dot: var(--dextinity-color-text-disabled);
+    --dextinity-status-indicator-archived-dot: var(--dextinity-color-control-line);
     // Label color of the archived status
     --dextinity-status-indicator-archived-foreground: var(--dextinity-color-text-subtle);
     // Dot of the warning status

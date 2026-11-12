@@ -26,7 +26,7 @@
     // Fill of an unchecked circle
     --dextinity-radio-group-background: var(--dextinity-color-surface);
     // Outline of an unchecked circle
-    --dextinity-radio-group-line: var(--dextinity-color-text-disabled);
+    --dextinity-radio-group-line: var(--dextinity-color-control-line);
     // Outline of a hovered circle
     --dextinity-radio-group-line-hover: var(--dextinity-color-text-subtle);
     // Outline of the circle when the group has an error
@@ -58,7 +58,7 @@
     // Outline of an unchecked card
     --dextinity-radio-group-card-line: var(--dextinity-color-line-strong);
     // Outline of a hovered card
-    --dextinity-radio-group-card-line-hover: var(--dextinity-color-text-disabled);
+    --dextinity-radio-group-card-line-hover: var(--dextinity-color-control-line);
     // Fill of a checked card
     --dextinity-radio-group-card-background-checked: var(--dextinity-color-accent-soft);
     // Outline of a checked card

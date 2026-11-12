@@ -35,7 +35,7 @@
     // Outline of a field
     --dextinity-field-line: var(--dextinity-color-line-strong);
     // Outline of a hovered field
-    --dextinity-field-line-hover: var(--dextinity-color-text-disabled);
+    --dextinity-field-line-hover: var(--dextinity-color-control-line);
     // Width of the outline of a focused field or a field in a validation state
     --dextinity-field-line-width-focus: calc(var(--dextinity-line-width) * 2);
     // Outline of a focused field

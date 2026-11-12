@@ -23,7 +23,7 @@
     // Outline of the search field
     --dextinity-top-bar-search-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge);
     // Outline and shadow of the search field on hover
-    --dextinity-top-bar-search-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-disabled), var(--dextinity-shadow-1);
+    --dextinity-top-bar-search-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line), var(--dextinity-shadow-1);
     // Color of the search field's icon and placeholder
     --dextinity-top-bar-search-foreground: var(--dextinity-color-text-subtle);
 }

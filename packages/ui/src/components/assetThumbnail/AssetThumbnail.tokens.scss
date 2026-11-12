@@ -6,7 +6,7 @@
     // Outline and shadow of the thumbnail at rest
     --dextinity-asset-thumbnail-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line), var(--dextinity-shadow-1);
     // Outline and shadow of an interactive thumbnail on hover
-    --dextinity-asset-thumbnail-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-disabled), var(--dextinity-shadow-2);
+    --dextinity-asset-thumbnail-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line), var(--dextinity-shadow-2);
     // Ring around a selected thumbnail
     --dextinity-asset-thumbnail-selected-shadow: 0 0 0 2px var(--dextinity-color-accent), 0 0 0 6px var(--dextinity-color-accent-soft);
     // How far the picture rises on hover when the thumbnail is interactive

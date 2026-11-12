@@ -92,6 +92,8 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         --dextinity-color-line: oklch(0.25 0.02 #{$neutral-hue} / 0.13);
         // Stronger lines, e.g. the outline of a field or a secondary button
         --dextinity-color-line-strong: oklch(0.25 0.02 #{$neutral-hue} / 0.24);
+        // Outline or fill that makes a control recognizable, e.g. an unchecked checkbox or radio, the switch track or a hovered field or button — needs 3:1 contrast against its surface
+        --dextinity-color-control-line: oklch(0.63 0.012 #{$neutral-hue});
 
         // Brand accent fill, e.g. a checked checkbox or switch
         --dextinity-color-accent: oklch(0.52 #{$primary-chroma} #{$primary-hue});
@@ -178,6 +180,7 @@ $danger-hue: var(--dextinity-brand-danger-hue);
 
         --dextinity-color-line: oklch(1 0 0 / 0.075);
         --dextinity-color-line-strong: oklch(1 0 0 / 0.13);
+        --dextinity-color-control-line: oklch(0.44 0.01 #{$neutral-hue});
 
         --dextinity-color-accent: oklch(0.74 calc(#{$primary-chroma} * 0.8) #{$primary-hue});
         --dextinity-color-accent-foreground: oklch(0.15 0.03 #{$primary-hue});
@@ -236,6 +239,7 @@ $danger-hue: var(--dextinity-brand-danger-hue);
 
         --dextinity-color-line: oklch(1 0 0 / 0.7);
         --dextinity-color-line-strong: oklch(1 0 0);
+        --dextinity-color-control-line: oklch(0.8 0 0);
 
         --dextinity-color-accent: oklch(0.88 calc(#{$primary-chroma} * 0.45) #{$primary-hue});
         --dextinity-color-accent-foreground: oklch(0 0 0);

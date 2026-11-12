@@ -146,6 +146,15 @@ Success and danger hues can be shifted per brand, so they stand apart from the b
     swatches={[
         { token: "--dextinity-color-line", name: "Line", usage: "Dividers in lists" },
         { token: "--dextinity-color-line-strong", name: "Line strong", usage: "Input outlines, table header" },
+        {
+            token: "--dextinity-color-control-line",
+            name: "Control line",
+            usage: "Unchecked checkbox and radio, switch track, hovered field or button",
+            contrast: [
+                { background: "--dextinity-color-surface", label: "on surface" },
+                { background: "--dextinity-color-surface-raised", label: "on surface raised" },
+            ],
+        },
     ]}
 />
 

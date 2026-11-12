@@ -2,7 +2,7 @@
 @mixin tokens {
     // Height of an item
     --dextinity-main-navigation-item-height: var(--dextinity-density-nav-item-height);
-    // Corner rounding of an item
+    // Corner radius of an item
     --dextinity-main-navigation-item-radius: var(--dextinity-radius-field);
     // Gap between the icon, the label and the expand icon
     --dextinity-main-navigation-item-gap: var(--dextinity-space-2);

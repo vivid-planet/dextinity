@@ -1,7 +1,7 @@
 @mixin tokens {
     // Space between the page header and the toolbar
     --dextinity-list-detail-layout-header-spacing: var(--dextinity-layout-header-spacing);
-    // Space between the toolbar and the list, and between the list and the side panel; follows the density
+    // Gap between the toolbar and the list, and between the list and the side panel; follows the density
     --dextinity-list-detail-layout-gap: var(--dextinity-layout-gap);
     // Width of the detail panel next to the list
     --dextinity-list-detail-layout-panel-width: minmax(320px, 380px);

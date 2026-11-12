@@ -1,5 +1,5 @@
 @mixin tokens {
-    // Space between the search field and the sections
+    // Gap between the search field and the sections
     --dextinity-block-picker-gap: var(--dextinity-space-3);
     // Height of the search field
     --dextinity-block-picker-search-height: var(--dextinity-density-field-height);
@@ -24,7 +24,7 @@
     --dextinity-block-picker-item-background-hover: var(--dextinity-color-surface-raised);
     // Outline of a hovered item and of the first match that Enter in the search adds
     --dextinity-block-picker-item-highlight-shadow: inset 0 0 0 1px var(--dextinity-color-accent);
-    // Font size of a block's name
+    // Text size of a block's name
     --dextinity-block-picker-item-label-font-size: 13.5px;
     // Size of a block's icon tile
     --dextinity-block-picker-item-icon-size: 32px;

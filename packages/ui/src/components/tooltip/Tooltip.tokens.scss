@@ -1,9 +1,9 @@
 @mixin tokens {
-    // Inverted: the text color as the background, so the tooltip stands out on any surface
+    // Fill of the tooltip: the text color, inverted so the tooltip stands out on any surface
     --dextinity-tooltip-background: var(--dextinity-color-text);
     // Text color of the tooltip
     --dextinity-tooltip-foreground: var(--dextinity-color-canvas);
-    // Corner rounding of the tooltip
+    // Corner radius of the tooltip
     --dextinity-tooltip-radius: var(--dextinity-radius-item);
     // Space above and below the text
     --dextinity-tooltip-padding-block: var(--dextinity-space-1-5);

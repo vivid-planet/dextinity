@@ -20,7 +20,7 @@
     --dextinity-device-preview-frame-background: oklch(1 0 0);
     // Outline and drop shadow of the device frame
     --dextinity-device-preview-frame-shadow: 0 0 0 1px oklch(0 0 0 / 0.08), 0 18px 40px -24px oklch(0 0 0 / 0.45);
-    // Covers the frame while the page loads; white like the frame
+    // Fill that covers the frame while the page loads; white like the frame
     --dextinity-device-preview-loading-background: oklch(1 0 0 / 0.72);
 }
 

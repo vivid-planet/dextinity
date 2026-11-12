@@ -3,7 +3,7 @@
     --dextinity-keyboard-key-height: 20px;
     // Horizontal padding inside a key
     --dextinity-keyboard-key-padding: var(--dextinity-space-1-5);
-    // Corner rounding of a key
+    // Corner radius of a key
     --dextinity-keyboard-key-radius: calc(var(--dextinity-radius-item) * 0.625);
     // Text size of the key label
     --dextinity-keyboard-key-font-size: var(--dextinity-typography-label-size);

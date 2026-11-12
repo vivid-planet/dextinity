@@ -1,5 +1,5 @@
 @mixin tokens {
-    // Corner rounding of a panel
+    // Corner radius of a panel
     --dextinity-panel-radius: var(--dextinity-radius-panel);
     // Between the edge and the header and body, which add their own padding
     --dextinity-panel-padding: var(--dextinity-space-2-5);

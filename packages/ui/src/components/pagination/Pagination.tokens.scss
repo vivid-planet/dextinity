@@ -1,5 +1,5 @@
 @mixin tokens {
-    // Space between the "per page" picker, the range text, and the page buttons
+    // Gap between the "per page" picker, the range text, and the page buttons
     --dextinity-pagination-gap: var(--dextinity-space-3);
     // Color of the range text and the "per page" label
     --dextinity-pagination-foreground: var(--dextinity-color-text-tertiary);
@@ -8,7 +8,7 @@
 
     // Height and minimum width of a page button
     --dextinity-pagination-page-size: var(--dextinity-density-icon-button-size-small);
-    // Corner rounding of a page button
+    // Corner radius of a page button
     --dextinity-pagination-page-radius: var(--dextinity-radius-item);
     // Text color of a page button
     --dextinity-pagination-page-foreground: var(--dextinity-color-text-secondary);
@@ -23,7 +23,7 @@
 
     // Height of the "per page" picker
     --dextinity-pagination-size-picker-height: var(--dextinity-density-control-height-small);
-    // Corner rounding of the "per page" picker
+    // Corner radius of the "per page" picker
     --dextinity-pagination-size-picker-radius: var(--dextinity-radius-control);
     // Fill of the "per page" picker
     --dextinity-pagination-size-picker-background: var(--dextinity-color-surface);

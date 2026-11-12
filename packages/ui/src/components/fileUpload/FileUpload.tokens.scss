@@ -1,12 +1,12 @@
 // The drop area comes from the Dropzone tokens.
 @mixin tokens {
-    // Space between the label, the drop area, the files, and the message
+    // Gap between the label, the drop area, the files, and the message
     --dextinity-file-upload-gap: var(--dextinity-field-gap);
-    // Space between the uploaded files in the list
+    // Gap between the uploaded files in the list
     --dextinity-file-upload-file-gap: var(--dextinity-space-2);
     // Minimum height of an uploaded file
     --dextinity-file-upload-file-height: 48px;
-    // Corner rounding of an uploaded file; the thumbnail is rounded to match
+    // Corner radius of an uploaded file; the thumbnail is rounded to match
     --dextinity-file-upload-file-radius: var(--dextinity-radius-control);
     // Fill of an uploaded file
     --dextinity-file-upload-file-background: var(--dextinity-color-surface);
@@ -46,6 +46,6 @@
     // Color of a success message
     --dextinity-file-upload-message-color-success: var(--dextinity-field-message-color-success);
 
-    // Corner rounding of the focus ring of a linked file name
+    // Corner radius of the focus ring of a linked file name
     --dextinity-file-upload-link-radius: 4px;
 }

@@ -5,7 +5,7 @@
     --dextinity-tree-view-row-radius: var(--dextinity-radius-field);
     // Indent per level
     --dextinity-tree-view-indent: 24px;
-    // Font size of the rows
+    // Text size of the rows
     --dextinity-tree-view-font-size: var(--dextinity-typography-body-size);
     // Text color of the rows
     --dextinity-tree-view-foreground: var(--dextinity-color-text);
@@ -15,7 +15,7 @@
     --dextinity-tree-view-meta-color: var(--dextinity-color-text-subtle);
     // Color of the count after a node's name
     --dextinity-tree-view-count-color: var(--dextinity-color-text-subtle);
-    // Font size of the count after a node's name
+    // Text size of the count after a node's name
     --dextinity-tree-view-count-font-size: var(--dextinity-typography-caption-size);
 
     // Line along the children of an expanded node

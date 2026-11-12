@@ -1,7 +1,7 @@
 @mixin tokens {
-    // Space between the label, the options, and the message
+    // Gap between the label, the options, and the message
     --dextinity-radio-group-gap: var(--dextinity-field-gap);
-    // Space between stacked options
+    // Gap between stacked options
     --dextinity-radio-group-option-gap: var(--dextinity-space-2);
     // Space between options laid out in a row
     --dextinity-radio-group-option-gap-horizontal: var(--dextinity-space-4);
@@ -49,7 +49,7 @@
 
     // Space inside a card of the `card` variant
     --dextinity-radio-group-card-padding: var(--dextinity-space-3);
-    // Corner rounding of a card
+    // Corner radius of a card
     --dextinity-radio-group-card-radius: var(--dextinity-radius-field);
     // Minimum width of a card before the cards wrap
     --dextinity-radio-group-card-min-width: 200px;

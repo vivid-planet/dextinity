@@ -5,7 +5,7 @@
     --dextinity-tabs-padding: var(--dextinity-space-1-5);
     // Gap between two tabs
     --dextinity-tabs-gap: var(--dextinity-space-4);
-    // Font size of a tab's label
+    // Text size of a tab's label
     --dextinity-tabs-font-size: var(--dextinity-typography-body-size);
     // Font weight of a tab's label
     --dextinity-tabs-font-weight: var(--dextinity-font-weight-medium);
@@ -40,7 +40,7 @@
     --dextinity-tabs-count-background: var(--dextinity-color-warning-soft);
     // Text color of the count after a tab's label
     --dextinity-tabs-count-foreground: var(--dextinity-color-warning-text);
-    // Font size of the count after a tab's label
+    // Text size of the count after a tab's label
     --dextinity-tabs-count-font-size: var(--dextinity-typography-caption-size);
     // Corner radius of the count after a tab's label
     --dextinity-tabs-count-radius: calc(var(--dextinity-radius-item) * 0.625);

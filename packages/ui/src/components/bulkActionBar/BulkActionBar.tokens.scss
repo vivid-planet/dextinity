@@ -1,5 +1,5 @@
 @mixin tokens {
-    // Corner rounding of the bar
+    // Corner radius of the bar
     --dextinity-bulk-action-bar-radius: var(--dextinity-radius-field);
     // Fill of the bar, inverted so it stands out from the list below
     --dextinity-bulk-action-bar-background: var(--dextinity-color-text);
@@ -14,7 +14,7 @@
 
     // Height of an action button
     --dextinity-bulk-action-bar-action-height: var(--dextinity-density-control-height-small);
-    // Corner rounding of an action button
+    // Corner radius of an action button
     --dextinity-bulk-action-bar-action-radius: var(--dextinity-radius-item);
     // Fill of a hovered action button
     --dextinity-bulk-action-bar-action-background-hover: color-mix(in oklch, var(--dextinity-color-canvas) 16%, transparent);

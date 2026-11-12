@@ -1,6 +1,6 @@
 // The frame (label, box, message) comes from the Field tokens.
 @mixin tokens {
-    // Corner rounding of the editor's box
+    // Corner radius of the editor's box
     --dextinity-rich-text-editor-radius: calc(12px * var(--dextinity-brand-radius-factor));
     // Padding around the toolbar's buttons
     --dextinity-rich-text-editor-toolbar-padding: 5px;

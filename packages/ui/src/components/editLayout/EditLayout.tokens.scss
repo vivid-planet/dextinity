@@ -1,7 +1,7 @@
 @mixin tokens {
     // Space between the edit header and the panes
     --dextinity-edit-layout-header-spacing: 22px;
-    // Space between the panes; follows the density
+    // Gap between the panes; follows the density
     --dextinity-edit-layout-gap: var(--dextinity-layout-gap);
     // Width of the editor panel next to the preview of a page
     --dextinity-edit-layout-panel-width: minmax(330px, 404px);

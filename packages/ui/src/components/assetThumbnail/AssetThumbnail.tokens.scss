@@ -1,5 +1,5 @@
 @mixin tokens {
-    // Corner rounding of the thumbnail
+    // Corner radius of the thumbnail
     --dextinity-asset-thumbnail-radius: calc(var(--dextinity-radius-field) * 0.85);
     // Fill behind the picture, visible while it loads or around letterboxed images
     --dextinity-asset-thumbnail-background: var(--dextinity-color-surface-sunken);
@@ -12,7 +12,7 @@
     // How far the picture rises on hover when the thumbnail is interactive
     --dextinity-asset-thumbnail-hover-lift: calc(var(--dextinity-motion-distance) * -0.25);
 
-    // Behind the first page of a document
+    // Fill behind the first page of a document
     --dextinity-asset-thumbnail-document-background: color-mix(in oklch, var(--dextinity-color-text) 6%, var(--dextinity-color-surface));
     // The shadow under a document's first page
     --dextinity-asset-thumbnail-document-page-shadow: 0 4px 10px oklch(0 0 0 / 0.18);

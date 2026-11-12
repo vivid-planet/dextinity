@@ -9,13 +9,13 @@
     --dextinity-segmented-control-padding-small: 9px;
     // Space between the track's edge and the options
     --dextinity-segmented-control-inset: 3px;
-    // Space between the options
+    // Gap between the options
     --dextinity-segmented-control-gap: var(--dextinity-space-0-5);
     // Corner radius of the track
     --dextinity-segmented-control-radius: calc(var(--dextinity-radius-item) + var(--dextinity-segmented-control-inset));
     // Corner radius of an option
     --dextinity-segmented-control-option-radius: var(--dextinity-radius-item);
-    // Font size of an option
+    // Text size of an option
     --dextinity-segmented-control-font-size: var(--dextinity-typography-ui-size);
     // Size of an option's icon
     --dextinity-segmented-control-icon-size: var(--dextinity-icon-size-small);
@@ -43,9 +43,9 @@
 
     // Line around the track in the error state
     --dextinity-segmented-control-line-error: var(--dextinity-color-danger);
-    // Space between the options and the validation message
+    // Gap between the options and the validation message
     --dextinity-segmented-control-message-gap: var(--dextinity-space-1);
-    // Font size of the validation message
+    // Text size of the validation message
     --dextinity-segmented-control-message-font-size: var(--dextinity-typography-small-size);
     // Color of the message in the error state
     --dextinity-segmented-control-message-color-error: var(--dextinity-color-danger-text);

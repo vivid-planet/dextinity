@@ -1,9 +1,9 @@
 @mixin tokens {
-    // Inverted: the text color as the background, so the toast stands out on any surface
+    // Fill of the toast: the text color, inverted so the toast stands out on any surface
     --dextinity-toast-background: var(--dextinity-color-text);
     // Text color of the toast
     --dextinity-toast-foreground: var(--dextinity-color-canvas);
-    // Corner rounding of the toast
+    // Corner radius of the toast
     --dextinity-toast-radius: var(--dextinity-radius-field);
     // Drop shadow of the toast
     --dextinity-toast-shadow: var(--dextinity-shadow-3);
@@ -34,7 +34,7 @@
     --dextinity-toast-action-height: 28px;
     // Horizontal padding of the action button
     --dextinity-toast-action-padding: var(--dextinity-space-2-5);
-    // Corner rounding of the action button
+    // Corner radius of the action button
     --dextinity-toast-action-radius: var(--dextinity-radius-item);
     // Fill of the action button
     --dextinity-toast-action-background: color-mix(in oklch, var(--dextinity-color-canvas) 15%, transparent);

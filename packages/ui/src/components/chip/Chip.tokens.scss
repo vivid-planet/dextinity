@@ -11,7 +11,7 @@
     --dextinity-chip-gap: var(--dextinity-space-1-5);
     // Gap between the icon, the label and the clear button of a small chip
     --dextinity-chip-gap-small: var(--dextinity-space-1);
-    // Corner rounding of a chip
+    // Corner radius of a chip
     --dextinity-chip-radius: var(--dextinity-radius-pill);
     // Label size of a medium chip
     --dextinity-chip-font-size: var(--dextinity-typography-ui-size);
@@ -36,51 +36,51 @@
 
     // Fill of a contained primary chip, the filled style for chips that need attention
     --dextinity-chip-contained-primary-background: var(--dextinity-color-accent);
-    // Text and icon of a contained primary chip
+    // Text and icon color of a contained primary chip
     --dextinity-chip-contained-primary-foreground: var(--dextinity-color-accent-foreground);
     // Fill of a contained secondary chip
     --dextinity-chip-contained-secondary-background: var(--dextinity-color-fill-strong);
-    // Text and icon of a contained secondary chip
+    // Text and icon color of a contained secondary chip
     --dextinity-chip-contained-secondary-foreground: var(--dextinity-color-text);
     // Fill of a contained info chip
     --dextinity-chip-contained-info-background: var(--dextinity-color-info);
-    // Text and icon of a contained info chip
+    // Text and icon color of a contained info chip
     --dextinity-chip-contained-info-foreground: var(--dextinity-color-accent-foreground);
     // Fill of a contained warning chip
     --dextinity-chip-contained-warning-background: var(--dextinity-color-warning);
-    // Text and icon of a contained warning chip
+    // Text and icon color of a contained warning chip
     --dextinity-chip-contained-warning-foreground: oklch(0.2 0 0);
     // Fill of a contained error chip
     --dextinity-chip-contained-error-background: var(--dextinity-color-danger);
-    // Text and icon of a contained error chip
+    // Text and icon color of a contained error chip
     --dextinity-chip-contained-error-foreground: var(--dextinity-color-danger-foreground);
     // Fill of a contained success chip
     --dextinity-chip-contained-success-background: var(--dextinity-color-success);
-    // Text and icon of a contained success chip
+    // Text and icon color of a contained success chip
     --dextinity-chip-contained-success-foreground: var(--dextinity-color-accent-foreground);
 
     // Outline of an outlined primary chip, the quieter style for e.g. a long list of filters
     --dextinity-chip-outlined-primary-line: var(--dextinity-color-accent);
-    // Text and icon of an outlined primary chip
+    // Text and icon color of an outlined primary chip
     --dextinity-chip-outlined-primary-foreground: var(--dextinity-color-accent-text);
     // Outline of an outlined secondary chip
     --dextinity-chip-outlined-secondary-line: var(--dextinity-color-line-strong);
-    // Text and icon of an outlined secondary chip
+    // Text and icon color of an outlined secondary chip
     --dextinity-chip-outlined-secondary-foreground: var(--dextinity-color-text);
     // Outline of an outlined info chip
     --dextinity-chip-outlined-info-line: var(--dextinity-color-info);
-    // Text and icon of an outlined info chip
+    // Text and icon color of an outlined info chip
     --dextinity-chip-outlined-info-foreground: var(--dextinity-color-info-text);
     // Outline of an outlined warning chip
     --dextinity-chip-outlined-warning-line: var(--dextinity-color-warning);
-    // Text and icon of an outlined warning chip
+    // Text and icon color of an outlined warning chip
     --dextinity-chip-outlined-warning-foreground: var(--dextinity-color-warning-text);
     // Outline of an outlined error chip
     --dextinity-chip-outlined-error-line: var(--dextinity-color-danger);
-    // Text and icon of an outlined error chip
+    // Text and icon color of an outlined error chip
     --dextinity-chip-outlined-error-foreground: var(--dextinity-color-danger-text);
     // Outline of an outlined success chip
     --dextinity-chip-outlined-success-line: var(--dextinity-color-success);
-    // Text and icon of an outlined success chip
+    // Text and icon color of an outlined success chip
     --dextinity-chip-outlined-success-foreground: var(--dextinity-color-success-text);
 }

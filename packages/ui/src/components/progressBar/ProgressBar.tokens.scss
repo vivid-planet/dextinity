@@ -1,5 +1,5 @@
 @mixin tokens {
-    // Space between the label row and the bar
+    // Gap between the label row and the bar
     --dextinity-progress-bar-gap: var(--dextinity-space-1-5);
     // Height of the bar
     --dextinity-progress-bar-height: 6px;
@@ -11,7 +11,7 @@
     --dextinity-progress-bar-track: var(--dextinity-color-fill-track);
     // Outline of the track
     --dextinity-progress-bar-track-shadow: 0 0 transparent;
-    // Fill of the indicator
+    // Fill of the indicator in the accent tone
     --dextinity-progress-bar-indicator-accent: var(--dextinity-gradient-brand);
     // Fill of the indicator in the success tone
     --dextinity-progress-bar-indicator-success: var(--dextinity-color-success);
@@ -19,7 +19,7 @@
     --dextinity-progress-bar-indicator-warning: var(--dextinity-color-warning);
     // Fill of the indicator in the danger tone
     --dextinity-progress-bar-indicator-danger: var(--dextinity-color-danger);
-    // Font size of the label and the value
+    // Text size of the label and the value
     --dextinity-progress-bar-label-font-size: var(--dextinity-typography-ui-size);
     // Color of the label
     --dextinity-progress-bar-label-color: var(--dextinity-color-text-secondary);

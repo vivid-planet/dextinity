@@ -1,7 +1,7 @@
 @mixin tokens {
     // Space between the page header and the toolbar
     --dextinity-tree-detail-layout-header-spacing: var(--dextinity-layout-header-spacing);
-    // Space between the toolbar and the tree, and between the tree and the detail; follows the density
+    // Gap between the toolbar and the tree, and between the tree and the detail; follows the density
     --dextinity-tree-detail-layout-gap: var(--dextinity-layout-gap);
     // Width of the detail column next to the tree
     --dextinity-tree-detail-layout-detail-width: 340px;

@@ -71,15 +71,15 @@ $scales: (
         // Spacing around large sections
         --dextinity-space-12: 48px;
 
-        // Corner rounding of small items, e.g. menu items and tags
+        // Corner radius of small items, e.g. menu items and tags
         --dextinity-radius-item: calc(8px * var(--dextinity-brand-radius-factor));
-        // Corner rounding of controls such as buttons and inputs; set by the brand
+        // Corner radius of controls such as buttons and inputs; set by the brand
         --dextinity-radius-control: var(--dextinity-brand-radius-control);
-        // Corner rounding of inputs on glass and of blocks
+        // Corner radius of inputs on glass and of blocks
         --dextinity-radius-field: calc(14px * var(--dextinity-brand-radius-factor));
-        // Corner rounding of rows and menus
+        // Corner radius of rows and menus
         --dextinity-radius-row: calc(20px * var(--dextinity-brand-radius-factor));
-        // Corner rounding of panels
+        // Corner radius of panels
         --dextinity-radius-panel: calc(30px * var(--dextinity-brand-radius-factor));
         // Fully rounded ends, e.g. of pills and switches
         --dextinity-radius-pill: 999px;

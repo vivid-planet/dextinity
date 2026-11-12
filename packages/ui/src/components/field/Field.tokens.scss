@@ -1,5 +1,5 @@
 @mixin tokens {
-    // Space between the label, the box, and the message
+    // Gap between the label, the box, and the message
     --dextinity-field-gap: 7px;
     // Height of a medium field
     --dextinity-field-height: var(--dextinity-density-field-height);
@@ -15,11 +15,11 @@
     --dextinity-field-radius: var(--dextinity-radius-control);
     // Corner radius of a field with `layout="stacked"`, e.g. a text editor
     --dextinity-field-radius-stacked: calc(12px * var(--dextinity-brand-radius-factor));
-    // Font size of the value in a medium field
+    // Text size of the value in a medium field
     --dextinity-field-font-size: var(--dextinity-typography-body-size);
-    // Font size of the value in a small field
+    // Text size of the value in a small field
     --dextinity-field-font-size-small: var(--dextinity-typography-ui-size);
-    // Font size of the value in a large field
+    // Text size of the value in a large field
     --dextinity-field-font-size-large: 15px;
 
     // Fill of a field
@@ -59,7 +59,7 @@
     // Opacity of a disabled field
     --dextinity-field-disabled-opacity: 0.55;
 
-    // Font size of the label
+    // Text size of the label
     --dextinity-field-label-font-size: var(--dextinity-typography-ui-size);
     // Font weight of the label
     --dextinity-field-label-font-weight: var(--dextinity-font-weight-medium);
@@ -69,7 +69,7 @@
     --dextinity-field-required-color: var(--dextinity-color-danger-text);
     // Color of the character count and other details at the end of the label
     --dextinity-field-counter-color: var(--dextinity-color-text-tertiary);
-    // Font size of the message below the field
+    // Text size of the message below the field
     --dextinity-field-message-font-size: var(--dextinity-typography-small-size);
     // Color of the message below the field
     --dextinity-field-message-color: var(--dextinity-color-text-tertiary);
@@ -83,7 +83,7 @@
     --dextinity-field-adornment-color: var(--dextinity-color-text-tertiary);
     // Font of a prefix or suffix
     --dextinity-field-adornment-font-family: var(--dextinity-font-family-mono);
-    // Font size of a prefix or suffix
+    // Text size of a prefix or suffix
     --dextinity-field-adornment-font-size: var(--dextinity-typography-mono-size);
     // Size of the icons inside a field
     --dextinity-field-icon-size: var(--dextinity-icon-size-small);

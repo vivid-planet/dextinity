@@ -3,7 +3,7 @@
     --dextinity-drawer-background: var(--dextinity-material-glass-overlay);
     // Blur behind the glass of the drawer
     --dextinity-drawer-blur: var(--dextinity-material-blur);
-    // Corner rounding of the drawer
+    // Corner radius of the drawer
     --dextinity-drawer-radius: calc(24px * var(--dextinity-brand-radius-factor));
     // Edge and shadow of the drawer
     --dextinity-drawer-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge), var(--dextinity-shadow-3);
@@ -33,7 +33,7 @@
     --dextinity-drawer-close-inset: 14px;
     // Room at the end of the header that keeps the title clear of the close button
     --dextinity-drawer-header-padding-end: 56px;
-    // Space between the blocks of content in the body
+    // Gap between the blocks of content in the body
     --dextinity-drawer-body-gap: var(--dextinity-space-3);
     // Line above the footer
     --dextinity-drawer-footer-line: var(--dextinity-color-line);

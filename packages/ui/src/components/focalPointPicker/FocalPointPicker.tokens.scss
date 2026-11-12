@@ -1,5 +1,5 @@
 @mixin tokens {
-    // Space between the image and the crop previews
+    // Gap between the image and the crop previews
     --dextinity-focal-point-picker-gap: var(--dextinity-space-panel-gap);
     // Corner radius of the image
     --dextinity-focal-point-picker-radius: var(--dextinity-radius-field);
@@ -26,7 +26,7 @@
 
     // Outline of the image in the error state
     --dextinity-focal-point-picker-line-error: var(--dextinity-color-danger);
-    // Font size of the message below the picker
+    // Text size of the message below the picker
     --dextinity-focal-point-picker-message-font-size: var(--dextinity-typography-small-size);
     // Color of the message in the error state
     --dextinity-focal-point-picker-message-color-error: var(--dextinity-color-danger-text);

@@ -1,6 +1,6 @@
 // The values match the label of `Field`, so a `FormLabel` above a custom control looks like the label of a field.
 @mixin tokens {
-    // Space between the label and its required marker or helper icon
+    // Gap between the label and its required marker or helper icon
     --dextinity-form-label-gap: var(--dextinity-space-1);
 
     // Size of the label

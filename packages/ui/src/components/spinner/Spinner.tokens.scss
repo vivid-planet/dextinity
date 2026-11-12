@@ -2,4 +2,8 @@
     --dextinity-spinner-color: var(--dextinity-color-accent);
     // One full turn
     --dextinity-spinner-duration: 1s;
+    --dextinity-spinner-size-small: var(--dextinity-icon-size-xsmall);
+    --dextinity-spinner-size-md: var(--dextinity-icon-size-small);
+    --dextinity-spinner-size-lg: 32px;
+    --dextinity-spinner-size-xl: 64px;
 }

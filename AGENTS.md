@@ -229,6 +229,10 @@ Fix description here
 - The description becomes the message of the squashed commit. See CONTRIBUTING.md#pull-requests.
 - After opening a pull request, always check its description and rewrite it to follow these rules, also when the pull request was created by a tool or UI that generated the description.
 
+## Pull request labels
+
+- When opening a pull request from a feature branch (`feature/…`) or a `merge-main-…`/`merge-next-…` branch, add the `skip-greptile-review` label when creating it. The labeler workflow sets it as well, but may run after Greptile has already started its review.
+
 ## Pull request comments
 
 - When watching or driving a pull request, reply on GitHub only to comments and reviews from bots (e.g. Greptile, Claude Code Review, lint bots). Bot accounts end in `[bot]` or are review/CI tools.

@@ -5,9 +5,7 @@ import { Icon } from "../icon/Icon";
 import { Tooltip } from "../tooltip/Tooltip";
 import styles from "./Badge.module.scss";
 
-type BadgeVariant = "ai" | "warning" | "count" | "dot";
-
-const defaultAiText = "AI";
+type BadgeVariant = "warning" | "count" | "dot";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -18,15 +16,14 @@ export type BadgeOwnerState = {
 
 export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children"> {
     /**
-     * `ai` marks AI-generated content (EU AI Act), `warning` a problem such as a missing alt text, `count` a number of items, and `dot`
-     * something new or changed.
+     * `warning` marks a problem such as a missing alt text, `count` a number of items, and `dot` something new or changed.
      */
     variant: BadgeVariant;
-    /** The text or number. `ai` defaults to "AI"; `warning` and `dot` show no text. */
+    /** The number of a `count`; `warning` and `dot` show no text. */
     children?: ReactNode;
     /**
-     * The explanation, shown as a tooltip on hover and keyboard focus. Required for `ai`, `warning`, and `dot`; for `warning` and `dot` it
-     * is also the accessible name, and without it they are hidden from assistive technology.
+     * The explanation, shown as a tooltip on hover and keyboard focus. Required for `warning` and `dot`, where it is also the accessible
+     * name; without it they are hidden from assistive technology.
      */
     tooltip?: string;
     /** Added alongside the component's own classes. */
@@ -34,12 +31,11 @@ export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, "class
 }
 
 /**
- * Marks a real exception on an element: AI-generated, a missing value, a count, or something new. One badge per element at most.
+ * Marks a real exception on an element: a missing value, a count, or something new. One badge per element at most.
  */
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge({ variant, children, tooltip, className, ...restProps }, ref) {
     const ownerState: BadgeOwnerState = { variant };
-    const hasText = ownerState.variant === "ai" || ownerState.variant === "count";
-    const text = ownerState.variant === "ai" ? (children ?? defaultAiText) : children;
+    const hasText = ownerState.variant === "count";
 
     const badge = (
         <span
@@ -53,7 +49,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge({ va
             className={clsx(styles.root, className)}
         >
             {ownerState.variant === "warning" && <Icon name="error" />}
-            {hasText && text}
+            {hasText && children}
             {hasText && tooltip != null && <span className={styles.description}>{tooltip}</span>}
         </span>
     );

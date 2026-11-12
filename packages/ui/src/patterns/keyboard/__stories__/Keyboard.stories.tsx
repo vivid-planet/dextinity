@@ -15,7 +15,6 @@ const keys = (shortcut: string) => formatShortcut(shortcut);
 
 const everywhere: ShortcutListItem[] = [
     { keys: keys("mod+k"), description: "Command palette" },
-    { keys: keys("mod+j"), description: "AI assistant" },
     { keys: keys("mod+\\"), description: "Collapse or expand the navigation" },
     { keys: ["/"], description: "Search the list" },
     { keys: ["?"], description: "Show keyboard shortcuts" },

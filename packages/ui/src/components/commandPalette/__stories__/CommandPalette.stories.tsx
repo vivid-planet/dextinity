@@ -31,7 +31,6 @@ const groups: CommandPaletteGroup[] = [
     {
         label: "Commands",
         items: [
-            { id: "ai", label: "Toggle AI assistant", icon: <Icon name="artificial-intelligence" />, shortcut: "⌘J", onSelect: fn() },
             { id: "nav", label: "Collapse navigation", icon: <Icon name="pin-left" />, shortcut: "⌘\\", onSelect: fn() },
             { id: "dark", label: "Switch to dark theme", icon: <Icon name="dark-mode" />, keywords: ["color scheme"], onSelect: fn() },
         ],

@@ -60,8 +60,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Appears at the bottom of a list while items are selected, with their number and the actions for all of them. `DataGrid` shows it
- * through its `bulkActions` prop.
+ * Appears at the bottom of a list while items are selected, with their number and the actions for all of them.
  *
  * **Rules**
  *

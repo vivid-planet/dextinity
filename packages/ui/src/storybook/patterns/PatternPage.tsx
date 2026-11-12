@@ -150,7 +150,7 @@ const pageDocs = {
     "Form fields": "building-blocks-form-fields-textfield--docs",
     "Selection & toggles": "building-blocks-selection-toggles-checkbox--docs",
     "Status, tags & badges": "building-blocks-status-tags-badges-statusindicator--docs",
-    "Tables & paging": "building-blocks-tables-paging-datagrid--docs",
+    "Tables & paging": "building-blocks-tables-paging-pagination--docs",
     Tree: "building-blocks-tree-treeview--docs",
     "Media & upload": "building-blocks-media-upload-dropzone--docs",
     "Blocks & preview": "building-blocks-blocks-preview-blocklist--docs",

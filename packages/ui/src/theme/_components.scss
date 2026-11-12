@@ -1,8 +1,6 @@
 // Component tokens. Each component declares a `tokens` mixin in `src/components/<feature>/<ComponentName>.tokens.scss`.
 @use "scope";
-@use "../components/aiPanel/AIPanel.tokens" as aiPanel;
 @use "../components/appShell/AppShell.tokens" as appShell;
-@use "../components/assetBrowser/AssetBrowser.tokens" as assetBrowser;
 @use "../components/assetThumbnail/AssetThumbnail.tokens" as assetThumbnail;
 @use "../components/avatar/Avatar.tokens" as avatar;
 @use "../components/badge/Badge.tokens" as badge;
@@ -19,7 +17,6 @@
 @use "../components/commandPalette/CommandPalette.tokens" as commandPalette;
 @use "../components/confirmDialog/ConfirmDialog.tokens" as confirmDialog;
 @use "../components/copyField/CopyField.tokens" as copyField;
-@use "../components/dataGrid/DataGrid.tokens" as dataGrid;
 @use "../components/datePicker/DatePicker.tokens" as datePicker;
 @use "../components/devicePreview/DevicePreview.tokens" as devicePreview;
 @use "../components/dialog/Dialog.tokens" as dialog;
@@ -86,9 +83,7 @@
 @use "../components/userMenu/UserMenu.tokens" as userMenu;
 
 @include scope.component-tokens {
-    @include aiPanel.tokens;
     @include appShell.tokens;
-    @include assetBrowser.tokens;
     @include assetThumbnail.tokens;
     @include avatar.tokens;
     @include badge.tokens;
@@ -105,7 +100,6 @@
     @include commandPalette.tokens;
     @include confirmDialog.tokens;
     @include copyField.tokens;
-    @include dataGrid.tokens;
     @include datePicker.tokens;
     @include devicePreview.tokens;
     @include dialog.tokens;
@@ -177,13 +171,11 @@
 }
 
 @include scope.high-contrast-component-tokens {
-    @include assetBrowser.high-contrast-tokens;
     @include assetThumbnail.high-contrast-tokens;
     @include banner.high-contrast-tokens;
     @include blockList.high-contrast-tokens;
     @include blockPicker.high-contrast-tokens;
     @include commandPalette.high-contrast-tokens;
-    @include dataGrid.high-contrast-tokens;
     @include datePicker.high-contrast-tokens;
     @include devicePreview.high-contrast-tokens;
     @include dialog.high-contrast-tokens;
@@ -201,6 +193,5 @@
     @include switch.high-contrast-tokens;
     @include tabs.high-contrast-tokens;
     @include toolbar.high-contrast-tokens;
-    @include topBar.high-contrast-tokens;
     @include treeView.high-contrast-tokens;
 }

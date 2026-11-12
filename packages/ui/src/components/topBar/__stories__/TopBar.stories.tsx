@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -8,28 +7,10 @@ import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { SaveState } from "../../saveState/SaveState";
 import { Tooltip } from "../../tooltip/Tooltip";
-import { TopBar, type TopBarProps } from "../TopBar";
+import { TopBar } from "../TopBar";
 import topBarTokens from "../TopBar.tokens.scss?raw";
 import styles from "./TopBar.stories.module.scss";
 import { StoryScopeSwitcher, StoryUserMenu } from "./topBarStoryParts";
-
-function ControlledTopBar(props: TopBarProps) {
-    const [aiOpen, setAiOpen] = useState(props.aiOpen ?? false);
-    return (
-        <TopBar
-            {...props}
-            aiOpen={aiOpen}
-            onAiOpenChange={
-                props.onAiOpenChange == null
-                    ? undefined
-                    : (nextOpen) => {
-                          setAiOpen(nextOpen);
-                          props.onAiOpenChange?.(nextOpen);
-                      }
-            }
-        />
-    );
-}
 
 const editActions = (
     <>
@@ -56,16 +37,13 @@ const meta = {
         ),
     ],
     parameters: { tokens: topBarTokens, layout: "fullscreen" },
-    render: (args) => <ControlledTopBar {...args} />,
     args: {
         onSearchClick: fn(),
         scope: <StoryScopeSwitcher />,
-        onAiOpenChange: fn(),
         userMenu: <StoryUserMenu />,
     },
     argTypes: {
         mode: { control: "radio", options: ["browse", "edit"] },
-        aiOpen: { control: "boolean" },
         scope: { control: false },
         userMenu: { control: false },
         browseActions: { control: false },
@@ -82,7 +60,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Search at the start opens the command palette; scope, AI toggle, and user menu at the end.
+ * Search at the start opens the command palette; scope and user menu at the end.
  *
  * **Rules**
  *
@@ -94,10 +72,6 @@ export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Search, jump, create …" }));
         await waitFor(() => expect(args.onSearchClick).toHaveBeenCalled());
-        const aiToggle = canvas.getByRole("switch", { name: "AI assistant" });
-        await userEvent.click(aiToggle);
-        await waitFor(() => expect(args.onAiOpenChange).toHaveBeenLastCalledWith(true));
-        await expect(aiToggle).toHaveAttribute("aria-checked", "true");
     },
 };
 
@@ -123,14 +97,8 @@ export const WithBrowseActions: Story = {
     },
 };
 
-export const AiOpen: Story = {
-    args: {
-        aiOpen: true,
-    },
-};
-
 /**
- * While editing, back, what is edited, and the editing actions replace search and toggles. Save is the bar's only primary action. A
+ * While editing, back, what is edited, and the editing actions replace search, scope, and user menu. Save is the bar's only primary action. A
  * page sets them with `useTopBarEdit`, see the `AppShell`'s `EditingPage` story.
  */
 export const Edit: Story = {
@@ -143,7 +111,7 @@ export const Edit: Story = {
 };
 
 /**
- * On narrow bars the AI toggle loses its text and the search becomes an icon; the scope shows its short form, then only the icon. On
+ * On narrow bars the search becomes an icon; the scope shows its short form, then only the icon. On
  * narrow windows, `onMenuClick` shows the menu button that opens the navigation.
  */
 export const Narrow: Story = {

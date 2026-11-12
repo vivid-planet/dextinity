@@ -34,7 +34,7 @@ export interface ListDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElemen
     header: ReactNode;
     /** Search and filters above the list, e.g. a `FilterBar`. */
     toolbar?: ReactNode;
-    /** The list, e.g. a `DataGrid`. A click on a row opens the side panel; the list stays visible. */
+    /** The list, e.g. a table. A click on a row opens the side panel; the list stays visible. */
     children: ReactNode;
     /** The side panel: a short form with save, e.g. for a redirect. Long forms belong on an edit page. */
     sidePanel: ReactNode;

@@ -9,13 +9,12 @@ import { type TopBarEdit, TopBarEditProvider, useTopBarEdit } from "../topBarEdi
 afterEach(cleanup);
 
 describe("TopBar render contract", () => {
-    it("emits the mode and the AI state, and reflects the AI state on the toggle", () => {
-        render(<TopBar onSearchClick={vi.fn()} aiOpen onAiOpenChange={vi.fn()} />);
+    it("emits the mode", () => {
+        render(<TopBar onSearchClick={vi.fn()} />);
 
         const bar = screen.getByRole("banner");
         expect(bar.className).toContain("dextinityTopBar");
-        expect([bar.dataset.mode, bar.dataset.aiopen]).toStrictEqual(["browse", ""]);
-        expect(screen.getByRole("switch", { name: "AI assistant" }).getAttribute("aria-checked")).toBe("true");
+        expect(bar.dataset.mode).toBe("browse");
     });
 
     it("shows the back button instead of the search in edit mode", () => {

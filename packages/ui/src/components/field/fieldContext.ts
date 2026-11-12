@@ -7,7 +7,7 @@ export interface FieldContextValue {
     ownerState: FieldOwnerState;
     /** Shows the field as loading while an action at the label is running. */
     setActionPending: (pending: boolean) => void;
-    /** Content shown between the control and the message, e.g. an AI suggestion to accept or discard. */
+    /** Content shown between the control and the message, e.g. a translation to accept or discard. */
     setActionContent: (content: ReactNode) => void;
 }
 

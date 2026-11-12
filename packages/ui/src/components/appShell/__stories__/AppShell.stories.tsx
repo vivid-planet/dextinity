@@ -4,7 +4,6 @@ import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { ProductLogo, ProductSign } from "../../../storybook/ProductLogo";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import { AIPanel, type AIPanelMessage } from "../../aiPanel/AIPanel";
 import { Button } from "../../button/Button";
 import { CommandPalette } from "../../commandPalette/CommandPalette";
 import { Icon } from "../../icon/Icon";
@@ -19,12 +18,6 @@ import { useTopBarEdit } from "../../topBar/topBarEdit";
 import { AppShell, type AppShellProps } from "../AppShell";
 import appShellTokens from "../AppShell.tokens.scss?raw";
 import styles from "./AppShell.stories.module.scss";
-
-const greeting: AIPanelMessage = {
-    id: "greeting",
-    role: "assistant",
-    content: "Hello Max. I know the content of the career portal in the scope Austria · German. Ask me something or pick a suggestion.",
-};
 
 function StoryNav() {
     const [activeId, setActiveId] = useState("job-ads");
@@ -42,29 +35,6 @@ function StoryNav() {
             onNavigate={(item, event) => {
                 event.preventDefault();
                 setActiveId(item.id);
-            }}
-        />
-    );
-}
-
-function StoryAIPanel({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
-    const [value, setValue] = useState("");
-    const [messages, setMessages] = useState([greeting]);
-    return (
-        <AIPanel
-            open={open}
-            onOpenChange={onOpenChange}
-            context="Job ads · Austria · German"
-            messages={messages}
-            suggestions={[
-                { label: "What expires this week?", prompt: "Which job ads expire this week?" },
-                { label: "Find drafts", prompt: "Which job ads are still drafts?" },
-            ]}
-            value={value}
-            onValueChange={setValue}
-            onSend={(prompt) => {
-                setMessages((current) => [...current, { id: `${current.length}`, role: "user", content: prompt }]);
-                setValue("");
             }}
         />
     );
@@ -88,30 +58,14 @@ function StoryPage() {
 
 function ControlledAppShell(props: AppShellProps) {
     const [navCollapsed, setNavCollapsed] = useState(props.navCollapsed);
-    const [aiOpen, setAiOpen] = useState(props.aiOpen ?? false);
     const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
     const [query, setQuery] = useState("");
-    function changeAiOpen(open: boolean) {
-        setAiOpen(open);
-        props.onAiOpenChange?.(open);
-    }
     return (
         <>
             <AppShell
                 {...props}
                 nav={<StoryNav />}
-                topBar={
-                    <TopBar
-                        onSearchClick={() => setCommandPaletteOpen(true)}
-                        scope={<StoryScopeSwitcher />}
-                        aiOpen={aiOpen}
-                        onAiOpenChange={changeAiOpen}
-                        userMenu={<StoryUserMenu />}
-                    />
-                }
-                aiPanel={<StoryAIPanel open={aiOpen} onOpenChange={changeAiOpen} />}
-                aiOpen={aiOpen}
-                onAiOpenChange={changeAiOpen}
+                topBar={<TopBar onSearchClick={() => setCommandPaletteOpen(true)} scope={<StoryScopeSwitcher />} userMenu={<StoryUserMenu />} />}
                 navCollapsed={navCollapsed}
                 onNavCollapsedChange={(collapsed) => {
                     setNavCollapsed(collapsed);
@@ -129,13 +83,6 @@ function ControlledAppShell(props: AppShellProps) {
                     {
                         label: "Commands",
                         items: [
-                            {
-                                id: "ai",
-                                label: "Toggle AI assistant",
-                                icon: <Icon name="artificial-intelligence" />,
-                                shortcut: "⌘J",
-                                onSelect: () => changeAiOpen(!aiOpen),
-                            },
                             {
                                 id: "nav",
                                 label: "Collapse navigation",
@@ -163,16 +110,13 @@ const meta = {
         children: null,
         navCollapsed: false,
         onNavCollapsedChange: fn(),
-        onAiOpenChange: fn(),
     },
     argTypes: {
-        aiOpen: { control: "boolean" },
         navCollapsed: { control: "boolean" },
         disableShortcuts: { control: "boolean" },
         nav: { control: false },
         topBar: { control: false },
         children: { control: false },
-        aiPanel: { control: false },
         labels: { control: false },
         className: { control: false },
         slotProps: { control: false },
@@ -184,9 +128,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Navigation, top bar, content, and AI assistant. From 1280px the navigation is open or collapsed and the assistant sits next to the
- * content; from 768px the navigation shows icons and the assistant lies over the content; below, the navigation is a drawer behind the
- * menu button and the assistant a sheet from the bottom. ⌘\ collapses the navigation, ⌘J toggles the assistant, ⌘K opens the search.
+ * Navigation, top bar, and content. From 1280px the navigation is open or collapsed; from 768px it shows icons; below, it is a drawer
+ * behind the menu button. ⌘\ collapses the navigation, ⌘K opens the search.
  *
  * **Rules**
  *
@@ -195,18 +138,12 @@ type Story = StoryObj<typeof meta>;
  * - Don't build a top bar per screen, and don't color apps differently: only the logo differs.
  */
 export const Default: Story = {
-    play: async ({ args }) => {
-        await userEvent.keyboard("{Control>}j{/Control}");
-        await waitFor(() => expect(args.onAiOpenChange).toHaveBeenLastCalledWith(true));
-        await waitFor(() => expect(screen.getByRole("complementary", { name: "AI assistant" })).toBeVisible());
-        await userEvent.click(screen.getByRole("button", { name: "Close AI assistant" }));
-        await waitFor(() => expect(args.onAiOpenChange).toHaveBeenLastCalledWith(false));
-    },
-};
-
-export const AiOpen: Story = {
-    args: {
-        aiOpen: true,
+    play: async () => {
+        await userEvent.click(screen.getByRole("button", { name: "Search, jump, create …" }));
+        const input = await screen.findByRole("combobox", { name: "Search, jump, create …" });
+        await waitFor(() => expect(input).toHaveFocus());
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("combobox")).toBeNull());
     },
 };
 
@@ -248,8 +185,8 @@ function StoryEditFlow() {
 }
 
 /**
- * A page switches the top bar to its edit mode with `useTopBarEdit`: back, what is edited, and the editing actions replace search
- * and toggles while the page is shown. Leave the `TopBar`'s `mode` unset.
+ * A page switches the top bar to its edit mode with `useTopBarEdit`: back, what is edited, and the editing actions replace search,
+ * scope, and user menu while the page is shown. Leave the `TopBar`'s `mode` unset.
  */
 export const EditingPage: Story = {
     args: { children: <StoryEditFlow /> },

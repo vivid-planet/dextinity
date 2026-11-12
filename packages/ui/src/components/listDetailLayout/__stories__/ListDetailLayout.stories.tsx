@@ -4,10 +4,10 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { PageTypeShell, StructureFrame, StructureRegion } from "../../../storybook/pageTypes/PageTypeShell";
 import { PatternLegend, PatternPage, PatternRules, PatternSection, PatternUses } from "../../../storybook/patterns/PatternPage";
+import { StoryTable, type StoryTableColumn } from "../../../storybook/StoryTable";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Chip } from "../../chip/Chip";
-import { DataGrid, type DataGridColumn } from "../../dataGrid/DataGrid";
 import { FilterBar } from "../../filterBar/FilterBar";
 import { FilterChip } from "../../filterChip/FilterChip";
 import { Icon } from "../../icon/Icon";
@@ -90,7 +90,7 @@ const initialRedirects: Redirect[] = [
     },
 ];
 
-const columns: DataGridColumn<Redirect>[] = [
+const columns: StoryTableColumn<Redirect>[] = [
     { key: "source", header: "Source", render: (redirect) => <span className={styles.mono}>{redirect.source}</span> },
     {
         key: "target",
@@ -105,12 +105,10 @@ const columns: DataGridColumn<Redirect>[] = [
             </span>
         ),
     },
-    { key: "type", header: "Type", width: 90, priority: "low", render: (redirect) => <span className={styles.muted}>{redirect.type}</span> },
+    { key: "type", header: "Type", render: (redirect) => <span className={styles.muted}>{redirect.type}</span> },
     {
         key: "origin",
         header: "Origin",
-        width: 120,
-        priority: "low",
         render: (redirect) => (
             <Chip size="small" color={redirect.automatic ? "info" : "secondary"} variant={redirect.automatic ? "contained" : "outlined"}>
                 {redirect.automatic ? "Automatic" : "Manual"}
@@ -120,7 +118,6 @@ const columns: DataGridColumn<Redirect>[] = [
     {
         key: "status",
         header: "Status",
-        width: 130,
         render: (redirect) => (
             <StatusIndicator status={redirect.active ? "published" : "unpublished"}>{redirect.active ? "Active" : "Inactive"}</StatusIndicator>
         ),
@@ -255,11 +252,12 @@ function RedirectsPage({ initialOpenId }: { initialOpenId?: string }) {
                 )
             }
         >
-            <DataGrid
+            <StoryTable
                 aria-label="Redirects"
                 columns={columns}
                 rows={rows}
                 getRowId={(redirect) => redirect.id}
+                getRowLabel={(redirect) => redirect.source}
                 onRowClick={(redirect) => setOpenId(redirect.id)}
             />
         </ListDetailLayout>

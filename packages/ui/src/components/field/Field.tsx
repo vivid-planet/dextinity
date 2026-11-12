@@ -101,7 +101,7 @@ export interface FieldBaseProps {
     prefix?: ReactNode;
     /** Icon or unit after the control. Replaced by a spinner while `loading`. */
     suffix?: ReactNode;
-    /** Actions at the label, usually `FieldActions` for translate and AI. */
+    /** Actions at the label, usually `FieldActions` for translate. */
     actions?: ReactNode;
 }
 

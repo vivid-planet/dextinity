@@ -55,7 +55,7 @@ const preview: Preview = {
                         "Modals & overlays",
                     ],
                     "Shell",
-                    ["App frame", "Navigation", "Top bar & scope", "AI assistant", "Search & commands"],
+                    ["App frame", "Navigation", "Top bar & scope", "Search & commands"],
                     "Patterns",
                     [
                         "Search & filter",
@@ -63,7 +63,7 @@ const preview: Preview = {
                         "Save & status",
                         "Undo instead of confirm",
                         "Empty, loading & error",
-                        "Translate & AI at the field",
+                        "Translation at the field",
                         "Drag & drop",
                         "Keyboard",
                         "Actions",

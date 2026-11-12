@@ -6,9 +6,6 @@
     --dextinity-badge-font-weight: 600;
     --dextinity-badge-icon-size: 12px;
 
-    // Marks AI-generated content (EU AI Act); a deeper shade of the accent
-    --dextinity-badge-ai-background: color-mix(in oklch, var(--dextinity-color-accent) 72%, var(--dextinity-color-text));
-    --dextinity-badge-ai-foreground: var(--dextinity-color-accent-foreground);
     --dextinity-badge-warning-background: var(--dextinity-color-warning);
     --dextinity-badge-warning-foreground: color-mix(in oklch, var(--dextinity-color-warning) 25%, black);
 

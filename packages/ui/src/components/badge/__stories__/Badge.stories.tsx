@@ -13,13 +13,13 @@ const meta = {
     decorators: [themeDecorator],
     parameters: { tokens: badgeTokens },
     args: {
-        variant: "ai",
-        tooltip: "Generated with AI",
+        variant: "warning",
+        tooltip: "Alt text missing",
     },
     argTypes: {
         variant: {
             control: "select",
-            options: ["ai", "warning", "count", "dot"],
+            options: ["warning", "count", "dot"],
         },
         children: { control: "text" },
         className: { control: false },
@@ -31,7 +31,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Marks AI-generated content, as the EU AI Act requires.
+ * A problem on the element, e.g. a missing alt text. The tooltip names it and shows on hover and keyboard focus.
  *
  * **Rules**
  *
@@ -41,18 +41,8 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     play: async ({ canvas }) => {
         await userEvent.tab();
-        await expect(canvas.getByText("AI")).toHaveFocus();
-        await expect(await screen.findByRole("tooltip")).toHaveTextContent("Generated with AI");
-    },
-};
-
-/**
- * A problem on the element, e.g. a missing alt text. The tooltip names it.
- */
-export const Warning: Story = {
-    args: {
-        variant: "warning",
-        tooltip: "Alt text missing",
+        await expect(canvas.getByRole("img", { name: "Alt text missing" })).toHaveFocus();
+        await expect(await screen.findByRole("tooltip")).toHaveTextContent("Alt text missing");
     },
 };
 

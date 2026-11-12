@@ -140,11 +140,11 @@ export const Lists: Story = {
 };
 
 /**
- * Translate and AI at the label, as on other fields.
+ * Translate at the label, as on other fields.
  */
 export const WithActions: Story = {
     args: {
-        actions: <FieldActions translate aiAssist onAiSuggest={() => Promise.resolve("Shape the interfaces of Dextinity with us.")} />,
+        actions: <FieldActions translate onTranslate={() => undefined} />,
     },
 };
 

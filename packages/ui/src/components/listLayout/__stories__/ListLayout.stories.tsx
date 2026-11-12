@@ -4,9 +4,10 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { PageTypeShell, StructureFrame, StructureRegion } from "../../../storybook/pageTypes/PageTypeShell";
 import { PatternLegend, PatternPage, PatternRules, PatternSection, PatternUses } from "../../../storybook/patterns/PatternPage";
+import { StoryTable, type StoryTableColumn } from "../../../storybook/StoryTable";
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { BulkActionBar } from "../../bulkActionBar/BulkActionBar";
 import { Button } from "../../button/Button";
-import { DataGrid, type DataGridColumn, type DataGridSort } from "../../dataGrid/DataGrid";
 import { EmptyState } from "../../emptyState/EmptyState";
 import { FilterBar } from "../../filterBar/FilterBar";
 import { FilterChip } from "../../filterChip/FilterChip";
@@ -16,6 +17,7 @@ import { Menu } from "../../menu/Menu";
 import { MenuItem } from "../../menu/MenuItem";
 import { MenuSeparator } from "../../menu/MenuSeparator";
 import { PageHeader } from "../../pageHeader/PageHeader";
+import { Pagination } from "../../pagination/Pagination";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { ListLayout } from "../ListLayout";
 import listLayoutTokens from "../ListLayout.tokens.scss?raw";
@@ -54,12 +56,12 @@ const statusFilters: { value: JobStatus | "all"; label: string }[] = [
     { value: "archived", label: "Archived" },
 ];
 
-const columns: DataGridColumn<Job>[] = [
-    { key: "title", header: "Title", sortable: true, render: (job) => <span className={styles.title}>{job.title}</span> },
-    { key: "location", header: "Location", sortable: true, priority: "low", render: (job) => <span className={styles.muted}>{job.location}</span> },
-    { key: "department", header: "Department", priority: "low", render: (job) => <span className={styles.muted}>{job.department}</span> },
-    { key: "updated", header: "Updated", width: 130, priority: "low", render: (job) => <span className={styles.muted}>{job.updated}</span> },
-    { key: "status", header: "Status", width: 150, render: (job) => <StatusIndicator status={job.status} /> },
+const columns: StoryTableColumn<Job>[] = [
+    { key: "title", header: "Title", render: (job) => <span className={styles.title}>{job.title}</span> },
+    { key: "location", header: "Location", render: (job) => <span className={styles.muted}>{job.location}</span> },
+    { key: "department", header: "Department", render: (job) => <span className={styles.muted}>{job.department}</span> },
+    { key: "updated", header: "Updated", render: (job) => <span className={styles.muted}>{job.updated}</span> },
+    { key: "status", header: "Status", render: (job) => <StatusIndicator status={job.status} /> },
 ];
 
 function RowMenu({ job }: { job: Job }) {
@@ -83,29 +85,16 @@ function RowMenu({ job }: { job: Job }) {
     );
 }
 
-function sortJobs(rows: Job[], sort: DataGridSort | undefined) {
-    if (sort == null) {
-        return rows;
-    }
-    const key = sort.key as keyof Job;
-    const factor = sort.direction === "asc" ? 1 : -1;
-    return [...rows].sort((a, b) => a[key].localeCompare(b[key]) * factor);
-}
-
 function JobAdsPage() {
     const [search, setSearch] = useState("");
     const [status, setStatus] = useState<JobStatus | "all">("all");
-    const [sort, setSort] = useState<DataGridSort | undefined>({ key: "title", direction: "asc" });
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
     const matches = jobs.filter((job) => `${job.title} ${job.location}`.toLowerCase().includes(search.toLowerCase()));
     const countFor = (value: JobStatus | "all") => matches.filter((job) => value === "all" || job.status === value).length;
-    const results = sortJobs(
-        matches.filter((job) => status === "all" || job.status === status),
-        sort,
-    );
+    const results = matches.filter((job) => status === "all" || job.status === status).sort((a, b) => a.title.localeCompare(b.title));
     const pageRows = results.slice((page - 1) * pageSize, page * pageSize);
 
     function resetFilters() {
@@ -157,45 +146,52 @@ function JobAdsPage() {
                 </FilterBar>
             }
         >
-            <DataGrid
-                aria-label="Job ads"
-                columns={columns}
-                rows={pageRows}
-                getRowId={(job) => job.id}
-                selectable
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-                sort={sort}
-                onSortChange={setSort}
-                onRowClick={() => undefined}
-                rowActions={(job) => <RowMenu job={job} />}
-                bulkActions={[
-                    { label: "Publish", icon: <Icon name="check" />, onClick: () => setSelectedIds([]) },
-                    { label: "Archive", icon: <Icon name="archive" />, onClick: () => setSelectedIds([]) },
-                ]}
-                pagination={{
-                    page,
-                    pageSize,
-                    total: results.length,
-                    onPageChange: setPage,
-                    onPageSizeChange: (nextPageSize) => {
+            <div className={styles.list}>
+                <StoryTable
+                    aria-label="Job ads"
+                    columns={columns}
+                    rows={pageRows}
+                    getRowId={(job) => job.id}
+                    getRowLabel={(job) => job.title}
+                    selectedIds={selectedIds}
+                    onSelectionChange={setSelectedIds}
+                    onRowClick={() => undefined}
+                    rowActions={(job) => <RowMenu job={job} />}
+                    emptyState={
+                        <EmptyState
+                            icon={<Icon name="search" />}
+                            title={`No matches for “${search}”`}
+                            description="Check the spelling or reset the filters."
+                            actions={
+                                <Button variant="outlined" color="secondary" size="small" onClick={resetFilters}>
+                                    Reset filters
+                                </Button>
+                            }
+                        />
+                    }
+                />
+                {selectedIds.length > 0 && (
+                    <BulkActionBar
+                        className={styles.bulkActionBar}
+                        count={selectedIds.length}
+                        onClear={() => setSelectedIds([])}
+                        actions={[
+                            { label: "Publish", icon: <Icon name="check" />, onClick: () => setSelectedIds([]) },
+                            { label: "Archive", icon: <Icon name="archive" />, onClick: () => setSelectedIds([]) },
+                        ]}
+                    />
+                )}
+                <Pagination
+                    page={page}
+                    pageSize={pageSize}
+                    total={results.length}
+                    onPageChange={setPage}
+                    onPageSizeChange={(nextPageSize) => {
                         setPageSize(nextPageSize);
                         setPage(1);
-                    },
-                }}
-                emptyState={
-                    <EmptyState
-                        icon={<Icon name="search" />}
-                        title={`No matches for “${search}”`}
-                        description="Check the spelling or reset the filters."
-                        actions={
-                            <Button variant="outlined" color="secondary" size="small" onClick={resetFilters}>
-                                Reset filters
-                            </Button>
-                        }
-                    />
-                }
-            />
+                    }}
+                />
+            </div>
         </ListLayout>
     );
 }
@@ -210,7 +206,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    "Structured content of one type as a table: the page header with scope, count, and primary action; a toolbar with search, status filters, and more filters; the `DataGrid` with selection, sorting, row menu, and paging. A row opens the edit page; with a selection, the bulk action bar appears above the paging.",
+                    "Structured content of one type as a table: the page header with scope, count, and primary action; a toolbar with search, status filters, and more filters; the table with selection, sorting, row menu, and paging. A row opens the edit page; with a selection, the bulk action bar appears above the paging.",
             },
             story: { inline: false, height: "960px" },
         },
@@ -233,7 +229,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * The job ads of the career portal inside the app frame.
+ * The job ads of the career portal inside the app frame. The table here is a placeholder built from plain markup, `Checkbox`,
+ * `BulkActionBar`, and `Pagination`.
  *
  * **Rules**
  *
@@ -282,7 +279,7 @@ export const Structure: Story = {
                             toolbar={<StructureRegion number={2} label="Search · filter chips · more filters" />}
                         >
                             <div className={styles.structureContent}>
-                                <StructureRegion number={3} label="DataGrid" variant="accent" />
+                                <StructureRegion number={3} label="Table" variant="accent" />
                                 <StructureRegion number={4} label="Footer · paging" />
                             </div>
                         </ListLayout>
@@ -291,7 +288,7 @@ export const Structure: Story = {
                         items={[
                             { title: "Page header", description: "Scope, count, primary action." },
                             { title: "Toolbar", description: "Search (/), status filters, more filters, export." },
-                            { title: "DataGrid", description: "Selection, sorting, row menu. A row opens the edit page." },
+                            { title: "Table", description: "Selection, sorting, row menu. A row opens the edit page." },
                             { title: "Footer", description: "Sorting, per page, pages. The bulk action bar appears above it with a selection." },
                         ]}
                     />

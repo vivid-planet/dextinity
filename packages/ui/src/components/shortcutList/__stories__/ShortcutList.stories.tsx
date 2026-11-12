@@ -13,7 +13,7 @@ const meta = {
     args: {
         shortcuts: [
             { keys: ["⌘", "K"], description: "Command palette" },
-            { keys: ["⌘", "J"], description: "AI assistant" },
+            { keys: ["⌘", "\\"], description: "Collapse or expand the navigation" },
             { keys: ["/"], description: "Search the list" },
             { keys: ["?"], description: "Show keyboard shortcuts" },
             { keys: ["Esc"], description: "Close, clear the selection" },

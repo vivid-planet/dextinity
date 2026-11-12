@@ -224,7 +224,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    "Moving in the tree, in the finder, and between blocks. `TreeView` (`draggable`), `BlockList` and `AssetBrowser` handle dragging and its keyboard alternative; `useUndoToast` reports each move with Undo.",
+                    "Moving in the tree, in the finder, and between blocks. `TreeView` (`draggable`) and `BlockList` handle dragging and its keyboard alternative; `useUndoToast` reports each move with Undo.",
             },
         },
     },

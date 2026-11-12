@@ -12,7 +12,6 @@ import styles from "./FieldActions.module.scss";
  */
 export type FieldActionsOwnerState = {
     translate: boolean;
-    aiassist: boolean;
 };
 
 /**
@@ -21,36 +20,23 @@ export type FieldActionsOwnerState = {
 export interface FieldActionsLabels {
     /** The accessible name of the translate button. */
     translate: string;
-    /** The accessible name of the AI button. */
-    aiAssist: string;
-    /** The heading and accessible name of a suggestion from `onAiSuggest`. */
-    suggestion: string;
     /** The heading and accessible name of a translation from `onTranslateSuggest`. */
     translation: string;
-    /** The button that applies the suggestion or translation. */
+    /** The button that applies the translation. */
     accept: string;
-    /** The button that drops the suggestion or translation. */
+    /** The button that drops the translation. */
     discard: string;
 }
 
 const defaultLabels: FieldActionsLabels = {
     translate: "Translate",
-    aiAssist: "Improve with AI",
-    suggestion: "AI suggestion",
     translation: "Translation",
     accept: "Accept",
     discard: "Discard",
 };
 
-type FieldAction = "translate" | "aiAssist";
-
 function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
     return typeof value === "object" && value !== null && "then" in value && typeof value.then === "function";
-}
-
-interface Suggestion {
-    action: FieldAction;
-    text: string;
 }
 
 export interface FieldActionsProps extends Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children" | "translate"> {
@@ -60,12 +46,6 @@ export interface FieldActionsProps extends Omit<HTMLAttributes<HTMLSpanElement>,
      * @defaultValue `false`
      */
     translate?: boolean;
-    /**
-     * Shows "Improve with AI".
-     *
-     * @defaultValue `false`
-     */
-    aiAssist?: boolean;
     /**
      * The locales passed to `onTranslate`, to translate the content into other locales. Leave empty when `onTranslate` translates the field's
      * content in place or asks for the locales itself, e.g. with a locale picker.
@@ -81,60 +61,49 @@ export interface FieldActionsProps extends Omit<HTMLAttributes<HTMLSpanElement>,
     onTranslate?: (targetLocales: string[]) => unknown;
     /**
      * Instead of `onTranslate`: delivers the translation of the field's content for the user to review. The field shows as loading until it
-     * resolves, then offers the translation to accept or discard, like an AI suggestion.
+     * resolves, then offers the translation to accept or discard.
      */
     onTranslateSuggest?: () => Promise<string>;
     /** Called when the user accepts the translation from `onTranslateSuggest`; set the field's value from it. */
     onTranslateAccept?: (translation: string) => void;
     /** Called when the promise of `onTranslate` or `onTranslateSuggest` rejects. */
     onTranslateError?: (error: unknown) => void;
-    /** Delivers the suggestion. The field shows as loading until it resolves, then offers the suggestion to accept or discard. */
-    onAiSuggest?: () => Promise<string>;
-    /** Called when the user accepts the suggestion; set the field's value from it. */
-    onAiAccept?: (suggestion: string) => void;
-    /** Called when `onAiSuggest` fails. */
-    onAiError?: (error: unknown) => void;
-    /** Texts of the actions and the suggestion, for translation. */
+    /** Texts of the action and the translation to review, for translation. */
     labels?: Partial<FieldActionsLabels>;
     /** Added alongside the component's own classes. */
     className?: string;
 }
 
 /**
- * Translate and AI at a field's label. Pass it to a field's `actions`; the field shows the loading state and the suggestion.
+ * Translate at a field's label. Pass it to a field's `actions`; the field shows the loading state and the translation to review.
  */
 export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(function FieldActions(
     {
         translate = false,
-        aiAssist = false,
         targetLocales = [],
         onTranslate,
         onTranslateSuggest,
         onTranslateAccept,
         onTranslateError,
-        onAiSuggest,
-        onAiAccept,
-        onAiError,
         labels: labelsProp,
         className,
         ...restProps
     },
     ref,
 ) {
-    const ownerState: FieldActionsOwnerState = { translate, aiassist: aiAssist };
+    const ownerState: FieldActionsOwnerState = { translate };
     const labels = { ...defaultLabels, ...labelsProp };
     const field = useFieldContext();
     const setActionPending = field?.setActionPending;
     const setActionContent = field?.setActionContent;
     const disabled = field != null && (field.ownerState.disabled || field.ownerState.readOnly);
 
-    const [pendingAction, setPendingAction] = useState<FieldAction | null>(null);
-    const pending = pendingAction != null;
-    const [suggestion, setSuggestion] = useState<Suggestion | null>(null);
+    const [pending, setPending] = useState(false);
+    const [suggestion, setSuggestion] = useState<string | null>(null);
 
     const controlId = field?.control.id;
-    const latest = useRef({ onAiAccept, onTranslateAccept, labels, controlId });
-    latest.current = { onAiAccept, onTranslateAccept, labels, controlId };
+    const latest = useRef({ onTranslateAccept, labels, controlId });
+    latest.current = { onTranslateAccept, labels, controlId };
     const suggestionRef = useRef<HTMLDivElement | null>(null);
 
     const mounted = useRef(true);
@@ -158,7 +127,6 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
             return;
         }
         const { labels: currentLabels } = latest.current;
-        const isTranslation = suggestion.action === "translate";
         const close = () => {
             setSuggestion(null);
             const id = latest.current.controlId;
@@ -174,24 +142,19 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
                 }}
                 className={styles.suggestion}
                 role="group"
-                aria-label={isTranslation ? currentLabels.translation : currentLabels.suggestion}
+                aria-label={currentLabels.translation}
                 tabIndex={-1}
-                data-action={suggestion.action}
             >
                 <span className={styles.suggestionLabel} aria-hidden>
-                    <Icon name={isTranslation ? "translate" : "artificial-intelligence"} />
-                    {isTranslation ? currentLabels.translation : currentLabels.suggestion}
+                    <Icon name="translate" />
+                    {currentLabels.translation}
                 </span>
-                <p className={styles.suggestionText}>{suggestion.text}</p>
+                <p className={styles.suggestionText}>{suggestion}</p>
                 <span className={styles.suggestionActions}>
                     <Button
                         size="small"
                         onClick={() => {
-                            if (isTranslation) {
-                                latest.current.onTranslateAccept?.(suggestion.text);
-                            } else {
-                                latest.current.onAiAccept?.(suggestion.text);
-                            }
+                            latest.current.onTranslateAccept?.(suggestion);
                             close();
                         }}
                     >
@@ -213,7 +176,7 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
         [setActionContent, setActionPending],
     );
 
-    async function run(action: FieldAction, task: () => unknown, onError: ((error: unknown) => void) | undefined, suggests: boolean) {
+    async function run(task: () => unknown, suggests: boolean) {
         if (pending) {
             return;
         }
@@ -223,66 +186,41 @@ export const FieldActions = forwardRef<HTMLSpanElement, FieldActionsProps>(funct
             if (!isPromiseLike(result)) {
                 return;
             }
-            setPendingAction(action);
+            setPending(true);
             const text: unknown = await result;
             if (suggests && mounted.current && typeof text === "string") {
-                setSuggestion({ action, text });
+                setSuggestion(text);
             }
         } catch (error) {
-            onError?.(error);
+            onTranslateError?.(error);
         } finally {
             if (mounted.current) {
-                setPendingAction(null);
+                setPending(false);
             }
         }
     }
 
     function translateContent() {
         if (onTranslateSuggest != null) {
-            void run("translate", onTranslateSuggest, onTranslateError, true);
+            void run(onTranslateSuggest, true);
         } else if (onTranslate != null) {
-            void run("translate", () => onTranslate(targetLocales), onTranslateError, false);
-        }
-    }
-
-    function requestSuggestion() {
-        if (onAiSuggest != null) {
-            void run("aiAssist", onAiSuggest, onAiError, true);
+            void run(() => onTranslate(targetLocales), false);
         }
     }
 
     return (
-        <span
-            {...restProps}
-            ref={ref}
-            className={clsx(styles.root, className)}
-            data-translate={ownerState.translate ? "" : undefined}
-            data-aiassist={ownerState.aiassist ? "" : undefined}
-        >
+        <span {...restProps} ref={ref} className={clsx(styles.root, className)} data-translate={ownerState.translate ? "" : undefined}>
             {translate && (
                 <IconButton
                     variant="text"
                     color="secondary"
                     size="small"
                     aria-label={labels.translate}
-                    disabled={disabled || (pending && pendingAction !== "translate")}
-                    loading={pendingAction === "translate"}
+                    disabled={disabled}
+                    loading={pending}
                     onClick={translateContent}
                 >
                     <Icon name="translate" />
-                </IconButton>
-            )}
-            {aiAssist && (
-                <IconButton
-                    variant="text"
-                    color="secondary"
-                    size="small"
-                    aria-label={labels.aiAssist}
-                    disabled={disabled || (pending && pendingAction !== "aiAssist")}
-                    loading={pendingAction === "aiAssist"}
-                    onClick={requestSuggestion}
-                >
-                    <Icon name="artificial-intelligence" />
                 </IconButton>
             )}
         </span>

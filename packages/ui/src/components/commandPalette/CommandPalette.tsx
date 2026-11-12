@@ -19,7 +19,7 @@ export interface CommandPaletteItem {
     /** Called when the entry is chosen with Enter or a click; the palette then closes. */
     onSelect: () => void;
     icon?: ReactNode;
-    /** Shown at the end, so people learn it, e.g. `⌘J`. */
+    /** Shown at the end, so people learn it, e.g. `⌘N`. */
     shortcut?: string;
     /** Further terms the filter finds the entry by. */
     keywords?: string[];

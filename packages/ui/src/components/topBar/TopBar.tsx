@@ -15,8 +15,6 @@ export interface TopBarLabels {
     search: string;
     /** The search trigger's keyboard hint. */
     searchShortcut: string;
-    /** The AI assistant toggle. */
-    ai: string;
     /** The menu button that opens the navigation on narrow windows. */
     menu: string;
 }
@@ -24,7 +22,6 @@ export interface TopBarLabels {
 const defaultLabels: TopBarLabels = {
     search: "Search, jump, create …",
     searchShortcut: "⌘K",
-    ai: "AI assistant",
     menu: "Open navigation",
 };
 
@@ -43,12 +40,11 @@ export interface TopBarBack {
  */
 export type TopBarOwnerState = {
     mode: TopBarMode;
-    aiOpen: boolean;
 };
 
 export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children" | "title"> {
     /**
-     * `browse` shows search, scope, AI toggle, and user menu; `edit` replaces them with the back button, the title, and the editing
+     * `browse` shows search, scope, and user menu; `edit` replaces them with the back button, the title, and the editing
      * actions. Leave it unset to follow the page: `edit` while a page sets it with `useTopBarEdit`, `browse` otherwise.
      */
     mode?: TopBarMode;
@@ -56,14 +52,6 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
     onSearchClick?: () => void;
     /** The scope picker, usually a `ScopeSwitcher`. The scope is global, so it lives only here. */
     scope?: ReactNode;
-    /**
-     * Whether the AI assistant is open.
-     *
-     * @defaultValue `false`
-     */
-    aiOpen?: boolean;
-    /** Shows the AI assistant toggle. */
-    onAiOpenChange?: (open: boolean) => void;
     /**
      * Only in `browse`: the app's own controls, before the scope, e.g. a popover with the status of the site's builds. Keep them few
      * and compact, e.g. icon buttons.
@@ -89,7 +77,7 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
 }
 
 /**
- * The glass bar above the content: search, the app's own actions, scope, AI assistant, and user menu while browsing; back and the editing actions while
+ * The glass bar above the content: search, the app's own actions, scope, and user menu while browsing; back and the editing actions while
  * editing. The app name never appears here, only in the navigation.
  */
 export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
@@ -97,8 +85,6 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
         mode: modeProp,
         onSearchClick,
         scope,
-        aiOpen = false,
-        onAiOpenChange,
         browseActions,
         userMenu,
         back: backProp,
@@ -114,20 +100,14 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
     const shell = useAppShellContext();
     const edit = useTopBarEditState();
     const labels = { ...defaultLabels, ...labelsProp };
-    const ownerState: TopBarOwnerState = { mode: modeProp ?? (edit != null ? "edit" : "browse"), aiOpen };
+    const ownerState: TopBarOwnerState = { mode: modeProp ?? (edit != null ? "edit" : "browse") };
     const back = backProp ?? edit?.back;
     const title = titleProp ?? edit?.title;
     const actions = actionsProp ?? edit?.actions;
     const onMenuClick = onMenuClickProp ?? shell?.onNavDrawerOpen;
 
     return (
-        <header
-            {...restProps}
-            ref={ref}
-            data-mode={ownerState.mode}
-            data-aiopen={ownerState.aiOpen ? "" : undefined}
-            className={clsx(styles.root, className)}
-        >
+        <header {...restProps} ref={ref} data-mode={ownerState.mode} className={clsx(styles.root, className)}>
             {onMenuClick != null && (
                 <IconButton variant="text" color="secondary" aria-label={labels.menu} onClick={onMenuClick} className={styles.menuButton}>
                     <Icon name="hamburger" />
@@ -155,20 +135,6 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
                     <div className={styles.actions}>
                         {browseActions}
                         {scope}
-                        {onAiOpenChange != null && (
-                            <button
-                                type="button"
-                                role="switch"
-                                aria-checked={ownerState.aiOpen}
-                                aria-label={labels.ai}
-                                onClick={() => onAiOpenChange(!ownerState.aiOpen)}
-                                className={styles.aiToggle}
-                            >
-                                <Icon name="artificial-intelligence" className={styles.aiIcon} />
-                                <span className={styles.aiLabel}>{labels.ai}</span>
-                                <span className={styles.aiTrack} />
-                            </button>
-                        )}
                         {userMenu}
                     </div>
                 </>

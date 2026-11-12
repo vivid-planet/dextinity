@@ -555,7 +555,7 @@ export const Structure: Story = {
                         { title: "Header", description: "Back, kind · scope, title, status. The top bar is in its edit mode." },
                         { title: "Preview", description: "Device switch; a click selects the block." },
                         { title: "Panel", description: "Tabs Blocks, SEO, Settings. Breadcrumbs when blocks are nested." },
-                        { title: "Form", description: "Fields in sections, with translate and AI at the label." },
+                        { title: "Form", description: "Fields in sections, with translate at the label." },
                     ]}
                 />
             </PatternSection>

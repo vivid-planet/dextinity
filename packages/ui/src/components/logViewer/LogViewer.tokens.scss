@@ -1,24 +1,43 @@
 @mixin tokens {
+    // Corner radius of the log viewer
     --dextinity-log-viewer-radius: var(--dextinity-radius-control);
+    // Fill of the log viewer
     --dextinity-log-viewer-background: var(--dextinity-color-surface-sunken);
+    // Color of the log text
     --dextinity-log-viewer-foreground: var(--dextinity-color-text-secondary);
+    // Outline of the log viewer
     --dextinity-log-viewer-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+    // Line below the header
     --dextinity-log-viewer-line: var(--dextinity-color-line);
+    // Minimum height of the header
     --dextinity-log-viewer-header-height: var(--dextinity-density-header-height);
+    // Color of the title in the header
     --dextinity-log-viewer-title-color: var(--dextinity-color-text);
+    // Inline padding of the header and the line numbers
     --dextinity-log-viewer-padding: var(--dextinity-space-3);
+    // Space above the first and below the last log line
     --dextinity-log-viewer-padding-block: var(--dextinity-space-2);
-    // The log scrolls once it is taller
+    // Height at which the log starts to scroll
     --dextinity-log-viewer-max-height: 420px;
+    // Font size of the log lines
     --dextinity-log-viewer-font-size: var(--dextinity-typography-mono-size);
+    // Line height of the log lines
     --dextinity-log-viewer-line-height: 1.6;
+    // Color of the line numbers and of the empty state
     --dextinity-log-viewer-number-color: var(--dextinity-color-text-subtle);
+    // Fill of a hovered log line
     --dextinity-log-viewer-line-background-hover: var(--dextinity-color-fill-subtle);
+    // Fill of an error line
     --dextinity-log-viewer-line-error-background: var(--dextinity-color-danger-soft);
+    // Text color of an error line
     --dextinity-log-viewer-line-error-foreground: var(--dextinity-color-danger-text);
+    // Fill of a warning line
     --dextinity-log-viewer-line-warning-background: var(--dextinity-color-warning-soft);
+    // Text color of a warning line
     --dextinity-log-viewer-line-warning-foreground: var(--dextinity-color-warning-text);
+    // Text color of an info line
     --dextinity-log-viewer-line-info-foreground: var(--dextinity-color-info-text);
+    // Text color of a success line
     --dextinity-log-viewer-line-success-foreground: var(--dextinity-color-success-text);
 }
 

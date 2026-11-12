@@ -1,56 +1,93 @@
 @mixin tokens {
+    // Space between the label, the box, and the message
     --dextinity-field-gap: 7px;
+    // Height of a medium field
     --dextinity-field-height: var(--dextinity-density-field-height);
+    // Height of a small field
     --dextinity-field-height-small: var(--dextinity-density-control-height);
+    // Height of a large field
     --dextinity-field-height-large: calc(var(--dextinity-density-field-height) + var(--dextinity-space-2));
+    // Inline padding inside a field
     --dextinity-field-padding: var(--dextinity-space-3);
+    // Inline padding inside a small field
     --dextinity-field-padding-small: var(--dextinity-space-2-5);
+    // Corner radius of a field
     --dextinity-field-radius: var(--dextinity-radius-control);
-    // The box of a multi-line control with `layout="stacked"`, e.g. a text editor
+    // Corner radius of a field with `layout="stacked"`, e.g. a text editor
     --dextinity-field-radius-stacked: calc(12px * var(--dextinity-brand-radius-factor));
+    // Font size of the value in a medium field
     --dextinity-field-font-size: var(--dextinity-typography-body-size);
+    // Font size of the value in a small field
     --dextinity-field-font-size-small: var(--dextinity-typography-ui-size);
+    // Font size of the value in a large field
     --dextinity-field-font-size-large: 15px;
 
+    // Fill of a field
     --dextinity-field-background: var(--dextinity-color-surface-raised);
+    // Fill of a focused field or of a field with an open popup
     --dextinity-field-background-focus: var(--dextinity-color-surface);
+    // Fill of a read-only field
     --dextinity-field-background-read-only: transparent;
+    // Color of the value in a field
     --dextinity-field-foreground: var(--dextinity-color-text);
+    // Color of the placeholder text
     --dextinity-field-placeholder: var(--dextinity-color-text-subtle);
+    // Outline of a field
     --dextinity-field-line: var(--dextinity-color-line-strong);
+    // Outline of a hovered field
     --dextinity-field-line-hover: var(--dextinity-color-text-subtle);
-    // Twice the hairline: 1px normally, 2px in high contrast
+    // Width of the outline of a focused field or a field in a validation state
     --dextinity-field-line-width-focus: calc(var(--dextinity-line-width) * 2);
+    // Outline of a focused field
     --dextinity-field-line-focus: var(--dextinity-color-accent);
-    // Soft halo around the focused field
+    // Soft halo around a focused field
     --dextinity-field-halo-focus: var(--dextinity-color-accent-soft);
+    // Outline of a field in the error state
     --dextinity-field-line-error: var(--dextinity-color-danger);
+    // Halo around a field in the error state
     --dextinity-field-halo-error: var(--dextinity-color-danger-soft);
+    // Outline of a field in the warning state
     --dextinity-field-line-warning: var(--dextinity-color-warning);
+    // Halo around a field in the warning state
     --dextinity-field-halo-warning: var(--dextinity-color-warning-soft);
+    // Outline of a field in the success state
     --dextinity-field-line-success: var(--dextinity-color-success);
-    // Replaces the line of the validation state while the field is focused; `initial` keeps the state's line
+    // Outline of a focused field in a validation state; `initial` keeps the state's color
     --dextinity-field-line-focus-over-state: initial;
+    // Halo around a field in the success state
     --dextinity-field-halo-success: var(--dextinity-color-success-soft);
+    // Opacity of a disabled field
     --dextinity-field-disabled-opacity: 0.55;
 
+    // Font size of the label
     --dextinity-field-label-font-size: var(--dextinity-typography-ui-size);
+    // Font weight of the label
     --dextinity-field-label-font-weight: var(--dextinity-font-weight-medium);
+    // Color of the label
     --dextinity-field-label-color: var(--dextinity-color-text-secondary);
+    // Color of the required marker after the label
     --dextinity-field-required-color: var(--dextinity-color-danger-text);
-    // Character count and other details at the end of the label
+    // Color of the character count and other details at the end of the label
     --dextinity-field-counter-color: var(--dextinity-color-text-tertiary);
+    // Font size of the message below the field
     --dextinity-field-message-font-size: var(--dextinity-typography-small-size);
+    // Color of the message below the field
     --dextinity-field-message-color: var(--dextinity-color-text-tertiary);
+    // Color of the message in the error state
     --dextinity-field-message-color-error: var(--dextinity-color-danger-text);
+    // Color of the message in the warning state
     --dextinity-field-message-color-warning: var(--dextinity-color-warning-text);
+    // Color of the message in the success state
     --dextinity-field-message-color-success: var(--dextinity-color-success-text);
-    // Prefix and suffix, e.g. a domain or a unit
+    // Color of a prefix or suffix, e.g. a domain or a unit
     --dextinity-field-adornment-color: var(--dextinity-color-text-tertiary);
+    // Font of a prefix or suffix
     --dextinity-field-adornment-font-family: var(--dextinity-font-family-mono);
+    // Font size of a prefix or suffix
     --dextinity-field-adornment-font-size: var(--dextinity-typography-mono-size);
+    // Size of the icons inside a field
     --dextinity-field-icon-size: var(--dextinity-icon-size-small);
-    // Actions at the label, e.g. Translate, stay muted until the field is hovered or focused
+    // Opacity of the label actions, e.g. Translate, until the field is hovered or focused
     --dextinity-field-actions-idle-opacity: 0.55;
 }
 

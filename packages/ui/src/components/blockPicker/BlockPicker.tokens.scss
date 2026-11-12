@@ -1,26 +1,44 @@
 @mixin tokens {
+    // Space between the search field and the sections
     --dextinity-block-picker-gap: var(--dextinity-space-3);
+    // Height of the search field
     --dextinity-block-picker-search-height: var(--dextinity-density-field-height);
+    // Corner radius of the search field
     --dextinity-block-picker-search-radius: var(--dextinity-radius-control);
+    // Fill of the search field
     --dextinity-block-picker-search-background: var(--dextinity-color-surface-raised);
+    // Outline of the search field
     --dextinity-block-picker-search-line: var(--dextinity-color-line-strong);
+    // Color of a section title
     --dextinity-block-picker-section-title-color: var(--dextinity-color-text-tertiary);
 
+    // Corner radius of a block item
     --dextinity-block-picker-item-radius: var(--dextinity-radius-field);
+    // Padding inside a block item
     --dextinity-block-picker-item-padding: var(--dextinity-space-2) var(--dextinity-space-2-5);
+    // Fill of a block item
     --dextinity-block-picker-item-background: color-mix(in oklch, var(--dextinity-color-surface-raised) 60%, transparent);
+    // Outline of a block item
     --dextinity-block-picker-item-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
-    // Hovered items, and the first match that Enter in the search field adds
+    // Fill of a hovered item and of the first match that Enter in the search adds
     --dextinity-block-picker-item-background-hover: var(--dextinity-color-surface-raised);
+    // Outline of a hovered item and of the first match that Enter in the search adds
     --dextinity-block-picker-item-highlight-shadow: inset 0 0 0 1px var(--dextinity-color-accent);
-    // Name of a block in the picker
+    // Font size of a block's name
     --dextinity-block-picker-item-label-font-size: 13.5px;
+    // Size of a block's icon tile
     --dextinity-block-picker-item-icon-size: 32px;
+    // Corner radius of a block's icon tile
     --dextinity-block-picker-item-icon-radius: calc(var(--dextinity-radius-item) * 1.1);
+    // Fill of a block's icon tile
     --dextinity-block-picker-item-icon-background: var(--dextinity-color-accent-soft);
+    // Color of the icon in a block's icon tile
     --dextinity-block-picker-item-icon-foreground: var(--dextinity-color-accent-text);
+    // Color of a block's description
     --dextinity-block-picker-item-description-color: var(--dextinity-color-text-tertiary);
+    // Color of the add icon at the end of an item
     --dextinity-block-picker-item-add-icon-color: var(--dextinity-color-text-subtle);
+    // Color of the add icon on a hovered or highlighted item
     --dextinity-block-picker-item-add-icon-color-hover: var(--dextinity-color-accent-text);
 }
 

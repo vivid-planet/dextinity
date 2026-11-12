@@ -2,30 +2,44 @@
 @mixin tokens {
     // Space between the label, the options, and the message
     --dextinity-checkbox-group-gap: var(--dextinity-field-gap);
-    // Space between the options
+    // Space between the options, and below the "Select all" checkbox
     --dextinity-checkbox-group-option-gap: var(--dextinity-space-2);
+    // Space between the options of a horizontal group
     --dextinity-checkbox-group-option-gap-horizontal: var(--dextinity-space-4);
     // Indent of the options inside a group
     --dextinity-checkbox-group-indent: calc(var(--dextinity-checkbox-size) + var(--dextinity-checkbox-gap));
     // Line along the options inside a group
     --dextinity-checkbox-group-guide-color: var(--dextinity-color-line);
 
+    // Font size of the group's label
     --dextinity-checkbox-group-label-font-size: var(--dextinity-field-label-font-size);
+    // Font weight of the group's label
     --dextinity-checkbox-group-label-font-weight: var(--dextinity-field-label-font-weight);
+    // Color of the group's label
     --dextinity-checkbox-group-label-color: var(--dextinity-field-label-color);
+    // Color of the required marker after the group's label
     --dextinity-checkbox-group-required-color: var(--dextinity-field-required-color);
-    // A group's label while groups have no checkbox
+    // Color of a group's label while groups have no checkbox
     --dextinity-checkbox-group-heading-color: var(--dextinity-color-text-secondary);
+    // Font size of a group's label while groups have no checkbox
     --dextinity-checkbox-group-heading-font-size: var(--dextinity-typography-small-size);
+    // Font weight of a group's label while groups have no checkbox
     --dextinity-checkbox-group-heading-font-weight: var(--dextinity-font-weight-semibold);
+    // Color of an option's description
     --dextinity-checkbox-group-description-color: var(--dextinity-color-text-tertiary);
+    // Font size of an option's description
     --dextinity-checkbox-group-description-font-size: var(--dextinity-typography-small-size);
     // Line below the "Select all" checkbox
     --dextinity-checkbox-group-divider-color: var(--dextinity-color-line);
 
+    // Font size of the message below the options
     --dextinity-checkbox-group-message-font-size: var(--dextinity-field-message-font-size);
+    // Color of the message below the options
     --dextinity-checkbox-group-message-color: var(--dextinity-field-message-color);
+    // Color of the message in the error state
     --dextinity-checkbox-group-message-color-error: var(--dextinity-field-message-color-error);
+    // Color of the message in the warning state
     --dextinity-checkbox-group-message-color-warning: var(--dextinity-field-message-color-warning);
+    // Color of the message in the success state
     --dextinity-checkbox-group-message-color-success: var(--dextinity-field-message-color-success);
 }

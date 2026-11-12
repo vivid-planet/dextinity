@@ -2,86 +2,137 @@
 @layer dextinity {
     :root,
     [data-dextinity-density="standard"] {
+        // Height of the input box of a text field, select, or picker
         --dextinity-density-field-height: 40px;
+        // Height of a medium button and other single-line controls
         --dextinity-density-control-height: 34px;
+        // Height of a small button and other compact controls
         --dextinity-density-control-height-small: 30px;
+        // Space at the start and end of a medium button's label
         --dextinity-density-control-padding: 15px;
+        // Space at the start and end of a small button's label
         --dextinity-density-control-padding-small: 11px;
+        // Width and height of a medium icon button
         --dextinity-density-icon-button-size: 34px;
+        // Width and height of a small icon button
         --dextinity-density-icon-button-size-small: 28px;
-        // Inline button in a field or a row, e.g. a clear or copy button
+        // Width and height of an inline button in a field or a row, e.g. a clear or copy button
         --dextinity-density-icon-button-size-xsmall: 24px;
+        // Height of a segment in a segmented control
         --dextinity-density-segment-height: 32px;
-        // Segment of a small segmented control
+        // Height of a segment in a small segmented control
         --dextinity-density-segment-height-small: 28px;
+        // Height of a chip and a filter chip
         --dextinity-density-chip-height: 32px;
+        // Height of a tab
         --dextinity-density-tab-height: 44px;
+        // Height of an item in a menu or select list
         --dextinity-density-menu-item-height: 36px;
-        // Header row of a list or table
+        // Height of the header row of a list or table
         --dextinity-density-header-height: 40px;
-        // Row in a list of commands or shortcuts
+        // Height of a row in a list of commands or shortcuts
         --dextinity-density-list-row-height: 42px;
+        // Height of a row in a table
         --dextinity-density-table-row-height: 58px;
+        // Height of a row in a tree view
         --dextinity-density-tree-row-height: 44px;
+        // Height of an item in the side or main navigation
         --dextinity-density-nav-item-height: 40px;
+        // Space between the fields of a form
         --dextinity-density-form-gap: 20px;
+        // Space between a panel's edge and its content
         --dextinity-density-panel-padding: 16px;
+        // Space around the content of a list item
         --dextinity-density-list-item-padding: 12px;
     }
 
     [data-dextinity-density="comfortable"] {
+        // Height of the input box of a text field, select, or picker
         --dextinity-density-field-height: 46px;
+        // Height of a medium button and other single-line controls
         --dextinity-density-control-height: 40px;
+        // Height of a small button and other compact controls
         --dextinity-density-control-height-small: 34px;
+        // Space at the start and end of a medium button's label
         --dextinity-density-control-padding: 18px;
+        // Space at the start and end of a small button's label
         --dextinity-density-control-padding-small: 13px;
+        // Width and height of a medium icon button
         --dextinity-density-icon-button-size: 40px;
+        // Width and height of a small icon button
         --dextinity-density-icon-button-size-small: 32px;
-        // Inline button in a field or a row, e.g. a clear or copy button
+        // Width and height of an inline button in a field or a row, e.g. a clear or copy button
         --dextinity-density-icon-button-size-xsmall: 24px;
+        // Height of a segment in a segmented control
         --dextinity-density-segment-height: 38px;
-        // Segment of a small segmented control
+        // Height of a segment in a small segmented control
         --dextinity-density-segment-height-small: 34px;
+        // Height of a chip and a filter chip
         --dextinity-density-chip-height: 38px;
+        // Height of a tab
         --dextinity-density-tab-height: 50px;
+        // Height of an item in a menu or select list
         --dextinity-density-menu-item-height: 42px;
-        // Header row of a list or table
+        // Height of the header row of a list or table
         --dextinity-density-header-height: 40px;
-        // Row in a list of commands or shortcuts
+        // Height of a row in a list of commands or shortcuts
         --dextinity-density-list-row-height: 42px;
+        // Height of a row in a table
         --dextinity-density-table-row-height: 66px;
+        // Height of a row in a tree view
         --dextinity-density-tree-row-height: 50px;
+        // Height of an item in the side or main navigation
         --dextinity-density-nav-item-height: 46px;
+        // Space between the fields of a form
         --dextinity-density-form-gap: 26px;
+        // Space between a panel's edge and its content
         --dextinity-density-panel-padding: 20px;
+        // Space around the content of a list item
         --dextinity-density-list-item-padding: 16px;
     }
 
     [data-dextinity-density="compact"] {
+        // Height of the input box of a text field, select, or picker
         --dextinity-density-field-height: 34px;
+        // Height of a medium button and other single-line controls
         --dextinity-density-control-height: 30px;
+        // Height of a small button and other compact controls
         --dextinity-density-control-height-small: 26px;
+        // Space at the start and end of a medium button's label
         --dextinity-density-control-padding: 12px;
+        // Space at the start and end of a small button's label
         --dextinity-density-control-padding-small: 9px;
+        // Width and height of a medium icon button
         --dextinity-density-icon-button-size: 30px;
+        // Width and height of a small icon button
         --dextinity-density-icon-button-size-small: 24px;
-        // Inline button in a field or a row, e.g. a clear or copy button
+        // Width and height of an inline button in a field or a row, e.g. a clear or copy button
         --dextinity-density-icon-button-size-xsmall: 24px;
+        // Height of a segment in a segmented control
         --dextinity-density-segment-height: 28px;
-        // Segment of a small segmented control
+        // Height of a segment in a small segmented control
         --dextinity-density-segment-height-small: 24px;
+        // Height of a chip and a filter chip
         --dextinity-density-chip-height: 28px;
+        // Height of a tab
         --dextinity-density-tab-height: 38px;
+        // Height of an item in a menu or select list
         --dextinity-density-menu-item-height: 30px;
-        // Header row of a list or table
+        // Height of the header row of a list or table
         --dextinity-density-header-height: 40px;
-        // Row in a list of commands or shortcuts
+        // Height of a row in a list of commands or shortcuts
         --dextinity-density-list-row-height: 42px;
+        // Height of a row in a table
         --dextinity-density-table-row-height: 44px;
+        // Height of a row in a tree view
         --dextinity-density-tree-row-height: 34px;
+        // Height of an item in the side or main navigation
         --dextinity-density-nav-item-height: 32px;
+        // Space between the fields of a form
         --dextinity-density-form-gap: 14px;
+        // Space between a panel's edge and its content
         --dextinity-density-panel-padding: 12px;
+        // Space around the content of a list item
         --dextinity-density-list-item-padding: 8px;
     }
 }

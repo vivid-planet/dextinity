@@ -1,13 +1,21 @@
 @mixin tokens {
+    // Gap between the dot and the label
     --dextinity-save-state-gap: 7px;
+    // Font size of the label
     --dextinity-save-state-font-size: var(--dextinity-typography-small-size);
+    // Diameter of the status dot
     --dextinity-save-state-dot-size: 6px;
+    // Label color once everything is saved
     --dextinity-save-state-saved-color: var(--dextinity-color-text-tertiary);
+    // Dot color once everything is saved
     --dextinity-save-state-saved-dot-color: var(--dextinity-color-success);
-    // Unsaved changes and saving in progress
+    // Label color with unsaved changes and while saving
     --dextinity-save-state-pending-color: var(--dextinity-color-warning-text);
+    // Dot color with unsaved changes and while saving
     --dextinity-save-state-pending-dot-color: var(--dextinity-color-warning);
+    // Label color when saving failed
     --dextinity-save-state-error-color: var(--dextinity-color-danger-text);
+    // Dot color when saving failed
     --dextinity-save-state-error-dot-color: var(--dextinity-color-danger);
 
     // Lowest opacity of the dot's breathing animation while saving

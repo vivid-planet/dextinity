@@ -1,17 +1,31 @@
 @mixin tokens {
+    // Gap between the icon and the message
     --dextinity-banner-gap: var(--dextinity-space-2-5);
+    // Space above and below the content
     --dextinity-banner-padding-block: var(--dextinity-space-2-5);
+    // Space at the start and end of the content
     --dextinity-banner-padding-inline: var(--dextinity-space-3);
+    // Corner radius of the banner
     --dextinity-banner-radius: var(--dextinity-radius-field);
+    // Font size of the message
     --dextinity-banner-font-size: var(--dextinity-typography-ui-size);
+    // Text color of the message
     --dextinity-banner-foreground: var(--dextinity-color-text);
+    // Shadow around the banner; an outline in high contrast, where tinted backgrounds are off
     --dextinity-banner-shadow: 0 0 transparent;
+    // Size of the leading icon
     --dextinity-banner-icon-size: var(--dextinity-icon-size-small);
+    // Background of a warning banner
     --dextinity-banner-warning-background: var(--dextinity-color-warning-soft);
+    // Icon color of a warning banner
     --dextinity-banner-warning-icon: var(--dextinity-color-warning-text);
+    // Background of an error banner
     --dextinity-banner-error-background: var(--dextinity-color-danger-soft);
+    // Icon color of an error banner
     --dextinity-banner-error-icon: var(--dextinity-color-danger-text);
+    // Background of an info banner
     --dextinity-banner-info-background: var(--dextinity-color-info-soft);
+    // Icon color of an info banner
     --dextinity-banner-info-icon: var(--dextinity-color-info-text);
 }
 

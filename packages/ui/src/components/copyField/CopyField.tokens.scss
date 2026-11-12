@@ -1,6 +1,9 @@
 @mixin tokens {
+    // Gap between the value and the copy button
     --dextinity-copy-field-gap: var(--dextinity-space-1-5);
+    // Text color of the value
     --dextinity-copy-field-color: var(--dextinity-color-text);
+    // Font size of the monospaced value
     --dextinity-copy-field-font-size: var(--dextinity-typography-mono-size);
     // The button's icon while it confirms the copy
     --dextinity-copy-field-copied-color: var(--dextinity-color-success-text);

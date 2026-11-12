@@ -1,34 +1,50 @@
 @mixin tokens {
+    // Height of a tab; follows the density
     --dextinity-tabs-height: var(--dextinity-density-tab-height);
+    // Space at the start and end of a tab's label
     --dextinity-tabs-padding: var(--dextinity-space-1-5);
+    // Gap between two tabs
     --dextinity-tabs-gap: var(--dextinity-space-4);
+    // Font size of a tab's label
     --dextinity-tabs-font-size: var(--dextinity-typography-body-size);
+    // Font weight of a tab's label
     --dextinity-tabs-font-weight: var(--dextinity-font-weight-medium);
+    // Corner radius of a tab and its focus ring
     --dextinity-tabs-radius: var(--dextinity-radius-item);
+    // Opacity of a disabled tab
     --dextinity-tabs-disabled-opacity: var(--dextinity-opacity-disabled);
 
+    // Label color of an inactive tab
     --dextinity-tabs-foreground: var(--dextinity-color-text-tertiary);
+    // Label color of an inactive tab on hover
     --dextinity-tabs-foreground-hover: var(--dextinity-color-text);
+    // Label color of the selected tab
     --dextinity-tabs-foreground-active: var(--dextinity-color-text);
     // The line under the whole tab list
     --dextinity-tabs-line: var(--dextinity-color-line-strong);
+    // Thickness of the bar under the selected tab
     --dextinity-tabs-indicator-height: var(--dextinity-indicator-width);
+    // Fill of the bar under the selected tab
     --dextinity-tabs-indicator-background: var(--dextinity-gradient-brand);
     // How far the indicator stays from the tab's edges
     --dextinity-tabs-indicator-inset: 4px;
     // Space between the focus ring and the tab's top edge, and between the ring and the indicator
     --dextinity-tabs-focus-inset: 4px;
 
-    // A tab with invalid fields
+    // Label color of a tab with invalid fields
     --dextinity-tabs-error-foreground: var(--dextinity-color-danger-text);
+    // Color of the error mark next to the label of a tab with invalid fields
     --dextinity-tabs-error-marker-color: var(--dextinity-color-danger);
 
-    // The count after a tab's label, e.g. open issues in a section
+    // Fill of the count after a tab's label, e.g. open issues in a section
     --dextinity-tabs-count-background: var(--dextinity-color-warning-soft);
+    // Text color of the count after a tab's label
     --dextinity-tabs-count-foreground: var(--dextinity-color-warning-text);
+    // Font size of the count after a tab's label
     --dextinity-tabs-count-font-size: var(--dextinity-typography-caption-size);
+    // Corner radius of the count after a tab's label
     --dextinity-tabs-count-radius: calc(var(--dextinity-radius-item) * 0.625);
-    // Line around the count; transparent normally, a full line in high contrast, where soft fills are transparent
+    // Line around the count; only drawn in high contrast, where soft fills are transparent
     --dextinity-tabs-count-line: transparent;
 }
 

@@ -1,6 +1,6 @@
 @mixin tokens {
     // Space between the cards; follows the density
-    --dextinity-overview-layout-gap: calc(var(--dextinity-density-panel-padding) + 2px);
+    --dextinity-overview-layout-gap: var(--dextinity-layout-gap);
     // Space above and below the greeting
     --dextinity-overview-layout-hero-padding: 20px var(--dextinity-space-3) 40px;
     --dextinity-overview-layout-label-color: var(--dextinity-color-text-tertiary);

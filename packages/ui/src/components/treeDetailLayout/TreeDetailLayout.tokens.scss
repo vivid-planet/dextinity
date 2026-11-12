@@ -1,11 +1,11 @@
 @mixin tokens {
     // Space between the page header and the toolbar
-    --dextinity-tree-detail-layout-header-spacing: 30px;
+    --dextinity-tree-detail-layout-header-spacing: var(--dextinity-layout-header-spacing);
     // Space between the toolbar and the tree, and between the tree and the detail; follows the density
-    --dextinity-tree-detail-layout-gap: calc(var(--dextinity-density-panel-padding) + 2px);
+    --dextinity-tree-detail-layout-gap: var(--dextinity-layout-gap);
     --dextinity-tree-detail-layout-detail-width: 340px;
     // Distance of the sticky detail from the top of the viewport, below the top bar
-    --dextinity-tree-detail-layout-sticky-offset: 84px;
+    --dextinity-tree-detail-layout-sticky-offset: var(--dextinity-layout-sticky-offset);
 
     // The card around the toolbar and the tree, like a `Panel`
     --dextinity-tree-detail-layout-card-radius: var(--dextinity-radius-panel);

@@ -1,6 +1,6 @@
 @mixin tokens {
     // Space between the page header and the finder window
-    --dextinity-finder-layout-header-spacing: 30px;
+    --dextinity-finder-layout-header-spacing: var(--dextinity-layout-header-spacing);
     // Height of the finder window: the viewport below the header, within sensible bounds
     --dextinity-finder-layout-window-height: clamp(460px, calc(100dvh - 320px), 780px);
 }

@@ -21,4 +21,11 @@
     --dextinity-app-shell-backdrop: oklch(0 0 0 / 0.28);
     --dextinity-app-shell-drawer-width: min(320px, 86vw);
     --dextinity-app-shell-overlay-shadow: var(--dextinity-shadow-3);
+
+    // Stacking order of the sticky top bar, below the navigation
+    --dextinity-app-shell-top-bar-layer: 6;
+    // Stacking order of the sticky navigation, above the top bar
+    --dextinity-app-shell-nav-layer: 7;
+    // Stacking order of the grain texture, above the shell's content
+    --dextinity-app-shell-grain-layer: 10;
 }

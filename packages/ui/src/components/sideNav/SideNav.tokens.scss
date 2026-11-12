@@ -13,15 +13,24 @@
     --dextinity-side-nav-logo-height: 29px;
     --dextinity-side-nav-title-color: var(--dextinity-color-text);
     --dextinity-side-nav-title-font-size: 22px;
+    --dextinity-side-nav-title-line-height: 1.15;
+    --dextinity-side-nav-title-letter-spacing: -0.025em;
     // Tenant and environment below the app name
     --dextinity-side-nav-subtitle-color: var(--dextinity-color-text-tertiary);
+    --dextinity-side-nav-subtitle-font-size: 12px;
     --dextinity-side-nav-group-label-color: var(--dextinity-color-text-tertiary);
 
     --dextinity-side-nav-item-height: var(--dextinity-density-nav-item-height);
+    --dextinity-side-nav-item-padding-block: 7px;
     --dextinity-side-nav-item-radius: var(--dextinity-radius-field);
     --dextinity-side-nav-item-font-size: 13.5px;
     --dextinity-side-nav-item-foreground: var(--dextinity-color-text-secondary);
     --dextinity-side-nav-item-icon-color: var(--dextinity-color-text-tertiary);
+    --dextinity-side-nav-item-icon-size: 18px;
+    // Start padding of a sub-entry, which lines its text up behind the parent's icon
+    --dextinity-side-nav-item-indent-level-2: 40px;
+    // Start padding of a sub-entry on the third level
+    --dextinity-side-nav-item-indent-level-3: 58px;
     --dextinity-side-nav-item-background-hover: var(--dextinity-material-glass-strong);
     // Text of an entry above the active one
     --dextinity-side-nav-item-ancestor-foreground: var(--dextinity-color-text);
@@ -32,4 +41,13 @@
     --dextinity-side-nav-guide-color: var(--dextinity-color-line-strong);
     --dextinity-side-nav-chevron-color: var(--dextinity-color-text-subtle);
     --dextinity-side-nav-collapse-foreground: var(--dextinity-color-text-tertiary);
+    --dextinity-side-nav-collapse-button-height: 34px;
+
+    // An entry in the collapsed rail, which shows only its icon
+    --dextinity-side-nav-collapsed-item-width: 54px;
+    --dextinity-side-nav-collapsed-item-height: 50px;
+    // Menu that shows the sub-entries of an entry in the collapsed rail
+    --dextinity-side-nav-flyout-min-width: 250px;
+    // Start padding of a third-level entry in that menu
+    --dextinity-side-nav-flyout-indent: 26px;
 }

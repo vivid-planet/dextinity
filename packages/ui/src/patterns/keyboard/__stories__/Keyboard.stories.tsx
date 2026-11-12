@@ -4,7 +4,7 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "../../../components/button/Button";
 import { Dialog } from "../../../components/dialog/Dialog";
-import { Kbd } from "../../../components/kbd/Kbd";
+import { KeyboardKey } from "../../../components/keyboardKey/KeyboardKey";
 import { formatShortcut, useKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
 import { ShortcutList, type ShortcutListItem } from "../../../components/shortcutList/ShortcutList";
 import { PatternPage, PatternRules, PatternSection, PatternShortcuts } from "../../../storybook/patterns/PatternPage";
@@ -72,7 +72,7 @@ function ShortcutOverview() {
         <PatternPage>
             <PatternSection title="Example" description="Live: press ? anywhere outside a text field to see every shortcut.">
                 <div className={styles.hint}>
-                    <Kbd>?</Kbd>
+                    <KeyboardKey>?</KeyboardKey>
                     <span>Show keyboard shortcuts</span>
                     <Button variant="outlined" color="secondary" size="small" onClick={() => setOpen(true)}>
                         Show shortcuts

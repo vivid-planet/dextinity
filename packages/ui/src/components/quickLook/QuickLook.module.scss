@@ -65,9 +65,9 @@
     --dextinity-button-text-foreground: var(--dextinity-quick-look-foreground);
     --dextinity-button-text-foreground-hover: var(--dextinity-quick-look-foreground);
     --dextinity-button-text-background-hover: var(--dextinity-quick-look-control-background);
-    --dextinity-kbd-background: transparent;
-    --dextinity-kbd-foreground: var(--dextinity-quick-look-foreground);
-    --dextinity-kbd-shadow: inset 0 0 0 1px var(--dextinity-quick-look-line);
+    --dextinity-keyboard-key-background: transparent;
+    --dextinity-keyboard-key-foreground: var(--dextinity-quick-look-foreground);
+    --dextinity-keyboard-key-shadow: inset 0 0 0 1px var(--dextinity-quick-look-line);
 }
 
 .header {

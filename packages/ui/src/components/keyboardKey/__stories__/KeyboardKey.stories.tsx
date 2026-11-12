@@ -1,22 +1,22 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import { Kbd } from "../Kbd";
-import kbdTokens from "../Kbd.tokens.scss?raw";
-import styles from "./Kbd.stories.module.scss";
+import { KeyboardKey } from "../KeyboardKey";
+import keyboardKeyTokens from "../KeyboardKey.tokens.scss?raw";
+import styles from "./KeyboardKey.stories.module.scss";
 
 const meta = {
-    component: Kbd,
-    title: "Building blocks/Status, tags & badges/Kbd",
+    component: KeyboardKey,
+    title: "Building blocks/Status, tags & badges/KeyboardKey",
     decorators: [themeDecorator],
-    parameters: { tokens: kbdTokens },
+    parameters: { tokens: keyboardKeyTokens },
     args: {
         children: "⌘K",
     },
     argTypes: {
         className: { control: false },
     },
-} satisfies Meta<typeof Kbd>;
+} satisfies Meta<typeof KeyboardKey>;
 
 export default meta;
 
@@ -34,13 +34,13 @@ export const NamedKey: Story = {
 };
 
 /**
- * A sequence of keys pressed one after another gets one `Kbd` per key.
+ * A sequence of keys pressed one after another gets one `KeyboardKey` per key.
  */
 export const Sequence: Story = {
     render: () => (
         <span className={styles.row}>
-            <Kbd>G</Kbd>
-            <Kbd>P</Kbd>
+            <KeyboardKey>G</KeyboardKey>
+            <KeyboardKey>P</KeyboardKey>
         </span>
     ),
 };

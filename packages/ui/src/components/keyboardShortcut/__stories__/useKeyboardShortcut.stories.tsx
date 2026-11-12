@@ -4,7 +4,7 @@ import { expect, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
-import { Kbd } from "../../kbd/Kbd";
+import { KeyboardKey } from "../../keyboardKey/KeyboardKey";
 import { SaveState, type SaveStateValue } from "../../saveState/SaveState";
 import { TextField } from "../../textField/TextField";
 import { formatShortcut, isApplePlatform, useKeyboardShortcut } from "../useKeyboardShortcut";
@@ -30,7 +30,7 @@ function SaveShortcutDemo() {
                 <SaveState state={saveState} />
                 <span className={styles.keys}>
                     {formatShortcut("mod+s").map((key) => (
-                        <Kbd key={key}>{key}</Kbd>
+                        <KeyboardKey key={key}>{key}</KeyboardKey>
                     ))}
                 </span>
             </div>
@@ -51,7 +51,7 @@ function SearchShortcutDemo() {
                 name="search"
                 type="search"
                 prefix={<Icon name="search" />}
-                suffix={<Kbd>/</Kbd>}
+                suffix={<KeyboardKey>/</KeyboardKey>}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
             />

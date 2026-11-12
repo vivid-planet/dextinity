@@ -5,7 +5,7 @@ import { forwardRef, type HTMLAttributes, type KeyboardEvent, type ReactNode, us
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { Icon } from "../icon/Icon";
-import { Kbd } from "../kbd/Kbd";
+import { KeyboardKey } from "../keyboardKey/KeyboardKey";
 import styles from "./CommandPalette.module.scss";
 
 /**
@@ -293,7 +293,7 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
                                                 <span className={styles.itemLabel}>
                                                     <HighlightedLabel label={item.label} terms={terms} />
                                                 </span>
-                                                {item.shortcut != null && <Kbd className={styles.itemShortcut}>{item.shortcut}</Kbd>}
+                                                {item.shortcut != null && <KeyboardKey className={styles.itemShortcut}>{item.shortcut}</KeyboardKey>}
                                             </div>
                                         ))}
                                     </div>
@@ -302,16 +302,16 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
                         </div>
                         <div {...footerProps}>
                             <span className={styles.hint}>
-                                <Kbd>{keyGlyphs.up}</Kbd>
-                                <Kbd>{keyGlyphs.down}</Kbd>
+                                <KeyboardKey>{keyGlyphs.up}</KeyboardKey>
+                                <KeyboardKey>{keyGlyphs.down}</KeyboardKey>
                                 {labels.navigate}
                             </span>
                             <span className={styles.hint}>
-                                <Kbd>{keyGlyphs.enter}</Kbd>
+                                <KeyboardKey>{keyGlyphs.enter}</KeyboardKey>
                                 {labels.select}
                             </span>
                             <span className={styles.hint}>
-                                <Kbd>{labels.escapeKey}</Kbd>
+                                <KeyboardKey>{labels.escapeKey}</KeyboardKey>
                                 {labels.close}
                             </span>
                         </div>

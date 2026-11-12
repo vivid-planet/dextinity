@@ -73,7 +73,7 @@
         "schema-dts": "^2.1.0",
         "typescript": "^5.9.3",
         "unplugin-dts": "^1.1.2",
-        "vite": "^8.3.6",
+        "vite": "^8.3.7",
         "vitest": "^5.1.0",
         "webpack": "^5.112.2"
     },

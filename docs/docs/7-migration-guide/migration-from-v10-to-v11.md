@@ -464,18 +464,69 @@ TypeScript 6 turns the deprecated `baseUrl` option into an error and requires an
 
 Without `baseUrl`, `paths` entries resolve relative to the `tsconfig.json`, so they need a leading `./`, and `tsconfig-paths` has to be v4 — v3 doesn't resolve them.
 
-### Override the `@golevelup/nestjs-discovery` version on pnpm
+### Replace `nest-commander` with the console commands from `@dextinity/cms-api`
 
-Skip this section when your project uses npm or yarn — nothing is needed there.
+`@dextinity/cms-api` runs console commands itself now and no longer depends on `nest-commander`.
 
-`nest-commander` pins `@golevelup/nestjs-discovery` at `7.0.3`, which still asks for NestJS v11 as a peer. It works against v12, and npm installs it as a nested copy with a warning. pnpm with `strictPeerDependencies` fails instead, so pin it to a release that accepts v12:
+1. Remove `nest-commander` and `@types/inquirer` from `api/package.json`.
+   If your project uses pnpm, also remove the `nest-commander>@golevelup/nestjs-discovery` override from `pnpm-workspace.yaml`.
 
-```yaml title="pnpm-workspace.yaml"
-overrides:
-    "nest-commander>@golevelup/nestjs-discovery": "^7.1.0"
-```
+2. Update every command:
 
-Remove the entry once `nest-commander` ships a release that depends on `7.1.0` or newer.
+    ```diff
+    - import { Command, CommandRunner, Option } from "nest-commander";
+    + import { ConsoleCommand, type ConsoleCommandInterface, ConsoleCommandOption } from "@dextinity/cms-api";
+
+    - @Command({ name: "import-products", arguments: "<filePath>" })
+    - export class ImportProductsCommand extends CommandRunner {
+    + @ConsoleCommand({ name: "import-products", arguments: "<filePath>" })
+    + export class ImportProductsCommand implements ConsoleCommandInterface {
+          constructor(private readonly productImporterService: ProductImporterService) {
+    -         super();
+          }
+
+    -     @Option({ flags: "-l, --limit <limit>" })
+    +     @ConsoleCommandOption({ flags: "-l, --limit <limit>" })
+          parseLimit(value: string): number {
+              return parseInt(value);
+          }
+      }
+    ```
+
+3. Create the application context with `NestFactory` and run the command with `runConsoleCommand()` in `api/src/console.ts`.
+   `runConsoleCommand()` rethrows errors thrown by the command, so the `serviceErrorHandler` option is gone and the surrounding `try`/`catch` handles them:
+
+    ```diff title="api/src/console.ts"
+    - import { CommandFactory } from "nest-commander";
+    + import { runConsoleCommand } from "@dextinity/cms-api";
+    + import { NestFactory } from "@nestjs/core";
+
+    - const app = await CommandFactory.createWithoutRunning(appModule, {
+    + const app = await NestFactory.createApplicationContext(appModule, {
+          logger: ["error", "warn", "log"],
+    -     serviceErrorHandler: async (error) => {
+    -         console.error(error);
+    -         process.exit(1);
+    -     },
+      });
+
+      try {
+          await app.init();
+    -     await CommandFactory.runApplication(app);
+    +     await runConsoleCommand(app);
+    ```
+
+4. Find usages of `nest-commander` features that aren't supported, and rewrite them with plain arguments and options:
+    - `@SubCommand()`, `@RootCommand()` and `@DefaultCommand()`
+    - `InquirerService`, `@QuestionSet()` and `@Question()`
+    - the `choices`, `name` and `env` options of `@Option()`
+    - the `aliases`, `argsDescription`, `allowUnknownOptions` and `allowExcessArgs` options of `@Command()`
+    - `this.command` in a `CommandRunner`
+
+5. Declare every argument a command reads in the `arguments` option of `@ConsoleCommand()`.
+   Commands now fail when they're called with more arguments than they declare.
+
+6. If `InvalidOptionArgumentError` or other `commander` exports are imported, add `commander` v15 to `api/package.json`.
 
 ### Import `repl` from `@nestjs/core`
 

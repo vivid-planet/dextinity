@@ -5,10 +5,10 @@
     --dextinity-icon-button-size-small: var(--dextinity-density-icon-button-size-small);
     // Corner radius of the button
     --dextinity-icon-button-radius: var(--dextinity-radius-control);
-    // Size of the icon in a medium button
-    --dextinity-icon-button-icon-size: 18px;
-    // Size of the icon in a small button
-    --dextinity-icon-button-icon-size-small: var(--dextinity-icon-size-small);
+    // Size of the icon in a medium button; one step below what the button's height would suggest, so the icon doesn't crowd the button
+    --dextinity-icon-button-icon-size: var(--dextinity-icon-size-small);
+    // Size of the icon in a small button; one step below what the button's height would suggest
+    --dextinity-icon-button-icon-size-small: var(--dextinity-icon-size-xsmall);
     // Opacity of a disabled button
     --dextinity-icon-button-disabled-opacity: var(--dextinity-opacity-disabled);
 

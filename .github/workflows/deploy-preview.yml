@@ -1,0 +1,29 @@
+name: Deploy preview
+
+on:
+    pull_request:
+
+permissions:
+    contents: read
+    statuses: write
+
+jobs:
+    deploy-preview:
+        name: Deploy preview
+        # Pull requests from forks are never previewed: the controller runs the branch's start script on its host
+        if: github.repository == 'vivid-planet/dextinity' && github.event.pull_request.head.repo.fork != true
+        runs-on: ubuntu-latest
+        steps:
+            # Inlined from vivid-planet-intern/deploy-preview/github-action, which a public repository of another organization can't use
+            - name: Link deploy preview
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  CONTROLLER_URL: https://preview.vivid-planet.cloud
+                  BRANCH: ${{ github.head_ref }}
+                  SHA: ${{ github.event.pull_request.head.sha }}
+              run: |
+                  gh api --silent "repos/$GITHUB_REPOSITORY/statuses/$SHA" \
+                      -f state=success \
+                      -f context="Deploy preview" \
+                      -f description="Start or open deploy preview" \
+                      -f target_url="$CONTROLLER_URL/open/$GITHUB_REPOSITORY/$BRANCH"

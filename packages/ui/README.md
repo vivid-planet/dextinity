@@ -285,7 +285,7 @@ An icon is 16px. Components size their nested icons through `--dextinity-icon-si
 
 ### Adding an icon
 
-1. Prepare the SVG file. Its root element is `<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 16 16" fill="none">`; for any other size, ask for a 16×16 version instead of scaling it.
+1. Prepare the SVG file. The icons are lines on a 24×24 grid with a 1.5 stroke and round ends, so its root element is `<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">`; for any other grid, ask for a 24×24 version instead of scaling it.
 2. Save it as `svg/<name>.svg`, with the name in kebab case, for example `arrow-right.svg`. Icons from the Figma library keep their Figma name; an icon that the library doesn't have yet follows the same naming, for example the `rte-` prefix for the rich text editor.
 3. Add the name to `defaultIconNames` in [`iconRegistry.ts`](src/components/icon/iconRegistry.ts), its search terms to [`iconSearchTerms.ts`](src/docs/theme/__stories__/iconSearchTerms.ts), and its variable to `icons.css`: `--dextinity-colored-icon-<name>` when the icon keeps its own colors, `--dextinity-icon-<name>` otherwise. [`iconSet.test.ts`](src/components/icon/__tests__/iconSet.test.ts) fails when the SVG files, the variables, and the names don't match.
-4. Optionally, add a soft fill for `duotone` as `svg/duotone/<name>.svg` and its variable `--dextinity-duotone-icon-<name>` to `icons.css`.
+4. Optionally, add a soft fill for `duotone` as `svg/duotone/<name>.svg`, a filled shape on the same grid, and its variable `--dextinity-duotone-icon-<name>` to `icons.css`.

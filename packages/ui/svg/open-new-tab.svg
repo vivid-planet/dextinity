@@ -1,3 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 16 16" fill="none">
-    <path d="M15.5 2C15.7455 2 15.9499 2.17691 15.9922 2.41016L16 2.5V13.5C16 13.7455 15.8231 13.9499 15.5898 13.9922L15.5 14H5.5C5.22386 14 5 13.7761 5 13.5C5 13.2545 5.17691 13.0501 5.41016 13.0078L5.5 13H15V6H9C8.44771 6 8 5.55228 8 5V3H1V13.5C1 13.7455 0.823093 13.9499 0.589844 13.9922L0.5 14C0.25454 14 0.0501485 13.8231 0.0078125 13.5898L0 13.5V2.5C0 2.25454 0.176907 2.05015 0.410156 2.00781L0.5 2H15.5Z" fill="currentColor"/>
+<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3.5" y="5" width="17" height="14" rx="2.5"/><path d="M3.5 9.5h17"/>
 </svg>

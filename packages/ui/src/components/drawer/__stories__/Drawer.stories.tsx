@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Field } from "../../field/Field";
@@ -68,7 +69,7 @@ const meta = {
     component: Drawer,
     title: "Building blocks/Modals & overlays/Drawer",
     decorators: [themeDecorator],
-    parameters: { tokens: drawerTokens },
+    parameters: { tokens: drawerTokens, docs: modalOverlayDocs("560px") },
     render: (args) => <RedirectList key={String(args.open)} {...args} />,
     args: {
         open: false,

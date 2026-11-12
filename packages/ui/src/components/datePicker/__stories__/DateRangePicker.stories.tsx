@@ -29,7 +29,7 @@ const meta = {
     component: DateRangePicker,
     title: "Building blocks/Form fields/DateRangePicker",
     decorators: [themeDecorator],
-    parameters: { tokens: `${datePickerTokens}\n${fieldTokens}` },
+    parameters: { tokens: `${datePickerTokens}\n${fieldTokens}`, popupRoom: "below" },
     render: (args) => <ControlledDateRangePicker key={JSON.stringify(args.value)} {...args} />,
     args: {
         name: "period",

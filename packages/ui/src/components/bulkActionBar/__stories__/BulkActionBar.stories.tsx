@@ -164,6 +164,7 @@ const moveToFolder = fn();
  * controlled with `open` and `onOpenChange`. Escape in the menu closes the menu and keeps the selection.
  */
 export const WithMenu: Story = {
+    parameters: { popupRoom: "above" },
     render: (args) => <WithMenuActionBar {...args} />,
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Move to" }));

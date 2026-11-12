@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type FormEvent, useId, useRef, useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { expectPopupStaysOpen } from "../../../storybook/expectPopupStaysOpen";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
@@ -32,7 +33,7 @@ const meta = {
     component: Dialog,
     title: "Building blocks/Modals & overlays/Dialog",
     decorators: [themeDecorator],
-    parameters: { tokens: dialogTokens },
+    parameters: { tokens: dialogTokens, docs: modalOverlayDocs("560px") },
     render: (args) => <ControlledDialog key={String(args.open)} {...args} />,
     args: {
         open: false,

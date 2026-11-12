@@ -152,6 +152,7 @@ export const Success: Story = {
  * With `overflow="wrap"`, the options wrap onto more rows instead.
  */
 export const Overflow: Story = {
+    parameters: { popupRoom: "below" },
     args: { "aria-label": "View", options: views, value: "list" },
     render: (args) => (
         <div className={styles.narrow}>

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { landscapeImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
@@ -123,7 +124,7 @@ function PagePicker({ onChange, initialPageId = null, ...props }: StoryArgs & { 
 const meta: Meta<StoryArgs> = {
     title: "Building blocks/Form fields/Picker",
     decorators: [themeDecorator],
-    parameters: { tokens: `${pickerTokens}\n${fieldTokens}` },
+    parameters: { tokens: `${pickerTokens}\n${fieldTokens}`, docs: modalOverlayDocs("560px") },
     args: { onChange: fn() },
     render: (args) => <PagePicker {...args} />,
 };

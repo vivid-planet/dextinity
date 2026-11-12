@@ -140,6 +140,8 @@ The Storybook sidebar mirrors the design system's areas — Foundations, Buildin
 
 The docs show only the body of a story's `render` function, so everything the example needs goes inside it. A `render` function names its parameter `args`. To show a story's full source instead of its `render` body, set `parameters.docs.source.type` to `"code"`.
 
+On the docs page, each story is only as tall as its content, which cuts off a popup that opens from it. A story with a popup, such as a select's options, a menu, or a calendar, sets `parameters.popupRoom` to `"below"` or `"above"`, where the popup opens: on the docs page the story then gets room for it. A story that opens a modal overlay, such as a dialog or a drawer, sets `parameters.docs` to `modalOverlayDocs(<height>)` from [`src/storybook/docsPopups.tsx`](src/storybook/docsPopups.tsx), so its scroll lock and focus trap stay in the story's own frame instead of locking the docs page.
+
 A story that needs styles, for example to show a customization, puts them in a `.module.scss` file next to the story file and uses it in its `render` function. The file contains only styles that belong to the example: the docs show it next to the story's code.
 
 ```tsx

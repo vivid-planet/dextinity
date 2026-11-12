@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
+import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Dialog } from "../../dialog/Dialog";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
@@ -94,7 +95,7 @@ const meta = {
     component: Select,
     title: "Building blocks/Form fields/Select",
     decorators: [themeDecorator],
-    parameters: { tokens: `${selectTokens}\n${fieldTokens}` },
+    parameters: { tokens: `${selectTokens}\n${fieldTokens}`, popupRoom: "below" },
     render: (args) => <ControlledSelect key={String(args.value)} {...(args as SelectProps<boolean>)} />,
     args: {
         name: "location",
@@ -452,6 +453,7 @@ export const ObjectValues: Story = {
  * In a `Dialog`, the options open above the dialog.
  */
 export const InDialog: Story = {
+    parameters: { docs: modalOverlayDocs("480px") },
     render: (args) => (
         <Dialog open onOpenChange={() => undefined} title="Move event">
             <ControlledSelect {...(args as SelectProps<boolean>)} />

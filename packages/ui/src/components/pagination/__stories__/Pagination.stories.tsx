@@ -35,7 +35,7 @@ const meta = {
     component: Pagination,
     title: "Building blocks/Tables & paging/Pagination",
     decorators: [themeDecorator],
-    parameters: { tokens: paginationTokens },
+    parameters: { tokens: paginationTokens, popupRoom: "above" },
     args: {
         page: 1,
         pageSize: 10,

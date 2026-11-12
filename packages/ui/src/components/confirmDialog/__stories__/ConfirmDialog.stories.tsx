@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { expectPopupStaysOpen } from "../../../storybook/expectPopupStaysOpen";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
@@ -50,7 +51,7 @@ const meta = {
     component: ConfirmDialog,
     title: "Building blocks/Modals & overlays/ConfirmDialog",
     decorators: [themeDecorator],
-    parameters: { tokens: confirmDialogTokens },
+    parameters: { tokens: confirmDialogTokens, docs: modalOverlayDocs("440px") },
     render: (args) => <ControlledConfirmDialog key={String(args.open)} {...args} />,
     args: {
         open: false,

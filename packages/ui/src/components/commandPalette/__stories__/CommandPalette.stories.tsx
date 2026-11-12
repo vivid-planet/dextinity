@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
@@ -76,7 +77,7 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: commandPaletteTokens },
+    parameters: { tokens: commandPaletteTokens, docs: modalOverlayDocs("700px") },
     render: (args) => <ControlledCommandPalette {...args} />,
     args: {
         open: false,

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type KeyboardEvent, useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
@@ -70,7 +71,7 @@ const meta = {
     component: QuickLook,
     title: "Building blocks/Modals & overlays/QuickLook",
     decorators: [themeDecorator],
-    parameters: { tokens: quickLookTokens },
+    parameters: { tokens: quickLookTokens, docs: modalOverlayDocs("720px") },
     render: (args) => <Finder key={`${args.open}-${args.index}`} {...args} />,
     args: {
         open: false,

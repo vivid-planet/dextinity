@@ -10,7 +10,7 @@
     --dextinity-toolbar-button-shadow-pressed: 0 0 transparent;
     --dextinity-toolbar-separator-color: var(--dextinity-color-line-strong);
     // Space between a separator and the controls next to it
-    --dextinity-toolbar-separator-space: 4px;
+    --dextinity-toolbar-separator-space: var(--dextinity-space-1);
     // How far a separator stays away from the toolbar's edges
     --dextinity-toolbar-separator-inset: 5px;
     // Horizontal padding of a menu trigger

@@ -28,10 +28,6 @@ const createState = (state: Partial<DamVideoBlockState> = {}): DamVideoBlockStat
 });
 
 describe("createDamVideoBlock", () => {
-    it("should reject the deprecated supports next to the options replacing it", () => {
-        expect(() => createDamVideoBlock({ name: "TeaserVideo", supports: [], previewImage: false })).toThrow(/both "supports" and/);
-    });
-
     it("should create a block named DamVideo", () => {
         expect(createDamVideoBlock().name).toBe("DamVideo");
     });
@@ -138,16 +134,6 @@ describe("createDamVideoBlock", () => {
             });
             expect(createDamVideoBlock({ name: "VideoWithoutPreviewImage", previewImage: false }).state2Output(state)).toEqual({
                 damFileId: "video-1",
-                autoplay: true,
-                loop: false,
-                showControls: true,
-            });
-        });
-
-        it("should still send options the deprecated supports hides", () => {
-            expect(createDamVideoBlock({ supports: [] }).state2Output(state)).toEqual({
-                damFileId: "video-1",
-                previewImage: {},
                 autoplay: true,
                 loop: false,
                 showControls: true,

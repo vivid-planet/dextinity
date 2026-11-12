@@ -335,15 +335,6 @@ export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", contr
 
 Disabled options are neither offered in the editor nor sent to the API, so disable the same options as in the API block.
 
-The `supports` array the Admin factory took before is deprecated.
-It only hides options from the editor and still sends them, as the `DamVideoBlock` exported by the API requires.
-Replace it with the options together with an API block created with the same options:
-
-```diff
--createDamVideoBlock({ name: "TeaserVideo", supports: ["controls"] });
-+createDamVideoBlock({ name: "TeaserVideo", previewImage: false });
-```
-
 ### Site
 
 Render the video with the fields the block supports:

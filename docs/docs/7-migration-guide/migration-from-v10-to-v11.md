@@ -1105,6 +1105,36 @@ grep -rn "GQLFinalFormFileUpload\(Downloadable\)\?Fragment" src
 
 Where your code reads `__typename` from a value of one of these types, select `__typename` in your own query and use that query's type instead.
 
+### Replace `supports` of `createDamVideoBlock`
+
+The `supports` option of `createDamVideoBlock` in the Admin is removed.
+It only hid options from the editor and still sent them to the API, as the `DamVideoBlock` exported by the API requires them.
+Its replacements `controls` and `previewImage` also leave the disabled options out of the data, so the API block has to leave them out as well.
+
+Find the usages:
+
+```sh
+grep -rn "supports:" src | grep -i video
+```
+
+Replace `supports` with the options, which state only what is disabled:
+
+```diff
+-export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", supports: ["controls"] });
++export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", previewImage: false });
+```
+
+In the API, use a block created with `createDamVideoBlock` with the same name and options in place of `DamVideoBlock`:
+
+```ts
+import { createDamVideoBlock } from "@dextinity/cms-api";
+
+export const TeaserVideoBlock = createDamVideoBlock({ previewImage: false }, "TeaserVideo");
+```
+
+Then regenerate `block-meta.json` and the block types in the Admin and the Site.
+The factory carries the migrations of `DamVideoBlock`, so existing content keeps loading.
+
 ### Update MUI to v9
 
 The admin packages now require MUI v9 and MUI X v9. See the [Material UI](https://mui.com/material-ui/migration/upgrade-to-v9/), [Data Grid](https://mui.com/x/migration/migration-data-grid-v8/) and [Date and Time Pickers](https://mui.com/x/migration/migration-pickers-v8/) migration guides for the complete list of changes.

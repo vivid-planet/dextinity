@@ -21,8 +21,6 @@ import { resolveNewState } from "./utils";
 
 export type DamVideoBlockState = Omit<DamVideoBlockData, "previewImage"> & { previewImage?: BlockState<typeof PixelImageBlock> };
 
-type DamVideoBlockSupports = "controls" | "previewImage";
-
 /**
  * What the editor can set besides the video file itself. Disable anything the site implementation doesn't use.
  *
@@ -46,35 +44,20 @@ interface DamVideoBlockFactoryOptions {
      * @default true
      */
     previewImage?: boolean;
-    /**
-     * Options left out are only hidden from the editor and still sent to the API, for the `DamVideoBlock` the API exports.
-     * @deprecated Use `controls` and `previewImage` instead, which only have to state what is disabled.
-     */
-    supports?: DamVideoBlockSupports[];
     tags?: Array<MessageDescriptor | string>;
 }
 
 export const createDamVideoBlock = (
     {
         name = "DamVideo",
-        controls,
-        previewImage,
-        supports,
+        controls: supportsControls = true,
+        previewImage: supportsPreviewImage = true,
         tags = [defineMessage({ id: "dextinity.damVideoBlock.tag.video", defaultMessage: "Video" })],
     }: DamVideoBlockFactoryOptions = {},
     override?: (
         block: BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput>,
     ) => BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput>,
 ): BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput> => {
-    if (supports !== undefined && (controls !== undefined || previewImage !== undefined)) {
-        throw new Error(`The ${name} block got both "supports" and "controls" or "previewImage". Use "controls" and "previewImage" only.`);
-    }
-
-    const supportsControls = supports?.includes("controls") ?? controls ?? true;
-    const supportsPreviewImage = supports?.includes("previewImage") ?? previewImage ?? true;
-    const hasControlsInData = controls ?? true;
-    const hasPreviewImageInData = previewImage ?? true;
-
     const DamVideoBlock: BlockInterface<DamVideoBlockData, DamVideoBlockState, DamVideoBlockInput> = {
         ...createBlockSkeleton(),
 
@@ -82,20 +65,20 @@ export const createDamVideoBlock = (
 
         displayName: <FormattedMessage id="dextinity.blocks.damVideo" defaultMessage="Video (CMS Asset)" />,
 
-        defaultValues: () => ({ showControls: true, ...(hasPreviewImageInData ? { previewImage: PixelImageBlock.defaultValues() } : {}) }),
+        defaultValues: () => ({ showControls: true, ...(supportsPreviewImage ? { previewImage: PixelImageBlock.defaultValues() } : {}) }),
 
         category: BlockCategory.Media,
 
         input2State: ({ previewImage, ...input }) => ({
             ...input,
-            ...(hasPreviewImageInData ? { previewImage: PixelImageBlock.input2State(previewImage) } : {}),
+            ...(supportsPreviewImage ? { previewImage: PixelImageBlock.input2State(previewImage) } : {}),
         }),
 
         state2Output: (state) => {
             const output = {
                 damFileId: state.damFile?.id,
-                ...(hasPreviewImageInData && state.previewImage ? { previewImage: PixelImageBlock.state2Output(state.previewImage) } : {}),
-                ...(hasControlsInData ? { autoplay: state.autoplay, loop: state.loop, showControls: state.showControls } : {}),
+                ...(supportsPreviewImage && state.previewImage ? { previewImage: PixelImageBlock.state2Output(state.previewImage) } : {}),
+                ...(supportsControls ? { autoplay: state.autoplay, loop: state.loop, showControls: state.showControls } : {}),
             };
 
             // DamVideoBlockInput is generated from the exported DamVideoBlock, which always has a preview image
@@ -108,7 +91,7 @@ export const createDamVideoBlock = (
                     autoplay: output.autoplay,
                     loop: output.loop,
                     showControls: output.showControls,
-                    ...(hasPreviewImageInData ? { previewImage: await PixelImageBlock.output2State(output.previewImage, context) } : {}),
+                    ...(supportsPreviewImage ? { previewImage: await PixelImageBlock.output2State(output.previewImage, context) } : {}),
                 };
             }
 
@@ -140,7 +123,7 @@ export const createDamVideoBlock = (
                 autoplay: output.autoplay,
                 loop: output.loop,
                 showControls: output.showControls,
-                ...(hasPreviewImageInData ? { previewImage: await PixelImageBlock.output2State(output.previewImage, context) } : {}),
+                ...(supportsPreviewImage ? { previewImage: await PixelImageBlock.output2State(output.previewImage, context) } : {}),
             };
         },
 
@@ -185,7 +168,7 @@ export const createDamVideoBlock = (
                 clonedOutput.damFileId = replacement.replaceWithId;
             }
 
-            if (hasPreviewImageInData) {
+            if (supportsPreviewImage) {
                 clonedOutput.previewImage = PixelImageBlock.replaceDependenciesInOutput(output.previewImage, replacements);
             }
 

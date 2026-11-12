@@ -1,14 +1,12 @@
+import { ConsoleCommand, type ConsoleCommandInterface } from "@dextinity/cms-api";
 import { MikroORM } from "@mikro-orm/postgresql";
 import { Logger } from "@nestjs/common";
-import { Command, CommandRunner } from "nest-commander";
 
-@Command({ name: "migrate", description: "Runs all migrations" })
-export class MigrateCommand extends CommandRunner {
+@ConsoleCommand({ name: "migrate", description: "Runs all migrations" })
+export class MigrateCommand implements ConsoleCommandInterface {
     private readonly logger = new Logger(MigrateCommand.name);
 
-    constructor(private readonly orm: MikroORM) {
-        super();
-    }
+    constructor(private readonly orm: MikroORM) {}
 
     private async sleep(s: number): Promise<unknown> {
         return new Promise((resolve) => {

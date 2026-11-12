@@ -1,4 +1,4 @@
-import { resolveEntityClass } from "@dextinity/cms-api";
+import { ConsoleCommand, type ConsoleCommandInterface, ConsoleCommandOption, resolveEntityClass } from "@dextinity/cms-api";
 import { MikroORM } from "@mikro-orm/core";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { EntityManager } from "@mikro-orm/postgresql";
@@ -6,7 +6,6 @@ import { Inject, Logger, type Type } from "@nestjs/common";
 import { isUUID, validateSync } from "class-validator";
 import { InvalidOptionArgumentError } from "commander";
 import * as fs from "fs";
-import { Command, CommandRunner, Option } from "nest-commander";
 
 import type { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory.js";
 import { BrevoContactImportService } from "../brevo-contact/brevo-contact-import.service.js";
@@ -22,11 +21,11 @@ interface CommandOptions {
 }
 
 export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCampaignScopeInterface> }): Type<unknown> {
-    @Command({
+    @ConsoleCommand({
         name: "import-brevo-contacts",
         description: "import brevo contacts as csv",
     })
-    class BrevoContactImportConsole extends CommandRunner {
+    class BrevoContactImportConsole implements ConsoleCommandInterface {
         private readonly logger = new Logger(BrevoContactImportConsole.name);
 
         constructor(
@@ -34,15 +33,13 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
             @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
             private readonly brevoContactImportService: BrevoContactImportService,
             private readonly entityManager: EntityManager,
-        ) {
-            super();
-        }
+        ) {}
 
         async run(passedParams: string[], options: CommandOptions): Promise<void> {
             await this.execute(options);
         }
 
-        @Option({
+        @ConsoleCommandOption({
             flags: "-p, --path <path>",
             required: true,
             description: "path to csv file",
@@ -54,7 +51,7 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
             return path;
         }
 
-        @Option({
+        @ConsoleCommandOption({
             flags: "-s, --scope <scope>",
             required: true,
             description: "scope for current import file",
@@ -69,7 +66,7 @@ export function createBrevoContactImportConsole({ Scope }: { Scope: Type<EmailCa
             return parsedScope;
         }
 
-        @Option({
+        @ConsoleCommandOption({
             flags: "--targetGroupIds <ids...>",
             required: false,
             defaultValue: "",

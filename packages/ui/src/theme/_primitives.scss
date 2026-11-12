@@ -48,8 +48,14 @@ $scales: (
             }
         }
 
+        // Half step for hairline gaps, e.g. between a label and its hint
+        --dextinity-space-0-5: 2px;
         --dextinity-space-1: 4px;
+        // Half step for tight groups, e.g. an icon and its label
+        --dextinity-space-1-5: 6px;
         --dextinity-space-2: 8px;
+        // Half step between small and medium spacing, e.g. inside menus and list rows
+        --dextinity-space-2-5: 10px;
         --dextinity-space-3: 12px;
         --dextinity-space-4: 16px;
         --dextinity-space-panel-gap: 18px;

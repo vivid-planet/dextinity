@@ -5,8 +5,11 @@ import { DocsDemo } from "./DocsDemo";
 import styles from "./Foundations.module.scss";
 
 const spaces = [
+    { token: "--dextinity-space-0-5", usage: "Hairline gaps" },
     { token: "--dextinity-space-1", usage: "Icon to text, tight" },
+    { token: "--dextinity-space-1-5", usage: "Tight groups" },
     { token: "--dextinity-space-2", usage: "Inside controls" },
+    { token: "--dextinity-space-2-5", usage: "Menus and list rows" },
     { token: "--dextinity-space-3", usage: "Fields in dense areas" },
     { token: "--dextinity-space-4", usage: "Panel padding" },
     { token: "--dextinity-space-panel-gap", usage: "Between glass panels" },

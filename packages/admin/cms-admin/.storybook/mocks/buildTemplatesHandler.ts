@@ -15,4 +15,4 @@ export const buildTemplatesHandler = graphqlApi.query("BuildTemplates", () => {
     });
 });
 
-export const createBuildsHandler = graphql.mutation("CreateBuilds", () => HttpResponse.json({ data: { createBuilds: true } }));
+export const createBuildsHandler = graphqlApi.mutation("CreateBuilds", () => HttpResponse.json({ data: { createBuilds: true } }));

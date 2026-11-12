@@ -1,17 +1,28 @@
 // The values match the group labels of `SideNav`.
 @mixin tokens {
+    // Gap between the label, the expand icon and the actions
     --dextinity-menu-section-header-gap: var(--dextinity-space-1);
+    // Horizontal padding of the header
     --dextinity-menu-section-header-padding-horizontal: var(--dextinity-space-3);
+    // Space above and below the label
     --dextinity-menu-section-header-padding-vertical: var(--dextinity-space-2);
+    // Size of the expand icon of a collapsible section
     --dextinity-menu-section-header-expand-icon-size: var(--dextinity-icon-size-xxsmall);
 
+    // Text size of the label
     --dextinity-menu-section-header-font-size: var(--dextinity-typography-label-size);
+    // Line height of the label
     --dextinity-menu-section-header-font-line-height: var(--dextinity-typography-small-line-height);
+    // Text weight of the label
     --dextinity-menu-section-header-font-weight: var(--dextinity-font-weight-medium);
 
+    // Text color of the label
     --dextinity-menu-section-header-default-foreground: var(--dextinity-color-text-tertiary);
+    // Color of the expand icon
     --dextinity-menu-section-header-default-icon: var(--dextinity-color-text-tertiary);
 
+    // Text color of a hovered clickable label
     --dextinity-menu-section-header-hover-foreground: var(--dextinity-color-text-secondary);
+    // Color of the expand icon while its label is hovered
     --dextinity-menu-section-header-hover-icon: var(--dextinity-color-text-secondary);
 }

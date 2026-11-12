@@ -3,7 +3,10 @@
     --dextinity-icon-size-xxsmall: 12px;
     // Icons inside compact controls, such as chips, checkboxes, tabs and toolbar menus
     --dextinity-icon-size-xsmall: 14px;
+    // An icon with `size="small"` or outside a component, and icons in buttons, fields and menus
     --dextinity-icon-size-small: 16px;
+    // An icon with `size="default"`, e.g. in the command palette and the collapsed side nav
     --dextinity-icon-size-default: 20px;
+    // An icon with `size="large"`
     --dextinity-icon-size-large: 24px;
 }

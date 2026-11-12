@@ -1,34 +1,49 @@
 @mixin tokens {
+    // Width of the expanded navigation
     --dextinity-side-nav-width: 300px;
+    // Width of the collapsed navigation, which shows only icons
     --dextinity-side-nav-width-collapsed: 86px;
     // Glass panel over the ambient light field; solid in high contrast
     --dextinity-side-nav-background: var(--dextinity-material-glass);
+    // Blur of the backdrop behind the navigation
     --dextinity-side-nav-blur: var(--dextinity-material-blur);
+    // Edge highlight and shadow of the navigation
     --dextinity-side-nav-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
+    // Corner rounding of the navigation
     --dextinity-side-nav-radius: var(--dextinity-radius-panel);
-    // Between groups and above the footer
+    // Line between groups and above the footer
     --dextinity-side-nav-separator-color: var(--dextinity-material-edge);
 
+    // Padding around the logo and app name
     --dextinity-side-nav-header-padding: 22px 22px 14px;
+    // Height of the logo
     --dextinity-side-nav-logo-height: 29px;
+    // Text color of the app name in the header
     --dextinity-side-nav-title-color: var(--dextinity-color-text);
+    // Text size of the app name in the header
     --dextinity-side-nav-title-font-size: 22px;
     // Line height of the app name in the header
     --dextinity-side-nav-title-line-height: 1.15;
     // Tracking of the app name
     --dextinity-side-nav-title-letter-spacing: -0.025em;
-    // Tenant and environment below the app name
+    // Text color of the tenant and environment below the app name
     --dextinity-side-nav-subtitle-color: var(--dextinity-color-text-tertiary);
     // Size of the tenant and environment line
     --dextinity-side-nav-subtitle-font-size: 12px;
+    // Text color of a group's label
     --dextinity-side-nav-group-label-color: var(--dextinity-color-text-tertiary);
 
+    // Minimum height of an entry
     --dextinity-side-nav-item-height: var(--dextinity-density-nav-item-height);
     // Space above and below an entry's label
     --dextinity-side-nav-item-padding-block: 7px;
+    // Corner rounding of an entry
     --dextinity-side-nav-item-radius: var(--dextinity-radius-field);
+    // Text size of an entry's label
     --dextinity-side-nav-item-font-size: 13.5px;
+    // Text color of an entry
     --dextinity-side-nav-item-foreground: var(--dextinity-color-text-secondary);
+    // Color of an entry's icon
     --dextinity-side-nav-item-icon-color: var(--dextinity-color-text-tertiary);
     // Icon in front of an entry's label
     --dextinity-side-nav-item-icon-size: 18px;
@@ -36,28 +51,34 @@
     --dextinity-side-nav-item-indent-level-2: 40px;
     // Start padding of a sub-entry on the third level
     --dextinity-side-nav-item-indent-level-3: 58px;
+    // Fill of a hovered entry
     --dextinity-side-nav-item-background-hover: var(--dextinity-material-glass-strong);
     // Text of an entry above the active one
     --dextinity-side-nav-item-ancestor-foreground: var(--dextinity-color-text);
+    // Fill of the active entry
     --dextinity-side-nav-item-active-background: var(--dextinity-gradient-brand);
+    // Text and icon color of the active entry
     --dextinity-side-nav-item-active-foreground: var(--dextinity-color-accent-foreground);
+    // Glow and top highlight of the active entry
     --dextinity-side-nav-item-active-shadow: 0 10px 24px -12px var(--dextinity-color-accent-glow), inset 0 1px 0 oklch(1 0 0 / 0.2);
     // Vertical line that leads the sub-entries
     --dextinity-side-nav-guide-color: var(--dextinity-color-line-strong);
+    // Color of the chevron that expands an entry's sub-entries
     --dextinity-side-nav-chevron-color: var(--dextinity-color-text-subtle);
+    // Text and icon color of the collapse button
     --dextinity-side-nav-collapse-foreground: var(--dextinity-color-text-tertiary);
-    // Button at the bottom that collapses and expands the navigation
+    // Height of the button at the bottom that collapses and expands the navigation
     --dextinity-side-nav-collapse-button-height: 34px;
 
-    // An entry in the collapsed rail, which shows only its icon
+    // Width of an entry in the collapsed rail, which shows only its icon
     --dextinity-side-nav-collapsed-item-width: 54px;
     // Height of an entry in the collapsed rail
     --dextinity-side-nav-collapsed-item-height: 50px;
-    // Menu that shows the sub-entries of an entry in the collapsed rail
+    // Minimum width of the menu that shows an entry's sub-entries in the collapsed rail
     --dextinity-side-nav-flyout-min-width: 250px;
     // Start padding of a third-level entry in that menu
     --dextinity-side-nav-flyout-indent: 26px;
 
-    // The corner marker of a collapsed item that opens a flyout
+    // Opacity of the corner marker on a collapsed entry that opens a flyout
     --dextinity-side-nav-flyout-marker-opacity: 0.45;
 }

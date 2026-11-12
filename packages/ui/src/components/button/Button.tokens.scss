@@ -1,36 +1,64 @@
 @mixin tokens {
+    // Height of a medium button
     --dextinity-button-height: var(--dextinity-density-control-height);
+    // Height of a small button
     --dextinity-button-height-small: var(--dextinity-density-control-height-small);
+    // Horizontal padding of a medium button
     --dextinity-button-padding: var(--dextinity-density-control-padding);
+    // Horizontal padding of a small button
     --dextinity-button-padding-small: var(--dextinity-density-control-padding-small);
+    // Gap between the icons and the label
     --dextinity-button-gap: var(--dextinity-space-2);
+    // Corner rounding of a button
     --dextinity-button-radius: var(--dextinity-radius-control);
+    // Label size of a medium button
     --dextinity-button-font-size: var(--dextinity-typography-body-size);
+    // Label size of a small button
     --dextinity-button-font-size-small: var(--dextinity-typography-ui-size);
+    // Label weight of a button
     --dextinity-button-font-weight: var(--dextinity-font-weight-medium);
+    // Size of the start and end icons
     --dextinity-button-icon-size: var(--dextinity-icon-size-small);
+    // Opacity of a disabled button
     --dextinity-button-disabled-opacity: var(--dextinity-opacity-disabled);
     // Darkens the button while it is pressed
     --dextinity-button-active-brightness: 0.93;
 
+    // Fill of a contained primary button
     --dextinity-button-primary-background: var(--dextinity-gradient-brand);
+    // Fill of a hovered contained primary button
     --dextinity-button-primary-background-hover: var(--dextinity-color-accent);
+    // Label and icon color of a contained primary button
     --dextinity-button-primary-foreground: var(--dextinity-color-accent-foreground);
+    // Top highlight and glow of a contained primary button
     --dextinity-button-primary-shadow: inset 0 1px 0 oklch(1 0 0 / 0.2), 0 8px 18px -10px var(--dextinity-color-accent-glow);
+    // Top highlight and glow of a hovered contained primary button
     --dextinity-button-primary-shadow-hover: inset 0 1px 0 oklch(1 0 0 / 0.2), 0 10px 22px -10px var(--dextinity-color-accent-glow);
 
+    // Fill of an outlined button
     --dextinity-button-secondary-background: var(--dextinity-color-surface);
+    // Label and icon color of an outlined button
     --dextinity-button-secondary-foreground: var(--dextinity-color-text);
+    // Outline and shadow of an outlined button
     --dextinity-button-secondary-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-1);
+    // Outline and shadow of a hovered outlined button
     --dextinity-button-secondary-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle), var(--dextinity-shadow-2);
 
+    // Label and icon color of a text button
     --dextinity-button-text-foreground: var(--dextinity-color-text-secondary);
+    // Label and icon color of a hovered text button
     --dextinity-button-text-foreground-hover: var(--dextinity-color-text);
+    // Fill of a hovered text button
     --dextinity-button-text-background-hover: var(--dextinity-color-fill-hover);
 
+    // Label and icon color of an outlined or text error button
     --dextinity-button-danger-foreground: var(--dextinity-color-danger-text);
+    // Fill of a contained error button
     --dextinity-button-danger-background: var(--dextinity-color-danger);
+    // Label and icon color of a contained error button
     --dextinity-button-danger-background-foreground: var(--dextinity-color-danger-foreground);
+    // Label and icon color of an outlined or text success button
     --dextinity-button-success-foreground: var(--dextinity-color-success-text);
+    // Fill of a contained success button
     --dextinity-button-success-background: var(--dextinity-color-success);
 }

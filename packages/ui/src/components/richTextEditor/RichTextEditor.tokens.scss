@@ -1,16 +1,27 @@
 // The frame (label, box, message) comes from the Field tokens.
 @mixin tokens {
+    // Corner rounding of the editor's box
     --dextinity-rich-text-editor-radius: calc(12px * var(--dextinity-brand-radius-factor));
+    // Padding around the toolbar's buttons
     --dextinity-rich-text-editor-toolbar-padding: 5px;
+    // Line between the toolbar and the text
     --dextinity-rich-text-editor-toolbar-line: var(--dextinity-color-line);
+    // Size of a toolbar button
     --dextinity-rich-text-editor-toolbar-button-size: 30px;
-    // Formatting that applies at the cursor
+    // Fill of a toolbar button whose formatting applies at the cursor
     --dextinity-rich-text-editor-toolbar-button-background-active: var(--dextinity-color-accent-soft);
+    // Icon color of a toolbar button whose formatting applies at the cursor
     --dextinity-rich-text-editor-toolbar-button-foreground-active: var(--dextinity-color-accent-text);
+    // Padding around the text
     --dextinity-rich-text-editor-content-padding: 14px var(--dextinity-space-4);
+    // Line height of the text
     --dextinity-rich-text-editor-line-height: 1.62;
+    // Text size of a heading in the text
     --dextinity-rich-text-editor-heading-size: var(--dextinity-typography-section-size);
+    // Text weight of a heading in the text
     --dextinity-rich-text-editor-heading-weight: var(--dextinity-typography-section-font-weight);
+    // Text color of a link in the text
     --dextinity-rich-text-editor-link-color: var(--dextinity-color-accent-text);
+    // Color of the placeholder of an empty editor
     --dextinity-rich-text-editor-placeholder-color: var(--dextinity-field-placeholder);
 }

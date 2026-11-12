@@ -1,16 +1,30 @@
 @mixin tokens {
+    // Gap between the icon, the text and the arrow
     --dextinity-linked-content-gap: var(--dextinity-space-3);
+    // Padding inside the card
     --dextinity-linked-content-padding: 14px;
+    // Corner rounding of the card
     --dextinity-linked-content-radius: var(--dextinity-radius-field);
+    // Fill of the card
     --dextinity-linked-content-background: var(--dextinity-color-surface-sunken);
+    // Outline of the card
     --dextinity-linked-content-line: var(--dextinity-color-line);
+    // Outline of the hovered card
     --dextinity-linked-content-line-hover: var(--dextinity-color-line-strong);
+    // Shadow of the hovered card
     --dextinity-linked-content-shadow-hover: var(--dextinity-shadow-1);
+    // Text color of the title
     --dextinity-linked-content-title-color: var(--dextinity-color-text);
+    // Text color of the description
     --dextinity-linked-content-description-color: var(--dextinity-color-text-tertiary);
+    // Size of the icon's tile
     --dextinity-linked-content-icon-size: 34px;
+    // Corner rounding of the icon's tile
     --dextinity-linked-content-icon-radius: var(--dextinity-radius-control);
+    // Fill of the icon's tile
     --dextinity-linked-content-icon-background: var(--dextinity-color-accent-soft);
+    // Color of the icon
     --dextinity-linked-content-icon-color: var(--dextinity-color-accent-text);
+    // Color of the arrow at the end of the card
     --dextinity-linked-content-arrow-color: var(--dextinity-color-text-tertiary);
 }

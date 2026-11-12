@@ -12,6 +12,7 @@ $danger-hue: var(--dextinity-brand-danger-hue);
     // Shared by all color schemes. Declared on every theme boundary so a nested `Theme` resolves against its own brand.
     :root,
     [data-dextinity-color-scheme] {
+        // Width of hairlines: outlines of fields, cards and panels, and separators
         --dextinity-line-width: 0.5px;
         // Heavier line, e.g. checkbox and radio outlines, dashed drop areas, and the outline of a selected block
         --dextinity-line-width-strong: 1.5px;
@@ -19,6 +20,7 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         --dextinity-indicator-width: 2px;
         // Indicator line that has to stand out, e.g. the drop target between blocks
         --dextinity-indicator-width-strong: 3px;
+        // Brand gradient from the accent toward the secondary color, e.g. primary buttons
         --dextinity-gradient-brand: linear-gradient(
             120deg,
             var(--dextinity-color-accent) 15%,
@@ -28,6 +30,7 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         --dextinity-focus-ring-width: 2px;
         // How far the focus ring reaches outside its element; a container that clips its content keeps this much room
         --dextinity-focus-ring-extent: 4px;
+        // Focus ring around a focused element, with a gap in the canvas color
         --dextinity-focus-ring: 0 0 0 2px var(--dextinity-color-canvas), 0 0 0 4px var(--dextinity-color-focus);
         // Focus ring drawn inside the element, for items in a list or grid that clips its overflow
         --dextinity-focus-ring-inset: inset 0 0 0 var(--dextinity-focus-ring-width) var(--dextinity-color-focus);
@@ -35,6 +38,7 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         --dextinity-focus-outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-focus);
         // Width of the soft halo around a focused or validated field
         --dextinity-focus-halo-width: 4px;
+        // Opacity of the fill layer of a duotone icon
         --dextinity-icon-duotone-opacity: 0.16;
         // Opacity of a disabled control
         --dextinity-opacity-disabled: 0.42;
@@ -56,8 +60,11 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         --dextinity-material-edge-shadow:
             inset 0 1px 0 var(--dextinity-material-highlight), inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge);
 
+        // Font of body text and controls
         --dextinity-font-family-text: var(--dextinity-brand-font-family-text);
+        // Font of display text: page titles, the app name and large figures
         --dextinity-font-family-display: var(--dextinity-brand-font-family-display);
+        // Font of code, keyboard keys and figures such as counts
         --dextinity-font-family-mono: var(--dextinity-brand-font-family-mono);
     }
 
@@ -65,54 +72,97 @@ $danger-hue: var(--dextinity-brand-danger-hue);
     [data-dextinity-color-scheme="light"] {
         color-scheme: light;
 
+        // Page background behind all surfaces
         --dextinity-color-canvas: oklch(0.984 0.003 #{$neutral-hue});
+        // Fill of opaque surfaces, e.g. outlined buttons and solid panels
         --dextinity-color-surface: oklch(1 0 0);
+        // Fill of a part set off from its surface, e.g. a field
         --dextinity-color-surface-raised: oklch(0.972 0.004 #{$neutral-hue});
+        // Fill of an inset area, e.g. a log viewer or a linked content card
         --dextinity-color-surface-sunken: oklch(0.955 0.005 #{$neutral-hue});
 
+        // Primary text and icons
         --dextinity-color-text: oklch(0.19 0.015 #{$neutral-hue});
+        // Secondary text, e.g. side nav entries and text buttons
         --dextinity-color-text-secondary: oklch(0.35 0.016 #{$neutral-hue});
+        // Quieter text, e.g. descriptions, hints and labels
         --dextinity-color-text-tertiary: oklch(0.46 0.014 #{$neutral-hue});
+        // Faintest text, e.g. placeholders and chevrons
         --dextinity-color-text-subtle: oklch(0.63 0.012 #{$neutral-hue});
 
+        // Hairlines, e.g. separators and the outline of a card
         --dextinity-color-line: oklch(0.25 0.02 #{$neutral-hue} / 0.13);
+        // Stronger lines, e.g. the outline of a field or a secondary button
         --dextinity-color-line-strong: oklch(0.25 0.02 #{$neutral-hue} / 0.24);
 
+        // Brand accent fill, e.g. a checked checkbox or switch
         --dextinity-color-accent: oklch(0.52 #{$primary-chroma} #{$primary-hue});
+        // Text and icons on an accent fill
         --dextinity-color-accent-foreground: oklch(1 0 0);
+        // Accent-colored text and icons on a surface, e.g. links
         --dextinity-color-accent-text: oklch(0.45 #{$primary-chroma} #{$primary-hue});
+        // Soft accent tint, e.g. a selected item or a focus halo
         --dextinity-color-accent-soft: oklch(0.955 calc(#{$primary-chroma} * 0.2) #{$primary-hue});
+        // Colored glow under accent-filled elements
         --dextinity-color-accent-glow: oklch(0.6 #{$primary-chroma} #{$primary-hue} / 0.32);
+        // Secondary brand color, where the brand gradient ends
         --dextinity-color-accent-secondary: oklch(0.64 #{$secondary-chroma} #{$gradient-hue});
+        // Color of the focus ring
         --dextinity-color-focus: oklch(0.58 #{$primary-chroma} #{$primary-hue});
 
+        // Success fill, e.g. a contained success button
         --dextinity-color-success: oklch(0.6 0.15 #{$success-hue});
+        // Success text and icons on a surface
         --dextinity-color-success-text: oklch(0.42 0.11 #{$success-hue});
+        // Soft success tint behind success content
         --dextinity-color-success-soft: oklch(0.6 0.15 #{$success-hue} / 0.1);
+        // Warning fill, e.g. a warning badge
         --dextinity-color-warning: oklch(0.76 0.15 75);
+        // Warning text and icons on a surface
         --dextinity-color-warning-text: oklch(0.45 0.1 62);
+        // Soft warning tint behind warning content
         --dextinity-color-warning-soft: oklch(0.76 0.15 75 / 0.14);
+        // Danger fill, e.g. a contained error button
         --dextinity-color-danger: oklch(0.6 0.2 #{$danger-hue});
+        // Danger text and icons on a surface, e.g. error messages
         --dextinity-color-danger-text: oklch(0.46 0.18 #{$danger-hue});
+        // Soft danger tint behind error content
         --dextinity-color-danger-soft: oklch(0.6 0.2 #{$danger-hue} / 0.09);
+        // Text and icons on a danger fill
         --dextinity-color-danger-foreground: oklch(1 0 0);
+        // Info fill, e.g. a contained info chip
         --dextinity-color-info: oklch(0.62 0.11 240);
+        // Info text and icons on a surface
         --dextinity-color-info-text: oklch(0.43 0.1 240);
+        // Soft info tint behind info content
         --dextinity-color-info-soft: oklch(0.62 0.11 240 / 0.1);
 
+        // First color blob of the ambient light field behind the app
         --dextinity-material-field-1: oklch(0.8 calc(#{$primary-chroma} * 0.7) #{$primary-hue} / 0.36);
+        // Second color blob of the ambient light field
         --dextinity-material-field-2: oklch(0.88 #{$secondary-chroma} #{$secondary-hue} / 0.4);
+        // Third color blob of the ambient light field
         --dextinity-material-field-3: oklch(0.86 calc(#{$primary-chroma} * 0.45) calc(#{$primary-hue} - 25) / 0.3);
+        // Fill of a glass surface, e.g. the side nav and glass panels
         --dextinity-material-glass: oklch(1 0 0 / 0.74);
+        // Denser glass, e.g. menus, popovers and a hovered side nav entry
         --dextinity-material-glass-strong: oklch(1 0 0 / 0.9);
+        // Nearly opaque glass of dialogs, drawers and the command palette
         --dextinity-material-glass-overlay: oklch(1 0 0 / 0.96);
+        // Top highlight along the upper edge of a glass surface
         --dextinity-material-highlight: oklch(1 0 0 / 0.9);
+        // Edge line of a glass surface
         --dextinity-material-edge: oklch(0.25 0.02 #{$neutral-hue} / 0.13);
+        // Blur of the backdrop behind glass
         --dextinity-material-blur: 30px;
+        // Strength of the noise grain over the light field
         --dextinity-material-grain: 0.05;
 
+        // Low elevation, e.g. an outlined button or a solid panel
         --dextinity-shadow-1: 0 1px 1px oklch(0.2 0.02 #{$neutral-hue} / 0.03), 0 2px 8px -3px oklch(0.2 0.02 #{$neutral-hue} / 0.07);
+        // Medium elevation, e.g. panels, cards, tooltips and the side nav
         --dextinity-shadow-2: 0 1px 2px oklch(0.2 0.02 #{$neutral-hue} / 0.04), 0 18px 40px -18px oklch(0.25 0.06 #{$primary-hue} / 0.25);
+        // High elevation, e.g. dialogs, menus, popovers and toasts
         --dextinity-shadow-3: 0 2px 4px oklch(0.2 0.02 #{$neutral-hue} / 0.04), 0 30px 70px -30px oklch(0.25 0.08 #{$primary-hue} / 0.35);
     }
 

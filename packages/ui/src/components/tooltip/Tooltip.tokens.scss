@@ -1,12 +1,20 @@
 @mixin tokens {
     // Inverted: the text color as the background, so the tooltip stands out on any surface
     --dextinity-tooltip-background: var(--dextinity-color-text);
+    // Text color of the tooltip
     --dextinity-tooltip-foreground: var(--dextinity-color-canvas);
+    // Corner rounding of the tooltip
     --dextinity-tooltip-radius: var(--dextinity-radius-item);
+    // Space above and below the text
     --dextinity-tooltip-padding-block: var(--dextinity-space-1-5);
+    // Space before and after the text
     --dextinity-tooltip-padding-inline: 9px;
+    // Text size of the tooltip
     --dextinity-tooltip-font-size: 12px;
+    // Width at which the text wraps
     --dextinity-tooltip-max-width: 240px;
+    // Shadow of the tooltip
     --dextinity-tooltip-shadow: var(--dextinity-shadow-2);
+    // Opacity of the keyboard shortcut after the text
     --dextinity-tooltip-shortcut-opacity: 0.6;
 }

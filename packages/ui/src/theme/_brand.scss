@@ -3,26 +3,45 @@
 @layer dextinity {
     :root,
     [data-dextinity-brand="dextinity"] {
+        // Hue of the primary brand color, used for the accent
         --dextinity-brand-primary-hue: 275;
+        // Chroma of the primary brand color
         --dextinity-brand-primary-chroma: 0.255;
+        // Hue of the secondary brand color
         --dextinity-brand-secondary-hue: 185;
+        // Chroma of the secondary brand color
         --dextinity-brand-secondary-chroma: 0.13;
+        // Hue the brand gradient ends in
         --dextinity-brand-gradient-hue: var(--dextinity-brand-secondary-hue);
+        // Tint of the neutrals: text, surfaces and lines
         --dextinity-brand-neutral-hue: 285;
+        // Strength of the neutral tint
         --dextinity-brand-neutral-chroma: 0.014;
+        // Success hue, shifted per brand to stand apart from the brand color
         --dextinity-brand-success-hue: 155;
+        // Danger hue, shifted per brand to stand apart from the brand color
         --dextinity-brand-danger-hue: 26;
 
+        // Font of body text and controls
         --dextinity-brand-font-family-text: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+        // Font of display text: page titles, the app name and large figures
         --dextinity-brand-font-family-display: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+        // Font of code, keyboard keys and figures such as counts
         --dextinity-brand-font-family-mono: "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+        // Size of body text
         --dextinity-brand-font-size: 14px;
+        // Weight of display text
         --dextinity-brand-display-font-weight: 500;
+        // Tracking of display text
         --dextinity-brand-display-letter-spacing: -0.035em;
+        // Case of display text
         --dextinity-brand-display-text-transform: none;
+        // Case of eyebrow labels
         --dextinity-brand-label-text-transform: uppercase;
 
+        // Corner rounding of controls
         --dextinity-brand-radius-control: 10px;
+        // Multiplies every other corner radius
         --dextinity-brand-radius-factor: 1;
     }
 

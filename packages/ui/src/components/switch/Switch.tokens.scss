@@ -1,35 +1,58 @@
 @mixin tokens {
+    // Width of a medium switch's track
     --dextinity-switch-track-width: 36px;
+    // Height of a medium switch's track
     --dextinity-switch-track-height: 22px;
+    // Width of a small switch's track
     --dextinity-switch-track-width-small: 28px;
+    // Height of a small switch's track
     --dextinity-switch-track-height-small: 16px;
     // Gap between the thumb and the track's edge
     --dextinity-switch-thumb-inset: 3px;
+    // Gap between the thumb and the track's edge of a small switch
     --dextinity-switch-thumb-inset-small: 2px;
+    // Gap between the label text and the switch
     --dextinity-switch-gap: var(--dextinity-space-4);
+    // Opacity of a disabled switch
     --dextinity-switch-disabled-opacity: var(--dextinity-opacity-disabled);
 
+    // Fill of the track when off
     --dextinity-switch-track-background: var(--dextinity-color-text-subtle);
+    // Fill of the track when on
     --dextinity-switch-track-background-checked: var(--dextinity-color-accent);
     // Line around the track; transparent normally, a full line in high contrast
     --dextinity-switch-track-line: transparent;
+    // Fill of the thumb when off
     --dextinity-switch-thumb-background: oklch(1 0 0);
+    // Fill of the thumb when on
     --dextinity-switch-thumb-background-checked: oklch(1 0 0);
+    // Shadow of the thumb
     --dextinity-switch-thumb-shadow: 0 1px 3px oklch(0 0 0 / 0.25);
 
+    // Text color of the label
     --dextinity-switch-label-color: var(--dextinity-color-text);
+    // Text size of a medium switch's label
     --dextinity-switch-label-font-size: var(--dextinity-typography-body-size);
+    // Text size of a small switch's label
     --dextinity-switch-label-font-size-small: var(--dextinity-typography-ui-size);
+    // Text weight of the label
     --dextinity-switch-label-font-weight: var(--dextinity-font-weight-medium);
+    // Text color of the description below the label
     --dextinity-switch-description-color: var(--dextinity-color-text-tertiary);
+    // Text size of the description below the label
     --dextinity-switch-description-font-size: var(--dextinity-typography-small-size);
+    // Color of the required marker after the label
     --dextinity-switch-required-color: var(--dextinity-color-danger-text);
 
     // Space between the switch and its validation message
     --dextinity-switch-message-gap: var(--dextinity-space-1);
+    // Text size of the validation message
     --dextinity-switch-message-font-size: var(--dextinity-typography-small-size);
+    // Text color of an error message
     --dextinity-switch-message-color-error: var(--dextinity-color-danger-text);
+    // Text color of a warning message
     --dextinity-switch-message-color-warning: var(--dextinity-color-warning-text);
+    // Text color of a success message
     --dextinity-switch-message-color-success: var(--dextinity-color-success-text);
 }
 

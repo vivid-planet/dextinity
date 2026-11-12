@@ -49,15 +49,23 @@ type EditBrevoContactFormValuesWithAttributes = EditBrevoContactFormValues & {
     email: string;
 };
 
-interface FormProps {
+export type BrevoTestContactFormInput<AdditionalAttributes extends object> = GQLBrevoContactFormQuery["brevoContact"] & AdditionalAttributes;
+
+interface FormProps<AdditionalAttributes extends object> {
     id?: number;
     scope: ContentScope;
     additionalFormFields?: ReactNode;
     additionalAttributesFragment?: { name: string; fragment: DocumentNode };
-    input2State?: (values?: EditBrevoContactFormValues) => EditBrevoContactFormValues;
+    input2State?: (values?: BrevoTestContactFormInput<AdditionalAttributes>) => EditBrevoContactFormValues;
 }
 
-export function BrevoTestContactForm({ id, scope, input2State, additionalFormFields, additionalAttributesFragment }: FormProps): ReactElement {
+export function BrevoTestContactForm<AdditionalAttributes extends object>({
+    id,
+    scope,
+    input2State,
+    additionalFormFields,
+    additionalAttributesFragment,
+}: FormProps<AdditionalAttributes>): ReactElement {
     const stackApi = useStackApi();
     const client = useApolloClient();
     const mode = id ? "edit" : "add";
@@ -86,7 +94,7 @@ export function BrevoTestContactForm({ id, scope, input2State, additionalFormFie
         if (input2State) {
             baseInitialValues = {
                 ...baseInitialValues,
-                ...input2State(data?.brevoContact),
+                ...input2State(data?.brevoContact as BrevoTestContactFormInput<AdditionalAttributes> | undefined),
             };
         }
 

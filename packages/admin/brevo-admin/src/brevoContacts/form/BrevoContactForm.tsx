@@ -54,15 +54,23 @@ type EditBrevoContactFormValuesWithAttributes = EditBrevoContactFormValues & {
     sendDoubleOptIn?: boolean;
 };
 
-interface FormProps {
+export type BrevoContactFormInput<AdditionalAttributes extends object> = GQLBrevoContactFormQuery["brevoContact"] & AdditionalAttributes;
+
+interface FormProps<AdditionalAttributes extends object> {
     id?: number;
     scope: ContentScope;
     additionalFormFields?: ReactNode;
     additionalAttributesFragment?: { name: string; fragment: DocumentNode };
-    input2State?: (values?: EditBrevoContactFormValues) => EditBrevoContactFormValues;
+    input2State?: (values?: BrevoContactFormInput<AdditionalAttributes>) => EditBrevoContactFormValues;
 }
 
-export function BrevoContactForm({ id, scope, input2State, additionalFormFields, additionalAttributesFragment }: FormProps): ReactElement {
+export function BrevoContactForm<AdditionalAttributes extends object>({
+    id,
+    scope,
+    input2State,
+    additionalFormFields,
+    additionalAttributesFragment,
+}: FormProps<AdditionalAttributes>): ReactElement {
     const stackApi = useStackApi();
     const client = useApolloClient();
     const mode = id ? "edit" : "add";
@@ -92,7 +100,7 @@ export function BrevoContactForm({ id, scope, input2State, additionalFormFields,
         if (input2State) {
             baseInitialValues = {
                 ...baseInitialValues,
-                ...input2State(data?.brevoContact),
+                ...input2State(data?.brevoContact as BrevoContactFormInput<AdditionalAttributes> | undefined),
             };
         }
 

@@ -40,15 +40,24 @@ export interface EditTargetGroupFinalFormValues {
     [key: string]: unknown;
 }
 
-interface FormProps {
+export type TargetGroupFormInput<AdditionalTargetGroupFields extends object> = GQLTargetGroupFormQuery["brevoTargetGroup"] &
+    AdditionalTargetGroupFields;
+
+interface FormProps<AdditionalTargetGroupFields extends object> {
     id: string;
     scope: ContentScope;
     additionalFormFields?: ReactNode;
     nodeFragment?: { name: string; fragment: DocumentNode };
-    input2State?: (values?: EditTargetGroupFinalFormValues) => EditTargetGroupFinalFormValues;
+    input2State?: (values?: TargetGroupFormInput<AdditionalTargetGroupFields>) => EditTargetGroupFinalFormValues;
 }
 
-export function TargetGroupForm({ id, scope, additionalFormFields, input2State, nodeFragment }: FormProps): ReactElement {
+export function TargetGroupForm<AdditionalTargetGroupFields extends object>({
+    id,
+    scope,
+    additionalFormFields,
+    input2State,
+    nodeFragment,
+}: FormProps<AdditionalTargetGroupFields>): ReactElement {
     const stackApi = useStackApi();
     const client = useApolloClient();
     const mode = "edit";
@@ -73,7 +82,7 @@ export function TargetGroupForm({ id, scope, additionalFormFields, input2State, 
         let additionalInitialValues = {};
 
         if (input2State) {
-            additionalInitialValues = input2State(data?.brevoTargetGroup);
+            additionalInitialValues = input2State(data?.brevoTargetGroup as TargetGroupFormInput<AdditionalTargetGroupFields> | undefined);
         }
 
         return data?.brevoTargetGroup ? { title: data.brevoTargetGroup.title, ...additionalInitialValues } : additionalInitialValues;

@@ -1,5 +1,5 @@
-import { Command, CommandRunner } from "nest-commander";
-
+import { Command } from "../console-commands/command.decorators.js";
+import { CommandRunner } from "../console-commands/command-runner.js";
 import { DependenciesService } from "../dependencies/dependencies.service.js";
 
 @Command({

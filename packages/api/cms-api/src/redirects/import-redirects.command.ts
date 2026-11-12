@@ -4,8 +4,9 @@ import { EntityManager, type FilterQuery, MikroORM } from "@mikro-orm/postgresql
 import { forwardRef, Inject } from "@nestjs/common";
 import * as console from "console";
 import * as fs from "fs";
-import { Command, CommandRunner } from "nest-commander";
 
+import { Command } from "../console-commands/command.decorators.js";
+import { CommandRunner } from "../console-commands/command-runner.js";
 import { PageTreeService } from "../page-tree/page-tree.service.js";
 import type { PageTreeReadApiOptions } from "../page-tree/page-tree-read-api.js";
 import type { RedirectInterface } from "./entities/redirect-entity.factory.js";

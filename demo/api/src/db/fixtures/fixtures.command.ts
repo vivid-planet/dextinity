@@ -1,5 +1,7 @@
 import {
     BlobStorageBackendService,
+    Command,
+    CommandRunner,
     DependenciesService,
     type PageTreeNodeBaseCreateInput,
     type PageTreeNodeInterface,
@@ -20,7 +22,6 @@ import { Page } from "@src/documents/pages/entities/page.entity.js";
 import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category.js";
 import { UserGroup } from "@src/user-groups/user-group.js";
 import { MultiBar, type Options, Presets } from "cli-progress";
-import { Command, CommandRunner } from "nest-commander";
 import slugify from "slugify";
 
 import { DocumentGeneratorService } from "./generators/document-generator.service.js";

@@ -171,6 +171,9 @@ export { IsNullable } from "./common/validators/is-nullable.js";
 export { IsPhoneNumber, isPhoneNumber } from "./common/validators/is-phone-number.js";
 export { IsSlug } from "./common/validators/is-slug.js";
 export { IsUndefinable } from "./common/validators/is-undefinable.js";
+export { Command, type CommandMetadata, Option, type OptionMetadata } from "./console-commands/command.decorators.js";
+export { CommandFactory } from "./console-commands/command.factory.js";
+export { CommandRunner } from "./console-commands/command-runner.js";
 export { AzureOpenAiContentGenerationModule } from "./content-generation/azure-open-ai/azure-open-ai-content-generation.module.js";
 export {
     type AzureOpenAiConfig,

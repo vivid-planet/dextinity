@@ -1,8 +1,9 @@
 import { MikroORM } from "@mikro-orm/core";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { Inject, Logger } from "@nestjs/common";
-import { Command, CommandRunner, Option } from "nest-commander";
 
+import { Command, Option } from "../console-commands/command.decorators.js";
+import { CommandRunner } from "../console-commands/command-runner.js";
 import { MAILER_SERVICE_CONFIG } from "./mailer.constants.js";
 import type { MailerModuleConfig } from "./mailer.module.js";
 import { MailerService } from "./mailer.service.js";

@@ -1,7 +1,7 @@
+import { Command, CommandRunner } from "@dextinity/cms-api";
 import { MikroORM } from "@mikro-orm/core";
 import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { Injectable } from "@nestjs/common";
-import { Command, CommandRunner } from "nest-commander";
 
 import { ProductImporterService } from "./product-importer.service.js";
 

@@ -76,7 +76,7 @@
         "eslint": "^9.39.5",
         "eslint-plugin-storybook": "^10.6.6",
         "immutable": "^3.8.4",
-        "msw": "^2.15.0",
+        "msw": "^3.0.5",
         "npm-run-all2": "^9.0.4",
         "playwright": "^1.65.0",
         "prettier": "^3.9.10",

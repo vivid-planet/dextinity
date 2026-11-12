@@ -12,7 +12,7 @@ import {
 import { CallToActionListBlock } from "@src/common/blocks/call-to-action-list.block.js";
 import { HeadingBlock } from "@src/common/blocks/heading.block.js";
 import { MediaBlock } from "@src/common/blocks/media.block.js";
-import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block.js";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
 import { IsEnum, IsInt, Max, Min } from "class-validator";
 
 export enum Alignment {
@@ -27,7 +27,7 @@ class BasicStageBlockData extends BlockData {
     @ChildBlock(HeadingBlock)
     heading: BlockDataInterface;
 
-    @ChildBlock(TipTapRichTextBlock)
+    @ChildBlock(RichTextBlock)
     text: BlockDataInterface;
 
     @BlockField()
@@ -47,8 +47,8 @@ class BasicStageBlockInput extends BlockInput {
     @ChildBlockInput(HeadingBlock)
     heading: ExtractBlockInput<typeof HeadingBlock>;
 
-    @ChildBlockInput(TipTapRichTextBlock)
-    text: ExtractBlockInput<typeof TipTapRichTextBlock>;
+    @ChildBlockInput(RichTextBlock)
+    text: ExtractBlockInput<typeof RichTextBlock>;
 
     @BlockField()
     @IsInt()

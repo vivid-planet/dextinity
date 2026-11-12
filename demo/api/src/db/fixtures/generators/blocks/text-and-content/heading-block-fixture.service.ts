@@ -3,17 +3,17 @@ import { Injectable } from "@nestjs/common";
 import { type HeadingBlock, HeadlineTag } from "@src/common/blocks/heading.block.js";
 import { faker } from "@src/db/fixtures/faker.js";
 
-import { InlineTipTapRichTextBlockFixtureService } from "./inline-tip-tap-rich-text-block-fixture.service.js";
+import { InlineRichTextBlockFixtureService } from "./inline-rich-text-block-fixture.service.js";
 
 @Injectable()
 export class HeadingBlockFixtureService {
-    constructor(private readonly inlineTipTapRichTextBlockFixtureService: InlineTipTapRichTextBlockFixtureService) {}
+    constructor(private readonly inlineRichTextBlockFixtureService: InlineRichTextBlockFixtureService) {}
 
     async generateBlockInput(): Promise<ExtractBlockInputFactoryProps<typeof HeadingBlock>> {
         const headlineTextBlocks = ["headline600", "headline550", "headline500", "headline450", "headline400", "headline350"];
 
         return {
-            eyebrow: await this.inlineTipTapRichTextBlockFixtureService.generateBlockInput(faker.lorem.words({ min: 3, max: 9 })),
+            eyebrow: await this.inlineRichTextBlockFixtureService.generateBlockInput(faker.lorem.words({ min: 3, max: 9 })),
             headline: {
                 tipTapContent: {
                     type: "doc",

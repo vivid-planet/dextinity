@@ -6,17 +6,17 @@ import { FormattedMessage } from "react-intl";
 
 const smallStyle = {
     name: "small",
-    label: <FormattedMessage id="mail.twoListSizesTipTapRichText.textBlockStyle.small" defaultMessage="Small" />,
+    label: <FormattedMessage id="mail.twoListSizesRichText.textBlockStyle.small" defaultMessage="Small" />,
     element: (props: HTMLAttributes<HTMLElement>) => <Typography variant="body2" {...props} />,
 };
 
-export const MailTwoListSizesTipTapRichTextBlock = {
+export const MailTwoListSizesRichTextBlock = {
     ...createTipTapRichTextBlock({
         link: MailLinkBlock,
         textBlocks: [
             {
                 name: "paragraph",
-                label: <FormattedMessage id="mail.twoListSizesTipTapRichText.textBlock.paragraph" defaultMessage="Paragraph" />,
+                label: <FormattedMessage id="mail.twoListSizesRichText.textBlock.paragraph" defaultMessage="Paragraph" />,
                 tag: "p",
                 styles: [smallStyle],
             },
@@ -24,5 +24,6 @@ export const MailTwoListSizesTipTapRichTextBlock = {
         orderedList: { styles: [smallStyle] },
         unorderedList: { styles: [smallStyle] },
     }),
-    displayName: <FormattedMessage id="mail.twoListSizesTipTapRichText.displayName" defaultMessage="Rich Text (Two List Sizes)" />,
+    name: "MailTwoListSizesRichText",
+    displayName: <FormattedMessage id="mail.twoListSizesRichText.displayName" defaultMessage="Rich Text (Two List Sizes)" />,
 };

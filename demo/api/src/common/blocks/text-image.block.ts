@@ -1,4 +1,4 @@
 import { createTextImageBlock, DamImageBlock } from "@dextinity/cms-api";
-import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block.js";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
 
-export const TextImageBlock = createTextImageBlock({ text: TipTapRichTextBlock, image: DamImageBlock });
+export const TextImageBlock = createTextImageBlock({ text: RichTextBlock, image: DamImageBlock });

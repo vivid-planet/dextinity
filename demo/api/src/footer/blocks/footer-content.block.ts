@@ -11,12 +11,12 @@ import {
     type ExtractBlockInput,
 } from "@dextinity/cms-api";
 import { LinkListBlock } from "@src/common/blocks/link-list.block.js";
-import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block.js";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
 import { IsString } from "class-validator";
 
 class FooterContentBlockData extends BlockData {
-    @ChildBlock(TipTapRichTextBlock)
-    text: ExtractBlockInput<typeof TipTapRichTextBlock>;
+    @ChildBlock(RichTextBlock)
+    text: ExtractBlockInput<typeof RichTextBlock>;
 
     @ChildBlock(DamImageBlock)
     image: BlockDataInterface;
@@ -32,8 +32,8 @@ class FooterContentBlockData extends BlockData {
 }
 
 class FooterContentBlockInput extends BlockInput {
-    @ChildBlockInput(TipTapRichTextBlock)
-    text: ExtractBlockInput<typeof TipTapRichTextBlock>;
+    @ChildBlockInput(RichTextBlock)
+    text: ExtractBlockInput<typeof RichTextBlock>;
 
     @ChildBlockInput(DamImageBlock)
     image: ExtractBlockInput<typeof DamImageBlock>;

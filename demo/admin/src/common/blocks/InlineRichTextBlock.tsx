@@ -1,14 +1,14 @@
 import { createTipTapRichTextBlock } from "@dextinity/cms-admin";
 import { FormattedMessage } from "react-intl";
 
-export const InlineTipTapRichTextBlock = {
+export const InlineRichTextBlock = {
     ...createTipTapRichTextBlock({
         strike: false,
         textBlocks: [
             {
                 name: "paragraph",
                 tag: "p",
-                label: <FormattedMessage id="inlineTipTapRichTextBlock.textBlock.paragraph" defaultMessage="Paragraph" />,
+                label: <FormattedMessage id="inlineRichTextBlock.textBlock.paragraph" defaultMessage="Paragraph" />,
             },
         ],
         orderedList: false,
@@ -16,5 +16,5 @@ export const InlineTipTapRichTextBlock = {
         maxTextBlocks: 1,
         minHeight: 0,
     }),
-    name: "InlineTipTapRichText",
+    name: "InlineRichText",
 };

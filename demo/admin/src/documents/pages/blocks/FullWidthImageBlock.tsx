@@ -1,10 +1,10 @@
 import { messages } from "@dextinity/admin";
 import { createCompositeBlock, createOptionalBlock, DamImageBlock } from "@dextinity/cms-admin";
 import { customBlockCategory } from "@src/common/blocks/customBlockCategories";
-import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { FormattedMessage } from "react-intl";
 
-const FullWidthImageContentBlock = createOptionalBlock(TipTapRichTextBlock, {
+const FullWidthImageContentBlock = createOptionalBlock(RichTextBlock, {
     title: <FormattedMessage {...messages.content} />,
 });
 

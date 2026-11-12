@@ -1,6 +1,6 @@
 import { BlockCategory, createCompositeBlock, createListBlock } from "@dextinity/cms-admin";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
-import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { FormattedMessage } from "react-intl";
 
 const SliderItemBlock = createCompositeBlock({
@@ -14,7 +14,7 @@ const SliderItemBlock = createCompositeBlock({
             hiddenInSubroute: true,
         },
         text: {
-            block: TipTapRichTextBlock,
+            block: RichTextBlock,
             hiddenInSubroute: true,
         },
     },

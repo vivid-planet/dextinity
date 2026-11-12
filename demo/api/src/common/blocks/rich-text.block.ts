@@ -3,11 +3,11 @@ import { ProductPriceBlock } from "@src/products/blocks/product-price.block.js";
 import { ProductTeaserBlock } from "@src/products/blocks/product-teaser.block.js";
 
 import { LinkBlock } from "./link.block.js";
-import { Heading1ToHeading2Migration } from "./tip-tap-rich-text/migrations/1-heading-1-to-heading-2.migration.js";
+import { Heading1ToHeading2Migration } from "./rich-text/migrations/1-heading-1-to-heading-2.migration.js";
 
 const listStyles = [{ name: "list300" }, { name: "list200" }];
 
-export const TipTapRichTextBlock = createTipTapRichTextBlock(
+export const RichTextBlock = createTipTapRichTextBlock(
     {
         link: LinkBlock,
         childBlocks: {
@@ -56,7 +56,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock(
         },
     },
     {
-        name: "TipTapRichText",
+        name: "RichText",
         migrate: {
             migrations: typeSafeBlockMigrationPipe([Heading1ToHeading2Migration]),
             version: 1,

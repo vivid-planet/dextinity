@@ -11,7 +11,7 @@ import {
     typeSafeBlockMigrationPipe,
 } from "@dextinity/cms-api";
 import { MediaBlock } from "@src/common/blocks/media.block.js";
-import { TipTapRichTextBlock } from "@src/common/blocks/tip-tap-rich-text.block.js";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
 
 import { RemoveSliderListMigration } from "./slider/migrations/1-remove-slider-list.migration.js";
 
@@ -19,7 +19,7 @@ class SliderItemBlockData extends BlockData {
     @ChildBlock(MediaBlock)
     media: BlockDataInterface;
 
-    @ChildBlock(TipTapRichTextBlock)
+    @ChildBlock(RichTextBlock)
     text: BlockDataInterface;
 }
 
@@ -27,8 +27,8 @@ class SliderItemBlockInput extends BlockInput {
     @ChildBlockInput(MediaBlock)
     media: ExtractBlockInput<typeof MediaBlock>;
 
-    @ChildBlockInput(TipTapRichTextBlock)
-    text: ExtractBlockInput<typeof TipTapRichTextBlock>;
+    @ChildBlockInput(RichTextBlock)
+    text: ExtractBlockInput<typeof RichTextBlock>;
 
     transformToBlockData(): SliderItemBlockData {
         return blockInputToData(SliderItemBlockData, this);

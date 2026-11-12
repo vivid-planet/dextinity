@@ -2,7 +2,7 @@ import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { FooterContentBlockData } from "@src/blocks.generated";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 import { LinkBlock } from "@src/common/blocks/LinkBlock";
-import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { Typography } from "@src/common/components/Typography";
 import { PageLayout } from "@src/layout/PageLayout";
 import { createImageSizes } from "@src/util/createImageSizes";
@@ -34,7 +34,7 @@ export const FooterContentBlock = withPreview(
                             </div>
 
                             <div className={styles.richTextWrapper}>
-                                <TipTapRichTextBlock data={text} disableLastBottomSpacing />
+                                <RichTextBlock data={text} disableLastBottomSpacing />
                             </div>
                         </div>
                         <hr className={styles.horizontalLine} />

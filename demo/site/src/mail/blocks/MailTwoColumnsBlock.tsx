@@ -15,13 +15,13 @@ import {
 } from "@dextinity/mail-react";
 import type {
     MailButtonBlockData,
+    MailRichTextBlockData,
     MailSpacerBlockData,
-    MailTipTapRichTextBlockData,
     MailTwoColumnsBlockData,
     PixelImageBlockData,
 } from "@src/blocks.generated";
+import { MjmlTipTapRichTextBlock } from "@src/mail/blocks/MailRichTextBlock";
 import { spacingToHeight } from "@src/mail/blocks/MailSpacerBlock";
-import { MjmlTipTapRichTextBlock } from "@src/mail/blocks/MailTipTapRichTextBlock";
 
 const columnGap = 20;
 
@@ -50,7 +50,7 @@ registerStyles(
     `,
 );
 
-const ColumnRichTextBlock = withPreview<PropsWithData<MailTipTapRichTextBlockData>>(
+const ColumnRichTextBlock = withPreview<PropsWithData<MailRichTextBlockData>>(
     ({ data, className }) => <MjmlTipTapRichTextBlock data={data} textClassName={className} />,
     { label: "Text" },
 );

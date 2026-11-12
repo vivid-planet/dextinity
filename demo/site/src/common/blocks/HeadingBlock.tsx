@@ -9,7 +9,7 @@ import {
 import type { HeadingBlockData } from "@src/blocks.generated";
 import { Typography, type TypographyProps } from "@src/common/components/Typography";
 
-import { InlineTipTapRichTextBlock } from "./InlineTipTapRichTextBlock";
+import { InlineRichTextBlock } from "./InlineRichTextBlock";
 
 type TypographyVariant = TypographyProps<"p">["variant"];
 
@@ -29,7 +29,7 @@ export const HeadingBlock = withPreview(
         <>
             {hasTipTapRichTextContent(eyebrow.tipTapContent) && (
                 <Typography variant="headline400" as="p" bottomSpacing>
-                    <InlineTipTapRichTextBlock data={eyebrow} />
+                    <InlineRichTextBlock data={eyebrow} />
                 </Typography>
             )}
             <PreviewSkeleton

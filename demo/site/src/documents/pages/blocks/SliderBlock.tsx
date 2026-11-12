@@ -2,7 +2,7 @@ import { type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import { useIntl } from "@dextinity/site-nextjs/intl";
 import type { SliderBlockData } from "@src/blocks.generated";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
-import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import {
     Carousel,
     CarouselDots,
@@ -49,7 +49,7 @@ export const SliderBlock = withPreview(
                                                 />
                                             </div>
                                             <div className={styles.text}>
-                                                <TipTapRichTextBlock data={block.props.text} />
+                                                <RichTextBlock data={block.props.text} />
                                             </div>
                                         </div>
                                     </AnimateBoxInOnScroll>

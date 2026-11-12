@@ -9,7 +9,7 @@ import {
     createBlock,
     type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { InlineTipTapRichTextBlock } from "@src/common/blocks/inline-tip-tap-rich-text.block.js";
+import { InlineRichTextBlock } from "@src/common/blocks/inline-rich-text.block.js";
 import { MediaBlock } from "@src/common/blocks/media.block.js";
 import { TextLinkBlock } from "@src/common/blocks/text-link.block.js";
 import { IsEnum, IsString } from "class-validator";
@@ -30,7 +30,7 @@ class TeaserItemBlockData extends BlockData {
     @BlockField()
     title: string;
 
-    @ChildBlock(InlineTipTapRichTextBlock)
+    @ChildBlock(InlineRichTextBlock)
     description: BlockDataInterface;
 
     @ChildBlock(TextLinkBlock)
@@ -48,8 +48,8 @@ class TeaserItemBlockInput extends BlockInput {
     @IsString()
     title: string;
 
-    @ChildBlockInput(InlineTipTapRichTextBlock)
-    description: ExtractBlockInput<typeof InlineTipTapRichTextBlock>;
+    @ChildBlockInput(InlineRichTextBlock)
+    description: ExtractBlockInput<typeof InlineRichTextBlock>;
 
     @ChildBlockInput(TextLinkBlock)
     link: ExtractBlockInput<typeof TextLinkBlock>;

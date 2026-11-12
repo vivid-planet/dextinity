@@ -861,7 +861,7 @@ type MainMenu {
 }
 
 type MainMenuItem {
-  content: TipTapRichTextBlockData
+  content: RichTextBlockData
   createdAt: DateTime!
   dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
   id: ID!
@@ -870,7 +870,7 @@ type MainMenuItem {
 }
 
 input MainMenuItemInput {
-  content: TipTapRichTextBlockInput
+  content: RichTextBlockInput
 }
 
 type Manufacturer {
@@ -2165,6 +2165,12 @@ input RemoveBrevoContactInput {
   brevoContactId: Int!
 }
 
+"""RichText root block data"""
+scalar RichTextBlockData @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+"""RichText root block input"""
+scalar RichTextBlockInput @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
 input ScopeFilter {
   equal: JSONObject
   isAnyOf: [JSONObject!]
@@ -2267,12 +2273,6 @@ input TargetGroupUpdateInput {
   filters: BrevoContactFilterAttributesInput
   title: String
 }
-
-"""TipTapRichText root block data"""
-scalar TipTapRichTextBlockData @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
-
-"""TipTapRichText root block input"""
-scalar TipTapRichTextBlockInput @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
 
 input UpdateDamFileInput {
   aiContentType: DamFileAiContentType

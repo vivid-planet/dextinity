@@ -9,9 +9,9 @@ import {
     createCompositeBlockTextField,
 } from "@dextinity/cms-admin";
 import type { AccordionItemBlockData } from "@src/blocks.generated";
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { SpaceBlock } from "@src/common/blocks/SpaceBlock";
 import { StandaloneCallToActionListBlock } from "@src/common/blocks/StandaloneCallToActionListBlock";
-import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
 import { FormattedMessage } from "react-intl";
 
 import { StandaloneHeadingBlock } from "./StandaloneHeadingBlock";
@@ -20,7 +20,7 @@ import { TextImageBlock } from "./TextImageBlock";
 const AccordionContentBlock = createBlocksBlock({
     name: "AccordionContent",
     supportedBlocks: {
-        richtext: TipTapRichTextBlock,
+        richtext: RichTextBlock,
         space: SpaceBlock,
         heading: StandaloneHeadingBlock,
         callToActionList: StandaloneCallToActionListBlock,

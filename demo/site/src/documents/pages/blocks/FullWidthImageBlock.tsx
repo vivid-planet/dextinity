@@ -1,7 +1,7 @@
 import { OptionalBlock, type PropsWithData, withPreview } from "@dextinity/site-nextjs";
 import type { FullWidthImageBlockData } from "@src/blocks.generated";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
-import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { AnimateBoxInOnScroll } from "@src/util/animations/AnimateBoxInOnScroll";
 import { AnimateGroup } from "@src/util/animations/AnimateGroup";
 
@@ -18,7 +18,7 @@ export const FullWidthImageBlock = withPreview(
                     <OptionalBlock
                         block={(props) => (
                             <AnimateBoxInOnScroll direction="bottom" delay={200} className={styles.content}>
-                                <TipTapRichTextBlock data={props} />
+                                <RichTextBlock data={props} />
                             </AnimateBoxInOnScroll>
                         )}
                         data={content}

@@ -1,15 +1,15 @@
 import { BlockCategory, createCompositeBlock, createCompositeBlockSelectField } from "@dextinity/cms-admin";
 import type { StandaloneRichTextBlockData } from "@src/blocks.generated";
-import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { FormattedMessage } from "react-intl";
 
 export const StandaloneRichTextBlock = createCompositeBlock(
     {
         name: "StandaloneRichText",
-        displayName: TipTapRichTextBlock.displayName,
+        displayName: RichTextBlock.displayName,
         blocks: {
             richText: {
-                block: TipTapRichTextBlock,
+                block: RichTextBlock,
             },
             textAlignment: {
                 block: createCompositeBlockSelectField<StandaloneRichTextBlockData["textAlignment"]>({

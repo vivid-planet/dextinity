@@ -3,16 +3,16 @@ import { MailButtonBlock } from "@src/mail/blocks/MailButtonBlock";
 import { MailDividerBlock } from "@src/mail/blocks/MailDividerBlock";
 import { MailImageBlock } from "@src/mail/blocks/MailImageBlock";
 import { MailSpacerBlock } from "@src/mail/blocks/MailSpacerBlock";
-import { MailTwoListSizesTipTapRichTextBlock } from "@src/mail/blocks/MailTwoListSizesTipTapRichTextBlock";
+import { MailTwoListSizesRichTextBlock } from "@src/mail/blocks/MailTwoListSizesRichTextBlock";
 
+import { EmailCampaignRichTextBlock } from "./EmailCampaignRichTextBlock";
 import { EmailCampaignSalutationBlock } from "./EmailCampaignSalutationBlock";
-import { EmailCampaignTipTapRichTextBlock } from "./EmailCampaignTipTapRichTextBlock";
 
 export const EmailCampaignContentBlock = createBlocksBlock({
     name: "EmailCampaignContent",
     supportedBlocks: {
-        twoListSizesTipTapText: MailTwoListSizesTipTapRichTextBlock,
-        tipTapText: EmailCampaignTipTapRichTextBlock,
+        twoListSizesText: MailTwoListSizesRichTextBlock,
+        text: EmailCampaignRichTextBlock,
         image: MailImageBlock,
         button: MailButtonBlock,
         divider: MailDividerBlock,

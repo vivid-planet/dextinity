@@ -7,14 +7,14 @@ import {
     PixelImageBlock,
 } from "@dextinity/cms-admin";
 import { MailButtonBlock } from "@src/mail/blocks/MailButtonBlock";
+import { MailRichTextBlock } from "@src/mail/blocks/MailRichTextBlock";
 import { MailSpacerBlock } from "@src/mail/blocks/MailSpacerBlock";
-import { MailTipTapRichTextBlock } from "@src/mail/blocks/MailTipTapRichTextBlock";
 import { FormattedMessage } from "react-intl";
 
 const MailTwoColumnsContentBlock = createBlocksBlock({
     name: "MailTwoColumnsContent",
     supportedBlocks: {
-        text: MailTipTapRichTextBlock,
+        text: MailRichTextBlock,
         image: PixelImageBlock,
         button: MailButtonBlock,
         spacer: MailSpacerBlock,

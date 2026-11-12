@@ -1,6 +1,6 @@
 import { createTipTapRichTextBlock } from "@dextinity/cms-api";
 
-export const HeadlineTipTapRichTextBlock = createTipTapRichTextBlock(
+export const HeadlineRichTextBlock = createTipTapRichTextBlock(
     {
         strike: false,
         textBlocks: [
@@ -16,5 +16,5 @@ export const HeadlineTipTapRichTextBlock = createTipTapRichTextBlock(
         maxTextBlocks: 1,
         migrateFromDraftJs: true,
     },
-    "HeadlineTipTapRichText",
+    "HeadlineRichText",
 );

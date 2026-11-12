@@ -1,5 +1,5 @@
 import { BlockCategory, createCompositeBlock, createCompositeBlockTextField, SvgImageBlock } from "@dextinity/cms-admin";
-import { InlineTipTapRichTextBlock } from "@src/common/blocks/InlineTipTapRichTextBlock";
+import { InlineRichTextBlock } from "@src/common/blocks/InlineRichTextBlock";
 import { FormattedMessage } from "react-intl";
 
 export const KeyFactsItemBlock = createCompositeBlock(
@@ -22,7 +22,7 @@ export const KeyFactsItemBlock = createCompositeBlock(
                 }),
             },
             description: {
-                block: InlineTipTapRichTextBlock,
+                block: InlineRichTextBlock,
                 title: <FormattedMessage id="keyFactsItemBlock.description" defaultMessage="Description" />,
             },
         },

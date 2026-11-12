@@ -12,7 +12,7 @@ import {
     FinalFormLayoutSelect,
 } from "@dextinity/cms-admin";
 import type { LayoutBlockData } from "@src/blocks.generated";
-import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { FormattedMessage } from "react-intl";
 
 import { MediaBlock } from "./MediaBlock";
@@ -143,7 +143,7 @@ export const LayoutBlock = createCompositeBlock(
                 title: <FormattedMessage id="layoutBlock.media1" defaultMessage="Media 1" />,
             },
             text1: {
-                block: TipTapRichTextBlock,
+                block: RichTextBlock,
                 title: <FormattedMessage id="layoutBlock.text1" defaultMessage="Text 1" />,
             },
             media2: {
@@ -151,7 +151,7 @@ export const LayoutBlock = createCompositeBlock(
                 title: <FormattedMessage id="layoutBlock.media2" defaultMessage="Media 2" />,
             },
             text2: {
-                block: TipTapRichTextBlock,
+                block: RichTextBlock,
                 title: <FormattedMessage id="layoutBlock.text2" defaultMessage="Text 2" />,
             },
         },

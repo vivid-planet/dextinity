@@ -2,8 +2,8 @@ import { BlockCategory, createCompositeBlock, createCompositeBlockSelectField } 
 import type { HeadingBlockData } from "@src/blocks.generated";
 import { FormattedMessage } from "react-intl";
 
-import { HeadlineTipTapRichTextBlock } from "./HeadlineTipTapRichTextBlock";
-import { InlineTipTapRichTextBlock } from "./InlineTipTapRichTextBlock";
+import { HeadlineRichTextBlock } from "./HeadlineRichTextBlock";
+import { InlineRichTextBlock } from "./InlineRichTextBlock";
 
 export const HeadingBlock = createCompositeBlock(
     {
@@ -11,11 +11,11 @@ export const HeadingBlock = createCompositeBlock(
         displayName: <FormattedMessage id="headingBlock.displayName" defaultMessage="Heading" />,
         blocks: {
             eyebrow: {
-                block: InlineTipTapRichTextBlock,
+                block: InlineRichTextBlock,
                 title: <FormattedMessage id="headingBlock.eyebrow" defaultMessage="Eyebrow" />,
             },
             headline: {
-                block: HeadlineTipTapRichTextBlock,
+                block: HeadlineRichTextBlock,
                 title: <FormattedMessage id="headingBlock.title" defaultMessage="Headline" />,
             },
             htmlTag: {

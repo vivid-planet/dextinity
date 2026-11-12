@@ -3,7 +3,7 @@ import type { BasicStageBlockData } from "@src/blocks.generated";
 import { CallToActionListBlock } from "@src/common/blocks/CallToActionListBlock";
 import { HeadingBlock } from "@src/common/blocks/HeadingBlock";
 import { MediaBlock } from "@src/common/blocks/MediaBlock";
-import { TipTapRichTextBlock } from "@src/common/blocks/TipTapRichTextBlock";
+import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { PageLayout } from "@src/layout/PageLayout";
 import { AnimateBoxInOnLoad } from "@src/util/animations/AnimateBoxInOnLoad";
 
@@ -31,7 +31,7 @@ export const BasicStageBlock = withPreview(
                         <HeadingBlock data={heading} />
                     </AnimateBoxInOnLoad>
                     <AnimateBoxInOnLoad direction="bottom" delay={150}>
-                        <TipTapRichTextBlock data={text} />
+                        <RichTextBlock data={text} />
                     </AnimateBoxInOnLoad>
                     <AnimateBoxInOnLoad direction="bottom" delay={300}>
                         <CallToActionListBlock data={callToActionList} />

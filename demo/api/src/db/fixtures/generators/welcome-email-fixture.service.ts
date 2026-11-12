@@ -15,9 +15,9 @@ interface WelcomeEmailScope {
     language: string;
 }
 
-type TipTapInlineContent = Array<{ type: "text"; text: string; marks?: object[] }>;
+type InlineContent = Array<{ type: "text"; text: string; marks?: object[] }>;
 
-function textBlock(content: string | TipTapInlineContent, textBlockStyle?: "title" | "header" | "small") {
+function textBlock(content: string | InlineContent, textBlockStyle?: "title" | "header" | "small") {
     return {
         type: "textBlock",
         attrs: { textBlock: "paragraph", ...(textBlockStyle ? { textBlockStyle } : {}) },
@@ -29,7 +29,7 @@ function bulletList(items: string[]) {
     return { type: "bulletList", content: items.map((item) => ({ type: "listItem", content: [textBlock(item)] })) };
 }
 
-function tipTapText(...content: object[]) {
+function richText(...content: object[]) {
     return { tipTapContent: { type: "doc", content } };
 }
 
@@ -48,7 +48,7 @@ const faqLink = {
     },
 };
 
-const helpWithTipTap = {
+const helpText = {
     tipTapContent: {
         type: "doc",
         content: [
@@ -125,8 +125,8 @@ export class WelcomeEmailFixtureService {
                     {
                         key: faker.string.uuid(),
                         visible: true,
-                        type: "tipTapText",
-                        props: tipTapText(textBlock("Welcome to our newsletter", "title")),
+                        type: "text",
+                        props: richText(textBlock("Welcome to our newsletter", "title")),
                     },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
                     {
@@ -139,8 +139,8 @@ export class WelcomeEmailFixtureService {
                     {
                         key: faker.string.uuid(),
                         visible: true,
-                        type: "tipTapText",
-                        props: tipTapText(
+                        type: "text",
+                        props: richText(
                             textBlock("Hi there, and thanks for subscribing — we're glad to have you on board."),
                             textBlock("You'll be the first to hear about:"),
                             bulletList(["Product updates", "Handy tips from our team", "Stories from behind the scenes"]),
@@ -150,8 +150,8 @@ export class WelcomeEmailFixtureService {
                     {
                         key: faker.string.uuid(),
                         visible: true,
-                        type: "tipTapText",
-                        props: tipTapText(
+                        type: "text",
+                        props: richText(
                             textBlock("Further information", "header"),
                             textBlock([
                                 { type: "text", text: "Call our " },
@@ -196,7 +196,7 @@ export class WelcomeEmailFixtureService {
                                                 key: faker.string.uuid(),
                                                 visible: true,
                                                 type: "text",
-                                                props: tipTapText(
+                                                props: richText(
                                                     textBlock("Our team", "header"),
                                                     textBlock("Meet the people who write this newsletter."),
                                                 ),
@@ -220,15 +220,15 @@ export class WelcomeEmailFixtureService {
                         },
                     },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
-                    { key: faker.string.uuid(), visible: true, type: "tipTapText", props: helpWithTipTap },
+                    { key: faker.string.uuid(), visible: true, type: "text", props: helpText },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.medium } },
                     { key: faker.string.uuid(), visible: true, type: "divider", props: {} },
                     { key: faker.string.uuid(), visible: true, type: "spacer", props: { spacing: MailSpacing.small } },
                     {
                         key: faker.string.uuid(),
                         visible: true,
-                        type: "tipTapText",
-                        props: tipTapText(
+                        type: "text",
+                        props: richText(
                             textBlock("You receive this email because you subscribed to our newsletter."),
                             textBlock("Example Company, Example Street 1, 1010 Vienna"),
                         ),

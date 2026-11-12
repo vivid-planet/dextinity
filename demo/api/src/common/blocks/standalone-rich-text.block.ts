@@ -11,7 +11,7 @@ import {
 } from "@dextinity/cms-api";
 import { IsEnum } from "class-validator";
 
-import { TipTapRichTextBlock } from "./tip-tap-rich-text.block.js";
+import { RichTextBlock } from "./rich-text.block.js";
 
 export enum TextAlignment {
     left = "left",
@@ -21,7 +21,7 @@ export enum TextAlignment {
 }
 
 class StandaloneRichTextBlockData extends BlockData {
-    @ChildBlock(TipTapRichTextBlock)
+    @ChildBlock(RichTextBlock)
     richText: BlockDataInterface;
 
     @BlockField({ type: "enum", enum: TextAlignment })
@@ -29,8 +29,8 @@ class StandaloneRichTextBlockData extends BlockData {
 }
 
 class StandaloneRichTextBlockInput extends BlockInput {
-    @ChildBlockInput(TipTapRichTextBlock)
-    richText: ExtractBlockInput<typeof TipTapRichTextBlock>;
+    @ChildBlockInput(RichTextBlock)
+    richText: ExtractBlockInput<typeof RichTextBlock>;
 
     @IsEnum(TextAlignment)
     @BlockField({ type: "enum", enum: TextAlignment })

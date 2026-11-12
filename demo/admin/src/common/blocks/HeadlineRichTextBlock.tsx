@@ -1,7 +1,7 @@
 import { createTipTapRichTextBlock } from "@dextinity/cms-admin";
 import { FormattedMessage } from "react-intl";
 
-export const HeadlineTipTapRichTextBlock = {
+export const HeadlineRichTextBlock = {
     ...createTipTapRichTextBlock({
         strike: false,
         textBlocks: [
@@ -17,5 +17,5 @@ export const HeadlineTipTapRichTextBlock = {
         maxTextBlocks: 1,
         minHeight: 0,
     }),
-    name: "HeadlineTipTapRichText",
+    name: "HeadlineRichText",
 };

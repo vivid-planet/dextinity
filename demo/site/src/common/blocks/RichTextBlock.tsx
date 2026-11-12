@@ -7,7 +7,7 @@ import {
     type TipTapNodeHandler,
     withPreview,
 } from "@dextinity/site-nextjs";
-import type { LinkBlockData, ProductPriceBlockData, ProductTeaserBlockData, TipTapRichTextBlockData } from "@src/blocks.generated";
+import type { LinkBlockData, ProductPriceBlockData, ProductTeaserBlockData, RichTextBlockData } from "@src/blocks.generated";
 import { ProductPriceBlock } from "@src/products/blocks/ProductPriceBlock";
 import { ProductTeaserBlock } from "@src/products/blocks/ProductTeaserBlock";
 import type { LoadedData as ProductTeaserLoadedData } from "@src/products/blocks/ProductTeaserBlock.loader";
@@ -15,7 +15,7 @@ import type { LoadedData as ProductTeaserLoadedData } from "@src/products/blocks
 import { Typography, type TypographyProps } from "../components/Typography";
 import { isValidLink } from "../helpers/isValidLink";
 import { LinkBlock } from "./LinkBlock";
-import styles from "./TipTapRichTextBlock.module.scss";
+import styles from "./RichTextBlock.module.scss";
 
 type TypographyVariant = TypographyProps<"p">["variant"];
 
@@ -75,12 +75,12 @@ const markMapping: Record<string, TipTapMarkHandler> = {
     },
 };
 
-interface TipTapRichTextBlockProps extends PropsWithData<TipTapRichTextBlockData> {
+interface RichTextBlockProps extends PropsWithData<RichTextBlockData> {
     disableLastBottomSpacing?: boolean;
 }
 
-export const TipTapRichTextBlock = withPreview(
-    ({ data, disableLastBottomSpacing }: TipTapRichTextBlockProps) => {
+export const RichTextBlock = withPreview(
+    ({ data, disableLastBottomSpacing }: RichTextBlockProps) => {
         const content = data.tipTapContent;
         const rendered = renderTipTapRichText({ content, nodeMapping, markMapping });
 

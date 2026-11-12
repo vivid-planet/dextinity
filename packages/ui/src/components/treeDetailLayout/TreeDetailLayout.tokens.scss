@@ -3,19 +3,28 @@
     --dextinity-tree-detail-layout-header-spacing: var(--dextinity-layout-header-spacing);
     // Space between the toolbar and the tree, and between the tree and the detail; follows the density
     --dextinity-tree-detail-layout-gap: var(--dextinity-layout-gap);
+    // Width of the detail column next to the tree
     --dextinity-tree-detail-layout-detail-width: 340px;
     // Distance of the sticky detail from the top of the viewport, below the top bar
     --dextinity-tree-detail-layout-sticky-offset: var(--dextinity-layout-sticky-offset);
 
-    // The card around the toolbar and the tree, like a `Panel`
+    // Corner radius of the card around the toolbar and the tree
     --dextinity-tree-detail-layout-card-radius: var(--dextinity-radius-panel);
+    // Padding inside the card around the toolbar and the tree, like a `Panel`
     --dextinity-tree-detail-layout-card-padding: var(--dextinity-panel-padding);
+    // Padding around the toolbar inside the card
     --dextinity-tree-detail-layout-card-toolbar-padding: var(--dextinity-panel-header-padding);
+    // Padding around the tree inside the card
     --dextinity-tree-detail-layout-card-tree-padding: var(--dextinity-panel-body-padding);
+    // Fill of the card with the glass surface
     --dextinity-tree-detail-layout-card-glass-background: var(--dextinity-material-glass);
+    // Blur of the content behind the card with the glass surface
     --dextinity-tree-detail-layout-card-glass-blur: var(--dextinity-material-blur);
+    // Edge and shadow of the card with the glass surface
     --dextinity-tree-detail-layout-card-glass-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
+    // Fill of the card with the solid surface
     --dextinity-tree-detail-layout-card-solid-background: var(--dextinity-color-surface);
+    // Outline and shadow of the card with the solid surface
     --dextinity-tree-detail-layout-card-solid-shadow:
         inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-1);
 }

@@ -1,47 +1,80 @@
 // The values match the box of `Field`, so an `Input` composed with `FormLabel` and `FormHelperText` looks like a `TextField`.
 @mixin tokens {
+    // Width of the border around the input
     --dextinity-input-border-width: var(--dextinity-line-width);
+    // Height of the input
     --dextinity-input-height: var(--dextinity-field-height);
+    // Corner radius of the input
     --dextinity-input-radius: var(--dextinity-field-radius);
+    // Gap between the text and the adornments
     --dextinity-input-gap: var(--dextinity-space-2);
+    // Space between the border and the content on the left and right
     --dextinity-input-padding-horizontal: var(--dextinity-field-padding);
+    // Space between the border and the content at the top and bottom
     --dextinity-input-padding-vertical: var(--dextinity-space-2);
+    // Size of icons inside the input, e.g. in the adornments
     --dextinity-input-icon-size: var(--dextinity-field-icon-size);
 
+    // Text size of the value and placeholder
     --dextinity-input-font-size: var(--dextinity-field-font-size);
+    // Line height of the value and placeholder
     --dextinity-input-font-line-height: var(--dextinity-typography-body-line-height);
+    // Text weight of the value and placeholder
     --dextinity-input-font-weight: var(--dextinity-typography-body-font-weight);
 
+    // Fill of the input at rest
     --dextinity-input-state-default-background: var(--dextinity-field-background);
+    // Text color of the value at rest
     --dextinity-input-state-default-foreground: var(--dextinity-field-foreground);
+    // Text color of the placeholder at rest
     --dextinity-input-state-default-foreground-placeholder: var(--dextinity-field-placeholder);
+    // Border color of the input at rest
     --dextinity-input-state-default-border: var(--dextinity-field-line);
 
+    // Fill of a hovered input
     --dextinity-input-state-hover-background: var(--dextinity-field-background);
+    // Text color of the value of a hovered input
     --dextinity-input-state-hover-foreground: var(--dextinity-field-foreground);
+    // Text color of the placeholder of a hovered input
     --dextinity-input-state-hover-foreground-placeholder: var(--dextinity-field-placeholder);
+    // Border color of a hovered input
     --dextinity-input-state-hover-border: var(--dextinity-field-line-hover);
 
+    // Fill of the focused input
     --dextinity-input-state-focus-background: var(--dextinity-field-background-focus);
+    // Text color of the value of the focused input
     --dextinity-input-state-focus-foreground: var(--dextinity-field-foreground);
+    // Text color of the placeholder of the focused input
     --dextinity-input-state-focus-foreground-placeholder: var(--dextinity-field-placeholder);
+    // Border color of the focused input
     --dextinity-input-state-focus-border: var(--dextinity-field-line-focus);
     // Soft halo around the focused input
     --dextinity-input-state-focus-halo: var(--dextinity-field-halo-focus);
 
+    // Border color of an input with an error
     --dextinity-input-state-error-border: var(--dextinity-field-line-error);
+    // Halo around a focused input with an error
     --dextinity-input-state-error-halo: var(--dextinity-field-halo-error);
+    // Border color of an input in the success state
     --dextinity-input-state-success-border: var(--dextinity-field-line-success);
+    // Halo around a focused input in the success state
     --dextinity-input-state-success-halo: var(--dextinity-field-halo-success);
+    // Border color of an input with a warning
     --dextinity-input-state-warning-border: var(--dextinity-field-line-warning);
+    // Halo around a focused input with a warning
     --dextinity-input-state-warning-halo: var(--dextinity-field-halo-warning);
 
+    // Color of the spinner in a loading input
     --dextinity-input-state-loading-spinner: var(--dextinity-color-text-tertiary);
 
+    // Opacity of a disabled input
     --dextinity-input-state-disabled-opacity: var(--dextinity-field-disabled-opacity);
 
+    // Fill of a read-only input
     --dextinity-input-state-read-only-background: var(--dextinity-field-background-read-only);
+    // Border color of a read-only input
     --dextinity-input-state-read-only-border: var(--dextinity-color-line);
 
+    // Text and icon color of the start and end adornments
     --dextinity-input-adornment-foreground: var(--dextinity-field-adornment-color);
 }

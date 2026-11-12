@@ -1,28 +1,45 @@
 @mixin tokens {
+    // Width and height of the checkbox box
     --dextinity-checkbox-size: 17px;
+    // Corner radius of the checkbox box
     --dextinity-checkbox-radius: calc(var(--dextinity-radius-item) * 0.625);
+    // Size of the check and indeterminate icons
     --dextinity-checkbox-icon-size: var(--dextinity-icon-size-xsmall);
+    // Gap between the checkbox and its label
     --dextinity-checkbox-gap: var(--dextinity-space-2);
+    // Width of the line around an unchecked checkbox
     --dextinity-checkbox-line-width: var(--dextinity-line-width-strong);
+    // Opacity of a disabled checkbox and its label
     --dextinity-checkbox-disabled-opacity: var(--dextinity-opacity-disabled);
 
+    // Fill of an unchecked checkbox
     --dextinity-checkbox-background: var(--dextinity-color-surface);
+    // Line around an unchecked checkbox
     --dextinity-checkbox-line: var(--dextinity-color-text-subtle);
+    // Line around a hovered unchecked checkbox
     --dextinity-checkbox-line-hover: var(--dextinity-color-text-tertiary);
     // Fill of a checked or indeterminate checkbox
     --dextinity-checkbox-background-checked: var(--dextinity-color-accent);
+    // Color of the check or indeterminate icon
     --dextinity-checkbox-foreground-checked: var(--dextinity-color-accent-foreground);
 
+    // Text color of the label
     --dextinity-checkbox-label-color: var(--dextinity-color-text);
+    // Text size of the label
     --dextinity-checkbox-label-font-size: var(--dextinity-typography-body-size);
+    // Color of the required marker after the label
     --dextinity-checkbox-required-color: var(--dextinity-color-danger-text);
     // Line of an unchecked checkbox in the error state
     --dextinity-checkbox-line-error: var(--dextinity-color-danger);
 
     // Space between the checkbox and its validation message
     --dextinity-checkbox-message-gap: var(--dextinity-space-1);
+    // Text size of the validation message
     --dextinity-checkbox-message-font-size: var(--dextinity-typography-small-size);
+    // Text color of an error message
     --dextinity-checkbox-message-color-error: var(--dextinity-color-danger-text);
+    // Text color of a warning message
     --dextinity-checkbox-message-color-warning: var(--dextinity-color-warning-text);
+    // Text color of a success message
     --dextinity-checkbox-message-color-success: var(--dextinity-color-success-text);
 }

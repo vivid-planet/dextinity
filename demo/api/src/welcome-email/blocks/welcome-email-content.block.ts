@@ -5,6 +5,7 @@ import { MailImageBlock } from "@src/mail/blocks/mail-image.block";
 import { MailRichTextBlock } from "@src/mail/blocks/mail-rich-text.block";
 import { MailSpacerBlock } from "@src/mail/blocks/mail-spacer.block";
 import { MailTipTapRichTextBlock } from "@src/mail/blocks/mail-tip-tap-rich-text.block";
+import { MailTwoColumnsBlock } from "@src/mail/blocks/mail-two-columns.block";
 import { MailTwoListSizesRichTextBlock } from "@src/mail/blocks/mail-two-list-sizes-rich-text.block";
 import { MailTwoListSizesTipTapRichTextBlock } from "@src/mail/blocks/mail-two-list-sizes-tip-tap-rich-text.block";
 
@@ -19,6 +20,7 @@ export const WelcomeEmailContentBlock = createBlocksBlock(
             button: MailButtonBlock,
             divider: MailDividerBlock,
             spacer: MailSpacerBlock,
+            twoColumns: MailTwoColumnsBlock,
         },
     },
     {

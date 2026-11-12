@@ -1,5 +1,68 @@
 # @comet/brevo-admin
 
+## 10.15.0
+
+### Minor Changes
+
+- 9918560: Send Brevo email campaigns in the background and add a `FAILED` sending state
+
+    Sending a large campaign with `sendBrevoEmailCampaignNow` could exceed the gateway timeout. The mutation now returns right after setting the campaign to `SCHEDULED`, and the campaign is sent in the background. If sending fails, or the campaign has no target group to send to, the campaign is set to `FAILED`.
+
+    The admin shows failed campaigns with a red indicator, and they can be edited and sent again.
+
+### Patch Changes
+
+- Updated dependencies [c6ce8a8]
+- Updated dependencies [41492ce]
+- Updated dependencies [d9c1a9b]
+    - @dextinity/cms-admin@10.15.0
+    - @dextinity/admin@10.15.0
+    - @dextinity/admin-icons@10.15.0
+
+## 10.14.0
+
+### Patch Changes
+
+- edd15dd: Show an alert on the Brevo config page when the data from Brevo can't be loaded
+
+    Previously, the config page opened an error dialog saying only "Internal Server Error" when the senders or double opt-in templates couldn't be loaded from Brevo, for instance because the API key is invalid.
+    Now the page shows an alert that points to the API key and the authorized IP addresses in Brevo instead.
+
+- Updated dependencies [de4cc90]
+- Updated dependencies [de4cc90]
+- Updated dependencies [c586a3d]
+- Updated dependencies [def6e3e]
+- Updated dependencies [e6909e2]
+- Updated dependencies [e131e00]
+- Updated dependencies [da2f8e6]
+- Updated dependencies [5db7734]
+- Updated dependencies [1595266]
+- Updated dependencies [1595266]
+- Updated dependencies [45cb8e2]
+    - @dextinity/cms-admin@10.14.0
+    - @dextinity/admin-icons@10.14.0
+    - @dextinity/admin@10.14.0
+
+## 10.13.1
+
+### Patch Changes
+
+- Updated dependencies [b6fde8f]
+    - @dextinity/admin@10.13.1
+    - @dextinity/cms-admin@10.13.1
+    - @dextinity/admin-icons@10.13.1
+
+## 10.13.0
+
+### Patch Changes
+
+- Updated dependencies [ad3f6d5]
+- Updated dependencies [46a1a08]
+- Updated dependencies [b16df0b]
+    - @dextinity/cms-admin@10.13.0
+    - @dextinity/admin@10.13.0
+    - @dextinity/admin-icons@10.13.0
+
 ## 10.12.0
 
 ### Patch Changes

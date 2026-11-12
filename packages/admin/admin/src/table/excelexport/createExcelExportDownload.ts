@@ -85,13 +85,8 @@ export async function createExcelExportDownload<TRow extends IRow>(
         applyDefaultStyling(worksheet);
     }
 
-    workbook.xlsx.writeBuffer().then(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        (buffer) => {
-            downloadFile(new Blob([buffer]), safeFileNameWithExtension(fileName));
-        },
-    );
+    const buffer = await workbook.xlsx.writeBuffer();
+    downloadFile(new Blob([buffer]), safeFileNameWithExtension(fileName));
 }
 
 function safeFileNameWithExtension(fileName: string): string {

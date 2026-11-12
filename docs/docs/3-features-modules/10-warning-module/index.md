@@ -159,18 +159,18 @@ export class NewsBlockWarningsService implements BlockWarningsServiceInterface<N
         private readonly newsRepository: EntityRepository<NewsRepository>,
     ) {}
 
-    async createWarnings(block: NewsBlockData): Promise<BlockWarning[]> {
-        const warnings: BlockWarning[] = [];
-
-        if (block.id) {
-            const news = await this.newsRepository.findOne({ id: block.id });
-            if (!news) {
-                warnings.push({ severity: "high", message: "invalidNewsTarget" });
-            }
-        } else {
-            warnings.push({ severity: "high", message: "missingNewsTarget" });
+    async warnings(block: NewsBlockData): Promise<BlockWarning[]> {
+        if (!block.id) {
+            return [];
         }
-        return warnings;
+
+        const news = await this.newsRepository.findOne({ id: block.id });
+
+        if (!news) {
+            return [{ severity: "high", message: "invalidNewsTarget" }];
+        }
+
+        return [];
     }
 }
 ```

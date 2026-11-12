@@ -28,8 +28,16 @@ const createState = (state: Partial<DamVideoBlockState> = {}): DamVideoBlockStat
 });
 
 describe("createDamVideoBlock", () => {
+    it("should reject the deprecated supports next to the options replacing it", () => {
+        expect(() => createDamVideoBlock({ name: "TeaserVideo", supports: [], previewImage: false })).toThrow(/both "supports" and/);
+    });
+
     it("should create a block named DamVideo", () => {
         expect(createDamVideoBlock().name).toBe("DamVideo");
+    });
+
+    it("should allow setting the name", () => {
+        expect(createDamVideoBlock({ name: "TeaserVideo" }).name).toBe("TeaserVideo");
     });
 
     it("should allow overriding the tags", () => {
@@ -64,6 +72,86 @@ describe("createDamVideoBlock", () => {
             const block = createDamVideoBlock();
 
             expect(block.dependencies?.(createState())).toEqual([]);
+        });
+    });
+
+    describe("when the API block doesn't support a preview image", () => {
+        const block = createDamVideoBlock({ name: "TeaserVideo", controls: false, previewImage: false });
+        const storedInput = { damFileId: "video-1" } as unknown as Parameters<typeof block.input2State>[0];
+
+        it("should have no preview image in its state", () => {
+            expect(block.defaultValues()).not.toHaveProperty("previewImage");
+            expect(block.input2State(storedInput)).not.toHaveProperty("previewImage");
+        });
+
+        it("should create a preview state", () => {
+            const state = block.input2State(storedInput);
+
+            expect(() =>
+                block.createPreviewState(state, { apiUrl: "https://example.com", damBasePath: "dam" } as unknown as Parameters<
+                    typeof block.createPreviewState
+                >[1]),
+            ).not.toThrow();
+        });
+
+        it("should send neither the controls nor the preview image to the API", () => {
+            const state = block.input2State({ ...storedInput, autoplay: true, loop: true, showControls: true });
+
+            expect(block.state2Output(state)).toEqual({ damFileId: undefined });
+        });
+
+        it("should return only the video file as dependency", () => {
+            expect(block.dependencies?.(block.input2State(storedInput))).toEqual([]);
+        });
+
+        it("should create state from output without querying the preview image", async () => {
+            const apolloClient = { query: async () => ({ data: { damFile: videoDamFile } }) };
+            const context = { apolloClient } as unknown as Parameters<typeof block.output2State>[1];
+
+            await expect(block.output2State(storedInput, context)).resolves.not.toHaveProperty("previewImage");
+        });
+
+        it("should replace the video file without a preview image", () => {
+            expect(
+                block.replaceDependenciesInOutput(storedInput, [{ type: "DamFile", originalId: "video-1", replaceWithId: "video-2" }]),
+            ).toMatchObject({ damFileId: "video-2" });
+        });
+    });
+
+    describe("state2Output", () => {
+        const state = createState({ damFile: videoDamFile, autoplay: true, loop: false, showControls: true });
+
+        it("should send all options by default", () => {
+            expect(createDamVideoBlock().state2Output(state)).toEqual({
+                damFileId: "video-1",
+                previewImage: {},
+                autoplay: true,
+                loop: false,
+                showControls: true,
+            });
+        });
+
+        it("should leave out a disabled option", () => {
+            expect(createDamVideoBlock({ name: "VideoWithoutControls", controls: false }).state2Output(state)).toEqual({
+                damFileId: "video-1",
+                previewImage: {},
+            });
+            expect(createDamVideoBlock({ name: "VideoWithoutPreviewImage", previewImage: false }).state2Output(state)).toEqual({
+                damFileId: "video-1",
+                autoplay: true,
+                loop: false,
+                showControls: true,
+            });
+        });
+
+        it("should still send options the deprecated supports hides", () => {
+            expect(createDamVideoBlock({ supports: [] }).state2Output(state)).toEqual({
+                damFileId: "video-1",
+                previewImage: {},
+                autoplay: true,
+                loop: false,
+                showControls: true,
+            });
         });
     });
 

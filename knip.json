@@ -78,14 +78,15 @@
         },
         "packages/site/site-nextjs": {
             "project": ["./src/**/*.{ts,tsx}"],
-            "ignore": ["./src/**/*.generated.ts"]
+            "ignore": ["./src/**/*.generated.ts"],
+            "ignoreDependencies": ["clsx", "fast-equals", "scroll-into-view-if-needed", "usehooks-ts"]
         },
         "packages/mail-react": {
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/*.generated.ts"]
         },
         "demo/admin": {
-            "entry": ["./src/loader.ts", "./src/**/*.dextinityGen.{ts,tsx}"],
+            "entry": ["./src/loader.tsx", "./src/**/*.dextinityGen.{ts,tsx}"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignore": ["./src/**/generated/**", "**/graphql.generated.ts", "**/*.generated.ts"],
             "ignoreDependencies": ["@swc/plugin-emotion", "cosmiconfig-toml-loader", "@babel/core"]
@@ -108,7 +109,7 @@
             "ignore": ["./src/**/generated/**", "**/*.generated.ts"]
         },
         "demo/site": {
-            "entry": ["./src/app/**", "./cache-handler.ts", "./server.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],
+            "entry": ["./src/app/**", "./cache-handler.ts", "./opentelemetry-metrics.ts", "tracing.dev.ts", "tracing.production.ts"],
             "project": ["./src/**/*.{ts,tsx}"],
             "ignoreDependencies": ["@babel/core", "@types/grecaptcha", "mjml"],
             "ignore": ["**/*.generated.ts"]

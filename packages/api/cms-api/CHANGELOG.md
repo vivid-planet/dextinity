@@ -1,5 +1,185 @@
 # @comet/cms-api
 
+## 10.15.0
+
+### Minor Changes
+
+- 41492ce: Add `createExternalLinkBlock` factory
+
+    The `ExternalLinkBlock` always has the options "Open in new window" and "No follow" besides the URL, even where neither has an effect. The factory disables an option by passing `false`, both are enabled by default. A disabled option is neither offered in the editor nor part of the block: it is absent from `block-meta.json` and the generated types, and sending it as input is rejected by validation. `ExternalLinkBlock` is now created from the factory and still exported, so this is non-breaking.
+
+    **Example**
+
+    ```ts
+    // API
+    import { createExternalLinkBlock } from "@dextinity/cms-api";
+
+    export const UrlLinkBlock = createExternalLinkBlock({ openInNewWindow: false, noFollow: false }, "UrlLink");
+    ```
+
+    ```tsx
+    // Admin
+    import { createExternalLinkBlock } from "@dextinity/cms-admin";
+
+    export const UrlLinkBlock = createExternalLinkBlock({ name: "UrlLink", openInNewWindow: false, noFollow: false });
+    ```
+
+    Create the API and the admin block with the same name and the same options disabled, and add a site component.
+
+    A block created by the API factory carries the migrations shipped with the `ExternalLinkBlock` as vendor migrations, so it can replace the `ExternalLinkBlock` in an existing project: it reads the content the `ExternalLinkBlock` stored, and its own migrations start with version 1. Values stored for a disabled option aren't passed on to the admin or the site, and are dropped the next time an editor saves the block.
+
+    **Redirects no longer offer "Open in new window" and "No follow"**
+
+    A redirect resolves to an HTTP redirect, which has neither a `target` nor a `rel` attribute, so both options were without effect there. The external target of redirects is now a `RedirectsExternalLink` block without them, in the API and the admin. Stored redirects load as before.
+
+### Patch Changes
+
+- d9c1a9b: Fix images breaking with "Missing crop dimensions"
+
+    Clicking into the crop area without dragging cleared the selected crop area in the DAM's crop settings and in the image block's crop dialog. Saving afterwards stored a crop area that had a focal point but no dimensions. Such a crop area cannot be cropped: images using it fail to render with `Missing crop dimensions` when `aspectRatio="inherit"` is used, and their image URLs resolve to an invalid crop.
+
+    Crop areas without usable dimensions are now rejected by the API, existing ones in the DAM are reset to the full image by a migration, and existing ones in image blocks fall back to the DAM's crop settings.
+
+- ba7823c: Stop reporting `missingTarget` for links without a target page
+
+    The Admin creates an internal link without a target in every `createLinkBlock` with `allowEmpty: false` (the default) as soon as the parent block is saved, so every optional link produced a `missingTarget` warning although the site hides the empty link. An empty link is not an error; `InternalLinkBlock` now only reports `invalidTarget` for a link to a deleted page.
+
+- db525c0: Fix `TableBlock` running the migrations of its cells again when saving
+
+    This could break saving a cell, for instance, when the cell contains a link block with migrations.
+
+- aabf937: Reject one-of block input whose `activeType` has no matching entry in `attachedBlocks`
+
+    Previously, input such as `{ "attachedBlocks": [], "activeType": "external" }` was saved. The site then rendered nothing, and the admin failed when opening the block.
+    Blocks created with `allowEmpty: false` now also reject a missing `activeType`.
+
+## 10.14.0
+
+### Minor Changes
+
+- bbd5b81: Add default descriptions to `createOneOfBlock`, `createLinkBlock`, `createListBlock`, `createBlocksBlock` and `createOptionalBlock`
+
+    The descriptions state the rules of the block input that the fields in `block-meta.json` don't show, for instance that `activeType` of a one-of block must name an entry in `attachedBlocks`.
+    This lets tools outside the admin, such as AI agents, build valid input for these blocks from the block meta alone.
+    Pass `description` in the options to replace the default:
+
+    ```ts
+    createListBlock({ block: TeaserItemBlock }, { name: "Teaser", description: "Teaser items, shown side by side." });
+    ```
+
+- 5db7734: Add an optional redirect type to choose between temporary and permanent redirects
+
+    Redirects have a new `redirectType` field (`temporary` or `permanent`), which defaults to `temporary` for new and existing redirects.
+    The site must handle the redirect type, so the setting is hidden in the admin by default. To enable it, first respect the redirect type in the site:
+
+    ```tsx
+    const { redirectBySource } = await graphQLFetch(/* query including redirectBySource { target redirectType } */);
+
+    if (redirectBySource.redirectType === "permanent") {
+        permanentRedirect(destination); // 308
+    } else {
+        redirect(destination); // 307
+    }
+    ```
+
+    Then enable the setting in the admin:
+
+    ```tsx title="App.tsx"
+    <DextinityConfigProvider
+        redirects={{
+            scopeParts: ["domain"],
+            enableRedirectType: true,
+        }}
+    >
+    ```
+
+    The redirect type only applies to path redirects.
+
+- 1595266: Add a `textAlign` option to `createTipTapRichTextBlock`
+
+    Editors can align paragraphs and headings left, center, right, or justified, using the toolbar or the shortcuts `Mod-Shift-L`, `Mod-Shift-E`, `Mod-Shift-R`, and `Mod-Shift-J`.
+    The alignment is stored in the text block's `textAlign` attribute.
+    The option is disabled by default and must be enabled in both the API and the Admin:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: true });
+    ```
+
+    To enable only some of the alignments, pass an object:
+
+    ```ts
+    createTipTapRichTextBlock({ textAlign: { left: true, center: true } });
+    ```
+
+    `renderTipTapRichText` renders the alignment as the text block's `text-align` style.
+    A custom `textBlock` handler has to apply `node.attrs.textAlign` itself.
+
+### Patch Changes
+
+- a5e4799: Support `@sentry/node` v10 and v11
+
+    The peer dependency now allows `^9.0.0 || ^10.0.0 || ^11.0.0`.
+
+    **Upgrading to v11**
+
+    Review the [Sentry v10 to v11 migration guide](https://github.com/getsentry/sentry-javascript/blob/master/MIGRATION.md) before upgrading. Changes that affect projects using `SentryModule`:
+
+    - `sendDefaultPii` was replaced by `dataCollection`, which collects more data by default (user info, cookies, request/response bodies and headers, database queries). Pass `dataCollection` to `SentryModule.forRootAsync()` to restrict it.
+    - `skipOpenTelemetrySetup` was replaced by `enableOpenTelemetrySetup` with inverted meaning.
+    - `Sentry.setupExpressErrorHandler(app)` is deprecated, but keep calling it. Sentry's automatic Express error capturing only works when Sentry is initialized before Express is loaded, and `SentryModule` initializes it afterwards.
+    - v11 supports self-hosted Sentry 26.4.2 or later.
+
+## 10.13.1
+
+### Patch Changes
+
+- 795901f: Support `@kubernetes/client-node` v2
+
+    The peer dependency now allows `^1.0.0 || ^2.0.0`. Note that v2 requires Node.js 22.19.0 or later.
+
+- 94991f8: Update `jose` to v6
+
+## 10.13.0
+
+### Minor Changes
+
+- 7d8cbff: Add `formatValidationErrors()` for readable validation errors
+
+    It turns the tree of class-validator errors into a list of `{ path, message }`, with paths like `content.blocks[3].props.height`, so that an API client, for instance an AI agent, can fix its input.
+    Use it, for instance, in a query that only validates an input:
+
+    ```ts
+    const errors = await validate(plainToInstance(PageInput, input), { whitelist: true, forbidNonWhitelisted: true });
+
+    return formatValidationErrors(errors);
+    // [{ path: "content.blocks[3].props.height", message: "height must be an integer number" }]
+    ```
+
+- ad3f6d5: Make blocking files with an invalid license opt-in with `blockFilesWithInvalidLicense`
+
+    A project decides whether files whose license has expired or isn't valid yet are blocked. While the option is off, which is the default, such files are delivered as before blocking was added: their URLs don't answer `410 Gone`, blocks don't hide them or replace them with the fallback image, and the DAM hides its "Settings" action, where the fallback image is chosen.
+
+    A project that blocks such files since blocking was added needs to enable the option in the API and in the Admin:
+
+    ```ts
+    DamModule.register({
+        damConfig: {
+            enableLicenseFeature: true,
+            blockFilesWithInvalidLicense: true,
+            // ...
+        },
+    });
+    ```
+
+    ```tsx
+    <DextinityConfigProvider dam={{ enableLicenseFeature: true, blockFilesWithInvalidLicense: true /* ... */ }}>
+    ```
+
+- a476170: Never treat a royalty-free license as expired or not valid yet
+
+    Switching a file's license from rights managed to royalty free keeps its duration. Such a file was still blocked once the duration ended: the DAM answered `410 Gone`, blocks replaced it with the invalid-license fallback image, and the warnings reported an expired license.
+    A royalty-free license now ignores its duration: `isLicenseValid` returns `true`, `expirationDate` is `null`, and no license warning is created.
+
 ## 10.12.0
 
 ### Minor Changes

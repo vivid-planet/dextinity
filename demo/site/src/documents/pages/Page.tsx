@@ -159,7 +159,7 @@ export async function Page({ pageTreeNodeId, scope }: { pageTreeNodeId: string; 
     return (
         <>
             {structuredData && <JsonLd<Thing> data={structuredData} />}
-            <Breadcrumbs {...data.pageContent} scope={scope} />
+            <Breadcrumbs name={data.pageContent.name} path={data.pageContent.path} parentNodes={data.pageContent.parentNodes} scope={scope} />
             {/* ID is used for skip link */}
             <main id="mainContent">
                 <StageBlock data={document.stage} />

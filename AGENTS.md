@@ -1,5 +1,15 @@
 # Agent Instructions
 
+## Keeping This File Up to Date
+
+When making changes that affect project structure, commands, architecture, ports, conventions, or configuration, update the relevant section of this file to reflect the new state. This includes:
+
+- Adding or removing packages or demo services
+- Changing commands or scripts
+- Introducing new patterns or conventions
+- Modifying ports, environment files, or Docker services
+- Updating tooling or linting configuration
+
 ## Local Usage (IDE / CLI)
 
 - you can expect setup is already done: all dependencies are installed and builds are done
@@ -98,6 +108,14 @@ Demo frontend site (Next.js)
 - Start using `pnpm exec dev-pm start @demo-site`
 - access at: http://localhost:3000/
 
+**Site Storybook:**
+Storybook for the demo site components (Vite, `@storybook/nextjs-vite`)
+
+- Start using `pnpm exec dev-pm start demo-site-storybook`
+- access at: http://localhost:26648/
+- stories live in `__stories__` folders next to the component
+- run the story tests with `pnpm --filter dextinity-demo-site run test:storybook`
+
 ### dev-pm
 
 Use dev-pm for managing demo processes:
@@ -144,10 +162,10 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 ### Site (`packages/site/`)
 
-| Package                  | Description                                                   |
-| ------------------------ | ------------------------------------------------------------- |
-| `@dextinity/site-react`  | React components and utilities for the frontend/site layer    |
-| `@dextinity/site-nextjs` | Next.js-specific site layer components (extends `site-react`) |
+| Package                  | Description                                                                                                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@dextinity/site-react`  | React components and utilities for the frontend/site layer                                                                                                          |
+| `@dextinity/site-nextjs` | Next.js-specific site layer components (extends `site-react`), serves build assets of other builds during rolling deployments (`dextinity-upload-build-assets` bin) |
 
 ### Utilities
 
@@ -188,6 +206,10 @@ Example:
 
 Fix description here
 ```
+
+## Branches
+
+- `next` is protected and can't be pushed to directly. When a session targets `next` (e.g. it was started on `next` or a task asks for a breaking change), always create a new branch from `next` before committing, push that branch, and open the pull request against `next`.
 
 ## Commit messages
 

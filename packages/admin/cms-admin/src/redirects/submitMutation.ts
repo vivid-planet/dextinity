@@ -12,13 +12,17 @@ import {
     updateRedirectMutation,
 } from "./RedirectForm";
 
-const convertRedirectFormToApiInput = ({ sourceType, source, target, comment }: FormValues, linkBlock: BlockInterface): GQLRedirectInput => {
+const convertRedirectFormToApiInput = (
+    { sourceType, source, target, comment, redirectType }: FormValues,
+    linkBlock: BlockInterface,
+): GQLRedirectInput => {
     const apiInput: GQLRedirectInput = {
         sourceType,
         source,
         target: linkBlock.state2Output(target),
         comment,
         generationType: "manual",
+        redirectType,
     };
 
     return apiInput;

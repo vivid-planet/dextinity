@@ -25,8 +25,6 @@ const contentSecurityPolicyDirectives: ContentSecurityPolicyDirective[] = [
 
 if (process.env.NODE_ENV === "development") {
     contentSecurityPolicyDirectives.push({ directive: "script-src", values: ["'unsafe-eval'"] });
-} else {
-    contentSecurityPolicyDirectives.push({ directive: "upgrade-insecure-requests", values: [] });
 }
 
 const contentSecurityPolicy = contentSecurityPolicyDirectives

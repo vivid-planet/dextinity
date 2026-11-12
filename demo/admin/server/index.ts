@@ -33,7 +33,6 @@ app.use(
                 "img-src": ["'self'", "data:", "blob:"],
                 "media-src": ["'self'", "data:"],
                 "frame-src": previewUrls,
-                upgradeInsecureRequests: process.env.NODE_ENV === "development" ? null : [], // Upgrade all requests to HTTPS on production
             },
             useDefaults: false, // Avoid default values for not explicitly set directives
         },

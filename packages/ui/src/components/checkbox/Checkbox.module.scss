@@ -27,6 +27,7 @@
 }
 
 .control {
+    position: relative;
     display: inline-grid;
     flex: none;
     place-items: center;
@@ -75,7 +76,12 @@
 }
 
 .indicator {
-    display: inline-flex;
+    // Out of flow: the box would otherwise take its baseline from the mark, which only renders while checked, and the line
+    // around an inline checkbox would grow when it gets checked
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
     --dextinity-icon-size: var(--dextinity-checkbox-icon-size);
 }
 

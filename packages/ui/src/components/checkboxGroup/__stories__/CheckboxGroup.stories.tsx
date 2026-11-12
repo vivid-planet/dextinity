@@ -21,6 +21,11 @@ function ControlledCheckboxGroup(props: CheckboxGroupProps) {
     );
 }
 
+function sizeOf(element: HTMLElement) {
+    const { width, height } = element.getBoundingClientRect();
+    return { width, height };
+}
+
 const contentScopes: CheckboxGroupOption[] = [
     {
         value: "main",
@@ -77,12 +82,17 @@ type Story = StoryObj<typeof meta>;
  * - For many options, a `Select` with `multiple`.
  */
 export const Default: Story = {
-    play: async ({ args, canvas }) => {
+    play: async ({ args, canvas, step }) => {
+        const group = canvas.getByRole("group", { name: "Channels" });
+        const initialSize = sizeOf(group);
         await userEvent.click(canvas.getByRole("checkbox", { name: "Newsletter" }));
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(["website", "newsletter"]));
+        await step("Checking an option keeps the group's size", () => expect(sizeOf(group)).toEqual(initialSize));
         await userEvent.click(canvas.getByRole("checkbox", { name: "Website" }));
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(["newsletter"]));
-        await expect(canvas.getByRole("group", { name: "Channels" })).toBeInTheDocument();
+        await userEvent.click(canvas.getByRole("checkbox", { name: "Newsletter" }));
+        await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith([]));
+        await step("Unchecking all options keeps the group's size", () => expect(sizeOf(group)).toEqual(initialSize));
     },
 };
 
@@ -111,12 +121,15 @@ export const SelectAll: Story = {
  */
 export const Hierarchical: Story = {
     args: { label: "Content scopes", options: contentScopes, value: ["main-de"], selectAllLabel: "All scopes" },
-    play: async ({ args, canvas }) => {
+    play: async ({ args, canvas, step }) => {
+        const group = canvas.getByRole("group", { name: "Content scopes" });
+        const initialSize = sizeOf(group);
         const main = canvas.getByRole("checkbox", { name: /Main/ });
         await expect(main).toHaveAttribute("aria-checked", "mixed");
         await userEvent.click(main);
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(["main-de", "main-en", "main-fr"]));
         await expect(main).toHaveAttribute("aria-checked", "true");
+        await step("Checking a group keeps the size", () => expect(sizeOf(group)).toEqual(initialSize));
         await userEvent.click(canvas.getByRole("checkbox", { name: /Secondary/ }));
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(["main-de", "main-en", "main-fr", "secondary-de"]));
     },

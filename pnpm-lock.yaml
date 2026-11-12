@@ -183,8 +183,8 @@ importers:
         specifier: ^24.19.2
         version: 24.19.2
       dev-oidc-provider:
-        specifier: ^2.1.2
-        version: 2.1.2(koa@3.3.0)(supports-color@10.2.2)
+        specifier: ^2.2.0
+        version: 2.2.0(koa@3.3.0)(supports-color@10.2.2)
       dev-process-manager:
         specifier: ^4.1.0
         version: 4.1.0(debug@4.4.3(supports-color@10.2.2))(supports-color@10.2.2)
@@ -11723,8 +11723,8 @@ packages:
     engines: {node: '>= 16.0.0'}
     hasBin: true
 
-  dev-oidc-provider@2.1.2:
-    resolution: {integrity: sha512-4NjOsbYDckVjzSkN/EUnqRQIvpoDk/lgGHNlYIaEsL9Fqd8X1z1NLC4JvEmGkALOx3tDbvPka7idXRNd+pzpIg==}
+  dev-oidc-provider@2.2.0:
+    resolution: {integrity: sha512-OfAge8H0qP3C9p+3hxZtSejSlguB+l5hRtKtAXdKe46q7YiOfNqRyNijGNcYwg0oGa7xRbyZkemi6TBl4EolLQ==}
     engines: {node: '>=22'}
     hasBin: true
 
@@ -29266,7 +29266,7 @@ snapshots:
     dependencies:
       address: 2.0.3
 
-  dev-oidc-provider@2.1.2(koa@3.3.0)(supports-color@10.2.2):
+  dev-oidc-provider@2.2.0(koa@3.3.0)(supports-color@10.2.2):
     dependencies:
       '@koa/ejs': 5.1.0(supports-color@10.2.2)
       '@koa/router': 15.7.1(koa@3.3.0)(supports-color@10.2.2)

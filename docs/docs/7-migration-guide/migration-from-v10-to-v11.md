@@ -1114,7 +1114,7 @@ Its replacements `controls` and `previewImage` also leave the disabled options o
 Find the usages:
 
 ```sh
-grep -rn "supports:" src | grep -i video
+grep -rl "createDamVideoBlock" src | xargs grep -n "supports:"
 ```
 
 Replace `supports` with the options, which state only what is disabled:

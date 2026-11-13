@@ -44,7 +44,7 @@ One adapter per value-holding control of `@dextinity/ui`. Each takes `name`, the
 
 | Adapter                 | ui component       | Form value                                                                | Controlled props it takes over                                        |
 | ----------------------- | ------------------ | ------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| `InputField`            | `TextField`        | `string`                                                                  | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
+| `InputField`            | `Field` + `Input`  | `string`                                                                  | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `TextareaField`         | `Textarea`         | `string`                                                                  | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `SelectField`           | `Select`           | an option's value (`string` by default) or `null`, a list with `multiple` | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |
 | `ComboboxField`         | `Combobox`         | the chosen option itself or `null`, a list with `multiple`                | `name`, `value`, `onChange`, `onBlur`, `state`, `validationMessage`   |

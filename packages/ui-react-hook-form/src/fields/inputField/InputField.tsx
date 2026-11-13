@@ -1,4 +1,4 @@
-import { TextField, type TextFieldProps } from "@dextinity/ui";
+import { Field, type FieldBaseProps, type FieldProps, Input, type InputProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 
@@ -12,17 +12,65 @@ export interface InputFieldProps<TFieldValues extends FieldValues = FieldValues,
     extends
         FieldAdapterBaseProps<TFieldValues, TName>,
         ReactHookFormFieldConfig<TFieldValues, TName>,
-        Omit<TextFieldProps, "name" | "value" | "onChange" | "onBlur" | "state" | "validationMessage" | "required" | "actions"> {
+        Omit<FieldBaseProps, "validationMessage" | "state" | "required" | "actions">,
+        Omit<
+            InputProps,
+            | "name"
+            | "value"
+            | "defaultValue"
+            | "onChange"
+            | "onBlur"
+            | "status"
+            | "disabled"
+            | "readOnly"
+            | "required"
+            | "loading"
+            | "size"
+            | "prefix"
+            | "startAdornment"
+            | "endAdornment"
+            | "className"
+            | "style"
+            | "slots"
+            | "slotProps"
+        > {
     /** Content at the label, or a function of the field's value and setter, e.g. to connect `FieldActions`. */
     actions?: FieldAdapterActions<string>;
+    /**
+     * Shows the character count at the label, as `count / maxLength` when `maxLength` is set.
+     *
+     * @defaultValue `false`
+     */
+    showCount?: boolean;
+    /** Added alongside the field's own classes, on the root. */
+    className?: string;
+    /** Props for each slot of the field frame, merged with the slot's own props rather than replacing them. */
+    slotProps?: FieldProps["slotProps"];
 }
 
 /**
- * A `TextField` connected to a React Hook Form field. Shows the field's error once it was touched or the form was submitted. An
+ * A text field, a `Field` with an `Input`, connected to a React Hook Form field. Shows the field's error once it was touched or the form was submitted. An
  * emptied field gets its default value back when that is empty (`""` or `null`), so it counts as unchanged.
  */
 export const InputField = forwardRef(function InputField<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
-    { name, actions, ...props }: InputFieldProps<TFieldValues, TName>,
+    {
+        name,
+        actions,
+        label,
+        helperText,
+        disabled,
+        readOnly,
+        loading,
+        size,
+        prefix,
+        suffix,
+        showCount = false,
+        id,
+        maxLength,
+        className,
+        slotProps,
+        ...props
+    }: InputFieldProps<TFieldValues, TName>,
     forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
     const [options, inputProps] = splitFieldAdapterProps(props);
@@ -30,17 +78,33 @@ export const InputField = forwardRef(function InputField<TFieldValues extends Fi
     const value: string = field.value ?? "";
 
     return (
-        <TextField
-            {...inputProps}
+        <Field
             {...validationProps}
-            ref={ref}
-            name={field.name}
-            value={value}
+            className={className}
+            controlId={id}
+            label={label}
             required={options.required}
+            helperText={helperText}
+            disabled={disabled}
+            readOnly={readOnly}
+            loading={loading}
+            size={size}
+            prefix={prefix}
+            suffix={suffix}
             actions={renderActions(actions, value, setValue)}
-            onChange={(event) => setValue(event.target.value)}
-            onBlur={field.onBlur}
-        />
+            counter={showCount ? (maxLength != null ? `${value.length} / ${maxLength}` : `${value.length}`) : undefined}
+            slotProps={slotProps}
+        >
+            <Input
+                {...inputProps}
+                ref={ref}
+                name={field.name}
+                value={value}
+                maxLength={maxLength}
+                onChange={(event) => setValue(event.target.value)}
+                onBlur={field.onBlur}
+            />
+        </Field>
     );
 }) as <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(
     props: InputFieldProps<TFieldValues, TName> & RefAttributes<HTMLInputElement>,

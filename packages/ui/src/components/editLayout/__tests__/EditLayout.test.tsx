@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { EditLayout } from "../EditLayout";
@@ -72,5 +72,46 @@ describe("EditLayout", () => {
         expect(container.querySelector(".dextinityEditLayout__body")?.getAttribute("aria-busy")).toBe("true");
         expect(container.querySelector(".dextinityEditLayout__preview .dextinitySkeleton")).toBeTruthy();
         expect(container.querySelector(".dextinityEditLayout__editor .dextinitySkeleton")).toBeTruthy();
+    });
+
+    it("makes the header sticky by default and marks it while it is held in place", () => {
+        const { container } = render(<EditLayout header="Header">Fields</EditLayout>);
+
+        const root = rootOf(container);
+        const header = screen.getByText("Header");
+        expect(root.dataset.stickyHeader).toBe("");
+        expect(header.hasAttribute("data-stuck")).toBe(false);
+
+        root.getBoundingClientRect = () => DOMRect.fromRect({ y: -300, height: 1000 });
+        header.getBoundingClientRect = () => DOMRect.fromRect({ y: 84, height: 100 });
+        act(() => {
+            fireEvent.scroll(document);
+        });
+        expect(header.dataset.stuck).toBe("");
+
+        header.getBoundingClientRect = () => DOMRect.fromRect({ y: -300, height: 100 });
+        act(() => {
+            fireEvent.scroll(document);
+        });
+        expect(header.hasAttribute("data-stuck")).toBe(false);
+    });
+
+    it("lets the header scroll with the page without stickyHeader", () => {
+        const { container } = render(
+            <EditLayout header="Header" stickyHeader={false}>
+                Fields
+            </EditLayout>,
+        );
+
+        const root = rootOf(container);
+        const header = screen.getByText("Header");
+        expect(root.hasAttribute("data-sticky-header")).toBe(false);
+
+        root.getBoundingClientRect = () => DOMRect.fromRect({ y: -300, height: 1000 });
+        header.getBoundingClientRect = () => DOMRect.fromRect({ y: 84, height: 100 });
+        act(() => {
+            fireEvent.scroll(document);
+        });
+        expect(header.hasAttribute("data-stuck")).toBe(false);
     });
 });

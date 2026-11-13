@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, userEvent } from "storybook/test";
+import { expect, userEvent, waitFor } from "storybook/test";
 
 import { PageTypeShell } from "../../../storybook/pageTypes/PageTypeShell";
 import { PatternLegend, PatternPage, PatternRules, PatternSection, PatternUses } from "../../../storybook/patterns/PatternPage";
@@ -306,11 +306,13 @@ function EditPage({
     pane: initialPane,
     inShell = true,
     loading = false,
+    stickyHeader,
 }: {
     variant: Variant;
     pane?: Pane;
     inShell?: boolean;
     loading?: boolean;
+    stickyHeader?: boolean;
 }) {
     const [pane, setPane] = useState<Pane>(initialPane ?? "editor");
     const kind = variant === "page" ? "page" : "jobAd";
@@ -323,6 +325,7 @@ function EditPage({
             asideLabel="Status"
             pane={pane}
             loading={loading}
+            stickyHeader={stickyHeader}
             paneSwitch={
                 <SegmentedControl
                     aria-label="View"
@@ -383,6 +386,7 @@ const meta = {
         variant: { control: "select", options: ["page", "form", "formWithPreview", "formWithBlocks"] },
         pane: { control: "radio", options: ["editor", "preview"] },
         loading: { control: "boolean" },
+        stickyHeader: { control: "boolean" },
         asideLabel: { control: "text" },
         header: { control: false },
         children: { control: false },
@@ -392,7 +396,7 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <EditPage variant={args.variant ?? "form"} pane={args.pane} loading={args.loading} />,
+    render: (args) => <EditPage variant={args.variant ?? "form"} pane={args.pane} loading={args.loading} stickyHeader={args.stickyHeader} />,
 } satisfies Meta<typeof EditLayout>;
 
 export default meta;
@@ -444,6 +448,38 @@ export const FormWithPreview: Story = {
  */
 export const FormWithBlocks: Story = {
     args: { variant: "formWithBlocks" },
+};
+
+/**
+ * By default, the header with back, title, and Save stays in view below the top bar while the form scrolls, so saving is always one
+ * click away; the preview and the side column stop below it.
+ */
+export const StickyHeader: Story = {
+    args: { variant: "formWithBlocks" },
+    play: async ({ canvas }) => {
+        const header = canvas.getByRole("link", { name: "Back to job ads" }).closest(".dextinityEditLayout__header");
+        await expect(header).not.toHaveAttribute("data-stuck");
+        window.scrollTo(0, document.scrollingElement?.scrollHeight ?? 0);
+        await waitFor(() => expect(header).toHaveAttribute("data-stuck"));
+        await expect(canvas.getByRole("button", { name: "Save" })).toBeVisible();
+        window.scrollTo(0, 0);
+        await waitFor(() => expect(header).not.toHaveAttribute("data-stuck"));
+    },
+};
+
+/**
+ * `stickyHeader={false}` lets the header scroll with the page, e.g. for a short form that fits the viewport anyway.
+ */
+export const HeaderScrollsWithPage: Story = {
+    args: { variant: "formWithBlocks", stickyHeader: false },
+    play: async ({ canvas }) => {
+        const back = canvas.getByRole("link", { name: "Back to job ads" });
+        const backTop = back.getBoundingClientRect().top;
+        window.scrollTo(0, 120);
+        await waitFor(() => expect(back.getBoundingClientRect().top).toBeLessThan(backTop - 60));
+        await expect(back.closest(".dextinityEditLayout__header")).not.toHaveAttribute("data-stuck");
+        window.scrollTo(0, 0);
+    },
 };
 
 /**

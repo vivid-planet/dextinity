@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode, type RefObject, useEffect, useImperativeHandle, useRef, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Panel } from "../panel/Panel";
@@ -25,6 +25,10 @@ export type EditLayoutOwnerState = {
     aside: boolean;
     /** Placeholders stand in for the editor, the preview, and the side column while their content loads. */
     loading: boolean;
+    /** Whether the header stays in view while the page scrolls. */
+    stickyHeader: boolean;
+    /** Whether the sticky header is currently held in place, with the page scrolling behind it. */
+    headerStuck: boolean;
 };
 
 export interface EditLayoutSlotProps {
@@ -82,6 +86,13 @@ export interface EditLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
      * @defaultValue `false`
      */
     loading?: boolean;
+    /**
+     * Keeps the header with back, title, and Save in view while the page scrolls, below the top bar. While it sticks, it gets a
+     * background, and the preview and the side column stick below it. Off, the header scrolls with the page.
+     *
+     * @defaultValue `true`
+     */
+    stickyHeader?: boolean;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -103,6 +114,7 @@ export const EditLayout = forwardRef<HTMLDivElement, EditLayoutProps>(function E
         paneSwitch,
         pane = "editor",
         loading = false,
+        stickyHeader = true,
         className,
         slotProps,
         ...restProps
@@ -111,7 +123,10 @@ export const EditLayout = forwardRef<HTMLDivElement, EditLayoutProps>(function E
 ) {
     const showsPreview = variant !== "form" && (preview != null || loading);
     const showsAside = variant === "form" && aside != null;
-    const ownerState: EditLayoutOwnerState = { variant, pane, preview: showsPreview, aside: showsAside, loading };
+    const rootRef = useRef<HTMLDivElement>(null);
+    useImperativeHandle(ref, () => rootRef.current as HTMLDivElement);
+    const headerStuck = useStickyHeader(rootRef, stickyHeader);
+    const ownerState: EditLayoutOwnerState = { variant, pane, preview: showsPreview, aside: showsAside, loading, stickyHeader, headerStuck };
 
     const headerProps = resolveSlotProps<EditLayoutOwnerState, "div", "div">({
         ownProps: { className: styles.header },
@@ -147,15 +162,18 @@ export const EditLayout = forwardRef<HTMLDivElement, EditLayoutProps>(function E
     return (
         <div
             {...restProps}
-            ref={ref}
+            ref={rootRef}
             data-variant={ownerState.variant}
             data-pane={ownerState.pane}
             data-preview={ownerState.preview ? "" : undefined}
             data-aside={ownerState.aside ? "" : undefined}
             data-loading={ownerState.loading ? "" : undefined}
+            data-sticky-header={ownerState.stickyHeader ? "" : undefined}
             className={clsx(styles.root, className)}
         >
-            <div {...headerProps}>{header}</div>
+            <div {...headerProps} data-stuck={headerStuck ? "" : undefined}>
+                {header}
+            </div>
             {showsPreview && paneSwitch != null && <div {...paneSwitchProps}>{paneSwitch}</div>}
             <div {...bodyProps}>
                 {showsPreview && variant !== "formWithPreview" && <div {...previewProps}>{loading ? <PreviewPlaceholder /> : preview}</div>}
@@ -166,6 +184,44 @@ export const EditLayout = forwardRef<HTMLDivElement, EditLayoutProps>(function E
         </div>
     );
 });
+
+/**
+ * Tells whether the sticky header is held in place, i.e. pushed down from where it sits in the layout, and keeps the header's height
+ * in `--_header-block-size` on the root, so the sticky panes stop below it. Listens to scrolling in any scroll container, so it also
+ * works when the page scrolls in an element instead of the window.
+ */
+function useStickyHeader(rootRef: RefObject<HTMLDivElement | null>, enabled: boolean) {
+    const [stuck, setStuck] = useState(false);
+    useEffect(() => {
+        const root = rootRef.current;
+        const header = root?.firstElementChild;
+        if (!enabled || root == null || !(header instanceof HTMLElement)) {
+            setStuck(false);
+            return;
+        }
+        const update = () => {
+            setStuck(header.getBoundingClientRect().top - root.getBoundingClientRect().top > 0.5);
+        };
+        const resizeObserver =
+            typeof ResizeObserver === "undefined"
+                ? undefined
+                : new ResizeObserver(() => {
+                      root.style.setProperty("--_header-block-size", `${header.offsetHeight}px`);
+                      update();
+                  });
+        resizeObserver?.observe(header);
+        update();
+        document.addEventListener("scroll", update, { capture: true, passive: true });
+        window.addEventListener("resize", update);
+        return () => {
+            resizeObserver?.disconnect();
+            root.style.removeProperty("--_header-block-size");
+            document.removeEventListener("scroll", update, { capture: true });
+            window.removeEventListener("resize", update);
+        };
+    }, [rootRef, enabled]);
+    return stuck;
+}
 
 function PreviewPlaceholder() {
     return (

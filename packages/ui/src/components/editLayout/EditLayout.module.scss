@@ -1,12 +1,22 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     --_columns: minmax(0, 1fr);
     --_areas: "editor";
+    --_pane-sticky-offset: var(--dextinity-edit-layout-sticky-offset);
 
     container-type: inline-size;
     display: flex;
     flex-direction: column;
     gap: var(--dextinity-edit-layout-header-spacing);
     min-inline-size: 0;
+
+    &[data-sticky-header] {
+        --_pane-sticky-offset: max(
+            var(--dextinity-edit-layout-sticky-offset),
+            var(--dextinity-edit-layout-header-sticky-offset) + var(--_header-block-size, 0px) + var(--dextinity-edit-layout-header-spacing)
+        );
+    }
 
     &[data-variant="page"] {
         --_columns: minmax(0, 1fr) var(--dextinity-edit-layout-panel-width);
@@ -34,6 +44,33 @@
     min-inline-size: 0;
 }
 
+.root[data-sticky-header] .header {
+    position: sticky;
+    inset-block-start: var(--dextinity-edit-layout-header-sticky-offset);
+    z-index: var(--dextinity-edit-layout-header-sticky-layer);
+
+    // Drawn around the header instead of padding it, so holding it in place doesn't move its content
+    &::before {
+        content: "";
+        position: absolute;
+        inset: calc(-1 * var(--dextinity-edit-layout-header-sticky-outset));
+        z-index: -1;
+        border-radius: var(--dextinity-edit-layout-header-sticky-radius);
+        background: var(--dextinity-edit-layout-header-sticky-background);
+        box-shadow: var(--dextinity-edit-layout-header-sticky-shadow);
+        backdrop-filter: blur(var(--dextinity-edit-layout-header-sticky-blur)) saturate(var(--dextinity-material-saturation));
+        opacity: 0;
+        transition: opacity var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
+        pointer-events: none;
+
+        @include forced-colors.edge;
+    }
+
+    &[data-stuck]::before {
+        opacity: 1;
+    }
+}
+
 .paneSwitch {
     display: none;
 }
@@ -53,7 +90,7 @@
 .preview,
 .aside {
     position: sticky;
-    inset-block-start: var(--dextinity-edit-layout-sticky-offset);
+    inset-block-start: var(--_pane-sticky-offset);
     min-inline-size: 0;
 }
 
@@ -61,7 +98,7 @@
     display: flex;
     flex-direction: column;
     grid-area: preview;
-    block-size: calc(100dvh - var(--dextinity-edit-layout-sticky-offset) - var(--dextinity-edit-layout-preview-spacing));
+    block-size: calc(100dvh - var(--_pane-sticky-offset) - var(--dextinity-edit-layout-preview-spacing));
     min-block-size: var(--dextinity-edit-layout-preview-min-height);
 
     > * {

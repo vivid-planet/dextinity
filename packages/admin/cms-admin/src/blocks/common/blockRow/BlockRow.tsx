@@ -128,7 +128,7 @@ export function BlockRow({
             focusableWhenDisabled
             onClick={() => onVisibleChange(!visible)}
         >
-            <Icon name={visible ? "visible" : "invisible"} />
+            <Icon name={visible ? "eye" : "eye-off"} />
         </IconButton>
     );
 
@@ -165,11 +165,11 @@ export function BlockRow({
                             }
                         >
                             <MenuItem label={intl.formatMessage(messages.copy)} icon={<Icon name="copy" />} onClick={onCopy} />
-                            <MenuItem label={labels.pasteBelow} icon={<Icon name="paste" />} onClick={onPaste} />
+                            <MenuItem label={labels.pasteBelow} icon={<Icon name="paste-add" />} onClick={onPaste} />
                             <MenuItem label={labels.duplicate} icon={<Icon name="duplicate" />} onClick={onDuplicate} />
                             {renderAdditionalMenuItems?.(menuApi)}
                             <MenuSeparator />
-                            <MenuItem label={intl.formatMessage(messages.delete)} icon={<Icon name="delete" />} color="error" onClick={onDelete} />
+                            <MenuItem label={intl.formatMessage(messages.delete)} icon={<Icon name="trash" />} color="error" onClick={onDelete} />
                         </Menu>
                     </>
                 }

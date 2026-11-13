@@ -489,7 +489,7 @@ export const useDamFileUpload = (options: UploadDamFileOptions): FileUploadApi =
         if (tooLargeVideoCount > 0) {
             addToast({
                 tone: "info",
-                icon: <Icon name="warning" />,
+                icon: <Icon name="warning-triangle" />,
                 message: intl.formatMessage(
                     {
                         id: "dextinity.dam.videoPerformanceWarning.snackbar",

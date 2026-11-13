@@ -87,7 +87,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
         {
             name: "highlight",
             label: <FormattedMessage id="tipTapRichTextBlock.inlineStyle.highlight" defaultMessage="Highlight" />,
-            icon: <Icon name="rte-highlight" />,
+            icon: <Icon name="highlight" />,
             element: (props: HTMLAttributes<HTMLElement>) => (
                 <Box component="span" sx={{ backgroundColor: "#fff3cd", color: "#664d03", padding: "0 2px" }} {...props} />
             ),

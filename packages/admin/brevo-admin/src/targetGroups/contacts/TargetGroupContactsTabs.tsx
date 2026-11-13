@@ -187,7 +187,7 @@ function ManuallyAddedContacts({ targetGroupId, scope, skip, onNotify }: Manuall
                             size="small"
                             variant="outlined"
                             color="secondary"
-                            startIcon={<Icon name="upload" />}
+                            startIcon={<Icon name="cloud-upload" />}
                             onClick={() => setImportOpen(true)}
                         >
                             {intl.formatMessage({
@@ -217,7 +217,7 @@ function ManuallyAddedContacts({ targetGroupId, scope, skip, onNotify }: Manuall
                 bulkActions={[
                     {
                         label: intl.formatMessage({ id: "dextinity.targetGroup.removeContacts", defaultMessage: "Remove from target group" }),
-                        icon: <Icon name="remove" />,
+                        icon: <Icon name="minus-circle" />,
                         color: "error",
                         onClick: () => setContactIdsToRemove(selectedIds),
                     },
@@ -234,7 +234,7 @@ function ManuallyAddedContacts({ targetGroupId, scope, skip, onNotify }: Manuall
                         color="secondary"
                         onClick={() => setContactIdsToRemove([String(contact.id)])}
                     >
-                        <Icon name="remove" />
+                        <Icon name="minus-circle" />
                     </IconButton>
                 )}
                 pagination={pagination}
@@ -309,7 +309,7 @@ function ManuallyAddedContacts({ targetGroupId, scope, skip, onNotify }: Manuall
                     defaultMessage: "The contacts stay in the target group if its filters assign them.",
                 })}
                 confirmLabel={intl.formatMessage({ id: "dextinity.targetGroup.removeDialog.confirm", defaultMessage: "Remove" })}
-                confirmIcon={<Icon name="remove" />}
+                confirmIcon={<Icon name="minus-circle" />}
                 onConfirm={() => void removeContacts()}
                 loading={removing}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.targetGroup.removeDialog.cancel", defaultMessage: "Cancel" }) }}

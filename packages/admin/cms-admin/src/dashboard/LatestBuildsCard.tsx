@@ -41,7 +41,7 @@ export function LatestBuildsCard({ publisherUrl }: LatestBuildsCardProps) {
     return (
         <Card
             title={intl.formatMessage({ id: "dextinity.latestBuildsCard.title", defaultMessage: "Builds" })}
-            icon={<Icon name="online" duotone />}
+            icon={<Icon name="bolt" />}
             link={
                 <Link render={<RouterLink to={publisherUrl} />} endIcon={<Icon name="arrow-right" />}>
                     <FormattedMessage id="dextinity.latestBuildsCard.publisher" defaultMessage="Publisher" />
@@ -52,21 +52,21 @@ export function LatestBuildsCard({ publisherUrl }: LatestBuildsCardProps) {
                 <Skeleton variant="row" count={3} />
             ) : error ? (
                 <EmptyState
-                    icon={<Icon name="error" />}
+                    icon={<Icon name="alert" />}
                     title={intl.formatMessage({ id: "dextinity.latestBuildsCard.error.title", defaultMessage: "Couldn't load" })}
                     description={intl.formatMessage({
                         id: "dextinity.latestBuildsCard.error.description",
                         defaultMessage: "The builds couldn't be loaded. Your content is not affected.",
                     })}
                     actions={
-                        <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="reload" />} onClick={() => refetch()}>
+                        <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="refresh" />} onClick={() => refetch()}>
                             <FormattedMessage id="dextinity.latestBuildsCard.error.retry" defaultMessage="Load again" />
                         </Button>
                     }
                 />
             ) : builds.length === 0 ? (
                 <EmptyState
-                    icon={<Icon name="online" />}
+                    icon={<Icon name="bolt" />}
                     title={intl.formatMessage({ id: "dextinity.latestBuildsCard.empty", defaultMessage: "No builds yet" })}
                 />
             ) : (

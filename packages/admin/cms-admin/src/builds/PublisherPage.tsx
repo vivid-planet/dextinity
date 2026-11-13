@@ -160,7 +160,7 @@ export function PublisherPage() {
                 labels={dataGridLabels}
                 emptyState={
                     <EmptyState
-                        icon={<Icon name="online" />}
+                        icon={<Icon name="bolt" />}
                         title={intl.formatMessage({ id: "dextinity.pages.publisher.empty", defaultMessage: "No builds yet" })}
                         description={intl.formatMessage({
                             id: "dextinity.pages.publisher.emptyDescription",

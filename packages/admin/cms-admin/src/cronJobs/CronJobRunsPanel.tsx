@@ -142,7 +142,7 @@ function JobRuns({ cronJobName, logsUrl }: { cronJobName: string; logsUrl: (jobN
     if (jobs.length === 0) {
         return (
             <EmptyState
-                icon={<Icon name="time" />}
+                icon={<Icon name="clock" />}
                 title={intl.formatMessage({ id: "dextinity.pages.cronJobs.noRuns", defaultMessage: "No runs yet" })}
             />
         );

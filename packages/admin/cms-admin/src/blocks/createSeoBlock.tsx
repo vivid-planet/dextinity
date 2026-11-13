@@ -268,7 +268,7 @@ export function createSeoBlock(
                                                     })}
                                                     onClick={() => fields.remove(index)}
                                                 >
-                                                    <Icon name="delete" />
+                                                    <Icon name="trash" />
                                                 </IconButton>
                                             </AlternativeLinkRemoveButton>
                                         </AlternativeLinkRow>
@@ -277,7 +277,7 @@ export function createSeoBlock(
                                         <Button
                                             variant="outlined"
                                             color="secondary"
-                                            startIcon={<Icon name="add" />}
+                                            startIcon={<Icon name="plus-circle" />}
                                             onClick={() => fields.push({ code: "", url: "" })}
                                         >
                                             <FormattedMessage id="dextinity.blocks.seo.alternativeLinks.add" defaultMessage="Add alternate link" />

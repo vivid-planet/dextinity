@@ -291,7 +291,7 @@ export function BrevoContactsListPage<AdditionalAttributes extends object>({
                                     <Button
                                         variant="outlined"
                                         color="secondary"
-                                        startIcon={<Icon name="upload" />}
+                                        startIcon={<Icon name="cloud-upload" />}
                                         onClick={() => setImportOpen(true)}
                                     >
                                         {intl.formatMessage({
@@ -467,7 +467,7 @@ export function BrevoContactsListPage<AdditionalAttributes extends object>({
                           })
                 }
                 confirmLabel={intl.formatMessage({ id: "dextinity.brevoContact.deleteDialog.confirm", defaultMessage: "Delete" })}
-                confirmIcon={<Icon name="delete" />}
+                confirmIcon={<Icon name="trash" />}
                 onConfirm={() => void deleteContact()}
                 loading={deleting}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.brevoContact.deleteDialog.cancel", defaultMessage: "Cancel" }) }}
@@ -566,7 +566,7 @@ function ContactRowMenu({ contact, canBlock, onEdit, onChangeBlocked, onDelete }
                 ) : (
                     <MenuItem
                         label={intl.formatMessage({ id: "dextinity.brevoContact.actions.block", defaultMessage: "Block" })}
-                        icon={<Icon name="reject" />}
+                        icon={<Icon name="close-circle" />}
                         onClick={() => onChangeBlocked(true)}
                     />
                 )
@@ -574,7 +574,7 @@ function ContactRowMenu({ contact, canBlock, onEdit, onChangeBlocked, onDelete }
             <MenuSeparator />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.brevoContact.actions.delete", defaultMessage: "Delete" })}
-                icon={<Icon name="delete" />}
+                icon={<Icon name="trash" />}
                 color="error"
                 onClick={onDelete}
             />

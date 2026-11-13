@@ -50,7 +50,7 @@ export function AppFrameRouterConfirmationDialog() {
                   }
                 : {
                       confirmLabel: discardLabel,
-                      confirmIcon: <Icon name="delete" />,
+                      confirmIcon: <Icon name="trash" />,
                       onConfirm: () => void dialog.onDiscard(),
                       tone: "danger" as const,
                   })}

@@ -51,7 +51,7 @@ const createTextImageBlock = (
         displayName: <FormattedMessage id="dextinity.blocks.textImage" defaultMessage="Text/Image" />,
 
         category: BlockCategory.TextAndContent,
-        iconName: "layout",
+        iconName: "columns-2",
         description: <FormattedMessage id="dextinity.blocks.textImage.description" defaultMessage="Text next to an image" />,
 
         tags: tags ? tags : [...(text.tags || []), ...(image.tags || [])],

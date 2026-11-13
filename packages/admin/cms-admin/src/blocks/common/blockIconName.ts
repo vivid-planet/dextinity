@@ -3,13 +3,13 @@ import type { IconName } from "@dextinity/ui";
 import { BlockCategory, type BlockInterface } from "../types";
 
 const categoryIconNames: Record<BlockCategory, IconName> = {
-    [BlockCategory.TextAndContent]: "rte-heading",
+    [BlockCategory.TextAndContent]: "heading",
     [BlockCategory.Media]: "image",
     [BlockCategory.Navigation]: "link",
-    [BlockCategory.Teaser]: "layout",
-    [BlockCategory.StructuredContent]: "data",
+    [BlockCategory.Teaser]: "story",
+    [BlockCategory.StructuredContent]: "layers",
     [BlockCategory.Layout]: "columns-2",
-    [BlockCategory.Form]: "edit-record",
+    [BlockCategory.Form]: "edit-page",
     [BlockCategory.Other]: "blocks",
 };
 

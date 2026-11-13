@@ -271,7 +271,7 @@ export function ProductCategoriesPage() {
                             size="small"
                             onClick={() => setCategoryToDelete(category)}
                         >
-                            <Icon name="delete" />
+                            <Icon name="trash" />
                         </IconButton>
                     )}
                     labels={dataGridLabels}
@@ -291,7 +291,7 @@ export function ProductCategoriesPage() {
                             />
                         ) : (
                             <EmptyState
-                                icon={<Icon name="inbox" />}
+                                icon={<Icon name="file" />}
                                 title={intl.formatMessage({ id: "uiDemo.productCategories.empty", defaultMessage: "No categories yet" })}
                             />
                         )
@@ -363,7 +363,7 @@ function ProductCategoryPanel({ categoryId, nextPosition, onClose, onCreated, on
                     <Skeleton variant="text" count={3} />
                 ) : (
                     <EmptyState
-                        icon={<Icon name="warning" />}
+                        icon={<Icon name="warning-triangle" />}
                         title={intl.formatMessage({
                             id: "uiDemo.productCategories.loadFailed",
                             defaultMessage: "The category couldn't be loaded",
@@ -418,7 +418,7 @@ function ProductCategoryPanel({ categoryId, nextPosition, onClose, onCreated, on
             onUnsavedChangesChange={onUnsavedChangesChange}
             footerStart={
                 category && (
-                    <Button size="small" variant="text" color="error" startIcon={<Icon name="delete" />} onClick={() => onDelete(category)}>
+                    <Button size="small" variant="text" color="error" startIcon={<Icon name="trash" />} onClick={() => onDelete(category)}>
                         {intl.formatMessage({ id: "uiDemo.productsCommon.delete", defaultMessage: "Delete" })}
                     </Button>
                 )

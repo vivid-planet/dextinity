@@ -42,7 +42,7 @@ export function ContentCountsCard({ newsCount, newsUrl }: ContentCountsCardProps
     const formatCount = (count: number | undefined) => (count === undefined ? "–" : intl.formatNumber(count));
 
     return (
-        <Card title={intl.formatMessage({ id: "overview.contentCounts.title", defaultMessage: "Content" })} icon={<Icon name="blocks" duotone />}>
+        <Card title={intl.formatMessage({ id: "overview.contentCounts.title", defaultMessage: "Content" })} icon={<Icon name="blocks" />}>
             <div className={styles.tiles}>
                 {isAllowed("news") && (
                     <RouterLink to={newsUrl} className={styles.tileLink}>

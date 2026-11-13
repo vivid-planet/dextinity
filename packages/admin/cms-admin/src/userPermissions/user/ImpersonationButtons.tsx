@@ -55,7 +55,7 @@ export const StartImpersonationButton = ({ userId, impersonationAllowed = true }
         <Button
             variant="outlined"
             color="secondary"
-            startIcon={<Icon name="impersonate-user" />}
+            startIcon={<Icon name="impersonate" />}
             disabled={disabledReason !== undefined}
             focusableWhenDisabled
             aria-describedby={disabledReason ? disabledReasonId : undefined}

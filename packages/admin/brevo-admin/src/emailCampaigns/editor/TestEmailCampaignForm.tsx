@@ -134,7 +134,7 @@ export function TestEmailCampaignForm({ scope, campaignId, sendBlockedReason, ad
                             <Button
                                 variant="outlined"
                                 color="secondary"
-                                startIcon={<Icon name="letter" />}
+                                startIcon={<Icon name="mail" />}
                                 disabled={sendBlockedReason != null || values.testContacts.length === 0}
                                 loading={submitting}
                                 aria-describedby={sendBlockedReason != null ? reasonId : undefined}

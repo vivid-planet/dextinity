@@ -25,7 +25,7 @@ export function RecentlyEditedCard({ pageTreeUrl }: RecentlyEditedCardProps) {
     return (
         <Card
             title={intl.formatMessage({ id: "overview.recentlyEdited.title", defaultMessage: "Recently edited" })}
-            icon={<Icon name="time" duotone />}
+            icon={<Icon name="clock" />}
             link={
                 <Link render={<RouterLink to={pageTreeUrl} />} endIcon={<Icon name="arrow-right" />}>
                     <FormattedMessage id="overview.recentlyEdited.pageTree" defaultMessage="Page tree" />

@@ -577,7 +577,7 @@ function PageSaveButton({ handleSavePage, hasChanges, hasConflict, saving, saveE
     const button = (
         <Button
             color={hasErrors ? "error" : "primary"}
-            startIcon={<Icon name={hasErrors ? "error" : "check"} />}
+            startIcon={<Icon name={hasErrors ? "alert" : "check"} />}
             disabled={!hasChanges}
             loading={saving}
             onClick={handleSavePage}

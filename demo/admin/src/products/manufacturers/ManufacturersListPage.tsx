@@ -344,7 +344,7 @@ export function ManufacturersListPage({ baseUrl }: ManufacturersListPageProps) {
                             size="small"
                             onClick={() => setManufacturerToDelete(manufacturer)}
                         >
-                            <Icon name="delete" />
+                            <Icon name="trash" />
                         </IconButton>
                     )}
                     labels={dataGridLabels}
@@ -365,7 +365,7 @@ export function ManufacturersListPage({ baseUrl }: ManufacturersListPageProps) {
                             />
                         ) : (
                             <EmptyState
-                                icon={<Icon name="inbox" />}
+                                icon={<Icon name="file" />}
                                 title={intl.formatMessage({ id: "uiDemo.manufacturers.empty", defaultMessage: "No manufacturers yet" })}
                             />
                         )

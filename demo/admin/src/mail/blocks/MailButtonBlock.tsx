@@ -12,7 +12,7 @@ export const MailButtonBlock = createCompositeBlock({
     name: "MailButton",
     displayName: <FormattedMessage id="mail.buttonBlock.displayName" defaultMessage="Button" />,
     category: BlockCategory.Navigation,
-    iconName: "button",
+    iconName: "button-tap",
     description: <FormattedMessage id="mail.buttonBlock.description" defaultMessage="Button with a link" />,
     blocks: {
         text: {

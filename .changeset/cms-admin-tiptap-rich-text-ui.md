@@ -21,7 +21,7 @@ The `icon` of an inline style is a React node now, e.g. an `Icon` of `@dextinity
              name: "highlight",
              label: <FormattedMessage id="tipTapRichTextBlock.inlineStyle.highlight" defaultMessage="Highlight" />,
 -            icon: RteHighlight,
-+            icon: <Icon name="rte-highlight" />,
++            icon: <Icon name="highlight" />,
              element: (props) => <span className="highlight" {...props} />,
          },
      ],

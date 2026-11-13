@@ -85,7 +85,7 @@ export function PageTreeNodeMenu({
             }
         >
             <MenuItem
-                icon={<Icon name="settings" />}
+                icon={<Icon name="gear" />}
                 label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.properties", defaultMessage: "Page properties" })}
                 disabled={isArchived}
                 onClick={onPropertiesClick}
@@ -104,7 +104,7 @@ export function PageTreeNodeMenu({
                 onClick={onCopyClick}
             />
             <MenuItem
-                icon={<Icon name="paste" />}
+                icon={<Icon name="paste-add" />}
                 label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.pasteAfter", defaultMessage: "Paste after" })}
                 shortcut={formatShortcutText(pageTreeShortcuts.pasteAfter)}
                 disabled={!hasClipboardPages}
@@ -112,7 +112,7 @@ export function PageTreeNodeMenu({
                 onClick={() => onPasteClick("after")}
             />
             <MenuItem
-                icon={<Icon name="paste" />}
+                icon={<Icon name="paste-add" />}
                 label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.pasteInside", defaultMessage: "Paste as subpage" })}
                 shortcut={formatShortcutText(pageTreeShortcuts.pasteInside)}
                 disabled={!hasClipboardPages || isArchived}
@@ -126,7 +126,7 @@ export function PageTreeNodeMenu({
             />
             {categories.length > 0 && (
                 <MenuSubmenu
-                    icon={<Icon name="move-page" />}
+                    icon={<Icon name="page-move" />}
                     label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.moveToCategory", defaultMessage: "Move to" })}
                     open={isMoveSubmenuOpen}
                     onOpenChange={setIsMoveSubmenuOpen}
@@ -155,7 +155,7 @@ export function PageTreeNodeMenu({
             <MenuSeparator />
             {isArchived ? (
                 <MenuItem
-                    icon={<Icon name="reload" />}
+                    icon={<Icon name="refresh" />}
                     label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.restore", defaultMessage: "Restore as unpublished" })}
                     onClick={() => onVisibilityChange("Unpublished")}
                 />
@@ -169,7 +169,7 @@ export function PageTreeNodeMenu({
             )}
             {deleteAction != null && (
                 <MenuItem
-                    icon={<Icon name="delete" />}
+                    icon={<Icon name="trash" />}
                     label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.delete", defaultMessage: "Delete with subpages" })}
                     color="error"
                     disabled={deleteAction.disabledReason != null}

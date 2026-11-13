@@ -164,7 +164,7 @@ const MainMenu = () => {
                     labels={dataGridLabels}
                     emptyState={
                         <EmptyState
-                            icon={<Icon name="page-tree" />}
+                            icon={<Icon name="sitemap" />}
                             title={intl.formatMessage({ id: "mainMenu.empty.title", defaultMessage: "No menu items" })}
                             description={intl.formatMessage({
                                 id: "mainMenu.empty.description",
@@ -187,7 +187,7 @@ const MainMenu = () => {
                     defaultMessage: "The menu item has unsaved changes. Save them first, or discard them.",
                 })}
                 confirmLabel={intl.formatMessage({ id: "mainMenu.unsavedChanges.discard", defaultMessage: "Discard changes" })}
-                confirmIcon={<Icon name="delete" />}
+                confirmIcon={<Icon name="trash" />}
                 tone="danger"
                 onConfirm={() => {
                     panelUnsavedChanges?.discard();

@@ -17,7 +17,7 @@ export function BlockAdminTabLabel({ children, isValid: isValidFn }: PropsWithCh
         <Root>
             {!isValid && (
                 <InvalidIcon
-                    name="warning-solid"
+                    name="warning-triangle-fill"
                     aria-label={intl.formatMessage({ id: "dextinity.blocks.containsErrors", defaultMessage: "Contains errors" })}
                 />
             )}

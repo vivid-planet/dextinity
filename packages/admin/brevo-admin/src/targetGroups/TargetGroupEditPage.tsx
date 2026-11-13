@@ -114,7 +114,7 @@ export function TargetGroupEditPage({
                 loading={loading}
             >
                 <EmptyState
-                    icon={<Icon name="warning" />}
+                    icon={<Icon name="warning-triangle" />}
                     title={intl.formatMessage({ id: "dextinity.targetGroup.loadFailed", defaultMessage: "The target group couldn't be loaded" })}
                     description={error?.message}
                 />

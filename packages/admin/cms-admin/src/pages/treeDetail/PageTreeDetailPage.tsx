@@ -527,7 +527,7 @@ function PageTreeDetailView({
                 },
                 { visibility },
             ),
-            icon: <Icon name={visibility === "Published" ? "visible" : visibility === "Unpublished" ? "invisible" : "archive"} />,
+            icon: <Icon name={visibility === "Published" ? "eye" : visibility === "Unpublished" ? "eye-off" : "archive"} />,
             onClick: () => {
                 changeVisibility(checkedIds, visibility);
                 setCheckedIds([]);
@@ -550,7 +550,7 @@ function PageTreeDetailView({
             ? [
                   {
                       label: intl.formatMessage({ id: "dextinity.pageTreeDetail.bulk.moveToCategory", defaultMessage: "Move to" }),
-                      icon: <Icon name="move-page" />,
+                      icon: <Icon name="page-move" />,
                       disabled: topmostCheckedPages.some((page) => page.visibility === "Archived"),
                       disabledReason: intl.formatMessage({
                           id: "dextinity.pageTreeDetail.bulk.moveArchived",
@@ -588,7 +588,7 @@ function PageTreeDetailView({
             ? [
                   {
                       label: intl.formatMessage({ id: "dextinity.pageTreeDetail.bulk.delete", defaultMessage: "Delete" }),
-                      icon: <Icon name="delete" />,
+                      icon: <Icon name="trash" />,
                       color: "error" as const,
                       onClick: () => {
                           if (checkedDeleteDisabledReason != null) {

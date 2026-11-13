@@ -75,7 +75,7 @@ export function Duplicates({ fileId, getEditUrl }: DuplicatesProps) {
                     loading={loading && data != null}
                     onClick={() => void refetch()}
                 >
-                    <Icon name="reload" />
+                    <Icon name="refresh" />
                 </IconButton>
             </DuplicatesToolbar>
             <DataGrid
@@ -94,7 +94,7 @@ export function Duplicates({ fileId, getEditUrl }: DuplicatesProps) {
                         size="small"
                         onClick={() => window.open(history.createHref({ pathname: getEditUrl(duplicate.id) }), "_blank")}
                     >
-                        <Icon name="open-new-tab" />
+                        <Icon name="window" />
                     </IconButton>
                 )}
                 labels={dataGridLabels}

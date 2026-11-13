@@ -47,7 +47,7 @@ const InlineStylesBlock = createTipTapRichTextBlock({
         {
             name: "highlight",
             label: "Highlight",
-            icon: <Icon name="rte-highlight" />,
+            icon: <Icon name="highlight" />,
             element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
         },
         {
@@ -180,7 +180,7 @@ const InlineStylesMoreOptionsBlock = createTipTapRichTextBlock({
         {
             name: "highlight",
             label: "Highlight",
-            icon: <Icon name="rte-highlight" />,
+            icon: <Icon name="highlight" />,
             element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
         },
         {
@@ -311,7 +311,7 @@ const CombinedStylesBlock = createTipTapRichTextBlock({
         {
             name: "highlight",
             label: "Highlight",
-            icon: <Icon name="rte-highlight" />,
+            icon: <Icon name="highlight" />,
             element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
         },
         {

@@ -159,7 +159,7 @@ function SitePreview({ resolvePath, logo = <DextinityIcon sx={{ fontSize: 24 }} 
                         </Typography>
                         {siteConfig.preloginEnabled && (
                             <Tooltip content={preloginMessage}>
-                                <Icon name="domain-locked" aria-label={preloginMessage} tabIndex={0} />
+                                <Icon name="globe-lock" aria-label={preloginMessage} tabIndex={0} />
                             </Tooltip>
                         )}
                     </SiteInformation>
@@ -183,7 +183,7 @@ function SitePreview({ resolvePath, logo = <DextinityIcon sx={{ fontSize: 24 }} 
                                 aria-label={intl.formatMessage({ id: "dextinity.sitePreview.reload", defaultMessage: "Reload" })}
                                 onClick={reload}
                             >
-                                <Icon name="reload" />
+                                <Icon name="refresh" />
                             </IconButton>
                             <IconButton
                                 variant="text"
@@ -192,7 +192,7 @@ function SitePreview({ resolvePath, logo = <DextinityIcon sx={{ fontSize: 24 }} 
                                 aria-label={intl.formatMessage({ id: "dextinity.sitePreview.openOnSite", defaultMessage: "Open on site" })}
                                 onClick={() => window.open(siteLink, "_blank", "noopener,noreferrer")}
                             >
-                                <Icon name="open-new-tab" />
+                                <Icon name="window" />
                             </IconButton>
                         </>
                     }

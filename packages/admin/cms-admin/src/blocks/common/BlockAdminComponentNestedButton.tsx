@@ -25,7 +25,7 @@ export const BlockAdminComponentNestedButton = ({ displayName, preview, count, o
                     <Title>
                         {!isValid && (
                             <InvalidIcon
-                                name="warning-solid"
+                                name="warning-triangle-fill"
                                 aria-label={intl.formatMessage({ id: "dextinity.blocks.containsErrors", defaultMessage: "Contains errors" })}
                             />
                         )}

@@ -113,7 +113,7 @@ export function StartBuildsDialog({ open, onClose }: StartBuildsDialogProps) {
                             <Skeleton variant="row" count={3} />
                         ) : error ? (
                             <EmptyState
-                                icon={<Icon name="error" />}
+                                icon={<Icon name="alert" />}
                                 title={intl.formatMessage({
                                     id: "dextinity.pages.publisher.startBuildsDialog.loadError",
                                     defaultMessage: "The build templates couldn't be loaded",
@@ -123,7 +123,7 @@ export function StartBuildsDialog({ open, onClose }: StartBuildsDialogProps) {
                                         variant="outlined"
                                         color="secondary"
                                         size="small"
-                                        startIcon={<Icon name="reload" />}
+                                        startIcon={<Icon name="refresh" />}
                                         onClick={() => refetch()}
                                     >
                                         {intl.formatMessage({
@@ -135,7 +135,7 @@ export function StartBuildsDialog({ open, onClose }: StartBuildsDialogProps) {
                             />
                         ) : buildTemplates.length === 0 ? (
                             <EmptyState
-                                icon={<Icon name="online" />}
+                                icon={<Icon name="bolt" />}
                                 title={intl.formatMessage({
                                     id: "dextinity.pages.publisher.startBuildsDialog.empty",
                                     defaultMessage: "There are no build templates",

@@ -272,7 +272,7 @@ export function EmailCampaignsListPage({ baseUrl, scope, scopeLabel, addToast, E
                             .join(" · ")}
                         title={title}
                         actions={
-                            <Button href={`${baseUrl}/add`} onClick={navigateWithRouter} startIcon={<Icon name="add" />}>
+                            <Button href={`${baseUrl}/add`} onClick={navigateWithRouter} startIcon={<Icon name="plus-circle" />}>
                                 {intl.formatMessage({ id: "dextinity.emailCampaign.newEmailCampaign", defaultMessage: "New email campaign" })}
                             </Button>
                         }
@@ -360,14 +360,14 @@ export function EmailCampaignsListPage({ baseUrl, scope, scopeLabel, addToast, E
                             />
                         ) : (
                             <EmptyState
-                                icon={<Icon name="newsletter" />}
+                                icon={<Icon name="mail-send" />}
                                 title={intl.formatMessage({ id: "dextinity.emailCampaigns.empty", defaultMessage: "No email campaigns yet" })}
                                 description={intl.formatMessage({
                                     id: "dextinity.emailCampaigns.emptyDescription",
                                     defaultMessage: "Write a campaign with blocks, choose its target groups, then send or schedule it.",
                                 })}
                                 actions={
-                                    <Button href={`${baseUrl}/add`} onClick={navigateWithRouter} size="small" startIcon={<Icon name="add" />}>
+                                    <Button href={`${baseUrl}/add`} onClick={navigateWithRouter} size="small" startIcon={<Icon name="plus-circle" />}>
                                         {intl.formatMessage({ id: "dextinity.emailCampaign.newEmailCampaign", defaultMessage: "New email campaign" })}
                                     </Button>
                                 }
@@ -393,7 +393,7 @@ export function EmailCampaignsListPage({ baseUrl, scope, scopeLabel, addToast, E
                     defaultMessage: "The campaign and its content are removed. This can't be undone.",
                 })}
                 confirmLabel={intl.formatMessage({ id: "dextinity.emailCampaigns.delete", defaultMessage: "Delete" })}
-                confirmIcon={<Icon name="delete" />}
+                confirmIcon={<Icon name="trash" />}
                 onConfirm={() => void deleteCampaign()}
                 loading={deleting}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.emailCampaigns.cancel", defaultMessage: "Cancel" }) }}
@@ -444,14 +444,14 @@ function EmailCampaignRowMenu({ campaign, onOpen, editUrl, viewUrl, statisticsUr
             {viewUrl != null && (
                 <MenuItem
                     label={intl.formatMessage({ id: "dextinity.emailCampaigns.view", defaultMessage: "View" })}
-                    icon={<Icon name="visible" />}
+                    icon={<Icon name="eye" />}
                     onClick={() => onOpen(viewUrl)}
                 />
             )}
             {statisticsUrl != null && (
                 <MenuItem
                     label={intl.formatMessage({ id: "dextinity.emailCampaigns.statistics", defaultMessage: "Statistics" })}
-                    icon={<Icon name="statistics" />}
+                    icon={<Icon name="chart-bars" />}
                     onClick={() => onOpen(statisticsUrl)}
                 />
             )}
@@ -463,7 +463,7 @@ function EmailCampaignRowMenu({ campaign, onOpen, editUrl, viewUrl, statisticsUr
             <MenuSeparator />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.emailCampaigns.delete", defaultMessage: "Delete" })}
-                icon={<Icon name="delete" />}
+                icon={<Icon name="trash" />}
                 color="error"
                 disabled={campaign.brevoId != null}
                 disabledReason={intl.formatMessage({

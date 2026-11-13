@@ -129,7 +129,7 @@ export function DamFinderSelectionMenu({
                         ? intl.formatMessage({ id: "dextinity.damFinder.actions.downloadFolder", defaultMessage: "Download as ZIP" })
                         : intl.formatMessage({ id: "dextinity.damFinder.actions.download", defaultMessage: "Download" })
                 }
-                icon={<Icon name={isSingleFolder ? "zip-file" : "download"} />}
+                icon={<Icon name={isSingleFolder ? "file-zip" : "download"} />}
                 disabled={fileCount === 0 && !isSingleFolder}
                 disabledReason={intl.formatMessage({
                     id: "dextinity.damFinder.actions.downloadFoldersDisabled",
@@ -161,7 +161,7 @@ export function DamFinderSelectionMenu({
             <MenuSeparator />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.damFinder.actions.delete", defaultMessage: "Delete…" })}
-                icon={<Icon name="delete" />}
+                icon={<Icon name="trash" />}
                 color="error"
                 onClick={onDelete}
             />

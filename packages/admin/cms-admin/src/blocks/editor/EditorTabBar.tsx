@@ -112,7 +112,7 @@ export function EditorTabBar({ tabs, selectedKey, getTabUrl }: EditorTabBarProps
                         <MenuItem
                             key={tab.key}
                             label={tab.invalid ? `${tab.label} – ${labels.error}` : tab.label}
-                            icon={tab.invalid ? <Icon name="error" /> : undefined}
+                            icon={tab.invalid ? <Icon name="alert" /> : undefined}
                             onClick={() => {
                                 setIsMenuOpen(false);
                                 history.push(getTabUrl(tab.key));

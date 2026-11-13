@@ -45,7 +45,7 @@ export const YouTubeVideoBlock: BlockInterface<YouTubeVideoBlockData, State, You
     defaultValues: () => ({ showControls: true, previewImage: PixelImageBlock.defaultValues() }),
 
     category: BlockCategory.Media,
-    iconName: "youtube-filled",
+    iconName: "video",
     description: <FormattedMessage id="dextinity.blocks.youTubeVideo.description" defaultMessage="Video from YouTube" />,
 
     input2State: (input) => ({ ...input, previewImage: PixelImageBlock.input2State(input.previewImage) }),

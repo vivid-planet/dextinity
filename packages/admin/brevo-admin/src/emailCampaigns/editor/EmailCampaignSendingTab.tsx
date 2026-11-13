@@ -94,7 +94,7 @@ export function EmailCampaignSendingTab({ baseUrl, scope, savedCampaign, hasUnsa
         <Button
             aria-describedby={sendBlockedReason != null ? sendBlockedReasonId : undefined}
             variant="outlined"
-            startIcon={<Icon name="send" />}
+            startIcon={<Icon name="mail-out" />}
             disabled={sendBlockedReason != null}
             loading={sending}
             onClick={() => setConfirmOpen(true)}
@@ -194,7 +194,7 @@ export function EmailCampaignSendingTab({ baseUrl, scope, savedCampaign, hasUnsa
                     },
                 )}
                 confirmLabel={intl.formatMessage({ id: "dextinity.emailCampaigns.sendNow.dialog.confirm", defaultMessage: "Send now" })}
-                confirmIcon={<Icon name="send" />}
+                confirmIcon={<Icon name="mail-out" />}
                 onConfirm={() => void sendCampaignNow()}
                 loading={sending}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.emailCampaigns.cancel", defaultMessage: "Cancel" }) }}

@@ -21,7 +21,7 @@ const RedirectsInternalLinkBlock: typeof InternalLinkBlock = {
 const RedirectsExternalLinkBlock = createExternalLinkBlock({ name: "RedirectsExternalLink", openInNewWindow: false, noFollow: false }, (block) => ({
     ...block,
     previewContent: (state) => [...(state.targetUrl ? [{ type: "text" as const, content: block.displayName }] : [])],
-    icon: (state) => state.targetUrl && <Icon name="open-new-tab" />,
+    icon: (state) => state.targetUrl && <Icon name="window" />,
     dynamicDisplayName: (state) => state.targetUrl ?? block.displayName,
 }));
 

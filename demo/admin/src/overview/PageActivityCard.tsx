@@ -44,7 +44,7 @@ export function PageActivityCard({ query, now, pageTreeUrl }: PageActivityCardPr
     return (
         <Card
             title={intl.formatMessage({ id: "overview.pageActivity.title", defaultMessage: "Edited pages" })}
-            icon={<Icon name="history" duotone />}
+            icon={<Icon name="history" />}
             meta={intl.formatMessage({ id: "overview.pageActivity.period", defaultMessage: "{days} days" }, { days: periodInDays })}
             link={
                 <Link render={<RouterLink to={pageTreeUrl} />} endIcon={<Icon name="arrow-right" />}>

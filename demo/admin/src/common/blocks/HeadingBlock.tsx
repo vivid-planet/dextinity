@@ -88,7 +88,7 @@ export const HeadingBlock = createCompositeBlock(
     },
     (block) => {
         block.category = BlockCategory.TextAndContent;
-        block.iconName = "rte-heading";
+        block.iconName = "heading";
         block.description = <FormattedMessage id="headingBlock.description" defaultMessage="Headline with an optional eyebrow" />;
         return block;
     },

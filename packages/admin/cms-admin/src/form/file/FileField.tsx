@@ -93,16 +93,16 @@ const SingleFileField = ({ buttonText, input, allowedMimetypes, preview, menuAct
                 <BlockAdminComponentPaper disablePadding>
                     <FileFieldRow file={damFile} preview={preview} menuActions={menuActions} />
                     <Footer>
-                        <Button variant="text" color="secondary" startIcon={<Icon name="assets" />} onClick={() => setPickerOpen(true)}>
+                        <Button variant="text" color="secondary" startIcon={<Icon name="images" />} onClick={() => setPickerOpen(true)}>
                             <FormattedMessage id="dextinity.form.file.replaceFile" defaultMessage="Replace" />
                         </Button>
-                        <Button variant="text" color="secondary" startIcon={<Icon name="delete" />} onClick={() => input.onChange(undefined)}>
+                        <Button variant="text" color="secondary" startIcon={<Icon name="trash" />} onClick={() => input.onChange(undefined)}>
                             <FormattedMessage id="dextinity.form.file.empty" defaultMessage="Empty" />
                         </Button>
                     </Footer>
                 </BlockAdminComponentPaper>
             ) : (
-                <BlockAdminComponentButton onClick={() => setPickerOpen(true)} startIcon={<Icon name="assets" />} size="large">
+                <BlockAdminComponentButton onClick={() => setPickerOpen(true)} startIcon={<Icon name="images" />} size="large">
                     {buttonText ?? <FormattedMessage id="dextinity.form.file.chooseFile" defaultMessage="Choose file" />}
                 </BlockAdminComponentButton>
             )}
@@ -151,7 +151,7 @@ const MultiFileField = ({ buttonText, input, allowedMimetypes, preview, menuActi
     return (
         <>
             {files.length === 0 ? (
-                <BlockAdminComponentButton onClick={() => setPickerOpen(true)} startIcon={<Icon name="assets" />} size="large">
+                <BlockAdminComponentButton onClick={() => setPickerOpen(true)} startIcon={<Icon name="images" />} size="large">
                     {buttonText ?? <FormattedMessage id="dextinity.form.file.chooseFiles" defaultMessage="Choose files" />}
                 </BlockAdminComponentButton>
             ) : (
@@ -166,7 +166,7 @@ const MultiFileField = ({ buttonText, input, allowedMimetypes, preview, menuActi
                         />
                     ))}
                     <Footer>
-                        <Button variant="text" color="secondary" startIcon={<Icon name="assets" />} onClick={() => setPickerOpen(true)}>
+                        <Button variant="text" color="secondary" startIcon={<Icon name="images" />} onClick={() => setPickerOpen(true)}>
                             <FormattedMessage id="dextinity.form.file.changeSelectedFiles" defaultMessage="Change selected files" />
                         </Button>
                     </Footer>

@@ -247,7 +247,7 @@ export function RedirectsListPage({ linkBlock, scope }: RedirectsListPageProps):
             sortable: true,
             render: (redirect) => (
                 <Source>
-                    {redirect.sourceType === "domain" ? <Icon name="domain" size="small" /> : null}
+                    {redirect.sourceType === "domain" ? <Icon name="globe" size="small" /> : null}
                     <span>{redirect.source}</span>
                 </Source>
             ),
@@ -549,17 +549,17 @@ export function RedirectsListPage({ linkBlock, scope }: RedirectsListPageProps):
                     bulkActions={[
                         {
                             label: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.activate", defaultMessage: "Activate" }),
-                            icon: <Icon name="visible" />,
+                            icon: <Icon name="eye" />,
                             onClick: () => void changeActiveness(selectedIds, true),
                         },
                         {
                             label: intl.formatMessage({ id: "dextinity.pages.redirects.redirect.deactivate", defaultMessage: "Deactivate" }),
-                            icon: <Icon name="invisible" />,
+                            icon: <Icon name="eye-off" />,
                             onClick: () => void changeActiveness(selectedIds, false),
                         },
                         {
                             label: intl.formatMessage({ id: "dextinity.pages.redirects.deleteSelected", defaultMessage: "Delete" }),
-                            icon: <Icon name="delete" />,
+                            icon: <Icon name="trash" />,
                             onClick: () => setRedirectsToDelete(selectedIds),
                         },
                     ]}
@@ -591,7 +591,7 @@ export function RedirectsListPage({ linkBlock, scope }: RedirectsListPageProps):
                             />
                         ) : (
                             <EmptyState
-                                icon={<Icon name="inbox" />}
+                                icon={<Icon name="file" />}
                                 title={intl.formatMessage({ id: "dextinity.redirects.empty", defaultMessage: "No redirects yet" })}
                                 description={intl.formatMessage({
                                     id: "dextinity.redirects.emptyDescription",
@@ -627,7 +627,7 @@ export function RedirectsListPage({ linkBlock, scope }: RedirectsListPageProps):
                     defaultMessage: "This can't be undone. To stop forwarding and keep a redirect, deactivate it instead.",
                 })}
                 confirmLabel={intl.formatMessage({ id: "dextinity.redirects.deleteDialog.confirm", defaultMessage: "Delete" })}
-                confirmIcon={<Icon name="delete" />}
+                confirmIcon={<Icon name="trash" />}
                 onConfirm={() => void deleteRedirects()}
                 loading={deleting}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.redirects.deleteDialog.cancel", defaultMessage: "Cancel" }) }}
@@ -709,20 +709,20 @@ function RedirectRowMenu({ redirect, onEdit, onChangeActiveness, onDelete }: Red
             {redirect.active ? (
                 <MenuItem
                     label={intl.formatMessage({ id: "dextinity.pages.redirects.redirect.deactivate", defaultMessage: "Deactivate" })}
-                    icon={<Icon name="invisible" />}
+                    icon={<Icon name="eye-off" />}
                     onClick={() => onChangeActiveness(false)}
                 />
             ) : (
                 <MenuItem
                     label={intl.formatMessage({ id: "dextinity.pages.redirects.redirect.activate", defaultMessage: "Activate" })}
-                    icon={<Icon name="visible" />}
+                    icon={<Icon name="eye" />}
                     onClick={() => onChangeActiveness(true)}
                 />
             )}
             <MenuSeparator />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.pages.redirects.deleteSelected", defaultMessage: "Delete" })}
-                icon={<Icon name="delete" />}
+                icon={<Icon name="trash" />}
                 color="error"
                 onClick={onDelete}
             />

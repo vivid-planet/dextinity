@@ -192,7 +192,7 @@ function EditFile({ id }: EditFileProps) {
             >
                 <Panel>
                     <EmptyState
-                        icon={<Icon name="warning" />}
+                        icon={<Icon name="warning-triangle" />}
                         title={error?.message ?? intl.formatMessage({ id: "dextinity.dam.file.notFound", defaultMessage: "The file doesn't exist" })}
                         actions={
                             <Button variant="outlined" color="secondary" size="small" href={assetsUrl} onClick={navigateWithRouter}>
@@ -408,7 +408,7 @@ function EditFileFormContent({ file, assetsUrl, assetsLabel, form, handleSubmit,
                                 {
                                     value: "preview",
                                     label: intl.formatMessage({ id: "dextinity.dam.file.pane.preview", defaultMessage: "Preview" }),
-                                    icon: <Icon name="visible" />,
+                                    icon: <Icon name="eye" />,
                                 },
                                 {
                                     value: "editor",
@@ -575,7 +575,7 @@ function FileActionsMenu({ file, assetsUrl, addToast }: FileActionsMenuProps) {
                 <MenuSeparator />
                 <MenuItem
                     label={intl.formatMessage({ id: "dextinity.dam.file.delete", defaultMessage: "Delete" })}
-                    icon={<Icon name="delete" />}
+                    icon={<Icon name="trash" />}
                     color="error"
                     onClick={() => setIsDeleteDialogOpen(true)}
                 />
@@ -597,7 +597,7 @@ function FileActionsMenu({ file, assetsUrl, addToast }: FileActionsMenuProps) {
                     defaultMessage: "This can't be undone, and the file disappears wherever it's used. To only hide it, archive it instead.",
                 })}
                 confirmLabel={intl.formatMessage({ id: "dextinity.dam.file.deleteDialog.confirm", defaultMessage: "Delete permanently" })}
-                confirmIcon={<Icon name="delete" />}
+                confirmIcon={<Icon name="trash" />}
                 onConfirm={() => void deletePermanently()}
                 loading={deleting}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.generic.cancel", defaultMessage: "Cancel" }) }}

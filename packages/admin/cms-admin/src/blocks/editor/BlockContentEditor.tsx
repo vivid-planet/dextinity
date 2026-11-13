@@ -129,7 +129,7 @@ export function BlockContentEditor({
                             {
                                 value: "preview",
                                 label: intl.formatMessage({ id: "dextinity.pageEditor.pane.preview", defaultMessage: "Preview" }),
-                                icon: <Icon name="visible" />,
+                                icon: <Icon name="eye" />,
                             },
                             {
                                 value: "editor",

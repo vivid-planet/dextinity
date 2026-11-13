@@ -69,7 +69,7 @@ export function DamFinderMoveDialog({ open, onClose, folders, count, movedFolder
                         id: folder.id,
                         label: folder.name,
                         type: "folder",
-                        icon: folder.parentId == null ? <Icon name="assets" /> : undefined,
+                        icon: folder.parentId == null ? <Icon name="images" /> : undefined,
                         children: children.length > 0 ? children : undefined,
                     };
                 });

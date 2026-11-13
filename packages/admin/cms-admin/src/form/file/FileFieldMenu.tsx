@@ -43,7 +43,7 @@ export const FileFieldMenu = ({ fileId, menuActions }: FileFieldMenuProps) => {
             {damDependency && (
                 <MenuItem
                     label={intl.formatMessage({ id: "dextinity.form.file.openInDam", defaultMessage: "Open in DAM" })}
-                    icon={<Icon name="open-new-tab" />}
+                    icon={<Icon name="window" />}
                     onClick={async () => {
                         const path = await damDependency.resolvePath({ apolloClient, id: fileId });
                         window.open(contentScope.match.url + path, "_blank");

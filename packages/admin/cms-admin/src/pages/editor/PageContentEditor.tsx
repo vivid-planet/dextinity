@@ -115,7 +115,7 @@ export function PageContentEditor({ pageId, pageApi, tabs, preview, previewApi, 
             {editorContext != null && (
                 <MenuItem
                     label={intl.formatMessage({ id: "dextinity.pageEditor.pageProperties", defaultMessage: "Page properties" })}
-                    icon={<Icon name="settings" />}
+                    icon={<Icon name="gear" />}
                     onClick={editorContext.openPageProperties}
                 />
             )}

@@ -208,7 +208,7 @@ export function ProductTagsPage() {
                             size="small"
                             onClick={() => setTagToDelete(tag)}
                         >
-                            <Icon name="delete" />
+                            <Icon name="trash" />
                         </IconButton>
                     )}
                     labels={dataGridLabels}
@@ -226,7 +226,7 @@ export function ProductTagsPage() {
                             />
                         ) : (
                             <EmptyState
-                                icon={<Icon name="inbox" />}
+                                icon={<Icon name="file" />}
                                 title={intl.formatMessage({ id: "uiDemo.productTags.empty", defaultMessage: "No tags yet" })}
                             />
                         )
@@ -289,7 +289,7 @@ function ProductTagPanel({ tagId, onClose, onCreated, onDelete, onUnsavedChanges
                     <Skeleton variant="text" count={3} />
                 ) : (
                     <EmptyState
-                        icon={<Icon name="warning" />}
+                        icon={<Icon name="warning-triangle" />}
                         title={intl.formatMessage({ id: "uiDemo.productTags.loadFailed", defaultMessage: "The tag couldn't be loaded" })}
                         description={error?.message}
                     />
@@ -339,7 +339,7 @@ function ProductTagPanel({ tagId, onClose, onCreated, onDelete, onUnsavedChanges
             onUnsavedChangesChange={onUnsavedChangesChange}
             footerStart={
                 tag && (
-                    <Button size="small" variant="text" color="error" startIcon={<Icon name="delete" />} onClick={() => onDelete(tag)}>
+                    <Button size="small" variant="text" color="error" startIcon={<Icon name="trash" />} onClick={() => onDelete(tag)}>
                         {intl.formatMessage({ id: "uiDemo.productsCommon.delete", defaultMessage: "Delete" })}
                     </Button>
                 )

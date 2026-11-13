@@ -134,18 +134,18 @@ export const RowActionsMenu = ({ rowId, state, updateState, addToRecentlyPastedI
                         ? tableBlockMessages.removeHighlighting
                         : intl.formatMessage({ id: "dextinity.tableBlock.highlightRow", defaultMessage: "Highlight row" })
                 }
-                icon={<Icon name={highlighted ? "remove" : "palette"} />}
+                icon={<Icon name={highlighted ? "minus-circle" : "highlight"} />}
                 onClick={toggleRowHighlight}
             />
             <MenuSeparator />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.tableBlock.addRowAbove", defaultMessage: "Add row above" })}
-                icon={<Icon name="add" />}
+                icon={<Icon name="plus-circle" />}
                 onClick={() => insertNewRow("above")}
             />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.tableBlock.addRowBelow", defaultMessage: "Add row below" })}
-                icon={<Icon name="add" />}
+                icon={<Icon name="plus-circle" />}
                 onClick={() => insertNewRow("below")}
             />
             <MenuSeparator />
@@ -169,7 +169,7 @@ export const RowActionsMenu = ({ rowId, state, updateState, addToRecentlyPastedI
             />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.tableBlock.pasteRow", defaultMessage: "Paste" })}
-                icon={<Icon name="paste" />}
+                icon={<Icon name="paste-add" />}
                 onClick={pasteRowFromClipboard}
             />
             <MenuItem
@@ -180,7 +180,7 @@ export const RowActionsMenu = ({ rowId, state, updateState, addToRecentlyPastedI
             <MenuSeparator />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.tableBlock.deleteRow", defaultMessage: "Delete" })}
-                icon={<Icon name="delete" />}
+                icon={<Icon name="trash" />}
                 color="error"
                 onClick={() => updateState((state) => deleteRowById(state, rowId))}
             />

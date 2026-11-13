@@ -224,7 +224,7 @@ export function ProductHighlightsPage() {
                             size="small"
                             onClick={() => setHighlightToDelete(highlight)}
                         >
-                            <Icon name="delete" />
+                            <Icon name="trash" />
                         </IconButton>
                     )}
                     labels={dataGridLabels}
@@ -244,7 +244,7 @@ export function ProductHighlightsPage() {
                             />
                         ) : (
                             <EmptyState
-                                icon={<Icon name="inbox" />}
+                                icon={<Icon name="file" />}
                                 title={intl.formatMessage({ id: "uiDemo.productHighlights.empty", defaultMessage: "No highlights yet" })}
                             />
                         )
@@ -319,7 +319,7 @@ function ProductHighlightPanel({ highlightId, onClose, onCreated, onDelete, onUn
                     <Skeleton variant="text" count={3} />
                 ) : (
                     <EmptyState
-                        icon={<Icon name="warning" />}
+                        icon={<Icon name="warning-triangle" />}
                         title={intl.formatMessage({
                             id: "uiDemo.productHighlights.loadFailed",
                             defaultMessage: "The highlight couldn't be loaded",
@@ -375,7 +375,7 @@ function ProductHighlightPanel({ highlightId, onClose, onCreated, onDelete, onUn
             onUnsavedChangesChange={onUnsavedChangesChange}
             footerStart={
                 highlight && (
-                    <Button size="small" variant="text" color="error" startIcon={<Icon name="delete" />} onClick={() => onDelete(highlight)}>
+                    <Button size="small" variant="text" color="error" startIcon={<Icon name="trash" />} onClick={() => onDelete(highlight)}>
                         {intl.formatMessage({ id: "uiDemo.productsCommon.delete", defaultMessage: "Delete" })}
                     </Button>
                 )

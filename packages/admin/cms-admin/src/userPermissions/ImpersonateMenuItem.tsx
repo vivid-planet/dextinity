@@ -54,7 +54,7 @@ function StartImpersonationMenuItem({ userId }: { userId: string }) {
     return (
         <MenuItem
             label={messages.startImpersonation}
-            icon={<Icon name="impersonate-user" />}
+            icon={<Icon name="impersonate" />}
             disabled={disabledReason !== undefined}
             disabledReason={disabledReason}
             onClick={() => void startImpersonation(userId)}

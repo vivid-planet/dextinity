@@ -131,7 +131,7 @@ export function PageEditorHeader({
                     >
                         <Button
                             color={saveErrorMessage != null ? "error" : "primary"}
-                            startIcon={<Icon name={saveErrorMessage != null ? "error" : "check"} />}
+                            startIcon={<Icon name={saveErrorMessage != null ? "alert" : "check"} />}
                             disabled={!hasChanges}
                             loading={saving}
                             onClick={onSave}

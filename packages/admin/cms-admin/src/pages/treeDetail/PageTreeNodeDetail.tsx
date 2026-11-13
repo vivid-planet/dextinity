@@ -112,7 +112,7 @@ export function PageTreeNodeDetail({
                     <Button startIcon={<Icon name="edit" />} href={editUrl} onClick={onEditClick} disabled={!isEditable}>
                         {intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.edit", defaultMessage: "Edit" })}
                     </Button>
-                    <Button variant="outlined" color="secondary" startIcon={<Icon name="visible" />} onClick={onPreviewClick} disabled={!hasPreview}>
+                    <Button variant="outlined" color="secondary" startIcon={<Icon name="eye" />} onClick={onPreviewClick} disabled={!hasPreview}>
                         {intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.preview", defaultMessage: "Preview" })}
                     </Button>
                 </DetailActions>

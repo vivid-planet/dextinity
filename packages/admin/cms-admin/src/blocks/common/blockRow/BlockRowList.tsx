@@ -91,7 +91,7 @@ export function BlockRowList({
                                         disabled={!hasSelection}
                                         onClick={bulkActions.onShow}
                                     >
-                                        <Icon name="visible" />
+                                        <Icon name="eye" />
                                     </IconButton>
                                 )}
                                 {bulkActions.onHide && (
@@ -106,7 +106,7 @@ export function BlockRowList({
                                         disabled={!hasSelection}
                                         onClick={bulkActions.onHide}
                                     >
-                                        <Icon name="invisible" />
+                                        <Icon name="eye-off" />
                                     </IconButton>
                                 )}
                                 <IconButton
@@ -126,7 +126,7 @@ export function BlockRowList({
                                     aria-label={intl.formatMessage(messages.paste)}
                                     onClick={bulkActions.onPaste}
                                 >
-                                    <Icon name="paste" />
+                                    <Icon name="paste-add" />
                                 </IconButton>
                                 <IconButton
                                     variant="text"
@@ -136,7 +136,7 @@ export function BlockRowList({
                                     disabled={!hasSelection}
                                     onClick={bulkActions.onDelete}
                                 >
-                                    <Icon name="delete" />
+                                    <Icon name="trash" />
                                 </IconButton>
                             </>
                         }

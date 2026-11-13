@@ -204,7 +204,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
                                 <Button
                                     variant="outlined"
                                     color="secondary"
-                                    startIcon={<Icon name="send" />}
+                                    startIcon={<Icon name="mail-out" />}
                                     disabled={!hasSavedEmail}
                                     loading={sendingTestMail}
                                     onClick={handleSendTestMail}

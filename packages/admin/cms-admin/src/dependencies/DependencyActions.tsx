@@ -82,7 +82,7 @@ export const DependencyActions = ({ onCopyLinkError, ...target }: DependencyActi
                     }
                 }}
             >
-                <Icon name="open-new-tab" />
+                <Icon name="window" />
             </IconButton>
             <IconButton
                 aria-label={isScopeAllowed ? intl.formatMessage(messages.openInThisTab) : scopeNotAllowedLabel}

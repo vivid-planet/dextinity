@@ -180,13 +180,13 @@ export function ProductVariantsTab({ productId, variantsUrl }: ProductVariantsTa
                             size="small"
                             onClick={() => setVariantToDelete(variant)}
                         >
-                            <Icon name="delete" />
+                            <Icon name="trash" />
                         </IconButton>
                     )}
                     labels={dataGridLabels}
                     emptyState={
                         <EmptyState
-                            icon={<Icon name="inbox" />}
+                            icon={<Icon name="file" />}
                             title={intl.formatMessage({ id: "uiDemo.productVariants.empty", defaultMessage: "No variants yet" })}
                         />
                     }

@@ -135,7 +135,7 @@ export function AppFrame({
                 colorScheme === "light"
                     ? intl.formatMessage({ id: "dextinity.appFrame.command.darkColorScheme", defaultMessage: "Switch to dark theme" })
                     : intl.formatMessage({ id: "dextinity.appFrame.command.lightColorScheme", defaultMessage: "Switch to light theme" }),
-            icon: <Icon name={colorScheme === "light" ? "dark-mode" : "light-mode"} />,
+            icon: <Icon name={colorScheme === "light" ? "moon" : "sun"} />,
             onSelect: () => onColorSchemeChange(colorScheme === "light" ? "dark" : "light"),
         },
     ];
@@ -143,7 +143,7 @@ export function AppFrame({
         commands.push({
             id: "toggle-ai-assistant",
             label: intl.formatMessage({ id: "dextinity.appFrame.command.toggleAiAssistant", defaultMessage: "Toggle AI assistant" }),
-            icon: <Icon name="artificial-intelligence" />,
+            icon: <Icon name="magic-wand" />,
             shortcut: formatShortcut("mod+j").join(isApplePlatform() ? "" : "+"),
             onSelect: () => aiAssistant.onOpenChange(!aiAssistant.open),
         });

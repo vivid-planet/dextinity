@@ -512,7 +512,7 @@ function WarningActions({ loadUrl }: { loadUrl: () => Promise<string> }) {
                 size="small"
                 onClick={async () => window.open(await loadUrl(), "_blank")}
             >
-                <Icon name="open-new-tab" />
+                <Icon name="window" />
             </IconButton>
             <IconButton
                 aria-label={intl.formatMessage(messages.openInThisTab)}

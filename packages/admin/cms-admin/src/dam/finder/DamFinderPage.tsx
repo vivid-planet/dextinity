@@ -665,7 +665,7 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
                                     <Button
                                         variant="text"
                                         color="secondary"
-                                        startIcon={<Icon name="settings" />}
+                                        startIcon={<Icon name="gear" />}
                                         href={settingsUrl}
                                         onClick={(event: MouseEvent<HTMLElement>) => {
                                             if (!isModifiedClick(event)) {
@@ -680,7 +680,7 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
                                 <Button
                                     variant="outlined"
                                     color="secondary"
-                                    startIcon={<Icon name="add-folder" />}
+                                    startIcon={<Icon name="folder-add" />}
                                     onClick={() => setIsNewFolderDialogOpen(true)}
                                 >
                                     {intl.formatMessage({ id: "dextinity.damFinder.newFolder", defaultMessage: "New folder" })}
@@ -688,7 +688,7 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
                                 <Button variant="outlined" color="secondary" startIcon={<Icon name="folder-import" />} onClick={openFolderChooser}>
                                     {intl.formatMessage({ id: "dextinity.damFinder.uploadFolder", defaultMessage: "Upload folder" })}
                                 </Button>
-                                <Button startIcon={<Icon name="upload" />} onClick={openFileChooser}>
+                                <Button startIcon={<Icon name="cloud-upload" />} onClick={openFileChooser}>
                                     {intl.formatMessage({ id: "dextinity.damFinder.upload", defaultMessage: "Upload" })}
                                 </Button>
                                 <input {...getInputProps()} />
@@ -855,7 +855,7 @@ function DamFinderView({ title, eyebrow, editFileUrl, settingsUrl, additionalToo
                     .filter((part) => part != null)
                     .join(" ")}
                 confirmLabel={intl.formatMessage({ id: "dextinity.damFinder.delete.confirm", defaultMessage: "Delete" })}
-                confirmIcon={<Icon name="delete" />}
+                confirmIcon={<Icon name="trash" />}
                 onConfirm={handleDelete}
                 secondaryLabel={
                     pendingDeleteFolderIds.length === 0

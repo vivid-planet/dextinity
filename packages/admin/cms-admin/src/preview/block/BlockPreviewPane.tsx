@@ -56,7 +56,7 @@ export function BlockPreviewPane({ url, previewState, previewApi, siteUrl, onOpe
                             aria-label={intl.formatMessage({ id: "dextinity.preview.openSitePreview", defaultMessage: "Open preview" })}
                             onClick={onOpenSitePreview}
                         >
-                            <Icon name="open-new-tab" />
+                            <Icon name="window" />
                         </IconButton>
                     )}
                     {actions}

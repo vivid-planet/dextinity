@@ -244,7 +244,7 @@ export const UserPermissionsUserGrid = ({ toolbarAction, rowAction, onRowClick }
                         />
                     ) : (
                         <EmptyState
-                            icon={<Icon name="account" />}
+                            icon={<Icon name="user" />}
                             title={intl.formatMessage({ id: "dextinity.userPermissions.empty", defaultMessage: "No users yet" })}
                             description={intl.formatMessage({
                                 id: "dextinity.userPermissions.emptyDescription",

@@ -1,7 +1,8 @@
-import { Switch, type SwitchProps } from "@dextinity/ui";
+import { Field, Switch, type SwitchProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { type FieldAdapterFieldProps, groupFieldPropKeys, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
 import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
@@ -9,10 +10,11 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface SwitchFieldProps<FieldValue = boolean>
     extends
         FieldAdapterBaseProps,
+        FieldAdapterFieldProps,
         FinalFormFieldConfig<FieldValue, boolean>,
         Omit<
             SwitchProps,
-            "name" | "checked" | "onChange" | "onBlur" | "required" | "defaultValue" | "defaultChecked" | "state" | "validationMessage"
+            "name" | "checked" | "onChange" | "onBlur" | "onFocus" | "required" | "defaultValue" | "defaultChecked" | "state" | "validationMessage"
         > {}
 
 /**
@@ -24,7 +26,8 @@ export const SwitchField = memo(
         { name, onFocus, ...props }: SwitchFieldProps<FieldValue>,
         forwardedRef: ForwardedRef<HTMLDivElement>,
     ) {
-        const [options, switchProps] = splitFieldAdapterProps(props);
+        const [options, controlProps] = splitFieldAdapterProps(props);
+        const [fieldProps, switchProps] = splitFieldProps(controlProps, groupFieldPropKeys);
         const {
             input,
             validationProps,
@@ -34,20 +37,23 @@ export const SwitchField = memo(
         } = useFieldAdapter<FieldValue, boolean, HTMLDivElement>(name, options, forwardedRef);
 
         return (
-            <Switch
-                {...switchProps}
-                ref={ref}
-                name={input.name}
-                checked={input.value === true}
+            <Field
+                layout="group"
+                {...fieldProps}
                 required={options.required}
                 {...validationProps}
-                onChange={input.onChange}
-                onBlur={onBlur}
+                onBlur={(event) => {
+                    if (leavesField(event)) {
+                        onBlur();
+                    }
+                }}
                 onFocus={(event) => {
                     onFieldFocus();
                     onFocus?.(event);
                 }}
-            />
+            >
+                <Switch {...switchProps} ref={ref} name={input.name} checked={input.value === true} onChange={input.onChange} />
+            </Field>
         );
     }),
 ) as <FieldValue = boolean>(props: SwitchFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;

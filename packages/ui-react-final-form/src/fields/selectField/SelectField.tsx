@@ -1,7 +1,8 @@
-import { Select, type SelectProps, type SelectValue } from "@dextinity/ui";
+import { Field, Select, type SelectProps, type SelectValue } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterActions, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { boxFieldPropKeys, type FieldAdapterBoxFieldProps, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
 import { defaultValueKey, isEqualByKey } from "../../fieldAdapter/isEqualByKey";
 import { renderActions } from "../../fieldAdapter/renderActions";
@@ -11,8 +12,12 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface SelectFieldProps<Multiple extends boolean = false, Value = string, FieldValue = SelectValue<Multiple, Value>>
     extends
         FieldAdapterBaseProps,
+        FieldAdapterBoxFieldProps,
         FinalFormFieldConfig<FieldValue, SelectValue<Multiple, Value>>,
-        Omit<SelectProps<Multiple, Value>, "name" | "value" | "onChange" | "onBlur" | "state" | "validationMessage" | "required" | "actions"> {
+        Omit<
+            SelectProps<Multiple, Value>,
+            "name" | "value" | "onChange" | "onBlur" | "onFocus" | "state" | "validationMessage" | "required" | "actions"
+        > {
     /** Content at the label, or a function of the field's value and setter, e.g. to connect `FieldActions`. */
     actions?: FieldAdapterActions<SelectValue<Multiple, Value>>;
 }
@@ -34,7 +39,8 @@ export const SelectField = memo(
         { name, actions, onFocus, ...props }: SelectFieldProps<Multiple, Value, FieldValue>,
         forwardedRef: ForwardedRef<HTMLButtonElement>,
     ) {
-        const [options, selectProps] = splitFieldAdapterProps(props);
+        const [options, controlProps] = splitFieldAdapterProps(props);
+        const [fieldProps, selectProps] = splitFieldProps(controlProps, boxFieldPropKeys);
         const isEqual =
             options.isEqual ?? (options.parse == null && options.format == null ? isEqualByKey(selectProps.getKey ?? defaultValueKey) : undefined);
         const {
@@ -47,21 +53,23 @@ export const SelectField = memo(
         const value = toSelectValue<Multiple, Value>(input.value, selectProps.multiple === true);
 
         return (
-            <Select<Multiple, Value>
-                {...selectProps}
+            <Field
+                {...fieldProps}
                 {...validationProps}
-                ref={ref}
-                name={input.name}
-                value={value}
                 required={options.required}
                 actions={renderActions(actions, value, input.onChange)}
-                onChange={input.onChange}
-                onBlur={onBlur}
+                onBlur={(event) => {
+                    if (leavesField(event)) {
+                        onBlur();
+                    }
+                }}
                 onFocus={(event) => {
                     onFieldFocus();
                     onFocus?.(event);
                 }}
-            />
+            >
+                <Select<Multiple, Value> {...selectProps} ref={ref} name={input.name} value={value} onChange={input.onChange} />
+            </Field>
         );
     }),
 ) as <Multiple extends boolean = false, Value = string, FieldValue = SelectValue<Multiple, Value>>(

@@ -1,7 +1,8 @@
-import { Textarea, type TextareaProps } from "@dextinity/ui";
+import { Field, Textarea, type TextareaProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterActions, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { boxFieldPropKeys, type FieldAdapterBoxFieldProps, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
 import { renderActions } from "../../fieldAdapter/renderActions";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
@@ -10,8 +11,9 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface TextareaFieldProps<FieldValue = string>
     extends
         FieldAdapterBaseProps,
+        FieldAdapterBoxFieldProps,
         FinalFormFieldConfig<FieldValue, string>,
-        Omit<TextareaProps, "name" | "value" | "onChange" | "onBlur" | "state" | "validationMessage" | "required" | "actions"> {
+        Omit<TextareaProps, "name" | "value" | "onChange" | "onBlur" | "onFocus" | "state" | "validationMessage" | "required" | "actions"> {
     /** Content at the label, or a function of the field's value and setter, e.g. to connect `FieldActions`. */
     actions?: FieldAdapterActions<string>;
 }
@@ -25,7 +27,8 @@ export const TextareaField = memo(
         { name, actions, onFocus, ...props }: TextareaFieldProps<FieldValue>,
         forwardedRef: ForwardedRef<HTMLTextAreaElement>,
     ) {
-        const [options, textareaProps] = splitFieldAdapterProps(props);
+        const [options, controlProps] = splitFieldAdapterProps(props);
+        const [fieldProps, textareaProps] = splitFieldProps(controlProps, boxFieldPropKeys);
         const {
             input,
             validationProps,
@@ -36,21 +39,23 @@ export const TextareaField = memo(
         const value = input.value ?? "";
 
         return (
-            <Textarea
-                {...textareaProps}
+            <Field
+                {...fieldProps}
                 {...validationProps}
-                ref={ref}
-                name={input.name}
-                value={value}
                 required={options.required}
                 actions={renderActions(actions, value, input.onChange)}
-                onChange={input.onChange}
-                onBlur={onBlur}
+                onBlur={(event) => {
+                    if (leavesField(event)) {
+                        onBlur();
+                    }
+                }}
                 onFocus={(event) => {
                     onFieldFocus();
                     onFocus?.(event);
                 }}
-            />
+            >
+                <Textarea {...textareaProps} ref={ref} name={input.name} value={value} onChange={input.onChange} />
+            </Field>
         );
     }),
 ) as <FieldValue = string>(props: TextareaFieldProps<FieldValue> & RefAttributes<HTMLTextAreaElement>) => ReactNode;

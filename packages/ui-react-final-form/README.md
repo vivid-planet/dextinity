@@ -92,7 +92,7 @@ For the dirty check, the adapters treat `undefined`, `null`, and `""` as equal: 
 
 ### Validation
 
-By default, a field shows its error once it was touched (blurred) or the form was submitted (see [When messages show](#when-messages-show)): `state="error"` with the message as `validationMessage`. A submit error for the field (returned from `onSubmit`) shows the same way until the field changes. Controls without a field frame – `CheckboxField`, `SwitchField`, `RadioGroupField`, `CheckboxGroupField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` – show it below the control, the same way.
+By default, a field shows its error once it was touched (blurred) or the form was submitted (see [When messages show](#when-messages-show)): `state="error"` with the message as `validationMessage`. A submit error for the field (returned from `onSubmit`) shows the same way until the field changes. Every adapter renders its control in a `Field` with `label`, `required`, `helperText`, `helpText`, and the message, so the message shows below the control for every field, including the group fields – `CheckboxField`, `SwitchField`, `RadioGroupField`, `CheckboxGroupField`, `SegmentedControlField`, `SliderField`, `FileUploadField`, and `FocalPointPickerField` – which use `layout="group"`.
 
 To focus the first field with an error when submitting fails, in document order, add the `focusOnError` decorator to the `<Form>`: `decorators={[focusOnError]}`. React Final Form has no focus on error of its own. The boxes of a checkbox group count as one field, focused at the first box.
 

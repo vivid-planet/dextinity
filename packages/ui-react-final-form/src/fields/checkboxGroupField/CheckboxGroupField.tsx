@@ -1,7 +1,8 @@
-import { CheckboxGroup, type CheckboxGroupProps } from "@dextinity/ui";
+import { CheckboxGroup, type CheckboxGroupProps, Field } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { type FieldAdapterFieldProps, groupFieldPropKeys, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
 import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
@@ -9,8 +10,9 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface CheckboxGroupFieldProps<Value extends string = string, FieldValue = Value[]>
     extends
         FieldAdapterBaseProps,
+        FieldAdapterFieldProps,
         FinalFormFieldConfig<FieldValue, Value[]>,
-        Omit<CheckboxGroupProps<Value>, "name" | "value" | "onChange" | "onBlur" | "required" | "state" | "validationMessage"> {}
+        Omit<CheckboxGroupProps<Value>, "name" | "value" | "onChange" | "onBlur" | "onFocus" | "required" | "state" | "validationMessage"> {}
 
 export function toCheckboxGroupValue<Value extends string>(value: unknown): Value[] {
     if (Array.isArray(value)) {
@@ -28,7 +30,8 @@ export const CheckboxGroupField = memo(
         { name, onFocus, ...props }: CheckboxGroupFieldProps<Value, FieldValue>,
         forwardedRef: ForwardedRef<HTMLDivElement>,
     ) {
-        const [options, checkboxGroupProps] = splitFieldAdapterProps(props);
+        const [options, controlProps] = splitFieldAdapterProps(props);
+        const [fieldProps, checkboxGroupProps] = splitFieldProps(controlProps, groupFieldPropKeys);
         const {
             input,
             validationProps,
@@ -38,14 +41,11 @@ export const CheckboxGroupField = memo(
         } = useFieldAdapter<FieldValue, Value[], HTMLDivElement>(name, options, forwardedRef);
 
         return (
-            <CheckboxGroup<Value>
-                {...checkboxGroupProps}
+            <Field
+                layout="group"
+                {...fieldProps}
                 {...validationProps}
-                ref={ref}
-                name={input.name}
-                value={toCheckboxGroupValue<Value>(input.value)}
                 required={options.required}
-                onChange={input.onChange}
                 onBlur={(event) => {
                     // Moving between the group's own controls isn't leaving the field, so it isn't touched yet
                     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
@@ -56,7 +56,15 @@ export const CheckboxGroupField = memo(
                     onFieldFocus();
                     onFocus?.(event);
                 }}
-            />
+            >
+                <CheckboxGroup<Value>
+                    {...checkboxGroupProps}
+                    ref={ref}
+                    name={input.name}
+                    value={toCheckboxGroupValue<Value>(input.value)}
+                    onChange={input.onChange}
+                />
+            </Field>
         );
     }),
 ) as <Value extends string = string, FieldValue = Value[]>(

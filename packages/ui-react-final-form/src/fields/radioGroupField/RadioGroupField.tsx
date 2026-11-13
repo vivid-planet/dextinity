@@ -1,7 +1,8 @@
-import { RadioGroup, type RadioGroupProps } from "@dextinity/ui";
+import { Field, RadioGroup, type RadioGroupProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { type FieldAdapterFieldProps, groupFieldPropKeys, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
 import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
@@ -9,8 +10,9 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface RadioGroupFieldProps<Value extends string = string, FieldValue = Value>
     extends
         FieldAdapterBaseProps,
+        FieldAdapterFieldProps,
         FinalFormFieldConfig<FieldValue, Value | null>,
-        Omit<RadioGroupProps<Value>, "name" | "value" | "onChange" | "onBlur" | "required" | "state" | "validationMessage"> {}
+        Omit<RadioGroupProps<Value>, "name" | "value" | "onChange" | "onBlur" | "onFocus" | "required" | "state" | "validationMessage"> {}
 
 export function toRadioGroupValue<Value extends string>(value: unknown): Value | null {
     return value == null || value === "" ? null : (value as Value);
@@ -25,7 +27,8 @@ export const RadioGroupField = memo(
         { name, onFocus, ...props }: RadioGroupFieldProps<Value, FieldValue>,
         forwardedRef: ForwardedRef<HTMLDivElement>,
     ) {
-        const [options, radioGroupProps] = splitFieldAdapterProps(props);
+        const [options, controlProps] = splitFieldAdapterProps(props);
+        const [fieldProps, radioGroupProps] = splitFieldProps(controlProps, groupFieldPropKeys);
         const {
             input,
             validationProps,
@@ -35,14 +38,11 @@ export const RadioGroupField = memo(
         } = useFieldAdapter<FieldValue, Value | null, HTMLDivElement>(name, options, forwardedRef);
 
         return (
-            <RadioGroup<Value>
-                {...radioGroupProps}
+            <Field
+                layout="group"
+                {...fieldProps}
                 {...validationProps}
-                ref={ref}
-                name={input.name}
-                value={toRadioGroupValue<Value>(input.value)}
                 required={options.required}
-                onChange={input.onChange}
                 onBlur={(event) => {
                     // Moving between the group's own controls isn't leaving the field, so it isn't touched yet
                     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
@@ -53,7 +53,15 @@ export const RadioGroupField = memo(
                     onFieldFocus();
                     onFocus?.(event);
                 }}
-            />
+            >
+                <RadioGroup<Value>
+                    {...radioGroupProps}
+                    ref={ref}
+                    name={input.name}
+                    value={toRadioGroupValue<Value>(input.value)}
+                    onChange={input.onChange}
+                />
+            </Field>
         );
     }),
 ) as <Value extends string = string, FieldValue = Value>(props: RadioGroupFieldProps<Value, FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;

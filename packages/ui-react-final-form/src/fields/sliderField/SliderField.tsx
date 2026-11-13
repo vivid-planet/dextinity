@@ -1,7 +1,8 @@
-import { Slider, type SliderProps } from "@dextinity/ui";
+import { Field, Slider, type SliderProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { type FieldAdapterFieldProps, groupFieldPropKeys, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
 import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
@@ -9,8 +10,9 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface SliderFieldProps<FieldValue = number>
     extends
         FieldAdapterBaseProps,
+        FieldAdapterFieldProps,
         Omit<FinalFormFieldConfig<FieldValue, number>, "format">,
-        Omit<SliderProps, "name" | "value" | "onChange" | "onBlur" | "required" | "state" | "validationMessage"> {}
+        Omit<SliderProps, "name" | "value" | "onChange" | "onBlur" | "onFocus" | "style" | "required" | "state" | "validationMessage"> {}
 
 export function toSliderValue(value: unknown, min = 0) {
     return typeof value === "number" && !Number.isNaN(value) ? value : min;
@@ -25,7 +27,8 @@ export const SliderField = memo(
         { name, format, onFocus, ...props }: SliderFieldProps<FieldValue>,
         forwardedRef: ForwardedRef<HTMLDivElement>,
     ) {
-        const [options, sliderProps] = splitFieldAdapterProps(props);
+        const [options, controlProps] = splitFieldAdapterProps(props);
+        const [fieldProps, sliderProps] = splitFieldProps(controlProps, groupFieldPropKeys);
         const {
             input,
             validationProps,
@@ -35,20 +38,30 @@ export const SliderField = memo(
         } = useFieldAdapter<FieldValue, number, HTMLDivElement>(name, options, forwardedRef);
 
         return (
-            <Slider
-                {...sliderProps}
-                ref={ref}
-                name={input.name}
-                format={format}
-                value={toSliderValue(input.value, sliderProps.min)}
+            <Field
+                layout="group"
+                {...fieldProps}
+                required={options.required}
                 {...validationProps}
-                onChange={input.onChange}
-                onBlur={onBlur}
+                onBlur={(event) => {
+                    if (leavesField(event)) {
+                        onBlur();
+                    }
+                }}
                 onFocus={(event) => {
                     onFieldFocus();
                     onFocus?.(event);
                 }}
-            />
+            >
+                <Slider
+                    {...sliderProps}
+                    ref={ref}
+                    name={input.name}
+                    format={format}
+                    value={toSliderValue(input.value, sliderProps.min)}
+                    onChange={input.onChange}
+                />
+            </Field>
         );
     }),
 ) as <FieldValue = number>(props: SliderFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;

@@ -1,7 +1,8 @@
-import { RichTextEditor, type RichTextEditorProps } from "@dextinity/ui";
+import { Field, RichTextEditor, type RichTextEditorProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterActions, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { boxFieldPropKeys, type FieldAdapterBoxFieldProps, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
 import { isEqualTreatingEmptyAs } from "../../fieldAdapter/isEqualTreatingEmptyAlike";
 import { renderActions } from "../../fieldAdapter/renderActions";
@@ -11,8 +12,9 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface RichTextEditorFieldProps<FieldValue = string>
     extends
         FieldAdapterBaseProps,
+        FieldAdapterBoxFieldProps,
         FinalFormFieldConfig<FieldValue, string>,
-        Omit<RichTextEditorProps, "name" | "value" | "onChange" | "onBlur" | "state" | "validationMessage" | "required" | "actions"> {
+        Omit<RichTextEditorProps, "name" | "value" | "onChange" | "onBlur" | "onFocus" | "state" | "validationMessage" | "required" | "actions"> {
     /** Content at the label, or a function of the field's value and setter, e.g. to connect `FieldActions`. */
     actions?: FieldAdapterActions<string>;
 }
@@ -43,7 +45,8 @@ export const RichTextEditorField = memo(
         { name, actions, onFocus, ...props }: RichTextEditorFieldProps<FieldValue>,
         forwardedRef: ForwardedRef<HTMLDivElement>,
     ) {
-        const [options, editorProps] = splitFieldAdapterProps(props);
+        const [options, controlProps] = splitFieldAdapterProps(props);
+        const [fieldProps, editorProps] = splitFieldProps(controlProps, boxFieldPropKeys);
         const {
             input,
             validationProps,
@@ -58,21 +61,24 @@ export const RichTextEditorField = memo(
         const value = input.value ?? "";
 
         return (
-            <RichTextEditor
-                {...editorProps}
+            <Field
+                layout="stacked"
+                {...fieldProps}
                 {...validationProps}
-                ref={ref}
-                name={input.name}
-                value={value}
                 required={options.required}
                 actions={renderActions(actions, value, input.onChange)}
-                onChange={input.onChange}
-                onBlur={onBlur}
+                onBlur={(event) => {
+                    if (leavesField(event)) {
+                        onBlur();
+                    }
+                }}
                 onFocus={(event) => {
                     onFieldFocus();
                     onFocus?.(event);
                 }}
-            />
+            >
+                <RichTextEditor {...editorProps} ref={ref} name={input.name} value={value} onChange={input.onChange} />
+            </Field>
         );
     }),
 ) as <FieldValue = string>(props: RichTextEditorFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;

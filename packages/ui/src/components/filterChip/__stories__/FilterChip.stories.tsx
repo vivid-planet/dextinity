@@ -92,7 +92,8 @@ function AuthorFilter(props: Pick<FilterChipProps, "onClick">) {
 const adornmentOptions = {
     none: undefined,
     "Status dot": <StatusIndicator status="published" decorative />,
-    Icon: <Icon name="calendar" />,
+    "Calendar icon": <Icon name="calendar" />,
+    "Globe icon": <Icon name="globe" />,
     Avatar: <Avatar name="Anna Berger" size="small" tooltip={false} aria-hidden />,
 };
 
@@ -147,7 +148,7 @@ export const WithCount: Story = {
  * assistive technology.
  */
 export const WithStatusDot: Story = {
-    args: { startAdornment: <StatusIndicator status="published" decorative />, count: 8 },
+    args: { startAdornment: "Status dot", count: 8 },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("button", { name: "Published 8" })).toBeVisible();
     },
@@ -157,7 +158,7 @@ export const WithStatusDot: Story = {
  * An icon before the label hints at the kind of filter.
  */
 export const WithIcon: Story = {
-    args: { children: "This week", startAdornment: <Icon name="calendar" />, count: 5 },
+    args: { children: "This week", startAdornment: "Calendar icon", count: 5 },
 };
 
 /**
@@ -167,7 +168,7 @@ export const WithIcon: Story = {
 export const WithAvatar: Story = {
     args: {
         children: "Anna Berger",
-        startAdornment: <Avatar name="Anna Berger" size="small" tooltip={false} aria-hidden />,
+        startAdornment: "Avatar",
         count: 4,
     },
     play: async ({ canvas }) => {
@@ -179,7 +180,7 @@ export const WithAvatar: Story = {
  * Content after the label, before the count and the chevron.
  */
 export const WithEndAdornment: Story = {
-    args: { children: "Shared", endAdornment: <Icon name="globe" />, count: 2 },
+    args: { children: "Shared", endAdornment: "Globe icon", count: 2 },
 };
 
 /**

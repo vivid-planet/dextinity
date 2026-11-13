@@ -2,6 +2,7 @@ import { Toggle } from "@base-ui/react/toggle";
 import { clsx } from "clsx";
 import { type ComponentPropsWithoutRef, forwardRef, type MouseEvent, type ReactNode } from "react";
 
+import { hasRenderableContent } from "../../utils/hasRenderableContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
 import styles from "./FilterChip.module.scss";
@@ -42,10 +43,14 @@ export interface FilterChipProps extends Omit<
     count?: number;
     /**
      * Content before the label, such as a status dot, an icon, or an avatar. It is part of the chip's accessible name, so hide purely
-     * decorative content from assistive technology, e.g. `<StatusIndicator status="published" decorative />`.
+     * decorative content from assistive technology, e.g. `<StatusIndicator status="published" decorative />`. It renders inside the
+     * chip's button, so it must not be interactive: no buttons, links, or other focusable content.
      */
     startAdornment?: ReactNode;
-    /** Content after the label, before the count and the chevron. Part of the chip's accessible name, like `startAdornment`. */
+    /**
+     * Content after the label, before the count and the chevron. Part of the chip's accessible name and must not be interactive, like
+     * `startAdornment`.
+     */
     endAdornment?: ReactNode;
     /**
      * Shows a chevron after the label: the chip opens a menu to pick the filter's value. Render the chip as the menu's trigger.
@@ -63,10 +68,6 @@ export interface FilterChipProps extends Omit<
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
     slotProps?: FilterChipSlotProps;
-}
-
-function hasContent(node: ReactNode) {
-    return node !== null && node !== undefined && typeof node !== "boolean" && node !== "";
 }
 
 /**
@@ -115,9 +116,9 @@ export const FilterChip = forwardRef<HTMLButtonElement, FilterChipProps>(functio
             data-hasmenu={ownerState.hasMenu ? "" : undefined}
             className={clsx(styles.root, className)}
         >
-            {hasContent(startAdornment) && <span {...startAdornmentProps}>{startAdornment}</span>}
+            {hasRenderableContent(startAdornment) && <span {...startAdornmentProps}>{startAdornment}</span>}
             <span {...labelProps}>{children}</span>
-            {hasContent(endAdornment) && <span {...endAdornmentProps}>{endAdornment}</span>}
+            {hasRenderableContent(endAdornment) && <span {...endAdornmentProps}>{endAdornment}</span>}
             {count != null && <span {...countProps}>{count}</span>}
             {ownerState.hasMenu && (
                 <span {...menuIconProps}>

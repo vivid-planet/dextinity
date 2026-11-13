@@ -1,19 +1,7 @@
 import { type DocumentNode, useApolloClient, useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext, RouterPrompt } from "@dextinity/admin";
 import { type ContentScope, queryUpdatedAt, resolveHasSaveConflict, useFormSaveConflict, useRouterLinkClick } from "@dextinity/cms-admin";
-import {
-    Banner,
-    Button,
-    EditLayout,
-    EmptyState,
-    formatShortcut,
-    Icon,
-    isApplePlatform,
-    PageHeader,
-    Panel,
-    Tooltip,
-    useKeyboardShortcut,
-} from "@dextinity/ui";
+import { Banner, Button, EditLayout, EmptyState, Icon, PageHeader, Panel, Tooltip, useKeyboardShortcut } from "@dextinity/ui";
 import { focusOnError, InputField, useHasUnsavedChanges } from "@dextinity/ui-react-final-form";
 import { FORM_ERROR, type FormApi, type SubmissionErrors } from "final-form";
 import { type JSX, type ReactNode, useId, useMemo, useRef } from "react";
@@ -222,7 +210,6 @@ function TargetGroupEditContent({
     const { submitting, submitError } = useFormState({ subscription: { submitting: true, submitError: true } });
 
     useKeyboardShortcut("mod+s", () => void form.submit(), { allowInEditable: true });
-    const saveShortcut = formatShortcut("mod+s").join(isApplePlatform() ? "" : "+");
 
     const submitAndReportSuccess = async () => {
         await form.submit();
@@ -262,7 +249,7 @@ function TargetGroupEditContent({
                                         id: "dextinity.targetGroup.saveTooltip",
                                         defaultMessage: "Saves the title and the filters",
                                     })}
-                                    shortcut={saveShortcut}
+                                    shortcut="mod+s"
                                 >
                                     <Button
                                         type="submit"

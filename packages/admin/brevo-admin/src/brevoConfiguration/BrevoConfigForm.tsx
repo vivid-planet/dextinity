@@ -1,7 +1,7 @@
 import { useApolloClient, useQuery } from "@apollo/client";
 import { LocalErrorScopeApolloContext, RouterPrompt } from "@dextinity/admin";
 import { type ContentScope, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
-import { Banner, Button, EditLayout, formatShortcut, Icon, isApplePlatform, PageHeader, Panel, Tooltip, useKeyboardShortcut } from "@dextinity/ui";
+import { Banner, Button, EditLayout, Icon, PageHeader, Panel, Tooltip, useKeyboardShortcut } from "@dextinity/ui";
 import { focusOnError, InputField, NumberField, SelectField, useHasUnsavedChanges } from "@dextinity/ui-react-final-form";
 import { FORM_ERROR, type FormApi, type SubmissionErrors } from "final-form";
 import { type ReactElement, type ReactNode, useMemo, useRef } from "react";
@@ -229,7 +229,6 @@ function BrevoConfigFormContent({
     const { submitting, submitError } = useFormState({ subscription: { submitting: true, submitError: true } });
 
     useKeyboardShortcut("mod+s", () => void form.submit(), { allowInEditable: true });
-    const saveShortcut = formatShortcut("mod+s").join(isApplePlatform() ? "" : "+");
     const requiredMessage = intl.formatMessage({ id: "dextinity.brevoConfig.required", defaultMessage: "Required" });
 
     const submitAndReportSuccess = async () => {
@@ -257,7 +256,7 @@ function BrevoConfigFormContent({
                                 <BrevoFormSaveState />
                                 <Tooltip
                                     content={intl.formatMessage({ id: "dextinity.brevoConfig.saveTooltip", defaultMessage: "Saves the config" })}
-                                    shortcut={saveShortcut}
+                                    shortcut="mod+s"
                                 >
                                     <Button
                                         type="submit"

@@ -11,6 +11,7 @@ import styles from "./Slider.module.scss";
  */
 export type SliderOwnerState = {
     disabled: boolean;
+    readOnly: boolean;
     invalid: boolean;
 };
 
@@ -56,6 +57,13 @@ export interface SliderProps
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /**
+     * Shows the value without letting the user change it; the thumb stays focusable. Ignored inside a `Field`, which takes it from its
+     * own `readOnly`.
+     *
+     * @defaultValue `false`
+     */
+    readOnly?: boolean;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -80,6 +88,7 @@ export const Slider = forwardRef<HTMLDivElement, SliderProps>(function Slider(
         startIcon,
         endIcon,
         disabled,
+        readOnly,
         className,
         slotProps,
         ...restProps
@@ -87,24 +96,32 @@ export const Slider = forwardRef<HTMLDivElement, SliderProps>(function Slider(
     ref,
 ) {
     const { control } = useGroupControl({
+        controlName: "Slider",
+        describeRequired: true,
         disabled,
+        readOnly,
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
         "aria-invalid": ariaInvalid,
     });
-    const ownerState: SliderOwnerState = { disabled: control.disabled, invalid: control["aria-invalid"] === true };
-    const invalid = ownerState.invalid;
-    // The thumb passes no aria-invalid to its input, so it is set on the input directly
+    const ownerState: SliderOwnerState = { disabled: control.disabled, readOnly: control.readOnly, invalid: control["aria-invalid"] === true };
+    const { invalid, readOnly: isReadOnly } = ownerState;
+    // The thumb passes neither aria-invalid nor aria-readonly to its input, so they are set on the input directly
     const inputRef = useCallback(
         (input: HTMLInputElement | null) => {
-            if (invalid) {
-                input?.setAttribute("aria-invalid", "true");
-            } else {
-                input?.removeAttribute("aria-invalid");
+            for (const [attribute, isSet] of [
+                ["aria-invalid", invalid],
+                ["aria-readonly", isReadOnly],
+            ] as const) {
+                if (isSet) {
+                    input?.setAttribute(attribute, "true");
+                } else {
+                    input?.removeAttribute(attribute);
+                }
             }
         },
-        [invalid],
+        [invalid, isReadOnly],
     );
 
     const startIconProps = resolveSlotProps<SliderOwnerState, "span", "span">({
@@ -149,13 +166,18 @@ export const Slider = forwardRef<HTMLDivElement, SliderProps>(function Slider(
             {...restProps}
             ref={ref}
             value={value}
-            onValueChange={(nextValue: number) => onChange(nextValue)}
+            onValueChange={(nextValue: number) => {
+                if (!isReadOnly) {
+                    onChange(nextValue);
+                }
+            }}
             min={min}
             max={max}
             step={step}
             disabled={ownerState.disabled}
             aria-label={control["aria-label"]}
             aria-labelledby={control["aria-labelledby"]}
+            data-readonly={ownerState.readOnly ? "" : undefined}
             data-invalid={ownerState.invalid ? "" : undefined}
             className={clsx(styles.root, className)}
         >

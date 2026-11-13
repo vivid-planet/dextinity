@@ -84,8 +84,12 @@
         color var(--dextinity-motion-duration-short),
         box-shadow var(--dextinity-motion-duration-medium);
 
-    &:hover:not([data-disabled]) {
+    &:hover:not([data-disabled], [data-readonly]) {
         color: var(--dextinity-segmented-control-foreground-hover);
+    }
+
+    &[data-readonly] {
+        cursor: default;
     }
 
     &[data-checked] {

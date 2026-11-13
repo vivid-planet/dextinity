@@ -140,6 +140,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
 
     return (
         <ControlFrame
+            controlName="Textarea"
             id={id}
             disabled={disabled}
             readOnly={readOnly}

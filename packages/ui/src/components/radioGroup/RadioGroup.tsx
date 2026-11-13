@@ -114,6 +114,7 @@ export const RadioGroup = forwardRef(function RadioGroup<Value extends string = 
     ref: ForwardedRef<HTMLDivElement>,
 ) {
     const { control } = useGroupControl({
+        controlName: "RadioGroup",
         disabled: disabledProp,
         readOnly: readOnlyProp,
         "aria-label": ariaLabel,

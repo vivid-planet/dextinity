@@ -1,3 +1,5 @@
+@use "helpButton";
+
 .root {
     display: inline-flex;
     align-items: flex-start;
@@ -21,4 +23,8 @@
 .required {
     margin-inline-start: var(--dextinity-form-label-gap);
     color: var(--dextinity-form-label-required-color);
+}
+
+.helpButton {
+    @include helpButton.button;
 }

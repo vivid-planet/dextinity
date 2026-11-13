@@ -57,7 +57,7 @@ export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.hover(canvas.getByRole("button"));
         await expect(await screen.findByRole("tooltip")).toHaveTextContent("More actions");
-        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(true));
+        await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(true, { reason: "trigger-hover" }));
         await userEvent.unhover(canvas.getByRole("button"));
         await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
     },
@@ -114,9 +114,9 @@ function ControlledTooltip(props: TooltipProps) {
         <Tooltip
             {...props}
             open={open}
-            onOpenChange={(nextOpen) => {
+            onOpenChange={(nextOpen, details) => {
                 setOpen(nextOpen);
-                props.onOpenChange?.(nextOpen);
+                props.onOpenChange?.(nextOpen, details);
             }}
         />
     );
@@ -127,6 +127,42 @@ function ControlledTooltip(props: TooltipProps) {
  */
 export const Controlled: Story = {
     render: (args) => <ControlledTooltip {...args} />,
+};
+
+function ClickToShowTooltip(props: TooltipProps) {
+    const [open, setOpen] = useState(false);
+    return (
+        <Tooltip {...props} open={open} onOpenChange={setOpen} closeOnClick={false}>
+            <Button variant="outlined" color="secondary" onClick={() => setOpen(true)}>
+                What is a slug?
+            </Button>
+        </Tooltip>
+    );
+}
+
+/**
+ * With `closeOnClick={false}`, a click on the trigger keeps the tooltip open, so the trigger can open it on click as well, e.g. an info
+ * button that a tap on a touch screen should open. `content` takes formatted text, too, but no interactive content.
+ */
+export const ClickToShow: Story = {
+    args: {
+        content: (
+            <>
+                The <strong>slug</strong> is the last part of the page&apos;s URL.
+            </>
+        ),
+    },
+    render: (args) => <ClickToShowTooltip {...args} />,
+    play: async ({ canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "What is a slug?" }));
+        const tooltip = await screen.findByRole("tooltip");
+        await expect(tooltip).toHaveTextContent("The slug is the last part of the page's URL.");
+        await expect(tooltip.querySelector("strong")).toHaveTextContent("slug");
+        await userEvent.click(canvas.getByRole("button", { name: "What is a slug?" }));
+        await expect(screen.getByRole("tooltip")).toBeVisible();
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull());
+    },
 };
 
 export const Disabled: Story = {

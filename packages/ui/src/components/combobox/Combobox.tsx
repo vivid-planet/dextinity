@@ -43,6 +43,8 @@ export interface ComboboxLabels {
     remove: (optionLabel: string) => string;
     /** Accessible name of the button that clears the choice. */
     clear: string;
+    /** Accessible name of the button that opens the list of options. */
+    showOptions: string;
 }
 
 const defaultLabels: ComboboxLabels = {
@@ -53,6 +55,7 @@ const defaultLabels: ComboboxLabels = {
     create: (query) => `Create “${query}”`,
     remove: (optionLabel) => `Remove ${optionLabel}`,
     clear: "Clear",
+    showOptions: "Show options",
 };
 
 export interface ComboboxProps<Option, Multiple extends boolean = false> extends PureControlProps {
@@ -279,7 +282,16 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
         );
 
     return (
-        <ControlFrame {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} pending={creating} className={className} style={style}>
+        <ControlFrame
+            controlName="Combobox"
+            {...ariaProps}
+            id={id}
+            disabled={disabledProp}
+            readOnly={readOnlyProp}
+            pending={creating}
+            className={className}
+            style={style}
+        >
             {(control) => (
                 <BaseCombobox.Root
                     items={grouped ? groupOptions(entries, entryGroup) : entries}
@@ -327,7 +339,7 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
                             <Icon name="close" />
                         </BaseCombobox.Clear>
                     )}
-                    <BaseCombobox.Trigger className={clsx(styles.iconButton, styles.chevron)} tabIndex={-1}>
+                    <BaseCombobox.Trigger className={clsx(styles.iconButton, styles.chevron)} tabIndex={-1} aria-label={labels.showOptions}>
                         <Icon name="chevron-down" />
                     </BaseCombobox.Trigger>
                     <BaseCombobox.Portal container={container}>

@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Field } from "../../field/Field";
@@ -34,9 +34,10 @@ describe("CheckboxGroup", () => {
             "",
         ]);
         const group = screen.getByRole("group", { name: "Scopes" });
-        expect(group).toHaveAccessibleDescription("Select a scope.");
+        // role="group" takes no aria-required, so the field's hidden "Required" describes it
+        expect(group).toHaveAccessibleDescription("Select a scope. Required");
         expect(group.getAttribute("aria-invalid")).toBe("true");
-        expect(group.getAttribute("aria-required")).toBe("true");
+        expect(group).not.toHaveAttribute("aria-required");
         const archive = screen.getByRole("checkbox", { name: /^Archive/ });
         expect(archive).toHaveAttribute("aria-invalid", "true");
         expect(archive).toHaveAttribute("aria-disabled", "true");
@@ -74,5 +75,22 @@ describe("CheckboxGroup", () => {
         expect(screen.queryByRole("checkbox", { name: "Main" })).toBeNull();
         expect(screen.getByText("Main").className).toBe("dextinityCheckboxGroup__groupHeading");
         expect(screen.getByRole("group", { name: "Main" })).toBeInTheDocument();
+    });
+
+    it("follows the read-only state of the surrounding field and ignores changes", () => {
+        const onChange = vi.fn();
+        const { container } = render(
+            <Field label="Scopes" layout="group" readOnly>
+                <CheckboxGroup options={options} value={[]} onChange={onChange} selectAllLabel="All" />
+            </Field>,
+        );
+
+        expect(container.querySelector<HTMLElement>(".dextinityCheckboxGroup")?.dataset.readonly).toBe("");
+        for (const name of ["All", "German", /^Archive/]) {
+            const checkbox = screen.getByRole("checkbox", { name });
+            expect(checkbox).toHaveAttribute("aria-readonly", "true");
+            fireEvent.click(checkbox);
+        }
+        expect(onChange).not.toHaveBeenCalled();
     });
 });

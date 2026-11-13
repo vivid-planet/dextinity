@@ -925,7 +925,16 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
     };
 
     return (
-        <ControlFrame {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} layout="stacked" className={className} style={style}>
+        <ControlFrame
+            controlName="RichTextEditor"
+            {...ariaProps}
+            id={id}
+            disabled={disabledProp}
+            readOnly={readOnlyProp}
+            layout="stacked"
+            className={className}
+            style={style}
+        >
             {(control) => (
                 <div ref={ref} className={styles.root} style={{ "--dextinity-rich-text-editor-min-rows": minRows } as CSSProperties}>
                     <RichTextEditorBody

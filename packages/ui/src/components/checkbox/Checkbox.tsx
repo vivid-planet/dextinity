@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
-import { type ControlAriaProps, isAriaInvalid } from "../field/ControlFrame";
+import { type ControlAriaProps, isAriaInvalid, useSingleChoiceFieldWarning } from "../field/ControlFrame";
 import { useFieldContext } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import styles from "./Checkbox.module.scss";
@@ -52,6 +52,12 @@ export interface CheckboxProps
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /**
+     * Shows the state without letting the user change it. Ignored inside a `Field`, which takes it from its own `readOnly`.
+     *
+     * @defaultValue `false`
+     */
+    readOnly?: boolean;
     /** Identifies the field when a form is submitted. */
     name?: string;
     /** The value submitted with the form while the checkbox is checked. */
@@ -64,8 +70,8 @@ export interface CheckboxProps
 
 /**
  * Selects an item, for multiple selection in lists, the page tree, and assets. For a validation message, e.g. on a consent checkbox, put it
- * in a `Field` with `layout="group"`: the checkbox takes the field's message, state, `required`, and `disabled`, and keeps its own text as
- * its name.
+ * in a `Field` with `layout="group"` and without `label`: the checkbox takes the field's message, state, `required`, `disabled`, and
+ * `readOnly`, and its own text names it.
  */
 export const Checkbox = forwardRef<HTMLDivElement, CheckboxProps>(function Checkbox(
     {
@@ -74,6 +80,7 @@ export const Checkbox = forwardRef<HTMLDivElement, CheckboxProps>(function Check
         onChange,
         indeterminate = false,
         disabled = false,
+        readOnly = false,
         name,
         value,
         "aria-label": ariaLabel,
@@ -87,11 +94,12 @@ export const Checkbox = forwardRef<HTMLDivElement, CheckboxProps>(function Check
     ref,
 ) {
     const fieldControl = useFieldContext()?.control;
+    useSingleChoiceFieldWarning("Checkbox", children != null);
     const ownerState: CheckboxOwnerState = {
         checked,
         indeterminate,
         disabled: fieldControl != null ? fieldControl.disabled : disabled,
-        readOnly: fieldControl?.readOnly === true,
+        readOnly: fieldControl != null ? fieldControl.readOnly : readOnly,
         required: fieldControl?.required === true,
         invalid: isAriaInvalid(ariaInvalid) || fieldControl?.["aria-invalid"] === true,
     };

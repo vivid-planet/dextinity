@@ -228,7 +228,13 @@ export { type ToolbarButtonSlotProps } from "./components/toolbar/ToolbarButton"
 export { ToolbarGroup, type ToolbarGroupOwnerState, type ToolbarGroupProps } from "./components/toolbar/ToolbarGroup";
 export { ToolbarMenu, type ToolbarMenuOwnerState, type ToolbarMenuProps, type ToolbarMenuSlotProps } from "./components/toolbar/ToolbarMenu";
 export { ToolbarSeparator, type ToolbarSeparatorOwnerState, type ToolbarSeparatorProps } from "./components/toolbar/ToolbarSeparator";
-export { Tooltip, type TooltipOwnerState, type TooltipProps, type TooltipSlotProps } from "./components/tooltip/Tooltip";
+export {
+    Tooltip,
+    type TooltipOpenChangeReason,
+    type TooltipOwnerState,
+    type TooltipProps,
+    type TooltipSlotProps,
+} from "./components/tooltip/Tooltip";
 export { TopBar, type TopBarLabels, type TopBarOwnerState, type TopBarProps } from "./components/topBar/TopBar";
 export { TreeDetailLayout, type TreeDetailLayoutOwnerState, type TreeDetailLayoutProps } from "./components/treeDetailLayout/TreeDetailLayout";
 export { type TreeDetailLayoutSlotProps } from "./components/treeDetailLayout/TreeDetailLayout";

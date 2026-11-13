@@ -54,6 +54,7 @@ export interface SegmentedControlOption<Value extends string = string> {
 export type SegmentedControlOwnerState = {
     size: SegmentedControlSize;
     disabled: boolean;
+    readOnly: boolean;
     invalid: boolean;
     /** Whether the options don't fit and a menu shows them instead. */
     collapsed: boolean;
@@ -97,6 +98,12 @@ export interface SegmentedControlProps<Value extends string = string>
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /**
+     * Shows the chosen option without letting the user change it. Ignored inside a `Field`, which takes it from its own `readOnly`.
+     *
+     * @defaultValue `false`
+     */
+    readOnly?: boolean;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -151,6 +158,7 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
         size = "default",
         overflow = "menu",
         disabled,
+        readOnly,
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
@@ -163,7 +171,9 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
 ) {
     const { overflows, rootRef, groupRef } = useOptionsOverflow(overflow === "menu");
     const { control, nameId, hiddenLabel } = useGroupControl({
+        controlName: "SegmentedControl",
         disabled,
+        readOnly,
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
@@ -172,6 +182,7 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
     const ownerState: SegmentedControlOwnerState = {
         size,
         disabled: control.disabled,
+        readOnly: control.readOnly,
         invalid: control["aria-invalid"] === true,
         collapsed: overflows,
     };
@@ -228,6 +239,7 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
             ref={setRootRef}
             data-size={ownerState.size}
             data-disabled={ownerState.disabled ? "" : undefined}
+            data-readonly={ownerState.readOnly ? "" : undefined}
             data-invalid={ownerState.invalid ? "" : undefined}
             data-collapsed={ownerState.collapsed ? "" : undefined}
             data-overflow={overflow}
@@ -250,7 +262,7 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
                             </button>
                         }
                     >
-                        <MenuRadioGroup value={value} onChange={(next) => next !== value && onChange(next as Value)}>
+                        <MenuRadioGroup value={value} onChange={(next) => !ownerState.readOnly && next !== value && onChange(next as Value)}>
                             {options.map((option) => (
                                 <MenuRadioItem
                                     key={option.value}
@@ -274,6 +286,7 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
                     }
                 }}
                 disabled={ownerState.disabled}
+                readOnly={ownerState.readOnly}
                 aria-hidden={ownerState.collapsed ? true : undefined}
             >
                 {options.map((option) => {

@@ -39,6 +39,7 @@ describe("Combobox", () => {
         expect(input).toHaveAttribute("aria-required", "true");
         expect(input).toHaveAttribute("aria-invalid", "true");
         expect(input).toBeDisabled();
+        expect(screen.getByRole("button", { name: "Show options" })).toBeInTheDocument();
     });
 
     it("names the chips' remove buttons by the option label", () => {

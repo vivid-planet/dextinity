@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Field } from "../../field/Field";
@@ -44,5 +44,23 @@ describe("FocalPointPicker", () => {
         render(<FocalPointPicker aria-label="Focal point" src="a.jpg" value={{ x: 0.5, y: 0.5 }} onChange={vi.fn()} />);
 
         expect(screen.getByRole("group", { name: "Focal point" })).toBeInTheDocument();
+    });
+
+    it("follows the read-only state of the surrounding field and ignores moves", () => {
+        const onChange = vi.fn();
+        const { container } = render(
+            <Field label="Focal point" layout="group" readOnly required>
+                <FocalPointPicker src="a.jpg" value={{ x: 0.5, y: 0.5 }} onChange={onChange} />
+            </Field>,
+        );
+
+        expect(container.querySelector<HTMLElement>(".dextinityFocalPointPicker")?.dataset.readonly).toBe("");
+        const marker = screen.getByRole("slider");
+        expect(marker).toHaveAttribute("aria-readonly", "true");
+        expect(marker).toHaveAttribute("tabindex", "0");
+        expect(marker).not.toHaveAttribute("aria-required");
+        expect(marker).toHaveAccessibleDescription("Required");
+        fireEvent.keyDown(marker, { key: "ArrowRight" });
+        expect(onChange).not.toHaveBeenCalled();
     });
 });

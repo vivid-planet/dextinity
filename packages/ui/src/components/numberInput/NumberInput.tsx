@@ -133,6 +133,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
 
     return (
         <ControlFrame
+            controlName="NumberInput"
             id={id}
             disabled={disabledProp}
             readOnly={readOnlyProp}

@@ -47,6 +47,11 @@ export interface FieldControlProps {
 export interface FieldLabels {
     /** Accessible name of the info button that shows the `helpText`. */
     helpText: string;
+    /**
+     * Read as the description of a required control whose role can't be marked as required, e.g. a `CheckboxGroup` or the button of a
+     * `Picker`. Other controls are marked with `aria-required`.
+     */
+    required: string;
 }
 
 interface FieldSlots {
@@ -214,7 +219,8 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
     const labelId = `${generatedId}label`;
     const helpTextId = `${generatedId}help`;
     const messageId = `${generatedId}message`;
-    const labels: FieldLabels = { helpText: defaultHelpTextButtonLabel, ...labelsProp };
+    const requiredId = `${generatedId}required`;
+    const labels: FieldLabels = { helpText: defaultHelpTextButtonLabel, required: "Required", ...labelsProp };
 
     const [actionPending, setActionPending] = useState(false);
     const [actionContent, setActionContent] = useState<ReactNode>(null);
@@ -253,7 +259,14 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
         required,
     };
 
-    const contextValue: FieldContextValue = { control, ownerState, setActionPending, setActionContent, setControlReport };
+    const contextValue: FieldContextValue = {
+        control,
+        ownerState,
+        setActionPending,
+        setActionContent,
+        setControlReport,
+        requiredDescriptionId: required ? requiredId : undefined,
+    };
 
     const focusControl = useCallback(
         (event: MouseEvent<HTMLDivElement>) => {
@@ -350,6 +363,11 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
                         {counter != null && <span className={styles.counter}>{counter}</span>}
                         {actions != null && <span className={styles.actions}>{actions}</span>}
                     </div>
+                )}
+                {required && (
+                    <span id={requiredId} hidden>
+                        {labels.required}
+                    </span>
                 )}
                 {layout === "group" ? (
                     controlContent

@@ -10,6 +10,11 @@ import styles from "./Tooltip.module.scss";
 
 type TooltipPlacement = "top" | "bottom" | "left" | "right";
 
+/**
+ * What requested the tooltip to open or close, e.g. `"trigger-hover"`, `"trigger-focus"`, `"outside-press"`, or `"escape-key"`.
+ */
+export type TooltipOpenChangeReason = BaseTooltip.Root.ChangeEventReason;
+
 const delayTokenName = "--dextinity-motion-tooltip-delay";
 const fallbackDelay = 380;
 
@@ -47,8 +52,8 @@ export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, "clas
     delay?: number;
     /** Whether the tooltip is open. Without it, hover and focus open and close the tooltip. */
     open?: boolean;
-    /** Called when hover, focus, or Escape requests to open or close the tooltip. */
-    onOpenChange?: (open: boolean) => void;
+    /** Called when hover, focus, a press outside, or Escape requests to open or close the tooltip, with what requested it. */
+    onOpenChange?: (open: boolean, details: { reason: TooltipOpenChangeReason }) => void;
     /**
      * Closes the tooltip when the trigger is clicked. Turn it off for a trigger whose click shows the tooltip, e.g. an info button.
      *
@@ -123,7 +128,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
         <BaseTooltip.Root
             disabled={ownerState.disabled}
             open={open}
-            onOpenChange={onOpenChange == null ? undefined : (nextOpen) => onOpenChange(nextOpen)}
+            onOpenChange={onOpenChange == null ? undefined : (nextOpen, eventDetails) => onOpenChange(nextOpen, { reason: eventDetails.reason })}
         >
             <BaseTooltip.Trigger ref={anchorRef} render={children} delay={delay ?? themeDelay} closeOnClick={closeOnClick} />
             <BaseTooltip.Portal container={container}>

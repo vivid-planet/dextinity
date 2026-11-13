@@ -154,6 +154,16 @@ export const HelpText: Story = {
         await userEvent.click(button);
         await waitFor(() => expect(screen.getByRole("tooltip")).toHaveTextContent("Shown in search results and when the page is shared."));
         await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("tooltip")).not.toBeInTheDocument());
+
+        // A tap: the browser follows the touch with emulated mouse events that end in a mouseleave
+        button.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerType: "touch" }));
+        button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        button.dispatchEvent(new MouseEvent("mouseleave", { relatedTarget: button.ownerDocument.body }));
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        await expect(screen.getByRole("tooltip")).toHaveTextContent("Shown in search results and when the page is shared.");
+        await userEvent.click(button.ownerDocument.body);
+        await waitFor(() => expect(screen.queryByRole("tooltip")).not.toBeInTheDocument());
     },
 };
 

@@ -163,7 +163,7 @@ export const Error: Story = {
     args: { value: [], required: true, state: "error", validationMessage: "Select at least one channel." },
     play: async ({ canvas }) => {
         const group = canvas.getByRole("group", { name: "Channels" });
-        await expect(group).toHaveAccessibleDescription("Select at least one channel.");
+        await expect(group).toHaveAccessibleDescription("Select at least one channel. Required");
         await expect(canvas.getByRole("checkbox", { name: "Website" })).toBeInvalid();
     },
 };

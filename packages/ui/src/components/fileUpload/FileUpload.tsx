@@ -184,6 +184,8 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
     const [pending, setPending] = useState<PendingFile[]>([]);
     const uploading = pending.some((entry) => entry.status === "uploading");
     const { control } = useGroupControl({
+        controlName: "FileUpload",
+        describeRequired: true,
         disabled: disabledProp,
         readOnly: readOnlyProp,
         "aria-label": ariaLabel,
@@ -361,7 +363,6 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
             aria-labelledby={control["aria-labelledby"]}
             aria-describedby={control["aria-describedby"]}
             aria-invalid={control["aria-invalid"]}
-            aria-required={control["aria-required"]}
             data-invalid={ownerState.invalid ? "" : undefined}
             data-multiple={ownerState.multiple ? "" : undefined}
             data-required={ownerState.required ? "" : undefined}

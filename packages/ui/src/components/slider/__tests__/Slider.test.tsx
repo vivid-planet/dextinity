@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Field } from "../../field/Field";
@@ -36,5 +36,33 @@ describe("Slider", () => {
         expect(slider.getAttribute("aria-invalid")).toBe("true");
         expect(slider).toHaveAccessibleDescription("Pick at least 50.");
         expect(slider).toBeDisabled();
+    });
+
+    it("follows the read-only state of the surrounding field and ignores changes", () => {
+        const onChange = vi.fn();
+        const { container } = render(
+            <Field label="Icon size" layout="group" readOnly>
+                <Slider value={40} onChange={onChange} />
+            </Field>,
+        );
+
+        expect(container.querySelector<HTMLElement>(".dextinitySlider")?.dataset.readonly).toBe("");
+        const slider = screen.getByRole("slider", { name: "Icon size" });
+        expect(slider).toHaveAttribute("aria-readonly", "true");
+        expect(slider).not.toBeDisabled();
+        fireEvent.keyDown(slider, { key: "ArrowRight" });
+        expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("describes the slider as required in a required field", () => {
+        render(
+            <Field label="Icon size" layout="group" required>
+                <Slider value={40} onChange={vi.fn()} />
+            </Field>,
+        );
+
+        const slider = screen.getByRole("slider", { name: "Icon size" });
+        expect(slider).toHaveAccessibleDescription("Required");
+        expect(slider).not.toHaveAttribute("aria-required");
     });
 });

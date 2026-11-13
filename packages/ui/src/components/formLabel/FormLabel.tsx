@@ -159,7 +159,7 @@ export const FormLabel: <
         ownerState,
     });
     const helpButtonProps = resolveSlotProps<FormLabelOwnerState, "button", "button">({
-        ownProps: { "aria-label": labels.helpText },
+        ownProps: { className: styles.helpButton, "aria-label": labels.helpText },
         slotProps: slotProps?.helpButton,
         ownerState,
     });

@@ -1,6 +1,6 @@
 @use "../../theme/forcedColors" as forced-colors;
 
-// The info button after a label that shows the label's help text. Shared by `FormLabel` and `Field`.
+// The info button after a label that shows the label's help text, the `helpButton` slot of `FormLabel` and `Field`.
 @mixin button {
     display: inline-grid;
     flex: none;

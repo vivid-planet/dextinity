@@ -91,8 +91,8 @@ export const Picker = forwardRef(function Picker<Value>(
     );
 
     return (
-        <ControlFrame {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} className={className} style={style}>
-            {(control, { nameId }) => (
+        <ControlFrame controlName="Picker" {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} className={className} style={style}>
+            {(control, { nameId, requiredDescriptionId }) => (
                 <>
                     <button
                         ref={setTriggerRef}
@@ -102,9 +102,8 @@ export const Picker = forwardRef(function Picker<Value>(
                         aria-haspopup="dialog"
                         aria-labelledby={clsx(nameId, valueId)}
                         data-readonly={readOnly ? "" : undefined}
-                        aria-describedby={control["aria-describedby"]}
+                        aria-describedby={clsx(control["aria-describedby"], requiredDescriptionId) || undefined}
                         aria-invalid={control["aria-invalid"]}
-                        aria-required={control["aria-required"]}
                         aria-busy={control["aria-busy"]}
                         disabled={disabled}
                         onClick={readOnly ? undefined : onOpen}

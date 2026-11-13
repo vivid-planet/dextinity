@@ -253,7 +253,7 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
     );
 
     return (
-        <ControlFrame {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} className={className} style={style}>
+        <ControlFrame controlName="Select" {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} className={className} style={style}>
             {(control, { nameId }) =>
                 searchable ? (
                     <Combobox.Root

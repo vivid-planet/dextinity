@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Field } from "../../field/Field";
@@ -79,5 +79,19 @@ describe("SegmentedControl", () => {
         expect(group.getAttribute("aria-invalid")).toBe("true");
         expect(group).toHaveAccessibleDescription("Choose one.");
         expect(screen.getAllByRole("radio").every((radio) => radio.hasAttribute("data-disabled"))).toBe(true);
+    });
+
+    it("follows the read-only state of the surrounding field and ignores changes", () => {
+        const onChange = vi.fn();
+        const { container } = render(
+            <Field label="Employment" layout="group" readOnly>
+                <SegmentedControl options={options} value="full" onChange={onChange} />
+            </Field>,
+        );
+
+        expect(container.querySelector<HTMLElement>(".dextinitySegmentedControl")?.dataset.readonly).toBe("");
+        expect(screen.getByRole("radiogroup", { name: "Employment" })).toHaveAttribute("aria-readonly", "true");
+        fireEvent.click(screen.getByRole("radio", { name: "Part-time" }));
+        expect(onChange).not.toHaveBeenCalled();
     });
 });

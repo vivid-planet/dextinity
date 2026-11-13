@@ -1,5 +1,5 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Theme } from "../../theme/Theme";
 import { Tooltip } from "../Tooltip";
@@ -31,5 +31,52 @@ describe("Tooltip", () => {
         );
 
         expect(screen.getByTestId("theme").contains(await screen.findByText("More actions"))).toBe(true);
+    });
+
+    it("keeps the tooltip open on a click of the trigger with closeOnClick off", async () => {
+        const onOpenChange = vi.fn();
+        render(
+            <Tooltip content="More actions" open closeOnClick={false} onOpenChange={onOpenChange}>
+                <button type="button">Trigger</button>
+            </Tooltip>,
+        );
+        await screen.findByText("More actions");
+
+        fireEvent.pointerDown(screen.getByRole("button"));
+        fireEvent.click(screen.getByRole("button"));
+
+        expect(onOpenChange).not.toHaveBeenCalledWith(false, expect.anything());
+    });
+
+    it("closes the tooltip on a click of the trigger by default, with the reason", async () => {
+        const onOpenChange = vi.fn();
+        render(
+            <Tooltip content="More actions" open onOpenChange={onOpenChange}>
+                <button type="button">Trigger</button>
+            </Tooltip>,
+        );
+        await screen.findByText("More actions");
+
+        fireEvent.pointerDown(screen.getByRole("button"));
+        fireEvent.click(screen.getByRole("button"));
+
+        expect(onOpenChange).toHaveBeenCalledWith(false, { reason: "trigger-press" });
+    });
+
+    it("renders formatted content", async () => {
+        render(
+            <Tooltip
+                content={
+                    <>
+                        The <strong>slug</strong> is part of the URL.
+                    </>
+                }
+                open
+            >
+                <button type="button">Trigger</button>
+            </Tooltip>,
+        );
+
+        expect((await screen.findByText("slug")).tagName).toBe("STRONG");
     });
 });

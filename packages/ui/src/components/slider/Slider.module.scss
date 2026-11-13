@@ -42,6 +42,10 @@
     &[data-disabled] {
         cursor: not-allowed;
     }
+
+    .root[data-readonly] & {
+        cursor: default;
+    }
 }
 
 .track {

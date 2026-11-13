@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import { type AriaAttributes, type CSSProperties, type ReactNode, useEffect, useId, useRef } from "react";
 
-import { Field, type FieldControlProps, type FieldOwnerState } from "./Field";
+import { Field, type FieldControlProps, type FieldLayout, type FieldOwnerState } from "./Field";
 import { useFieldContext } from "./fieldContext";
 
 /**
@@ -31,7 +31,9 @@ export function isAriaInvalid(value: AriaAttributes["aria-invalid"]) {
 }
 
 /**
- * The props of a control that takes its label, message, and state from a surrounding `Field`.
+ * The props of a control that takes its label, message, and state from a surrounding `Field`. A control takes no other HTML attributes:
+ * put `onFocus`, `onBlur`, or `data-*` attributes on the `Field`, whose root receives the focus events that bubble up from the control.
+ * On its own, put the control in a `Field` without `label` for them.
  */
 export interface PureControlProps extends ControlAriaProps {
     /**
@@ -52,6 +54,36 @@ export interface PureControlProps extends ControlAriaProps {
     className?: string;
     /** Inline styles for the control's box. Has no visible effect inside a `Field`. */
     style?: CSSProperties;
+}
+
+/**
+ * Warns in development when a control sits in a `Field` with a layout it doesn't fit, e.g. a `RadioGroup` in a field without
+ * `layout="group"`, which then points its `<label>` at no element and draws a box around the group.
+ */
+function useFieldLayoutWarning(controlName: string, fittingLayouts: ReadonlyArray<FieldLayout>) {
+    const layout = useFieldContext()?.ownerState.layout;
+    const fits = layout == null || fittingLayouts.includes(layout);
+    const expected = fittingLayouts[0];
+    useEffect(() => {
+        if (process.env.NODE_ENV !== "production" && !fits) {
+            console.warn(`${controlName}: put it in a <Field layout="${expected}">. The surrounding Field has layout="${layout}".`);
+        }
+    }, [controlName, expected, fits, layout]);
+}
+
+/**
+ * Warns in development about a single `Checkbox` or `Switch` with its own text in a `Field` with a label: the text names the control,
+ * so the field's label names nothing.
+ */
+export function useSingleChoiceFieldWarning(controlName: string, hasText: boolean) {
+    const field = useFieldContext();
+    const hasFieldLabel = field?.control["aria-labelledby"] != null;
+    useFieldLayoutWarning(controlName, ["group"]);
+    useEffect(() => {
+        if (process.env.NODE_ENV !== "production" && hasText && hasFieldLabel) {
+            console.warn(`${controlName}: its text names it, so the label of the surrounding Field names nothing. Leave out the Field's label.`);
+        }
+    }, [controlName, hasFieldLabel, hasText]);
 }
 
 /**
@@ -83,6 +115,8 @@ interface FrameState {
      * control's `aria-labelledby`, or a hidden copy of its `aria-label`.
      */
     nameId: string | undefined;
+    /** The id of the field's hidden "Required" text, for a control whose role can't take `aria-required`, e.g. a button. */
+    requiredDescriptionId: string | undefined;
 }
 
 interface ControlNameOptions extends ControlAriaProps {
@@ -114,6 +148,8 @@ function useControlName({
 }
 
 interface ControlFrameProps extends ControlAriaProps {
+    /** The control's component name, for the warning about a field with the wrong layout. */
+    controlName: string;
     /** The control's id on its own. Inside a `Field`, the field's id applies. */
     id?: string;
     disabled?: boolean;
@@ -169,7 +205,7 @@ function ControlFrameContent({
     return (
         <>
             {hiddenLabel}
-            {children(control, { ownerState: field.ownerState, nameId })}
+            {children(control, { ownerState: field.ownerState, nameId, requiredDescriptionId: field.requiredDescriptionId })}
         </>
     );
 }
@@ -179,6 +215,7 @@ function ControlFrameContent({
  * message, and state. On its own, it draws a box without label, and shows its own errors below it.
  */
 export function ControlFrame({
+    controlName,
     id,
     disabled = false,
     readOnly = false,
@@ -192,6 +229,7 @@ export function ControlFrame({
     ...ariaProps
 }: ControlFrameProps) {
     const field = useFieldContext();
+    useFieldLayoutWarning(controlName, layout === "stacked" ? ["stacked"] : ["inline", "stacked"]);
     const content = (
         <ControlFrameContent error={error} counter={counter} pending={pending} {...ariaProps}>
             {children}
@@ -215,12 +253,27 @@ export function ControlFrame({
     );
 }
 
+interface GroupControlOptions extends ControlAriaProps {
+    /** The control's component name, for the warning about a field with the wrong layout. */
+    controlName: string;
+    disabled?: boolean;
+    readOnly?: boolean;
+    /**
+     * Adds the field's hidden "Required" text to the description, for a control whose role can't take `aria-required`, e.g.
+     * `role="group"`.
+     *
+     * @defaultValue `false`
+     */
+    describeRequired?: boolean;
+}
+
 /**
  * The connections of a control that draws its own frame, e.g. `RadioGroup` or `Slider`: inside a `Field` with `layout="group"`, the
  * field's id, label, message, and state, merged with the control's own name and description; on its own, the control's props.
  */
-export function useGroupControl({ disabled = false, readOnly = false, ...ariaProps }: ControlAriaProps & { disabled?: boolean; readOnly?: boolean }) {
+export function useGroupControl({ controlName, disabled = false, readOnly = false, describeRequired = false, ...ariaProps }: GroupControlOptions) {
     const field = useFieldContext();
+    useFieldLayoutWarning(controlName, ["group"]);
     const standaloneField = {
         control: {
             id: "",
@@ -234,6 +287,11 @@ export function useGroupControl({ disabled = false, readOnly = false, ...ariaPro
             required: false,
         },
     };
-    const { control, nameId, hiddenLabel } = useControlName({ field: field ?? standaloneField, ...ariaProps });
+    const requiredDescriptionId = describeRequired ? field?.requiredDescriptionId : undefined;
+    const { control, nameId, hiddenLabel } = useControlName({
+        field: field ?? standaloneField,
+        ...ariaProps,
+        "aria-describedby": clsx(requiredDescriptionId, ariaProps["aria-describedby"]) || undefined,
+    });
     return { control, nameId, hiddenLabel };
 }

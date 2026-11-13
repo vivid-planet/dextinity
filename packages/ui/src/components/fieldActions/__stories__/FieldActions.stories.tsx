@@ -138,6 +138,9 @@ export const Default: Story = {
  * When the promise of `onTranslate` rejects, the loading state ends and `onTranslateError` receives the error. `FieldActions` shows no
  * error itself: the application handles `onTranslateError`, here by setting the surrounding field's `state="error"` and
  * `validationMessage` ("Translation failed. Try again.") until the next translation or input.
+ *
+ * Focus stays on "Translate", and the field's message is no live region, so a screen reader doesn't announce the failure on its own:
+ * the application announces it as well, e.g. with an error toast.
  */
 export const TranslationFails: Story = {
     args: {

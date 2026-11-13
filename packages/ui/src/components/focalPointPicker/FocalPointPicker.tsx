@@ -29,6 +29,7 @@ const defaultRatios = ["16:9", "4:3", "1:1", "9:16"];
 export type FocalPointPickerOwnerState = {
     auto: boolean;
     disabled: boolean;
+    readOnly: boolean;
     invalid: boolean;
 };
 
@@ -71,6 +72,13 @@ export interface FocalPointPickerProps
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /**
+     * Shows the point without letting the user move it; the point stays focusable. Ignored inside a `Field`, which takes it from its own
+     * `readOnly`.
+     *
+     * @defaultValue `false`
+     */
+    readOnly?: boolean;
     /** The built-in texts. */
     labels?: Partial<FocalPointPickerLabels>;
     /** Added alongside the component's own classes. */
@@ -104,6 +112,7 @@ export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps
         ratios = defaultRatios,
         auto = false,
         disabled: disabledProp,
+        readOnly: readOnlyProp,
         labels: labelsProp,
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledBy,
@@ -117,14 +126,18 @@ export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps
 ) {
     const labels = { ...defaultLabels, ...labelsProp };
     const { control } = useGroupControl({
+        controlName: "FocalPointPicker",
+        describeRequired: true,
         disabled: disabledProp,
+        readOnly: readOnlyProp,
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
         "aria-invalid": ariaInvalid,
     });
-    const disabled = control.disabled;
-    const ownerState: FocalPointPickerOwnerState = { auto, disabled, invalid: control["aria-invalid"] === true };
+    const { disabled, readOnly } = control;
+    const editable = !disabled && !readOnly;
+    const ownerState: FocalPointPickerOwnerState = { auto, disabled, readOnly, invalid: control["aria-invalid"] === true };
     const markerRef = useRef<HTMLSpanElement>(null);
     const objectPosition = `${toPercent(value.x)} ${toPercent(value.y)}`;
 
@@ -137,7 +150,7 @@ export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps
     };
 
     const handleKeyDown = (event: KeyboardEvent<HTMLSpanElement>) => {
-        if (disabled) {
+        if (!editable) {
             return;
         }
         const step = event.shiftKey ? 0.1 : 0.01;
@@ -154,7 +167,7 @@ export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps
         ownProps: {
             className: styles.stage,
             onPointerDown: (event: PointerEvent<HTMLDivElement>) => {
-                if (disabled || event.button !== 0) {
+                if (!editable || event.button !== 0) {
                     return;
                 }
                 event.preventDefault();
@@ -163,7 +176,7 @@ export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps
                 setFromPointer(event);
             },
             onPointerMove: (event: PointerEvent<HTMLDivElement>) => {
-                if (!disabled && event.currentTarget.hasPointerCapture(event.pointerId)) {
+                if (editable && event.currentTarget.hasPointerCapture(event.pointerId)) {
                     setFromPointer(event);
                 }
             },
@@ -188,8 +201,8 @@ export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps
             "aria-valuenow": Math.round(clamp(value.x) * 100),
             "aria-valuetext": labels.valueText(value),
             "aria-disabled": disabled || undefined,
+            "aria-readonly": readOnly || undefined,
             "aria-invalid": control["aria-invalid"],
-            "aria-required": control["aria-required"],
             "aria-describedby": control["aria-describedby"],
             style: { insetInlineStart: toPercent(value.x), insetBlockStart: toPercent(value.y) } satisfies CSSProperties,
             onKeyDown: handleKeyDown,
@@ -212,6 +225,7 @@ export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps
             aria-label={control["aria-label"]}
             aria-labelledby={control["aria-labelledby"]}
             data-disabled={ownerState.disabled ? "" : undefined}
+            data-readonly={ownerState.readOnly ? "" : undefined}
             data-invalid={ownerState.invalid ? "" : undefined}
             className={clsx(styles.root, className)}
         >

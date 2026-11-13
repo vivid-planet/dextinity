@@ -213,7 +213,7 @@ export const Error: Story = {
         </div>
     ),
     play: async ({ canvas }) => {
-        await expect(canvas.getByRole("button", { name: /Link target/ })).toHaveAccessibleDescription("Choose the page the link opens.");
+        await expect(canvas.getByRole("button", { name: /Link target/ })).toHaveAccessibleDescription("Choose the page the link opens. Required");
     },
 };
 

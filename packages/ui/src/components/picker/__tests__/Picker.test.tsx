@@ -28,8 +28,9 @@ describe("Picker", () => {
         );
 
         const trigger = screen.getByRole("button", { name: "Link target" });
-        expect(trigger).toHaveAccessibleDescription("Choose a page.");
-        expect(trigger).toHaveAttribute("aria-required", "true");
+        // A button takes no aria-required, so the field's hidden "Required" describes it
+        expect(trigger).toHaveAccessibleDescription("Choose a page. Required");
+        expect(trigger).not.toHaveAttribute("aria-required");
         expect(trigger).toHaveAttribute("aria-invalid", "true");
         expect(trigger).toBeDisabled();
     });

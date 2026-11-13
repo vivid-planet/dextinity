@@ -23,6 +23,11 @@ export interface FieldContextValue {
     setActionContent: (content: ReactNode) => void;
     /** Lets the control show its own error, counter, or loading state in the field. */
     setControlReport: (report: ControlReport) => void;
+    /**
+     * The id of a hidden "Required" text in a required field. A control whose role has no `aria-required`, e.g. `role="group"` or a
+     * button, adds it to its `aria-describedby` instead.
+     */
+    requiredDescriptionId: string | undefined;
 }
 
 export const FieldContext = createContext<FieldContextValue | null>(null);

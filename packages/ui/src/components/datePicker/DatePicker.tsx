@@ -139,7 +139,16 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
     };
 
     return (
-        <ControlFrame {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} error={draft.error} className={className} style={style}>
+        <ControlFrame
+            controlName="DatePicker"
+            {...ariaProps}
+            id={id}
+            disabled={disabledProp}
+            readOnly={readOnlyProp}
+            error={draft.error}
+            className={className}
+            style={style}
+        >
             {(control, { nameId }) => (
                 <>
                     <input

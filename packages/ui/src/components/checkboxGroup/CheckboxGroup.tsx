@@ -32,6 +32,7 @@ export type CheckboxGroupOwnerState = {
     invalid: boolean;
     required: boolean;
     disabled: boolean;
+    readOnly: boolean;
     selectableGroups: boolean;
 };
 
@@ -76,6 +77,12 @@ export interface CheckboxGroupProps<Value extends string = string>
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /**
+     * Shows the checked options without letting the user change them. Ignored inside a `Field`, which takes it from its own `readOnly`.
+     *
+     * @defaultValue `false`
+     */
+    readOnly?: boolean;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -101,6 +108,7 @@ export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends str
         selectableGroups = true,
         orientation = "vertical",
         disabled: disabledProp,
+        readOnly: readOnlyProp,
         className,
         slotProps,
         ...restProps
@@ -108,18 +116,22 @@ export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends str
     ref: ForwardedRef<HTMLDivElement>,
 ) {
     const { control } = useGroupControl({
+        controlName: "CheckboxGroup",
+        describeRequired: true,
         disabled: disabledProp,
+        readOnly: readOnlyProp,
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
         "aria-invalid": ariaInvalid,
     });
-    const disabled = control.disabled;
+    const { disabled, readOnly } = control;
     const ownerState: CheckboxGroupOwnerState = {
         orientation,
         invalid: control["aria-invalid"] === true,
         required: control.required,
         disabled,
+        readOnly,
         selectableGroups,
     };
     const idPrefix = useId();
@@ -137,7 +149,6 @@ export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends str
             "aria-labelledby": control["aria-labelledby"],
             "aria-describedby": control["aria-describedby"],
             "aria-invalid": control["aria-invalid"],
-            "aria-required": control["aria-required"],
         },
         slotProps: slotProps?.group,
         ownerState,
@@ -172,6 +183,7 @@ export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends str
                     checked={checked}
                     indeterminate={indeterminate}
                     disabled={checkboxDisabled}
+                    readOnly={readOnly}
                     aria-invalid={ownerState.invalid}
                     name={children.length > 0 ? undefined : name}
                     value={children.length > 0 ? undefined : option.value}
@@ -218,6 +230,7 @@ export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends str
             data-invalid={ownerState.invalid ? "" : undefined}
             data-required={ownerState.required ? "" : undefined}
             data-disabled={ownerState.disabled ? "" : undefined}
+            data-readonly={ownerState.readOnly ? "" : undefined}
             data-selectablegroups={ownerState.selectableGroups ? "" : undefined}
             className={clsx(styles.root, className)}
         >
@@ -229,6 +242,7 @@ export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends str
                             <Checkbox
                                 {...optionCheckState(allOptions, selected)}
                                 disabled={disabled || optionValues(allOptions, true).length === 0}
+                                readOnly={readOnly}
                                 aria-invalid={ownerState.invalid}
                                 onChange={() => onChange(toggleOption(options, value, allOptions))}
                             >

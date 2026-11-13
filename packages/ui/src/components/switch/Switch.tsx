@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type ReactNode, useId } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
-import { type ControlAriaProps, isAriaInvalid } from "../field/ControlFrame";
+import { type ControlAriaProps, isAriaInvalid, useSingleChoiceFieldWarning } from "../field/ControlFrame";
 import { useFieldContext } from "../field/fieldContext";
 import styles from "./Switch.module.scss";
 
@@ -52,6 +52,12 @@ export interface SwitchProps
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /**
+     * Shows the state without letting the user change it. Ignored inside a `Field`, which takes it from its own `readOnly`.
+     *
+     * @defaultValue `false`
+     */
+    readOnly?: boolean;
     /** @defaultValue `"default"` */
     size?: SwitchSize;
     /** Identifies the field when a form is submitted. */
@@ -64,8 +70,8 @@ export interface SwitchProps
 
 /**
  * Turns a setting on or off, for settings that take effect immediately or on save. For a validation message, e.g. on a switch that must
- * be on, put it in a `Field` with `layout="group"`: the switch takes the field's message, state, `required`, and `disabled`, and keeps
- * its own text as its name.
+ * be on, put it in a `Field` with `layout="group"` and without `label`: the switch takes the field's message, state, `required`,
+ * `disabled`, and `readOnly`, and its own text names it.
  */
 export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
     {
@@ -74,6 +80,7 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
         checked,
         onChange,
         disabled = false,
+        readOnly = false,
         size = "default",
         name,
         "aria-label": ariaLabel,
@@ -87,11 +94,12 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
     ref,
 ) {
     const fieldControl = useFieldContext()?.control;
+    useSingleChoiceFieldWarning("Switch", children != null);
     const ownerState: SwitchOwnerState = {
         size,
         checked,
         disabled: fieldControl != null ? fieldControl.disabled : disabled,
-        readOnly: fieldControl?.readOnly === true,
+        readOnly: fieldControl != null ? fieldControl.readOnly : readOnly,
         required: fieldControl?.required === true,
         invalid: isAriaInvalid(ariaInvalid) || fieldControl?.["aria-invalid"] === true,
     };

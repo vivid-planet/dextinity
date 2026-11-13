@@ -29,9 +29,9 @@ describe("FileUpload", () => {
             "",
             false,
         ]);
-        expect(group).toHaveAccessibleDescription("Attach the signed contract.");
+        expect(group).toHaveAccessibleDescription("Attach the signed contract. Required");
         expect(group.getAttribute("aria-invalid")).toBe("true");
-        expect(group.getAttribute("aria-required")).toBe("true");
+        expect(group).not.toHaveAttribute("aria-required");
         expect(screen.queryByRole("button", { name: "Remove" })).toBeNull();
         expect(group.querySelector<HTMLInputElement>("input[type=hidden][name=attachments]")?.value).toBe("1");
     });

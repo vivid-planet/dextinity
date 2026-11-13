@@ -141,7 +141,16 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
     };
 
     return (
-        <ControlFrame {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} error={draftError} className={className} style={style}>
+        <ControlFrame
+            controlName="DateRangePicker"
+            {...ariaProps}
+            id={id}
+            disabled={disabledProp}
+            readOnly={readOnlyProp}
+            error={draftError}
+            className={className}
+            style={style}
+        >
             {(control, { nameId }) => (
                 <>
                     <span id={startLabelId} hidden>

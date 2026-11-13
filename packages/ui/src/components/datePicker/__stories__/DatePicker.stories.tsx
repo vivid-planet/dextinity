@@ -35,7 +35,7 @@ const meta = {
     component: DatePicker,
     title: "Building blocks/Form fields/DatePicker",
     decorators: [themeDecorator],
-    parameters: { tokens: `${datePickerTokens}\n${fieldTokens}`, popupRoom: { side: "below", minHeight: "420px" } },
+    parameters: { tokens: `${datePickerTokens}\n${fieldTokens}` },
     render: (args) => <ControlledDatePicker key={String(args.value)} {...args} />,
     args: {
         name: "publishedOn",

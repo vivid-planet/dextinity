@@ -70,7 +70,7 @@ const meta = {
     component: QuickLook,
     title: "Building blocks/Modals & overlays/QuickLook",
     decorators: [themeDecorator],
-    parameters: { tokens: quickLookTokens, popupRoom: { side: "below", minHeight: "680px" }, closedOnDocsPage: true },
+    parameters: { tokens: quickLookTokens, closedOnDocsPage: true },
     render: (args) => <Finder key={`${args.open}-${args.index}`} {...args} />,
     args: {
         open: false,

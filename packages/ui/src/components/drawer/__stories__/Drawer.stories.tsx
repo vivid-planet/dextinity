@@ -68,7 +68,7 @@ const meta = {
     component: Drawer,
     title: "Building blocks/Modals & overlays/Drawer",
     decorators: [themeDecorator],
-    parameters: { tokens: drawerTokens, popupRoom: { side: "below", minHeight: "560px" }, closedOnDocsPage: true },
+    parameters: { tokens: drawerTokens, closedOnDocsPage: true },
     render: (args) => <RedirectList key={String(args.open)} {...args} />,
     args: {
         open: false,

@@ -92,7 +92,7 @@ const meta: Meta<StoryArgs> = {
     component: Combobox as ComponentType<StoryArgs>,
     title: "Building blocks/Form fields/Combobox",
     decorators: [themeDecorator],
-    parameters: { tokens: `${selectTokens}\n${fieldTokens}`, popupRoom: { side: "below", minHeight: "400px" } },
+    parameters: { tokens: `${selectTokens}\n${fieldTokens}` },
     args: { onChange: fn() },
 };
 

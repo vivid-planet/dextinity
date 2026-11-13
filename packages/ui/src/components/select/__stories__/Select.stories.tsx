@@ -105,7 +105,10 @@ const meta = {
     component: Select,
     title: "Building blocks/Form fields/Select",
     decorators: [themeDecorator],
-    parameters: { tokens: `${selectTokens}\n${fieldTokens}`, popupRoom: { side: "below", minHeight: "280px" } },
+    parameters: {
+        tokens: `${selectTokens}
+${fieldTokens}`,
+    },
     render: (args) => <ControlledSelect key={String(args.value)} {...(args as SelectStoryArgs<boolean>)} />,
     args: {
         name: "location",
@@ -212,7 +215,6 @@ export const Multiple: Story = {
  * `searchable` adds a search to the menu.
  */
 export const Searchable: Story = {
-    parameters: { popupRoom: { side: "below", minHeight: "400px" } },
     args: {
         name: "country",
         label: "Country",
@@ -234,7 +236,6 @@ export const Searchable: Story = {
  * An option's `group` lists it under a header. Options with the same group are shown together, in the order the groups first appear.
  */
 export const Groups: Story = {
-    parameters: { popupRoom: { side: "below", minHeight: "400px" } },
     args: {
         name: "office",
         label: "Office",
@@ -261,7 +262,6 @@ export const Groups: Story = {
  * Groups work with the search too; a group without matches disappears.
  */
 export const SearchableGroups: Story = {
-    parameters: { popupRoom: { side: "below", minHeight: "400px" } },
     args: {
         name: "office",
         label: "Office",
@@ -279,7 +279,6 @@ export const SearchableGroups: Story = {
 };
 
 export const SearchableMultiple: Story = {
-    parameters: { popupRoom: { side: "below", minHeight: "400px" } },
     render: (args) => (
         <ControlledMultipleSelect
             name="countries"

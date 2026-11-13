@@ -49,7 +49,7 @@ const meta = {
     component: ConfirmDialog,
     title: "Building blocks/Modals & overlays/ConfirmDialog",
     decorators: [themeDecorator],
-    parameters: { tokens: confirmDialogTokens, popupRoom: { side: "below", minHeight: "300px" }, closedOnDocsPage: true },
+    parameters: { tokens: confirmDialogTokens, closedOnDocsPage: true },
     render: (args) => <ControlledConfirmDialog key={String(args.open)} {...args} />,
     args: {
         open: false,

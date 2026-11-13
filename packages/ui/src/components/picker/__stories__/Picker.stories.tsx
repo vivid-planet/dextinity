@@ -146,7 +146,6 @@ type Story = StoryObj<StoryArgs>;
  * - Offer `onClear` when the value is optional.
  */
 export const Default: Story = {
-    parameters: { popupRoom: { side: "below", minHeight: "480px" } },
     play: async ({ args, canvas }) => {
         const trigger = canvas.getByRole("button", { name: "Link target Choose a page" });
         await userEvent.click(trigger);
@@ -161,7 +160,6 @@ export const Default: Story = {
  * With a value and `onClear`, a button clears it.
  */
 export const WithValue: Story = {
-    parameters: { popupRoom: { side: "below", minHeight: "480px" } },
     render: (args) => <PagePicker {...args} initialPageId="about" />,
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Clear" }));

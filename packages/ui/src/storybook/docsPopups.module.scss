@@ -1,9 +1,4 @@
+// Keeps the margins of the story inside the room, so the room's padding is all extra room for popups
 .popupRoom {
-    display: grid;
-    align-content: start;
-    min-block-size: 300px;
-}
-
-.popupRoomAbove {
-    align-content: end;
+    display: flow-root;
 }

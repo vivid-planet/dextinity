@@ -31,7 +31,7 @@ const meta = {
     component: Dialog,
     title: "Building blocks/Modals & overlays/Dialog",
     decorators: [themeDecorator],
-    parameters: { tokens: dialogTokens, popupRoom: { side: "below", minHeight: "320px" }, closedOnDocsPage: true },
+    parameters: { tokens: dialogTokens, closedOnDocsPage: true },
     render: (args) => <ControlledDialog key={String(args.open)} {...args} />,
     args: {
         open: false,

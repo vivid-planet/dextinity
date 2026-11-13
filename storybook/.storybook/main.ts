@@ -51,6 +51,13 @@ const config: StorybookConfig = {
                 title: "@dextinity/ui",
                 url: configType === "DEVELOPMENT" ? "http://localhost:26648/" : chromaticUrl("6adb09e1f667e1e0e9a4a772"),
             },
+            // Only composed locally until the adapter packages publish their Storybooks to Chromatic
+            ...(configType === "DEVELOPMENT"
+                ? {
+                      "@dextinity/ui-react-final-form": { title: "@dextinity/ui-react-final-form", url: "http://localhost:26650/" },
+                      "@dextinity/ui-react-hook-form": { title: "@dextinity/ui-react-hook-form", url: "http://localhost:26651/" },
+                  }
+                : {}),
         };
     },
 };

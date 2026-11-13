@@ -1,0 +1,81 @@
+/*
+ * A flat brand, written the way an application customizes the theme: only token overrides, outside any cascade layer, no change to
+ * the library. It removes depth everywhere — no shadows, glass, blur, gradients, glows, halos, light fields or grain — and draws
+ * edges with solid lines instead.
+ */
+
+/* Shared by all color schemes. High contrast is flat already, so these values agree with it. */
+[data-dextinity-brand="flat"] {
+    --dextinity-brand-radius-control: 4px;
+    --dextinity-brand-radius-factor: 0.4;
+
+    --dextinity-line-width: 1px;
+    --dextinity-line-width-strong: 2px;
+
+    --dextinity-gradient-brand: var(--dextinity-color-accent);
+    --dextinity-color-accent-glow: transparent;
+    --dextinity-focus-halo-width: 0px;
+
+    --dextinity-shadow-1: 0 0 transparent;
+    --dextinity-shadow-2: 0 0 transparent;
+    --dextinity-shadow-3: 0 0 transparent;
+
+    --dextinity-material-glass: var(--dextinity-color-surface);
+    --dextinity-material-glass-strong: var(--dextinity-color-surface);
+    --dextinity-material-glass-overlay: var(--dextinity-color-surface);
+    --dextinity-material-highlight: transparent;
+    --dextinity-material-blur: 0px;
+    --dextinity-material-saturation: 1;
+    --dextinity-material-grain: 0;
+    --dextinity-material-field-1: transparent;
+    --dextinity-material-field-2: transparent;
+    --dextinity-material-field-3: transparent;
+    --dextinity-material-edge-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge);
+
+    --dextinity-app-shell-field-blur: 0px;
+    --dextinity-command-palette-backdrop-blur: 0px;
+    --dextinity-quick-look-backdrop-blur: 0px;
+}
+
+/* Light and dark only: high contrast keeps its own outlines and colors. */
+[data-dextinity-brand="flat"]:not([data-dextinity-color-scheme="high-contrast"]) {
+    --dextinity-material-edge: var(--dextinity-color-line-strong);
+
+    --dextinity-field-halo-focus: transparent;
+    --dextinity-field-halo-error: transparent;
+    --dextinity-field-halo-warning: transparent;
+    --dextinity-field-halo-success: transparent;
+
+    --dextinity-button-primary-shadow: 0 0 transparent;
+    --dextinity-button-primary-shadow-hover: 0 0 transparent;
+    --dextinity-button-active-brightness: 0.9;
+
+    --dextinity-switch-thumb-shadow: 0 0 transparent;
+    --dextinity-pagination-page-shadow-current: 0 0 transparent;
+
+    --dextinity-side-nav-item-background-hover: var(--dextinity-color-fill-hover);
+    --dextinity-side-nav-item-active-shadow: 0 0 transparent;
+    --dextinity-top-bar-search-background: var(--dextinity-color-surface-raised);
+    --dextinity-tree-view-row-background-selected: var(--dextinity-color-accent-soft);
+    --dextinity-status-indicator-running-pulse: var(--dextinity-color-accent-soft);
+
+    --dextinity-app-shell-overlay-shadow: 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+    --dextinity-command-palette-backdrop: oklch(0 0 0 / 0.34);
+
+    --dextinity-asset-thumbnail-document-page-shadow: 0 0 0 transparent;
+    --dextinity-asset-thumbnail-folder-highlight: transparent;
+    --dextinity-device-preview-frame-shadow: 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+    --dextinity-focal-point-picker-marker-shadow: 0 0 0 1px oklch(0 0 0 / 0.5);
+}
+
+/* Without shadows, surfaces stand apart from the canvas by contrast alone. */
+[data-dextinity-brand="flat"][data-dextinity-color-scheme="light"] {
+    --dextinity-color-canvas: oklch(0.955 0.005 var(--dextinity-brand-neutral-hue));
+    --dextinity-color-surface-raised: oklch(1 0 0);
+    --dextinity-color-surface-sunken: oklch(0.94 0.006 var(--dextinity-brand-neutral-hue));
+}
+
+[data-dextinity-brand="flat"][data-dextinity-color-scheme="dark"] {
+    --dextinity-color-canvas: oklch(0.12 0.006 var(--dextinity-brand-neutral-hue));
+    --dextinity-color-surface-raised: oklch(0.175 0.008 var(--dextinity-brand-neutral-hue));
+}

@@ -7,7 +7,7 @@ import { InlineStyleContext } from "../InlineStyleContext";
 declare module "@tiptap/core" {
     interface Commands<ReturnType> {
         inlineStyle: {
-            setInlineStyle: (attrs: { type: string }) => ReturnType;
+            setInlineStyle: (name: string) => ReturnType;
             unsetInlineStyle: () => ReturnType;
         };
     }
@@ -63,9 +63,9 @@ export const InlineStyleMark = Mark.create({
     addCommands() {
         return {
             setInlineStyle:
-                (attrs) =>
+                (name) =>
                 ({ commands }) =>
-                    commands.setMark(this.name, attrs),
+                    commands.setMark(this.name, { type: name }),
             unsetInlineStyle:
                 () =>
                 ({ commands }) =>

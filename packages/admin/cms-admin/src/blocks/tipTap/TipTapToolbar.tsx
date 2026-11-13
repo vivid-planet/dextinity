@@ -251,7 +251,7 @@ export const TipTapToolbar = ({
                 if (editorState.activeInlineStyles[style.name]) {
                     editor.chain().focus().unsetInlineStyle().run();
                 } else {
-                    editor.chain().focus().setInlineStyle({ type: style.name }).run();
+                    editor.chain().focus().setInlineStyle(style.name).run();
                 }
             },
         })),

@@ -13,7 +13,7 @@ import {
     useBlockPreview,
     useRouterLinkClick,
 } from "@dextinity/cms-admin";
-import { Button, EmptyState, formatShortcut, Icon, isApplePlatform, type NewToast, PageHeader, Panel, Tooltip } from "@dextinity/ui";
+import { Button, EmptyState, Icon, type NewToast, PageHeader, Panel, Tooltip } from "@dextinity/ui";
 import { focusOnError, useHasUnsavedChanges } from "@dextinity/ui-react-final-form";
 import { deepEqual } from "fast-equals";
 import { FORM_ERROR, type FormApi, type SubmissionErrors } from "final-form";
@@ -386,7 +386,6 @@ function EmailCampaignFormContent({
         }),
     };
 
-    const saveShortcut = formatShortcut("mod+s").join(isApplePlatform() ? "" : "+");
     const title = savedCampaign?.title ?? intl.formatMessage({ id: "dextinity.emailCampaigns.newTitle", defaultMessage: "New email campaign" });
 
     return (
@@ -413,7 +412,7 @@ function EmailCampaignFormContent({
                             {(savedCampaign != null || hasUnsavedChanges) && <BrevoFormSaveState />}
                             <Tooltip
                                 content={intl.formatMessage({ id: "dextinity.emailCampaigns.saveTooltip", defaultMessage: "Saves the campaign" })}
-                                shortcut={saveShortcut}
+                                shortcut="mod+s"
                             >
                                 <Button
                                     startIcon={<Icon name="check" />}

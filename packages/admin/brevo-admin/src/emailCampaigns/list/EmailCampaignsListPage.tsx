@@ -25,6 +25,7 @@ import {
     MenuSeparator,
     type NewToast,
     PageHeader,
+    StatusIndicator,
 } from "@dextinity/ui";
 import { useState } from "react";
 import { FormattedDate, useIntl } from "react-intl";
@@ -313,7 +314,7 @@ export function EmailCampaignsListPage({ baseUrl, scope, scopeLabel, addToast, E
                                 selected={filters.sendingState === sendingState}
                                 onClick={() => listState.setFilter("sendingState", sendingState)}
                                 count={counts[sendingState]}
-                                status={sendingStateStatus[sendingState]}
+                                startAdornment={<StatusIndicator status={sendingStateStatus[sendingState]} decorative />}
                             >
                                 {intl.formatMessage(sendingStateMessages[sendingState])}
                             </FilterChip>

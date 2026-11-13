@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type KeyboardEvent, useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
-import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
@@ -71,7 +70,7 @@ const meta = {
     component: QuickLook,
     title: "Building blocks/Modals & overlays/QuickLook",
     decorators: [themeDecorator],
-    parameters: { tokens: quickLookTokens },
+    parameters: { tokens: quickLookTokens, popupRoom: { side: "below", minHeight: "680px" }, closedOnDocsPage: true },
     render: (args) => <Finder key={`${args.open}-${args.index}`} {...args} />,
     args: {
         open: false,
@@ -105,7 +104,6 @@ type Story = StoryObj<typeof meta>;
  * - The arrow keys step through the same files as the list behind it.
  */
 export const Default: Story = {
-    parameters: { popupRoom: { side: "below", minHeight: "680px" } },
     play: async ({ args, canvas }) => {
         const tile = canvas.getByRole("button", { name: "team.jpg" });
         tile.focus();
@@ -126,7 +124,6 @@ export const Default: Story = {
 
 export const Open: Story = {
     args: { open: true, index: 1 },
-    parameters: { docs: modalOverlayDocs("720px") },
 };
 
 /**
@@ -146,7 +143,6 @@ export const WithActions: Story = {
             </>
         ),
     },
-    parameters: { docs: modalOverlayDocs("720px") },
 };
 
 /**
@@ -154,5 +150,4 @@ export const WithActions: Story = {
  */
 export const Buttons: Story = {
     args: { open: true, index: 2 },
-    parameters: { docs: modalOverlayDocs("720px") },
 };

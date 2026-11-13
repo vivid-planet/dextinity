@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
-import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
@@ -50,7 +49,7 @@ const meta = {
     component: ConfirmDialog,
     title: "Building blocks/Modals & overlays/ConfirmDialog",
     decorators: [themeDecorator],
-    parameters: { tokens: confirmDialogTokens },
+    parameters: { tokens: confirmDialogTokens, popupRoom: { side: "below", minHeight: "300px" }, closedOnDocsPage: true },
     render: (args) => <ControlledConfirmDialog key={String(args.open)} {...args} />,
     args: {
         open: false,
@@ -90,7 +89,6 @@ type Story = StoryObj<typeof meta>;
  * - Label the confirming action with what it does, never "OK" or "Yes".
  */
 export const Default: Story = {
-    parameters: { popupRoom: { side: "below", minHeight: "300px" } },
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Leave page" }));
         const dialog = await screen.findByRole("alertdialog", { name: "Unsaved changes" });
@@ -106,7 +104,6 @@ export const Default: Story = {
  */
 export const Cancel: Story = {
     args: { open: true },
-    parameters: { docs: modalOverlayDocs("440px") },
 };
 
 /**
@@ -118,7 +115,6 @@ export const WithSecondaryAction: Story = {
         secondaryLabel: "Discard",
         onSecondary: fn(),
     },
-    parameters: { docs: modalOverlayDocs("440px") },
 };
 
 /**
@@ -133,7 +129,6 @@ export const Danger: Story = {
         confirmLabel: "Delete",
         confirmIcon: <Icon name="delete" />,
     },
-    parameters: { docs: modalOverlayDocs("440px") },
 };
 
 /**
@@ -154,7 +149,6 @@ export const WithDetails: Story = {
             </ul>
         ),
     },
-    parameters: { docs: modalOverlayDocs("440px") },
 };
 
 /**
@@ -163,5 +157,4 @@ export const WithDetails: Story = {
  */
 export const Loading: Story = {
     args: { open: true, loading: true, secondaryLabel: "Discard", onSecondary: fn() },
-    parameters: { docs: modalOverlayDocs("440px") },
 };

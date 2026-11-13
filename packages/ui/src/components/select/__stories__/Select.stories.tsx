@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
-import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Button } from "../../button/Button";
 import { Dialog } from "../../dialog/Dialog";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Icon } from "../../icon/Icon";
@@ -453,14 +453,24 @@ export const ObjectValues: Story = {
     },
 };
 
+function SelectInDialog({ defaultOpen, ...props }: SelectProps<boolean> & { defaultOpen: boolean }) {
+    const [open, setOpen] = useState(defaultOpen);
+    return (
+        <>
+            <Button variant="outlined" color="secondary" onClick={() => setOpen(true)}>
+                Move event
+            </Button>
+            <Dialog open={open} onOpenChange={setOpen} title="Move event">
+                <ControlledSelect {...props} />
+            </Dialog>
+        </>
+    );
+}
+
 /**
  * In a `Dialog`, the options open above the dialog.
  */
 export const InDialog: Story = {
-    parameters: { docs: modalOverlayDocs("480px") },
-    render: (args) => (
-        <Dialog open onOpenChange={() => undefined} title="Move event">
-            <ControlledSelect {...(args as SelectProps<boolean>)} />
-        </Dialog>
-    ),
+    // Starts closed on the docs page, where an open modal dialog would lock the page's scrolling and take the reader's focus
+    render: (args, { viewMode }) => <SelectInDialog defaultOpen={viewMode !== "docs"} {...(args as SelectProps<boolean>)} />,
 };

@@ -1,4 +1,4 @@
-import type { Decorator, Parameters } from "@storybook/react-vite";
+import type { Decorator } from "@storybook/react-vite";
 
 import styles from "./docsPopups.module.scss";
 
@@ -52,36 +52,13 @@ export const popupRoomDecorator: Decorator = (Story, { id, parameters, viewMode 
 };
 
 /**
- * The `docs` parameters for a story that starts with a modal overlay open, such as a dialog or a drawer. The docs page renders the
- * story in its own frame of the given height, so the overlay's scroll lock and focus trap stay in that frame and don't take over the
- * docs page. The frame runs the story's play function as soon as it loads, which would move the reader's focus, so such a story has
- * no play function: its interaction test goes in a dev story.
+ * On docs pages, renders a story with `parameters.closedOnDocsPage` with its `open` arg off, so only its trigger shows. A modal
+ * overlay that starts open would lock the docs page's scrolling and take the reader's focus as soon as the page loads. The
+ * story's own page still starts with the overlay open.
  */
-export function modalOverlayDocs(height: string): Parameters["docs"] {
-    return { story: { inline: false, height } };
-}
-
-/**
- * In a story's own frame on a docs page (see `modalOverlayDocs`), ignores calls to `focus()` until the reader moves into that frame.
- * An overlay that starts open moves the focus into itself, and in a frame, that takes the focus away from the docs page as soon as
- * the frame loads.
- */
-export function preventFocusInDocsFramesUntilUsed() {
-    if (!window.frameElement?.id.startsWith("iframe--")) {
-        return;
+export const closedOnDocsPageDecorator: Decorator = (Story, { args, parameters, viewMode }) => {
+    if (viewMode !== "docs" || parameters.closedOnDocsPage !== true) {
+        return <Story />;
     }
-    // Not `navigator.userActivation`: a click anywhere on the docs page activates its same-origin frames too
-    let used = false;
-    const markUsed = () => {
-        used = true;
-    };
-    for (const type of ["focus", "pointerdown", "keydown"]) {
-        window.addEventListener(type, markUsed, { capture: true, once: true });
-    }
-    const focus = HTMLElement.prototype.focus;
-    HTMLElement.prototype.focus = function (options) {
-        if (used) {
-            focus.call(this, options);
-        }
-    };
-}
+    return <Story args={{ ...args, open: false }} />;
+};

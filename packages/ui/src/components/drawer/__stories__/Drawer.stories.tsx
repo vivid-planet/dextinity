@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
-import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Field } from "../../field/Field";
@@ -69,7 +68,7 @@ const meta = {
     component: Drawer,
     title: "Building blocks/Modals & overlays/Drawer",
     decorators: [themeDecorator],
-    parameters: { tokens: drawerTokens },
+    parameters: { tokens: drawerTokens, popupRoom: { side: "below", minHeight: "560px" }, closedOnDocsPage: true },
     render: (args) => <RedirectList key={String(args.open)} {...args} />,
     args: {
         open: false,
@@ -114,7 +113,6 @@ type Story = StoryObj<typeof meta>;
  * - On narrow screens the drawer takes the full width.
  */
 export const Default: Story = {
-    parameters: { popupRoom: { side: "below", minHeight: "560px" } },
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: /alt-2/ }));
         const drawer = await screen.findByRole("dialog", { name: "Edit redirect" });
@@ -131,7 +129,6 @@ export const Default: Story = {
 
 export const Open: Story = {
     args: { open: true },
-    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -139,7 +136,6 @@ export const Open: Story = {
  */
 export const WithDescription: Story = {
     args: { open: true, description: "Visitors of the old address land on the new page." },
-    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -147,7 +143,6 @@ export const WithDescription: Story = {
  */
 export const Large: Story = {
     args: { open: true, width: "large" },
-    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -155,5 +150,4 @@ export const Large: Story = {
  */
 export const Modal: Story = {
     args: { open: true, modal: true },
-    parameters: { docs: modalOverlayDocs("560px") },
 };

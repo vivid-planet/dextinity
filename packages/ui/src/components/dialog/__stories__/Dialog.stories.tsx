@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type FormEvent, useId, useRef, useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
-import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Field } from "../../field/Field";
@@ -32,7 +31,7 @@ const meta = {
     component: Dialog,
     title: "Building blocks/Modals & overlays/Dialog",
     decorators: [themeDecorator],
-    parameters: { tokens: dialogTokens },
+    parameters: { tokens: dialogTokens, popupRoom: { side: "below", minHeight: "320px" }, closedOnDocsPage: true },
     render: (args) => <ControlledDialog key={String(args.open)} {...args} />,
     args: {
         open: false,
@@ -82,7 +81,6 @@ type Story = StoryObj<typeof meta>;
  * - Prefer a `Drawer` when people need the context behind it.
  */
 export const Default: Story = {
-    parameters: { popupRoom: { side: "below", minHeight: "320px" } },
     play: async ({ args, canvas }) => {
         const trigger = canvas.getByRole("button", { name: "Open dialog" });
         await userEvent.click(trigger);
@@ -104,7 +102,6 @@ export const Default: Story = {
 
 export const Open: Story = {
     args: { open: true },
-    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -112,7 +109,6 @@ export const Open: Story = {
  */
 export const CloseButton: Story = {
     args: { open: true },
-    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 function RedirectForm() {
@@ -146,7 +142,6 @@ export const WithForm: Story = {
             </>
         ),
     },
-    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -154,7 +149,6 @@ export const WithForm: Story = {
  */
 export const Small: Story = {
     args: { open: true, size: "small" },
-    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -162,7 +156,6 @@ export const Small: Story = {
  */
 export const Large: Story = {
     args: { open: true, size: "large" },
-    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 function BrightPage() {
@@ -186,7 +179,6 @@ export const OverBrightPage: Story = {
             <ControlledDialog key={String(args.open)} {...args} />
         </>
     ),
-    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -194,13 +186,12 @@ export const OverBrightPage: Story = {
  */
 export const HideCloseButton: Story = {
     args: { open: true, hideCloseButton: true },
-    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 function InitialFocusDialog(props: DialogProps) {
     const saveRef = useRef<HTMLButtonElement>(null);
     return (
-        <Dialog
+        <ControlledDialog
             {...props}
             initialFocus={saveRef}
             footer={
@@ -218,8 +209,7 @@ function InitialFocusDialog(props: DialogProps) {
  */
 export const InitialFocus: Story = {
     args: { open: true },
-    render: (args) => <InitialFocusDialog {...args} />,
-    parameters: { docs: modalOverlayDocs("560px") },
+    render: (args) => <InitialFocusDialog key={String(args.open)} {...args} />,
 };
 
 /**
@@ -227,7 +217,6 @@ export const InitialFocus: Story = {
  */
 export const AlertDialog: Story = {
     args: { open: true, role: "alertdialog" },
-    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /**
@@ -235,7 +224,6 @@ export const AlertDialog: Story = {
  */
 export const NotDismissible: Story = {
     args: { open: true, dismissible: false },
-    parameters: { docs: modalOverlayDocs("560px") },
 };
 
 /** A dialog with a form: the form element is in the content, the footer's submit button submits it by its id. */
@@ -288,5 +276,4 @@ function FormDialog(props: DialogProps) {
 export const WithFormActions: Story = {
     args: { open: true, title: "New folder", description: undefined, footer: undefined },
     render: (args) => <FormDialog {...args} />,
-    parameters: { docs: modalOverlayDocs("560px") },
 };

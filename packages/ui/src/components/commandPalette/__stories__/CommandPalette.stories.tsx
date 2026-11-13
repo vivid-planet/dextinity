@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
-import { modalOverlayDocs } from "../../../storybook/docsPopups";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
@@ -77,7 +76,7 @@ const meta = {
             </div>
         ),
     ],
-    parameters: { tokens: commandPaletteTokens },
+    parameters: { tokens: commandPaletteTokens, closedOnDocsPage: true },
     render: (args) => <ControlledCommandPalette {...args} />,
     args: {
         open: false,
@@ -145,7 +144,6 @@ export const Open: Story = {
     args: {
         open: true,
     },
-    parameters: { docs: modalOverlayDocs("700px") },
 };
 
 export const Filtered: Story = {
@@ -153,7 +151,6 @@ export const Filtered: Story = {
         open: true,
         query: "new",
     },
-    parameters: { docs: modalOverlayDocs("700px") },
 };
 
 export const NoResults: Story = {
@@ -161,5 +158,4 @@ export const NoResults: Story = {
         open: true,
         query: "invoice",
     },
-    parameters: { docs: modalOverlayDocs("700px") },
 };

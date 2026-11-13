@@ -1,8 +1,9 @@
-import { Switch, type SwitchProps } from "@dextinity/ui";
+import { Field, Switch, type SwitchProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { type FieldAdapterFieldProps, groupFieldPropKeys, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { ReactHookFormFieldConfig } from "../../fieldAdapter/reactHookFormFieldConfig";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
 import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
@@ -10,10 +11,11 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface SwitchFieldProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>
     extends
         FieldAdapterBaseProps<TFieldValues, TName>,
+        FieldAdapterFieldProps,
         ReactHookFormFieldConfig<TFieldValues, TName>,
         Omit<
             SwitchProps,
-            "name" | "checked" | "onChange" | "onBlur" | "required" | "defaultValue" | "defaultChecked" | "state" | "validationMessage"
+            "name" | "checked" | "onChange" | "onBlur" | "onFocus" | "required" | "defaultValue" | "defaultChecked" | "state" | "validationMessage"
         > {}
 
 /**
@@ -21,23 +23,28 @@ export interface SwitchFieldProps<TFieldValues extends FieldValues = FieldValues
  * submitted.
  */
 export const SwitchField = forwardRef(function SwitchField<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
-    { name, ...props }: SwitchFieldProps<TFieldValues, TName>,
+    { name, onFocus, ...props }: SwitchFieldProps<TFieldValues, TName>,
     forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
-    const [options, switchProps] = splitFieldAdapterProps(props);
+    const [options, controlProps] = splitFieldAdapterProps(props);
+    const [fieldProps, switchProps] = splitFieldProps(controlProps, groupFieldPropKeys);
     const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLDivElement>({ name, ...options }, forwardedRef);
 
     return (
-        <Switch
-            {...switchProps}
-            ref={ref}
-            name={field.name}
-            checked={field.value === true}
+        <Field
+            layout="group"
+            {...fieldProps}
             required={options.required}
             {...validationProps}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-        />
+            onBlur={(event) => {
+                if (leavesField(event)) {
+                    field.onBlur();
+                }
+            }}
+            onFocus={onFocus}
+        >
+            <Switch {...switchProps} ref={ref} name={field.name} checked={field.value === true} onChange={field.onChange} />
+        </Field>
     );
 }) as <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(
     props: SwitchFieldProps<TFieldValues, TName> & RefAttributes<HTMLDivElement>,

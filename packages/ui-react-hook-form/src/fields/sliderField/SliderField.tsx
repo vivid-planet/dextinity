@@ -1,8 +1,9 @@
-import { Slider, type SliderProps } from "@dextinity/ui";
+import { Field, Slider, type SliderProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { type FieldAdapterFieldProps, groupFieldPropKeys, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { ReactHookFormFieldConfig } from "../../fieldAdapter/reactHookFormFieldConfig";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
 import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
@@ -10,8 +11,9 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface SliderFieldProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>
     extends
         FieldAdapterBaseProps<TFieldValues, TName>,
+        FieldAdapterFieldProps,
         ReactHookFormFieldConfig<TFieldValues, TName>,
-        Omit<SliderProps, "name" | "value" | "onChange" | "onBlur" | "required" | "state" | "validationMessage"> {}
+        Omit<SliderProps, "name" | "value" | "onChange" | "onBlur" | "onFocus" | "style" | "required" | "state" | "validationMessage"> {}
 
 export function toSliderValue(value: unknown, min = 0) {
     return typeof value === "number" && !Number.isNaN(value) ? value : min;
@@ -22,22 +24,28 @@ export function toSliderValue(value: unknown, min = 0) {
  * slider once it was touched or the form was submitted.
  */
 export const SliderField = forwardRef(function SliderField<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
-    { name, ...props }: SliderFieldProps<TFieldValues, TName>,
+    { name, onFocus, ...props }: SliderFieldProps<TFieldValues, TName>,
     forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
-    const [options, sliderProps] = splitFieldAdapterProps(props);
+    const [options, controlProps] = splitFieldAdapterProps(props);
+    const [fieldProps, sliderProps] = splitFieldProps(controlProps, groupFieldPropKeys);
     const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLDivElement>({ name, ...options }, forwardedRef);
 
     return (
-        <Slider
-            {...sliderProps}
-            ref={ref}
-            name={field.name}
-            value={toSliderValue(field.value, sliderProps.min)}
+        <Field
+            layout="group"
+            {...fieldProps}
+            required={options.required}
             {...validationProps}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-        />
+            onBlur={(event) => {
+                if (leavesField(event)) {
+                    field.onBlur();
+                }
+            }}
+            onFocus={onFocus}
+        >
+            <Slider {...sliderProps} ref={ref} name={field.name} value={toSliderValue(field.value, sliderProps.min)} onChange={field.onChange} />
+        </Field>
     );
 }) as <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(
     props: SliderFieldProps<TFieldValues, TName> & RefAttributes<HTMLDivElement>,

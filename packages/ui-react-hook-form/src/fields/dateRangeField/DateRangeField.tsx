@@ -1,8 +1,9 @@
-import { type DateRange, DateRangePicker, type DateRangePickerProps } from "@dextinity/ui";
+import { type DateRange, DateRangePicker, type DateRangePickerProps, Field } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 
 import type { FieldAdapterActions, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { boxFieldPropKeys, type FieldAdapterBoxFieldProps, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { ReactHookFormFieldConfig } from "../../fieldAdapter/reactHookFormFieldConfig";
 import { renderActions } from "../../fieldAdapter/renderActions";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
@@ -11,8 +12,9 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface DateRangeFieldProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>
     extends
         Omit<FieldAdapterBaseProps<TFieldValues, TName>, "required">,
+        FieldAdapterBoxFieldProps,
         ReactHookFormFieldConfig<TFieldValues, TName>,
-        Omit<DateRangePickerProps, "name" | "value" | "onChange" | "onBlur" | "state" | "validationMessage" | "required" | "actions"> {
+        Omit<DateRangePickerProps, "name" | "value" | "onChange" | "onBlur" | "onFocus" | "state" | "validationMessage" | "required" | "actions"> {
     /**
      * Marks the field as required and validates that both the start and the end are set.
      *
@@ -41,10 +43,11 @@ export function isIncompleteDateRange(value: unknown) {
  * field's error once it was touched or the form was submitted.
  */
 export const DateRangeField = forwardRef(function DateRangeField<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
-    { name, actions, ...props }: DateRangeFieldProps<TFieldValues, TName>,
+    { name, onFocus, actions, ...props }: DateRangeFieldProps<TFieldValues, TName>,
     forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
-    const [options, dateRangePickerProps] = splitFieldAdapterProps(props);
+    const [options, controlProps] = splitFieldAdapterProps(props);
+    const [fieldProps, dateRangePickerProps] = splitFieldProps(controlProps, boxFieldPropKeys);
     const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLInputElement>(
         { name, ...options, isEmpty: isIncompleteDateRange },
         forwardedRef,
@@ -52,17 +55,20 @@ export const DateRangeField = forwardRef(function DateRangeField<TFieldValues ex
     const value = toDateRangeValue(field.value);
 
     return (
-        <DateRangePicker
-            {...dateRangePickerProps}
+        <Field
+            {...fieldProps}
             {...validationProps}
-            ref={ref}
-            name={field.name}
-            value={value}
             required={options.required}
             actions={renderActions(actions, value, field.onChange)}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-        />
+            onBlur={(event) => {
+                if (leavesField(event)) {
+                    field.onBlur();
+                }
+            }}
+            onFocus={onFocus}
+        >
+            <DateRangePicker {...dateRangePickerProps} ref={ref} name={field.name} value={value} onChange={field.onChange} />
+        </Field>
     );
 }) as <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(
     props: DateRangeFieldProps<TFieldValues, TName> & RefAttributes<HTMLInputElement>,

@@ -1,8 +1,9 @@
-import { type FocalPoint, FocalPointPicker, type FocalPointPickerProps } from "@dextinity/ui";
+import { Field, type FocalPoint, FocalPointPicker, type FocalPointPickerProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { type FieldAdapterFieldProps, groupFieldPropKeys, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { ReactHookFormFieldConfig } from "../../fieldAdapter/reactHookFormFieldConfig";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
 import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
@@ -13,8 +14,9 @@ export interface FocalPointPickerFieldProps<
 >
     extends
         FieldAdapterBaseProps<TFieldValues, TName>,
+        FieldAdapterFieldProps,
         ReactHookFormFieldConfig<TFieldValues, TName>,
-        Omit<FocalPointPickerProps, "value" | "onChange" | "onBlur" | "defaultValue" | "state" | "validationMessage"> {}
+        Omit<FocalPointPickerProps, "value" | "onChange" | "onBlur" | "onFocus" | "defaultValue" | "state" | "validationMessage"> {}
 
 const center: FocalPoint = { x: 0.5, y: 0.5 };
 
@@ -32,19 +34,26 @@ export function toFocalPoint(value: unknown): FocalPoint {
 export const FocalPointPickerField = forwardRef(function FocalPointPickerField<
     TFieldValues extends FieldValues,
     TName extends FieldPath<TFieldValues>,
->({ name, ...props }: FocalPointPickerFieldProps<TFieldValues, TName>, forwardedRef: ForwardedRef<HTMLDivElement>) {
-    const [options, pickerProps] = splitFieldAdapterProps(props);
+>({ name, onFocus, ...props }: FocalPointPickerFieldProps<TFieldValues, TName>, forwardedRef: ForwardedRef<HTMLDivElement>) {
+    const [options, controlProps] = splitFieldAdapterProps(props);
+    const [fieldProps, pickerProps] = splitFieldProps(controlProps, groupFieldPropKeys);
     const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLDivElement>({ name, ...options }, forwardedRef);
 
     return (
-        <FocalPointPicker
-            {...pickerProps}
-            ref={ref}
-            value={toFocalPoint(field.value)}
+        <Field
+            layout="group"
+            {...fieldProps}
+            required={options.required}
             {...validationProps}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-        />
+            onBlur={(event) => {
+                if (leavesField(event)) {
+                    field.onBlur();
+                }
+            }}
+            onFocus={onFocus}
+        >
+            <FocalPointPicker {...pickerProps} ref={ref} value={toFocalPoint(field.value)} onChange={field.onChange} />
+        </Field>
     );
 }) as <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(
     props: FocalPointPickerFieldProps<TFieldValues, TName> & RefAttributes<HTMLDivElement>,

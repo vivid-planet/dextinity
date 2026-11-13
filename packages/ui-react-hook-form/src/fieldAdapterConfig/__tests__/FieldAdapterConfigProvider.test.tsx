@@ -52,12 +52,12 @@ function fieldOf(label: string) {
 describe("FieldAdapterConfigProvider", () => {
     it("shows errors once the field was touched by default", async () => {
         renderForm({}, { mode: "onTouched" });
-        expect(screen.queryByText("Required")).not.toBeInTheDocument();
+        expect(screen.queryByText("Required", { ignore: "[hidden]" })).not.toBeInTheDocument();
 
         await userEvent.click(screen.getByLabelText("Title"));
         await userEvent.tab();
 
-        expect(await screen.findByText("Required")).toBeInTheDocument();
+        expect(await screen.findByText("Required", { ignore: "[hidden]" })).toBeInTheDocument();
         expect(fieldOf("Title")).toHaveAttribute("data-state", "error");
     });
 
@@ -67,7 +67,7 @@ describe("FieldAdapterConfigProvider", () => {
         await userEvent.type(screen.getByLabelText("Title"), "a");
         await userEvent.clear(screen.getByLabelText("Title"));
 
-        expect(await screen.findByText("Required")).toBeInTheDocument();
+        expect(await screen.findByText("Required", { ignore: "[hidden]" })).toBeInTheDocument();
         expect(screen.getByLabelText("Title")).toHaveAttribute("aria-invalid", "true");
     });
 
@@ -124,6 +124,6 @@ describe("FieldAdapterConfigProvider", () => {
         await userEvent.clear(screen.getByLabelText("Slug"));
 
         expect(screen.getByText("Longer than recommended")).toBeInTheDocument();
-        expect(await screen.findByText("Required")).toBeInTheDocument();
+        expect(await screen.findByText("Required", { ignore: "[hidden]" })).toBeInTheDocument();
     });
 });

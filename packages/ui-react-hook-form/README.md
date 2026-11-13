@@ -100,7 +100,7 @@ React Hook Form compares the values as they are, including their type, so a defa
 
 ### Validation
 
-By default, a field shows its error once it was touched (blurred) or the form was submitted (see [When messages show](#when-messages-show)): `state="error"` with the message as `validationMessage`. An error set with `setError` after submitting (e.g. from the server) shows the same way until the field changes and validates again. Controls without a field frame – `CheckboxField`, `SwitchField`, `RadioGroupField`, `CheckboxGroupField`, `SegmentedControlField`, `SliderField`, and `FocalPointPickerField` – show it below the control, the same way.
+By default, a field shows its error once it was touched (blurred) or the form was submitted (see [When messages show](#when-messages-show)): `state="error"` with the message as `validationMessage`. An error set with `setError` after submitting (e.g. from the server) shows the same way until the field changes and validates again. Every adapter renders its control in a `Field` with `label`, `required`, `helperText`, `helpText`, and the message, so the message shows below the control for every field, including the group fields – `CheckboxField`, `SwitchField`, `RadioGroupField`, `CheckboxGroupField`, `SegmentedControlField`, `SliderField`, `FileUploadField`, and `FocalPointPickerField` – which use `layout="group"`.
 
 When submitting fails validation, React Hook Form focuses the first invalid field (`shouldFocusError`, on by default). The adapters register the element to focus inside the ui component – the input, the select trigger, the editor, or the checkbox – since not every ui component's root takes focus. Pass `{ shouldFocus: true }` to `setError` to focus a field with a server error.
 

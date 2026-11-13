@@ -1,8 +1,9 @@
-import { Checkbox, type CheckboxProps } from "@dextinity/ui";
+import { Checkbox, type CheckboxProps, Field } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { type FieldAdapterFieldProps, groupFieldPropKeys, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { ReactHookFormFieldConfig } from "../../fieldAdapter/reactHookFormFieldConfig";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
 import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
@@ -10,10 +11,11 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface CheckboxFieldProps<TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>
     extends
         FieldAdapterBaseProps<TFieldValues, TName>,
+        FieldAdapterFieldProps,
         ReactHookFormFieldConfig<TFieldValues, TName>,
         Omit<
             CheckboxProps,
-            "name" | "checked" | "onChange" | "onBlur" | "required" | "defaultValue" | "defaultChecked" | "state" | "validationMessage"
+            "name" | "checked" | "onChange" | "onBlur" | "onFocus" | "required" | "defaultValue" | "defaultChecked" | "state" | "validationMessage"
         > {
     /** Makes the checkbox one of a group: the field holds the list of the checked boxes' values, and this box adds or removes its own. */
     value?: string;
@@ -36,24 +38,35 @@ export function toggleCheckboxValue(fieldValue: unknown, value: string | undefin
  * checked. Shows the field's error below the checkbox once it was touched or the form was submitted.
  */
 export const CheckboxField = forwardRef(function CheckboxField<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
-    { name, value, ...props }: CheckboxFieldProps<TFieldValues, TName>,
+    { name, onFocus, value, ...props }: CheckboxFieldProps<TFieldValues, TName>,
     forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
-    const [options, checkboxProps] = splitFieldAdapterProps(props);
+    const [options, controlProps] = splitFieldAdapterProps(props);
+    const [fieldProps, checkboxProps] = splitFieldProps(controlProps, groupFieldPropKeys);
     const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLDivElement>({ name, ...options }, forwardedRef);
 
     return (
-        <Checkbox
-            {...checkboxProps}
-            ref={ref}
-            name={field.name}
-            value={value}
-            checked={isCheckboxChecked(field.value, value)}
+        <Field
+            layout="group"
+            {...fieldProps}
             required={options.required}
             {...validationProps}
-            onChange={(checked) => field.onChange(toggleCheckboxValue(field.value, value, checked))}
-            onBlur={field.onBlur}
-        />
+            onBlur={(event) => {
+                if (leavesField(event)) {
+                    field.onBlur();
+                }
+            }}
+            onFocus={onFocus}
+        >
+            <Checkbox
+                {...checkboxProps}
+                ref={ref}
+                name={field.name}
+                value={value}
+                checked={isCheckboxChecked(field.value, value)}
+                onChange={(checked) => field.onChange(toggleCheckboxValue(field.value, value, checked))}
+            />
+        </Field>
     );
 }) as <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(
     props: CheckboxFieldProps<TFieldValues, TName> & RefAttributes<HTMLDivElement>,

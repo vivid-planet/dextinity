@@ -1,8 +1,9 @@
-import { RichTextEditor, type RichTextEditorProps } from "@dextinity/ui";
+import { Field, RichTextEditor, type RichTextEditorProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 
 import type { FieldAdapterActions, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { boxFieldPropKeys, type FieldAdapterBoxFieldProps, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { ReactHookFormFieldConfig } from "../../fieldAdapter/reactHookFormFieldConfig";
 import { renderActions } from "../../fieldAdapter/renderActions";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
@@ -14,8 +15,9 @@ export interface RichTextEditorFieldProps<
 >
     extends
         FieldAdapterBaseProps<TFieldValues, TName>,
+        FieldAdapterBoxFieldProps,
         ReactHookFormFieldConfig<TFieldValues, TName>,
-        Omit<RichTextEditorProps, "name" | "value" | "onChange" | "onBlur" | "state" | "validationMessage" | "required" | "actions"> {
+        Omit<RichTextEditorProps, "name" | "value" | "onChange" | "onBlur" | "onFocus" | "state" | "validationMessage" | "required" | "actions"> {
     /** Content at the label, or a function of the field's value and setter, e.g. to connect `FieldActions`. */
     actions?: FieldAdapterActions<string>;
 }
@@ -40,10 +42,11 @@ export function isEmptyRichText(html: unknown) {
  * visible text. Shows the field's error once it was touched or the form was submitted.
  */
 export const RichTextEditorField = forwardRef(function RichTextEditorField<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
-    { name, actions, ...props }: RichTextEditorFieldProps<TFieldValues, TName>,
+    { name, onFocus, actions, ...props }: RichTextEditorFieldProps<TFieldValues, TName>,
     forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
-    const [options, editorProps] = splitFieldAdapterProps(props);
+    const [options, controlProps] = splitFieldAdapterProps(props);
+    const [fieldProps, editorProps] = splitFieldProps(controlProps, boxFieldPropKeys);
     const { field, validationProps, ref, setValue } = useFieldAdapter<TFieldValues, TName, HTMLDivElement>(
         { name, ...options, isEmpty: isEmptyRichText, isBlank: isEmptyRichText },
         forwardedRef,
@@ -51,17 +54,21 @@ export const RichTextEditorField = forwardRef(function RichTextEditorField<TFiel
     const value: string = field.value ?? "";
 
     return (
-        <RichTextEditor
-            {...editorProps}
+        <Field
+            layout="stacked"
+            {...fieldProps}
             {...validationProps}
-            ref={ref}
-            name={field.name}
-            value={value}
             required={options.required}
             actions={renderActions(actions, value, setValue)}
-            onChange={setValue}
-            onBlur={field.onBlur}
-        />
+            onBlur={(event) => {
+                if (leavesField(event)) {
+                    field.onBlur();
+                }
+            }}
+            onFocus={onFocus}
+        >
+            <RichTextEditor {...editorProps} ref={ref} name={field.name} value={value} onChange={setValue} />
+        </Field>
     );
 }) as <TFieldValues extends FieldValues = FieldValues, TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(
     props: RichTextEditorFieldProps<TFieldValues, TName> & RefAttributes<HTMLDivElement>,

@@ -38,7 +38,9 @@ describe("CheckboxGroupField", () => {
         render(<TestForm />);
 
         await userEvent.click(screen.getByRole("button", { name: "Save" }));
-        await waitFor(() => expect(screen.getByRole("group", { name: "Scopes" })).toHaveAccessibleDescription("Select a scope"));
+        await waitFor(() =>
+            expect(screen.getByRole("group", { name: "Scopes" })).toHaveAccessibleDescription(expect.stringContaining("Select a scope")),
+        );
         expect(screen.getByRole("checkbox", { name: "Main" })).toHaveFocus();
 
         await userEvent.click(screen.getByRole("checkbox", { name: "Main" }));
@@ -63,11 +65,11 @@ describe("CheckboxGroupField", () => {
         await userEvent.tab();
         expect(screen.getByRole("checkbox", { name: "German" })).toHaveFocus();
         await new Promise((resolve) => setTimeout(resolve, 0));
-        expect(group).not.toHaveAccessibleDescription("Select a scope");
+        expect(group).not.toHaveAccessibleDescription(expect.stringContaining("Select a scope"));
 
         await userEvent.tab();
         await userEvent.tab();
         expect(screen.getByRole("button", { name: "Save" })).toHaveFocus();
-        await waitFor(() => expect(group).toHaveAccessibleDescription("Select a scope"));
+        await waitFor(() => expect(group).toHaveAccessibleDescription(expect.stringContaining("Select a scope")));
     });
 });

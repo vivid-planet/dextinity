@@ -34,6 +34,7 @@ const meta = {
         onClick: fn(),
     },
     argTypes: {
+        onClick: { description: "Called when the button is clicked." },
         children: {
             control: "select",
             options: Object.keys(iconOptions),

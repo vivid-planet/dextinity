@@ -18,6 +18,8 @@ import { restoreMocksOnFirstRender } from "../src/storybook/restoreMocksOnFirstR
 
 const preview: Preview = {
     tags: ["autodocs"],
+    // `ref` reaches the props table only for some components, and without a description
+    argTypes: { ref: { table: { disable: true } } },
     beforeEach: restoreMocksOnFirstRender,
     decorators: [colorSchemeBackgroundDecorator, keyboardPlatformDecorator, popupRoomDecorator, closedOnDocsPageDecorator, docsFrameDecorator, argsUpdatesInTestsDecorator],
     afterEach: checkDocsPopups,

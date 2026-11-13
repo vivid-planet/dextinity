@@ -50,6 +50,8 @@ export interface MenuSectionHeaderProps<
     ExpandIcon extends ExpandIconElementType = typeof Icon,
     Action extends ElementType = "span",
 > extends Omit<HTMLAttributes<HTMLDivElement>, "className"> {
+    /** The section's name. */
+    children?: ReactNode;
     /**
      * Shows an expand icon for a section that expands and collapses.
      *

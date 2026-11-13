@@ -47,6 +47,12 @@ export interface MenuRadioItemProps<IconElement extends ElementType = "span"> ex
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /**
+     * Closes the menu when the option is picked. Turn it off to let people try several options, e.g. to compare themes.
+     *
+     * @defaultValue `true`
+     */
+    closeOnClick?: boolean;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */

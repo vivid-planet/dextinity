@@ -75,7 +75,7 @@ const meta = {
         labels: { control: false },
         className: { control: false },
         slotProps: { control: false },
-        style: { control: false },
+        style: { control: false, description: "Inline styles, e.g. `--dextinity-log-viewer-max-height` to limit the log's height." },
     },
 } satisfies Meta<typeof LogViewer>;
 

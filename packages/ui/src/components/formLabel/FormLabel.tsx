@@ -75,6 +75,8 @@ export interface FormLabelProps<
     RequiredMarker extends ElementType = "span",
     HelpIcon extends ElementType = typeof Icon,
 > extends Omit<LabelHTMLAttributes<HTMLLabelElement>, "className" | "style"> {
+    /** The label text. */
+    children?: ReactNode;
     /**
      * Marks the field as required with an asterisk.
      *

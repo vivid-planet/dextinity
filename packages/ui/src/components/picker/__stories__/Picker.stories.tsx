@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ComponentType, useState } from "react";
+import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { landscapeImage } from "../../../storybook/sampleImages";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Dialog } from "../../dialog/Dialog";
@@ -10,7 +12,7 @@ import { Field } from "../../field/Field";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Icon } from "../../icon/Icon";
 import { type TreeNode, TreeView } from "../../treeView/TreeView";
-import { Picker } from "../Picker";
+import { Picker, type PickerProps } from "../Picker";
 import pickerTokens from "../Picker.tokens.scss?raw";
 import styles from "./Picker.stories.module.scss";
 
@@ -48,45 +50,45 @@ function findPage(nodes: TreeNode[], id: string): TreeNode | undefined {
     return undefined;
 }
 
-interface StoryArgs {
-    onChange: (value: unknown) => void;
-    disabled?: boolean;
-    readOnly?: boolean;
-    required?: boolean;
+function renderPage(page: TreeNode) {
+    return (
+        <>
+            <Icon name="file" />
+            {page.label}
+            <span className={styles.path}>{page.path}</span>
+        </>
+    );
 }
 
-/** An application's page picker: the field opens a dialog with the page tree. */
-function PagePicker({ onChange, initialPageId = null, ...fieldProps }: StoryArgs & { initialPageId?: string | null }) {
-    const [page, setPage] = useState<TreeNode | null>(initialPageId ? (findPage(pages, initialPageId) ?? null) : null);
+type PickerStoryArgs = PickerProps<TreeNode> & FieldStoryArgs;
+
+/** An application's page picker: the field opens a dialog with the page tree, and choosing a page there sets the value. */
+function PagePicker({ onChange, ...args }: PickerStoryArgs & { onChange: (page: TreeNode | null) => void }) {
+    const { field, control: props } = splitFieldArgs(args);
     const [open, setOpen] = useState(false);
-    const [selectedId, setSelectedId] = useState<string | undefined>(page?.id);
+    const [selectedId, setSelectedId] = useState<string | undefined>(props.value?.id);
     const [expandedIds, setExpandedIds] = useState(["home", "products"]);
-    const choose = (next: TreeNode | null) => {
-        setPage(next);
-        onChange(next?.id ?? null);
-    };
 
     return (
         <div className={styles.narrow}>
-            <Field {...fieldProps} label="Link target">
+            <StoryField field={field}>
                 <Picker<TreeNode>
-                    placeholder="Choose a page"
-                    value={page}
-                    renderValue={(value) => (
-                        <>
-                            <Icon name="file" />
-                            {value.label}
-                            <span className={styles.path}>{value.path}</span>
-                        </>
-                    )}
+                    {...props}
                     onOpen={() => {
-                        setSelectedId(page?.id);
+                        props.onOpen();
+                        setSelectedId(props.value?.id);
                         setOpen(true);
                     }}
-                    onClear={fieldProps.required ? undefined : () => choose(null)}
-                    icon={<Icon name="file" />}
+                    onClear={
+                        field.required
+                            ? undefined
+                            : () => {
+                                  props.onClear?.();
+                                  onChange(null);
+                              }
+                    }
                 />
-            </Field>
+            </StoryField>
             <Dialog
                 open={open}
                 onOpenChange={setOpen}
@@ -99,7 +101,7 @@ function PagePicker({ onChange, initialPageId = null, ...fieldProps }: StoryArgs
                         <Button
                             disabled={selectedId == null}
                             onClick={() => {
-                                choose(selectedId ? (findPage(pages, selectedId) ?? null) : null);
+                                onChange(selectedId ? (findPage(pages, selectedId) ?? null) : null);
                                 setOpen(false);
                             }}
                         >
@@ -121,19 +123,37 @@ function PagePicker({ onChange, initialPageId = null, ...fieldProps }: StoryArgs
     );
 }
 
-const meta: Meta<StoryArgs> = {
-    // The generic component takes its value's type from the story's wrapper
-    component: Picker as unknown as ComponentType<StoryArgs>,
+const meta = {
+    component: Picker,
     title: "Building blocks/Form fields/Picker",
     decorators: [themeDecorator],
     parameters: { tokens: `${pickerTokens}\n${fieldTokens}` },
-    args: { onChange: fn() },
-    render: (args) => <PagePicker {...args} />,
-};
+    args: {
+        label: "Link target",
+        placeholder: "Choose a page",
+        value: null,
+        renderValue: renderPage,
+        onOpen: fn(),
+        onClear: fn(),
+        icon: <Icon name="file" />,
+    },
+    argTypes: {
+        value: { control: "object" },
+        ...fieldArgTypes,
+        renderValue: { control: false },
+        icon: { control: false },
+        labels: { control: false },
+        className: { control: false },
+    },
+    render: (args, context) => {
+        const [value, setValue] = useControlledArg(args, "value", context);
+        return <PagePicker {...args} value={value} onChange={setValue} />;
+    },
+} satisfies Meta<PickerStoryArgs>;
 
 export default meta;
 
-type Story = StoryObj<StoryArgs>;
+type Story = StoryObj<PickerStoryArgs>;
 
 /**
  * Put it in a `Field` for the label, help, and validation message: `<Field label="Link target"><Picker … /></Field>`.
@@ -149,10 +169,10 @@ export const Default: Story = {
     play: async ({ args, canvas }) => {
         const trigger = canvas.getByRole("button", { name: "Link target Choose a page" });
         await userEvent.click(trigger);
+        await expect(args.onOpen).toHaveBeenCalledTimes(1);
         await userEvent.click(await screen.findByText("Backpacks"));
         await userEvent.click(screen.getByRole("button", { name: "Choose" }));
-        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith("backpacks"));
-        await expect(canvas.getByRole("button", { name: /^Link target Backpacks/ })).toBeVisible();
+        await waitFor(() => expect(canvas.getByRole("button", { name: /^Link target Backpacks/ })).toBeVisible());
     },
 };
 
@@ -160,11 +180,11 @@ export const Default: Story = {
  * With a value and `onClear`, a button clears it.
  */
 export const WithValue: Story = {
-    render: (args) => <PagePicker {...args} initialPageId="about" />,
+    args: { value: findPage(pages, "about") },
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Clear" }));
-        await waitFor(() => expect(args.onChange).toHaveBeenCalledWith(null));
-        await expect(canvas.getByRole("button", { name: "Link target Choose a page" })).toBeVisible();
+        await waitFor(() => expect(args.onClear).toHaveBeenCalledTimes(1));
+        await waitFor(() => expect(canvas.getByRole("button", { name: "Link target Choose a page" })).toBeVisible());
     },
 };
 
@@ -202,25 +222,18 @@ export const File: Story = {
 };
 
 export const Error: Story = {
-    args: { required: true },
-    render: (args) => (
-        <div className={styles.narrow}>
-            <Field label="Link target" required={args.required} state="error" validationMessage="Choose the page the link opens.">
-                <Picker placeholder="Choose a page" value={null} renderValue={() => null} onOpen={fn()} />
-            </Field>
-        </div>
-    ),
+    args: { required: true, state: "error", validationMessage: "Choose the page the link opens." },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("button", { name: /Link target/ })).toHaveAccessibleDescription("Choose the page the link opens. Required");
     },
 };
 
 export const Disabled: Story = {
-    render: (args) => <PagePicker {...args} initialPageId="tents" disabled />,
+    args: { value: findPage(pages, "tents"), disabled: true },
 };
 
 export const ReadOnly: Story = {
-    render: (args) => <PagePicker {...args} initialPageId="tents" readOnly />,
+    args: { value: findPage(pages, "tents"), readOnly: true },
     play: async ({ canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: /^Link target Tents/ }));
         await expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

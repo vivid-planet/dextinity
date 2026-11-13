@@ -24,6 +24,7 @@ const meta = {
         onClick: fn(),
     },
     argTypes: {
+        onClick: { description: "Called when the button is clicked." },
         variant: {
             control: "radio",
             options: ["contained", "outlined", "text"],

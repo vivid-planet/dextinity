@@ -10,9 +10,17 @@ import styles from "./NumberInput.module.scss";
  * Texts for assistive technology.
  */
 export interface NumberInputLabels {
-    /** @defaultValue `"Increase"` */
+    /**
+     * Names the button that increases the value.
+     *
+     * @defaultValue `"Increase"`
+     */
     increment: string;
-    /** @defaultValue `"Decrease"` */
+    /**
+     * Names the button that decreases the value.
+     *
+     * @defaultValue `"Decrease"`
+     */
     decrement: string;
     /**
      * What screen readers announce the input as.

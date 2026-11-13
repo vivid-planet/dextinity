@@ -42,7 +42,11 @@ export interface UserMenuProps extends Omit<HTMLAttributes<HTMLButtonElement>, "
     children?: ReactNode;
     /** Shows the logout item at the end. */
     onLogout?: () => void;
-    /** @defaultValue `"bottom-end"` */
+    /**
+     * The preferred position of the menu next to the trigger. The menu flips when there isn't enough room.
+     *
+     * @defaultValue `"bottom-end"`
+     */
     placement?: MenuPlacement;
     /** The built-in texts. */
     labels?: Partial<UserMenuLabels>;

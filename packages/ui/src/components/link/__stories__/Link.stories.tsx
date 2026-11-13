@@ -23,6 +23,7 @@ const meta = {
         onClick: fn((event) => event.preventDefault()),
     },
     argTypes: {
+        onClick: { description: "Called when the link is clicked, e.g. to navigate with a client-side router." },
         color: { control: "radio", options: ["secondary", "accent"] },
         startIcon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },
         endIcon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },

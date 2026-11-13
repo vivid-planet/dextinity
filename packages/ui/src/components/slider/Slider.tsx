@@ -41,11 +41,23 @@ export interface SliderProps
     value: number;
     /** Called with the new value while the thumb moves. */
     onChange: (value: number) => void;
-    /** @defaultValue `0` */
+    /**
+     * The lowest value.
+     *
+     * @defaultValue `0`
+     */
     min?: number;
-    /** @defaultValue `100` */
+    /**
+     * The highest value.
+     *
+     * @defaultValue `100`
+     */
     max?: number;
-    /** @defaultValue `1` */
+    /**
+     * The amount the value changes by, e.g. with the arrow keys.
+     *
+     * @defaultValue `1`
+     */
     step?: number;
     /** An icon before the track for the low end, e.g. a small image for a size. */
     startIcon?: ReactNode;

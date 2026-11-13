@@ -39,6 +39,8 @@ export interface FormHelperTextProps<IconSlot extends ElementType = "span", Text
     HTMLAttributes<HTMLElement>,
     "className"
 > {
+    /** The help text or validation message. */
+    children?: ReactNode;
     /**
      * Explains why the field's value is invalid, with an error icon.
      *

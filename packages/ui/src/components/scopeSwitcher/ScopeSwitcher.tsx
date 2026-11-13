@@ -80,7 +80,11 @@ export interface ScopeSwitcherProps extends Omit<HTMLAttributes<HTMLButtonElemen
      * @defaultValue `true`
      */
     searchable?: boolean;
-    /** @defaultValue `"bottom-end"` */
+    /**
+     * The preferred position of the popup next to the trigger. The popup flips when there isn't enough room.
+     *
+     * @defaultValue `"bottom-end"`
+     */
     placement?: PopoverPlacement;
     /** The built-in texts. */
     labels?: Partial<ScopeSwitcherLabels>;

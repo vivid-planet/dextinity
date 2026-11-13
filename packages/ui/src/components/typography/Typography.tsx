@@ -1,6 +1,6 @@
 import { useRender } from "@base-ui/react/use-render";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import styles from "./Typography.module.scss";
 
@@ -26,6 +26,8 @@ const variantElement: Record<TypographyVariant, TypographyElement> = {
 };
 
 export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "className"> {
+    /** The text. */
+    children?: ReactNode;
     /**
      * Visual style. Each variant has a default semantic element: `displayXl` for the greeting on an overview, `displayL` for the page title
      * (one per view), `title` for panels and cards, `section` for form sections, `body` for UI text and tables, `small` for help texts and

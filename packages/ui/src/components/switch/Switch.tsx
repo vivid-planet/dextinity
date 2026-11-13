@@ -58,7 +58,11 @@ export interface SwitchProps
      * @defaultValue `false`
      */
     readOnly?: boolean;
-    /** @defaultValue `"default"` */
+    /**
+     * `small` in table rows and dense panels.
+     *
+     * @defaultValue `"default"`
+     */
     size?: SwitchSize;
     /** Identifies the field when a form is submitted. */
     name?: string;

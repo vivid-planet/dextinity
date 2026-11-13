@@ -1,6 +1,14 @@
 import { Button as BaseButton } from "@base-ui/react/button";
 import { clsx } from "clsx";
-import { type ElementType, type ForwardedRef, forwardRef, type ReactNode, type RefAttributes, type SyntheticEvent } from "react";
+import {
+    type ButtonHTMLAttributes,
+    type ElementType,
+    type ForwardedRef,
+    forwardRef,
+    type ReactNode,
+    type RefAttributes,
+    type SyntheticEvent,
+} from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useAriaKeyShortcuts } from "../keyboardShortcut/useAriaKeyShortcuts";
@@ -82,6 +90,12 @@ export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinn
      * @defaultValue `false`
      */
     disabled?: boolean;
+    /**
+     * The button's behavior in a form: `submit` submits it, `reset` resets it.
+     *
+     * @defaultValue `"button"`
+     */
+    type?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
     /**
      * Shows a spinner in place of the icon and ignores clicks.
      *

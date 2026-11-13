@@ -7,7 +7,11 @@ export interface ToastData {
     id: string;
     /** The result of the action, e.g. "Saved – the change is live". */
     message: string;
-    /** @defaultValue `"success"` */
+    /**
+     * Sets the icon and its color: `success` confirms, `error` reports a failure, `warning` points out something to look at although the action went through, `info` informs.
+     *
+     * @defaultValue `"success"`
+     */
     tone?: ToastTone;
     /** Replaces the tone's icon. */
     icon?: ReactNode;

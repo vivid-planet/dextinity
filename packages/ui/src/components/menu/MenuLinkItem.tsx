@@ -28,7 +28,7 @@ export interface MenuLinkItemProps extends Omit<BaseMenu.LinkItem.Props, "classN
      * the middle button still follows the link, e.g. into a new tab.
      */
     onClick?: () => void;
-    /** An icon before the label, e.g. `<Icon name="page-tree" />`. */
+    /** An icon before the label, e.g. `<Icon name="sitemap" />`. */
     icon?: ReactNode;
     /**
      * Whether choosing the link closes the menu.

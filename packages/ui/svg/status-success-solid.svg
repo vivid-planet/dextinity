@@ -1,3 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-    <mask id="mk-chf" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><circle cx="12" cy="12" r="9" fill="#fff" stroke="none"/><path d="M8.5 12.3l2.5 2.5 4.5-5" stroke="#000" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></mask><circle cx="12" cy="12" r="9" fill="currentColor" stroke="none" mask="url(#mk-chf)"/>
-</svg>

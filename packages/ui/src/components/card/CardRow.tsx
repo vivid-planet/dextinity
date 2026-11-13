@@ -99,7 +99,7 @@ export const CardRow = forwardRef<HTMLAnchorElement, CardRowProps>(function Card
                     </span>
                     {end != null && <span {...endProps}>{end}</span>}
                     <span {...arrowProps}>
-                        <Icon name="arrow-right" size="small" />
+                        <Icon name="arrow" size="small" />
                     </span>
                 </>
             ),

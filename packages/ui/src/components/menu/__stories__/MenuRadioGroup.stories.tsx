@@ -64,9 +64,9 @@ const meta = {
         onChange: fn(),
         children: (
             <>
-                <MenuRadioItem value="light" label="Light" icon={<Icon name="light-mode" />} />
-                <MenuRadioItem value="dark" label="Dark" icon={<Icon name="dark-mode" />} />
-                <MenuRadioItem value="high-contrast" label="High contrast" icon={<Icon name="high-contrast-mode" />} />
+                <MenuRadioItem value="light" label="Light" icon={<Icon name="sun" />} />
+                <MenuRadioItem value="dark" label="Dark" icon={<Icon name="moon" />} />
+                <MenuRadioItem value="high-contrast" label="High contrast" icon={<Icon name="contrast" />} />
             </>
         ),
     },

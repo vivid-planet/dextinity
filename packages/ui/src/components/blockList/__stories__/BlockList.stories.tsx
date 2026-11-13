@@ -25,7 +25,7 @@ const initialBlocks: SampleBlock[] = [
     { id: "hero", title: "Shape what's next", summary: "Hero · Image · Title · Text", icon: <Icon name="image" />, visible: true },
     { id: "teasers", title: "Why join us", summary: "Teaser grid · 3 teasers", icon: <Icon name="blocks" />, visible: true },
     { id: "jobs", title: "Open positions", summary: "Job list · 12 jobs", icon: <Icon name="list" />, visible: true },
-    { id: "contact", title: "Get in touch", summary: "Contact form", icon: <Icon name="edit-record" />, visible: false },
+    { id: "contact", title: "Get in touch", summary: "Contact form", icon: <Icon name="edit-page" />, visible: false },
 ];
 
 function moveItem<Item>(items: Item[], fromIndex: number, toIndex: number) {
@@ -57,7 +57,7 @@ function ControlledBlockList(props: BlockListProps) {
                         const id = `text-${Date.now()}`;
                         setBlocks((current) => [
                             ...current.slice(0, index),
-                            { id, title: "New text", summary: "Text", icon: <Icon name="rte-heading" />, visible: true },
+                            { id, title: "New text", summary: "Text", icon: <Icon name="heading" />, visible: true },
                             ...current.slice(index),
                         ]);
                         setSelectedId(id);
@@ -78,7 +78,7 @@ function ControlledBlockList(props: BlockListProps) {
                         onSelect={() => setSelectedId(block.id)}
                         actions={
                             <IconButton variant="text" color="secondary" size="small" aria-label="More actions">
-                                <Icon name="more-horizontal" />
+                                <Icon name="more" />
                             </IconButton>
                         }
                     />
@@ -184,11 +184,11 @@ function BulkActionsBlockList(props: BlockListProps) {
                         onSelectAllChange={(selected) => setCheckedIds(selected ? blocks.map((block) => block.id) : [])}
                         actions={
                             <>
-                                {action("Show", <Icon name="visible" />, () => setVisible(true))}
-                                {action("Hide", <Icon name="invisible" />, () => setVisible(false))}
+                                {action("Show", <Icon name="eye" />, () => setVisible(true))}
+                                {action("Hide", <Icon name="eye-off" />, () => setVisible(false))}
                                 {action("Copy", <Icon name="copy" />, () => undefined)}
-                                {action("Paste", <Icon name="paste" />, () => undefined, false)}
-                                {action("Delete", <Icon name="delete" />, () => {
+                                {action("Paste", <Icon name="paste-add" />, () => undefined, false)}
+                                {action("Delete", <Icon name="trash" />, () => {
                                     setBlocks((current) => current.filter((block) => !checkedIds.includes(block.id)));
                                     setCheckedIds([]);
                                 })}
@@ -316,15 +316,15 @@ const initialColumns: NestedColumn[] = [
         id: "left",
         title: "Left column",
         blocks: [
-            { id: "left-heading", title: "Our values", summary: "Heading", icon: <Icon name="rte-heading" />, visible: true },
-            { id: "left-text", title: "We build for people", summary: "Text", icon: <Icon name="edit-record" />, visible: true },
+            { id: "left-heading", title: "Our values", summary: "Heading", icon: <Icon name="heading" />, visible: true },
+            { id: "left-text", title: "We build for people", summary: "Text", icon: <Icon name="edit-page" />, visible: true },
             { id: "left-image", title: "Team at work", summary: "Image", icon: <Icon name="image" />, visible: true },
         ],
     },
     {
         id: "right",
         title: "Right column",
-        blocks: [{ id: "right-quote", title: "“Best team ever”", summary: "Quote", icon: <Icon name="edit-record" />, visible: true }],
+        blocks: [{ id: "right-quote", title: "“Best team ever”", summary: "Quote", icon: <Icon name="edit-page" />, visible: true }],
     },
 ];
 
@@ -350,7 +350,7 @@ function NestedBlockList(listProps: BlockListProps) {
                         key={column.id}
                         title={column.title}
                         summary={`Column · ${column.blocks.length === 1 ? "1 block" : `${column.blocks.length} blocks`}`}
-                        icon={<Icon name="columns-3" />}
+                        icon={<Icon name="columns" />}
                         visible
                         expanded={expandedIds.includes(column.id)}
                         onExpandedChange={(expanded) =>
@@ -367,7 +367,7 @@ function NestedBlockList(listProps: BlockListProps) {
                                         id: `${column.id}-${Date.now()}`,
                                         title: "New text",
                                         summary: "Text",
-                                        icon: <Icon name="rte-heading" />,
+                                        icon: <Icon name="heading" />,
                                         visible: true,
                                     },
                                     ...blocks.slice(index),

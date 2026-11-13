@@ -41,8 +41,8 @@ function ControlledMenuCheckboxItem(props: MenuCheckboxItemProps<ElementType>) {
 }
 
 const iconOptions = {
-    Globe: <Icon name="domain" />,
-    Eye: <Icon name="visible" />,
+    Globe: <Icon name="globe" />,
+    Eye: <Icon name="eye" />,
 };
 
 const meta = {
@@ -104,7 +104,7 @@ export const Unchecked: Story = {
 };
 
 export const WithIcon: Story = {
-    args: { icon: <Icon name="domain" /> },
+    args: { icon: <Icon name="globe" /> },
 };
 
 export const Disabled: Story = {

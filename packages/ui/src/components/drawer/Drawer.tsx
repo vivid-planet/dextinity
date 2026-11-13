@@ -168,7 +168,7 @@ export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(function Drawer(
                                         aria-label={labels.close}
                                         className={clsx(styles.closeButton, slotProps?.closeButton?.className)}
                                     >
-                                        <Icon name="close" />
+                                        <Icon name="x" />
                                     </IconButton>
                                 }
                             />

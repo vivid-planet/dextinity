@@ -34,7 +34,7 @@ export const FocusOnAdornmentButtonClick: Story = {
         "aria-label": "Search",
         endAdornment: (
             <IconButton aria-label="Clear" variant="text" color="secondary" size="small">
-                <Icon name="clear" />
+                <Icon name="close-circle-fill" />
             </IconButton>
         ),
     },

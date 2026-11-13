@@ -67,7 +67,7 @@ export const WithBack: Story = {
             <>
                 <SaveState state="dirty" />
                 <IconButton color="secondary" aria-label="More actions" variant="text">
-                    <Icon name="more-horizontal" />
+                    <Icon name="more" />
                 </IconButton>
                 <Button startIcon={<Icon name="check" />}>Save</Button>
             </>

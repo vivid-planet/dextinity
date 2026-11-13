@@ -181,12 +181,12 @@ export const ScopeSwitcher = forwardRef<HTMLButtonElement, ScopeSwitcherProps>(f
                     data-searchable={ownerState.searchable ? "" : undefined}
                     className={clsx(styles.root, className)}
                 >
-                    <Icon name="domain" className={styles.icon} />
+                    <Icon name="globe" className={styles.icon} />
                     <span className={styles.text}>
                         <span className={styles.longText}>{longText}</span>
                         <span className={styles.shortText}>{scopeText(dimensions, value, true)}</span>
                     </span>
-                    <Icon name="chevron-down" className={styles.chevron} />
+                    <Icon name="chev-d" className={styles.chevron} />
                 </button>
             }
         >

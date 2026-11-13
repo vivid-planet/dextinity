@@ -181,7 +181,7 @@ export const QuickLook = forwardRef<HTMLDivElement, QuickLookProps>(function Qui
                                             <BaseDialog.Close
                                                 render={
                                                     <IconButton variant="text" color="secondary" aria-label={labels.close}>
-                                                        <Icon name="close" />
+                                                        <Icon name="x" />
                                                     </IconButton>
                                                 }
                                             />
@@ -194,7 +194,7 @@ export const QuickLook = forwardRef<HTMLDivElement, QuickLookProps>(function Qui
                                                 disabled={ownerState.first}
                                                 onClick={() => step(-1)}
                                             >
-                                                <Icon name="chevron-left" />
+                                                <Icon name="chev-l" />
                                             </IconButton>
                                             <div {...previewProps}>
                                                 {renderPreview != null ? renderPreview(item) : <img src={item.src} alt={item.alt ?? item.title} />}
@@ -206,7 +206,7 @@ export const QuickLook = forwardRef<HTMLDivElement, QuickLookProps>(function Qui
                                                 disabled={ownerState.last}
                                                 onClick={() => step(1)}
                                             >
-                                                <Icon name="chevron-right" />
+                                                <Icon name="chev-r" />
                                             </IconButton>
                                         </div>
                                         <div {...footerProps}>

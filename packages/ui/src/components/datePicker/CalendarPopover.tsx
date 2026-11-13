@@ -42,7 +42,7 @@ export function CalendarPopover({
     return (
         <BasePopover.Root open={open} onOpenChange={(nextOpen) => onOpenChange(nextOpen)}>
             <BasePopover.Trigger ref={anchorRef} type="button" className={triggerClassName} aria-label={triggerLabel} disabled={disabled}>
-                <Icon name="calendar" />
+                <Icon name="cal" />
             </BasePopover.Trigger>
             <BasePopover.Portal container={container}>
                 <FieldContextReset>

@@ -42,7 +42,7 @@ const meta = {
         actions: [
             { label: "Publish", icon: <Icon name="check" />, onClick: fn() },
             { label: "Archive", icon: <Icon name="archive" />, onClick: fn() },
-            { label: "Delete", icon: <Icon name="delete" />, color: "error", onClick: fn() },
+            { label: "Delete", icon: <Icon name="trash" />, color: "error", onClick: fn() },
         ],
         onClear: fn(),
     },
@@ -113,7 +113,7 @@ export const DisabledAction: Story = {
             { label: "Translate", icon: <Icon name="translate" />, disabled: true, onClick: fn() },
             {
                 label: "Delete",
-                icon: <Icon name="delete" />,
+                icon: <Icon name="trash" />,
                 color: "error",
                 disabled: true,
                 disabledReason: "Select the subpages too to delete a page",
@@ -147,11 +147,11 @@ function WithMenuActionBar(props: BulkActionBarProps) {
                             <MenuItem label="Images" icon={<Icon name="folder" />} onClick={moveToFolder} />
                             <MenuItem label="Documents" icon={<Icon name="folder" />} onClick={moveToFolder} />
                             <MenuSeparator />
-                            <MenuItem label="New folder…" icon={<Icon name="add-folder" />} onClick={moveToFolder} />
+                            <MenuItem label="New folder…" icon={<Icon name="folder-add" />} onClick={moveToFolder} />
                         </>
                     ),
                 },
-                { label: "Delete", icon: <Icon name="delete" />, color: "error", onClick: fn() },
+                { label: "Delete", icon: <Icon name="trash" />, color: "error", onClick: fn() },
             ]}
         />
     );

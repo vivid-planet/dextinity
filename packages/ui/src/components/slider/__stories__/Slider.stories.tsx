@@ -9,7 +9,7 @@ import sliderTokens from "../Slider.tokens.scss?raw";
 
 const iconOptions = {
     Image: <Icon name="image" />,
-    Gallery: <Icon name="assets" />,
+    Gallery: <Icon name="images" />,
 };
 
 /** Keeps the story controlled: moving updates the local value; the `value` arg sets the initial one. */

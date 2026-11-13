@@ -10,9 +10,9 @@ import emptyStateTokens from "../EmptyState.tokens.scss?raw";
 const onResetFilters = fn();
 
 const iconOptions = {
-    Search: <Icon name="search" duotone />,
-    Inbox: <Icon name="inbox" duotone />,
-    Lock: <Icon name="locked" duotone />,
+    Search: <Icon name="search" />,
+    Mail: <Icon name="mail" />,
+    Lock: <Icon name="lock" />,
 };
 
 const actionOptions = {
@@ -72,7 +72,7 @@ export const Default: Story = {};
  */
 export const NoResults: Story = {
     args: {
-        icon: <Icon name="search" duotone />,
+        icon: <Icon name="search" />,
         description: "Check the spelling or reset the filters.",
         actions: actionOptions.ResetFilters,
     },
@@ -88,7 +88,7 @@ export const NoResults: Story = {
 export const NothingYet: Story = {
     args: {
         title: "No pages yet",
-        icon: <Icon name="file" duotone />,
+        icon: <Icon name="file" />,
         description: "Pages you create appear here.",
         actions: actionOptions.Create,
     },
@@ -100,7 +100,7 @@ export const NothingYet: Story = {
 export const TitleElement: Story = {
     args: {
         title: "No access",
-        icon: <Icon name="locked" duotone />,
+        icon: <Icon name="lock" />,
         description: "Ask an administrator for the editor role.",
         slots: { title: "h2" },
     },

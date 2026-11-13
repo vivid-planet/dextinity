@@ -8,10 +8,10 @@ import buttonTokens from "../Button.tokens.scss?raw";
 import styles from "./Button.stories.module.scss";
 
 const iconOptions = {
-    Favorite: <Icon name="favorite" />,
+    Favorite: <Icon name="star-fill" />,
     Check: <Icon name="check" />,
-    ArrowRight: <Icon name="arrow-right" />,
-    Trash: <Icon name="delete" />,
+    ArrowRight: <Icon name="arrow" />,
+    Trash: <Icon name="trash" />,
 };
 
 const meta = {
@@ -113,7 +113,7 @@ export const Danger: Story = {
     args: {
         variant: "outlined",
         color: "error",
-        startIcon: <Icon name="delete" />,
+        startIcon: <Icon name="trash" />,
         children: "Delete",
     },
 };
@@ -169,10 +169,10 @@ export const LoadingKeepsWidth: Story = {
             <Button {...args} loading>
                 Save
             </Button>
-            <Button {...args} variant="outlined" color="secondary" startIcon={<Icon name="visible" />}>
+            <Button {...args} variant="outlined" color="secondary" startIcon={<Icon name="eye" />}>
                 Preview
             </Button>
-            <Button {...args} variant="outlined" color="secondary" startIcon={<Icon name="visible" />} loading>
+            <Button {...args} variant="outlined" color="secondary" startIcon={<Icon name="eye" />} loading>
                 Preview
             </Button>
         </div>
@@ -190,9 +190,9 @@ export const LoadingKeepsWidth: Story = {
 export const WithIcons: Story = {
     render: () => (
         <div style={{ display: "flex", gap: "1rem" }}>
-            <Button startIcon={<Icon name="favorite" />}>Start only</Button>
-            <Button endIcon={<Icon name="arrow-right" />}>End only</Button>
-            <Button startIcon={<Icon name="favorite" />} endIcon={<Icon name="arrow-right" />}>
+            <Button startIcon={<Icon name="star-fill" />}>Start only</Button>
+            <Button endIcon={<Icon name="arrow" />}>End only</Button>
+            <Button startIcon={<Icon name="star-fill" />} endIcon={<Icon name="arrow" />}>
                 Both
             </Button>
         </div>
@@ -207,6 +207,6 @@ export const AsLink: Story = {
         href: "#",
         variant: "outlined",
         color: "secondary",
-        endIcon: <Icon name="open-new-tab" />,
+        endIcon: <Icon name="window" />,
     },
 };

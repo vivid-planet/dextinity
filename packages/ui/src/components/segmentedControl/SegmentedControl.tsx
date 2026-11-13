@@ -251,7 +251,7 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
                                     {chosenOption?.icon != null && <span {...iconProps}>{chosenOption.icon}</span>}
                                     {chosenOption != null && (chosenOption.label ?? chosenOption["aria-label"])}
                                 </span>
-                                <Icon name="chevron-down" className={styles.menuTriggerChevron} />
+                                <Icon name="chev-d" className={styles.menuTriggerChevron} />
                             </button>
                         }
                     >

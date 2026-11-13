@@ -105,7 +105,7 @@ export const MenuSubmenu = forwardRef<HTMLDivElement, MenuSubmenuProps>(function
                 {icon != null && <span {...iconProps}>{icon}</span>}
                 <span {...labelProps}>{label}</span>
                 <span {...chevronProps}>
-                    <Icon name="chevron-right" />
+                    <Icon name="chev-r" />
                 </span>
             </BaseMenu.SubmenuTrigger>
             <BaseMenu.Portal container={container}>

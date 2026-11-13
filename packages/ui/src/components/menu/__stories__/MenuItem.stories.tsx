@@ -13,7 +13,7 @@ import styles from "./Menu.stories.module.scss";
 const iconOptions = {
     Edit: <Icon name="edit" />,
     Copy: <Icon name="copy" />,
-    Trash: <Icon name="delete" />,
+    Trash: <Icon name="trash" />,
 };
 
 function InOpenMenu({ children }: { children: ReactNode }) {
@@ -101,7 +101,7 @@ export const WithShortcut: Story = {
  * `color="error"` for destructive actions. Put them last, after a `MenuSeparator`.
  */
 export const ErrorColor: Story = {
-    args: { label: "Delete", icon: <Icon name="delete" />, shortcut: "⌘⌫", color: "error" },
+    args: { label: "Delete", icon: <Icon name="trash" />, shortcut: "⌘⌫", color: "error" },
 };
 
 /**
@@ -121,7 +121,7 @@ export const Disabled: Story = {
  * `disabledReason` explains why the item is disabled, in a tooltip and to screen readers.
  */
 export const DisabledWithReason: Story = {
-    args: { label: "Delete", icon: <Icon name="delete" />, color: "error", disabled: true, disabledReason: "Only admins can delete pages" },
+    args: { label: "Delete", icon: <Icon name="trash" />, color: "error", disabled: true, disabledReason: "Only admins can delete pages" },
     play: async ({ args }) => {
         const item = await screen.findByRole("menuitem", { name: "Delete" });
         await expect(item).toHaveAccessibleDescription("Only admins can delete pages");

@@ -48,7 +48,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge({ va
             data-variant={ownerState.variant}
             className={clsx(styles.root, className)}
         >
-            {ownerState.variant === "warning" && <Icon name="error" />}
+            {ownerState.variant === "warning" && <Icon name="alert" />}
             {hasText && children}
             {hasText && tooltip != null && <span className={styles.description}>{tooltip}</span>}
         </span>

@@ -73,7 +73,7 @@ function RowMenu({ job }: { job: Job }) {
             placement="bottom-end"
             trigger={
                 <IconButton color="secondary" aria-label={`Actions for ${job.title}`} size="small" variant="text">
-                    <Icon name="more-horizontal" />
+                    <Icon name="more" />
                 </IconButton>
             }
         >

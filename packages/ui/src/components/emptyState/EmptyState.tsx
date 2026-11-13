@@ -36,7 +36,7 @@ export interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
     title: string;
     /** Why, and what people can do about it. */
     description?: string;
-    /** An icon above the title, e.g. `<Icon name="search" duotone />`. */
+    /** An icon above the title, e.g. `<Icon name="search" />`. */
     icon?: ReactNode;
     /** The way forward, usually one `Button`, e.g. "Reset filters". */
     actions?: ReactNode;

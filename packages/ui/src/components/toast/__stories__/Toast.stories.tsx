@@ -8,7 +8,7 @@ import toastTokens from "../Toast.tokens.scss?raw";
 import styles from "./Toast.stories.module.scss";
 
 const iconOptions = {
-    Sparkle: <Icon name="artificial-intelligence" />,
+    Sparkle: <Icon name="magic-wand" />,
     Copy: <Icon name="copy" />,
 };
 

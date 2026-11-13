@@ -15,7 +15,7 @@ const groups: CommandPaletteGroup[] = [
     {
         label: "Jump to",
         items: [
-            { id: "dashboard", label: "Overview", icon: <Icon name="dashboard" />, onSelect: fn() },
+            { id: "dashboard", label: "Overview", icon: <Icon name="dash" />, onSelect: fn() },
             { id: "page-tree", label: "Page tree", icon: <Icon name="file" />, keywords: ["website", "sitemap"], onSelect: fn() },
             { id: "job-ads", label: "Job ads", icon: <Icon name="list" />, keywords: ["careers", "jobs"], onSelect: openJobAds },
             { id: "assets", label: "Assets", icon: <Icon name="image" />, keywords: ["images", "files"], onSelect: fn() },
@@ -32,7 +32,7 @@ const groups: CommandPaletteGroup[] = [
         label: "Commands",
         items: [
             { id: "nav", label: "Collapse navigation", icon: <Icon name="pin-left" />, shortcut: "⌘\\", onSelect: fn() },
-            { id: "dark", label: "Switch to dark theme", icon: <Icon name="dark-mode" />, keywords: ["color scheme"], onSelect: fn() },
+            { id: "dark", label: "Switch to dark theme", icon: <Icon name="moon" />, keywords: ["color scheme"], onSelect: fn() },
         ],
     },
 ];

@@ -19,22 +19,22 @@ const categories: BlockPickerCategory[] = [
 ];
 
 const items: BlockPickerItem[] = [
-    { value: "heading", label: "Heading", description: "A title for a section", icon: <Icon name="rte-heading" />, category: "text" },
-    { value: "richText", label: "Rich text", description: "Paragraphs, lists, and links", icon: <Icon name="rte-bold" />, category: "text" },
+    { value: "heading", label: "Heading", description: "A title for a section", icon: <Icon name="heading" />, category: "text" },
+    { value: "richText", label: "Rich text", description: "Paragraphs, lists, and links", icon: <Icon name="bold" />, category: "text" },
     { value: "image", label: "Image", description: "One picture with an optional caption", icon: <Icon name="image" />, category: "media" },
-    { value: "gallery", label: "Gallery", description: "Several pictures to swipe through", icon: <Icon name="assets" />, category: "media" },
+    { value: "gallery", label: "Gallery", description: "Several pictures to swipe through", icon: <Icon name="images" />, category: "media" },
     {
         value: "stage",
         label: "Stage",
         description: "Large picture with title at the top of a page",
-        icon: <Icon name="layout" />,
+        icon: <Icon name="format-land" />,
         category: "media",
         keywords: ["hero"],
     },
     { value: "video", label: "Video", description: "YouTube, Vimeo, or an uploaded video", icon: <Icon name="play" />, category: "media" },
     { value: "teaserGrid", label: "Teaser grid", description: "Three to six teasers side by side", icon: <Icon name="grid" />, category: "teasers" },
     { value: "teaserList", label: "Teaser list", description: "Teasers below each other", icon: <Icon name="list" />, category: "teasers" },
-    { value: "contactForm", label: "Contact form", description: "Name, email, and message", icon: <Icon name="edit-record" />, category: "forms" },
+    { value: "contactForm", label: "Contact form", description: "Name, email, and message", icon: <Icon name="edit-page" />, category: "forms" },
     { value: "spacer", label: "Space", description: "Empty space between blocks", icon: <Icon name="maximize" /> },
 ];
 

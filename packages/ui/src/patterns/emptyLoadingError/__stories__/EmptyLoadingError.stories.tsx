@@ -54,7 +54,7 @@ function LoadingExample() {
                 variant="outlined"
                 color="secondary"
                 size="small"
-                startIcon={<Icon name="reload" />}
+                startIcon={<Icon name="refresh" />}
                 loading={loading}
                 onClick={() => setLoading(true)}
             >
@@ -127,7 +127,7 @@ function EmptyLoadingErrorPage() {
                             title="This folder is empty"
                             description="Drag files here or upload them."
                             actions={
-                                <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="upload" />}>
+                                <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="cloud-upload" />}>
                                     Upload
                                 </Button>
                             }

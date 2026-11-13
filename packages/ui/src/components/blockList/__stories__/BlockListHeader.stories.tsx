@@ -26,12 +26,12 @@ function ControlledBlockListHeader(props: BlockListHeaderProps) {
                     <>
                         <Tooltip content="Hide">
                             <IconButton variant="text" color="secondary" size="small" aria-label="Hide" disabled={selectedCount === 0}>
-                                <Icon name="invisible" />
+                                <Icon name="eye-off" />
                             </IconButton>
                         </Tooltip>
                         <Tooltip content="Delete">
                             <IconButton variant="text" color="secondary" size="small" aria-label="Delete" disabled={selectedCount === 0}>
-                                <Icon name="delete" />
+                                <Icon name="trash" />
                             </IconButton>
                         </Tooltip>
                     </>

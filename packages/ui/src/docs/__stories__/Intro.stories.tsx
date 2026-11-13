@@ -27,9 +27,9 @@ type Story = StoryObj<typeof meta>;
 export const Showcase: Story = {
     render: function Render() {
         const contentPages = [
-            { name: "Pages", icon: <Icon name="page-tree" /> },
-            { name: "Assets", icon: <Icon name="assets" /> },
-            { name: "Target groups", icon: <Icon name="target-groups" /> },
+            { name: "Pages", icon: <Icon name="sitemap" /> },
+            { name: "Assets", icon: <Icon name="images" /> },
+            { name: "Target groups", icon: <Icon name="target-group" /> },
         ];
         const [activePage, setActivePage] = useState("Pages");
 
@@ -38,7 +38,7 @@ export const Showcase: Story = {
                 <div className={styles.column}>
                     <section className={styles.taskCard}>
                         <Typography variant="label" className={styles.taskDate}>
-                            <Icon name="calendar-today" /> Due on Friday
+                            <Icon name="cal-today" /> Due on Friday
                         </Typography>
                         <Typography variant="title" className={styles.taskTitle}>
                             Publish the spring campaign
@@ -113,7 +113,7 @@ export const Showcase: Story = {
                                     <Icon name="copy" />
                                 </IconButton>
                                 <IconButton variant="text" color="error" aria-label="Delete">
-                                    <Icon name="delete" />
+                                    <Icon name="trash" />
                                 </IconButton>
                             </div>
                         </div>

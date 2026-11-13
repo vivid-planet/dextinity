@@ -35,7 +35,7 @@ const meta = {
             <InOpenMenu>
                 <MenuItem label="Archive" icon={<Icon name="archive" />} onClick={fn()} />
                 <Story />
-                <MenuItem label="Delete" icon={<Icon name="delete" />} color="error" onClick={fn()} />
+                <MenuItem label="Delete" icon={<Icon name="trash" />} color="error" onClick={fn()} />
             </InOpenMenu>
         ),
         themeDecorator,

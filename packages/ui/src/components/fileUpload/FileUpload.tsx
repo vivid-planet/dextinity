@@ -443,7 +443,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                             </span>
                             {editable && (
                                 <IconButton variant="text" color="secondary" size="small" aria-label={labels.remove} onClick={() => remove(file)}>
-                                    <Icon name="close" />
+                                    <Icon name="x" />
                                 </IconButton>
                             )}
                             {name != null && <input type="hidden" name={name} value={file.id} />}
@@ -451,7 +451,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                     ))}
                     {pending.map((entry) => (
                         <li key={entry.key} className={styles.file} data-status={entry.status}>
-                            <Icon name={entry.status === "uploading" ? "upload" : "error"} className={styles.fileIcon} />
+                            <Icon name={entry.status === "uploading" ? "cloud-upload" : "alert"} className={styles.fileIcon} />
                             <span className={styles.details}>
                                 {renderName(entry.file)}
                                 {entry.status === "uploading" ? (
@@ -470,7 +470,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                             <span className={styles.actions}>
                                 {entry.status === "failed" && !disabled && (
                                     <IconButton variant="text" color="secondary" size="small" aria-label={labels.retry} onClick={() => retry(entry)}>
-                                        <Icon name="reload" />
+                                        <Icon name="refresh" />
                                     </IconButton>
                                 )}
                                 <IconButton
@@ -480,7 +480,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                                     aria-label={entry.status === "uploading" ? labels.cancel : labels.dismiss}
                                     onClick={() => cancel(entry)}
                                 >
-                                    <Icon name="close" />
+                                    <Icon name="x" />
                                 </IconButton>
                             </span>
                         </li>

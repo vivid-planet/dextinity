@@ -11,7 +11,7 @@ import { MenuLinkItem } from "../MenuLinkItem";
 import styles from "./Menu.stories.module.scss";
 
 const iconOptions = {
-    PageTree: <Icon name="page-tree" />,
+    PageTree: <Icon name="sitemap" />,
 };
 
 function InOpenMenu({ children }: { children: ReactNode }) {
@@ -101,5 +101,5 @@ export const Default: Story = {
  * `icon` comes before the label.
  */
 export const WithIcon: Story = {
-    args: { icon: <Icon name="page-tree" /> },
+    args: { icon: <Icon name="sitemap" /> },
 };

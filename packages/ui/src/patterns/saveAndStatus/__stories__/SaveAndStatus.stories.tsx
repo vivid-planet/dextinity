@@ -30,19 +30,19 @@ function StatusModel() {
     return (
         <div className={styles.flow}>
             <span className={styles.flowNode}>New</span>
-            <Icon name="arrow-right" />
+            <Icon name="arrow" />
             <span className={styles.flowNode}>
                 <StatusIndicator status="unpublished" />
             </span>
             <span className={styles.flowSwitch}>
-                <Icon name="arrow-right" />
+                <Icon name="arrow" />
                 <span>Switch</span>
-                <Icon name="arrow-left" />
+                <Icon name="arrow-l" />
             </span>
             <span className={styles.flowNode}>
                 <StatusIndicator status="published" />
             </span>
-            <Icon name="arrow-right" />
+            <Icon name="arrow" />
             <span className={styles.flowNode}>
                 <StatusIndicator status="archived" />
             </span>
@@ -90,7 +90,7 @@ function EditPageExample() {
                             variant="outlined"
                             color="secondary"
                             size="small"
-                            startIcon={<Icon name="reload" />}
+                            startIcon={<Icon name="refresh" />}
                             onClick={() => setStatus("unpublished")}
                         >
                             Restore

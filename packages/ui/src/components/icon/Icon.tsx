@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import { type ComponentPropsWithoutRef, type CSSProperties, forwardRef } from "react";
 
 import styles from "./Icon.module.scss";
-import type { IconName } from "./iconRegistry";
+import { type IconName, resolveIconName } from "./iconRegistry";
 
 type IconSize = "small" | "default" | "large";
 
@@ -11,24 +11,16 @@ type IconSize = "small" | "default" | "large";
  */
 export type IconOwnerState = {
     size: IconSize | undefined;
-    duotone: boolean;
 };
 
 export interface IconProps extends Omit<ComponentPropsWithoutRef<"span">, "children"> {
-    /** The name of the icon, one of the keys of `IconRegistry`. */
+    /** The name of the icon, one of the keys of `IconRegistry`. A deprecated earlier name of a default icon shows the icon it points to. */
     name: IconName;
     /**
      * `small` (18px) in buttons, fields, and tables, `default` (20px) in navigation, `large` (24px) in empty states and card headers.
      * Without a size, the icon follows the surrounding component's `--dextinity-icon-size`, and is 18px outside of one.
      */
     size?: IconSize;
-    /**
-     * Adds a soft fill behind the line, for card headers and empty states. The fill is the CSS variable `--dextinity-duotone-icon-<name>`;
-     * an icon without one shows only its line. Off in high contrast.
-     *
-     * @defaultValue `false`
-     */
-    duotone?: boolean;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Names the icon for assistive technology. Without it or `aria-labelledby`, the icon is hidden from assistive technology. */
@@ -43,15 +35,15 @@ export interface IconProps extends Omit<ComponentPropsWithoutRef<"span">, "child
  * For a list of all icons, see "Foundations → Icons → All icons" in the Storybook. To replace or add icons, see "Foundations → Icons → Customize icons".
  */
 export const Icon = forwardRef<HTMLSpanElement, IconProps>(function Icon(
-    { name, size, duotone = false, className, style, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, ...restProps },
+    { name, size, className, style, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledBy, ...restProps },
     ref,
 ) {
-    const ownerState: IconOwnerState = { size, duotone };
+    const ownerState: IconOwnerState = { size };
+    const iconName = resolveIconName(name);
     const isLabeled = ariaLabel !== undefined || ariaLabelledBy !== undefined;
     const iconStyle: CSSProperties & Record<`--${string}`, string> = {
-        "--dextinity-current-icon-mask": `var(--dextinity-icon-${name})`,
-        "--dextinity-current-icon-image": `var(--dextinity-colored-icon-${name})`,
-        ...(ownerState.duotone && { "--dextinity-current-duotone-icon-mask": `var(--dextinity-duotone-icon-${name})` }),
+        "--dextinity-current-icon-mask": `var(--dextinity-icon-${iconName})`,
+        "--dextinity-current-icon-image": `var(--dextinity-colored-icon-${iconName})`,
         ...style,
     };
 
@@ -64,7 +56,6 @@ export const Icon = forwardRef<HTMLSpanElement, IconProps>(function Icon(
             aria-labelledby={ariaLabelledBy}
             {...restProps}
             data-size={ownerState.size}
-            data-duotone={ownerState.duotone ? "" : undefined}
             className={clsx(styles.root, className)}
             style={iconStyle}
         />

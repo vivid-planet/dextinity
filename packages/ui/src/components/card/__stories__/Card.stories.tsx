@@ -10,14 +10,14 @@ import cardTokens from "../Card.tokens.scss?raw";
 import styles from "./Card.stories.module.scss";
 
 const iconOptions = {
-    Recent: <Icon name="time" duotone />,
-    Page: <Icon name="file" duotone />,
-    Live: <Icon name="online" duotone />,
+    Recent: <Icon name="clock" />,
+    Page: <Icon name="file" />,
+    Live: <Icon name="bolt" />,
 };
 
 const linkOptions = {
     PageTree: (
-        <Link href="#page-tree" endIcon={<Icon name="arrow-right" />}>
+        <Link href="#page-tree" endIcon={<Icon name="arrow" />}>
             Page tree
         </Link>
     ),
@@ -34,7 +34,7 @@ function RecentRow() {
                 <Avatar name="Anna Klein" size="small" />
                 12 min ago
             </div>
-            <Icon name="arrow-right" size="small" className={styles.rowGo} />
+            <Icon name="arrow" size="small" className={styles.rowGo} />
         </a>
     );
 }

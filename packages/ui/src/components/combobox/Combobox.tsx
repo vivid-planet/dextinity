@@ -272,7 +272,7 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
         entry.kind === "retry" ? (
             <BaseCombobox.Item key={entry.key} value={entry} className={styles.item}>
                 <span className={styles.itemIcon}>
-                    <Icon name="reload" />
+                    <Icon name="refresh" />
                 </span>
                 <span className={styles.itemText}>{labels.retry}</span>
             </BaseCombobox.Item>
@@ -339,7 +339,7 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
                                     <BaseCombobox.Chip key={entry.key} className={styles.chip}>
                                         {optionLabel}
                                         <BaseCombobox.ChipRemove className={styles.chipRemove} aria-label={labels.remove(optionLabel)}>
-                                            <Icon name="close" />
+                                            <Icon name="x" />
                                         </BaseCombobox.ChipRemove>
                                     </BaseCombobox.Chip>
                                 );
@@ -356,11 +356,11 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
                     )}
                     {showsClear && (
                         <BaseCombobox.Clear className={styles.iconButton} aria-label={labels.clear}>
-                            <Icon name="close" />
+                            <Icon name="x" />
                         </BaseCombobox.Clear>
                     )}
                     <BaseCombobox.Trigger className={clsx(styles.iconButton, styles.chevron)} tabIndex={-1}>
-                        <Icon name="chevron-down" />
+                        <Icon name="chev-d" />
                     </BaseCombobox.Trigger>
                     <BaseCombobox.Portal container={container}>
                         <FieldContextReset>

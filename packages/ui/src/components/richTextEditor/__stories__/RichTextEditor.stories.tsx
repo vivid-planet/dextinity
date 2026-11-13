@@ -221,7 +221,7 @@ export const InlineStyles: Story = {
     ),
     args: {
         toolbar: ["subscript", "superscript"],
-        inlineStyles: [{ name: "productName", label: "Product name", icon: "rte-highlight" }],
+        inlineStyles: [{ name: "productName", label: "Product name", icon: "highlight" }],
         value: '<p>You design the interfaces of <span data-inline-style="productName">Dextinity</span> with us.</p>',
     },
     play: async ({ canvas }) => {

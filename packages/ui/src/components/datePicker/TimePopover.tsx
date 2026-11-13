@@ -127,7 +127,7 @@ export function TimePopover({
     return (
         <BasePopover.Root open={open} onOpenChange={(nextOpen) => openChange(nextOpen)}>
             <BasePopover.Trigger ref={anchorRef} type="button" className={triggerClassName} aria-label={triggerLabel} disabled={disabled}>
-                <Icon name="time" />
+                <Icon name="clock" />
             </BasePopover.Trigger>
             <BasePopover.Portal container={container}>
                 <BasePopover.Positioner className={styles.positioner} anchor={fieldBox} side="bottom" align="end" sideOffset={6} collisionPadding={8}>

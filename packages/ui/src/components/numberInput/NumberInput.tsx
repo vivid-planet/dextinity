@@ -189,10 +189,10 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
                     {showsSteppers && (
                         <span className={styles.steppers}>
                             <BaseNumberField.Increment className={styles.increment} aria-label={labels.increment}>
-                                <Icon name="chevron-down" />
+                                <Icon name="chev-d" />
                             </BaseNumberField.Increment>
                             <BaseNumberField.Decrement className={styles.decrement} aria-label={labels.decrement}>
-                                <Icon name="chevron-down" />
+                                <Icon name="chev-d" />
                             </BaseNumberField.Decrement>
                         </span>
                     )}

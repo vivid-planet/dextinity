@@ -165,7 +165,7 @@ function SideNavEntry({ item, level, context }: { item: SideNavItem; level: numb
             {level === 1 && item.icon != null && <span className={styles.itemIcon}>{item.icon}</span>}
             <span className={styles.itemLabel}>{item.label}</span>
             {item.badge != null && <Badge variant="count">{item.badge}</Badge>}
-            {hasChildren && <Icon name="chevron-right" className={styles.itemChevron} />}
+            {hasChildren && <Icon name="chev-r" className={styles.itemChevron} />}
         </>
     );
     const itemProps = {

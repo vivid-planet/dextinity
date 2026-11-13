@@ -126,7 +126,7 @@ export const Expanded: Story = {
  * Hidden blocks are marked the same way in the list and in the preview.
  */
 export const Hidden: Story = {
-    args: { title: "Contact form", summary: "Form", icon: <Icon name="edit-record" />, visible: false },
+    args: { title: "Contact form", summary: "Form", icon: <Icon name="edit-page" />, visible: false },
 };
 
 /**
@@ -142,7 +142,7 @@ export const Selected: Story = {
         onSelect: fn(),
         actions: (
             <IconButton variant="text" color="secondary" size="small" aria-label="More actions">
-                <Icon name="more-horizontal" />
+                <Icon name="more" />
             </IconButton>
         ),
     },

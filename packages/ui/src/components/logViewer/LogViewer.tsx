@@ -274,7 +274,7 @@ export const LogViewer = forwardRef<HTMLDivElement, LogViewerProps>(function Log
                 {loading && <Spinner className={styles.spinner} />}
             </div>
             {follow && !atEnd && (
-                <Button size="small" variant="outlined" className={styles.jump} startIcon={<Icon name="arrow-down" />} onClick={jumpToLatest}>
+                <Button size="small" variant="outlined" className={styles.jump} startIcon={<Icon name="down" />} onClick={jumpToLatest}>
                     {labels.jumpToLatest}
                 </Button>
             )}

@@ -680,7 +680,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                     >
                         {draggable && (
                             <span className={styles.dragHandle} aria-hidden>
-                                <Icon name="drag-indicator" />
+                                <Icon name="grip" />
                             </span>
                         )}
                         <span
@@ -696,7 +696,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                                 }
                             }}
                         >
-                            <Icon name="chevron-right" />
+                            <Icon name="chev-r" />
                         </span>
                         {checkable && (
                             <span
@@ -736,7 +736,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                         )}
                         {node.hiddenInMenu && (
                             <span id={partId("hidden")} className={styles.hiddenInMenu} role="img" aria-label={labels.hiddenInMenu}>
-                                <Icon name="invisible" />
+                                <Icon name="eye-off" />
                             </span>
                         )}
                         {node.count != null && (

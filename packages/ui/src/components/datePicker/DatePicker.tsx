@@ -204,7 +204,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function
                                 inputRef.current?.focus();
                             }}
                         >
-                            <Icon name="close" />
+                            <Icon name="x" />
                         </button>
                     )}
                     <CalendarPopover

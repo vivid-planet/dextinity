@@ -112,7 +112,7 @@ export function PatternRules({ dos, donts }: { dos: string[]; donts: string[] })
                 </div>
                 <div className={styles.dont}>
                     <b>
-                        <Icon name="close" size="small" />
+                        <Icon name="x" size="small" />
                         Don't
                     </b>
                     <ul>
@@ -178,7 +178,7 @@ export function PatternLinks({ title, links }: { title: string; links: PatternLi
                     <li key={link.label}>
                         <a href={`/?path=/docs/${link.docsId}`} target="_top">
                             {link.label}
-                            <Icon name="arrow-right" />
+                            <Icon name="arrow" />
                         </a>
                     </li>
                 ))}

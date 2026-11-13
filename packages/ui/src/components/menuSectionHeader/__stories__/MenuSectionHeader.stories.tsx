@@ -10,7 +10,7 @@ import styles from "./menuSectionHeader.module.scss";
 const actionOptions = {
     Add: (
         <IconButton variant="text" color="secondary" size="small" aria-label="Add page">
-            <Icon name="add" />
+            <Icon name="plus-circle" />
         </IconButton>
     ),
 };

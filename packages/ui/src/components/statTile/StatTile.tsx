@@ -46,9 +46,9 @@ const defaultLabels: StatTileLabels = {
 };
 
 const trendIcon: Record<StatTileTrend, IconName> = {
-    up: "trend-arrow-up",
-    down: "trend-arrow-down",
-    flat: "arrow-right",
+    up: "trend-up",
+    down: "trend-down",
+    flat: "arrow",
 };
 
 const trendLabelKey: Record<StatTileTrend, keyof StatTileLabels> = {

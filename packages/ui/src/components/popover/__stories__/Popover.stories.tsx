@@ -52,7 +52,7 @@ const meta = {
     render: (args) => <ControlledPopover key={String(args.open)} {...args} />,
     args: {
         trigger: (
-            <Button variant="outlined" color="secondary" startIcon={<Icon name="time" />}>
+            <Button variant="outlined" color="secondary" startIcon={<Icon name="clock" />}>
                 Time of day
             </Button>
         ),
@@ -114,7 +114,7 @@ export const WithoutTitle: Story = {
         "aria-label": "Time of day",
         trigger: (
             <IconButton color="secondary" aria-label="Time of day" variant="outlined">
-                <Icon name="time" />
+                <Icon name="clock" />
             </IconButton>
         ),
     },

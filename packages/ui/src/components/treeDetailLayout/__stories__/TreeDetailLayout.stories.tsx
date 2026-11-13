@@ -104,7 +104,7 @@ function PageDetail({ node, published, onPublishedChange }: { node: TreeNode; pu
             title="Selected"
             actions={
                 <IconButton color="secondary" variant="text" size="small" aria-label="Actions">
-                    <Icon name="more-horizontal" />
+                    <Icon name="more" />
                 </IconButton>
             }
         >
@@ -116,7 +116,7 @@ function PageDetail({ node, published, onPublishedChange }: { node: TreeNode; pu
                 </div>
                 <div className={styles.detailActions}>
                     <Button startIcon={<Icon name="edit" />}>Edit</Button>
-                    <Button variant="outlined" color="secondary" startIcon={<Icon name="visible" />}>
+                    <Button variant="outlined" color="secondary" startIcon={<Icon name="eye" />}>
                         Preview
                     </Button>
                 </div>
@@ -135,7 +135,7 @@ function PageDetail({ node, published, onPublishedChange }: { node: TreeNode; pu
                         { key: "Subpages", value: countDescendants(node) },
                     ]}
                 />
-                <LinkedContent href="#job-ads" icon={<Icon name="layout" />} title="Job ads" description="This page lists 47 job ads" />
+                <LinkedContent href="#job-ads" icon={<Icon name="page" />} title="Job ads" description="This page lists 47 job ads" />
             </div>
         </Panel>
     );

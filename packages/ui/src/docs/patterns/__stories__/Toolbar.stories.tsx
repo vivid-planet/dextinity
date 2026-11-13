@@ -28,7 +28,7 @@ export const Default: Story = {
                         </Typography>
                     </li>
                     <li aria-hidden className={styles.breadcrumbSeparator}>
-                        <Icon name="chevron-right" />
+                        <Icon name="chev-r" />
                     </li>
                     <li>
                         <Typography variant="small" aria-current="page">
@@ -48,7 +48,7 @@ export const Default: Story = {
                     <Button>Export</Button>
                 </div>
                 <IconButton variant="text" color="secondary" aria-label="More actions" className={styles.moreActions}>
-                    <Icon name="more-vertical" />
+                    <Icon name="more-v" />
                 </IconButton>
             </div>
         </div>
@@ -66,7 +66,7 @@ export const DetailPage: Story = {
                         </Typography>
                     </li>
                     <li aria-hidden className={styles.breadcrumbSeparator}>
-                        <Icon name="chevron-right" />
+                        <Icon name="chev-r" />
                     </li>
                     <li>
                         <Typography variant="small" aria-current="page">
@@ -77,7 +77,7 @@ export const DetailPage: Story = {
             </nav>
             <div className={styles.titleRow}>
                 <IconButton variant="text" color="secondary" aria-label="Back">
-                    <Icon name="arrow-left" />
+                    <Icon name="arrow-l" />
                 </IconButton>
                 <div className={styles.titleGroup}>
                     <div className={styles.titleLine}>
@@ -85,7 +85,7 @@ export const DetailPage: Story = {
                             Spring campaign 2027
                         </Typography>
                         <IconButton variant="text" color="secondary" size="small" aria-label="More information">
-                            <Icon name="info-filled" />
+                            <Icon name="info-fill" />
                         </IconButton>
                     </div>
                     <Typography variant="small" className={styles.supportText}>
@@ -97,7 +97,7 @@ export const DetailPage: Story = {
                     <Button>Export</Button>
                 </div>
                 <IconButton variant="text" color="secondary" aria-label="More actions" className={styles.moreActions}>
-                    <Icon name="more-vertical" />
+                    <Icon name="more-v" />
                 </IconButton>
             </div>
         </div>
@@ -128,7 +128,7 @@ export const SmallScreen: Story = {
                             </Typography>
                         </li>
                         <li aria-hidden className={styles.breadcrumbSeparator}>
-                            <Icon name="chevron-right" />
+                            <Icon name="chev-r" />
                         </li>
                         <li>
                             <Typography variant="small" aria-current="page">
@@ -148,7 +148,7 @@ export const SmallScreen: Story = {
                         <Button>Export</Button>
                     </div>
                     <IconButton variant="text" color="secondary" aria-label="More actions" className={styles.moreActions}>
-                        <Icon name="more-vertical" />
+                        <Icon name="more-v" />
                     </IconButton>
                 </div>
             </div>

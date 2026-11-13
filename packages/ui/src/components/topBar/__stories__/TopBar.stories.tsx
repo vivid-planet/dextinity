@@ -66,7 +66,7 @@ export const WithBrowseActions: Story = {
         browseActions: (
             <Tooltip content="Builds">
                 <IconButton variant="text" color="secondary" aria-label="Builds" onClick={fn()}>
-                    <Icon name="reload" />
+                    <Icon name="refresh" />
                 </IconButton>
             </Tooltip>
         ),

@@ -12,6 +12,20 @@
     font-size: var(--dextinity-typography-body-size);
 }
 
+.category + .category {
+    margin-block-start: var(--dextinity-space-8);
+}
+
+.categoryTitle {
+    margin-block-end: var(--dextinity-space-3);
+    color: var(--dextinity-color-text);
+}
+
+.count {
+    color: var(--dextinity-color-text-subtle);
+    font-weight: normal;
+}
+
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -49,4 +63,25 @@
 
 .searchTerms {
     color: var(--dextinity-color-text-subtle);
+}
+
+.aliasTable {
+    border-collapse: collapse;
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+
+    th,
+    td {
+        padding-block: var(--dextinity-space-1);
+        padding-inline: var(--dextinity-space-3);
+        border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
+        text-align: start;
+    }
+}
+
+.aliasTarget {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
 }

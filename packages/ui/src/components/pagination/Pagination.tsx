@@ -166,7 +166,7 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(function Pagi
                         trigger={
                             <button type="button" className={styles.pageSizeTrigger} aria-label={`${labels.pageSize}: ${pageSize}`}>
                                 {pageSize}
-                                <Icon name="chevron-down" />
+                                <Icon name="chev-d" />
                             </button>
                         }
                     >
@@ -188,7 +188,7 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(function Pagi
                     disabled={page <= 1}
                     onClick={() => onPageChange(page - 1)}
                 >
-                    <Icon name="chevron-left" />
+                    <Icon name="chev-l" />
                 </IconButton>
                 {getPageItems(page, pageCount).map((item) =>
                     typeof item === "number" ? (
@@ -216,7 +216,7 @@ export const Pagination = forwardRef<HTMLElement, PaginationProps>(function Pagi
                     disabled={page >= pageCount}
                     onClick={() => onPageChange(page + 1)}
                 >
-                    <Icon name="chevron-right" />
+                    <Icon name="chev-r" />
                 </IconButton>
             </div>
         </nav>

@@ -3,7 +3,8 @@ import { readdirSync, readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
-import { defaultIconNames } from "../iconRegistry";
+import { iconCategories } from "../../../docs/theme/__stories__/iconCategories";
+import { defaultIconNames, deprecatedIconAliases } from "../iconRegistry";
 
 const iconNames = Object.keys(defaultIconNames);
 const iconsCss = readFileSync(new URL("../../../../icons.css", import.meta.url), "utf-8");
@@ -14,8 +15,6 @@ if (iconSetCss === undefined) {
 }
 const variableNames = [...iconSetCss.matchAll(/--dextinity-(?:colored-)?icon-([a-z0-9-]+):/g)].map(([, name]) => name);
 const svgFiles = readdirSync(new URL("../../../../svg/", import.meta.url)).filter((file) => file.endsWith(".svg"));
-const duotoneNames = [...iconsCss.matchAll(/--dextinity-duotone-icon-([a-z0-9-]+):/g)].map(([, name]) => name);
-const duotoneSvgFiles = readdirSync(new URL("../../../../svg/duotone/", import.meta.url)).filter((file) => file.endsWith(".svg"));
 
 describe("default icon set", () => {
     it("has a variable for every icon name, with the SVG file of that name", () => {
@@ -48,19 +47,15 @@ describe("default icon set", () => {
         expect(namesWithSeveralVariables).toEqual([]);
     });
 
-    it("has a duotone fill only for icon names, each with the SVG file of that name", () => {
-        const fillsWithoutName = duotoneNames.filter((name) => !iconNames.includes(name));
-        const fillsWithoutFile = duotoneNames.filter(
-            (name) => !iconsCss.includes(`--dextinity-duotone-icon-${name}: url("./svg/duotone/${name}.svg#icon");`),
-        );
+    it("has no deprecated alias that is also an icon name", () => {
+        const aliasesThatAreIconNames = Object.keys(deprecatedIconAliases).filter((alias) => iconNames.includes(alias));
 
-        expect(fillsWithoutName).toEqual([]);
-        expect(fillsWithoutFile).toEqual([]);
+        expect(aliasesThatAreIconNames).toEqual([]);
     });
 
-    it("has a duotone variable for every duotone SVG file", () => {
-        const filesWithoutVariable = duotoneSvgFiles.filter((file) => !duotoneNames.includes(file.replace(".svg", "")));
+    it("lists every icon name in exactly one category", () => {
+        const categorizedNames = iconCategories.flatMap(({ iconNames }) => iconNames);
 
-        expect(filesWithoutVariable).toEqual([]);
+        expect([...categorizedNames].sort()).toEqual([...iconNames].sort());
     });
 });

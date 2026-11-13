@@ -200,7 +200,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                         onBlur={startDraft.commit}
                         onKeyDown={onKeyDown(startDraft)}
                     />
-                    <Icon name="arrow-right" className={styles.separator} />
+                    <Icon name="arrow" className={styles.separator} />
                     <input
                         type="text"
                         inputMode="numeric"
@@ -232,7 +232,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                                 inputRef.current?.focus();
                             }}
                         >
-                            <Icon name="close" />
+                            <Icon name="x" />
                         </button>
                     )}
                     <CalendarPopover

@@ -90,7 +90,7 @@ export const FormHelperText: <IconSlot extends ElementType = "span", Text extend
                 <>
                     {ownerState.error && (
                         <IconSlotElement {...iconProps}>
-                            <Icon name="error" />
+                            <Icon name="alert" />
                         </IconSlotElement>
                     )}
                     <TextSlot {...textProps}>{children}</TextSlot>

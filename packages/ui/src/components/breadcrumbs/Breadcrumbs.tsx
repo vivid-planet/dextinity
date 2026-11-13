@@ -162,7 +162,7 @@ export const Breadcrumbs = forwardRef<HTMLElement, BreadcrumbsProps>(function Br
                                 onOpenChange={setCollapsedMenuOpen}
                                 trigger={
                                     <button {...moreButtonProps}>
-                                        <Icon name="more-horizontal" />
+                                        <Icon name="more" />
                                     </button>
                                 }
                             >

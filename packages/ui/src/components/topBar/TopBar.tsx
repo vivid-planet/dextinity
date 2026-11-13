@@ -63,7 +63,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
         <header {...restProps} ref={ref} className={clsx(styles.root, className)}>
             {onMenuClick != null && (
                 <IconButton variant="text" color="secondary" aria-label={labels.menu} onClick={onMenuClick} className={styles.menuButton}>
-                    <Icon name="hamburger" />
+                    <Icon name="menu" />
                 </IconButton>
             )}
             {onSearchClick != null && (

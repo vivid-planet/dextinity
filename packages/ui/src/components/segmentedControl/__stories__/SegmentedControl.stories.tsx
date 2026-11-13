@@ -15,16 +15,16 @@ const employment: SegmentedControlOption[] = [
 ];
 
 const devices: SegmentedControlOption[] = [
-    { value: "desktop", icon: <Icon name="device-desktop" />, "aria-label": "Desktop" },
-    { value: "tablet", icon: <Icon name="device-tablet" />, "aria-label": "Tablet" },
-    { value: "phone", icon: <Icon name="device-phone" />, "aria-label": "Phone" },
+    { value: "desktop", icon: <Icon name="desk" />, "aria-label": "Desktop" },
+    { value: "tablet", icon: <Icon name="tablet" />, "aria-label": "Tablet" },
+    { value: "phone", icon: <Icon name="phone" />, "aria-label": "Phone" },
 ];
 
 const views: SegmentedControlOption[] = [
     { value: "grid", label: "Icons", icon: <Icon name="grid" /> },
     { value: "list", label: "List", icon: <Icon name="list" /> },
-    { value: "columns", label: "Columns", icon: <Icon name="columns-3" /> },
-    { value: "gallery", label: "Gallery", icon: <Icon name="assets" />, disabled: true },
+    { value: "columns", label: "Columns", icon: <Icon name="columns" /> },
+    { value: "gallery", label: "Gallery", icon: <Icon name="images" />, disabled: true },
 ];
 
 /** Keeps the story controlled: choosing updates the local value; the `value` arg sets the initial one. */

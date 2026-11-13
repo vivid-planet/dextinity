@@ -53,8 +53,8 @@ export interface ToastProps extends Omit<HTMLAttributes<HTMLDivElement>, "classN
 
 const toneIcons: Record<ToastTone, IconName> = {
     success: "check",
-    error: "error",
-    warning: "warning",
+    error: "alert",
+    warning: "warn-tri",
     info: "info",
 };
 

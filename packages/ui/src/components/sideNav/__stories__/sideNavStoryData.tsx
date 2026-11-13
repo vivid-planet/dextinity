@@ -5,7 +5,7 @@ export const sideNavGroups: SideNavGroup[] = [
     {
         label: "Content",
         items: [
-            { id: "dashboard", label: "Overview", icon: <Icon name="dashboard" />, href: "#dashboard" },
+            { id: "dashboard", label: "Overview", icon: <Icon name="dash" />, href: "#dashboard" },
             {
                 id: "website",
                 label: "Website",
@@ -23,7 +23,7 @@ export const sideNavGroups: SideNavGroup[] = [
                     { id: "redirects", label: "Redirects", href: "#redirects" },
                 ],
             },
-            { id: "submissions", label: "Submissions", icon: <Icon name="inbox" />, href: "#submissions", badge: 3 },
+            { id: "submissions", label: "Submissions", icon: <Icon name="form" />, href: "#submissions", badge: 3 },
             { id: "assets", label: "Assets", icon: <Icon name="image" />, href: "#assets" },
         ],
     },
@@ -33,7 +33,7 @@ export const sideNavGroups: SideNavGroup[] = [
             {
                 id: "structure",
                 label: "Structure",
-                icon: <Icon name="layout" />,
+                icon: <Icon name="sitemap" />,
                 children: [
                     { id: "main-navigation", label: "Main navigation", href: "#main-navigation" },
                     { id: "footer", label: "Footer and legal pages with a long label that wraps", href: "#footer" },
@@ -45,8 +45,8 @@ export const sideNavGroups: SideNavGroup[] = [
     {
         label: "Administration",
         items: [
-            { id: "users", label: "Users", icon: <Icon name="account" />, href: "#users" },
-            { id: "settings", label: "Settings", icon: <Icon name="settings" />, href: "#settings" },
+            { id: "users", label: "Users", icon: <Icon name="user" />, href: "#users" },
+            { id: "settings", label: "Settings", icon: <Icon name="gear" />, href: "#settings" },
         ],
     },
 ];

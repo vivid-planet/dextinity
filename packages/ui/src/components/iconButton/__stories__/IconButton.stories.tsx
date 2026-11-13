@@ -8,11 +8,11 @@ import iconButtonTokens from "../IconButton.tokens.scss?raw";
 import styles from "./IconButton.stories.module.scss";
 
 const iconOptions = {
-    Favorite: <Icon name="favorite" />,
-    More: <Icon name="more-horizontal" />,
+    Favorite: <Icon name="star-fill" />,
+    More: <Icon name="more" />,
     Edit: <Icon name="edit" />,
-    Trash: <Icon name="delete" />,
-    Close: <Icon name="close" />,
+    Trash: <Icon name="trash" />,
+    Close: <Icon name="x" />,
 };
 
 const meta = {
@@ -28,7 +28,7 @@ const meta = {
     ],
     parameters: { tokens: iconButtonTokens },
     args: {
-        children: <Icon name="favorite" />,
+        children: <Icon name="star-fill" />,
         "aria-label": "Add to favorites",
         onClick: fn(),
     },
@@ -127,7 +127,7 @@ export const Secondary: Story = {
 export const Error: Story = {
     args: {
         color: "error",
-        children: <Icon name="delete" />,
+        children: <Icon name="trash" />,
         "aria-label": "Delete",
     },
 };

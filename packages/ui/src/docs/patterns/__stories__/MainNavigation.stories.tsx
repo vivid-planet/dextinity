@@ -24,14 +24,14 @@ export const MainNavigation: Story = {
 
         return (
             <nav aria-label="Main" className={styles.navigation}>
-                <MainNavigationItem href="#" icon={<Icon name="dashboard" />}>
+                <MainNavigationItem href="#" icon={<Icon name="dash" />}>
                     Dashboard
                 </MainNavigationItem>
                 <MenuSectionHeader
                     slotProps={{ label: { id: "navigation-content" } }}
                     action={
                         <IconButton variant="text" color="secondary" size="small" aria-label="Add page">
-                            <Icon name="add" />
+                            <Icon name="plus-circle" />
                         </IconButton>
                     }
                 >
@@ -39,12 +39,12 @@ export const MainNavigation: Story = {
                 </MenuSectionHeader>
                 <ul aria-labelledby="navigation-content" className={styles.list}>
                     <li>
-                        <MainNavigationItem href="#" icon={<Icon name="page-tree" />} active>
+                        <MainNavigationItem href="#" icon={<Icon name="sitemap" />} active>
                             Pages
                         </MainNavigationItem>
                     </li>
                     <li>
-                        <MainNavigationItem href="#" icon={<Icon name="assets" />}>
+                        <MainNavigationItem href="#" icon={<Icon name="images" />}>
                             Assets
                         </MainNavigationItem>
                     </li>
@@ -53,7 +53,7 @@ export const MainNavigation: Story = {
                 <ul aria-labelledby="navigation-system" className={styles.list}>
                     <li>
                         <MainNavigationItem
-                            icon={<Icon name="settings" />}
+                            icon={<Icon name="gear" />}
                             expandable
                             render={
                                 <button type="button" aria-expanded={isSettingsExpanded} onClick={() => setIsSettingsExpanded(!isSettingsExpanded)} />

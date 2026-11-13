@@ -17,7 +17,7 @@ const meta = {
     decorators: [themeDecorator],
     parameters: { tokens: iconTokens },
     args: {
-        name: "favorite",
+        name: "star-fill",
     },
     argTypes: {
         name: {
@@ -38,7 +38,7 @@ type Story = StoryObj<typeof meta>;
  * **Rules**
  *
  * - Do: give icon buttons a tooltip and an accessible name.
- * - Do: keep one icon per meaning — `domain` always means scope or global.
+ * - Do: keep one icon per meaning — `globe` always means scope or global.
  * - Don't: use an icon as the only information for a status.
  * - Don't: use emoji instead of icons.
  */
@@ -54,7 +54,7 @@ export const Label: Story = {
 };
 
 /**
- * A colored icon keeps its own colors, for example a logo. It ignores the text color and `duotone`. In high contrast and in forced
+ * A colored icon keeps its own colors, for example a logo. It ignores the text color. In high contrast and in forced
  * colors, the Dextinity mark switches to its flat form in the text color.
  *
  * The Dextinity mark comes in both forms: `dextinity` in the text color and `dextinity-color` in the brand colors.
@@ -85,7 +85,6 @@ function DextinityMarks() {
         <div className={styles.row}>
             <Icon name="dextinity" size="large" aria-label="Dextinity" />
             <Icon name="dextinity-color" size="large" aria-label="Dextinity in color" />
-            <Icon name="youtube-filled-color" size="large" aria-label="YouTube" />
         </div>
     );
 }
@@ -140,20 +139,6 @@ export const Color: Story = {
 };
 
 /**
- * A soft fill (16%) behind the line, only in card headers and empty states. Off in high contrast. The fill is the variable
- * `--dextinity-duotone-icon-<name>`; an icon without one shows only its line.
- */
-export const Duotone: Story = {
-    render: () => (
-        <div className={styles.row}>
-            {(["time", "online", "warning", "inbox", "palette", "blocks", "layout", "history"] as const).map((name) => (
-                <Icon key={name} name={name} size="large" duotone />
-            ))}
-        </div>
-    ),
-};
-
-/**
  * Every icon is a CSS variable, `--dextinity-icon-<name>`, so a theme swaps icons in CSS alone — no React context. Here a class
  * replaces some icons with square, heavier variants:
  *
@@ -171,7 +156,7 @@ export const CustomIcons: Story = {
             {(["default", "custom"] as const).map((variant) => (
                 <div key={variant} className={clsx(styles.row, variant === "custom" && styles.customIcons)}>
                     <code className={styles.variantName}>{variant}</code>
-                    {(["search", "home", "folder", "check", "close", "plus", "arrow-right", "chevron-down"] as const).map((name) => (
+                    {(["search", "home", "folder", "check", "x", "plus", "arrow", "chev-d"] as const).map((name) => (
                         <Icon key={name} name={name} size="large" />
                     ))}
                 </div>

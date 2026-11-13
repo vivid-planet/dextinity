@@ -5,13 +5,13 @@ import { Icon } from "../Icon";
 
 describe("Icon", () => {
     it("is hidden from assistive technology without a label", () => {
-        const { container } = render(<Icon name="favorite" />);
+        const { container } = render(<Icon name="star-fill" />);
 
         expect(container.querySelector("span")?.getAttribute("aria-hidden")).toBe("true");
     });
 
     it("is an image named by its label", () => {
-        const { container } = render(<Icon name="favorite" aria-label="Favorite" />);
+        const { container } = render(<Icon name="star-fill" aria-label="Favorite" />);
 
         expect(within(container).getByRole("img", { name: "Favorite" })).toBeInTheDocument();
     });
@@ -20,7 +20,7 @@ describe("Icon", () => {
         const { container } = render(
             <>
                 <span id="favorite-label">Favorite</span>
-                <Icon name="favorite" aria-labelledby="favorite-label" />
+                <Icon name="star-fill" aria-labelledby="favorite-label" />
             </>,
         );
 
@@ -28,7 +28,7 @@ describe("Icon", () => {
     });
 
     it("keeps its contract class next to the consumer's class", () => {
-        const { container } = render(<Icon name="favorite" className="consumer-class" />);
+        const { container } = render(<Icon name="star-fill" className="consumer-class" />);
 
         expect(container.querySelector("span")?.getAttribute("class")).toBe("dextinityIcon consumer-class");
     });
@@ -49,24 +49,16 @@ describe("Icon", () => {
     });
 
     it("emits its size as a data attribute", () => {
-        const { container } = render(<Icon name="time" size="large" />);
+        const { container } = render(<Icon name="clock" size="large" />);
 
         expect(container.querySelector("span")).toHaveAttribute("data-size", "large");
     });
 
-    it("reads the soft fill of a duotone icon from the icon's duotone variable", () => {
-        const { container } = render(<Icon name="time" duotone />);
+    it("shows the icon that a deprecated earlier name points to", () => {
+        const { container } = render(<Icon name="delete" />);
         const icon = container.querySelector("span");
 
-        expect(icon).toHaveAttribute("data-duotone");
-        expect(icon?.style.getPropertyValue("--dextinity-current-duotone-icon-mask")).toBe("var(--dextinity-duotone-icon-time)");
-    });
-
-    it("has no soft fill without duotone", () => {
-        const { container } = render(<Icon name="time" />);
-        const icon = container.querySelector("span");
-
-        expect(icon).not.toHaveAttribute("data-duotone");
-        expect(icon?.style.getPropertyValue("--dextinity-current-duotone-icon-mask")).toBe("");
+        expect(icon?.style.getPropertyValue("--dextinity-current-icon-mask")).toBe("var(--dextinity-icon-trash)");
+        expect(icon?.style.getPropertyValue("--dextinity-current-icon-image")).toBe("var(--dextinity-colored-icon-trash)");
     });
 });

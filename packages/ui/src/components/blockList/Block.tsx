@@ -256,7 +256,7 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                             onDragStart={listItem.onDragStart}
                             onDragEnd={listItem.onDragEnd}
                         >
-                            <Icon name="drag-indicator" />
+                            <Icon name="grip" />
                         </button>
                     </Tooltip>
                 )}
@@ -272,7 +272,7 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                 {ownerState.invalid && (
                     <Tooltip content={invalidReason ?? labels.invalid}>
                         <span {...invalidMarkerProps}>
-                            <Icon name="warning" />
+                            <Icon name="warn-tri" />
                         </span>
                     </Tooltip>
                 )}
@@ -287,16 +287,16 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                         aria-pressed={!ownerState.visible}
                         onClick={() => onVisibleChange(!ownerState.visible)}
                     >
-                        <Icon name={ownerState.visible ? "visible" : "invisible"} />
+                        <Icon name={ownerState.visible ? "eye" : "eye-off"} />
                     </IconButton>
                 )}
                 {actions != null && <span className={styles.actions}>{actions}</span>}
-                {!ownerState.expandable && onSelect != null && <Icon name="chevron-right" className={styles.chevron} />}
+                {!ownerState.expandable && onSelect != null && <Icon name="chev-r" className={styles.chevron} />}
                 {ownerState.expandable && (
                     <Collapsible.Trigger
                         render={
                             <IconButton variant="text" color="secondary" size="small" className={styles.toggle} aria-label={labels.toggleFields}>
-                                <Icon name="chevron-down" className={styles.toggleIcon} />
+                                <Icon name="chev-d" className={styles.toggleIcon} />
                             </IconButton>
                         }
                     />

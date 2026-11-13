@@ -10,7 +10,7 @@ export function ThemeExampleContent() {
             <Typography variant="displayL">Job postings</Typography>
             <Typography>Body text follows the active brand, color scheme, and density.</Typography>
             <div className={styles.actions}>
-                <Button startIcon={<Icon name="add" />}>Add</Button>
+                <Button startIcon={<Icon name="plus-circle" />}>Add</Button>
                 <Button variant="outlined" color="secondary" startIcon={<Icon name="edit" />}>
                     Edit
                 </Button>

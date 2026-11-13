@@ -50,9 +50,9 @@ const defaultLabels: DropzoneLabels = {
 };
 
 const uploadIconNames: Record<NonNullable<DropzoneUpload["status"]>, IconName> = {
-    uploading: "upload",
+    uploading: "cloud-upload",
     done: "file",
-    error: "error",
+    error: "alert",
 };
 
 /**
@@ -273,7 +273,7 @@ export const Dropzone = forwardRef<HTMLDivElement, DropzoneProps>(function Dropz
         >
             {overlay && children}
             <div {...zoneProps}>
-                <Icon name="upload" className={styles.icon} />
+                <Icon name="cloud-upload" className={styles.icon} />
                 {overlay ? (
                     <span className={styles.title}>{labels.drop}</span>
                 ) : (

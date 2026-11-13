@@ -174,10 +174,10 @@ const textAlignShortcuts: Record<RichTextEditorTextAlign, string> = { left: "⌘
 const maxPendingEmittedValues = 20;
 
 const textAlignIcons: Record<RichTextEditorTextAlign, IconName> = {
-    left: "rte-align-left",
-    center: "rte-align-center",
-    right: "rte-align-right",
-    justify: "rte-align-justify",
+    left: "align-left",
+    center: "align-center",
+    right: "align-right",
+    justify: "align-justify",
 };
 
 const textAlignLabels: Record<RichTextEditorTextAlign, "alignLeft" | "alignCenter" | "alignRight" | "alignJustify"> = {
@@ -191,13 +191,13 @@ type MarkFormat = "bold" | "italic" | "underline" | "strike";
 
 const markFormats: MarkFormat[] = ["bold", "italic", "underline", "strike"];
 
-const markIcons: Record<MarkFormat, IconName> = { bold: "rte-bold", italic: "rte-italic", underline: "rte-underlined", strike: "rte-strikethrough" };
+const markIcons: Record<MarkFormat, IconName> = { bold: "bold", italic: "italic", underline: "underline", strike: "strike" };
 
 const markShortcuts: Record<MarkFormat, string> = { bold: "⌘B", italic: "⌘I", underline: "⌘U", strike: "⌘⇧S" };
 
 type ScriptFormat = "subscript" | "superscript";
 
-const scriptIcons: Record<ScriptFormat, IconName> = { subscript: "rte-sub", superscript: "rte-sup" };
+const scriptIcons: Record<ScriptFormat, IconName> = { subscript: "subscript", superscript: "superscript" };
 
 const scriptShortcuts: Record<ScriptFormat, string> = { subscript: "⌘,", superscript: "⌘." };
 
@@ -567,7 +567,7 @@ function RichTextEditorBody({
                         keepFocus
                         onClick={() => editor?.chain().focus().undo().run()}
                     >
-                        <Icon name="rte-undo" />
+                        <Icon name="undo" />
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={labels.redo}
@@ -576,7 +576,7 @@ function RichTextEditorBody({
                         keepFocus
                         onClick={() => editor?.chain().focus().redo().run()}
                     >
-                        <Icon name="rte-redo" />
+                        <Icon name="redo" />
                     </ToolbarButton>
                 </ToolbarGroup>
             ),
@@ -647,7 +647,7 @@ function RichTextEditorBody({
                     ) : (
                         hasMoreFormatting && (
                             <ToolbarMenu
-                                icon={<Icon name="more-horizontal" />}
+                                icon={<Icon name="more" />}
                                 aria-label={labels.moreFormatting}
                                 open={moreMenuOpen}
                                 onOpenChange={setMoreMenuOpen}
@@ -711,7 +711,7 @@ function RichTextEditorBody({
                             keepFocus
                             onClick={() => editor?.chain().focus().toggleBulletList().run()}
                         >
-                            <Icon name="rte-ul-bullet-point" />
+                            <Icon name="list-ul" />
                         </ToolbarButton>
                     )}
                     {has("orderedList") && (
@@ -722,7 +722,7 @@ function RichTextEditorBody({
                             keepFocus
                             onClick={() => editor?.chain().focus().toggleOrderedList().run()}
                         >
-                            <Icon name="rte-ol" />
+                            <Icon name="list-ol" />
                         </ToolbarButton>
                     )}
                     <ToolbarButton
@@ -732,7 +732,7 @@ function RichTextEditorBody({
                         keepFocus
                         onClick={() => editor?.chain().focus().sinkListItem("listItem").run()}
                     >
-                        <Icon name="rte-indent-increase" />
+                        <Icon name="indent-inc" />
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={labels.outdent}
@@ -741,7 +741,7 @@ function RichTextEditorBody({
                         keepFocus
                         onClick={() => editor?.chain().focus().liftListItem("listItem").run()}
                     >
-                        <Icon name="rte-indent-decrease" />
+                        <Icon name="indent-dec" />
                     </ToolbarButton>
                 </ToolbarGroup>
             ),
@@ -753,7 +753,7 @@ function RichTextEditorBody({
             content: (
                 <ToolbarGroup>
                     <ToolbarButton aria-label={labels.link} shortcut="⌘K" pressed={state.link} keepFocus onClick={() => void requestLink()}>
-                        <Icon name="rte-link" />
+                        <Icon name="link" />
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={labels.removeLink}
@@ -761,7 +761,7 @@ function RichTextEditorBody({
                         keepFocus
                         onClick={() => editor?.chain().focus().extendMarkRange("link").unsetLink().run()}
                     >
-                        <Icon name="rte-clear-link" />
+                        <Icon name="unlink" />
                     </ToolbarButton>
                 </ToolbarGroup>
             ),
@@ -772,7 +772,7 @@ function RichTextEditorBody({
             key: "placeholders",
             content: (
                 <ToolbarMenu
-                    icon={<Icon name="rte-text-placeholder" />}
+                    icon={<Icon name="braces" />}
                     aria-label={labels.insertPlaceholder}
                     open={placeholderMenuOpen}
                     onOpenChange={setPlaceholderMenuOpen}
@@ -799,12 +799,12 @@ function RichTextEditorBody({
                             keepFocus
                             onClick={() => editor?.chain().focus().insertNonBreakingSpace().run()}
                         >
-                            <Icon name="rte-non-breaking-space" />
+                            <Icon name="nbsp" />
                         </ToolbarButton>
                     )}
                     {has("softHyphen") && (
                         <ToolbarButton aria-label={labels.softHyphen} keepFocus onClick={() => editor?.chain().focus().insertSoftHyphen().run()}>
-                            <Icon name="rte-soft-hyphen" />
+                            <Icon name="soft-hyphen" />
                         </ToolbarButton>
                     )}
                 </ToolbarGroup>

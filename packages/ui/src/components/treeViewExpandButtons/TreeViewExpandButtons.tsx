@@ -83,7 +83,7 @@ export const TreeViewExpandButtons = forwardRef<HTMLDivElement, TreeViewExpandBu
                 aria-label={labels.expandAll}
                 onClick={onExpandAll}
             >
-                <Icon name="chevrons-expand" />
+                <Icon name="expand" />
             </IconButton>
             <IconButton
                 variant="text"
@@ -94,7 +94,7 @@ export const TreeViewExpandButtons = forwardRef<HTMLDivElement, TreeViewExpandBu
                 aria-label={labels.collapseAll}
                 onClick={onCollapseAll}
             >
-                <Icon name="chevrons-collapse" />
+                <Icon name="collapse" />
             </IconButton>
         </div>
     );

@@ -79,7 +79,7 @@ export const Picker = forwardRef(function Picker<Value>(
         onOpen,
         onClear,
         placeholder,
-        icon = <Icon name="more-horizontal" />,
+        icon = <Icon name="more" />,
         labels: labelsProp,
         id,
         className,
@@ -162,7 +162,7 @@ export const Picker = forwardRef(function Picker<Value>(
                                 triggerRef.current?.focus();
                             }}
                         >
-                            <Icon name="close" />
+                            <Icon name="x" />
                         </button>
                     )}
                     <span className={styles.openIcon} aria-hidden onClick={disabled || readOnly ? undefined : onOpen}>

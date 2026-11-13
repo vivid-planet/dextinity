@@ -98,7 +98,7 @@ const columns: StoryTableColumn<Redirect>[] = [
         header: "Target",
         render: (redirect) => (
             <span className={styles.target}>
-                <Icon name={redirect.targetTitle == null ? "open-new-tab" : "file"} size="small" />
+                <Icon name={redirect.targetTitle == null ? "window" : "file"} size="small" />
                 <span>
                     <b>{redirect.targetTitle ?? "External URL"}</b>
                     <span className={styles.mono}>{redirect.target}</span>
@@ -132,7 +132,7 @@ function RedirectForm({ redirect, onClose, onSave }: { redirect: Redirect; onClo
             title={redirect.source === "" ? "New redirect" : "Edit redirect"}
             actions={
                 <IconButton color="secondary" aria-label="Close" variant="text" size="small" onClick={onClose}>
-                    <Icon name="close" />
+                    <Icon name="x" />
                 </IconButton>
             }
         >

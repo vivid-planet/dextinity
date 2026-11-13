@@ -38,8 +38,6 @@ $danger-hue: var(--dextinity-brand-danger-hue);
         --dextinity-focus-outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-focus);
         // Width of the soft halo around a focused or validated field
         --dextinity-focus-halo-width: 4px;
-        // Opacity of the fill layer of a duotone icon
-        --dextinity-icon-duotone-opacity: 0.16;
         // Opacity of a disabled control
         --dextinity-opacity-disabled: 0.42;
         // Opacity of the item left in place while it's being dragged
@@ -226,7 +224,6 @@ $danger-hue: var(--dextinity-brand-danger-hue);
 
         --dextinity-line-width: 1px;
         --dextinity-gradient-brand: var(--dextinity-color-accent);
-        --dextinity-icon-duotone-opacity: 0;
 
         --dextinity-color-canvas: oklch(0 0 0);
         --dextinity-color-surface: oklch(0 0 0);

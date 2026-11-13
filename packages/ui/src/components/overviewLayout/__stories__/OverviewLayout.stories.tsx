@@ -48,7 +48,7 @@ function Row({ title, subtitle, end, href = "#" }: { title: string; subtitle: st
                 <div className={styles.rowSubtitle}>{subtitle}</div>
             </div>
             <div className={styles.rowEnd}>{end}</div>
-            <Icon name="arrow-right" size="small" className={styles.rowGo} />
+            <Icon name="arrow" size="small" className={styles.rowGo} />
         </a>
     );
 }
@@ -58,9 +58,9 @@ function OverviewCards() {
         <>
             <Card
                 title="Recently edited"
-                icon={<Icon name="time" duotone />}
+                icon={<Icon name="clock" />}
                 link={
-                    <Link href="#page-tree" endIcon={<Icon name="arrow-right" />}>
+                    <Link href="#page-tree" endIcon={<Icon name="arrow" />}>
                         Page tree
                     </Link>
                 }
@@ -79,7 +79,7 @@ function OverviewCards() {
                     />
                 ))}
             </Card>
-            <Card title="Published" icon={<Icon name="online" duotone />} meta="30 days">
+            <Card title="Published" icon={<Icon name="bolt" />} meta="30 days">
                 <div className={styles.published}>
                     <div className={styles.publishedHead}>
                         <div>
@@ -97,10 +97,10 @@ function OverviewCards() {
             </Card>
             <Card
                 title="Warnings"
-                icon={<Icon name="warning" duotone />}
+                icon={<Icon name="warn-tri" />}
                 meta="3 open"
                 link={
-                    <Link href="#warnings" endIcon={<Icon name="arrow-right" />}>
+                    <Link href="#warnings" endIcon={<Icon name="arrow" />}>
                         All
                     </Link>
                 }
@@ -114,13 +114,13 @@ function OverviewCards() {
                     />
                 ))}
             </Card>
-            <Card title="New form submissions" icon={<Icon name="inbox" duotone />}>
+            <Card title="New form submissions" icon={<Icon name="form" />}>
                 <EmptyState
-                    icon={<Icon name="error" />}
+                    icon={<Icon name="alert" />}
                     title="Couldn't load"
                     description="The server didn't answer in time. Your content is not affected."
                     actions={
-                        <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="reload" />}>
+                        <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="refresh" />}>
                             Load again
                         </Button>
                     }

@@ -9,8 +9,8 @@ import styles from "./Banner.module.scss";
 type BannerTone = "warning" | "error" | "info";
 
 const toneIcons: Record<BannerTone, IconName> = {
-    warning: "warning",
-    error: "error",
+    warning: "warn-tri",
+    error: "alert",
     info: "info",
 };
 

@@ -21,7 +21,7 @@ export interface ToolbarButtonSlotProps {
 }
 
 export interface ToolbarButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className" | "children" | "aria-pressed"> {
-    /** The icon, e.g. `<Icon name="rte-bold" />`. */
+    /** The icon, e.g. `<Icon name="bold" />`. */
     children: ReactNode;
     /** The accessible name, also shown as the tooltip. Name the action, e.g. "Bold". */
     "aria-label": string;

@@ -93,7 +93,7 @@ function findLabel(nodes: TreeNode[], id: string): string | undefined {
 
 const initialBlocks = [
     { id: "hero", title: "Hero", icon: <Icon name="image" /> },
-    { id: "text", title: "Text", icon: <Icon name="rte-heading" /> },
+    { id: "text", title: "Text", icon: <Icon name="heading" /> },
     { id: "jobs", title: "Job list", icon: <Icon name="list" /> },
 ];
 

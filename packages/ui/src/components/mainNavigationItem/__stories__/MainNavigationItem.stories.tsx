@@ -9,8 +9,8 @@ import mainNavigationItemTokens from "../MainNavigationItem.tokens.scss?raw";
 import styles from "./mainNavigationItem.module.scss";
 
 const iconOptions = {
-    Dashboard: <Icon name="dashboard" />,
-    Settings: <Icon name="settings" />,
+    Dashboard: <Icon name="dash" />,
+    Settings: <Icon name="gear" />,
 };
 
 const meta = {
@@ -53,20 +53,20 @@ export const Default: Story = {};
 
 export const WithIcon: Story = {
     args: {
-        icon: <Icon name="dashboard" />,
+        icon: <Icon name="dash" />,
     },
 };
 
 export const Active: Story = {
     args: {
-        icon: <Icon name="dashboard" />,
+        icon: <Icon name="dash" />,
         active: true,
     },
 };
 
 export const Expandable: Story = {
     args: {
-        icon: <Icon name="settings" />,
+        icon: <Icon name="gear" />,
         expandable: true,
         children: "Settings",
         href: undefined,

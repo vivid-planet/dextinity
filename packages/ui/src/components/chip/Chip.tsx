@@ -195,7 +195,7 @@ export const Chip: <StartIcon extends ElementType = "span", EndIcon extends Elem
                     {endIcon != null && <EndIconSlot {...endIconProps}>{endIcon}</EndIconSlot>}
                     {onClear !== undefined && (
                         <ClearButtonSlot {...clearButtonProps}>
-                            <Icon name="clear" />
+                            <Icon name="close-circle-fill" />
                         </ClearButtonSlot>
                     )}
                 </>

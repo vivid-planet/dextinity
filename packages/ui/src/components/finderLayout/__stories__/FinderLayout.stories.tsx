@@ -130,7 +130,7 @@ function AssetsPage() {
                             <Button variant="outlined" color="secondary" startIcon={<Icon name="folder" />}>
                                 New folder
                             </Button>
-                            <Button startIcon={<Icon name="upload" />}>Upload</Button>
+                            <Button startIcon={<Icon name="cloud-upload" />}>Upload</Button>
                         </>
                     }
                 />

@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type TableHTMLAttributes } from "react";
+import { forwardRef, Fragment, type TableHTMLAttributes } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
@@ -18,7 +18,8 @@ interface ShortcutListItemBase {
 interface ShortcutListItemWithShortcut extends ShortcutListItemBase {
     /**
      * The shortcut in the notation of `useKeyboardShortcut`, e.g. `"mod+k"`, shown for the platform as one key cap. Several shortcuts
-     * pressed one after another, or alternatives, are listed in order, e.g. `["mod+x", "mod+v"]`.
+     * are listed side by side and read as a list, for alternatives, e.g. `["mod+ArrowDown", "mod+o"]` for "Open", or one per part of
+     * the description, e.g. `["mod+x", "mod+v"]` for "Cut and paste". The notation has no sequences of keys pressed one after another.
      */
     shortcut: string | string[];
     keys?: never;
@@ -99,7 +100,10 @@ export const ShortcutList = forwardRef<HTMLTableElement, ShortcutListProps>(func
                         <td>
                             <span {...keysProps}>
                                 {shortcutsOf(item).map((shortcut, index) => (
-                                    <KeyboardShortcut key={index} shortcut={shortcut} />
+                                    <Fragment key={index}>
+                                        {index > 0 && <span className={styles.separator}>{", "}</span>}
+                                        <KeyboardShortcut shortcut={shortcut} />
+                                    </Fragment>
                                 ))}
                                 {item.keys?.map((key, index) => (
                                     <KeyboardShortcut key={index}>{key}</KeyboardShortcut>

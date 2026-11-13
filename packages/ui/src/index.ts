@@ -115,7 +115,7 @@ export type { DefaultIconName, DefaultIconRegistry, DeprecatedIconAlias, IconNam
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";
 export { type IconButtonSlotProps, type IconButtonSlots } from "./components/iconButton/IconButton";
 export { Input, type InputOwnerState, type InputProps } from "./components/input/Input";
-export { describeShortcut, formatShortcut, type KeyboardShortcutLabels } from "./components/keyboardShortcut/formatShortcut";
+export { describeShortcut, formatShortcut, formatShortcutText, type KeyboardShortcutLabels } from "./components/keyboardShortcut/formatShortcut";
 export { KeyboardShortcut, type KeyboardShortcutOwnerState, type KeyboardShortcutProps } from "./components/keyboardShortcut/KeyboardShortcut";
 export {
     isApplePlatform,

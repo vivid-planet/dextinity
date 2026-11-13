@@ -2,6 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { AppShellContext } from "../../appShell/appShellContext";
+import { KeyboardShortcutProvider } from "../../keyboardShortcut/keyboardShortcutPlatform";
 import { TopBar } from "../TopBar";
 
 afterEach(cleanup);
@@ -25,6 +26,18 @@ describe("TopBar render contract", () => {
             "Scope",
             "User",
         ]);
+    });
+
+    it("announces the search shortcut for the platform", () => {
+        render(
+            <KeyboardShortcutProvider platform="apple">
+                <TopBar onSearchClick={vi.fn()} />
+            </KeyboardShortcutProvider>,
+        );
+
+        const search = screen.getByRole("button", { name: "Search, jump, create …" });
+        expect(search.getAttribute("aria-keyshortcuts")).toBe("Meta+K");
+        expect(search.textContent).toContain("⌘K");
     });
 
     it("opens the AppShell's navigation drawer from the menu button", () => {

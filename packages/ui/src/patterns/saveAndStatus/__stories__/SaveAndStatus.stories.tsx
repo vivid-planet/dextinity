@@ -7,7 +7,7 @@ import { ConfirmDialog } from "../../../components/confirmDialog/ConfirmDialog";
 import { Field } from "../../../components/field/Field";
 import { Icon } from "../../../components/icon/Icon";
 import { Input } from "../../../components/input/Input";
-import { formatShortcut } from "../../../components/keyboardShortcut/formatShortcut";
+import { formatShortcutText } from "../../../components/keyboardShortcut/formatShortcut";
 import { useKeyboardShortcutPlatform } from "../../../components/keyboardShortcut/keyboardShortcutPlatform";
 import { useKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
 import { SaveState, type SaveStateValue } from "../../../components/saveState/SaveState";
@@ -169,7 +169,7 @@ function SaveAndStatusPage() {
                 steps={[
                     { title: "Edit", description: "The header shows “Unsaved changes”." },
                     {
-                        title: `Save (${formatShortcut("mod+s", apple).join(apple ? "" : "+")})`,
+                        title: `Save (${formatShortcutText("mod+s", apple)})`,
                         description: "If the page is published, the change is live right away. The button's tooltip says so.",
                     },
                     { title: "Publish", description: "The “Published” switch – also in list, tree and detail." },

@@ -34,6 +34,10 @@ export interface KeyboardShortcutProps extends Omit<HTMLAttributes<HTMLElement>,
  *
  * With `shortcut`, `mod` shows as ⌘ on Apple platforms and as Ctrl elsewhere. The platform is detected after hydration, so server
  * rendering shows Ctrl first; a `KeyboardShortcutProvider` or `platform` sets it explicitly.
+ *
+ * Screen readers read its spoken name where it stands, e.g. in a table. Components whose shortcut belongs to a control, such as
+ * `MenuItem`, `IconButton` and the entries of `CommandPalette`, set `aria-keyshortcuts` on the control instead, so its name stays its
+ * label.
  */
 export const KeyboardShortcut = forwardRef<HTMLElement, KeyboardShortcutProps>(function KeyboardShortcut(
     { shortcut, children, platform: platformProp, labels: labelsProp, className, ...restProps },

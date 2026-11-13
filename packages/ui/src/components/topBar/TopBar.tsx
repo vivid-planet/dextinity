@@ -5,6 +5,7 @@ import { useAppShellContext } from "../appShell/appShellContext";
 import { Icon } from "../icon/Icon";
 import { IconButton } from "../iconButton/IconButton";
 import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
+import { useAriaKeyShortcuts } from "../keyboardShortcut/useAriaKeyShortcuts";
 import styles from "./TopBar.module.scss";
 
 export interface TopBarLabels {
@@ -72,6 +73,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
     const shell = useAppShellContext();
     const labels = { ...defaultLabels, ...labelsProp };
     const onMenuClick = onMenuClickProp ?? shell?.onNavDrawerOpen;
+    const searchKeyShortcuts = useAriaKeyShortcuts(searchShortcut);
 
     return (
         <header {...restProps} ref={ref} className={clsx(styles.root, className)}>
@@ -81,7 +83,14 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
                 </IconButton>
             )}
             {onSearchClick != null && (
-                <button type="button" aria-label={labels.search} aria-haspopup="dialog" onClick={onSearchClick} className={styles.search}>
+                <button
+                    type="button"
+                    aria-label={labels.search}
+                    aria-keyshortcuts={searchKeyShortcuts}
+                    aria-haspopup="dialog"
+                    onClick={onSearchClick}
+                    className={styles.search}
+                >
                     <Icon name="search" />
                     <span className={styles.searchText}>{labels.search}</span>
                     <KeyboardShortcut className={styles.searchShortcut} shortcut={searchShortcut} />

@@ -18,7 +18,7 @@ describe("Tooltip", () => {
         expect(tooltip.className).toContain("dextinityTooltip");
         expect(tooltip.className).toContain("consumer-class");
         expect(tooltip.dataset.placement).toBe("top");
-        expect(screen.getByText("Control .").closest("kbd")?.className).toContain("dextinityTooltip__shortcut");
+        expect(screen.getByText("Control Period").closest("kbd")?.className).toContain("dextinityTooltip__shortcut");
     });
 
     it("portals the popup into the closest theme, so it keeps the theme's color scheme", async () => {

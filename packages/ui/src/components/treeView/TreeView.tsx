@@ -18,6 +18,8 @@ import {
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Checkbox } from "../checkbox/Checkbox";
 import { Icon } from "../icon/Icon";
+import { useKeyboardShortcutPlatform } from "../keyboardShortcut/keyboardShortcutPlatform";
+import { matchesShortcut } from "../keyboardShortcut/useKeyboardShortcut";
 import { StatusIndicator, type StatusIndicatorStatus } from "../statusIndicator/StatusIndicator";
 import { readTooltipDelay, Tooltip } from "../tooltip/Tooltip";
 import styles from "./TreeView.module.scss";
@@ -126,8 +128,9 @@ export interface TreeViewProps extends Omit<HTMLAttributes<HTMLUListElement>, "c
      */
     filter?: (node: TreeNode) => boolean;
     /**
-     * Lets nodes be moved by dragging, with a drag handle on hover, and by keyboard: Ctrl/⌘+X cuts the focused node, Ctrl/⌘+V
-     * moves it inside the focused node as its last child, Shift+Ctrl/⌘+V right after it, Escape cancels.
+     * Lets nodes be moved by dragging, with a drag handle on hover, and by keyboard: `mod+x` (⌘X on Apple platforms, Ctrl+X
+     * elsewhere) cuts the focused node, `mod+v` moves it inside the focused node as its last child, `shift+mod+v` right after it, Escape
+     * cancels.
      *
      * @defaultValue `false`
      */
@@ -299,6 +302,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
     const [draggedId, setDraggedId] = useState<string>();
     const [dropTarget, setDropTarget] = useState<Omit<TreeViewMove, "id">>();
     const [cutId, setCutId] = useState<string>();
+    const apple = useKeyboardShortcutPlatform() === "apple";
     const labelRefs = useRef(new Map<string, HTMLSpanElement>());
     const [fullLabelId, setFullLabelId] = useState<string>();
     const fullLabelTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -437,16 +441,16 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
             focusNode(next.node.id);
         };
 
-        if (draggable && (event.ctrlKey || event.metaKey) && !event.altKey) {
-            const key = event.key.toLowerCase();
-            if (key === "x") {
+        if (draggable) {
+            if (matchesShortcut(event, "mod+x", apple)) {
                 event.preventDefault();
                 setCutId(id);
                 return;
             }
-            if (key === "v" && cutId != null) {
+            const pastesAfter = matchesShortcut(event, "shift+mod+v", apple);
+            if (cutId != null && (pastesAfter || matchesShortcut(event, "mod+v", apple))) {
                 event.preventDefault();
-                const move: TreeViewMove = { id: cutId, targetId: id, position: event.shiftKey ? "after" : "inside" };
+                const move: TreeViewMove = { id: cutId, targetId: id, position: pastesAfter ? "after" : "inside" };
                 if (isDropAllowed(move)) {
                     onMove?.(move);
                     setCutId(undefined);

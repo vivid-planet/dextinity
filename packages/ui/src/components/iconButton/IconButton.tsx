@@ -3,6 +3,7 @@ import { clsx } from "clsx";
 import { type ElementType, type ForwardedRef, forwardRef, type ReactNode, type RefAttributes, type SyntheticEvent } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
+import { useAriaKeyShortcuts } from "../keyboardShortcut/useAriaKeyShortcuts";
 import { Spinner } from "../spinner/Spinner";
 import { Tooltip, type TooltipProps } from "../tooltip/Tooltip";
 import styles from "./IconButton.module.scss";
@@ -124,6 +125,7 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
     }: IconButtonProps<Icon, LoadingSpinner>,
     ref: ForwardedRef<HTMLButtonElement>,
 ) {
+    const ariaKeyShortcutsValue = useAriaKeyShortcuts(shortcut);
     const ownerState: IconButtonOwnerState = { variant, color, size, disabled: disabled === true, loading: loading === true };
 
     const IconSlot: ElementType = slots?.icon ?? "span";
@@ -147,6 +149,7 @@ export const IconButton: <Icon extends ElementType = "span", LoadingSpinner exte
                 ref={ref}
                 type={restProps.nativeButton === false ? undefined : type}
                 aria-label={ariaLabel}
+                aria-keyshortcuts={restProps["aria-keyshortcuts"] ?? ariaKeyShortcutsValue}
                 disabled={ownerState.disabled}
                 data-variant={ownerState.variant}
                 data-color={ownerState.color}

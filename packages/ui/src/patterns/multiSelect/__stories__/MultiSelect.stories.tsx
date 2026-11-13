@@ -5,7 +5,7 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 import { BulkActionBar } from "../../../components/bulkActionBar/BulkActionBar";
 import { Checkbox } from "../../../components/checkbox/Checkbox";
 import { Icon } from "../../../components/icon/Icon";
-import { formatShortcut } from "../../../components/keyboardShortcut/formatShortcut";
+import { formatShortcut, formatShortcutText } from "../../../components/keyboardShortcut/formatShortcut";
 import { useKeyboardShortcutPlatform } from "../../../components/keyboardShortcut/keyboardShortcutPlatform";
 import { useSelection } from "../../../components/selection/useSelection";
 import { StatusIndicator } from "../../../components/statusIndicator/StatusIndicator";
@@ -75,7 +75,7 @@ function MultiSelectExample() {
 
 function MultiSelectPage() {
     const apple = useKeyboardShortcutPlatform() === "apple";
-    const selectAllKeys = formatShortcut("mod+a", apple).join(apple ? "" : "+");
+    const selectAllKeys = formatShortcutText("mod+a", apple);
     const mod = formatShortcut("mod+a", apple)[0];
     return (
         <PatternPage>

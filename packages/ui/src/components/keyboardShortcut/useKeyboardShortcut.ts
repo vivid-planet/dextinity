@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 
-import { parseShortcut } from "./formatShortcut";
+import { isSymbolKey, normalizeKey, parseShortcut } from "./formatShortcut";
 import { isApplePlatform, useKeyboardShortcutPlatform } from "./keyboardShortcutPlatform";
 
 /**
  * Whether a keyboard event matches a shortcut such as `"mod+s"`, `"shift+mod+n"`, `"/"` or `"Escape"`.
  *
- * `mod` is ⌘ on Apple platforms and Ctrl elsewhere. Shift is ignored for keys that are symbols (e.g. `"?"`), since keyboard layouts
- * differ in whether they need it.
+ * `mod` is ⌘ on Apple platforms and Ctrl elsewhere. Shift and Alt are ignored for keys that are symbols (e.g. `"?"` or `"\\"`), since
+ * keyboard layouts differ in whether they need them: `\\` is AltGr+ß on German Windows keyboards and ⌥⇧7 on German Macs.
  */
 export function matchesShortcut(
     event: Pick<KeyboardEvent, "key" | "metaKey" | "ctrlKey" | "shiftKey" | "altKey">,
@@ -17,12 +17,17 @@ export function matchesShortcut(
     const parsed = parseShortcut(shortcut);
     const modPressed = apple ? event.metaKey : event.ctrlKey;
     const otherModifierPressed = apple ? event.ctrlKey : event.metaKey;
-    const isSymbol = parsed.key.length === 1 && parsed.key.toLowerCase() === parsed.key.toUpperCase();
+    const isSymbol = isSymbolKey(parsed.key);
+    // AltGr reports Ctrl and Alt as pressed on Windows, so with it Ctrl can't tell whether `mod` is pressed too
+    const altGr = !apple && isSymbol && event.ctrlKey && event.altKey;
 
-    if (event.key.toLowerCase() !== parsed.key) {
+    if (normalizeKey(event.key) !== parsed.key) {
         return false;
     }
-    if (modPressed !== parsed.mod || otherModifierPressed || event.altKey !== parsed.alt) {
+    if (otherModifierPressed || (!altGr && modPressed !== parsed.mod)) {
+        return false;
+    }
+    if (parsed.alt ? !event.altKey : event.altKey && !isSymbol) {
         return false;
     }
     return isSymbol || event.shiftKey === parsed.shift;

@@ -2,6 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { createRef } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { KeyboardShortcutProvider } from "../../keyboardShortcut/keyboardShortcutPlatform";
 import { IconButton } from "../IconButton";
 
 /**
@@ -120,5 +121,21 @@ describe("IconButton", () => {
         );
 
         expect(screen.getByLabelText("Back to job ads").hasAttribute("type")).toBe(false);
+    });
+
+    it("announces its shortcut for the platform, as the tooltip that shows it isn't linked to the button", () => {
+        render(
+            <>
+                <KeyboardShortcutProvider platform="apple">
+                    <IconButton aria-label="Edit" shortcut="mod+e" />
+                </KeyboardShortcutProvider>
+                <KeyboardShortcutProvider platform="other">
+                    <IconButton aria-label="Save" shortcut="shift+mod+s" />
+                </KeyboardShortcutProvider>
+            </>,
+        );
+
+        expect(screen.getByRole("button", { name: "Edit" }).getAttribute("aria-keyshortcuts")).toBe("Meta+E");
+        expect(screen.getByRole("button", { name: "Save" }).getAttribute("aria-keyshortcuts")).toBe("Control+Shift+S");
     });
 });

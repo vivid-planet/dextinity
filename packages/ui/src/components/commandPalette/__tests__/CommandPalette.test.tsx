@@ -1,6 +1,7 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { KeyboardShortcutProvider } from "../../keyboardShortcut/keyboardShortcutPlatform";
 import { CommandPalette, type CommandPaletteGroup } from "../CommandPalette";
 
 const groups: CommandPaletteGroup[] = [
@@ -39,5 +40,46 @@ describe("CommandPalette render contract", () => {
         render(<CommandPalette open onOpenChange={vi.fn()} query="zzz" onQueryChange={vi.fn()} groups={groups} filter={false} />);
 
         expect(screen.getAllByRole("option")).toHaveLength(3);
+    });
+});
+
+describe("CommandPalette global shortcut", () => {
+    it("opens with Ctrl+K on Windows and Linux, not with ⌘K", () => {
+        const onOpenChange = vi.fn();
+        render(
+            <KeyboardShortcutProvider platform="other">
+                <CommandPalette open={false} onOpenChange={onOpenChange} query="" onQueryChange={vi.fn()} groups={groups} />
+            </KeyboardShortcutProvider>,
+        );
+
+        fireEvent.keyDown(document, { key: "k", metaKey: true });
+        expect(onOpenChange).not.toHaveBeenCalled();
+        fireEvent.keyDown(document, { key: "k", ctrlKey: true });
+        expect(onOpenChange).toHaveBeenCalledWith(true);
+    });
+
+    it("opens with ⌘K on Apple platforms, not with Ctrl+K", () => {
+        const onOpenChange = vi.fn();
+        render(
+            <KeyboardShortcutProvider platform="apple">
+                <CommandPalette open={false} onOpenChange={onOpenChange} query="" onQueryChange={vi.fn()} groups={groups} />
+            </KeyboardShortcutProvider>,
+        );
+
+        fireEvent.keyDown(document, { key: "k", ctrlKey: true });
+        expect(onOpenChange).not.toHaveBeenCalled();
+        fireEvent.keyDown(document, { key: "k", metaKey: true });
+        expect(onOpenChange).toHaveBeenCalledWith(true);
+    });
+
+    it("names an entry by its label and announces its shortcut", () => {
+        const items = [{ id: "new", label: "New page", shortcut: "mod+n", onSelect: vi.fn() }];
+        render(
+            <KeyboardShortcutProvider platform="apple">
+                <CommandPalette open onOpenChange={vi.fn()} query="" onQueryChange={vi.fn()} groups={[{ label: "Create", items }]} />
+            </KeyboardShortcutProvider>,
+        );
+
+        expect(screen.getByRole("option", { name: "New page" }).getAttribute("aria-keyshortcuts")).toBe("Meta+N");
     });
 });

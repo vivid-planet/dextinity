@@ -81,10 +81,10 @@ export const WindowsAndLinux: Story = {
 };
 
 /**
- * Shortcuts pressed one after another are listed in order, e.g. cut and paste. `keys` shows fixed key caps for what the notation
- * doesn't cover.
+ * Several shortcuts in one row are read as a list: alternatives, or one per part of the description, e.g. cut and paste. `keys`
+ * shows fixed key caps for what the notation doesn't cover.
  */
-export const Sequence: Story = {
+export const SeveralShortcuts: Story = {
     args: {
         shortcuts: [
             { shortcut: ["mod+x", "mod+v"], description: "Cut and paste (page tree)" },

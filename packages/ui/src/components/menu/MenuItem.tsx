@@ -4,6 +4,7 @@ import { type ElementType, type ForwardedRef, forwardRef, type ReactNode, type R
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
+import { useAriaKeyShortcuts } from "../keyboardShortcut/useAriaKeyShortcuts";
 import { Tooltip } from "../tooltip/Tooltip";
 import styles from "./MenuItem.module.scss";
 
@@ -105,16 +106,20 @@ export const MenuItem: <IconElement extends ElementType = "span">(props: MenuIte
             ownerState,
         });
         const shortcutProps = resolveSlotProps<MenuItemOwnerState, typeof KeyboardShortcut, typeof KeyboardShortcut>({
-            ownProps: { className: styles.shortcut, shortcut },
+            // The shortcut is announced through `aria-keyshortcuts`, so the item's name stays its label
+            ownProps: { className: styles.shortcut, shortcut, "aria-hidden": true },
             slotProps: slotProps?.shortcut,
             ownerState,
         });
+
+        const ariaKeyShortcutsValue = useAriaKeyShortcuts(shortcutProps.shortcut, shortcutProps.platform);
 
         const item = (
             <BaseMenu.Item
                 {...restProps}
                 ref={ref}
                 label={label}
+                aria-keyshortcuts={restProps["aria-keyshortcuts"] ?? ariaKeyShortcutsValue}
                 disabled={ownerState.disabled}
                 aria-describedby={showsReason ? reasonId : restProps["aria-describedby"]}
                 data-color={ownerState.color}

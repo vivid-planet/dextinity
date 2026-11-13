@@ -46,12 +46,12 @@ describe("Menu", () => {
         expect(menu.dataset.placement).toBe("bottom-end");
         expect(screen.getByTestId("theme").contains(menu)).toBe(true);
 
-        const duplicate = screen.getByRole("menuitem", { name: /Duplicate/ });
+        const duplicate = screen.getByRole("menuitem", { name: "Duplicate" });
         expect(duplicate.className).toContain("dextinityMenuItem");
         expect(duplicate.dataset.color).toBe("default");
         expect(screen.getByText("i").parentElement?.className).toContain("dextinityMenuItem__icon");
         expect(screen.getByText("Command D").closest("kbd")?.className).toContain("dextinityMenuItem__shortcut");
-        expect(duplicate).toHaveAccessibleName("Duplicate Command D");
+        expect(duplicate.getAttribute("aria-keyshortcuts")).toBe("Meta+D");
 
         const remove = screen.getByRole("menuitem", { name: "Delete" });
         expect(remove.dataset.color).toBe("error");

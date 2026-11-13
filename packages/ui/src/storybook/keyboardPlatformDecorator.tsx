@@ -1,6 +1,6 @@
 import type { Decorator } from "@storybook/react-vite";
 
-import { describeShortcut, formatShortcut } from "../components/keyboardShortcut/formatShortcut";
+import { describeShortcut, formatShortcutText } from "../components/keyboardShortcut/formatShortcut";
 import { isApplePlatform, KeyboardShortcutProvider } from "../components/keyboardShortcut/keyboardShortcutPlatform";
 import { keyboardPlatformSetting } from "./keyboardPlatform";
 
@@ -24,7 +24,7 @@ export function storyModKey() {
  */
 export function storyShortcutText(shortcut: string) {
     const apple = isStoryApplePlatform();
-    return `${formatShortcut(shortcut, apple).join(apple ? "" : "+")}${describeShortcut(shortcut, apple)}`;
+    return `${formatShortcutText(shortcut, apple)}${describeShortcut(shortcut, apple)}`;
 }
 
 export const keyboardPlatformDecorator: Decorator = (Story) => {

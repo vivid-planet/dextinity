@@ -6,7 +6,9 @@ import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
+import { ariaKeyShortcuts } from "../keyboardShortcut/formatShortcut";
 import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
+import { useKeyboardShortcutPlatform } from "../keyboardShortcut/keyboardShortcutPlatform";
 import { useKeyboardShortcut } from "../keyboardShortcut/useKeyboardShortcut";
 import styles from "./CommandPalette.module.scss";
 
@@ -171,6 +173,7 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
     const listRef = useRef<HTMLDivElement>(null);
     const id = useId();
     const [activeId, setActiveId] = useState<string | null>(null);
+    const apple = useKeyboardShortcutPlatform() === "apple";
 
     const terms = termsOf(query);
     const visibleGroups = groups
@@ -275,6 +278,7 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
                                                     id={optionId(item)}
                                                     role="option"
                                                     aria-selected={item === activeItem}
+                                                    aria-keyshortcuts={item.shortcut != null ? ariaKeyShortcuts(item.shortcut, apple) : undefined}
                                                     data-id={item.id}
                                                     className={styles.item}
                                                     onPointerMove={() => setActiveId(item.id)}
@@ -285,7 +289,7 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
                                                         <HighlightedLabel label={item.label} terms={terms} />
                                                     </span>
                                                     {item.shortcut != null && (
-                                                        <KeyboardShortcut className={styles.itemShortcut} shortcut={item.shortcut} />
+                                                        <KeyboardShortcut aria-hidden className={styles.itemShortcut} shortcut={item.shortcut} />
                                                     )}
                                                 </div>
                                             ))}

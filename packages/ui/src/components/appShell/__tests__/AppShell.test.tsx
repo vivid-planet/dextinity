@@ -1,6 +1,7 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { type KeyboardShortcutPlatform, KeyboardShortcutProvider } from "../../keyboardShortcut/keyboardShortcutPlatform";
 import { SideNav, type SideNavGroup } from "../../sideNav/SideNav";
 import { TopBar } from "../../topBar/TopBar";
 import { AppShell } from "../AppShell";
@@ -16,16 +17,22 @@ function matchMedia(query: string) {
     return { matches, media: query, addEventListener: vi.fn(), removeEventListener: vi.fn() } as unknown as MediaQueryList;
 }
 
-function renderShell({ navCollapsed = false, onNavCollapsedChange = vi.fn() } = {}) {
+function renderShell({
+    navCollapsed = false,
+    onNavCollapsedChange = vi.fn(),
+    platform = "other",
+}: { navCollapsed?: boolean; onNavCollapsedChange?: () => void; platform?: KeyboardShortcutPlatform } = {}) {
     return render(
-        <AppShell
-            nav={<SideNav title="App" groups={groups} activeId="jobs" expanded={[]} onExpandedChange={vi.fn()} onNavigate={vi.fn()} />}
-            topBar={<TopBar />}
-            navCollapsed={navCollapsed}
-            onNavCollapsedChange={onNavCollapsedChange}
-        >
-            Content
-        </AppShell>,
+        <KeyboardShortcutProvider platform={platform}>
+            <AppShell
+                nav={<SideNav title="App" groups={groups} activeId="jobs" expanded={[]} onExpandedChange={vi.fn()} onNavigate={vi.fn()} />}
+                topBar={<TopBar />}
+                navCollapsed={navCollapsed}
+                onNavCollapsedChange={onNavCollapsedChange}
+            >
+                Content
+            </AppShell>
+        </KeyboardShortcutProvider>,
     );
 }
 
@@ -65,6 +72,27 @@ describe("AppShell", () => {
         renderShell({ onNavCollapsedChange });
 
         fireEvent.keyDown(document, { key: "\\", ctrlKey: true });
+        expect(onNavCollapsedChange).toHaveBeenCalledWith(true);
+    });
+
+    it("toggles the navigation with Ctrl+\\ typed with AltGr, as on German Windows keyboards", () => {
+        windowWidth = 1440;
+        const onNavCollapsedChange = vi.fn();
+        renderShell({ onNavCollapsedChange });
+
+        fireEvent.keyDown(document, { key: "\\", ctrlKey: true, altKey: true });
+        expect(onNavCollapsedChange).toHaveBeenCalledWith(true);
+    });
+
+    it("toggles the navigation with ⌘\\ and not with Ctrl+\\ on Apple platforms", () => {
+        windowWidth = 1440;
+        const onNavCollapsedChange = vi.fn();
+        renderShell({ onNavCollapsedChange, platform: "apple" });
+
+        fireEvent.keyDown(document, { key: "\\", ctrlKey: true });
+        expect(onNavCollapsedChange).not.toHaveBeenCalled();
+        // ⌥⇧7 types a backslash on German Mac keyboards
+        fireEvent.keyDown(document, { key: "\\", metaKey: true, altKey: true, shiftKey: true });
         expect(onNavCollapsedChange).toHaveBeenCalledWith(true);
     });
 

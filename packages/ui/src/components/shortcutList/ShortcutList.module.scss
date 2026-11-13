@@ -31,8 +31,19 @@
 }
 
 .keys {
+    position: relative;
     display: inline-flex;
     flex-wrap: wrap;
     gap: var(--dextinity-shortcut-list-key-gap);
     align-items: center;
+}
+
+// Screen readers read the shortcuts as a list instead of running their names together
+.separator {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
 }

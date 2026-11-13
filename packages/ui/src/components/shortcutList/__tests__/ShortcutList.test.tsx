@@ -14,7 +14,7 @@ describe("ShortcutList", () => {
         expect(table.className).toContain("dextinityShortcutList");
         expect(table.className).toContain("consumer-class");
         expect(table.querySelector(".dextinityShortcutList__keys")?.querySelectorAll(":scope > kbd")).toHaveLength(2);
-        expect(screen.getByRole("cell", { name: "Control X Control V" })).toBeInTheDocument();
+        expect(screen.getByRole("cell", { name: "Control X , Control V" })).toBeInTheDocument();
     });
 
     it("shows the shortcuts for the platform of the provider", () => {

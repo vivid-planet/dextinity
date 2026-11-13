@@ -13,6 +13,7 @@ export function useComboboxLabels(): ComboboxLabels {
             create: (query) => intl.formatMessage({ id: "combobox.create", defaultMessage: "Create “{query}”" }, { query }),
             remove: (optionLabel) => intl.formatMessage({ id: "combobox.remove", defaultMessage: "Remove {optionLabel}" }, { optionLabel }),
             clear: intl.formatMessage({ id: "combobox.clear", defaultMessage: "Clear" }),
+            showOptions: intl.formatMessage({ id: "combobox.showOptions", defaultMessage: "Show options" }),
         }),
         [intl],
     );

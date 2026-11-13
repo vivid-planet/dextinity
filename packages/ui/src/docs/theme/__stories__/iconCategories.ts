@@ -312,5 +312,5 @@ export const iconCategories: { label: string; iconNames: DefaultIconName[] }[] =
         ],
     },
     { label: "Appearance", iconNames: ["sun", "moon", "contrast"] },
-    { label: "Dextinity", iconNames: ["dextinity", "dextinity-color"] },
+    { label: "Dextinity", iconNames: ["dextinity", "dextinity-color", "dextinity-filled", "dextinity-filled-color"] },
 ];

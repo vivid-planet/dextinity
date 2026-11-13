@@ -55,9 +55,10 @@ export const Label: Story = {
 
 /**
  * A colored icon keeps its own colors, for example a logo. It ignores the text color. In high contrast and in forced
- * colors, the Dextinity mark switches to its flat form in the text color.
+ * colors, the Dextinity marks switch to their flat forms in the text color.
  *
- * The Dextinity mark comes in both forms: `dextinity` in the text color and `dextinity-color` in the brand colors.
+ * The Dextinity mark comes in both forms: `dextinity` in the text color and `dextinity-color` in the brand colors. So does the
+ * filled mark, the app icon like the favicon: `dextinity-filled` in the text color and `dextinity-filled-color` in the brand colors.
  */
 export const ColoredIcon: Story = {
     tags: ["forced-colors"],
@@ -85,23 +86,43 @@ function DextinityMarks() {
         <div className={styles.row}>
             <Icon name="dextinity" size="large" aria-label="Dextinity" />
             <Icon name="dextinity-color" size="large" aria-label="Dextinity in color" />
+            <Icon name="dextinity-filled" size="large" aria-label="Dextinity filled" />
+            <Icon name="dextinity-filled-color" size="large" aria-label="Dextinity filled in color" />
         </div>
     );
 }
 
 async function expectDextinityMarks(canvas: StoryContext["canvas"]) {
-    const colorMarkElement = canvas.getByRole("img", { name: "Dextinity in color" });
-    const flatMark = getComputedStyle(canvas.getByRole("img", { name: "Dextinity" }));
+    await expectColoredMark(canvas, {
+        flatName: "Dextinity",
+        flatFile: "dextinity.svg",
+        colorName: "Dextinity in color",
+        colorFile: "dextinity-color.svg",
+    });
+    await expectColoredMark(canvas, {
+        flatName: "Dextinity filled",
+        flatFile: "dextinity-filled.svg",
+        colorName: "Dextinity filled in color",
+        colorFile: "dextinity-filled-color.svg",
+    });
+}
+
+async function expectColoredMark(
+    canvas: StoryContext["canvas"],
+    { flatName, flatFile, colorName, colorFile }: { flatName: string; flatFile: string; colorName: string; colorFile: string },
+) {
+    const colorMarkElement = canvas.getByRole("img", { name: colorName });
+    const flatMark = getComputedStyle(canvas.getByRole("img", { name: flatName }));
     const colorMark = getComputedStyle(colorMarkElement);
 
-    await expect(flatMark.maskImage).toContain("dextinity.svg");
+    await expect(flatMark.maskImage).toContain(`/${flatFile}`);
     await expect(flatMark.backgroundImage).toBe("none");
     if (window.matchMedia("(forced-colors: active)").matches || colorMarkElement.closest('[data-dextinity-color-scheme="high-contrast"]')) {
-        await expect(colorMark.maskImage).toContain("dextinity.svg");
+        await expect(colorMark.maskImage).toContain(`/${flatFile}`);
         await expect(colorMark.backgroundImage).toBe("none");
         await expect(colorMark.backgroundColor).toBe(colorMark.color);
     } else {
-        await expect(colorMark.backgroundImage).toContain("dextinity-color.svg");
+        await expect(colorMark.backgroundImage).toContain(`/${colorFile}`);
         await expect(colorMark.maskImage).toBe("none");
     }
 }

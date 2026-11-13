@@ -73,6 +73,8 @@
         --dextinity-icon-devices: url("./svg/devices.svg#icon");
         --dextinity-icon-dextinity: url("./svg/dextinity.svg#icon");
         --dextinity-colored-icon-dextinity-color: url("./svg/dextinity-color.svg#icon");
+        --dextinity-icon-dextinity-filled: url("./svg/dextinity-filled.svg#icon");
+        --dextinity-colored-icon-dextinity-filled-color: url("./svg/dextinity-filled-color.svg#icon");
         --dextinity-icon-down: url("./svg/down.svg#icon");
         --dextinity-icon-download: url("./svg/download.svg#icon");
         --dextinity-icon-drag-handle: url("./svg/drag-handle.svg#icon");
@@ -300,12 +302,16 @@
     [data-dextinity-color-scheme="high-contrast"] {
         --dextinity-colored-icon-dextinity-color: initial;
         --dextinity-icon-dextinity-color: url("./svg/dextinity.svg#icon");
+        --dextinity-colored-icon-dextinity-filled-color: initial;
+        --dextinity-icon-dextinity-filled-color: url("./svg/dextinity-filled.svg#icon");
     }
 
     @media (forced-colors: active) {
         :root {
             --dextinity-colored-icon-dextinity-color: initial;
             --dextinity-icon-dextinity-color: url("./svg/dextinity.svg#icon");
+            --dextinity-colored-icon-dextinity-filled-color: initial;
+            --dextinity-icon-dextinity-filled-color: url("./svg/dextinity-filled.svg#icon");
         }
     }
 }

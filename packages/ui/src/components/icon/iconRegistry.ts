@@ -72,6 +72,8 @@ export const defaultIconNames = {
     devices: true,
     dextinity: true,
     "dextinity-color": true,
+    "dextinity-filled": true,
+    "dextinity-filled-color": true,
     down: true,
     download: true,
     "drag-handle": true,

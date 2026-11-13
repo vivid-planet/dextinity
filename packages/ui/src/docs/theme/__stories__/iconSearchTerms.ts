@@ -84,6 +84,8 @@ export const iconSearchTerms: Record<DefaultIconName, string[]> = {
     devices: ["device-responsive", "DesktopTabletMobile", "DeviceResponsive"],
     dextinity: ["Logo", "Brand", "Dextinity"],
     "dextinity-color": ["Logo", "Brand", "Dextinity"],
+    "dextinity-filled": ["Logo", "Brand", "Dextinity", "App icon", "Favicon"],
+    "dextinity-filled-color": ["Logo", "Brand", "Dextinity", "App icon", "Favicon"],
     down: ["arrow-down", "ArrowDown"],
     download: ["download-arrow", "Save", "Export"],
     "drag-handle": ["ChangePosition", "DragHandle"],

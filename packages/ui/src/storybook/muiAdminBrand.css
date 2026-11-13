@@ -1,0 +1,184 @@
+/*
+ * A brand that looks like the MUI theme of `@dextinity/admin` (`createDextinityTheme`), written the way an application customizes
+ * the theme: only token overrides, outside any cascade layer, no change to the library. The light color scheme takes the admin's
+ * palette, shadows, and shapes; the admin has no dark color scheme, so dark and high contrast derive from the brand hues.
+ */
+
+[data-dextinity-brand="mui-admin"] {
+    --dextinity-brand-primary-hue: 234.6;
+    --dextinity-brand-primary-chroma: 0.145;
+    --dextinity-brand-secondary-hue: 234.6;
+    --dextinity-brand-secondary-chroma: 0.145;
+    --dextinity-brand-neutral-hue: 0;
+    --dextinity-brand-neutral-chroma: 0;
+    --dextinity-brand-success-hue: 144;
+    --dextinity-brand-danger-hue: 31;
+
+    --dextinity-brand-font-family-text: "Roboto Flex Variable", Helvetica, Arial, sans-serif;
+    --dextinity-brand-font-family-display: "Roboto Flex Variable", Helvetica, Arial, sans-serif;
+    --dextinity-brand-font-size: 16px;
+    --dextinity-brand-display-font-weight: 170;
+    --dextinity-brand-display-letter-spacing: 0;
+    --dextinity-brand-label-text-transform: none;
+
+    --dextinity-brand-radius-control: 4px;
+    --dextinity-brand-radius-factor: 0.15;
+
+    --dextinity-font-weight-regular: 250;
+    --dextinity-font-weight-medium: 500;
+    --dextinity-font-weight-semibold: 600;
+    --dextinity-typography-ui-size: 14px;
+    --dextinity-typography-small-size: 14px;
+    --dextinity-typography-caption-size: 12px;
+    --dextinity-typography-label-size: 12px;
+    --dextinity-typography-label-letter-spacing: 0;
+    --dextinity-typography-title-letter-spacing: 0;
+    --dextinity-typography-section-letter-spacing: 0;
+
+    --dextinity-line-width: 1px;
+    --dextinity-line-width-strong: 1px;
+    --dextinity-focus-halo-width: 0px;
+
+    --dextinity-gradient-brand: var(--dextinity-color-accent);
+    --dextinity-material-glass: var(--dextinity-color-surface);
+    --dextinity-material-glass-strong: var(--dextinity-color-surface);
+    --dextinity-material-glass-overlay: var(--dextinity-color-surface);
+    --dextinity-material-highlight: transparent;
+    --dextinity-material-blur: 0px;
+    --dextinity-material-saturation: 1;
+    --dextinity-material-grain: 0;
+    --dextinity-material-field-1: transparent;
+    --dextinity-material-field-2: transparent;
+    --dextinity-material-field-3: transparent;
+    --dextinity-app-shell-field-blur: 0px;
+    --dextinity-command-palette-backdrop-blur: 0px;
+    --dextinity-quick-look-backdrop-blur: 0px;
+}
+
+/* The admin's palette (`paletteOptions.ts`) and shadows (`shadows.ts`). */
+[data-dextinity-brand="mui-admin"][data-dextinity-color-scheme="light"] {
+    --dextinity-color-canvas: #f2f2f2;
+    --dextinity-color-surface: #ffffff;
+    --dextinity-color-surface-raised: #ffffff;
+    --dextinity-color-surface-sunken: #f2f2f2;
+
+    --dextinity-color-text: #242424;
+    --dextinity-color-text-subtle: #676767;
+    --dextinity-color-text-disabled: #b3b3b3;
+
+    --dextinity-color-line: #d9d9d9;
+    --dextinity-color-line-strong: #d9d9d9;
+    --dextinity-color-control-line: #b3b3b3;
+
+    --dextinity-color-accent: #29b6f6;
+    --dextinity-color-accent-foreground: #000000;
+    --dextinity-color-accent-text: #1c7fac;
+    --dextinity-color-accent-soft: rgb(41 182 246 / 0.1);
+    --dextinity-color-accent-glow: transparent;
+    --dextinity-color-accent-secondary: #29b6f6;
+    --dextinity-color-focus: #1c7fac;
+
+    --dextinity-color-success: #14cc33;
+    --dextinity-color-success-text: #0e8e23;
+    --dextinity-color-success-soft: rgb(20 204 51 / 0.1);
+    --dextinity-color-warning: #ffb31a;
+    --dextinity-color-warning-text: #a35f00;
+    --dextinity-color-warning-soft: rgb(255 179 26 / 0.14);
+    --dextinity-color-danger: #d11700;
+    --dextinity-color-danger-text: #d11700;
+    --dextinity-color-danger-soft: rgb(209 23 0 / 0.08);
+    --dextinity-color-danger-foreground: #ffffff;
+    --dextinity-color-info: #29b6f6;
+    --dextinity-color-info-text: #1c7fac;
+    --dextinity-color-info-soft: rgb(41 182 246 / 0.1);
+
+    --dextinity-material-edge: transparent;
+
+    --dextinity-shadow-1: 0 0 4px 0 rgb(0 0 0 / 0.08);
+    --dextinity-shadow-2: 0 0 8px 0 rgb(0 0 0 / 0.1);
+    --dextinity-shadow-3: 0 0 20px 0 rgb(0 0 0 / 0.1);
+}
+
+/* Component values of the admin's MUI component overrides (`componentsTheme/`). */
+[data-dextinity-brand="mui-admin"]:not([data-dextinity-color-scheme="high-contrast"]) {
+    --dextinity-button-height: 40px;
+    --dextinity-button-font-weight: var(--dextinity-font-weight-regular);
+    --dextinity-button-primary-background-hover: #1c7fac;
+    --dextinity-button-primary-shadow: 0 0 transparent;
+    --dextinity-button-primary-shadow-hover: 0 0 transparent;
+    --dextinity-button-secondary-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+    --dextinity-button-secondary-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line);
+    --dextinity-button-text-foreground: var(--dextinity-color-text);
+    --dextinity-icon-button-outlined-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+    --dextinity-icon-button-outlined-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line);
+
+    --dextinity-field-radius: 2px;
+    --dextinity-field-label-color: var(--dextinity-color-text);
+    --dextinity-field-label-font-size: 16px;
+    --dextinity-field-label-font-weight: var(--dextinity-font-weight-semibold);
+    --dextinity-field-line-width-focus: var(--dextinity-line-width);
+    --dextinity-field-line-focus: var(--dextinity-color-accent);
+    --dextinity-field-halo-focus: transparent;
+    --dextinity-field-halo-error: transparent;
+    --dextinity-field-halo-warning: transparent;
+    --dextinity-field-halo-success: transparent;
+    --dextinity-filter-bar-search-shadow: 0 0 transparent;
+
+    --dextinity-checkbox-radius: 2px;
+    --dextinity-checkbox-line: var(--dextinity-color-line-strong);
+    --dextinity-checkbox-foreground-checked: #ffffff;
+
+    --dextinity-switch-track-background: var(--dextinity-color-surface);
+    --dextinity-switch-track-background-checked: var(--dextinity-color-surface);
+    --dextinity-switch-track-line: var(--dextinity-color-line-strong);
+    --dextinity-switch-thumb-background: var(--dextinity-color-control-line);
+    --dextinity-switch-thumb-background-checked: var(--dextinity-color-accent);
+    --dextinity-switch-thumb-shadow: 0 0 transparent;
+
+    --dextinity-tabs-foreground: var(--dextinity-color-text-subtle);
+    --dextinity-tabs-foreground-active: var(--dextinity-color-accent);
+    --dextinity-tabs-font-weight: 550;
+    --dextinity-tabs-font-size: 16px;
+    --dextinity-tabs-indicator-height: 1px;
+    --dextinity-tabs-indicator-inset: 0px;
+    --dextinity-tabs-line: var(--dextinity-color-line);
+
+    --dextinity-chip-radius: 12px;
+
+    --dextinity-card-shadow: var(--dextinity-shadow-1);
+    --dextinity-panel-glass-shadow: var(--dextinity-shadow-1);
+    --dextinity-panel-solid-shadow: var(--dextinity-shadow-1);
+    --dextinity-tree-detail-layout-card-glass-shadow: var(--dextinity-shadow-1);
+    --dextinity-tree-detail-layout-card-solid-shadow: var(--dextinity-shadow-1);
+    --dextinity-dialog-radius: 4px;
+    --dextinity-dialog-shadow: var(--dextinity-shadow-3);
+    --dextinity-drawer-shadow: var(--dextinity-shadow-3);
+    --dextinity-menu-shadow: var(--dextinity-shadow-3);
+    --dextinity-popover-shadow: var(--dextinity-shadow-1);
+    --dextinity-select-popup-shadow: var(--dextinity-shadow-3);
+    --dextinity-date-picker-popup-shadow: var(--dextinity-shadow-3);
+    --dextinity-command-palette-shadow: var(--dextinity-shadow-3);
+    --dextinity-command-palette-backdrop: rgb(0 0 0 / 0.5);
+    --dextinity-dialog-backdrop: rgb(0 0 0 / 0.5);
+
+    --dextinity-side-nav-radius: 0px;
+    --dextinity-side-nav-shadow: var(--dextinity-shadow-1);
+    --dextinity-side-nav-separator-color: var(--dextinity-color-canvas);
+    --dextinity-side-nav-item-radius: 0px;
+    --dextinity-side-nav-item-foreground: var(--dextinity-color-text);
+    --dextinity-side-nav-item-icon-color: var(--dextinity-color-text);
+    --dextinity-side-nav-item-background-hover: var(--dextinity-color-canvas);
+    --dextinity-side-nav-item-active-background: var(--dextinity-color-surface);
+    --dextinity-side-nav-item-active-foreground: var(--dextinity-color-accent);
+    --dextinity-side-nav-item-active-shadow: inset -2px 0 0 var(--dextinity-color-accent);
+    --dextinity-top-bar-radius: 0px;
+    --dextinity-top-bar-shadow: var(--dextinity-shadow-1);
+    --dextinity-top-bar-search-background: var(--dextinity-color-surface);
+    --dextinity-top-bar-search-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+    --dextinity-scope-switcher-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+    --dextinity-app-shell-gap: 0px;
+
+    --dextinity-pagination-page-shadow-current: 0 0 transparent;
+    --dextinity-tree-view-row-background-selected: var(--dextinity-color-accent-soft);
+    --dextinity-asset-thumbnail-folder-highlight: transparent;
+}

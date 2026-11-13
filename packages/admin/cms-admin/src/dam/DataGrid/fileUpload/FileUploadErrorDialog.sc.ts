@@ -29,7 +29,7 @@ export const FileName = styled("div")`
 `;
 
 export const FilePath = styled("div")`
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     font-size: var(--dextinity-typography-small-size);
     overflow-wrap: anywhere;
 `;

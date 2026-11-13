@@ -127,6 +127,6 @@ const FocalPointGroup = styled("div")`
 
 const Hint = styled("p")`
     margin: 0;
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     font-size: var(--dextinity-typography-small-size);
 `;

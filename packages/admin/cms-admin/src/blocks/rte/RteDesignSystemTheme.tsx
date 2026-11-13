@@ -49,7 +49,7 @@ export function RteDesignSystemTheme({ children }: PropsWithChildren) {
                             outerBorderOnFocus: "var(--dextinity-field-line-focus)",
                             toolbarBackground: "var(--dextinity-field-background)",
                             buttonIcon: "var(--dextinity-icon-button-foreground)",
-                            buttonIconDisabled: "var(--dextinity-color-text-subtle)",
+                            buttonIconDisabled: "var(--dextinity-color-text-disabled)",
                             buttonBackgroundHover: "var(--dextinity-icon-button-background-hover)",
                             buttonBorderHover: "transparent",
                             buttonBorderDisabled: "transparent",

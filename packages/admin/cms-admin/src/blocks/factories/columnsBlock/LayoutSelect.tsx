@@ -121,6 +121,6 @@ const OptionLabel = styled("span")`
 `;
 
 const OptionSection = styled("span")`
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     font-size: var(--dextinity-typography-small-size);
 `;

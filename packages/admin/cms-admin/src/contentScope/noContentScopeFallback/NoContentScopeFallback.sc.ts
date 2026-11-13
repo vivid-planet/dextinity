@@ -31,6 +31,6 @@ export const NoContentScopeFallbackHelp = styled("section")`
     }
 
     & li::marker {
-        color: var(--dextinity-color-text-secondary);
+        color: var(--dextinity-color-text-subtle);
     }
 `;

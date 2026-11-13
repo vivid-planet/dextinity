@@ -80,7 +80,7 @@ const Preview = styled("div")`
     block-size: 64px;
     border-radius: var(--dextinity-radius-item);
     background: var(--dextinity-color-surface-sunken);
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
 
     > [data-type] {
         inline-size: 100%;
@@ -110,7 +110,7 @@ const Name = styled("span")`
 
 const Path = styled("span")`
     overflow: hidden;
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     font-size: var(--dextinity-typography-small-size);
     text-overflow: ellipsis;
     white-space: nowrap;

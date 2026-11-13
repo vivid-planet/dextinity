@@ -6,7 +6,7 @@ export const DependencyActionsRoot = styled("div")`
 `;
 
 export const DependencyActionsUnavailable = styled("span")`
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
 `;
 
 export const DependencyActionsUnavailableWrapper = styled("span")`

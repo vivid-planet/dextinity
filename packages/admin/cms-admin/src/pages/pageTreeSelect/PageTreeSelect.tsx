@@ -84,7 +84,7 @@ const PageName = styled("span")`
 
 const PagePath = styled("span")`
     overflow: hidden;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     font-size: var(--dextinity-typography-small-size);
     text-overflow: ellipsis;
 `;

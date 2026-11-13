@@ -198,7 +198,7 @@ const ThumbnailFrame = styled("span")`
     block-size: 24px;
     border-radius: 4px;
     background: var(--dextinity-color-surface-sunken);
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
 `;
 
 const FileName = styled("span")`
@@ -208,7 +208,7 @@ const FileName = styled("span")`
 
 const FileMeta = styled("span")`
     overflow: hidden;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     font-size: var(--dextinity-typography-small-size);
     text-overflow: ellipsis;
 `;

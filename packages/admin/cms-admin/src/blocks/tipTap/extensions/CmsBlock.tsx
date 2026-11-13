@@ -103,7 +103,7 @@ const blockButtonStyles = `
     transition: box-shadow var(--dextinity-motion-duration-short);
 
     &:hover {
-        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-text-subtle);
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line);
     }
 
     &[data-selected],

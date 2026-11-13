@@ -92,7 +92,7 @@ const TitleText = styled("span")`
 
 const Description = styled("span")`
     overflow: hidden;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     font-size: var(--dextinity-typography-small-size);
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -105,5 +105,5 @@ const InvalidIcon = styled(Icon)`
 
 const Arrow = styled(Icon)`
     flex: none;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
 `;

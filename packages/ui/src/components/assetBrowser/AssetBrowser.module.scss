@@ -13,7 +13,7 @@
     box-shadow: var(--dextinity-asset-browser-shadow);
     color: var(--dextinity-color-text);
     font-family: var(--dextinity-font-family-text);
-    font-size: 13px;
+    font-size: var(--dextinity-typography-ui-size);
 
     @include forced-colors.edge;
 }
@@ -114,15 +114,15 @@
 
 .titleName {
     overflow: hidden;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: var(--dextinity-typography-body-size);
+    font-weight: var(--dextinity-font-weight-semibold);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .titleMeta {
     color: var(--dextinity-asset-browser-meta-foreground);
-    font-size: 11.5px;
+    font-size: var(--dextinity-asset-browser-meta-font-size);
 }
 
 .spacer {
@@ -144,7 +144,7 @@
     color: var(--dextinity-asset-browser-meta-foreground);
     cursor: text;
     transition: box-shadow var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
-    --dextinity-icon-size: 13px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xxsmall);
 
     &:hover {
         box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-asset-browser-search-line-hover);
@@ -185,7 +185,7 @@
     background: transparent;
     color: var(--dextinity-color-text);
     font: inherit;
-    font-size: 12.5px;
+    font-size: var(--dextinity-typography-small-size);
 
     &::placeholder {
         color: var(--dextinity-asset-browser-meta-foreground);
@@ -209,7 +209,7 @@
     background: transparent;
     color: inherit;
     cursor: pointer;
-    --dextinity-icon-size: 12px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xxsmall);
 
     &:hover {
         background: var(--dextinity-asset-browser-hover-background);
@@ -248,7 +248,7 @@
     margin: 0;
     padding: 18px 10px;
     color: var(--dextinity-asset-browser-meta-foreground);
-    font-size: 12.5px;
+    font-size: var(--dextinity-typography-small-size);
     text-align: center;
 }
 
@@ -274,7 +274,7 @@
     }
 
     &[data-dragging] {
-        opacity: 0.45;
+        opacity: var(--dextinity-asset-browser-dragging-opacity);
     }
 
     &[data-drop-target] {
@@ -330,8 +330,8 @@
     max-inline-size: 100%;
     padding: 1px 6px;
     overflow: hidden;
-    border-radius: 5px;
-    font-size: 12.5px;
+    border-radius: var(--dextinity-asset-browser-name-radius);
+    font-size: var(--dextinity-typography-small-size);
     line-height: 1.3;
     text-align: center;
     word-break: break-word;
@@ -342,7 +342,7 @@
 .tileMeta {
     margin-block-start: -3px;
     color: var(--dextinity-asset-browser-meta-foreground);
-    font-size: 11px;
+    font-size: var(--dextinity-typography-caption-size);
     font-variant-numeric: tabular-nums;
 }
 
@@ -369,7 +369,7 @@
     box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-asset-browser-divider);
     color: var(--dextinity-asset-browser-meta-foreground);
     font-family: var(--dextinity-font-family-mono);
-    font-size: 10.5px;
+    font-size: var(--dextinity-typography-label-size);
     letter-spacing: 0.08em;
     text-transform: uppercase;
 
@@ -415,7 +415,7 @@
     align-items: center;
     gap: var(--dextinity-space-2);
     min-inline-size: 0;
-    font-weight: 500;
+    font-weight: var(--dextinity-font-weight-medium);
 }
 
 .rowThumbnail {
@@ -423,13 +423,13 @@
     inline-size: 24px;
 
     --dextinity-asset-thumbnail-radius: 4px;
-    --dextinity-icon-size: 12px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xxsmall);
 }
 
 .rowMeta {
     overflow: hidden;
     color: var(--dextinity-asset-browser-meta-foreground);
-    font-size: 12px;
+    font-size: var(--dextinity-asset-browser-row-meta-font-size);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -471,7 +471,7 @@
     block-size: 30px;
     padding: 0 6px 0 8px;
     border: 0;
-    border-radius: 7px;
+    border-radius: var(--dextinity-asset-browser-column-row-radius);
     background: transparent;
     color: inherit;
     font: inherit;
@@ -510,9 +510,9 @@
 .columnChevron {
     flex: none;
     color: inherit;
-    opacity: 0.55;
+    opacity: var(--dextinity-asset-browser-chevron-opacity);
 
-    --dextinity-icon-size: 12px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xxsmall);
 }
 
 .columnPreview {
@@ -526,7 +526,7 @@
 
 .previewName {
     margin-block-start: var(--dextinity-space-2);
-    font-weight: 600;
+    font-weight: var(--dextinity-font-weight-semibold);
     word-break: break-all;
 }
 
@@ -596,7 +596,7 @@
     border-radius: var(--dextinity-asset-browser-item-radius);
 
     --dextinity-asset-thumbnail-radius: 6px;
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 
     &[data-selected] {
         box-shadow: 0 0 0 2px var(--dextinity-color-accent);
@@ -618,7 +618,7 @@
     padding: 6px 12px;
     box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-asset-browser-divider);
     color: var(--dextinity-asset-browser-meta-foreground);
-    font-size: 12.5px;
+    font-size: var(--dextinity-typography-small-size);
 
     @include forced-colors.separator(block-start);
 }
@@ -641,7 +641,7 @@
     margin: 0;
     padding: 1px 6px;
     border: 0;
-    border-radius: 5px;
+    border-radius: var(--dextinity-asset-browser-name-radius);
     outline: none;
     background: var(--dextinity-asset-browser-name-field-background);
     box-shadow: var(--dextinity-asset-browser-name-field-shadow);

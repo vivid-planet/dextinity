@@ -10,7 +10,7 @@
     min-block-size: 0;
     border-radius: var(--dextinity-ai-panel-radius);
     background: var(--dextinity-ai-panel-background);
-    backdrop-filter: blur(var(--dextinity-ai-panel-blur)) saturate(1.6);
+    backdrop-filter: blur(var(--dextinity-ai-panel-blur)) saturate(var(--dextinity-material-saturation));
     box-shadow: var(--dextinity-ai-panel-shadow);
     color: var(--dextinity-color-text);
     font-family: var(--dextinity-font-family-text);
@@ -44,7 +44,7 @@
     background: var(--dextinity-ai-panel-orb-background);
     box-shadow: var(--dextinity-ai-panel-orb-shadow);
     color: var(--dextinity-ai-panel-orb-foreground);
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 }
 
 .heading {
@@ -55,14 +55,14 @@
 }
 
 .title {
-    font-weight: 600;
+    font-weight: var(--dextinity-ai-panel-title-font-weight);
     letter-spacing: -0.01em;
 }
 
 .context {
     overflow: hidden;
     color: var(--dextinity-ai-panel-context-color);
-    font-size: 12px;
+    font-size: var(--dextinity-ai-panel-context-font-size);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -91,7 +91,7 @@
 
     &[data-role="assistant"] {
         align-self: flex-start;
-        border-start-start-radius: 6px;
+        border-start-start-radius: var(--dextinity-ai-panel-message-tail-radius);
         background: var(--dextinity-ai-panel-assistant-background);
         box-shadow: var(--dextinity-ai-panel-assistant-shadow);
         @include forced-colors.edge;
@@ -99,7 +99,7 @@
 
     &[data-role="user"] {
         align-self: flex-end;
-        border-start-end-radius: 6px;
+        border-start-end-radius: var(--dextinity-ai-panel-message-tail-radius);
         background: var(--dextinity-ai-panel-user-background);
         color: var(--dextinity-ai-panel-user-foreground);
         @include forced-colors.edge;
@@ -157,7 +157,7 @@
     0%,
     80%,
     100% {
-        opacity: 0.3;
+        opacity: var(--dextinity-ai-panel-typing-dim-opacity);
     }
 
     40% {
@@ -182,16 +182,16 @@
     border-radius: var(--dextinity-radius-control);
     background: transparent;
     box-shadow: var(--dextinity-ai-panel-suggestion-shadow);
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-ai-panel-suggestion-foreground);
     font: inherit;
-    font-size: 12.5px;
+    font-size: var(--dextinity-ai-panel-suggestion-font-size);
     text-align: start;
     cursor: pointer;
     transition:
         background var(--dextinity-motion-duration-short),
         box-shadow var(--dextinity-motion-duration-short),
         color var(--dextinity-motion-duration-short);
-    --dextinity-icon-size: 13px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xxsmall);
 
     > :first-child {
         color: var(--dextinity-color-accent-text);
@@ -259,7 +259,7 @@
     outline: none;
 
     &::placeholder {
-        color: var(--dextinity-color-text-subtle);
+        color: var(--dextinity-ai-panel-input-placeholder-color);
     }
 }
 
@@ -272,6 +272,6 @@
 .note {
     margin: 7px 0 0;
     color: var(--dextinity-ai-panel-note-color);
-    font-size: 11px;
+    font-size: var(--dextinity-ai-panel-note-font-size);
     text-align: center;
 }

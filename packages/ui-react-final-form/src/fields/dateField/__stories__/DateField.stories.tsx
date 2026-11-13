@@ -40,7 +40,8 @@ export const Required: Story = {
         await expect(input).toHaveValue("not a day");
 
         await userEvent.clear(input);
-        await userEvent.tab();
+        // The field counts as touched once the focus leaves it, not when it moves to the field's own buttons
+        await userEvent.click(canvasElement.ownerDocument.body);
         await expect(await canvas.findByText("Enter the day the article was published")).toBeVisible();
 
         await userEvent.click(canvas.getByRole("button", { name: "Submit" }));

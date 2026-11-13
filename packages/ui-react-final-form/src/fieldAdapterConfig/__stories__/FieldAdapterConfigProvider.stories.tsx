@@ -128,6 +128,6 @@ export const NestedProviders: Story = {
     ),
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-        await expect(canvas.getAllByText("Required")).toHaveLength(1);
+        await expect(canvas.getAllByText("Required", { ignore: "[hidden]" })).toHaveLength(1);
     },
 };

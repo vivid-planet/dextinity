@@ -59,6 +59,7 @@ export const InputField = memo(
             onFocus,
             label,
             helperText,
+            helpText,
             disabled,
             readOnly,
             loading,
@@ -92,6 +93,7 @@ export const InputField = memo(
                 label={label}
                 required={options.required}
                 helperText={helperText}
+                helpText={helpText}
                 disabled={disabled}
                 readOnly={readOnly}
                 loading={loading}

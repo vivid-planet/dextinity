@@ -1,7 +1,8 @@
-import { type DateRange, DateRangePicker, type DateRangePickerProps } from "@dextinity/ui";
+import { type DateRange, DateRangePicker, type DateRangePickerProps, Field } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterActions, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { boxFieldPropKeys, type FieldAdapterBoxFieldProps, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
 import { renderActions } from "../../fieldAdapter/renderActions";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
@@ -10,8 +11,9 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface DateRangeFieldProps<FieldValue = DateRange | null>
     extends
         Omit<FieldAdapterBaseProps, "required">,
+        FieldAdapterBoxFieldProps,
         FinalFormFieldConfig<FieldValue, DateRange | null>,
-        Omit<DateRangePickerProps, "name" | "value" | "onChange" | "onBlur" | "state" | "validationMessage" | "required" | "actions"> {
+        Omit<DateRangePickerProps, "name" | "value" | "onChange" | "onBlur" | "onFocus" | "state" | "validationMessage" | "required" | "actions"> {
     /**
      * Marks the field as required and validates that both the start and the end are set.
      *
@@ -44,7 +46,8 @@ export const DateRangeField = memo(
         { name, actions, onFocus, ...props }: DateRangeFieldProps<FieldValue>,
         forwardedRef: ForwardedRef<HTMLInputElement>,
     ) {
-        const [options, dateRangePickerProps] = splitFieldAdapterProps(props);
+        const [options, controlProps] = splitFieldAdapterProps(props);
+        const [fieldProps, dateRangePickerProps] = splitFieldProps(controlProps, boxFieldPropKeys);
         const {
             input,
             validationProps,
@@ -55,21 +58,23 @@ export const DateRangeField = memo(
         const value = toDateRangeValue(input.value);
 
         return (
-            <DateRangePicker
-                {...dateRangePickerProps}
+            <Field
+                {...fieldProps}
                 {...validationProps}
-                ref={ref}
-                name={input.name}
-                value={value}
                 required={options.required}
                 actions={renderActions(actions, value, input.onChange)}
-                onChange={input.onChange}
-                onBlur={onBlur}
+                onBlur={(event) => {
+                    if (leavesField(event)) {
+                        onBlur();
+                    }
+                }}
                 onFocus={(event) => {
                     onFieldFocus();
                     onFocus?.(event);
                 }}
-            />
+            >
+                <DateRangePicker {...dateRangePickerProps} ref={ref} name={input.name} value={value} onChange={input.onChange} />
+            </Field>
         );
     }),
 ) as <FieldValue = DateRange | null>(props: DateRangeFieldProps<FieldValue> & RefAttributes<HTMLInputElement>) => ReactNode;

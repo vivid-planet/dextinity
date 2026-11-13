@@ -43,19 +43,19 @@ function fieldOf(label: string) {
 describe("FieldAdapterConfigProvider", () => {
     it("shows errors once the field was touched by default", async () => {
         renderForm();
-        expect(screen.queryByText("Required")).not.toBeInTheDocument();
+        expect(screen.queryByText("Required", { ignore: "[hidden]" })).not.toBeInTheDocument();
 
         await userEvent.click(screen.getByLabelText("Title"));
         await userEvent.tab();
 
-        expect(screen.getByText("Required")).toBeInTheDocument();
+        expect(screen.getByText("Required", { ignore: "[hidden]" })).toBeInTheDocument();
         expect(fieldOf("Title")).toHaveAttribute("data-state", "error");
     });
 
     it("shows errors right away with showErrors always", () => {
         renderForm({ showErrors: "always" });
 
-        expect(screen.getByText("Required")).toBeInTheDocument();
+        expect(screen.getByText("Required", { ignore: "[hidden]" })).toBeInTheDocument();
         expect(screen.getByLabelText("Title")).toHaveAttribute("aria-invalid", "true");
     });
 
@@ -110,6 +110,6 @@ describe("FieldAdapterConfigProvider", () => {
         );
 
         expect(screen.getByText("Longer than recommended")).toBeInTheDocument();
-        expect(screen.getByText("Required")).toBeInTheDocument();
+        expect(screen.getByText("Required", { ignore: "[hidden]" })).toBeInTheDocument();
     });
 });

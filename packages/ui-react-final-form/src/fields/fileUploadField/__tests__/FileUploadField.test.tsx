@@ -30,7 +30,7 @@ describe("FileUploadField", () => {
         );
 
         await userEvent.click(screen.getByRole("button", { name: "Save" }));
-        expect(screen.getByRole("group", { name: "Contract" })).toHaveAccessibleDescription("Attach the contract");
+        expect(screen.getByRole("group", { name: "Contract" })).toHaveAccessibleDescription(expect.stringContaining("Attach the contract"));
         expect(screen.getByRole("button", { name: "choose files" })).toHaveFocus();
 
         const input = document.querySelector<HTMLInputElement>("input[type=file]");

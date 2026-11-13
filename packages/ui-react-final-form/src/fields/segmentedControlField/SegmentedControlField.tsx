@@ -1,7 +1,8 @@
-import { SegmentedControl, type SegmentedControlProps } from "@dextinity/ui";
+import { Field, SegmentedControl, type SegmentedControlProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { type FieldAdapterFieldProps, groupFieldPropKeys, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
 import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
@@ -9,8 +10,9 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface SegmentedControlFieldProps<Value extends string = string, FieldValue = Value>
     extends
         FieldAdapterBaseProps,
+        FieldAdapterFieldProps,
         FinalFormFieldConfig<FieldValue, Value>,
-        Omit<SegmentedControlProps<Value>, "value" | "onChange" | "onBlur" | "state" | "validationMessage"> {}
+        Omit<SegmentedControlProps<Value>, "value" | "onChange" | "onBlur" | "onFocus" | "state" | "validationMessage"> {}
 
 /**
  * A `SegmentedControl` connected to a React Final Form field holding one of the options' values. Without a value, no option is checked.
@@ -22,6 +24,7 @@ export const SegmentedControlField = memo(
         forwardedRef: ForwardedRef<HTMLDivElement>,
     ) {
         const [options, controlProps] = splitFieldAdapterProps(props);
+        const [fieldProps, segmentedControlProps] = splitFieldProps(controlProps, groupFieldPropKeys);
         const {
             input,
             validationProps,
@@ -31,18 +34,23 @@ export const SegmentedControlField = memo(
         } = useFieldAdapter<FieldValue, Value, HTMLDivElement>(name, options, forwardedRef);
 
         return (
-            <SegmentedControl<Value>
-                {...controlProps}
-                ref={ref}
-                value={input.value ?? ("" as Value)}
+            <Field
+                layout="group"
+                {...fieldProps}
+                required={options.required}
                 {...validationProps}
-                onChange={input.onChange}
-                onBlur={onBlur}
+                onBlur={(event) => {
+                    if (leavesField(event)) {
+                        onBlur();
+                    }
+                }}
                 onFocus={(event) => {
                     onFieldFocus();
                     onFocus?.(event);
                 }}
-            />
+            >
+                <SegmentedControl<Value> {...segmentedControlProps} ref={ref} value={input.value ?? ("" as Value)} onChange={input.onChange} />
+            </Field>
         );
     }),
 ) as <Value extends string = string, FieldValue = Value>(

@@ -1,7 +1,8 @@
-import { Checkbox, type CheckboxProps } from "@dextinity/ui";
+import { Checkbox, type CheckboxProps, Field } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { type FieldAdapterFieldProps, groupFieldPropKeys, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
 import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
@@ -9,10 +10,11 @@ import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
 export interface CheckboxFieldProps<FieldValue = boolean | string[]>
     extends
         FieldAdapterBaseProps,
+        FieldAdapterFieldProps,
         FinalFormFieldConfig<FieldValue, boolean | string[]>,
         Omit<
             CheckboxProps,
-            "name" | "checked" | "onChange" | "onBlur" | "required" | "defaultValue" | "defaultChecked" | "state" | "validationMessage"
+            "name" | "checked" | "onChange" | "onBlur" | "onFocus" | "required" | "defaultValue" | "defaultChecked" | "state" | "validationMessage"
         > {
     /** Makes the checkbox one of a group: the field holds the list of the checked boxes' values, and this box adds or removes its own. */
     value?: string;
@@ -39,7 +41,8 @@ export const CheckboxField = memo(
         { name, value, onFocus, ...props }: CheckboxFieldProps<FieldValue>,
         forwardedRef: ForwardedRef<HTMLDivElement>,
     ) {
-        const [options, checkboxProps] = splitFieldAdapterProps(props);
+        const [options, controlProps] = splitFieldAdapterProps(props);
+        const [fieldProps, checkboxProps] = splitFieldProps(controlProps, groupFieldPropKeys);
         const {
             input,
             validationProps,
@@ -49,21 +52,30 @@ export const CheckboxField = memo(
         } = useFieldAdapter<FieldValue, boolean | string[], HTMLDivElement>(name, options, forwardedRef);
 
         return (
-            <Checkbox
-                {...checkboxProps}
-                ref={ref}
-                name={input.name}
-                value={value}
-                checked={isCheckboxChecked(input.value, value)}
+            <Field
+                layout="group"
+                {...fieldProps}
                 required={options.required}
                 {...validationProps}
-                onChange={(checked) => input.onChange(toggleCheckboxValue(input.value, value, checked))}
-                onBlur={onBlur}
+                onBlur={(event) => {
+                    if (leavesField(event)) {
+                        onBlur();
+                    }
+                }}
                 onFocus={(event) => {
                     onFieldFocus();
                     onFocus?.(event);
                 }}
-            />
+            >
+                <Checkbox
+                    {...checkboxProps}
+                    ref={ref}
+                    name={input.name}
+                    value={value}
+                    checked={isCheckboxChecked(input.value, value)}
+                    onChange={(checked) => input.onChange(toggleCheckboxValue(input.value, value, checked))}
+                />
+            </Field>
         );
     }),
 ) as <FieldValue = boolean | string[]>(props: CheckboxFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;

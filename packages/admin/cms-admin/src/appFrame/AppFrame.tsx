@@ -2,9 +2,7 @@ import { MasterLayoutContext, useStoredState } from "@dextinity/admin";
 import {
     AppShell,
     type CommandPaletteItem,
-    formatShortcut,
     Icon,
-    isApplePlatform,
     SideNav,
     Theme,
     type ThemeBrand,
@@ -126,7 +124,7 @@ export function AppFrame({
                 ? intl.formatMessage({ id: "dextinity.appFrame.command.expandNavigation", defaultMessage: "Expand navigation" })
                 : intl.formatMessage({ id: "dextinity.appFrame.command.collapseNavigation", defaultMessage: "Collapse navigation" }),
             icon: <Icon name={navCollapsed ? "pin-right" : "pin-left"} />,
-            shortcut: formatShortcut("mod+\\").join(isApplePlatform() ? "" : "+"),
+            shortcut: "mod+\\",
             onSelect: () => setNavCollapsed(!navCollapsed),
         },
         {
@@ -144,7 +142,7 @@ export function AppFrame({
             id: "toggle-ai-assistant",
             label: intl.formatMessage({ id: "dextinity.appFrame.command.toggleAiAssistant", defaultMessage: "Toggle AI assistant" }),
             icon: <Icon name="magic-wand" />,
-            shortcut: formatShortcut("mod+j").join(isApplePlatform() ? "" : "+"),
+            shortcut: "mod+j",
             onSelect: () => aiAssistant.onOpenChange(!aiAssistant.open),
         });
     }
@@ -214,7 +212,6 @@ export function AppFrame({
                                 }
                                 labels={{
                                     search: intl.formatMessage({ id: "dextinity.appFrame.topBar.search", defaultMessage: "Search, jump to …" }),
-                                    searchShortcut: formatShortcut("mod+k").join(isApplePlatform() ? "" : "+"),
                                     ai: intl.formatMessage({ id: "dextinity.appFrame.aiAssistant", defaultMessage: "AI assistant" }),
                                     menu: intl.formatMessage({ id: "dextinity.appFrame.topBar.menu", defaultMessage: "Open navigation" }),
                                 }}

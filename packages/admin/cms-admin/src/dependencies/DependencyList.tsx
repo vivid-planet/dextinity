@@ -249,7 +249,7 @@ export function DependencyList<Query>({ query, variables, getPage, listKey, type
                 <FilterChip
                     selected={filterValues.visibleOnly}
                     onClick={() => listState.setFilter("visibleOnly", !filterValues.visibleOnly)}
-                    status={filterValues.visibleOnly ? "published" : undefined}
+                    startAdornment={filterValues.visibleOnly ? <StatusIndicator status="published" decorative /> : undefined}
                 >
                     {intl.formatMessage({ id: "dextinity.dependencies.filter.visibleOnly", defaultMessage: "Visible only" })}
                 </FilterChip>

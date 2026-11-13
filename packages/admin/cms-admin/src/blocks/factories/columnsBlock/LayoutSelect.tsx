@@ -1,4 +1,4 @@
-import { Select, type SelectOption } from "@dextinity/ui";
+import { Field, Select, type SelectOption } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import { type ReactNode, useMemo } from "react";
 import { useIntl } from "react-intl";
@@ -79,22 +79,25 @@ export function LayoutSelect({ name, label, layouts, value, onChange, onBlur, on
     const options = useLayoutSelectOptions(layouts);
 
     return (
-        <Select
-            name={name}
+        <Field
             label={label}
-            options={options}
-            value={value?.name ?? null}
-            readOnly={layouts.length === 1}
             prefix={value ? <LayoutPreviewPrefix>{value.preview}</LayoutPreviewPrefix> : undefined}
-            onChange={(layoutName) => {
-                const layout = layouts.find((layout) => layout.name === layoutName);
-                if (layout) {
-                    onChange(layout);
-                }
-            }}
             onBlur={onBlur}
             onFocus={onFocus}
-        />
+        >
+            <Select
+                name={name}
+                options={options}
+                value={value?.name ?? null}
+                readOnly={layouts.length === 1}
+                onChange={(layoutName) => {
+                    const layout = layouts.find((layout) => layout.name === layoutName);
+                    if (layout) {
+                        onChange(layout);
+                    }
+                }}
+            />
+        </Field>
     );
 }
 

@@ -1,4 +1,4 @@
-import { formatShortcut, Icon, IconButton, isApplePlatform, Menu, MenuItem, MenuSeparator, MenuSubmenu } from "@dextinity/ui";
+import { Icon, IconButton, Menu, MenuItem, MenuSeparator, MenuSubmenu } from "@dextinity/ui";
 import { useState } from "react";
 import { useIntl } from "react-intl";
 
@@ -32,10 +32,6 @@ interface PageTreeNodeMenuProps {
     translate?: { disabledReason?: string; onClick: () => void };
     /** Without it, deleting isn't offered. */
     delete?: { disabledReason?: string; onClick: () => void };
-}
-
-function formatShortcutText(shortcut: string) {
-    return formatShortcut(shortcut).join(isApplePlatform() ? "" : "+");
 }
 
 export function PageTreeNodeMenu({
@@ -100,13 +96,13 @@ export function PageTreeNodeMenu({
             <MenuItem
                 icon={<Icon name="copy" />}
                 label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.copy", defaultMessage: "Copy with subpages" })}
-                shortcut={formatShortcutText(pageTreeShortcuts.copy)}
+                shortcut={pageTreeShortcuts.copy}
                 onClick={onCopyClick}
             />
             <MenuItem
                 icon={<Icon name="paste-add" />}
                 label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.pasteAfter", defaultMessage: "Paste after" })}
-                shortcut={formatShortcutText(pageTreeShortcuts.pasteAfter)}
+                shortcut={pageTreeShortcuts.pasteAfter}
                 disabled={!hasClipboardPages}
                 disabledReason={emptyClipboardReason}
                 onClick={() => onPasteClick("after")}
@@ -114,7 +110,7 @@ export function PageTreeNodeMenu({
             <MenuItem
                 icon={<Icon name="paste-add" />}
                 label={intl.formatMessage({ id: "dextinity.pageTreeDetail.detail.pasteInside", defaultMessage: "Paste as subpage" })}
-                shortcut={formatShortcutText(pageTreeShortcuts.pasteInside)}
+                shortcut={pageTreeShortcuts.pasteInside}
                 disabled={!hasClipboardPages || isArchived}
                 disabledReason={isArchived ? undefined : emptyClipboardReason}
                 onClick={() => onPasteClick("inside")}

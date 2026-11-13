@@ -1,11 +1,12 @@
 /*
  * A flat brand, written the way an application customizes the theme: only token overrides, outside any cascade layer, no change to
  * the library. It removes depth everywhere — no shadows, glass, blur, gradients, glows, halos, light fields or grain — and draws
- * edges with solid lines instead.
+ * edges with solid lines instead. `flat-colorful` shares these rules and adds its colors in `flatColorfulBrand.css`.
  */
 
 /* Shared by all color schemes. High contrast is flat already, so these values agree with it. */
-[data-dextinity-brand="flat"] {
+[data-dextinity-brand="flat"],
+[data-dextinity-brand="flat-colorful"] {
     --dextinity-brand-radius-control: 4px;
     --dextinity-brand-radius-factor: 0.4;
 
@@ -38,7 +39,8 @@
 }
 
 /* Light and dark only: high contrast keeps its own outlines and colors. */
-[data-dextinity-brand="flat"]:not([data-dextinity-color-scheme="high-contrast"]) {
+[data-dextinity-brand="flat"]:not([data-dextinity-color-scheme="high-contrast"]),
+[data-dextinity-brand="flat-colorful"]:not([data-dextinity-color-scheme="high-contrast"]) {
     --dextinity-material-edge: var(--dextinity-color-line-strong);
 
     --dextinity-field-halo-focus: transparent;

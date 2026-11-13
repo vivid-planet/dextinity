@@ -1,0 +1,97 @@
+/*
+ * The colors of the `flat-colorful` brand: the flat rules of `flatBrand.css` with saturated color blocks — a violet navigation, a
+ * cyan top bar, a pink accent and yellow highlights on a tinted canvas. Import it after `flatBrand.css`, which it builds on.
+ */
+
+[data-dextinity-brand="flat-colorful"] {
+    --dextinity-brand-primary-hue: 350;
+    --dextinity-brand-primary-chroma: 0.24;
+    --dextinity-brand-secondary-hue: 195;
+    --dextinity-brand-secondary-chroma: 0.16;
+    --dextinity-brand-neutral-hue: 285;
+    --dextinity-brand-neutral-chroma: 0.03;
+    --dextinity-brand-success-hue: 150;
+    --dextinity-brand-danger-hue: 25;
+
+    --dextinity-brand-display-font-weight: 750;
+    --dextinity-brand-display-letter-spacing: -0.04em;
+
+    --dextinity-brand-radius-control: 8px;
+    --dextinity-brand-radius-factor: 0.6;
+}
+
+[data-dextinity-brand="flat-colorful"][data-dextinity-color-scheme="light"] {
+    --flat-colorful-navigation: oklch(0.42 0.2 285);
+    --flat-colorful-highlight: oklch(0.88 0.18 95);
+    --flat-colorful-ink: oklch(0.22 0.06 285);
+    --flat-colorful-bar: oklch(0.8 0.13 195);
+    --flat-colorful-heading: oklch(0.42 0.2 285);
+
+    --dextinity-color-canvas: oklch(0.95 0.03 285);
+    --dextinity-color-surface-raised: oklch(1 0 0);
+    --dextinity-color-surface-sunken: oklch(0.93 0.04 285);
+    --dextinity-color-accent-soft: oklch(0.93 0.06 350);
+}
+
+[data-dextinity-brand="flat-colorful"][data-dextinity-color-scheme="dark"] {
+    --flat-colorful-navigation: oklch(0.34 0.17 285);
+    --flat-colorful-highlight: oklch(0.86 0.17 95);
+    --flat-colorful-ink: oklch(0.22 0.06 285);
+    --flat-colorful-bar: oklch(0.45 0.11 205);
+    --flat-colorful-heading: oklch(0.84 0.11 285);
+
+    --dextinity-color-canvas: oklch(0.15 0.04 285);
+    --dextinity-color-surface: oklch(0.21 0.045 285);
+    --dextinity-color-surface-raised: oklch(0.21 0.045 285);
+    --dextinity-color-surface-sunken: oklch(0.13 0.035 285);
+}
+
+/* High contrast keeps its own colors. */
+[data-dextinity-brand="flat-colorful"]:not([data-dextinity-color-scheme="high-contrast"]) {
+    --dextinity-side-nav-background: var(--flat-colorful-navigation);
+    --dextinity-side-nav-separator-color: oklch(1 0 0 / 0.18);
+    --dextinity-side-nav-title-color: oklch(1 0 0);
+    --dextinity-side-nav-subtitle-color: oklch(1 0 0 / 0.72);
+    --dextinity-side-nav-group-label-color: oklch(1 0 0 / 0.72);
+    --dextinity-side-nav-item-foreground: oklch(1 0 0 / 0.86);
+    --dextinity-side-nav-item-icon-color: oklch(1 0 0 / 0.86);
+    --dextinity-side-nav-item-ancestor-foreground: oklch(1 0 0);
+    --dextinity-side-nav-item-background-hover: oklch(1 0 0 / 0.12);
+    --dextinity-side-nav-item-active-background: var(--flat-colorful-highlight);
+    --dextinity-side-nav-item-active-foreground: var(--flat-colorful-ink);
+    --dextinity-side-nav-guide-color: oklch(1 0 0 / 0.28);
+    --dextinity-side-nav-chevron-color: oklch(1 0 0 / 0.6);
+    --dextinity-side-nav-collapse-foreground: oklch(1 0 0 / 0.86);
+    --dextinity-side-nav-shadow: 0 0 transparent;
+
+    --dextinity-top-bar-background: var(--flat-colorful-bar);
+    --dextinity-top-bar-shadow: 0 0 transparent;
+    --dextinity-top-bar-search-background: var(--dextinity-color-surface);
+    --dextinity-top-bar-search-shadow: 0 0 transparent;
+    --dextinity-scope-switcher-shadow: 0 0 transparent;
+
+    --dextinity-page-header-title-color: var(--flat-colorful-heading);
+    --dextinity-stat-tile-value-color: var(--flat-colorful-heading);
+    --dextinity-avatar-background: var(--flat-colorful-highlight);
+    --dextinity-avatar-foreground: var(--flat-colorful-ink);
+    --dextinity-avatar-shadow: 0 0 transparent;
+    --dextinity-badge-dot-background: var(--dextinity-color-accent-secondary);
+
+    --dextinity-tabs-indicator-height: 3px;
+    --dextinity-segmented-control-selected-background: var(--flat-colorful-highlight);
+    --dextinity-segmented-control-selected-foreground: var(--flat-colorful-ink);
+    --dextinity-segmented-control-selected-shadow: 0 0 transparent;
+    --dextinity-tree-view-row-background-selected: var(--dextinity-color-accent-soft);
+}
+
+/* The navigation also reads the text and line colors directly, so they turn light on its violet through its contract class. */
+[data-dextinity-brand="flat-colorful"]:not([data-dextinity-color-scheme="high-contrast"]) .dextinitySideNav {
+    --dextinity-color-text: oklch(1 0 0);
+    --dextinity-color-text-subtle: oklch(1 0 0 / 0.78);
+    --dextinity-color-text-disabled: oklch(1 0 0 / 0.55);
+    --dextinity-color-line-strong: oklch(1 0 0 / 0.3);
+    --dextinity-color-accent-text: var(--flat-colorful-highlight);
+    --dextinity-badge-count-background: oklch(1 0 0 / 0.16);
+    --dextinity-badge-count-foreground: oklch(1 0 0);
+    --dextinity-badge-count-shadow: 0 0 transparent;
+}

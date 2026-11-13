@@ -12,7 +12,12 @@
     display: none;
 }
 
-:where([data-dextinity-color-scheme="dark"], [data-dextinity-color-scheme="high-contrast"]) .root {
+:where(
+        [data-dextinity-color-scheme="dark"],
+        [data-dextinity-color-scheme="high-contrast"],
+        [data-dextinity-brand="flat-colorful"] :global(.dextinitySideNav)
+    )
+    .root {
     .positive {
         display: none;
     }

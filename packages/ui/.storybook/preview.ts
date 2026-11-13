@@ -4,6 +4,7 @@ import "@fontsource/source-sans-pro/600.css";
 import "@fontsource/source-sans-pro/700.css";
 import "../icons.css";
 import "../src/storybook/flatBrand.css";
+import "../src/storybook/flatColorfulBrand.css";
 
 import type { Preview } from "@storybook/react-vite";
 

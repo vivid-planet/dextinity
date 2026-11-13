@@ -14,6 +14,7 @@ export function useComboboxLabels(): ComboboxLabels {
             remove: (optionLabel) =>
                 intl.formatMessage({ id: "uiDemo.productsCommon.combobox.remove", defaultMessage: "Remove {optionLabel}" }, { optionLabel }),
             clear: intl.formatMessage({ id: "uiDemo.productsCommon.combobox.clear", defaultMessage: "Clear" }),
+            showOptions: intl.formatMessage({ id: "uiDemo.productsCommon.combobox.showOptions", defaultMessage: "Show options" }),
         }),
         [intl],
     );

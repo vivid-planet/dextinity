@@ -15,9 +15,7 @@ import {
     ConfirmDialog,
     EditLayout,
     EmptyState,
-    formatShortcut,
     Icon,
-    isApplePlatform,
     KeyValueList,
     Link,
     type NewToast,
@@ -374,7 +372,6 @@ function NewsEditFormContent({ baseUrl, savedNews, createdId, form, addToast }: 
               });
 
     const title = savedNews?.title ?? intl.formatMessage({ id: "uiDemo.news.edit.newTitle", defaultMessage: "New news" });
-    const saveShortcut = formatShortcut("mod+s").join(isApplePlatform() ? "" : "+");
     const isActive = status === "active";
 
     return (
@@ -431,7 +428,7 @@ function NewsEditFormContent({ baseUrl, savedNews, createdId, form, addToast }: 
                                               })
                                             : intl.formatMessage({ id: "uiDemo.news.edit.saveTooltip", defaultMessage: "Saves the news" })
                                     }
-                                    shortcut={saveShortcut}
+                                    shortcut="mod+s"
                                 >
                                     <Button
                                         type="submit"

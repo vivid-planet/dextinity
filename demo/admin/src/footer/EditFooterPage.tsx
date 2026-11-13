@@ -13,7 +13,7 @@ import {
     useShowAppToast,
     useSiteConfig,
 } from "@dextinity/cms-admin";
-import { Button, formatShortcut, Icon, isApplePlatform, PageHeader, SaveState, type SaveStateValue, Tooltip } from "@dextinity/ui";
+import { Button, Icon, PageHeader, SaveState, type SaveStateValue, Tooltip } from "@dextinity/ui";
 import type { FooterContentBlockInput } from "@src/blocks.generated";
 import { deepEqual } from "fast-equals";
 import { type JSX, useEffect, useState } from "react";
@@ -117,7 +117,6 @@ export function EditFooterPage(): JSX.Element | null {
     });
 
     const saveState: SaveStateValue = saving ? "saving" : saveError != null && hasChanges ? "error" : hasChanges ? "dirty" : "saved";
-    const saveShortcut = formatShortcut("mod+s").join(isApplePlatform() ? "" : "+");
 
     return (
         <BlockContentEditor
@@ -145,7 +144,7 @@ export function EditFooterPage(): JSX.Element | null {
                             )}
                             <Tooltip
                                 content={intl.formatMessage({ id: "footers.edit.saveTooltip", defaultMessage: "Saves the footer" })}
-                                shortcut={saveShortcut}
+                                shortcut="mod+s"
                             >
                                 <Button startIcon={<Icon name="check" />} disabled={!hasChanges} loading={saving} onClick={() => void handleSave()}>
                                     {intl.formatMessage(messages.save)}

@@ -12,18 +12,7 @@ import {
     useSaveConflictQuery,
     useSiteConfig,
 } from "@dextinity/cms-admin";
-import {
-    Button,
-    formatShortcut,
-    Icon,
-    isApplePlatform,
-    PageHeader,
-    SaveState,
-    type SaveStateValue,
-    ToastViewport,
-    Tooltip,
-    useToasts,
-} from "@dextinity/ui";
+import { Button, Icon, PageHeader, SaveState, type SaveStateValue, ToastViewport, Tooltip, useToasts } from "@dextinity/ui";
 import type { WelcomeEmailContentBlockInput } from "@src/blocks.generated";
 import { deepEqual } from "fast-equals";
 import { type JSX, useEffect, useState } from "react";
@@ -162,7 +151,6 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
 
     const saveState: SaveStateValue = saving ? "saving" : saveError != null && hasChanges ? "error" : hasChanges ? "dirty" : "saved";
     const lastSavedVersionHint = intl.formatMessage({ id: "welcomeEmail.edit.lastSavedVersionHint", defaultMessage: "Uses the last saved version" });
-    const saveShortcut = formatShortcut("mod+s").join(isApplePlatform() ? "" : "+");
 
     return (
         <BlockContentEditor
@@ -214,7 +202,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
                             </Tooltip>
                             <Tooltip
                                 content={intl.formatMessage({ id: "welcomeEmail.edit.saveTooltip", defaultMessage: "Saves the welcome email" })}
-                                shortcut={saveShortcut}
+                                shortcut="mod+s"
                             >
                                 <Button startIcon={<Icon name="check" />} disabled={!hasChanges} loading={saving} onClick={() => void handleSave()}>
                                     {intl.formatMessage(messages.save)}

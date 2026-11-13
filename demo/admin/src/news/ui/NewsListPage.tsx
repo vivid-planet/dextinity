@@ -369,7 +369,11 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                                 selected={status === filterOption.value}
                                 onClick={() => listState.setFilter("status", filterOption.value === "all" ? null : filterOption.value)}
                                 count={filterOption.count}
-                                status={filterOption.value === "all" ? undefined : getNewsStatusIndicator(filterOption.value)}
+                                startAdornment={
+                                    filterOption.value === "all" ? undefined : (
+                                        <StatusIndicator status={getNewsStatusIndicator(filterOption.value)} decorative />
+                                    )
+                                }
                             >
                                 {filterOption.label}
                             </FilterChip>

@@ -262,7 +262,11 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
                                 selected={status === filterOption.value}
                                 onClick={() => update({ status: filterOption.value })}
                                 count={filterOption.count}
-                                status={filterOption.value === "all" ? undefined : getProductStatusIndicator(filterOption.value)}
+                                startAdornment={
+                                    filterOption.value === "all" ? undefined : (
+                                        <StatusIndicator status={getProductStatusIndicator(filterOption.value)} decorative />
+                                    )
+                                }
                             >
                                 {filterOption.value === "all"
                                     ? intl.formatMessage({ id: "uiDemo.products.filter.all", defaultMessage: "All" })

@@ -5,9 +5,7 @@ import {
     Button,
     EditLayout,
     EmptyState,
-    formatShortcut,
     Icon,
-    isApplePlatform,
     PageHeader,
     Panel,
     SaveState,
@@ -267,7 +265,7 @@ function EntityEditPageContent({
                                 />
                                 <Tooltip
                                     content={intl.formatMessage({ id: "uiDemo.productsCommon.saveTooltip", defaultMessage: "Save the changes" })}
-                                    shortcut={formatShortcut("mod+s").join(isApplePlatform() ? "" : "+")}
+                                    shortcut="mod+s"
                                 >
                                     <Button
                                         type="submit"

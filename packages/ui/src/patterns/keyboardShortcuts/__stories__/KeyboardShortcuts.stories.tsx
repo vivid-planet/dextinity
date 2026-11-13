@@ -5,45 +5,43 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 import { Button } from "../../../components/button/Button";
 import { Dialog } from "../../../components/dialog/Dialog";
 import { KeyboardShortcut } from "../../../components/keyboardShortcut/KeyboardShortcut";
-import { formatShortcut, useKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
+import { useKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
 import { ShortcutList, type ShortcutListItem } from "../../../components/shortcutList/ShortcutList";
 import { PatternPage, PatternRules, PatternSection, PatternShortcuts } from "../../../storybook/patterns/PatternPage";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import styles from "./KeyboardShortcuts.stories.module.scss";
 
-const keys = (shortcut: string) => formatShortcut(shortcut);
-
 const everywhere: ShortcutListItem[] = [
-    { keys: keys("mod+k"), description: "Command palette" },
-    { keys: keys("mod+\\"), description: "Collapse or expand the navigation" },
-    { keys: ["/"], description: "Search the list" },
-    { keys: ["?"], description: "Show keyboard shortcuts" },
-    { keys: ["Esc"], description: "Close, clear the selection" },
+    { shortcut: "mod+k", description: "Command palette" },
+    { shortcut: "mod+\\", description: "Collapse or expand the navigation" },
+    { shortcut: "/", description: "Search the list" },
+    { shortcut: "?", description: "Show keyboard shortcuts" },
+    { shortcut: "Escape", description: "Close, clear the selection" },
 ];
 
 const editing: ShortcutListItem[] = [
-    { keys: keys("mod+s"), description: "Save" },
-    { keys: keys("mod+p"), description: "Preview" },
-    { keys: keys("mod+d"), description: "Duplicate" },
+    { shortcut: "mod+s", description: "Save" },
+    { shortcut: "mod+p", description: "Preview" },
+    { shortcut: "mod+d", description: "Duplicate" },
 ];
 
 const pageTree: ShortcutListItem[] = [
-    { keys: ["↑", "↓", "←", "→"], description: "Move, expand and collapse" },
-    { keys: ["Enter"], description: "Edit" },
-    { keys: ["Space"], description: "Select" },
+    { shortcut: ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"], description: "Move, expand and collapse" },
+    { shortcut: "Enter", description: "Edit" },
+    { shortcut: "Space", description: "Select" },
 ];
 
 const finder: ShortcutListItem[] = [
-    { keys: [...keys("mod+1"), "–", "4"], description: "Icons, list, columns, gallery" },
-    { keys: [...keys("mod+["), ...keys("mod+]")], description: "Back, forward" },
-    { keys: keys("mod+ArrowUp"), description: "Parent folder" },
-    { keys: [...keys("mod+ArrowDown"), ...keys("mod+o")], description: "Open" },
-    { keys: ["Enter"], description: "Rename" },
-    { keys: ["Space"], description: "Quick look" },
-    { keys: keys("mod+a"), description: "Select all" },
-    { keys: keys("mod+d"), description: "Duplicate" },
-    { keys: keys("shift+mod+n"), description: "New folder" },
-    { keys: keys("mod+Backspace"), description: "Delete" },
+    { shortcut: ["mod+1", "mod+2", "mod+3", "mod+4"], description: "Icons, list, columns, gallery" },
+    { shortcut: ["mod+[", "mod+]"], description: "Back, forward" },
+    { shortcut: "mod+ArrowUp", description: "Parent folder" },
+    { shortcut: ["mod+ArrowDown", "mod+o"], description: "Open" },
+    { shortcut: "Enter", description: "Rename" },
+    { shortcut: "Space", description: "Quick look" },
+    { shortcut: "mod+a", description: "Select all" },
+    { shortcut: "mod+d", description: "Duplicate" },
+    { shortcut: "shift+mod+n", description: "New folder" },
+    { shortcut: "mod+Backspace", description: "Delete" },
 ];
 
 const rules = {
@@ -71,7 +69,7 @@ function ShortcutOverview() {
         <PatternPage>
             <PatternSection title="Example" description="Live: press ? anywhere outside a text field to see every shortcut.">
                 <div className={styles.hint}>
-                    <KeyboardShortcut>?</KeyboardShortcut>
+                    <KeyboardShortcut shortcut="?" />
                     <span>Show keyboard shortcuts</span>
                     <Button variant="outlined" color="secondary" size="small" onClick={() => setOpen(true)}>
                         Show shortcuts
@@ -92,7 +90,7 @@ const meta = {
         docs: {
             description: {
                 component:
-                    "All keyboard shortcuts in one place. Build them with `useKeyboardShortcut`, show them with `ShortcutList`, and name them in tooltips (`Tooltip`'s `shortcut`) and menus.",
+                    "All keyboard shortcuts in one place. Build them with `useKeyboardShortcut`, show them with `ShortcutList`, and name them in tooltips (`Tooltip`'s `shortcut`) and menus, all in the same notation, e.g. `mod+s`: `mod` is ⌘ on Apple platforms and Ctrl elsewhere.",
             },
         },
     },

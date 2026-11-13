@@ -82,7 +82,7 @@ export const Toggle: Story = {
  * The shortcut shows in the tooltip next to the name.
  */
 export const Shortcut: Story = {
-    args: { shortcut: "⌘B" },
+    args: { shortcut: "mod+b" },
 };
 
 /**

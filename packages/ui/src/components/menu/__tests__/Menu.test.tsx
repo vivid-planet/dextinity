@@ -19,7 +19,13 @@ describe("Menu", () => {
             <Theme colorScheme="dark" data-testid="theme">
                 <Menu open onOpenChange={vi.fn()} placement="bottom-end" className="consumer-class" trigger={<button type="button">Trigger</button>}>
                     <MenuGroup label="Row">
-                        <MenuItem label="Duplicate" icon={<span>i</span>} shortcut="⌘D" onClick={vi.fn()} />
+                        <MenuItem
+                            label="Duplicate"
+                            icon={<span>i</span>}
+                            shortcut="mod+d"
+                            slotProps={{ shortcut: { platform: "apple" } }}
+                            onClick={vi.fn()}
+                        />
                         <MenuSeparator />
                         <MenuItem label="Delete" color="error" disabled onClick={vi.fn()} />
                     </MenuGroup>
@@ -44,7 +50,8 @@ describe("Menu", () => {
         expect(duplicate.className).toContain("dextinityMenuItem");
         expect(duplicate.dataset.color).toBe("default");
         expect(screen.getByText("i").parentElement?.className).toContain("dextinityMenuItem__icon");
-        expect(screen.getByText("⌘D").className).toContain("dextinityMenuItem__shortcut");
+        expect(screen.getByText("Command D").closest("kbd")?.className).toContain("dextinityMenuItem__shortcut");
+        expect(duplicate).toHaveAccessibleName("Duplicate Command D");
 
         const remove = screen.getByRole("menuitem", { name: "Delete" });
         expect(remove.dataset.color).toBe("error");

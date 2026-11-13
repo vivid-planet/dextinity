@@ -43,7 +43,7 @@ export interface MenuItemProps<IconElement extends ElementType = "span"> extends
     label: string;
     /** An icon before the label, e.g. `<Icon name="copy" />`. */
     icon?: ReactNode;
-    /** The keyboard shortcut of the action, shown at the end, e.g. `⌘D`. */
+    /** The keyboard shortcut of the action, shown at the end, in the notation of `useKeyboardShortcut`, e.g. `"mod+d"`. */
     shortcut?: string;
     /**
      * `error` for destructive actions, e.g. Delete. Put them last, after a separator.
@@ -105,7 +105,7 @@ export const MenuItem: <IconElement extends ElementType = "span">(props: MenuIte
             ownerState,
         });
         const shortcutProps = resolveSlotProps<MenuItemOwnerState, typeof KeyboardShortcut, typeof KeyboardShortcut>({
-            ownProps: { className: styles.shortcut, children: shortcut },
+            ownProps: { className: styles.shortcut, shortcut },
             slotProps: slotProps?.shortcut,
             ownerState,
         });

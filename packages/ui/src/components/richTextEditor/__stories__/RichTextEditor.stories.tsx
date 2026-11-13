@@ -162,7 +162,7 @@ export const AllFormatting: Story = {
 };
 
 /**
- * `textAlignments` limits the alignments, in the toolbar and by keyboard: ⌘⇧L, ⌘⇧E, ⌘⇧R, and ⌘⇧J.
+ * `textAlignments` limits the alignments, in the toolbar and by keyboard: ⇧⌘L, ⇧⌘E, ⇧⌘R, and ⇧⌘J (Ctrl+Shift+L … on Windows and Linux).
  */
 export const TextAlignments: Story = {
     args: {

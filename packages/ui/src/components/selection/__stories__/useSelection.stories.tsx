@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, userEvent } from "storybook/test";
 
+import { storyModKey } from "../../../storybook/keyboardPlatformDecorator";
 import { jobAds } from "../../../storybook/patterns/jobAds";
 import { patternListClassNames } from "../../../storybook/patterns/PatternPage";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Checkbox } from "../../checkbox/Checkbox";
-import { isApplePlatform } from "../../keyboardShortcut/useKeyboardShortcut";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { useSelection } from "../useSelection";
 
@@ -50,8 +50,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const modKey = isApplePlatform() ? "Meta" : "Control";
-
 /**
  * `useSelection` keeps the selected ids of a list: a checkbox toggles one item, Shift-click selects the range from the
  * previously toggled item, ⌘A (Ctrl+A) selects all visible items and Escape clears the selection.
@@ -69,7 +67,7 @@ export const Default: Story = {
         await userEvent.keyboard("{/Shift}");
         await expect(canvas.getByRole("checkbox", { name: "4 selected" })).toBeInTheDocument();
 
-        await userEvent.keyboard(`{${modKey}>}a{/${modKey}}`);
+        await userEvent.keyboard(`{${storyModKey()}>}a{/${storyModKey()}}`);
         await expect(canvas.getByRole("checkbox", { name: "7 selected" })).toBeChecked();
 
         await userEvent.keyboard("{Escape}");

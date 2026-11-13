@@ -94,14 +94,14 @@ export const WithIcon: Story = {
  * `shortcut` shows the keyboard shortcut at the end, so people learn it.
  */
 export const WithShortcut: Story = {
-    args: { icon: <Icon name="copy" />, shortcut: "⌘D" },
+    args: { icon: <Icon name="copy" />, shortcut: "mod+d" },
 };
 
 /**
  * `color="error"` for destructive actions. Put them last, after a `MenuSeparator`.
  */
 export const ErrorColor: Story = {
-    args: { label: "Delete", icon: <Icon name="trash" />, shortcut: "⌘⌫", color: "error" },
+    args: { label: "Delete", icon: <Icon name="trash" />, shortcut: "mod+Backspace", color: "error" },
 };
 
 /**

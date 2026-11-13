@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, screen, userEvent } from "storybook/test";
 
+import { storyShortcutText } from "../../../storybook/keyboardPlatformDecorator";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../IconButton";
@@ -86,12 +87,12 @@ export const WithShortcut: Story = {
     args: {
         children: <Icon name="edit" />,
         "aria-label": "Edit",
-        shortcut: "⌘E",
+        shortcut: "mod+e",
     },
     play: async ({ args, canvas }) => {
         await userEvent.tab();
         await expect(canvas.getByRole("button", { name: "Edit" })).toHaveFocus();
-        await expect(await screen.findByRole("tooltip")).toHaveTextContent("Edit⌘E");
+        await expect(await screen.findByRole("tooltip")).toHaveTextContent(`Edit${storyShortcutText("mod+e")}`);
         await userEvent.keyboard("{Enter}");
         await expect(args.onClick).toHaveBeenCalledOnce();
     },

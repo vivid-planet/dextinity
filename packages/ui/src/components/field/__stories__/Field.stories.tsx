@@ -46,10 +46,10 @@ function EditorControl(control: FieldControlProps) {
     return (
         <>
             <Toolbar aria-label="Formatting" className={styles.editorToolbar} disabled={control.disabled || control.readOnly}>
-                <ToolbarButton aria-label="Bold" shortcut="⌘B" pressed={bold} keepFocus onClick={() => setBold(!bold)}>
+                <ToolbarButton aria-label="Bold" shortcut="mod+b" pressed={bold} keepFocus onClick={() => setBold(!bold)}>
                     <Icon name="bold" />
                 </ToolbarButton>
-                <ToolbarButton aria-label="Link" shortcut="⌘K" keepFocus>
+                <ToolbarButton aria-label="Link" shortcut="mod+k" keepFocus>
                     <Icon name="link-diagonal" />
                 </ToolbarButton>
             </Toolbar>

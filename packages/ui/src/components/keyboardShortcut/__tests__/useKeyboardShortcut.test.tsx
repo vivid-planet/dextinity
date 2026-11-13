@@ -1,7 +1,9 @@
 import { cleanup, fireEvent, render, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { formatShortcut, matchesShortcut, useKeyboardShortcut } from "../useKeyboardShortcut";
+import { describeShortcut, formatShortcut } from "../formatShortcut";
+import { KeyboardShortcutProvider } from "../keyboardShortcutPlatform";
+import { matchesShortcut, useKeyboardShortcut } from "../useKeyboardShortcut";
 
 afterEach(cleanup);
 
@@ -31,6 +33,25 @@ describe("formatShortcut", () => {
         expect(formatShortcut("mod+s", false)).toEqual(["Ctrl", "S"]);
         expect(formatShortcut("Escape", true)).toEqual(["Esc"]);
     });
+
+    it("puts the modifiers in the platform's order", () => {
+        expect(formatShortcut("mod+shift+alt+n", true)).toEqual(["⌥", "⇧", "⌘", "N"]);
+        expect(formatShortcut("alt+shift+mod+n", false)).toEqual(["Ctrl", "Shift", "Alt", "N"]);
+    });
+});
+
+describe("describeShortcut", () => {
+    it("returns the spoken name for the platform", () => {
+        expect(describeShortcut("shift+mod+n", true)).toBe("Shift Command N");
+        expect(describeShortcut("alt+mod+n", false)).toBe("Control Alt N");
+        expect(describeShortcut("alt+ArrowUp", true)).toBe("Option Up Arrow");
+        expect(describeShortcut("Escape", false)).toBe("Escape");
+        expect(describeShortcut("?", false)).toBe("?");
+    });
+
+    it("takes the key names from labels", () => {
+        expect(describeShortcut("mod+Enter", false, { control: "Strg", enter: "Eingabe" })).toBe("Strg Eingabe");
+    });
 });
 
 describe("useKeyboardShortcut", () => {
@@ -43,6 +64,19 @@ describe("useKeyboardShortcut", () => {
         expect(onShortcut).not.toHaveBeenCalled();
 
         fireEvent.keyDown(document.body, { key: "/" });
+        expect(onShortcut).toHaveBeenCalledTimes(1);
+    });
+
+    it("listens to mod for the platform of the provider", () => {
+        const onShortcut = vi.fn();
+        renderHook(() => useKeyboardShortcut("mod+k", onShortcut), {
+            wrapper: ({ children }) => <KeyboardShortcutProvider platform="apple">{children}</KeyboardShortcutProvider>,
+        });
+
+        fireEvent.keyDown(document.body, { key: "k", ctrlKey: true });
+        expect(onShortcut).not.toHaveBeenCalled();
+
+        fireEvent.keyDown(document.body, { key: "k", metaKey: true });
         expect(onShortcut).toHaveBeenCalledTimes(1);
     });
 

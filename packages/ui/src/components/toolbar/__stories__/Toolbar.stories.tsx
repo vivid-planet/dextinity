@@ -36,13 +36,13 @@ function EditorToolbar(props: Omit<ToolbarProps, "children">) {
             </ToolbarMenu>
             <ToolbarSeparator />
             <ToolbarGroup aria-label="Marks">
-                <ToolbarButton aria-label="Bold" shortcut="⌘B" pressed={marks.bold} onClick={() => toggle("bold")}>
+                <ToolbarButton aria-label="Bold" shortcut="mod+b" pressed={marks.bold} onClick={() => toggle("bold")}>
                     <Icon name="bold" />
                 </ToolbarButton>
-                <ToolbarButton aria-label="Italic" shortcut="⌘I" pressed={marks.italic} onClick={() => toggle("italic")}>
+                <ToolbarButton aria-label="Italic" shortcut="mod+i" pressed={marks.italic} onClick={() => toggle("italic")}>
                     <Icon name="italic" />
                 </ToolbarButton>
-                <ToolbarButton aria-label="Link" shortcut="⌘K" onClick={fn()}>
+                <ToolbarButton aria-label="Link" shortcut="mod+k" onClick={fn()}>
                     <Icon name="link-diagonal" />
                 </ToolbarButton>
             </ToolbarGroup>
@@ -56,7 +56,7 @@ function EditorToolbar(props: Omit<ToolbarProps, "children">) {
                 </ToolbarButton>
             </ToolbarGroup>
             <ToolbarSeparator />
-            <ToolbarButton aria-label="Undo" shortcut="⌘Z" onClick={fn()}>
+            <ToolbarButton aria-label="Undo" shortcut="mod+z" onClick={fn()}>
                 <Icon name="history" />
             </ToolbarButton>
         </Toolbar>

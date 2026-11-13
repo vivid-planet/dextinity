@@ -25,7 +25,7 @@ export interface ToolbarButtonProps extends Omit<ButtonHTMLAttributes<HTMLButton
     children: ReactNode;
     /** The accessible name, also shown as the tooltip. Name the action, e.g. "Bold". */
     "aria-label": string;
-    /** A keyboard shortcut for the action, shown in the tooltip, e.g. `⌘B`. */
+    /** A keyboard shortcut for the action, shown in the tooltip, in the notation of `useKeyboardShortcut`, e.g. `"mod+b"`. */
     shortcut?: string;
     /**
      * Makes the button a toggle and sets whether it is on, e.g. whether the text at the cursor is bold. Toggle it in `onClick`. Leave it

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { storyModKey, storyShortcutText } from "../../../storybook/keyboardPlatformDecorator";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
@@ -25,13 +26,13 @@ const groups: CommandPaletteGroup[] = [
         label: "Create",
         items: [
             { id: "new-page", label: "New page under Careers", icon: <Icon name="plus" />, onSelect: fn() },
-            { id: "new-job-ad", label: "New job ad", icon: <Icon name="plus" />, shortcut: "⌘N", onSelect: fn() },
+            { id: "new-job-ad", label: "New job ad", icon: <Icon name="plus" />, shortcut: "mod+n", onSelect: fn() },
         ],
     },
     {
         label: "Commands",
         items: [
-            { id: "nav", label: "Collapse navigation", icon: <Icon name="pin-left" />, shortcut: "⌘\\", onSelect: fn() },
+            { id: "nav", label: "Collapse navigation", icon: <Icon name="pin-left" />, shortcut: "mod+\\", onSelect: fn() },
             { id: "dark", label: "Switch to dark theme", icon: <Icon name="moon" />, keywords: ["color scheme"], onSelect: fn() },
         ],
     },
@@ -117,7 +118,7 @@ export const Default: Story = {
         await userEvent.type(input, "jo");
         await waitFor(() => expect(args.onQueryChange).toHaveBeenLastCalledWith("jo"));
         const options = screen.getAllByRole("option");
-        await expect(options.map((option) => option.textContent)).toStrictEqual(["Job ads", "New job ad⌘N"]);
+        await expect(options.map((option) => option.textContent)).toStrictEqual(["Job ads", `New job ad${storyShortcutText("mod+n")}`]);
         await expect(options[0]).toHaveAttribute("aria-selected", "true");
         await userEvent.keyboard("{ArrowDown}");
         await expect(options[1]).toHaveAttribute("aria-selected", "true");
@@ -128,11 +129,11 @@ export const Default: Story = {
 };
 
 /**
- * ⌘K or Ctrl+K toggles the palette from anywhere in the app.
+ * ⌘K on Apple platforms and Ctrl+K elsewhere toggles the palette from anywhere in the app.
  */
 export const GlobalShortcut: Story = {
     play: async ({ args }) => {
-        await userEvent.keyboard("{Control>}k{/Control}");
+        await userEvent.keyboard(`{${storyModKey()}>}k{/${storyModKey()}}`);
         await waitFor(() => expect(args.onOpenChange).toHaveBeenLastCalledWith(true));
         await screen.findByRole("combobox");
         await userEvent.keyboard("{Escape}");

@@ -10,15 +10,12 @@ import styles from "./TopBar.module.scss";
 export interface TopBarLabels {
     /** The search trigger's text and accessible name. */
     search: string;
-    /** The search trigger's keyboard hint. */
-    searchShortcut: string;
     /** The menu button that opens the navigation on narrow windows. */
     menu: string;
 }
 
 const defaultLabels: TopBarLabels = {
     search: "Search, jump, create …",
-    searchShortcut: "⌘K",
     menu: "Open navigation",
 };
 
@@ -30,6 +27,13 @@ export type TopBarOwnerState = Record<string, never>;
 export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children" | "title"> {
     /** Opens the command palette; shows the search trigger at the start of the bar. */
     onSearchClick?: () => void;
+    /**
+     * The keyboard shortcut shown in the search trigger, in the notation of `useKeyboardShortcut`. It only shows the hint; the
+     * `CommandPalette` listens to the shortcut.
+     *
+     * @defaultValue `"mod+k"`
+     */
+    searchShortcut?: string;
     /** The scope picker, usually a `ScopeSwitcher`. The scope is global, so it lives only here. */
     scope?: ReactNode;
     /**
@@ -52,7 +56,17 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
  * back and actions belong in its `PageHeader`. The app name never appears here, only in the navigation.
  */
 export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
-    { onSearchClick, scope, browseActions, userMenu, onMenuClick: onMenuClickProp, labels: labelsProp, className, ...restProps },
+    {
+        onSearchClick,
+        searchShortcut = "mod+k",
+        scope,
+        browseActions,
+        userMenu,
+        onMenuClick: onMenuClickProp,
+        labels: labelsProp,
+        className,
+        ...restProps
+    },
     ref,
 ) {
     const shell = useAppShellContext();
@@ -70,7 +84,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
                 <button type="button" aria-label={labels.search} aria-haspopup="dialog" onClick={onSearchClick} className={styles.search}>
                     <Icon name="search" />
                     <span className={styles.searchText}>{labels.search}</span>
-                    <KeyboardShortcut className={styles.searchShortcut}>{labels.searchShortcut}</KeyboardShortcut>
+                    <KeyboardShortcut className={styles.searchShortcut} shortcut={searchShortcut} />
                 </button>
             )}
             <div className={styles.actions}>

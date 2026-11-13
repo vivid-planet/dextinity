@@ -7,13 +7,16 @@ import { ConfirmDialog } from "../../../components/confirmDialog/ConfirmDialog";
 import { Field } from "../../../components/field/Field";
 import { Icon } from "../../../components/icon/Icon";
 import { Input } from "../../../components/input/Input";
-import { formatShortcut, isApplePlatform, useKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
+import { formatShortcut } from "../../../components/keyboardShortcut/formatShortcut";
+import { useKeyboardShortcutPlatform } from "../../../components/keyboardShortcut/keyboardShortcutPlatform";
+import { useKeyboardShortcut } from "../../../components/keyboardShortcut/useKeyboardShortcut";
 import { SaveState, type SaveStateValue } from "../../../components/saveState/SaveState";
 import { StatusIndicator } from "../../../components/statusIndicator/StatusIndicator";
 import { Switch } from "../../../components/switch/Switch";
 import { ToastViewport } from "../../../components/toast/ToastViewport";
 import { useToasts } from "../../../components/toast/useToasts";
 import { Tooltip } from "../../../components/tooltip/Tooltip";
+import { storyModKey } from "../../../storybook/keyboardPlatformDecorator";
 import {
     PatternExample,
     PatternPage,
@@ -108,7 +111,7 @@ function EditPageExample() {
                             </Button>
                             <Tooltip
                                 content={status === "published" ? "The page is published: saving makes the change live" : "Saves without publishing"}
-                                shortcut={formatShortcut("mod+s").join("")}
+                                shortcut="mod+s"
                             >
                                 <Button size="small" onClick={save}>
                                     Save
@@ -150,6 +153,7 @@ function EditPageExample() {
 }
 
 function SaveAndStatusPage() {
+    const apple = useKeyboardShortcutPlatform() === "apple";
     return (
         <PatternPage>
             <PatternSection title="Status model" description="Only three states. No draft, no versions, no scheduling.">
@@ -165,7 +169,7 @@ function SaveAndStatusPage() {
                 steps={[
                     { title: "Edit", description: "The header shows “Unsaved changes”." },
                     {
-                        title: `Save (${formatShortcut("mod+s").join(isApplePlatform() ? "" : "+")})`,
+                        title: `Save (${formatShortcut("mod+s", apple).join(apple ? "" : "+")})`,
                         description: "If the page is published, the change is live right away. The button's tooltip says so.",
                     },
                     { title: "Publish", description: "The “Published” switch – also in list, tree and detail." },
@@ -173,7 +177,7 @@ function SaveAndStatusPage() {
                     { title: "Archive", description: "Off the website, stays in the admin. Restoring sets it to Unpublished." },
                 ]}
             />
-            <PatternShortcuts shortcuts={[{ keys: formatShortcut("mod+s"), description: "Save" }]} />
+            <PatternShortcuts shortcuts={[{ shortcut: "mod+s", description: "Save" }]} />
             <PatternUses pages={["Buttons", "Selection & toggles", "Status, tags & badges", "Loading & save state", "Modals & overlays"]} />
             <PatternRules
                 dos={[
@@ -204,8 +208,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const modKey = isApplePlatform() ? "Meta" : "Control";
-
 /**
  * **Rules**
  *
@@ -225,7 +227,7 @@ export const SaveWithShortcut: Story = {
     play: async ({ canvas }) => {
         await userEvent.type(canvas.getByRole("textbox", { name: "Title" }), " & perks");
         await expect(canvas.getByText("Unsaved changes")).toBeVisible();
-        await userEvent.keyboard(`{${modKey}>}s{/${modKey}}`);
+        await userEvent.keyboard(`{${storyModKey()}>}s{/${storyModKey()}}`);
         await waitFor(() => expect(canvas.getByText("Saved – the change is live")).toBeVisible());
         await expect(canvas.getByText("All changes saved")).toBeVisible();
     },

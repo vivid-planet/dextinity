@@ -86,7 +86,7 @@ function ControlledAppShell(props: AppShellProps) {
                                 id: "nav",
                                 label: "Collapse navigation",
                                 icon: <Icon name="pin-left" />,
-                                shortcut: "⌘\\",
+                                shortcut: "mod+\\",
                                 onSelect: () => setNavCollapsed(!navCollapsed),
                             },
                         ],

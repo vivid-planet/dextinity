@@ -169,7 +169,12 @@ const allHeadingLevels: RichTextEditorHeadingLevel[] = [1, 2, 3, 4, 5, 6];
 
 const allTextAlignments: RichTextEditorTextAlign[] = ["left", "center", "right", "justify"];
 
-const textAlignShortcuts: Record<RichTextEditorTextAlign, string> = { left: "⌘⇧L", center: "⌘⇧E", right: "⌘⇧R", justify: "⌘⇧J" };
+const textAlignShortcuts: Record<RichTextEditorTextAlign, string> = {
+    left: "shift+mod+l",
+    center: "shift+mod+e",
+    right: "shift+mod+r",
+    justify: "shift+mod+j",
+};
 
 const maxPendingEmittedValues = 20;
 
@@ -193,13 +198,13 @@ const markFormats: MarkFormat[] = ["bold", "italic", "underline", "strike"];
 
 const markIcons: Record<MarkFormat, IconName> = { bold: "bold", italic: "italic", underline: "underline", strike: "strikethrough" };
 
-const markShortcuts: Record<MarkFormat, string> = { bold: "⌘B", italic: "⌘I", underline: "⌘U", strike: "⌘⇧S" };
+const markShortcuts: Record<MarkFormat, string> = { bold: "mod+b", italic: "mod+i", underline: "mod+u", strike: "shift+mod+s" };
 
 type ScriptFormat = "subscript" | "superscript";
 
 const scriptIcons: Record<ScriptFormat, IconName> = { subscript: "subscript", superscript: "superscript" };
 
-const scriptShortcuts: Record<ScriptFormat, string> = { subscript: "⌘,", superscript: "⌘." };
+const scriptShortcuts: Record<ScriptFormat, string> = { subscript: "mod+,", superscript: "mod+." };
 
 export interface RichTextEditorProps extends PureControlProps {
     /** Field name. Describes the data, not the UI. */
@@ -222,8 +227,8 @@ export interface RichTextEditorProps extends PureControlProps {
      */
     headingLevels?: RichTextEditorHeadingLevel[];
     /**
-     * The alignments the toolbar offers, also by keyboard (⌘⇧L, ⌘⇧E, ⌘⇧R, ⌘⇧J). Other alignments are removed from pasted and incoming
-     * content. Needs `"textAlign"` in `toolbar`.
+     * The alignments the toolbar offers, also by keyboard (`shift+mod` with L, E, R, or J: ⇧⌘L on Apple platforms, Ctrl+Shift+L
+     * elsewhere). Other alignments are removed from pasted and incoming content. Needs `"textAlign"` in `toolbar`.
      *
      * @defaultValue `["left", "center", "right", "justify"]`
      */
@@ -454,7 +459,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                 <ToolbarGroup>
                     <ToolbarButton
                         aria-label={labels.undo}
-                        shortcut="⌘Z"
+                        shortcut="mod+z"
                         disabled={!state.canUndo}
                         keepFocus
                         onClick={() => editor?.chain().focus().undo().run()}
@@ -463,7 +468,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={labels.redo}
-                        shortcut="⌘⇧Z"
+                        shortcut="shift+mod+z"
                         disabled={!state.canRedo}
                         keepFocus
                         onClick={() => editor?.chain().focus().redo().run()}
@@ -598,7 +603,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                     {has("bulletList") && (
                         <ToolbarButton
                             aria-label={labels.bulletList}
-                            shortcut="⌘⇧8"
+                            shortcut="shift+mod+8"
                             pressed={state.bulletList}
                             keepFocus
                             onClick={() => editor?.chain().focus().toggleBulletList().run()}
@@ -609,7 +614,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                     {has("orderedList") && (
                         <ToolbarButton
                             aria-label={labels.orderedList}
-                            shortcut="⌘⇧7"
+                            shortcut="shift+mod+7"
                             pressed={state.orderedList}
                             keepFocus
                             onClick={() => editor?.chain().focus().toggleOrderedList().run()}
@@ -628,7 +633,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={labels.outdent}
-                        shortcut="⇧Tab"
+                        shortcut="shift+Tab"
                         disabled={!state.canOutdent}
                         keepFocus
                         onClick={() => editor?.chain().focus().liftListItem("listItem").run()}
@@ -644,7 +649,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
             key: "link",
             content: (
                 <ToolbarGroup>
-                    <ToolbarButton aria-label={labels.link} shortcut="⌘K" pressed={state.link} keepFocus onClick={() => requestLink()}>
+                    <ToolbarButton aria-label={labels.link} shortcut="mod+k" pressed={state.link} keepFocus onClick={() => requestLink()}>
                         <Icon name="link" />
                     </ToolbarButton>
                     <ToolbarButton

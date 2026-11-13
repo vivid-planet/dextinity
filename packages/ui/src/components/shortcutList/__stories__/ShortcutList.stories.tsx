@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { KeyboardShortcutProvider } from "../../keyboardShortcut/keyboardShortcutPlatform";
 import { ShortcutList } from "../ShortcutList";
 import shortcutListTokens from "../ShortcutList.tokens.scss?raw";
 
@@ -12,11 +13,11 @@ const meta = {
     parameters: { tokens: shortcutListTokens },
     args: {
         shortcuts: [
-            { keys: ["⌘", "K"], description: "Command palette" },
-            { keys: ["⌘", "\\"], description: "Collapse or expand the navigation" },
-            { keys: ["/"], description: "Search the list" },
-            { keys: ["?"], description: "Show keyboard shortcuts" },
-            { keys: ["Esc"], description: "Close, clear the selection" },
+            { shortcut: "mod+k", description: "Command palette" },
+            { shortcut: "mod+\\", description: "Collapse or expand the navigation" },
+            { shortcut: "/", description: "Search the list" },
+            { shortcut: "?", description: "Show keyboard shortcuts" },
+            { shortcut: "Escape", description: "Close, clear the selection" },
         ],
     },
     argTypes: {
@@ -45,12 +46,48 @@ export const Default: Story = {
 };
 
 /**
- * A sequence lists all of its keys, e.g. cut and paste.
+ * A `KeyboardShortcutProvider` sets the platform for every shortcut inside, here Apple: ⌘ and the other modifiers as symbols.
+ */
+export const Apple: Story = {
+    decorators: [
+        (Story) => (
+            <KeyboardShortcutProvider platform="apple">
+                <Story />
+            </KeyboardShortcutProvider>
+        ),
+    ],
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("cell", { name: "Command K" })).toBeVisible();
+        await expect(canvas.getByRole("cell", { name: "Command K" }).querySelector("[aria-hidden]")).toHaveTextContent("⌘K");
+    },
+};
+
+/**
+ * On Windows and Linux, `mod` shows as Ctrl and the keys are joined with `+`.
+ */
+export const WindowsAndLinux: Story = {
+    name: "Windows & Linux",
+    decorators: [
+        (Story) => (
+            <KeyboardShortcutProvider platform="other">
+                <Story />
+            </KeyboardShortcutProvider>
+        ),
+    ],
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("cell", { name: "Control K" })).toBeVisible();
+        await expect(canvas.getByRole("cell", { name: "Control K" }).querySelector("[aria-hidden]")).toHaveTextContent("Ctrl+K");
+    },
+};
+
+/**
+ * Shortcuts pressed one after another are listed in order, e.g. cut and paste. `keys` shows fixed key caps for what the notation
+ * doesn't cover.
  */
 export const Sequence: Story = {
     args: {
         shortcuts: [
-            { keys: ["⌘", "X", "⌘", "V"], description: "Cut and paste (page tree)" },
+            { shortcut: ["mod+x", "mod+v"], description: "Cut and paste (page tree)" },
             { keys: ["Right-click"], description: "Move to … (finder)" },
         ],
     },
@@ -62,6 +99,6 @@ export const Sequence: Story = {
 export const CustomLabels: Story = {
     args: {
         labels: { keys: "Taste", description: "Wirkung" },
-        shortcuts: [{ keys: ["⌘", "S"], description: "Speichern" }],
+        shortcuts: [{ shortcut: "mod+s", description: "Speichern" }],
     },
 };

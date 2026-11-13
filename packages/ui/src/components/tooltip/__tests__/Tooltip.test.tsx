@@ -9,7 +9,7 @@ afterEach(cleanup);
 describe("Tooltip", () => {
     it("renders the popup with the contract classes and the preferred placement", async () => {
         render(
-            <Tooltip content="More actions" shortcut="⌘." placement="top" open className="consumer-class">
+            <Tooltip content="More actions" shortcut="mod+." placement="top" open className="consumer-class">
                 <button type="button">Trigger</button>
             </Tooltip>,
         );
@@ -18,7 +18,7 @@ describe("Tooltip", () => {
         expect(tooltip.className).toContain("dextinityTooltip");
         expect(tooltip.className).toContain("consumer-class");
         expect(tooltip.dataset.placement).toBe("top");
-        expect(screen.getByText("⌘.").className).toContain("dextinityTooltip__shortcut");
+        expect(screen.getByText("Control .").closest("kbd")?.className).toContain("dextinityTooltip__shortcut");
     });
 
     it("portals the popup into the closest theme, so it keeps the theme's color scheme", async () => {

@@ -7,6 +7,7 @@ import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
+import { useKeyboardShortcut } from "../keyboardShortcut/useKeyboardShortcut";
 import styles from "./CommandPalette.module.scss";
 
 /**
@@ -20,7 +21,7 @@ export interface CommandPaletteItem {
     /** Called when the entry is chosen with Enter or a click; the palette then closes. */
     onSelect: () => void;
     icon?: ReactNode;
-    /** Shown at the end, so people learn it, e.g. `⌘N`. */
+    /** The entry's keyboard shortcut, shown at the end so people learn it, in the notation of `useKeyboardShortcut`, e.g. `"mod+n"`. */
     shortcut?: string;
     /** Further terms the filter finds the entry by. */
     keywords?: string[];
@@ -179,19 +180,7 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
     const activeItem = visibleItems.find((item) => item.id === activeId) ?? visibleItems.at(0);
     const optionId = (item: CommandPaletteItem) => `${id}-option-${item.id}`;
 
-    useEffect(() => {
-        if (disableGlobalShortcut) {
-            return;
-        }
-        function handleKeyDown(event: globalThis.KeyboardEvent) {
-            if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-                event.preventDefault();
-                onOpenChange(!open);
-            }
-        }
-        document.addEventListener("keydown", handleKeyDown);
-        return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [disableGlobalShortcut, onOpenChange, open]);
+    useKeyboardShortcut("mod+k", () => onOpenChange(!open), { enabled: !disableGlobalShortcut });
 
     useEffect(() => {
         if (activeItem != null) {
@@ -296,7 +285,7 @@ export const CommandPalette = forwardRef<HTMLDivElement, CommandPaletteProps>(fu
                                                         <HighlightedLabel label={item.label} terms={terms} />
                                                     </span>
                                                     {item.shortcut != null && (
-                                                        <KeyboardShortcut className={styles.itemShortcut}>{item.shortcut}</KeyboardShortcut>
+                                                        <KeyboardShortcut className={styles.itemShortcut} shortcut={item.shortcut} />
                                                     )}
                                                 </div>
                                             ))}

@@ -6,6 +6,7 @@ import { defaultConfig, type TagBadgeParameters } from "storybook-addon-tag-badg
 import { brandSetting } from "../src/storybook/brand";
 import { colorSchemeSetting } from "../src/storybook/colorScheme";
 import { densitySetting } from "../src/storybook/density";
+import { keyboardPlatformSetting } from "../src/storybook/keyboardPlatform";
 import { StyleSourcePanel } from "./StyleSourcePanel";
 
 addons.setConfig({
@@ -27,6 +28,7 @@ const toolbarSettings = [
     { id: "color-scheme", title: "Color scheme", setting: colorSchemeSetting },
     { id: "brand", title: "Brand", setting: brandSetting },
     { id: "density", title: "Density", setting: densitySetting },
+    { id: "keyboard-platform", title: "Keyboard platform", setting: keyboardPlatformSetting },
 ];
 
 for (const { id, title, setting } of toolbarSettings) {

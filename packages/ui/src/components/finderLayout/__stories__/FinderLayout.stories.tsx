@@ -235,10 +235,10 @@ export const Structure: Story = {
             </PatternSection>
             <PatternShortcuts
                 shortcuts={[
-                    { keys: ["⌘", "A"], description: "Select all" },
-                    { keys: ["Space"], description: "Quick look" },
-                    { keys: ["⌘", "⌫"], description: "Move to the archive" },
-                    { keys: ["⌘", "↑"], description: "Enclosing folder" },
+                    { shortcut: "mod+a", description: "Select all" },
+                    { shortcut: "Space", description: "Quick look" },
+                    { shortcut: "mod+Backspace", description: "Move to the archive" },
+                    { shortcut: "mod+ArrowUp", description: "Enclosing folder" },
                 ]}
             />
             <PatternUses pages={["Media & upload", "Menus & messages", "Modals & overlays"]} />

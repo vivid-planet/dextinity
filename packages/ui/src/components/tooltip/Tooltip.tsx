@@ -38,7 +38,10 @@ export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, "clas
     content: ReactNode;
     /** The element that shows the tooltip on hover and keyboard focus. It must accept a ref and event handlers. */
     children: ReactElement;
-    /** A keyboard shortcut for the action, shown after the text, e.g. `⌘S`. */
+    /**
+     * A keyboard shortcut for the action, shown after the text, in the notation of `useKeyboardShortcut`, e.g. `"mod+s"`: `⌘S` on
+     * Apple platforms and `Ctrl+S` elsewhere.
+     */
     shortcut?: string;
     /**
      * The preferred side. The tooltip flips to the opposite side when there isn't enough room.
@@ -119,7 +122,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
         ownerState,
     });
     const shortcutProps = resolveSlotProps<TooltipOwnerState, typeof KeyboardShortcut, typeof KeyboardShortcut>({
-        ownProps: { className: styles.shortcut, children: shortcut },
+        ownProps: { className: styles.shortcut, shortcut },
         slotProps: slotProps?.shortcut,
         ownerState,
     });

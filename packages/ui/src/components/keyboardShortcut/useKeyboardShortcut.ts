@@ -1,33 +1,7 @@
 import { useEffect, useRef } from "react";
 
-interface ParsedShortcut {
-    key: string;
-    mod: boolean;
-    shift: boolean;
-    alt: boolean;
-}
-
-function parseShortcut(shortcut: string): ParsedShortcut {
-    const parts = shortcut.split("+");
-    const key = parts.pop() ?? "";
-    const modifiers = parts.map((part) => part.toLowerCase());
-    return {
-        key: key.toLowerCase(),
-        mod: modifiers.includes("mod"),
-        shift: modifiers.includes("shift"),
-        alt: modifiers.includes("alt"),
-    };
-}
-
-/**
- * Whether the platform uses ⌘ (Apple devices) rather than Ctrl as the shortcut modifier.
- */
-export function isApplePlatform(): boolean {
-    if (typeof navigator === "undefined") {
-        return false;
-    }
-    return /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
-}
+import { parseShortcut } from "./formatShortcut";
+import { isApplePlatform, useKeyboardShortcutPlatform } from "./keyboardShortcutPlatform";
 
 /**
  * Whether a keyboard event matches a shortcut such as `"mod+s"`, `"shift+mod+n"`, `"/"` or `"Escape"`.
@@ -54,31 +28,6 @@ export function matchesShortcut(
     return isSymbol || event.shiftKey === parsed.shift;
 }
 
-const appleKeyNames: Record<string, string> = { mod: "⌘", shift: "⇧", alt: "⌥" };
-const otherKeyNames: Record<string, string> = { mod: "Ctrl", shift: "Shift", alt: "Alt" };
-const keyNames: Record<string, string> = {
-    escape: "Esc",
-    arrowup: "↑",
-    arrowdown: "↓",
-    arrowleft: "←",
-    arrowright: "→",
-    backspace: "⌫",
-    enter: "Enter",
-};
-
-/**
- * The key caps of a shortcut for display, e.g. `["⌘", "S"]` for `"mod+s"` on Apple platforms and `["Ctrl", "S"]` elsewhere. Pass
- * them to `KeyboardShortcut`, `ShortcutList` or a tooltip's `shortcut`.
- */
-export function formatShortcut(shortcut: string, apple = isApplePlatform()): string[] {
-    const parts = shortcut.split("+");
-    const key = parts.pop() ?? "";
-    const names = apple ? appleKeyNames : otherKeyNames;
-    const modifiers = parts.map((part) => names[part.toLowerCase()] ?? part);
-    const keyName = keyNames[key.toLowerCase()] ?? (key.length === 1 ? key.toUpperCase() : key);
-    return [...modifiers, keyName];
-}
-
 function isEditable(target: EventTarget | null) {
     if (!(target instanceof HTMLElement)) {
         return false;
@@ -103,9 +52,11 @@ export interface KeyboardShortcutOptions {
 /**
  * Calls `onShortcut` when the shortcut is pressed anywhere in the document, e.g. `"mod+s"` to save or `"/"` to focus the search.
  * The browser's own action for the keys is prevented. A key event something else already handled (`defaultPrevented`) is ignored.
+ * `mod` follows the platform of the nearest `KeyboardShortcutProvider`, else the detected one.
  */
 export function useKeyboardShortcut(shortcut: string, onShortcut: (event: KeyboardEvent) => void, options: KeyboardShortcutOptions = {}) {
     const { enabled = true, allowInEditable = false } = options;
+    const apple = useKeyboardShortcutPlatform() === "apple";
     const onShortcutRef = useRef(onShortcut);
     onShortcutRef.current = onShortcut;
 
@@ -115,7 +66,7 @@ export function useKeyboardShortcut(shortcut: string, onShortcut: (event: Keyboa
         }
         const hasModifier = parseShortcut(shortcut).mod;
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.defaultPrevented || event.isComposing || !matchesShortcut(event, shortcut)) {
+            if (event.defaultPrevented || event.isComposing || !matchesShortcut(event, shortcut, apple)) {
                 return;
             }
             if (!hasModifier && !allowInEditable && isEditable(event.target)) {
@@ -126,5 +77,5 @@ export function useKeyboardShortcut(shortcut: string, onShortcut: (event: Keyboa
         };
         document.addEventListener("keydown", handleKeyDown);
         return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [shortcut, enabled, allowInEditable]);
+    }, [shortcut, enabled, allowInEditable, apple]);
 }

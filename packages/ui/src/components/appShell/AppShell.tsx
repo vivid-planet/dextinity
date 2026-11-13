@@ -1,9 +1,10 @@
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useState } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { useKeyboardShortcut } from "../keyboardShortcut/useKeyboardShortcut";
 import styles from "./AppShell.module.scss";
 import { AppShellContext, type AppShellContextValue } from "./appShellContext";
 import { useMediaQuery } from "./useMediaQuery";
@@ -49,7 +50,7 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
     navCollapsed: boolean;
     /** Called to collapse or expand the navigation, with its footer button or ⌘\ / Ctrl+\. */
     onNavCollapsedChange: (collapsed: boolean) => void;
-    /** Leaves out the shortcut ⌘\, e.g. when the app handles it itself. */
+    /** Leaves out the shortcut ⌘\ / Ctrl+\, e.g. when the app handles it itself. */
     disableShortcuts?: boolean;
     /** The built-in texts. */
     labels?: Partial<AppShellLabels>;
@@ -75,22 +76,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
     const { anchorRef, container } = useThemePortalContainer<HTMLSpanElement>();
 
-    useEffect(() => {
-        if (disableShortcuts) {
-            return;
-        }
-        function handleKeyDown(event: KeyboardEvent) {
-            if (!(event.metaKey || event.ctrlKey)) {
-                return;
-            }
-            if (event.key === "\\" && layout === "wide") {
-                event.preventDefault();
-                onNavCollapsedChange(!navCollapsed);
-            }
-        }
-        document.addEventListener("keydown", handleKeyDown);
-        return () => document.removeEventListener("keydown", handleKeyDown);
-    }, [disableShortcuts, layout, navCollapsed, onNavCollapsedChange]);
+    useKeyboardShortcut("mod+\\", () => onNavCollapsedChange(!navCollapsed), { enabled: !disableShortcuts && layout === "wide" });
 
     const columnContext: AppShellContextValue = {
         navCollapsed: navCollapsed || layout === "medium",

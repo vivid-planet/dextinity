@@ -68,7 +68,7 @@ export const Default: Story = {
  */
 export const WithShortcut: Story = {
     args: {
-        shortcut: "⌘.",
+        shortcut: "mod+.",
         open: true,
     },
 };

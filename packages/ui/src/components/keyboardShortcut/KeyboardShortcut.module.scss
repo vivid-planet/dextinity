@@ -1,6 +1,7 @@
 @use "../../theme/forcedColors" as forced-colors;
 
 .root {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -19,4 +20,22 @@
     white-space: nowrap;
 
     @include forced-colors.edge;
+}
+
+.keys {
+    display: inline-flex;
+    align-items: center;
+}
+
+.key {
+    font: inherit;
+}
+
+.spoken {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
 }

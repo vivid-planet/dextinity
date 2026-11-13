@@ -54,7 +54,7 @@ export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinn
     "aria-label": string;
     /** The icon to show, e.g. `<Icon name="more-horizontal" />`. */
     children?: ReactNode;
-    /** A keyboard shortcut for the action, shown in the tooltip, e.g. `⌘S`. */
+    /** A keyboard shortcut for the action, shown in the tooltip, in the notation of `useKeyboardShortcut`, e.g. `"mod+s"`. */
     shortcut?: string;
     /**
      * Visual emphasis: `contained` for the main action, `outlined` where the button stands alone on a surface, and `text` for toolbars

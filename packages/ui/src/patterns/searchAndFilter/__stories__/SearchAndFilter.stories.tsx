@@ -149,8 +149,8 @@ function SearchAndFilterPage() {
             />
             <PatternShortcuts
                 shortcuts={[
-                    { keys: ["/"], description: "Jump into the search" },
-                    { keys: ["Esc"], description: "Clear the search" },
+                    { shortcut: "/", description: "Jump into the search" },
+                    { shortcut: "Escape", description: "Clear the search" },
                 ]}
             />
             <PatternUses pages={["Form fields", "Selection & toggles", "Tables & paging", "Menus & messages"]} />

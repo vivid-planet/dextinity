@@ -10,11 +10,36 @@ import styles from "./ShortcutList.module.scss";
  */
 export type ShortcutListOwnerState = Record<string, never>;
 
-export interface ShortcutListItem {
-    /** The keys pressed, one key cap each, e.g. `["⌘", "K"]`; a sequence lists all of its keys, e.g. `["⌘", "X", "⌘", "V"]`. */
-    keys: string[];
+interface ShortcutListItemBase {
     /** What the shortcut does, e.g. "Open the command palette". */
     description: string;
+}
+
+interface ShortcutListItemWithShortcut extends ShortcutListItemBase {
+    /**
+     * The shortcut in the notation of `useKeyboardShortcut`, e.g. `"mod+k"`, shown for the platform as one key cap. Several shortcuts
+     * pressed one after another, or alternatives, are listed in order, e.g. `["mod+x", "mod+v"]`.
+     */
+    shortcut: string | string[];
+    keys?: never;
+}
+
+interface ShortcutListItemWithKeys extends ShortcutListItemBase {
+    /** Fixed key caps for what the notation doesn't cover, e.g. `["⇧", "Click"]` or `["Right-click"]`. */
+    keys: string[];
+    shortcut?: never;
+}
+
+/**
+ * One row of a `ShortcutList`: a shortcut, or fixed key caps, with what it does.
+ */
+export type ShortcutListItem = ShortcutListItemWithShortcut | ShortcutListItemWithKeys;
+
+function shortcutsOf(item: ShortcutListItem): string[] {
+    if (item.shortcut == null) {
+        return [];
+    }
+    return typeof item.shortcut === "string" ? [item.shortcut] : item.shortcut;
 }
 
 export interface ShortcutListLabels {
@@ -69,16 +94,19 @@ export const ShortcutList = forwardRef<HTMLTableElement, ShortcutListProps>(func
                 </tr>
             </thead>
             <tbody>
-                {shortcuts.map((shortcut) => (
-                    <tr key={`${shortcut.keys.join(" ")} ${shortcut.description}`}>
+                {shortcuts.map((item) => (
+                    <tr key={`${[...shortcutsOf(item), ...(item.keys ?? [])].join(" ")} ${item.description}`}>
                         <td>
                             <span {...keysProps}>
-                                {shortcut.keys.map((key, index) => (
+                                {shortcutsOf(item).map((shortcut, index) => (
+                                    <KeyboardShortcut key={index} shortcut={shortcut} />
+                                ))}
+                                {item.keys?.map((key, index) => (
                                     <KeyboardShortcut key={index}>{key}</KeyboardShortcut>
                                 ))}
                             </span>
                         </td>
-                        <td>{shortcut.description}</td>
+                        <td>{item.description}</td>
                     </tr>
                 ))}
             </tbody>

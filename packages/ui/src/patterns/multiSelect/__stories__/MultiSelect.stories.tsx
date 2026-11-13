@@ -5,11 +5,13 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 import { BulkActionBar } from "../../../components/bulkActionBar/BulkActionBar";
 import { Checkbox } from "../../../components/checkbox/Checkbox";
 import { Icon } from "../../../components/icon/Icon";
-import { formatShortcut, isApplePlatform } from "../../../components/keyboardShortcut/useKeyboardShortcut";
+import { formatShortcut } from "../../../components/keyboardShortcut/formatShortcut";
+import { useKeyboardShortcutPlatform } from "../../../components/keyboardShortcut/keyboardShortcutPlatform";
 import { useSelection } from "../../../components/selection/useSelection";
 import { StatusIndicator } from "../../../components/statusIndicator/StatusIndicator";
 import { ToastViewport } from "../../../components/toast/ToastViewport";
 import { useToasts } from "../../../components/toast/useToasts";
+import { storyModKey } from "../../../storybook/keyboardPlatformDecorator";
 import { type JobAd, jobAds as initialJobAds } from "../../../storybook/patterns/jobAds";
 import {
     PatternExample,
@@ -71,10 +73,10 @@ function MultiSelectExample() {
     );
 }
 
-const selectAllKeys = formatShortcut("mod+a").join(isApplePlatform() ? "" : "+");
-const mod = formatShortcut("mod+a")[0];
-
 function MultiSelectPage() {
+    const apple = useKeyboardShortcutPlatform() === "apple";
+    const selectAllKeys = formatShortcut("mod+a", apple).join(apple ? "" : "+");
+    const mod = formatShortcut("mod+a", apple)[0];
     return (
         <PatternPage>
             <PatternSection title="Example" description="Live: the checkbox selects, the action bar shows the count.">
@@ -102,8 +104,8 @@ function MultiSelectPage() {
             <PatternShortcuts
                 shortcuts={[
                     { keys: ["⇧", "Click"], description: "Select a range" },
-                    { keys: formatShortcut("mod+a"), description: "Select all visible items" },
-                    { keys: ["Esc"], description: "Clear the selection" },
+                    { shortcut: "mod+a", description: "Select all visible items" },
+                    { shortcut: "Escape", description: "Clear the selection" },
                 ]}
             />
             <PatternUses pages={["Selection & toggles", "Tables & paging", "Tree", "Menus & messages"]} />
@@ -131,8 +133,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-const modKey = isApplePlatform() ? "Meta" : "Control";
 
 /**
  * **Rules**
@@ -172,7 +172,7 @@ export const Keyboard: Story = {
     render: () => <MultiSelectPage />,
     play: async ({ canvas }) => {
         canvas.getByRole("checkbox", { name: "Select Frontend Developer" }).focus();
-        await userEvent.keyboard(`{${modKey}>}a{/${modKey}}`);
+        await userEvent.keyboard(`{${storyModKey()}>}a{/${storyModKey()}}`);
         await waitFor(() => expect(canvas.getByText("5 selected")).toBeVisible());
         await userEvent.keyboard("{Escape}");
         await expect(canvas.getByRole("checkbox", { name: "Select Frontend Developer" })).not.toBeChecked();

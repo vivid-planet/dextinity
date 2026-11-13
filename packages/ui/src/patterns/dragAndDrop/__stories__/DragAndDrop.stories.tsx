@@ -6,11 +6,13 @@ import { AssetThumbnail } from "../../../components/assetThumbnail/AssetThumbnai
 import { Block } from "../../../components/blockList/Block";
 import { BlockList } from "../../../components/blockList/BlockList";
 import { Icon } from "../../../components/icon/Icon";
-import { formatShortcut, isApplePlatform } from "../../../components/keyboardShortcut/useKeyboardShortcut";
+import { formatShortcut } from "../../../components/keyboardShortcut/formatShortcut";
+import { useKeyboardShortcutPlatform } from "../../../components/keyboardShortcut/keyboardShortcutPlatform";
 import { ToastViewport } from "../../../components/toast/ToastViewport";
 import { useToasts } from "../../../components/toast/useToasts";
 import { type TreeNode, TreeView, type TreeViewMove } from "../../../components/treeView/TreeView";
 import { useUndoToast } from "../../../components/undoToast/useUndoToast";
+import { storyModKey } from "../../../storybook/keyboardPlatformDecorator";
 import {
     PatternExample,
     PatternLegend,
@@ -162,10 +164,8 @@ function DragAndDropExample() {
     );
 }
 
-const cut = formatShortcut("mod+x");
-const paste = formatShortcut("mod+v");
-
 function DragAndDropPage() {
+    const apple = useKeyboardShortcutPlatform() === "apple";
     return (
         <PatternPage>
             <PatternSection
@@ -180,7 +180,7 @@ function DragAndDropPage() {
                         { title: "Page tree", description: "Move pages; a line shows where they land, a folder target stands out." },
                         {
                             title: "Finder",
-                            description: `Files and folders onto folders, also in the sidebar and path bar. Several with ${formatShortcut("mod+a")[0]}/⇧.`,
+                            description: `Files and folders onto folders, also in the sidebar and path bar. Several with ${formatShortcut("mod+a", apple)[0]}/⇧.`,
                         },
                         { title: "Blocks", description: "Order by the grip." },
                         { title: "Upload", description: "Files from the computer onto the list." },
@@ -204,8 +204,8 @@ function DragAndDropPage() {
                 title="Keyboard alternative"
                 description="Everything that can be dragged also works through the “Move to …” menu and the keyboard."
                 shortcuts={[
-                    { keys: [...cut, ...paste], description: "Cut and paste (page tree)" },
-                    { keys: ["↑", "↓"], description: "Move a block (on its grip)" },
+                    { shortcut: ["mod+x", "mod+v"], description: "Cut and paste (page tree)" },
+                    { shortcut: ["ArrowUp", "ArrowDown"], description: "Move a block (on its grip)" },
                     { keys: ["Right-click"], description: "Move to … (finder)" },
                 ]}
             />
@@ -234,8 +234,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const modKey = isApplePlatform() ? "Meta" : "Control";
-
 /**
  * **Rules**
  *
@@ -254,9 +252,9 @@ export const MoveInTreeWithKeyboard: Story = {
     play: async ({ canvas }) => {
         const tree = canvas.getByRole("tree", { name: "Pages" });
         await userEvent.click(within(tree).getByText("Imprint"));
-        await userEvent.keyboard(`{${modKey}>}x{/${modKey}}`);
+        await userEvent.keyboard(`{${storyModKey()}>}x{/${storyModKey()}}`);
         await userEvent.keyboard("{Home}");
-        await userEvent.keyboard(`{Shift>}{${modKey}>}v{/${modKey}}{/Shift}`);
+        await userEvent.keyboard(`{Shift>}{${storyModKey()}>}v{/${storyModKey()}}{/Shift}`);
         await waitFor(() => expect(canvas.getByText("“Imprint” moved after “Home”")).toBeVisible());
         const items = within(tree).getAllByRole("treeitem");
         await expect(items[1]).toHaveTextContent("Imprint");

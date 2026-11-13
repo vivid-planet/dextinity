@@ -4,6 +4,7 @@ import { type PropsWithChildren, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState, type TipTapTextBlockStyle } from "../createTipTapRichTextBlock";
+import { chooseMenuItem, closeMenu } from "./tipTapStoryInteractions";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -71,29 +72,27 @@ export const ApplyingAStyle: StoryObj<typeof ApplyingAStyleStory> = {
         await step("Editor is ready with text block style dropdown", async () => {
             await waitFor(
                 () => {
-                    const comboboxes = canvas.getAllByRole("combobox");
-                    expect(comboboxes).toHaveLength(2);
+                    expect(canvas.getByRole("button", { name: "Text type" })).toBeInTheDocument();
+                    expect(canvas.getByRole("button", { name: "Text style" })).toBeInTheDocument();
                 },
                 { timeout: 5000 },
             );
 
-            const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes[0]).toHaveTextContent("Paragraph");
-            expect(comboboxes[1]).toHaveTextContent("Default");
+            expect(canvas.getByRole("button", { name: "Text type" })).toHaveTextContent("Paragraph");
+            expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Default");
         });
 
         await step("Select text block style 'Intro Text'", async () => {
-            const comboboxes = canvas.getAllByRole("combobox");
-            await userEvent.click(comboboxes[1]);
+            await userEvent.click(canvas.getByRole("button", { name: "Text style" }));
 
             await waitFor(
                 () => {
-                    expect(within(document.body).getByRole("option", { name: "Intro Text" })).toBeInTheDocument();
+                    expect(within(document.body).getByRole("menuitemradio", { name: "Intro Text" })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
 
-            await userEvent.click(within(document.body).getByRole("option", { name: "Intro Text" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Intro Text");
 
             await waitFor(
                 () => {
@@ -156,7 +155,7 @@ export const StylesPerTextBlock: StoryObj<typeof StylesPerTextBlockStory> = {
         });
 
         await step("Select Heading 1", async () => {
-            const textBlockTypeSelect = canvas.getAllByRole("combobox")[0];
+            const textBlockTypeSelect = canvas.getByRole("button", { name: "Text type" });
             await userEvent.click(textBlockTypeSelect);
 
             await waitFor(
@@ -169,14 +168,14 @@ export const StylesPerTextBlock: StoryObj<typeof StylesPerTextBlockStory> = {
 
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[0]).toHaveTextContent("Heading 1");
+                    expect(canvas.getByRole("button", { name: "Text type" })).toHaveTextContent("Heading 1");
                 },
                 { timeout: 3000 },
             );
         });
 
         await step("Verify available styles for Heading 1: Chapter Heading, Large Heading, Highlight — but not Intro Text", async () => {
-            const textBlockStyleSelect = canvas.getAllByRole("combobox")[1];
+            const textBlockStyleSelect = canvas.getByRole("button", { name: "Text style" });
             await userEvent.click(textBlockStyleSelect);
 
             await waitFor(
@@ -196,7 +195,7 @@ export const StylesPerTextBlock: StoryObj<typeof StylesPerTextBlockStory> = {
 
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Chapter Heading");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Chapter Heading");
                 },
                 { timeout: 3000 },
             );
@@ -214,7 +213,7 @@ export const StylesPerTextBlock: StoryObj<typeof StylesPerTextBlockStory> = {
         });
 
         await step("Switch to Heading 2", async () => {
-            const textBlockTypeSelect = canvas.getAllByRole("combobox")[0];
+            const textBlockTypeSelect = canvas.getByRole("button", { name: "Text type" });
             await userEvent.click(textBlockTypeSelect);
 
             await waitFor(
@@ -227,7 +226,7 @@ export const StylesPerTextBlock: StoryObj<typeof StylesPerTextBlockStory> = {
 
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[0]).toHaveTextContent("Heading 2");
+                    expect(canvas.getByRole("button", { name: "Text type" })).toHaveTextContent("Heading 2");
                 },
                 { timeout: 3000 },
             );
@@ -236,7 +235,7 @@ export const StylesPerTextBlock: StoryObj<typeof StylesPerTextBlockStory> = {
         await step("Block style auto-resets to Default (Chapter Heading doesn't apply to heading-2)", async () => {
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Default");
                 },
                 { timeout: 3000 },
             );
@@ -291,32 +290,32 @@ export const TextBlockElement: StoryObj<typeof TextBlockElementStory> = {
         await step("A text block without styles disables the styling select", async () => {
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveAttribute("aria-disabled", "true");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveAttribute("data-disabled");
                 },
                 { timeout: 5000 },
             );
         });
 
         await step("Display renders through its own element", async () => {
-            await userEvent.click(canvas.getAllByRole("combobox")[0]);
-            await userEvent.click(within(document.body).getByRole("option", { name: "Display" }));
+            await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Display");
 
             await waitFor(
                 () => {
                     expect(canvas.getByRole("heading", { level: 1 })).toHaveStyle({ fontSize: "64px" });
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveAttribute("aria-disabled", "true");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveAttribute("data-disabled");
                 },
                 { timeout: 3000 },
             );
         });
 
         await step("Heading 1 offers its styles instead", async () => {
-            await userEvent.click(canvas.getAllByRole("combobox")[0]);
-            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 1" }));
+            await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 1");
 
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).not.toHaveAttribute("aria-disabled");
+                    expect(canvas.getByRole("button", { name: "Text style" })).not.toHaveAttribute("data-disabled");
                 },
                 { timeout: 3000 },
             );
@@ -355,69 +354,73 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
         await step("New content starts with the default text block's default style", async () => {
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Intro Text");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Intro Text");
                 },
                 { timeout: 5000 },
             );
         });
 
         await step("A text block with a default style offers no Default entry", async () => {
-            await userEvent.click(canvas.getAllByRole("combobox")[1]);
+            await userEvent.click(canvas.getByRole("button", { name: "Text style" }));
 
             await waitFor(
                 () => {
-                    expect(within(document.body).getByRole("option", { name: "Intro Text" })).toBeInTheDocument();
-                    expect(within(document.body).queryByRole("option", { name: "Default" })).toBeNull();
+                    expect(within(document.body).getByRole("menuitemradio", { name: "Intro Text" })).toBeInTheDocument();
+                    expect(within(document.body).queryByRole("menuitemradio", { name: "Default" })).toBeNull();
                 },
                 { timeout: 3000 },
             );
-            await userEvent.keyboard("{Escape}");
+            await closeMenu(userEvent);
         });
 
         await step("Switching to Heading 1 applies its own default style", async () => {
-            await userEvent.click(canvas.getAllByRole("combobox")[0]);
-            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 1" }));
+            await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 1");
 
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Large Heading");
                 },
                 { timeout: 3000 },
             );
         });
 
         await step("Heading 2 shares the styles but keeps the Default entry, having no default style", async () => {
-            await userEvent.click(canvas.getAllByRole("combobox")[0]);
-            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+            await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 2");
 
-            // "Large Heading" is offered by both, so switching keeps it instead of resetting.
+            // "Large Heading" is offered by both, so switching keeps it instead of resetting. The switch is applied once the menu has
+            // closed and moves the focus into the editor, which would close a menu opened before it.
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
+                    expect(canvas.getByRole("button", { name: "Text type" })).toHaveTextContent("Heading 2");
+                    expect(within(document.body).queryByRole("menu")).toBeNull();
+                    expect(canvas.getByRole("textbox")).toHaveFocus();
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Large Heading");
                 },
                 { timeout: 3000 },
             );
 
-            await userEvent.click(canvas.getAllByRole("combobox")[1]);
+            await userEvent.click(canvas.getByRole("button", { name: "Text style" }));
             await waitFor(
                 () => {
-                    expect(within(document.body).getByRole("option", { name: "Default" })).toBeInTheDocument();
+                    expect(within(document.body).getByRole("menuitemradio", { name: "Default" })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
-            await userEvent.click(within(document.body).getByRole("option", { name: "Default" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Default");
 
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Default");
                 },
                 { timeout: 3000 },
             );
         });
 
         await step("The list shortcut hands the paragraph to the list's default style and back", async () => {
-            await userEvent.click(canvas.getAllByRole("combobox")[0]);
-            await userEvent.click(within(document.body).getByRole("option", { name: "Paragraph" }));
+            await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Paragraph");
 
             const editor = canvas.getByRole("textbox");
             await userEvent.click(editor);
@@ -425,7 +428,7 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
 
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Intro Text");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Intro Text");
                 },
                 { timeout: 3000 },
             );
@@ -437,7 +440,7 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
             await waitFor(
                 () => {
                     expect(editor.querySelector("ul")).toBeTruthy();
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("List Large");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("List Large");
                 },
                 { timeout: 3000 },
             );
@@ -447,7 +450,7 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
             await waitFor(
                 () => {
                     expect(editor.querySelector("ul")).toBeFalsy();
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Intro Text");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Intro Text");
                 },
                 { timeout: 3000 },
             );
@@ -464,7 +467,7 @@ export const DefaultTextBlockStyle: StoryObj<typeof DefaultTextBlockStyleStory> 
             await waitFor(
                 () => {
                     expect(canvas.getByRole("heading", { level: 1 })).toHaveAttribute("data-text-block-style", "large-heading");
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Large Heading");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Large Heading");
                 },
                 { timeout: 3000 },
             );
@@ -498,7 +501,7 @@ export const TextBlockStyleSelectDisabledInList: StoryObj<typeof TextBlockStyleS
         await step("A paragraph offers its styles", async () => {
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).not.toHaveAttribute("aria-disabled");
+                    expect(canvas.getByRole("button", { name: "Text style" })).not.toHaveAttribute("data-disabled");
                 },
                 { timeout: 5000 },
             );
@@ -516,8 +519,8 @@ export const TextBlockStyleSelectDisabledInList: StoryObj<typeof TextBlockStyleS
             await waitFor(
                 () => {
                     expect(editor.querySelector("ul")).toBeTruthy();
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveAttribute("aria-disabled", "true");
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveAttribute("data-disabled");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Default");
                 },
                 { timeout: 3000 },
             );
@@ -551,33 +554,33 @@ export const TextBlockStyleSelectDisabledInHeading: StoryObj<typeof TextBlockSty
         await step("A paragraph offers its styles", async () => {
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).not.toHaveAttribute("aria-disabled");
+                    expect(canvas.getByRole("button", { name: "Text style" })).not.toHaveAttribute("data-disabled");
                 },
                 { timeout: 5000 },
             );
         });
 
         await step("A heading without styles keeps the styling select, disabled", async () => {
-            await userEvent.click(canvas.getAllByRole("combobox")[0]);
-            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 1" }));
+            await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 1");
 
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[0]).toHaveTextContent("Heading 1");
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveAttribute("aria-disabled", "true");
-                    expect(canvas.getAllByRole("combobox")[1]).toHaveTextContent("Default");
+                    expect(canvas.getByRole("button", { name: "Text type" })).toHaveTextContent("Heading 1");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveAttribute("data-disabled");
+                    expect(canvas.getByRole("button", { name: "Text style" })).toHaveTextContent("Default");
                 },
                 { timeout: 3000 },
             );
         });
 
         await step("Back in a paragraph, the styling select is enabled again", async () => {
-            await userEvent.click(canvas.getAllByRole("combobox")[0]);
-            await userEvent.click(within(document.body).getByRole("option", { name: "Paragraph" }));
+            await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Paragraph");
 
             await waitFor(
                 () => {
-                    expect(canvas.getAllByRole("combobox")[1]).not.toHaveAttribute("aria-disabled");
+                    expect(canvas.getByRole("button", { name: "Text style" })).not.toHaveAttribute("data-disabled");
                 },
                 { timeout: 3000 },
             );

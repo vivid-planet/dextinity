@@ -1,78 +1,152 @@
 import { gql, useQuery } from "@apollo/client";
-import { useBufferedRowCount, useDataGridRemote, usePersistentColumnState } from "@dextinity/admin";
-import { type BlockInterface, createBlockSkeleton, useContentScope } from "@dextinity/cms-admin";
-import { Box } from "@mui/material";
-import { DataGridPro } from "@mui/x-data-grid-pro";
+import {
+    BlockAdminComponentSection,
+    type BlockInterface,
+    createBlockSkeleton,
+    toGqlSort,
+    useContentScope,
+    useDataGridLabels,
+    useRemoteListPagination,
+} from "@dextinity/cms-admin";
+import { Button, DataGrid, type DataGridColumn, type DataGridSort, FilterBar, Typography } from "@dextinity/ui";
 import type { NewsListBlockData, NewsListBlockInput } from "@src/blocks.generated";
+import type { GQLNewsSortField } from "@src/graphql.generated";
+import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
+import { useDebounce } from "use-debounce";
 
-import type { GQLNewsListBlockQuery, GQLNewsListBlockQueryVariables } from "./NewsListBlock.generated";
+import type { GQLNewsListBlockNewsFragment, GQLNewsListBlockQuery, GQLNewsListBlockQueryVariables } from "./NewsListBlock.generated";
 
 type State = {
     ids: string[];
 };
 
+const newsListBlockQuery = gql`
+    query NewsListBlock($scope: NewsContentScopeInput!, $search: String, $sort: [NewsSort!], $offset: Int!, $limit: Int!) {
+        newsList(scope: $scope, search: $search, sort: $sort, offset: $offset, limit: $limit) {
+            nodes {
+                id
+                ...NewsListBlockNews
+            }
+            totalCount
+        }
+    }
+    fragment NewsListBlockNews on News {
+        title
+    }
+`;
+
 export const NewsListBlock: BlockInterface<NewsListBlockData, State, NewsListBlockInput> = {
     ...createBlockSkeleton(),
     name: "NewsList",
     displayName: <FormattedMessage id="blocks.newsList.name" defaultMessage="News List" />,
+    iconName: "list",
+    description: <FormattedMessage id="blocks.newsList.description" defaultMessage="Selected news articles" />,
     defaultValues: () => ({ ids: [] }),
     AdminComponent: ({ state, updateState }) => {
         const { scope } = useContentScope();
-        const dataGridProps = {
-            ...useDataGridRemote(),
-            ...usePersistentColumnState("NewsListBlock"),
-        };
         const intl = useIntl();
+        const { labels: dataGridLabels } = useDataGridLabels();
+        const [searchInput, setSearchInput] = useState("");
+        const [search] = useDebounce(searchInput, 300);
+        const [sort, setSort] = useState<DataGridSort | undefined>();
+        const [page, setPage] = useState(1);
+        const [pageSize, setPageSize] = useState(10);
 
-        const { data, loading, error } = useQuery<GQLNewsListBlockQuery, GQLNewsListBlockQueryVariables>(
-            gql`
-                query NewsListBlock($scope: NewsContentScopeInput!) {
-                    newsList(scope: $scope) {
-                        nodes {
-                            id
-                            ...NewsListBlockNews
-                        }
-                        totalCount
-                    }
-                }
-                fragment NewsListBlockNews on News {
-                    title
-                }
-            `,
-            { variables: { scope } },
+        const { data, previousData, loading, error } = useQuery<GQLNewsListBlockQuery, GQLNewsListBlockQueryVariables>(newsListBlockQuery, {
+            variables: {
+                scope,
+                search: search || undefined,
+                sort: toGqlSort<GQLNewsSortField>(sort),
+                offset: (page - 1) * pageSize,
+                limit: pageSize,
+            },
+        });
+        const newsList = (data ?? previousData)?.newsList;
+        const pagination = useRemoteListPagination(
+            {
+                page,
+                pageSize,
+                setPage,
+                setPageSize: (newPageSize) => {
+                    setPageSize(newPageSize);
+                    setPage(1);
+                },
+            },
+            newsList?.totalCount,
         );
-        const rowCount = useBufferedRowCount(data?.newsList.totalCount);
 
         if (error) {
             throw error;
         }
 
-        const rows = data?.newsList.nodes ?? [];
+        const columns: DataGridColumn<GQLNewsListBlockNewsFragment & { id: string }>[] = [
+            {
+                key: "title",
+                header: intl.formatMessage({ id: "news.title", defaultMessage: "Title" }),
+                render: (news) => news.title,
+                sortable: true,
+            },
+        ];
 
         return (
-            <Box sx={{ height: 500 }}>
-                <DataGridPro
-                    {...dataGridProps}
-                    rows={rows}
-                    rowCount={rowCount}
-                    columns={[
-                        {
-                            field: "title",
-                            headerName: intl.formatMessage({ id: "news.title", defaultMessage: "Title" }),
-                            width: 150,
-                        },
-                    ]}
-                    loading={loading}
-                    checkboxSelection
-                    keepNonExistentRowsSelected
-                    rowSelectionModel={{ type: "include", ids: new Set(state.ids) }}
-                    onRowSelectionModelChange={(newSelection) => {
-                        updateState({ ids: Array.from(newSelection.ids) as string[] });
+            <>
+                <BlockAdminComponentSection variant="dense">
+                    <FilterBar
+                        searchValue={searchInput}
+                        onSearchChange={(value) => {
+                            setSearchInput(value);
+                            setPage(1);
+                        }}
+                        searchShortcut={false}
+                        resultCount={newsList?.totalCount}
+                        labels={{
+                            search: intl.formatMessage({ id: "blocks.newsList.search", defaultMessage: "Search" }),
+                            searchPlaceholder: intl.formatMessage({ id: "blocks.newsList.searchPlaceholder", defaultMessage: "Search news" }),
+                            filters: intl.formatMessage({ id: "blocks.newsList.filters", defaultMessage: "Filters" }),
+                            resultCount: (count) =>
+                                intl.formatMessage(
+                                    { id: "blocks.newsList.resultCount", defaultMessage: "{count, plural, one {# news} other {# news}}" },
+                                    { count },
+                                ),
+                        }}
+                    />
+                </BlockAdminComponentSection>
+                <DataGrid
+                    aria-label={intl.formatMessage({ id: "blocks.newsList.news", defaultMessage: "News" })}
+                    columns={columns}
+                    rows={newsList?.nodes ?? []}
+                    getRowId={(news) => news.id}
+                    selectable
+                    selectedIds={state.ids}
+                    onSelectionChange={(ids) => updateState({ ids })}
+                    clearSelectionOnEscape={false}
+                    sort={sort}
+                    onSortChange={(newSort) => {
+                        setSort(newSort);
+                        setPage(1);
                     }}
-                    disableRowSelectionExcludeModel
+                    loading={loading && !newsList}
+                    pagination={pagination}
+                    labels={dataGridLabels}
+                    footer={
+                        state.ids.length > 0 ? (
+                            <>
+                                <Typography variant="small" element="span">
+                                    <FormattedMessage
+                                        id="blocks.newsList.selectedCount"
+                                        defaultMessage="{count, plural, one {# news selected} other {# news selected}}"
+                                        values={{ count: state.ids.length }}
+                                    />
+                                </Typography>
+                                <Button variant="text" color="secondary" size="small" onClick={() => updateState({ ids: [] })}>
+                                    <FormattedMessage id="blocks.newsList.clearSelection" defaultMessage="Clear selection" />
+                                </Button>
+                            </>
+                        ) : undefined
+                    }
                 />
-            </Box>
+            </>
         );
     },
 };

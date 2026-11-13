@@ -39,11 +39,11 @@ export const BillboardTeaserBlock = createCompositeBlock(
             },
             overlay: {
                 block: createCompositeBlockSelectField<BillboardTeaserBlockData["overlay"]>({
+                    label: <FormattedMessage id="billboardTeaserBlock.overlay" defaultMessage="Overlay" />,
                     defaultValue: 50,
                     options: overlayOptions,
                     required: true,
                 }),
-                title: <FormattedMessage id="billboardTeaserBlock.overlay" defaultMessage="Overlay" />,
                 hiddenInSubroute: true,
             },
             callToActionList: {
@@ -54,6 +54,8 @@ export const BillboardTeaserBlock = createCompositeBlock(
     },
     (block) => {
         block.category = BlockCategory.Teaser;
+        block.iconName = "format-landscape";
+        block.description = <FormattedMessage id="billboardTeaserBlock.description" defaultMessage="Large image with title, text and link" />;
         return block;
     },
 );

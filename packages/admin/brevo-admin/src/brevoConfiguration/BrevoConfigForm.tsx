@@ -1,32 +1,18 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
-import {
-    Alert,
-    Field,
-    FillSpace,
-    FinalForm,
-    FinalFormAutocomplete,
-    FinalFormSaveButton,
-    type FinalFormSubmitEvent,
-    Loading,
-    LocalErrorScopeApolloContext,
-    MainContent,
-    NumberField,
-    TextField,
-    Toolbar,
-    ToolbarActions,
-    ToolbarTitleItem,
-    Tooltip,
-    useFormApiRef,
-    useStackSwitchApi,
-} from "@dextinity/admin";
-import { Info } from "@dextinity/admin-icons";
-import { type ContentScope, ContentScopeIndicator, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
-import type { FormApi } from "final-form";
-import { type ReactElement, type ReactNode, useMemo } from "react";
-import { FormattedMessage } from "react-intl";
+import { useApolloClient, useQuery } from "@apollo/client";
+import { LocalErrorScopeApolloContext, RouterPrompt } from "@dextinity/admin";
+import { type ContentScope, resolveHasSaveConflict, useFormSaveConflict } from "@dextinity/cms-admin";
+import { Banner, Button, EditLayout, Icon, PageHeader, Panel, Tooltip, useKeyboardShortcut } from "@dextinity/ui";
+import { focusOnError, InputField, NumberField, SelectField, useHasUnsavedChanges } from "@dextinity/ui-react-final-form";
+import { FORM_ERROR, type FormApi, type SubmissionErrors } from "final-form";
+import { type ReactElement, type ReactNode, useMemo, useRef } from "react";
+import { Form, useForm, useFormState } from "react-final-form";
+import { useIntl } from "react-intl";
 
+import { BrevoFormSaveState } from "../common/form/BrevoFormSaveState";
+import { FormSection } from "../common/form/FormSection";
 import {
     brevoConfigFormQuery,
+    brevoConfigUpdatedAtQuery,
     createBrevoConfigMutation,
     doubleOptInTemplatesSelectQuery,
     sendersSelectQuery,
@@ -35,6 +21,8 @@ import {
 import type {
     GQLBrevoConfigFormQuery,
     GQLBrevoConfigFormQueryVariables,
+    GQLBrevoConfigUpdatedAtQuery,
+    GQLBrevoConfigUpdatedAtQueryVariables,
     GQLCreateBrevoConfigMutation,
     GQLCreateBrevoConfigMutationVariables,
     GQLDoubleOptInTemplatesSelectQuery,
@@ -44,124 +32,66 @@ import type {
     GQLUpdateBrevoConfigMutation,
     GQLUpdateBrevoConfigMutationVariables,
 } from "./BrevoConfigForm.gql.generated";
+import { EditorContent, HeaderActions } from "./BrevoConfigForm.sc";
 
-interface Option {
-    value: string;
-    label: string;
-}
-type FormValues = {
-    sender: Option;
-    doubleOptInTemplate: Option;
-    folderId: number;
+interface FormValues {
+    senderMail: string | null;
+    doubleOptInTemplateId: string | null;
+    folderId: number | null;
     allowedRedirectionUrl: string;
     unsubscriptionPageId: string;
-};
+}
 
 interface FormProps {
     scope: ContentScope;
+    scopeLabel: string;
 }
 
-function validateUrl(value: string): ReactNode | undefined {
-    const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d{1,5})?(\/[^\s]*)?$/;
-    if (!urlPattern.test(value)) {
-        return <FormattedMessage id="dextinity.brevoConfig.allowedRedirectionUrl.validationError" defaultMessage="Please enter a valid URL." />;
-    }
-    return undefined;
-}
+const urlPattern = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d{1,5})?(\/[^\s]*)?$/;
+const unsubscriptionPageIdPattern = /^[a-zA-Z0-9]{24}$/;
+const formDecorators = [focusOnError];
 
-export function BrevoConfigForm({ scope }: FormProps): ReactElement {
+export function BrevoConfigForm({ scope, scopeLabel }: FormProps): ReactElement {
+    const intl = useIntl();
     const client = useApolloClient();
-    const formApiRef = useFormApiRef<FormValues>();
-    const stackSwitchApi = useStackSwitchApi();
+    const formApiRef = useRef<FormApi<FormValues>>(undefined);
 
     const { data, error, loading, refetch } = useQuery<GQLBrevoConfigFormQuery, GQLBrevoConfigFormQueryVariables>(brevoConfigFormQuery, {
         variables: { scope },
     });
-
-    const mode = data?.brevoConfig?.id ? "edit" : "add";
-
-    const {
-        data: sendersData,
-        error: senderError,
-        loading: senderLoading,
-    } = useQuery<GQLSendersSelectQuery, GQLSendersSelectQueryVariables>(sendersSelectQuery, {
+    const senders = useQuery<GQLSendersSelectQuery, GQLSendersSelectQueryVariables>(sendersSelectQuery, {
         variables: { scope },
         context: LocalErrorScopeApolloContext,
     });
+    const doubleOptInTemplates = useQuery<GQLDoubleOptInTemplatesSelectQuery, GQLDoubleOptInTemplatesSelectQueryVariables>(
+        doubleOptInTemplatesSelectQuery,
+        { variables: { scope }, context: LocalErrorScopeApolloContext },
+    );
 
-    const {
-        data: doubleOptInTemplatesData,
-        error: doubleOptInTemplatesError,
-        loading: doubleOptInTemplatesLoading,
-    } = useQuery<GQLDoubleOptInTemplatesSelectQuery, GQLDoubleOptInTemplatesSelectQueryVariables>(doubleOptInTemplatesSelectQuery, {
-        variables: { scope },
-        context: LocalErrorScopeApolloContext,
-    });
+    const brevoConfig = data?.brevoConfig;
 
-    const senderOptions =
-        sendersData?.brevoSenders?.map((sender) => ({
-            value: sender.email,
-            label: `${sender.name} (${sender.email})`,
-        })) ?? [];
-
-    const doubleOptInTemplateOptions =
-        doubleOptInTemplatesData?.brevoDoubleOptInTemplates?.map((doubleOptInTemplate) => ({
-            value: doubleOptInTemplate.id,
-            label: `${doubleOptInTemplate.id}: ${doubleOptInTemplate.name}`,
-        })) ?? [];
-
-    const initialValues = useMemo<Partial<FormValues>>(() => {
-        const sender = sendersData?.brevoSenders?.find((s) => s.email === data?.brevoConfig?.senderMail && s.name === data?.brevoConfig?.senderName);
-
-        const doubleOptInTemplate = doubleOptInTemplatesData?.brevoDoubleOptInTemplates?.find(
-            (template) => template.id === data?.brevoConfig?.doubleOptInTemplateId?.toString(),
-        );
-
-        return {
-            sender: sender
-                ? {
-                      value: sender.email,
-                      label: `${sender.name} (${sender.email})`,
-                  }
-                : undefined,
-
-            doubleOptInTemplate: doubleOptInTemplate
-                ? {
-                      value: doubleOptInTemplate?.id,
-                      label: `${doubleOptInTemplate?.id}: ${doubleOptInTemplate?.name}`,
-                  }
-                : undefined,
-            allowedRedirectionUrl: data?.brevoConfig?.allowedRedirectionUrl ?? "",
-            folderId: data?.brevoConfig?.folderId ?? 1,
-            unsubscriptionPageId: data?.brevoConfig?.unsubscriptionPageId ?? "",
-        };
-    }, [
-        sendersData?.brevoSenders,
-        doubleOptInTemplatesData?.brevoDoubleOptInTemplates,
-        data?.brevoConfig?.allowedRedirectionUrl,
-        data?.brevoConfig?.folderId,
-        data?.brevoConfig?.unsubscriptionPageId,
-        data?.brevoConfig?.senderMail,
-        data?.brevoConfig?.senderName,
-        data?.brevoConfig?.doubleOptInTemplateId,
-    ]);
+    const initialValues = useMemo<FormValues>(
+        () => ({
+            senderMail: brevoConfig?.senderMail ?? null,
+            doubleOptInTemplateId: brevoConfig?.doubleOptInTemplateId != null ? String(brevoConfig.doubleOptInTemplateId) : null,
+            folderId: brevoConfig?.folderId ?? 1,
+            allowedRedirectionUrl: brevoConfig?.allowedRedirectionUrl ?? "",
+            unsubscriptionPageId: brevoConfig?.unsubscriptionPageId ?? "",
+        }),
+        [brevoConfig],
+    );
 
     const saveConflict = useFormSaveConflict({
         checkConflict: async () => {
-            const query = gql`
-                query ($scope: EmailCampaignContentScopeInput!) {
-                    brevoConfig(scope: $scope) {
-                        updatedAt
-                    }
-                }
-            `;
-            const { data } = await client.query({
-                query,
+            if (!brevoConfig) {
+                return false;
+            }
+            const { data: latest } = await client.query<GQLBrevoConfigUpdatedAtQuery, GQLBrevoConfigUpdatedAtQueryVariables>({
+                query: brevoConfigUpdatedAtQuery,
                 variables: { scope },
                 fetchPolicy: "no-cache",
             });
-
-            return resolveHasSaveConflict(data?.brevoConfig?.updatedAt, data.updatedAt);
+            return resolveHasSaveConflict(brevoConfig.updatedAt, latest.brevoConfig?.updatedAt);
         },
         formApiRef,
         loadLatestVersion: async () => {
@@ -169,178 +99,286 @@ export function BrevoConfigForm({ scope }: FormProps): ReactElement {
         },
     });
 
-    const handleSubmit = async (state: FormValues, form: FormApi<FormValues>, event: FinalFormSubmitEvent) => {
-        if (await saveConflict.checkForConflicts()) {
-            throw new Error("Conflicts detected");
-        }
-
-        const sender = sendersData?.brevoSenders?.find((s) => s.email === state.sender.value);
-
-        if (!sender || !state.doubleOptInTemplate || !state.allowedRedirectionUrl || !state.unsubscriptionPageId) {
-            throw new Error("Not all required fields are set");
-        }
-
-        const output = {
-            senderName: sender?.name,
-            senderMail: sender?.email,
-            doubleOptInTemplateId: Number(state.doubleOptInTemplate.value),
-            folderId: state.folderId ?? 1,
-            allowedRedirectionUrl: state?.allowedRedirectionUrl ?? "",
-            unsubscriptionPageId: state.unsubscriptionPageId,
-        };
-
-        if (mode === "edit") {
-            if (!data?.brevoConfig?.id) {
-                throw new Error("Missing id in edit mode");
-            }
-            await client.mutate<GQLUpdateBrevoConfigMutation, GQLUpdateBrevoConfigMutationVariables>({
-                mutation: updateBrevoConfigMutation,
-                variables: { id: data?.brevoConfig?.id, input: output, lastUpdatedAt: data?.brevoConfig?.updatedAt },
-            });
-        } else {
-            const { data: mutationResponse } = await client.mutate<GQLCreateBrevoConfigMutation, GQLCreateBrevoConfigMutationVariables>({
-                mutation: createBrevoConfigMutation,
-                variables: {
-                    scope,
-                    input: output,
-                },
-            });
-            if (!event.navigatingBack) {
-                const id = mutationResponse?.createBrevoConfig.id;
-                if (id) {
-                    setTimeout(() => {
-                        stackSwitchApi.activatePage("edit", id);
-                    });
-                }
-            }
-        }
-    };
-
     if (error) {
         throw error;
     }
 
-    if (loading || senderLoading || doubleOptInTemplatesLoading) {
-        return <Loading behavior="fillPageHeight" />;
-    }
-
-    if (senderError || doubleOptInTemplatesError) {
+    if (loading && !data) {
         return (
-            <MainContent>
-                <Alert
-                    severity="error"
-                    title={<FormattedMessage id="dextinity.brevoConfig.brevoRequestFailed.title" defaultMessage="Couldn't load data from Brevo" />}
-                >
-                    <FormattedMessage
-                        id="dextinity.brevoConfig.brevoRequestFailed.description"
-                        defaultMessage="Make sure a valid Brevo API key is configured and the API's IP address is authorized in Brevo."
-                    />
-                </Alert>
-            </MainContent>
+            <EditLayout header={<BrevoConfigHeader scopeLabel={scopeLabel} />} loading>
+                {null}
+            </EditLayout>
         );
     }
 
-    const validateUnsubscriptionPageId = (value: string) => {
-        const validUnsubscriptionPageId = /^[a-zA-Z0-9]{24}$/;
-        if (!validUnsubscriptionPageId.test(value)) {
-            return (
-                <FormattedMessage id="dextinity.brevoConfig.unsubscriptionPageId.validation" defaultMessage="Must be a 24-digit alphanumeric ID" />
-            );
+    const save = async (values: FormValues): Promise<SubmissionErrors | undefined> => {
+        if (await saveConflict.checkForConflicts()) {
+            return {
+                [FORM_ERROR]: intl.formatMessage({
+                    id: "dextinity.brevoConfig.saveConflict",
+                    defaultMessage: "Someone else changed the config in the meantime",
+                }),
+            };
         }
-        return undefined;
+        const sender = senders.data?.brevoSenders?.find((candidate) => candidate.email === values.senderMail);
+        if (!sender || values.doubleOptInTemplateId == null) {
+            return undefined;
+        }
+        const input = {
+            senderName: sender.name,
+            senderMail: sender.email,
+            doubleOptInTemplateId: Number(values.doubleOptInTemplateId),
+            folderId: values.folderId ?? 1,
+            allowedRedirectionUrl: values.allowedRedirectionUrl,
+            unsubscriptionPageId: values.unsubscriptionPageId,
+        };
+        try {
+            if (brevoConfig) {
+                await client.mutate<GQLUpdateBrevoConfigMutation, GQLUpdateBrevoConfigMutationVariables>({
+                    mutation: updateBrevoConfigMutation,
+                    variables: { id: brevoConfig.id, input, lastUpdatedAt: brevoConfig.updatedAt },
+                    context: LocalErrorScopeApolloContext,
+                });
+            } else {
+                await client.mutate<GQLCreateBrevoConfigMutation, GQLCreateBrevoConfigMutationVariables>({
+                    mutation: createBrevoConfigMutation,
+                    variables: { scope, input },
+                    context: LocalErrorScopeApolloContext,
+                    refetchQueries: ["BrevoConfigForm"],
+                    awaitRefetchQueries: true,
+                });
+            }
+            return undefined;
+        } catch (saveError) {
+            return {
+                [FORM_ERROR]: intl.formatMessage(
+                    { id: "dextinity.brevoConfig.saveFailed", defaultMessage: "Saving failed: {reason}" },
+                    { reason: saveError instanceof Error ? saveError.message : String(saveError) },
+                ),
+            };
+        }
     };
 
     return (
-        <FinalForm<FormValues> apiRef={formApiRef} onSubmit={handleSubmit} mode={mode} initialValues={initialValues}>
-            {({ values }) => {
+        <Form<FormValues> onSubmit={save} initialValues={initialValues} decorators={formDecorators}>
+            {({ handleSubmit, form }) => {
+                formApiRef.current = form;
                 return (
-                    <>
+                    <form
+                        onSubmit={handleSubmit}
+                        noValidate
+                        aria-label={intl.formatMessage({ id: "dextinity.brevoConfig.title", defaultMessage: "Brevo config" })}
+                    >
                         {saveConflict.dialogs}
-                        <Toolbar scopeIndicator={<ContentScopeIndicator />}>
-                            <ToolbarTitleItem>
-                                <FormattedMessage id="dextinity.brevoConfig.title" defaultMessage="Brevo config" />
-                            </ToolbarTitleItem>
-                            <FillSpace />
-                            <ToolbarActions>
-                                <FinalFormSaveButton hasConflict={saveConflict.hasConflict} />
-                            </ToolbarActions>
-                        </Toolbar>
-                        <MainContent>
-                            <Field
-                                component={FinalFormAutocomplete}
-                                getOptionLabel={(option: Option) => option.label}
-                                isOptionEqualToValue={(option: Option, value: Option) => option.value === value.value}
-                                options={senderOptions}
-                                name="sender"
-                                label={<FormattedMessage id="dextinity.brevoConfig.sender" defaultMessage="Sender" />}
-                                fullWidth
-                                required
-                            />
-                            <Field
-                                component={FinalFormAutocomplete}
-                                getOptionLabel={(option: Option) => option.label}
-                                isOptionEqualToValue={(option: Option, value: Option) => option.value === value.value}
-                                options={doubleOptInTemplateOptions}
-                                name="doubleOptInTemplate"
-                                label={<FormattedMessage id="dextinity.brevoConfig.doubleOptInTemplate" defaultMessage="Double Opt-in template id" />}
-                                fullWidth
-                                required
-                            />
-                            <NumberField
-                                name="folderId"
-                                defaultValue={1}
-                                label={
-                                    <>
-                                        <FormattedMessage id="dextinity.brevoConfig.folderId" defaultMessage="Folder ID" />
-                                        <Tooltip
-                                            title={
-                                                <FormattedMessage
-                                                    id="dextinity.brevoConfig.folderId.info"
-                                                    defaultMessage="By default, the folder ID should be set to 1 unless you have specifically configured another folder in Brevo."
-                                                />
-                                            }
-                                            sx={{ marginLeft: "5px" }}
-                                        >
-                                            <Info />
-                                        </Tooltip>
-                                    </>
-                                }
-                                fullWidth
-                                required
-                            />
-                            <TextField
-                                required
-                                fullWidth
-                                name="allowedRedirectionUrl"
-                                label={
-                                    <>
-                                        <FormattedMessage id="dextinity.brevoConfig.allowedRedirectionUrl" defaultMessage="Allowed redirection URL" />
-                                        <Tooltip
-                                            title={
-                                                <FormattedMessage
-                                                    id="dextinity.brevoConfig.allowedRedirectionUrl.info"
-                                                    defaultMessage="Defines the schema of a valid redirection URL that is set when creating or importing contacts."
-                                                />
-                                            }
-                                            sx={{ marginLeft: "5px" }}
-                                        >
-                                            <Info />
-                                        </Tooltip>
-                                    </>
-                                }
-                                validate={validateUrl}
-                            />
-                            <TextField
-                                fullWidth
-                                name="unsubscriptionPageId"
-                                required
-                                label={<FormattedMessage id="dextinity.brevoConfig.unsubscriptionPageId" defaultMessage="Unsubscription Page ID" />}
-                                validate={validateUnsubscriptionPageId}
-                            />
-                        </MainContent>
-                    </>
+                        <BrevoConfigFormContent
+                            scopeLabel={scopeLabel}
+                            senders={senders.data?.brevoSenders ?? []}
+                            sendersLoading={senders.loading}
+                            sendersFailed={senders.error != null}
+                            doubleOptInTemplates={doubleOptInTemplates.data?.brevoDoubleOptInTemplates ?? []}
+                            doubleOptInTemplatesLoading={doubleOptInTemplates.loading}
+                            doubleOptInTemplatesFailed={doubleOptInTemplates.error != null}
+                            hasConflict={saveConflict.hasConflict}
+                        />
+                    </form>
                 );
             }}
-        </FinalForm>
+        </Form>
+    );
+}
+
+function BrevoConfigHeader({ scopeLabel, actions }: { scopeLabel: string; actions?: ReactNode }) {
+    const intl = useIntl();
+    return (
+        <PageHeader
+            eyebrow={scopeLabel}
+            title={intl.formatMessage({ id: "dextinity.brevoConfig.title", defaultMessage: "Brevo config" })}
+            subtitle={intl.formatMessage({
+                id: "dextinity.brevoConfig.subtitle",
+                defaultMessage: "Sender, double opt-in and unsubscription of the newsletter in this scope",
+            })}
+            actions={actions}
+        />
+    );
+}
+
+interface BrevoConfigFormContentProps {
+    scopeLabel: string;
+    senders: NonNullable<GQLSendersSelectQuery["brevoSenders"]>;
+    sendersLoading: boolean;
+    sendersFailed: boolean;
+    doubleOptInTemplates: NonNullable<GQLDoubleOptInTemplatesSelectQuery["brevoDoubleOptInTemplates"]>;
+    doubleOptInTemplatesLoading: boolean;
+    doubleOptInTemplatesFailed: boolean;
+    hasConflict: boolean;
+}
+
+function BrevoConfigFormContent({
+    scopeLabel,
+    senders,
+    sendersLoading,
+    sendersFailed,
+    doubleOptInTemplates,
+    doubleOptInTemplatesLoading,
+    doubleOptInTemplatesFailed,
+    hasConflict,
+}: BrevoConfigFormContentProps) {
+    const intl = useIntl();
+    const form = useForm<FormValues>();
+    const hasUnsavedChanges = useHasUnsavedChanges();
+    const { submitting, submitError } = useFormState({ subscription: { submitting: true, submitError: true } });
+
+    useKeyboardShortcut("mod+s", () => void form.submit(), { allowInEditable: true });
+    const requiredMessage = intl.formatMessage({ id: "dextinity.brevoConfig.required", defaultMessage: "Required" });
+
+    const submitAndReportSuccess = async () => {
+        await form.submit();
+        const { hasValidationErrors, hasSubmitErrors } = form.getState();
+        return !hasValidationErrors && !hasSubmitErrors;
+    };
+
+    return (
+        <RouterPrompt
+            message={() =>
+                hasUnsavedChanges
+                    ? intl.formatMessage({ id: "dextinity.brevoConfig.unsavedChanges", defaultMessage: "Do you want to save your changes?" })
+                    : true
+            }
+            saveAction={submitAndReportSuccess}
+            resetAction={() => form.reset()}
+        >
+            <EditLayout
+                header={
+                    <BrevoConfigHeader
+                        scopeLabel={scopeLabel}
+                        actions={
+                            <HeaderActions>
+                                <BrevoFormSaveState />
+                                <Tooltip
+                                    content={intl.formatMessage({ id: "dextinity.brevoConfig.saveTooltip", defaultMessage: "Saves the config" })}
+                                    shortcut="mod+s"
+                                >
+                                    <Button
+                                        type="submit"
+                                        startIcon={<Icon name="check" />}
+                                        loading={submitting}
+                                        disabled={!hasUnsavedChanges || hasConflict}
+                                    >
+                                        {intl.formatMessage({ id: "dextinity.brevoConfig.save", defaultMessage: "Save" })}
+                                    </Button>
+                                </Tooltip>
+                            </HeaderActions>
+                        }
+                    />
+                }
+            >
+                <Panel>
+                    <EditorContent>
+                        {submitError ? <Banner tone="error">{submitError}</Banner> : null}
+                        <FormSection
+                            title={intl.formatMessage({ id: "dextinity.brevoConfig.section.sending", defaultMessage: "Sending" })}
+                            description={intl.formatMessage({
+                                id: "dextinity.brevoConfig.section.sending.description",
+                                defaultMessage: "The sender of the newsletters and the email that confirms a subscription.",
+                            })}
+                        >
+                            {sendersFailed ? (
+                                <Banner tone="error">
+                                    {intl.formatMessage({
+                                        id: "dextinity.brevoConfig.sendersFailed",
+                                        defaultMessage:
+                                            "The senders couldn't be loaded from Brevo. Make sure a valid Brevo API key is configured and the API's IP address is authorized in Brevo.",
+                                    })}
+                                </Banner>
+                            ) : null}
+                            <SelectField
+                                name="senderMail"
+                                label={intl.formatMessage({ id: "dextinity.brevoConfig.sender", defaultMessage: "Sender" })}
+                                options={senders.map((sender) => ({ value: sender.email, label: `${sender.name} (${sender.email})` }))}
+                                loading={sendersLoading}
+                                searchable
+                                required
+                                requiredMessage={requiredMessage}
+                            />
+                            {doubleOptInTemplatesFailed ? (
+                                <Banner tone="error">
+                                    {intl.formatMessage({
+                                        id: "dextinity.brevoConfig.doubleOptInTemplatesFailed",
+                                        defaultMessage:
+                                            "The email templates couldn't be loaded from Brevo. Make sure a valid Brevo API key is configured and the API's IP address is authorized in Brevo.",
+                                    })}
+                                </Banner>
+                            ) : null}
+                            <SelectField
+                                name="doubleOptInTemplateId"
+                                label={intl.formatMessage({
+                                    id: "dextinity.brevoConfig.doubleOptInTemplate",
+                                    defaultMessage: "Double opt-in template",
+                                })}
+                                options={doubleOptInTemplates.map((template) => ({ value: template.id, label: `${template.id}: ${template.name}` }))}
+                                loading={doubleOptInTemplatesLoading}
+                                searchable
+                                required
+                                requiredMessage={requiredMessage}
+                            />
+                        </FormSection>
+                        <FormSection title={intl.formatMessage({ id: "dextinity.brevoConfig.section.contacts", defaultMessage: "Contacts" })} columns>
+                            <NumberField
+                                name="folderId"
+                                label={intl.formatMessage({ id: "dextinity.brevoConfig.folderId", defaultMessage: "Folder ID" })}
+                                helperText={intl.formatMessage({
+                                    id: "dextinity.brevoConfig.folderId.info",
+                                    defaultMessage:
+                                        "By default, the folder ID should be set to 1 unless you have specifically configured another folder in Brevo.",
+                                })}
+                                min={1}
+                                required
+                                requiredMessage={requiredMessage}
+                            />
+                            <InputField
+                                name="allowedRedirectionUrl"
+                                label={intl.formatMessage({
+                                    id: "dextinity.brevoConfig.allowedRedirectionUrl",
+                                    defaultMessage: "Allowed redirection URL",
+                                })}
+                                helperText={intl.formatMessage({
+                                    id: "dextinity.brevoConfig.allowedRedirectionUrl.info",
+                                    defaultMessage: "Defines the schema of a valid redirection URL that is set when creating or importing contacts.",
+                                })}
+                                required
+                                requiredMessage={requiredMessage}
+                                spellCheck={false}
+                                validate={(value: string) =>
+                                    !value || urlPattern.test(value)
+                                        ? undefined
+                                        : intl.formatMessage({
+                                              id: "dextinity.brevoConfig.allowedRedirectionUrl.validationError",
+                                              defaultMessage: "Please enter a valid URL.",
+                                          })
+                                }
+                            />
+                            <InputField
+                                name="unsubscriptionPageId"
+                                label={intl.formatMessage({
+                                    id: "dextinity.brevoConfig.unsubscriptionPageId",
+                                    defaultMessage: "Unsubscription page ID",
+                                })}
+                                required
+                                requiredMessage={requiredMessage}
+                                spellCheck={false}
+                                validate={(value: string) =>
+                                    !value || unsubscriptionPageIdPattern.test(value)
+                                        ? undefined
+                                        : intl.formatMessage({
+                                              id: "dextinity.brevoConfig.unsubscriptionPageId.validation",
+                                              defaultMessage: "Must be a 24-digit alphanumeric ID",
+                                          })
+                                }
+                            />
+                        </FormSection>
+                    </EditorContent>
+                </Panel>
+            </EditLayout>
+        </RouterPrompt>
     );
 }

@@ -1,71 +1,35 @@
-import { Button, messages } from "@dextinity/admin";
-import {
-    Box,
-    // eslint-disable-next-line no-restricted-imports
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    LinearProgress,
-    type LinearProgressProps,
-    Typography,
-} from "@mui/material";
+import { Dialog, ProgressBar } from "@dextinity/ui";
 import { type ReactNode, useCallback, useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { useIntl } from "react-intl";
 
-function LinearProgressWithLabel({ message, ...props }: LinearProgressProps & { value: number; message?: ReactNode }) {
+interface ProgressDialogProps {
+    title: string;
+    progress: { value: number; message?: ReactNode } | undefined;
+}
+
+function ignoreOpenChange() {}
+
+/**
+ * Shows how far a task is, e.g. pasting blocks or pages, or translating pages. It can't be closed, since stopping halfway would leave
+ * the content half done.
+ */
+export function ProgressDialog({ title, progress }: ProgressDialogProps) {
+    const intl = useIntl();
+
     return (
-        <Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Box sx={{ width: "100%", mr: 1 }}>
-                    <LinearProgress variant="determinate" {...props} />
-                </Box>
-                <Box sx={{ minWidth: 35 }}>
-                    <Typography
-                        variant="body2"
-                        sx={{
-                            color: "text.secondary",
-                        }}
-                    >{`${Math.round(props.value)}%`}</Typography>
-                </Box>
-            </Box>
-            {message && (
-                <Typography
-                    variant="body2"
-                    sx={{
-                        color: "text.secondary",
-                    }}
-                >
-                    {message}
-                </Typography>
-            )}
-        </Box>
+        <Dialog open={progress !== undefined} onOpenChange={ignoreOpenChange} title={title} size="small" hideCloseButton dismissible={false}>
+            <ProgressBar
+                value={progress?.value ?? null}
+                label={progress?.message}
+                aria-label={progress?.message == null ? title : undefined}
+                showValue
+                locale={intl.locale}
+            />
+        </Dialog>
     );
 }
 
-function ProgressDialog(props: { title: ReactNode; progress: number | undefined; message?: ReactNode; onCancel?: () => void }) {
-    return (
-        <>
-            {props.progress !== undefined && (
-                <Dialog open={true}>
-                    <DialogTitle>{props.title}</DialogTitle>
-                    <DialogContent>
-                        <LinearProgressWithLabel value={props.progress} message={props.message} />
-                    </DialogContent>
-                    {props.onCancel && (
-                        <DialogActions>
-                            <Button onClick={props.onCancel} variant="textDark">
-                                <FormattedMessage {...messages.cancel} />
-                            </Button>
-                        </DialogActions>
-                    )}
-                </Dialog>
-            )}
-        </>
-    );
-}
-
-export function useProgressDialog(options: { title: ReactNode; onCancel?: () => void }) {
+export function useProgressDialog(options: { title: string }) {
     const [progress, setProgress] = useState<{
         progress: number | undefined;
         message?: ReactNode;
@@ -82,6 +46,11 @@ export function useProgressDialog(options: { title: ReactNode; onCancel?: () => 
         progress: progress.progress,
         message: progress.message,
         updateProgress,
-        dialog: <ProgressDialog title={options.title} onCancel={options.onCancel} progress={progress.progress} message={progress.message} />,
+        dialog: (
+            <ProgressDialog
+                title={options.title}
+                progress={progress.progress !== undefined ? { value: progress.progress, message: progress.message } : undefined}
+            />
+        ),
     };
 }

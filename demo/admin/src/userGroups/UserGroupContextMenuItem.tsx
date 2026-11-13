@@ -1,10 +1,9 @@
-import { CancelButton, Dialog, OkayButton, SelectField } from "@dextinity/admin";
-import { Account } from "@dextinity/admin-icons";
-import { DialogActions, DialogContent, ListItemIcon, MenuItem } from "@mui/material";
+import { Dialog, DialogFormActions, Icon, MenuItem } from "@dextinity/ui";
+import { SelectField } from "@dextinity/ui-react-final-form";
 import type { GQLUserGroup } from "@src/graphql.generated";
-import { type JSX, useState } from "react";
+import { type JSX, useId } from "react";
 import { Form } from "react-final-form";
-import { FormattedMessage } from "react-intl";
+import { useIntl } from "react-intl";
 
 import { userGroupOptions } from "./userGroupOptions";
 
@@ -20,68 +19,77 @@ interface UserGroupItem {
 interface Props {
     item: UserGroupItem;
     onChange: (item: UserGroupItem) => void;
-    onMenuClose: () => void;
+    openDialog: (renderDialog: (close: () => void) => JSX.Element) => void;
 }
 
-function UserGroupContextMenuItem({ item, onChange, onMenuClose }: Props): JSX.Element {
-    const [dialogOpen, setDialogOpen] = useState(false);
-
-    interface FormValues {
-        userGroup: GQLUserGroup;
-    }
-
-    const handleSubmit = (values: FormValues) => {
-        onChange({ ...item, userGroup: values.userGroup });
-        setDialogOpen(false);
-        onMenuClose();
-    };
+function UserGroupContextMenuItem({ item, onChange, openDialog }: Props): JSX.Element {
+    const intl = useIntl();
 
     return (
-        <>
-            <MenuItem
-                onClick={() => {
-                    setDialogOpen(true);
+        <MenuItem
+            label={intl.formatMessage({ id: "pageContentBlock.userGroup.menuItem", defaultMessage: "Visibility rules" })}
+            icon={<Icon name="checklist" />}
+            onClick={() => openDialog((close) => <UserGroupDialog item={item} onChange={onChange} onClose={close} />)}
+        />
+    );
+}
+
+interface FormValues {
+    userGroup: GQLUserGroup;
+}
+
+interface UserGroupDialogProps {
+    item: UserGroupItem;
+    onChange: (item: UserGroupItem) => void;
+    onClose: () => void;
+}
+
+function UserGroupDialog({ item, onChange, onClose }: UserGroupDialogProps) {
+    const intl = useIntl();
+    const formId = useId();
+
+    const options = userGroupOptions.map((option) => {
+        const label = intl.formatMessage(option.label);
+        return { value: option.value, label, textValue: label };
+    });
+
+    return (
+        <Dialog
+            open
+            onOpenChange={(open) => {
+                if (!open) {
+                    onClose();
+                }
+            }}
+            title={intl.formatMessage({ id: "pageContentBlock.userGroup.dialogTitle", defaultMessage: "Visibility rules" })}
+            footer={
+                <DialogFormActions
+                    formId={formId}
+                    submitLabel={intl.formatMessage({ id: "pageContentBlock.userGroup.apply", defaultMessage: "Apply" })}
+                    onCancel={onClose}
+                    labels={{ cancel: intl.formatMessage({ id: "pageContentBlock.userGroup.cancel", defaultMessage: "Cancel" }) }}
+                />
+            }
+        >
+            <Form<FormValues>
+                onSubmit={(values) => {
+                    onChange({ ...item, userGroup: values.userGroup });
+                    onClose();
                 }}
+                initialValues={{ userGroup: item.userGroup }}
             >
-                <ListItemIcon>
-                    <Account />
-                </ListItemIcon>
-                <FormattedMessage id="pageContentBlock.userGroup.menuItem" defaultMessage="Visibility rules" />
-            </MenuItem>
-            <Dialog
-                open={dialogOpen}
-                onClose={() => {
-                    setDialogOpen(false);
-                    onMenuClose();
-                }}
-                title={<FormattedMessage id="pageContentBlock.userGroup.dialogTitle" defaultMessage="Visibility rules" />}
-            >
-                <Form<FormValues> onSubmit={handleSubmit} initialValues={{ userGroup: item.userGroup }}>
-                    {({ handleSubmit }) => (
-                        <form onSubmit={handleSubmit}>
-                            <DialogContent>
-                                <SelectField name="userGroup" fullWidth required>
-                                    {userGroupOptions.map((option) => (
-                                        <MenuItem key={option.value} value={option.value}>
-                                            {option.label}
-                                        </MenuItem>
-                                    ))}
-                                </SelectField>
-                            </DialogContent>
-                            <DialogActions>
-                                <CancelButton
-                                    onClick={() => {
-                                        setDialogOpen(false);
-                                        onMenuClose();
-                                    }}
-                                />
-                                <OkayButton type="submit" />
-                            </DialogActions>
-                        </form>
-                    )}
-                </Form>
-            </Dialog>
-        </>
+                {({ handleSubmit }) => (
+                    <form id={formId} onSubmit={handleSubmit}>
+                        <SelectField<false, GQLUserGroup>
+                            name="userGroup"
+                            label={intl.formatMessage({ id: "pageContentBlock.userGroup.label", defaultMessage: "Show block for" })}
+                            options={options}
+                            required
+                        />
+                    </form>
+                )}
+            </Form>
+        </Dialog>
     );
 }
 

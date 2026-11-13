@@ -1,127 +1,124 @@
 import { gql, useQuery } from "@apollo/client";
-import { Alert, Button, FormSection, useStackApi } from "@dextinity/admin";
-import { BallTriangle as BallTriangleIcon, Link as LinkIcon, OpenNewTab as OpenNewTabIcon, Reload as ReloadIcon } from "@dextinity/admin-icons";
-import { IconButton, List as MuiList, ListItem, ListItemIcon as MuiListItemIcon, ListItemSecondaryAction, ListItemText } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { FormattedMessage } from "react-intl";
+import { Banner, DataGrid, type DataGridColumn, EmptyState, Icon, IconButton } from "@dextinity/ui";
+import { useIntl } from "react-intl";
+import { useHistory } from "react-router";
 
+import { useDataGridLabels } from "../../dataGrid/remoteList/useDataGridLabels";
 import type { GQLDamFileDuplicatesQuery, GQLDamFileDuplicatesQueryVariables } from "./Duplicates.generated";
+import { DuplicatesRoot, DuplicatesToolbar, InfoTitle, Name, NameCell, SecondaryText } from "./Duplicates.sc";
 
 const damFileDuplicatesQuery = gql`
     query DamFileDuplicates($id: ID!) {
         damFile(id: $id) {
+            id
             duplicates {
                 id
                 name
-                folder {
-                    id
-                    name
-                    parents {
-                        id
-                        name
-                    }
-                }
+                damPath
             }
         }
     }
 `;
 
-const Duplicates = ({ fileId }: { fileId: string }) => {
-    const stackApi = useStackApi();
-    const { data, loading, refetch } = useQuery<GQLDamFileDuplicatesQuery, GQLDamFileDuplicatesQueryVariables>(damFileDuplicatesQuery, {
-        variables: {
-            id: fileId,
-        },
+type Duplicate = GQLDamFileDuplicatesQuery["damFile"]["duplicates"][number];
+
+interface DuplicatesProps {
+    fileId: string;
+    getEditUrl: (fileId: string) => string;
+}
+
+/** The files with the same content as the file, which the DAM detects regardless of their names. */
+export function Duplicates({ fileId, getEditUrl }: DuplicatesProps) {
+    const intl = useIntl();
+    const history = useHistory();
+    const { labels: dataGridLabels } = useDataGridLabels();
+    const { data, loading, error, refetch } = useQuery<GQLDamFileDuplicatesQuery, GQLDamFileDuplicatesQueryVariables>(damFileDuplicatesQuery, {
+        variables: { id: fileId },
         notifyOnNetworkStatusChange: true,
     });
 
+    if (error) {
+        throw error;
+    }
+
+    const duplicates = data?.damFile.duplicates ?? [];
+    const columns: DataGridColumn<Duplicate>[] = [
+        {
+            key: "name",
+            header: intl.formatMessage({ id: "dextinity.dam.file.duplicates.file", defaultMessage: "File" }),
+            render: (duplicate) => (
+                <NameCell>
+                    <Name>{duplicate.name}</Name>
+                    {duplicate.damPath !== "/" && <SecondaryText>{duplicate.damPath}</SecondaryText>}
+                </NameCell>
+            ),
+        },
+    ];
+
     return (
-        <FormSection
-            title={
-                <FormattedMessage
-                    id="dextinity.dam.file.duplicates.title"
-                    defaultMessage="{count, plural, =0 {No files found} one {# file} other {# files}}"
-                    values={{ count: data?.damFile.duplicates.length || 0 }}
-                />
-            }
-        >
-            <List disablePadding>
-                <ListItemHeader key="refresh" divider>
-                    <Button size="small" variant="textDark" endIcon={<ReloadIcon />} onClick={() => refetch({ id: fileId })}>
-                        <FormattedMessage id="dextinity.dam.file.duplicates.refresh" defaultMessage="Refresh" />
-                    </Button>
-                </ListItemHeader>
-                {data?.damFile.duplicates.map((file) => {
-                    const folderPath = [],
-                        urlPath = [];
-                    if (file.folder) {
-                        file.folder.parents.forEach((folder) => {
-                            urlPath.push(folder.id, "folder");
-                            folderPath.push(folder.name);
-                        });
-                        urlPath.push(file.folder.id, "folder");
-                        folderPath.push(file.folder.name);
-                    }
-                    const href = `${stackApi?.breadCrumbs[0].url || ""}/${[...urlPath, file.id, "edit"].join("/")}`;
-
-                    return (
-                        <ListItem key={file.id} divider>
-                            <ListItemTextWrapper>
-                                <ListItemText primary={file.name} secondary={`/${folderPath.join("/")}`} />
-                            </ListItemTextWrapper>
-                            <ListItemSecondaryAction>
-                                <IconButton href={href} size="large">
-                                    <LinkIcon />
-                                </IconButton>
-                                <IconButton href={href} target="_blank" size="large">
-                                    <OpenNewTabIcon />
-                                </IconButton>
-                            </ListItemSecondaryAction>
-                        </ListItem>
-                    );
-                })}
-                {loading && (
-                    <ListItem key="loading" divider>
-                        <ListItemIcon>
-                            <LoadingIcon />
-                        </ListItemIcon>
-                    </ListItem>
+        <DuplicatesRoot>
+            <DuplicatesToolbar>
+                <span>
+                    {intl.formatMessage(
+                        {
+                            id: "dextinity.dam.file.duplicates.title",
+                            defaultMessage: "{count, plural, =0 {No files found} one {# file} other {# files}}",
+                        },
+                        { count: duplicates.length },
+                    )}
+                </span>
+                <IconButton
+                    aria-label={intl.formatMessage({ id: "dextinity.dam.file.duplicates.refresh", defaultMessage: "Refresh" })}
+                    variant="outlined"
+                    color="secondary"
+                    size="small"
+                    loading={loading && data != null}
+                    onClick={() => void refetch()}
+                >
+                    <Icon name="refresh" />
+                </IconButton>
+            </DuplicatesToolbar>
+            <DataGrid
+                aria-label={intl.formatMessage({ id: "dextinity.dam.file.duplicates.tabTitle", defaultMessage: "Duplicates" })}
+                columns={columns}
+                rows={duplicates}
+                getRowId={(duplicate) => duplicate.id}
+                loading={loading && data == null}
+                loadingRowCount={2}
+                onRowClick={(duplicate) => history.push(getEditUrl(duplicate.id))}
+                rowActions={(duplicate) => (
+                    <IconButton
+                        aria-label={intl.formatMessage({ id: "dextinity.dam.file.duplicates.openInNewTab", defaultMessage: "Open in new tab" })}
+                        variant="text"
+                        color="secondary"
+                        size="small"
+                        onClick={() => window.open(history.createHref({ pathname: getEditUrl(duplicate.id) }), "_blank")}
+                    >
+                        <Icon name="window" />
+                    </IconButton>
                 )}
-            </List>
-            <Alert
-                title={<FormattedMessage id="dextinity.dam.file.duplicates.info.title" defaultMessage="What are duplicate assets?" />}
-                sx={{ marginTop: 4 }}
-            >
-                <FormattedMessage
-                    id="dextinity.dam.file.duplicates.info.content"
-                    defaultMessage="Duplicates refer to one or more identical copies of a digital asset stored in the DAM system. The DAM automatically detects identical assets, even if their file names are different, to reduce storage usage."
-                />
-            </Alert>
-        </FormSection>
+                labels={dataGridLabels}
+                emptyState={
+                    <EmptyState
+                        icon={<Icon name="duplicate" />}
+                        title={intl.formatMessage({ id: "dextinity.dam.file.duplicates.empty", defaultMessage: "No duplicates" })}
+                        description={intl.formatMessage({
+                            id: "dextinity.dam.file.duplicates.emptyDescription",
+                            defaultMessage: "No other file in the DAM has the same content.",
+                        })}
+                    />
+                }
+            />
+            <Banner tone="info">
+                <InfoTitle>
+                    {intl.formatMessage({ id: "dextinity.dam.file.duplicates.info.title", defaultMessage: "What are duplicate assets?" })}
+                </InfoTitle>
+                {intl.formatMessage({
+                    id: "dextinity.dam.file.duplicates.info.content",
+                    defaultMessage:
+                        "Duplicates refer to one or more identical copies of a digital asset stored in the DAM system. The DAM automatically detects identical assets, even if their file names are different, to reduce storage usage.",
+                })}
+            </Banner>
+        </DuplicatesRoot>
     );
-};
-
-export default Duplicates;
-
-const List = styled(MuiList)`
-    background-color: ${({ theme }) => theme.palette.background.paper};
-`;
-
-const ListItemHeader = styled(ListItem)`
-    display: flex;
-    justify-content: flex-end;
-`;
-
-const ListItemTextWrapper = styled("div")`
-    padding-right: 48px;
-`;
-
-const ListItemIcon = styled(MuiListItemIcon)`
-    display: flex;
-    justify-content: center;
-`;
-
-const LoadingIcon = styled(BallTriangleIcon)`
-    font-size: 32px;
-    margin: ${({ theme }) => theme.spacing(2, 0)};
-`;
+}

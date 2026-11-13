@@ -1,12 +1,10 @@
 import { gql, useQuery } from "@apollo/client";
-import { RowActionsItem } from "@dextinity/admin";
-import { ImpersonateUser, Reset } from "@dextinity/admin-icons";
-import { CircularProgress } from "@mui/material";
-import { FormattedMessage } from "react-intl";
+import { Icon, MenuItem } from "@dextinity/ui";
+import { useIntl } from "react-intl";
 
-import { commonImpersonationMessages } from "../common/impersonation/commonImpersonationMessages";
 import { useCurrentUser } from "./hooks/currentUser";
 import type { GQLUserImpersonationCheckQuery, GQLUserImpersonationCheckQueryVariables } from "./ImpersonateMenuItem.generated";
+import { useImpersonationMessages } from "./user/useImpersonationMessages";
 import { startImpersonation, stopImpersonation } from "./utils/handleImpersonation";
 
 const userImpersonationCheckQuery = gql`
@@ -18,22 +16,22 @@ const userImpersonationCheckQuery = gql`
     }
 `;
 
+/** A `MenuItem` of `@dextinity/ui` that starts the impersonation of the user, or stops the running impersonation. */
 export function ImpersonateMenuItem({ userId }: { userId: string }) {
     const currentUser = useCurrentUser();
+    const messages = useImpersonationMessages();
 
     if (currentUser.impersonated) {
-        return (
-            <RowActionsItem icon={<Reset />} onClick={() => stopImpersonation()}>
-                {commonImpersonationMessages.stopImpersonation}
-            </RowActionsItem>
-        );
+        return <MenuItem label={messages.stopImpersonation} icon={<Icon name="reset" />} onClick={() => void stopImpersonation()} />;
     }
 
     return <StartImpersonationMenuItem userId={userId} />;
 }
 
 function StartImpersonationMenuItem({ userId }: { userId: string }) {
+    const intl = useIntl();
     const currentUser = useCurrentUser();
+    const messages = useImpersonationMessages();
     const isSelf = currentUser.id === userId;
 
     const { data, loading } = useQuery<GQLUserImpersonationCheckQuery, GQLUserImpersonationCheckQueryVariables>(userImpersonationCheckQuery, {
@@ -42,23 +40,24 @@ function StartImpersonationMenuItem({ userId }: { userId: string }) {
     });
     const impersonationAllowed = data?.user.impersonationAllowed ?? false;
 
-    const label = loading ? (
-        <FormattedMessage id="dextinity.userPermissions.evaluatingPermissions" defaultMessage="Evaluating permissions" />
-    ) : isSelf ? (
-        <FormattedMessage id="dextinity.userPermissions.cannotImpersonateYourself" defaultMessage="Cannot impersonate yourself" />
-    ) : !impersonationAllowed ? (
-        <FormattedMessage id="dextinity.userPermissions.cannotImpersonate" defaultMessage="Cannot impersonate" />
-    ) : (
-        commonImpersonationMessages.startImpersonation
-    );
+    const disabledReason = loading
+        ? messages.evaluatingPermissions
+        : isSelf
+          ? messages.cannotImpersonateYourself
+          : !impersonationAllowed
+            ? intl.formatMessage({
+                  id: "dextinity.userPermissions.cannotImpersonateReason",
+                  defaultMessage: "This user has permissions or content scopes that you don't have",
+              })
+            : undefined;
 
     return (
-        <RowActionsItem
-            icon={loading ? <CircularProgress size={16} /> : <ImpersonateUser />}
-            disabled={loading || !impersonationAllowed || isSelf}
-            onClick={() => startImpersonation(userId)}
-        >
-            {label}
-        </RowActionsItem>
+        <MenuItem
+            label={messages.startImpersonation}
+            icon={<Icon name="impersonate" />}
+            disabled={disabledReason !== undefined}
+            disabledReason={disabledReason}
+            onClick={() => void startImpersonation(userId)}
+        />
     );
 }

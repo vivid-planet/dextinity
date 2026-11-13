@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
-import { Field } from "@dextinity/admin";
-import { deepClone } from "@mui/x-data-grid/internals";
+import { Field } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
 import type { SvgImageBlockData, SvgImageBlockInput } from "../blocks.generated";
@@ -32,6 +31,8 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
     defaultValues: () => ({}),
 
     category: BlockCategory.Media,
+    iconName: "vector",
+    description: <FormattedMessage id="dextinity.blocks.svgImage.description" defaultMessage="Vector graphic from the assets" />,
 
     createPreviewState: (state, previewContext) => {
         return {
@@ -103,7 +104,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
     },
 
     replaceDependenciesInOutput: (output, replacements) => {
-        const clonedOutput: SvgImageBlockInput = deepClone(output);
+        const clonedOutput: SvgImageBlockInput = structuredClone(output);
         const replacement = replacements.find((replacement) => replacement.type === "DamFile" && replacement.originalId === output.damFileId);
 
         if (replacement) {
@@ -132,10 +133,9 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
                     <Field
                         name="damFile"
                         component={FileField}
-                        fullWidth
                         buttonText={<FormattedMessage id="dextinity.blocks.image.chooseImage" defaultMessage="Choose image" />}
                         allowedMimetypes={filteredAcceptedMimeTypes.svgImage}
-                        preview={<img src={previewUrl} width="70" height="70" />}
+                        preview={<img src={previewUrl} alt="" />}
                     />
                 </BlocksFinalForm>
             </SelectPreviewComponent>

@@ -1,4 +1,4 @@
-import { Box, Divider } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { deepEqual } from "fast-equals";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import type { MessageDescriptor } from "react-intl";
@@ -153,17 +153,12 @@ export function createOptionalBlock<T extends BlockInterface>(
                                         });
                                     }}
                                 >
-                                    <Divider />
-                                    <Box
-                                        sx={{
-                                            padding: decoratedBlock.definesOwnPadding ? 0 : 3,
-                                        }}
-                                    >
+                                    <Content data-padding={decoratedBlock.definesOwnPadding ? "none" : "default"}>
                                         <decoratedBlock.AdminComponent
                                             updateState={updateSubBlocksFn}
                                             state={state.block ? state.block : decoratedBlock.defaultValues()}
                                         />
-                                    </Box>
+                                    </Content>
                                 </Collapsible>
                             </BlockAdminComponentPaper>
                         ) : (
@@ -209,3 +204,11 @@ export function createOptionalBlock<T extends BlockInterface>(
 
     return OptionalBlock;
 }
+
+const Content = styled("div")`
+    border-block-start: var(--dextinity-line-width) solid var(--dextinity-color-line);
+
+    &[data-padding="default"] {
+        padding: var(--dextinity-space-4);
+    }
+`;

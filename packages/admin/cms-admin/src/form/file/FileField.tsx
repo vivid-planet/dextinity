@@ -1,18 +1,15 @@
 import { useApolloClient } from "@apollo/client";
-import { Alert, useSnackbarApi } from "@dextinity/admin";
-import { Assets, Delete, MoreVertical } from "@dextinity/admin-icons";
-import { Box, Divider, Grid, IconButton, List, Snackbar, Typography } from "@mui/material";
+import { Button, Icon } from "@dextinity/ui";
+import { styled } from "@mui/material/styles";
 import { type ReactElement, type ReactNode, useState } from "react";
 import type { FieldRenderProps } from "react-final-form";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { BlockAdminComponentButton } from "../../blocks/common/BlockAdminComponentButton";
 import { BlockAdminComponentPaper } from "../../blocks/common/BlockAdminComponentPaper";
-import { DamScopeProvider } from "../../dam/config/DamScopeProvider";
-import { useDamScope } from "../../dam/config/useDamScope";
-import { ChooseDamFileDialog } from "./chooseFile/ChooseDamFileDialog";
-import { ChooseDamFilesDialog } from "./chooseFile/ChooseDamFilesDialog";
-import { DamPathLazy } from "./DamPathLazy";
+import { useDamScopeFromContentScope } from "../../dam/config/useDamScope";
+import { DamFilePickerDialog } from "./chooseFile/DamFilePickerDialog";
+import { getDamFileFolderId } from "./DamFileField";
 import type { GQLDamFileFieldFileFragment } from "./FileField.fragment.generated";
 import { damFileFieldFileQuery, damFileFieldFilesByIdsQuery } from "./FileField.gql";
 import type {
@@ -21,7 +18,7 @@ import type {
     GQLDamFileFieldFilesByIdsQuery,
     GQLDamFileFieldFilesByIdsQueryVariables,
 } from "./FileField.gql.generated";
-import { type ActionItem, FileFieldMenu, useHasFileFieldMenu } from "./FileFieldMenu";
+import type { FileFieldMenuActions } from "./FileFieldMenu";
 import { FileFieldRow } from "./FileFieldRow";
 
 export type { GQLDamFileFieldFileFragment } from "./FileField.fragment.generated";
@@ -29,7 +26,8 @@ export type { GQLDamFileFieldFileFragment } from "./FileField.fragment.generated
 type CommonProps = {
     buttonText?: ReactNode;
     allowedMimetypes?: string[];
-    menuActions?: Array<ActionItem | ReactElement | null | undefined>;
+    /** Entries of the file's menu besides "Open in DAM": `MenuItem` props or `MenuItem` elements from `@dextinity/ui`. */
+    menuActions?: FileFieldMenuActions;
 };
 
 type SingleFileFieldProps = FieldRenderProps<GQLDamFileFieldFileFragment | undefined, HTMLInputElement> &
@@ -44,6 +42,12 @@ type MultiFileFieldProps = FieldRenderProps<GQLDamFileFieldFileFragment[] | unde
         preview?: (file: GQLDamFileFieldFileFragment) => ReactNode;
     };
 
+/**
+ * A React Final Form `Field` component to choose a file from the assets in a block, shown as a card with the file's preview, name and
+ * path. Its value is the file (`GQLDamFileFieldFileFragment`) or `undefined`; with `multiple`, a list of files.
+ *
+ * In forms built with `@dextinity/ui-react-final-form`, use `DamFileField` instead.
+ */
 export function FileField(props: SingleFileFieldProps): ReactElement;
 export function FileField(props: MultiFileFieldProps): ReactElement;
 export function FileField(props: SingleFileFieldProps | MultiFileFieldProps): ReactElement {
@@ -57,165 +61,147 @@ export function FileField(props: SingleFileFieldProps | MultiFileFieldProps): Re
 }
 
 const SingleFileField = ({ buttonText, input, allowedMimetypes, preview, menuActions }: SingleFileFieldProps) => {
-    const [chooseFileDialogOpen, setChooseFileDialogOpen] = useState<boolean>(false);
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const intl = useIntl();
+    const [pickerOpen, setPickerOpen] = useState(false);
+    const [loadError, setLoadError] = useState<string>();
     const apolloClient = useApolloClient();
-    const showMenu = useHasFileFieldMenu(menuActions);
 
-    const damFile = input.value;
+    const damFile = input.value || undefined;
 
-    if (damFile) {
-        return (
-            <>
-                <BlockAdminComponentPaper disablePadding>
-                    <Box
-                        sx={{
-                            padding: 3,
-                        }}
-                    >
-                        <Grid
-                            container
-                            spacing={3}
-                            sx={{
-                                alignItems: "center",
-                            }}
-                        >
-                            {preview && <Grid>{preview}</Grid>}
-                            <Grid size="grow">
-                                <Typography variant="subtitle1">{damFile.name}</Typography>
-                                <Typography variant="body1" color="textSecondary">
-                                    <DamPathLazy fileId={damFile.id} />
-                                </Typography>
-                            </Grid>
-                            {showMenu && (
-                                <Grid>
-                                    <IconButton
-                                        onMouseDown={(event) => event.stopPropagation()}
-                                        onClick={(event) => {
-                                            event.stopPropagation();
-                                            setAnchorEl(event.currentTarget);
-                                        }}
-                                        size="large"
-                                    >
-                                        <MoreVertical />
-                                    </IconButton>
-                                </Grid>
-                            )}
-                        </Grid>
-                    </Box>
-                    <Divider />
-                    <BlockAdminComponentButton startIcon={<Delete />} onClick={() => input.onChange(undefined)}>
-                        <FormattedMessage id="dextinity.form.file.empty" defaultMessage="Empty" />
-                    </BlockAdminComponentButton>
-                </BlockAdminComponentPaper>
-                {showMenu && (
-                    <FileFieldMenu fileId={damFile.id} anchorEl={anchorEl} onClose={() => setAnchorEl(null)} menuActions={menuActions} keepMounted />
-                )}
-            </>
-        );
-    }
+    const chooseFile = async ([fileId]: string[]) => {
+        try {
+            const { data } = await apolloClient.query<GQLDamFileFieldFileQuery, GQLDamFileFieldFileQueryVariables>({
+                query: damFileFieldFileQuery,
+                variables: { id: fileId },
+            });
+            setLoadError(undefined);
+            input.onChange(data.damFile);
+        } catch {
+            setLoadError(
+                intl.formatMessage({
+                    id: "dextinity.form.file.failedToLoadSelectedFile",
+                    defaultMessage: "Failed to load the selected file. Please try again.",
+                }),
+            );
+        }
+        setPickerOpen(false);
+    };
 
     return (
         <>
-            <BlockAdminComponentButton onClick={() => setChooseFileDialogOpen(true)} startIcon={<Assets />} size="large">
-                {buttonText ?? <FormattedMessage id="dextinity.form.file.chooseFile" defaultMessage="Choose file" />}
-            </BlockAdminComponentButton>
-            <ChooseDamFileDialog
-                open={chooseFileDialogOpen}
+            {damFile ? (
+                <BlockAdminComponentPaper disablePadding>
+                    <FileFieldRow file={damFile} preview={preview} menuActions={menuActions} />
+                    <Footer>
+                        <Button variant="text" color="secondary" startIcon={<Icon name="images" />} onClick={() => setPickerOpen(true)}>
+                            <FormattedMessage id="dextinity.form.file.replaceFile" defaultMessage="Replace" />
+                        </Button>
+                        <Button variant="text" color="secondary" startIcon={<Icon name="trash" />} onClick={() => input.onChange(undefined)}>
+                            <FormattedMessage id="dextinity.form.file.empty" defaultMessage="Empty" />
+                        </Button>
+                    </Footer>
+                </BlockAdminComponentPaper>
+            ) : (
+                <BlockAdminComponentButton onClick={() => setPickerOpen(true)} startIcon={<Icon name="images" />} size="large">
+                    {buttonText ?? <FormattedMessage id="dextinity.form.file.chooseFile" defaultMessage="Choose file" />}
+                </BlockAdminComponentButton>
+            )}
+            {loadError != null && <ErrorMessage role="alert">{loadError}</ErrorMessage>}
+            <DamFilePickerDialog
+                open={pickerOpen}
+                onClose={() => setPickerOpen(false)}
+                onChoose={chooseFile}
+                initialFileIds={damFile ? [damFile.id] : []}
+                initialFolderId={getDamFileFolderId(damFile)}
                 allowedMimetypes={allowedMimetypes}
-                onClose={() => setChooseFileDialogOpen(false)}
-                onChooseFile={async (fileId) => {
-                    setChooseFileDialogOpen(false);
-                    const { data } = await apolloClient.query<GQLDamFileFieldFileQuery, GQLDamFileFieldFileQueryVariables>({
-                        query: damFileFieldFileQuery,
-                        variables: {
-                            id: fileId,
-                        },
-                    });
-
-                    input.onChange(data.damFile);
-                }}
             />
         </>
     );
 };
 
-const MultiFileField = (props: MultiFileFieldProps) => (
-    <DamScopeProvider>
-        <MultiFileFieldInner {...props} />
-    </DamScopeProvider>
-);
-
-const MultiFileFieldInner = ({ buttonText, input, allowedMimetypes, preview, menuActions }: MultiFileFieldProps) => {
-    const [dialogOpen, setDialogOpen] = useState(false);
+const MultiFileField = ({ buttonText, input, allowedMimetypes, preview, menuActions }: MultiFileFieldProps) => {
+    const intl = useIntl();
+    const [pickerOpen, setPickerOpen] = useState(false);
+    const [loadError, setLoadError] = useState<string>();
     const apolloClient = useApolloClient();
-    const snackbarApi = useSnackbarApi();
-    const damScope = useDamScope();
+    const damScope = useDamScopeFromContentScope();
 
     // react-final-form may pass "" as the default when no initial value is set; fall back to [].
     const files: GQLDamFileFieldFileFragment[] = Array.isArray(input.value) ? input.value : [];
 
-    const handleRemove = (id: string) => {
-        input.onChange(files.filter((f) => f.id !== id));
-    };
-
-    const handleConfirm = async (fileIds: string[]) => {
+    const chooseFiles = async (fileIds: string[]) => {
         try {
             const { data } = await apolloClient.query<GQLDamFileFieldFilesByIdsQuery, GQLDamFileFieldFilesByIdsQueryVariables>({
                 query: damFileFieldFilesByIdsQuery,
                 variables: { ids: fileIds, limit: fileIds.length, scope: damScope },
             });
-
-            const sortedFiles = [...data.damFilesList.nodes].sort((a, b) => fileIds.indexOf(a.id) - fileIds.indexOf(b.id));
-            input.onChange(sortedFiles);
-            setDialogOpen(false);
+            setLoadError(undefined);
+            input.onChange([...data.damFilesList.nodes].sort((first, second) => fileIds.indexOf(first.id) - fileIds.indexOf(second.id)));
         } catch {
-            snackbarApi.showSnackbar(
-                <Snackbar autoHideDuration={5000}>
-                    <Alert severity="error">
-                        <FormattedMessage
-                            id="dextinity.form.file.failedToLoadSelection"
-                            defaultMessage="Failed to load selected files. Please try again."
-                        />
-                    </Alert>
-                </Snackbar>,
+            setLoadError(
+                intl.formatMessage({
+                    id: "dextinity.form.file.failedToLoadSelection",
+                    defaultMessage: "Failed to load selected files. Please try again.",
+                }),
             );
         }
+        setPickerOpen(false);
     };
 
     return (
         <>
             {files.length === 0 ? (
-                <BlockAdminComponentButton onClick={() => setDialogOpen(true)} startIcon={<Assets />} size="large">
+                <BlockAdminComponentButton onClick={() => setPickerOpen(true)} startIcon={<Icon name="images" />} size="large">
                     {buttonText ?? <FormattedMessage id="dextinity.form.file.chooseFiles" defaultMessage="Choose files" />}
                 </BlockAdminComponentButton>
             ) : (
                 <BlockAdminComponentPaper disablePadding>
-                    <List disablePadding>
-                        {files.map((file) => (
-                            <FileFieldRow
-                                key={file.id}
-                                file={file}
-                                onRemove={() => handleRemove(file.id)}
-                                preview={preview}
-                                menuActions={menuActions}
-                            />
-                        ))}
-                    </List>
-                    <Divider />
-                    <BlockAdminComponentButton startIcon={<Assets />} onClick={() => setDialogOpen(true)}>
-                        <FormattedMessage id="dextinity.form.file.changeSelectedFiles" defaultMessage="Change selected files" />
-                    </BlockAdminComponentButton>
+                    {files.map((file) => (
+                        <FileFieldRow
+                            key={file.id}
+                            file={file}
+                            onRemove={() => input.onChange(files.filter(({ id }) => id !== file.id))}
+                            preview={preview?.(file)}
+                            menuActions={menuActions}
+                        />
+                    ))}
+                    <Footer>
+                        <Button variant="text" color="secondary" startIcon={<Icon name="images" />} onClick={() => setPickerOpen(true)}>
+                            <FormattedMessage id="dextinity.form.file.changeSelectedFiles" defaultMessage="Change selected files" />
+                        </Button>
+                    </Footer>
                 </BlockAdminComponentPaper>
             )}
-            {dialogOpen && (
-                <ChooseDamFilesDialog
-                    allowedMimetypes={allowedMimetypes}
-                    initialFileIds={files.map((f) => f.id)}
-                    onClose={() => setDialogOpen(false)}
-                    onConfirm={handleConfirm}
-                />
-            )}
+            {loadError != null && <ErrorMessage role="alert">{loadError}</ErrorMessage>}
+            <DamFilePickerDialog
+                open={pickerOpen}
+                multiple
+                onClose={() => setPickerOpen(false)}
+                onChoose={chooseFiles}
+                initialFileIds={files.map(({ id }) => id)}
+                initialFolderId={getDamFileFolderId(files[0])}
+                allowedMimetypes={allowedMimetypes}
+            />
         </>
     );
 };
+
+const Footer = styled("div")`
+    display: flex;
+    border-block-start: 1px solid var(--dextinity-color-line);
+
+    > * {
+        flex: 1;
+    }
+
+    > * + * {
+        border-inline-start: 1px solid var(--dextinity-color-line);
+        border-radius: 0;
+    }
+`;
+
+const ErrorMessage = styled("p")`
+    margin: var(--dextinity-space-2) 0 0;
+    color: var(--dextinity-color-danger-text);
+    font-size: var(--dextinity-typography-small-size);
+`;

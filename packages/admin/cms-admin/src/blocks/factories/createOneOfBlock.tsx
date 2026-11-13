@@ -1,15 +1,16 @@
-import { Field, RadioGroupField, SelectField } from "@dextinity/admin";
-import { Box, Divider, ToggleButton as MuiToggleButton, ToggleButtonGroup as MuiToggleButtonGroup } from "@mui/material";
+import type { IconName } from "@dextinity/ui";
+import { RadioGroupField, SegmentedControlField, SelectField } from "@dextinity/ui-react-final-form";
 import { styled } from "@mui/material/styles";
 import { deepEqual } from "fast-equals";
 import { type Dispatch, type ReactNode, type SetStateAction, useCallback, useMemo } from "react";
-import { FormattedMessage, type MessageDescriptor } from "react-intl";
+import { FormattedMessage, type MessageDescriptor, useIntl } from "react-intl";
 
 import { useContentScope } from "../../contentScope/Provider";
 import { useBlockAdminComponentPaper } from "../common/BlockAdminComponentPaper";
 import { HiddenInSubroute } from "../common/HiddenInSubroute";
 import { useBlocksConfig } from "../config/BlocksConfigContext";
 import { BlocksFinalForm } from "../form/BlocksFinalForm";
+import { messageText } from "../form/messageText";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { HoverPreviewComponent } from "../iframebridge/HoverPreviewComponent";
 import { SelectPreviewComponent } from "../iframebridge/SelectPreviewComponent";
@@ -65,7 +66,22 @@ export interface CreateOneOfBlockOptions<T extends boolean> {
     displayName?: ReactNode;
     supportedBlocks: Record<BlockType, BlockInterface>;
     category?: BlockCategory | CustomBlockCategory;
+    /**
+     * The block type's icon, shown next to it in the Add Block Drawer and in a block list when `icon` returns none.
+     * Falls back to an icon for the block's category.
+     */
+    iconName?: IconName;
+    /**
+     * What the block is for, in a few words, shown under its name in the Add Block Drawer.
+     */
+    description?: ReactNode;
     variant?: "select" | "radio" | "toggle";
+    /**
+     * The label of the control that chooses the block. Visible for the `select` variant, the accessible name of the other variants.
+     *
+     * @defaultValue "Block type"
+     */
+    label?: ReactNode;
     allowEmpty?: T;
     tags?: Array<MessageDescriptor | string>;
 }
@@ -76,7 +92,10 @@ export const createOneOfBlock = <T extends boolean = boolean>(
         name,
         displayName = "Switch",
         category = BlockCategory.Other,
+        iconName,
+        description,
         variant = "select",
+        label = <FormattedMessage id="dextinity.blocks.oneOfBlock.blockType" defaultMessage="Block type" />,
         allowEmpty: passedAllowEmpty,
         tags,
     }: CreateOneOfBlockOptions<T>,
@@ -136,6 +155,10 @@ export const createOneOfBlock = <T extends boolean = boolean>(
         tags: tags ? tags : childTags,
 
         category,
+
+        iconName,
+
+        description,
 
         defaultValues: () => {
             if (allowEmpty) {
@@ -385,14 +408,15 @@ export const createOneOfBlock = <T extends boolean = boolean>(
 
             const activeBlock = getActiveBlock(state);
             const selectedBlockType = activeBlock.block ? activeBlock.state.type : "none";
+            const hasActiveBlock = Boolean(activeBlock.block);
 
             return (
                 <SelectPreviewComponent>
                     <HiddenInSubroute>
-                        <Box
-                            sx={{
-                                paddingBottom: isInPaper ? 0 : 3,
-                            }}
+                        <TypeChooser
+                            data-variant={variant}
+                            data-in-paper={isInPaper ? "" : undefined}
+                            data-divider={(variant === "radio" || isInPaper) && hasActiveBlock ? "" : undefined}
                         >
                             <BlocksFinalForm<{ blockType: string }>
                                 onSubmit={({ blockType }) => {
@@ -402,78 +426,19 @@ export const createOneOfBlock = <T extends boolean = boolean>(
                                     blockType: selectedBlockType,
                                 }}
                             >
-                                {variant === "select" && (
-                                    <>
-                                        <Box
-                                            sx={{
-                                                padding: isInPaper ? 3 : 0,
-                                            }}
-                                        >
-                                            <SelectField name="blockType" options={options} fullWidth required />
-                                        </Box>
-                                        {isInPaper && activeBlock.block && <Divider />}
-                                    </>
-                                )}
-                                {variant === "radio" && (
-                                    <>
-                                        <Box
-                                            sx={{
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                padding: 3,
-                                            }}
-                                        >
-                                            <RadioGroupField name="blockType" fullWidth options={options} />
-                                        </Box>
-                                        {activeBlock.block && <Divider />}
-                                    </>
-                                )}
-                                {variant === "toggle" && (
-                                    <>
-                                        <Box
-                                            sx={{
-                                                padding: isInPaper ? 3 : 0,
-                                            }}
-                                        >
-                                            <Field name="blockType" fullWidth>
-                                                {({ input: { value, onChange } }) => (
-                                                    <ToggleButtonGroup
-                                                        value={value}
-                                                        onChange={(event, blockType: string | null) => {
-                                                            if (blockType) {
-                                                                onChange(blockType);
-                                                            }
-                                                        }}
-                                                        exclusive
-                                                    >
-                                                        {options.map((option) => (
-                                                            <ToggleButton value={option.value} key={option.value}>
-                                                                {option.label}
-                                                            </ToggleButton>
-                                                        ))}
-                                                    </ToggleButtonGroup>
-                                                )}
-                                            </Field>
-                                        </Box>
-                                        {isInPaper && activeBlock.block && <Divider />}
-                                    </>
-                                )}
+                                <BlockTypeField variant={variant} label={label} options={options} />
                             </BlocksFinalForm>
-                        </Box>
+                        </TypeChooser>
                     </HiddenInSubroute>
                     {activeBlock.block && activeBlock.state ? (
-                        <Box
-                            sx={{
-                                padding: isInPaper && !activeBlock.block.definesOwnPadding ? 3 : 0,
-                            }}
-                        >
+                        <ActiveBlock data-padding={isInPaper && !activeBlock.block.definesOwnPadding ? "default" : "none"}>
                             <HoverPreviewComponent key={activeBlock.type} componentSlug={`#${activeBlock.type}`}>
                                 <activeBlock.block.AdminComponent
                                     state={activeBlock.state.props}
                                     updateState={createUpdateSubBlocksFn(activeBlock.state.type)}
                                 />
                             </HoverPreviewComponent>
-                        </Box>
+                        </ActiveBlock>
                     ) : null}
                 </SelectPreviewComponent>
             );
@@ -546,11 +511,70 @@ export const createOneOfBlock = <T extends boolean = boolean>(
     return OneOfBlock;
 };
 
-const ToggleButtonGroup = styled(MuiToggleButtonGroup)`
-    display: flex;
+interface BlockTypeFieldProps {
+    variant: "select" | "radio" | "toggle";
+    label: ReactNode;
+    options: Array<{ value: string; label: ReactNode }>;
+}
+
+function BlockTypeField({ variant, label, options }: BlockTypeFieldProps) {
+    const intl = useIntl();
+    const labelText = messageText(intl, label) ?? intl.formatMessage({ id: "dextinity.blocks.oneOfBlock.blockType", defaultMessage: "Block type" });
+    const optionsWithText = options.map((option) => ({ ...option, textValue: messageText(intl, option.label) }));
+
+    if (variant === "radio") {
+        return <RadioGroupField name="blockType" aria-label={labelText} options={optionsWithText} />;
+    }
+
+    if (variant === "toggle") {
+        return (
+            <StretchedSegmentedControl>
+                <SegmentedControlField name="blockType" aria-label={labelText} options={optionsWithText} />
+            </StretchedSegmentedControl>
+        );
+    }
+
+    return <SelectField name="blockType" label={label} options={optionsWithText} required />;
+}
+
+const StretchedSegmentedControl = styled("div")`
+    & > * {
+        display: flex;
+        inline-size: 100%;
+    }
+
+    & [role="radiogroup"] {
+        display: flex;
+        min-inline-size: 100%;
+    }
+
+    & [role="radio"] {
+        flex: 1 0 auto;
+    }
+
+    & > [data-collapsed] > button {
+        justify-content: space-between;
+        inline-size: 100%;
+    }
 `;
 
-const ToggleButton = styled(MuiToggleButton)`
-    flex: 1;
-    color: ${({ theme }) => theme.palette.text.primary};
+const TypeChooser = styled("div")`
+    &:not([data-in-paper]) {
+        padding-block-end: var(--dextinity-space-4);
+    }
+
+    &[data-in-paper],
+    &[data-variant="radio"] {
+        padding: var(--dextinity-space-4);
+    }
+
+    &[data-divider] {
+        border-block-end: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    }
+`;
+
+const ActiveBlock = styled("div")`
+    &[data-padding="default"] {
+        padding: var(--dextinity-space-4);
+    }
 `;

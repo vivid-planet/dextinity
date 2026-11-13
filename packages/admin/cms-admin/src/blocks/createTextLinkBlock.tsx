@@ -1,10 +1,11 @@
-import { Field, FinalFormInput, messages } from "@dextinity/admin";
-import { Box } from "@mui/material";
+import { messages } from "@dextinity/admin";
+import { styled } from "@mui/material/styles";
 import type { ReactNode } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
 import type { TextLinkBlockData, TextLinkBlockInput } from "../blocks.generated";
 import { BlockAdminComponentPaper } from "./common/BlockAdminComponentPaper";
+import { BlockInputField } from "./form/BlockInputField";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { composeBlocks } from "./helpers/composeBlocks/composeBlocks";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
@@ -40,6 +41,8 @@ export function createTextLinkBlock(
         tags: tags ? tags : LinkBlock.tags,
 
         category: BlockCategory.Navigation,
+        iconName: "link",
+        description: <FormattedMessage id="dextinity.blocks.textLink.description" defaultMessage="Link with its text" />,
 
         definesOwnPadding: true,
 
@@ -48,21 +51,16 @@ export function createTextLinkBlock(
 
             return (
                 <BlockAdminComponentPaper disablePadding>
-                    <Box
-                        sx={{
-                            padding: 3,
-                            paddingBottom: 0,
-                        }}
-                    >
+                    <TextSection>
                         <BlocksFinalForm
                             onSubmit={({ text }: { text: string | undefined }) => {
                                 updateState((prevState) => ({ ...prevState, text: text ?? "" }));
                             }}
                             initialValues={{ text: state.text }}
                         >
-                            <Field label={<FormattedMessage {...messages.text} />} name="text" component={FinalFormInput} fullWidth />
+                            <BlockInputField label={<FormattedMessage {...messages.text} />} name="text" />
                         </BlocksFinalForm>
-                    </Box>
+                    </TextSection>
                     {link}
                 </BlockAdminComponentPaper>
             );
@@ -96,3 +94,7 @@ export function createTextLinkBlock(
 
     return TextLinkBlock;
 }
+
+const TextSection = styled("div")`
+    padding: var(--dextinity-space-4) var(--dextinity-space-4) 0;
+`;

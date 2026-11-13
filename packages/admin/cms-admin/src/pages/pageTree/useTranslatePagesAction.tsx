@@ -1,17 +1,17 @@
 import { gql, useApolloClient } from "@apollo/client";
-import { Button, Dialog, messages, useContentTranslationService, useErrorDialog } from "@dextinity/admin";
-import { DialogActions, DialogContent, DialogContentText } from "@mui/material";
+import { useContentTranslationService } from "@dextinity/admin";
+import { Button, ConfirmDialog, Dialog, Icon } from "@dextinity/ui";
 import { type ReactNode, useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { useIntl } from "react-intl";
 
-import { useProgressDialog } from "../../common/useProgressDialog";
+import { ProgressDialog } from "../../common/useProgressDialog";
 import { useContentLanguage } from "../../contentLanguage/useContentLanguage";
 import { useContentScope } from "../../contentScope/Provider";
 import type { DocumentInterface, GQLDocument } from "../../documents/types";
 import type { TranslatableInterface } from "../../translation/TranslatableInterface";
 import { findAvailableSlug } from "./findAvailableSlug";
 import { transformToSlug } from "./transformToSlug";
-import type { PageTreePage } from "./usePageTree";
+import type { GQLPageTreePageFragment } from "./usePageTree";
 
 function isTranslatable(
     documentType: DocumentInterface,
@@ -20,7 +20,7 @@ function isTranslatable(
 }
 
 interface Props {
-    pages: PageTreePage[];
+    pages: GQLPageTreePageFragment[];
     documentTypes: Record<string, DocumentInterface>;
 }
 
@@ -35,12 +35,11 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
     const { enabled, translate, batchTranslate } = useContentTranslationService();
     const { scope } = useContentScope();
     const language = useContentLanguage({ scope });
-    const errorDialog = useErrorDialog();
+    const intl = useIntl();
     const [translating, setTranslating] = useState(false);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-    const progress = useProgressDialog({
-        title: <FormattedMessage id="dextinity.translator.progress.title" defaultMessage="Translating pages" />,
-    });
+    const [progress, setProgress] = useState<{ value: number; message: string }>();
+    const [errorMessage, setErrorMessage] = useState<string>();
 
     const eligiblePages = pages.filter((page) => page.visibility !== "Archived");
     const hasTranslatableContent = eligiblePages.some((page) => {
@@ -60,14 +59,13 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
                 const documentType = documentTypes[page.documentType];
                 const hasTranslatableContent = documentType && isTranslatable(documentType);
 
-                progress.updateProgress(
-                    (i / eligiblePages.length) * 100,
-                    <FormattedMessage
-                        id="dextinity.translator.progress.message"
-                        defaultMessage="Translating {current} of {total}: {name}"
-                        values={{ current: i + 1, total: eligiblePages.length, name: page.name }}
-                    />,
-                );
+                setProgress({
+                    value: (i / eligiblePages.length) * 100,
+                    message: intl.formatMessage(
+                        { id: "dextinity.translator.progress.message", defaultMessage: "Translating {current} of {total}: {name}" },
+                        { current: i + 1, total: eligiblePages.length, name: page.name },
+                    ),
+                });
 
                 const shouldTranslateName = hasTranslatableContent && page.slug !== "home";
 
@@ -148,20 +146,11 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
                 }
             }
 
-            progress.updateProgress(undefined);
+            setProgress(undefined);
             await apolloClient.refetchQueries({ include: ["Pages"] });
         } catch (error) {
-            progress.updateProgress(undefined);
-            errorDialog?.showError({
-                title: <FormattedMessage id="dextinity.translator.error.title" defaultMessage="Translation failed" />,
-                userMessage: (
-                    <FormattedMessage
-                        id="dextinity.translator.error.message"
-                        defaultMessage="An error occurred while translating the content. Please try again."
-                    />
-                ),
-                error: error instanceof Error ? error.message : "Translation failed",
-            });
+            setProgress(undefined);
+            setErrorMessage(error instanceof Error ? error.message : undefined);
         } finally {
             setTranslating(false);
         }
@@ -171,47 +160,59 @@ export function useTranslatePagesAction({ pages, documentTypes }: Props): {
 
     const dialogs = (
         <>
-            <Dialog
+            <ConfirmDialog
                 open={confirmDialogOpen}
-                onClose={() => setConfirmDialogOpen(false)}
+                onOpenChange={setConfirmDialogOpen}
                 title={
-                    isSinglePage ? (
-                        <FormattedMessage id="dextinity.translator.confirmDialog.title" defaultMessage="Translate page content?" />
-                    ) : (
-                        <FormattedMessage
-                            id="dextinity.translator.confirmDialog.titleMultiple"
-                            defaultMessage="Translate {count} pages?"
-                            values={{ count: eligiblePages.length }}
-                        />
-                    )
+                    isSinglePage
+                        ? intl.formatMessage({ id: "dextinity.translator.confirmDialog.title", defaultMessage: "Translate page content?" })
+                        : intl.formatMessage(
+                              { id: "dextinity.translator.confirmDialog.titleMultiple", defaultMessage: "Translate {count} pages?" },
+                              { count: eligiblePages.length },
+                          )
+                }
+                description={
+                    isSinglePage
+                        ? intl.formatMessage({
+                              id: "dextinity.translator.confirmDialog.message",
+                              defaultMessage: "All text content of this page will be translated. This action cannot be reverted.",
+                          })
+                        : intl.formatMessage(
+                              {
+                                  id: "dextinity.translator.confirmDialog.messageMultiple",
+                                  defaultMessage: "All text content of {count} pages will be translated. This action cannot be reverted.",
+                              },
+                              { count: eligiblePages.length },
+                          )
+                }
+                confirmLabel={intl.formatMessage({ id: "dextinity.translator.confirmDialog.confirm", defaultMessage: "Translate" })}
+                confirmIcon={<Icon name="translate" />}
+                onConfirm={handleTranslate}
+                labels={{ cancel: intl.formatMessage({ id: "dextinity.translator.confirmDialog.cancel", defaultMessage: "Cancel" }) }}
+            />
+            <ProgressDialog
+                title={intl.formatMessage({ id: "dextinity.translator.progress.title", defaultMessage: "Translating pages" })}
+                progress={progress}
+            />
+            <Dialog
+                open={errorMessage !== undefined}
+                onOpenChange={() => setErrorMessage(undefined)}
+                role="alertdialog"
+                size="small"
+                title={intl.formatMessage({ id: "dextinity.translator.error.title", defaultMessage: "Translation failed" })}
+                description={intl.formatMessage({
+                    id: "dextinity.translator.error.message",
+                    defaultMessage: "An error occurred while translating the content. Please try again.",
+                })}
+                labels={{ close: intl.formatMessage({ id: "dextinity.translator.error.close", defaultMessage: "Close" }) }}
+                footer={
+                    <Button onClick={() => setErrorMessage(undefined)}>
+                        {intl.formatMessage({ id: "dextinity.translator.error.close", defaultMessage: "Close" })}
+                    </Button>
                 }
             >
-                <DialogContent>
-                    <DialogContentText>
-                        {isSinglePage ? (
-                            <FormattedMessage
-                                id="dextinity.translator.confirmDialog.message"
-                                defaultMessage="All text content of this page will be translated. This action cannot be reverted."
-                            />
-                        ) : (
-                            <FormattedMessage
-                                id="dextinity.translator.confirmDialog.messageMultiple"
-                                defaultMessage="All text content of {count} pages will be translated. This action cannot be reverted."
-                                values={{ count: eligiblePages.length }}
-                            />
-                        )}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setConfirmDialogOpen(false)} variant="textDark">
-                        <FormattedMessage {...messages.cancel} />
-                    </Button>
-                    <Button onClick={handleTranslate} variant="primary">
-                        <FormattedMessage id="dextinity.translator.confirmDialog.confirm" defaultMessage="Translate" />
-                    </Button>
-                </DialogActions>
+                {errorMessage}
             </Dialog>
-            {progress.dialog}
         </>
     );
 

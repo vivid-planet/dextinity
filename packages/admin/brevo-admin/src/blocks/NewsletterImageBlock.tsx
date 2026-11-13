@@ -10,6 +10,8 @@ export const NewsletterImageBlock: BlockInterface<NewsletterImageBlockData, News
         name: "NewsletterImage",
         displayName: <FormattedMessage id="dextinity.blocks.newsletterImage.displayName" defaultMessage="Newsletter Image" />,
         category: BlockCategory.Media,
+        iconName: "image",
+        description: <FormattedMessage id="dextinity.blocks.newsletterImage.description" defaultMessage="Image from the assets" />,
         blocks: {
             image: {
                 block: PixelImageBlock,

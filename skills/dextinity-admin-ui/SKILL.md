@@ -363,8 +363,7 @@ offset:
 To group related content, use a container component instead of a `Box` with hand-set padding,
 borders, and a title. `FieldSet` (from `@dextinity/admin`) is a collapsible titled panel — wrap a page
 form's fields in it. Inside a dialog or sidebar, group fields with `FormSection` instead, a lighter
-titled section with a divider. For a dashboard widget, use `DashboardWidgetRoot` when the project
-has `@dextinity/cms-admin`, rather than building a container by hand. When you compose one yourself,
+titled section with a divider. When you compose a container yourself, such as a dashboard widget,
 build it from `Card` (with `CardHeader` and `CardContent`) or `Paper`, with `Typography` for text
 and `Grid` for layout. Dextinity themes `Card`, `Paper`, and `Typography`, so they carry the right
 elevation, radius, and type scale without custom CSS. `Grid` takes its spacing from the theme.
@@ -382,9 +381,6 @@ come from `@mui/material`; `FieldSet` and `FormSection` from `@dextinity/admin`.
 <FieldSet title={title} supportText={supportText}>
     {children}
 </FieldSet>;
-
-// Prefer — a dashboard widget from @dextinity/cms-admin's ready-made container
-<DashboardWidgetRoot header={title}>{children}</DashboardWidgetRoot>;
 ```
 
 ### Buttons: `Button` variants and action buttons, not hand-styled buttons

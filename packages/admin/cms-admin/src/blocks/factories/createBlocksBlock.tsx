@@ -1,45 +1,20 @@
-import {
-    RowActionsItem,
-    RowActionsMenu,
-    StackPage,
-    StackPageTitle,
-    StackSwitch,
-    StackSwitchApiContext,
-    Tooltip,
-    UndoSnackbar,
-    useSnackbarApi,
-} from "@dextinity/admin";
-import { Add, Copy, Delete, Invisible, Paste, Visible } from "@dextinity/admin-icons";
-import { Box, Checkbox, FormControlLabel, IconButton, Typography } from "@mui/material";
-import { styled } from "@mui/material/styles";
-import {
-    type ChangeEvent,
-    type Dispatch,
-    type FunctionComponent,
-    type ReactNode,
-    type SetStateAction,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from "react";
-import { FormattedMessage, type MessageDescriptor } from "react-intl";
+import { StackPage, StackPageTitle, StackSwitch, StackSwitchApiContext } from "@dextinity/admin";
+import { type Dispatch, type FunctionComponent, type ReactNode, type SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
+import { FormattedMessage, type MessageDescriptor, useIntl } from "react-intl";
 import { v4 as uuid } from "uuid";
 
 import { useContentScope } from "../../contentScope/Provider";
 import { CannotPasteBlockDialog } from "../clipboard/CannotPasteBlockDialog";
 import { useBlockClipboard } from "../clipboard/useBlockClipboard";
 import { AddBlockDrawer } from "../common/AddBlockDrawer";
-import { AdminComponentStickyFooter } from "../common/AdminComponentStickyFooter";
-import { AdminComponentStickyHeader } from "../common/AdminComponentStickyHeader";
-import { BlockAdminComponentButton } from "../common/BlockAdminComponentButton";
-import { BlockAdminComponentPaper } from "../common/BlockAdminComponentPaper";
-import { BlockPreviewContent } from "../common/blockRow/BlockPreviewContent";
-import { BlockRow } from "../common/blockRow/BlockRow";
+import { BlockRow, type BlockRowMenuApi } from "../common/blockRow/BlockRow";
+import { BlockRowList } from "../common/blockRow/BlockRowList";
+import { useBlockListToasts } from "../common/blockRow/useBlockListToasts";
 import { useBlocksConfig } from "../config/BlocksConfigContext";
+import { useBlockContext } from "../context/useBlockContext";
+import { messageText } from "../form/messageText";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { deduplicateBlockDependencies } from "../helpers/deduplicateBlockDependencies";
-import { HoverPreviewComponent } from "../iframebridge/HoverPreviewComponent";
 import { SelectPreviewComponent } from "../iframebridge/SelectPreviewComponent";
 import type { BlockDependency, BlockInterface, BlockState, PreviewContent } from "../types";
 import { resolveNewState } from "../utils";
@@ -115,6 +90,7 @@ interface CreateBlocksBlockOptions<AdditionalItemFields extends Record<string, u
         item: BlocksBlockItem<BlockInterface, AdditionalItemFields>;
         onChange: (item: BlocksBlockItem<BlockInterface, AdditionalItemFields>) => void;
         onMenuClose: () => void;
+        openDialog: BlockRowMenuApi["openDialog"];
     }>;
     AdditionalItemContent?: FunctionComponent<{ item: BlocksBlockItem<BlockInterface, AdditionalItemFields> }>;
     tags?: Array<MessageDescriptor | string>;
@@ -324,23 +300,15 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
         definesOwnPadding: true,
 
         AdminComponent: ({ state, updateState }) => {
-            const toggleVisible = useCallback(
-                (blockKey: string) => {
-                    updateState((prevState) => ({
-                        ...prevState,
-                        blocks: prevState.blocks.map((c) => (c.key === blockKey ? { ...c, visible: !c.visible } : c)),
-                    }));
-                },
-                [updateState],
-            );
-
+            const intl = useIntl();
+            const context = useBlockContext();
             const [showAddBlockDrawer, setShowAddBlockDrawer] = useState(false);
             const [beforeIndex, setBeforeIndex] = useState<number>();
             const [cannotPasteBlockError, setCannotPasteBlockError] = useState<ReactNode>();
-
-            const snackbarApi = useSnackbarApi();
+            const { toasts, dismissToast, perform } = useBlockListToasts();
 
             const totalVisibleBlocks = state.blocks.filter((block) => block.visible).length;
+            const isMaxVisibleBlocksReached = !!maxVisibleBlocks && totalVisibleBlocks >= maxVisibleBlocks;
 
             useEffect(() => {
                 if (state.blocks.some((block) => block.slideIn)) {
@@ -354,83 +322,51 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                 }
             }, [state.blocks, updateState]);
 
-            const handleUndoClick = useCallback(
-                (removedBlocks: RemovedBlocksBlockItem<BlockInterface, AdditionalItemFields>[] | undefined) => {
-                    if (!removedBlocks) {
-                        return;
-                    }
+            const toggleVisible = (blockKey: string) => {
+                updateState((prevState) => ({
+                    ...prevState,
+                    blocks: prevState.blocks.map((c) => (c.key === blockKey ? { ...c, visible: !c.visible } : c)),
+                }));
+            };
 
-                    updateState((prevState) => {
-                        const blocks = [...prevState.blocks];
-                        removedBlocks?.forEach((removedBlock) => {
-                            const { removedAt } = removedBlock;
-                            const block: BlocksBlockItem<BlockInterface, AdditionalItemFields> = { ...removedBlock };
-                            delete block.removedAt;
-                            blocks.splice(removedAt, 0, block);
-                        });
+            const setVisibleOfSelectedBlocks = (visible: boolean) => {
+                updateState((prevState) => ({
+                    ...prevState,
+                    blocks: prevState.blocks.map((c) => (c.selected ? { ...c, visible } : c)),
+                }));
+            };
 
-                        return { ...prevState, blocks };
-                    });
-                },
-                [updateState],
-            );
-
-            const deleteBlocks = useCallback(
-                (blockKeys: string[]) => {
-                    updateState((prevState) => {
-                        const blocksToRemove = prevState.blocks
-                            .map((block, index) => {
-                                return { ...block, removedAt: index };
-                            })
-                            .filter((block) => {
-                                return blockKeys.includes(block.key);
-                            });
-
-                        snackbarApi.showSnackbar(
-                            <UndoSnackbar
-                                message={
-                                    <FormattedMessage
-                                        id="dextinity.blocks.list.blockDeleted"
-                                        defaultMessage="{count, plural, one {block} other {# blocks}} deleted"
-                                        values={{ count: blocksToRemove.length }}
-                                    />
-                                }
-                                payload={blocksToRemove}
-                                onUndoClick={(blocksToRemove) => {
-                                    handleUndoClick(blocksToRemove);
-                                }}
-                            />,
-                        );
-
-                        return { ...prevState, blocks: prevState.blocks.filter((c) => !blockKeys.includes(c.key)) };
-                    });
-                },
-                [handleUndoClick, snackbarApi, updateState],
-            );
-
-            const handleToggleVisibilityOfAllSelectedBlocks = (visible = false) => {
-                const blocksToShow = state.blocks.map((c) => {
-                    if (c.selected) {
-                        c.visible = visible;
-                    }
-                    return c;
-                });
-
+            const restoreBlocks = (removedBlocks: RemovedBlocksBlockItem<BlockInterface, AdditionalItemFields>[]) => {
                 updateState((prevState) => {
-                    return { ...prevState, blocks: blocksToShow };
+                    const blocks = [...prevState.blocks];
+                    for (const removedBlock of removedBlocks) {
+                        const { removedAt } = removedBlock;
+                        const block: BlocksBlockItem<BlockInterface, AdditionalItemFields> = { ...removedBlock, selected: false };
+                        delete block.removedAt;
+                        blocks.splice(removedAt, 0, block);
+                    }
+
+                    return { ...prevState, blocks };
                 });
             };
 
-            const handleDeleteAllSelectedBlocks = () => {
-                const blocksToDelete = state.blocks.filter((c) => {
-                    return c.selected;
-                });
+            const deleteBlocks = (blockKeys: string[]) => {
+                const removedBlocks = state.blocks
+                    .map((block, index) => ({ ...block, removedAt: index }))
+                    .filter((block) => blockKeys.includes(block.key));
 
-                deleteBlocks(
-                    blocksToDelete.map((block) => {
-                        return block.key;
-                    }),
-                );
+                if (removedBlocks.length === 0) {
+                    return;
+                }
+
+                perform({
+                    run: () => updateState((prevState) => ({ ...prevState, blocks: prevState.blocks.filter((c) => !blockKeys.includes(c.key)) })),
+                    undo: () => restoreBlocks(removedBlocks),
+                    message: intl.formatMessage(
+                        { id: "dextinity.blocks.list.blocksDeleted", defaultMessage: "{count, plural, one {Block} other {# blocks}} deleted" },
+                        { count: removedBlocks.length },
+                    ),
+                });
             };
 
             const addNewBlock = (type: BlockType, beforeIndex?: number) => {
@@ -453,20 +389,46 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                     ) as AdditionalItemFields),
                 };
 
-                const newBlocks = [...state.blocks];
-
-                if (beforeIndex !== undefined) {
-                    newBlocks.splice(beforeIndex, 0, newItem);
-                } else {
-                    newBlocks.push(newItem);
-                }
-
-                updateState((prevState) => ({
-                    ...prevState,
-                    blocks: newBlocks,
-                }));
+                updateState((prevState) => {
+                    const blocks = [...prevState.blocks];
+                    blocks.splice(beforeIndex ?? blocks.length, 0, newItem);
+                    return { ...prevState, blocks };
+                });
 
                 return key;
+            };
+
+            const moveBlock = (fromIndex: number, toIndex: number) => {
+                updateState((prevState) => {
+                    const blocks = [...prevState.blocks];
+                    const [blockToMove] = blocks.splice(fromIndex, 1);
+                    blocks.splice(toIndex, 0, blockToMove);
+                    return { ...prevState, blocks };
+                });
+            };
+
+            const duplicateBlock = async (blockKey: string) => {
+                const original = state.blocks.find((item) => item.key === blockKey);
+                const block = original ? blockForType(original.type) : null;
+                if (!original || !block) {
+                    return;
+                }
+
+                const props = await block.output2State(block.state2Output(original.props), context);
+
+                updateState((prevState) => {
+                    const index = prevState.blocks.findIndex((item) => item.key === blockKey);
+                    const blocks = [...prevState.blocks];
+                    blocks.splice(index + 1, 0, {
+                        ...original,
+                        key: uuid(),
+                        props,
+                        visible: original.visible && !isMaxVisibleBlocksReached,
+                        selected: false,
+                        slideIn: true,
+                    });
+                    return { ...prevState, blocks };
+                });
             };
 
             const createUpdateSubBlocksFn = useCallback(
@@ -554,54 +516,47 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                 setBeforeIndex(undefined);
             };
 
-            const handleToggleSelectAll = (event: ChangeEvent<HTMLInputElement>) => {
-                const selected = event.target.checked;
-                updateState((prevState) => {
-                    return {
-                        ...prevState,
-                        blocks: prevState.blocks.map((block) => {
-                            return { ...block, selected };
-                        }),
-                    };
-                });
+            const selectAllBlocks = (selected: boolean) => {
+                updateState((prevState) => ({
+                    ...prevState,
+                    blocks: prevState.blocks.map((block) => ({ ...block, selected })),
+                }));
             };
 
-            const handleSelectBlock = (currentBlock: BlocksBlockItem, select: boolean) => {
-                updateState((prevState) => {
-                    return {
-                        ...prevState,
-                        blocks: prevState.blocks.map((block) => {
-                            return { ...block, selected: block === currentBlock ? select : block.selected };
-                        }),
-                    };
-                });
+            const selectBlock = (blockKey: string, selected: boolean) => {
+                updateState((prevState) => ({
+                    ...prevState,
+                    blocks: prevState.blocks.map((block) => (block.key === blockKey ? { ...block, selected } : block)),
+                }));
             };
 
-            const handleCopySelectedBlocks = () => {
-                const blocksToCopy = state.blocks
-                    .filter((block) => block.selected)
-                    .map((block) => {
-                        const blockInterface = blockForType(block.type);
+            const copyBlocks = (items: BlocksBlockItem<BlockInterface, AdditionalItemFields>[]) => {
+                const blocksToCopy = items.map((item) => {
+                    const block = blockForType(item.type);
 
-                        if (!blockInterface) {
-                            throw new Error(`No Block found for type ${block.type}`);
-                        }
+                    if (!block) {
+                        throw new Error(`No Block found for type ${item.type}`);
+                    }
 
-                        return {
-                            name: blockInterface.name,
-                            visible: block.visible,
-                            state: block.props,
-                            additionalFields: Object.keys(additionalItemFields ?? {}).reduce(
-                                (fields, field) => ({ ...fields, [field]: block[field] }),
-                                {},
-                            ),
-                        };
-                    });
+                    return {
+                        name: block.name,
+                        visible: item.visible,
+                        state: item.props,
+                        additionalFields: Object.keys(additionalItemFields ?? {}).reduce(
+                            (fields, field) => ({ ...fields, [field]: item[field] }),
+                            {},
+                        ),
+                    };
+                });
 
                 updateClipboardContent(blocksToCopy);
             };
 
             const selectedCount = state.blocks.filter((block) => block.selected).length;
+            const maxVisibleBlocksReason = intl.formatMessage(
+                { id: "dextinity.blocks.block.maxVisibleBlocks", defaultMessage: "Max. visible blocks allowed: {maxVisibleBlocks}" },
+                { maxVisibleBlocks },
+            );
 
             return (
                 <>
@@ -611,229 +566,88 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                                 {(stackApi) => {
                                     return (
                                         <SelectPreviewComponent>
-                                            <BlockAdminComponentPaper disablePadding>
-                                                <AdminComponentStickyHeader>
-                                                    <BlockListHeader>
-                                                        {state.blocks.length ? (
-                                                            <SelectAllFromControlLabel
-                                                                control={
-                                                                    <Checkbox
-                                                                        checked={selectedCount === state.blocks.length && selectedCount > 0}
-                                                                        indeterminate={selectedCount > 0 && selectedCount !== state.blocks.length}
-                                                                        onChange={handleToggleSelectAll}
-                                                                    />
-                                                                }
-                                                                label={
-                                                                    <FormattedMessage
-                                                                        id="dextinity.blocks.list.selectAll"
-                                                                        defaultMessage="Select all"
-                                                                    />
-                                                                }
-                                                            />
-                                                        ) : (
-                                                            <div />
-                                                        )}
-                                                        <BlockListHeaderActionContainer>
-                                                            <RowActionsMenu>
-                                                                {/* Do not show toggle visibility of all selected blocks buttons when maxVisibleBlocks is set */}
-                                                                {!maxVisibleBlocks && (
-                                                                    <>
-                                                                        <RowActionsItem
-                                                                            icon={<Visible />}
-                                                                            disabled={selectedCount === 0}
-                                                                            onClick={() => handleToggleVisibilityOfAllSelectedBlocks(true)}
-                                                                        >
-                                                                            <FormattedMessage
-                                                                                id="dextinity.blocks.list.action.visible"
-                                                                                defaultMessage="Make visible"
-                                                                            />
-                                                                        </RowActionsItem>
-                                                                        <RowActionsItem
-                                                                            icon={<Invisible />}
-                                                                            disabled={selectedCount === 0}
-                                                                            onClick={() => handleToggleVisibilityOfAllSelectedBlocks()}
-                                                                        >
-                                                                            <FormattedMessage
-                                                                                id="dextinity.blocks.list.action.invisible"
-                                                                                defaultMessage="Make invisible"
-                                                                            />
-                                                                        </RowActionsItem>
-                                                                    </>
-                                                                )}
-                                                                <Separator />
-                                                                <RowActionsItem
-                                                                    icon={<Delete />}
-                                                                    disabled={selectedCount === 0}
-                                                                    onClick={handleDeleteAllSelectedBlocks}
-                                                                >
-                                                                    <FormattedMessage
-                                                                        id="dextinity.blocks.list.action.delete"
-                                                                        defaultMessage="Delete"
-                                                                    />
-                                                                </RowActionsItem>
-                                                                <RowActionsItem
-                                                                    icon={<Copy />}
-                                                                    disabled={selectedCount === 0}
-                                                                    onClick={handleCopySelectedBlocks}
-                                                                >
-                                                                    <FormattedMessage id="dextinity.blocks.list.action.copy" defaultMessage="Copy" />
-                                                                </RowActionsItem>
-                                                                <RowActionsItem icon={<Paste />} onClick={() => pasteBlock(0)}>
-                                                                    <FormattedMessage
-                                                                        id="dextinity.blocks.list.action.paste"
-                                                                        defaultMessage="Paste"
-                                                                    />
-                                                                </RowActionsItem>
-                                                            </RowActionsMenu>
-                                                        </BlockListHeaderActionContainer>
-                                                    </BlockListHeader>
-                                                </AdminComponentStickyHeader>
-                                                <div>
-                                                    {state.blocks.map((data, blockIndex) => {
-                                                        const block = blockForType(data.type);
-                                                        if (!block) {
-                                                            return null;
-                                                        }
+                                            <BlockRowList
+                                                aria-label={messageText(intl, displayName) ?? name}
+                                                addLabel={intl.formatMessage({
+                                                    id: "dextinity.blocks.list.addNewBlock",
+                                                    defaultMessage: "Add block",
+                                                })}
+                                                count={state.blocks.length}
+                                                selectedCount={selectedCount}
+                                                onSelectAllChange={selectAllBlocks}
+                                                onAdd={handleAddBlockClick}
+                                                onReorder={moveBlock}
+                                                bulkActions={{
+                                                    onShow: maxVisibleBlocks ? undefined : () => setVisibleOfSelectedBlocks(true),
+                                                    onHide: maxVisibleBlocks ? undefined : () => setVisibleOfSelectedBlocks(false),
+                                                    onCopy: () => copyBlocks(state.blocks.filter((block) => block.selected)),
+                                                    onPaste: () => pasteBlock(0),
+                                                    onDelete: () =>
+                                                        deleteBlocks(state.blocks.filter((block) => block.selected).map((block) => block.key)),
+                                                }}
+                                                toasts={toasts}
+                                                onDismissToast={dismissToast}
+                                            >
+                                                {state.blocks.map((data, blockIndex) => {
+                                                    const block = blockForType(data.type);
+                                                    if (!block) {
+                                                        return null;
+                                                    }
 
-                                                        const isMaxVisibleBlocksReached =
-                                                            !!maxVisibleBlocks && totalVisibleBlocks >= maxVisibleBlocks;
-                                                        const canToggleVisibility = isMaxVisibleBlocksReached ? data.visible : true;
-                                                        const showMaxBlocksAllowedMessage = isMaxVisibleBlocksReached && !data.visible;
-
-                                                        return (
-                                                            <HoverPreviewComponent key={data.key} componentSlug={`${data.key}/blocks`}>
-                                                                <BlockRow
-                                                                    id={data.key}
-                                                                    renderPreviewContent={() => (
-                                                                        <BlockPreviewContent block={block} state={data.props} />
-                                                                    )}
-                                                                    index={blockIndex}
-                                                                    onContentClick={() => {
-                                                                        stackApi.activatePage("blocks", data.key);
-                                                                    }}
-                                                                    onDeleteClick={() => {
-                                                                        deleteBlocks([data.key]);
-                                                                    }}
-                                                                    moveBlock={(from, to) => {
-                                                                        updateState((prevState) => {
-                                                                            const blocks = [...prevState.blocks];
-                                                                            const blockToMove = blocks.splice(from, 1)[0];
-                                                                            blocks.splice(to, 0, blockToMove);
-                                                                            return { ...prevState, blocks };
-                                                                        });
-                                                                    }}
-                                                                    visibilityButton={
-                                                                        <Tooltip
-                                                                            title={
-                                                                                showMaxBlocksAllowedMessage ? (
-                                                                                    <FormattedMessage
-                                                                                        id="dextinity.blocks.block.maxVisibleBlocks"
-                                                                                        defaultMessage="Max. visible blocks allowed: {maxVisibleBlocks}"
-                                                                                        values={{ maxVisibleBlocks }}
-                                                                                    />
-                                                                                ) : null
-                                                                            }
-                                                                        >
-                                                                            <Box component="span">
-                                                                                <IconButton
-                                                                                    onClick={() => canToggleVisibility && toggleVisible(data.key)}
-                                                                                    size="small"
-                                                                                    disabled={!canToggleVisibility}
-                                                                                >
-                                                                                    {data.visible ? (
-                                                                                        <Visible color="success" />
-                                                                                    ) : (
-                                                                                        <Invisible color="action" />
-                                                                                    )}
-                                                                                </IconButton>
-                                                                            </Box>
-                                                                        </Tooltip>
-                                                                    }
-                                                                    onAddNewBlock={handleAddBlockClick}
-                                                                    onCopyClick={() => {
-                                                                        const block = blockForType(data.type);
-
-                                                                        if (!block) {
-                                                                            throw new Error(`No Block found for type ${data.type}`);
-                                                                        }
-                                                                        updateClipboardContent([
-                                                                            {
-                                                                                name: block.name,
-                                                                                visible: data.visible,
-                                                                                state: data.props,
-                                                                                additionalFields: Object.keys(additionalItemFields ?? {}).reduce(
-                                                                                    (fields, field) => ({ ...fields, [field]: data[field] }),
-                                                                                    {},
-                                                                                ),
-                                                                            },
-                                                                        ]);
-                                                                    }}
-                                                                    onPasteClick={() => {
-                                                                        pasteBlock(blockIndex + 1);
-                                                                    }}
-                                                                    selected={data.selected}
-                                                                    onSelectedClick={(selected) => {
-                                                                        handleSelectBlock(data, selected);
-                                                                    }}
-                                                                    isValidFn={() => block.isValid(data.props)}
-                                                                    slideIn={data.slideIn}
-                                                                    hideBottomInsertBetweenButton={blockIndex >= state.blocks.length - 1}
-                                                                    additionalMenuItems={(onMenuClose) =>
-                                                                        AdditionalItemContextMenuItems ? (
-                                                                            <AdditionalItemContextMenuItems
-                                                                                item={data}
-                                                                                onChange={(updatedItem) => {
-                                                                                    updateState((previousState) => ({
-                                                                                        blocks: previousState.blocks.map((block) =>
-                                                                                            block.key === data.key ? updatedItem : block,
-                                                                                        ),
-                                                                                    }));
-                                                                                }}
-                                                                                onMenuClose={onMenuClose}
-                                                                            />
-                                                                        ) : undefined
-                                                                    }
-                                                                    additionalContent={
-                                                                        AdditionalItemContent ? <AdditionalItemContent item={data} /> : undefined
-                                                                    }
-                                                                />
-                                                            </HoverPreviewComponent>
-                                                        );
-                                                    })}
-                                                    {state.blocks.length === 0 ? (
-                                                        <BlockAdminComponentButton
-                                                            onClick={() => handleAddBlockClick()}
-                                                            variant="primary"
-                                                            size="large"
-                                                        >
-                                                            <LargeAddButtonContent>
-                                                                <LargeAddButtonIcon />
-                                                                <Typography>
-                                                                    <FormattedMessage
-                                                                        id="dextinity.blocks.list.addNewBlock"
-                                                                        defaultMessage="Add block"
-                                                                    />
-                                                                </Typography>
-                                                            </LargeAddButtonContent>
-                                                        </BlockAdminComponentButton>
-                                                    ) : (
-                                                        <AdminComponentStickyFooter>
-                                                            <BlockAdminComponentButton
-                                                                onClick={() => handleAddBlockClick()}
-                                                                variant="primary"
-                                                                size="large"
-                                                                startIcon={<Add />}
-                                                            >
-                                                                <FormattedMessage id="dextinity.blocks.list.addNewBlock" defaultMessage="Add block" />
-                                                            </BlockAdminComponentButton>
-                                                        </AdminComponentStickyFooter>
-                                                    )}
-                                                </div>
-                                            </BlockAdminComponentPaper>
+                                                    return (
+                                                        <BlockRow
+                                                            key={data.key}
+                                                            block={block}
+                                                            state={data.props}
+                                                            previewSlug={`${data.key}/blocks`}
+                                                            visible={data.visible}
+                                                            onVisibleChange={() => toggleVisible(data.key)}
+                                                            visibilityRestriction={
+                                                                isMaxVisibleBlocksReached && !data.visible
+                                                                    ? { reason: maxVisibleBlocksReason, canToggle: false }
+                                                                    : undefined
+                                                            }
+                                                            checked={data.selected}
+                                                            onCheckedChange={(checked) => selectBlock(data.key, checked)}
+                                                            onOpen={() => stackApi.activatePage("blocks", data.key)}
+                                                            onCopy={() => copyBlocks([data])}
+                                                            onPaste={() => pasteBlock(blockIndex + 1)}
+                                                            onDuplicate={() => duplicateBlock(data.key)}
+                                                            onDelete={() => deleteBlocks([data.key])}
+                                                            renderAdditionalMenuItems={
+                                                                AdditionalItemContextMenuItems
+                                                                    ? ({ closeMenu, openDialog }) => (
+                                                                          <AdditionalItemContextMenuItems
+                                                                              item={data}
+                                                                              onChange={(updatedItem) => {
+                                                                                  updateState((previousState) => ({
+                                                                                      blocks: previousState.blocks.map((block) =>
+                                                                                          block.key === data.key ? updatedItem : block,
+                                                                                      ),
+                                                                                  }));
+                                                                              }}
+                                                                              onMenuClose={closeMenu}
+                                                                              openDialog={openDialog}
+                                                                          />
+                                                                      )
+                                                                    : undefined
+                                                            }
+                                                            additionalContent={
+                                                                AdditionalItemContent ? <AdditionalItemContent item={data} /> : undefined
+                                                            }
+                                                        />
+                                                    );
+                                                })}
+                                            </BlockRowList>
                                             <AddBlockDrawer
                                                 open={showAddBlockDrawer}
                                                 onClose={handleCloseAddBlockDrawer}
                                                 blocks={filteredSupportedBlocks}
+                                                insertBefore={
+                                                    beforeIndex !== undefined && state.blocks[beforeIndex]
+                                                        ? (blockForType(state.blocks[beforeIndex].type) ?? undefined)
+                                                        : undefined
+                                                }
                                                 onAddNewBlock={(type, addAndEdit) => {
                                                     const key = addNewBlock(type, beforeIndex);
 
@@ -847,7 +661,10 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
                                 }}
                             </StackSwitchApiContext.Consumer>
                         </StackPage>
-                        <StackPage name="blocks" title="Block bearbeiten">
+                        <StackPage
+                            name="blocks"
+                            title={intl.formatMessage({ id: "dextinity.blocks.blocks.editBlock", defaultMessage: "Edit block" })}
+                        >
                             {(id) => (
                                 <StackSwitchApiContext.Consumer>
                                     {(stackApi) => {
@@ -963,40 +780,3 @@ export function createBlocksBlock<AdditionalItemFields extends Record<string, un
 
     return BlocksBlock;
 }
-
-const BlockListHeader = styled("div")`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: ${({ theme }) => theme.spacing(0, 1)};
-`;
-
-const BlockListHeaderActionContainer = styled("div")`
-    display: flex;
-    align-items: center;
-    padding: 12px 0;
-`;
-
-const SelectAllFromControlLabel = styled(FormControlLabel)`
-    padding: 15px 10px 15px 7px;
-`;
-
-const LargeAddButtonContent = styled("span")`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 4px 0;
-`;
-
-const LargeAddButtonIcon = styled(Add)`
-    font-size: 24px;
-    margin-bottom: 8px;
-`;
-
-const Separator = styled("div")`
-    background-color: ${(props) => props.theme.palette.grey["100"]};
-    height: 22px;
-    width: 1px;
-    margin-left: ${({ theme }) => theme.spacing(1)};
-    margin-right: ${({ theme }) => theme.spacing(1)};
-`;

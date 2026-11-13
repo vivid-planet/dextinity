@@ -9,6 +9,7 @@ import {
     type TipTapTextBlock,
     type TipTapTextBlockStyle,
 } from "../createTipTapRichTextBlock";
+import { chooseMenuItem } from "./tipTapStoryInteractions";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -65,7 +66,7 @@ export const HeadingLevels: StoryObj<typeof HeadingLevelsStory> = {
         });
 
         await step("Heading dropdown only offers Heading 2-4, not 1, 5 or 6", async () => {
-            const textBlockTypeSelect = canvas.getByRole("combobox");
+            const textBlockTypeSelect = canvas.getByRole("button", { name: "Text type" });
             await userEvent.click(textBlockTypeSelect);
 
             await waitFor(
@@ -161,17 +162,17 @@ export const HeadingOnly: StoryObj<typeof HeadingOnlyStory> = {
         });
 
         await step("Text block type dropdown only offers headings, no paragraph", async () => {
-            await userEvent.click(canvas.getByRole("combobox"));
+            await userEvent.click(canvas.getByRole("button", { name: "Text type" }));
 
             await waitFor(
                 () => {
                     const body = within(document.body);
-                    expect(body.getAllByRole("option").map((option) => option.textContent)).toEqual(["Heading 2", "Heading 3", "Heading 4"]);
+                    expect(body.getAllByRole("menuitemradio").map((option) => option.textContent)).toEqual(["Heading 2", "Heading 3", "Heading 4"]);
                 },
                 { timeout: 3000 },
             );
 
-            await userEvent.click(within(document.body).getByRole("option", { name: "Heading 2" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Heading 2");
         });
 
         await step("Selected heading level is applied", async () => {
@@ -248,18 +249,17 @@ export const HeadingOnlyWithTextBlockStyles: StoryObj<typeof HeadingOnlyWithText
         });
 
         await step("Applying a text block style keeps the heading", async () => {
-            const comboboxes = canvas.getAllByRole("combobox");
-            expect(comboboxes[0]).toHaveTextContent("Heading 3");
-            await userEvent.click(comboboxes[1]);
+            expect(canvas.getByRole("button", { name: "Text type" })).toHaveTextContent("Heading 3");
+            await userEvent.click(canvas.getByRole("button", { name: "Text style" }));
 
             await waitFor(
                 () => {
-                    expect(within(document.body).getByRole("option", { name: "Size 550" })).toBeInTheDocument();
+                    expect(within(document.body).getByRole("menuitemradio", { name: "Size 550" })).toBeInTheDocument();
                 },
                 { timeout: 3000 },
             );
 
-            await userEvent.click(within(document.body).getByRole("option", { name: "Size 550" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitemradio", "Size 550");
 
             await waitFor(
                 () => {

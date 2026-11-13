@@ -1,9 +1,9 @@
-import { Field, FinalFormInput } from "@dextinity/admin";
 import { FormattedMessage } from "react-intl";
 
 import type { PhoneLinkBlockData, PhoneLinkBlockInput } from "../blocks.generated";
 import { isPhoneNumber } from "../validation/isPhoneNumber";
 import { validatePhoneNumber } from "../validation/validatePhoneNumber";
+import { BlockInputField } from "./form/BlockInputField";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
@@ -19,6 +19,8 @@ export const PhoneLinkBlock: BlockInterface<PhoneLinkBlockData, PhoneLinkBlockDa
     defaultValues: () => ({ phone: undefined }),
 
     category: BlockCategory.Navigation,
+    iconName: "phone-call",
+    description: <FormattedMessage id="dextinity.blocks.link.phone.description" defaultMessage="Link that calls a phone number" />,
 
     isValid: (state) => {
         return state.phone ? isPhoneNumber(state.phone) : true;
@@ -28,11 +30,11 @@ export const PhoneLinkBlock: BlockInterface<PhoneLinkBlockData, PhoneLinkBlockDa
         return (
             <SelectPreviewComponent>
                 <BlocksFinalForm onSubmit={updateState} initialValues={state}>
-                    <Field
+                    <BlockInputField
                         label={<FormattedMessage id="dextinity.blocks.link.phone" defaultMessage="Phone Number" />}
                         name="phone"
-                        component={FinalFormInput}
-                        fullWidth
+                        type="tel"
+                        disableContentTranslation
                         validate={validatePhoneNumber}
                     />
                 </BlocksFinalForm>

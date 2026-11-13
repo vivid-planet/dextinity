@@ -1,8 +1,8 @@
-import { Field, FinalFormInput } from "@dextinity/admin";
 import { isEmail } from "class-validator";
 import { FormattedMessage } from "react-intl";
 
 import type { EmailLinkBlockData, EmailLinkBlockInput } from "../blocks.generated";
+import { BlockInputField } from "./form/BlockInputField";
 import { BlocksFinalForm } from "./form/BlocksFinalForm";
 import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
@@ -18,6 +18,8 @@ export const EmailLinkBlock: BlockInterface<EmailLinkBlockData, EmailLinkBlockDa
     defaultValues: () => ({ email: undefined }),
 
     category: BlockCategory.Navigation,
+    iconName: "mail",
+    description: <FormattedMessage id="dextinity.blocks.link.email.description" defaultMessage="Link that writes an email" />,
 
     isValid: (state) => {
         return state.email ? isEmail(state.email) : true;
@@ -27,11 +29,11 @@ export const EmailLinkBlock: BlockInterface<EmailLinkBlockData, EmailLinkBlockDa
         return (
             <SelectPreviewComponent>
                 <BlocksFinalForm onSubmit={updateState} initialValues={state}>
-                    <Field
+                    <BlockInputField
                         label={<FormattedMessage id="dextinity.blocks.link.email" defaultMessage="Email" />}
                         name="email"
-                        component={FinalFormInput}
-                        fullWidth
+                        type="email"
+                        disableContentTranslation
                         validate={(email: string) => {
                             if (email && !isEmail(email)) {
                                 return <FormattedMessage id="dextinity.blocks.link.email.invalid" defaultMessage="Invalid e-mail address" />;

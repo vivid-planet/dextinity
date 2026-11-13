@@ -247,12 +247,9 @@ Fix description here
 
 ## Generated demo files
 
-- `demo/api` and `demo/admin` contain `generated/` folders. Do not edit files inside `generated/` directly; rerun `api-generator` or `admin-generator` to update them.
-- After any changes to `api-generator` or `admin-generator` execute the generator in demo to update the generated files. Before running, build the package.
-
-### admin-generator
-
-The source for generated files are \*.dextinityGen.tsx config files. Modify those and re-run `admin-generator` for changes.
+- `demo/api` contains `generated/` folders. Do not edit files inside `generated/` directly; rerun `api-generator` to update them.
+- After any changes to `api-generator` execute the generator in demo to update the generated files. Before running, build the package.
+- The demo admin doesn't use `admin-generator`; its snapshot tests (`pnpm --filter @dextinity/admin-generator run test`) cover the generated output.
 
 ### api-generator
 

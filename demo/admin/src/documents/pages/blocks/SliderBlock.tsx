@@ -23,6 +23,8 @@ const SliderItemBlock = createCompositeBlock({
 export const SliderBlock = createListBlock({
     name: "Slider",
     displayName: <FormattedMessage id="sliderBlock.displayName" defaultMessage="Slider" />,
+    iconName: "swap",
+    description: <FormattedMessage id="sliderBlock.description" defaultMessage="Slides with media and text" />,
     block: SliderItemBlock,
     itemName: <FormattedMessage id="sliderBlock.itemName" defaultMessage="Item" />,
     itemsName: <FormattedMessage id="sliderBlock.itemsName" defaultMessage="Items" />,

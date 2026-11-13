@@ -1,4 +1,5 @@
 import { FinalFormContextProvider, type FinalFormContextProviderProps, renderFinalFormChildren } from "@dextinity/admin";
+import { FieldAdapterConfigProvider } from "@dextinity/ui-react-final-form";
 import { type JSX, useEffect, useLayoutEffect, useRef } from "react";
 import { flushSync } from "react-dom";
 import { type AnyObject, Form, type FormProps, type FormRenderProps, useForm, useFormState } from "react-final-form";
@@ -60,16 +61,18 @@ export function BlocksFinalForm<FormValues = AnyObject>({ onSubmit, children, ..
         return (
             <>
                 <AutosaveSpy<FormValues> onSubmit={onSubmit} />
-                <FinalFormContextProvider {...finalFormContextValues}>
-                    {renderFinalFormChildren(
-                        {
-                            children: children,
-                            component: rest.component,
-                            render: rest.render,
-                        },
-                        props,
-                    )}
-                </FinalFormContextProvider>
+                <FieldAdapterConfigProvider showErrors="always" showWarnings="always">
+                    <FinalFormContextProvider {...finalFormContextValues}>
+                        {renderFinalFormChildren(
+                            {
+                                children: children,
+                                component: rest.component,
+                                render: rest.render,
+                            },
+                            props,
+                        )}
+                    </FinalFormContextProvider>
+                </FieldAdapterConfigProvider>
             </>
         );
     }

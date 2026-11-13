@@ -61,7 +61,7 @@ class ExampleBlockInput extends BlockInput {
 **Admin** — use `FormattedNumber` for locale-aware labels:
 
 ```tsx
-const overlayOptions: Array<{ value: ExampleBlockData["overlay"]; label: ReactNode }> = [
+const overlayOptions: Array<CompositeBlockSelectFieldOption<ExampleBlockData["overlay"]>> = [
     { value: 90, label: <FormattedNumber value={0.9} style="percent" /> },
     { value: 70, label: <FormattedNumber value={0.7} style="percent" /> },
     { value: 50, label: <FormattedNumber value={0.5} style="percent" /> },
@@ -71,11 +71,11 @@ const overlayOptions: Array<{ value: ExampleBlockData["overlay"]; label: ReactNo
 
 overlay: {
     block: createCompositeBlockSelectField<ExampleBlockData["overlay"]>({
+        label: <FormattedMessage id="exampleBlock.overlay" defaultMessage="Overlay" />,
         defaultValue: 50,
         options: overlayOptions,
         required: true,
     }),
-    title: <FormattedMessage id="exampleBlock.overlay" defaultMessage="Overlay" />,
 },
 ```
 
@@ -103,17 +103,13 @@ titleHtmlTag: {
 
 ---
 
-## `label` vs `title` — Mutual Exclusivity
+## `label`, not `title`
 
-| Scenario                                                               | Use                                                               |
-| ---------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| Field has its own inline label (visible inside the dropdown component) | `label` on the field options; **omit** `title` on the block entry |
-| No inline label                                                        | **Omit** `label`; use `title` on the block entry instead          |
+`createCompositeBlockSelectField` requires a `label`, which renders with the select. Don't set a `title` on its block entry: both would create redundant, stacked headings.
 
-Using both creates redundant, stacked headings.
+An option `label` can be a string, a `FormattedMessage`, a `FormattedNumber`, or any other element. Other elements need a `textValue` with the option as plain text, for typing ahead and searching. Put an icon into the option's `icon`, not into its `label`.
 
 ```tsx
-// label only — no title
 variant: {
     block: createCompositeBlockSelectField<ExampleBlockData["variant"]>({
         label: <FormattedMessage id="exampleBlock.variant" defaultMessage="Variant" />,
@@ -121,16 +117,6 @@ variant: {
         options: variantOptions,
         required: true,
     }),
-},
-
-// title only — no label
-alignment: {
-    block: createCompositeBlockSelectField<ExampleBlockData["alignment"]>({
-        defaultValue: "left",
-        options: alignmentOptions,
-        required: true,
-    }),
-    title: <FormattedMessage id="exampleBlock.alignment" defaultMessage="Alignment" />,
 },
 ```
 

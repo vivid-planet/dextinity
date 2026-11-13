@@ -1,33 +1,18 @@
 import "react-image-crop/dist/ReactCrop.css";
 
 import { useApolloClient } from "@apollo/client";
-import { CancelButton, Field, FormSection, messages, SaveButton } from "@dextinity/admin";
-import { OpenNewTab } from "@dextinity/admin-icons";
-import {
-    Box,
-    // eslint-disable-next-line no-restricted-imports
-    Button,
-    // eslint-disable-next-line no-restricted-imports
-    Dialog,
-    DialogActions,
-    DialogContent as MuiDialogContent,
-    DialogTitle,
-    Divider,
-    FormControlLabel,
-    Grid,
-    Switch,
-    Typography,
-} from "@mui/material";
+import { Button, Dialog, DialogFormActions, Icon, KeyValueList, Typography } from "@dextinity/ui";
+import { SwitchField } from "@dextinity/ui-react-final-form";
 import { styled } from "@mui/material/styles";
 import { deepEqual } from "fast-equals";
-import type { ChangeEvent } from "react";
+import { useId } from "react";
 import { Form } from "react-final-form";
-import { FormattedMessage } from "react-intl";
+import { useIntl } from "react-intl";
 
 import { fullCropArea } from "../../common/image/cropArea";
 import { ImageCrop } from "../../common/image/ImageCrop";
+import { ImageCropSettingsFields } from "../../common/image/ImageCropSettingsFields";
 import { useContentScope } from "../../contentScope/Provider";
-import { CropSettingsFields } from "../../dam/FileForm/CropSettingsFields";
 import type { EditImageFormValues } from "../../dam/FileForm/EditFile";
 import { useDependenciesConfig } from "../../dependencies/dependenciesConfig";
 import { DamPathLazy } from "../../form/file/DamPathLazy";
@@ -40,8 +25,6 @@ type CropArea = {
     x?: number;
     y?: number;
 };
-
-const imageStyle = { maxWidth: "60vw", maxHeight: "70vh" };
 
 interface FormValues extends EditImageFormValues {
     useInheritedDamSettings?: boolean;
@@ -65,53 +48,40 @@ interface Props {
     inheritedDamSettings?: { cropArea: CropArea };
 }
 
-const DialogContent = styled(MuiDialogContent)`
-    display: grid;
-    grid-template-columns: auto 320px;
-    padding: 0;
-    padding-left: 40px;
-`;
+function toCropArea(values: FormValues): CropArea {
+    if (values.focalPoint === "SMART") {
+        return { focalPoint: "SMART", x: undefined, y: undefined, width: undefined, height: undefined };
+    }
+    if (values.crop.width && values.crop.height) {
+        return {
+            focalPoint: values.focalPoint,
+            x: values.crop.x,
+            y: values.crop.y,
+            width: Math.ceil(values.crop.width),
+            height: Math.ceil(values.crop.height),
+        };
+    }
+    return { focalPoint: values.focalPoint, ...fullCropArea };
+}
 
+/**
+ * A dialog to crop an image and set its focus point, e.g. for the image of a block, built with `@dextinity/ui`. With
+ * `inheritedDamSettings`, the crop of the asset can be used instead.
+ */
 export function EditImageDialog({ image, initialValues, onSubmit, onClose, inheritedDamSettings, damFileId }: Props) {
+    const intl = useIntl();
+    const formId = useId();
     const contentScope = useContentScope();
     const apolloClient = useApolloClient();
     const { entityDependencyMap } = useDependenciesConfig();
+    const damDependency = entityDependencyMap["DamFile"];
 
     const handleSubmit = (values: FormValues) => {
-        if (values.useInheritedDamSettings) {
-            onSubmit(undefined);
-        } else {
-            let cropArea: CropArea;
-
-            if (values.focalPoint === "SMART") {
-                cropArea = {
-                    focalPoint: "SMART",
-                    x: undefined,
-                    y: undefined,
-                    width: undefined,
-                    height: undefined,
-                };
-            } else if (values.crop.width && values.crop.height) {
-                cropArea = {
-                    focalPoint: values.focalPoint,
-                    x: values.crop.x,
-                    y: values.crop.y,
-                    width: Math.ceil(values.crop.width),
-                    height: Math.ceil(values.crop.height),
-                };
-            } else {
-                cropArea = {
-                    focalPoint: values.focalPoint,
-                    ...fullCropArea,
-                };
-            }
-
-            onSubmit(cropArea);
-        }
+        onSubmit(values.useInheritedDamSettings ? undefined : toCropArea(values));
     };
 
     return (
-        <Form
+        <Form<FormValues>
             onSubmit={handleSubmit}
             initialValues={{
                 useInheritedDamSettings: initialValues.useInheritedDamSettings,
@@ -125,159 +95,137 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
             }}
             initialValuesEqual={deepEqual}
         >
-            {({ handleSubmit, values }) => (
-                <Dialog open onClose={onClose} maxWidth={false}>
-                    <DialogFormWrapper onSubmit={handleSubmit}>
-                        <DialogTitle>
-                            <Grid
-                                container
-                                sx={{
-                                    justifyContent: "space-between",
-                                }}
-                            >
-                                <Grid>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id="dextinity.blocks.image.edit"
-                                            defaultMessage="Edit image „{filename}”"
-                                            values={{
-                                                filename: image.name,
-                                            }}
-                                        />
-                                    </Typography>
-                                </Grid>
-                                <Grid>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id="dextinity.blocks.image.dimensions"
-                                            defaultMessage="{width}x{height}px"
-                                            values={{
-                                                width: image.width,
-                                                height: image.height,
-                                            }}
-                                        />
-                                        {image.size && (
-                                            <FormattedMessage
-                                                id="dextinity.blocks.image.size"
-                                                defaultMessage=" | {size, number, :: .00 measure-unit/digital-megabyte}"
-                                                values={{
-                                                    size: image.size / 1024 / 1024,
-                                                }}
-                                            />
-                                        )}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        </DialogTitle>
-                        <DialogContent>
-                            <ImageCrop src={image.url} style={imageStyle} disabled={values.useInheritedDamSettings} />
-                            <div>
+            {({ handleSubmit, values }) => {
+                const usesInheritedDamSettings = inheritedDamSettings !== undefined && Boolean(values.useInheritedDamSettings);
+                return (
+                    <Dialog
+                        open
+                        onOpenChange={(open) => {
+                            if (!open) {
+                                onClose();
+                            }
+                        }}
+                        size="large"
+                        title={intl.formatMessage(
+                            { id: "dextinity.blocks.image.edit", defaultMessage: "Edit image „{filename}”" },
+                            { filename: image.name },
+                        )}
+                        description={[
+                            intl.formatMessage(
+                                { id: "dextinity.blocks.image.dimensions", defaultMessage: "{width}x{height}px" },
+                                { width: image.width, height: image.height },
+                            ),
+                            image.size
+                                ? intl.formatMessage(
+                                      {
+                                          id: "dextinity.blocks.image.fileSize",
+                                          defaultMessage: "{size, number, :: .00 measure-unit/digital-megabyte}",
+                                      },
+                                      { size: image.size / 1024 / 1024 },
+                                  )
+                                : undefined,
+                        ]
+                            .filter((part) => part != null)
+                            .join(" · ")}
+                        labels={{ close: intl.formatMessage({ id: "dextinity.generic.close", defaultMessage: "Close" }) }}
+                        footer={
+                            <DialogFormActions
+                                formId={formId}
+                                submitLabel={intl.formatMessage({ id: "dextinity.generic.save", defaultMessage: "Save" })}
+                                onCancel={onClose}
+                                labels={{ cancel: intl.formatMessage({ id: "dextinity.generic.cancel", defaultMessage: "Cancel" }) }}
+                            />
+                        }
+                    >
+                        <Content id={formId} onSubmit={handleSubmit}>
+                            <CropStage>
+                                <ImageCrop src={image.url} disabled={usesInheritedDamSettings} />
+                            </CropStage>
+                            <Settings>
                                 {inheritedDamSettings !== undefined && (
-                                    <>
-                                        <Box
-                                            sx={{
-                                                padding: 8,
-                                                paddingTop: 0,
-                                            }}
-                                        >
-                                            <FormSection
-                                                title={<FormattedMessage id="dextinity.blocks.image.dam" defaultMessage="DAM" />}
-                                                disableMarginBottom
-                                            >
-                                                <Field
-                                                    name="useInheritedDamSettings"
-                                                    label={
-                                                        <FormattedMessage
-                                                            id="dextinity.blocks.image.useInheritedDamSettings"
-                                                            defaultMessage="Use inherited DAM settings?"
-                                                        />
-                                                    }
-                                                    type="checkbox"
-                                                >
-                                                    {({ input: { checked, onChange } }) => <YesNoSwitch checked={checked} onChange={onChange} />}
-                                                </Field>
-                                            </FormSection>
-                                        </Box>
-
-                                        {entityDependencyMap["DamFile"] && damFileId && (
-                                            <Box
-                                                sx={{
-                                                    padding: 7,
-                                                    paddingTop: 0,
-                                                }}
-                                            >
-                                                <>
-                                                    <Typography variant="subtitle1">
-                                                        <FormattedMessage id="dextinity.blocks.image.damPath" defaultMessage="DAM Path: " />
-                                                    </Typography>
-                                                    <Typography
-                                                        sx={{
-                                                            mb: 2,
+                                    <SettingsSection>
+                                        <Typography variant="section" element="h3">
+                                            {intl.formatMessage({ id: "dextinity.blocks.image.dam", defaultMessage: "DAM" })}
+                                        </Typography>
+                                        <SwitchField name="useInheritedDamSettings">
+                                            {intl.formatMessage({
+                                                id: "dextinity.blocks.image.useInheritedDamSettings",
+                                                defaultMessage: "Use inherited DAM settings?",
+                                            })}
+                                        </SwitchField>
+                                        {damDependency && damFileId && (
+                                            <>
+                                                <KeyValueList
+                                                    items={[
+                                                        {
+                                                            key: intl.formatMessage({
+                                                                id: "dextinity.blocks.image.damPathLabel",
+                                                                defaultMessage: "DAM path",
+                                                            }),
+                                                            value: <DamPathLazy fileId={damFileId} />,
+                                                        },
+                                                    ]}
+                                                />
+                                                <div>
+                                                    <Button
+                                                        variant="outlined"
+                                                        color="secondary"
+                                                        size="small"
+                                                        startIcon={<Icon name="window" />}
+                                                        onClick={async () => {
+                                                            const path = await damDependency.resolvePath({ apolloClient, id: damFileId });
+                                                            window.open(contentScope.match.url + path, "_blank");
                                                         }}
                                                     >
-                                                        <DamPathLazy fileId={damFileId} />
-                                                    </Typography>
-                                                </>
-                                                <Button
-                                                    variant="outlined"
-                                                    color="inherit"
-                                                    onClick={async () => {
-                                                        const path = await entityDependencyMap["DamFile"].resolvePath({
-                                                            apolloClient,
-                                                            id: damFileId,
-                                                        });
-                                                        const url = contentScope.match.url + path;
-                                                        window.open(url, "_blank");
-                                                    }}
-                                                    startIcon={<OpenNewTab />}
-                                                >
-                                                    <FormattedMessage id="dextinity.blocks.image.openInDam" defaultMessage="Open in DAM" />
-                                                </Button>
-                                            </Box>
+                                                        {intl.formatMessage({
+                                                            id: "dextinity.blocks.image.openInDam",
+                                                            defaultMessage: "Open in DAM",
+                                                        })}
+                                                    </Button>
+                                                </div>
+                                            </>
                                         )}
-                                        <Divider sx={{ marginLeft: 8, marginRight: 8 }} />
-                                    </>
+                                    </SettingsSection>
                                 )}
-                                <Box
-                                    sx={{
-                                        padding: 8,
-                                    }}
-                                >
-                                    <CropSettingsFields disabled={inheritedDamSettings === undefined ? false : values.useInheritedDamSettings} />
-                                </Box>
-                            </div>
-                        </DialogContent>
-                        <DialogActions>
-                            <CancelButton type="button" onClick={onClose} />
-                            <SaveButton type="submit" />
-                        </DialogActions>
-                    </DialogFormWrapper>
-                </Dialog>
-            )}
+                                <ImageCropSettingsFields disabled={usesInheritedDamSettings} />
+                            </Settings>
+                        </Content>
+                    </Dialog>
+                );
+            }}
         </Form>
     );
 }
 
-interface YesNoSwitchProps {
-    checked?: boolean;
-    onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
-}
-
-const YesNoSwitch = ({ checked, onChange }: YesNoSwitchProps) => {
-    return (
-        <FormControlLabel
-            control={<Switch checked={checked} onChange={onChange} />}
-            label={checked ? <FormattedMessage {...messages.yes} /> : <FormattedMessage {...messages.no} />}
-        />
-    );
-};
-
-const DialogFormWrapper = styled("form")`
+const Content = styled("form")`
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: min-content auto min-content;
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
-    max-height: 100%;
-    overflow: hidden;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: var(--dextinity-space-6);
+    align-items: start;
+`;
+
+const CropStage = styled("div")`
+    display: grid;
+    place-items: center;
+    min-block-size: 240px;
+    padding: var(--dextinity-space-3);
+    border-radius: var(--dextinity-radius-item);
+    background: var(--dextinity-color-surface-sunken);
+
+    img {
+        max-inline-size: 100%;
+        max-block-size: 60vh;
+    }
+`;
+
+const Settings = styled("div")`
+    display: grid;
+    gap: var(--dextinity-space-6);
+`;
+
+const SettingsSection = styled("div")`
+    display: grid;
+    gap: var(--dextinity-space-3);
+    padding-block-end: var(--dextinity-space-6);
+    border-block-end: 1px solid var(--dextinity-color-line);
 `;

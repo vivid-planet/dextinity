@@ -17,6 +17,8 @@ import { createBlockSkeleton } from "./helpers/createBlockSkeleton";
 import { SelectPreviewComponent } from "./iframebridge/SelectPreviewComponent";
 import { createCmsLinkToolbarButton } from "./rte/extension/CmsLink/createCmsLinkToolbarButton";
 import { Decorator as CmsLinkDecorator } from "./rte/extension/CmsLink/Decorator";
+import { ContentTranslationToolbarButton } from "./rte/extension/ContentTranslation/ContentTranslationToolbarButton";
+import { RteDesignSystemTheme } from "./rte/RteDesignSystemTheme";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface, type ReadOnlyBlockRenderInterface } from "./types";
 
 export interface RichTextBlockState {
@@ -98,6 +100,11 @@ export interface RichTextBlockFactoryOptions {
 export type RichTextBlock = BlockInterface<RichTextBlockData, RichTextBlockState, RichTextBlockInput> &
     ReadOnlyBlockRenderInterface<RichTextBlockState>;
 
+/**
+ * A rich text block edited with Draft.js (`@dextinity/admin-rte`), stored as Draft.js raw content (`draftContent`).
+ *
+ * @deprecated Use `createTipTapRichTextBlock` for new rich text blocks. This block keeps working for existing content.
+ */
 export const createRichTextBlock = (options: RichTextBlockFactoryOptions, override?: (block: RichTextBlock) => RichTextBlock): RichTextBlock => {
     const CmsLinkToolbarButton = createCmsLinkToolbarButton({ link: options.link });
     const defaultRteOptions: IRteOptions = {
@@ -127,6 +134,7 @@ export const createRichTextBlock = (options: RichTextBlockFactoryOptions, overri
         standardBlockType: "unstyled",
 
         overwriteLinkButton: CmsLinkToolbarButton,
+        overwriteTranslationButton: ContentTranslationToolbarButton,
     };
     const LinkBlock = options.link;
     const rteOptions = { ...defaultRteOptions, ...(options.rte ?? {}) };
@@ -141,6 +149,8 @@ export const createRichTextBlock = (options: RichTextBlockFactoryOptions, overri
         defaultValues: () => ({ editorState: createEmptyState() }),
 
         category: BlockCategory.TextAndContent,
+        iconName: "bold",
+        description: <FormattedMessage id="dextinity.blocks.richtext.description" defaultMessage="Formatted text with lists and links" />,
 
         tags: options.tags,
 
@@ -190,65 +200,69 @@ export const createRichTextBlock = (options: RichTextBlockFactoryOptions, overri
         AdminComponent: ({ state, updateState }) => {
             return (
                 <SelectPreviewComponent>
-                    <Rte
-                        minHeight={options.minHeight}
-                        options={{
-                            ...rteOptions,
-                            draftJsProps: {
-                                ...rteOptions.draftJsProps,
-                                handlePastedText: (text, html, editorState) => {
-                                    const nextEditorState = pasteAndFilterText(html, editorState, rteOptions);
+                    <RteDesignSystemTheme>
+                        <Rte
+                            minHeight={options.minHeight}
+                            options={{
+                                ...rteOptions,
+                                draftJsProps: {
+                                    ...rteOptions.draftJsProps,
+                                    handlePastedText: (text, html, editorState) => {
+                                        const nextEditorState = pasteAndFilterText(html, editorState, rteOptions);
 
-                                    if (nextEditorState) {
-                                        // Paste is from one Draft.js instance to another -> update directly
-                                        updateState({ editorState: nextEditorState });
-                                        return "handled";
-                                    }
-
-                                    // Pasted text comes from an external source, e.g. a Word document
-                                    if (html !== undefined) {
-                                        const { contentBlocks } = convertFromHTML(html);
-
-                                        let nextContent = Modifier.replaceWithFragment(
-                                            state.editorState.getCurrentContent(),
-                                            state.editorState.getSelection(),
-                                            BlockMapBuilder.createFromArray(contentBlocks),
-                                        );
-
-                                        const entities = (nextContent.getEntityMap().__getAll() as Immutable.Map<string, EntityInstance>).entries();
-
-                                        // @ts-expect-error Immutable.Map#entries is iterable, but missing [Symbol.iterator]()
-                                        for (const [key, entity] of entities) {
-                                            if (entity.getType() === "LINK") {
-                                                const data = entity.getData();
-
-                                                if (typeof data.url === "string") {
-                                                    nextContent = nextContent.replaceEntityData(
-                                                        key,
-                                                        LinkBlock.url2State?.(data.url) || LinkBlock.defaultValues(),
-                                                    );
-                                                }
-                                            }
+                                        if (nextEditorState) {
+                                            // Paste is from one Draft.js instance to another -> update directly
+                                            updateState({ editorState: nextEditorState });
+                                            return "handled";
                                         }
 
-                                        const newEditorState = EditorState.push(state.editorState, nextContent, "insert-fragment");
+                                        // Pasted text comes from an external source, e.g. a Word document
+                                        if (html !== undefined) {
+                                            const { contentBlocks } = convertFromHTML(html);
 
-                                        updateState({ editorState: newEditorState });
-                                        return "handled";
-                                    }
+                                            let nextContent = Modifier.replaceWithFragment(
+                                                state.editorState.getCurrentContent(),
+                                                state.editorState.getSelection(),
+                                                BlockMapBuilder.createFromArray(contentBlocks),
+                                            );
 
-                                    return "not-handled";
+                                            const entities = (
+                                                nextContent.getEntityMap().__getAll() as Immutable.Map<string, EntityInstance>
+                                            ).entries();
+
+                                            // @ts-expect-error Immutable.Map#entries is iterable, but missing [Symbol.iterator]()
+                                            for (const [key, entity] of entities) {
+                                                if (entity.getType() === "LINK") {
+                                                    const data = entity.getData();
+
+                                                    if (typeof data.url === "string") {
+                                                        nextContent = nextContent.replaceEntityData(
+                                                            key,
+                                                            LinkBlock.url2State?.(data.url) || LinkBlock.defaultValues(),
+                                                        );
+                                                    }
+                                                }
+                                            }
+
+                                            const newEditorState = EditorState.push(state.editorState, nextContent, "insert-fragment");
+
+                                            updateState({ editorState: newEditorState });
+                                            return "handled";
+                                        }
+
+                                        return "not-handled";
+                                    },
                                 },
-                            },
-                        }}
-                        value={state.editorState}
-                        onChange={(c: EditorState) => {
-                            updateState((prevState) => ({
-                                ...prevState,
-                                editorState: c,
-                            }));
-                        }}
-                    />
+                            }}
+                            value={state.editorState}
+                            onChange={(c: EditorState) => {
+                                updateState((prevState) => ({
+                                    ...prevState,
+                                    editorState: c,
+                                }));
+                            }}
+                        />
+                    </RteDesignSystemTheme>
                 </SelectPreviewComponent>
             );
         },

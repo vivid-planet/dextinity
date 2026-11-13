@@ -1,219 +1,187 @@
 import { messages } from "@dextinity/admin";
-import { Copy, Delete, Drag, MoreVertical, Paste, Warning } from "@dextinity/admin-icons";
-import { Checkbox, Divider, IconButton, ListItemIcon, Menu, MenuItem } from "@mui/material";
-import { type ChangeEvent, type JSX, type MouseEventHandler, type ReactNode, useRef, useState } from "react";
-import { type DropTargetMonitor, useDrag, useDrop, type XYCoord } from "react-dnd";
-import { FormattedMessage } from "react-intl";
+import { Block, Icon, IconButton, Menu, MenuItem, MenuSeparator } from "@dextinity/ui";
+import { styled } from "@mui/material/styles";
+import { type ReactNode, useCallback, useState } from "react";
+import { useIntl } from "react-intl";
 
-import { InsertInBetweenAction } from "../../../common/InsertInBetweenAction";
-import { InsertInBetweenActionButton } from "../../../common/InsertInBetweenActionButton";
+import { useBlockContext } from "../../context/useBlockContext";
+import { useHoverPreviewComponent } from "../../iframebridge/useHoverPreviewComponent";
+import { type BlockInterface, isPreviewContentImageRule, isPreviewContentTextRule } from "../../types";
+import { blockIconName } from "../blockIconName";
 import { usePromise } from "../usePromise";
-import * as sc from "./BlockRow.sc";
+import { useBlockRowLabels } from "./useBlockRowLabels";
 
-const ItemTypes = {
-    BLOCK: "block",
-};
+export interface BlockRowVisibilityRestriction {
+    /** Why the visibility is restricted, e.g. "Max. visible blocks allowed: 3", shown at the toggle. */
+    reason: string;
+    /** Whether the visibility can still be changed, e.g. to hide a block although the minimum of visible blocks isn't reached. */
+    canToggle: boolean;
+}
 
-interface BlockRowProps {
-    renderPreviewContent: () => ReactNode;
-    onContentClick?: () => void;
-    onDeleteClick?: () => void;
-    id: string;
-    index: number;
-    moveBlock: (dragIndex: number, hoverIndex: number) => void;
-    visibilityButton: ReactNode;
-    onAddNewBlock: (beforeIndex: number) => void;
-    onCopyClick?: () => void;
-    onPasteClick?: () => void;
-    selected: boolean;
-    onSelectedClick?: (selected: boolean) => void;
-    isValidFn: () => boolean | Promise<boolean>;
-    slideIn: boolean;
-    hideBottomInsertBetweenButton?: boolean;
-    additionalMenuItems?: (onMenuClose: () => void) => ReactNode;
+export interface BlockRowMenuApi {
+    /** Closes the row's menu. */
+    closeMenu: () => void;
+    /**
+     * Shows a dialog for an action of the menu. The menu closes when an item is chosen, so a dialog rendered inside it would disappear
+     * with it; render it through this function instead and call `close` when it's done.
+     */
+    openDialog: (renderDialog: (close: () => void) => ReactNode) => void;
+}
+
+export interface BlockRowProps {
+    block: BlockInterface;
+    state: unknown;
+    /** The route segment of the block in the site preview, relative to the list, e.g. `${key}/blocks`. */
+    previewSlug: string;
+    /** Replaces the block's name in the summary, e.g. "Column 2". */
+    label?: ReactNode;
+    visible: boolean;
+    onVisibleChange: (visible: boolean) => void;
+    /** Shown instead of the visibility toggle while a limit of visible blocks applies. */
+    visibilityRestriction?: BlockRowVisibilityRestriction;
+    /** Whether the block is selected for bulk actions. */
+    checked: boolean;
+    onCheckedChange: (checked: boolean) => void;
+    /** Opens the block's form. */
+    onOpen: () => void;
+    onCopy: () => void;
+    /** Pastes the blocks from the clipboard below this one. */
+    onPaste: () => void;
+    onDuplicate: () => void;
+    onDelete: () => void;
+    /** Further `MenuItem`s in the row's menu, before Delete. */
+    renderAdditionalMenuItems?: (menuApi: BlockRowMenuApi) => ReactNode;
+    /** Further content in the row's header, e.g. a chip with the target group. */
     additionalContent?: ReactNode;
 }
 
-interface IDragItem {
-    index: number;
-    id: string;
-    type: string;
-}
+/**
+ * A block in the list of a blocks, list, or columns block, as a `Block` of `@dextinity/ui`: its preview text as title, its type and
+ * thumbnail, its visibility, a checkbox for bulk actions, and a menu to copy, paste, duplicate, and delete it. Use it inside a `BlockList`.
+ */
+export function BlockRow({
+    block,
+    state,
+    previewSlug,
+    label,
+    visible,
+    onVisibleChange,
+    visibilityRestriction,
+    checked,
+    onCheckedChange,
+    onOpen,
+    onCopy,
+    onPaste,
+    onDuplicate,
+    onDelete,
+    renderAdditionalMenuItems,
+    additionalContent,
+}: BlockRowProps) {
+    const intl = useIntl();
+    const labels = useBlockRowLabels();
+    const context = useBlockContext();
+    const { ref, isHovered, onMouseOver, onMouseLeave } = useHoverPreviewComponent<HTMLLIElement>(previewSlug);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [renderDialog, setRenderDialog] = useState<(close: () => void) => ReactNode>();
 
-export function BlockRow(props: BlockRowProps): JSX.Element {
-    const { index, onAddNewBlock, slideIn } = props;
-    const ref = useRef<HTMLDivElement>(null);
-    const [, drop] = useDrop<IDragItem>({
-        accept: ItemTypes.BLOCK,
-        hover(item, monitor: DropTargetMonitor) {
-            if (!ref.current) {
-                return;
-            }
-            const dragIndex = item.index;
-            const hoverIndex = props.index;
+    const isValidFn = useCallback(() => block.isValid(state), [block, state]);
+    const isValid = usePromise(isValidFn, { initialValue: true });
 
-            // Don't replace items with themselves
-            if (dragIndex === hoverIndex) {
-                return;
-            }
+    const previewContent = block.previewContent(state, context);
+    const texts = previewContent
+        .filter(isPreviewContentTextRule)
+        .map(({ content }) => content)
+        .filter((content) => content !== "" && content != null);
+    const image = previewContent.find(isPreviewContentImageRule);
+    const typeName = label ?? block.dynamicDisplayName?.(state) ?? block.displayName;
+    const [firstText, secondText] = texts;
+    const summary =
+        firstText != null ? (
+            <>
+                {typeName}
+                {secondText != null && (
+                    <>
+                        {" · "}
+                        {secondText}
+                    </>
+                )}
+            </>
+        ) : undefined;
 
-            // Determine rectangle on screen
-            const hoverBoundingRect = ref.current.getBoundingClientRect();
-
-            // Get vertical middle
-            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-            // Determine mouse position
-            const clientOffset = monitor.getClientOffset();
-
-            // Get pixels to the top
-            const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-
-            // Only perform the move when the mouse has crossed half of the items height
-            // When dragging downwards, only move when the cursor is below 50%
-            // When dragging upwards, only move when the cursor is above 50%
-
-            // Dragging downwards
-            if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-                return;
-            }
-
-            // Dragging upwards
-            if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-                return;
-            }
-
-            // Time to actually perform the action
-            props.moveBlock(dragIndex, hoverIndex);
-
-            // Note: we're mutating the monitor item here!
-            // Generally it's better to avoid mutations,
-            // but it's good here for the sake of performance
-            // to avoid expensive index searches.
-            item.index = hoverIndex;
+    const closeMenu = () => setIsMenuOpen(false);
+    const menuApi: BlockRowMenuApi = {
+        closeMenu,
+        openDialog: (nextRenderDialog) => {
+            closeMenu();
+            setRenderDialog(() => nextRenderDialog);
         },
-    });
-
-    const [hover, setHover] = useState(false);
-    const [{ isDragging }, drag] = useDrag({
-        type: ItemTypes.BLOCK,
-        item: { type: ItemTypes.BLOCK, id: props.id, index: props.index }, // type in item should not be needed anymore since react-dnd 14
-        collect: (monitor) => ({
-            isDragging: monitor.isDragging(),
-        }),
-    });
-    const opacity = isDragging ? 0 : 1;
-    drag(drop(ref));
-
-    const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLElement>();
-
-    const handleMoreClick: MouseEventHandler<HTMLElement> = (event) => {
-        setMenuAnchorEl(event.currentTarget);
     };
 
-    const handleMenuClose = () => {
-        setMenuAnchorEl(undefined);
-    };
-
-    const handleCopyClick = () => {
-        props.onCopyClick?.();
-        handleMenuClose();
-    };
-
-    const handlePasteClick = () => {
-        props.onPasteClick?.();
-        handleMenuClose();
-    };
-
-    const handleDeleteClick = () => {
-        props.onDeleteClick?.();
-        handleMenuClose();
-    };
-
-    // Evaluate is valid
-    const isValid = usePromise(props.isValidFn, { initialValue: true });
+    const restrictedVisibilityToggle = visibilityRestriction && (
+        <IconButton
+            variant="text"
+            color="secondary"
+            size="small"
+            aria-label={visibilityRestriction.reason}
+            aria-pressed={!visible}
+            disabled={!visibilityRestriction.canToggle}
+            focusableWhenDisabled
+            onClick={() => onVisibleChange(!visible)}
+        >
+            <Icon name={visible ? "eye" : "eye-off"} />
+        </IconButton>
+    );
 
     return (
-        <sc.BlockWrapper>
-            <sc.AddContainer>
-                <InsertInBetweenAction
-                    top={<InsertInBetweenActionButton onClick={() => onAddNewBlock(index)} />}
-                    bottom={!props.hideBottomInsertBetweenButton && <InsertInBetweenActionButton onClick={() => onAddNewBlock(index + 1)} />}
-                />
-            </sc.AddContainer>
-            <sc.Root
+        <>
+            <Block
                 ref={ref}
-                style={{ opacity }}
-                onMouseEnter={() => {
-                    setHover(true);
-                }}
-                onMouseLeave={() => {
-                    setHover(false);
-                }}
-                isMouseHover={hover}
-                slideIn={slideIn}
-            >
-                <sc.BlockGrabber>
-                    <Drag color="inherit" />
-                </sc.BlockGrabber>
-
-                <sc.InnerBlock>
-                    <sc.SelectBlock>
-                        {hover || props.selected ? (
-                            <Checkbox
-                                checked={props.selected}
-                                onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                                    props.onSelectedClick?.(event.target.checked);
-                                }}
-                            />
-                        ) : (
-                            <>{!isValid ? <Warning color="error" /> : null}</>
-                        )}
-                    </sc.SelectBlock>
-                    <sc.OuterContent>
-                        <sc.Content>
-                            <sc.PreviewTextContainer>{props.renderPreviewContent()}</sc.PreviewTextContainer>
-                        </sc.Content>
-                        {props.additionalContent}
-                    </sc.OuterContent>
-                    <sc.ButtonContainer>
-                        {props.visibilityButton}
-                        <IconButton size="small" onClick={handleMoreClick}>
-                            <MoreVertical color="action" />
-                        </IconButton>
-                    </sc.ButtonContainer>
-                </sc.InnerBlock>
-                <sc.RowClickContainer
-                    onClick={() => {
-                        if (props.onContentClick) {
-                            props.onContentClick();
-                        }
-                    }}
-                />
-
-                <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleMenuClose}>
-                    <MenuItem onClick={handleCopyClick}>
-                        <ListItemIcon>
-                            <Copy />
-                        </ListItemIcon>
-                        <FormattedMessage {...messages.copy} />
-                    </MenuItem>
-                    <MenuItem onClick={handlePasteClick}>
-                        <ListItemIcon>
-                            <Paste />
-                        </ListItemIcon>
-                        <FormattedMessage {...messages.paste} />
-                    </MenuItem>
-                    {props.additionalMenuItems?.(handleMenuClose)}
-                    <Divider />
-                    <MenuItem onClick={handleDeleteClick}>
-                        <ListItemIcon>
-                            <Delete />
-                        </ListItemIcon>
-                        <FormattedMessage {...messages.delete} />
-                    </MenuItem>
-                </Menu>
-            </sc.Root>
-        </sc.BlockWrapper>
+                data-block-key={previewSlug}
+                onMouseOver={onMouseOver}
+                onMouseLeave={onMouseLeave}
+                title={firstText ?? typeName}
+                summary={summary}
+                icon={image ? <PreviewImage src={image.content.src} alt="" /> : (block.icon?.(state) ?? <Icon name={blockIconName(block)} />)}
+                visible={visible}
+                onVisibleChange={visibilityRestriction ? undefined : onVisibleChange}
+                selected={isHovered}
+                onSelect={onOpen}
+                invalid={!isValid}
+                checked={checked}
+                onCheckedChange={onCheckedChange}
+                labels={labels.block}
+                actions={
+                    <>
+                        {additionalContent}
+                        {restrictedVisibilityToggle}
+                        <Menu
+                            open={isMenuOpen}
+                            onOpenChange={setIsMenuOpen}
+                            placement="bottom-end"
+                            trigger={
+                                <IconButton variant="text" color="secondary" size="small" aria-label={labels.moreActions}>
+                                    <Icon name="more-vertical" />
+                                </IconButton>
+                            }
+                        >
+                            <MenuItem label={intl.formatMessage(messages.copy)} icon={<Icon name="copy" />} onClick={onCopy} />
+                            <MenuItem label={labels.pasteBelow} icon={<Icon name="paste-add" />} onClick={onPaste} />
+                            <MenuItem label={labels.duplicate} icon={<Icon name="duplicate" />} onClick={onDuplicate} />
+                            {renderAdditionalMenuItems?.(menuApi)}
+                            <MenuSeparator />
+                            <MenuItem label={intl.formatMessage(messages.delete)} icon={<Icon name="trash" />} color="error" onClick={onDelete} />
+                        </Menu>
+                    </>
+                }
+            />
+            {renderDialog?.(() => setRenderDialog(undefined))}
+        </>
     );
 }
+
+const PreviewImage = styled("img")`
+    inline-size: 100%;
+    block-size: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+`;

@@ -1,46 +1,49 @@
+import { Stack, StackPage, StackSwitch } from "@dextinity/admin";
 import type { ReactNode } from "react";
+import { useIntl } from "react-intl";
 import { useRouteMatch } from "react-router";
 
-import { ContentScopeIndicator } from "../contentScope/ContentScopeIndicator";
-import { type ContentScope, useContentScope } from "../contentScope/Provider";
-import { useContentScopeConfig } from "../contentScope/useContentScopeConfig";
-import { useDamConfig } from "./config/damConfig";
+import type { ContentScope } from "../contentScope/Provider";
 import { DamScopeProvider } from "./config/DamScopeProvider";
-import { useDamScope } from "./config/useDamScope";
-import { DamTable } from "./DamTable";
+import EditFile from "./FileForm/EditFile";
+import { DamFinderPage } from "./finder/DamFinderPage";
+import { DamSettings } from "./settings/DamSettings";
 
-type Props = {
+interface DamPageProps {
+    /** @deprecated Unused, the content scope is shown in the top bar. */
     renderContentScopeIndicator?: (scope: ContentScope) => ReactNode;
-    /**
-     * @deprecated Use `additionalToolbarItems` option in `DamConfigProvider` instead
-     */
+    /** Further actions in the finder's page header. Defaults to `additionalToolbarItems` of the DAM config. */
     additionalToolbarItems?: ReactNode;
-};
+}
 
-const DefaultContentScopeIndicator = () => {
-    const damScope = useDamScope();
-
-    if (Object.keys(damScope).length > 0) {
-        return <ContentScopeIndicator scope={damScope} />;
-    } else {
-        return <ContentScopeIndicator global />;
-    }
-};
-
-function DamPage({ renderContentScopeIndicator, additionalToolbarItems }: Props) {
-    const { scope, match } = useContentScope();
-    const routeMatch = useRouteMatch();
-    const damRouteLocation = routeMatch.url.replace(match.url, "");
-    useContentScopeConfig({ redirectPathAfterChange: damRouteLocation });
-    const damConfig = useDamConfig();
+/**
+ * The assets: the finder (`DamFinderPage`) at the route of the page, a file's settings at `<route>/<fileId>/edit`, and the DAM settings
+ * at `<route>/settings/settings`.
+ */
+function DamPage({ additionalToolbarItems }: DamPageProps) {
+    const intl = useIntl();
+    const match = useRouteMatch();
+    const baseUrl = match.url.replace(/\/$/, "");
 
     return (
         <DamScopeProvider>
-            <DamTable
-                contentScopeIndicator={renderContentScopeIndicator ? renderContentScopeIndicator(scope) : <DefaultContentScopeIndicator />}
-                additionalToolbarItems={damConfig.additionalToolbarItems ?? additionalToolbarItems}
-                renderWithFullHeightMainContent
-            />
+            <Stack topLevelTitle={intl.formatMessage({ id: "dextinity.damFinder.title", defaultMessage: "Assets" })}>
+                <StackSwitch initialPage="finder">
+                    <StackPage name="finder">
+                        <DamFinderPage
+                            editFileUrl={(fileId) => `${baseUrl}/${fileId}/edit`}
+                            settingsUrl={`${baseUrl}/settings/settings`}
+                            additionalToolbarItems={additionalToolbarItems}
+                        />
+                    </StackPage>
+                    <StackPage name="edit" title={intl.formatMessage({ id: "dextinity.pages.dam.edit", defaultMessage: "Edit" })}>
+                        {(fileId: string) => <EditFile id={fileId} />}
+                    </StackPage>
+                    <StackPage name="settings" title={intl.formatMessage({ id: "dextinity.pages.dam.settings", defaultMessage: "Settings" })}>
+                        <DamSettings />
+                    </StackPage>
+                </StackSwitch>
+            </Stack>
         </DamScopeProvider>
     );
 }

@@ -1,14 +1,22 @@
-import { OnChangeField, SwitchField } from "@dextinity/admin";
+import { OnChangeField } from "@dextinity/admin";
+import { SwitchField } from "@dextinity/ui-react-final-form";
+import { styled } from "@mui/material/styles";
 import { useForm } from "react-final-form";
 import { FormattedMessage } from "react-intl";
 
 export const VideoOptionsFields = () => {
     const form = useForm();
     return (
-        <>
-            <SwitchField name="autoplay" label={<FormattedMessage id="dextinity.blocks.video.autoplay" defaultMessage="Autoplay" />} />
-            <SwitchField name="loop" label={<FormattedMessage id="dextinity.blocks.video.loop" defaultMessage="Loop" />} />
-            <SwitchField name="showControls" label={<FormattedMessage id="dextinity.blocks.video.showControls" defaultMessage="Show controls" />} />
+        <Root>
+            <SwitchField name="autoplay">
+                <FormattedMessage id="dextinity.blocks.video.autoplay" defaultMessage="Autoplay" />
+            </SwitchField>
+            <SwitchField name="loop">
+                <FormattedMessage id="dextinity.blocks.video.loop" defaultMessage="Loop" />
+            </SwitchField>
+            <SwitchField name="showControls">
+                <FormattedMessage id="dextinity.blocks.video.showControls" defaultMessage="Show controls" />
+            </SwitchField>
             {/* case: autoplay = false and showControls = false is not allowed */}
             <OnChangeField name="autoplay">
                 {(value, previousValue) => {
@@ -24,6 +32,13 @@ export const VideoOptionsFields = () => {
                     }
                 }}
             </OnChangeField>
-        </>
+        </Root>
     );
 };
+
+const Root = styled("div")`
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-3);
+    margin-block-end: var(--dextinity-space-4);
+`;

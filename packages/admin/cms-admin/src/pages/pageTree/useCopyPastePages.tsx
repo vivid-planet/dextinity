@@ -1,7 +1,7 @@
 import { useApolloClient } from "@apollo/client";
 import { LocalErrorScopeApolloContext, messages, readClipboardText, useErrorDialog, writeClipboardText } from "@dextinity/admin";
-import { type ReactNode, useCallback } from "react";
-import { FormattedMessage } from "react-intl";
+import { type ReactNode, useCallback, useContext } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { useProgressDialog } from "../../common/useProgressDialog";
 import { useDextinityConfig } from "../../config/DextinityConfigContext";
@@ -11,9 +11,9 @@ import { useDamScope } from "../../dam/config/useDamScope";
 import type { GQLDocument, GQLPageQuery, GQLPageQueryVariables } from "../../documents/types";
 import { usePageTreeScope } from "../config/usePageTreeScope";
 import { usePageTreeConfig } from "../pageTreeConfig";
+import { PageTreeContext } from "./PageTreeContext";
 import { sendPages, type SendPagesOptions } from "./useCopyPastePages/sendPages";
 import type { GQLPageTreePageFragment } from "./usePageTree";
-import { usePageTreeContext } from "./usePageTreeContext";
 
 export type PageClipboard = GQLPageTreePageFragment & { document?: GQLDocument | null };
 
@@ -58,23 +58,51 @@ interface UseCopyPastePagesApi {
      * @param parentId Parent Id where the paste should be attached to
      * @param pages all pages which should be pasted
      * @param options customize where the pages are pasted
+     * @returns whether the pages were pasted
      */
-    sendPages: (parentId: string | null, pages: PagesClipboard, options: SendPagesOptions) => Promise<void>;
+    sendPages: (parentId: string | null, pages: PagesClipboard, options: SendPagesOptions) => Promise<boolean>;
 
+    /** How far pasting is, while `sendPages` runs. Show it in a dialog that can't be closed, e.g. with a `ProgressBar`. */
+    progress: PastePagesProgress | undefined;
+
+    /**
+     * The progress of pasting as a dialog built with MUI.
+     *
+     * @deprecated Show `progress` with `@dextinity/ui` instead, as `PageTreeDetailPage` does.
+     */
     progressDialog: ReactNode;
+}
+
+export interface PastePagesProgress {
+    /** Between 0 and 100. */
+    value: number;
+    /** The current step, e.g. "copying assets". */
+    message: ReactNode;
+}
+
+interface UseCopyPastePagesOptions {
+    /** Called when pasting fails. Without it, the error dialog of `@dextinity/admin` shows the error. */
+    onPasteError?: (error: unknown) => void;
+    /** The category the pages are pasted into. Without it, the one of the surrounding page tree. */
+    category?: string;
 }
 
 /**
  * This hooks provides some helper functions to copy / paste Pages and PageTreeNodes
  */
-function useCopyPastePages(): UseCopyPastePagesApi {
+function useCopyPastePages({ onPasteError, category }: UseCopyPastePagesOptions = {}): UseCopyPastePagesApi {
     const { apiUrl } = useDextinityConfig();
     const { documentTypes } = usePageTreeConfig();
-    const { currentCategory } = usePageTreeContext();
+    const pageTreeContext = useContext(PageTreeContext);
+    const currentCategory = category ?? pageTreeContext?.currentCategory;
+    if (currentCategory === undefined) {
+        throw new Error("useCopyPastePages needs a category or a PageTreeContext");
+    }
     const client = useApolloClient();
     const scope = usePageTreeScope();
     const damScope = useDamScope();
-    const progress = useProgressDialog({ title: <FormattedMessage id="dextinity.pages.insertingPages" defaultMessage="Inserting pages" /> });
+    const intl = useIntl();
+    const progress = useProgressDialog({ title: intl.formatMessage({ id: "dextinity.pages.insertingPages", defaultMessage: "Inserting pages" }) });
     const errorDialog = useErrorDialog();
     const damBasePath = useDamBasePath();
 
@@ -181,7 +209,12 @@ function useCopyPastePages(): UseCopyPastePagesApi {
                     { client, scope, documentTypes, apiUrl, damScope, currentCategory, damBasePath },
                     updateProgress,
                 );
+                return true;
             } catch (e) {
+                if (onPasteError != null) {
+                    onPasteError(e);
+                    return false;
+                }
                 errorDialog?.showError({
                     title: <FormattedMessage {...messages.error} />,
                     userMessage: (
@@ -189,11 +222,12 @@ function useCopyPastePages(): UseCopyPastePagesApi {
                     ),
                     error: String(e),
                 });
+                return false;
             } finally {
                 updateProgress(undefined); //hides progress dialog
             }
         },
-        [client, scope, documentTypes, apiUrl, damScope, currentCategory, updateProgress, errorDialog, damBasePath],
+        [client, scope, documentTypes, apiUrl, damScope, currentCategory, updateProgress, errorDialog, damBasePath, onPasteError],
     );
 
     return {
@@ -201,6 +235,7 @@ function useCopyPastePages(): UseCopyPastePagesApi {
         writeToClipboard,
         getFromClipboard,
         sendPages: sendPagesCb,
+        progress: progress.progress !== undefined ? { value: progress.progress, message: progress.message } : undefined,
         progressDialog: progress.dialog,
     };
 }

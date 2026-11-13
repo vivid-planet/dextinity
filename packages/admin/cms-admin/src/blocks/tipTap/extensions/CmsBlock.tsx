@@ -1,5 +1,4 @@
-import { Box } from "@mui/material";
-import { grey as muiGreyPalette } from "@mui/material/colors";
+import { styled } from "@mui/material/styles";
 import { Node } from "@tiptap/core";
 import { NodeViewWrapper, type ReactNodeViewProps, ReactNodeViewRenderer } from "@tiptap/react";
 import { useContext, useState } from "react";
@@ -38,9 +37,7 @@ const InlineBlockPreview = ({ block, state }: { block: BlockInterface; state: un
     return (
         <>
             {icon}
-            <Box component="span" sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {text || label}
-            </Box>
+            <InlineBlockText>{text || label}</InlineBlockText>
         </>
     );
 };
@@ -64,33 +61,18 @@ const CmsBlockView = ({ node, updateAttributes, deleteNode, selected }: ReactNod
         />
     );
 
+    const openEditDialog = () => {
+        if (block) {
+            setEditDialogOpen(true);
+        }
+    };
+
     if (isInline) {
         return (
-            <NodeViewWrapper as="span" style={{ display: "inline-block", verticalAlign: "baseline" }}>
-                <Box
-                    component="span"
-                    contentEditable={false}
-                    sx={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 0.5,
-                        maxWidth: "100%",
-                        px: "6px",
-                        py: "1px",
-                        border: `1px solid ${selected ? muiGreyPalette[600] : muiGreyPalette[300]}`,
-                        borderRadius: "4px",
-                        backgroundColor: muiGreyPalette[50],
-                        cursor: "pointer",
-                        "&:hover": { borderColor: muiGreyPalette[500] },
-                    }}
-                    onClick={() => {
-                        if (block) {
-                            setEditDialogOpen(true);
-                        }
-                    }}
-                >
+            <NodeViewWrapper as="span">
+                <InlineBlockButton type="button" contentEditable={false} data-selected={selected ? "" : undefined} onClick={openEditDialog}>
                     {block ? <InlineBlockPreview block={block} state={node.attrs.data} /> : blockType}
-                </Box>
+                </InlineBlockButton>
                 {dialog}
             </NodeViewWrapper>
         );
@@ -98,35 +80,67 @@ const CmsBlockView = ({ node, updateAttributes, deleteNode, selected }: ReactNod
 
     return (
         <NodeViewWrapper>
-            <Box
-                contentEditable={false}
-                sx={{
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    p: "8px 12px",
-                    my: "8px",
-                    border: `1px solid ${selected ? muiGreyPalette[600] : muiGreyPalette[300]}`,
-                    borderRadius: "4px",
-                    backgroundColor: muiGreyPalette[50],
-                    cursor: "pointer",
-                    "&:hover": { borderColor: muiGreyPalette[500] },
-                }}
-                onClick={() => {
-                    if (block) {
-                        setEditDialogOpen(true);
-                    }
-                }}
-            >
-                <Box sx={{ flexGrow: 1, overflow: "hidden", pointerEvents: "none" }}>
-                    {block ? <BlockPreviewContent block={block} state={node.attrs.data} showIcon /> : blockType}
-                </Box>
-            </Box>
+            <BlockButton type="button" contentEditable={false} data-selected={selected ? "" : undefined} onClick={openEditDialog}>
+                {block ? <BlockPreviewContent block={block} state={node.attrs.data} showIcon /> : blockType}
+            </BlockButton>
             {dialog}
         </NodeViewWrapper>
     );
 };
+
+const blockButtonStyles = `
+    box-sizing: border-box;
+    align-items: center;
+    max-inline-size: 100%;
+    border: 0;
+    border-radius: var(--dextinity-radius-item);
+    background: var(--dextinity-color-surface-sunken);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+    color: var(--dextinity-color-text);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition: box-shadow var(--dextinity-motion-duration-short);
+
+    &:hover {
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line);
+    }
+
+    &[data-selected],
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+    }
+`;
+
+const InlineBlockButton = styled("button")`
+    ${blockButtonStyles}
+
+    display: inline-flex;
+    gap: var(--dextinity-space-1);
+    padding: 1px 6px;
+    vertical-align: baseline;
+`;
+
+const InlineBlockText = styled("span")`
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+`;
+
+const BlockButton = styled("button")`
+    ${blockButtonStyles}
+
+    display: flex;
+    inline-size: 100%;
+    margin-block: var(--dextinity-space-2);
+    padding: var(--dextinity-space-2) var(--dextinity-space-3);
+    overflow: hidden;
+
+    > * {
+        pointer-events: none;
+    }
+`;
 
 const createCmsBlock = ({ inline }: { inline: boolean }) =>
     Node.create({

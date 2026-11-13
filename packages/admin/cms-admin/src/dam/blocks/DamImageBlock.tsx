@@ -1,4 +1,4 @@
-import { Field } from "@dextinity/admin";
+import { Field } from "react-final-form";
 import { defineMessage, FormattedMessage } from "react-intl";
 
 import type { PixelImageBlockData, SvgImageBlockData } from "../../blocks.generated";
@@ -20,6 +20,8 @@ const DamImageBlock = createOneOfBlock({
     name: "DamImage",
     displayName: <FormattedMessage id="dextinity.blocks.damImage" defaultMessage="Image" />,
     category: BlockCategory.Media,
+    iconName: "image",
+    description: <FormattedMessage id="dextinity.blocks.damImage.description" defaultMessage="Image or SVG from the assets" />,
     supportedBlocks,
     allowEmpty: false,
     tags: [defineMessage({ id: "dextinity.damImageBlock.tag.image", defaultMessage: "Image" })],
@@ -69,7 +71,6 @@ DamImageBlock.AdminComponent = function AdminComponent({ state, updateState }) {
                 <Field
                     name="damFile"
                     component={FileField}
-                    fullWidth
                     buttonText={<FormattedMessage id="dextinity.blocks.image.chooseImage" defaultMessage="Choose image" />}
                     allowedMimetypes={[...filteredAcceptedMimeTypes.pixelImage, ...filteredAcceptedMimeTypes.svgImage]}
                 />

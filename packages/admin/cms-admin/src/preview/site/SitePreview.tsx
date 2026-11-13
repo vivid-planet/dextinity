@@ -1,28 +1,34 @@
 import { gql, useQuery } from "@apollo/client";
-import { Tooltip } from "@dextinity/admin";
-import { DextinityIcon, Domain, DomainLocked } from "@dextinity/admin-icons";
-import { Grid, Typography } from "@mui/material";
+import { DextinityIcon } from "@dextinity/admin-icons";
+import { Icon, IconButton, Theme, type ThemeBrand, type ThemeColorScheme, type ThemeDensity, Tooltip, Typography } from "@dextinity/ui";
 import { type ReactNode, useCallback, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { type RouteComponentProps, useHistory, useLocation } from "react-router";
 
 import type { ExternalLinkBlockData } from "../../blocks.generated";
 import { type ContentScope, useContentScope } from "../../contentScope/Provider";
 import { useSiteConfig } from "../../siteConfigs/useSiteConfig";
-import { Device } from "../common/Device";
-import { DeviceToggle } from "../common/DeviceToggle";
-import { IFrameViewer } from "../common/IFrameViewer";
+import { parsePreviewDevice, previewDevices } from "../common/previewDevice";
+import { usePreviewLabels } from "../common/usePreviewLabels";
 import { VisibilityToggle } from "../common/VisibilityToggle";
 import { type SitePrevewIFrameLocationMessage, SitePreviewIFrameMessageType } from "./iframebridge/SitePreviewIFrameMessage";
 import { useSitePreviewIFrameBridge } from "./iframebridge/useSitePreviewIFrameBridge";
 import { OpenLinkDialog } from "./OpenLinkDialog";
 import type { GQLSitePreviewJwtQuery } from "./SitePreview.generated";
-import { ActionsContainer, LogoWrapper, Root, SiteInformation, SiteLink, SiteLinkWrapper } from "./SitePreview.sc";
+import { Header, PreviewArea, Root, SiteInformation } from "./SitePreview.sc";
 
 //TODO v4 remove RouteComponentProps
 interface Props extends RouteComponentProps {
     resolvePath?: (path: string, scope: ContentScope) => string;
     logo?: ReactNode;
+    /**
+     * The color scheme of the preview window, which is opened outside of the `AppFrame`, e.g. the one the user chose in the admin.
+     *
+     * @defaultValue `"light"`
+     */
+    colorScheme?: ThemeColorScheme;
+    brand?: ThemeBrand;
+    density?: ThemeDensity;
 }
 
 function useSearchState<ParseFunction extends (value: string | undefined) => ReturnType<ParseFunction>>(
@@ -44,9 +50,10 @@ function useSearchState<ParseFunction extends (value: string | undefined) => Ret
     );
     return [value, setValue];
 }
-function SitePreview({ resolvePath, logo = <DextinityIcon sx={{ fontSize: 32 }} /> }: Props) {
+function SitePreview({ resolvePath, logo = <DextinityIcon sx={{ fontSize: 24 }} />, colorScheme, brand, density }: Props) {
     const { scope } = useContentScope();
     const siteConfig = useSiteConfig({ scope });
+    const labels = usePreviewLabels();
 
     //initialPath: path the preview is initialized with; WITHOUT resolvePath called, might be not the path actually used in site
     //doesn't change during navigation within site
@@ -71,13 +78,9 @@ function SitePreview({ resolvePath, logo = <DextinityIcon sx={{ fontSize: 32 }} 
     //doesn't change during navigation within site
     //changed when settings (showOnlyVisible) change
     const [iframePath, setIframePath] = useState(sitePath);
+    const [reloadCount, setReloadCount] = useState(0);
 
-    const [device, setDevice] = useSearchState("device", (v) => {
-        if (![Device.Responsive, Device.Mobile, Device.Tablet, Device.Desktop].includes(Number(v))) {
-            return Device.Responsive;
-        }
-        return Number(v) as Device;
-    });
+    const [device, setDevice] = useSearchState("device", parsePreviewDevice);
     const [showOnlyVisible, setShowOnlyVisible] = useSearchState("showOnlyVisible", (v) => !v || v === "true");
 
     const [linkToOpen, setLinkToOpen] = useState<ExternalLinkBlockData | undefined>(undefined);
@@ -95,15 +98,15 @@ function SitePreview({ resolvePath, logo = <DextinityIcon sx={{ fontSize: 32 }} 
         [sitePath, setSitePath],
     );
 
-    const handleDeviceChange = (newDevice: Device) => {
-        setDevice(String(newDevice));
+    const reload = () => {
+        setIframePath(sitePath);
+        setReloadCount((count) => count + 1);
+        refetch();
     };
 
-    const handleShowOnlyVisibleChange = () => {
-        const newShowOnlyVisible = !showOnlyVisible;
+    const handleShowOnlyVisibleChange = (newShowOnlyVisible: boolean) => {
         setShowOnlyVisible(String(newShowOnlyVisible));
-        setIframePath(sitePath); //reload iframe with new settings
-        refetch();
+        reload();
     };
 
     const siteLink = `${siteConfig.url}${sitePath}`;
@@ -138,72 +141,65 @@ function SitePreview({ resolvePath, logo = <DextinityIcon sx={{ fontSize: 32 }} 
     if (error) {
         throw new Error(error.message);
     }
-    if (!data) {
-        return <div />;
-    }
 
-    const initialPageUrl = `${siteConfig.sitePreviewApiUrl}?${new URLSearchParams({ jwt: data.sitePreviewJwt }).toString()}`;
+    const iframeUrl = data ? `${siteConfig.sitePreviewApiUrl}?${new URLSearchParams({ jwt: data.sitePreviewJwt }).toString()}` : undefined;
+    const preloginMessage = intl.formatMessage({
+        id: "dextinity.sitePreview.sitePreloginEnabledMessage",
+        defaultMessage: "Site is not yet publicly available",
+    });
 
     return (
-        <Root>
-            <IFrameViewer device={device} initialPageUrl={initialPageUrl} />
-            <ActionsContainer>
-                <Grid
-                    container
-                    wrap="nowrap"
-                    sx={{
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                    }}
-                >
-                    <Grid>
-                        <SiteInformation>
-                            <LogoWrapper>
-                                {logo}
-                                <Typography
-                                    color="white"
-                                    sx={{
-                                        textTransform: "uppercase",
-                                    }}
-                                >
-                                    <FormattedMessage defaultMessage="Preview" id="dextinity.sitePreview.preview" />
-                                </Typography>
-                            </LogoWrapper>
-                            <SiteLinkWrapper>
-                                {siteConfig.preloginEnabled ? (
-                                    <Tooltip
-                                        title={intl.formatMessage({
-                                            id: "dextinity.sitePreview.sitePreloginEnabledMessage",
-                                            defaultMessage: "Site is not yet publicly available",
-                                        })}
-                                    >
-                                        <DomainLocked />
-                                    </Tooltip>
-                                ) : (
-                                    <Domain />
-                                )}
-                                <SiteLink variant="body1" href={siteLink} target="_blank">
-                                    {siteLink}
-                                </SiteLink>
-                            </SiteLinkWrapper>
-                        </SiteInformation>
-                    </Grid>
-                    <Grid>
-                        <DeviceToggle device={device} onChange={handleDeviceChange} />
-                    </Grid>
-                    <Grid>
-                        <VisibilityToggle showOnlyVisible={showOnlyVisible} onChange={handleShowOnlyVisibleChange} />
-                    </Grid>
-                </Grid>
-            </ActionsContainer>
-            <OpenLinkDialog
-                open={linkToOpen != null}
-                onClose={() => {
-                    setLinkToOpen(undefined);
-                }}
-                link={linkToOpen}
-            />
-        </Root>
+        <Theme colorScheme={colorScheme} brand={brand} density={density}>
+            <Root>
+                <Header>
+                    <SiteInformation>
+                        {logo}
+                        <Typography variant="section" element="h1">
+                            {intl.formatMessage({ id: "dextinity.sitePreview.preview", defaultMessage: "Preview" })}
+                        </Typography>
+                        {siteConfig.preloginEnabled && (
+                            <Tooltip content={preloginMessage}>
+                                <Icon name="globe-lock" aria-label={preloginMessage} tabIndex={0} />
+                            </Tooltip>
+                        )}
+                    </SiteInformation>
+                </Header>
+                <PreviewArea
+                    key={reloadCount}
+                    url={siteLink}
+                    src={iframeUrl}
+                    loading={iframeUrl == null ? true : undefined}
+                    device={device}
+                    onDeviceChange={setDevice}
+                    devices={previewDevices}
+                    labels={labels}
+                    actions={
+                        <>
+                            <VisibilityToggle showOnlyVisible={showOnlyVisible} onChange={handleShowOnlyVisibleChange} />
+                            <IconButton
+                                variant="text"
+                                color="secondary"
+                                size="small"
+                                aria-label={intl.formatMessage({ id: "dextinity.sitePreview.reload", defaultMessage: "Reload" })}
+                                onClick={reload}
+                            >
+                                <Icon name="refresh" />
+                            </IconButton>
+                            <IconButton
+                                variant="text"
+                                color="secondary"
+                                size="small"
+                                aria-label={intl.formatMessage({ id: "dextinity.sitePreview.openOnSite", defaultMessage: "Open on site" })}
+                                onClick={() => window.open(siteLink, "_blank", "noopener,noreferrer")}
+                            >
+                                <Icon name="window" />
+                            </IconButton>
+                        </>
+                    }
+                />
+                <OpenLinkDialog open={linkToOpen != null} onClose={() => setLinkToOpen(undefined)} link={linkToOpen} />
+            </Root>
+        </Theme>
     );
 }
 

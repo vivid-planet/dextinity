@@ -1,11 +1,12 @@
 import { useStoredState } from "@dextinity/admin";
-import type { Dispatch, SetStateAction } from "react";
+import type { DevicePreviewDevice } from "@dextinity/ui";
+import { type Dispatch, type SetStateAction, useCallback } from "react";
 
-import { Device } from "../common/Device";
+import { parsePreviewDevice } from "../common/previewDevice";
 
 interface BlockPreviewApi {
-    device: Device;
-    setDevice: Dispatch<SetStateAction<Device>>;
+    device: DevicePreviewDevice;
+    setDevice: Dispatch<SetStateAction<DevicePreviewDevice>>;
     showOnlyVisible: boolean;
     setShowOnlyVisible: Dispatch<SetStateAction<boolean>>;
     minimized: boolean;
@@ -13,11 +14,18 @@ interface BlockPreviewApi {
 }
 
 function useBlockPreview(): BlockPreviewApi {
-    const [device, setDevice] = useStoredState<Device>("previewDevice", Device.Responsive);
+    const [storedDevice, setStoredDevice] = useStoredState<DevicePreviewDevice | number>("previewDevice", "responsive");
     const [showOnlyVisible, setShowOnlyVisible] = useStoredState<boolean>("previewShowOnlyVisible", true);
     const [minimized, setMinimized] = useStoredState<boolean>("previewMinimized", false);
 
-    return { device, setDevice, showOnlyVisible, setShowOnlyVisible, minimized, setMinimized };
+    const setDevice = useCallback<Dispatch<SetStateAction<DevicePreviewDevice>>>(
+        (action) => {
+            setStoredDevice((previous) => (typeof action === "function" ? action(parsePreviewDevice(previous)) : action));
+        },
+        [setStoredDevice],
+    );
+
+    return { device: parsePreviewDevice(storedDevice), setDevice, showOnlyVisible, setShowOnlyVisible, minimized, setMinimized };
 }
 
 export { type BlockPreviewApi, useBlockPreview };

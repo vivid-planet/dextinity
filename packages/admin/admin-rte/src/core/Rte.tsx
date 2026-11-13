@@ -67,6 +67,8 @@ export interface IRteOptions {
     blocktypeMap: IBlocktypeMap;
     overwriteLinkButton?: ToolbarButtonComponent;
     overwriteLinksRemoveButton?: ToolbarButtonComponent;
+    /** Replaces the button that translates the content with the content translation service. */
+    overwriteTranslationButton?: ToolbarButtonComponent;
     customToolbarButtons?: ToolbarButtonComponent[];
     draftJsProps: Partial<
         Pick<

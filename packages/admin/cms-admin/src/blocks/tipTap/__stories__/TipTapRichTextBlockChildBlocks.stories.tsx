@@ -6,6 +6,7 @@ import { expect, waitFor, within } from "storybook/test";
 import { createBlockSkeleton } from "../../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface } from "../../types";
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
+import { chooseMenuItem } from "./tipTapStoryInteractions";
 
 function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     return (
@@ -86,7 +87,7 @@ export const InlineChildBlocks: StoryObj<typeof ChildBlocksStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.click(within(document.body).getByRole("menuitem", { name: "Example Child" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitem", "Example Child", { focusesEditor: false });
 
             await waitFor(
                 () => {
@@ -145,7 +146,7 @@ export const BlockChildBlocks: StoryObj<typeof ChildBlocksStory> = {
                 { timeout: 3000 },
             );
 
-            await userEvent.click(within(document.body).getByRole("menuitem", { name: "Example Child" }));
+            await chooseMenuItem({ canvas, userEvent }, "menuitem", "Example Child", { focusesEditor: false });
 
             await waitFor(
                 () => {

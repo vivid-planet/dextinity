@@ -17,11 +17,11 @@ describe("TableBlock: Delete a column", () => {
 
         const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
-        const originalNumberOfCellsInRow = within(rows[0]).getAllByRole("gridcell").length;
+        const originalNumberOfCellsInRow = within(rows[0]).getAllByRole("cell").length;
 
         const originalCellValuesPerRow = rows.map((rowElement) =>
             within(rowElement)
-                .getAllByRole("gridcell")
+                .getAllByRole("cell")
                 .map((cell) => cell.textContent),
         );
 
@@ -29,7 +29,7 @@ describe("TableBlock: Delete a column", () => {
 
         const newCellValuesPerRow = rows.map((rowElement) =>
             within(rowElement)
-                .getAllByRole("gridcell")
+                .getAllByRole("cell")
                 .map((cell) => cell.textContent),
         );
 

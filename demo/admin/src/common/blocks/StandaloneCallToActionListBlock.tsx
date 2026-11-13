@@ -7,6 +7,8 @@ export const StandaloneCallToActionListBlock = createCompositeBlock(
     {
         name: "StandaloneCallToActionList",
         displayName: CallToActionListBlock.displayName,
+        iconName: CallToActionListBlock.iconName,
+        description: CallToActionListBlock.description,
         blocks: {
             callToActionList: {
                 block: CallToActionListBlock,

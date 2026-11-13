@@ -1,3 +1,4 @@
+import type { IconName } from "@dextinity/ui";
 import type { ComponentType, Dispatch, ReactElement, ReactNode, SetStateAction } from "react";
 import { FormattedMessage, type MessageDescriptor } from "react-intl";
 
@@ -129,6 +130,16 @@ export interface BlockInterface<
     displayName: ReactNode;
     category: BlockCategory | CustomBlockCategory;
     tags?: Array<MessageDescriptor | string>;
+    /**
+     * The block type's icon, shown next to it in the Add Block Drawer and in a block list when `icon` returns none.
+     * Falls back to an icon for the block's category.
+     */
+    iconName?: IconName;
+    /**
+     * What the block is for, in a few words, shown under its name in the Add Block Drawer and found by its search,
+     * e.g. "Image with focal point and caption".
+     */
+    description?: ReactNode;
 }
 
 export interface RootBlockInterface<

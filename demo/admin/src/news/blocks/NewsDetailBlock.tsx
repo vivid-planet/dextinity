@@ -1,5 +1,5 @@
-import { Field, FinalFormInput } from "@dextinity/admin";
 import { type BlockInterface, BlocksFinalForm, createBlockSkeleton } from "@dextinity/cms-admin";
+import { InputField } from "@dextinity/ui-react-final-form";
 import type { NewsDetailBlockData, NewsDetailBlockInput } from "@src/blocks.generated";
 import { FormattedMessage } from "react-intl";
 
@@ -11,18 +11,15 @@ const NewsDetailBlock: BlockInterface<NewsDetailBlockData, State, NewsDetailBloc
     name: "NewsDetail",
 
     displayName: "News Detail",
+    iconName: "news",
+    description: <FormattedMessage id="blocks.newsDetail.description" defaultMessage="One news article" />,
 
     defaultValues: () => ({}),
 
     AdminComponent: ({ state, updateState }) => {
         return (
             <BlocksFinalForm onSubmit={updateState} initialValues={state}>
-                <Field
-                    name="id"
-                    label={<FormattedMessage id="blocks.newsDetail.id.label" defaultMessage="ID" />}
-                    fullWidth
-                    component={FinalFormInput}
-                />
+                <InputField name="id" label={<FormattedMessage id="blocks.newsDetail.id.label" defaultMessage="ID" />} />
             </BlocksFinalForm>
         );
     },

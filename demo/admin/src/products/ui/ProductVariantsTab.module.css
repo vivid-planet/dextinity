@@ -1,0 +1,21 @@
+.thumbnail {
+    inline-size: 40px;
+}
+
+.noImage {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 40px;
+    block-size: 40px;
+    border-radius: var(--dextinity-radius-item);
+    background: var(--dextinity-color-surface-sunken);
+    color: var(--dextinity-color-text-subtle);
+}
+
+.name {
+    font-weight: 500;
+}
+
+.muted {
+    color: var(--dextinity-color-text-subtle);
+}

@@ -1,35 +1,27 @@
 import { gql, useQuery } from "@apollo/client";
-import { Field, FinalForm, FinalFormInput, FinalFormSelect, Loading } from "@dextinity/admin";
-import type { FormApi } from "final-form";
-import { type FunctionComponent, useMemo } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { type CheckboxGroupOption, EmptyState, Field, Icon, Input } from "@dextinity/ui";
+import { CheckboxGroupField, InputField, SegmentedControlField, SelectField } from "@dextinity/ui-react-final-form";
+import { useEffect, useRef, useState } from "react";
+import { useForm, useFormState } from "react-final-form";
+import { useIntl } from "react-intl";
 
 import type { ContentScope } from "../../../../contentScope/Provider";
 import {
+    type ContentScopeOption,
     enumerableScopeCombinationExists,
+    getContentScopeKey,
+    getContentScopeOptions,
     getDimensionOptions,
     getEnumerableDimensionNames,
     getEnumerableSelectionAfterChange,
     getRequiredEnumerableDimensions,
+    toContentScope,
 } from "./contentScopeSelection";
 import type { GQLAvailableContentScopesQuery } from "./SelectScopesDialogContent.generated";
+import { ModeContent } from "./SelectScopesDialogContent.sc";
 
-interface SelectScopesDialogContentProps {
-    /** Called with the built scope when the form is submitted. The caller is responsible for persisting it. */
-    onSubmit: (scope: ContentScope) => Promise<void> | void;
-}
-
-type FormValues = {
-    scope: ContentScope;
-};
-
-export const SelectScopesDialogContent: FunctionComponent<SelectScopesDialogContentProps> = ({ onSubmit }) => {
-    const intl = useIntl();
-
-    // Memoized so that re-renders don't reinitialize the form and discard the selection.
-    const initialValues = useMemo<FormValues>(() => ({ scope: {} }), []);
-
-    const { data, error } = useQuery<GQLAvailableContentScopesQuery>(gql`
+export function useAvailableContentScopesQuery() {
+    return useQuery<GQLAvailableContentScopesQuery>(gql`
         query AvailableContentScopes {
             availableContentScopes: userPermissionsAvailableContentScopes {
                 scope
@@ -41,141 +33,241 @@ export const SelectScopesDialogContent: FunctionComponent<SelectScopesDialogCont
             }
         }
     `);
+}
 
-    const submit = async (values: FormValues) => {
-        const scope: ContentScope = Object.fromEntries(
-            Object.entries(values.scope)
-                .filter(([, value]) => value != null && String(value).trim() !== "")
-                .map(([dimension, value]) => [dimension, String(value).trim()]),
-        );
-        await onSubmit(scope);
-    };
+export type SelectScopesMode = "available" | "custom";
 
-    if (error) {
-        throw new Error(error.message);
+export interface SelectScopesFormValues {
+    mode: SelectScopesMode;
+    /** The keys (see `getContentScopeKey`) of the checked available scopes, including the ones assigned already. */
+    scopeKeys: string[];
+    /** The scope built dimension by dimension in the custom mode. */
+    scope: ContentScope;
+}
+
+/** The scopes to add: the newly checked available scopes, or the custom scope. */
+export function getScopesToAdd({
+    values,
+    availableContentScopes,
+    assignedScopeKeys,
+}: {
+    values: SelectScopesFormValues;
+    availableContentScopes: GQLAvailableContentScopesQuery["availableContentScopes"];
+    assignedScopeKeys: ReadonlySet<string>;
+}): ContentScope[] {
+    if (values.mode === "custom") {
+        return [
+            Object.fromEntries(
+                Object.entries(values.scope ?? {})
+                    .filter(([, value]) => value != null && String(value).trim() !== "")
+                    .map(([dimension, value]) => [dimension, String(value).trim()]),
+            ),
+        ];
     }
+    const checkedKeys = new Set(values.scopeKeys);
+    return availableContentScopes
+        .filter((availableContentScope) => {
+            const key = getContentScopeKey(availableContentScope.scope);
+            return checkedKeys.has(key) && !assignedScopeKeys.has(key);
+        })
+        .map(toContentScope);
+}
 
-    if (!data) {
-        return <Loading />;
+/** Validates the form; the messages are already translated. */
+export function validateSelectScopes({
+    values,
+    data,
+    assignedScopeKeys,
+    messages,
+}: {
+    values: SelectScopesFormValues;
+    data: GQLAvailableContentScopesQuery;
+    assignedScopeKeys: ReadonlySet<string>;
+    messages: { selectScope: string; selectValue: string; enterValue: string; combinationDoesNotExist: string };
+}) {
+    if (values.mode === "available") {
+        const hasNewScope = getScopesToAdd({ values, availableContentScopes: data.availableContentScopes, assignedScopeKeys }).length > 0;
+        return hasNewScope ? {} : { scopeKeys: messages.selectScope };
     }
-
-    // A dimension is enumerable when it appears in the available content scopes; its values then come from there. The remaining
-    // declared dimensions (e.g. one with too many values to enumerate) are entered as free text.
+    const scope = values.scope ?? {};
     const enumerableDimensionNames = getEnumerableDimensionNames(data.availableContentScopes);
-    const isEnumerableDimension = (dimension: string) => enumerableDimensionNames.includes(dimension);
-    const requiredEnumerableDimensions = getRequiredEnumerableDimensions(data.availableContentScopes);
-
-    const allValuesLabel = intl.formatMessage({ id: "dextinity.userPermissions.allContentScopeValues", defaultMessage: "All" });
-
-    // Changing a dimension keeps the other enumerable selections only while they still form a valid combination; the free-text
-    // selections are preserved.
-    const changeEnumerableValue = (form: FormApi<FormValues>, scope: ContentScope, dimension: string, value: string) => {
-        const enumerableSelection = getEnumerableSelectionAfterChange({
-            availableContentScopes: data.availableContentScopes,
-            scope,
-            dimension,
-            value,
-        });
-        const freeSelection = Object.fromEntries(
-            data.availableContentScopeDimensions
-                .filter((declaredDimension) => !isEnumerableDimension(declaredDimension.name) && scope[declaredDimension.name])
-                .map((declaredDimension) => [declaredDimension.name, scope[declaredDimension.name]]),
-        );
-        form.change("scope", { ...freeSelection, ...enumerableSelection });
-    };
-
-    const validate = ({ scope = {} }: FormValues) => {
-        const scopeErrors: Record<string, string> = {};
-        for (const dimension of requiredEnumerableDimensions) {
-            if (!scope[dimension]) {
-                scopeErrors[dimension] = intl.formatMessage({ id: "dextinity.userPermissions.selectValue", defaultMessage: "Select a value." });
-            }
+    const scopeErrors: Record<string, string> = {};
+    for (const dimension of getRequiredEnumerableDimensions(data.availableContentScopes)) {
+        if (!scope[dimension]) {
+            scopeErrors[dimension] = messages.selectValue;
         }
-        // Free-text dimensions must not be left empty: an empty value would drop the dimension from the scope, which grants
-        // access only to scopes without that dimension rather than to all values. Require an explicit value (`*` for all).
-        for (const dimension of data.availableContentScopeDimensions) {
-            if (!isEnumerableDimension(dimension.name) && String(scope[dimension.name] ?? "").trim() === "") {
-                scopeErrors[dimension.name] = intl.formatMessage({
-                    id: "dextinity.userPermissions.enterValue",
-                    defaultMessage: "Enter a value (* for all).",
-                });
-            }
+    }
+    // Free-text dimensions must not be left empty: an empty value would drop the dimension from the scope, which grants access only to
+    // scopes without that dimension rather than to all values. Require an explicit value (`*` for all).
+    for (const dimension of data.availableContentScopeDimensions) {
+        if (!enumerableDimensionNames.includes(dimension.name) && String(scope[dimension.name] ?? "").trim() === "") {
+            scopeErrors[dimension.name] = messages.enterValue;
         }
-        // Only a combination of enumerable values that exists in the available content scopes can be assigned. Skip this
-        // when there are no enumerable dimensions (all dimensions are free text), as there is no combination to match.
-        if (Object.keys(scopeErrors).length === 0 && enumerableDimensionNames.length > 0) {
-            if (!enumerableScopeCombinationExists({ scope, availableContentScopes: data.availableContentScopes })) {
-                const message = intl.formatMessage({
-                    id: "dextinity.userPermissions.contentScopeDoesNotExist",
-                    defaultMessage: "This combination of scopes does not exist.",
-                });
-                for (const dimension of enumerableDimensionNames) {
-                    scopeErrors[dimension] = message;
-                }
-            }
+    }
+    // Only a combination of enumerable values that exists in the available content scopes can be assigned.
+    if (
+        Object.keys(scopeErrors).length === 0 &&
+        enumerableDimensionNames.length > 0 &&
+        !enumerableScopeCombinationExists({ scope, availableContentScopes: data.availableContentScopes })
+    ) {
+        for (const dimension of enumerableDimensionNames) {
+            scopeErrors[dimension] = messages.combinationDoesNotExist;
         }
-        return Object.keys(scopeErrors).length > 0 ? { scope: scopeErrors } : {};
-    };
+    }
+    return Object.keys(scopeErrors).length > 0 ? { scope: scopeErrors } : {};
+}
+
+interface SelectScopesDialogContentProps {
+    data: GQLAvailableContentScopesQuery;
+    assignedScopeKeys: ReadonlySet<string>;
+}
+
+/**
+ * The fields of a React Final Form with `SelectScopesFormValues`: the available scopes as a searchable tree of checkboxes, or – for
+ * all values of a dimension (`*`) or dimensions that can't be listed – a custom scope built dimension by dimension.
+ */
+export function SelectScopesDialogContent({ data, assignedScopeKeys }: SelectScopesDialogContentProps) {
+    const intl = useIntl();
+    const { values } = useFormState<SelectScopesFormValues>({ subscription: { values: true } });
 
     return (
-        <FinalForm<FormValues>
-            subscription={{ values: true }}
-            mode="edit"
-            onSubmit={submit}
-            onAfterSubmit={() => null}
-            initialValues={initialValues}
-            validate={validate}
-        >
-            {({ values, form }: { values: FormValues; form: FormApi<FormValues> }) => {
-                const scope = values.scope ?? {};
-                return (
-                    <>
-                        {data.availableContentScopeDimensions.map((dimension) => {
-                            if (isEnumerableDimension(dimension.name)) {
-                                const options = getDimensionOptions({
-                                    dimension: dimension.name,
-                                    scope,
-                                    availableContentScopes: data.availableContentScopes,
-                                    allValuesLabel,
-                                });
-                                return (
-                                    <Field<string>
-                                        key={dimension.name}
-                                        name={`scope.${dimension.name}`}
-                                        label={dimension.label}
-                                        fullWidth
-                                        required={requiredEnumerableDimensions.includes(dimension.name)}
-                                    >
-                                        {({ input, meta }) => (
-                                            <FinalFormSelect
-                                                input={{
-                                                    ...input,
-                                                    onChange: (value: string) => changeEnumerableValue(form, scope, dimension.name, value),
-                                                }}
-                                                meta={meta}
-                                                fullWidth
-                                                options={options.map((option) => option.value)}
-                                                getOptionLabel={(value: string) => options.find((option) => option.value === value)?.label ?? value}
-                                            />
-                                        )}
-                                    </Field>
-                                );
-                            }
-                            return (
-                                <Field
-                                    key={dimension.name}
-                                    name={`scope.${dimension.name}`}
-                                    label={dimension.label}
-                                    helperText={<FormattedMessage id="dextinity.userPermissions.allValuesHint" defaultMessage="* for All" />}
-                                    fullWidth
-                                    required
-                                    component={FinalFormInput}
-                                />
-                            );
-                        })}
-                    </>
-                );
-            }}
-        </FinalForm>
+        <>
+            <SegmentedControlField<SelectScopesMode>
+                name="mode"
+                aria-label={intl.formatMessage({ id: "dextinity.userPermissions.addScope.mode", defaultMessage: "How to choose the scopes" })}
+                options={[
+                    {
+                        value: "available",
+                        label: intl.formatMessage({ id: "dextinity.userPermissions.addScope.available", defaultMessage: "Available scopes" }),
+                    },
+                    {
+                        value: "custom",
+                        label: intl.formatMessage({ id: "dextinity.userPermissions.addScope.custom", defaultMessage: "Custom scope" }),
+                    },
+                ]}
+            />
+            {values.mode === "custom" ? (
+                <CustomScopeSelection data={data} />
+            ) : (
+                <AvailableScopeSelection data={data} assignedScopeKeys={assignedScopeKeys} />
+            )}
+        </>
     );
-};
+}
+
+function markAssignedScopes(options: ContentScopeOption[], assignedScopeKeys: ReadonlySet<string>, assignedLabel: string): CheckboxGroupOption[] {
+    return options.map((option) =>
+        option.children
+            ? { ...option, children: markAssignedScopes(option.children, assignedScopeKeys, assignedLabel) }
+            : assignedScopeKeys.has(option.value)
+              ? { ...option, disabled: true, description: assignedLabel }
+              : option,
+    );
+}
+
+function AvailableScopeSelection({ data, assignedScopeKeys }: SelectScopesDialogContentProps) {
+    const intl = useIntl();
+    const [search, setSearch] = useState("");
+    const options = markAssignedScopes(
+        getContentScopeOptions({
+            availableContentScopes: data.availableContentScopes,
+            dimensionNames: data.availableContentScopeDimensions.map((dimension) => dimension.name),
+            search,
+        }),
+        assignedScopeKeys,
+        intl.formatMessage({ id: "dextinity.userPermissions.addScope.assigned", defaultMessage: "Has access already" }),
+    );
+    const label = intl.formatMessage({ id: "dextinity.userPermissions.addScope.scopes", defaultMessage: "Scopes" });
+
+    return (
+        <ModeContent>
+            <Field
+                label={intl.formatMessage({ id: "dextinity.userPermissions.addScope.search", defaultMessage: "Search scopes" })}
+                prefix={<Icon name="search" />}
+            >
+                <Input name="scopeSearch" type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
+            </Field>
+            {options.length > 0 ? (
+                <CheckboxGroupField name="scopeKeys" label={label} options={options} />
+            ) : (
+                <EmptyState
+                    icon={<Icon name="search" />}
+                    title={intl.formatMessage({ id: "dextinity.userPermissions.noScopeMatches", defaultMessage: "No scopes match the search" })}
+                />
+            )}
+        </ModeContent>
+    );
+}
+
+function CustomScopeSelection({ data }: { data: GQLAvailableContentScopesQuery }) {
+    const intl = useIntl();
+    const { values } = useFormState<SelectScopesFormValues>({ subscription: { values: true } });
+    const scope = values.scope ?? {};
+    const enumerableDimensionNames = getEnumerableDimensionNames(data.availableContentScopes);
+    const requiredEnumerableDimensions = getRequiredEnumerableDimensions(data.availableContentScopes);
+    const allValuesLabel = intl.formatMessage({ id: "dextinity.userPermissions.allContentScopeValues", defaultMessage: "All" });
+
+    return (
+        <ModeContent>
+            <EnumerableSelectionKeeper availableContentScopes={data.availableContentScopes} />
+            {data.availableContentScopeDimensions.map((dimension) =>
+                enumerableDimensionNames.includes(dimension.name) ? (
+                    <SelectField
+                        key={dimension.name}
+                        name={`scope.${dimension.name}`}
+                        label={dimension.label}
+                        required={requiredEnumerableDimensions.includes(dimension.name)}
+                        options={getDimensionOptions({
+                            dimension: dimension.name,
+                            scope,
+                            availableContentScopes: data.availableContentScopes,
+                            allValuesLabel,
+                        })}
+                    />
+                ) : (
+                    <InputField
+                        key={dimension.name}
+                        name={`scope.${dimension.name}`}
+                        label={dimension.label}
+                        helperText={intl.formatMessage({ id: "dextinity.userPermissions.allValuesHint", defaultMessage: "* for All" })}
+                        required
+                    />
+                ),
+            )}
+        </ModeContent>
+    );
+}
+
+// Changing a dimension keeps the other enumerable selections only while they still form a valid combination with the new value; the
+// free-text selections are preserved.
+function EnumerableSelectionKeeper({ availableContentScopes }: { availableContentScopes: GQLAvailableContentScopesQuery["availableContentScopes"] }) {
+    const form = useForm<SelectScopesFormValues>();
+    const { values } = useFormState<SelectScopesFormValues>({ subscription: { values: true } });
+    const scope = values.scope;
+    const previousScope = useRef(scope);
+
+    useEffect(() => {
+        const previous = previousScope.current ?? {};
+        previousScope.current = scope;
+        if (!scope) {
+            return;
+        }
+        const enumerableDimensionNames = getEnumerableDimensionNames(availableContentScopes);
+        const changedDimension = enumerableDimensionNames.find((dimension) => scope[dimension] !== previous[dimension]);
+        if (changedDimension === undefined || !scope[changedDimension]) {
+            return;
+        }
+        const enumerableSelection = getEnumerableSelectionAfterChange({
+            availableContentScopes,
+            scope,
+            dimension: changedDimension,
+            value: scope[changedDimension],
+        });
+        const removedDimensions = enumerableDimensionNames.filter((dimension) => scope[dimension] && !enumerableSelection[dimension]);
+        for (const dimension of removedDimensions) {
+            form.change(`scope.${dimension}` as keyof SelectScopesFormValues, undefined);
+        }
+    }, [scope, availableContentScopes, form]);
+
+    return null;
+}

@@ -1,46 +1,78 @@
-// eslint-disable-next-line no-restricted-imports
-import { Button, type ButtonProps } from "@mui/material";
-import Cookies from "js-cookie";
+import { Button, type ButtonProps, Icon, Tooltip } from "@dextinity/ui";
+import { useId } from "react";
+import { useIntl } from "react-intl";
 
-import { commonImpersonationMessages } from "../../common/impersonation/commonImpersonationMessages";
 import { useCurrentUser, useUserPermissionCheck } from "../hooks/currentUser";
+import { startImpersonation, stopImpersonation } from "../utils/handleImpersonation";
+import { useImpersonationMessages } from "./useImpersonationMessages";
 
-export const StopImpersonationButton = (buttonProps: ButtonProps) => {
-    const stopImpersonation = async () => {
-        Cookies.remove("dextinity-impersonate-user-id");
-        location.href = "/";
-    };
+export type StopImpersonationButtonProps = Omit<ButtonProps, "children" | "onClick" | "href">;
 
+export const StopImpersonationButton = (buttonProps: StopImpersonationButtonProps) => {
+    const { stopImpersonation: label } = useImpersonationMessages();
     return (
-        <Button onClick={stopImpersonation} {...buttonProps}>
-            {commonImpersonationMessages.stopImpersonation}
+        <Button startIcon={<Icon name="reset" />} {...buttonProps} onClick={() => void stopImpersonation()}>
+            {label}
         </Button>
     );
 };
 
-export const StartImpersonationButton = ({ userId }: { userId: string }) => {
+interface StartImpersonationButtonProps {
+    userId: string;
+    /** Whether the user can be impersonated; disables the button with the reason when `false`. */
+    impersonationAllowed?: boolean;
+}
+
+/**
+ * Starts the impersonation of the user, or, while any user is impersonated, stops it. Renders nothing without the `impersonation`
+ * permission.
+ */
+export const StartImpersonationButton = ({ userId, impersonationAllowed = true }: StartImpersonationButtonProps) => {
+    const intl = useIntl();
     const currentUser = useCurrentUser();
     const isAllowed = useUserPermissionCheck();
-    const startImpersonation = async () => {
-        Cookies.set("dextinity-impersonate-user-id", userId);
-        location.href = "/";
-    };
+    const messages = useImpersonationMessages();
+    const disabledReasonId = useId();
 
     if (!isAllowed("impersonation")) {
         return null;
     }
 
-    if (currentUser.id !== userId && !currentUser.impersonated) {
-        return (
-            <Button onClick={startImpersonation} variant="contained">
-                {commonImpersonationMessages.startImpersonation}
-            </Button>
-        );
+    if (currentUser.impersonated) {
+        return <StopImpersonationButton variant="outlined" color="secondary" />;
     }
 
-    if (currentUser.impersonated && currentUser.id === userId) {
-        return <StopImpersonationButton variant="contained" />;
-    }
+    const disabledReason =
+        currentUser.id === userId
+            ? messages.cannotImpersonateYourself
+            : !impersonationAllowed
+              ? intl.formatMessage({
+                    id: "dextinity.userPermissions.cannotImpersonateReason",
+                    defaultMessage: "This user has permissions or content scopes that you don't have",
+                })
+              : undefined;
+    const button = (
+        <Button
+            variant="outlined"
+            color="secondary"
+            startIcon={<Icon name="impersonate" />}
+            disabled={disabledReason !== undefined}
+            focusableWhenDisabled
+            aria-describedby={disabledReason ? disabledReasonId : undefined}
+            onClick={() => void startImpersonation(userId)}
+        >
+            {messages.startImpersonation}
+        </Button>
+    );
 
-    return null;
+    return disabledReason ? (
+        <>
+            <Tooltip content={disabledReason}>{button}</Tooltip>
+            <span id={disabledReasonId} hidden>
+                {disabledReason}
+            </span>
+        </>
+    ) : (
+        button
+    );
 };

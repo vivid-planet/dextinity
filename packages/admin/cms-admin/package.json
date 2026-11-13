@@ -50,6 +50,8 @@
         "@dextinity/admin": "workspace:*",
         "@dextinity/admin-icons": "workspace:*",
         "@dextinity/admin-rte": "workspace:*",
+        "@dextinity/ui": "workspace:*",
+        "@dextinity/ui-react-final-form": "workspace:*",
         "@tiptap/core": "^3.33.0",
         "@tiptap/extension-subscript": "^3.33.0",
         "@tiptap/extension-superscript": "^3.33.0",
@@ -68,7 +70,6 @@
         "lodash.escaperegexp": "^4.1.2",
         "mime-db": "^1.54.0",
         "p-debounce": "^6.0.0",
-        "react-cool-dimensions": "^3.0.1",
         "react-dropzone": "^20.2.0",
         "react-final-form-arrays": "^3.1.4",
         "react-hotkeys-hook": "^5.3.3",
@@ -86,6 +87,7 @@
         "@apollo/client": "^3.14.1",
         "@babel/cli": "^8.0.6",
         "@babel/core": "^8.0.10",
+        "@base-ui/react": "^1.5.0",
         "@dextinity/admin-babel-preset": "workspace:*",
         "@dextinity/cli": "workspace:*",
         "@dextinity/eslint-config": "workspace:*",
@@ -98,10 +100,6 @@
         "@graphql-codegen/typescript-operations": "^6.1.10",
         "@mui/material": "^9.5.0",
         "@mui/system": "^9.5.0",
-        "@mui/x-data-grid": "^9.15.0",
-        "@mui/x-data-grid-premium": "^9.15.0",
-        "@mui/x-data-grid-pro": "^9.15.0",
-        "@mui/x-date-pickers": "^9.15.0",
         "@storybook/addon-docs": "^10.6.6",
         "@storybook/addon-vitest": "10.6.6",
         "@storybook/react-vite": "^10.6.6",
@@ -150,11 +148,10 @@
     },
     "peerDependencies": {
         "@apollo/client": "^3.7.0",
+        "@base-ui/react": "^1.5.0",
         "@emotion/react": "^11.5.0",
         "@emotion/styled": "^11.3.0",
         "@mui/material": "^9.0.0",
-        "@mui/x-data-grid": "^9.0.0",
-        "@mui/x-data-grid-pro": "^9.0.0",
         "final-form": "^4.0.0",
         "graphql": "^15.0.0 || ^16.0.0",
         "react": "^18.0.0 || ^19.0.0",
@@ -165,11 +162,6 @@
         "react-intl": "^12.0.0",
         "react-router": "^5.0.0",
         "react-router-dom": "^5.0.0"
-    },
-    "peerDependenciesMeta": {
-        "@mui/x-data-grid-pro": {
-            "optional": true
-        }
     },
     "engines": {
         "node": ">=24.15.0"

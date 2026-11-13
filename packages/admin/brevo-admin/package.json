@@ -1,6 +1,6 @@
 {
     "name": "@dextinity/brevo-admin",
-    "version": "10.15.0",
+    "version": "10.14.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vivid-planet/dextinity",
@@ -41,10 +41,10 @@
     },
     "dependencies": {
         "@dextinity/admin": "workspace:*",
-        "@dextinity/admin-icons": "workspace:*",
         "@dextinity/cms-admin": "workspace:*",
-        "date-fns": "^4.4.0",
-        "react-dropzone": "^20.2.0"
+        "@dextinity/ui": "workspace:*",
+        "@dextinity/ui-react-final-form": "workspace:*",
+        "fast-equals": "^5.4.0"
     },
     "devDependencies": {
         "@apollo/client": "^3.14.1",
@@ -60,17 +60,13 @@
         "@graphql-codegen/typescript": "^6.1.2",
         "@graphql-codegen/typescript-operations": "^6.1.10",
         "@mui/material": "^9.5.0",
-        "@mui/system": "^9.5.0",
-        "@mui/x-data-grid": "^9.15.0",
-        "@mui/x-data-grid-pro": "^9.15.0",
-        "@mui/x-date-pickers": "^9.15.0",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "@types/react-router": "^5.1.20",
         "chokidar-cli": "^3.0.0",
         "eslint": "^9.39.5",
         "final-form": "^4.20.10",
-        "graphql": "^16.15.0",
+        "graphql": "^16.14.2",
         "prettier": "^3.9.10",
         "react": "^19.3.1",
         "react-dnd": "^16.0.1",
@@ -87,9 +83,6 @@
         "@emotion/react": "^11.5.0",
         "@emotion/styled": "^11.3.0",
         "@mui/material": "^9.0.0",
-        "@mui/x-data-grid": "^9.0.0",
-        "@mui/x-data-grid-pro": "^9.0.0",
-        "@mui/x-date-pickers": "^9.0.0",
         "final-form": "^4.0.0",
         "graphql": "^15.0.0 || ^16.0.0",
         "react": "^18.0.0 || ^19.0.0",

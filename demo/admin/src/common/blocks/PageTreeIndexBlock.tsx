@@ -6,5 +6,7 @@ export const PageTreeIndexBlock: BlockInterface<PageTreeIndexBlockData, Record<s
     ...createBlockSkeleton(),
     name: "PageTreeIndex",
     displayName: <FormattedMessage id="blocks.pageTreeIndex" defaultMessage="Page Tree Index" />,
+    iconName: "sitemap",
+    description: <FormattedMessage id="blocks.pageTreeIndex.description" defaultMessage="Links to the pages below this one" />,
     defaultValues: () => ({}),
 };

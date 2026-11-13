@@ -1,5 +1,4 @@
-import { greyPalette, useContentTranslationService, useErrorDialog } from "@dextinity/admin";
-import { Box, type SvgIconProps } from "@mui/material";
+import { useContentTranslationService, useErrorDialog } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
 import { Extension, type Extensions } from "@tiptap/core";
 import Subscript from "@tiptap/extension-subscript";
@@ -8,17 +7,8 @@ import { skipTrailingNodeMeta } from "@tiptap/extensions";
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { deepEqual } from "fast-equals";
-import {
-    type ComponentType,
-    type ForwardRefExoticComponent,
-    type HTMLAttributes,
-    type ReactNode,
-    type RefAttributes,
-    useEffect,
-    useRef,
-    useState,
-} from "react";
-import { FormattedMessage } from "react-intl";
+import { type ComponentType, type CSSProperties, type HTMLAttributes, type ReactNode, useEffect, useRef, useState } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
 import { BlockCategory, type BlockInterface, type LinkBlockInterface, type ReadOnlyBlockRenderInterface } from "../types";
@@ -161,9 +151,10 @@ export interface TipTapInlineStyle {
     appliesTo?: string[];
     element: ComponentType<HTMLAttributes<HTMLElement>>;
     /**
-     * Displayed next to the label in the toolbar's "More options" menu, matching Superscript/Subscript.
+     * Displayed next to the label in the toolbar's "More options" menu, matching Superscript/Subscript, e.g. `<Icon name="rte-highlight" />`
+     * from `@dextinity/ui`.
      */
-    icon?: ForwardRefExoticComponent<Omit<SvgIconProps, "ref"> & RefAttributes<SVGSVGElement>>;
+    icon?: ReactNode;
 }
 
 export interface TipTapRichTextBlockState {
@@ -569,15 +560,122 @@ export function buildTipTapExtensions({
     ];
 }
 
-const ReadOnlyContent = styled("div")({
-    ".tiptap > :first-child, .tiptap > :first-child > :first-child": {
-        marginTop: 0,
-    },
+// The editable content in the typography of the design system. Text blocks with an `element` bring their own styles.
+const EditorContentRoot = styled("div")`
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+    line-height: 1.62;
+    color: var(--dextinity-color-text);
+    overflow-wrap: anywhere;
 
-    ".tiptap > :last-child, .tiptap > :last-child > :last-child": {
-        marginBottom: 0,
-    },
-});
+    .tiptap {
+        outline: none;
+    }
+
+    /* The first child, without :first-child, which Emotion warns about since server-side rendering can insert style elements before it */
+    .tiptap > :not(* ~ *),
+    .tiptap > :not(* ~ *) > :not(* ~ *) {
+        margin-block-start: 0;
+    }
+
+    .tiptap > :last-child,
+    .tiptap > :last-child > :last-child {
+        margin-block-end: 0;
+    }
+
+    p,
+    ul,
+    ol {
+        margin-block: 0 10px;
+    }
+
+    ul,
+    ol {
+        padding-inline-start: 22px;
+    }
+
+    li > p {
+        margin-block-end: 4px;
+    }
+
+    h1,
+    h2 {
+        margin-block: 18px 10px;
+        font-size: var(--dextinity-typography-title-size);
+        font-weight: var(--dextinity-typography-title-font-weight);
+        line-height: var(--dextinity-typography-title-line-height);
+    }
+
+    h1 {
+        font-size: var(--dextinity-typography-display-l-size);
+        line-height: var(--dextinity-typography-display-l-line-height);
+    }
+
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin-block: 14px 8px;
+        font-size: var(--dextinity-typography-section-size);
+        font-weight: var(--dextinity-typography-section-font-weight);
+        line-height: var(--dextinity-typography-section-line-height);
+    }
+
+    h5,
+    h6 {
+        font-size: var(--dextinity-typography-body-size);
+    }
+
+    a {
+        color: var(--dextinity-color-accent-text);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+`;
+
+// The frame of a field in the design system, stacked: the toolbar above the content, both inside one box with the field's focus ring.
+// The line is drawn above the content, so the toolbar's background doesn't cover it.
+const EditorFrame = styled("div")`
+    position: relative;
+    isolation: isolate;
+    border-radius: var(--dextinity-field-radius-stacked);
+    background: var(--dextinity-field-background);
+    color: var(--dextinity-field-foreground);
+    transition:
+        box-shadow var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        background var(--dextinity-motion-duration-medium);
+
+    &::after {
+        content: "";
+        position: absolute;
+        z-index: 3;
+        inset: 0;
+        border-radius: inherit;
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-field-line);
+        pointer-events: none;
+        transition: box-shadow var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+    }
+
+    &:hover::after {
+        box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-field-line-hover);
+    }
+
+    &:focus-within {
+        background: var(--dextinity-field-background-focus);
+        box-shadow: 0 0 0 4px var(--dextinity-field-halo-focus);
+    }
+
+    &:focus-within::after {
+        box-shadow: inset 0 0 0 var(--dextinity-field-line-width-focus) var(--dextinity-field-line-focus);
+    }
+
+    .tiptap {
+        box-sizing: border-box;
+        min-block-size: var(--tip-tap-editor-min-height);
+        padding: 14px 16px;
+        cursor: text;
+    }
+`;
 
 export interface TipTapEditorProps {
     state: TipTapRichTextBlockState;
@@ -591,6 +689,12 @@ export interface TipTapEditorProps {
     listLevelMax?: number;
     minHeight?: number;
     readOnly?: boolean;
+    /**
+     * The editor's accessible name.
+     *
+     * @defaultValue `"Rich text"`
+     */
+    label?: string;
 }
 
 export const TipTapEditor = ({
@@ -605,7 +709,10 @@ export const TipTapEditor = ({
     listLevelMax,
     minHeight = 200,
     readOnly,
+    label,
 }: TipTapEditorProps) => {
+    const intl = useIntl();
+    const accessibleName = label ?? intl.formatMessage({ id: "dextinity.blocks.tipTapRichText.editorLabel", defaultMessage: "Rich text" });
     const childBlocksByKey: Record<string, BlockInterface> = Object.fromEntries(Object.entries(childBlocks).map(([key, { block }]) => [key, block]));
 
     // Content the editor holds that hasn't come back through state yet. Matched by identity, not by
@@ -632,6 +739,14 @@ export const TipTapEditor = ({
         extensions,
         content: state.tipTapContent,
         editable: !readOnly,
+        editorProps: {
+            attributes: {
+                role: "textbox",
+                "aria-label": accessibleName,
+                "aria-multiline": "true",
+                ...(readOnly ? { "aria-readonly": "true" } : {}),
+            },
+        },
         onUpdate: ({ editor }) => {
             if (maxTextBlocks !== undefined && editor.state.doc.childCount > maxTextBlocks) {
                 // Remove excess text blocks (e.g. from paste)
@@ -733,9 +848,9 @@ export const TipTapEditor = ({
             <InlineStyleContext.Provider value={inlineStyles}>
                 <ChildBlocksContext.Provider value={childBlocksByKey}>
                     {readOnly ? (
-                        <ReadOnlyContent>{editorNode}</ReadOnlyContent>
+                        <EditorContentRoot>{editorNode}</EditorContentRoot>
                     ) : (
-                        <Box sx={{ border: `1px solid ${greyPalette[100]}`, borderTopWidth: 0, backgroundColor: "white", borderRadius: "2px" }}>
+                        <EditorFrame style={{ "--tip-tap-editor-min-height": `${minHeight}px` } as CSSProperties}>
                             <TipTapToolbar
                                 editor={editor}
                                 resolvedOptions={resolvedOptions}
@@ -747,12 +862,11 @@ export const TipTapEditor = ({
                                 canTranslate={canTranslate}
                                 onTranslateClick={handleTranslateClick}
                             />
-                            <Box sx={{ "& .tiptap": { minHeight, p: "20px", outline: "none" } }}>{editorNode}</Box>
-                        </Box>
+                            <EditorContentRoot>{editorNode}</EditorContentRoot>
+                        </EditorFrame>
                     )}
                     {translationDialogState && (
                         <TipTapContentTranslationDialog
-                            open
                             onClose={() => setTranslationDialogState(null)}
                             originalContent={translationDialogState.original}
                             translatedContent={translationDialogState.translated}
@@ -828,6 +942,8 @@ export const createTipTapRichTextBlock = (options: TipTapRichTextBlockFactoryOpt
         defaultValues: () => ({ tipTapContent: emptyContent }),
 
         category: BlockCategory.TextAndContent,
+        iconName: "bold",
+        description: <FormattedMessage id="dextinity.blocks.tipTapRichText.description" defaultMessage="Formatted text with lists and links" />,
 
         input2State: ({ tipTapContent }) => {
             let content = tipTapContent ?? emptyContent;

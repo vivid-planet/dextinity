@@ -1,5 +1,5 @@
-import { RteHighlight, Tag } from "@dextinity/admin-icons";
 import { createTipTapRichTextBlock, type TipTapTextBlockStyle } from "@dextinity/cms-admin";
+import { Icon } from "@dextinity/ui";
 import { Box, Typography } from "@mui/material";
 import { ProductPriceBlock } from "@src/products/blocks/ProductPriceBlock";
 import { ProductTeaserBlock } from "@src/products/blocks/ProductTeaserBlock";
@@ -87,16 +87,16 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
         {
             name: "highlight",
             label: <FormattedMessage id="tipTapRichTextBlock.inlineStyle.highlight" defaultMessage="Highlight" />,
-            icon: RteHighlight,
+            icon: <Icon name="highlight" />,
             element: (props: HTMLAttributes<HTMLElement>) => (
-                <Box component="span" sx={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />
+                <Box component="span" sx={{ backgroundColor: "#fff3cd", color: "#664d03", padding: "0 2px" }} {...props} />
             ),
         },
         {
             name: "tag",
             label: <FormattedMessage id="tipTapRichTextBlock.inlineStyle.tag" defaultMessage="Tag" />,
             appliesTo: ["paragraph"],
-            icon: Tag,
+            icon: <Icon name="tag" />,
             element: (props: HTMLAttributes<HTMLElement>) => (
                 <Box component="span" sx={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: "4px" }} {...props} />
             ),

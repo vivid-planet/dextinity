@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import { type CheckboxGroupOption, EmptyState, Icon, TextField } from "@dextinity/ui";
+import { type CheckboxGroupOption, EmptyState, Field, Icon, Input } from "@dextinity/ui";
 import { CheckboxGroupField, InputField, SegmentedControlField, SelectField } from "@dextinity/ui-react-final-form";
 import { useEffect, useRef, useState } from "react";
 import { useForm, useFormState } from "react-final-form";
@@ -181,14 +181,12 @@ function AvailableScopeSelection({ data, assignedScopeKeys }: SelectScopesDialog
 
     return (
         <ModeContent>
-            <TextField
-                name="scopeSearch"
-                type="search"
+            <Field
                 label={intl.formatMessage({ id: "dextinity.userPermissions.addScope.search", defaultMessage: "Search scopes" })}
                 prefix={<Icon name="search" />}
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-            />
+            >
+                <Input name="scopeSearch" type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
+            </Field>
             {options.length > 0 ? (
                 <CheckboxGroupField name="scopeKeys" label={label} options={options} />
             ) : (

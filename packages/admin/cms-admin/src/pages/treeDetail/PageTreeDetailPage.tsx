@@ -15,6 +15,7 @@ import {
     PageHeader,
     Panel,
     Skeleton,
+    StatusIndicator,
     ToastViewport,
     TreeDetailLayout,
     type TreeNode,
@@ -777,7 +778,7 @@ function PageTreeDetailView({
                                 selected={statusFilter === status}
                                 onClick={() => setStatusFilter(status)}
                                 count={countFor(status)}
-                                status={status === "all" ? undefined : visibilityStatus[status]}
+                                startAdornment={status === "all" ? undefined : <StatusIndicator status={visibilityStatus[status]} decorative />}
                             >
                                 {statusFilterLabels[status]}
                             </FilterChip>

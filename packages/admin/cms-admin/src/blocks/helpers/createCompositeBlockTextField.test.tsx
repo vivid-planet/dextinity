@@ -48,7 +48,7 @@ describe("createCompositeBlockTextField", () => {
 
         await waitFor(() => expect(onUpdate).toHaveBeenLastCalledWith(""));
         await waitFor(() => expect(input.getAttribute("aria-invalid")).toBe("true"));
-        expect(screen.getByText("Required")).toBeTruthy();
+        expect(screen.getByText("Required", { ignore: "[hidden]" })).toBeTruthy();
     });
 
     it("shows a textarea with multiline", () => {

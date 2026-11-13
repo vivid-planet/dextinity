@@ -1,20 +1,18 @@
-import { Icon, Picker, type PickerProps } from "@dextinity/ui";
+import { Field, Icon, Picker, type PickerProps } from "@dextinity/ui";
 import { styled } from "@mui/material/styles";
 import { type ReactNode, useState } from "react";
 import { useIntl } from "react-intl";
 
 import { PageTreeSelectDialog, type PageTreeSelectValue } from "./PageTreeSelectDialog";
 
-export interface PageTreeSelectProps extends Omit<
-    PickerProps<PageTreeSelectValue>,
-    "value" | "onChange" | "renderValue" | "onOpen" | "onClear" | "label"
-> {
+export interface PageTreeSelectProps extends Omit<PickerProps<PageTreeSelectValue>, "value" | "onChange" | "renderValue" | "onOpen" | "onClear"> {
     /**
      * The field's label.
      *
      * @defaultValue "Page"
      */
-    label?: PickerProps<PageTreeSelectValue>["label"];
+    label?: ReactNode;
+    required?: boolean;
     value: PageTreeSelectValue | undefined | null;
     onChange: (newValue: PageTreeSelectValue | null) => void;
     /**
@@ -49,18 +47,21 @@ export function PageTreeSelect({ value, onChange, clearable, label, placeholder,
 
     return (
         <>
-            <Picker<PageTreeSelectValue>
-                {...pickerProps}
+            <Field
                 label={label ?? intl.formatMessage({ id: "dextinity.pages.pageTreeSelect.fieldLabel", defaultMessage: "Page" })}
                 required={required}
-                value={value ?? null}
-                renderValue={renderPageTreeSelectValue}
-                placeholder={placeholder ?? intl.formatMessage({ id: "dextinity.pages.pageTreeSelect.label", defaultMessage: "Select Page" })}
-                icon={<Icon name="file" />}
-                labels={{ clear: intl.formatMessage({ id: "dextinity.pages.pageTreeSelect.clear", defaultMessage: "Remove page" }), ...labels }}
-                onOpen={() => setOpen(true)}
-                onClear={showsClear ? () => onChange(null) : undefined}
-            />
+            >
+                <Picker<PageTreeSelectValue>
+                    {...pickerProps}
+                    value={value ?? null}
+                    renderValue={renderPageTreeSelectValue}
+                    placeholder={placeholder ?? intl.formatMessage({ id: "dextinity.pages.pageTreeSelect.label", defaultMessage: "Select Page" })}
+                    icon={<Icon name="file" />}
+                    labels={{ clear: intl.formatMessage({ id: "dextinity.pages.pageTreeSelect.clear", defaultMessage: "Remove page" }), ...labels }}
+                    onOpen={() => setOpen(true)}
+                    onClear={showsClear ? () => onChange(null) : undefined}
+                />
+            </Field>
             {/* Mounted only while open, so that the page tree is only queried then */}
             {open && (
                 <PageTreeSelectDialog

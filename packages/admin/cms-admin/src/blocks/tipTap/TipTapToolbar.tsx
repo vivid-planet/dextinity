@@ -1,8 +1,6 @@
 import { RteAlignCenter, RteAlignJustify, RteAlignLeft, RteAlignRight } from "@dextinity/admin-icons";
 import {
-    formatShortcut,
     Icon,
-    isApplePlatform,
     MenuCheckboxItem,
     MenuItem,
     MenuRadioGroup,
@@ -48,10 +46,6 @@ interface MoreOptionsItem {
     label: string;
     isActive: boolean;
     onToggle: () => void;
-}
-
-function shortcutLabel(shortcut: string) {
-    return formatShortcut(shortcut).join(isApplePlatform() ? "" : "+");
 }
 
 const textAlignMessages = defineMessages({
@@ -309,7 +303,7 @@ export const TipTapToolbar = ({
                 <ToolbarGroup aria-label={label({ id: "dextinity.blocks.tipTapRichText.history", defaultMessage: "History" })}>
                     <ToolbarButton
                         aria-label={label({ id: "dextinity.blocks.tipTapRichText.undo.tooltip", defaultMessage: "Undo" })}
-                        shortcut={shortcutLabel("mod+z")}
+                        shortcut="mod+z"
                         disabled={!editorState.canUndo}
                         keepFocus
                         onClick={() => editor.chain().focus().undo().run()}
@@ -318,7 +312,7 @@ export const TipTapToolbar = ({
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={label({ id: "dextinity.blocks.tipTapRichText.redo.tooltip", defaultMessage: "Redo" })}
-                        shortcut={shortcutLabel("shift+mod+z")}
+                        shortcut="shift+mod+z"
                         disabled={!editorState.canRedo}
                         keepFocus
                         onClick={() => editor.chain().focus().redo().run()}
@@ -397,7 +391,7 @@ export const TipTapToolbar = ({
                     {resolvedOptions.bold && (
                         <ToolbarButton
                             aria-label={label({ id: "dextinity.blocks.tipTapRichText.bold.tooltip", defaultMessage: "Bold" })}
-                            shortcut={shortcutLabel("mod+b")}
+                            shortcut="mod+b"
                             pressed={editorState.isBoldActive}
                             keepFocus
                             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -408,7 +402,7 @@ export const TipTapToolbar = ({
                     {resolvedOptions.italic && (
                         <ToolbarButton
                             aria-label={label({ id: "dextinity.blocks.tipTapRichText.italic.tooltip", defaultMessage: "Italic" })}
-                            shortcut={shortcutLabel("mod+i")}
+                            shortcut="mod+i"
                             pressed={editorState.isItalicActive}
                             keepFocus
                             onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -419,7 +413,7 @@ export const TipTapToolbar = ({
                     {resolvedOptions.underline && (
                         <ToolbarButton
                             aria-label={label({ id: "dextinity.blocks.tipTapRichText.underline.tooltip", defaultMessage: "Underline" })}
-                            shortcut={shortcutLabel("mod+u")}
+                            shortcut="mod+u"
                             pressed={editorState.isUnderlineActive}
                             keepFocus
                             onClick={() => editor.chain().focus().toggleUnderline().run()}
@@ -430,7 +424,7 @@ export const TipTapToolbar = ({
                     {resolvedOptions.strike && (
                         <ToolbarButton
                             aria-label={label({ id: "dextinity.blocks.tipTapRichText.strike.tooltip", defaultMessage: "Strikethrough" })}
-                            shortcut={shortcutLabel("shift+mod+s")}
+                            shortcut="shift+mod+s"
                             pressed={editorState.isStrikeActive}
                             keepFocus
                             onClick={() => editor.chain().focus().toggleStrike().run()}
@@ -478,7 +472,7 @@ export const TipTapToolbar = ({
                         <ToolbarButton
                             key={textAlign}
                             aria-label={label(textAlignMessages[textAlign])}
-                            shortcut={shortcutLabel(textAlignShortcuts[textAlign])}
+                            shortcut={textAlignShortcuts[textAlign]}
                             pressed={editorState.activeTextAlign === textAlign}
                             keepFocus
                             onClick={() => {
@@ -503,7 +497,7 @@ export const TipTapToolbar = ({
                     {resolvedOptions.orderedList && (
                         <ToolbarButton
                             aria-label={label({ id: "dextinity.blocks.tipTapRichText.orderedList.tooltip", defaultMessage: "Ordered list" })}
-                            shortcut={shortcutLabel("shift+mod+7")}
+                            shortcut="shift+mod+7"
                             pressed={editorState.isOrderedListActive}
                             keepFocus
                             onClick={() => handleListToggle(resolvedOptions.orderedList as TipTapResolvedList)}
@@ -514,7 +508,7 @@ export const TipTapToolbar = ({
                     {resolvedOptions.unorderedList && (
                         <ToolbarButton
                             aria-label={label({ id: "dextinity.blocks.tipTapRichText.bulletList.tooltip", defaultMessage: "Bullet list" })}
-                            shortcut={shortcutLabel("shift+mod+8")}
+                            shortcut="shift+mod+8"
                             pressed={editorState.isBulletListActive}
                             keepFocus
                             onClick={() => handleListToggle(resolvedOptions.unorderedList as TipTapResolvedList)}
@@ -524,7 +518,7 @@ export const TipTapToolbar = ({
                     )}
                     <ToolbarButton
                         aria-label={label({ id: "dextinity.blocks.tipTapRichText.indent.tooltip", defaultMessage: "Increase indent" })}
-                        shortcut={shortcutLabel("Tab")}
+                        shortcut="Tab"
                         disabled={!editorState.canIndent}
                         keepFocus
                         onClick={() => editor.chain().focus().sinkListItem("listItem").run()}
@@ -533,7 +527,7 @@ export const TipTapToolbar = ({
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={label({ id: "dextinity.blocks.tipTapRichText.dedent.tooltip", defaultMessage: "Decrease indent" })}
-                        shortcut={shortcutLabel("shift+Tab")}
+                        shortcut="shift+Tab"
                         disabled={!editorState.canDedent}
                         keepFocus
                         onClick={() => editor.chain().focus().liftListItem("listItem").run()}

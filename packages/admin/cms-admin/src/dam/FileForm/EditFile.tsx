@@ -7,10 +7,8 @@ import {
     EditLayout,
     type EditLayoutPane,
     EmptyState,
-    formatShortcut,
     Icon,
     IconButton,
-    isApplePlatform,
     Menu,
     MenuItem,
     MenuSeparator,
@@ -350,7 +348,6 @@ function EditFileFormContent({ file, assetsUrl, assetsLabel, form, handleSubmit,
     };
 
     useKeyboardShortcut("mod+s", () => void submit(), { allowInEditable: true });
-    const saveShortcut = formatShortcut("mod+s").join(isApplePlatform() ? "" : "+");
     const backUrl = file.folder ? `${assetsUrl}?folder=${encodeURIComponent(file.folder.id)}` : assetsUrl;
 
     const submitAndReportSuccess = async () => {
@@ -388,7 +385,7 @@ function EditFileFormContent({ file, assetsUrl, assetsLabel, form, handleSubmit,
                                             id: "dextinity.dam.file.saveTooltip",
                                             defaultMessage: "Saves the file's settings",
                                         })}
-                                        shortcut={saveShortcut}
+                                        shortcut="mod+s"
                                     >
                                         <Button type="submit" startIcon={<Icon name="check" />} loading={submitting} disabled={!hasUnsavedChanges}>
                                             {intl.formatMessage({ id: "dextinity.generic.save", defaultMessage: "Save" })}

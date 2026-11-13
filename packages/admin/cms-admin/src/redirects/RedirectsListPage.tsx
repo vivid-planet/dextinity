@@ -18,6 +18,7 @@ import {
     MenuRadioItem,
     MenuSeparator,
     PageHeader,
+    StatusIndicator,
     Switch,
     ToastViewport,
     useToasts,
@@ -422,7 +423,11 @@ export function RedirectsListPage({ linkBlock, scope }: RedirectsListPageProps):
                                 selected={status === statusFilter.value}
                                 onClick={() => listState.setFilter("status", statusFilter.value)}
                                 count={statusFilter.count}
-                                status={statusFilter.value === null ? undefined : statusFilter.value === "active" ? "published" : "unpublished"}
+                                startAdornment={
+                                    statusFilter.value === null ? undefined : (
+                                        <StatusIndicator status={statusFilter.value === "active" ? "published" : "unpublished"} decorative />
+                                    )
+                                }
                             >
                                 {statusFilter.label}
                             </FilterChip>

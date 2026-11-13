@@ -5,9 +5,7 @@ import {
     Button,
     EditLayout,
     EmptyState,
-    formatShortcut,
     Icon,
-    isApplePlatform,
     PageHeader,
     Panel,
     Skeleton,
@@ -195,7 +193,7 @@ function SaveActions({ form }: { form: FormApi<DamSettingsFormValues> }) {
             <DamFinderFormSaveState />
             <Tooltip
                 content={intl.formatMessage({ id: "dextinity.dam.settings.saveTooltip", defaultMessage: "Saves the settings" })}
-                shortcut={formatShortcut("mod+s").join(isApplePlatform() ? "" : "+")}
+                shortcut="mod+s"
             >
                 <Button type="submit" startIcon={<Icon name="check" />} loading={submitting} disabled={!hasUnsavedChanges}>
                     {intl.formatMessage({ id: "dextinity.generic.save", defaultMessage: "Save" })}

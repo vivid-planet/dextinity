@@ -1,10 +1,8 @@
 import { messages } from "@dextinity/admin";
 import {
     Button,
-    formatShortcut,
     Icon,
     IconButton,
-    isApplePlatform,
     Menu,
     PageHeader,
     type PageHeaderBack,
@@ -73,7 +71,6 @@ export function PageEditorHeader({
               : saveError === "error"
                 ? intl.formatMessage(messages.error)
                 : undefined;
-    const saveShortcut = formatShortcut("mod+s").join(isApplePlatform() ? "" : "+");
 
     return (
         <PageHeader
@@ -127,7 +124,7 @@ export function PageEditorHeader({
                     )}
                     <Tooltip
                         content={saveErrorMessage ?? intl.formatMessage({ id: "dextinity.pageEditor.saveTooltip", defaultMessage: "Saves the page" })}
-                        shortcut={saveErrorMessage == null ? saveShortcut : undefined}
+                        shortcut={saveErrorMessage == null ? "mod+s" : undefined}
                     >
                         <Button
                             color={saveErrorMessage != null ? "error" : "primary"}

@@ -15,6 +15,7 @@ import {
     MenuRadioGroup,
     MenuRadioItem,
     PageHeader,
+    StatusIndicator,
 } from "@dextinity/ui";
 import { type ReactNode, useState } from "react";
 import { defineMessages, FormattedDate, useIntl } from "react-intl";
@@ -345,7 +346,7 @@ export function WarningsPage({ showAllScopes = false }: WarningsPageProps) {
                             selected={filters.severity === severity}
                             onClick={() => listState.setFilter("severity", severity)}
                             count={severityCounts[severity]}
-                            status={warningSeverityStatus[severity]}
+                            startAdornment={<StatusIndicator status={warningSeverityStatus[severity]} decorative />}
                         >
                             {intl.formatMessage(warningSeverityLabels[severity])}
                         </FilterChip>
@@ -427,7 +428,7 @@ export function WarningsPage({ showAllScopes = false }: WarningsPageProps) {
                     <FilterChip
                         selected={filters.visibleOnly}
                         onClick={() => listState.setFilter("visibleOnly", !filters.visibleOnly)}
-                        status={filters.visibleOnly ? "published" : undefined}
+                        startAdornment={filters.visibleOnly ? <StatusIndicator status="published" decorative /> : undefined}
                     >
                         {intl.formatMessage({ id: "dextinity.warnings.filter.visibleOnly", defaultMessage: "Visible only" })}
                     </FilterChip>

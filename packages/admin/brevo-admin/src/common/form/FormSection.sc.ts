@@ -21,7 +21,7 @@ export const Title = styled("h3")`
 
 export const Description = styled("p")`
     margin: 0;
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     font-size: var(--dextinity-typography-small-size);
 `;
 

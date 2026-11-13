@@ -8,6 +8,6 @@ export const ActionRow = styled("div")`
 `;
 
 export const Hint = styled("span")`
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     font-size: var(--dextinity-typography-small-size);
 `;

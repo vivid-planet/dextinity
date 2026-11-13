@@ -15,11 +15,11 @@ export const Title = styled("span")`
 
 export const SecondaryText = styled("span")`
     overflow: hidden;
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     text-overflow: ellipsis;
     white-space: nowrap;
 `;
 
 export const Muted = styled("span")`
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
 `;

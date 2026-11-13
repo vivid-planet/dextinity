@@ -5,7 +5,19 @@ import { Placeholder } from "@tiptap/extensions";
 import { type Editor, EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import { clsx } from "clsx";
-import { type CSSProperties, forwardRef, Fragment, type HTMLAttributes, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import {
+    type CSSProperties,
+    forwardRef,
+    Fragment,
+    type HTMLAttributes,
+    memo,
+    type ReactNode,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 
 import { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "../field/Field";
 import { Icon } from "../icon/Icon";
@@ -355,122 +367,48 @@ function headingLevelOf(blockType: string) {
     return blockType === "paragraph" ? null : (Number(blockType.replace("heading", "")) as RichTextEditorHeadingLevel);
 }
 
-interface RichTextEditorBodyProps {
-    control: FieldControlProps;
+interface RichTextEditorToolbarProps {
+    editor: Editor | null;
     config: EditorConfig;
-    value: string;
-    onChange: (html: string) => void;
-    disabled: boolean;
-    readOnly: boolean;
     labels: RichTextEditorLabels;
     textPlaceholders: RichTextEditorTextPlaceholder[];
     inlineStyles: RichTextEditorInlineStyle[];
-    onRequestLink: RichTextEditorProps["onRequestLink"];
+    disabled: boolean;
+    requestLink: () => void;
 }
 
-function RichTextEditorBody({
-    control,
+function haveSameEntries<T extends object>(previous: T, next: T) {
+    const previousKeys = Object.keys(previous) as (keyof T)[];
+    return previousKeys.length === Object.keys(next).length && previousKeys.every((key) => Object.is(previous[key], next[key]));
+}
+
+// The parent passes freshly built labels, config, and option arrays on every render, so they are compared by content.
+function areToolbarPropsEqual(previous: RichTextEditorToolbarProps, next: RichTextEditorToolbarProps) {
+    return (
+        previous.editor === next.editor &&
+        previous.disabled === next.disabled &&
+        previous.requestLink === next.requestLink &&
+        haveSameEntries(previous.labels, next.labels) &&
+        JSON.stringify([previous.config, previous.textPlaceholders, previous.inlineStyles]) ===
+            JSON.stringify([next.config, next.textPlaceholders, next.inlineStyles])
+    );
+}
+
+const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
+    editor,
     config,
-    value,
-    onChange,
-    disabled,
-    readOnly,
     labels,
     textPlaceholders,
     inlineStyles,
-    onRequestLink,
-}: RichTextEditorBodyProps) {
+    disabled,
+    requestLink,
+}: RichTextEditorToolbarProps) {
     const { formats, headingLevels, listLevelMax } = config;
     const has = (format: RichTextEditorFormat) => formats.includes(format);
-    const editable = !disabled && !readOnly;
     const hasLists = has("bulletList") || has("orderedList");
-    const onChangeRef = useRef(onChange);
-    const requestLinkRef = useRef<() => void>(() => undefined);
-    const emittedValues = useRef<string[]>([value]);
     const [blockTypeMenuOpen, setBlockTypeMenuOpen] = useState(false);
     const [moreMenuOpen, setMoreMenuOpen] = useState(false);
     const [placeholderMenuOpen, setPlaceholderMenuOpen] = useState(false);
-
-    useEffect(() => {
-        onChangeRef.current = onChange;
-    });
-
-    const configKey = JSON.stringify(config);
-    // The editor's schema is fixed at creation, so the extensions, and with them the editor, are recreated only when the config changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const extensions = useMemo(() => buildExtensions(config, () => requestLinkRef.current()), [configKey]);
-
-    // Tiptap types the editor as always present, but under SSR and in Next.js it's created only after the first render.
-    const editor: Editor | null = useEditor(
-        {
-            extensions,
-            content: value,
-            editable,
-            injectCSS: false,
-            onUpdate: ({ editor: updatedEditor }) => {
-                const html = htmlOf(updatedEditor);
-                emittedValues.current.push(html);
-                if (emittedValues.current.length > maxPendingEmittedValues) {
-                    emittedValues.current.splice(0, emittedValues.current.length - maxPendingEmittedValues);
-                }
-                onChangeRef.current(html);
-            },
-        },
-        [extensions],
-    );
-
-    const {
-        id: controlId,
-        "aria-labelledby": ariaLabelledBy,
-        "aria-describedby": ariaDescribedBy,
-        "aria-invalid": ariaInvalid,
-        "aria-required": ariaRequired,
-        "aria-busy": ariaBusy,
-    } = control;
-    const attributes = useMemo(() => {
-        const entries: Record<string, string | true | undefined> = {
-            id: controlId,
-            class: styles.content,
-            role: "textbox",
-            "aria-multiline": "true",
-            "aria-labelledby": ariaLabelledBy,
-            "aria-describedby": ariaDescribedBy,
-            "aria-invalid": ariaInvalid,
-            "aria-required": ariaRequired,
-            "aria-busy": ariaBusy,
-            "aria-readonly": readOnly || undefined,
-            "aria-disabled": disabled || undefined,
-            tabindex: disabled ? "-1" : "0",
-        };
-        return Object.fromEntries(Object.entries(entries).flatMap(([key, entry]) => (entry === undefined ? [] : [[key, String(entry)]])));
-    }, [controlId, ariaLabelledBy, ariaDescribedBy, ariaInvalid, ariaRequired, ariaBusy, readOnly, disabled]);
-
-    useEffect(() => {
-        editor?.setOptions({ editorProps: { attributes } });
-    }, [editor, attributes]);
-
-    useEffect(() => {
-        editor?.setEditable(editable, false);
-    }, [editor, editable]);
-
-    useEffect(() => {
-        if (editor == null) {
-            return;
-        }
-        // React can render a keystroke's value after later keystrokes reached the editor; applying a value the editor emitted itself would undo them.
-        const emittedIndex = emittedValues.current.indexOf(value);
-        if (emittedIndex >= 0) {
-            emittedValues.current.splice(0, emittedIndex + 1);
-            return;
-        }
-        emittedValues.current.length = 0;
-        if (value === htmlOf(editor)) {
-            return;
-        }
-        const { from, to } = editor.state.selection;
-        editor.commands.setContent(value, { emitUpdate: false });
-        editor.commands.setTextSelection({ from, to });
-    }, [editor, value]);
 
     const state =
         useEditorState({
@@ -505,31 +443,6 @@ function RichTextEditorBody({
                 };
             },
         }) ?? stateWithoutEditor;
-
-    const requestLink = async () => {
-        if (editor == null || !editor.isEditable) {
-            return;
-        }
-        const currentHref = editor.isActive("link") ? ((editor.getAttributes("link").href as string | undefined) ?? null) : null;
-        const href = onRequestLink != null ? await onRequestLink(currentHref) : window.prompt(labels.linkUrl, currentHref ?? "https://");
-        if (href == null || !isSafeHref(href)) {
-            editor.commands.focus();
-            return;
-        }
-        if (editor.state.selection.empty && currentHref == null) {
-            editor
-                .chain()
-                .focus()
-                .insertContent({ type: "text", text: href, marks: [{ type: "link", attrs: { href } }] })
-                .run();
-        } else {
-            editor.chain().focus().extendMarkRange("link").setLink({ href }).run();
-        }
-    };
-
-    useEffect(() => {
-        requestLinkRef.current = () => void requestLink();
-    });
 
     const setBlockType = (blockType: string) => {
         const level = headingLevelOf(blockType);
@@ -752,7 +665,7 @@ function RichTextEditorBody({
             key: "link",
             content: (
                 <ToolbarGroup>
-                    <ToolbarButton aria-label={labels.link} shortcut="⌘K" pressed={state.link} keepFocus onClick={() => void requestLink()}>
+                    <ToolbarButton aria-label={labels.link} shortcut="⌘K" pressed={state.link} keepFocus onClick={() => requestLink()}>
                         <Icon name="link" />
                     </ToolbarButton>
                     <ToolbarButton
@@ -812,18 +725,171 @@ function RichTextEditorBody({
         });
     }
 
+    if (groups.length === 0) {
+        return null;
+    }
+
+    return (
+        <Toolbar className={styles.toolbar} aria-label={labels.toolbar} disabled={disabled}>
+            {groups.map((group, index) => (
+                <Fragment key={group.key}>
+                    {index > 0 && <ToolbarSeparator />}
+                    {group.content}
+                </Fragment>
+            ))}
+        </Toolbar>
+    );
+}, areToolbarPropsEqual);
+
+interface RichTextEditorBodyProps {
+    control: FieldControlProps;
+    config: EditorConfig;
+    value: string;
+    onChange: (html: string) => void;
+    disabled: boolean;
+    readOnly: boolean;
+    labels: RichTextEditorLabels;
+    textPlaceholders: RichTextEditorTextPlaceholder[];
+    inlineStyles: RichTextEditorInlineStyle[];
+    onRequestLink: RichTextEditorProps["onRequestLink"];
+}
+
+function RichTextEditorBody({
+    control,
+    config,
+    value,
+    onChange,
+    disabled,
+    readOnly,
+    labels,
+    textPlaceholders,
+    inlineStyles,
+    onRequestLink,
+}: RichTextEditorBodyProps) {
+    const editable = !disabled && !readOnly;
+    const onChangeRef = useRef(onChange);
+    const requestLinkRef = useRef<() => void>(() => undefined);
+    const emittedValues = useRef<string[]>([value]);
+
+    useEffect(() => {
+        onChangeRef.current = onChange;
+    });
+
+    const configKey = JSON.stringify(config);
+    // The editor's schema is fixed at creation, so the extensions, and with them the editor, are recreated only when the config changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const extensions = useMemo(() => buildExtensions(config, () => requestLinkRef.current()), [configKey]);
+
+    // Tiptap types the editor as always present, but under SSR and in Next.js it's created only after the first render.
+    const editor: Editor | null = useEditor(
+        {
+            extensions,
+            content: value,
+            editable,
+            injectCSS: false,
+            onUpdate: ({ editor: updatedEditor }) => {
+                const html = htmlOf(updatedEditor);
+                emittedValues.current.push(html);
+                if (emittedValues.current.length > maxPendingEmittedValues) {
+                    emittedValues.current.splice(0, emittedValues.current.length - maxPendingEmittedValues);
+                }
+                onChangeRef.current(html);
+            },
+        },
+        [extensions],
+    );
+
+    const {
+        id: controlId,
+        "aria-labelledby": ariaLabelledBy,
+        "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
+        "aria-required": ariaRequired,
+        "aria-busy": ariaBusy,
+    } = control;
+    const attributes = useMemo(() => {
+        const entries: Record<string, string | true | undefined> = {
+            id: controlId,
+            class: styles.content,
+            role: "textbox",
+            "aria-multiline": "true",
+            "aria-labelledby": ariaLabelledBy,
+            "aria-describedby": ariaDescribedBy,
+            "aria-invalid": ariaInvalid,
+            "aria-required": ariaRequired,
+            "aria-busy": ariaBusy,
+            "aria-readonly": readOnly || undefined,
+            "aria-disabled": disabled || undefined,
+            tabindex: disabled ? "-1" : "0",
+        };
+        return Object.fromEntries(Object.entries(entries).flatMap(([key, entry]) => (entry === undefined ? [] : [[key, String(entry)]])));
+    }, [controlId, ariaLabelledBy, ariaDescribedBy, ariaInvalid, ariaRequired, ariaBusy, readOnly, disabled]);
+
+    useEffect(() => {
+        editor?.setOptions({ editorProps: { attributes } });
+    }, [editor, attributes]);
+
+    useEffect(() => {
+        editor?.setEditable(editable, false);
+    }, [editor, editable]);
+
+    useEffect(() => {
+        if (editor == null) {
+            return;
+        }
+        // React can render a keystroke's value after later keystrokes reached the editor; applying a value the editor emitted itself would undo them.
+        const emittedIndex = emittedValues.current.indexOf(value);
+        if (emittedIndex >= 0) {
+            emittedValues.current.splice(0, emittedIndex + 1);
+            return;
+        }
+        emittedValues.current.length = 0;
+        if (value === htmlOf(editor)) {
+            return;
+        }
+        const { from, to } = editor.state.selection;
+        editor.commands.setContent(value, { emitUpdate: false });
+        editor.commands.setTextSelection({ from, to });
+    }, [editor, value]);
+
+    const requestLink = async () => {
+        if (editor == null || !editor.isEditable) {
+            return;
+        }
+        const currentHref = editor.isActive("link") ? ((editor.getAttributes("link").href as string | undefined) ?? null) : null;
+        const href = onRequestLink != null ? await onRequestLink(currentHref) : window.prompt(labels.linkUrl, currentHref ?? "https://");
+        if (href == null || !isSafeHref(href)) {
+            editor.commands.focus();
+            return;
+        }
+        if (editor.state.selection.empty && currentHref == null) {
+            editor
+                .chain()
+                .focus()
+                .insertContent({ type: "text", text: href, marks: [{ type: "link", attrs: { href } }] })
+                .run();
+        } else {
+            editor.chain().focus().extendMarkRange("link").setLink({ href }).run();
+        }
+    };
+
+    useEffect(() => {
+        requestLinkRef.current = () => void requestLink();
+    });
+
+    const requestLinkFromToolbar = useCallback(() => requestLinkRef.current(), []);
+
     return (
         <>
-            {groups.length > 0 && (
-                <Toolbar className={styles.toolbar} aria-label={labels.toolbar} disabled={!editable || editor == null}>
-                    {groups.map((group, index) => (
-                        <Fragment key={group.key}>
-                            {index > 0 && <ToolbarSeparator />}
-                            {group.content}
-                        </Fragment>
-                    ))}
-                </Toolbar>
-            )}
+            <RichTextEditorToolbar
+                editor={editor}
+                config={config}
+                labels={labels}
+                textPlaceholders={textPlaceholders}
+                inlineStyles={inlineStyles}
+                disabled={!editable || editor == null}
+                requestLink={requestLinkFromToolbar}
+            />
             {editor == null ? (
                 <div className={styles.editor}>
                     <div className={styles.content} />

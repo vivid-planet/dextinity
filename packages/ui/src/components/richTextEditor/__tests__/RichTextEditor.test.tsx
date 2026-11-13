@@ -1,10 +1,12 @@
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import { useState } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { RichTextEditor } from "../RichTextEditor";
 
 const editorCreation = vi.hoisted(() => ({ deferred: false }));
+const toolbarRenders = vi.hoisted(() => ({ count: 0 }));
 
 vi.mock("@tiptap/react", async (importOriginal) => {
     const tiptapReact = await importOriginal<typeof import("@tiptap/react")>();
@@ -17,9 +19,22 @@ vi.mock("@tiptap/react", async (importOriginal) => {
     };
 });
 
+vi.mock("../../toolbar/Toolbar", async (importOriginal) => {
+    const toolbarModule = await importOriginal<typeof import("../../toolbar/Toolbar")>();
+    const OriginalToolbar = toolbarModule.Toolbar;
+    return {
+        ...toolbarModule,
+        Toolbar: (props: Parameters<typeof OriginalToolbar>[0]) => {
+            toolbarRenders.count++;
+            return <OriginalToolbar {...props} />;
+        },
+    };
+});
+
 afterEach(() => {
     cleanup();
     editorCreation.deferred = false;
+    toolbarRenders.count = 0;
 });
 
 describe("RichTextEditor", () => {
@@ -149,6 +164,48 @@ describe("RichTextEditor", () => {
 
         expect(screen.getByRole("toolbar")).toHaveAttribute("data-disabled");
         expect(screen.getByRole("button", { name: "Bold" })).toHaveAttribute("aria-disabled", "true");
+    });
+
+    it("doesn't re-render the toolbar when the parent re-renders with unchanged props", () => {
+        let rerenderParent = () => undefined as void;
+        function Parent() {
+            const [renderCount, setRenderCount] = useState(0);
+            rerenderParent = () => setRenderCount((count) => count + 1);
+            return (
+                <div data-render-count={renderCount}>
+                    <RichTextEditor
+                        name="text"
+                        label="Text"
+                        value="<p>Hi</p>"
+                        onChange={() => undefined}
+                        onRequestLink={() => null}
+                        toolbar={["bold", "textAlign", "link"]}
+                        labels={{ bold: "Fett" }}
+                        textPlaceholders={[{ name: "firstName", label: "First name" }]}
+                        inlineStyles={[{ name: "productName", label: "Product name" }]}
+                    />
+                </div>
+            );
+        }
+        render(<Parent />);
+        const rendersAfterMount = toolbarRenders.count;
+
+        for (let index = 0; index < 5; index++) {
+            act(() => rerenderParent());
+        }
+
+        expect(toolbarRenders.count).toBe(rendersAfterMount);
+        expect(screen.getByRole("button", { name: "Fett" })).toBeInTheDocument();
+    });
+
+    it("re-renders the toolbar when its labels or formats change", () => {
+        const { rerender } = render(<RichTextEditor name="text" label="Text" value="" onChange={vi.fn()} toolbar={["bold"]} />);
+
+        rerender(<RichTextEditor name="text" label="Text" value="" onChange={vi.fn()} toolbar={["bold"]} labels={{ bold: "Fett" }} />);
+        expect(screen.getByRole("button", { name: "Fett" })).toBeInTheDocument();
+
+        rerender(<RichTextEditor name="text" label="Text" value="" onChange={vi.fn()} toolbar={["bold", "italic"]} labels={{ bold: "Fett" }} />);
+        expect(screen.getAllByRole("button").map((button) => button.getAttribute("aria-label"))).toStrictEqual(["Fett", "Italic"]);
     });
 
     it("renders on the server", () => {

@@ -1,8 +1,8 @@
 import { NumberField as BaseNumberField } from "@base-ui/react/number-field";
-import { clsx } from "clsx";
 import { forwardRef, type InputHTMLAttributes, useMemo } from "react";
 
-import { Field, type FieldBaseProps, type FieldOwnerState, type FieldProps } from "../field/Field";
+import { ControlFrame, type PureControlProps, useControlState } from "../field/ControlFrame";
+import type { FieldOwnerState } from "../field/Field";
 import { Icon } from "../icon/Icon";
 import styles from "./NumberInput.module.scss";
 
@@ -33,10 +33,10 @@ export type NumberInputOwnerState = FieldOwnerState & {
 
 export interface NumberInputProps
     extends
-        FieldBaseProps,
+        PureControlProps,
         Omit<
             InputHTMLAttributes<HTMLInputElement>,
-            | "className"
+            | keyof PureControlProps
             | "size"
             | "prefix"
             | "value"
@@ -90,10 +90,6 @@ export interface NumberInputProps
     steppers?: boolean;
     /** Accessible names of the step buttons and the input's announced role, in English by default. */
     labels?: Partial<NumberInputLabels>;
-    /** Added alongside the component's own classes, on the root. */
-    className?: string;
-    /** Props for each slot of the field frame, merged with the slot's own props rather than replacing them. */
-    slotProps?: FieldProps["slotProps"];
 }
 
 /**
@@ -102,18 +98,8 @@ export interface NumberInputProps
  */
 export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(function NumberInput(
     {
-        label,
-        required = false,
-        helperText,
-        validationMessage,
-        state,
-        disabled = false,
-        readOnly = false,
-        loading,
-        size,
-        prefix,
-        suffix,
-        actions,
+        disabled: disabledProp,
+        readOnly: readOnlyProp,
         name,
         value,
         onChange,
@@ -128,8 +114,11 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
         labels: labelsProp,
         id,
         className,
-        slotProps,
+        style,
+        "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
         ...restProps
     },
     ref,
@@ -139,30 +128,25 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
         () => (decimals != null ? { ...format, minimumFractionDigits: decimals, maximumFractionDigits: decimals } : format),
         [decimals, format],
     );
+    const { readOnly } = useControlState(disabledProp, readOnlyProp);
     const showsSteppers = steppers && !readOnly;
 
     return (
-        <Field
-            className={clsx(styles.root, className)}
-            data-steppers={showsSteppers ? "" : undefined}
-            controlId={id}
-            label={label}
-            required={required}
-            helperText={helperText}
-            validationMessage={validationMessage}
-            state={state}
-            disabled={disabled}
-            readOnly={readOnly}
-            loading={loading}
-            size={size}
-            prefix={prefix}
-            suffix={suffix}
-            actions={actions}
-            slotProps={slotProps}
+        <ControlFrame
+            id={id}
+            disabled={disabledProp}
+            readOnly={readOnlyProp}
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
+            aria-describedby={ariaDescribedBy}
+            aria-invalid={ariaInvalid}
+            className={className}
+            style={style}
         >
             {({ id: controlId, disabled: controlDisabled, readOnly: controlReadOnly, required: controlRequired, ...control }) => (
                 <BaseNumberField.Root
                     className={styles.number}
+                    data-steppers={showsSteppers ? "" : undefined}
                     id={controlId}
                     name={name}
                     value={value}
@@ -183,7 +167,6 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
                         {...control}
                         ref={ref}
                         aria-roledescription={labels.roleDescription}
-                        aria-describedby={clsx(control["aria-describedby"], ariaDescribedBy) || undefined}
                         className={styles.control}
                     />
                     {showsSteppers && (
@@ -198,6 +181,6 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
                     )}
                 </BaseNumberField.Root>
             )}
-        </Field>
+        </ControlFrame>
     );
 });

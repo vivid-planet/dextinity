@@ -16,8 +16,7 @@ import {
 } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
-import { type ControlValidationProps, useControlValidation } from "../field/controlValidation";
-import type { FieldState } from "../field/Field";
+import { type ControlAriaProps, useGroupControl } from "../field/ControlFrame";
 import { Icon } from "../icon/Icon";
 import { Menu } from "../menu/Menu";
 import { MenuRadioGroup } from "../menu/MenuRadioGroup";
@@ -55,7 +54,7 @@ export interface SegmentedControlOption<Value extends string = string> {
 export type SegmentedControlOwnerState = {
     size: SegmentedControlSize;
     disabled: boolean;
-    state: FieldState;
+    invalid: boolean;
     /** Whether the options don't fit and a menu shows them instead. */
     collapsed: boolean;
 };
@@ -69,22 +68,16 @@ export interface SegmentedControlSlotProps {
     optionIcon?: SlotPropsValue<SegmentedControlOwnerState, "span">;
     /** Props for the `menuTrigger` slot, the button that opens the menu of options when they don't fit. */
     menuTrigger?: SlotPropsValue<SegmentedControlOwnerState, "button">;
-    /** Props for the `message` slot, the validation message below the options. */
-    message?: SlotPropsValue<SegmentedControlOwnerState, "div">;
 }
 
 export interface SegmentedControlProps<Value extends string = string>
-    extends ControlValidationProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | "defaultValue"> {
+    extends ControlAriaProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | "defaultValue" | keyof ControlAriaProps> {
     /** Two to four mutually exclusive options. For more, use a `Select`. */
     options: ReadonlyArray<SegmentedControlOption<Value>>;
     /** The chosen option's value. */
     value: Value;
     /** Called with the newly chosen option's value. */
     onChange: (value: Value) => void;
-    /** The accessible name of the group. */
-    "aria-label": string;
-    /** Identifies the elements that name the group, in addition to `aria-label`. */
-    "aria-labelledby"?: string;
     /**
      * `small` for toolbars, e.g. a device switch above a preview.
      *
@@ -99,7 +92,7 @@ export interface SegmentedControlProps<Value extends string = string>
      */
     overflow?: SegmentedControlOverflow;
     /**
-     * Prevents interaction with the whole group.
+     * Prevents interaction with the whole group. Ignored inside a `Field`, which takes it from its own `disabled`.
      *
      * @defaultValue `false`
      */
@@ -148,6 +141,7 @@ function useOptionsOverflow(enabled: boolean) {
 
 /**
  * Chooses one of two to four mutually exclusive options, e.g. a view or a device. When the options don't fit, a menu shows them instead.
+ * On its own, e.g. in a toolbar, name it with `aria-label`; in a form, put it in a `Field` with `layout="group"`, whose label names it.
  */
 export const SegmentedControl = forwardRef(function SegmentedControl<Value extends string = string>(
     {
@@ -156,12 +150,11 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
         onChange,
         size = "default",
         overflow = "menu",
-        disabled = false,
-        state = "default",
-        validationMessage,
+        disabled,
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
         className,
         slotProps,
         ...restProps
@@ -169,10 +162,20 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
     ref: ForwardedRef<HTMLDivElement>,
 ) {
     const { overflows, rootRef, groupRef } = useOptionsOverflow(overflow === "menu");
-    const ownerState: SegmentedControlOwnerState = { size, disabled, state, collapsed: overflows };
-    const validation = useControlValidation(state, validationMessage, ariaDescribedBy);
+    const { control, nameId, hiddenLabel } = useGroupControl({
+        disabled,
+        "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
+        "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
+    });
+    const ownerState: SegmentedControlOwnerState = {
+        size,
+        disabled: control.disabled,
+        invalid: control["aria-invalid"] === true,
+        collapsed: overflows,
+    };
     const [menuOpen, setMenuOpen] = useState(false);
-    const nameId = `${useId()}name`;
     const valueId = `${useId()}value`;
 
     const setRootRef = useCallback(
@@ -190,17 +193,13 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
     const groupProps = resolveSlotProps<SegmentedControlOwnerState, GroupSlot, GroupSlot>({
         ownProps: {
             className: styles.group,
-            "aria-label": ariaLabel,
-            "aria-labelledby": ariaLabelledBy,
-            "aria-describedby": validation["aria-describedby"],
-            "aria-invalid": validation["aria-invalid"],
+            "aria-label": control["aria-label"],
+            "aria-labelledby": control["aria-labelledby"],
+            "aria-describedby": control["aria-describedby"],
+            "aria-invalid": control["aria-invalid"],
+            "aria-required": control["aria-required"],
         },
         slotProps: slotProps?.group,
-        ownerState,
-    });
-    const messageProps = resolveSlotProps<SegmentedControlOwnerState, "div", "div">({
-        ownProps: { className: styles.message, id: validation.messageId },
-        slotProps: slotProps?.message,
         ownerState,
     });
     const iconProps = resolveSlotProps<SegmentedControlOwnerState, "span", "span">({
@@ -213,9 +212,9 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
             type: "button",
             className: styles.menuTrigger,
             disabled: ownerState.disabled,
-            "aria-labelledby": `${ariaLabelledBy ?? nameId} ${valueId}`,
-            "aria-describedby": validation["aria-describedby"],
-            "aria-invalid": validation["aria-invalid"],
+            "aria-labelledby": clsx(nameId, valueId),
+            "aria-describedby": control["aria-describedby"],
+            "aria-invalid": control["aria-invalid"],
         },
         slotProps: slotProps?.menuTrigger,
         ownerState,
@@ -229,18 +228,14 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
             ref={setRootRef}
             data-size={ownerState.size}
             data-disabled={ownerState.disabled ? "" : undefined}
-            data-state={ownerState.state}
+            data-invalid={ownerState.invalid ? "" : undefined}
             data-collapsed={ownerState.collapsed ? "" : undefined}
             data-overflow={overflow}
             className={clsx(styles.root, className)}
         >
             {ownerState.collapsed && (
                 <>
-                    {ariaLabelledBy == null && (
-                        <span id={nameId} hidden>
-                            {ariaLabel}
-                        </span>
-                    )}
+                    {hiddenLabel}
                     <Menu
                         open={menuOpen}
                         onOpenChange={setMenuOpen}
@@ -307,7 +302,6 @@ export const SegmentedControl = forwardRef(function SegmentedControl<Value exten
                     );
                 })}
             </RadioGroup>
-            {validation.showsMessage && <div {...messageProps}>{validationMessage}</div>}
         </div>
     );
 }) as <Value extends string = string>(props: SegmentedControlProps<Value> & RefAttributes<HTMLDivElement>) => ReactNode;

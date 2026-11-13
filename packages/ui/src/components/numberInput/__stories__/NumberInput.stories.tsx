@@ -2,23 +2,29 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { NumberInput, type NumberInputProps } from "../NumberInput";
 import numberInputTokens from "../NumberInput.tokens.scss?raw";
 
+type NumberInputStoryArgs = NumberInputProps & FieldStoryArgs;
+
 /** Keeps the story controlled: typing updates the local value; changing the `value` control starts over from it. */
-function ControlledNumberInput(props: NumberInputProps) {
-    const [value, setValue] = useState(props.value);
+function ControlledNumberInput(args: NumberInputStoryArgs) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useState(control.value);
     return (
-        <NumberInput
-            {...props}
-            value={value}
-            onChange={(next) => {
-                props.onChange(next);
-                setValue(next);
-            }}
-        />
+        <StoryField field={field}>
+            <NumberInput
+                {...control}
+                value={value}
+                onChange={(next) => {
+                    control.onChange(next);
+                    setValue(next);
+                }}
+            />
+        </StoryField>
     );
 }
 
@@ -36,22 +42,21 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
-        size: { control: "radio", options: ["small", "default", "large"] },
-        actions: { control: false },
+        ...fieldArgTypes,
         className: { control: false },
-        slotProps: { control: false },
     },
-} satisfies Meta<typeof NumberInput>;
+} satisfies Meta<NumberInputStoryArgs>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
 /**
+ * Put it in a `Field` for the label, help, and validation message: `<Field label="Quantity"><NumberInput … /></Field>`.
+ *
  * **Rules**
  * - Always controlled: `value` + `onChange`, `null` while the field is empty.
- * - Put the unit in `suffix`, not in the label.
+ * - Put the unit in the field's `suffix`, not in the label.
  */
 export const Default: Story = {
     play: async ({ args, canvas }) => {

@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { Field } from "../../field/Field";
 import { FocalPointPicker } from "../FocalPointPicker";
 
 afterEach(cleanup);
@@ -23,21 +24,25 @@ describe("FocalPointPicker", () => {
         expect(previews.map((image) => image.style.objectPosition)).toStrictEqual(["25% 75%", "25% 75%"]);
     });
 
-    it("connects the validation message to the point", () => {
+    it("follows the surrounding field", () => {
         const { container } = render(
-            <FocalPointPicker
-                src="a.jpg"
-                value={{ x: 0.5, y: 0.5 }}
-                onChange={vi.fn()}
-                state="error"
-                validationMessage="Set the point on the face."
-            />,
+            <Field label="Focal point" layout="group" disabled state="error" validationMessage="Set the point on the face.">
+                <FocalPointPicker src="a.jpg" value={{ x: 0.5, y: 0.5 }} onChange={vi.fn()} />
+            </Field>,
         );
 
-        expect((container.firstElementChild as HTMLElement).dataset.state).toBe("error");
+        const root = container.querySelector<HTMLElement>(".dextinityFocalPointPicker");
+        expect([root?.dataset.invalid, root?.dataset.disabled]).toStrictEqual(["", ""]);
+        expect(screen.getByRole("group", { name: "Focal point" })).toBe(root);
         const marker = screen.getByRole("slider");
         expect(marker.getAttribute("aria-invalid")).toBe("true");
-        const message = document.getElementById(marker.getAttribute("aria-describedby") ?? "");
-        expect([message?.className, message?.textContent]).toStrictEqual(["dextinityFocalPointPicker__message", "Set the point on the face."]);
+        expect(marker).toHaveAccessibleDescription("Set the point on the face.");
+        expect(marker.getAttribute("aria-disabled")).toBe("true");
+    });
+
+    it("names its group by aria-label on its own", () => {
+        render(<FocalPointPicker aria-label="Focal point" src="a.jpg" value={{ x: 0.5, y: 0.5 }} onChange={vi.fn()} />);
+
+        expect(screen.getByRole("group", { name: "Focal point" })).toBeInTheDocument();
     });
 });

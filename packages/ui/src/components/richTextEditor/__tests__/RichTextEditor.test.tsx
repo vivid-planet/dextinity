@@ -3,6 +3,7 @@ import { useState } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { Field } from "../../field/Field";
 import { RichTextEditor } from "../RichTextEditor";
 
 const editorCreation = vi.hoisted(() => ({ deferred: false }));
@@ -38,32 +39,43 @@ afterEach(() => {
 });
 
 describe("RichTextEditor", () => {
-    it("composes the field root with its own root class and keeps only the enabled formatting of the value", () => {
-        const { container } = render(
+    it("keeps only the enabled formatting of the value", () => {
+        render(
             <RichTextEditor
                 name="text"
-                label="Text"
+                aria-label="Text"
                 value='<p>Hi <b>there</b> <u>under</u><img src="x" onerror="alert(1)"><a href="javascript:alert(1)">x</a></p>'
                 onChange={vi.fn()}
             />,
         );
 
-        const root = container.firstElementChild as HTMLElement;
-        expect(root.className).toContain("dextinityField");
-        expect(root.className).toContain("dextinityRichTextEditor");
         const editor = screen.getByRole("textbox", { name: "Text" });
         expect(editor.className).toContain("dextinityRichTextEditor__content");
         expect(editor.innerHTML).toBe("<p>Hi <strong>there</strong> underx</p>");
     });
 
+    it("follows the surrounding field", () => {
+        render(
+            <Field label="Text" layout="stacked" required disabled state="error" validationMessage="Describe the position.">
+                <RichTextEditor name="text" value="" onChange={vi.fn()} />
+            </Field>,
+        );
+
+        const editor = screen.getByRole("textbox", { name: "Text" });
+        expect(editor).toHaveAccessibleDescription("Describe the position.");
+        expect(editor.getAttribute("aria-required")).toBe("true");
+        expect(editor.getAttribute("aria-invalid")).toBe("true");
+        expect(editor.getAttribute("aria-disabled")).toBe("true");
+    });
+
     it("offers only the formats in `toolbar`", () => {
-        render(<RichTextEditor name="text" label="Text" value="" onChange={vi.fn()} toolbar={["bold", "link"]} />);
+        render(<RichTextEditor name="text" aria-label="Text" value="" onChange={vi.fn()} toolbar={["bold", "link"]} />);
 
         expect(screen.getAllByRole("button").map((button) => button.getAttribute("aria-label"))).toStrictEqual(["Bold", "Link", "Remove link"]);
     });
 
     it("keeps headings of the offered levels and turns the others into paragraphs", () => {
-        render(<RichTextEditor name="text" label="Text" value="<h2>Two</h2><h5>Five</h5>" onChange={vi.fn()} headingLevels={[2, 3]} />);
+        render(<RichTextEditor name="text" aria-label="Text" value="<h2>Two</h2><h5>Five</h5>" onChange={vi.fn()} headingLevels={[2, 3]} />);
 
         expect(screen.getByRole("textbox").innerHTML).toBe("<h2>Two</h2><p>Five</p>");
     });
@@ -74,7 +86,7 @@ describe("RichTextEditor", () => {
         render(
             <RichTextEditor
                 name="text"
-                label="Text"
+                aria-label="Text"
                 value={value}
                 onChange={vi.fn()}
                 textPlaceholders={[{ name: "firstName", label: "First name" }]}
@@ -91,7 +103,7 @@ describe("RichTextEditor", () => {
     });
 
     it("is not editable while disabled or read-only", () => {
-        render(<RichTextEditor name="text" label="Text" value="" onChange={vi.fn()} readOnly />);
+        render(<RichTextEditor name="text" aria-label="Text" value="" onChange={vi.fn()} readOnly />);
 
         const editor = screen.getByRole("textbox");
         expect([editor.getAttribute("contenteditable"), editor.getAttribute("aria-readonly")]).toStrictEqual(["false", "true"]);
@@ -101,7 +113,7 @@ describe("RichTextEditor", () => {
         render(
             <RichTextEditor
                 name="text"
-                label="Text"
+                aria-label="Text"
                 value='<p><a href="https://example.com" target="_blank" rel="opener" class="evil" title="Title">x</a></p>'
                 onChange={vi.fn()}
             />,
@@ -114,7 +126,7 @@ describe("RichTextEditor", () => {
         render(
             <RichTextEditor
                 name="text"
-                label="Text"
+                aria-label="Text"
                 value='<p><span data-type="placeholder" data-name="lastName">{{lastName}}</span></p>'
                 onChange={vi.fn()}
                 textPlaceholders={[{ name: "firstName", label: "First name" }]}
@@ -128,7 +140,7 @@ describe("RichTextEditor", () => {
         render(
             <RichTextEditor
                 name="text"
-                label="Text"
+                aria-label="Text"
                 value='<p style="text-align: center">Center</p><p style="text-align: right">Right</p>'
                 onChange={vi.fn()}
                 toolbar={["textAlign"]}
@@ -145,7 +157,7 @@ describe("RichTextEditor", () => {
         render(
             <RichTextEditor
                 name="text"
-                label="Text"
+                aria-label="Text"
                 value="<ul><li><p>One</p><ul><li><p>Two</p><ul><li><p>Three</p></li></ul></li></ul></li></ul>"
                 onChange={onChange}
                 listLevelMax={2}
@@ -160,7 +172,7 @@ describe("RichTextEditor", () => {
 
     it("renders a disabled toolbar until the editor exists, as under SSR and in Next.js", () => {
         editorCreation.deferred = true;
-        render(<RichTextEditor name="text" label="Text" value="<p>Hi</p>" onChange={vi.fn()} />);
+        render(<RichTextEditor name="text" aria-label="Text" value="<p>Hi</p>" onChange={vi.fn()} />);
 
         expect(screen.getByRole("toolbar")).toHaveAttribute("data-disabled");
         expect(screen.getByRole("button", { name: "Bold" })).toHaveAttribute("aria-disabled", "true");
@@ -175,7 +187,7 @@ describe("RichTextEditor", () => {
                 <div data-render-count={renderCount}>
                     <RichTextEditor
                         name="text"
-                        label="Text"
+                        aria-label="Text"
                         value="<p>Hi</p>"
                         onChange={() => undefined}
                         onRequestLink={() => null}
@@ -199,16 +211,16 @@ describe("RichTextEditor", () => {
     });
 
     it("re-renders the toolbar when its labels or formats change", () => {
-        const { rerender } = render(<RichTextEditor name="text" label="Text" value="" onChange={vi.fn()} toolbar={["bold"]} />);
+        const { rerender } = render(<RichTextEditor name="text" aria-label="Text" value="" onChange={vi.fn()} toolbar={["bold"]} />);
 
-        rerender(<RichTextEditor name="text" label="Text" value="" onChange={vi.fn()} toolbar={["bold"]} labels={{ bold: "Fett" }} />);
+        rerender(<RichTextEditor name="text" aria-label="Text" value="" onChange={vi.fn()} toolbar={["bold"]} labels={{ bold: "Fett" }} />);
         expect(screen.getByRole("button", { name: "Fett" })).toBeInTheDocument();
 
-        rerender(<RichTextEditor name="text" label="Text" value="" onChange={vi.fn()} toolbar={["bold", "italic"]} labels={{ bold: "Fett" }} />);
+        rerender(<RichTextEditor name="text" aria-label="Text" value="" onChange={vi.fn()} toolbar={["bold", "italic"]} labels={{ bold: "Fett" }} />);
         expect(screen.getAllByRole("button").map((button) => button.getAttribute("aria-label"))).toStrictEqual(["Fett", "Italic"]);
     });
 
     it("renders on the server", () => {
-        expect(renderToString(<RichTextEditor name="text" label="Text" value="<p>Hi</p>" onChange={vi.fn()} />)).toContain('role="toolbar"');
+        expect(renderToString(<RichTextEditor name="text" aria-label="Text" value="<p>Hi</p>" onChange={vi.fn()} />)).toContain('role="toolbar"');
     });
 });

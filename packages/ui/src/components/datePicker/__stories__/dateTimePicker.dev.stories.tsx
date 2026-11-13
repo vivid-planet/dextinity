@@ -4,6 +4,7 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
+import { Field } from "../../field/Field";
 import { DateTimePicker, type DateTimePickerProps } from "../DateTimePicker";
 import styles from "./DatePicker.stories.module.scss";
 
@@ -11,14 +12,16 @@ function DateTimePickerWithReset(props: DateTimePickerProps) {
     const [value, setValue] = useState(props.value);
     return (
         <div className={styles.narrow}>
-            <DateTimePicker
-                {...props}
-                value={value}
-                onChange={(next) => {
-                    props.onChange(next);
-                    setValue(next);
-                }}
-            />
+            <Field label="Publish at">
+                <DateTimePicker
+                    {...props}
+                    value={value}
+                    onChange={(next) => {
+                        props.onChange(next);
+                        setValue(next);
+                    }}
+                />
+            </Field>
             <Button onClick={() => setValue(null)}>Reset</Button>
         </div>
     );
@@ -30,7 +33,7 @@ const meta = {
     tags: ["development", "!autodocs", "!manifest"],
     decorators: [themeDecorator],
     render: (args) => <DateTimePickerWithReset {...args} />,
-    args: { name: "publishAt", label: "Publish at", value: null, locale: "de-AT", onChange: fn() },
+    args: { name: "publishAt", value: null, locale: "de-AT", onChange: fn() },
 } satisfies Meta<typeof DateTimePicker>;
 
 export default meta;

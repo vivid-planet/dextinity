@@ -3,8 +3,8 @@ import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type ReactNode, useId } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
-import { type ControlValidationProps, useControlValidation } from "../field/controlValidation";
-import type { FieldState } from "../field/Field";
+import { type ControlAriaProps, isAriaInvalid } from "../field/ControlFrame";
+import { useFieldContext } from "../field/fieldContext";
 import styles from "./Switch.module.scss";
 
 type SwitchSize = "default" | "small";
@@ -16,8 +16,9 @@ export type SwitchOwnerState = {
     size: SwitchSize;
     checked: boolean;
     disabled: boolean;
+    readOnly: boolean;
     required: boolean;
-    state: FieldState;
+    invalid: boolean;
 };
 
 export interface SwitchSlotProps {
@@ -33,12 +34,11 @@ export interface SwitchSlotProps {
     label?: SlotPropsValue<SwitchOwnerState, "span">;
     /** Props for the `description` slot. */
     description?: SlotPropsValue<SwitchOwnerState, "span">;
-    /** Props for the `message` slot, the validation message below the switch. */
-    message?: SlotPropsValue<SwitchOwnerState, "div">;
 }
 
-export interface SwitchProps extends ControlValidationProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange"> {
-    /** The label. Without a visible label, set `aria-label`. */
+export interface SwitchProps
+    extends ControlAriaProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | keyof ControlAriaProps> {
+    /** The label, which names the switch even inside a `Field`. Without a visible label, set `aria-label`. */
     children?: ReactNode;
     /** A second line under the label, e.g. what the setting does or why it is disabled. */
     description?: ReactNode;
@@ -47,23 +47,15 @@ export interface SwitchProps extends ControlValidationProps, Omit<HTMLAttributes
     /** Called with the new state when the switch is toggled. */
     onChange: (checked: boolean) => void;
     /**
-     * Prevents interaction with the switch. Say why in `description`.
+     * Prevents interaction with the switch. Say why in `description`. Ignored inside a `Field`, which takes it from its own `disabled`.
      *
      * @defaultValue `false`
      */
     disabled?: boolean;
-    /**
-     * Requires the switch to be on, e.g. to accept terms, and adds a star after the label.
-     *
-     * @defaultValue `false`
-     */
-    required?: boolean;
     /** @defaultValue `"default"` */
     size?: SwitchSize;
     /** Identifies the field when a form is submitted. */
     name?: string;
-    /** The accessible name when there is no visible label. */
-    "aria-label"?: string;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -71,7 +63,9 @@ export interface SwitchProps extends ControlValidationProps, Omit<HTMLAttributes
 }
 
 /**
- * Turns a setting on or off, for settings that take effect immediately or on save.
+ * Turns a setting on or off, for settings that take effect immediately or on save. For a validation message, e.g. on a switch that must
+ * be on, put it in a `Field` with `layout="group"`: the switch takes the field's message, state, `required`, and `disabled`, and keeps
+ * its own text as its name.
  */
 export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
     {
@@ -80,38 +74,48 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
         checked,
         onChange,
         disabled = false,
-        required = false,
-        state = "default",
-        validationMessage,
         size = "default",
         name,
         "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
         className,
         slotProps,
         ...restProps
     },
     ref,
 ) {
-    const ownerState: SwitchOwnerState = { size, checked, disabled, required, state };
+    const fieldControl = useFieldContext()?.control;
+    const ownerState: SwitchOwnerState = {
+        size,
+        checked,
+        disabled: fieldControl != null ? fieldControl.disabled : disabled,
+        readOnly: fieldControl?.readOnly === true,
+        required: fieldControl?.required === true,
+        invalid: isAriaInvalid(ariaInvalid) || fieldControl?.["aria-invalid"] === true,
+    };
     const labelId = useId();
     const descriptionId = useId();
     const hasLabel = children != null;
     const hasDescription = description != null;
-    const validation = useControlValidation(state, validationMessage, clsx(hasDescription && descriptionId, ariaDescribedBy) || undefined);
+    // The switch's own text names it; the field's label names it only without text
+    const labelledBy = ariaLabelledBy ?? (hasLabel ? labelId : fieldControl?.["aria-labelledby"]);
 
     const controlProps = resolveSlotProps<SwitchOwnerState, typeof BaseSwitch.Root, typeof BaseSwitch.Root>({
         ownProps: {
             className: styles.control,
+            id: fieldControl?.id,
             checked,
-            disabled,
-            required,
+            disabled: ownerState.disabled,
+            readOnly: ownerState.readOnly,
+            required: ownerState.required,
             name,
             onCheckedChange: (nextChecked: boolean) => onChange(nextChecked),
             "aria-label": ariaLabel,
-            "aria-labelledby": hasLabel ? labelId : undefined,
-            "aria-describedby": validation["aria-describedby"],
-            "aria-invalid": validation["aria-invalid"],
+            "aria-labelledby": labelledBy,
+            "aria-describedby": clsx(hasDescription && descriptionId, fieldControl?.["aria-describedby"], ariaDescribedBy) || undefined,
+            "aria-invalid": ownerState.invalid ? true : undefined,
         },
         slotProps: slotProps?.control,
         ownerState,
@@ -119,11 +123,6 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
     const rowProps = resolveSlotProps<SwitchOwnerState, "label", "label">({
         ownProps: { className: styles.row },
         slotProps: slotProps?.row,
-        ownerState,
-    });
-    const messageProps = resolveSlotProps<SwitchOwnerState, "div", "div">({
-        ownProps: { className: styles.message, id: validation.messageId },
-        slotProps: slotProps?.message,
         ownerState,
     });
     const thumbProps = resolveSlotProps<SwitchOwnerState, typeof BaseSwitch.Thumb, typeof BaseSwitch.Thumb>({
@@ -154,8 +153,9 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
             data-size={ownerState.size}
             data-checked={ownerState.checked ? "" : undefined}
             data-disabled={ownerState.disabled ? "" : undefined}
+            data-readonly={ownerState.readOnly ? "" : undefined}
             data-required={ownerState.required ? "" : undefined}
-            data-state={ownerState.state}
+            data-invalid={ownerState.invalid ? "" : undefined}
             className={clsx(styles.root, className)}
         >
             <label {...rowProps}>
@@ -164,7 +164,7 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
                         {hasLabel && (
                             <span {...labelProps}>
                                 {children}
-                                {required && <span className={styles.required} aria-hidden />}
+                                {ownerState.required && fieldControl?.["aria-labelledby"] == null && <span className={styles.required} aria-hidden />}
                             </span>
                         )}
                         {hasDescription && <span {...descriptionProps}>{description}</span>}
@@ -174,7 +174,6 @@ export const Switch = forwardRef<HTMLDivElement, SwitchProps>(function Switch(
                     <BaseSwitch.Thumb {...thumbProps} />
                 </BaseSwitch.Root>
             </label>
-            {validation.showsMessage && <div {...messageProps}>{validationMessage}</div>}
         </div>
     );
 });

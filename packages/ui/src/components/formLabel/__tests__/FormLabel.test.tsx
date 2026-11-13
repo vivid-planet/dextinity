@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { LabelHTMLAttributes } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -27,17 +27,33 @@ export function FormLabelLabelSlotTypeContract() {
 afterEach(cleanup);
 
 describe("FormLabel", () => {
-    it("keeps the asterisk and the helper icon out of the accessible name of the labeled field", () => {
+    it("keeps the asterisk and the help button out of the accessible name of the labeled field", () => {
         render(
             <>
-                <FormLabel htmlFor="title" required helperIcon={<span role="img" aria-label="More information" />}>
+                <FormLabel htmlFor="title" required helpText="Shown in search results." helpTextId="title-help">
                     Title
                 </FormLabel>
-                <input id="title" />
+                <input id="title" aria-describedby="title-help" />
             </>,
         );
 
-        expect(screen.getByRole("textbox", { name: "Title" })).toBeDefined();
+        expect(screen.getByRole("textbox", { name: "Title" })).toHaveAccessibleDescription("Shown in search results.");
+    });
+
+    it("puts a focusable info button right after the label that shows the help text in a tooltip on a tap", async () => {
+        render(
+            <FormLabel htmlFor="title" helpText="Shown in search results." labels={{ helpText: "Mehr Informationen" }}>
+                Title
+            </FormLabel>,
+        );
+
+        const button = screen.getByRole("button", { name: "Mehr Informationen" });
+        expect(button.previousElementSibling?.tagName).toBe("LABEL");
+        expect(button.closest("label")).toBeNull();
+        expect(button.tabIndex).toBe(0);
+        expect(button).toHaveAccessibleDescription("Shown in search results.");
+        await act(async () => fireEvent.click(button));
+        expect(await screen.findByRole("tooltip")).toHaveTextContent("Shown in search results.");
     });
 
     it("puts the owner state, `className` and `style` on the element around the label, and other props on the label", () => {

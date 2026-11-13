@@ -1,10 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { expect, userEvent } from "storybook/test";
+import { expect, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Checkbox } from "../../checkbox/Checkbox";
+import { DatePicker } from "../../datePicker/DatePicker";
 import { Icon } from "../../icon/Icon";
 import { Input } from "../../input/Input";
+import { RadioGroup } from "../../radioGroup/RadioGroup";
+import { Select } from "../../select/Select";
 import { Toolbar } from "../../toolbar/Toolbar";
 import { ToolbarButton } from "../../toolbar/ToolbarButton";
 import { Field, type FieldControlProps } from "../Field";
@@ -85,12 +89,14 @@ const meta = {
     argTypes: {
         state: { control: "select", options: ["default", "success", "warning", "error"] },
         size: { control: "radio", options: ["small", "default", "large"] },
-        layout: { control: "radio", options: ["inline", "stacked"] },
+        layout: { control: "radio", options: ["inline", "stacked", "group"] },
         prefix: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
         suffix: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
         children: { control: false },
         actions: { control: false },
+        labels: { control: false },
         className: { control: false },
+        slots: { control: false },
         slotProps: { control: false },
     },
 } satisfies Meta<typeof Field>;
@@ -100,8 +106,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * An `Input` in the frame makes a complete text field: it takes the label, message, and state from the field. A custom control gets
- * the props that connect it to its label and message from the `children` function.
+ * An `Input` in the frame makes a complete text field: it takes the label, message, and state from the field. Every other control works
+ * the same way, e.g. `Select`, `DatePicker`, or `Textarea`: the controls have no label, help, or validation props of their own. A custom
+ * control gets the props that connect it to its label and message from the `children` function.
  *
  * **Rules**
  * - Keep the label visible; a placeholder is never the only label.
@@ -121,6 +128,80 @@ export const HelperText: Story = {
     },
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("textbox")).toHaveAccessibleDescription("Use gender-neutral wording.");
+    },
+};
+
+/**
+ * `helpText` adds an info button right after the label. Hover, keyboard focus, or a tap shows the text in a tooltip, and it describes
+ * the control and the button for assistive technology. The button is named "More information"; translate it with `labels.helpText`, and
+ * change its icon with `slots.helpIcon` or `slotProps.helpIcon`.
+ *
+ * **helpText or helperText?**
+ * - `helpText` is background most users don't need, e.g. where a value is used. It stays hidden until asked for.
+ * - `helperText` is what everyone needs to fill in the field, e.g. the expected format. It is always visible below the field.
+ */
+export const HelpText: Story = {
+    args: {
+        label: "Meta title",
+        helpText: "Shown in search results and when the page is shared.",
+        helperText: "Up to 60 characters.",
+    },
+    play: async ({ canvas }) => {
+        const control = canvas.getByRole("textbox", { name: "Meta title" });
+        await expect(control).toHaveAccessibleDescription("Shown in search results and when the page is shared. Up to 60 characters.");
+        const button = canvas.getByRole("button", { name: "More information" });
+        await expect(button).toHaveAccessibleDescription("Shown in search results and when the page is shared.");
+        await userEvent.click(button);
+        await waitFor(() => expect(screen.getByRole("tooltip")).toHaveTextContent("Shown in search results and when the page is shared."));
+        await userEvent.keyboard("{Escape}");
+    },
+};
+
+/**
+ * Every control takes the field's id, label, message, and state: a `Select`, a `DatePicker`, and so on. Group controls, e.g. `RadioGroup`,
+ * `CheckboxGroup`, `Slider`, or `FileUpload`, draw their own frame: `layout="group"` leaves out the box, and the label names the control's
+ * group. A single `Checkbox` or `Switch` keeps its text as its name; a field without `label` adds just the message.
+ */
+export const AnyControl: Story = {
+    render: () => (
+        <div className={styles.stack}>
+            <Field label="Location" helperText="Where the job is based." required>
+                <Select
+                    name="location"
+                    value="vienna"
+                    onChange={() => undefined}
+                    options={[
+                        { value: "vienna", label: "Vienna" },
+                        { value: "graz", label: "Graz" },
+                    ]}
+                />
+            </Field>
+            <Field label="Start date" state="error" validationMessage="Choose a day in the future.">
+                <DatePicker name="startDate" value="2026-01-12" onChange={() => undefined} locale="en-GB" />
+            </Field>
+            <Field label="Employment" layout="group" helpText="Part-time is up to 30 hours a week.">
+                <RadioGroup
+                    value="full-time"
+                    onChange={() => undefined}
+                    options={[
+                        { value: "full-time", label: "Full-time" },
+                        { value: "part-time", label: "Part-time" },
+                    ]}
+                    orientation="horizontal"
+                />
+            </Field>
+            <Field layout="group" required state="error" validationMessage="Accept the terms to continue.">
+                <Checkbox checked={false} onChange={() => undefined}>
+                    I accept the terms
+                </Checkbox>
+            </Field>
+        </div>
+    ),
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("combobox", { name: "Location Vienna" })).toHaveAccessibleDescription("Where the job is based.");
+        await expect(canvas.getByRole("textbox", { name: "Start date" })).toHaveAccessibleDescription("Choose a day in the future.");
+        await expect(canvas.getByRole("radiogroup", { name: "Employment" })).toHaveAccessibleDescription("Part-time is up to 30 hours a week.");
+        await expect(canvas.getByRole("checkbox", { name: "I accept the terms" })).toHaveAccessibleDescription("Accept the terms to continue.");
     },
 };
 

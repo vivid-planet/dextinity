@@ -22,18 +22,3 @@
     margin-inline-start: var(--dextinity-form-label-gap);
     color: var(--dextinity-form-label-required-color);
 }
-
-.helperIcon {
-    display: inline-flex;
-    flex-shrink: 0;
-    align-items: center;
-    block-size: var(--dextinity-form-label-font-line-height);
-    color: var(--dextinity-form-label-helper-icon-color);
-
-    --dextinity-icon-size: var(--dextinity-form-label-helper-icon-size);
-
-    > svg {
-        inline-size: var(--dextinity-form-label-helper-icon-size);
-        block-size: var(--dextinity-form-label-helper-icon-size);
-    }
-}

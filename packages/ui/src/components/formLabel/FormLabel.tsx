@@ -8,10 +8,13 @@ import {
     type ReactNode,
     type Ref,
     type RefAttributes,
+    useId,
 } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
+import { Icon } from "../icon/Icon";
 import styles from "./FormLabel.module.scss";
+import { defaultHelpTextButtonLabel, HelpTextButton } from "./HelpTextButton";
 
 const requiredMarker = "*";
 
@@ -25,7 +28,15 @@ export type FormLabelOwnerState = {
     error: boolean;
 };
 
-interface FormLabelSlots<Label extends LabelElement, RequiredMarker extends ElementType, HelperIcon extends ElementType> {
+/**
+ * Texts of the form label, for translation.
+ */
+export interface FormLabelLabels {
+    /** Accessible name of the info button that shows the `helpText`. */
+    helpText: string;
+}
+
+interface FormLabelSlots<Label extends LabelElement, RequiredMarker extends ElementType, HelpIcon extends ElementType> {
     /**
      * Element for the `label` slot.
      *
@@ -39,28 +50,30 @@ interface FormLabelSlots<Label extends LabelElement, RequiredMarker extends Elem
      */
     required?: RequiredMarker;
     /**
-     * Element for the `helperIcon` slot.
+     * Element for the `helpIcon` slot, the icon of the button that shows the `helpText`.
      *
-     * @defaultValue `span`
+     * @defaultValue `Icon` named `info`
      */
-    helperIcon?: HelperIcon;
+    helpIcon?: HelpIcon;
 }
 
-interface FormLabelSlotProps<Label extends LabelElement, RequiredMarker extends ElementType, HelperIcon extends ElementType> {
+interface FormLabelSlotProps<Label extends LabelElement, RequiredMarker extends ElementType, HelpIcon extends ElementType> {
     /** Props for the element around the label, other than `className` and `style`. */
     root?: SlotPropsValue<FormLabelOwnerState, "span">;
     /** Props for the `label` slot. */
     label?: SlotPropsValue<FormLabelOwnerState, Label>;
     /** Props for the `required` slot. */
     required?: SlotPropsValue<FormLabelOwnerState, RequiredMarker>;
-    /** Props for the `helperIcon` slot. */
-    helperIcon?: SlotPropsValue<FormLabelOwnerState, HelperIcon>;
+    /** Props for the `helpButton` slot, the info button after the label that shows the `helpText`. */
+    helpButton?: SlotPropsValue<FormLabelOwnerState, "button">;
+    /** Props for the `helpIcon` slot. */
+    helpIcon?: SlotPropsValue<FormLabelOwnerState, HelpIcon>;
 }
 
 export interface FormLabelProps<
     Label extends LabelElement = "label",
     RequiredMarker extends ElementType = "span",
-    HelperIcon extends ElementType = "span",
+    HelpIcon extends ElementType = typeof Icon,
 > extends Omit<LabelHTMLAttributes<HTMLLabelElement>, "className" | "style"> {
     /**
      * Marks the field as required with an asterisk.
@@ -74,36 +87,66 @@ export interface FormLabelProps<
      * @defaultValue `false`
      */
     error?: boolean;
-    /** Shown after the label and not part of the field's name, for example an info icon or a button that opens help. */
-    helperIcon?: ReactNode;
+    /**
+     * Extra explanation behind an info button after the label, shown in a tooltip on hover, keyboard focus, and tap. Not part of the
+     * field's name; add `helpTextId` to the control's `aria-describedby` so it describes the control. Use it for background most users
+     * don't need; what everyone needs belongs in a `FormHelperText` below the control.
+     */
+    helpText?: ReactNode;
+    /**
+     * The id of the hidden copy of the `helpText`, to add to the control's `aria-describedby`.
+     *
+     * @defaultValue generated
+     */
+    helpTextId?: string;
+    /** Texts of the label, for translation. */
+    labels?: Partial<FormLabelLabels>;
     /** Added alongside the component's own classes on the element around the label. */
     className?: string;
     /** Inline styles for the element around the label. */
     style?: CSSProperties;
     /** Sets which element a named inner part renders as. */
-    slots?: FormLabelSlots<Label, RequiredMarker, HelperIcon>;
+    slots?: FormLabelSlots<Label, RequiredMarker, HelpIcon>;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
-    slotProps?: FormLabelSlotProps<Label, RequiredMarker, HelperIcon>;
+    slotProps?: FormLabelSlotProps<Label, RequiredMarker, HelpIcon>;
 }
 
 /**
- * Names a form field.
+ * Names a form field, for a custom layout without `Field`. `Field` renders its own label with the same look.
  */
-export const FormLabel: <Label extends LabelElement = "label", RequiredMarker extends ElementType = "span", HelperIcon extends ElementType = "span">(
-    props: FormLabelProps<Label, RequiredMarker, HelperIcon> & RefAttributes<HTMLLabelElement>,
+export const FormLabel: <
+    Label extends LabelElement = "label",
+    RequiredMarker extends ElementType = "span",
+    HelpIcon extends ElementType = typeof Icon,
+>(
+    props: FormLabelProps<Label, RequiredMarker, HelpIcon> & RefAttributes<HTMLLabelElement>,
 ) => ReactNode = forwardRef(function FormLabel<
     Label extends LabelElement = "label",
     RequiredMarker extends ElementType = "span",
-    HelperIcon extends ElementType = "span",
+    HelpIcon extends ElementType = typeof Icon,
 >(
-    { required, error, helperIcon, className, style, slots, slotProps, children, ...restProps }: FormLabelProps<Label, RequiredMarker, HelperIcon>,
+    {
+        required,
+        error,
+        helpText,
+        helpTextId: helpTextIdProp,
+        labels: labelsProp,
+        className,
+        style,
+        slots,
+        slotProps,
+        children,
+        ...restProps
+    }: FormLabelProps<Label, RequiredMarker, HelpIcon>,
     ref: ForwardedRef<HTMLLabelElement>,
 ) {
+    const generatedHelpTextId = `${useId()}help`;
+    const helpTextId = helpTextIdProp ?? generatedHelpTextId;
+    const labels: FormLabelLabels = { helpText: defaultHelpTextButtonLabel, ...labelsProp };
     const ownerState: FormLabelOwnerState = { required: required === true, error: error === true };
 
     const LabelSlot: ElementType = slots?.label ?? "label";
     const RequiredSlot: ElementType = slots?.required ?? "span";
-    const HelperIconSlot: ElementType = slots?.helperIcon ?? "span";
 
     const labelProps = resolveSlotProps<FormLabelOwnerState, Label, "label">({
         ownProps: { ...restProps, ref, className: styles.label },
@@ -115,9 +158,14 @@ export const FormLabel: <Label extends LabelElement = "label", RequiredMarker ex
         slotProps: slotProps?.required,
         ownerState,
     });
-    const helperIconProps = resolveSlotProps<FormLabelOwnerState, HelperIcon, "span">({
-        ownProps: { className: styles.helperIcon },
-        slotProps: slotProps?.helperIcon,
+    const helpButtonProps = resolveSlotProps<FormLabelOwnerState, "button", "button">({
+        ownProps: { "aria-label": labels.helpText },
+        slotProps: slotProps?.helpButton,
+        ownerState,
+    });
+    const helpIconProps = resolveSlotProps<FormLabelOwnerState, HelpIcon, typeof Icon>({
+        ownProps: { name: "info" },
+        slotProps: slotProps?.helpIcon,
         ownerState,
     });
 
@@ -133,7 +181,15 @@ export const FormLabel: <Label extends LabelElement = "label", RequiredMarker ex
                 {children}
                 {ownerState.required && <RequiredSlot {...requiredProps} />}
             </LabelSlot>
-            {helperIcon != null && <HelperIconSlot {...helperIconProps}>{helperIcon}</HelperIconSlot>}
+            {helpText != null && helpText !== "" && (
+                <HelpTextButton
+                    helpText={helpText}
+                    helpTextId={helpTextId}
+                    buttonProps={helpButtonProps}
+                    IconSlot={slots?.helpIcon ?? Icon}
+                    iconProps={helpIconProps}
+                />
+            )}
         </span>
     );
 });

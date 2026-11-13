@@ -157,13 +157,14 @@ function RedirectForm({ redirect, onClose, onSave }: { redirect: Redirect; onClo
                         ]}
                     />
                 </div>
-                <Textarea
-                    name="comment"
-                    label="Comment"
-                    rows={2}
-                    value={draft.comment}
-                    onChange={(event) => setDraft({ ...draft, comment: event.target.value })}
-                />
+                <Field label="Comment">
+                    <Textarea
+                        name="comment"
+                        rows={2}
+                        value={draft.comment}
+                        onChange={(event) => setDraft({ ...draft, comment: event.target.value })}
+                    />
+                </Field>
                 <Switch checked={draft.active} onChange={(active) => setDraft({ ...draft, active })}>
                     Active
                 </Switch>

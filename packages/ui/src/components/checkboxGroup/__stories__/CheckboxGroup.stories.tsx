@@ -2,22 +2,28 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { type FieldStoryArgs, groupFieldArgTypes, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { CheckboxGroup, type CheckboxGroupOption, type CheckboxGroupProps } from "../CheckboxGroup";
 import checkboxGroupTokens from "../CheckboxGroup.tokens.scss?raw";
 
+type CheckboxGroupStoryArgs = CheckboxGroupProps & FieldStoryArgs;
+
 /** Keeps the story controlled: toggling updates the local value; changing the `value` control starts over from it. */
-function ControlledCheckboxGroup(props: CheckboxGroupProps) {
-    const [value, setValue] = useState(props.value);
+function ControlledCheckboxGroup(args: CheckboxGroupStoryArgs) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useState(control.value);
     return (
-        <CheckboxGroup
-            {...props}
-            value={value}
-            onChange={(next) => {
-                props.onChange(next);
-                setValue(next);
-            }}
-        />
+        <StoryField field={field} layout="group">
+            <CheckboxGroup
+                {...control}
+                value={value}
+                onChange={(next) => {
+                    control.onChange(next);
+                    setValue(next);
+                }}
+            />
+        </StoryField>
     );
 }
 
@@ -65,12 +71,11 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
+        ...groupFieldArgTypes,
         orientation: { control: "radio", options: ["vertical", "horizontal"] },
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
         className: { control: false },
-        slotProps: { control: false },
     },
-} satisfies Meta<typeof CheckboxGroup>;
+} satisfies Meta<CheckboxGroupStoryArgs>;
 
 export default meta;
 

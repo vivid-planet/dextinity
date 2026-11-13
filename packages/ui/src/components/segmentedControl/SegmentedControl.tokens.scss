@@ -43,16 +43,6 @@
 
     // Line around the track in the error state
     --dextinity-segmented-control-line-error: var(--dextinity-color-danger);
-    // Gap between the options and the validation message
-    --dextinity-segmented-control-message-gap: var(--dextinity-space-1);
-    // Text size of the validation message
-    --dextinity-segmented-control-message-font-size: var(--dextinity-typography-small-size);
-    // Color of the message in the error state
-    --dextinity-segmented-control-message-color-error: var(--dextinity-color-danger-text);
-    // Color of the message in the warning state
-    --dextinity-segmented-control-message-color-warning: var(--dextinity-color-warning-text);
-    // Color of the message in the success state
-    --dextinity-segmented-control-message-color-success: var(--dextinity-color-success-text);
 }
 
 @mixin high-contrast-tokens {

@@ -3,8 +3,8 @@ import { type ForwardedRef, forwardRef, type HTMLAttributes, type ReactNode, typ
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Checkbox } from "../checkbox/Checkbox";
-import type { FieldState } from "../field/Field";
-import { useGroupMessage } from "../field/groupMessage";
+import { type ControlAriaProps, useGroupControl } from "../field/ControlFrame";
+import { FieldContextReset } from "../field/fieldContext";
 import styles from "./CheckboxGroup.module.scss";
 import { optionCheckState, optionValues, toggleOption } from "./checkboxGroupSelection";
 
@@ -29,15 +29,13 @@ export interface CheckboxGroupOption<Value extends string = string> {
  */
 export type CheckboxGroupOwnerState = {
     orientation: CheckboxGroupOrientation;
-    state: FieldState;
+    invalid: boolean;
     required: boolean;
     disabled: boolean;
     selectableGroups: boolean;
 };
 
 export interface CheckboxGroupSlotProps {
-    /** Props for the `label` slot, the group's label above the options. */
-    label?: SlotPropsValue<CheckboxGroupOwnerState, "span">;
     /** Props for the `group` slot, the element that holds the options and the group's role. */
     group?: SlotPropsValue<CheckboxGroupOwnerState, "div">;
     /** Props for the `nested` slot, the indented options of each group option. */
@@ -46,24 +44,16 @@ export interface CheckboxGroupSlotProps {
     groupHeading?: SlotPropsValue<CheckboxGroupOwnerState, "span">;
     /** Props for the `optionDescription` slot. */
     optionDescription?: SlotPropsValue<CheckboxGroupOwnerState, "span">;
-    /** Props for the `message` slot, the help or validation message below the options. */
-    message?: SlotPropsValue<CheckboxGroupOwnerState, "div">;
 }
 
-export interface CheckboxGroupProps<Value extends string = string> extends Omit<
-    HTMLAttributes<HTMLDivElement>,
-    "className" | "children" | "onChange" | "defaultValue"
-> {
+export interface CheckboxGroupProps<Value extends string = string>
+    extends ControlAriaProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | "defaultValue" | keyof ControlAriaProps> {
     /** The options. Give an option `children` to group options, e.g. the languages of a domain, as deep as needed. */
     options: ReadonlyArray<CheckboxGroupOption<Value>>;
     /** The values of the checked options, in the options' order. */
     value: ReadonlyArray<Value>;
     /** Called with the values of the checked options after one was toggled. */
     onChange: (value: Value[]) => void;
-    /** Visible label above the options. */
-    label?: ReactNode;
-    /** The accessible name when there is no visible label. Required without `label`. */
-    "aria-label"?: string;
     /** Identifies the field when a form is submitted. */
     name?: string;
     /** Adds a checkbox above the options that selects or clears all of them, with this label. */
@@ -81,28 +71,11 @@ export interface CheckboxGroupProps<Value extends string = string> extends Omit<
      */
     orientation?: CheckboxGroupOrientation;
     /**
-     * Marks the group as needing at least one checked option with a star after the label. The form validates it, e.g. through
-     * `CheckboxGroupField`'s `required`.
-     *
-     * @defaultValue `false`
-     */
-    required?: boolean;
-    /**
-     * Prevents interaction with the whole group.
+     * Prevents interaction with the whole group. Ignored inside a `Field`, which takes it from its own `disabled`.
      *
      * @defaultValue `false`
      */
     disabled?: boolean;
-    /** Permanent help below the options. */
-    helperText?: ReactNode;
-    /** Message for the `state`. Replaces the help while the state is `success`, `warning`, or `error`. Say what is missing and how to fix it. */
-    validationMessage?: ReactNode;
-    /**
-     * Validation state, shown by the message color and, for `error`, the unchecked boxes' line.
-     *
-     * @defaultValue `"default"`
-     */
-    state?: FieldState;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -111,60 +84,62 @@ export interface CheckboxGroupProps<Value extends string = string> extends Omit<
 
 /**
  * Chooses any number of options, all visible at once, optionally grouped in a hierarchy, e.g. the domains and languages of content scopes.
+ * Put it in a `Field` with `layout="group"` for a label, help, and a validation message: the field's label names the group. On its own,
+ * name it with `aria-label`.
  */
 export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends string = string>(
     {
         options,
         value,
         onChange,
-        label,
         "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
         name,
         selectAllLabel,
         selectableGroups = true,
         orientation = "vertical",
-        required = false,
-        disabled = false,
-        helperText,
-        validationMessage,
-        state = "default",
+        disabled: disabledProp,
         className,
         slotProps,
         ...restProps
     }: CheckboxGroupProps<Value>,
     ref: ForwardedRef<HTMLDivElement>,
 ) {
-    const ownerState: CheckboxGroupOwnerState = { orientation, state, required, disabled, selectableGroups };
-    const message = useGroupMessage({ state, validationMessage, helperText, ariaDescribedBy });
+    const { control } = useGroupControl({
+        disabled: disabledProp,
+        "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
+        "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
+    });
+    const disabled = control.disabled;
+    const ownerState: CheckboxGroupOwnerState = {
+        orientation,
+        invalid: control["aria-invalid"] === true,
+        required: control.required,
+        disabled,
+        selectableGroups,
+    };
     const idPrefix = useId();
     const selected = useMemo(() => new Set(value), [value]);
-    const controlState = state === "error" ? "error" : "default";
     const allOptions = useMemo<CheckboxGroupOption<Value>>(
         () => ({ value: "" as Value, label: selectAllLabel, children: options }),
         [options, selectAllLabel],
     );
 
-    const labelProps = resolveSlotProps<CheckboxGroupOwnerState, "span", "span">({
-        ownProps: { className: styles.label, id: message.labelId },
-        slotProps: slotProps?.label,
-        ownerState,
-    });
     const groupProps = resolveSlotProps<CheckboxGroupOwnerState, "div", "div">({
         ownProps: {
             className: styles.group,
             role: "group",
-            "aria-label": ariaLabel,
-            "aria-labelledby": label != null ? message.labelId : undefined,
-            "aria-describedby": message["aria-describedby"],
-            "aria-invalid": message["aria-invalid"],
+            "aria-label": control["aria-label"],
+            "aria-labelledby": control["aria-labelledby"],
+            "aria-describedby": control["aria-describedby"],
+            "aria-invalid": control["aria-invalid"],
+            "aria-required": control["aria-required"],
         },
         slotProps: slotProps?.group,
-        ownerState,
-    });
-    const messageProps = resolveSlotProps<CheckboxGroupOwnerState, "div", "div">({
-        ownProps: { className: styles.message, id: message.messageId },
-        slotProps: slotProps?.message,
         ownerState,
     });
 
@@ -197,7 +172,7 @@ export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends str
                     checked={checked}
                     indeterminate={indeterminate}
                     disabled={checkboxDisabled}
-                    state={controlState}
+                    aria-invalid={ownerState.invalid}
                     name={children.length > 0 ? undefined : name}
                     value={children.length > 0 ? undefined : option.value}
                     onChange={() => onChange(toggleOption(options, value, option))}
@@ -240,34 +215,30 @@ export const CheckboxGroup = forwardRef(function CheckboxGroup<Value extends str
             {...restProps}
             ref={ref}
             data-orientation={ownerState.orientation}
-            data-state={ownerState.state}
+            data-invalid={ownerState.invalid ? "" : undefined}
             data-required={ownerState.required ? "" : undefined}
             data-disabled={ownerState.disabled ? "" : undefined}
             data-selectablegroups={ownerState.selectableGroups ? "" : undefined}
             className={clsx(styles.root, className)}
         >
-            {label != null && (
-                <div className={styles.labelRow}>
-                    <span {...labelProps}>{label}</span>
-                    {required && <span className={styles.required} aria-hidden />}
-                </div>
-            )}
             <div {...groupProps}>
-                {selectAllLabel != null && (
-                    <div className={styles.selectAll}>
-                        <Checkbox
-                            {...optionCheckState(allOptions, selected)}
-                            disabled={disabled || optionValues(allOptions, true).length === 0}
-                            state={controlState}
-                            onChange={() => onChange(toggleOption(options, value, allOptions))}
-                        >
-                            {selectAllLabel}
-                        </Checkbox>
-                    </div>
-                )}
-                {options.map((option, index) => renderOption(option, String(index), false))}
+                {/* The options are named by their own text, not by the surrounding field */}
+                <FieldContextReset>
+                    {selectAllLabel != null && (
+                        <div className={styles.selectAll}>
+                            <Checkbox
+                                {...optionCheckState(allOptions, selected)}
+                                disabled={disabled || optionValues(allOptions, true).length === 0}
+                                aria-invalid={ownerState.invalid}
+                                onChange={() => onChange(toggleOption(options, value, allOptions))}
+                            >
+                                {selectAllLabel}
+                            </Checkbox>
+                        </div>
+                    )}
+                    {options.map((option, index) => renderOption(option, String(index), false))}
+                </FieldContextReset>
             </div>
-            {message.showsMessage && <div {...messageProps}>{message.message}</div>}
         </div>
     );
 }) as <Value extends string = string>(props: CheckboxGroupProps<Value> & RefAttributes<HTMLDivElement>) => ReactNode;

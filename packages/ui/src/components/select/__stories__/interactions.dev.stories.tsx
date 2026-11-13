@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { Select } from "../Select";
-import selectMeta, { InDialog } from "./Select.stories";
+import selectMeta, { InDialog, type SelectStoryArgs } from "./Select.stories";
 
 const meta = {
     component: Select,
@@ -11,7 +11,7 @@ const meta = {
     decorators: selectMeta.decorators,
     render: selectMeta.render,
     args: selectMeta.args,
-} satisfies Meta<typeof Select>;
+} satisfies Meta<SelectStoryArgs<boolean>>;
 
 export default meta;
 

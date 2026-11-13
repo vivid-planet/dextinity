@@ -2,28 +2,44 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { landscapeImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { FocalPointPicker, type FocalPointPickerProps } from "../FocalPointPicker";
 import focalPointPickerTokens from "../FocalPointPicker.tokens.scss?raw";
 import styles from "./FocalPointPicker.stories.module.scss";
 
-/** Keeps the story controlled: moving the point updates the local value and clears `auto`. */
-function ControlledFocalPointPicker(props: FocalPointPickerProps) {
-    const [value, setValue] = useState(props.value);
-    const [auto, setAuto] = useState(props.auto);
+type FocalPointPickerStoryArgs = FocalPointPickerProps & Pick<FieldStoryArgs, "label" | "helperText" | "validationMessage" | "state">;
+
+/**
+ * Keeps the story controlled: moving the point updates the local value and clears `auto`. With a field arg, it puts the picker in a
+ * `Field` with `layout="group"`.
+ */
+function ControlledFocalPointPicker(args: FocalPointPickerStoryArgs) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useState(control.value);
+    const [auto, setAuto] = useState(control.auto);
+    const picker = (
+        <FocalPointPicker
+            {...control}
+            value={value}
+            auto={auto}
+            onChange={(next) => {
+                control.onChange(next);
+                setValue(next);
+                setAuto(false);
+            }}
+        />
+    );
     return (
         <div className={styles.container}>
-            <FocalPointPicker
-                {...props}
-                value={value}
-                auto={auto}
-                onChange={(next) => {
-                    props.onChange(next);
-                    setValue(next);
-                    setAuto(false);
-                }}
-            />
+            {hasFieldArgs(field) ? (
+                <StoryField field={field} layout="group">
+                    {picker}
+                </StoryField>
+            ) : (
+                picker
+            )}
         </div>
     );
 }
@@ -41,14 +57,17 @@ const meta = {
     argTypes: {
         auto: { control: "boolean" },
         disabled: { control: "boolean" },
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
+        label: fieldArgTypes.label,
+        helperText: fieldArgTypes.helperText,
+        validationMessage: fieldArgTypes.validationMessage,
+        state: fieldArgTypes.state,
         ratios: { control: "object" },
         labels: { control: false },
         className: { control: false },
         slotProps: { control: false },
     },
     render: (args) => <ControlledFocalPointPicker {...args} />,
-} satisfies Meta<typeof FocalPointPicker>;
+} satisfies Meta<FocalPointPickerStoryArgs>;
 
 export default meta;
 
@@ -106,12 +125,16 @@ export const Disabled: Story = {
 };
 
 /**
+ * A `Field` with `layout="group"` adds the label and the message: `<Field label="Focal point" layout="group" state="error"
+ * validationMessage="…"><FocalPointPicker … /></Field>`.
+ *
  * **Rules**
  * - Say what is missing and how to fix it.
  */
 export const Error: Story = {
-    args: { state: "error", validationMessage: "Set the point on the main subject." },
+    args: { label: "Focal point", state: "error", validationMessage: "Set the point on the main subject." },
     play: async ({ canvas }) => {
+        await expect(canvas.getByRole("group", { name: "Focal point" })).toBeInTheDocument();
         const marker = canvas.getByRole("slider");
         await expect(marker).toHaveAttribute("aria-invalid", "true");
         await expect(marker).toHaveAccessibleDescription("Set the point on the main subject.");
@@ -119,9 +142,9 @@ export const Error: Story = {
 };
 
 export const Warning: Story = {
-    args: { state: "warning", validationMessage: "The point is close to the edge; narrow crops may cut off the subject." },
+    args: { label: "Focal point", state: "warning", validationMessage: "The point is close to the edge; narrow crops may cut off the subject." },
 };
 
 export const Success: Story = {
-    args: { state: "success", validationMessage: "Matches the detected face." },
+    args: { label: "Focal point", state: "success", validationMessage: "Matches the detected face." },
 };

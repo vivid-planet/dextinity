@@ -1,20 +1,10 @@
-@use "../field/groupFrame";
 @use "../../theme/forcedColors" as forced-colors;
 
 .root {
-    @include groupFrame.root(checkbox-group);
-}
-
-.labelRow {
-    @include groupFrame.label-row;
-}
-
-.label {
-    @include groupFrame.label(checkbox-group);
-}
-
-.required {
-    @include groupFrame.required(checkbox-group);
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+    font-family: var(--dextinity-font-family-text);
 }
 
 .group {
@@ -90,6 +80,3 @@
     }
 }
 
-.message {
-    @include groupFrame.message(checkbox-group);
-}

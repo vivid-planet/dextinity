@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { Field } from "../../field/Field";
 import { RadioGroup } from "../RadioGroup";
 
 afterEach(cleanup);
@@ -11,60 +12,43 @@ const options = [
 ];
 
 describe("RadioGroup", () => {
-    it("emits the variant, orientation, and state on the root", () => {
+    it("emits the variant, orientation, and required state on the root", () => {
         const { container } = render(
-            <RadioGroup label="Employment" options={options} value={null} onChange={vi.fn()} variant="card" orientation="horizontal" required />,
+            <Field label="Employment" layout="group" required>
+                <RadioGroup options={options} value={null} onChange={vi.fn()} variant="card" orientation="horizontal" />
+            </Field>,
         );
 
-        const root = container.firstElementChild as HTMLElement;
-        expect(root.className).toContain("dextinityRadioGroup");
-        expect([root.dataset.variant, root.dataset.orientation, root.dataset.state, root.dataset.required]).toStrictEqual([
+        const root = container.querySelector<HTMLElement>(".dextinityRadioGroup");
+        expect([root?.dataset.variant, root?.dataset.orientation, root?.dataset.invalid, root?.dataset.required]).toStrictEqual([
             "card",
             "horizontal",
-            "default",
+            undefined,
             "",
         ]);
         expect(screen.getByRole("radio", { name: "Full-time" }).className).toContain("dextinityRadioGroup__control");
     });
 
-    it("names the group by its label and connects the message and the descriptions", () => {
+    it("follows the surrounding field and connects the descriptions", () => {
         render(
-            <RadioGroup
-                label="Employment"
-                options={options}
-                value="part-time"
-                onChange={vi.fn()}
-                state="error"
-                validationMessage="Choose one."
-                aria-describedby="hint"
-            />,
+            <Field label="Employment" layout="group" readOnly state="error" validationMessage="Choose one.">
+                <RadioGroup options={options} value="part-time" onChange={vi.fn()} aria-describedby="hint" />
+            </Field>,
         );
 
         const group = screen.getByRole("radiogroup", { name: "Employment" });
         expect(group.getAttribute("aria-invalid")).toBe("true");
-        const [hintId, messageId] = (group.getAttribute("aria-describedby") ?? "").split(" ");
+        expect(group.getAttribute("aria-readonly")).toBe("true");
+        const [messageId, hintId] = (group.getAttribute("aria-describedby") ?? "").split(" ");
         expect(hintId).toBe("hint");
-        expect(document.getElementById(messageId)?.className).toBe("dextinityRadioGroup__message");
+        expect(document.getElementById(messageId)?.textContent).toBe("Choose one.");
         expect(screen.getByRole("radio", { name: "Full-time" })).toHaveAccessibleDescription("40 hours");
         expect(screen.getByRole("radio", { name: "Part-time" }).getAttribute("aria-checked")).toBe("true");
     });
 
-    it("shows the help until a validation message replaces it", () => {
-        const { rerender } = render(<RadioGroup aria-label="Employment" options={options} value={null} onChange={vi.fn()} helperText="Help" />);
-        expect(screen.getByRole("radiogroup")).toHaveAccessibleDescription("Help");
+    it("takes its name from aria-label on its own", () => {
+        render(<RadioGroup aria-label="Employment" options={options} value={null} onChange={vi.fn()} />);
 
-        rerender(
-            <RadioGroup
-                aria-label="Employment"
-                options={options}
-                value={null}
-                onChange={vi.fn()}
-                helperText="Help"
-                state="error"
-                validationMessage="Choose one."
-            />,
-        );
-        expect(screen.getByRole("radiogroup")).toHaveAccessibleDescription("Choose one.");
-        expect(screen.queryByText("Help")).toBeNull();
+        expect(screen.getByRole("radiogroup", { name: "Employment" })).toBeInTheDocument();
     });
 });

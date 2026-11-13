@@ -1,12 +1,8 @@
 @use "../../theme/forcedColors" as forced-colors;
 
-.root {
-    min-inline-size: 0;
-
-    // The steppers sit at the end, against the field's edge
-    &[data-steppers] > :global(.dextinityField__box) {
-        padding-inline-end: 3px;
-    }
+// The steppers sit at the end, against the field's edge
+:global(.dextinityField__box):has(> .number[data-steppers]) {
+    padding-inline-end: 3px;
 }
 
 // Lets the input and the steppers take part in the field's row, so the steppers can come after the suffix

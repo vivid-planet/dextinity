@@ -1,7 +1,12 @@
 @use "../../theme/forcedColors" as forced-colors;
 
-.root {
+:global(.dextinityField__box):has(> .root) {
     --dextinity-field-radius-stacked: var(--dextinity-rich-text-editor-radius);
+}
+
+// Lets the toolbar and the text take part in the field's box
+.root {
+    display: contents;
 }
 
 .toolbar {

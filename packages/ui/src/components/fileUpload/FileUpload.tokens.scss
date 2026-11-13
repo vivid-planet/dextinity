@@ -1,6 +1,6 @@
 // The drop area comes from the Dropzone tokens.
 @mixin tokens {
-    // Gap between the label, the drop area, the files, and the message
+    // Gap between the drop area and the files
     --dextinity-file-upload-gap: var(--dextinity-field-gap);
     // Gap between the uploaded files in the list
     --dextinity-file-upload-file-gap: var(--dextinity-space-2);
@@ -26,25 +26,6 @@
     --dextinity-file-upload-error-font-size: 12px;
     // Outline of the drop area when the field has an error
     --dextinity-file-upload-error-outline: var(--dextinity-line-width-strong) dashed var(--dextinity-color-danger);
-
-    // Size of the field label
-    --dextinity-file-upload-label-font-size: var(--dextinity-field-label-font-size);
-    // Weight of the field label
-    --dextinity-file-upload-label-font-weight: var(--dextinity-field-label-font-weight);
-    // Color of the field label
-    --dextinity-file-upload-label-color: var(--dextinity-field-label-color);
-    // Color of the required marker after the label
-    --dextinity-file-upload-required-color: var(--dextinity-field-required-color);
-    // Size of the helper or validation message
-    --dextinity-file-upload-message-font-size: var(--dextinity-field-message-font-size);
-    // Color of the helper message
-    --dextinity-file-upload-message-color: var(--dextinity-field-message-color);
-    // Color of an error message
-    --dextinity-file-upload-message-color-error: var(--dextinity-field-message-color-error);
-    // Color of a warning message
-    --dextinity-file-upload-message-color-warning: var(--dextinity-field-message-color-warning);
-    // Color of a success message
-    --dextinity-file-upload-message-color-success: var(--dextinity-field-message-color-success);
 
     // Corner radius of the focus ring of a linked file name
     --dextinity-file-upload-link-radius: 4px;

@@ -2,23 +2,37 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Checkbox, type CheckboxProps } from "../Checkbox";
 import checkboxTokens from "../Checkbox.tokens.scss?raw";
 import styles from "./Checkbox.stories.module.scss";
 
-/** Keeps the story controlled: toggling updates the local state; the `checked` arg sets the initial state. */
-function ControlledCheckbox(props: CheckboxProps) {
-    const [checked, setChecked] = useState(props.checked);
-    return (
+type CheckboxStoryArgs = CheckboxProps & Pick<FieldStoryArgs, "required" | "helperText" | "validationMessage" | "state">;
+
+/**
+ * Keeps the story controlled: toggling updates the local state; the `checked` arg sets the initial state. With a field arg, it puts the
+ * checkbox in a `Field` with `layout="group"`.
+ */
+function ControlledCheckbox(args: CheckboxStoryArgs) {
+    const { field, control } = splitFieldArgs(args);
+    const [checked, setChecked] = useState(control.checked);
+    const checkbox = (
         <Checkbox
-            {...props}
+            {...control}
             checked={checked}
             onChange={(next) => {
-                props.onChange(next);
+                control.onChange(next);
                 setChecked(next);
             }}
         />
+    );
+    return hasFieldArgs(field) ? (
+        <StoryField field={field} layout="group">
+            {checkbox}
+        </StoryField>
+    ) : (
+        checkbox
     );
 }
 
@@ -66,12 +80,15 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
+        required: fieldArgTypes.required,
+        helperText: fieldArgTypes.helperText,
+        validationMessage: fieldArgTypes.validationMessage,
+        state: fieldArgTypes.state,
         className: { control: false },
         slotProps: { control: false },
     },
     render: (args) => <ControlledCheckbox {...args} />,
-} satisfies Meta<typeof Checkbox>;
+} satisfies Meta<CheckboxStoryArgs>;
 
 export default meta;
 
@@ -171,7 +188,8 @@ export const SelectAll: Story = {
 };
 
 /**
- * A checkbox that must be checked, e.g. to accept terms, shows a star after the label.
+ * A checkbox that must be checked, e.g. to accept terms, goes in a `Field` with `required` and `layout="group"`; without a field label,
+ * the star follows the checkbox's text.
  */
 export const Required: Story = {
     args: { required: true, children: "I accept the terms" },
@@ -181,6 +199,8 @@ export const Required: Story = {
 };
 
 /**
+ * The field's message sits below the checkbox and describes it: `<Field layout="group" state="error" validationMessage="…"><Checkbox>…</Checkbox></Field>`.
+ *
  * **Rules**
  * - Say what is missing and how to fix it.
  */

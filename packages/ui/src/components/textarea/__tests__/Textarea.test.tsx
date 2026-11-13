@@ -1,24 +1,47 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { Field } from "../../field/Field";
 import { Textarea } from "../Textarea";
 
 afterEach(cleanup);
 
 describe("Textarea", () => {
-    it("composes the field root with its own root class and marks auto-resizing", () => {
-        const { container } = render(<Textarea name="intro" label="Intro" value="" onChange={vi.fn()} />);
+    it("marks auto-resizing on the textarea", () => {
+        render(<Textarea name="intro" aria-label="Intro" value="" onChange={vi.fn()} />);
 
-        const root = container.firstElementChild as HTMLElement;
-        expect(root.className).toContain("dextinityField");
-        expect(root.className).toContain("dextinityTextarea");
-        expect(root.dataset.autoresize).toBe("");
-        expect(screen.getByRole("textbox", { name: "Intro" }).className).toContain("dextinityTextarea__control");
+        const textarea = screen.getByRole("textbox", { name: "Intro" });
+        expect(textarea.className).toContain("dextinityTextarea__control");
+        expect(textarea.dataset.autoresize).toBe("");
     });
 
     it("omits the auto-resize attribute when the user resizes the field", () => {
-        const { container } = render(<Textarea name="intro" label="Intro" value="" onChange={vi.fn()} autoResize={false} />);
+        render(<Textarea name="intro" aria-label="Intro" value="" onChange={vi.fn()} autoResize={false} />);
 
-        expect((container.firstElementChild as HTMLElement).hasAttribute("data-autoresize")).toBe(false);
+        expect(screen.getByRole("textbox").hasAttribute("data-autoresize")).toBe(false);
+    });
+
+    it("follows the surrounding field", () => {
+        render(
+            <Field label="Intro" required disabled state="error" validationMessage="Write an intro.">
+                <Textarea name="intro" value="" onChange={vi.fn()} />
+            </Field>,
+        );
+
+        const textarea = screen.getByRole("textbox", { name: "Intro" });
+        expect(textarea).toHaveAccessibleDescription("Write an intro.");
+        expect(textarea).toBeRequired();
+        expect(textarea).toBeDisabled();
+        expect(textarea).toHaveAttribute("aria-invalid", "true");
+    });
+
+    it("shows its count at the field's label", () => {
+        render(
+            <Field label="Teaser">
+                <Textarea name="teaser" value="Hello" maxLength={80} showCount onChange={vi.fn()} />
+            </Field>,
+        );
+
+        expect(screen.getByText("5 / 80")).toBeInTheDocument();
     });
 });

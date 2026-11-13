@@ -3,8 +3,7 @@ import { type FocusEvent, forwardRef, type HTMLAttributes, type ReactNode, useEf
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Dropzone, type DropzoneProps, type DropzoneRejection } from "../dropzone/Dropzone";
-import type { FieldState } from "../field/Field";
-import { useGroupMessage } from "../field/groupMessage";
+import { type ControlAriaProps, useGroupControl } from "../field/ControlFrame";
 import { Icon } from "../icon/Icon";
 import { IconButton } from "../iconButton/IconButton";
 import { ProgressBar } from "../progressBar/ProgressBar";
@@ -70,7 +69,7 @@ const defaultLabels: FileUploadLabels = {
  * The resolved configuration that influences the component's appearance or behavior.
  */
 export type FileUploadOwnerState = {
-    state: FieldState;
+    invalid: boolean;
     multiple: boolean;
     required: boolean;
     disabled: boolean;
@@ -79,17 +78,14 @@ export type FileUploadOwnerState = {
 };
 
 export interface FileUploadSlotProps {
-    /** Props for the `label` slot. */
-    label?: SlotPropsValue<FileUploadOwnerState, "span">;
     /** Props for the `files` slot, the list of uploaded, uploading, and failed files. */
     files?: SlotPropsValue<FileUploadOwnerState, "ul">;
-    /** Props for the `message` slot, the help or validation message below the files. */
-    message?: SlotPropsValue<FileUploadOwnerState, "div">;
     /** Props for the drop area, e.g. its `labels`. */
     dropzone?: Partial<Omit<DropzoneProps, "onFiles" | "onReject" | "accept" | "maxSize" | "multiple" | "disabled" | "overlay" | "uploads">>;
 }
 
-export interface FileUploadProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | "defaultValue"> {
+export interface FileUploadProps
+    extends ControlAriaProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | "defaultValue" | keyof ControlAriaProps> {
     /** The uploaded files. */
     value: ReadonlyArray<FileUploadFile>;
     /** Called with the files after one was uploaded or removed. */
@@ -98,10 +94,6 @@ export interface FileUploadProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
     onUpload: (file: File, context: FileUploadContext) => Promise<FileUploadFile>;
     /** Called when the first upload starts and when the last one ends, e.g. to prevent saving the form meanwhile. */
     onUploadingChange?: (uploading: boolean) => void;
-    /** Visible label above the drop area. */
-    label?: ReactNode;
-    /** The accessible name when there is no visible label. Required without `label`. */
-    "aria-label"?: string;
     /** Identifies the field when a form is submitted: the ids of the uploaded files. */
     name?: string;
     /** The accepted file types, as in the file input's `accept` attribute, e.g. `image/*,application/pdf`. */
@@ -119,33 +111,17 @@ export interface FileUploadProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
     /** What can be uploaded, shown in the drop area, e.g. "PDF up to 10 MB". */
     hint?: ReactNode;
     /**
-     * Adds a star after the label.
-     *
-     * @defaultValue `false`
-     */
-    required?: boolean;
-    /**
-     * Prevents uploading and removing files.
+     * Prevents uploading and removing files. Ignored inside a `Field`, which takes it from its own `disabled`.
      *
      * @defaultValue `false`
      */
     disabled?: boolean;
     /**
-     * Shows the files without the drop area and the remove buttons.
+     * Shows the files without the drop area and the remove buttons. Ignored inside a `Field`, which takes it from its own `readOnly`.
      *
      * @defaultValue `false`
      */
     readOnly?: boolean;
-    /** Permanent help below the files. */
-    helperText?: ReactNode;
-    /** Message for the `state`. Replaces the help while the state is `success`, `warning`, or `error`. Say what is missing and how to fix it. */
-    validationMessage?: ReactNode;
-    /**
-     * Validation state, shown by the message color and the drop area's line.
-     *
-     * @defaultValue `"default"`
-     */
-    state?: FieldState;
     /** The message shown for a failed upload, from what `onUpload` rejected with. Defaults to `labels.uploadFailed`. */
     getErrorMessage?: (error: unknown) => ReactNode;
     /** Formats a file size. Defaults to the largest fitting unit in the browser's locale, e.g. `1.4 MB`. */
@@ -181,21 +157,18 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
         onChange,
         onUpload,
         onUploadingChange,
-        label,
         "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
         name,
         accept,
         maxSize,
         multiple = false,
         maxFiles,
         hint,
-        required = false,
-        disabled = false,
-        readOnly = false,
-        helperText,
-        validationMessage,
-        state = "default",
+        disabled: disabledProp,
+        readOnly: readOnlyProp,
         getErrorMessage,
         formatSize = formatFileSize,
         labels: labelsProp,
@@ -210,8 +183,16 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
     const labels = { ...defaultLabels, ...labelsProp };
     const [pending, setPending] = useState<PendingFile[]>([]);
     const uploading = pending.some((entry) => entry.status === "uploading");
-    const ownerState: FileUploadOwnerState = { state, multiple, required, disabled, readOnly, uploading };
-    const message = useGroupMessage({ state, validationMessage, helperText, ariaDescribedBy });
+    const { control } = useGroupControl({
+        disabled: disabledProp,
+        readOnly: readOnlyProp,
+        "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
+        "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
+    });
+    const { disabled, readOnly, required } = control;
+    const ownerState: FileUploadOwnerState = { invalid: control["aria-invalid"] === true, multiple, required, disabled, readOnly, uploading };
 
     // Uploads can finish before the parent passes the new value, so each one adds to the latest value it knows of
     const latestValue = useRef(value);
@@ -356,19 +337,9 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
     const full = multiple ? maxFiles != null && activeCount >= maxFiles : activeCount > 0;
     const showsDropzone = !readOnly && !full;
 
-    const labelProps = resolveSlotProps<FileUploadOwnerState, "span", "span">({
-        ownProps: { className: styles.label, id: message.labelId },
-        slotProps: slotProps?.label,
-        ownerState,
-    });
     const filesProps = resolveSlotProps<FileUploadOwnerState, "ul", "ul">({
         ownProps: { className: styles.files },
         slotProps: slotProps?.files,
-        ownerState,
-    });
-    const messageProps = resolveSlotProps<FileUploadOwnerState, "div", "div">({
-        ownProps: { className: styles.message, id: message.messageId },
-        slotProps: slotProps?.message,
         ownerState,
     });
 
@@ -386,11 +357,12 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
             {...restProps}
             ref={ref}
             role="group"
-            aria-label={ariaLabel}
-            aria-labelledby={label != null ? message.labelId : undefined}
-            aria-describedby={message["aria-describedby"]}
-            aria-invalid={message["aria-invalid"]}
-            data-state={ownerState.state}
+            aria-label={control["aria-label"]}
+            aria-labelledby={control["aria-labelledby"]}
+            aria-describedby={control["aria-describedby"]}
+            aria-invalid={control["aria-invalid"]}
+            aria-required={control["aria-required"]}
+            data-invalid={ownerState.invalid ? "" : undefined}
             data-multiple={ownerState.multiple ? "" : undefined}
             data-required={ownerState.required ? "" : undefined}
             data-disabled={ownerState.disabled ? "" : undefined}
@@ -409,12 +381,6 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                 onBlur?.(event);
             }}
         >
-            {label != null && (
-                <div className={styles.labelRow}>
-                    <span {...labelProps}>{label}</span>
-                    {required && <span className={styles.required} aria-hidden />}
-                </div>
-            )}
             {showsDropzone && (
                 <Dropzone
                     hint={hint}
@@ -487,7 +453,6 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                     ))}
                 </ul>
             )}
-            {message.showsMessage && <div {...messageProps}>{message.message}</div>}
         </div>
     );
 });

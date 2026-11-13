@@ -1,9 +1,5 @@
 @use "../../theme/forcedColors" as forced-colors;
 
-.root {
-    min-inline-size: 0;
-}
-
 .trigger {
     display: flex;
     flex: 1;
@@ -25,7 +21,7 @@
         cursor: not-allowed;
     }
 
-    .root[data-readonly] & {
+    &[data-readonly] {
         cursor: default;
     }
 }
@@ -64,8 +60,7 @@
         color: var(--dextinity-picker-icon-color-hover);
     }
 
-    .root[data-disabled] &,
-    .root[data-readonly] & {
+    .trigger:is(:disabled, [data-readonly]) ~ & {
         color: var(--dextinity-picker-icon-color);
         cursor: default;
     }

@@ -34,15 +34,13 @@ function FieldsExample() {
                 >
                     <Input name="metaTitle" value={metaTitle} onChange={(event) => setMetaTitle(event.target.value)} />
                 </Field>
-                <Textarea
-                    name="altText"
+                <Field
                     label="Alt text"
-                    rows={2}
                     helperText="Per language."
-                    value={altText}
-                    onChange={(event) => setAltText(event.target.value)}
                     actions={<FieldActions translate targetLocales={["de", "fr"]} onTranslate={translate("Alt text")} />}
-                />
+                >
+                    <Textarea name="altText" rows={2} value={altText} onChange={(event) => setAltText(event.target.value)} />
+                </Field>
             </div>
             <ToastViewport toasts={toasts} onDismiss={dismiss} />
         </PatternExample>

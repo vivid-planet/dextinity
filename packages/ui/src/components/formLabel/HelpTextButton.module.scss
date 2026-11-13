@@ -1,0 +1,5 @@
+@use "helpButton";
+
+.button {
+    @include helpButton.button;
+}

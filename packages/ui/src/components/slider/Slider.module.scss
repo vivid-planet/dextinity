@@ -1,26 +1,16 @@
-@use "../field/controlMessage";
 @use "../../theme/forcedColors" as forced-colors;
 
-// Label and message span all columns; the icons take their columns only when present
+// The icons take their columns only when present
 .root {
     display: inline-grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
-    row-gap: var(--dextinity-slider-row-gap);
     font-family: var(--dextinity-font-family-text);
     color: var(--dextinity-slider-icon-color);
 
     &[data-disabled] {
         opacity: var(--dextinity-slider-disabled-opacity);
     }
-}
-
-.label {
-    grid-column: 1 / -1;
-    font-size: var(--dextinity-slider-label-font-size);
-    font-weight: var(--dextinity-slider-label-font-weight);
-    line-height: var(--dextinity-typography-ui-line-height);
-    color: var(--dextinity-slider-label-color);
 }
 
 .startIcon,
@@ -38,11 +28,6 @@
     grid-column: 3;
     margin-inline-start: var(--dextinity-slider-gap);
     --dextinity-icon-size: var(--dextinity-slider-end-icon-size);
-}
-
-.message {
-    grid-column: 1 / -1;
-    @include controlMessage.message(slider);
 }
 
 .control {

@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { Field } from "../../field/Field";
 import { SegmentedControl } from "../SegmentedControl";
 
 const options = [
@@ -66,22 +67,17 @@ describe("SegmentedControl", () => {
         }
     });
 
-    it("connects the validation message to the group", () => {
+    it("follows the surrounding field", () => {
         const { container } = render(
-            <SegmentedControl
-                aria-label="Employment"
-                options={options}
-                value="full"
-                onChange={vi.fn()}
-                state="error"
-                validationMessage="Choose one."
-            />,
+            <Field label="Employment" layout="group" disabled state="error" validationMessage="Choose one.">
+                <SegmentedControl options={options} value="full" onChange={vi.fn()} />
+            </Field>,
         );
 
-        expect((container.firstElementChild as HTMLElement).dataset.state).toBe("error");
+        expect(container.querySelector<HTMLElement>(".dextinitySegmentedControl")?.dataset.invalid).toBe("");
         const group = screen.getByRole("radiogroup", { name: "Employment" });
         expect(group.getAttribute("aria-invalid")).toBe("true");
-        const message = document.getElementById(group.getAttribute("aria-describedby") ?? "");
-        expect([message?.className, message?.textContent]).toStrictEqual(["dextinitySegmentedControl__message", "Choose one."]);
+        expect(group).toHaveAccessibleDescription("Choose one.");
+        expect(screen.getAllByRole("radio").every((radio) => radio.hasAttribute("data-disabled"))).toBe(true);
     });
 });

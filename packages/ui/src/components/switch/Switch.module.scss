@@ -4,7 +4,6 @@
 .root {
     display: inline-flex;
     flex-direction: column;
-    gap: var(--dextinity-switch-message-gap);
     font-family: var(--dextinity-font-family-text);
 
     --_track-width: var(--dextinity-switch-track-width);
@@ -118,8 +117,4 @@
 
 .required {
     @include controlMessage.required(switch);
-}
-
-.message {
-    @include controlMessage.message(switch);
 }

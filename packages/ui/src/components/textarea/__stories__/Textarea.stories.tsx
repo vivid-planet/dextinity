@@ -2,23 +2,29 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Textarea, type TextareaProps } from "../Textarea";
 import textareaTokens from "../Textarea.tokens.scss?raw";
 
+type TextareaStoryArgs = TextareaProps & FieldStoryArgs;
+
 /** Keeps the story controlled: typing updates the local value; changing the `value` control starts over from it. */
-function ControlledTextarea(props: TextareaProps) {
-    const [value, setValue] = useState(props.value);
+function ControlledTextarea(args: TextareaStoryArgs) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useState(control.value);
     return (
-        <Textarea
-            {...props}
-            value={value}
-            onChange={(event) => {
-                props.onChange(event);
-                setValue(event.target.value);
-            }}
-        />
+        <StoryField field={field}>
+            <Textarea
+                {...control}
+                value={value}
+                onChange={(event) => {
+                    control.onChange(event);
+                    setValue(event.target.value);
+                }}
+            />
+        </StoryField>
     );
 }
 
@@ -35,22 +41,19 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
-        size: { control: "radio", options: ["small", "default", "large"] },
-        actions: { control: false },
-        prefix: { control: false },
-        suffix: { control: false },
+        ...fieldArgTypes,
         className: { control: false },
-        slotProps: { control: false },
+        style: { control: false },
     },
-} satisfies Meta<typeof Textarea>;
+} satisfies Meta<TextareaStoryArgs>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
 /**
- * Starts with three lines and grows with the content up to `maxRows`.
+ * Starts with three lines and grows with the content up to `maxRows`. The `Field` around it adds the label, help, and validation message:
+ * `<Field label="Tasks"><Textarea … /></Field>`.
  */
 export const Default: Story = {
     play: async ({ args, canvas }) => {
@@ -69,7 +72,7 @@ export const HelperText: Story = {
 };
 
 /**
- * The count sits at the label.
+ * The count sits at the end of the field's label row.
  */
 export const Count: Story = {
     args: {
@@ -100,7 +103,7 @@ export const NarrowerWidth: Story = {
     },
     play: async ({ canvas, canvasElement }) => {
         const textarea = canvas.getByRole("textbox", { name: "Tasks" });
-        const root = canvasElement.querySelector<HTMLElement>(".dextinityTextarea");
+        const root = canvasElement.querySelector<HTMLElement>(".dextinityField");
         const initialHeight = textarea.getBoundingClientRect().height;
         root?.style.setProperty("inline-size", "160px");
         await waitFor(() => expect(textarea.getBoundingClientRect().height).toBeGreaterThan(initialHeight));
@@ -144,5 +147,15 @@ export const ReadOnly: Story = {
 export const Small: Story = {
     args: {
         size: "small",
+    },
+};
+
+/**
+ * Without a `Field`, the textarea draws its own box. Name it with `aria-label`.
+ */
+export const Standalone: Story = {
+    render: (args) => <Textarea {...splitFieldArgs(args).control} aria-label="Tasks" />,
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("textbox", { name: "Tasks" })).toBeVisible();
     },
 };

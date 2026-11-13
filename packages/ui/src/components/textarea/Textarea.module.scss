@@ -1,4 +1,5 @@
-.root > :global(.dextinityField__box) {
+// Prefix and suffix stay at the first line of the text
+:global(.dextinityField__box):has(> .control) {
     align-items: flex-start;
 }
 
@@ -28,13 +29,12 @@
         cursor: not-allowed;
     }
 
-    .root[data-autoresize] & {
+    &[data-autoresize] {
         resize: none;
     }
 }
 
-.root :global(.dextinityField__prefix),
-.root :global(.dextinityField__suffix) {
+:global(.dextinityField__box):has(> .control) > :is(:global(.dextinityField__prefix), :global(.dextinityField__suffix)) {
     align-self: flex-start;
     padding-block: var(--dextinity-textarea-padding-block);
     line-height: var(--dextinity-textarea-line-height);

@@ -26,14 +26,6 @@
 
     // Outline of the image in the error state
     --dextinity-focal-point-picker-line-error: var(--dextinity-color-danger);
-    // Text size of the message below the picker
-    --dextinity-focal-point-picker-message-font-size: var(--dextinity-typography-small-size);
-    // Color of the message in the error state
-    --dextinity-focal-point-picker-message-color-error: var(--dextinity-color-danger-text);
-    // Color of the message in the warning state
-    --dextinity-focal-point-picker-message-color-warning: var(--dextinity-color-warning-text);
-    // Color of the message in the success state
-    --dextinity-focal-point-picker-message-color-success: var(--dextinity-color-success-text);
 }
 
 @mixin high-contrast-tokens {

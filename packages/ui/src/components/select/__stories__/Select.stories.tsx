@@ -2,9 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
+import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Dialog } from "../../dialog/Dialog";
+import { Field } from "../../field/Field";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Icon } from "../../icon/Icon";
 import { Select, type SelectOption, type SelectProps } from "../Select";
@@ -55,38 +57,46 @@ const offices: SelectOption[] = [
     { value: "remote", label: "Remote" },
 ];
 
+export type SelectStoryArgs<Multiple extends boolean = false> = SelectProps<Multiple> & FieldStoryArgs;
+
 /** Keeps the story controlled: choosing updates the local value; changing the `value` control starts over from it. */
-function ControlledSelect(props: SelectProps<boolean>) {
-    const [value, setValue] = useState(props.value);
+function ControlledSelect(args: SelectStoryArgs<boolean>) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useState(control.value);
     return (
         <div className={styles.narrow}>
-            <Select
-                {...props}
-                value={value}
-                onChange={(next) => {
-                    props.onChange(next);
-                    setValue(next);
-                }}
-            />
+            <StoryField field={field}>
+                <Select
+                    {...control}
+                    value={value}
+                    onChange={(next) => {
+                        control.onChange(next);
+                        setValue(next);
+                    }}
+                />
+            </StoryField>
         </div>
     );
 }
 
 function ControlledMultipleSelect(
-    props: Omit<SelectProps<true>, "value" | "onChange"> & { initialValue: string[]; onChange: (value: string[]) => void },
+    props: Omit<SelectStoryArgs<true>, "value" | "onChange"> & { initialValue: string[]; onChange: (value: string[]) => void },
 ) {
     const { initialValue, onChange, ...rest } = props;
+    const { field, control } = splitFieldArgs(rest);
     const [value, setValue] = useState(initialValue);
     return (
         <div className={styles.narrow}>
-            <Select
-                {...rest}
-                value={value}
-                onChange={(next) => {
-                    onChange(next);
-                    setValue(next);
-                }}
-            />
+            <StoryField field={field}>
+                <Select
+                    {...control}
+                    value={value}
+                    onChange={(next) => {
+                        onChange(next);
+                        setValue(next);
+                    }}
+                />
+            </StoryField>
         </div>
     );
 }
@@ -96,7 +106,7 @@ const meta = {
     title: "Building blocks/Form fields/Select",
     decorators: [themeDecorator],
     parameters: { tokens: `${selectTokens}\n${fieldTokens}`, popupRoom: { side: "below", minHeight: "280px" } },
-    render: (args) => <ControlledSelect key={String(args.value)} {...(args as SelectProps<boolean>)} />,
+    render: (args) => <ControlledSelect key={String(args.value)} {...(args as SelectStoryArgs<boolean>)} />,
     args: {
         name: "location",
         label: "Location",
@@ -105,19 +115,14 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
-        size: { control: "radio", options: ["small", "default", "large"] },
+        ...fieldArgTypes,
         value: { control: "select", options: [null, ...locations.map((location) => location.value)] },
         options: { control: false },
         multiple: { control: false },
-        actions: { control: false },
-        prefix: { control: false },
-        suffix: { control: false },
         labels: { control: false },
         className: { control: false },
-        slotProps: { control: false },
     },
-} satisfies Meta<typeof Select>;
+} satisfies Meta<SelectStoryArgs<boolean>>;
 
 export default meta;
 
@@ -382,16 +387,17 @@ function NumberSelect({ onChange }: { onChange: (value: number | null) => void }
     const [value, setValue] = useState<number | null>(25);
     return (
         <div className={styles.narrow}>
-            <Select<false, number>
-                name="pageSize"
-                label="Rows per page"
-                options={pageSizes}
-                value={value}
-                onChange={(next) => {
-                    onChange(next);
-                    setValue(next);
-                }}
-            />
+            <Field label="Rows per page">
+                <Select<false, number>
+                    name="pageSize"
+                    options={pageSizes}
+                    value={value}
+                    onChange={(next) => {
+                        onChange(next);
+                        setValue(next);
+                    }}
+                />
+            </Field>
         </div>
     );
 }
@@ -424,17 +430,18 @@ function ObjectSelect({ onChange }: { onChange: (value: Manufacturer | null) => 
     const [value, setValue] = useState<Manufacturer | null>({ id: "2", name: "Danube Works" });
     return (
         <div className={styles.narrow}>
-            <Select<false, Manufacturer>
-                name="manufacturer"
-                label="Manufacturer"
-                options={manufacturers.map((manufacturer) => ({ value: manufacturer, label: manufacturer.name }))}
-                value={value}
-                onChange={(next) => {
-                    onChange(next);
-                    setValue(next);
-                }}
-                getKey={(manufacturer) => manufacturer.id}
-            />
+            <Field label="Manufacturer">
+                <Select<false, Manufacturer>
+                    name="manufacturer"
+                    options={manufacturers.map((manufacturer) => ({ value: manufacturer, label: manufacturer.name }))}
+                    value={value}
+                    onChange={(next) => {
+                        onChange(next);
+                        setValue(next);
+                    }}
+                    getKey={(manufacturer) => manufacturer.id}
+                />
+            </Field>
         </div>
     );
 }
@@ -472,5 +479,5 @@ function SelectInDialog({ defaultOpen, ...props }: SelectProps<boolean> & { defa
  */
 export const InDialog: Story = {
     // Starts closed on the docs page, where an open modal dialog would lock the page's scrolling and take the reader's focus
-    render: (args, { viewMode }) => <SelectInDialog defaultOpen={viewMode !== "docs"} {...(args as SelectProps<boolean>)} />,
+    render: (args, { viewMode }) => <SelectInDialog defaultOpen={viewMode !== "docs"} {...(args as SelectStoryArgs<boolean>)} />,
 };

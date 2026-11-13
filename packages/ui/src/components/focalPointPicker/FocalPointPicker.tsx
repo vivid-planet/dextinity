@@ -3,8 +3,7 @@ import { type CSSProperties, forwardRef, type HTMLAttributes, type KeyboardEvent
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import type { FocalPoint } from "../assetThumbnail/AssetThumbnail";
-import { type ControlValidationProps, useControlValidation } from "../field/controlValidation";
-import type { FieldState } from "../field/Field";
+import { type ControlAriaProps, useGroupControl } from "../field/ControlFrame";
 import styles from "./FocalPointPicker.module.scss";
 
 export interface FocalPointPickerLabels {
@@ -30,7 +29,7 @@ const defaultRatios = ["16:9", "4:3", "1:1", "9:16"];
 export type FocalPointPickerOwnerState = {
     auto: boolean;
     disabled: boolean;
-    state: FieldState;
+    invalid: boolean;
 };
 
 export interface FocalPointPickerSlotProps {
@@ -42,11 +41,10 @@ export interface FocalPointPickerSlotProps {
     marker?: SlotPropsValue<FocalPointPickerOwnerState, "span">;
     /** Props for the `previews` slot, the row of crops. */
     previews?: SlotPropsValue<FocalPointPickerOwnerState, "div">;
-    /** Props for the `message` slot, the validation message below the picker. */
-    message?: SlotPropsValue<FocalPointPickerOwnerState, "div">;
 }
 
-export interface FocalPointPickerProps extends ControlValidationProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange"> {
+export interface FocalPointPickerProps
+    extends ControlAriaProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | keyof ControlAriaProps> {
     /** The URL of the image. */
     src: string;
     /** The image's text alternative. */
@@ -68,7 +66,7 @@ export interface FocalPointPickerProps extends ControlValidationProps, Omit<HTML
      */
     auto?: boolean;
     /**
-     * Prevents moving the point.
+     * Prevents moving the point. Ignored inside a `Field`, which takes it from its own `disabled`.
      *
      * @defaultValue `false`
      */
@@ -94,7 +92,8 @@ function toPercent(value: number) {
 }
 
 /**
- * Sets the point an image is cropped around, by clicking or dragging in the image or with the arrow keys, and previews the crops.
+ * Sets the point an image is cropped around, by clicking or dragging in the image or with the arrow keys, and previews the crops. For a
+ * label, help, or a validation message, put it in a `Field` with `layout="group"`, whose label names the picker's group.
  */
 export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps>(function FocalPointPicker(
     {
@@ -104,11 +103,12 @@ export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps
         onChange,
         ratios = defaultRatios,
         auto = false,
-        disabled = false,
-        state = "default",
-        validationMessage,
+        disabled: disabledProp,
         labels: labelsProp,
+        "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
         className,
         slotProps,
         ...restProps
@@ -116,8 +116,15 @@ export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps
     ref,
 ) {
     const labels = { ...defaultLabels, ...labelsProp };
-    const ownerState: FocalPointPickerOwnerState = { auto, disabled, state };
-    const validation = useControlValidation(state, validationMessage, ariaDescribedBy);
+    const { control } = useGroupControl({
+        disabled: disabledProp,
+        "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
+        "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
+    });
+    const disabled = control.disabled;
+    const ownerState: FocalPointPickerOwnerState = { auto, disabled, invalid: control["aria-invalid"] === true };
     const markerRef = useRef<HTMLSpanElement>(null);
     const objectPosition = `${toPercent(value.x)} ${toPercent(value.y)}`;
 
@@ -181,17 +188,13 @@ export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps
             "aria-valuenow": Math.round(clamp(value.x) * 100),
             "aria-valuetext": labels.valueText(value),
             "aria-disabled": disabled || undefined,
-            "aria-invalid": validation["aria-invalid"],
-            "aria-describedby": validation["aria-describedby"],
+            "aria-invalid": control["aria-invalid"],
+            "aria-required": control["aria-required"],
+            "aria-describedby": control["aria-describedby"],
             style: { insetInlineStart: toPercent(value.x), insetBlockStart: toPercent(value.y) } satisfies CSSProperties,
             onKeyDown: handleKeyDown,
         },
         slotProps: slotProps?.marker,
-        ownerState,
-    });
-    const messageProps = resolveSlotProps<FocalPointPickerOwnerState, "div", "div">({
-        ownProps: { className: styles.message, id: validation.messageId },
-        slotProps: slotProps?.message,
         ownerState,
     });
     const previewsProps = resolveSlotProps<FocalPointPickerOwnerState, "div", "div">({
@@ -205,8 +208,11 @@ export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps
             {...restProps}
             ref={ref}
             data-auto={ownerState.auto ? "" : undefined}
+            role="group"
+            aria-label={control["aria-label"]}
+            aria-labelledby={control["aria-labelledby"]}
             data-disabled={ownerState.disabled ? "" : undefined}
-            data-state={ownerState.state}
+            data-invalid={ownerState.invalid ? "" : undefined}
             className={clsx(styles.root, className)}
         >
             <div {...stageProps}>
@@ -230,7 +236,6 @@ export const FocalPointPicker = forwardRef<HTMLDivElement, FocalPointPickerProps
                     ))}
                 </div>
             )}
-            {validation.showsMessage && <div {...messageProps}>{validationMessage}</div>}
         </div>
     );
 });

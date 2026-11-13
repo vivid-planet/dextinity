@@ -4,8 +4,7 @@ import { clsx } from "clsx";
 import { type ForwardedRef, forwardRef, type HTMLAttributes, type ReactNode, type RefAttributes, useId } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
-import type { FieldState } from "../field/Field";
-import { useGroupMessage } from "../field/groupMessage";
+import { type ControlAriaProps, useGroupControl } from "../field/ControlFrame";
 import styles from "./RadioGroup.module.scss";
 
 type RadioGroupVariant = "default" | "card";
@@ -29,15 +28,13 @@ export interface RadioGroupOption<Value extends string = string> {
 export type RadioGroupOwnerState = {
     variant: RadioGroupVariant;
     orientation: RadioGroupOrientation;
-    state: FieldState;
+    invalid: boolean;
     required: boolean;
     disabled: boolean;
     readOnly: boolean;
 };
 
 export interface RadioGroupSlotProps {
-    /** Props for the `label` slot, the group's label above the options. */
-    label?: SlotPropsValue<RadioGroupOwnerState, "span">;
     /** Props for the `group` slot, the element that holds the options and the group's role. */
     group?: SlotPropsValue<RadioGroupOwnerState, typeof BaseRadioGroup>;
     /** Props for the `option` slot, each option's clickable row or card. */
@@ -50,24 +47,16 @@ export interface RadioGroupSlotProps {
     optionLabel?: SlotPropsValue<RadioGroupOwnerState, "span">;
     /** Props for the `optionDescription` slot. */
     optionDescription?: SlotPropsValue<RadioGroupOwnerState, "span">;
-    /** Props for the `message` slot, the help or validation message below the options. */
-    message?: SlotPropsValue<RadioGroupOwnerState, "div">;
 }
 
-export interface RadioGroupProps<Value extends string = string> extends Omit<
-    HTMLAttributes<HTMLDivElement>,
-    "className" | "children" | "onChange" | "defaultValue"
-> {
+export interface RadioGroupProps<Value extends string = string>
+    extends ControlAriaProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | "defaultValue" | keyof ControlAriaProps> {
     /** The options, usually two to seven. For a short choice in a toolbar, use `SegmentedControl`; for more options, a `Select`. */
     options: ReadonlyArray<RadioGroupOption<Value>>;
     /** The chosen option's value, `null` while none is chosen. */
     value: Value | null;
     /** Called with the newly chosen option's value. */
     onChange: (value: Value) => void;
-    /** Visible label above the options. */
-    label?: ReactNode;
-    /** The accessible name when there is no visible label. Required without `label`. */
-    "aria-label"?: string;
     /** Identifies the field when a form is submitted. */
     name?: string;
     /**
@@ -83,33 +72,18 @@ export interface RadioGroupProps<Value extends string = string> extends Omit<
      */
     orientation?: RadioGroupOrientation;
     /**
-     * Requires an option to be chosen before a form is submitted, and adds a star after the label.
-     *
-     * @defaultValue `false`
-     */
-    required?: boolean;
-    /**
-     * Prevents interaction with the whole group.
+     * Prevents interaction with the whole group. Ignored inside a `Field`, which takes it from its own `disabled`.
      *
      * @defaultValue `false`
      */
     disabled?: boolean;
     /**
-     * Shows the choice without allowing changes. The options stay focusable.
+     * Shows the choice without allowing changes. The options stay focusable. Ignored inside a `Field`, which takes it from its own
+     * `readOnly`.
      *
      * @defaultValue `false`
      */
     readOnly?: boolean;
-    /** Permanent help below the options. */
-    helperText?: ReactNode;
-    /** Message for the `state`. Replaces the help while the state is `success`, `warning`, or `error`. Say what is missing and how to fix it. */
-    validationMessage?: ReactNode;
-    /**
-     * Validation state, shown by the message color and, for `error`, the circles' line.
-     *
-     * @defaultValue `"default"`
-     */
-    state?: FieldState;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -124,47 +98,49 @@ export const RadioGroup = forwardRef(function RadioGroup<Value extends string = 
         options,
         value,
         onChange,
-        label,
         "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
         name,
         variant = "default",
         orientation = "vertical",
-        required = false,
-        disabled = false,
-        readOnly = false,
-        helperText,
-        validationMessage,
-        state = "default",
+        disabled: disabledProp,
+        readOnly: readOnlyProp,
         className,
         slotProps,
         ...restProps
     }: RadioGroupProps<Value>,
     ref: ForwardedRef<HTMLDivElement>,
 ) {
-    const ownerState: RadioGroupOwnerState = { variant, orientation, state, required, disabled, readOnly };
-    const message = useGroupMessage({ state, validationMessage, helperText, ariaDescribedBy });
+    const { control } = useGroupControl({
+        disabled: disabledProp,
+        readOnly: readOnlyProp,
+        "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
+        "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
+    });
+    const { disabled, readOnly, required } = control;
+    const ownerState: RadioGroupOwnerState = {
+        variant,
+        orientation,
+        invalid: control["aria-invalid"] === true,
+        required,
+        disabled,
+        readOnly,
+    };
     const optionIdPrefix = useId();
 
-    const labelProps = resolveSlotProps<RadioGroupOwnerState, "span", "span">({
-        ownProps: { className: styles.label, id: message.labelId },
-        slotProps: slotProps?.label,
-        ownerState,
-    });
     const groupProps = resolveSlotProps<RadioGroupOwnerState, typeof BaseRadioGroup, typeof BaseRadioGroup>({
         ownProps: {
             className: styles.group,
-            "aria-label": ariaLabel,
-            "aria-labelledby": label != null ? message.labelId : undefined,
-            "aria-describedby": message["aria-describedby"],
-            "aria-invalid": message["aria-invalid"],
+            "aria-label": control["aria-label"],
+            "aria-labelledby": control["aria-labelledby"],
+            "aria-describedby": control["aria-describedby"],
+            "aria-invalid": control["aria-invalid"],
         },
         slotProps: slotProps?.group,
-        ownerState,
-    });
-    const messageProps = resolveSlotProps<RadioGroupOwnerState, "div", "div">({
-        ownProps: { className: styles.message, id: message.messageId },
-        slotProps: slotProps?.message,
         ownerState,
     });
 
@@ -174,18 +150,12 @@ export const RadioGroup = forwardRef(function RadioGroup<Value extends string = 
             ref={ref}
             data-variant={ownerState.variant}
             data-orientation={ownerState.orientation}
-            data-state={ownerState.state}
+            data-invalid={ownerState.invalid ? "" : undefined}
             data-required={ownerState.required ? "" : undefined}
             data-disabled={ownerState.disabled ? "" : undefined}
             data-readonly={ownerState.readOnly ? "" : undefined}
             className={clsx(styles.root, className)}
         >
-            {label != null && (
-                <div className={styles.labelRow}>
-                    <span {...labelProps}>{label}</span>
-                    {required && <span className={styles.required} aria-hidden />}
-                </div>
-            )}
             <BaseRadioGroup<Value | null>
                 {...groupProps}
                 defaultValue={undefined}
@@ -247,7 +217,6 @@ export const RadioGroup = forwardRef(function RadioGroup<Value extends string = 
                     );
                 })}
             </BaseRadioGroup>
-            {message.showsMessage && <div {...messageProps}>{message.message}</div>}
         </div>
     );
 }) as <Value extends string = string>(props: RadioGroupProps<Value> & RefAttributes<HTMLDivElement>) => ReactNode;

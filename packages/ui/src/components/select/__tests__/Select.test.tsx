@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { Field } from "../../field/Field";
 import { Select } from "../Select";
 
 const options = [
@@ -11,25 +12,28 @@ const options = [
 afterEach(cleanup);
 
 describe("Select", () => {
-    it("composes the field root with its own root class and emits multiple and searchable", () => {
-        const { container } = render(
-            <Select name="locations" label="Locations" options={options} value={["vienna"]} onChange={vi.fn()} multiple searchable />,
+    it("names the trigger by the field's label and the chosen option, and follows the field", () => {
+        render(
+            <Field label="Location" required disabled state="error" validationMessage="Choose a location.">
+                <Select name="location" options={options} value="graz" onChange={vi.fn()} />
+            </Field>,
         );
 
-        const root = container.firstElementChild as HTMLElement;
-        expect(root.className).toContain("dextinityField");
-        expect(root.className).toContain("dextinitySelect");
-        expect([root.dataset.multiple, root.dataset.searchable]).toStrictEqual(["", ""]);
+        const trigger = screen.getByRole("combobox", { name: "Location Graz" });
+        expect(trigger).toHaveAccessibleDescription("Choose a location.");
+        expect(trigger).toHaveAttribute("aria-required", "true");
+        expect(trigger).toHaveAttribute("aria-invalid", "true");
+        expect(trigger).toBeDisabled();
     });
 
-    it("names the trigger by the label and the chosen option", () => {
-        render(<Select name="location" label="Location" options={options} value="graz" onChange={vi.fn()} />);
+    it("names the trigger by its aria-label and the chosen option on its own", () => {
+        render(<Select name="location" aria-label="Location" options={options} value="graz" onChange={vi.fn()} />);
 
         expect(screen.getByRole("combobox", { name: "Location Graz" })).toBeTruthy();
     });
 
     it("renders a chip with a remove button per chosen option", () => {
-        render(<Select name="locations" label="Locations" options={options} value={["vienna", "graz"]} onChange={vi.fn()} multiple />);
+        render(<Select name="locations" aria-label="Locations" options={options} value={["vienna", "graz"]} onChange={vi.fn()} multiple />);
 
         expect(screen.getAllByRole("button", { name: /^Remove/ }).map((button) => button.getAttribute("aria-label"))).toStrictEqual([
             "Remove Vienna",
@@ -41,7 +45,7 @@ describe("Select", () => {
         render(
             <Select
                 name="sites"
-                label="Sites"
+                aria-label="Sites"
                 options={[{ value: "main", label: <strong>Main</strong>, textValue: "Main website" }]}
                 value={["main"]}
                 onChange={vi.fn()}
@@ -56,7 +60,7 @@ describe("Select", () => {
         render(
             <Select<false, number>
                 name="size"
-                label="Size"
+                aria-label="Size"
                 options={[
                     { value: 10, label: "10" },
                     { value: 25, label: "25" },
@@ -73,7 +77,7 @@ describe("Select", () => {
         render(
             <Select<false, { id: string }>
                 name="manufacturer"
-                label="Manufacturer"
+                aria-label="Manufacturer"
                 options={[
                     { value: { id: "1" }, label: "Alpine" },
                     { value: { id: "2" }, label: "Danube" },
@@ -91,7 +95,7 @@ describe("Select", () => {
         render(
             <Select<false, { id: string; version: number }>
                 name="manufacturer"
-                label="Manufacturer"
+                aria-label="Manufacturer"
                 options={[{ value: { id: "1", version: 1 }, label: "Alpine" }]}
                 value={{ id: "1", version: 2 }}
                 isOptionEqualToValue={(option, value) => option.id === value.id}

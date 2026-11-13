@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { Field } from "../../field/Field";
 import { CheckboxGroup, type CheckboxGroupOption } from "../CheckboxGroup";
 
 afterEach(cleanup);
@@ -18,25 +19,28 @@ const options: CheckboxGroupOption[] = [
 ];
 
 describe("CheckboxGroup", () => {
-    it("emits the orientation and state on the root and names the group", () => {
+    it("follows the surrounding field and emits the orientation and state on the root", () => {
         const { container } = render(
-            <CheckboxGroup
-                label="Scopes"
-                options={options}
-                value={[]}
-                onChange={vi.fn()}
-                orientation="horizontal"
-                state="error"
-                validationMessage="Select a scope."
-            />,
+            <Field label="Scopes" layout="group" required disabled state="error" validationMessage="Select a scope.">
+                <CheckboxGroup options={options} value={[]} onChange={vi.fn()} orientation="horizontal" />
+            </Field>,
         );
 
-        const root = container.firstElementChild as HTMLElement;
-        expect(root.className).toContain("dextinityCheckboxGroup");
-        expect([root.dataset.orientation, root.dataset.state, root.dataset.selectablegroups]).toStrictEqual(["horizontal", "error", ""]);
+        const root = container.querySelector<HTMLElement>(".dextinityCheckboxGroup");
+        expect([root?.dataset.orientation, root?.dataset.invalid, root?.dataset.required, root?.dataset.selectablegroups]).toStrictEqual([
+            "horizontal",
+            "",
+            "",
+            "",
+        ]);
         const group = screen.getByRole("group", { name: "Scopes" });
         expect(group).toHaveAccessibleDescription("Select a scope.");
         expect(group.getAttribute("aria-invalid")).toBe("true");
+        expect(group.getAttribute("aria-required")).toBe("true");
+        const archive = screen.getByRole("checkbox", { name: /^Archive/ });
+        expect(archive).toHaveAttribute("aria-invalid", "true");
+        expect(archive).toHaveAttribute("aria-disabled", "true");
+        expect(archive).not.toHaveAttribute("aria-required");
     });
 
     it("derives a group's checkbox from the options inside it and names the nested group by it", () => {

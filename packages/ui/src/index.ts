@@ -82,7 +82,14 @@ export { type EditLayoutPane, type EditLayoutVariant } from "./components/editLa
 export { type EditLayoutSlotProps } from "./components/editLayout/EditLayout";
 export { EmptyState, type EmptyStateOwnerState, type EmptyStateProps } from "./components/emptyState/EmptyState";
 export { type EmptyStateSlotProps, type EmptyStateSlots } from "./components/emptyState/EmptyState";
-export { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "./components/field/Field";
+export {
+    Field,
+    type FieldBaseProps,
+    type FieldControlProps,
+    type FieldLabels,
+    type FieldOwnerState,
+    type FieldProps,
+} from "./components/field/Field";
 export { type FieldSize, type FieldState } from "./components/field/Field";
 export { type FieldLayout } from "./components/field/Field";
 export { FieldActions, type FieldActionsLabels, type FieldActionsOwnerState, type FieldActionsProps } from "./components/fieldActions/FieldActions";
@@ -102,7 +109,7 @@ export {
     type FocalPointPickerSlotProps,
 } from "./components/focalPointPicker/FocalPointPicker";
 export { FormHelperText, type FormHelperTextOwnerState, type FormHelperTextProps } from "./components/formHelperText/FormHelperText";
-export { FormLabel, type FormLabelOwnerState, type FormLabelProps } from "./components/formLabel/FormLabel";
+export { FormLabel, type FormLabelLabels, type FormLabelOwnerState, type FormLabelProps } from "./components/formLabel/FormLabel";
 export { Icon, type IconOwnerState, type IconProps } from "./components/icon/Icon";
 export type { DefaultIconName, DefaultIconRegistry, DeprecatedIconAlias, IconName, IconRegistry } from "./components/icon/iconRegistry";
 export { IconButton, type IconButtonOwnerState, type IconButtonProps } from "./components/iconButton/IconButton";

@@ -2,25 +2,31 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
+import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import datePickerTokens from "../DatePicker.tokens.scss?raw";
 import { DateTimePicker, type DateTimePickerProps } from "../DateTimePicker";
 import styles from "./DatePicker.stories.module.scss";
 
+type DateTimePickerStoryArgs = DateTimePickerProps & FieldStoryArgs;
+
 /** Keeps the story controlled: choosing updates the local value; changing the `value` control starts over from it. */
-function ControlledDateTimePicker(props: DateTimePickerProps) {
-    const [value, setValue] = useState(props.value);
+function ControlledDateTimePicker(args: DateTimePickerStoryArgs) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useState(control.value);
     return (
         <div className={styles.narrow}>
-            <DateTimePicker
-                {...props}
-                value={value}
-                onChange={(next) => {
-                    props.onChange(next);
-                    setValue(next);
-                }}
-            />
+            <StoryField field={field}>
+                <DateTimePicker
+                    {...control}
+                    value={value}
+                    onChange={(next) => {
+                        control.onChange(next);
+                        setValue(next);
+                    }}
+                />
+            </StoryField>
         </div>
     );
 }
@@ -41,18 +47,13 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
-        size: { control: "radio", options: ["small", "default", "large"] },
+        ...fieldArgTypes,
         locale: { control: "select", options: ["en-GB", "en-US", "de-AT", "fr-FR", "ja-JP"] },
         weekStartsOn: { control: "select", options: [0, 1, 2, 3, 4, 5, 6] },
-        actions: { control: false },
-        prefix: { control: false },
-        suffix: { control: false },
         labels: { control: false },
         className: { control: false },
-        slotProps: { control: false },
     },
-} satisfies Meta<typeof DateTimePicker>;
+} satisfies Meta<DateTimePickerStoryArgs>;
 
 export default meta;
 

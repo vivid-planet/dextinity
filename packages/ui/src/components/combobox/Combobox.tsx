@@ -1,9 +1,10 @@
 import { Combobox as BaseCombobox } from "@base-ui/react/combobox";
 import { clsx } from "clsx";
-import { type ForwardedRef, forwardRef, type HTMLAttributes, type ReactNode, type RefAttributes, useCallback, useState } from "react";
+import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes, useCallback, useState } from "react";
 
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
-import { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "../field/Field";
+import { ControlFrame, type FrameControlProps, type PureControlProps, useControlState } from "../field/ControlFrame";
+import type { FieldOwnerState } from "../field/Field";
 import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import { groupOptions, hasGroups, type OptionGroup } from "../select/optionGroups";
@@ -54,8 +55,7 @@ const defaultLabels: ComboboxLabels = {
     clear: "Clear",
 };
 
-export interface ComboboxProps<Option, Multiple extends boolean = false>
-    extends FieldBaseProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "prefix" | "onChange" | "defaultValue"> {
+export interface ComboboxProps<Option, Multiple extends boolean = false> extends PureControlProps {
     /** Field name. Describes the data, not the UI. */
     name: string;
     /** The chosen option, a list of options with `multiple`, or `null` when nothing is chosen. Always controlled. */
@@ -102,12 +102,6 @@ export interface ComboboxProps<Option, Multiple extends boolean = false>
     placeholder?: string;
     /** Texts of the menu's states, the chips, and the clear button, for translation. */
     labels?: Partial<ComboboxLabels>;
-    /** The id of the input, used to connect it with the label. */
-    id?: string;
-    /** Added alongside the component's own classes, on the root. */
-    className?: string;
-    /** Props for each slot of the field frame, merged with the slot's own props rather than replacing them. */
-    slotProps?: FieldProps["slotProps"];
 }
 
 type OptionEntry<Option> = { kind: "option"; key: string; option: Option };
@@ -127,9 +121,10 @@ function defaultGetOptionKey(option: unknown): string {
     return defaultGetKey(option);
 }
 
-function inputProps(control: FieldControlProps) {
+function inputProps(control: FrameControlProps) {
     return {
         id: control.id,
+        "aria-label": control["aria-label"],
         "aria-labelledby": control["aria-labelledby"],
         "aria-describedby": control["aria-describedby"],
         "aria-invalid": control["aria-invalid"],
@@ -145,18 +140,8 @@ const fieldBoxSelector = ".dextinityField__box";
  */
 export const Combobox = forwardRef(function Combobox<Option, Multiple extends boolean = false>(
     {
-        label,
-        required,
-        helperText,
-        validationMessage,
-        state,
-        disabled = false,
-        readOnly = false,
-        loading = false,
-        size,
-        prefix,
-        suffix,
-        actions,
+        disabled: disabledProp,
+        readOnly: readOnlyProp,
         name,
         value,
         onChange,
@@ -173,12 +158,13 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
         labels: labelsProp,
         id,
         className,
-        slotProps,
-        ...restProps
+        style,
+        ...ariaProps
     }: ComboboxProps<Option, Multiple>,
     ref: ForwardedRef<HTMLInputElement>,
 ) {
     const labels = { ...defaultLabels, ...labelsProp };
+    const { disabled, readOnly, required } = useControlState(disabledProp, readOnlyProp);
     const isMultiple = multiple === true;
     const [open, setOpen] = useState(false);
     const [inputValue, setInputValue] = useState("");
@@ -293,25 +279,7 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
         );
 
     return (
-        <Field
-            {...restProps}
-            className={clsx(styles.root, className)}
-            data-multiple={isMultiple ? "" : undefined}
-            controlId={id}
-            label={label}
-            required={required}
-            helperText={helperText}
-            validationMessage={validationMessage}
-            state={state}
-            disabled={disabled}
-            readOnly={readOnly}
-            loading={loading || creating}
-            size={size}
-            prefix={prefix}
-            suffix={suffix}
-            actions={actions}
-            slotProps={slotProps}
-        >
+        <ControlFrame {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} pending={creating} className={className} style={style}>
             {(control) => (
                 <BaseCombobox.Root
                     items={grouped ? groupOptions(entries, entryGroup) : entries}
@@ -387,6 +355,6 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
                     </BaseCombobox.Portal>
                 </BaseCombobox.Root>
             )}
-        </Field>
+        </ControlFrame>
     );
 }) as <Option, Multiple extends boolean = false>(props: ComboboxProps<Option, Multiple> & RefAttributes<HTMLInputElement>) => ReactNode;

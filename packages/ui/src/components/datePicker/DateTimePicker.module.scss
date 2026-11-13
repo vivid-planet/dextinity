@@ -1,10 +1,6 @@
 @use "../../theme/forcedColors" as forced-colors;
 @use "dateField";
 
-.root {
-    min-inline-size: 0;
-}
-
 .dateInput {
     @include dateField.input;
 

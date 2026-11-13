@@ -1,7 +1,8 @@
 import { clsx } from "clsx";
-import { type ForwardedRef, forwardRef, type HTMLAttributes, type ReactNode, type RefAttributes, useCallback, useId, useRef } from "react";
+import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes, useCallback, useId, useRef } from "react";
 
-import { Field, type FieldBaseProps, type FieldOwnerState, type FieldProps } from "../field/Field";
+import { ControlFrame, type PureControlProps, useControlState } from "../field/ControlFrame";
+import type { FieldOwnerState } from "../field/Field";
 import { Icon } from "../icon/Icon";
 import styles from "./Picker.module.scss";
 
@@ -24,8 +25,7 @@ const defaultLabels: PickerLabels = {
     clear: "Clear",
 };
 
-export interface PickerProps<Value>
-    extends FieldBaseProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "prefix" | "onChange" | "defaultValue"> {
+export interface PickerProps<Value> extends PureControlProps {
     /** The chosen value, or `null` (or an empty list) when nothing is chosen. Always controlled. */
     value: Value | null;
     /** Shows the chosen value in the field, e.g. a page's name and path or a file's thumbnail and name. */
@@ -44,12 +44,6 @@ export interface PickerProps<Value>
     icon?: ReactNode;
     /** Texts of the clear button, for translation. */
     labels?: Partial<PickerLabels>;
-    /** The id of the button that opens the picker, used to connect it with the label. */
-    id?: string;
-    /** Added alongside the component's own classes, on the root. */
-    className?: string;
-    /** Props for each slot of the field frame, merged with the slot's own props rather than replacing them. */
-    slotProps?: FieldProps["slotProps"];
 }
 
 function isEmpty(value: unknown) {
@@ -62,18 +56,8 @@ function isEmpty(value: unknown) {
  */
 export const Picker = forwardRef(function Picker<Value>(
     {
-        label,
-        required,
-        helperText,
-        validationMessage,
-        state,
-        disabled = false,
-        readOnly = false,
-        loading,
-        size,
-        prefix,
-        suffix,
-        actions,
+        disabled: disabledProp,
+        readOnly: readOnlyProp,
         value,
         renderValue,
         onOpen,
@@ -83,13 +67,14 @@ export const Picker = forwardRef(function Picker<Value>(
         labels: labelsProp,
         id,
         className,
-        slotProps,
-        ...restProps
+        style,
+        ...ariaProps
     }: PickerProps<Value>,
     ref: ForwardedRef<HTMLButtonElement>,
 ) {
     const labels = { ...defaultLabels, ...labelsProp };
     const valueId = `${useId()}value`;
+    const { disabled, readOnly } = useControlState(disabledProp, readOnlyProp);
     const empty = isEmpty(value);
     const showsClear = onClear != null && !empty && !disabled && !readOnly;
     const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -106,26 +91,8 @@ export const Picker = forwardRef(function Picker<Value>(
     );
 
     return (
-        <Field
-            {...restProps}
-            className={clsx(styles.root, className)}
-            data-empty={empty ? "" : undefined}
-            controlId={id}
-            label={label}
-            required={required}
-            helperText={helperText}
-            validationMessage={validationMessage}
-            state={state}
-            disabled={disabled}
-            readOnly={readOnly}
-            loading={loading}
-            size={size}
-            prefix={prefix}
-            suffix={suffix}
-            actions={actions}
-            slotProps={slotProps}
-        >
-            {(control) => (
+        <ControlFrame {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} className={className} style={style}>
+            {(control, { nameId }) => (
                 <>
                     <button
                         ref={setTriggerRef}
@@ -133,7 +100,8 @@ export const Picker = forwardRef(function Picker<Value>(
                         id={control.id}
                         className={styles.trigger}
                         aria-haspopup="dialog"
-                        aria-labelledby={`${control["aria-labelledby"]} ${valueId}`}
+                        aria-labelledby={clsx(nameId, valueId)}
+                        data-readonly={readOnly ? "" : undefined}
                         aria-describedby={control["aria-describedby"]}
                         aria-invalid={control["aria-invalid"]}
                         aria-required={control["aria-required"]}
@@ -170,6 +138,6 @@ export const Picker = forwardRef(function Picker<Value>(
                     </span>
                 </>
             )}
-        </Field>
+        </ControlFrame>
     );
 }) as <Value>(props: PickerProps<Value> & RefAttributes<HTMLButtonElement>) => ReactNode;

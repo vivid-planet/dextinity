@@ -2,6 +2,18 @@ import { createContext, type ReactNode, useContext } from "react";
 
 import type { FieldControlProps, FieldOwnerState } from "./Field";
 
+/**
+ * What a control inside a `Field` reports to the field to show.
+ */
+export interface ControlReport {
+    /** An error the control found itself, e.g. typed text that is no valid date. Shown in place of the field's message, as an error. */
+    error?: string;
+    /** Shown at the end of the label row, e.g. a character count. */
+    counter?: string;
+    /** Shows the field as loading, e.g. while the control creates an option. */
+    pending?: boolean;
+}
+
 export interface FieldContextValue {
     control: FieldControlProps;
     ownerState: FieldOwnerState;
@@ -9,6 +21,8 @@ export interface FieldContextValue {
     setActionPending: (pending: boolean) => void;
     /** Content shown between the control and the message, e.g. a translation to accept or discard. */
     setActionContent: (content: ReactNode) => void;
+    /** Lets the control show its own error, counter, or loading state in the field. */
+    setControlReport: (report: ControlReport) => void;
 }
 
 export const FieldContext = createContext<FieldContextValue | null>(null);

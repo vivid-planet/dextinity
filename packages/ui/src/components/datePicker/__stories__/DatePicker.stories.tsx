@@ -2,25 +2,31 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
+import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { DatePicker, type DatePickerProps } from "../DatePicker";
 import datePickerTokens from "../DatePicker.tokens.scss?raw";
 import styles from "./DatePicker.stories.module.scss";
 
+type DatePickerStoryArgs = DatePickerProps & FieldStoryArgs;
+
 /** Keeps the story controlled: choosing updates the local value; changing the `value` control starts over from it. */
-function ControlledDatePicker(props: DatePickerProps) {
-    const [value, setValue] = useState(props.value);
+function ControlledDatePicker(args: DatePickerStoryArgs) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useState(control.value);
     return (
         <div className={styles.narrow}>
-            <DatePicker
-                {...props}
-                value={value}
-                onChange={(next) => {
-                    props.onChange(next);
-                    setValue(next);
-                }}
-            />
+            <StoryField field={field}>
+                <DatePicker
+                    {...control}
+                    value={value}
+                    onChange={(next) => {
+                        control.onChange(next);
+                        setValue(next);
+                    }}
+                />
+            </StoryField>
         </div>
     );
 }
@@ -38,24 +44,22 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
-        size: { control: "radio", options: ["small", "default", "large"] },
+        ...fieldArgTypes,
         locale: { control: "select", options: ["en-GB", "en-US", "de-AT", "fr-FR", "ja-JP"] },
         weekStartsOn: { control: "select", options: [0, 1, 2, 3, 4, 5, 6] },
-        actions: { control: false },
-        prefix: { control: false },
-        suffix: { control: false },
         labels: { control: false },
         className: { control: false },
-        slotProps: { control: false },
     },
-} satisfies Meta<typeof DatePicker>;
+} satisfies Meta<DatePickerStoryArgs>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
 /**
+ * Put it in a `Field` for the label, help, and validation message: `<Field label="Published on"><DatePicker … /></Field>`. Typed text that
+ * is no valid day shows its error in the field's message.
+ *
  * **Rules**
  * - Always controlled: `value` + `onChange`. The value is a day as `YYYY-MM-DD`, without time and time zone, so it is the same day
  *   for everyone; use `DateTimePicker` for an instant.
@@ -246,4 +250,26 @@ export const ReadOnly: Story = {
 
 export const Small: Story = {
     args: { size: "small" },
+};
+
+/**
+ * Without a `Field`, the date picker draws its own box and shows a typing error below it. Name it with `aria-label`.
+ */
+export const Standalone: Story = {
+    args: { locale: "en-GB" },
+    render: (args) => (
+        <div className={styles.narrow}>
+            <DatePicker {...splitFieldArgs(args).control} aria-label="Published on" />
+        </div>
+    ),
+    play: async ({ canvas }) => {
+        const input = canvas.getByRole("textbox", { name: "Published on" });
+        await userEvent.clear(input);
+        await userEvent.type(input, "next week{Enter}");
+        await expect(input).toHaveAttribute("aria-invalid", "true");
+        await expect(input).toHaveAccessibleDescription(/^Enter a date like/);
+        await userEvent.click(canvas.getByRole("button", { name: "Choose date" }));
+        await expect(await screen.findByRole("dialog", { name: "Published on" })).toBeInTheDocument();
+        await userEvent.keyboard("{Escape}");
+    },
 };

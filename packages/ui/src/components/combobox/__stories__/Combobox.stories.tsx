@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import { type ComponentType, useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
+import { type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import selectTokens from "../../select/Select.tokens.scss?raw";
@@ -53,27 +54,31 @@ async function searchCategories(query: string, { signal }: { signal: AbortSignal
 type CategoryComboboxProps<Multiple extends boolean> = Omit<
     ComboboxProps<Category, Multiple>,
     "value" | "onChange" | "loadOptions" | "getOptionLabel"
-> & {
-    initialValue: Multiple extends true ? Category[] : Category | null;
-    onChange: (value: unknown) => void;
-    loadOptions?: ComboboxProps<Category, Multiple>["loadOptions"];
-};
+> &
+    FieldStoryArgs & {
+        initialValue: Multiple extends true ? Category[] : Category | null;
+        onChange: (value: unknown) => void;
+        loadOptions?: ComboboxProps<Category, Multiple>["loadOptions"];
+    };
 
-/** Keeps the story controlled: choosing updates the local value. */
-function CategoryCombobox<Multiple extends boolean = false>({ initialValue, onChange, loadOptions, ...props }: CategoryComboboxProps<Multiple>) {
+/** Keeps the story controlled: choosing updates the local value. The `Field` around it adds the label, help, and validation message. */
+function CategoryCombobox<Multiple extends boolean = false>({ initialValue, onChange, loadOptions, ...args }: CategoryComboboxProps<Multiple>) {
+    const { field, control } = splitFieldArgs(args);
     const [value, setValue] = useState(initialValue);
     return (
         <div className={styles.narrow}>
-            <Combobox<Category, Multiple>
-                {...props}
-                value={value}
-                onChange={(next) => {
-                    onChange(next);
-                    setValue(next);
-                }}
-                loadOptions={loadOptions ?? searchCategories}
-                getOptionLabel={(category) => category.title}
-            />
+            <StoryField field={field}>
+                <Combobox<Category, Multiple>
+                    {...control}
+                    value={value}
+                    onChange={(next) => {
+                        onChange(next);
+                        setValue(next);
+                    }}
+                    loadOptions={loadOptions ?? searchCategories}
+                    getOptionLabel={(category) => category.title}
+                />
+            </StoryField>
         </div>
     );
 }
@@ -83,6 +88,8 @@ interface StoryArgs {
 }
 
 const meta: Meta<StoryArgs> = {
+    // The generic component takes its options' type from the story's wrapper
+    component: Combobox as ComponentType<StoryArgs>,
     title: "Building blocks/Form fields/Combobox",
     decorators: [themeDecorator],
     parameters: { tokens: `${selectTokens}\n${fieldTokens}`, popupRoom: { side: "below", minHeight: "400px" } },
@@ -94,6 +101,8 @@ export default meta;
 type Story = StoryObj<StoryArgs>;
 
 /**
+ * Put it in a `Field` for the label, help, and validation message: `<Field label="Category"><Combobox … /></Field>`.
+ *
  * **Rules**
  * - Use it when the options come from an API or are too many to load at once; for a fixed list, use a select with `searchable`.
  * - Always controlled: `value` + `onChange`; the value is the chosen option itself, so the field can show it before the options load.

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { SegmentedControl, type SegmentedControlOption, type SegmentedControlProps } from "../SegmentedControl";
@@ -27,18 +28,31 @@ const views: SegmentedControlOption[] = [
     { value: "gallery", label: "Gallery", icon: <Icon name="images" />, disabled: true },
 ];
 
-/** Keeps the story controlled: choosing updates the local value; the `value` arg sets the initial one. */
-function ControlledSegmentedControl(props: SegmentedControlProps) {
-    const [value, setValue] = useState(props.value);
-    return (
+type SegmentedControlStoryArgs = SegmentedControlProps & Pick<FieldStoryArgs, "label" | "helperText" | "validationMessage" | "state">;
+
+/**
+ * Keeps the story controlled: choosing updates the local value; the `value` arg sets the initial one. With a field arg, it puts the
+ * control in a `Field` with `layout="group"`.
+ */
+function ControlledSegmentedControl(args: SegmentedControlStoryArgs) {
+    const { field, control } = splitFieldArgs(args, ["size"]);
+    const [value, setValue] = useState(control.value);
+    const segmentedControl = (
         <SegmentedControl
-            {...props}
+            {...control}
             value={value}
             onChange={(next) => {
-                props.onChange(next);
+                control.onChange(next);
                 setValue(next);
             }}
         />
+    );
+    return hasFieldArgs(field) ? (
+        <StoryField field={field} layout="group">
+            {segmentedControl}
+        </StoryField>
+    ) : (
+        segmentedControl
     );
 }
 
@@ -55,13 +69,16 @@ const meta = {
     },
     argTypes: {
         size: { control: "radio", options: ["default", "small"] },
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
+        label: fieldArgTypes.label,
+        helperText: fieldArgTypes.helperText,
+        validationMessage: fieldArgTypes.validationMessage,
+        state: fieldArgTypes.state,
         options: { control: false },
         className: { control: false },
         slotProps: { control: false },
     },
     render: (args) => <ControlledSegmentedControl {...args} />,
-} satisfies Meta<typeof SegmentedControl>;
+} satisfies Meta<SegmentedControlStoryArgs>;
 
 export default meta;
 
@@ -127,11 +144,14 @@ export const Keyboard: Story = {
 };
 
 /**
+ * In a form, a `Field` with `layout="group"` adds the label and the message: `<Field label="Employment" layout="group" state="error"
+ * validationMessage="…"><SegmentedControl … /></Field>`.
+ *
  * **Rules**
  * - Say what is missing and how to fix it.
  */
 export const Error: Story = {
-    args: { state: "error", validationMessage: "Choose the type of employment." },
+    args: { "aria-label": undefined, label: "Employment", state: "error", validationMessage: "Choose the type of employment." },
     play: async ({ canvas }) => {
         const group = canvas.getByRole("radiogroup", { name: "Employment" });
         await expect(group).toHaveAttribute("aria-invalid", "true");
@@ -140,11 +160,11 @@ export const Error: Story = {
 };
 
 export const Warning: Story = {
-    args: { state: "warning", validationMessage: "Freelance jobs are not shown on the career page." },
+    args: { "aria-label": undefined, label: "Employment", state: "warning", validationMessage: "Freelance jobs are not shown on the career page." },
 };
 
 export const Success: Story = {
-    args: { state: "success", validationMessage: "Matches the job ad." },
+    args: { "aria-label": undefined, label: "Employment", state: "success", validationMessage: "Matches the job ad." },
 };
 
 /**

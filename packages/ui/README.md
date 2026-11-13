@@ -82,6 +82,15 @@ A change that makes a comment inaccurate updates it in the same change.
 
 Components are pure UI and always controlled: a value comes with its change handler (`value` + `onChange`, `checked` + `onChange`, `open` + `onOpenChange`), and there is no `defaultValue`. A controlled boolean is a required prop (`checked: boolean`), so a component never silently falls back to uncontrolled mode.
 
+### Form controls and `Field`
+
+Form controls are pure controls, like `Input`: `Select`, `DatePicker`, `Textarea`, `RadioGroup`, and the others have no `label`, `required`, `helperText`, `validationMessage`, or `state` props. `Field` holds all of that and the control follows it through `useFieldContext()`: the field's id, `aria-labelledby`, `aria-describedby`, `required`, `disabled`, `readOnly`, and invalid state. Usage: `<Field label="Location" required helperText="…" validationMessage="…"><Select … /></Field>`.
+
+- **Box controls** (e.g. `Select`, `DatePicker`, `NumberInput`, `Textarea`, `RichTextEditor`) render through the internal `ControlFrame`: inside a `Field` they take the field's box; on their own they draw a box without a label and take their name from `aria-label` or `aria-labelledby`. A control that finds an error itself, such as a date picker with typed text that is no date, reports it with `setControlReport`, and the field shows it as its message. `RichTextEditor` needs `<Field layout="stacked">`.
+- **Group controls** (e.g. `RadioGroup`, `CheckboxGroup`, `SegmentedControl`, `Slider`, `FileUpload`, `FocalPointPicker`) draw their own frame and go in `<Field layout="group">`, which draws no box and renders the label as the name of the control's group element (`useGroupControl`). On their own, `aria-label` names the group.
+- **A single `Checkbox` or `Switch`** keeps its text as its name. For a validation message, it goes in a `<Field layout="group">` without `label`.
+- **`helpText` vs. `helperText`.** `helperText` is what everyone needs to fill in a field, e.g. the expected format; it is always visible below the field. `helpText` (on `Field` and `FormLabel`) is background most users don't need; it sits behind a focusable info button right after the `<label>` element, shows in a tooltip on hover, focus, and tap, and describes the control through `aria-describedby`. The button's name comes from `labels.helpText` ("More information"), its icon from `slots.helpIcon` and `slotProps.helpIcon`.
+
 ### Text
 
 Component source contains no literal text (`react/jsx-no-literals`): every visible or accessible string comes from props, so the consuming application translates it. Where a component needs built-in strings (e.g. "Close"), it takes a `labels` prop with English defaults.

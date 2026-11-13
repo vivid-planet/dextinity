@@ -1,11 +1,11 @@
 // The values match the label of `Field`, so a `FormLabel` above a custom control looks like the label of a field.
 @mixin tokens {
-    // Gap between the label and its required marker or helper icon
+    // Gap between the label and its required marker or help button
     --dextinity-form-label-gap: var(--dextinity-space-1);
 
     // Size of the label
     --dextinity-form-label-font-size: var(--dextinity-field-label-font-size);
-    // Line height of the label; also the height of the helper icon's box
+    // Line height of the label
     --dextinity-form-label-font-line-height: calc(var(--dextinity-field-label-font-size) * 1.3);
     // Weight of the label
     --dextinity-form-label-font-weight: var(--dextinity-field-label-font-weight);
@@ -17,8 +17,12 @@
     // Color of the required marker
     --dextinity-form-label-required-color: var(--dextinity-field-required-color);
 
-    // Color of the helper icon next to the label
-    --dextinity-form-label-helper-icon-color: var(--dextinity-color-text-subtle);
-    // Size of the helper icon next to the label
-    --dextinity-form-label-helper-icon-size: var(--dextinity-field-icon-size);
+    // Size of the info button after the label that shows the help text; also used by `Field`
+    --dextinity-form-label-help-button-size: var(--dextinity-density-icon-button-size-xsmall);
+    // Color of the info icon after the label
+    --dextinity-form-label-help-icon-color: var(--dextinity-color-text-subtle);
+    // Color of the info icon while hovered or while its help text is shown
+    --dextinity-form-label-help-icon-color-hover: var(--dextinity-color-text);
+    // Size of the info icon after the label
+    --dextinity-form-label-help-icon-size: var(--dextinity-icon-size-xsmall);
 }

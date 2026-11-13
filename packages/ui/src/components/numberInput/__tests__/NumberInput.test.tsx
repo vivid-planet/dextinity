@@ -1,47 +1,43 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { Field } from "../../field/Field";
 import { NumberInput } from "../NumberInput";
 
 afterEach(cleanup);
 
 describe("NumberInput", () => {
-    it("connects the input to the label and the message, and shows the value for the locale", () => {
-        const { container } = render(
-            <NumberInput
-                label="Price"
-                value={1234.5}
-                onChange={vi.fn()}
-                decimals={2}
-                locale="de-DE"
-                suffix="€"
-                state="error"
-                validationMessage="Too high."
-            />,
+    it("follows the surrounding field and shows the value for the locale", () => {
+        render(
+            <Field label="Price" suffix="€" required state="error" validationMessage="Too high.">
+                <NumberInput value={1234.5} onChange={vi.fn()} decimals={2} locale="de-DE" />
+            </Field>,
         );
 
-        const root = container.firstElementChild as HTMLElement;
-        expect(root.className).toContain("dextinityNumberInput");
-        expect(root.dataset.steppers).toBe("");
         const input = screen.getByRole("textbox", { name: "Price" });
         expect(input).toHaveValue("1.234,50");
         expect(input).toHaveAccessibleDescription("Too high.");
         expect(input.getAttribute("aria-invalid")).toBe("true");
+        expect(input).toBeRequired();
+        expect(input.closest("[data-steppers]")).not.toBeNull();
         expect(screen.getByRole("button", { name: "Increase" })).toBeInTheDocument();
     });
 
-    it("hides the steppers when read-only", () => {
-        const { container } = render(<NumberInput label="Price" value={null} onChange={vi.fn()} readOnly labels={{ increment: "Plus" }} />);
+    it("hides the steppers when the field is read-only", () => {
+        render(
+            <Field label="Price" readOnly>
+                <NumberInput value={null} onChange={vi.fn()} labels={{ increment: "Plus" }} />
+            </Field>,
+        );
 
-        expect((container.firstElementChild as HTMLElement).dataset.steppers).toBeUndefined();
         expect(screen.queryByRole("button")).toBeNull();
         expect(screen.getByRole("textbox", { name: "Price" })).toHaveValue("");
     });
 
-    it("takes all texts for assistive technology from labels", () => {
+    it("takes its name from aria-label and all texts for assistive technology from labels on its own", () => {
         render(
             <NumberInput
-                label="Preis"
+                aria-label="Preis"
                 value={1}
                 onChange={vi.fn()}
                 labels={{ increment: "Erhöhen", decrement: "Verringern", roleDescription: "Zahlenfeld" }}

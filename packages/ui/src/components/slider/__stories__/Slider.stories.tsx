@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Slider, type SliderProps } from "../Slider";
@@ -12,18 +13,31 @@ const iconOptions = {
     Gallery: <Icon name="images" />,
 };
 
-/** Keeps the story controlled: moving updates the local value; the `value` arg sets the initial one. */
-function ControlledSlider(props: SliderProps) {
-    const [value, setValue] = useState(props.value);
-    return (
+type SliderStoryArgs = SliderProps & Pick<FieldStoryArgs, "label" | "helperText" | "validationMessage" | "state">;
+
+/**
+ * Keeps the story controlled: moving updates the local value; the `value` arg sets the initial one. With a field arg, it puts the slider
+ * in a `Field` with `layout="group"`.
+ */
+function ControlledSlider(args: SliderStoryArgs) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useState(control.value);
+    const slider = (
         <Slider
-            {...props}
+            {...control}
             value={value}
             onChange={(next) => {
-                props.onChange(next);
+                control.onChange(next);
                 setValue(next);
             }}
         />
+    );
+    return hasFieldArgs(field) ? (
+        <StoryField field={field} layout="group">
+            {slider}
+        </StoryField>
+    ) : (
+        slider
     );
 }
 
@@ -38,14 +52,17 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
+        label: fieldArgTypes.label,
+        helperText: fieldArgTypes.helperText,
+        validationMessage: fieldArgTypes.validationMessage,
+        state: fieldArgTypes.state,
         startIcon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },
         endIcon: { control: "select", options: Object.keys(iconOptions), mapping: iconOptions },
         className: { control: false },
         slotProps: { control: false },
     },
     render: (args) => <ControlledSlider {...args} />,
-} satisfies Meta<typeof Slider>;
+} satisfies Meta<SliderStoryArgs>;
 
 export default meta;
 
@@ -55,7 +72,7 @@ type Story = StoryObj<typeof meta>;
  * **Rules**
  *
  * - Always controlled: `value` + `onChange`.
- * - Name the slider with `aria-label`; it has no visible label.
+ * - On its own, name the slider with `aria-label`; in a form, put it in a `Field` with `layout="group"`, whose label names it.
  */
 export const Default: Story = {};
 
@@ -87,7 +104,7 @@ export const Keyboard: Story = {
 };
 
 /**
- * A visible label above the slider, e.g. in a form.
+ * A visible label above the slider, e.g. in a form: `<Field label="Opacity" layout="group"><Slider … /></Field>`.
  */
 export const WithLabel: Story = {
     args: { "aria-label": undefined, label: "Opacity" },

@@ -141,17 +141,18 @@ function JobAdFields() {
                     <Field className={styles.full} label="Title" required helperText="Use gender-inclusive wording.">
                         <Input name="title" value={title} onChange={(event) => setTitle(event.target.value)} />
                     </Field>
-                    <Select
-                        name="location"
-                        label="Location"
-                        value={location}
-                        onChange={setLocation}
-                        options={[
-                            { value: "vienna", label: "Vienna" },
-                            { value: "graz", label: "Graz" },
-                            { value: "remote", label: "Remote" },
-                        ]}
-                    />
+                    <Field label="Location">
+                        <Select
+                            name="location"
+                            value={location}
+                            onChange={setLocation}
+                            options={[
+                                { value: "vienna", label: "Vienna" },
+                                { value: "graz", label: "Graz" },
+                                { value: "remote", label: "Remote" },
+                            ]}
+                        />
+                    </Field>
                     <Field label="Salary from" suffix="€ gross / year" helperText="Required in Austria.">
                         <Input name="salary" value={salary} onChange={(event) => setSalary(event.target.value)} />
                     </Field>
@@ -161,15 +162,9 @@ function JobAdFields() {
                 <div className={styles.sectionHead}>
                     <h3>Description</h3>
                 </div>
-                <Textarea
-                    name="teaser"
-                    label="Teaser"
-                    rows={3}
-                    value={teaser}
-                    onChange={(event) => setTeaser(event.target.value)}
-                    showCount
-                    maxLength={200}
-                />
+                <Field label="Teaser">
+                    <Textarea name="teaser" rows={3} value={teaser} onChange={(event) => setTeaser(event.target.value)} showCount maxLength={200} />
+                </Field>
             </section>
         </div>
     );

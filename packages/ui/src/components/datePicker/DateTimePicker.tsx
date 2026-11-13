@@ -1,7 +1,8 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type KeyboardEvent, useCallback, useId, useRef, useState } from "react";
+import { forwardRef, type KeyboardEvent, useCallback, useId, useRef, useState } from "react";
 
-import { Field, type FieldBaseProps, type FieldOwnerState, type FieldProps } from "../field/Field";
+import { ControlFrame, type PureControlProps, useControlState } from "../field/ControlFrame";
+import type { FieldOwnerState } from "../field/Field";
 import { Icon } from "../icon/Icon";
 import { CalendarPopover } from "./CalendarPopover";
 import { type DatePickerCalendarProps, type DatePickerLabels, defaultDatePickerLabels } from "./DatePicker";
@@ -32,11 +33,7 @@ export type DateTimePickerOwnerState = FieldOwnerState & {
     clearable: boolean;
 };
 
-export interface DateTimePickerProps
-    extends
-        FieldBaseProps,
-        DatePickerCalendarProps,
-        Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "prefix" | "onChange" | "defaultValue"> {
+export interface DateTimePickerProps extends DatePickerCalendarProps, PureControlProps {
     /** Field name. Describes the data, not the UI. */
     name: string;
     /**
@@ -58,12 +55,6 @@ export interface DateTimePickerProps
     timeStep?: number;
     /** Texts of the inputs, the buttons, and the calendar, for translation. */
     labels?: Partial<DateTimePickerLabels>;
-    /** The id of the date input, used to connect it with the label. */
-    id?: string;
-    /** Added alongside the component's own classes, on the root. */
-    className?: string;
-    /** Props for each slot of the field frame, merged with the slot's own props rather than replacing them. */
-    slotProps?: FieldProps["slotProps"];
 }
 
 /**
@@ -73,18 +64,8 @@ export interface DateTimePickerProps
  */
 export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(function DateTimePicker(
     {
-        label,
-        required,
-        helperText,
-        validationMessage,
-        state,
-        disabled = false,
-        readOnly = false,
-        loading,
-        size,
-        prefix,
-        suffix,
-        actions,
+        disabled: disabledProp,
+        readOnly: readOnlyProp,
         name,
         value,
         onChange,
@@ -99,8 +80,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         labels: labelsProp,
         id,
         className,
-        slotProps,
-        ...restProps
+        style,
+        ...ariaProps
     },
     ref,
 ) {
@@ -126,6 +107,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
 
     const current = splitDateTime(value);
     const time = current?.time ?? pendingTime;
+    const { disabled, readOnly } = useControlState(disabledProp, readOnlyProp);
     const editable = !disabled && !readOnly;
 
     const change = (date: IsoDate | null, nextTime: TimeOfDay | null) => {
@@ -181,26 +163,8 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     };
 
     return (
-        <Field
-            {...restProps}
-            className={clsx(styles.root, className)}
-            data-clearable={clearable ? "" : undefined}
-            controlId={id}
-            label={label}
-            required={required}
-            helperText={helperText}
-            validationMessage={draftError ?? validationMessage}
-            state={draftError != null ? "error" : state}
-            disabled={disabled}
-            readOnly={readOnly}
-            loading={loading}
-            size={size}
-            prefix={prefix}
-            suffix={suffix}
-            actions={actions}
-            slotProps={slotProps}
-        >
-            {(control) => (
+        <ControlFrame {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} error={draftError} className={className} style={style}>
+            {(control, { nameId }) => (
                 <>
                     <input
                         {...control}
@@ -226,7 +190,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         triggerClassName={styles.trigger}
                         disabled={!editable}
                         finalFocus={inputRef}
-                        labelledBy={control["aria-labelledby"]}
+                        labelledBy={nameId}
                         start={current?.date ?? null}
                         end={null}
                         range={false}
@@ -256,7 +220,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         placeholder={timePlaceholder}
                         disabled={control.disabled}
                         readOnly={control.readOnly}
-                        aria-labelledby={`${control["aria-labelledby"]} ${timeLabelId}`}
+                        aria-labelledby={clsx(nameId, timeLabelId)}
                         aria-describedby={control["aria-describedby"]}
                         aria-invalid={control["aria-invalid"]}
                         onChange={timeDraft.onChange}
@@ -278,7 +242,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         triggerClassName={styles.trigger}
                         disabled={!editable}
                         finalFocus={timeInputRef}
-                        labelledBy={`${control["aria-labelledby"]} ${timeLabelId}`}
+                        labelledBy={clsx(nameId, timeLabelId)}
                     />
                     <input type="hidden" name={name} value={current == null ? "" : joinDateTime(current.date, current.time)} />
                     {clearable && editable && current != null && (
@@ -298,6 +262,6 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                     )}
                 </>
             )}
-        </Field>
+        </ControlFrame>
     );
 });

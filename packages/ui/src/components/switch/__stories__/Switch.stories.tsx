@@ -2,23 +2,37 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Switch, type SwitchProps } from "../Switch";
 import switchTokens from "../Switch.tokens.scss?raw";
 import styles from "./Switch.stories.module.scss";
 
-/** Keeps the story controlled: toggling updates the local state; the `checked` arg sets the initial state. */
-function ControlledSwitch(props: SwitchProps) {
-    const [checked, setChecked] = useState(props.checked);
-    return (
+type SwitchStoryArgs = SwitchProps & Pick<FieldStoryArgs, "required" | "helperText" | "validationMessage" | "state">;
+
+/**
+ * Keeps the story controlled: toggling updates the local state; the `checked` arg sets the initial state. With a field arg, it puts the
+ * switch in a `Field` with `layout="group"`.
+ */
+function ControlledSwitch(args: SwitchStoryArgs) {
+    const { field, control } = splitFieldArgs(args, ["size"]);
+    const [checked, setChecked] = useState(control.checked);
+    const toggle = (
         <Switch
-            {...props}
+            {...control}
             checked={checked}
             onChange={(next) => {
-                props.onChange(next);
+                control.onChange(next);
                 setChecked(next);
             }}
         />
+    );
+    return hasFieldArgs(field) ? (
+        <StoryField field={field} layout="group">
+            {toggle}
+        </StoryField>
+    ) : (
+        toggle
     );
 }
 
@@ -34,12 +48,15 @@ const meta = {
     },
     argTypes: {
         size: { control: "radio", options: ["default", "small"] },
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
+        required: fieldArgTypes.required,
+        helperText: fieldArgTypes.helperText,
+        validationMessage: fieldArgTypes.validationMessage,
+        state: fieldArgTypes.state,
         className: { control: false },
         slotProps: { control: false },
     },
     render: (args) => <ControlledSwitch {...args} />,
-} satisfies Meta<typeof Switch>;
+} satisfies Meta<SwitchStoryArgs>;
 
 export default meta;
 
@@ -141,7 +158,8 @@ export const SettingsList: Story = {
 };
 
 /**
- * A switch that must be on, e.g. to accept terms, shows a star after the label.
+ * A switch that must be on, e.g. to accept terms, goes in a `Field` with `required` and `layout="group"`; without a field label, the star
+ * follows the switch's text.
  */
 export const Required: Story = {
     args: { required: true, children: "Accept the terms" },
@@ -151,6 +169,8 @@ export const Required: Story = {
 };
 
 /**
+ * The field's message sits below the switch and describes it: `<Field layout="group" state="error" validationMessage="…"><Switch>…</Switch></Field>`.
+ *
  * **Rules**
  * - Say what is missing and how to fix it.
  */

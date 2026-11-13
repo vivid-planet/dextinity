@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
+import { type ComponentType, useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { landscapeImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Dialog } from "../../dialog/Dialog";
+import { Field } from "../../field/Field";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Icon } from "../../icon/Icon";
 import { type TreeNode, TreeView } from "../../treeView/TreeView";
@@ -55,7 +56,7 @@ interface StoryArgs {
 }
 
 /** An application's page picker: the field opens a dialog with the page tree. */
-function PagePicker({ onChange, initialPageId = null, ...props }: StoryArgs & { initialPageId?: string | null }) {
+function PagePicker({ onChange, initialPageId = null, ...fieldProps }: StoryArgs & { initialPageId?: string | null }) {
     const [page, setPage] = useState<TreeNode | null>(initialPageId ? (findPage(pages, initialPageId) ?? null) : null);
     const [open, setOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<string | undefined>(page?.id);
@@ -67,25 +68,25 @@ function PagePicker({ onChange, initialPageId = null, ...props }: StoryArgs & { 
 
     return (
         <div className={styles.narrow}>
-            <Picker<TreeNode>
-                {...props}
-                label="Link target"
-                placeholder="Choose a page"
-                value={page}
-                renderValue={(value) => (
-                    <>
-                        <Icon name="file" />
-                        {value.label}
-                        <span className={styles.path}>{value.path}</span>
-                    </>
-                )}
-                onOpen={() => {
-                    setSelectedId(page?.id);
-                    setOpen(true);
-                }}
-                onClear={props.required ? undefined : () => choose(null)}
-                icon={<Icon name="file" />}
-            />
+            <Field {...fieldProps} label="Link target">
+                <Picker<TreeNode>
+                    placeholder="Choose a page"
+                    value={page}
+                    renderValue={(value) => (
+                        <>
+                            <Icon name="file" />
+                            {value.label}
+                            <span className={styles.path}>{value.path}</span>
+                        </>
+                    )}
+                    onOpen={() => {
+                        setSelectedId(page?.id);
+                        setOpen(true);
+                    }}
+                    onClear={fieldProps.required ? undefined : () => choose(null)}
+                    icon={<Icon name="file" />}
+                />
+            </Field>
             <Dialog
                 open={open}
                 onOpenChange={setOpen}
@@ -121,6 +122,8 @@ function PagePicker({ onChange, initialPageId = null, ...props }: StoryArgs & { 
 }
 
 const meta: Meta<StoryArgs> = {
+    // The generic component takes its value's type from the story's wrapper
+    component: Picker as unknown as ComponentType<StoryArgs>,
     title: "Building blocks/Form fields/Picker",
     decorators: [themeDecorator],
     parameters: { tokens: `${pickerTokens}\n${fieldTokens}` },
@@ -133,6 +136,8 @@ export default meta;
 type Story = StoryObj<StoryArgs>;
 
 /**
+ * Put it in a `Field` for the label, help, and validation message: `<Field label="Link target"><Picker … /></Field>`.
+ *
  * **Rules**
  * - Use it for values chosen in a picker the application provides, e.g. a dialog with the page tree or the assets; for a list of
  *   options, use a select or combobox.
@@ -179,20 +184,20 @@ export const File: Story = {
         const file: Asset = { id: "1", name: "mountain-lake.jpg", url: landscapeImage };
         return (
             <div className={styles.narrow}>
-                <Picker<Asset>
-                    {...args}
-                    label="Image"
-                    value={file}
-                    renderValue={(value) => (
-                        <>
-                            <img className={styles.thumbnail} src={value.url} alt="" />
-                            {value.name}
-                        </>
-                    )}
-                    onOpen={fn()}
-                    onClear={fn()}
-                    icon={<Icon name="image" />}
-                />
+                <Field label="Image" disabled={args.disabled} readOnly={args.readOnly} required={args.required}>
+                    <Picker<Asset>
+                        value={file}
+                        renderValue={(value) => (
+                            <>
+                                <img className={styles.thumbnail} src={value.url} alt="" />
+                                {value.name}
+                            </>
+                        )}
+                        onOpen={fn()}
+                        onClear={fn()}
+                        icon={<Icon name="image" />}
+                    />
+                </Field>
             </div>
         );
     },
@@ -202,16 +207,9 @@ export const Error: Story = {
     args: { required: true },
     render: (args) => (
         <div className={styles.narrow}>
-            <Picker
-                {...args}
-                label="Link target"
-                placeholder="Choose a page"
-                value={null}
-                renderValue={() => null}
-                onOpen={fn()}
-                state="error"
-                validationMessage="Choose the page the link opens."
-            />
+            <Field label="Link target" required={args.required} state="error" validationMessage="Choose the page the link opens.">
+                <Picker placeholder="Choose a page" value={null} renderValue={() => null} onOpen={fn()} />
+            </Field>
         </div>
     ),
     play: async ({ canvas }) => {

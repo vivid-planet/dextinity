@@ -3,6 +3,7 @@ import { type CSSProperties, type ReactNode, useRef, useState } from "react";
 import { Button } from "../../../components/button/Button";
 import { Checkbox } from "../../../components/checkbox/Checkbox";
 import { Chip } from "../../../components/chip/Chip";
+import { Field } from "../../../components/field/Field";
 import { Icon } from "../../../components/icon/Icon";
 import { Link } from "../../../components/link/Link";
 import { Slider, type SliderProps } from "../../../components/slider/Slider";
@@ -93,15 +94,15 @@ type AxisSliderProps = Pick<SliderProps, "value" | "onChange" | "min" | "max" | 
 function AxisSlider({ label, formattedValue, track, ...sliderProps }: AxisSliderProps) {
     return (
         <div className={styles.axisSlider}>
-            <Slider
-                {...sliderProps}
-                label={label}
-                className={styles.slider}
-                slotProps={{
-                    track: { className: styles.gradientTrack, style: { background: track } },
-                    indicator: { className: styles.gradientIndicator },
-                }}
-            />
+            <Field label={label} layout="group" className={styles.slider}>
+                <Slider
+                    {...sliderProps}
+                    slotProps={{
+                        track: { className: styles.gradientTrack, style: { background: track } },
+                        indicator: { className: styles.gradientIndicator },
+                    }}
+                />
+            </Field>
             <output className={styles.axisValue} aria-hidden>
                 {formattedValue}
             </output>

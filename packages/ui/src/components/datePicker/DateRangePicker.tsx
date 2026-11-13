@@ -1,7 +1,8 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type KeyboardEvent, useCallback, useId, useRef, useState } from "react";
+import { forwardRef, type KeyboardEvent, useCallback, useId, useRef, useState } from "react";
 
-import { Field, type FieldBaseProps, type FieldOwnerState, type FieldProps } from "../field/Field";
+import { ControlFrame, type PureControlProps, useControlState } from "../field/ControlFrame";
+import type { FieldOwnerState } from "../field/Field";
 import { Icon } from "../icon/Icon";
 import { CalendarPopover } from "./CalendarPopover";
 import { type DatePickerCalendarProps, type DatePickerLabels, defaultDatePickerLabels } from "./DatePicker";
@@ -37,11 +38,7 @@ export type DateRangePickerOwnerState = FieldOwnerState & {
     clearable: boolean;
 };
 
-export interface DateRangePickerProps
-    extends
-        FieldBaseProps,
-        DatePickerCalendarProps,
-        Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "prefix" | "onChange" | "defaultValue"> {
+export interface DateRangePickerProps extends DatePickerCalendarProps, PureControlProps {
     /** Field name. Describes the data, not the UI. */
     name: string;
     /** The range, or `null` for none. Always controlled. */
@@ -58,12 +55,6 @@ export interface DateRangePickerProps
     months?: 1 | 2;
     /** Texts of the inputs, the buttons, and the calendar, for translation. */
     labels?: Partial<DateRangePickerLabels>;
-    /** The id of the start input, used to connect it with the label. */
-    id?: string;
-    /** Added alongside the component's own classes, on the root. */
-    className?: string;
-    /** Props for each slot of the field frame, merged with the slot's own props rather than replacing them. */
-    slotProps?: FieldProps["slotProps"];
 }
 
 function toRange(start: IsoDate | null, end: IsoDate | null): DateRange | null {
@@ -80,18 +71,8 @@ function toRange(start: IsoDate | null, end: IsoDate | null): DateRange | null {
  */
 export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(function DateRangePicker(
     {
-        label,
-        required,
-        helperText,
-        validationMessage,
-        state,
-        disabled = false,
-        readOnly = false,
-        loading,
-        size,
-        prefix,
-        suffix,
-        actions,
+        disabled: disabledProp,
+        readOnly: readOnlyProp,
         name,
         value,
         onChange,
@@ -105,8 +86,8 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
         labels: labelsProp,
         id,
         className,
-        slotProps,
-        ...restProps
+        style,
+        ...ariaProps
     },
     ref,
 ) {
@@ -132,6 +113,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
 
     const start = value != null && isIsoDate(value.start) ? value.start : null;
     const end = value != null && isIsoDate(value.end) ? value.end : null;
+    const { disabled, readOnly } = useControlState(disabledProp, readOnlyProp);
     const editable = !disabled && !readOnly;
 
     const readDay = (text: string, apply: (day: IsoDate | null) => void) => {
@@ -159,26 +141,8 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
     };
 
     return (
-        <Field
-            {...restProps}
-            className={clsx(styles.root, className)}
-            data-clearable={clearable ? "" : undefined}
-            controlId={id}
-            label={label}
-            required={required}
-            helperText={helperText}
-            validationMessage={draftError ?? validationMessage}
-            state={draftError != null ? "error" : state}
-            disabled={disabled}
-            readOnly={readOnly}
-            loading={loading}
-            size={size}
-            prefix={prefix}
-            suffix={suffix}
-            actions={actions}
-            slotProps={slotProps}
-        >
-            {(control) => (
+        <ControlFrame {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} error={draftError} className={className} style={style}>
+            {(control, { nameId }) => (
                 <>
                     <span id={startLabelId} hidden>
                         {labels.start}
@@ -195,7 +159,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                         className={styles.input}
                         value={startDraft.text}
                         placeholder={placeholder}
-                        aria-labelledby={`${control["aria-labelledby"]} ${startLabelId}`}
+                        aria-labelledby={clsx(nameId, startLabelId)}
                         onChange={startDraft.onChange}
                         onBlur={startDraft.commit}
                         onKeyDown={onKeyDown(startDraft)}
@@ -210,7 +174,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                         placeholder={placeholder}
                         disabled={control.disabled}
                         readOnly={control.readOnly}
-                        aria-labelledby={`${control["aria-labelledby"]} ${endLabelId}`}
+                        aria-labelledby={clsx(nameId, endLabelId)}
                         aria-describedby={control["aria-describedby"]}
                         aria-invalid={control["aria-invalid"]}
                         aria-required={control["aria-required"]}
@@ -247,7 +211,7 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                         triggerClassName={styles.trigger}
                         disabled={!editable}
                         finalFocus={inputRef}
-                        labelledBy={control["aria-labelledby"]}
+                        labelledBy={nameId}
                         start={pendingStart ?? start}
                         end={pendingStart == null ? end : null}
                         range
@@ -272,6 +236,6 @@ export const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps
                     />
                 </>
             )}
-        </Field>
+        </ControlFrame>
     );
 });

@@ -1,28 +1,15 @@
-@use "../field/groupFrame";
 @use "../../theme/forcedColors" as forced-colors;
 
 .root {
-    @include groupFrame.root(file-upload);
-}
-
-.labelRow {
-    @include groupFrame.label-row;
-}
-
-.label {
-    @include groupFrame.label(file-upload);
-}
-
-.required {
-    @include groupFrame.required(file-upload);
-}
-
-.message {
-    @include groupFrame.message(file-upload);
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-file-upload-gap);
+    min-inline-size: 0;
+    font-family: var(--dextinity-font-family-text);
 }
 
 .dropzone {
-    .root[data-state="error"] > & > :global(.dextinityDropzone__zone) {
+    .root[data-invalid] > & > :global(.dextinityDropzone__zone) {
         outline: var(--dextinity-file-upload-error-outline);
     }
 }

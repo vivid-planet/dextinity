@@ -44,16 +44,6 @@
     // Color of the required marker after the label
     --dextinity-switch-required-color: var(--dextinity-color-danger-text);
 
-    // Gap between the switch and its validation message
-    --dextinity-switch-message-gap: var(--dextinity-space-1);
-    // Text size of the validation message
-    --dextinity-switch-message-font-size: var(--dextinity-typography-small-size);
-    // Text color of an error message
-    --dextinity-switch-message-color-error: var(--dextinity-color-danger-text);
-    // Text color of a warning message
-    --dextinity-switch-message-color-warning: var(--dextinity-color-warning-text);
-    // Text color of a success message
-    --dextinity-switch-message-color-success: var(--dextinity-color-success-text);
 }
 
 @mixin high-contrast-tokens {

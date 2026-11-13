@@ -4,22 +4,10 @@ import { Superscript } from "@tiptap/extension-superscript";
 import { Placeholder } from "@tiptap/extensions";
 import { type Editor, EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
-import { clsx } from "clsx";
-import {
-    type CSSProperties,
-    forwardRef,
-    Fragment,
-    type HTMLAttributes,
-    memo,
-    type ReactNode,
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from "react";
+import { type CSSProperties, forwardRef, Fragment, memo, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "../field/Field";
+import { ControlFrame, type FrameControlProps, type PureControlProps } from "../field/ControlFrame";
+import type { FieldOwnerState } from "../field/Field";
 import { Icon } from "../icon/Icon";
 import type { IconName } from "../icon/iconRegistry";
 import { MenuCheckboxItem } from "../menu/MenuCheckboxItem";
@@ -213,10 +201,7 @@ const scriptIcons: Record<ScriptFormat, IconName> = { subscript: "subscript", su
 
 const scriptShortcuts: Record<ScriptFormat, string> = { subscript: "⌘,", superscript: "⌘." };
 
-export interface RichTextEditorProps
-    extends
-        Omit<FieldBaseProps, "prefix" | "suffix">,
-        Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "prefix" | "onChange" | "defaultValue"> {
+export interface RichTextEditorProps extends PureControlProps {
     /** Field name. Describes the data, not the UI. */
     name: string;
     /** The content as HTML. Always controlled. Only the enabled formatting is kept; everything else is reduced to text. */
@@ -266,12 +251,6 @@ export interface RichTextEditorProps
     onRequestLink?: (currentHref: string | null) => string | null | Promise<string | null>;
     /** Texts of the toolbar, for translation. */
     labels?: Partial<RichTextEditorLabels>;
-    /** The id of the editable area, used to connect it with the label. */
-    id?: string;
-    /** Added alongside the component's own classes, on the root. */
-    className?: string;
-    /** Props for each slot of the field frame, merged with the slot's own props rather than replacing them. */
-    slotProps?: FieldProps["slotProps"];
 }
 
 interface EditorConfig {
@@ -742,7 +721,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
 }, areToolbarPropsEqual);
 
 interface RichTextEditorBodyProps {
-    control: FieldControlProps;
+    control: FrameControlProps;
     config: EditorConfig;
     value: string;
     onChange: (html: string) => void;
@@ -801,6 +780,7 @@ function RichTextEditorBody({
 
     const {
         id: controlId,
+        "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
         "aria-invalid": ariaInvalid,
@@ -813,6 +793,7 @@ function RichTextEditorBody({
             class: styles.content,
             role: "textbox",
             "aria-multiline": "true",
+            "aria-label": ariaLabel,
             "aria-labelledby": ariaLabelledBy,
             "aria-describedby": ariaDescribedBy,
             "aria-invalid": ariaInvalid,
@@ -823,7 +804,7 @@ function RichTextEditorBody({
             tabindex: disabled ? "-1" : "0",
         };
         return Object.fromEntries(Object.entries(entries).flatMap(([key, entry]) => (entry === undefined ? [] : [[key, String(entry)]])));
-    }, [controlId, ariaLabelledBy, ariaDescribedBy, ariaInvalid, ariaRequired, ariaBusy, readOnly, disabled]);
+    }, [controlId, ariaLabel, ariaLabelledBy, ariaDescribedBy, ariaInvalid, ariaRequired, ariaBusy, readOnly, disabled]);
 
     useEffect(() => {
         editor?.setOptions({ editorProps: { attributes } });
@@ -908,16 +889,8 @@ function RichTextEditorBody({
  */
 export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(function RichTextEditor(
     {
-        label,
-        required,
-        helperText,
-        validationMessage,
-        state,
-        disabled = false,
-        readOnly = false,
-        loading,
-        size,
-        actions,
+        disabled: disabledProp,
+        readOnly: readOnlyProp,
         name,
         value,
         onChange,
@@ -934,9 +907,8 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
         labels: labelsProp,
         id,
         className,
-        slotProps,
         style,
-        ...restProps
+        ...ariaProps
     },
     ref,
 ) {
@@ -953,42 +925,24 @@ export const RichTextEditor = forwardRef<HTMLDivElement, RichTextEditorProps>(fu
     };
 
     return (
-        <Field
-            {...restProps}
-            ref={ref}
-            style={{ ...style, "--dextinity-rich-text-editor-min-rows": minRows } as CSSProperties}
-            className={clsx(styles.root, className)}
-            layout="stacked"
-            controlId={id}
-            label={label}
-            required={required}
-            helperText={helperText}
-            validationMessage={validationMessage}
-            state={state}
-            disabled={disabled}
-            readOnly={readOnly}
-            loading={loading}
-            size={size}
-            actions={actions}
-            slotProps={slotProps}
-        >
+        <ControlFrame {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} layout="stacked" className={className} style={style}>
             {(control) => (
-                <>
+                <div ref={ref} className={styles.root} style={{ "--dextinity-rich-text-editor-min-rows": minRows } as CSSProperties}>
                     <RichTextEditorBody
                         control={control}
                         config={config}
                         value={value}
                         onChange={onChange}
-                        disabled={disabled}
-                        readOnly={readOnly}
+                        disabled={control.disabled}
+                        readOnly={control.readOnly}
                         labels={labels}
                         textPlaceholders={textPlaceholders}
                         inlineStyles={inlineStyles}
                         onRequestLink={onRequestLink}
                     />
                     <input type="hidden" name={name} value={value} />
-                </>
+                </div>
             )}
-        </Field>
+        </ControlFrame>
     );
 });

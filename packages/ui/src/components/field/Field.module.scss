@@ -1,4 +1,5 @@
 @use "../../theme/forcedColors" as forced-colors;
+@use "../formLabel/helpButton";
 
 .root {
     display: flex;
@@ -29,13 +30,16 @@
 }
 
 .required {
+    margin-inline-start: var(--dextinity-space-1-5);
     color: var(--dextinity-field-required-color);
-    font-size: var(--dextinity-field-label-font-size);
-    font-weight: var(--dextinity-field-label-font-weight);
 
     &::after {
         content: "*";
     }
+}
+
+.helpButton {
+    @include helpButton.button;
 }
 
 .counter {

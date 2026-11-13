@@ -54,15 +54,16 @@ function Gallery() {
                 value={employment}
                 onChange={setEmployment}
             />
-            <RadioGroup
-                label="Contract"
-                options={[
-                    { value: "full-time", label: "Full-time" },
-                    { value: "freelance", label: "Freelance" },
-                ]}
-                value={contract}
-                onChange={setContract}
-            />
+            <Field label="Contract" layout="group">
+                <RadioGroup
+                    options={[
+                        { value: "full-time", label: "Full-time" },
+                        { value: "freelance", label: "Freelance" },
+                    ]}
+                    value={contract}
+                    onChange={setContract}
+                />
+            </Field>
             <Slider aria-label="Icon size" value={size} onChange={setSize} />
             <Tabs
                 aria-label="Page"
@@ -109,7 +110,9 @@ function SeparatorGallery() {
                     <Icon name="link-diagonal" />
                 </ToolbarButton>
             </Toolbar>
-            <DateTimePicker name="publishAt" label="Publish at" value={publishAt} onChange={setPublishAt} />
+            <Field label="Publish at">
+                <DateTimePicker name="publishAt" value={publishAt} onChange={setPublishAt} />
+            </Field>
             <Menu
                 open={menuOpen}
                 onOpenChange={setMenuOpen}

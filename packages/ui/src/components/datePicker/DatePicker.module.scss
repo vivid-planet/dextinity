@@ -1,9 +1,5 @@
 @use "dateField";
 
-.root {
-    min-inline-size: 0;
-}
-
 .input {
     @include dateField.input;
 }

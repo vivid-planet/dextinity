@@ -28,13 +28,9 @@ function MetaTitleField(props: FieldActionsProps) {
 function AltTextField(props: FieldActionsProps) {
     const [value, setValue] = useState("Three people at a table in the office.");
     return (
-        <Textarea
-            name="altText"
+        <Field
             label="Alt text"
-            rows={2}
             helperText="Per language."
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
             actions={
                 <FieldActions
                     {...props}
@@ -44,7 +40,9 @@ function AltTextField(props: FieldActionsProps) {
                     }}
                 />
             }
-        />
+        >
+            <Textarea name="altText" rows={2} value={value} onChange={(event) => setValue(event.target.value)} />
+        </Field>
     );
 }
 
@@ -60,12 +58,8 @@ function translateToGerman(text: string) {
 function TranslatedInPlaceField(props: FieldActionsProps) {
     const [value, setValue] = useState("Three people at a table in the office.");
     return (
-        <Textarea
-            name="altText"
+        <Field
             label="Alt text"
-            rows={2}
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
             actions={
                 <FieldActions
                     {...props}
@@ -75,7 +69,9 @@ function TranslatedInPlaceField(props: FieldActionsProps) {
                     }}
                 />
             }
-        />
+        >
+            <Textarea name="altText" rows={2} value={value} onChange={(event) => setValue(event.target.value)} />
+        </Field>
     );
 }
 
@@ -102,7 +98,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Translate sits at the label and becomes fully opaque on hover or focus.
+ * Translate sits at the label and becomes fully opaque on hover or focus. Pass the actions to the field:
+ * `<Field label="Alt text" actions={<FieldActions translate … />}><Textarea … /></Field>`.
  *
  * **Rules**
  * - Offer translation only for fields with content per language, not at every field.

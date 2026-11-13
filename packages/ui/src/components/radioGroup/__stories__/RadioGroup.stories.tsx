@@ -2,22 +2,36 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { type FieldStoryArgs, groupFieldArgTypes, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { RadioGroup, type RadioGroupProps } from "../RadioGroup";
 import radioGroupTokens from "../RadioGroup.tokens.scss?raw";
 
-/** Keeps the story controlled: choosing updates the local value; changing the `value` control starts over from it. */
-function ControlledRadioGroup(props: RadioGroupProps) {
-    const [value, setValue] = useState(props.value);
-    return (
+type RadioGroupStoryArgs = RadioGroupProps & FieldStoryArgs;
+
+/**
+ * Keeps the story controlled: choosing updates the local value; changing the `value` control starts over from it. With a field arg, it
+ * puts the group in a `Field` with `layout="group"`, whose label names the group.
+ */
+function ControlledRadioGroup(args: RadioGroupStoryArgs) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useState(control.value);
+    const radioGroup = (
         <RadioGroup
-            {...props}
+            {...control}
             value={value}
             onChange={(next) => {
-                props.onChange(next);
+                control.onChange(next);
                 setValue(next);
             }}
         />
+    );
+    return hasFieldArgs(field) ? (
+        <StoryField field={field} layout="group">
+            {radioGroup}
+        </StoryField>
+    ) : (
+        radioGroup
     );
 }
 
@@ -38,13 +52,12 @@ const meta = {
         onChange: fn(),
     },
     argTypes: {
+        ...groupFieldArgTypes,
         variant: { control: "radio", options: ["default", "card"] },
         orientation: { control: "radio", options: ["vertical", "horizontal"] },
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
         className: { control: false },
-        slotProps: { control: false },
     },
-} satisfies Meta<typeof RadioGroup>;
+} satisfies Meta<RadioGroupStoryArgs>;
 
 export default meta;
 
@@ -142,7 +155,7 @@ export const ReadOnly: Story = {
 };
 
 /**
- * Without a visible label, `aria-label` names the group.
+ * Without a `Field`, `aria-label` names the group.
  */
 export const WithoutLabel: Story = {
     args: { label: undefined, "aria-label": "Employment" },

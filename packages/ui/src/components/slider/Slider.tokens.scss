@@ -30,23 +30,6 @@
     --dextinity-slider-thumb-ring: var(--dextinity-color-surface);
     // Shadow of the thumb
     --dextinity-slider-thumb-shadow: var(--dextinity-shadow-1);
-
-    // Gap between the label, the slider, and the validation message
-    --dextinity-slider-row-gap: 7px;
-    // Text size of the label
-    --dextinity-slider-label-font-size: var(--dextinity-typography-ui-size);
-    // Text weight of the label
-    --dextinity-slider-label-font-weight: var(--dextinity-font-weight-medium);
-    // Text color of the label
-    --dextinity-slider-label-color: var(--dextinity-color-text-subtle);
-    // Text size of the validation message
-    --dextinity-slider-message-font-size: var(--dextinity-typography-small-size);
-    // Text color of an error message
-    --dextinity-slider-message-color-error: var(--dextinity-color-danger-text);
-    // Text color of a warning message
-    --dextinity-slider-message-color-warning: var(--dextinity-color-warning-text);
-    // Text color of a success message
-    --dextinity-slider-message-color-success: var(--dextinity-color-success-text);
 }
 
 @mixin high-contrast-tokens {

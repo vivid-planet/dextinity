@@ -3,8 +3,8 @@ import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
-import { type ControlValidationProps, useControlValidation } from "../field/controlValidation";
-import type { FieldState } from "../field/Field";
+import { type ControlAriaProps, isAriaInvalid } from "../field/ControlFrame";
+import { useFieldContext } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import styles from "./Checkbox.module.scss";
 
@@ -15,8 +15,9 @@ export type CheckboxOwnerState = {
     checked: boolean;
     indeterminate: boolean;
     disabled: boolean;
+    readOnly: boolean;
     required: boolean;
-    state: FieldState;
+    invalid: boolean;
 };
 
 export interface CheckboxSlotProps {
@@ -28,12 +29,11 @@ export interface CheckboxSlotProps {
     indicator?: SlotPropsValue<CheckboxOwnerState, typeof BaseCheckbox.Indicator>;
     /** Props for the `label` slot. */
     label?: SlotPropsValue<CheckboxOwnerState, "span">;
-    /** Props for the `message` slot, the validation message below the checkbox. */
-    message?: SlotPropsValue<CheckboxOwnerState, "div">;
 }
 
-export interface CheckboxProps extends ControlValidationProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange"> {
-    /** The label. Without a visible label, set `aria-label`. */
+export interface CheckboxProps
+    extends ControlAriaProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | keyof ControlAriaProps> {
+    /** The label, which names the checkbox even inside a `Field`. Without a visible label, set `aria-label`. */
     children?: ReactNode;
     /** Whether the checkbox is checked. */
     checked: boolean;
@@ -47,23 +47,15 @@ export interface CheckboxProps extends ControlValidationProps, Omit<HTMLAttribut
      */
     indeterminate?: boolean;
     /**
-     * Prevents interaction with the checkbox.
+     * Prevents interaction with the checkbox. Ignored inside a `Field`, which takes it from its own `disabled`.
      *
      * @defaultValue `false`
      */
     disabled?: boolean;
-    /**
-     * Requires the checkbox to be checked before a form is submitted, and adds a star after the label.
-     *
-     * @defaultValue `false`
-     */
-    required?: boolean;
     /** Identifies the field when a form is submitted. */
     name?: string;
     /** The value submitted with the form while the checkbox is checked. */
     value?: string;
-    /** The accessible name when there is no visible label. Required without `children`. */
-    "aria-label"?: string;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -71,7 +63,9 @@ export interface CheckboxProps extends ControlValidationProps, Omit<HTMLAttribut
 }
 
 /**
- * Selects an item, for multiple selection in lists, the page tree, and assets.
+ * Selects an item, for multiple selection in lists, the page tree, and assets. For a validation message, e.g. on a consent checkbox, put it
+ * in a `Field` with `layout="group"`: the checkbox takes the field's message, state, `required`, and `disabled`, and keeps its own text as
+ * its name.
  */
 export const Checkbox = forwardRef<HTMLDivElement, CheckboxProps>(function Checkbox(
     {
@@ -80,35 +74,46 @@ export const Checkbox = forwardRef<HTMLDivElement, CheckboxProps>(function Check
         onChange,
         indeterminate = false,
         disabled = false,
-        required = false,
-        state = "default",
-        validationMessage,
         name,
         value,
         "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
         className,
         slotProps,
         ...restProps
     },
     ref,
 ) {
-    const ownerState: CheckboxOwnerState = { checked, indeterminate, disabled, required, state };
-    const validation = useControlValidation(state, validationMessage, ariaDescribedBy);
+    const fieldControl = useFieldContext()?.control;
+    const ownerState: CheckboxOwnerState = {
+        checked,
+        indeterminate,
+        disabled: fieldControl != null ? fieldControl.disabled : disabled,
+        readOnly: fieldControl?.readOnly === true,
+        required: fieldControl?.required === true,
+        invalid: isAriaInvalid(ariaInvalid) || fieldControl?.["aria-invalid"] === true,
+    };
+    // The checkbox's own text names it; the field's label names it only without text
+    const labelledBy = ariaLabelledBy ?? (children == null ? fieldControl?.["aria-labelledby"] : undefined);
 
     const controlProps = resolveSlotProps<CheckboxOwnerState, typeof BaseCheckbox.Root, typeof BaseCheckbox.Root>({
         ownProps: {
             className: styles.control,
+            id: fieldControl?.id,
             checked,
             indeterminate,
-            disabled,
-            required,
+            disabled: ownerState.disabled,
+            readOnly: ownerState.readOnly,
+            required: ownerState.required,
             name,
             value,
             onCheckedChange: (nextChecked: boolean) => onChange(nextChecked),
             "aria-label": ariaLabel,
-            "aria-invalid": validation["aria-invalid"],
-            "aria-describedby": validation["aria-describedby"],
+            "aria-labelledby": labelledBy,
+            "aria-invalid": ownerState.invalid ? true : undefined,
+            "aria-describedby": clsx(fieldControl?.["aria-describedby"], ariaDescribedBy) || undefined,
         },
         slotProps: slotProps?.control,
         ownerState,
@@ -128,11 +133,6 @@ export const Checkbox = forwardRef<HTMLDivElement, CheckboxProps>(function Check
         slotProps: slotProps?.label,
         ownerState,
     });
-    const messageProps = resolveSlotProps<CheckboxOwnerState, "div", "div">({
-        ownProps: { className: styles.message, id: validation.messageId },
-        slotProps: slotProps?.message,
-        ownerState,
-    });
 
     return (
         <div
@@ -141,8 +141,9 @@ export const Checkbox = forwardRef<HTMLDivElement, CheckboxProps>(function Check
             data-checked={ownerState.checked ? "" : undefined}
             data-indeterminate={ownerState.indeterminate ? "" : undefined}
             data-disabled={ownerState.disabled ? "" : undefined}
+            data-readonly={ownerState.readOnly ? "" : undefined}
             data-required={ownerState.required ? "" : undefined}
-            data-state={ownerState.state}
+            data-invalid={ownerState.invalid ? "" : undefined}
             className={clsx(styles.root, className)}
         >
             <label {...rowProps}>
@@ -154,11 +155,10 @@ export const Checkbox = forwardRef<HTMLDivElement, CheckboxProps>(function Check
                 {children != null && (
                     <span {...labelProps}>
                         {children}
-                        {required && <span className={styles.required} aria-hidden />}
+                        {ownerState.required && fieldControl?.["aria-labelledby"] == null && <span className={styles.required} aria-hidden />}
                     </span>
                 )}
             </label>
-            {validation.showsMessage && <div {...messageProps}>{validationMessage}</div>}
         </div>
     );
 });

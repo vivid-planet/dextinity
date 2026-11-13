@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { type FieldStoryArgs, groupFieldArgTypes, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { interiorImage, landscapeImage } from "../../../storybook/sampleImages";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { FileUpload, type FileUploadContext, type FileUploadFile, type FileUploadProps } from "../FileUpload";
@@ -29,17 +30,23 @@ function simulateUpload(file: File, { onProgress, signal }: FileUploadContext): 
     });
 }
 
-function ControlledFileUpload(props: FileUploadProps) {
-    const [value, setValue] = useState(props.value);
+type FileUploadStoryArgs = FileUploadProps & FieldStoryArgs;
+
+/** Keeps the story controlled. The `Field` around it, with `layout="group"`, adds the label, help, and validation message. */
+function ControlledFileUpload(args: FileUploadStoryArgs) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useState(control.value);
     return (
-        <FileUpload
-            {...props}
-            value={value}
-            onChange={(next) => {
-                setValue(next);
-                props.onChange(next);
-            }}
-        />
+        <StoryField field={field} layout="group">
+            <FileUpload
+                {...control}
+                value={value}
+                onChange={(next) => {
+                    setValue(next);
+                    control.onChange(next);
+                }}
+            />
+        </StoryField>
     );
 }
 
@@ -80,21 +87,19 @@ const meta = {
         maxSize: 5_000_000,
     },
     argTypes: {
+        ...groupFieldArgTypes,
         multiple: { control: "boolean" },
-        required: { control: "boolean" },
         disabled: { control: "boolean" },
         readOnly: { control: "boolean" },
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
         value: { control: false },
         onUpload: { control: false },
         getErrorMessage: { control: false },
         formatSize: { control: false },
         labels: { control: false },
         className: { control: false },
-        slotProps: { control: false },
     },
     render: (args) => <ControlledFileUpload {...args} />,
-} satisfies Meta<typeof FileUpload>;
+} satisfies Meta<FileUploadStoryArgs>;
 
 export default meta;
 
@@ -180,7 +185,7 @@ export const MaxFiles: Story = {
 };
 
 /**
- * A required upload shows the form's message below the files.
+ * A required upload shows the field's message below the files.
  */
 export const ValidationError: Story = {
     args: { required: true, state: "error", validationMessage: "Attach the signed contract." },

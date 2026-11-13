@@ -1,6 +1,6 @@
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactElement, useMemo } from "react";
+import { forwardRef, type HTMLAttributes, type ReactElement, type ReactNode, useMemo } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
@@ -29,8 +29,8 @@ export interface TooltipSlotProps {
 }
 
 export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "content"> {
-    /** The explanation, one short line. */
-    content: string;
+    /** The explanation, usually one short line. */
+    content: ReactNode;
     /** The element that shows the tooltip on hover and keyboard focus. It must accept a ref and event handlers. */
     children: ReactElement;
     /** A keyboard shortcut for the action, shown after the text, e.g. `⌘S`. */
@@ -49,6 +49,12 @@ export interface TooltipProps extends Omit<HTMLAttributes<HTMLDivElement>, "clas
     open?: boolean;
     /** Called when hover, focus, or Escape requests to open or close the tooltip. */
     onOpenChange?: (open: boolean) => void;
+    /**
+     * Closes the tooltip when the trigger is clicked. Turn it off for a trigger whose click shows the tooltip, e.g. an info button.
+     *
+     * @defaultValue `true`
+     */
+    closeOnClick?: boolean;
     /**
      * Keeps the tooltip from opening.
      *
@@ -82,7 +88,20 @@ export function readTooltipDelay(element: Element | null) {
  * The tooltip is a visual aid: the trigger needs its own accessible name, e.g. an `aria-label` with the same text.
  */
 export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip(
-    { content, children, shortcut, placement = "bottom", delay, open, onOpenChange, disabled = false, className, slotProps, ...restProps },
+    {
+        content,
+        children,
+        shortcut,
+        placement = "bottom",
+        delay,
+        open,
+        onOpenChange,
+        closeOnClick = true,
+        disabled = false,
+        className,
+        slotProps,
+        ...restProps
+    },
     ref,
 ) {
     const ownerState: TooltipOwnerState = { placement, disabled };
@@ -106,7 +125,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
             open={open}
             onOpenChange={onOpenChange == null ? undefined : (nextOpen) => onOpenChange(nextOpen)}
         >
-            <BaseTooltip.Trigger ref={anchorRef} render={children} delay={delay ?? themeDelay} />
+            <BaseTooltip.Trigger ref={anchorRef} render={children} delay={delay ?? themeDelay} closeOnClick={closeOnClick} />
             <BaseTooltip.Portal container={container}>
                 <FieldContextReset>
                     <BaseTooltip.Positioner {...positionerProps}>

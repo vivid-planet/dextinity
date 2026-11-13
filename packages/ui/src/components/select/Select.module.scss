@@ -1,7 +1,8 @@
 @use "menu";
 @use "../../theme/forcedColors" as forced-colors;
 
-.root[data-multiple] > :global(.dextinityField__box) {
+// A multiple select wraps its chips onto several lines
+:global(.dextinityField__box):has(> .trigger[data-multiple]) {
     flex-wrap: wrap;
     row-gap: var(--dextinity-space-1);
     padding-block: var(--dextinity-space-1);

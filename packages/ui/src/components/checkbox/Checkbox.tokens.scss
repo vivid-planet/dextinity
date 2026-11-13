@@ -35,15 +35,4 @@
     --dextinity-checkbox-required-color: var(--dextinity-color-danger-text);
     // Line of an unchecked checkbox in the error state
     --dextinity-checkbox-line-error: var(--dextinity-color-danger);
-
-    // Gap between the checkbox and its validation message
-    --dextinity-checkbox-message-gap: var(--dextinity-space-1);
-    // Text size of the validation message
-    --dextinity-checkbox-message-font-size: var(--dextinity-typography-small-size);
-    // Text color of an error message
-    --dextinity-checkbox-message-color-error: var(--dextinity-color-danger-text);
-    // Text color of a warning message
-    --dextinity-checkbox-message-color-warning: var(--dextinity-color-warning-text);
-    // Text color of a success message
-    --dextinity-checkbox-message-color-success: var(--dextinity-color-success-text);
 }

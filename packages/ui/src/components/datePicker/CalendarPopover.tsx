@@ -18,7 +18,7 @@ interface CalendarPopoverProps extends CalendarProps {
     /** The element focused when the calendar closes, usually the text input. */
     finalFocus: RefObject<HTMLElement | null>;
     /** The id of the field's label, which names the popup. */
-    labelledBy: string;
+    labelledBy: string | undefined;
 }
 
 /**

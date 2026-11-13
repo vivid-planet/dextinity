@@ -1,0 +1,32 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+// The info button after a label that shows the label's help text. Shared by `FormLabel` and `Field`.
+@mixin button {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--dextinity-form-label-help-button-size);
+    block-size: var(--dextinity-form-label-help-button-size);
+    // Keeps the row at the label's height while the button stays large enough to tap
+    margin-block: calc(var(--dextinity-form-label-font-line-height) / 2 - var(--dextinity-form-label-help-button-size) / 2);
+    margin-inline: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--dextinity-radius-item);
+    background: transparent;
+    color: var(--dextinity-form-label-help-icon-color);
+    cursor: help;
+
+    --dextinity-icon-size: var(--dextinity-form-label-help-icon-size);
+
+    &:hover,
+    &[data-popup-open] {
+        color: var(--dextinity-form-label-help-icon-color-hover);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}

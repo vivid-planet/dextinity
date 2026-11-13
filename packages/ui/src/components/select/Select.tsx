@@ -1,10 +1,11 @@
 import { Combobox } from "@base-ui/react/combobox";
 import { Select as BaseSelect } from "@base-ui/react/select";
 import { clsx } from "clsx";
-import { type ForwardedRef, forwardRef, Fragment, type HTMLAttributes, type ReactNode, type RefAttributes, useCallback, useId } from "react";
+import { type ForwardedRef, forwardRef, Fragment, type ReactNode, type RefAttributes, useCallback, useId } from "react";
 
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
-import { Field, type FieldBaseProps, type FieldControlProps, type FieldOwnerState, type FieldProps } from "../field/Field";
+import { ControlFrame, type FrameControlProps, type PureControlProps, useControlState } from "../field/ControlFrame";
+import type { FieldOwnerState } from "../field/Field";
 import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
 import { groupOptions, hasGroups, type OptionGroup } from "./optionGroups";
@@ -60,8 +61,7 @@ const defaultLabels: SelectLabels = {
     remove: (optionLabel) => `Remove ${optionLabel}`,
 };
 
-export interface SelectProps<Multiple extends boolean = false, Value = string>
-    extends FieldBaseProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "prefix" | "onChange" | "defaultValue"> {
+export interface SelectProps<Multiple extends boolean = false, Value = string> extends PureControlProps {
     /** Field name. Describes the data, not the UI. */
     name: string;
     /** The options to choose from. */
@@ -98,12 +98,6 @@ export interface SelectProps<Multiple extends boolean = false, Value = string>
     placeholder?: string;
     /** Texts of the search, the empty result, and the chips, for translation. */
     labels?: Partial<SelectLabels>;
-    /** The id of the trigger, used to connect it with the label. */
-    id?: string;
-    /** Added alongside the component's own classes, on the root. */
-    className?: string;
-    /** Props for each slot of the field frame, merged with the slot's own props rather than replacing them. */
-    slotProps?: FieldProps["slotProps"];
 }
 
 function toList<Value>(value: Value | Value[] | null): Value[] {
@@ -120,10 +114,10 @@ function optionText(option: { label: ReactNode; textValue?: string }): string {
     return typeof option.label === "string" || typeof option.label === "number" ? String(option.label) : "";
 }
 
-function triggerProps(control: FieldControlProps, valueId: string) {
+function triggerProps(control: FrameControlProps, nameId: string | undefined, valueId: string) {
     return {
         id: control.id,
-        "aria-labelledby": `${control["aria-labelledby"]} ${valueId}`,
+        "aria-labelledby": clsx(nameId, valueId),
         "aria-describedby": control["aria-describedby"],
         "aria-invalid": control["aria-invalid"],
         "aria-required": control["aria-required"],
@@ -136,18 +130,8 @@ function triggerProps(control: FieldControlProps, valueId: string) {
  */
 export const Select = forwardRef(function Select<Multiple extends boolean = false, Value = string>(
     {
-        label,
-        required,
-        helperText,
-        validationMessage,
-        state,
-        disabled = false,
-        readOnly = false,
-        loading,
-        size,
-        prefix,
-        suffix,
-        actions,
+        disabled: disabledProp,
+        readOnly: readOnlyProp,
         name,
         options,
         value,
@@ -160,12 +144,13 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
         labels: labelsProp,
         id,
         className,
-        slotProps,
-        ...restProps
+        style,
+        ...ariaProps
     }: SelectProps<Multiple, Value>,
     ref: ForwardedRef<HTMLButtonElement>,
 ) {
     const labels = { ...defaultLabels, ...labelsProp };
+    const { disabled, readOnly, required } = useControlState(disabledProp, readOnlyProp);
     const isMultiple = multiple === true;
     const valueId = `${useId()}value`;
     const { anchor, anchorRef, container } = useThemePortalContainer<HTMLButtonElement>();
@@ -268,27 +253,8 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
     );
 
     return (
-        <Field
-            {...restProps}
-            className={clsx(styles.root, className)}
-            data-multiple={isMultiple ? "" : undefined}
-            data-searchable={searchable ? "" : undefined}
-            controlId={id}
-            label={label}
-            required={required}
-            helperText={helperText}
-            validationMessage={validationMessage}
-            state={state}
-            disabled={disabled}
-            readOnly={readOnly}
-            loading={loading}
-            size={size}
-            prefix={prefix}
-            suffix={suffix}
-            actions={actions}
-            slotProps={slotProps}
-        >
-            {(control) =>
+        <ControlFrame {...ariaProps} id={id} disabled={disabledProp} readOnly={readOnlyProp} className={className} style={style}>
+            {(control, { nameId }) =>
                 searchable ? (
                     <Combobox.Root
                         items={grouped ? optionGroups : options}
@@ -311,7 +277,12 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                         required={required}
                     >
                         {chips}
-                        <Combobox.Trigger {...triggerProps(control, valueId)} ref={setTriggerRef} className={styles.trigger}>
+                        <Combobox.Trigger
+                            {...triggerProps(control, nameId, valueId)}
+                            ref={setTriggerRef}
+                            className={styles.trigger}
+                            data-multiple={isMultiple ? "" : undefined}
+                        >
                             {triggerContent}
                             <Combobox.Icon className={styles.chevron}>
                                 <Icon name="chevron-down" />
@@ -354,7 +325,12 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                         required={required}
                     >
                         {chips}
-                        <BaseSelect.Trigger {...triggerProps(control, valueId)} ref={setTriggerRef} className={styles.trigger}>
+                        <BaseSelect.Trigger
+                            {...triggerProps(control, nameId, valueId)}
+                            ref={setTriggerRef}
+                            className={styles.trigger}
+                            data-multiple={isMultiple ? "" : undefined}
+                        >
                             {triggerContent}
                             <BaseSelect.Icon className={styles.chevron}>
                                 <Icon name="chevron-down" />
@@ -391,6 +367,6 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                     </BaseSelect.Root>
                 )
             }
-        </Field>
+        </ControlFrame>
     );
 }) as <Multiple extends boolean = false, Value = string>(props: SelectProps<Multiple, Value> & RefAttributes<HTMLButtonElement>) => ReactNode;

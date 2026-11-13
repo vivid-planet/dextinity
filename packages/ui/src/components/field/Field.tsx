@@ -1,14 +1,16 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type MouseEvent, type ReactNode, useCallback, useId, useState } from "react";
+import { type ElementType, forwardRef, type HTMLAttributes, type MouseEvent, type ReactNode, useCallback, useId, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
+import { defaultHelpTextButtonLabel, HelpTextButton } from "../formLabel/HelpTextButton";
+import { Icon } from "../icon/Icon";
 import { Spinner } from "../spinner/Spinner";
 import styles from "./Field.module.scss";
-import { FieldContext, type FieldContextValue } from "./fieldContext";
+import { type ControlReport, FieldContext, type FieldContextValue } from "./fieldContext";
 
 export type FieldState = "default" | "success" | "warning" | "error";
 export type FieldSize = "small" | "default" | "large";
-export type FieldLayout = "inline" | "stacked";
+export type FieldLayout = "inline" | "stacked" | "group";
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
@@ -28,7 +30,8 @@ export type FieldOwnerState = {
  */
 export interface FieldControlProps {
     id: string;
-    "aria-labelledby": string;
+    /** The id of the field's label, or `undefined` for a field without a label. */
+    "aria-labelledby": string | undefined;
     "aria-describedby": string | undefined;
     "aria-invalid": true | undefined;
     "aria-required": true | undefined;
@@ -38,9 +41,30 @@ export interface FieldControlProps {
     required: boolean;
 }
 
+/**
+ * Texts of the field, for translation.
+ */
+export interface FieldLabels {
+    /** Accessible name of the info button that shows the `helpText`. */
+    helpText: string;
+}
+
+interface FieldSlots {
+    /**
+     * Element for the `helpIcon` slot, the icon of the button that shows the `helpText`.
+     *
+     * @defaultValue `Icon` named `info`
+     */
+    helpIcon?: ElementType;
+}
+
 interface FieldSlotProps {
     /** Props for the `label` slot. */
     label?: SlotPropsValue<FieldOwnerState, "label">;
+    /** Props for the `helpButton` slot, the info button after the label that shows the `helpText`. */
+    helpButton?: SlotPropsValue<FieldOwnerState, "button">;
+    /** Props for the `helpIcon` slot, e.g. another icon `name`. */
+    helpIcon?: SlotPropsValue<FieldOwnerState, typeof Icon>;
     /** Props for the `box` slot, the bordered area around the control. */
     box?: SlotPropsValue<FieldOwnerState, "div">;
     /** Props for the `prefix` slot. */
@@ -55,15 +79,23 @@ interface FieldSlotProps {
  * Props shared by every field: label, help, validation, state, and size.
  */
 export interface FieldBaseProps {
-    /** Visible label above the field. Never replace it with a placeholder. */
-    label: ReactNode;
+    /**
+     * Visible label above the field. Never replace it with a placeholder. Leave it out only when the control names itself, e.g. a
+     * `Checkbox` with its text, and the field adds just its message.
+     */
+    label?: ReactNode;
     /**
      * Adds a star after the label and marks the control as required.
      *
      * @defaultValue `false`
      */
     required?: boolean;
-    /** Permanent help below the field. */
+    /**
+     * Extra explanation behind an info button after the label, shown in a tooltip on hover, keyboard focus, and tap, and read as the
+     * control's description. Use it for background most users don't need; what everyone needs belongs in `helperText`.
+     */
+    helpText?: ReactNode;
+    /** Permanent help below the field, always visible. */
     helperText?: ReactNode;
     /** Message for the `state`. Replaces the help while the state is `success`, `warning`, or `error`. Say what is missing and how to fix it. */
     validationMessage?: ReactNode;
@@ -107,8 +139,10 @@ export interface FieldBaseProps {
 
 export interface FieldProps extends FieldBaseProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "prefix"> {
     /**
-     * How the box arranges its content: `inline` puts prefix, control, and suffix in a row of the field's height; `stacked` lets a
-     * multi-line control fill the box from edge to edge, e.g. a text editor with its toolbar above the text, and keeps its own padding.
+     * How the field holds its control: `inline` draws a box with prefix, control, and suffix in a row of the field's height; `stacked`
+     * lets a multi-line control fill the box from edge to edge, e.g. `RichTextEditor` with its toolbar above the text; `group` draws no
+     * box, for a control that groups several inputs or draws its own frame, e.g. `RadioGroup`, `CheckboxGroup`, `Slider`, or `Checkbox`.
+     * In a group, the label names the control's group element instead of pointing to one input.
      *
      * @defaultValue `"inline"`
      */
@@ -121,27 +155,41 @@ export interface FieldProps extends FieldBaseProps, Omit<HTMLAttributes<HTMLDivE
     controlId?: string;
     /** Shown at the end of the label row, e.g. a character count. */
     counter?: ReactNode;
-    /** The control. A function receives the props that connect it to the label, message, and state. */
+    /** Texts of the field, for translation. */
+    labels?: Partial<FieldLabels>;
+    /**
+     * The control, e.g. `Input`, `Select`, or `DatePicker`, which takes the field's id, label, message, and state. A function receives
+     * the props that connect a custom control to the label, message, and state.
+     */
     children: ReactNode | ((control: FieldControlProps) => ReactNode);
     /** Added alongside the component's own classes. */
     className?: string;
+    /** Sets which element a named inner part renders as. */
+    slots?: FieldSlots;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
     slotProps?: FieldSlotProps;
 }
 
 const interactiveSelector = "input, textarea, select, button, a, [contenteditable='true'], [role='button']";
 
+function hasContent(node: ReactNode) {
+    return node != null && node !== "" && node !== false;
+}
+
 /**
- * The frame shared by all form fields: label, required star, actions, the bordered box with prefix and suffix, help, and validation
- * message. Wrap a custom control in it to get the same look and accessible connections, e.g. a third-party editor with `layout="stacked"`.
+ * The frame of a form field: label, required star, help text, actions, the bordered box with prefix and suffix, help, and validation
+ * message. Put any control in it, e.g. `<Field label="Title"><Input /></Field>`: the control takes the field's id, label, message,
+ * and state. Wrap a custom control in it to get the same look and accessible connections, e.g. a third-party editor with
+ * `layout="stacked"`.
  */
 export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
     {
         label,
         required = false,
+        helpText,
         helperText,
         validationMessage,
-        state = "default",
+        state: stateProp = "default",
         disabled = false,
         readOnly = false,
         loading = false,
@@ -149,11 +197,13 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
         prefix,
         suffix,
         actions,
-        counter,
+        counter: counterProp,
         layout = "inline",
         controlId: controlIdProp,
+        labels: labelsProp,
         children,
         className,
+        slots,
         slotProps,
         ...restProps
     },
@@ -162,21 +212,39 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
     const generatedId = useId();
     const controlId = controlIdProp ?? `${generatedId}control`;
     const labelId = `${generatedId}label`;
+    const helpTextId = `${generatedId}help`;
     const messageId = `${generatedId}message`;
+    const labels: FieldLabels = { helpText: defaultHelpTextButtonLabel, ...labelsProp };
 
     const [actionPending, setActionPending] = useState(false);
     const [actionContent, setActionContent] = useState<ReactNode>(null);
+    const [controlReport, setControlReport] = useState<ControlReport>({});
 
-    const ownerState: FieldOwnerState = { state, size, required, disabled, readOnly, loading: loading || actionPending, layout };
+    const controlError = hasContent(controlReport.error) ? controlReport.error : undefined;
+    const state = controlError != null ? "error" : stateProp;
+    const counter = counterProp ?? controlReport.counter;
 
-    const showsValidation = state !== "default" && validationMessage != null && validationMessage !== "";
-    const message = showsValidation ? validationMessage : helperText;
-    const hasMessage = message != null && message !== "";
+    const ownerState: FieldOwnerState = {
+        state,
+        size,
+        required,
+        disabled,
+        readOnly,
+        loading: loading || actionPending || controlReport.pending === true,
+        layout,
+    };
+
+    const shownValidationMessage = controlError ?? validationMessage;
+    const showsValidation = state !== "default" && hasContent(shownValidationMessage);
+    const message = showsValidation ? shownValidationMessage : helperText;
+    const hasMessage = hasContent(message);
+    const hasLabel = hasContent(label);
+    const hasHelpText = hasContent(helpText);
 
     const control: FieldControlProps = {
         id: controlId,
-        "aria-labelledby": labelId,
-        "aria-describedby": hasMessage ? messageId : undefined,
+        "aria-labelledby": hasLabel ? labelId : undefined,
+        "aria-describedby": clsx(hasHelpText && helpTextId, hasMessage && messageId) || undefined,
         "aria-invalid": state === "error" ? true : undefined,
         "aria-required": required ? true : undefined,
         "aria-busy": ownerState.loading ? true : undefined,
@@ -185,7 +253,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
         required,
     };
 
-    const contextValue: FieldContextValue = { control, ownerState, setActionPending, setActionContent };
+    const contextValue: FieldContextValue = { control, ownerState, setActionPending, setActionContent, setControlReport };
 
     const focusControl = useCallback(
         (event: MouseEvent<HTMLDivElement>) => {
@@ -201,9 +269,19 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
         [controlId, disabled],
     );
 
-    const labelProps = resolveSlotProps<FieldOwnerState, "label", "label">({
+    const { htmlFor, form, ...labelProps } = resolveSlotProps<FieldOwnerState, "label", "label">({
         ownProps: { className: styles.label, id: labelId, htmlFor: controlId },
         slotProps: slotProps?.label,
+        ownerState,
+    });
+    const helpButtonProps = resolveSlotProps<FieldOwnerState, "button", "button">({
+        ownProps: { className: styles.helpButton, "aria-label": labels.helpText },
+        slotProps: slotProps?.helpButton,
+        ownerState,
+    });
+    const helpIconProps = resolveSlotProps<FieldOwnerState, typeof Icon, typeof Icon>({
+        ownProps: { name: "info" },
+        slotProps: slotProps?.helpIcon,
         ownerState,
     });
     const boxProps = resolveSlotProps<FieldOwnerState, "div", "div">({
@@ -227,6 +305,15 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
         ownerState,
     });
 
+    const labelContent = (
+        <>
+            {label}
+            {required && <span className={styles.required} aria-hidden />}
+        </>
+    );
+    const controlContent = typeof children === "function" ? children(control) : children;
+    const hasLabelRow = hasLabel || hasHelpText || counter != null || actions != null;
+
     return (
         <FieldContext.Provider value={contextValue}>
             <div
@@ -241,23 +328,44 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function Field(
                 data-loading={ownerState.loading ? "" : undefined}
                 data-layout={ownerState.layout}
             >
-                <div className={styles.labelRow}>
-                    <label {...labelProps}>{label}</label>
-                    {required && <span className={styles.required} aria-hidden />}
-                    {counter != null && <span className={styles.counter}>{counter}</span>}
-                    {actions != null && <span className={styles.actions}>{actions}</span>}
-                </div>
-                <div {...boxProps}>
-                    {prefix != null && <span {...prefixProps}>{prefix}</span>}
-                    {typeof children === "function" ? children(control) : children}
-                    {ownerState.loading ? (
-                        <span {...suffixProps}>
-                            <Spinner className={styles.spinner} />
-                        </span>
-                    ) : (
-                        suffix != null && <span {...suffixProps}>{suffix}</span>
-                    )}
-                </div>
+                {hasLabelRow && (
+                    <div className={styles.labelRow}>
+                        {hasLabel &&
+                            (layout === "group" ? (
+                                <span {...labelProps}>{labelContent}</span>
+                            ) : (
+                                <label {...labelProps} htmlFor={htmlFor} form={form}>
+                                    {labelContent}
+                                </label>
+                            ))}
+                        {hasHelpText && (
+                            <HelpTextButton
+                                helpText={helpText}
+                                helpTextId={helpTextId}
+                                buttonProps={helpButtonProps}
+                                IconSlot={slots?.helpIcon ?? Icon}
+                                iconProps={helpIconProps}
+                            />
+                        )}
+                        {counter != null && <span className={styles.counter}>{counter}</span>}
+                        {actions != null && <span className={styles.actions}>{actions}</span>}
+                    </div>
+                )}
+                {layout === "group" ? (
+                    controlContent
+                ) : (
+                    <div {...boxProps}>
+                        {prefix != null && <span {...prefixProps}>{prefix}</span>}
+                        {controlContent}
+                        {ownerState.loading ? (
+                            <span {...suffixProps}>
+                                <Spinner className={styles.spinner} />
+                            </span>
+                        ) : (
+                            suffix != null && <span {...suffixProps}>{suffix}</span>
+                        )}
+                    </div>
+                )}
                 {actionContent}
                 {hasMessage && <div {...messageProps}>{message}</div>}
             </div>

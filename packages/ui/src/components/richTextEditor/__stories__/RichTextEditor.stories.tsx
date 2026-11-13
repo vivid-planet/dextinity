@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { FieldActions } from "../../fieldActions/FieldActions";
@@ -9,18 +10,23 @@ import { RichTextEditor, type RichTextEditorProps } from "../RichTextEditor";
 import richTextEditorTokens from "../RichTextEditor.tokens.scss?raw";
 import styles from "./RichTextEditor.stories.module.scss";
 
+type RichTextEditorStoryArgs = RichTextEditorProps & FieldStoryArgs;
+
 /** Keeps the story controlled: editing updates the local value; changing the `value` control starts over from it. */
-function ControlledRichTextEditor(props: RichTextEditorProps) {
-    const [value, setValue] = useState(props.value);
+function ControlledRichTextEditor(args: RichTextEditorStoryArgs) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useState(control.value);
     return (
-        <RichTextEditor
-            {...props}
-            value={value}
-            onChange={(html) => {
-                props.onChange(html);
-                setValue(html);
-            }}
-        />
+        <StoryField field={field} layout="stacked">
+            <RichTextEditor
+                {...control}
+                value={value}
+                onChange={(html) => {
+                    control.onChange(html);
+                    setValue(html);
+                }}
+            />
+        </StoryField>
     );
 }
 
@@ -69,8 +75,7 @@ const meta = {
         onRequestLink: fn(() => "https://example.com"),
     },
     argTypes: {
-        state: { control: "select", options: ["default", "success", "warning", "error"] },
-        size: { control: "radio", options: ["small", "default", "large"] },
+        ...fieldArgTypes,
         toolbar: {
             control: "check",
             options: [
@@ -92,19 +97,18 @@ const meta = {
         },
         headingLevels: { control: "check", options: [1, 2, 3, 4, 5, 6] },
         textAlignments: { control: "check", options: ["left", "center", "right", "justify"] },
-        actions: { control: false },
         labels: { control: false },
         className: { control: false },
-        slotProps: { control: false },
     },
-} satisfies Meta<typeof RichTextEditor>;
+} satisfies Meta<RichTextEditorStoryArgs>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
 /**
- * The value is an HTML string. The toolbar shows which formatting applies at the cursor; the usual shortcuts work too, e.g. ⌘B,
+ * Put it in a `Field` with `layout="stacked"` for the label, help, and validation message:
+ * `<Field label="Rich text" layout="stacked"><RichTextEditor … /></Field>`. The value is an HTML string. The toolbar shows which formatting applies at the cursor; the usual shortcuts work too, e.g. ⌘B,
  * ⌘I, ⌘K, ⌘Z, and Tab in a list.
  *
  * **Limitations**
@@ -379,7 +383,7 @@ export const LimitedToolbar: Story = {
 };
 
 /**
- * Translate at the label, as on other fields.
+ * Translate at the label, as on other fields: the field's `actions`.
  */
 export const WithActions: Story = {
     args: {
@@ -408,5 +412,15 @@ export const Disabled: Story = {
 export const ReadOnly: Story = {
     args: {
         readOnly: true,
+    },
+};
+
+/**
+ * Without a `Field`, the editor draws its own box. Name it with `aria-label`.
+ */
+export const Standalone: Story = {
+    render: (args) => <RichTextEditor {...splitFieldArgs(args).control} aria-label="Rich text" />,
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("textbox", { name: "Rich text" })).toBeVisible();
     },
 };

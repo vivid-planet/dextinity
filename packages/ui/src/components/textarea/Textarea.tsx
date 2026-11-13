@@ -1,7 +1,7 @@
-import { clsx } from "clsx";
 import { type ChangeEvent, forwardRef, type TextareaHTMLAttributes, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
-import { Field, type FieldBaseProps, type FieldOwnerState, type FieldProps } from "../field/Field";
+import { ControlFrame, type PureControlProps } from "../field/ControlFrame";
+import type { FieldOwnerState } from "../field/Field";
 import styles from "./Textarea.module.scss";
 
 /**
@@ -13,10 +13,10 @@ export type TextareaOwnerState = FieldOwnerState & {
 
 export interface TextareaProps
     extends
-        FieldBaseProps,
+        PureControlProps,
         Omit<
             TextareaHTMLAttributes<HTMLTextAreaElement>,
-            "className" | "prefix" | "value" | "defaultValue" | "onChange" | "disabled" | "readOnly" | "required" | "rows"
+            keyof PureControlProps | "prefix" | "value" | "defaultValue" | "onChange" | "disabled" | "readOnly" | "required" | "rows"
         > {
     /** Field name. Describes the data, not the UI. */
     name: string;
@@ -48,10 +48,6 @@ export interface TextareaProps
      * @defaultValue `false`
      */
     showCount?: boolean;
-    /** Added alongside the component's own classes, on the root. */
-    className?: string;
-    /** Props for each slot of the field frame, merged with the slot's own props rather than replacing them. */
-    slotProps?: FieldProps["slotProps"];
 }
 
 function fitHeight(element: HTMLTextAreaElement, rows: number, maxRows: number) {
@@ -75,18 +71,8 @@ function fitHeight(element: HTMLTextAreaElement, rows: number, maxRows: number) 
  */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function Textarea(
     {
-        label,
-        required,
-        helperText,
-        validationMessage,
-        state,
         disabled,
         readOnly,
-        loading,
-        size,
-        prefix,
-        suffix,
-        actions,
         rows = 3,
         autoResize = true,
         maxRows = 12,
@@ -95,8 +81,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
         value,
         maxLength,
         className,
-        slotProps,
+        style,
+        "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
+        "aria-invalid": ariaInvalid,
         ...restProps
     },
     ref,
@@ -150,24 +139,17 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
     }, [autoResize, rows, maxRows]);
 
     return (
-        <Field
-            className={clsx(styles.root, className)}
-            data-autoresize={autoResize ? "" : undefined}
-            controlId={id}
-            label={label}
-            required={required}
-            helperText={helperText}
-            validationMessage={validationMessage}
-            state={state}
+        <ControlFrame
+            id={id}
             disabled={disabled}
             readOnly={readOnly}
-            loading={loading}
-            size={size}
-            prefix={prefix}
-            suffix={suffix}
-            actions={actions}
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
+            aria-describedby={ariaDescribedBy}
+            aria-invalid={ariaInvalid}
             counter={showCount ? (maxLength != null ? `${value.length} / ${maxLength}` : `${value.length}`) : undefined}
-            slotProps={slotProps}
+            className={className}
+            style={style}
         >
             {(control) => (
                 <textarea
@@ -177,10 +159,10 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
                     rows={rows}
                     value={value}
                     maxLength={maxLength}
-                    aria-describedby={clsx(control["aria-describedby"], ariaDescribedBy) || undefined}
                     className={styles.control}
+                    data-autoresize={autoResize ? "" : undefined}
                 />
             )}
-        </Field>
+        </ControlFrame>
     );
 });

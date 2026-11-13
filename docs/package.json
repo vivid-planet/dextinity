@@ -33,7 +33,7 @@
         ]
     },
     "dependencies": {
-        "@algolia/client-search": "^5.61.0",
+        "@algolia/client-search": "^5.63.0",
         "@docusaurus/core": "^3.10.2",
         "@docusaurus/preset-classic": "^3.10.2",
         "@docusaurus/theme-mermaid": "^3.10.2",

@@ -22,7 +22,7 @@
         border-radius: var(--dextinity-data-grid-surface-radius);
         background: var(--dextinity-data-grid-surface-background);
         box-shadow: var(--dextinity-data-grid-surface-shadow);
-        backdrop-filter: blur(var(--dextinity-data-grid-surface-blur)) saturate(1.6);
+        backdrop-filter: blur(var(--dextinity-data-grid-surface-blur)) saturate(var(--dextinity-material-saturation));
 
         @include forced-colors.edge;
     }
@@ -51,7 +51,7 @@
     border-block-end: var(--dextinity-line-width) solid var(--dextinity-data-grid-header-line);
     color: var(--dextinity-data-grid-header-foreground);
     font-size: var(--dextinity-data-grid-header-font-size);
-    font-weight: 500;
+    font-weight: var(--dextinity-data-grid-header-font-weight);
     text-align: start;
     white-space: nowrap;
 
@@ -64,7 +64,7 @@
     }
 
     &[data-dragging] {
-        opacity: 0.5;
+        opacity: var(--dextinity-data-grid-header-dragging-opacity);
     }
 
     &[data-drop] {
@@ -73,8 +73,8 @@
         &::after {
             position: absolute;
             inset-block: var(--dextinity-space-1);
-            inline-size: 2px;
-            border-radius: 1px;
+            inline-size: var(--dextinity-data-grid-drop-indicator-width);
+            border-radius: var(--dextinity-data-grid-drop-indicator-radius);
             background: var(--dextinity-data-grid-drop-indicator);
             content: "";
             pointer-events: none;
@@ -131,7 +131,7 @@
     cursor: pointer;
     transition: color var(--dextinity-motion-duration-short);
 
-    --dextinity-icon-size: 13px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xxsmall);
 
     > :last-child {
         opacity: 0;
@@ -142,7 +142,7 @@
         color: var(--dextinity-data-grid-header-foreground-active);
 
         > :last-child {
-            opacity: 0.6;
+            opacity: var(--dextinity-data-grid-sort-icon-hover-opacity);
         }
     }
 
@@ -249,12 +249,12 @@
     text-align: start;
     cursor: pointer;
 
-    --dextinity-icon-size: 14px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
 
     > :last-child {
         flex: none;
         margin-inline-start: auto;
-        color: var(--dextinity-color-text-tertiary);
+        color: var(--dextinity-color-text-subtle);
     }
 }
 
@@ -329,7 +329,7 @@
     cursor: grab;
     transition: opacity var(--dextinity-motion-duration-short);
 
-    --dextinity-icon-size: 14px;
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
 
     .header:hover &,
     .header:focus-within &,
@@ -375,7 +375,7 @@
     cursor: grab;
     transition: opacity var(--dextinity-motion-duration-short);
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 
     .row:hover &,
     .row:focus-within &,
@@ -419,7 +419,7 @@
         color var(--dextinity-motion-duration-short),
         background var(--dextinity-motion-duration-short);
 
-    --dextinity-icon-size: 16px;
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
 
     > * {
         transition: transform var(--dextinity-motion-duration-short) var(--dextinity-motion-easing);
@@ -530,7 +530,7 @@ th.actionsCell {
     }
 
     &[data-dragging] {
-        opacity: 0.4;
+        opacity: var(--dextinity-data-grid-row-dragging-opacity);
     }
 
     // The line showing where a dragged row lands. Drawn per cell, and the outer cells start and end it at the row's corner
@@ -541,7 +541,7 @@ th.actionsCell {
         &::after {
             position: absolute;
             inset-inline: 0;
-            block-size: 2px;
+            block-size: var(--dextinity-data-grid-drop-indicator-width);
             background: var(--dextinity-data-grid-drop-indicator);
             content: "";
             pointer-events: none;
@@ -550,14 +550,14 @@ th.actionsCell {
 
         &:first-child::after {
             inset-inline-start: var(--dextinity-data-grid-row-radius);
-            border-start-start-radius: 1px;
-            border-end-start-radius: 1px;
+            border-start-start-radius: var(--dextinity-data-grid-drop-indicator-radius);
+            border-end-start-radius: var(--dextinity-data-grid-drop-indicator-radius);
         }
 
         &:last-child::after {
             inset-inline-end: var(--dextinity-data-grid-row-radius);
-            border-start-end-radius: 1px;
-            border-end-end-radius: 1px;
+            border-start-end-radius: var(--dextinity-data-grid-drop-indicator-radius);
+            border-end-end-radius: var(--dextinity-data-grid-drop-indicator-radius);
         }
     }
 
@@ -600,7 +600,7 @@ th.actionsCell {
 
 @keyframes placeholder-pulse {
     50% {
-        opacity: 0.45;
+        opacity: var(--dextinity-data-grid-placeholder-dim-opacity);
     }
 }
 
@@ -644,7 +644,7 @@ th.actionsCell {
     inset-block-end: calc(
         var(--dextinity-space-panel-gap) + var(--dextinity-data-grid-bulk-action-bar-height) + var(--dextinity-data-grid-bulk-action-bar-offset)
     );
-    z-index: 2;
+    z-index: var(--dextinity-data-grid-bulk-action-bar-layer);
     display: flex;
     justify-content: center;
     block-size: 0;

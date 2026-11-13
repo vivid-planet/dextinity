@@ -138,7 +138,7 @@ function JobAdsPage() {
                                 setPage(1);
                             }}
                             count={countFor(filter.value)}
-                            status={filter.value === "all" ? undefined : filter.value}
+                            startAdornment={filter.value === "all" ? undefined : <StatusIndicator status={filter.value} decorative />}
                         >
                             {filter.label}
                         </FilterChip>

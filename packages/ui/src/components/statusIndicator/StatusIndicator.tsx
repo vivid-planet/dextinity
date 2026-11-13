@@ -27,6 +27,7 @@ export const defaultStatusIndicatorLabels: StatusIndicatorLabels = {
 export type StatusIndicatorOwnerState = {
     status: StatusIndicatorStatus;
     dotOnly: boolean;
+    decorative: boolean;
 };
 
 export interface StatusIndicatorSlots<Dot extends ElementType> {
@@ -59,6 +60,13 @@ export interface StatusIndicatorProps<Dot extends ElementType = "span"> extends 
      * @defaultValue `false`
      */
     dotOnly?: boolean;
+    /**
+     * Shows only the dot and hides it from assistive technology, without a tooltip. Only where adjacent text already names the status,
+     * e.g. as the `startAdornment` of a `FilterChip` labeled "Published". Takes precedence over `dotOnly`.
+     *
+     * @defaultValue `false`
+     */
+    decorative?: boolean;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Sets which element a named inner part renders as. */
@@ -72,10 +80,20 @@ export interface StatusIndicatorProps<Dot extends ElementType = "span"> extends 
  */
 export const StatusIndicator: <Dot extends ElementType = "span">(props: StatusIndicatorProps<Dot> & RefAttributes<HTMLSpanElement>) => ReactNode =
     forwardRef(function StatusIndicator<Dot extends ElementType = "span">(
-        { status, children, dotOnly = false, labels: labelsProp, className, slots, slotProps, ...restProps }: StatusIndicatorProps<Dot>,
+        {
+            status,
+            children,
+            dotOnly = false,
+            decorative = false,
+            labels: labelsProp,
+            className,
+            slots,
+            slotProps,
+            ...restProps
+        }: StatusIndicatorProps<Dot>,
         ref: ForwardedRef<HTMLSpanElement>,
     ) {
-        const ownerState: StatusIndicatorOwnerState = { status, dotOnly };
+        const ownerState: StatusIndicatorOwnerState = { status, dotOnly: dotOnly || decorative, decorative };
         const systemWord = labelsProp?.[ownerState.status] ?? defaultStatusIndicatorLabels[ownerState.status];
         const label = children ?? systemWord;
 
@@ -93,6 +111,14 @@ export const StatusIndicator: <Dot extends ElementType = "span">(props: StatusIn
             "data-dotonly": ownerState.dotOnly ? "" : undefined,
             className: clsx(styles.root, className),
         };
+
+        if (ownerState.decorative) {
+            return (
+                <span {...rootProps} aria-hidden>
+                    <DotSlot {...dotProps} />
+                </span>
+            );
+        }
 
         if (ownerState.dotOnly) {
             const textLabel = typeof label === "string" ? label : systemWord;

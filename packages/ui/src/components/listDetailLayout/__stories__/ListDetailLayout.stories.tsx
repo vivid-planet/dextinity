@@ -219,7 +219,9 @@ function RedirectsPage({ initialOpenId }: { initialOpenId?: string }) {
                             selected={status === value}
                             onClick={() => setStatus(value)}
                             count={countFor(value)}
-                            status={value === "all" ? undefined : value === "active" ? "published" : "unpublished"}
+                            startAdornment={
+                                value === "all" ? undefined : <StatusIndicator status={value === "active" ? "published" : "unpublished"} decorative />
+                            }
                         >
                             {value === "all" ? "All" : value === "active" ? "Active" : "Inactive"}
                         </FilterChip>

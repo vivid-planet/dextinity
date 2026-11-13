@@ -137,3 +137,18 @@ export const DotOnly: Story = {
         await expect(await screen.findByRole("tooltip")).toHaveTextContent("Warning");
     },
 };
+
+/**
+ * A dot without text, tooltip, or accessible name, for places where adjacent text already names the status, e.g. the
+ * `startAdornment` of a `FilterChip`. Never use it as the only hint of a status.
+ */
+export const Decorative: Story = {
+    args: {
+        status: "published",
+        decorative: true,
+    },
+    play: async ({ canvas, canvasElement }) => {
+        await expect(canvas.queryByRole("img")).not.toBeInTheDocument();
+        await expect(canvasElement.querySelector("[data-status='published']")).toHaveAttribute("aria-hidden", "true");
+    },
+};

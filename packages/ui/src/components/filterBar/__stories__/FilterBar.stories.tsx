@@ -8,6 +8,7 @@ import { Button } from "../../button/Button";
 import { Checkbox } from "../../checkbox/Checkbox";
 import { FilterChip } from "../../filterChip/FilterChip";
 import { Icon } from "../../icon/Icon";
+import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
 import { FilterBar, type FilterBarProps } from "../FilterBar";
 import filterBarTokens from "../FilterBar.tokens.scss?raw";
 
@@ -42,7 +43,7 @@ function ControlledFilterBar(props: FilterBarProps) {
                         selected={status === filter.value}
                         onClick={() => setStatus(filter.value)}
                         count={countFor(filter.value)}
-                        status={filter.value === "all" ? undefined : filter.value}
+                        startAdornment={filter.value === "all" ? undefined : <StatusIndicator status={filter.value} decorative />}
                     >
                         {filter.label}
                     </FilterChip>

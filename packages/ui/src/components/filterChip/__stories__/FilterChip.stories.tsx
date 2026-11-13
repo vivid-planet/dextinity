@@ -3,10 +3,12 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { Avatar } from "../../avatar/Avatar";
+import { Icon } from "../../icon/Icon";
 import { Menu } from "../../menu/Menu";
 import { MenuRadioGroup } from "../../menu/MenuRadioGroup";
 import { MenuRadioItem } from "../../menu/MenuRadioItem";
-import type { StatusIndicatorStatus } from "../../statusIndicator/StatusIndicator";
+import { StatusIndicator, type StatusIndicatorStatus } from "../../statusIndicator/StatusIndicator";
 import { FilterChip, type FilterChipProps } from "../FilterChip";
 import filterChipTokens from "../FilterChip.tokens.scss?raw";
 import styles from "./FilterChip.stories.module.scss";
@@ -42,7 +44,7 @@ function StatusFilterToolbar(props: Pick<FilterChipProps, "onClick">) {
                 <FilterChip
                     key={value}
                     selected={filter === value}
-                    status={value === "all" ? undefined : value}
+                    startAdornment={value === "all" ? undefined : <StatusIndicator status={value} decorative />}
                     count={count}
                     onClick={(event) => {
                         props.onClick(event);
@@ -87,7 +89,12 @@ function AuthorFilter(props: Pick<FilterChipProps, "onClick">) {
     );
 }
 
-const statusOptions = ["published", "unpublished", "archived", "warning", "critical", "info", "running"];
+const adornmentOptions = {
+    none: undefined,
+    "Status dot": <StatusIndicator status="published" decorative />,
+    Icon: <Icon name="calendar" />,
+    Avatar: <Avatar name="Anna Berger" size="small" tooltip={false} aria-hidden />,
+};
 
 const meta = {
     component: FilterChip,
@@ -100,7 +107,8 @@ const meta = {
         onClick: fn(),
     },
     argTypes: {
-        status: { control: "select", options: statusOptions },
+        startAdornment: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
+        endAdornment: { control: "select", options: Object.keys(adornmentOptions), mapping: adornmentOptions },
         className: { control: false },
         slotProps: { control: false },
     },
@@ -135,10 +143,43 @@ export const WithCount: Story = {
 };
 
 /**
- * For filters by status, the status's dot precedes the label.
+ * For filters by status, a decorative status dot precedes the label. The label names the status, so the dot stays hidden from
+ * assistive technology.
  */
-export const WithStatus: Story = {
-    args: { status: "published", count: 8 },
+export const WithStatusDot: Story = {
+    args: { startAdornment: <StatusIndicator status="published" decorative />, count: 8 },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("button", { name: "Published 8" })).toBeVisible();
+    },
+};
+
+/**
+ * An icon before the label hints at the kind of filter.
+ */
+export const WithIcon: Story = {
+    args: { children: "This week", startAdornment: <Icon name="calendar" />, count: 5 },
+};
+
+/**
+ * For filters by person, the person's avatar precedes the name. Hide the avatar from assistive technology and turn off its tooltip,
+ * since the label already shows the name.
+ */
+export const WithAvatar: Story = {
+    args: {
+        children: "Anna Berger",
+        startAdornment: <Avatar name="Anna Berger" size="small" tooltip={false} aria-hidden />,
+        count: 4,
+    },
+    play: async ({ canvas }) => {
+        await expect(canvas.getByRole("button", { name: "Anna Berger 4" })).toBeVisible();
+    },
+};
+
+/**
+ * Content after the label, before the count and the chevron.
+ */
+export const WithEndAdornment: Story = {
+    args: { children: "Shared", endAdornment: <Icon name="globe" />, count: 2 },
 };
 
 /**

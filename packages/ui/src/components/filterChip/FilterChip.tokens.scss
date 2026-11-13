@@ -3,14 +3,18 @@
     --dextinity-filter-chip-height: var(--dextinity-density-chip-height);
     // Space at the start and end of a chip
     --dextinity-filter-chip-padding: var(--dextinity-space-3);
-    // Gap between the icon, the label, and the count
+    // Gap between the adornments, the label, the count, and the chevron
     --dextinity-filter-chip-gap: 7px;
     // Corner radius of a chip
     --dextinity-filter-chip-radius: var(--dextinity-radius-control);
     // Text size of the label
     --dextinity-filter-chip-font-size: var(--dextinity-typography-ui-size);
-    // Size of the icon
+    // Size of the chevron of a chip with a menu
     --dextinity-filter-chip-icon-size: var(--dextinity-icon-size-xsmall);
+    // Size of an icon in the start or end adornment
+    --dextinity-filter-chip-adornment-icon-size: var(--dextinity-icon-size-xsmall);
+    // Shift of the start adornment towards the chip's edge, so a dot or an avatar doesn't look indented
+    --dextinity-filter-chip-start-adornment-offset: calc(-1 * var(--dextinity-space-1));
     // Opacity of a disabled chip
     --dextinity-filter-chip-disabled-opacity: var(--dextinity-opacity-disabled);
 

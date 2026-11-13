@@ -33,4 +33,17 @@ describe("StatusIndicator", () => {
         const status = screen.getByRole("img", { name: "Critical" });
         expect([status.dataset.dotonly, status.textContent]).toStrictEqual(["", ""]);
     });
+
+    it("hides a decorative dot from assistive technology, without a tooltip trigger or text", () => {
+        const { container } = render(<StatusIndicator status="published" decorative />);
+
+        const status = container.querySelector<HTMLElement>(".dextinityStatusIndicator");
+        expect([status?.getAttribute("aria-hidden"), status?.dataset.dotonly, status?.textContent, status?.getAttribute("role")]).toStrictEqual([
+            "true",
+            "",
+            "",
+            null,
+        ]);
+        expect(screen.queryByRole("img")).toBeNull();
+    });
 });

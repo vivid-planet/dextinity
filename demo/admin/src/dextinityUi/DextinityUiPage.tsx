@@ -38,11 +38,11 @@ export function DextinityUiPage() {
                 <Grid container spacing={4}>
                     <IconCard title={<FormattedMessage id="dextinityUi.icons.defaultIcon" defaultMessage="Default icon, in the text color" />}>
                         <LargeIcon
-                            name="favorite"
+                            name="star-fill"
                             aria-label={intl.formatMessage({ id: "dextinityUi.icons.label.favorite", defaultMessage: "Favorite" })}
                         />
                         <BlueIcon
-                            name="favorite"
+                            name="star-fill"
                             aria-label={intl.formatMessage({ id: "dextinityUi.icons.label.favorite", defaultMessage: "Favorite" })}
                         />
                     </IconCard>
@@ -50,8 +50,8 @@ export function DextinityUiPage() {
                         title={<FormattedMessage id="dextinityUi.icons.defaultIconWithOwnColors" defaultMessage="Default icon with its own colors" />}
                     >
                         <LargeIcon
-                            name="youtube-filled-color"
-                            aria-label={intl.formatMessage({ id: "dextinityUi.icons.label.youtube", defaultMessage: "YouTube" })}
+                            name="dextinity-color"
+                            aria-label={intl.formatMessage({ id: "dextinityUi.icons.label.dextinity", defaultMessage: "Dextinity" })}
                         />
                     </IconCard>
                     <IconCard title={<FormattedMessage id="dextinityUi.icons.projectIcon" defaultMessage="Project icon, in the text color" />}>

@@ -11,11 +11,11 @@
 }
 
 .muted {
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
 }
 
 .mono {
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     font-family: var(--dextinity-font-family-mono);
     font-size: var(--dextinity-typography-mono-size);
 }

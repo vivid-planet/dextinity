@@ -10,7 +10,7 @@
 
 .clockLabel {
     margin-block-start: 10px;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     font-family: var(--dextinity-font-family-mono);
     font-size: var(--dextinity-typography-label-size);
     letter-spacing: var(--dextinity-typography-label-letter-spacing);

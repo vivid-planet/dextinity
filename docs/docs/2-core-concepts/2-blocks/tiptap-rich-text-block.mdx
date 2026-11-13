@@ -15,22 +15,12 @@ It offers several advantages over the old block:
 - **Easier to extend.** New features can be added as TipTap extensions, making it simpler to implement new functionality.
 - **Standardized, portable content format.** Content is stored as a nested ProseMirror JSON tree that mirrors the document structure, which is far easier to work with than Draft.js's flat list of blocks with separate offset-based ranges and a detached `entityMap`. The well-structured format is straightforward to render, transform, and reason about — and paves the way for AI-assisted workflows such as generating, editing, or analyzing rich text content.
 
-:::caution Experimental
-
-The TipTap Rich Text Block is **experimental**.
-The factory (`createTipTapRichTextBlock`) and the site render helper (`renderTipTapRichText`) are marked `@experimental`, and their APIs may change in a minor release without following semantic versioning.
-
-Use it for new projects and evaluate it against your requirements, but be prepared to adapt your configuration when upgrading.
-
-:::
-
 ## Roadmap
 
 The TipTap Rich Text Block will replace the Draft.js-based `RichTextBlock` over the following steps:
 
-1. **Experimental (current).** The block is available and functional, but its public API is not yet stable and may still change.
-2. **Stable.** Once the API has settled, the `@experimental` markers are removed and the block follows the regular semantic-versioning guarantees. This is the point at which we recommend it for all projects.
-3. **Removal of the old block.** In a future (major) Dextinity version, the Draft.js-based `RichTextBlock` (`createRichTextBlock`) will be deprecated and eventually removed.
+1. **Stable (current).** The block is available and follows the regular semantic-versioning guarantees. We recommend it for all projects.
+2. **Removal of the old block.** In a future (major) Dextinity version, the Draft.js-based `RichTextBlock` (`createRichTextBlock`) will be deprecated and eventually removed.
 
 We recommend planning the switch to the TipTap Rich Text Block early. New content should use the new block, and existing content can be migrated with the [built-in Draft.js migration](#migrating-existing-content).
 

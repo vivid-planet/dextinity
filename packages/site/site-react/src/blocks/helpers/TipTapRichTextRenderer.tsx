@@ -63,9 +63,6 @@ const defaultTipTapMarkMapping: Record<string, TipTapMarkHandler> = {
     subscript: ({ children }) => <sub>{children}</sub>,
 };
 
-/**
- * @experimental
- */
 export function renderTipTapRichText({ content, nodeMapping, markMapping }: RenderTipTapRichTextOptions): ReactNode {
     const mergedNodeMapping = { ...defaultTipTapNodeMapping, ...nodeMapping };
     const mergedMarkMapping = { ...defaultTipTapMarkMapping, ...markMapping };

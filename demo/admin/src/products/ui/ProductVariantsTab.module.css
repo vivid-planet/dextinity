@@ -9,7 +9,7 @@
     block-size: 40px;
     border-radius: var(--dextinity-radius-item);
     background: var(--dextinity-color-surface-sunken);
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
 }
 
 .name {
@@ -17,5 +17,5 @@
 }
 
 .muted {
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
 }

@@ -12,10 +12,10 @@
 }
 
 .muted {
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
 }
 
 .date {
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     white-space: nowrap;
 }

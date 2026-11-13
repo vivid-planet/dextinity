@@ -295,7 +295,7 @@ export const Pick: Story = {
 export const WithToolbar: Story = {
     args: {
         toolbar: (
-            <Button size="small" variant="outlined" color="secondary" startIcon={<Icon name="upload" />}>
+            <Button size="small" variant="outlined" color="secondary" startIcon={<Icon name="cloud-upload" />}>
                 Upload
             </Button>
         ),
@@ -342,7 +342,7 @@ function UploadAndReveal(props: AssetBrowserProps) {
             }}
             scrollToItemId={scrollToItemId}
             toolbar={
-                <Button size="small" variant="outlined" color="secondary" startIcon={<Icon name="upload" />} onClick={upload}>
+                <Button size="small" variant="outlined" color="secondary" startIcon={<Icon name="cloud-upload" />} onClick={upload}>
                     Upload
                 </Button>
             }

@@ -124,7 +124,7 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
                         onClick={() => onAiOpenChange(!ownerState.aiOpen)}
                         className={styles.aiToggle}
                     >
-                        <Icon name="artificial-intelligence" className={styles.aiIcon} />
+                        <Icon name="magic-wand" className={styles.aiIcon} />
                         <span className={styles.aiLabel}>{labels.ai}</span>
                         <span className={styles.aiTrack} />
                     </button>

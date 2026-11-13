@@ -183,7 +183,7 @@ export const AIPanel = forwardRef<HTMLElement, AIPanelProps>(function AIPanel(
         >
             <div {...headerProps}>
                 <span className={styles.orb}>
-                    <Icon name="artificial-intelligence" />
+                    <Icon name="magic-wand" />
                 </span>
                 <span className={styles.heading}>
                     <span id={titleId} className={styles.title}>
@@ -229,7 +229,7 @@ export const AIPanel = forwardRef<HTMLElement, AIPanelProps>(function AIPanel(
                 <div className={styles.suggestions} role="group" aria-label={labels.suggestions}>
                     {suggestions.map((suggestion) => (
                         <button key={suggestion.prompt} type="button" className={styles.suggestion} onClick={() => onSend(suggestion.prompt)}>
-                            <Icon name="artificial-intelligence" />
+                            <Icon name="magic-wand" />
                             {suggestion.label}
                         </button>
                     ))}

@@ -138,7 +138,7 @@ const meta = {
                                 {
                                     id: "ai",
                                     label: "Toggle AI assistant",
-                                    icon: <Icon name="artificial-intelligence" />,
+                                    icon: <Icon name="magic-wand" />,
                                     shortcut: "mod+j",
                                     onSelect: () => changeAiOpen(!aiOpen),
                                 },

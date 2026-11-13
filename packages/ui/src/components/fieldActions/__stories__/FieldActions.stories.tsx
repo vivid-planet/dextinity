@@ -25,15 +25,29 @@ function MetaTitleField(props: FieldActionsProps) {
     );
 }
 
+const translationFailedMessage = "Translation failed. Try again.";
+
+/** Shows a failed translation in the field's validation message until the next translation or input. */
 function AltTextField(props: FieldActionsProps) {
     const [value, setValue] = useState("Three people at a table in the office.");
+    const [translationFailed, setTranslationFailed] = useState(false);
     return (
         <Field
             label="Alt text"
             helperText="Per language."
+            state={translationFailed ? "error" : "default"}
+            validationMessage={translationFailed ? translationFailedMessage : undefined}
             actions={
                 <FieldActions
                     {...props}
+                    onTranslate={(targetLocales) => {
+                        setTranslationFailed(false);
+                        return props.onTranslate?.(targetLocales);
+                    }}
+                    onTranslateError={(error) => {
+                        props.onTranslateError?.(error);
+                        setTranslationFailed(true);
+                    }}
                     onTranslateAccept={(translation) => {
                         props.onTranslateAccept?.(translation);
                         setValue(translation);
@@ -41,7 +55,15 @@ function AltTextField(props: FieldActionsProps) {
                 />
             }
         >
-            <Textarea name="altText" rows={2} value={value} onChange={(event) => setValue(event.target.value)} />
+            <Textarea
+                name="altText"
+                rows={2}
+                value={value}
+                onChange={(event) => {
+                    setTranslationFailed(false);
+                    setValue(event.target.value);
+                }}
+            />
         </Field>
     );
 }
@@ -113,17 +135,34 @@ export const Default: Story = {
 };
 
 /**
- * When the promise of `onTranslate` rejects, the loading state ends and `onTranslateError` receives the error.
+ * When the promise of `onTranslate` rejects, the loading state ends and `onTranslateError` receives the error. `FieldActions` shows no
+ * error itself: the application handles `onTranslateError`, here by setting the surrounding field's `state="error"` and
+ * `validationMessage` ("Translation failed. Try again.") until the next translation or input.
  */
 export const TranslationFails: Story = {
     args: {
-        onTranslate: fn(() => Promise.reject(new globalThis.Error("Service unavailable"))),
+        onTranslate: fn(() => new Promise((_resolve, reject) => setTimeout(() => reject(new globalThis.Error("Service unavailable")), 300))),
     },
     play: async ({ args, canvas }) => {
+        const textbox = canvas.getByRole("textbox", { name: "Alt text" });
         await userEvent.click(canvas.getByRole("button", { name: "Translate" }));
-        await waitFor(() => expect(args.onTranslateError).toHaveBeenCalled());
-        await expect(canvas.getByRole("textbox")).not.toHaveAttribute("aria-busy");
+        await waitFor(() => expect(args.onTranslateError).toHaveBeenCalledTimes(1));
+        await expect(textbox).not.toHaveAttribute("aria-busy");
         await expect(canvas.getByRole("button", { name: "Translate" })).toHaveFocus();
+        await expect(textbox).toHaveAttribute("aria-invalid", "true");
+        await expect(textbox).toHaveAccessibleDescription("Translation failed. Try again.");
+
+        await userEvent.type(textbox, " ");
+        await expect(textbox).not.toHaveAttribute("aria-invalid");
+        await expect(textbox).toHaveAccessibleDescription("Per language.");
+
+        await userEvent.click(canvas.getByRole("button", { name: "Translate" }));
+        await waitFor(() => expect(args.onTranslateError).toHaveBeenCalledTimes(2));
+        await userEvent.click(canvas.getByRole("button", { name: "Translate" }));
+        await expect(textbox).not.toHaveAttribute("aria-invalid");
+        await expect(textbox).toHaveAccessibleDescription("Per language.");
+        await waitFor(() => expect(args.onTranslateError).toHaveBeenCalledTimes(3));
+        await expect(textbox).toHaveAccessibleDescription("Translation failed. Try again.");
     },
 };
 

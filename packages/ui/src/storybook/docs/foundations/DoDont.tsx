@@ -27,7 +27,7 @@ export function DoDont({ dos, donts }: DoDontProps) {
                 </div>
                 <div className={styles.dont}>
                     <b>
-                        <Icon name="x" size="small" />
+                        <Icon name="close" size="small" />
                         Don't
                     </b>
                     <ul>

@@ -186,7 +186,7 @@ export const ScopeSwitcher = forwardRef<HTMLButtonElement, ScopeSwitcherProps>(f
                         <span className={styles.longText}>{longText}</span>
                         <span className={styles.shortText}>{scopeText(dimensions, value, true)}</span>
                     </span>
-                    <Icon name="chev-d" className={styles.chevron} />
+                    <Icon name="chevron-down" className={styles.chevron} />
                 </button>
             }
         >

@@ -118,7 +118,7 @@ export const OverviewLayout = forwardRef<HTMLDivElement, OverviewLayoutProps>(fu
                         <div {...labelProps}>
                             {back != null && (
                                 <Link
-                                    startIcon={<Icon name="arrow-l" />}
+                                    startIcon={<Icon name="arrow-left" />}
                                     {...slotProps?.back}
                                     className={clsx(styles.back, slotProps?.back?.className)}
                                     href={back.href}

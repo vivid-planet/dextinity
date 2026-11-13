@@ -104,7 +104,7 @@ function PageDetail({ node, published, onPublishedChange }: { node: TreeNode; pu
             title="Selected"
             actions={
                 <IconButton color="secondary" variant="text" size="small" aria-label="Actions">
-                    <Icon name="more" />
+                    <Icon name="more-horizontal" />
                 </IconButton>
             }
         >

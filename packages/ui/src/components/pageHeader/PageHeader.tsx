@@ -165,7 +165,7 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
                             }
                         }}
                     >
-                        <Icon name="arrow-l" />
+                        <Icon name="arrow-left" />
                     </IconButton>
                 )}
                 <h1 {...titleProps}>{title}</h1>

@@ -51,7 +51,7 @@ function RedirectList(props: DrawerProps) {
                             }}
                         >
                             <span className={styles.source}>{source}</span>
-                            <Icon name="arrow" size="small" className={styles.arrow} />
+                            <Icon name="arrow-right" size="small" className={styles.arrow} />
                             Page {index + 1}
                         </button>
                     </li>

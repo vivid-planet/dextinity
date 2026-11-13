@@ -132,7 +132,7 @@ function RedirectForm({ redirect, onClose, onSave }: { redirect: Redirect; onClo
             title={redirect.source === "" ? "New redirect" : "Edit redirect"}
             actions={
                 <IconButton color="secondary" aria-label="Close" variant="text" size="small" onClick={onClose}>
-                    <Icon name="x" />
+                    <Icon name="close" />
                 </IconButton>
             }
         >

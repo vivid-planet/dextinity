@@ -78,7 +78,7 @@ function ControlledBlockList(props: BlockListProps) {
                         onSelect={() => setSelectedId(block.id)}
                         actions={
                             <IconButton variant="text" color="secondary" size="small" aria-label="More actions">
-                                <Icon name="more" />
+                                <Icon name="more-horizontal" />
                             </IconButton>
                         }
                     />
@@ -350,7 +350,7 @@ function NestedBlockList(listProps: BlockListProps) {
                         key={column.id}
                         title={column.title}
                         summary={`Column · ${column.blocks.length === 1 ? "1 block" : `${column.blocks.length} blocks`}`}
-                        icon={<Icon name="columns" />}
+                        icon={<Icon name="columns-3" />}
                         visible
                         expanded={expandedIds.includes(column.id)}
                         onExpandedChange={(expanded) =>

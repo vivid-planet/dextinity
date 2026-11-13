@@ -51,9 +51,9 @@ export interface LinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>,
      * @defaultValue `false`
      */
     external?: boolean;
-    /** An icon before the text, e.g. `<Icon name="arrow-l" />` for a back link. It nudges to the start on hover. */
+    /** An icon before the text, e.g. `<Icon name="arrow-left" />` for a back link. It nudges to the start on hover. */
     startIcon?: ReactNode;
-    /** An icon after the text, e.g. `<Icon name="arrow" />`. It nudges to the end on hover. */
+    /** An icon after the text, e.g. `<Icon name="arrow-right" />`. It nudges to the end on hover. */
     endIcon?: ReactNode;
     /** Built-in text for assistive technology. */
     labels?: Partial<LinkLabels>;

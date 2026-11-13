@@ -83,7 +83,7 @@ const pageBlocks = [
     { id: "stage", title: "Stage", summary: "Image + heading", icon: <Icon name="image" /> },
     { id: "text", title: "Text", summary: "Body text", icon: <Icon name="heading" /> },
     { id: "jobs", title: "Job list", summary: "Linked content · 12 entries", icon: <Icon name="blocks" /> },
-    { id: "cta", title: "Call to action", summary: "Button", icon: <Icon name="arrow" /> },
+    { id: "cta", title: "Call to action", summary: "Button", icon: <Icon name="arrow-right" /> },
 ];
 
 const jobAdBlocks = [
@@ -275,7 +275,7 @@ const editActions = (
     <>
         <SaveState state="dirty" />
         <IconButton variant="text" color="secondary" aria-label="More actions">
-            <Icon name="more" />
+            <Icon name="more-horizontal" />
         </IconButton>
         <Button startIcon={<Icon name="check" />}>Save</Button>
     </>

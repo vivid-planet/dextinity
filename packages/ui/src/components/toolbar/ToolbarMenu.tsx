@@ -94,7 +94,7 @@ export const ToolbarMenu = forwardRef<HTMLButtonElement, ToolbarMenuProps>(funct
                 >
                     {icon != null && <span {...iconProps}>{icon}</span>}
                     {label != null && <span {...labelProps}>{label}</span>}
-                    <Icon name="chev-d" className={styles.chevron} />
+                    <Icon name="chevron-down" className={styles.chevron} />
                 </BaseToolbar.Button>
             }
         >

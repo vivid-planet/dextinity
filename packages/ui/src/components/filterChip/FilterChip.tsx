@@ -103,7 +103,7 @@ export const FilterChip = forwardRef<HTMLButtonElement, FilterChipProps>(functio
             {count != null && <span {...countProps}>{count}</span>}
             {ownerState.hasMenu && (
                 <span {...menuIconProps}>
-                    <Icon name="chev-d" />
+                    <Icon name="chevron-down" />
                 </span>
             )}
         </Toggle>

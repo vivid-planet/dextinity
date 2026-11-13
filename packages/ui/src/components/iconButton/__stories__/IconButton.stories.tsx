@@ -9,10 +9,10 @@ import styles from "./IconButton.stories.module.scss";
 
 const iconOptions = {
     Favorite: <Icon name="star-fill" />,
-    More: <Icon name="more" />,
+    More: <Icon name="more-horizontal" />,
     Edit: <Icon name="edit" />,
     Trash: <Icon name="trash" />,
-    Close: <Icon name="x" />,
+    Close: <Icon name="close" />,
 };
 
 const meta = {

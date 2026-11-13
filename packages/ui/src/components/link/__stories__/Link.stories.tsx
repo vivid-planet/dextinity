@@ -7,9 +7,9 @@ import { Link } from "../Link";
 import linkTokens from "../Link.tokens.scss?raw";
 
 const iconOptions = {
-    ArrowRight: <Icon name="arrow" />,
-    ArrowLeft: <Icon name="arrow-l" />,
-    ChevronRight: <Icon name="chev-r" />,
+    ArrowRight: <Icon name="arrow-right" />,
+    ArrowLeft: <Icon name="arrow-left" />,
+    ChevronRight: <Icon name="chevron-right" />,
 };
 
 const meta = {
@@ -54,14 +54,14 @@ export const Default: Story = {
  * A "go to" link next to a heading, e.g. in a card header. The arrow nudges forward on hover.
  */
 export const WithArrow: Story = {
-    args: { endIcon: <Icon name="arrow" /> },
+    args: { endIcon: <Icon name="arrow-right" /> },
 };
 
 /**
  * A back link, e.g. in the label line of an edit page header. The arrow nudges back on hover.
  */
 export const Back: Story = {
-    args: { startIcon: <Icon name="arrow-l" /> },
+    args: { startIcon: <Icon name="arrow-left" /> },
 };
 
 /**

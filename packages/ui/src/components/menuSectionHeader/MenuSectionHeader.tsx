@@ -13,7 +13,7 @@ export type MenuSectionHeaderOwnerState = {
     expandable: boolean;
 };
 
-type ExpandIconElementType = ElementType<{ name: "chev-d"; className?: string }>;
+type ExpandIconElementType = ElementType<{ name: "chevron-down"; className?: string }>;
 
 interface MenuSectionHeaderSlots<Label extends ElementType, ExpandIcon extends ExpandIconElementType, Action extends ElementType> {
     /**
@@ -102,7 +102,7 @@ export const MenuSectionHeader: <
         ownerState,
     });
     const expandIconProps = resolveSlotProps<MenuSectionHeaderOwnerState, ExpandIcon, typeof Icon>({
-        ownProps: { name: "chev-d", className: styles.expandIcon },
+        ownProps: { name: "chevron-down", className: styles.expandIcon },
         slotProps: slotProps?.expandIcon,
         ownerState,
     });

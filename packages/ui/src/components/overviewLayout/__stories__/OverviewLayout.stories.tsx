@@ -48,7 +48,7 @@ function Row({ title, subtitle, end, href = "#" }: { title: string; subtitle: st
                 <div className={styles.rowSubtitle}>{subtitle}</div>
             </div>
             <div className={styles.rowEnd}>{end}</div>
-            <Icon name="arrow" size="small" className={styles.rowGo} />
+            <Icon name="arrow-right" size="small" className={styles.rowGo} />
         </a>
     );
 }
@@ -60,7 +60,7 @@ function OverviewCards() {
                 title="Recently edited"
                 icon={<Icon name="clock" />}
                 link={
-                    <Link href="#page-tree" endIcon={<Icon name="arrow" />}>
+                    <Link href="#page-tree" endIcon={<Icon name="arrow-right" />}>
                         Page tree
                     </Link>
                 }
@@ -97,10 +97,10 @@ function OverviewCards() {
             </Card>
             <Card
                 title="Warnings"
-                icon={<Icon name="warn-tri" />}
+                icon={<Icon name="warning-triangle" />}
                 meta="3 open"
                 link={
-                    <Link href="#warnings" endIcon={<Icon name="arrow" />}>
+                    <Link href="#warnings" endIcon={<Icon name="arrow-right" />}>
                         All
                     </Link>
                 }

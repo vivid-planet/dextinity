@@ -43,7 +43,7 @@ function EditorToolbar(props: Omit<ToolbarProps, "children">) {
                     <Icon name="italic" />
                 </ToolbarButton>
                 <ToolbarButton aria-label="Link" shortcut="⌘K" onClick={fn()}>
-                    <Icon name="link" />
+                    <Icon name="link-diagonal" />
                 </ToolbarButton>
             </ToolbarGroup>
             <ToolbarSeparator />
@@ -52,7 +52,7 @@ function EditorToolbar(props: Omit<ToolbarProps, "children">) {
                     <Icon name="list" />
                 </ToolbarButton>
                 <ToolbarButton aria-label="Numbered list" pressed={false} onClick={fn()}>
-                    <Icon name="list-ol" />
+                    <Icon name="list-ordered" />
                 </ToolbarButton>
             </ToolbarGroup>
             <ToolbarSeparator />

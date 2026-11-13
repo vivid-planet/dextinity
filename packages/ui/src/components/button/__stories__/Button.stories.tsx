@@ -10,7 +10,7 @@ import styles from "./Button.stories.module.scss";
 const iconOptions = {
     Favorite: <Icon name="star-fill" />,
     Check: <Icon name="check" />,
-    ArrowRight: <Icon name="arrow" />,
+    ArrowRight: <Icon name="arrow-right" />,
     Trash: <Icon name="trash" />,
 };
 
@@ -191,8 +191,8 @@ export const WithIcons: Story = {
     render: () => (
         <div style={{ display: "flex", gap: "1rem" }}>
             <Button startIcon={<Icon name="star-fill" />}>Start only</Button>
-            <Button endIcon={<Icon name="arrow" />}>End only</Button>
-            <Button startIcon={<Icon name="star-fill" />} endIcon={<Icon name="arrow" />}>
+            <Button endIcon={<Icon name="arrow-right" />}>End only</Button>
+            <Button startIcon={<Icon name="star-fill" />} endIcon={<Icon name="arrow-right" />}>
                 Both
             </Button>
         </div>

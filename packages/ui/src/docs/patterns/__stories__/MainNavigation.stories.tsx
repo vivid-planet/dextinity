@@ -24,7 +24,7 @@ export const MainNavigation: Story = {
 
         return (
             <nav aria-label="Main" className={styles.navigation}>
-                <MainNavigationItem href="#" icon={<Icon name="dash" />}>
+                <MainNavigationItem href="#" icon={<Icon name="dashboard" />}>
                     Dashboard
                 </MainNavigationItem>
                 <MenuSectionHeader

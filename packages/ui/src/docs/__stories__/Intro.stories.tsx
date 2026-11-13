@@ -38,7 +38,7 @@ export const Showcase: Story = {
                 <div className={styles.column}>
                     <section className={styles.taskCard}>
                         <Typography variant="label" className={styles.taskDate}>
-                            <Icon name="cal-today" /> Due on Friday
+                            <Icon name="calendar-today" /> Due on Friday
                         </Typography>
                         <Typography variant="title" className={styles.taskTitle}>
                             Publish the spring campaign

@@ -106,7 +106,7 @@ export const LinkedContent = forwardRef<HTMLAnchorElement, LinkedContentProps>(f
                         {description != null && <span {...descriptionProps}>{description}</span>}
                     </span>
                     <span {...arrowProps}>
-                        <Icon name="arrow" />
+                        <Icon name="arrow-right" />
                     </span>
                 </>
             ),

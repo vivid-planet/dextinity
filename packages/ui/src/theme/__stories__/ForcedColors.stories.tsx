@@ -106,7 +106,7 @@ function SeparatorGallery() {
                 </ToolbarButton>
                 <ToolbarSeparator />
                 <ToolbarButton aria-label="Link" onClick={() => {}}>
-                    <Icon name="link" />
+                    <Icon name="link-diagonal" />
                 </ToolbarButton>
             </Toolbar>
             <DateTimePicker name="publishAt" label="Publish at" value={publishAt} onChange={setPublishAt} />

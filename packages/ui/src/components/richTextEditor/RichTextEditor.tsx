@@ -203,7 +203,7 @@ type MarkFormat = "bold" | "italic" | "underline" | "strike";
 
 const markFormats: MarkFormat[] = ["bold", "italic", "underline", "strike"];
 
-const markIcons: Record<MarkFormat, IconName> = { bold: "bold", italic: "italic", underline: "underline", strike: "strike" };
+const markIcons: Record<MarkFormat, IconName> = { bold: "bold", italic: "italic", underline: "underline", strike: "strikethrough" };
 
 const markShortcuts: Record<MarkFormat, string> = { bold: "⌘B", italic: "⌘I", underline: "⌘U", strike: "⌘⇧S" };
 
@@ -560,7 +560,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                     ) : (
                         hasMoreFormatting && (
                             <ToolbarMenu
-                                icon={<Icon name="more" />}
+                                icon={<Icon name="more-horizontal" />}
                                 aria-label={labels.moreFormatting}
                                 open={moreMenuOpen}
                                 onOpenChange={setMoreMenuOpen}
@@ -624,7 +624,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                             keepFocus
                             onClick={() => editor?.chain().focus().toggleBulletList().run()}
                         >
-                            <Icon name="list-ul" />
+                            <Icon name="list-unordered" />
                         </ToolbarButton>
                     )}
                     {has("orderedList") && (
@@ -635,7 +635,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                             keepFocus
                             onClick={() => editor?.chain().focus().toggleOrderedList().run()}
                         >
-                            <Icon name="list-ol" />
+                            <Icon name="list-ordered" />
                         </ToolbarButton>
                     )}
                     <ToolbarButton
@@ -645,7 +645,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                         keepFocus
                         onClick={() => editor?.chain().focus().sinkListItem("listItem").run()}
                     >
-                        <Icon name="indent-inc" />
+                        <Icon name="indent-increase" />
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={labels.outdent}
@@ -654,7 +654,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                         keepFocus
                         onClick={() => editor?.chain().focus().liftListItem("listItem").run()}
                     >
-                        <Icon name="indent-dec" />
+                        <Icon name="indent-decrease" />
                     </ToolbarButton>
                 </ToolbarGroup>
             ),
@@ -666,7 +666,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
             content: (
                 <ToolbarGroup>
                     <ToolbarButton aria-label={labels.link} shortcut="⌘K" pressed={state.link} keepFocus onClick={() => requestLink()}>
-                        <Icon name="link" />
+                        <Icon name="link-diagonal" />
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={labels.removeLink}
@@ -712,7 +712,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
                             keepFocus
                             onClick={() => editor?.chain().focus().insertNonBreakingSpace().run()}
                         >
-                            <Icon name="nbsp" />
+                            <Icon name="non-breaking-space" />
                         </ToolbarButton>
                     )}
                     {has("softHyphen") && (

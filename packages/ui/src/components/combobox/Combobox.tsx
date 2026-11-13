@@ -339,7 +339,7 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
                                     <BaseCombobox.Chip key={entry.key} className={styles.chip}>
                                         {optionLabel}
                                         <BaseCombobox.ChipRemove className={styles.chipRemove} aria-label={labels.remove(optionLabel)}>
-                                            <Icon name="x" />
+                                            <Icon name="close" />
                                         </BaseCombobox.ChipRemove>
                                     </BaseCombobox.Chip>
                                 );
@@ -356,11 +356,11 @@ export const Combobox = forwardRef(function Combobox<Option, Multiple extends bo
                     )}
                     {showsClear && (
                         <BaseCombobox.Clear className={styles.iconButton} aria-label={labels.clear}>
-                            <Icon name="x" />
+                            <Icon name="close" />
                         </BaseCombobox.Clear>
                     )}
                     <BaseCombobox.Trigger className={clsx(styles.iconButton, styles.chevron)} tabIndex={-1}>
-                        <Icon name="chev-d" />
+                        <Icon name="chevron-down" />
                     </BaseCombobox.Trigger>
                     <BaseCombobox.Portal container={container}>
                         <FieldContextReset>

@@ -67,7 +67,7 @@ const meta = {
     args: {
         trigger: (
             <IconButton color="secondary" aria-label="More actions" variant="outlined">
-                <Icon name="more" />
+                <Icon name="more-horizontal" />
             </IconButton>
         ),
         children: rowMenuItems,

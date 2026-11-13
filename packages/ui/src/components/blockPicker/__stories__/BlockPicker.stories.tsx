@@ -27,7 +27,7 @@ const items: BlockPickerItem[] = [
         value: "stage",
         label: "Stage",
         description: "Large picture with title at the top of a page",
-        icon: <Icon name="format-land" />,
+        icon: <Icon name="format-landscape" />,
         category: "media",
         keywords: ["hero"],
     },

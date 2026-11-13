@@ -30,19 +30,19 @@ function StatusModel() {
     return (
         <div className={styles.flow}>
             <span className={styles.flowNode}>New</span>
-            <Icon name="arrow" />
+            <Icon name="arrow-right" />
             <span className={styles.flowNode}>
                 <StatusIndicator status="unpublished" />
             </span>
             <span className={styles.flowSwitch}>
-                <Icon name="arrow" />
+                <Icon name="arrow-right" />
                 <span>Switch</span>
-                <Icon name="arrow-l" />
+                <Icon name="arrow-left" />
             </span>
             <span className={styles.flowNode}>
                 <StatusIndicator status="published" />
             </span>
-            <Icon name="arrow" />
+            <Icon name="arrow-right" />
             <span className={styles.flowNode}>
                 <StatusIndicator status="archived" />
             </span>

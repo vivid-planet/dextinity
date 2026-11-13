@@ -200,7 +200,7 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
                                                 aria-label={labels.close}
                                                 className={clsx(styles.closeButton, slotProps?.closeButton?.className)}
                                             >
-                                                <Icon name="x" />
+                                                <Icon name="close" />
                                             </IconButton>
                                         }
                                     />

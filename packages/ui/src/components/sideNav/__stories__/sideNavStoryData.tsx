@@ -5,7 +5,7 @@ export const sideNavGroups: SideNavGroup[] = [
     {
         label: "Content",
         items: [
-            { id: "dashboard", label: "Overview", icon: <Icon name="dash" />, href: "#dashboard" },
+            { id: "dashboard", label: "Overview", icon: <Icon name="dashboard" />, href: "#dashboard" },
             {
                 id: "website",
                 label: "Website",

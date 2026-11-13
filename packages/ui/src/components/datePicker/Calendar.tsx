@@ -235,7 +235,7 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
                     disabled={!canGoBack}
                     onClick={() => showMonths(-step)}
                 >
-                    <Icon name="chev-l" />
+                    <Icon name="chevron-left" />
                 </button>
                 <button
                     type="button"
@@ -248,7 +248,7 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
                     }}
                 >
                     {heading}
-                    <Icon name="chev-d" className={styles.headingIcon} />
+                    <Icon name="chevron-down" className={styles.headingIcon} />
                     <span id={headingDescriptionId} hidden>
                         {labels.chooseMonth}
                     </span>
@@ -266,7 +266,7 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
                     <BaseSelect.Trigger ref={yearAnchorRef} className={styles.yearTrigger} aria-label={labels.year}>
                         <BaseSelect.Value />
                         <BaseSelect.Icon className={styles.headingIcon}>
-                            <Icon name="chev-d" />
+                            <Icon name="chevron-down" />
                         </BaseSelect.Icon>
                     </BaseSelect.Trigger>
                     <BaseSelect.Portal container={yearPortalContainer}>
@@ -293,7 +293,7 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
                     disabled={!canGoForward}
                     onClick={() => showMonths(step)}
                 >
-                    <Icon name="chev-r" />
+                    <Icon name="chevron-right" />
                 </button>
             </div>
             <span className={styles.visuallyHidden} aria-live="polite">

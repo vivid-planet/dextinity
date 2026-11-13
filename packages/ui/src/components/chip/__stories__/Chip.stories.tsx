@@ -9,8 +9,8 @@ import chipTokens from "../Chip.tokens.scss?raw";
 import styles from "./Chip.stories.module.scss";
 
 const iconOptions = {
-    Calendar: <Icon name="cal" />,
-    ChevronDown: <Icon name="chev-d" />,
+    Calendar: <Icon name="calendar" />,
+    ChevronDown: <Icon name="chevron-down" />,
 };
 
 const meta = {
@@ -110,8 +110,8 @@ export const Disabled: Story = {
 
 export const WithIcons: Story = {
     args: {
-        startIcon: <Icon name="cal" />,
-        endIcon: <Icon name="chev-d" />,
+        startIcon: <Icon name="calendar" />,
+        endIcon: <Icon name="chevron-down" />,
     },
 };
 

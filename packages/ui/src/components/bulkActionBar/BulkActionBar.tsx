@@ -175,7 +175,7 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
                         {action.label}
                         {action.menu != null && (
                             <span className={styles.actionIcon} data-menu-indicator="" aria-hidden>
-                                <Icon name="chev-u" />
+                                <Icon name="chevron-up" />
                             </span>
                         )}
                     </Toolbar.Button>
@@ -200,7 +200,7 @@ export const BulkActionBar = forwardRef<HTMLDivElement, BulkActionBarProps>(func
             })}
             <Tooltip content={labels.clear}>
                 <Toolbar.Button {...clearProps}>
-                    <Icon name="x" />
+                    <Icon name="close" />
                 </Toolbar.Button>
             </Tooltip>
         </Toolbar.Root>

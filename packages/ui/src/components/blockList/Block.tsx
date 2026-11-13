@@ -272,7 +272,7 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                 {ownerState.invalid && (
                     <Tooltip content={invalidReason ?? labels.invalid}>
                         <span {...invalidMarkerProps}>
-                            <Icon name="warn-tri" />
+                            <Icon name="warning-triangle" />
                         </span>
                     </Tooltip>
                 )}
@@ -291,12 +291,12 @@ export const Block = forwardRef<HTMLLIElement, BlockProps>(function Block(
                     </IconButton>
                 )}
                 {actions != null && <span className={styles.actions}>{actions}</span>}
-                {!ownerState.expandable && onSelect != null && <Icon name="chev-r" className={styles.chevron} />}
+                {!ownerState.expandable && onSelect != null && <Icon name="chevron-right" className={styles.chevron} />}
                 {ownerState.expandable && (
                     <Collapsible.Trigger
                         render={
                             <IconButton variant="text" color="secondary" size="small" className={styles.toggle} aria-label={labels.toggleFields}>
-                                <Icon name="chev-d" className={styles.toggleIcon} />
+                                <Icon name="chevron-down" className={styles.toggleIcon} />
                             </IconButton>
                         }
                     />

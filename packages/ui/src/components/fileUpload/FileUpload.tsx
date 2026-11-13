@@ -443,7 +443,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                             </span>
                             {editable && (
                                 <IconButton variant="text" color="secondary" size="small" aria-label={labels.remove} onClick={() => remove(file)}>
-                                    <Icon name="x" />
+                                    <Icon name="close" />
                                 </IconButton>
                             )}
                             {name != null && <input type="hidden" name={name} value={file.id} />}
@@ -480,7 +480,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                                     aria-label={entry.status === "uploading" ? labels.cancel : labels.dismiss}
                                     onClick={() => cancel(entry)}
                                 >
-                                    <Icon name="x" />
+                                    <Icon name="close" />
                                 </IconButton>
                             </span>
                         </li>

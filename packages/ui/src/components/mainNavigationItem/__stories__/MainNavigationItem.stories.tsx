@@ -9,7 +9,7 @@ import mainNavigationItemTokens from "../MainNavigationItem.tokens.scss?raw";
 import styles from "./mainNavigationItem.module.scss";
 
 const iconOptions = {
-    Dashboard: <Icon name="dash" />,
+    Dashboard: <Icon name="dashboard" />,
     Settings: <Icon name="gear" />,
 };
 
@@ -53,13 +53,13 @@ export const Default: Story = {};
 
 export const WithIcon: Story = {
     args: {
-        icon: <Icon name="dash" />,
+        icon: <Icon name="dashboard" />,
     },
 };
 
 export const Active: Story = {
     args: {
-        icon: <Icon name="dash" />,
+        icon: <Icon name="dashboard" />,
         active: true,
     },
 };

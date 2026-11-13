@@ -17,7 +17,7 @@ const iconOptions = {
 
 const linkOptions = {
     PageTree: (
-        <Link href="#page-tree" endIcon={<Icon name="arrow" />}>
+        <Link href="#page-tree" endIcon={<Icon name="arrow-right" />}>
             Page tree
         </Link>
     ),
@@ -34,7 +34,7 @@ function RecentRow() {
                 <Avatar name="Anna Klein" size="small" />
                 12 min ago
             </div>
-            <Icon name="arrow" size="small" className={styles.rowGo} />
+            <Icon name="arrow-right" size="small" className={styles.rowGo} />
         </a>
     );
 }

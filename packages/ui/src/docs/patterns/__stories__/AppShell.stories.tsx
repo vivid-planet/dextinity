@@ -34,7 +34,7 @@ export const AppShell: Story = {
                     <MenuSectionHeader slotProps={{ label: { id: "app-shell-main" } }}>Main</MenuSectionHeader>
                     <ul aria-labelledby="app-shell-main" className={styles.list}>
                         <li>
-                            <MainNavigationItem href="#" icon={<Icon name="dash" />} active>
+                            <MainNavigationItem href="#" icon={<Icon name="dashboard" />} active>
                                 Dashboard
                             </MainNavigationItem>
                         </li>
@@ -60,7 +60,7 @@ export const AppShell: Story = {
                                     </Typography>
                                 </li>
                                 <li aria-hidden className={styles.breadcrumbSeparator}>
-                                    <Icon name="chev-r" />
+                                    <Icon name="chevron-right" />
                                 </li>
                                 <li>
                                     <Typography variant="small" aria-current="page">
@@ -78,7 +78,7 @@ export const AppShell: Story = {
                                 <Button>Export</Button>
                             </div>
                             <IconButton variant="text" color="secondary" aria-label="More actions" className={styles.moreActions}>
-                                <Icon name="more-v" />
+                                <Icon name="more-vertical" />
                             </IconButton>
                         </div>
                     </div>

@@ -46,7 +46,7 @@ function EditorControl(control: FieldControlProps) {
                     <Icon name="bold" />
                 </ToolbarButton>
                 <ToolbarButton aria-label="Link" shortcut="⌘K" keepFocus>
-                    <Icon name="link" />
+                    <Icon name="link-diagonal" />
                 </ToolbarButton>
             </Toolbar>
             <div

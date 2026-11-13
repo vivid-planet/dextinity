@@ -17,10 +17,10 @@ export const ReplaceIconsInPart: StoryObj = {
     render: () => (
         <>
             <Typography>
-                Default: <Icon name="arrow" /> <Icon name="star-fill" />
+                Default: <Icon name="arrow-right" /> <Icon name="star-fill" />
             </Typography>
             <Typography className={styles.projectIcons}>
-                Replaced: <Icon name="arrow" /> <Icon name="star-fill" />
+                Replaced: <Icon name="arrow-right" /> <Icon name="star-fill" />
             </Typography>
         </>
     ),

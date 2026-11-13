@@ -117,7 +117,7 @@
     }
 
     [data-type="non-breaking-space"]::after {
-        mask: var(--dextinity-icon-nbsp) center / contain no-repeat;
+        mask: var(--dextinity-icon-non-breaking-space) center / contain no-repeat;
     }
 
     [data-type="soft-hyphen"] {

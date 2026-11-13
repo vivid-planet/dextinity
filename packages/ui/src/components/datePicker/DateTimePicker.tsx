@@ -293,7 +293,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                                 inputRef.current?.focus();
                             }}
                         >
-                            <Icon name="x" />
+                            <Icon name="close" />
                         </button>
                     )}
                 </>

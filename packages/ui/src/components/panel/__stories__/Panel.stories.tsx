@@ -11,13 +11,13 @@ import styles from "./Panel.stories.module.scss";
 
 const actionOptions = {
     Link: (
-        <Link href="#pages" endIcon={<Icon name="arrow" />}>
+        <Link href="#pages" endIcon={<Icon name="arrow-right" />}>
             Page tree
         </Link>
     ),
     IconButton: (
         <IconButton variant="text" color="secondary" aria-label="More actions" size="small">
-            <Icon name="more" />
+            <Icon name="more-horizontal" />
         </IconButton>
     ),
 };

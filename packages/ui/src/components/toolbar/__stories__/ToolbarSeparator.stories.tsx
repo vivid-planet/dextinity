@@ -21,7 +21,7 @@ const meta = {
                     </ToolbarButton>
                     <Story />
                     <ToolbarButton aria-label="Link" onClick={fn()}>
-                        <Icon name="link" />
+                        <Icon name="link-diagonal" />
                     </ToolbarButton>
                 </Toolbar>
             </div>

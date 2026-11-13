@@ -229,7 +229,7 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                       disabled={disabled || readOnly}
                       onClick={() => emit(selectedOptions.filter((selected) => selected !== option))}
                   >
-                      <Icon name="x" />
+                      <Icon name="close" />
                   </button>
               </span>
           ))
@@ -314,7 +314,7 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                         <Combobox.Trigger {...triggerProps(control, valueId)} ref={setTriggerRef} className={styles.trigger}>
                             {triggerContent}
                             <Combobox.Icon className={styles.chevron}>
-                                <Icon name="chev-d" />
+                                <Icon name="chevron-down" />
                             </Combobox.Icon>
                         </Combobox.Trigger>
                         <Combobox.Portal container={container}>
@@ -357,7 +357,7 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
                         <BaseSelect.Trigger {...triggerProps(control, valueId)} ref={setTriggerRef} className={styles.trigger}>
                             {triggerContent}
                             <BaseSelect.Icon className={styles.chevron}>
-                                <Icon name="chev-d" />
+                                <Icon name="chevron-down" />
                             </BaseSelect.Icon>
                         </BaseSelect.Trigger>
                         <BaseSelect.Portal container={container}>

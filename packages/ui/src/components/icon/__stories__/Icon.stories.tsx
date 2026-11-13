@@ -177,7 +177,7 @@ export const CustomIcons: Story = {
             {(["default", "custom"] as const).map((variant) => (
                 <div key={variant} className={clsx(styles.row, variant === "custom" && styles.customIcons)}>
                     <code className={styles.variantName}>{variant}</code>
-                    {(["search", "home", "folder", "check", "x", "plus", "arrow", "chev-d"] as const).map((name) => (
+                    {(["search", "home", "folder", "check", "close", "plus", "arrow-right", "chevron-down"] as const).map((name) => (
                         <Icon key={name} name={name} size="large" />
                     ))}
                 </div>

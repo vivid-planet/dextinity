@@ -52,7 +52,7 @@ export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinn
 > {
     /** Names the action, since the button shows no text. It is also shown as the button's tooltip, e.g. "More actions". */
     "aria-label": string;
-    /** The icon to show, e.g. `<Icon name="more" />`. */
+    /** The icon to show, e.g. `<Icon name="more-horizontal" />`. */
     children?: ReactNode;
     /** A keyboard shortcut for the action, shown in the tooltip, e.g. `⌘S`. */
     shortcut?: string;

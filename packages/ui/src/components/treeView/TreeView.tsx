@@ -173,7 +173,7 @@ interface Expansion {
 /** Long enough for the collapse animation to end; clears it where `animationend` never comes, e.g. without rendering. */
 const expansionAnimationTimeout = 1000;
 
-const typeIcons = { page: "file", link: "link", folder: "folder" } as const;
+const typeIcons = { page: "file", link: "link-diagonal", folder: "folder" } as const;
 
 function collectParents(nodes: TreeNode[], parentId: string | undefined, parents: Map<string, string | undefined>) {
     for (const node of nodes) {
@@ -696,7 +696,7 @@ export const TreeView = forwardRef<HTMLUListElement, TreeViewProps>(function Tre
                                 }
                             }}
                         >
-                            <Icon name="chev-r" />
+                            <Icon name="chevron-right" />
                         </span>
                         {checkable && (
                             <span

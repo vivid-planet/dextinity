@@ -18,7 +18,7 @@ export type MainNavigationItemOwnerState = {
     expandable: boolean;
 };
 
-type ExpandIconElementType = ElementType<{ name: "chev-d"; className?: string }>;
+type ExpandIconElementType = ElementType<{ name: "chevron-down"; className?: string }>;
 
 interface MainNavigationItemSlots<
     ActiveIndicator extends ElementType,
@@ -183,7 +183,7 @@ export const MainNavigationItem: <
         ownerState,
     });
     const expandIconProps = resolveSlotProps<MainNavigationItemOwnerState, ExpandIcon, typeof Icon>({
-        ownProps: { name: "chev-d", className: styles.expandIcon },
+        ownProps: { name: "chevron-down", className: styles.expandIcon },
         slotProps: slotProps?.expandIcon,
         ownerState,
     });

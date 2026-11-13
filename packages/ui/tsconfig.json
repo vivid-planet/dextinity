@@ -14,5 +14,12 @@
     },
     "exclude": ["node_modules", "lib"],
     "extends": "../../tsconfig.core.json",
-    "include": ["./src", "./.storybook", "./vite.config.mts", "./vitest.setup.ts", "./vitest.storybook.setup.ts"]
+    "include": [
+        "./src",
+        "./.storybook",
+        "./vite.config.mts",
+        "./vitest.setup.ts",
+        "./vitest.storybook.setup.ts",
+        "./vitest.storybook-docs-popups.setup.ts"
+    ]
 }

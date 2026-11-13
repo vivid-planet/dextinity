@@ -2,12 +2,13 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Slider } from "../../slider/Slider";
-import { Popover, type PopoverProps } from "../Popover";
+import { Popover } from "../Popover";
 import popoverTokens from "../Popover.tokens.scss?raw";
 import styles from "./Popover.stories.module.scss";
 
@@ -23,20 +24,6 @@ function TimeOfDay() {
     );
 }
 
-function ControlledPopover(props: PopoverProps) {
-    const [open, setOpen] = useState(props.open);
-    return (
-        <Popover
-            {...props}
-            open={open}
-            onOpenChange={(nextOpen) => {
-                setOpen(nextOpen);
-                props.onOpenChange(nextOpen);
-            }}
-        />
-    );
-}
-
 const meta = {
     component: Popover,
     title: "Building blocks/Modals & overlays/Popover",
@@ -49,7 +36,19 @@ const meta = {
         ),
     ],
     parameters: { tokens: popoverTokens },
-    render: (args) => <ControlledPopover key={String(args.open)} {...args} />,
+    render: (args, context) => {
+        const [open, setOpen] = useControlledArg(args, "open", context);
+        return (
+            <Popover
+                {...args}
+                open={open}
+                onOpenChange={(nextOpen) => {
+                    setOpen(nextOpen);
+                    args.onOpenChange(nextOpen);
+                }}
+            />
+        );
+    },
     args: {
         trigger: (
             <Button variant="outlined" color="secondary" startIcon={<Icon name="clock" />}>

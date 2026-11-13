@@ -1,28 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { MenuItem } from "../../menu/MenuItem";
 import { Toolbar } from "../Toolbar";
 import toolbarTokens from "../Toolbar.tokens.scss?raw";
-import { ToolbarMenu, type ToolbarMenuProps } from "../ToolbarMenu";
+import { ToolbarMenu } from "../ToolbarMenu";
 import styles from "./Toolbar.stories.module.scss";
-
-function ControlledToolbarMenu(props: ToolbarMenuProps) {
-    const [open, setOpen] = useState(props.open);
-    return (
-        <ToolbarMenu
-            {...props}
-            open={open}
-            onOpenChange={(nextOpen) => {
-                setOpen(nextOpen);
-                props.onOpenChange(nextOpen);
-            }}
-        />
-    );
-}
 
 const meta = {
     component: ToolbarMenu,
@@ -61,7 +47,19 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledToolbarMenu {...args} />,
+    render: (args, context) => {
+        const [open, setOpen] = useControlledArg(args, "open", context);
+        return (
+            <ToolbarMenu
+                {...args}
+                open={open}
+                onOpenChange={(nextOpen) => {
+                    setOpen(nextOpen);
+                    args.onOpenChange(nextOpen);
+                }}
+            />
+        );
+    },
 } satisfies Meta<typeof ToolbarMenu>;
 
 export default meta;

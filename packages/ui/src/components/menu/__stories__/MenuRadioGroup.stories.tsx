@@ -1,13 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import type { ReactNode } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { Menu } from "../Menu";
 import menuTokens from "../Menu.tokens.scss?raw";
-import { MenuRadioGroup, type MenuRadioGroupProps } from "../MenuRadioGroup";
+import { MenuRadioGroup } from "../MenuRadioGroup";
 import { MenuRadioItem } from "../MenuRadioItem";
 import styles from "./Menu.stories.module.scss";
 
@@ -24,20 +25,6 @@ function InOpenMenu({ children }: { children: ReactNode }) {
         >
             {children}
         </Menu>
-    );
-}
-
-function ControlledRadioGroup(props: MenuRadioGroupProps) {
-    const [value, setValue] = useState(props.value);
-    return (
-        <MenuRadioGroup
-            {...props}
-            value={value}
-            onChange={(nextValue) => {
-                setValue(nextValue);
-                props.onChange(nextValue);
-            }}
-        />
     );
 }
 
@@ -58,7 +45,19 @@ const meta = {
         ),
     ],
     parameters: { tokens: menuTokens },
-    render: (args) => <ControlledRadioGroup {...args} />,
+    render: (args, context) => {
+        const [value, setValue] = useControlledArg(args, "value", context);
+        return (
+            <MenuRadioGroup
+                {...args}
+                value={value}
+                onChange={(nextValue) => {
+                    setValue(nextValue);
+                    args.onChange(nextValue);
+                }}
+            />
+        );
+    },
     args: {
         value: "light",
         onChange: fn(),

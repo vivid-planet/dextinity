@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { SegmentedControl, type SegmentedControlOption, type SegmentedControlProps } from "../SegmentedControl";
@@ -31,12 +31,12 @@ const views: SegmentedControlOption[] = [
 type SegmentedControlStoryArgs = SegmentedControlProps & Pick<FieldStoryArgs, "label" | "helperText" | "validationMessage" | "state">;
 
 /**
- * Keeps the story controlled: choosing updates the local value; the `value` arg sets the initial one. With a field arg, it puts the
- * control in a `Field` with `layout="group"`.
+ * Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. With a field arg, it
+ * puts the control in a `Field` with `layout="group"`.
  */
-function ControlledSegmentedControl(args: SegmentedControlStoryArgs) {
+function ControlledSegmentedControl({ storyId, ...args }: SegmentedControlStoryArgs & { storyId: string }) {
     const { field, control } = splitFieldArgs(args, ["size"]);
-    const [value, setValue] = useState(control.value);
+    const [value, setValue] = useControlledArg(control, "value", { id: storyId });
     const segmentedControl = (
         <SegmentedControl
             {...control}
@@ -77,7 +77,7 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledSegmentedControl {...args} />,
+    render: (args, context) => <ControlledSegmentedControl {...args} storyId={context.id} />,
 } satisfies Meta<SegmentedControlStoryArgs>;
 
 export default meta;
@@ -173,11 +173,13 @@ export const Success: Story = {
  */
 export const Overflow: Story = {
     args: { "aria-label": "View", options: views, value: "list" },
-    render: (args) => (
-        <div className={styles.narrow}>
-            <ControlledSegmentedControl {...args} />
-        </div>
-    ),
+    decorators: [
+        (Story) => (
+            <div className={styles.narrow}>
+                <Story />
+            </div>
+        ),
+    ],
     play: async ({ args, canvas }) => {
         const trigger = await canvas.findByRole("button", { name: "View List" });
         await expect(canvas.queryByRole("radiogroup")).toBeNull();
@@ -192,11 +194,13 @@ export const Overflow: Story = {
 
 export const OverflowWrap: Story = {
     args: { "aria-label": "View", options: views, value: "list", overflow: "wrap" },
-    render: (args) => (
-        <div className={styles.narrow}>
-            <ControlledSegmentedControl {...args} />
-        </div>
-    ),
+    decorators: [
+        (Story) => (
+            <div className={styles.narrow}>
+                <Story />
+            </div>
+        ),
+    ],
     play: async ({ canvas }) => {
         await expect(canvas.getByRole("radiogroup", { name: "View" })).toBeInTheDocument();
     },

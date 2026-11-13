@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { FieldActions } from "../../fieldActions/FieldActions";
@@ -12,10 +12,10 @@ import styles from "./RichTextEditor.stories.module.scss";
 
 type RichTextEditorStoryArgs = RichTextEditorProps & FieldStoryArgs;
 
-/** Keeps the story controlled: editing updates the local value; changing the `value` control starts over from it. */
-function ControlledRichTextEditor(args: RichTextEditorStoryArgs) {
+/** Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. */
+function ControlledRichTextEditor({ storyId, ...args }: RichTextEditorStoryArgs & { storyId: string }) {
     const { field, control } = splitFieldArgs(args);
-    const [value, setValue] = useState(control.value);
+    const [value, setValue] = useControlledArg(control, "value", { id: storyId });
     return (
         <StoryField field={field} layout="stacked">
             <RichTextEditor
@@ -66,7 +66,7 @@ const meta = {
     title: "Building blocks/Form fields/RichTextEditor",
     decorators: [themeDecorator],
     parameters: { tokens: `${richTextEditorTokens}\n${fieldTokens}` },
-    render: (args) => <ControlledRichTextEditor key={args.value} {...args} />,
+    render: (args, context) => <ControlledRichTextEditor {...args} storyId={context.id} />,
     args: {
         name: "description",
         label: "Rich text",
@@ -218,11 +218,13 @@ export const MoreFormatting: Story = {
  * is rendered. Without bold, italic, underline, or strikethrough buttons, styles with an icon show as buttons of their own.
  */
 export const InlineStyles: Story = {
-    render: (args) => (
-        <div className={styles.inlineStyles}>
-            <ControlledRichTextEditor key={args.value} {...args} />
-        </div>
-    ),
+    decorators: [
+        (Story) => (
+            <div className={styles.inlineStyles}>
+                <Story />
+            </div>
+        ),
+    ],
     args: {
         toolbar: ["subscript", "superscript"],
         inlineStyles: [{ name: "productName", label: "Product name", icon: "highlight" }],

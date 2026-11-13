@@ -1,44 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { ProductLogo, ProductSign } from "../../../storybook/ProductLogo";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import { getSideNavAncestorIds, SideNav, type SideNavProps } from "../SideNav";
+import { getSideNavAncestorIds, SideNav } from "../SideNav";
 import sideNavTokens from "../SideNav.tokens.scss?raw";
 import styles from "./SideNav.stories.module.scss";
 import { sideNavGroups } from "./sideNavStoryData";
-
-function ControlledSideNav(props: SideNavProps) {
-    const [activeId, setActiveId] = useState(props.activeId);
-    const [expanded, setExpanded] = useState(props.expanded);
-    const [collapsed, setCollapsed] = useState(props.collapsed ?? false);
-    return (
-        <SideNav
-            {...props}
-            activeId={activeId}
-            expanded={expanded}
-            onExpandedChange={(nextExpanded) => {
-                setExpanded(nextExpanded);
-                props.onExpandedChange(nextExpanded);
-            }}
-            onNavigate={(item, event) => {
-                event.preventDefault();
-                setActiveId(item.id);
-                props.onNavigate(item, event);
-            }}
-            collapsed={collapsed}
-            onCollapsedChange={
-                props.onCollapsedChange == null
-                    ? undefined
-                    : (nextCollapsed) => {
-                          setCollapsed(nextCollapsed);
-                          props.onCollapsedChange?.(nextCollapsed);
-                      }
-            }
-        />
-    );
-}
 
 const meta = {
     component: SideNav,
@@ -52,7 +21,36 @@ const meta = {
         ),
     ],
     parameters: { tokens: sideNavTokens, layout: "fullscreen" },
-    render: (args) => <ControlledSideNav {...args} />,
+    render: (args, context) => {
+        const [activeId, setActiveId] = useControlledArg(args, "activeId", context);
+        const [expanded, setExpanded] = useControlledArg(args, "expanded", context);
+        const [collapsed, setCollapsed] = useControlledArg(args, "collapsed", context);
+        return (
+            <SideNav
+                {...args}
+                activeId={activeId}
+                expanded={expanded}
+                onExpandedChange={(nextExpanded) => {
+                    setExpanded(nextExpanded);
+                    args.onExpandedChange(nextExpanded);
+                }}
+                onNavigate={(item, event) => {
+                    event.preventDefault();
+                    setActiveId(item.id);
+                    args.onNavigate(item, event);
+                }}
+                collapsed={collapsed ?? false}
+                onCollapsedChange={
+                    args.onCollapsedChange == null
+                        ? undefined
+                        : (nextCollapsed) => {
+                              setCollapsed(nextCollapsed);
+                              args.onCollapsedChange?.(nextCollapsed);
+                          }
+                }
+            />
+        );
+    },
     args: {
         logo: <ProductLogo />,
         logoMark: <ProductSign />,

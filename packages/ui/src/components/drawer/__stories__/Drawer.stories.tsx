@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Field } from "../../field/Field";
@@ -28,14 +29,9 @@ function RedirectForm({ source }: { source: string }) {
     );
 }
 
+/** Opens the drawer for the redirect clicked in the list; the `open` prop opens it for the last one clicked. */
 function RedirectList(props: DrawerProps) {
-    const [selected, setSelected] = useState<string | null>(props.open ? redirects[1] : null);
-    const handleOpenChange = (nextOpen: boolean) => {
-        if (!nextOpen) {
-            setSelected(null);
-        }
-        props.onOpenChange(nextOpen);
-    };
+    const [selected, setSelected] = useState(redirects[1]);
     return (
         <>
             <ul className={styles.list}>
@@ -44,7 +40,7 @@ function RedirectList(props: DrawerProps) {
                         <button
                             type="button"
                             className={styles.row}
-                            aria-current={selected === source}
+                            aria-current={props.open && selected === source}
                             onClick={() => {
                                 setSelected(source);
                                 props.onOpenChange(true);
@@ -57,9 +53,7 @@ function RedirectList(props: DrawerProps) {
                     </li>
                 ))}
             </ul>
-            <Drawer {...props} open={selected != null} onOpenChange={handleOpenChange}>
-                {selected != null && <RedirectForm key={selected} source={selected} />}
-            </Drawer>
+            <Drawer {...props}>{props.open && <RedirectForm key={selected} source={selected} />}</Drawer>
         </>
     );
 }
@@ -69,7 +63,19 @@ const meta = {
     title: "Building blocks/Modals & overlays/Drawer",
     decorators: [themeDecorator],
     parameters: { tokens: drawerTokens, closedOnDocsPage: true },
-    render: (args) => <RedirectList key={String(args.open)} {...args} />,
+    render: (args, context) => {
+        const [open, setOpen] = useControlledArg(args, "open", context);
+        return (
+            <RedirectList
+                {...args}
+                open={open}
+                onOpenChange={(nextOpen) => {
+                    setOpen(nextOpen);
+                    args.onOpenChange(nextOpen);
+                }}
+            />
+        );
+    },
     args: {
         open: false,
         onOpenChange: fn(),

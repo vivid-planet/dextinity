@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
-import { DevicePreview, type DevicePreviewProps } from "../DevicePreview";
+import { DevicePreview } from "../DevicePreview";
 import devicePreviewTokens from "../DevicePreview.tokens.scss?raw";
 import styles from "./DevicePreview.stories.module.scss";
 
@@ -35,23 +35,6 @@ function SamplePage() {
     );
 }
 
-/** Keeps the story controlled: switching the device updates the local value. */
-function ControlledDevicePreview(props: DevicePreviewProps) {
-    const [device, setDevice] = useState(props.device);
-    return (
-        <div className={styles.container}>
-            <DevicePreview
-                {...props}
-                device={device}
-                onDeviceChange={(next) => {
-                    props.onDeviceChange(next);
-                    setDevice(next);
-                }}
-            />
-        </div>
-    );
-}
-
 const meta = {
     component: DevicePreview,
     title: "Building blocks/Blocks & preview/DevicePreview",
@@ -75,7 +58,21 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledDevicePreview {...args} />,
+    render: (args, context) => {
+        const [device, setDevice] = useControlledArg(args, "device", context);
+        return (
+            <div className={styles.container}>
+                <DevicePreview
+                    {...args}
+                    device={device}
+                    onDeviceChange={(next) => {
+                        args.onDeviceChange(next);
+                        setDevice(next);
+                    }}
+                />
+            </div>
+        );
+    },
 } satisfies Meta<typeof DevicePreview>;
 
 export default meta;

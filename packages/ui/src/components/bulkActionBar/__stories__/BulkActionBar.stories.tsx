@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
@@ -10,9 +11,9 @@ import { MenuSeparator } from "../../menu/MenuSeparator";
 import { BulkActionBar, type BulkActionBarProps } from "../BulkActionBar";
 import bulkActionBarTokens from "../BulkActionBar.tokens.scss?raw";
 
-/** Keeps the story controlled: clearing sets the count to 0, "Select 3" brings the bar back. */
-function ControlledBulkActionBar(props: BulkActionBarProps) {
-    const [count, setCount] = useState(props.count);
+/** Binds the count to the story's `count` arg: clearing sets it to 0, "Select 3" brings the bar back. */
+function BulkActionBarWithArgs({ storyId, ...props }: BulkActionBarProps & { storyId: string }) {
+    const [count, setCount] = useControlledArg(props, "count", { id: storyId });
     return (
         <>
             <BulkActionBar
@@ -52,7 +53,7 @@ const meta = {
         slotProps: { control: false },
         labels: { control: false },
     },
-    render: (args) => <ControlledBulkActionBar {...args} />,
+    render: (args, context) => <BulkActionBarWithArgs {...args} storyId={context.id} />,
 } satisfies Meta<typeof BulkActionBar>;
 
 export default meta;
@@ -130,10 +131,10 @@ export const DisabledAction: Story = {
     },
 };
 
-function WithMenuActionBar(props: BulkActionBarProps) {
+function WithMenuActionBar(props: BulkActionBarProps & { storyId: string }) {
     const [moveToOpen, setMoveToOpen] = useState(false);
     return (
-        <ControlledBulkActionBar
+        <BulkActionBarWithArgs
             {...props}
             actions={[
                 { label: "Duplicate", icon: <Icon name="copy" />, onClick: props.actions[0].onClick ?? fn() },
@@ -165,7 +166,7 @@ const moveToFolder = fn();
  */
 export const WithMenu: Story = {
     parameters: { popupRoom: { side: "above" } },
-    render: (args) => <WithMenuActionBar {...args} />,
+    render: (args, context) => <WithMenuActionBar {...args} storyId={context.id} />,
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Move to" }));
         await userEvent.click(await screen.findByRole("menuitem", { name: "Documents" }));

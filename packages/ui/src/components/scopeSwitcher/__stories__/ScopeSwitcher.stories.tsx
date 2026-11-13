@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import { ScopeSwitcher, type ScopeSwitcherDimension, type ScopeSwitcherProps } from "../ScopeSwitcher";
+import { ScopeSwitcher, type ScopeSwitcherDimension } from "../ScopeSwitcher";
 import scopeSwitcherTokens from "../ScopeSwitcher.tokens.scss?raw";
 import styles from "./ScopeSwitcher.stories.module.scss";
 
@@ -38,26 +38,6 @@ const areas: ScopeSwitcherDimension = {
     ],
 };
 
-function ControlledScopeSwitcher(props: ScopeSwitcherProps) {
-    const [value, setValue] = useState(props.value);
-    const [open, setOpen] = useState(props.open);
-    return (
-        <ScopeSwitcher
-            {...props}
-            value={value}
-            onChange={(nextValue) => {
-                setValue(nextValue);
-                props.onChange(nextValue);
-            }}
-            open={open}
-            onOpenChange={(nextOpen) => {
-                setOpen(nextOpen);
-                props.onOpenChange(nextOpen);
-            }}
-        />
-    );
-}
-
 const meta = {
     component: ScopeSwitcher,
     title: "Shell/Top bar & scope/ScopeSwitcher",
@@ -70,7 +50,25 @@ const meta = {
         ),
     ],
     parameters: { tokens: scopeSwitcherTokens },
-    render: (args) => <ControlledScopeSwitcher {...args} />,
+    render: (args, context) => {
+        const [value, setValue] = useControlledArg(args, "value", context);
+        const [open, setOpen] = useControlledArg(args, "open", context);
+        return (
+            <ScopeSwitcher
+                {...args}
+                value={value}
+                onChange={(nextValue) => {
+                    setValue(nextValue);
+                    args.onChange(nextValue);
+                }}
+                open={open}
+                onOpenChange={(nextOpen) => {
+                    setOpen(nextOpen);
+                    args.onOpenChange(nextOpen);
+                }}
+            />
+        );
+    },
     args: {
         dimensions: [countries, languages],
         value: ["at", "de"],

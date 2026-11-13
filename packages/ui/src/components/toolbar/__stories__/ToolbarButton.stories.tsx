@@ -1,27 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, userEvent, within } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Toolbar } from "../Toolbar";
 import toolbarTokens from "../Toolbar.tokens.scss?raw";
-import { ToolbarButton, type ToolbarButtonProps } from "../ToolbarButton";
+import { ToolbarButton } from "../ToolbarButton";
 import styles from "./Toolbar.stories.module.scss";
-
-function ToggleButton(props: ToolbarButtonProps) {
-    const [pressed, setPressed] = useState(props.pressed);
-    return (
-        <ToolbarButton
-            {...props}
-            pressed={pressed}
-            onClick={(event) => {
-                setPressed((current) => (current === undefined ? undefined : !current));
-                props.onClick?.(event);
-            }}
-        />
-    );
-}
 
 const meta = {
     component: ToolbarButton,
@@ -47,7 +33,19 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ToggleButton {...args} />,
+    render: (args, context) => {
+        const [pressed, setPressed] = useControlledArg(args, "pressed", context);
+        return (
+            <ToolbarButton
+                {...args}
+                pressed={pressed}
+                onClick={(event) => {
+                    setPressed(pressed === undefined ? undefined : !pressed);
+                    args.onClick?.(event);
+                }}
+            />
+        );
+    },
 } satisfies Meta<typeof ToolbarButton>;
 
 export default meta;

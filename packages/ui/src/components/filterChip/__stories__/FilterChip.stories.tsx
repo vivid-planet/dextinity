@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { updateStoryArgs, useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Avatar } from "../../avatar/Avatar";
 import { Icon } from "../../icon/Icon";
@@ -12,21 +13,6 @@ import { StatusIndicator, type StatusIndicatorStatus } from "../../statusIndicat
 import { FilterChip, type FilterChipProps } from "../FilterChip";
 import filterChipTokens from "../FilterChip.tokens.scss?raw";
 import styles from "./FilterChip.stories.module.scss";
-
-/** Keeps the story controlled: clicking toggles the local state; the `selected` arg sets the initial state. */
-function ControlledFilterChip(props: FilterChipProps) {
-    const [selected, setSelected] = useState(props.selected);
-    return (
-        <FilterChip
-            {...props}
-            selected={selected}
-            onClick={(event) => {
-                props.onClick(event);
-                setSelected((current) => !current);
-            }}
-        />
-    );
-}
 
 const statusFilters: Array<{ value: "all" | StatusIndicatorStatus; label: string; count: number }> = [
     { value: "all", label: "All", count: 12 },
@@ -113,7 +99,19 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledFilterChip {...args} />,
+    render: (args, context) => {
+        const [selected, setSelected] = useControlledArg(args, "selected", context);
+        return (
+            <FilterChip
+                {...args}
+                selected={selected}
+                onClick={(event) => {
+                    args.onClick(event);
+                    setSelected(!selected);
+                }}
+            />
+        );
+    },
 } satisfies Meta<typeof FilterChip>;
 
 export default meta;
@@ -127,16 +125,26 @@ type Story = StoryObj<typeof meta>;
  * - Show the count of matching items so the effect of a filter is visible before choosing it.
  */
 export const Default: Story = {
-    play: async ({ args, canvas }) => {
+    play: async ({ args, canvas, id }) => {
         const chip = canvas.getByRole("button", { name: "Published" });
         await userEvent.click(chip);
         await waitFor(() => expect(args.onClick).toHaveBeenCalledTimes(1));
         await expect(chip).toHaveAttribute("aria-pressed", "true");
+        updateStoryArgs(id, { selected: false });
+        await waitFor(() => expect(chip).toHaveAttribute("aria-pressed", "false"));
+        updateStoryArgs(id, { selected: true });
+        await waitFor(() => expect(chip).toHaveAttribute("aria-pressed", "true"));
     },
 };
 
 export const Selected: Story = {
     args: { selected: true },
+    play: async ({ canvas }) => {
+        const chip = canvas.getByRole("button", { name: "Published" });
+        await expect(chip).toHaveAttribute("aria-pressed", "true");
+        await userEvent.click(chip);
+        await waitFor(() => expect(chip).toHaveAttribute("aria-pressed", "false"));
+    },
 };
 
 export const WithCount: Story = {

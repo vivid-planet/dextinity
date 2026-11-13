@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Tooltip, type TooltipProps } from "../Tooltip";
@@ -108,25 +109,24 @@ export const Right: Story = {
     },
 };
 
-function ControlledTooltip(props: TooltipProps) {
-    const [open, setOpen] = useState(false);
-    return (
-        <Tooltip
-            {...props}
-            open={open}
-            onOpenChange={(nextOpen, details) => {
-                setOpen(nextOpen);
-                props.onOpenChange?.(nextOpen, details);
-            }}
-        />
-    );
-}
-
 /**
  * With `open` and `onOpenChange`, the consumer owns the open state.
  */
 export const Controlled: Story = {
-    render: (args) => <ControlledTooltip {...args} />,
+    args: { open: false },
+    render: (args, context) => {
+        const [open, setOpen] = useControlledArg(args, "open", context);
+        return (
+            <Tooltip
+                {...args}
+                open={open}
+                onOpenChange={(nextOpen, details) => {
+                    setOpen(nextOpen);
+                    args.onOpenChange?.(nextOpen, details);
+                }}
+            />
+        );
+    },
 };
 
 function ClickToShowTooltip(props: TooltipProps) {

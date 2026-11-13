@@ -3,13 +3,14 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { jobAds, type JobAdStatus } from "../../../storybook/patterns/jobAds";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Checkbox } from "../../checkbox/Checkbox";
 import { FilterChip } from "../../filterChip/FilterChip";
 import { Icon } from "../../icon/Icon";
 import { StatusIndicator } from "../../statusIndicator/StatusIndicator";
-import { FilterBar, type FilterBarProps } from "../FilterBar";
+import { FilterBar } from "../FilterBar";
 import filterBarTokens from "../FilterBar.tokens.scss?raw";
 
 const statusFilters: { value: JobAdStatus | "all"; label: string }[] = [
@@ -18,39 +19,6 @@ const statusFilters: { value: JobAdStatus | "all"; label: string }[] = [
     { value: "unpublished", label: "Unpublished" },
     { value: "archived", label: "Archived" },
 ];
-
-/** Keeps the story controlled: the search filters the sample job ads, the chips' counts follow it. */
-function ControlledFilterBar(props: FilterBarProps) {
-    const [search, setSearch] = useState(props.searchValue);
-    const [status, setStatus] = useState<JobAdStatus | "all">("all");
-    const matches = jobAds.filter((jobAd) => jobAd.title.toLowerCase().includes(search.toLowerCase()));
-    const countFor = (value: JobAdStatus | "all") => matches.filter((jobAd) => value === "all" || jobAd.status === value).length;
-
-    return (
-        <FilterBar
-            {...props}
-            searchValue={search}
-            onSearchChange={(value) => {
-                props.onSearchChange(value);
-                setSearch(value);
-            }}
-            resultCount={props.resultCount == null ? undefined : countFor(status)}
-        >
-            {props.children ??
-                statusFilters.map((filter) => (
-                    <FilterChip
-                        key={filter.value}
-                        selected={status === filter.value}
-                        onClick={() => setStatus(filter.value)}
-                        count={countFor(filter.value)}
-                        startAdornment={filter.value === "all" ? undefined : <StatusIndicator status={filter.value} decorative />}
-                    >
-                        {filter.label}
-                    </FilterChip>
-                ))}
-        </FilterBar>
-    );
-}
 
 const meta = {
     component: FilterBar,
@@ -70,7 +38,37 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledFilterBar {...args} />,
+    render: (args, context) => {
+        const [search, setSearch] = useControlledArg(args, "searchValue", context);
+        const [status, setStatus] = useState<JobAdStatus | "all">("all");
+        const matches = jobAds.filter((jobAd) => jobAd.title.toLowerCase().includes(search.toLowerCase()));
+        const countFor = (value: JobAdStatus | "all") => matches.filter((jobAd) => value === "all" || jobAd.status === value).length;
+
+        return (
+            <FilterBar
+                {...args}
+                searchValue={search}
+                onSearchChange={(value) => {
+                    args.onSearchChange(value);
+                    setSearch(value);
+                }}
+                resultCount={args.resultCount == null ? undefined : countFor(status)}
+            >
+                {args.children ??
+                    statusFilters.map((filter) => (
+                        <FilterChip
+                            key={filter.value}
+                            selected={status === filter.value}
+                            onClick={() => setStatus(filter.value)}
+                            count={countFor(filter.value)}
+                            startAdornment={filter.value === "all" ? undefined : <StatusIndicator status={filter.value} decorative />}
+                        >
+                            {filter.label}
+                        </FilterChip>
+                    ))}
+            </FilterBar>
+        );
+    },
 } satisfies Meta<typeof FilterBar>;
 
 export default meta;

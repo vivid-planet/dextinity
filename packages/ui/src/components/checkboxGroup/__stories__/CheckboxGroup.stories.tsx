@@ -1,18 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { type FieldStoryArgs, groupFieldArgTypes, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { CheckboxGroup, type CheckboxGroupOption, type CheckboxGroupProps } from "../CheckboxGroup";
 import checkboxGroupTokens from "../CheckboxGroup.tokens.scss?raw";
 
 type CheckboxGroupStoryArgs = CheckboxGroupProps & FieldStoryArgs;
 
-/** Keeps the story controlled: toggling updates the local value; changing the `value` control starts over from it. */
-function ControlledCheckboxGroup(args: CheckboxGroupStoryArgs) {
+/** Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. */
+function ControlledCheckboxGroup({ storyId, ...args }: CheckboxGroupStoryArgs & { storyId: string }) {
     const { field, control } = splitFieldArgs(args);
-    const [value, setValue] = useState(control.value);
+    const [value, setValue] = useControlledArg(control, "value", { id: storyId });
     return (
         <StoryField field={field} layout="group">
             <CheckboxGroup
@@ -59,7 +59,7 @@ const meta = {
     title: "Building blocks/Selection & toggles/CheckboxGroup",
     decorators: [themeDecorator],
     parameters: { tokens: checkboxGroupTokens },
-    render: (args) => <ControlledCheckboxGroup key={JSON.stringify(args.value)} {...args} />,
+    render: (args, context) => <ControlledCheckboxGroup {...args} storyId={context.id} />,
     args: {
         label: "Channels",
         options: [

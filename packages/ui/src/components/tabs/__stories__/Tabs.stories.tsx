@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ComponentPropsWithRef, useState } from "react";
+import type { ComponentPropsWithRef } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import { Tabs, type TabsItem, type TabsProps } from "../Tabs";
+import { Tabs, type TabsItem } from "../Tabs";
 import tabsTokens from "../Tabs.tokens.scss?raw";
 import styles from "./Tabs.stories.module.scss";
 
@@ -18,21 +19,6 @@ const withPanels: TabsItem[] = [
     { value: "seo", label: "SEO", count: 1, panel: <div className={styles.panel}>How the page appears in search results.</div> },
     { value: "settings", label: "Settings", panel: <div className={styles.panel}>Path, visibility, and access.</div> },
 ];
-
-/** Keeps the story controlled: choosing updates the local value; the `value` arg sets the initial one. */
-function ControlledTabs(props: TabsProps) {
-    const [value, setValue] = useState(props.value);
-    return (
-        <Tabs
-            {...props}
-            value={value}
-            onChange={(next) => {
-                props.onChange(next);
-                setValue(next);
-            }}
-        />
-    );
-}
 
 const meta = {
     component: Tabs,
@@ -51,7 +37,19 @@ const meta = {
         slots: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledTabs {...args} />,
+    render: (args, context) => {
+        const [value, setValue] = useControlledArg(args, "value", context);
+        return (
+            <Tabs
+                {...args}
+                value={value}
+                onChange={(next) => {
+                    args.onChange(next);
+                    setValue(next);
+                }}
+            />
+        );
+    },
 } satisfies Meta<typeof Tabs>;
 
 export default meta;

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { landscapeImage } from "../../../storybook/sampleImages";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { FocalPointPicker, type FocalPointPickerProps } from "../FocalPointPicker";
 import focalPointPickerTokens from "../FocalPointPicker.tokens.scss?raw";
@@ -12,13 +12,13 @@ import styles from "./FocalPointPicker.stories.module.scss";
 type FocalPointPickerStoryArgs = FocalPointPickerProps & Pick<FieldStoryArgs, "label" | "helperText" | "validationMessage" | "state">;
 
 /**
- * Keeps the story controlled: moving the point updates the local value and clears `auto`. With a field arg, it puts the picker in a
- * `Field` with `layout="group"`.
+ * Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. With a field arg, it
+ * puts the picker in a `Field` with `layout="group"`.
  */
-function ControlledFocalPointPicker(args: FocalPointPickerStoryArgs) {
+function ControlledFocalPointPicker({ storyId, ...args }: FocalPointPickerStoryArgs & { storyId: string }) {
     const { field, control } = splitFieldArgs(args);
-    const [value, setValue] = useState(control.value);
-    const [auto, setAuto] = useState(control.auto);
+    const [value, setValue] = useControlledArg(control, "value", { id: storyId });
+    const [auto, setAuto] = useControlledArg(control, "auto", { id: storyId });
     const picker = (
         <FocalPointPicker
             {...control}
@@ -66,7 +66,7 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledFocalPointPicker {...args} />,
+    render: (args, context) => <ControlledFocalPointPicker {...args} storyId={context.id} />,
 } satisfies Meta<FocalPointPickerStoryArgs>;
 
 export default meta;

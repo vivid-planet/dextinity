@@ -1,13 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ElementType, type ReactNode, useState } from "react";
+import type { ReactNode } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { Menu } from "../Menu";
 import menuTokens from "../Menu.tokens.scss?raw";
-import { MenuCheckboxItem, type MenuCheckboxItemProps } from "../MenuCheckboxItem";
+import { MenuCheckboxItem } from "../MenuCheckboxItem";
 import styles from "./Menu.stories.module.scss";
 
 function InOpenMenu({ children }: { children: ReactNode }) {
@@ -23,20 +24,6 @@ function InOpenMenu({ children }: { children: ReactNode }) {
         >
             {children}
         </Menu>
-    );
-}
-
-function ControlledMenuCheckboxItem(props: MenuCheckboxItemProps<ElementType>) {
-    const [checked, setChecked] = useState(props.checked);
-    return (
-        <MenuCheckboxItem
-            {...props}
-            checked={checked}
-            onChange={(nextChecked) => {
-                props.onChange(nextChecked);
-                setChecked(nextChecked);
-            }}
-        />
     );
 }
 
@@ -77,7 +64,19 @@ const meta = {
         slots: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledMenuCheckboxItem {...args} />,
+    render: (args, context) => {
+        const [checked, setChecked] = useControlledArg(args, "checked", context);
+        return (
+            <MenuCheckboxItem
+                {...args}
+                checked={checked}
+                onChange={(nextChecked) => {
+                    args.onChange(nextChecked);
+                    setChecked(nextChecked);
+                }}
+            />
+        );
+    },
 } satisfies Meta<typeof MenuCheckboxItem>;
 
 export default meta;

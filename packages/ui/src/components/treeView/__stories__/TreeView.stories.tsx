@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fireEvent, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
@@ -84,35 +84,36 @@ function applyMove(nodes: TreeNode[], { id, targetId, position }: TreeViewMove) 
     return removed != null ? insertNode(remaining, removed, targetId, position) : nodes;
 }
 
-/** Keeps the story controlled: expansion, selection, marking, and moves update local state; the args set the initial values. */
-function ControlledTreeView(props: TreeViewProps) {
-    const [nodes, setNodes] = useState(props.nodes);
-    const [expandedIds, setExpandedIds] = useState(props.expandedIds);
-    const [selectedId, setSelectedId] = useState(props.selectedId);
-    const [checkedIds, setCheckedIds] = useState(props.checkedIds ?? []);
+/** Binds expansion, selection, marking, and moves to the story's args. */
+function TreeViewWithArgs({ storyId, ...args }: TreeViewProps & { storyId: string }) {
+    const context = { id: storyId };
+    const [nodes, setNodes] = useControlledArg(args, "nodes", context);
+    const [expandedIds, setExpandedIds] = useControlledArg(args, "expandedIds", context);
+    const [selectedId, setSelectedId] = useControlledArg(args, "selectedId", context);
+    const [checkedIds, setCheckedIds] = useControlledArg(args, "checkedIds", context);
     return (
         <TreeView
-            {...props}
+            {...args}
             className={styles.tree}
             nodes={nodes}
             expandedIds={expandedIds}
             onExpandedChange={(ids) => {
-                props.onExpandedChange(ids);
+                args.onExpandedChange(ids);
                 setExpandedIds(ids);
             }}
             selectedId={selectedId}
             onSelect={(id) => {
-                props.onSelect?.(id);
+                args.onSelect?.(id);
                 setSelectedId(id);
             }}
-            checkedIds={checkedIds}
+            checkedIds={checkedIds ?? []}
             onCheckedChange={(ids) => {
-                props.onCheckedChange?.(ids);
+                args.onCheckedChange?.(ids);
                 setCheckedIds(ids);
             }}
             onMove={(move) => {
-                props.onMove?.(move);
-                setNodes((previous) => applyMove(previous, move));
+                args.onMove?.(move);
+                setNodes(applyMove(nodes, move));
             }}
         />
     );
@@ -142,7 +143,7 @@ const meta = {
         slotProps: { control: false },
         labels: { control: false },
     },
-    render: (args) => <ControlledTreeView {...args} />,
+    render: (args, context) => <TreeViewWithArgs {...args} storyId={context.id} />,
 } satisfies Meta<typeof TreeView>;
 
 export default meta;
@@ -298,9 +299,9 @@ export const LongNames: Story = {
         nodes: longNameTree,
         expandedIds: ["news"],
     },
-    render: (args) => (
+    render: (args, context) => (
         <div className={styles.narrow} onKeyDown={(event) => event.key === "Escape" && escapeOutsideTree()}>
-            <ControlledTreeView {...args} />
+            <TreeViewWithArgs {...args} storyId={context.id} />
         </div>
     ),
     play: async ({ canvas }) => {

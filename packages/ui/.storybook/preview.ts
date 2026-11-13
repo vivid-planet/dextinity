@@ -7,18 +7,22 @@ import "../icons.css";
 import type { Preview } from "@storybook/react-vite";
 
 import { CanvasWithStyleSource } from "../src/storybook/CanvasWithStyleSource";
+import { argsUpdatesInTestsDecorator } from "../src/storybook/argsUpdatesInTests";
 import { colorSchemeBackgroundDecorator } from "../src/storybook/colorSchemeBackgroundDecorator";
 import { DocsPage } from "../src/storybook/docs/DocsPage";
 import { closedOnDocsPageDecorator, popupRoomDecorator } from "../src/storybook/docsPopups";
 import { checkDocsPopups, docsFrameDecorator } from "../src/storybook/docsPopupsCheck";
 import { keyboardPlatformDecorator } from "../src/storybook/keyboardPlatformDecorator";
 import { renderSourceWithArgs } from "../src/storybook/renderSourceWithArgs";
+import { restoreMocksOnFirstRender } from "../src/storybook/restoreMocksOnFirstRender";
 
 const preview: Preview = {
     tags: ["autodocs"],
-    decorators: [colorSchemeBackgroundDecorator, keyboardPlatformDecorator, popupRoomDecorator, closedOnDocsPageDecorator, docsFrameDecorator],
+    beforeEach: restoreMocksOnFirstRender,
+    decorators: [colorSchemeBackgroundDecorator, keyboardPlatformDecorator, popupRoomDecorator, closedOnDocsPageDecorator, docsFrameDecorator, argsUpdatesInTestsDecorator],
     afterEach: checkDocsPopups,
     parameters: {
+        test: { restoreMocks: false },
         docs: {
             codePanel: true,
             page: DocsPage,

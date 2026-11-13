@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Checkbox } from "../../checkbox/Checkbox";
@@ -38,29 +39,6 @@ const items: BlockPickerItem[] = [
     { value: "spacer", label: "Space", description: "Empty space between blocks", icon: <Icon name="maximize" /> },
 ];
 
-/** Keeps the story controlled: search and category live in local state. */
-function ControlledBlockPicker(props: BlockPickerProps) {
-    const [query, setQuery] = useState(props.query);
-    const [category, setCategory] = useState(props.category ?? null);
-    return (
-        <div className={styles.container}>
-            <BlockPicker
-                {...props}
-                query={query}
-                onQueryChange={(next) => {
-                    props.onQueryChange(next);
-                    setQuery(next);
-                }}
-                category={category}
-                onCategoryChange={(next) => {
-                    props.onCategoryChange?.(next);
-                    setCategory(next);
-                }}
-            />
-        </div>
-    );
-}
-
 const meta = {
     component: BlockPicker,
     title: "Building blocks/Blocks & preview/BlockPicker",
@@ -82,7 +60,27 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledBlockPicker {...args} />,
+    render: (args, context) => {
+        const [query, setQuery] = useControlledArg(args, "query", context);
+        const [category, setCategory] = useControlledArg(args, "category", context);
+        return (
+            <div className={styles.container}>
+                <BlockPicker
+                    {...args}
+                    query={query}
+                    onQueryChange={(next) => {
+                        args.onQueryChange(next);
+                        setQuery(next);
+                    }}
+                    category={category ?? null}
+                    onCategoryChange={(next) => {
+                        args.onCategoryChange?.(next);
+                        setCategory(next);
+                    }}
+                />
+            </div>
+        );
+    },
 } satisfies Meta<typeof BlockPicker>;
 
 export default meta;

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { NumberInput, type NumberInputProps } from "../NumberInput";
@@ -10,8 +11,26 @@ import numberInputTokens from "../NumberInput.tokens.scss?raw";
 
 type NumberInputStoryArgs = NumberInputProps & FieldStoryArgs;
 
-/** Keeps the story controlled: typing updates the local value; changing the `value` control starts over from it. */
-function ControlledNumberInput(args: NumberInputStoryArgs) {
+/** Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. */
+function ControlledNumberInput({ storyId, ...args }: NumberInputStoryArgs & { storyId: string }) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useControlledArg(control, "value", { id: storyId });
+    return (
+        <StoryField field={field}>
+            <NumberInput
+                {...control}
+                value={value}
+                onChange={(next) => {
+                    control.onChange(next);
+                    setValue(next);
+                }}
+            />
+        </StoryField>
+    );
+}
+
+/** A number input of a story that shows several side by side, each with its own value; the `value` prop sets the initial one. */
+function StatefulNumberInput(args: NumberInputStoryArgs) {
     const { field, control } = splitFieldArgs(args);
     const [value, setValue] = useState(control.value);
     return (
@@ -33,7 +52,7 @@ const meta = {
     title: "Building blocks/Form fields/NumberInput",
     decorators: [themeDecorator],
     parameters: { tokens: `${numberInputTokens}\n${fieldTokens}` },
-    render: (args) => <ControlledNumberInput key={args.value} {...args} />,
+    render: (args, context) => <ControlledNumberInput {...args} storyId={context.id} />,
     args: {
         name: "quantity",
         label: "Quantity",
@@ -136,9 +155,9 @@ export const ReadOnly: Story = {
 export const Sizes: Story = {
     render: (args) => (
         <div style={{ display: "grid", gap: "var(--dextinity-space-4)", maxWidth: 320 }}>
-            <ControlledNumberInput {...args} size="small" label="Small" />
-            <ControlledNumberInput {...args} label="Default" />
-            <ControlledNumberInput {...args} size="large" label="Large" />
+            <StatefulNumberInput {...args} size="small" label="Small" />
+            <StatefulNumberInput {...args} label="Default" />
+            <StatefulNumberInput {...args} size="large" label="Large" />
         </div>
     ),
 };

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { Slider, type SliderProps } from "../Slider";
@@ -16,12 +16,12 @@ const iconOptions = {
 type SliderStoryArgs = SliderProps & Pick<FieldStoryArgs, "label" | "helperText" | "validationMessage" | "state">;
 
 /**
- * Keeps the story controlled: moving updates the local value; the `value` arg sets the initial one. With a field arg, it puts the slider
- * in a `Field` with `layout="group"`.
+ * Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. With a field arg, it
+ * puts the slider in a `Field` with `layout="group"`.
  */
-function ControlledSlider(args: SliderStoryArgs) {
+function ControlledSlider({ storyId, ...args }: SliderStoryArgs & { storyId: string }) {
     const { field, control } = splitFieldArgs(args);
-    const [value, setValue] = useState(control.value);
+    const [value, setValue] = useControlledArg(control, "value", { id: storyId });
     const slider = (
         <Slider
             {...control}
@@ -61,7 +61,7 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledSlider {...args} />,
+    render: (args, context) => <ControlledSlider {...args} storyId={context.id} />,
 } satisfies Meta<SliderStoryArgs>;
 
 export default meta;

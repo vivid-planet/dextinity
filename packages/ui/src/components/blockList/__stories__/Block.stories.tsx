@@ -2,12 +2,13 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Field } from "../../field/Field";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
 import { Input } from "../../input/Input";
-import { Block, type BlockProps } from "../Block";
+import { Block } from "../Block";
 import { BlockList } from "../BlockList";
 import blockListTokens from "../BlockList.tokens.scss?raw";
 import styles from "./BlockList.stories.module.scss";
@@ -24,43 +25,6 @@ function HeroFields() {
                 <Input name="text" value={text} onChange={(event) => setText(event.target.value)} />
             </Field>
         </>
-    );
-}
-
-/** Keeps the story controlled: the toggles update the local visibility and expansion. */
-function ControlledBlock(props: BlockProps) {
-    const [visible, setVisible] = useState(props.visible);
-    const [expanded, setExpanded] = useState(props.expanded);
-    const [checked, setChecked] = useState(props.checked);
-    return (
-        <div className={styles.container}>
-            <BlockList aria-label="Blocks">
-                <Block
-                    {...props}
-                    visible={visible}
-                    onVisibleChange={
-                        props.onVisibleChange &&
-                        ((next) => {
-                            props.onVisibleChange?.(next);
-                            setVisible(next);
-                        })
-                    }
-                    checked={checked}
-                    onCheckedChange={
-                        props.onCheckedChange &&
-                        ((next) => {
-                            props.onCheckedChange?.(next);
-                            setChecked(next);
-                        })
-                    }
-                    expanded={expanded}
-                    onExpandedChange={(next) => {
-                        props.onExpandedChange?.(next);
-                        setExpanded(next);
-                    }}
-                />
-            </BlockList>
-        </div>
     );
 }
 
@@ -89,7 +53,41 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledBlock {...args} />,
+    render: (args, context) => {
+        const [visible, setVisible] = useControlledArg(args, "visible", context);
+        const [expanded, setExpanded] = useControlledArg(args, "expanded", context);
+        const [checked, setChecked] = useControlledArg(args, "checked", context);
+        return (
+            <div className={styles.container}>
+                <BlockList aria-label="Blocks">
+                    <Block
+                        {...args}
+                        visible={visible}
+                        onVisibleChange={
+                            args.onVisibleChange &&
+                            ((next) => {
+                                args.onVisibleChange?.(next);
+                                setVisible(next);
+                            })
+                        }
+                        checked={checked}
+                        onCheckedChange={
+                            args.onCheckedChange &&
+                            ((next) => {
+                                args.onCheckedChange?.(next);
+                                setChecked(next);
+                            })
+                        }
+                        expanded={expanded}
+                        onExpandedChange={(next) => {
+                            args.onExpandedChange?.(next);
+                            setExpanded(next);
+                        }}
+                    />
+                </BlockList>
+            </div>
+        );
+    },
 } satisfies Meta<typeof Block>;
 
 export default meta;

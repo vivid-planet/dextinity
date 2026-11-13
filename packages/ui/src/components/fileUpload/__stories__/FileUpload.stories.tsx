@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { type FieldStoryArgs, groupFieldArgTypes, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
 import { interiorImage, landscapeImage } from "../../../storybook/sampleImages";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { FileUpload, type FileUploadContext, type FileUploadFile, type FileUploadProps } from "../FileUpload";
 import fileUploadTokens from "../FileUpload.tokens.scss?raw";
@@ -32,10 +32,13 @@ function simulateUpload(file: File, { onProgress, signal }: FileUploadContext): 
 
 type FileUploadStoryArgs = FileUploadProps & FieldStoryArgs;
 
-/** Keeps the story controlled. The `Field` around it, with `layout="group"`, adds the label, help, and validation message. */
-function ControlledFileUpload(args: FileUploadStoryArgs) {
+/**
+ * Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. The `Field` around it,
+ * with `layout="group"`, adds the label, help, and validation message.
+ */
+function ControlledFileUpload({ storyId, ...args }: FileUploadStoryArgs & { storyId: string }) {
     const { field, control } = splitFieldArgs(args);
-    const [value, setValue] = useState(control.value);
+    const [value, setValue] = useControlledArg(control, "value", { id: storyId });
     return (
         <StoryField field={field} layout="group">
             <FileUpload
@@ -98,7 +101,7 @@ const meta = {
         labels: { control: false },
         className: { control: false },
     },
-    render: (args) => <ControlledFileUpload {...args} />,
+    render: (args, context) => <ControlledFileUpload {...args} storyId={context.id} />,
 } satisfies Meta<FileUploadStoryArgs>;
 
 export default meta;

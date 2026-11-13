@@ -1,8 +1,9 @@
 import type { Decorator } from "@storybook/react-vite";
-import { type PropsWithChildren, useLayoutEffect, useRef, useState } from "react";
+import { type PropsWithChildren, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { popupCollisionPadding } from "../utils/popupCollisionPadding";
 import styles from "./docsPopups.module.scss";
+import { updateStoryArgs } from "./storyArgs";
 
 type PopupSide = "below" | "above";
 
@@ -415,14 +416,34 @@ export const popupRoomDecorator: Decorator = (Story, { id, parameters, viewMode 
     );
 };
 
+function ClosedOnFirstRender({ storyId, open, children }: { storyId: string; open: boolean; children: (closing: boolean) => ReactNode }) {
+    const [closed, setClosed] = useState(!open);
+    useEffect(() => {
+        if (!closed) {
+            updateStoryArgs(storyId, { open: false });
+        }
+        // Only the docs page's first render closes the overlay; the reader opens it again afterwards
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+    if (!closed && !open) {
+        setClosed(true);
+    }
+    return children(!closed);
+}
+
 /**
- * On docs pages, renders a story with `parameters.closedOnDocsPage` with its `open` arg off, so only its trigger shows. A modal
- * overlay that starts open would lock the docs page's scrolling and take the reader's focus as soon as the page loads. The
- * story's own page still starts with the overlay open.
+ * On docs pages, sets the `open` arg of a story with `parameters.closedOnDocsPage` to `false` when the page loads, so only its
+ * trigger shows. A modal overlay that starts open would lock the docs page's scrolling and take the reader's focus as soon as the
+ * page loads. The reader can still open the overlay with its trigger or the Controls panel, and the story's own page still starts
+ * with the overlay open.
  */
-export const closedOnDocsPageDecorator: Decorator = (Story, { args, parameters, viewMode }) => {
+export const closedOnDocsPageDecorator: Decorator = (Story, { id, args, parameters, viewMode }) => {
     if (viewMode !== "docs" || parameters.closedOnDocsPage !== true) {
         return <Story />;
     }
-    return <Story args={{ ...args, open: false }} />;
+    return (
+        <ClosedOnFirstRender storyId={id} open={args.open === true}>
+            {(closing) => (closing ? <Story args={{ ...args, open: false }} /> : <Story />)}
+        </ClosedOnFirstRender>
+    );
 };

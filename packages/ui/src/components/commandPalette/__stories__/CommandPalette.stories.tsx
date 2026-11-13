@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { storyModKey, storyShortcutText } from "../../../storybook/keyboardPlatformDecorator";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
-import { CommandPalette, type CommandPaletteGroup, type CommandPaletteProps } from "../CommandPalette";
+import { CommandPalette, type CommandPaletteGroup } from "../CommandPalette";
 import commandPaletteTokens from "../CommandPalette.tokens.scss?raw";
 import styles from "./CommandPalette.stories.module.scss";
 
@@ -38,34 +38,6 @@ const groups: CommandPaletteGroup[] = [
     },
 ];
 
-function ControlledCommandPalette(props: CommandPaletteProps) {
-    const [open, setOpen] = useState(props.open);
-    const [query, setQuery] = useState(props.query);
-    return (
-        <>
-            <Button variant="outlined" color="secondary" startIcon={<Icon name="search" />} onClick={() => setOpen(true)}>
-                Open command palette
-            </Button>
-            <CommandPalette
-                {...props}
-                open={open}
-                onOpenChange={(nextOpen) => {
-                    setOpen(nextOpen);
-                    if (!nextOpen) {
-                        setQuery("");
-                    }
-                    props.onOpenChange(nextOpen);
-                }}
-                query={query}
-                onQueryChange={(nextQuery) => {
-                    setQuery(nextQuery);
-                    props.onQueryChange(nextQuery);
-                }}
-            />
-        </>
-    );
-}
-
 const meta = {
     component: CommandPalette,
     title: "Shell/Search & commands/CommandPalette",
@@ -78,7 +50,33 @@ const meta = {
         ),
     ],
     parameters: { tokens: commandPaletteTokens, closedOnDocsPage: true },
-    render: (args) => <ControlledCommandPalette {...args} />,
+    render: (args, context) => {
+        const [open, setOpen] = useControlledArg(args, "open", context);
+        const [query, setQuery] = useControlledArg(args, "query", context);
+        return (
+            <>
+                <Button variant="outlined" color="secondary" startIcon={<Icon name="search" />} onClick={() => setOpen(true)}>
+                    Open command palette
+                </Button>
+                <CommandPalette
+                    {...args}
+                    open={open}
+                    onOpenChange={(nextOpen) => {
+                        setOpen(nextOpen);
+                        if (!nextOpen) {
+                            setQuery("");
+                        }
+                        args.onOpenChange(nextOpen);
+                    }}
+                    query={query}
+                    onQueryChange={(nextQuery) => {
+                        setQuery(nextQuery);
+                        args.onQueryChange(nextQuery);
+                    }}
+                />
+            </>
+        );
+    },
     args: {
         open: false,
         onOpenChange: fn(),

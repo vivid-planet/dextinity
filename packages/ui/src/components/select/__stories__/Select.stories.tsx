@@ -3,6 +3,7 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Dialog } from "../../dialog/Dialog";
@@ -59,43 +60,25 @@ const offices: SelectOption[] = [
 
 export type SelectStoryArgs<Multiple extends boolean = false> = SelectProps<Multiple> & FieldStoryArgs;
 
-/** Keeps the story controlled: choosing updates the local value; changing the `value` control starts over from it. */
-function ControlledSelect(args: SelectStoryArgs<boolean>) {
-    const { field, control } = splitFieldArgs(args);
-    const [value, setValue] = useState(control.value);
-    return (
-        <div className={styles.narrow}>
-            <StoryField field={field}>
-                <Select
-                    {...control}
-                    value={value}
-                    onChange={(next) => {
-                        control.onChange(next);
-                        setValue(next);
-                    }}
-                />
-            </StoryField>
-        </div>
-    );
+/** Binds the select's value to the story's `value` arg, so the Controls panel drives it and choosing an option updates the arg. */
+function useValueArgProps(args: SelectProps<boolean>, context: { id: string }): Pick<SelectProps<boolean>, "value" | "onChange"> {
+    const [value, setValue] = useControlledArg(args, "value", context);
+    return {
+        value,
+        onChange: (next) => {
+            args.onChange(next);
+            setValue(next);
+        },
+    };
 }
 
-function ControlledMultipleSelect(
-    props: Omit<SelectStoryArgs<true>, "value" | "onChange"> & { initialValue: string[]; onChange: (value: string[]) => void },
-) {
-    const { initialValue, onChange, ...rest } = props;
-    const { field, control } = splitFieldArgs(rest);
-    const [value, setValue] = useState(initialValue);
+function ControlledSelect({ storyId, ...args }: SelectStoryArgs<boolean> & { storyId: string }) {
+    const { field, control } = splitFieldArgs(args);
+    const valueArgProps = useValueArgProps(control, { id: storyId });
     return (
         <div className={styles.narrow}>
             <StoryField field={field}>
-                <Select
-                    {...control}
-                    value={value}
-                    onChange={(next) => {
-                        onChange(next);
-                        setValue(next);
-                    }}
-                />
+                <Select {...control} {...valueArgProps} />
             </StoryField>
         </div>
     );
@@ -105,11 +88,8 @@ const meta = {
     component: Select,
     title: "Building blocks/Form fields/Select",
     decorators: [themeDecorator],
-    parameters: {
-        tokens: `${selectTokens}
-${fieldTokens}`,
-    },
-    render: (args) => <ControlledSelect key={String(args.value)} {...(args as SelectStoryArgs<boolean>)} />,
+    parameters: { tokens: `${selectTokens}\n${fieldTokens}` },
+    render: (args, context) => <ControlledSelect {...(args as SelectStoryArgs<boolean>)} storyId={context.id} />,
     args: {
         name: "location",
         label: "Location",
@@ -191,17 +171,8 @@ export const IconsAndDisabledOptions: Story = {
  * With `multiple`, the value is a list and the chosen options show as chips. A chip's button removes it.
  */
 export const Multiple: Story = {
-    render: (args) => (
-        <ControlledMultipleSelect
-            name="locations"
-            label="Locations"
-            options={locations}
-            initialValue={["vienna", "remote"]}
-            placeholder="Choose locations"
-            onChange={args.onChange as (value: string[]) => void}
-            multiple
-        />
-    ),
+    args: { name: "locations", label: "Locations", options: locations, value: ["vienna", "remote"], placeholder: "Choose locations", multiple: true },
+    argTypes: { value: { control: "check", options: locations.map((option) => option.value) } },
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Remove Remote" }));
         await waitFor(() => expect(args.onChange).toHaveBeenCalledWith(["vienna"]));
@@ -279,17 +250,15 @@ export const SearchableGroups: Story = {
 };
 
 export const SearchableMultiple: Story = {
-    render: (args) => (
-        <ControlledMultipleSelect
-            name="countries"
-            label="Countries"
-            options={countries}
-            initialValue={["austria", "germany", "switzerland"]}
-            onChange={args.onChange as (value: string[]) => void}
-            multiple
-            searchable
-        />
-    ),
+    args: {
+        name: "countries",
+        label: "Countries",
+        options: countries,
+        value: ["austria", "germany", "switzerland"],
+        multiple: true,
+        searchable: true,
+    },
+    argTypes: { value: { control: "check", options: countries.map((option) => option.value) } },
 };
 
 export const Error: Story = {
@@ -358,17 +327,8 @@ const sites: SelectOption[] = [
  * and the chips' remove buttons.
  */
 export const RichLabels: Story = {
-    render: (args) => (
-        <ControlledMultipleSelect
-            name="sites"
-            label="Sites"
-            options={sites}
-            initialValue={["main"]}
-            onChange={args.onChange as (value: string[]) => void}
-            multiple
-            searchable
-        />
-    ),
+    args: { name: "sites", label: "Sites", options: sites, value: ["main"], multiple: true, searchable: true },
+    argTypes: { value: { control: "check", options: sites.map((option) => option.value) } },
     play: async ({ args, canvas }) => {
         await expect(canvas.getByRole("button", { name: "Remove Main website" })).toBeInTheDocument();
         await userEvent.click(canvas.getByRole("combobox", { name: /Sites/ }));
@@ -459,7 +419,7 @@ export const ObjectValues: Story = {
     },
 };
 
-function SelectInDialog({ defaultOpen, ...props }: SelectProps<boolean> & { defaultOpen: boolean }) {
+function SelectInDialog({ defaultOpen, ...props }: SelectStoryArgs<boolean> & { defaultOpen: boolean; storyId: string }) {
     const [open, setOpen] = useState(defaultOpen);
     return (
         <>
@@ -478,5 +438,7 @@ function SelectInDialog({ defaultOpen, ...props }: SelectProps<boolean> & { defa
  */
 export const InDialog: Story = {
     // Starts closed on the docs page, where an open modal dialog would lock the page's scrolling and take the reader's focus
-    render: (args, { viewMode }) => <SelectInDialog defaultOpen={viewMode !== "docs"} {...(args as SelectStoryArgs<boolean>)} />,
+    render: (args, context) => (
+        <SelectInDialog defaultOpen={context.viewMode !== "docs"} {...(args as SelectStoryArgs<boolean>)} storyId={context.id} />
+    ),
 };

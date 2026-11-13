@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../../icon/Icon";
 import { MenuGroup } from "../../menu/MenuGroup";
@@ -9,7 +10,7 @@ import { MenuItem } from "../../menu/MenuItem";
 import { MenuRadioGroup } from "../../menu/MenuRadioGroup";
 import { MenuRadioItem } from "../../menu/MenuRadioItem";
 import { MenuSeparator } from "../../menu/MenuSeparator";
-import { UserMenu, type UserMenuProps } from "../UserMenu";
+import { UserMenu } from "../UserMenu";
 import userMenuTokens from "../UserMenu.tokens.scss?raw";
 import styles from "./UserMenu.stories.module.scss";
 
@@ -40,20 +41,6 @@ function UserSettings() {
     );
 }
 
-function ControlledUserMenu(props: UserMenuProps) {
-    const [open, setOpen] = useState(props.open);
-    return (
-        <UserMenu
-            {...props}
-            open={open}
-            onOpenChange={(nextOpen) => {
-                setOpen(nextOpen);
-                props.onOpenChange(nextOpen);
-            }}
-        />
-    );
-}
-
 const meta = {
     component: UserMenu,
     title: "Shell/Top bar & scope/UserMenu",
@@ -66,7 +53,19 @@ const meta = {
         ),
     ],
     parameters: { tokens: userMenuTokens },
-    render: (args) => <ControlledUserMenu {...args} />,
+    render: (args, context) => {
+        const [open, setOpen] = useControlledArg(args, "open", context);
+        return (
+            <UserMenu
+                {...args}
+                open={open}
+                onOpenChange={(nextOpen) => {
+                    setOpen(nextOpen);
+                    args.onOpenChange(nextOpen);
+                }}
+            />
+        );
+    },
     args: {
         name: "Max Mustermann",
         role: "Editor",

@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type KeyboardEvent, useState } from "react";
+import type { KeyboardEvent } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
-import { QuickLook, type QuickLookItem, type QuickLookProps } from "../QuickLook";
+import { QuickLook, type QuickLookItem } from "../QuickLook";
 import quickLookTokens from "../QuickLook.tokens.scss?raw";
 import styles from "./QuickLook.stories.module.scss";
 
@@ -20,58 +21,56 @@ const items: QuickLookItem[] = [
     { src: placeholderImage(40, "event.png"), title: "event.png", description: "PNG · 3.1 MB · 2400 × 1600" },
 ];
 
-function Finder(props: QuickLookProps) {
-    const [open, setOpen] = useState(props.open);
-    const [index, setIndex] = useState(props.index);
-    const handleOpenChange = (nextOpen: boolean) => {
-        setOpen(nextOpen);
-        props.onOpenChange(nextOpen);
-    };
-    const handleTileKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-        if (event.key === " ") {
-            event.preventDefault();
-            handleOpenChange(true);
-        }
-    };
-    return (
-        <>
-            <div className={styles.grid}>
-                {props.items.map((item, itemIndex) => (
-                    <button
-                        key={item.title}
-                        type="button"
-                        className={styles.tile}
-                        aria-pressed={itemIndex === index}
-                        onClick={() => setIndex(itemIndex)}
-                        onDoubleClick={() => handleOpenChange(true)}
-                        onFocus={() => setIndex(itemIndex)}
-                        onKeyDown={handleTileKeyDown}
-                    >
-                        <img src={item.src} alt="" />
-                        {item.title}
-                    </button>
-                ))}
-            </div>
-            <QuickLook
-                {...props}
-                open={open}
-                onOpenChange={handleOpenChange}
-                index={index}
-                onIndexChange={(nextIndex) => {
-                    setIndex(nextIndex);
-                    props.onIndexChange(nextIndex);
-                }}
-            />
-        </>
-    );
-}
-
 const meta = {
     component: QuickLook,
     title: "Building blocks/Modals & overlays/QuickLook",
     decorators: [themeDecorator],
     parameters: { tokens: quickLookTokens, closedOnDocsPage: true },
-    render: (args) => <Finder key={`${args.open}-${args.index}`} {...args} />,
+    render: (args, context) => {
+        const [open, setOpen] = useControlledArg(args, "open", context);
+        const [index, setIndex] = useControlledArg(args, "index", context);
+        const handleOpenChange = (nextOpen: boolean) => {
+            setOpen(nextOpen);
+            args.onOpenChange(nextOpen);
+        };
+        const handleTileKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+            if (event.key === " ") {
+                event.preventDefault();
+                handleOpenChange(true);
+            }
+        };
+        return (
+            <>
+                <div className={styles.grid}>
+                    {args.items.map((item, itemIndex) => (
+                        <button
+                            key={item.title}
+                            type="button"
+                            className={styles.tile}
+                            aria-pressed={itemIndex === index}
+                            onClick={() => setIndex(itemIndex)}
+                            onDoubleClick={() => handleOpenChange(true)}
+                            onFocus={() => setIndex(itemIndex)}
+                            onKeyDown={handleTileKeyDown}
+                        >
+                            <img src={item.src} alt="" />
+                            {item.title}
+                        </button>
+                    ))}
+                </div>
+                <QuickLook
+                    {...args}
+                    open={open}
+                    onOpenChange={handleOpenChange}
+                    index={index}
+                    onIndexChange={(nextIndex) => {
+                        setIndex(nextIndex);
+                        args.onIndexChange(nextIndex);
+                    }}
+                />
+            </>
+        );
+    },
     args: {
         open: false,
         onOpenChange: fn(),

@@ -1,44 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
-import { ConfirmDialog, type ConfirmDialogProps } from "../ConfirmDialog";
+import { ConfirmDialog } from "../ConfirmDialog";
 import confirmDialogTokens from "../ConfirmDialog.tokens.scss?raw";
-
-function ControlledConfirmDialog(props: ConfirmDialogProps) {
-    const [open, setOpen] = useState(props.open);
-    const handleOpenChange = (nextOpen: boolean) => {
-        setOpen(nextOpen);
-        props.onOpenChange(nextOpen);
-    };
-    return (
-        <>
-            <Button variant="outlined" color="secondary" onClick={() => handleOpenChange(true)}>
-                Leave page
-            </Button>
-            <ConfirmDialog
-                {...props}
-                open={open}
-                onOpenChange={handleOpenChange}
-                onConfirm={() => {
-                    props.onConfirm();
-                    handleOpenChange(false);
-                }}
-                onSecondary={
-                    props.onSecondary == null
-                        ? undefined
-                        : () => {
-                              props.onSecondary?.();
-                              handleOpenChange(false);
-                          }
-                }
-            />
-        </>
-    );
-}
 
 const iconOptions = {
     Trash: <Icon name="trash" />,
@@ -50,7 +18,37 @@ const meta = {
     title: "Building blocks/Modals & overlays/ConfirmDialog",
     decorators: [themeDecorator],
     parameters: { tokens: confirmDialogTokens, closedOnDocsPage: true },
-    render: (args) => <ControlledConfirmDialog key={String(args.open)} {...args} />,
+    render: (args, context) => {
+        const [open, setOpen] = useControlledArg(args, "open", context);
+        const handleOpenChange = (nextOpen: boolean) => {
+            setOpen(nextOpen);
+            args.onOpenChange(nextOpen);
+        };
+        return (
+            <>
+                <Button variant="outlined" color="secondary" onClick={() => handleOpenChange(true)}>
+                    Leave page
+                </Button>
+                <ConfirmDialog
+                    {...args}
+                    open={open}
+                    onOpenChange={handleOpenChange}
+                    onConfirm={() => {
+                        args.onConfirm();
+                        handleOpenChange(false);
+                    }}
+                    onSecondary={
+                        args.onSecondary == null
+                            ? undefined
+                            : () => {
+                                  args.onSecondary?.();
+                                  handleOpenChange(false);
+                              }
+                    }
+                />
+            </>
+        );
+    },
     args: {
         open: false,
         onOpenChange: fn(),

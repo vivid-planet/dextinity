@@ -1,14 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type ReactNode, useState } from "react";
+import type { ReactNode } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { Menu } from "../Menu";
 import menuTokens from "../Menu.tokens.scss?raw";
 import { MenuItem } from "../MenuItem";
-import { MenuSubmenu, type MenuSubmenuProps } from "../MenuSubmenu";
+import { MenuSubmenu } from "../MenuSubmenu";
 import styles from "./Menu.stories.module.scss";
 
 function InOpenMenu({ children }: { children: ReactNode }) {
@@ -24,20 +25,6 @@ function InOpenMenu({ children }: { children: ReactNode }) {
         >
             {children}
         </Menu>
-    );
-}
-
-function ControlledSubmenu(props: MenuSubmenuProps) {
-    const [open, setOpen] = useState(props.open);
-    return (
-        <MenuSubmenu
-            {...props}
-            open={open}
-            onOpenChange={(nextOpen) => {
-                setOpen(nextOpen);
-                props.onOpenChange(nextOpen);
-            }}
-        />
     );
 }
 
@@ -59,7 +46,19 @@ const meta = {
         ),
     ],
     parameters: { tokens: menuTokens },
-    render: (args) => <ControlledSubmenu {...args} />,
+    render: (args, context) => {
+        const [open, setOpen] = useControlledArg(args, "open", context);
+        return (
+            <MenuSubmenu
+                {...args}
+                open={open}
+                onOpenChange={(nextOpen) => {
+                    setOpen(nextOpen);
+                    args.onOpenChange(nextOpen);
+                }}
+            />
+        );
+    },
     args: {
         label: "Move to",
         open: false,

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { Textarea, type TextareaProps } from "../Textarea";
@@ -10,10 +10,10 @@ import textareaTokens from "../Textarea.tokens.scss?raw";
 
 type TextareaStoryArgs = TextareaProps & FieldStoryArgs;
 
-/** Keeps the story controlled: typing updates the local value; changing the `value` control starts over from it. */
-function ControlledTextarea(args: TextareaStoryArgs) {
+/** Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. */
+function ControlledTextarea({ storyId, ...args }: TextareaStoryArgs & { storyId: string }) {
     const { field, control } = splitFieldArgs(args);
-    const [value, setValue] = useState(control.value);
+    const [value, setValue] = useControlledArg(control, "value", { id: storyId });
     return (
         <StoryField field={field}>
             <Textarea
@@ -33,7 +33,7 @@ const meta = {
     title: "Building blocks/Form fields/Textarea",
     decorators: [themeDecorator],
     parameters: { tokens: `${textareaTokens}\n${fieldTokens}` },
-    render: (args) => <ControlledTextarea key={args.value} {...args} />,
+    render: (args, context) => <ControlledTextarea {...args} storyId={context.id} />,
     args: {
         name: "tasks",
         label: "Tasks",

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import fieldTokens from "../../field/Field.tokens.scss?raw";
 import { DatePicker, type DatePickerProps } from "../DatePicker";
@@ -11,8 +12,28 @@ import styles from "./DatePicker.stories.module.scss";
 
 type DatePickerStoryArgs = DatePickerProps & FieldStoryArgs;
 
-/** Keeps the story controlled: choosing updates the local value; changing the `value` control starts over from it. */
-function ControlledDatePicker(args: DatePickerStoryArgs) {
+/** Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. */
+function ControlledDatePicker({ storyId, ...args }: DatePickerStoryArgs & { storyId: string }) {
+    const { field, control } = splitFieldArgs(args);
+    const [value, setValue] = useControlledArg(control, "value", { id: storyId });
+    return (
+        <div className={styles.narrow}>
+            <StoryField field={field}>
+                <DatePicker
+                    {...control}
+                    value={value}
+                    onChange={(next) => {
+                        control.onChange(next);
+                        setValue(next);
+                    }}
+                />
+            </StoryField>
+        </div>
+    );
+}
+
+/** A date picker of a story that shows several side by side, each with its own value; the `value` prop sets the initial one. */
+function StatefulDatePicker(args: DatePickerStoryArgs) {
     const { field, control } = splitFieldArgs(args);
     const [value, setValue] = useState(control.value);
     return (
@@ -36,7 +57,7 @@ const meta = {
     title: "Building blocks/Form fields/DatePicker",
     decorators: [themeDecorator],
     parameters: { tokens: `${datePickerTokens}\n${fieldTokens}` },
-    render: (args) => <ControlledDatePicker key={String(args.value)} {...args} />,
+    render: (args, context) => <ControlledDatePicker {...args} storyId={context.id} />,
     args: {
         name: "publishedOn",
         label: "Published on",
@@ -218,9 +239,9 @@ export const MonthAndYear: Story = {
 export const Locales: Story = {
     render: (args) => (
         <div className={styles.row}>
-            <ControlledDatePicker {...args} label="en-US" locale="en-US" />
-            <ControlledDatePicker {...args} label="de-AT" locale="de-AT" />
-            <ControlledDatePicker {...args} label="ja-JP" locale="ja-JP" />
+            <StatefulDatePicker {...args} label="en-US" locale="en-US" />
+            <StatefulDatePicker {...args} label="de-AT" locale="de-AT" />
+            <StatefulDatePicker {...args} label="ja-JP" locale="ja-JP" />
         </div>
     ),
 };

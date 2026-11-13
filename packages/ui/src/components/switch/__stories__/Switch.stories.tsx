@@ -3,6 +3,7 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Switch, type SwitchProps } from "../Switch";
 import switchTokens from "../Switch.tokens.scss?raw";
@@ -11,10 +12,33 @@ import styles from "./Switch.stories.module.scss";
 type SwitchStoryArgs = SwitchProps & Pick<FieldStoryArgs, "required" | "helperText" | "validationMessage" | "state">;
 
 /**
- * Keeps the story controlled: toggling updates the local state; the `checked` arg sets the initial state. With a field arg, it puts the
- * switch in a `Field` with `layout="group"`.
+ * Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. With a field arg, it
+ * puts the switch in a `Field` with `layout="group"`.
  */
-function ControlledSwitch(args: SwitchStoryArgs) {
+function ControlledSwitch({ storyId, ...args }: SwitchStoryArgs & { storyId: string }) {
+    const { field, control } = splitFieldArgs(args, ["size"]);
+    const [checked, setChecked] = useControlledArg(control, "checked", { id: storyId });
+    const toggle = (
+        <Switch
+            {...control}
+            checked={checked}
+            onChange={(next) => {
+                control.onChange(next);
+                setChecked(next);
+            }}
+        />
+    );
+    return hasFieldArgs(field) ? (
+        <StoryField field={field} layout="group">
+            {toggle}
+        </StoryField>
+    ) : (
+        toggle
+    );
+}
+
+/** A switch of a story that shows several side by side, each with its own state; the `checked` prop sets the initial state. */
+function StatefulSwitch(args: SwitchStoryArgs) {
     const { field, control } = splitFieldArgs(args, ["size"]);
     const [checked, setChecked] = useState(control.checked);
     const toggle = (
@@ -55,7 +79,7 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledSwitch {...args} />,
+    render: (args, context) => <ControlledSwitch {...args} storyId={context.id} />,
 } satisfies Meta<SwitchStoryArgs>;
 
 export default meta;
@@ -132,10 +156,10 @@ export const Keyboard: Story = {
 export const States: Story = {
     render: (args) => (
         <div className={styles.states}>
-            <ControlledSwitch {...args} children={undefined} aria-label="Off" />
-            <ControlledSwitch {...args} children={undefined} aria-label="On" checked />
-            <ControlledSwitch {...args} children={undefined} aria-label="Disabled" disabled />
-            <ControlledSwitch {...args} children={undefined} aria-label="Disabled on" checked disabled />
+            <StatefulSwitch {...args} children={undefined} aria-label="Off" />
+            <StatefulSwitch {...args} children={undefined} aria-label="On" checked />
+            <StatefulSwitch {...args} children={undefined} aria-label="Disabled" disabled />
+            <StatefulSwitch {...args} children={undefined} aria-label="Disabled on" checked disabled />
         </div>
     ),
 };
@@ -146,13 +170,13 @@ export const States: Story = {
 export const SettingsList: Story = {
     render: (args) => (
         <div className={styles.settings}>
-            <ControlledSwitch {...args} description="The page stays reachable but doesn't appear in the navigation." />
-            <ControlledSwitch {...args} checked description="Search engines may list this page.">
+            <StatefulSwitch {...args} description="The page stays reachable but doesn't appear in the navigation." />
+            <StatefulSwitch {...args} checked description="Search engines may list this page.">
                 Index in search engines
-            </ControlledSwitch>
-            <ControlledSwitch {...args} disabled description="Only administrators can change this setting.">
+            </StatefulSwitch>
+            <StatefulSwitch {...args} disabled description="Only administrators can change this setting.">
                 Lock page
-            </ControlledSwitch>
+            </StatefulSwitch>
         </div>
     ),
 };

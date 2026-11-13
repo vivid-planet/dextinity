@@ -2,11 +2,12 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
 import { IconButton } from "../../iconButton/IconButton";
-import { Menu, type MenuProps } from "../Menu";
+import { Menu } from "../Menu";
 import menuTokens from "../Menu.tokens.scss?raw";
 import { MenuGroup } from "../MenuGroup";
 import { MenuItem } from "../MenuItem";
@@ -37,20 +38,6 @@ function MoveToSubmenu() {
     );
 }
 
-function ControlledMenu(props: MenuProps) {
-    const [open, setOpen] = useState(props.open);
-    return (
-        <Menu
-            {...props}
-            open={open}
-            onOpenChange={(nextOpen) => {
-                setOpen(nextOpen);
-                props.onOpenChange(nextOpen);
-            }}
-        />
-    );
-}
-
 const meta = {
     component: Menu,
     title: "Building blocks/Menus & messages/Menu",
@@ -63,7 +50,19 @@ const meta = {
         ),
     ],
     parameters: { tokens: menuTokens },
-    render: (args) => <ControlledMenu {...args} />,
+    render: (args, context) => {
+        const [open, setOpen] = useControlledArg(args, "open", context);
+        return (
+            <Menu
+                {...args}
+                open={open}
+                onOpenChange={(nextOpen) => {
+                    setOpen(nextOpen);
+                    args.onOpenChange(nextOpen);
+                }}
+            />
+        );
+    },
     args: {
         trigger: (
             <IconButton color="secondary" aria-label="More actions" variant="outlined">

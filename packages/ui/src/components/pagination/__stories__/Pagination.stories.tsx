@@ -1,35 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import { Pagination, type PaginationProps } from "../Pagination";
+import { Pagination } from "../Pagination";
 import paginationTokens from "../Pagination.tokens.scss?raw";
-
-/** Keeps the story controlled: page and page size update the local state; the args set the initial values. */
-function ControlledPagination(props: PaginationProps) {
-    const [page, setPage] = useState(props.page);
-    const [pageSize, setPageSize] = useState(props.pageSize);
-    return (
-        <Pagination
-            {...props}
-            page={page}
-            pageSize={pageSize}
-            onPageChange={(nextPage) => {
-                props.onPageChange(nextPage);
-                setPage(nextPage);
-            }}
-            onPageSizeChange={
-                props.onPageSizeChange &&
-                ((nextPageSize) => {
-                    props.onPageSizeChange?.(nextPageSize);
-                    setPageSize(nextPageSize);
-                    setPage(1);
-                })
-            }
-        />
-    );
-}
 
 const meta = {
     component: Pagination,
@@ -48,7 +23,29 @@ const meta = {
         slotProps: { control: false },
         labels: { control: false },
     },
-    render: (args) => <ControlledPagination {...args} />,
+    render: (args, context) => {
+        const [page, setPage] = useControlledArg(args, "page", context);
+        const [pageSize, setPageSize] = useControlledArg(args, "pageSize", context);
+        return (
+            <Pagination
+                {...args}
+                page={page}
+                pageSize={pageSize}
+                onPageChange={(nextPage) => {
+                    args.onPageChange(nextPage);
+                    setPage(nextPage);
+                }}
+                onPageSizeChange={
+                    args.onPageSizeChange &&
+                    ((nextPageSize) => {
+                        args.onPageSizeChange?.(nextPageSize);
+                        setPageSize(nextPageSize);
+                        setPage(1);
+                    })
+                }
+            />
+        );
+    },
 } satisfies Meta<typeof Pagination>;
 
 export default meta;

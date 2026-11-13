@@ -3,6 +3,7 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Checkbox, type CheckboxProps } from "../Checkbox";
 import checkboxTokens from "../Checkbox.tokens.scss?raw";
@@ -11,10 +12,32 @@ import styles from "./Checkbox.stories.module.scss";
 type CheckboxStoryArgs = CheckboxProps & Pick<FieldStoryArgs, "required" | "helperText" | "validationMessage" | "state">;
 
 /**
- * Keeps the story controlled: toggling updates the local state; the `checked` arg sets the initial state. With a field arg, it puts the
- * checkbox in a `Field` with `layout="group"`.
+ * Binds the checkbox to the `checked` arg in both directions. With a field arg, it puts the checkbox in a `Field` with `layout="group"`.
  */
-function ControlledCheckbox(args: CheckboxStoryArgs) {
+function ControlledCheckbox({ storyId, ...args }: CheckboxStoryArgs & { storyId: string }) {
+    const { field, control } = splitFieldArgs(args);
+    const [checked, setChecked] = useControlledArg(control, "checked", { id: storyId });
+    const checkbox = (
+        <Checkbox
+            {...control}
+            checked={checked}
+            onChange={(next) => {
+                control.onChange(next);
+                setChecked(next);
+            }}
+        />
+    );
+    return hasFieldArgs(field) ? (
+        <StoryField field={field} layout="group">
+            {checkbox}
+        </StoryField>
+    ) : (
+        checkbox
+    );
+}
+
+/** A checkbox of a story that shows several side by side, each with its own state; the `checked` prop sets the initial state. */
+function StatefulCheckbox(args: CheckboxStoryArgs) {
     const { field, control } = splitFieldArgs(args);
     const [checked, setChecked] = useState(control.checked);
     const checkbox = (
@@ -87,7 +110,7 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <ControlledCheckbox {...args} />,
+    render: (args, context) => <ControlledCheckbox {...args} storyId={context.id} />,
 } satisfies Meta<CheckboxStoryArgs>;
 
 export default meta;
@@ -156,19 +179,19 @@ export const Keyboard: Story = {
 export const States: Story = {
     render: (args) => (
         <div className={styles.row}>
-            <ControlledCheckbox {...args}>Empty</ControlledCheckbox>
-            <ControlledCheckbox {...args} checked>
+            <StatefulCheckbox {...args}>Empty</StatefulCheckbox>
+            <StatefulCheckbox {...args} checked>
                 Checked
-            </ControlledCheckbox>
-            <ControlledCheckbox {...args} indeterminate>
+            </StatefulCheckbox>
+            <StatefulCheckbox {...args} indeterminate>
                 Partial
-            </ControlledCheckbox>
-            <ControlledCheckbox {...args} disabled>
+            </StatefulCheckbox>
+            <StatefulCheckbox {...args} disabled>
                 Disabled
-            </ControlledCheckbox>
-            <ControlledCheckbox {...args} checked disabled>
+            </StatefulCheckbox>
+            <StatefulCheckbox {...args} checked disabled>
                 Disabled checked
-            </ControlledCheckbox>
+            </StatefulCheckbox>
         </div>
     ),
 };

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { type FieldStoryArgs, groupFieldArgTypes, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { RadioGroup, type RadioGroupProps } from "../RadioGroup";
 import radioGroupTokens from "../RadioGroup.tokens.scss?raw";
@@ -10,12 +10,12 @@ import radioGroupTokens from "../RadioGroup.tokens.scss?raw";
 type RadioGroupStoryArgs = RadioGroupProps & FieldStoryArgs;
 
 /**
- * Keeps the story controlled: choosing updates the local value; changing the `value` control starts over from it. With a field arg, it
+ * Binds the value to its story arg, so the Controls panel drives it and a change on the canvas updates the arg. With a field arg, it
  * puts the group in a `Field` with `layout="group"`, whose label names the group.
  */
-function ControlledRadioGroup(args: RadioGroupStoryArgs) {
+function ControlledRadioGroup({ storyId, ...args }: RadioGroupStoryArgs & { storyId: string }) {
     const { field, control } = splitFieldArgs(args);
-    const [value, setValue] = useState(control.value);
+    const [value, setValue] = useControlledArg(control, "value", { id: storyId });
     const radioGroup = (
         <RadioGroup
             {...control}
@@ -40,7 +40,7 @@ const meta = {
     title: "Building blocks/Selection & toggles/RadioGroup",
     decorators: [themeDecorator],
     parameters: { tokens: radioGroupTokens },
-    render: (args) => <ControlledRadioGroup key={args.value} {...args} />,
+    render: (args, context) => <ControlledRadioGroup {...args} storyId={context.id} />,
     args: {
         label: "Employment",
         options: [

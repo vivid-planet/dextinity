@@ -2,8 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useEffect, useState } from "react";
 import { expect, fn, spyOn, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
-import { Dropzone, type DropzoneProps, type DropzoneRejection, type DropzoneUpload } from "../Dropzone";
+import { Dropzone, type DropzoneRejection, type DropzoneUpload } from "../Dropzone";
 import dropzoneTokens from "../Dropzone.tokens.scss?raw";
 import styles from "./Dropzone.stories.module.scss";
 
@@ -11,53 +12,6 @@ function describeRejections(rejections: DropzoneRejection[]) {
     return rejections
         .map(({ file, reason }) => (reason === "size" ? `${file.name} is larger than 200 MB.` : `${file.name} is not an image, PDF, or video.`))
         .join(" ");
-}
-
-/** Simulates uploads: each accepted file appears in the list and fills up until it is done. */
-function UploadingDropzone(props: DropzoneProps) {
-    const [uploads, setUploads] = useState<DropzoneUpload[]>(props.uploads ? [...props.uploads] : []);
-    const [error, setError] = useState(props.error);
-
-    const uploading = uploads.some((upload) => upload.status === "uploading");
-    useEffect(() => {
-        if (!uploading) {
-            return;
-        }
-        const timer = setInterval(() => {
-            setUploads((current) =>
-                current.map((upload) => {
-                    if (upload.status !== "uploading") {
-                        return upload;
-                    }
-                    const progress = Math.min(1, (upload.progress ?? 0) + 0.2);
-                    return { ...upload, progress, status: progress >= 1 ? "done" : "uploading" };
-                }),
-            );
-        }, 400);
-        return () => clearInterval(timer);
-    }, [uploading]);
-
-    return (
-        <div className={styles.container}>
-            <Dropzone
-                {...props}
-                uploads={uploads}
-                error={error}
-                onFiles={(files) => {
-                    props.onFiles(files);
-                    setError(undefined);
-                    setUploads((current) => [
-                        ...current,
-                        ...files.map((file, index) => ({ id: `${Date.now()}-${index}`, name: file.name, progress: 0, status: "uploading" as const })),
-                    ]);
-                }}
-                onReject={(rejections) => {
-                    props.onReject?.(rejections);
-                    setError(describeRejections(rejections));
-                }}
-            />
-        </div>
-    );
 }
 
 const meta = {
@@ -80,7 +34,56 @@ const meta = {
         className: { control: false },
         slotProps: { control: false },
     },
-    render: (args) => <UploadingDropzone {...args} />,
+    render: (args, context) => {
+        const [uploads, setUploads] = useState<DropzoneUpload[]>(args.uploads ? [...args.uploads] : []);
+        const [error, setError] = useControlledArg(args, "error", context);
+
+        const uploading = uploads.some((upload) => upload.status === "uploading");
+        useEffect(() => {
+            if (!uploading) {
+                return;
+            }
+            const timer = setInterval(() => {
+                setUploads((current) =>
+                    current.map((upload) => {
+                        if (upload.status !== "uploading") {
+                            return upload;
+                        }
+                        const progress = Math.min(1, (upload.progress ?? 0) + 0.2);
+                        return { ...upload, progress, status: progress >= 1 ? "done" : "uploading" };
+                    }),
+                );
+            }, 400);
+            return () => clearInterval(timer);
+        }, [uploading]);
+
+        return (
+            <div className={styles.container}>
+                <Dropzone
+                    {...args}
+                    uploads={uploads}
+                    error={error}
+                    onFiles={(files) => {
+                        args.onFiles(files);
+                        setError(undefined);
+                        setUploads((current) => [
+                            ...current,
+                            ...files.map((file, index) => ({
+                                id: `${Date.now()}-${index}`,
+                                name: file.name,
+                                progress: 0,
+                                status: "uploading" as const,
+                            })),
+                        ]);
+                    }}
+                    onReject={(rejections) => {
+                        args.onReject?.(rejections);
+                        setError(describeRejections(rejections));
+                    }}
+                />
+            </div>
+        );
+    },
 } satisfies Meta<typeof Dropzone>;
 
 export default meta;

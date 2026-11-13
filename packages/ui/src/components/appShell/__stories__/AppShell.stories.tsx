@@ -3,6 +3,7 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { ProductLogo, ProductSign } from "../../../storybook/ProductLogo";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { CommandPalette } from "../../commandPalette/CommandPalette";
@@ -14,7 +15,7 @@ import { sideNavGroups } from "../../sideNav/__stories__/sideNavStoryData";
 import { getSideNavAncestorIds, SideNav } from "../../sideNav/SideNav";
 import { StoryScopeSwitcher, StoryUserMenu } from "../../topBar/__stories__/topBarStoryParts";
 import { TopBar } from "../../topBar/TopBar";
-import { AppShell, type AppShellProps } from "../AppShell";
+import { AppShell } from "../AppShell";
 import appShellTokens from "../AppShell.tokens.scss?raw";
 import styles from "./AppShell.stories.module.scss";
 
@@ -55,54 +56,52 @@ function StoryPage() {
     );
 }
 
-function ControlledAppShell(props: AppShellProps) {
-    const [navCollapsed, setNavCollapsed] = useState(props.navCollapsed);
-    const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
-    const [query, setQuery] = useState("");
-    return (
-        <>
-            <AppShell
-                {...props}
-                nav={<StoryNav />}
-                topBar={<TopBar onSearchClick={() => setCommandPaletteOpen(true)} scope={<StoryScopeSwitcher />} userMenu={<StoryUserMenu />} />}
-                navCollapsed={navCollapsed}
-                onNavCollapsedChange={(collapsed) => {
-                    setNavCollapsed(collapsed);
-                    props.onNavCollapsedChange(collapsed);
-                }}
-            >
-                {props.children ?? <StoryPage />}
-            </AppShell>
-            <CommandPalette
-                open={commandPaletteOpen}
-                onOpenChange={setCommandPaletteOpen}
-                query={query}
-                onQueryChange={setQuery}
-                groups={[
-                    {
-                        label: "Commands",
-                        items: [
-                            {
-                                id: "nav",
-                                label: "Collapse navigation",
-                                icon: <Icon name="pin-left" />,
-                                shortcut: "mod+\\",
-                                onSelect: () => setNavCollapsed(!navCollapsed),
-                            },
-                        ],
-                    },
-                ]}
-            />
-        </>
-    );
-}
-
 const meta = {
     component: AppShell,
     title: "Shell/App frame/AppShell",
     decorators: [themeDecorator],
     parameters: { tokens: appShellTokens, layout: "fullscreen" },
-    render: (args) => <ControlledAppShell {...args} />,
+    render: (args, context) => {
+        const [navCollapsed, setNavCollapsed] = useControlledArg(args, "navCollapsed", context);
+        const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+        const [query, setQuery] = useState("");
+        return (
+            <>
+                <AppShell
+                    {...args}
+                    nav={<StoryNav />}
+                    topBar={<TopBar onSearchClick={() => setCommandPaletteOpen(true)} scope={<StoryScopeSwitcher />} userMenu={<StoryUserMenu />} />}
+                    navCollapsed={navCollapsed}
+                    onNavCollapsedChange={(collapsed) => {
+                        setNavCollapsed(collapsed);
+                        args.onNavCollapsedChange(collapsed);
+                    }}
+                >
+                    {args.children ?? <StoryPage />}
+                </AppShell>
+                <CommandPalette
+                    open={commandPaletteOpen}
+                    onOpenChange={setCommandPaletteOpen}
+                    query={query}
+                    onQueryChange={setQuery}
+                    groups={[
+                        {
+                            label: "Commands",
+                            items: [
+                                {
+                                    id: "nav",
+                                    label: "Collapse navigation",
+                                    icon: <Icon name="pin-left" />,
+                                    shortcut: "mod+\\",
+                                    onSelect: () => setNavCollapsed(!navCollapsed),
+                                },
+                            ],
+                        },
+                    ]}
+                />
+            </>
+        );
+    },
     args: {
         nav: null,
         topBar: null,

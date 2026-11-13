@@ -1,5 +1,5 @@
 import { Slider, type SliderProps } from "@dextinity/ui";
-import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
+import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
@@ -20,33 +20,35 @@ export function toSliderValue(value: unknown, min = 0) {
  * A `Slider` connected to a numeric React Final Form field. Without a value, the thumb rests at `min`. Shows the field's error below the
  * slider once it was touched or the form was submitted.
  */
-export const SliderField = forwardRef(function SliderField<FieldValue = number>(
-    { name, format, onFocus, ...props }: SliderFieldProps<FieldValue>,
-    forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
-    const [options, sliderProps] = splitFieldAdapterProps(props);
-    const {
-        input,
-        validationProps,
-        ref,
-        onBlur,
-        onFocus: onFieldFocus,
-    } = useFieldAdapter<FieldValue, number, HTMLDivElement>(name, options, forwardedRef);
+export const SliderField = memo(
+    forwardRef(function SliderField<FieldValue = number>(
+        { name, format, onFocus, ...props }: SliderFieldProps<FieldValue>,
+        forwardedRef: ForwardedRef<HTMLDivElement>,
+    ) {
+        const [options, sliderProps] = splitFieldAdapterProps(props);
+        const {
+            input,
+            validationProps,
+            ref,
+            onBlur,
+            onFocus: onFieldFocus,
+        } = useFieldAdapter<FieldValue, number, HTMLDivElement>(name, options, forwardedRef);
 
-    return (
-        <Slider
-            {...sliderProps}
-            ref={ref}
-            name={input.name}
-            format={format}
-            value={toSliderValue(input.value, sliderProps.min)}
-            {...validationProps}
-            onChange={input.onChange}
-            onBlur={onBlur}
-            onFocus={(event) => {
-                onFieldFocus();
-                onFocus?.(event);
-            }}
-        />
-    );
-}) as <FieldValue = number>(props: SliderFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;
+        return (
+            <Slider
+                {...sliderProps}
+                ref={ref}
+                name={input.name}
+                format={format}
+                value={toSliderValue(input.value, sliderProps.min)}
+                {...validationProps}
+                onChange={input.onChange}
+                onBlur={onBlur}
+                onFocus={(event) => {
+                    onFieldFocus();
+                    onFocus?.(event);
+                }}
+            />
+        );
+    }),
+) as <FieldValue = number>(props: SliderFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;

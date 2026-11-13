@@ -1,5 +1,5 @@
 import { type DateRange, DateRangePicker, type DateRangePickerProps } from "@dextinity/ui";
-import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
+import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterActions, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
@@ -39,35 +39,37 @@ export function isIncompleteDateRange(value: unknown) {
  * A `DateRangePicker` connected to a React Final Form field: `{ start, end }` with days as `YYYY-MM-DD`, or `null` for none. Shows the
  * field's error once it was touched or the form was submitted.
  */
-export const DateRangeField = forwardRef(function DateRangeField<FieldValue = DateRange | null>(
-    { name, actions, onFocus, ...props }: DateRangeFieldProps<FieldValue>,
-    forwardedRef: ForwardedRef<HTMLInputElement>,
-) {
-    const [options, dateRangePickerProps] = splitFieldAdapterProps(props);
-    const {
-        input,
-        validationProps,
-        ref,
-        onBlur,
-        onFocus: onFieldFocus,
-    } = useFieldAdapter<FieldValue, DateRange | null, HTMLInputElement>(name, { ...options, isEmpty: isIncompleteDateRange }, forwardedRef);
-    const value = toDateRangeValue(input.value);
+export const DateRangeField = memo(
+    forwardRef(function DateRangeField<FieldValue = DateRange | null>(
+        { name, actions, onFocus, ...props }: DateRangeFieldProps<FieldValue>,
+        forwardedRef: ForwardedRef<HTMLInputElement>,
+    ) {
+        const [options, dateRangePickerProps] = splitFieldAdapterProps(props);
+        const {
+            input,
+            validationProps,
+            ref,
+            onBlur,
+            onFocus: onFieldFocus,
+        } = useFieldAdapter<FieldValue, DateRange | null, HTMLInputElement>(name, { ...options, isEmpty: isIncompleteDateRange }, forwardedRef);
+        const value = toDateRangeValue(input.value);
 
-    return (
-        <DateRangePicker
-            {...dateRangePickerProps}
-            {...validationProps}
-            ref={ref}
-            name={input.name}
-            value={value}
-            required={options.required}
-            actions={renderActions(actions, value, input.onChange)}
-            onChange={input.onChange}
-            onBlur={onBlur}
-            onFocus={(event) => {
-                onFieldFocus();
-                onFocus?.(event);
-            }}
-        />
-    );
-}) as <FieldValue = DateRange | null>(props: DateRangeFieldProps<FieldValue> & RefAttributes<HTMLInputElement>) => ReactNode;
+        return (
+            <DateRangePicker
+                {...dateRangePickerProps}
+                {...validationProps}
+                ref={ref}
+                name={input.name}
+                value={value}
+                required={options.required}
+                actions={renderActions(actions, value, input.onChange)}
+                onChange={input.onChange}
+                onBlur={onBlur}
+                onFocus={(event) => {
+                    onFieldFocus();
+                    onFocus?.(event);
+                }}
+            />
+        );
+    }),
+) as <FieldValue = DateRange | null>(props: DateRangeFieldProps<FieldValue> & RefAttributes<HTMLInputElement>) => ReactNode;

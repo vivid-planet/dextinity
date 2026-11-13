@@ -1,5 +1,5 @@
 import { CheckboxGroup, type CheckboxGroupProps } from "@dextinity/ui";
-import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
+import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
@@ -23,40 +23,42 @@ export function toCheckboxGroupValue<Value extends string>(value: unknown): Valu
  * A `CheckboxGroup` connected to a React Final Form field holding the list of the checked options' values. A required group needs at least
  * one checked option. Shows the field's error below the options once it was touched or the form was submitted.
  */
-export const CheckboxGroupField = forwardRef(function CheckboxGroupField<Value extends string = string, FieldValue = Value[]>(
-    { name, onFocus, ...props }: CheckboxGroupFieldProps<Value, FieldValue>,
-    forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
-    const [options, checkboxGroupProps] = splitFieldAdapterProps(props);
-    const {
-        input,
-        validationProps,
-        ref,
-        onBlur,
-        onFocus: onFieldFocus,
-    } = useFieldAdapter<FieldValue, Value[], HTMLDivElement>(name, options, forwardedRef);
+export const CheckboxGroupField = memo(
+    forwardRef(function CheckboxGroupField<Value extends string = string, FieldValue = Value[]>(
+        { name, onFocus, ...props }: CheckboxGroupFieldProps<Value, FieldValue>,
+        forwardedRef: ForwardedRef<HTMLDivElement>,
+    ) {
+        const [options, checkboxGroupProps] = splitFieldAdapterProps(props);
+        const {
+            input,
+            validationProps,
+            ref,
+            onBlur,
+            onFocus: onFieldFocus,
+        } = useFieldAdapter<FieldValue, Value[], HTMLDivElement>(name, options, forwardedRef);
 
-    return (
-        <CheckboxGroup<Value>
-            {...checkboxGroupProps}
-            {...validationProps}
-            ref={ref}
-            name={input.name}
-            value={toCheckboxGroupValue<Value>(input.value)}
-            required={options.required}
-            onChange={input.onChange}
-            onBlur={(event) => {
-                // Moving between the group's own controls isn't leaving the field, so it isn't touched yet
-                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                    onBlur();
-                }
-            }}
-            onFocus={(event) => {
-                onFieldFocus();
-                onFocus?.(event);
-            }}
-        />
-    );
-}) as <Value extends string = string, FieldValue = Value[]>(
+        return (
+            <CheckboxGroup<Value>
+                {...checkboxGroupProps}
+                {...validationProps}
+                ref={ref}
+                name={input.name}
+                value={toCheckboxGroupValue<Value>(input.value)}
+                required={options.required}
+                onChange={input.onChange}
+                onBlur={(event) => {
+                    // Moving between the group's own controls isn't leaving the field, so it isn't touched yet
+                    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                        onBlur();
+                    }
+                }}
+                onFocus={(event) => {
+                    onFieldFocus();
+                    onFocus?.(event);
+                }}
+            />
+        );
+    }),
+) as <Value extends string = string, FieldValue = Value[]>(
     props: CheckboxGroupFieldProps<Value, FieldValue> & RefAttributes<HTMLDivElement>,
 ) => ReactNode;

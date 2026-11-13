@@ -1,5 +1,5 @@
 import { RichTextEditor, type RichTextEditorProps } from "@dextinity/ui";
-import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
+import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterActions, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
@@ -38,39 +38,41 @@ const isEqualTreatingEmptyRichText = isEqualTreatingEmptyAs(isEmptyRichText);
  * A `RichTextEditor` connected to a React Final Form field, with the HTML as value. A required field counts as empty while it has no
  * visible text. Shows the field's error once it was touched or the form was submitted.
  */
-export const RichTextEditorField = forwardRef(function RichTextEditorField<FieldValue = string>(
-    { name, actions, onFocus, ...props }: RichTextEditorFieldProps<FieldValue>,
-    forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
-    const [options, editorProps] = splitFieldAdapterProps(props);
-    const {
-        input,
-        validationProps,
-        ref,
-        onBlur,
-        onFocus: onFieldFocus,
-    } = useFieldAdapter<FieldValue, string, HTMLDivElement>(
-        name,
-        { ...options, isEqual: options.isEqual ?? isEqualTreatingEmptyRichText, isEmpty: isEmptyRichText },
-        forwardedRef,
-    );
-    const value = input.value ?? "";
+export const RichTextEditorField = memo(
+    forwardRef(function RichTextEditorField<FieldValue = string>(
+        { name, actions, onFocus, ...props }: RichTextEditorFieldProps<FieldValue>,
+        forwardedRef: ForwardedRef<HTMLDivElement>,
+    ) {
+        const [options, editorProps] = splitFieldAdapterProps(props);
+        const {
+            input,
+            validationProps,
+            ref,
+            onBlur,
+            onFocus: onFieldFocus,
+        } = useFieldAdapter<FieldValue, string, HTMLDivElement>(
+            name,
+            { ...options, isEqual: options.isEqual ?? isEqualTreatingEmptyRichText, isEmpty: isEmptyRichText },
+            forwardedRef,
+        );
+        const value = input.value ?? "";
 
-    return (
-        <RichTextEditor
-            {...editorProps}
-            {...validationProps}
-            ref={ref}
-            name={input.name}
-            value={value}
-            required={options.required}
-            actions={renderActions(actions, value, input.onChange)}
-            onChange={input.onChange}
-            onBlur={onBlur}
-            onFocus={(event) => {
-                onFieldFocus();
-                onFocus?.(event);
-            }}
-        />
-    );
-}) as <FieldValue = string>(props: RichTextEditorFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;
+        return (
+            <RichTextEditor
+                {...editorProps}
+                {...validationProps}
+                ref={ref}
+                name={input.name}
+                value={value}
+                required={options.required}
+                actions={renderActions(actions, value, input.onChange)}
+                onChange={input.onChange}
+                onBlur={onBlur}
+                onFocus={(event) => {
+                    onFieldFocus();
+                    onFocus?.(event);
+                }}
+            />
+        );
+    }),
+) as <FieldValue = string>(props: RichTextEditorFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;

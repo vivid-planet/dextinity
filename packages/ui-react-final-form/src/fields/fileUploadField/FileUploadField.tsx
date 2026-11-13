@@ -1,5 +1,5 @@
 import { FileUpload, type FileUploadFile, type FileUploadProps } from "@dextinity/ui";
-import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
+import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
@@ -23,39 +23,42 @@ export function toFileUploadValue(value: unknown): FileUploadFile[] {
  * A `FileUpload` connected to a React Final Form field holding the list of uploaded files, as `onUpload` describes them. A required
  * field needs at least one uploaded file. Shows the field's error below the files once it was touched or the form was submitted.
  */
-export const FileUploadField = forwardRef(function FileUploadField<FieldValue = FileUploadFile[]>(
-    { name, onFocus, ...props }: FileUploadFieldProps<FieldValue>,
-    forwardedRef: ForwardedRef<HTMLDivElement>,
-) {
-    const [options, fileUploadProps] = splitFieldAdapterProps(props);
-    const {
-        input,
-        validationProps,
-        ref,
-        onBlur,
-        onFocus: onFieldFocus,
-    } = useFieldAdapter<FieldValue, FileUploadFile[], HTMLDivElement>(name, options, forwardedRef);
+export const FileUploadField = memo(
+    forwardRef(function FileUploadField<FieldValue = FileUploadFile[]>(
+        { name, onFocus, ...props }: FileUploadFieldProps<FieldValue>,
+        forwardedRef: ForwardedRef<HTMLDivElement>,
+    ) {
+        const [options, fileUploadProps] = splitFieldAdapterProps(props);
+        const {
+            input,
+            validationProps,
+            ref,
+            onBlur,
+            onFocus: onFieldFocus,
+        } = useFieldAdapter<FieldValue, FileUploadFile[], HTMLDivElement>(name, options, forwardedRef);
 
-    return (
-        <FileUpload
-            {...fileUploadProps}
-            {...validationProps}
-            ref={ref}
-            name={input.name}
-            value={toFileUploadValue(input.value)}
-            required={options.required}
-            onChange={input.onChange}
-            onBlur={(event) => {
-                // Moving between the field's own buttons, or to the file dialog, isn't leaving the field, so it isn't touched yet
-                const leavesField = event.relatedTarget == null ? document.hasFocus() : !event.currentTarget.contains(event.relatedTarget as Node);
-                if (leavesField) {
-                    onBlur();
-                }
-            }}
-            onFocus={(event) => {
-                onFieldFocus();
-                onFocus?.(event);
-            }}
-        />
-    );
-}) as <FieldValue = FileUploadFile[]>(props: FileUploadFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;
+        return (
+            <FileUpload
+                {...fileUploadProps}
+                {...validationProps}
+                ref={ref}
+                name={input.name}
+                value={toFileUploadValue(input.value)}
+                required={options.required}
+                onChange={input.onChange}
+                onBlur={(event) => {
+                    // Moving between the field's own buttons, or to the file dialog, isn't leaving the field, so it isn't touched yet
+                    const leavesField =
+                        event.relatedTarget == null ? document.hasFocus() : !event.currentTarget.contains(event.relatedTarget as Node);
+                    if (leavesField) {
+                        onBlur();
+                    }
+                }}
+                onFocus={(event) => {
+                    onFieldFocus();
+                    onFocus?.(event);
+                }}
+            />
+        );
+    }),
+) as <FieldValue = FileUploadFile[]>(props: FileUploadFieldProps<FieldValue> & RefAttributes<HTMLDivElement>) => ReactNode;

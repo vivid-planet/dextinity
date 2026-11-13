@@ -1,5 +1,5 @@
 import { Picker, type PickerProps } from "@dextinity/ui";
-import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes, useState } from "react";
+import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes, useState } from "react";
 
 import type { FieldAdapterActions, FieldAdapterActionsContext, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
@@ -48,59 +48,61 @@ export function toPickerValue<Value>(value: unknown): Value | null {
  * A `Picker` connected to a React Final Form field: the value chosen in the application's picker, or `null` for nothing chosen. Shows the
  * field's error once the picker was closed or the form was submitted.
  */
-export const PickerField = forwardRef(function PickerField<Value, FieldValue = Value | null>(
-    { name, actions, renderPicker, onOpen, clearable, onFocus, ...props }: PickerFieldProps<Value, FieldValue>,
-    forwardedRef: ForwardedRef<HTMLButtonElement>,
-) {
-    const [options, pickerProps] = splitFieldAdapterProps(props);
-    const {
-        input,
-        validationProps,
-        ref,
-        onBlur,
-        onFocus: onFieldFocus,
-    } = useFieldAdapter<FieldValue, Value | null, HTMLButtonElement>(name, options, forwardedRef);
-    const [open, setOpen] = useState(false);
-    const value = toPickerValue<Value>(input.value);
-    const setValue = (next: Value | null) => input.onChange(next);
-    const close = () => {
-        setOpen(false);
-        onBlur();
-    };
-    const showsClear = clearable ?? !options.required;
+export const PickerField = memo(
+    forwardRef(function PickerField<Value, FieldValue = Value | null>(
+        { name, actions, renderPicker, onOpen, clearable, onFocus, ...props }: PickerFieldProps<Value, FieldValue>,
+        forwardedRef: ForwardedRef<HTMLButtonElement>,
+    ) {
+        const [options, pickerProps] = splitFieldAdapterProps(props);
+        const {
+            input,
+            validationProps,
+            ref,
+            onBlur,
+            onFocus: onFieldFocus,
+        } = useFieldAdapter<FieldValue, Value | null, HTMLButtonElement>(name, options, forwardedRef);
+        const [open, setOpen] = useState(false);
+        const value = toPickerValue<Value>(input.value);
+        const setValue = (next: Value | null) => input.onChange(next);
+        const close = () => {
+            setOpen(false);
+            onBlur();
+        };
+        const showsClear = clearable ?? !options.required;
 
-    return (
-        <>
-            <Picker<Value>
-                {...pickerProps}
-                {...validationProps}
-                ref={ref}
-                value={value}
-                required={options.required}
-                actions={renderActions(actions, value, setValue)}
-                onOpen={() => {
-                    if (renderPicker != null) {
-                        setOpen(true);
-                    }
-                    onOpen?.({ value, setValue });
-                }}
-                onClear={showsClear ? () => setValue((Array.isArray(value) ? [] : null) as Value | null) : undefined}
-                // While the picker is open, the focus is in the picker; the field counts as touched once it closes
-                onBlur={open ? undefined : onBlur}
-                onFocus={(event) => {
-                    onFieldFocus();
-                    onFocus?.(event);
-                }}
-            />
-            {renderPicker?.({
-                open,
-                value,
-                onChange: (next) => {
-                    setValue(next);
-                    close();
-                },
-                onClose: close,
-            })}
-        </>
-    );
-}) as <Value, FieldValue = Value | null>(props: PickerFieldProps<Value, FieldValue> & RefAttributes<HTMLButtonElement>) => ReactNode;
+        return (
+            <>
+                <Picker<Value>
+                    {...pickerProps}
+                    {...validationProps}
+                    ref={ref}
+                    value={value}
+                    required={options.required}
+                    actions={renderActions(actions, value, setValue)}
+                    onOpen={() => {
+                        if (renderPicker != null) {
+                            setOpen(true);
+                        }
+                        onOpen?.({ value, setValue });
+                    }}
+                    onClear={showsClear ? () => setValue((Array.isArray(value) ? [] : null) as Value | null) : undefined}
+                    // While the picker is open, the focus is in the picker; the field counts as touched once it closes
+                    onBlur={open ? undefined : onBlur}
+                    onFocus={(event) => {
+                        onFieldFocus();
+                        onFocus?.(event);
+                    }}
+                />
+                {renderPicker?.({
+                    open,
+                    value,
+                    onChange: (next) => {
+                        setValue(next);
+                        close();
+                    },
+                    onClose: close,
+                })}
+            </>
+        );
+    }),
+) as <Value, FieldValue = Value | null>(props: PickerFieldProps<Value, FieldValue> & RefAttributes<HTMLButtonElement>) => ReactNode;

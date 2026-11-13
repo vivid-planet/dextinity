@@ -1,5 +1,5 @@
 import { NumberInput, type NumberInputProps } from "@dextinity/ui";
-import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
+import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterActions, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
@@ -24,36 +24,38 @@ export function toNumberValue(value: unknown): number | null {
  * A `NumberInput` connected to a numeric React Final Form field: a number, or `null` while the field is empty. Shows the field's error once
  * it was touched or the form was submitted.
  */
-export const NumberField = forwardRef(function NumberField<FieldValue = number | null>(
-    { name, actions, format, onFocus, ...props }: NumberFieldProps<FieldValue>,
-    forwardedRef: ForwardedRef<HTMLInputElement>,
-) {
-    const [options, numberInputProps] = splitFieldAdapterProps(props);
-    const {
-        input,
-        validationProps,
-        ref,
-        onBlur,
-        onFocus: onFieldFocus,
-    } = useFieldAdapter<FieldValue, number | null, HTMLInputElement>(name, options, forwardedRef);
-    const value = toNumberValue(input.value);
+export const NumberField = memo(
+    forwardRef(function NumberField<FieldValue = number | null>(
+        { name, actions, format, onFocus, ...props }: NumberFieldProps<FieldValue>,
+        forwardedRef: ForwardedRef<HTMLInputElement>,
+    ) {
+        const [options, numberInputProps] = splitFieldAdapterProps(props);
+        const {
+            input,
+            validationProps,
+            ref,
+            onBlur,
+            onFocus: onFieldFocus,
+        } = useFieldAdapter<FieldValue, number | null, HTMLInputElement>(name, options, forwardedRef);
+        const value = toNumberValue(input.value);
 
-    return (
-        <NumberInput
-            {...numberInputProps}
-            {...validationProps}
-            ref={ref}
-            name={input.name}
-            value={value}
-            format={format}
-            required={options.required}
-            actions={renderActions(actions, value, input.onChange)}
-            onChange={input.onChange}
-            onBlur={onBlur}
-            onFocus={(event) => {
-                onFieldFocus();
-                onFocus?.(event);
-            }}
-        />
-    );
-}) as <FieldValue = number | null>(props: NumberFieldProps<FieldValue> & RefAttributes<HTMLInputElement>) => ReactNode;
+        return (
+            <NumberInput
+                {...numberInputProps}
+                {...validationProps}
+                ref={ref}
+                name={input.name}
+                value={value}
+                format={format}
+                required={options.required}
+                actions={renderActions(actions, value, input.onChange)}
+                onChange={input.onChange}
+                onBlur={onBlur}
+                onFocus={(event) => {
+                    onFieldFocus();
+                    onFocus?.(event);
+                }}
+            />
+        );
+    }),
+) as <FieldValue = number | null>(props: NumberFieldProps<FieldValue> & RefAttributes<HTMLInputElement>) => ReactNode;

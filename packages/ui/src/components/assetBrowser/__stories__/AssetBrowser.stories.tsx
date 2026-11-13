@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { expect, fireEvent, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { documentImage, interiorImage, landscapeImage, portraitImage } from "../../../storybook/sampleImages";
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Icon } from "../../icon/Icon";
@@ -106,14 +107,15 @@ function useSimulatedSearch(search: string, allFolders: ReadonlyArray<AssetBrows
 }
 
 /** Keeps the story controlled: folder, view, selection, search, moves, and deletions live in local state. */
-function ControlledAssetBrowser(props: AssetBrowserProps) {
-    const [folderId, setFolderId] = useState(props.folderId);
-    const [view, setView] = useState(props.view);
+function ControlledAssetBrowser({ storyId, ...props }: AssetBrowserProps & { storyId: string }) {
+    const [folderId, setFolderId] = useControlledArg(props, "folderId", { id: storyId });
+    const [view, setView] = useControlledArg(props, "view", { id: storyId });
     const [selectedIds, setSelectedIds] = useState<string[]>([...props.selectedIds]);
     const [currentFolders, setCurrentFolders] = useState(props.folders);
     const [currentAssets, setCurrentAssets] = useState(props.assets);
     const [sidebarWidth, setSidebarWidth] = useState(props.sidebarWidth);
-    const [search, setSearch] = useState(props.search ?? "");
+    const [searchArg, setSearch] = useControlledArg(props, "search", { id: storyId });
+    const search = searchArg ?? "";
     const simulatedSearch = useSimulatedSearch(search, currentFolders, currentAssets);
     return (
         <AssetBrowser
@@ -220,7 +222,7 @@ const meta = {
         searchResults: { control: false },
         searchFolderResults: { control: false },
     },
-    render: (args) => <ControlledAssetBrowser {...args} />,
+    render: (args, context) => <ControlledAssetBrowser {...args} storyId={context.id} />,
 } satisfies Meta<typeof AssetBrowser>;
 
 export default meta;
@@ -311,8 +313,8 @@ const manyAssets: AssetBrowserAsset[] = Array.from({ length: 36 }, (_, index) =>
     meta: "JPG · 1.8 MB",
 }));
 
-function UploadAndReveal(props: AssetBrowserProps) {
-    const [view, setView] = useState(props.view);
+function UploadAndReveal({ storyId, ...props }: AssetBrowserProps & { storyId: string }) {
+    const [view, setView] = useControlledArg(props, "view", { id: storyId });
     const [currentAssets, setCurrentAssets] = useState(manyAssets);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [scrollToItemId, setScrollToItemId] = useState<string>();
@@ -355,7 +357,7 @@ function UploadAndReveal(props: AssetBrowserProps) {
  * a file sorted last, selects it, and scrolls to it.
  */
 export const ScrollToItem: Story = {
-    render: (args) => <UploadAndReveal {...args} />,
+    render: (args, context) => <UploadAndReveal {...args} storyId={context.id} />,
     play: async ({ canvas, canvasElement }) => {
         const content = canvasElement.querySelector<HTMLElement>(".dextinityAssetBrowser__content");
         if (content == null) {

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { AIPanel, type AIPanelMessage, type AIPanelProps } from "../AIPanel";
 import aiPanelTokens from "../AIPanel.tokens.scss?raw";
@@ -27,9 +28,9 @@ const conversation: AIPanelMessage[] = [
     },
 ];
 
-function ControlledAIPanel(props: AIPanelProps) {
-    const [open, setOpen] = useState(props.open);
-    const [value, setValue] = useState(props.value);
+function ControlledAIPanel({ storyId, ...props }: AIPanelProps & { storyId: string }) {
+    const [open, setOpen] = useControlledArg(props, "open", { id: storyId });
+    const [value, setValue] = useControlledArg(props, "value", { id: storyId });
     const [messages, setMessages] = useState(props.messages);
     return (
         <AIPanel
@@ -66,7 +67,7 @@ const meta = {
         ),
     ],
     parameters: { tokens: aiPanelTokens, layout: "fullscreen" },
-    render: (args) => <ControlledAIPanel {...args} />,
+    render: (args, context) => <ControlledAIPanel {...args} storyId={context.id} />,
     args: {
         open: true,
         onOpenChange: fn(),

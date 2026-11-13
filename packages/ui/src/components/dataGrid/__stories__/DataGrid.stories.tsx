@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useRef, useState } from "react";
 import { expect, fireEvent, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
+import { useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { EmptyState } from "../../emptyState/EmptyState";
@@ -87,14 +88,15 @@ function moveItem<Item>(items: Item[], fromIndex: number, toIndex: number) {
 }
 
 /**
- * Keeps the story controlled: sorting, selection, paging, edits, order, expansion, and column visibility update local state; the
- * args set the initial values.
+ * Keeps the story controlled: sorting and selection follow their args in both directions; paging, edits, order, expansion, and
+ * column visibility update local state, and the args set their initial values.
  */
-function ControlledDataGrid(props: DataGridProps<Job>) {
+function ControlledDataGrid({ storyId, ...props }: DataGridProps<Job> & { storyId: string }) {
     const [allRows, setAllRows] = useState(props.rows);
     const [orderedColumns, setOrderedColumns] = useState(props.columns);
-    const [sort, setSort] = useState(props.sort);
-    const [selectedIds, setSelectedIds] = useState(props.selectedIds ?? []);
+    const [sort, setSort] = useControlledArg(props, "sort", { id: storyId });
+    const [selectedIdsArg, setSelectedIds] = useControlledArg(props, "selectedIds", { id: storyId });
+    const selectedIds = selectedIdsArg ?? [];
     const [expandedRowIds, setExpandedRowIds] = useState(props.expandedRowIds ?? []);
     const [columnVisibility, setColumnVisibility] = useState<DataGridColumnVisibility>(props.columnVisibility ?? {});
     const [page, setPage] = useState(props.pagination?.page ?? 1);
@@ -213,7 +215,7 @@ const meta = {
         renderRowDetail: { control: false },
         isRowExpandable: { control: false },
     },
-    render: (args) => <ControlledDataGrid {...args} />,
+    render: (args, context) => <ControlledDataGrid {...args} storyId={context.id} />,
 } satisfies Meta<DataGridProps<Job>>;
 
 export default meta;
@@ -409,9 +411,9 @@ export const InsidePanel: Story = {
         variant: "plain",
         rows: allJobs.slice(0, 5),
     },
-    render: (args) => (
+    render: (args, context) => (
         <Panel title="Open jobs" description="The latest jobs of this location.">
-            <ControlledDataGrid {...args} />
+            <ControlledDataGrid {...args} storyId={context.id} />
         </Panel>
     ),
     play: async ({ canvas }) => {

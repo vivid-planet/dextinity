@@ -65,7 +65,7 @@ function RowMenu({ job }: { job: Job }) {
             <MenuItem label="Edit" icon={<Icon name="edit" />} />
             <MenuItem label="Duplicate" icon={<Icon name="copy" />} />
             <MenuSeparator />
-            <MenuItem label="Delete" icon={<Icon name="delete" />} color="error" />
+            <MenuItem label="Delete" icon={<Icon name="trash" />} color="error" />
         </Menu>
     );
 }
@@ -240,7 +240,7 @@ export const Default: Story = {
         bulkActions: [
             { label: "Publish", icon: <Icon name="check" />, onClick: fn() },
             { label: "Archive", icon: <Icon name="archive" />, onClick: fn() },
-            { label: "Delete", icon: <Icon name="delete" />, color: "error", onClick: fn() },
+            { label: "Delete", icon: <Icon name="trash" />, color: "error", onClick: fn() },
         ],
         pagination: { page: 1, pageSize: 10, total: 47, onPageChange: fn() },
     },
@@ -913,7 +913,7 @@ function SpreadsheetExample() {
                     },
                     {
                         label: "Delete column",
-                        icon: "delete",
+                        icon: "trash",
                         color: "error",
                         disabled: sheetColumns.length === 1,
                         onClick: () => setSheetColumns((current) => current.filter((candidate) => candidate.id !== sheetColumn.id)),
@@ -941,7 +941,7 @@ function SpreadsheetExample() {
                             { label: "Insert row below", icon: "arrow-down", onClick: () => insertRow(index + 1) },
                             {
                                 label: "Delete row",
-                                icon: "delete",
+                                icon: "trash",
                                 color: "error",
                                 disabled: sheetRows.length === 1,
                                 onClick: () => setSheetRows((current) => current.filter((candidate) => candidate.id !== row.id)),

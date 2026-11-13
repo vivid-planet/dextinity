@@ -898,7 +898,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                 setColumnDropTarget(undefined);
             }}
         >
-            <Icon name="drag-indicator" />
+            <Icon name="grip" />
         </button>
     );
 
@@ -1049,7 +1049,7 @@ export const DataGrid = forwardRef(function DataGrid<Row>(
                 setDropTarget(undefined);
             }}
         >
-            <Icon name="drag-indicator" />
+            <Icon name="grip" />
         </button>
     );
 

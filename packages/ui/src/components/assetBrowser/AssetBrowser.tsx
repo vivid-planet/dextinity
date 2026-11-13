@@ -1257,7 +1257,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
             return canCreateFolder ? (
                 <MenuItem
                     label={labels.newFolder}
-                    icon={<Icon name="add-folder" />}
+                    icon={<Icon name="folder-add" />}
                     onClick={() => {
                         keepFocusAfterContextMenu.current = true;
                         startCreatingFolder();
@@ -1283,7 +1283,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
         ].filter(Boolean);
         const customEntries = contextMenuItems?.(contextMenuIds);
         const deleteEntry = canManage && onDelete != null && (
-            <MenuItem label={labels.delete} icon={<Icon name="delete" />} color="error" onClick={() => onDelete(contextMenuIds)} />
+            <MenuItem label={labels.delete} icon={<Icon name="trash" />} color="error" onClick={() => onDelete(contextMenuIds)} />
         );
         return (
             <>
@@ -1524,7 +1524,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                             disabled={!canCreateFolder}
                             onClick={startCreatingFolder}
                         >
-                            <Icon name="add-folder" />
+                            <Icon name="folder-add" />
                         </IconButton>
                     )}
                     {toolbar}
@@ -1537,7 +1537,7 @@ export const AssetBrowser = forwardRef<HTMLDivElement, AssetBrowserProps>(functi
                             { value: "icons", icon: <Icon name="grid" />, "aria-label": labels.icons },
                             { value: "list", icon: <Icon name="list" />, "aria-label": labels.list },
                             { value: "columns", icon: <Icon name="columns-3" />, "aria-label": labels.columns, disabled: isSearching },
-                            { value: "gallery", icon: <Icon name="assets" />, "aria-label": labels.gallery },
+                            { value: "gallery", icon: <Icon name="images" />, "aria-label": labels.gallery },
                         ]}
                     />
                 </div>

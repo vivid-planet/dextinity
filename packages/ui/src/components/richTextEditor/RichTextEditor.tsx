@@ -666,7 +666,7 @@ const RichTextEditorToolbar = memo(function RichTextEditorToolbar({
             content: (
                 <ToolbarGroup>
                     <ToolbarButton aria-label={labels.link} shortcut="⌘K" pressed={state.link} keepFocus onClick={() => requestLink()}>
-                        <Icon name="link-diagonal" />
+                        <Icon name="link" />
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={labels.removeLink}

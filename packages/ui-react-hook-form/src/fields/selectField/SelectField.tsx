@@ -1,8 +1,9 @@
-import { Select, type SelectProps, type SelectValue } from "@dextinity/ui";
+import { Field, Select, type SelectProps, type SelectValue } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 
 import type { FieldAdapterActions, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { boxFieldPropKeys, type FieldAdapterBoxFieldProps, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { ReactHookFormFieldConfig } from "../../fieldAdapter/reactHookFormFieldConfig";
 import { renderActions } from "../../fieldAdapter/renderActions";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
@@ -16,8 +17,12 @@ export interface SelectFieldProps<
 >
     extends
         FieldAdapterBaseProps<TFieldValues, TName>,
+        FieldAdapterBoxFieldProps,
         ReactHookFormFieldConfig<TFieldValues, TName>,
-        Omit<SelectProps<Multiple, Value>, "name" | "value" | "onChange" | "onBlur" | "state" | "validationMessage" | "required" | "actions"> {
+        Omit<
+            SelectProps<Multiple, Value>,
+            "name" | "value" | "onChange" | "onBlur" | "onFocus" | "state" | "validationMessage" | "required" | "actions"
+        > {
     /** Content at the label, or a function of the field's value and setter, e.g. to connect `FieldActions`. */
     actions?: FieldAdapterActions<SelectValue<Multiple, Value>>;
 }
@@ -38,23 +43,27 @@ export const SelectField = forwardRef(function SelectField<
     Value,
     TFieldValues extends FieldValues,
     TName extends FieldPath<TFieldValues>,
->({ name, actions, ...props }: SelectFieldProps<Multiple, Value, TFieldValues, TName>, forwardedRef: ForwardedRef<HTMLButtonElement>) {
-    const [options, selectProps] = splitFieldAdapterProps(props);
+>({ name, onFocus, actions, ...props }: SelectFieldProps<Multiple, Value, TFieldValues, TName>, forwardedRef: ForwardedRef<HTMLButtonElement>) {
+    const [options, controlProps] = splitFieldAdapterProps(props);
+    const [fieldProps, selectProps] = splitFieldProps(controlProps, boxFieldPropKeys);
     const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLButtonElement>({ name, ...options }, forwardedRef);
     const value = toSelectValue<Multiple, Value>(field.value, selectProps.multiple === true);
 
     return (
-        <Select<Multiple, Value>
-            {...selectProps}
+        <Field
+            {...fieldProps}
             {...validationProps}
-            ref={ref}
-            name={field.name}
-            value={value}
             required={options.required}
             actions={renderActions(actions, value, field.onChange)}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-        />
+            onBlur={(event) => {
+                if (leavesField(event)) {
+                    field.onBlur();
+                }
+            }}
+            onFocus={onFocus}
+        >
+            <Select<Multiple, Value> {...selectProps} ref={ref} name={field.name} value={value} onChange={field.onChange} />
+        </Field>
     );
 }) as <
     Multiple extends boolean = false,

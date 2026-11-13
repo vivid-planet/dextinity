@@ -1,8 +1,9 @@
-import { Picker, type PickerProps } from "@dextinity/ui";
+import { Field, Picker, type PickerProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes, useState } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 
 import type { FieldAdapterActions, FieldAdapterActionsContext, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { boxFieldPropKeys, type FieldAdapterBoxFieldProps, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { ReactHookFormFieldConfig } from "../../fieldAdapter/reactHookFormFieldConfig";
 import { renderActions } from "../../fieldAdapter/renderActions";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
@@ -29,8 +30,9 @@ export interface PickerFieldProps<
 >
     extends
         FieldAdapterBaseProps<TFieldValues, TName>,
+        FieldAdapterBoxFieldProps,
         ReactHookFormFieldConfig<TFieldValues, TName>,
-        Omit<PickerProps<Value>, "value" | "onOpen" | "onClear" | "onBlur" | "state" | "validationMessage" | "required" | "actions"> {
+        Omit<PickerProps<Value>, "value" | "onOpen" | "onClear" | "onBlur" | "onFocus" | "state" | "validationMessage" | "required" | "actions"> {
     /** Renders the application's picker, e.g. a dialog with the page tree, from whose choice the field's value is set. */
     renderPicker?: (context: PickerFieldPickerContext<Value>) => ReactNode;
     /** Called when the user activates the field, with the field's value and setter, e.g. to open a picker outside the form. */
@@ -54,10 +56,11 @@ export function toPickerValue<Value>(value: unknown): Value | null {
  * field's error once the picker was closed or the form was submitted.
  */
 export const PickerField = forwardRef(function PickerField<Value, TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>(
-    { name, actions, renderPicker, onOpen, clearable, ...props }: PickerFieldProps<Value, TFieldValues, TName>,
+    { name, onFocus, actions, renderPicker, onOpen, clearable, ...props }: PickerFieldProps<Value, TFieldValues, TName>,
     forwardedRef: ForwardedRef<HTMLButtonElement>,
 ) {
-    const [options, pickerProps] = splitFieldAdapterProps(props);
+    const [options, controlProps] = splitFieldAdapterProps(props);
+    const [fieldProps, pickerProps] = splitFieldProps(controlProps, boxFieldPropKeys);
     const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLButtonElement>({ name, ...options }, forwardedRef);
     const [open, setOpen] = useState(false);
     const value = toPickerValue<Value>(field.value);
@@ -70,23 +73,28 @@ export const PickerField = forwardRef(function PickerField<Value, TFieldValues e
 
     return (
         <>
-            <Picker<Value>
-                {...pickerProps}
+            <Field
+                {...fieldProps}
                 {...validationProps}
-                ref={ref}
-                value={value}
                 required={options.required}
                 actions={renderActions(actions, value, setValue)}
-                onOpen={() => {
-                    if (renderPicker != null) {
-                        setOpen(true);
-                    }
-                    onOpen?.({ value, setValue });
-                }}
-                onClear={showsClear ? () => setValue((Array.isArray(value) ? [] : null) as Value | null) : undefined}
                 // While the picker is open, the focus is in the picker; the field counts as touched once it closes
                 onBlur={open ? undefined : field.onBlur}
-            />
+                onFocus={onFocus}
+            >
+                <Picker<Value>
+                    {...pickerProps}
+                    ref={ref}
+                    value={value}
+                    onOpen={() => {
+                        if (renderPicker != null) {
+                            setOpen(true);
+                        }
+                        onOpen?.({ value, setValue });
+                    }}
+                    onClear={showsClear ? () => setValue((Array.isArray(value) ? [] : null) as Value | null) : undefined}
+                />
+            </Field>
             {renderPicker?.({
                 open,
                 value,

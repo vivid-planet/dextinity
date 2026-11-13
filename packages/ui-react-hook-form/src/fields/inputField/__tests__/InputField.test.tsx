@@ -66,7 +66,7 @@ describe("InputField", () => {
 
         await userEvent.click(screen.getByRole("button", { name: "Save" }));
 
-        await waitFor(() => expect(screen.getByText("Required")).toBeInTheDocument());
+        await waitFor(() => expect(screen.getByText("Required", { ignore: "[hidden]" })).toBeInTheDocument());
         expect(screen.getByLabelText("Title")).toHaveAttribute("aria-invalid", "true");
         expect(screen.getByLabelText("Title")).toHaveFocus();
     });

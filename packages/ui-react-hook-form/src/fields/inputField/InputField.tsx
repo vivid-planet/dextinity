@@ -58,6 +58,7 @@ export const InputField = forwardRef(function InputField<TFieldValues extends Fi
         actions,
         label,
         helperText,
+        helpText,
         disabled,
         readOnly,
         loading,
@@ -85,6 +86,7 @@ export const InputField = forwardRef(function InputField<TFieldValues extends Fi
             label={label}
             required={options.required}
             helperText={helperText}
+            helpText={helpText}
             disabled={disabled}
             readOnly={readOnly}
             loading={loading}

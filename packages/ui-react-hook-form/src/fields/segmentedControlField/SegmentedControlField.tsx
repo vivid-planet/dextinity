@@ -1,8 +1,9 @@
-import { SegmentedControl, type SegmentedControlProps } from "@dextinity/ui";
+import { Field, SegmentedControl, type SegmentedControlProps } from "@dextinity/ui";
 import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 
 import type { FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
+import { type FieldAdapterFieldProps, groupFieldPropKeys, leavesField, splitFieldProps } from "../../fieldAdapter/fieldFrameProps";
 import type { ReactHookFormFieldConfig } from "../../fieldAdapter/reactHookFormFieldConfig";
 import { splitFieldAdapterProps } from "../../fieldAdapter/splitFieldAdapterProps";
 import { useFieldAdapter } from "../../fieldAdapter/useFieldAdapter";
@@ -14,8 +15,9 @@ export interface SegmentedControlFieldProps<
 >
     extends
         FieldAdapterBaseProps<TFieldValues, TName>,
+        FieldAdapterFieldProps,
         ReactHookFormFieldConfig<TFieldValues, TName>,
-        Omit<SegmentedControlProps<Value>, "value" | "onChange" | "onBlur" | "state" | "validationMessage"> {}
+        Omit<SegmentedControlProps<Value>, "value" | "onChange" | "onBlur" | "onFocus" | "state" | "validationMessage"> {}
 
 /**
  * A `SegmentedControl` connected to a React Hook Form field holding one of the options' values. Without a value, no option is checked.
@@ -25,19 +27,26 @@ export const SegmentedControlField = forwardRef(function SegmentedControlField<
     Value extends string,
     TFieldValues extends FieldValues,
     TName extends FieldPath<TFieldValues>,
->({ name, ...props }: SegmentedControlFieldProps<Value, TFieldValues, TName>, forwardedRef: ForwardedRef<HTMLDivElement>) {
+>({ name, onFocus, ...props }: SegmentedControlFieldProps<Value, TFieldValues, TName>, forwardedRef: ForwardedRef<HTMLDivElement>) {
     const [options, controlProps] = splitFieldAdapterProps(props);
+    const [fieldProps, segmentedControlProps] = splitFieldProps(controlProps, groupFieldPropKeys);
     const { field, validationProps, ref } = useFieldAdapter<TFieldValues, TName, HTMLDivElement>({ name, ...options }, forwardedRef);
 
     return (
-        <SegmentedControl<Value>
-            {...controlProps}
-            ref={ref}
-            value={field.value ?? ("" as Value)}
+        <Field
+            layout="group"
+            {...fieldProps}
+            required={options.required}
             {...validationProps}
-            onChange={field.onChange}
-            onBlur={field.onBlur}
-        />
+            onBlur={(event) => {
+                if (leavesField(event)) {
+                    field.onBlur();
+                }
+            }}
+            onFocus={onFocus}
+        >
+            <SegmentedControl<Value> {...segmentedControlProps} ref={ref} value={field.value ?? ("" as Value)} onChange={field.onChange} />
+        </Field>
     );
 }) as <
     Value extends string = string,

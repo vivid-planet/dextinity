@@ -30,6 +30,7 @@ const preview: Preview = {
                     "Foundations",
                     [
                         "Colors",
+                        "OKLCH color space",
                         "Typography",
                         "Spacing, radii & material",
                         "Tokens",

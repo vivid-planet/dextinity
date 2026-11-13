@@ -1,0 +1,76 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { DoDont } from "../../storybook/docs/foundations/DoDont";
+import { BrandHueDemo, ColorFormatComparison, HslOklchComparison, OklchAxes, OklchPlayground } from "../../storybook/docs/foundations/OklchDemos";
+
+<Meta title="Foundations/OKLCH color space" />
+
+# OKLCH color space
+
+How we describe colors: lightness, chroma, hue — and why that makes theming so simple. Every color token of the theme is an `oklch()` value.
+
+## In short
+
+OKLCH describes a color the way we see it: how light, how colorful, which hue. The same number means the same impression — for every hue.
+
+<OklchAxes />
+
+```css
+color: oklch(0.52 0.255 275); /* L  C  H – the indigo accent of the Dextinity brand */
+```
+
+In the theme, the same accent is `--dextinity-color-accent: oklch(0.52 var(--dextinity-brand-primary-chroma) var(--dextinity-brand-primary-hue))`: the color scheme sets the lightness, the brand the chroma and the hue.
+
+## Try it
+
+Three sliders, visible right away. The page computes the hex value and the contrast along with it. "Load a token" starts from a color of the brand and color scheme picked in the toolbar.
+
+<OklchPlayground />
+
+## The difference
+
+On paper, both rows have the same lightness. Measured (L) and to the eye: HSL lies, OKLCH doesn't.
+
+<HslOklchComparison />
+
+## Why it matters to us
+
+- **Predictable contrast.** The same L means a similar contrast. White text on the accent works for indigo, orange, and violet with the same rule — instead of measuring color by color.
+- **Clean scales.** Our primitives, `--dextinity-color-<scale>-<step>`, have 11 steps (50–950) on a fixed lightness curve. Step 500 is equally light in every scale, so steps are interchangeable.
+- **Theming with one number.** At its core, a brand is a hue and a chroma (`--dextinity-brand-primary-hue`, `--dextinity-brand-primary-chroma`). All states, surfaces, and gradients are computed from them.
+- **States without tables.** A soft tint or a lighter variant shifts L and scales C, e.g. `--dextinity-color-accent-soft` is the accent hue at L 0.955 with a fifth of the chroma. No hex value of its own per state and brand.
+- **Dark and high contrast.** The color schemes mostly turn L, and lower C a little where the color gets light. Hue stays, so the brand looks the same in every color scheme.
+- **More colors.** OKLCH can also describe Display P3, the wider color space of modern screens. Older devices automatically get the nearest sRGB color.
+
+## Live: the brand through its hue
+
+One slider, one token. Button, chip, link, and the whole primary scale follow — exactly how our brands work. The demo sets the two tokens on a nested `Theme`, as a [custom brand](?path=/docs/foundations-theme-customize-brand--docs) does. A step marked "P3" is outside sRGB but inside Display P3, one marked "clipped" is outside both: a screen shows the nearest color it can.
+
+<BrandHueDemo />
+
+## Compared
+
+<ColorFormatComparison />
+
+## Limits
+
+- **Too colorful doesn't fit everywhere.** High chroma at very light or very dark lies outside sRGB and gets clipped. That's why the primitives' chroma curve lowers C toward the ends of the scales. A brand with a high chroma, such as Dextinity's 0.255, still leaves sRGB in the light steps — the demo above marks them.
+- **Figma doesn't speak OKLCH.** The primitives are computed and transferred to Figma as hex. The source of truth is the OKLCH values in the code.
+- **Check contrast anyway.** L is a very good approximation, but doesn't replace the WCAG measurement. The [Colors](?path=/docs/foundations-colors--docs) page computes it live.
+
+## Rules
+
+<DoDont
+    dos={[
+        "Create new colors as oklch(), not as hex.",
+        "Generate scales on a fixed L curve.",
+        "Derive states with small steps in L.",
+        "Interpolate gradients “in oklch”.",
+    ]}
+    donts={[
+        "Hex values in components.",
+        "HSL for scales or states.",
+        "Chroma above ~0.25 for areas.",
+        "The brand hue for status, such as error or success.",
+    ]}
+/>

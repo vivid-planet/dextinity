@@ -339,7 +339,7 @@ function flattenList(list: ProseMirrorNode): ProseMirrorNode[] {
 }
 
 /** Turns the items of lists nested deeper than `listLevelMax` into paragraphs of the item they're nested in. */
-export function trimListNesting(transaction: Transaction, listLevelMax: number) {
+function trimListNesting(transaction: Transaction, listLevelMax: number) {
     const tooDeep: { pos: number; node: ProseMirrorNode }[] = [];
     transaction.doc.descendants((node, pos) => {
         if (!isList(node)) {

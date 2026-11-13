@@ -9,7 +9,7 @@ type PopupSide = "below" | "above";
  * 300px by default. Set as `parameters.popupRoom` on a story whose popup — a select's options, a menu, a calendar — would otherwise
  * be cut off by the story's frame on the docs page.
  */
-export interface PopupRoom {
+interface PopupRoom {
     side: PopupSide;
     minHeight?: string;
 }

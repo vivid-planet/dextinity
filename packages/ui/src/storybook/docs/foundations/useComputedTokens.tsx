@@ -1,20 +1,19 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { type RefObject, useLayoutEffect, useRef, useState } from "react";
 
 import { brandSetting } from "../../brand";
 import { useAppliedColorScheme } from "../../colorScheme";
 import { densitySetting } from "../../density";
 import { ToolbarThemed } from "../ThemedProbe";
 
+type ComputedProperty = "color" | "borderTopLeftRadius";
+
 /**
- * Resolves tokens to computed values in the toolbar's theme by applying each to `property` of a probe. Unlike the raw custom
- * property, the computed value has every `calc()` and `var()` evaluated, so it can be parsed and compared.
+ * Resolves tokens to computed values by applying each to `property` of the probe element of `probeRef`. Unlike the raw
+ * custom property, the computed value has every `calc()` and `var()` evaluated, so it can be parsed and compared. The
+ * values are read again whenever `refreshKey` changes.
  */
-export function useComputedTokens(tokens: string[], property: "color" | "borderTopLeftRadius") {
-    const probeRef = useRef<HTMLSpanElement>(null);
+export function useComputedTokensIn(probeRef: RefObject<HTMLElement | null>, tokens: string[], property: ComputedProperty, refreshKey: string) {
     const [values, setValues] = useState<Record<string, string>>({});
-    const colorScheme = useAppliedColorScheme();
-    const brand = brandSetting.useValue();
-    const density = densitySetting.useValue();
     const tokensKey = tokens.join(",");
 
     useLayoutEffect(() => {
@@ -28,7 +27,20 @@ export function useComputedTokens(tokens: string[], property: "color" | "borderT
             resolved[token] = getComputedStyle(probe)[property];
         }
         setValues(resolved);
-    }, [tokensKey, property, colorScheme, brand, density]);
+    }, [probeRef, tokensKey, property, refreshKey]);
+
+    return values;
+}
+
+/**
+ * Resolves tokens to computed values in the toolbar's theme.
+ */
+export function useComputedTokens(tokens: string[], property: ComputedProperty) {
+    const probeRef = useRef<HTMLSpanElement>(null);
+    const colorScheme = useAppliedColorScheme();
+    const brand = brandSetting.useValue();
+    const density = densitySetting.useValue();
+    const values = useComputedTokensIn(probeRef, tokens, property, [colorScheme, brand, density].join());
 
     const probe = (
         <ToolbarThemed>

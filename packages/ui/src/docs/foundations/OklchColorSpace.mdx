@@ -19,7 +19,7 @@ OKLCH describes a color the way we see it: how light, how colorful, which hue. T
 color: oklch(0.52 0.255 275); /* L  C  H – the indigo accent of the Dextinity brand */
 ```
 
-In the theme, the same accent is `--dextinity-color-accent: oklch(0.52 var(--dextinity-brand-primary-chroma) var(--dextinity-brand-primary-hue))`: the color scheme sets the lightness, the brand the chroma and the hue.
+In the theme, the same accent is `--dextinity-color-accent: oklch(0.52 var(--dextinity-brand-primary-chroma) var(--dextinity-brand-primary-hue))`: the brand sets the chroma and the hue, the color scheme the lightness. Dark and high contrast also scale the brand's chroma down (`× 0.8` and `× 0.45`), because the accent gets lighter there.
 
 ## Try it
 
@@ -29,7 +29,7 @@ Three sliders, visible right away. The page computes the hex value and the contr
 
 ## The difference
 
-On paper, both rows have the same lightness. Measured (L) and to the eye: HSL lies, OKLCH doesn't.
+On paper, both rows have the same lightness. The OKLCH row uses a chroma every hue can show in sRGB, so no cell gets clipped. Measured (L) and to the eye: HSL lies, OKLCH doesn't.
 
 <HslOklchComparison />
 
@@ -54,7 +54,7 @@ One slider, one token. Button, chip, link, and the whole primary scale follow �
 
 ## Limits
 
-- **Too colorful doesn't fit everywhere.** High chroma at very light or very dark lies outside sRGB and gets clipped. That's why the primitives' chroma curve lowers C toward the ends of the scales. A brand with a high chroma, such as Dextinity's 0.255, still leaves sRGB in the light steps — the demo above marks them.
+- **Too colorful doesn't fit everywhere.** High chroma at very light or very dark lies outside sRGB and gets clipped. That's why the primitives' chroma curve lowers C toward the ends of the scales. A brand with a high chroma, such as Dextinity's 0.255, goes beyond that anyway: its light primary steps and its accent in the dark color scheme lie outside sRGB and mostly outside Display P3 too, so screens show the nearest color they can. The demo above marks them.
 - **Figma doesn't speak OKLCH.** The primitives are computed and transferred to Figma as hex. The source of truth is the OKLCH values in the code.
 - **Check contrast anyway.** L is a very good approximation, but doesn't replace the WCAG measurement. The [Colors](?path=/docs/foundations-colors--docs) page computes it live.
 
@@ -70,7 +70,7 @@ One slider, one token. Button, chip, link, and the whole primary scale follow �
     donts={[
         "Hex values in components.",
         "HSL for scales or states.",
-        "Chroma above ~0.25 for areas.",
+        "Chroma above ~0.25 for large areas, such as backgrounds.",
         "The brand hue for status, such as error or success.",
     ]}
 />

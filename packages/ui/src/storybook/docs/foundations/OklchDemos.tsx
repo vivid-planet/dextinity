@@ -1,4 +1,4 @@
-import { type CSSProperties, type ReactNode, type RefObject, useLayoutEffect, useRef, useState } from "react";
+import { type CSSProperties, type ReactNode, useRef, useState } from "react";
 
 import { Button } from "../../../components/button/Button";
 import { Checkbox } from "../../../components/checkbox/Checkbox";
@@ -30,7 +30,7 @@ import {
     toHex,
 } from "./oklch";
 import styles from "./OklchDemos.module.scss";
-import { useResolvedColors } from "./useComputedTokens";
+import { useComputedTokensIn, useResolvedColors } from "./useComputedTokens";
 
 const white: Rgb = [1, 1, 1];
 const black: Rgb = [0, 0, 0];
@@ -304,11 +304,11 @@ export function HslOklchComparison() {
                 </div>
                 <div className={styles.rowLabel}>
                     <b>OKLCH</b>
-                    <code>oklch(0.66 0.15 h)</code>
+                    <code>oklch(0.66 0.11 h)</code>
                 </div>
                 <div className={styles.cells}>
                     {comparisonHues.map(({ hue, name }) => {
-                        const color = { lightness: 0.66, chroma: 0.15, hue };
+                        const color = { lightness: 0.66, chroma: 0.11, hue };
                         return (
                             <div
                                 key={name}
@@ -356,27 +356,6 @@ const brandProbeTokens = [
 ];
 
 /**
- * Resolves color tokens to computed colors inside the element of `probeRef`, re-reading them whenever `key` changes.
- */
-function useColorsInside(probeRef: RefObject<HTMLSpanElement | null>, tokens: string[], key: string) {
-    const [colors, setColors] = useState<Record<string, string>>({});
-    const tokensKey = tokens.join(",");
-    useLayoutEffect(() => {
-        const probe = probeRef.current;
-        if (!probe) {
-            return;
-        }
-        const resolved: Record<string, string> = {};
-        for (const token of tokensKey.split(",")) {
-            probe.style.color = `var(${token})`;
-            resolved[token] = getComputedStyle(probe).color;
-        }
-        setColors(resolved);
-    }, [probeRef, tokensKey, key]);
-    return colors;
-}
-
-/**
  * Moves the brand's primary hue and chroma, the two tokens a brand sets for its accent, and shows how real components, the
  * primary scale, and the contrast of the accent follow in the toolbar's color scheme.
  */
@@ -393,7 +372,7 @@ export function BrandHueDemo() {
     const brandChroma = Number(brandValues[primaryChromaToken]) || 0;
     const hue = override?.hue ?? brandHue;
     const chroma = override?.chroma ?? brandChroma;
-    const colors = useColorsInside(probeRef, brandProbeTokens, [hue, chroma, colorScheme, brand, density].join());
+    const colors = useComputedTokensIn(probeRef, brandProbeTokens, "color", [hue, chroma, colorScheme, brand, density].join());
 
     const parsed = (token: string) => (colors[token] ? parseColor(colors[token]) : null);
     const canvas = parsed("--dextinity-color-canvas");

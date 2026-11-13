@@ -41,6 +41,13 @@ describe("Icon", () => {
         expect(icon?.style.getPropertyValue("--dextinity-current-icon-image")).toBe("var(--dextinity-colored-icon-search)");
     });
 
+    it("reads the image of a colored icon from the icon's colored variable", () => {
+        const { container } = render(<Icon name="dextinity-color" />);
+        const icon = container.querySelector("span");
+
+        expect(icon?.style.getPropertyValue("--dextinity-current-icon-image")).toBe("var(--dextinity-colored-icon-dextinity-color)");
+    });
+
     it("emits its size as a data attribute", () => {
         const { container } = render(<Icon name="time" size="large" />);
 

@@ -49,8 +49,6 @@
         --dextinity-icon-columns-2: url("./svg/columns-2.svg#icon");
         --dextinity-icon-columns-3: url("./svg/columns-3.svg#icon");
         --dextinity-icon-columns-4: url("./svg/columns-4.svg#icon");
-        --dextinity-icon-comet: url("./svg/comet.svg#icon");
-        --dextinity-icon-comet-outline: url("./svg/comet-outline.svg#icon");
         --dextinity-icon-comment-list: url("./svg/comment-list.svg#icon");
         --dextinity-icon-company: url("./svg/company.svg#icon");
         --dextinity-icon-contact: url("./svg/contact.svg#icon");
@@ -79,6 +77,8 @@
         --dextinity-icon-device-phone: url("./svg/device-phone.svg#icon");
         --dextinity-icon-device-responsive: url("./svg/device-responsive.svg#icon");
         --dextinity-icon-device-tablet: url("./svg/device-tablet.svg#icon");
+        --dextinity-icon-dextinity: url("./svg/dextinity.svg#icon");
+        --dextinity-colored-icon-dextinity-color: url("./svg/dextinity-color.svg#icon");
         --dextinity-icon-domain: url("./svg/domain.svg#icon");
         --dextinity-icon-domain-locked: url("./svg/domain-locked.svg#icon");
         --dextinity-icon-download: url("./svg/download.svg#icon");
@@ -323,5 +323,13 @@
         --dextinity-duotone-icon-palette: url("./svg/duotone/palette.svg#icon");
         --dextinity-duotone-icon-time: url("./svg/duotone/time.svg#icon");
         --dextinity-duotone-icon-warning: url("./svg/duotone/warning.svg#icon");
+    }
+
+    /* A colored icon would keep its own colors over the user's, so it shows its flat form in the text color instead */
+    @media (forced-colors: active) {
+        :root {
+            --dextinity-colored-icon-dextinity-color: initial;
+            --dextinity-icon-dextinity-color: url("./svg/dextinity.svg#icon");
+        }
     }
 }

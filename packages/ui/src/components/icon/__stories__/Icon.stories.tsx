@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { clsx } from "clsx";
+import { expect } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Icon } from "../Icon";
@@ -52,11 +53,34 @@ export const Label: Story = {
 };
 
 /**
- * A colored icon keeps its own colors, for example a logo.
+ * A colored icon keeps its own colors, for example a logo. It ignores the text color and `duotone`. In forced colors, the
+ * Dextinity mark switches to its flat form in the text color.
+ *
+ * The Dextinity mark comes in both forms: `dextinity` in the text color and `dextinity-color` in the brand colors.
  */
 export const ColoredIcon: Story = {
-    args: {
-        name: "youtube-filled-color",
+    tags: ["forced-colors"],
+    render: () => (
+        <div className={styles.row}>
+            <Icon name="dextinity" size="large" aria-label="Dextinity" />
+            <Icon name="dextinity-color" size="large" aria-label="Dextinity in color" />
+            <Icon name="youtube-filled-color" size="large" aria-label="YouTube" />
+        </div>
+    ),
+    play: async ({ canvas }) => {
+        const flatMark = getComputedStyle(canvas.getByRole("img", { name: "Dextinity" }));
+        const colorMark = getComputedStyle(canvas.getByRole("img", { name: "Dextinity in color" }));
+
+        await expect(flatMark.maskImage).toContain("dextinity.svg");
+        await expect(flatMark.backgroundImage).toBe("none");
+        if (window.matchMedia("(forced-colors: active)").matches) {
+            await expect(colorMark.maskImage).toContain("dextinity.svg");
+            await expect(colorMark.backgroundImage).toBe("none");
+            await expect(colorMark.backgroundColor).toBe(colorMark.color);
+        } else {
+            await expect(colorMark.backgroundImage).toContain("dextinity-color.svg");
+            await expect(colorMark.maskImage).toBe("none");
+        }
     },
 };
 

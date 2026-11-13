@@ -7,7 +7,9 @@ import { defaultIconNames } from "../iconRegistry";
 
 const iconNames = Object.keys(defaultIconNames);
 const iconsCss = readFileSync(new URL("../../../../icons.css", import.meta.url), "utf-8");
-const variableNames = [...iconsCss.matchAll(/--dextinity-(?:colored-)?icon-([a-z0-9-]+):/g)].map(([, name]) => name);
+// A colored icon may switch to its flat form in forced colors, which sets a second variable for its name
+const [iconsCssWithoutForcedColors] = iconsCss.split("@media (forced-colors: active)");
+const variableNames = [...iconsCssWithoutForcedColors.matchAll(/--dextinity-(?:colored-)?icon-([a-z0-9-]+):/g)].map(([, name]) => name);
 const svgFiles = readdirSync(new URL("../../../../svg/", import.meta.url)).filter((file) => file.endsWith(".svg"));
 const duotoneNames = [...iconsCss.matchAll(/--dextinity-duotone-icon-([a-z0-9-]+):/g)].map(([, name]) => name);
 const duotoneSvgFiles = readdirSync(new URL("../../../../svg/duotone/", import.meta.url)).filter((file) => file.endsWith(".svg"));

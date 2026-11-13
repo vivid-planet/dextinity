@@ -54,6 +54,17 @@ Every icon that you add needs both, otherwise it doesn't show correctly. If you 
 
 `Icon` shows an icon in the text color: it uses only the shape of the SVG file. For an icon that keeps its own colors, such as a logo, set `--dextinity-colored-icon-<name>` instead. `Icon` then shows the SVG file as an image.
 
+In forced colors, for example a Windows contrast theme, a colored icon keeps its own colors. To show it in the user's text color instead, switch to a flat form of it there, as `@dextinity/ui` does for `dextinity-color`:
+
+```css
+@media (forced-colors: active) {
+    :root {
+        --dextinity-colored-icon-my-logo: initial;
+        --dextinity-icon-my-logo: url("./icons/my-logo-flat.svg#icon");
+    }
+}
+```
+
 ## Prepare an SVG file
 
 - The root element is `<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 24 24" fill="none">`. The default icons are lines on this 24×24 grid with a 1.5 stroke and round ends; an icon that sits next to them matches that. For any other size, ask for a 24×24 version instead of scaling it.

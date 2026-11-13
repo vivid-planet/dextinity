@@ -63,7 +63,7 @@ function Addresses() {
                                 disabled={fields.length === 1}
                                 onClick={() => remove(index)}
                             >
-                                <Icon name="delete" />
+                                <Icon name="trash" />
                             </IconButton>
                         </div>
                     </div>

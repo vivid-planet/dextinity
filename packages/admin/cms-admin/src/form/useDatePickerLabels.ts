@@ -17,6 +17,7 @@ export function useDatePickerLabels(): DatePickerLabels {
             previousYear: intl.formatMessage({ id: "dextinity.datePicker.previousYear", defaultMessage: "Previous year" }),
             nextYear: intl.formatMessage({ id: "dextinity.datePicker.nextYear", defaultMessage: "Next year" }),
             chooseMonth: intl.formatMessage({ id: "dextinity.datePicker.chooseMonth", defaultMessage: "Choose month and year" }),
+            year: intl.formatMessage({ id: "dextinity.datePicker.year", defaultMessage: "Year" }),
             today: intl.formatMessage({ id: "dextinity.datePicker.today", defaultMessage: "Today" }),
             invalidDate: (example) =>
                 intl.formatMessage({ id: "dextinity.datePicker.invalidDate", defaultMessage: "Enter a date like {example}." }, { example }),
@@ -46,7 +47,11 @@ export function useDateTimePickerLabels(): DateTimePickerLabels {
     const intl = useIntl();
     const datePickerLabels = useDatePickerLabels();
     return useMemo(
-        () => ({ ...datePickerLabels, time: intl.formatMessage({ id: "dextinity.dateTimePicker.time", defaultMessage: "Time" }) }),
+        () => ({
+            ...datePickerLabels,
+            time: intl.formatMessage({ id: "dextinity.dateTimePicker.time", defaultMessage: "Time" }),
+            openTimeList: intl.formatMessage({ id: "dextinity.dateTimePicker.openTimeList", defaultMessage: "Choose time" }),
+        }),
         [datePickerLabels, intl],
     );
 }

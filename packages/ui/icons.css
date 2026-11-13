@@ -325,7 +325,12 @@
         --dextinity-duotone-icon-warning: url("./svg/duotone/warning.svg#icon");
     }
 
-    /* A colored icon would keep its own colors over the user's, so it shows its flat form in the text color instead */
+    /* A colored icon would keep its own colors over the user's or the high-contrast ones, so it shows its flat form in the text color instead */
+    [data-dextinity-color-scheme="high-contrast"] {
+        --dextinity-colored-icon-dextinity-color: initial;
+        --dextinity-icon-dextinity-color: url("./svg/dextinity.svg#icon");
+    }
+
     @media (forced-colors: active) {
         :root {
             --dextinity-colored-icon-dextinity-color: initial;

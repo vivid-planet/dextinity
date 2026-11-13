@@ -26,7 +26,7 @@ export interface PageEditorHeaderProps {
     title?: string;
     back?: PageHeaderBack;
     /** Called when the back link is clicked, e.g. to navigate with the router while keeping modifier clicks. */
-    onBackClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
+    onBackClick?: (event: MouseEvent<HTMLElement>) => void;
     /** The kind of document and the scope, e.g. "Page · Main / English". */
     eyebrow?: ReactNode;
     visibility?: GQLPageTreeNodeVisibility;

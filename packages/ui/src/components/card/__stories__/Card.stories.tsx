@@ -83,7 +83,7 @@ export const Default: Story = {
 };
 
 /**
- * As on the overview: a duotone icon in the orb and a link to the full view.
+ * As on the overview: an icon in the orb and a link to the full view.
  */
 export const WithIconAndLink: Story = {
     args: { icon: iconOptions.Recent, link: linkOptions.PageTree },

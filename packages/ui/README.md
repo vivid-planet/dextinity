@@ -283,7 +283,7 @@ A brand is a CSS block on `[data-dextinity-brand="<name>"]` that sets the `--dex
 
 An icon is 18px. Components size their nested icons through `--dextinity-icon-size`, and `Icon`'s `size` prop picks one of the sizes `small` (18px), `default` (20px), and `large` (24px).
 
-The icon set is the one of the Dextinity admin design: lines on a 24×24 grid with a 1.5 stroke, round ends, and no duotone fills. The names are short and in kebab case, e.g. `chev-d`, `trash`, `star-fill`, and the Storybook groups them by category in "Foundations → Icons → All icons". Earlier names — the names of the COMET icon set and the earlier names of this package, e.g. `delete` or `chevron-down` — still work: `deprecatedIconAliases` in [`iconRegistry.ts`](src/components/icon/iconRegistry.ts) maps each one to its icon, and `Icon` shows that icon's variable, so a project overrides the variable of the icon, not of the earlier name. Use the icon's name in new code.
+The icon set is the one of the Dextinity admin design: lines on a 24×24 grid with a 1.5 stroke, round ends, and no duotone fills. The names are short and in kebab case, e.g. `chev-d`, `trash`, `star-fill`, and the Storybook groups them by category in "Foundations → Icons → All icons". Earlier names — the names of the COMET icon set and the earlier names of this package, e.g. `delete` or `chevron-down` — still work: `deprecatedIconAliases` in [`iconRegistry.ts`](src/components/icon/iconRegistry.ts) maps each one to its icon. For an earlier name, `Icon` reads the variable of that name and falls back to the variable of the icon, so a project icon or override under the earlier name still wins. Use the icon's name in new code.
 
 ### Adding an icon
 

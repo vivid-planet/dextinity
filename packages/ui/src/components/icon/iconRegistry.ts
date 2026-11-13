@@ -542,6 +542,8 @@ export const deprecatedIconAliases = {
 
 /**
  * A deprecated earlier name of a default icon, see `deprecatedIconAliases`.
+ *
+ * @deprecated Use the name of the icon instead. TypeScript can't mark single members of a string union as deprecated, so editors don't strike the names through.
  */
 export type DeprecatedIconAlias = keyof typeof deprecatedIconAliases;
 
@@ -551,8 +553,12 @@ export type DeprecatedIconAlias = keyof typeof deprecatedIconAliases;
 export type IconName = keyof IconRegistry | DeprecatedIconAlias;
 
 /**
- * The name of the icon that `Icon` shows for a name: the icon an earlier name points to, or the name itself.
+ * The CSS value that reads an icon variable, e.g. `--dextinity-icon-<name>`, for a name.
+ * For a deprecated earlier name, the variable of that name comes first, so a project icon or override under that name wins, and the variable of the icon it points to is the fallback.
  */
-export function resolveIconName(name: IconName): string {
-    return Object.hasOwn(deprecatedIconAliases, name) ? deprecatedIconAliases[name as DeprecatedIconAlias] : name;
+export function iconVariableValue(variablePrefix: string, name: IconName): string {
+    if (Object.hasOwn(deprecatedIconAliases, name)) {
+        return `var(${variablePrefix}${name}, var(${variablePrefix}${deprecatedIconAliases[name as DeprecatedIconAlias]}))`;
+    }
+    return `var(${variablePrefix}${name})`;
 }

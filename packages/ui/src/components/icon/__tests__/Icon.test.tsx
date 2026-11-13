@@ -54,11 +54,13 @@ describe("Icon", () => {
         expect(container.querySelector("span")).toHaveAttribute("data-size", "large");
     });
 
-    it("shows the icon that a deprecated earlier name points to", () => {
+    it("shows the icon that a deprecated earlier name points to, unless the variable of that name is set", () => {
         const { container } = render(<Icon name="delete" />);
         const icon = container.querySelector("span");
 
-        expect(icon?.style.getPropertyValue("--dextinity-current-icon-mask")).toBe("var(--dextinity-icon-trash)");
-        expect(icon?.style.getPropertyValue("--dextinity-current-icon-image")).toBe("var(--dextinity-colored-icon-trash)");
+        expect(icon?.style.getPropertyValue("--dextinity-current-icon-mask")).toBe("var(--dextinity-icon-delete, var(--dextinity-icon-trash))");
+        expect(icon?.style.getPropertyValue("--dextinity-current-icon-image")).toBe(
+            "var(--dextinity-colored-icon-delete, var(--dextinity-colored-icon-trash))",
+        );
     });
 });

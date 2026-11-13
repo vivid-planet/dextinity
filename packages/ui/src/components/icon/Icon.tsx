@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import { type ComponentPropsWithoutRef, type CSSProperties, forwardRef } from "react";
 
 import styles from "./Icon.module.scss";
-import { type IconName, resolveIconName } from "./iconRegistry";
+import { type IconName, iconVariableValue } from "./iconRegistry";
 
 type IconSize = "small" | "default" | "large";
 
@@ -39,11 +39,10 @@ export const Icon = forwardRef<HTMLSpanElement, IconProps>(function Icon(
     ref,
 ) {
     const ownerState: IconOwnerState = { size };
-    const iconName = resolveIconName(name);
     const isLabeled = ariaLabel !== undefined || ariaLabelledBy !== undefined;
     const iconStyle: CSSProperties & Record<`--${string}`, string> = {
-        "--dextinity-current-icon-mask": `var(--dextinity-icon-${iconName})`,
-        "--dextinity-current-icon-image": `var(--dextinity-colored-icon-${iconName})`,
+        "--dextinity-current-icon-mask": iconVariableValue("--dextinity-icon-", name),
+        "--dextinity-current-icon-image": iconVariableValue("--dextinity-colored-icon-", name),
         ...style,
     };
 

@@ -39,7 +39,7 @@ export const FileFieldRow = ({ file, onRemove, preview, menuActions }: FileField
                             onClick={onRemove}
                             aria-label={intl.formatMessage({ id: "dextinity.form.file.removeFile", defaultMessage: "Remove" })}
                         >
-                            <Icon name="delete" />
+                            <Icon name="trash" />
                         </IconButton>
                     )}
                     {showsMenu && <FileFieldMenu fileId={file.id} menuActions={menuActions} />}

@@ -88,7 +88,7 @@ export function AppFrameErrorDialog() {
             labels={{ close: intl.formatMessage({ id: "dextinity.errorDialog.close", defaultMessage: "Close" }) }}
             footer={
                 errorType === "unauthenticated" && !errorOptions.userMessage ? (
-                    <Button href="/" startIcon={<Icon name="reload" />}>
+                    <Button href="/" startIcon={<Icon name="refresh" />}>
                         {intl.formatMessage({ id: "dextinity.errorDialog.sessionExpired.button", defaultMessage: "Re-login" })}
                     </Button>
                 ) : (

@@ -49,7 +49,7 @@ export function ProductDetailsPanel({ productId, editUrl, onClose, onUnsavedChan
                     </div>
                 ) : (
                     <EmptyState
-                        icon={<Icon name="warning" />}
+                        icon={<Icon name="warning-triangle" />}
                         title={intl.formatMessage({ id: "uiDemo.products.panel.loadFailed", defaultMessage: "The product couldn't be loaded" })}
                         description={error?.message}
                     />

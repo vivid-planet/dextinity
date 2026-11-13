@@ -105,7 +105,7 @@ export function BrevoContactPanel(props: BrevoContactPanelProps): JSX.Element {
                     </FormBody>
                 ) : (
                     <EmptyState
-                        icon={<Icon name="warning" />}
+                        icon={<Icon name="warning-triangle" />}
                         title={intl.formatMessage({
                             id: "dextinity.brevoContact.panel.loadFailed",
                             defaultMessage: "The contact couldn't be loaded",

@@ -317,7 +317,7 @@ function Coordinates({ coordinates }: { coordinates: GQLManufacturersUiEditFragm
                     href={`https://www.openstreetmap.org/?mlat=${coordinates.latitude}&mlon=${coordinates.longitude}#map=15/${coordinates.latitude}/${coordinates.longitude}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    startIcon={<Icon name="open-new-tab" />}
+                    startIcon={<Icon name="window" />}
                 >
                     {intl.formatMessage({ id: "uiDemo.manufacturers.openMap", defaultMessage: "Show on OpenStreetMap" })}
                 </Link>

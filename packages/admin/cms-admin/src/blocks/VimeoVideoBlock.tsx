@@ -45,7 +45,7 @@ export const VimeoVideoBlock: BlockInterface<VimeoVideoBlockData, State, VimeoVi
     defaultValues: () => ({ showControls: true, previewImage: PixelImageBlock.defaultValues() }),
 
     category: BlockCategory.Media,
-    iconName: "vimeo-filled",
+    iconName: "video",
     description: <FormattedMessage id="dextinity.blocks.vimeoVideo.description" defaultMessage="Video from Vimeo" />,
 
     input2State: (input) => ({ ...input, previewImage: PixelImageBlock.input2State(input.previewImage) }),

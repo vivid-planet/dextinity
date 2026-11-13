@@ -93,7 +93,7 @@ export function ReplaceFileButton({ file, onNotify }: ReplaceFileButtonProps) {
                 variant="outlined"
                 color="secondary"
                 size="small"
-                startIcon={<Icon name="upload" />}
+                startIcon={<Icon name="cloud-upload" />}
                 loading={isReplacing}
                 onClick={() => fileInputRef.current?.click()}
             >

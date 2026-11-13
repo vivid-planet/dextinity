@@ -31,7 +31,7 @@ export const SvgImageBlock: BlockInterface<SvgImageBlockData, SvgImageBlockState
     defaultValues: () => ({}),
 
     category: BlockCategory.Media,
-    iconName: "image-vector",
+    iconName: "vector",
     description: <FormattedMessage id="dextinity.blocks.svgImage.description" defaultMessage="Vector graphic from the assets" />,
 
     createPreviewState: (state, previewContext) => {

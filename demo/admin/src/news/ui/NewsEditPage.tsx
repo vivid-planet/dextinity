@@ -150,7 +150,7 @@ function NewsLoadError({ baseUrl, reason }: NewsLoadErrorProps) {
         >
             <Panel>
                 <EmptyState
-                    icon={<Icon name="warning" />}
+                    icon={<Icon name="warning-triangle" />}
                     title={reason}
                     actions={
                         <Button variant="outlined" color="secondary" size="small" href={baseUrl} onClick={navigateWithRouter}>
@@ -504,7 +504,7 @@ function NewsEditFormContent({ baseUrl, savedNews, createdId, form, addToast }: 
                                     variant="outlined"
                                     color="error"
                                     size="small"
-                                    startIcon={<Icon name="delete" />}
+                                    startIcon={<Icon name="trash" />}
                                     onClick={() => setDeleteDialogOpen(true)}
                                 >
                                     {intl.formatMessage({ id: "uiDemo.news.edit.delete", defaultMessage: "Delete permanently" })}
@@ -614,7 +614,7 @@ function NewsEditFormContent({ baseUrl, savedNews, createdId, form, addToast }: 
                     defaultMessage: "This can't be undone. To hide the news from the site and keep it, switch off “Active” instead.",
                 })}
                 confirmLabel={intl.formatMessage({ id: "uiDemo.news.edit.delete", defaultMessage: "Delete permanently" })}
-                confirmIcon={<Icon name="delete" />}
+                confirmIcon={<Icon name="trash" />}
                 onConfirm={() => void deletePermanently()}
                 loading={deleting}
                 labels={{ cancel: intl.formatMessage({ id: "uiDemo.news.list.deleteDialog.cancel", defaultMessage: "Cancel" }) }}

@@ -163,7 +163,7 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
             priority: "low",
             render: (permission) =>
                 permission.overrideContentScopes ? (
-                    <Chip size="small" color="info" startIcon={<Icon name="domain" />}>
+                    <Chip size="small" color="info" startIcon={<Icon name="globe" />}>
                         {intl.formatMessage({ id: "dextinity.userPermissions.contentScopes.specific", defaultMessage: "Permission-specific" })}
                     </Chip>
                 ) : (
@@ -241,7 +241,7 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
                 labels={dataGridLabels}
                 emptyState={
                     <EmptyState
-                        icon={<Icon name="security" />}
+                        icon={<Icon name="shield-check" />}
                         title={intl.formatMessage({ id: "dextinity.userPermissions.noPermissions", defaultMessage: "No permissions assigned" })}
                         description={intl.formatMessage({
                             id: "dextinity.userPermissions.noPermissionsDescription",
@@ -280,7 +280,7 @@ export const PermissionGrid = ({ userId }: { userId: string }) => {
                     defaultMessage: "The user can't use this area of the admin anymore.",
                 })}
                 confirmLabel={intl.formatMessage({ id: "dextinity.userPermissions.removePermissionDialog.confirm", defaultMessage: "Remove" })}
-                confirmIcon={<Icon name="delete" />}
+                confirmIcon={<Icon name="trash" />}
                 onConfirm={() => void confirmDelete()}
                 loading={deleting}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.userPermissions.cancel", defaultMessage: "Cancel" }) }}
@@ -327,7 +327,7 @@ function PermissionRowMenu({ permission, onEdit, onEditContentScopes, onDelete }
                             ? intl.formatMessage({ id: "dextinity.userPermissions.showPermission", defaultMessage: "Show details" })
                             : intl.formatMessage({ id: "dextinity.userPermissions.editPermission", defaultMessage: "Edit" })
                     }
-                    icon={<Icon name={isByRule ? "view" : "edit"} />}
+                    icon={<Icon name={isByRule ? "page-search" : "edit"} />}
                     onClick={onEdit}
                 />
                 {hasPermissionSpecificScopes(permission) && (
@@ -336,14 +336,14 @@ function PermissionRowMenu({ permission, onEdit, onEditContentScopes, onDelete }
                             id: "dextinity.userPermissions.overrideContentScopes",
                             defaultMessage: "Permission-specific Content-Scopes",
                         })}
-                        icon={<Icon name="domain" />}
+                        icon={<Icon name="globe" />}
                         onClick={onEditContentScopes}
                     />
                 )}
                 <MenuSeparator />
                 <MenuItem
                     label={intl.formatMessage({ id: "dextinity.userPermissions.removePermission", defaultMessage: "Remove" })}
-                    icon={<Icon name="delete" />}
+                    icon={<Icon name="trash" />}
                     color="error"
                     onClick={onDelete}
                     disabled={isByRule}

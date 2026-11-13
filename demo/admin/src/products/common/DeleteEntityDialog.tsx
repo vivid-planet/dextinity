@@ -26,7 +26,7 @@ export function DeleteEntityDialog({ entryName, description, deleting, onCancel,
                 description ?? intl.formatMessage({ id: "uiDemo.productsCommon.deleteDialog.description", defaultMessage: "This can't be undone." })
             }
             confirmLabel={intl.formatMessage({ id: "uiDemo.productsCommon.delete", defaultMessage: "Delete" })}
-            confirmIcon={<Icon name="delete" />}
+            confirmIcon={<Icon name="trash" />}
             onConfirm={onConfirm}
             loading={deleting}
             labels={{ cancel: intl.formatMessage({ id: "uiDemo.productsCommon.cancel", defaultMessage: "Cancel" }) }}

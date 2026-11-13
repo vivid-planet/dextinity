@@ -270,7 +270,7 @@ function DamFilePickerDialogContent({
         if (error) {
             return (
                 <EmptyState
-                    icon={<Icon name="warning" />}
+                    icon={<Icon name="warning-triangle" />}
                     title={intl.formatMessage({ id: "dextinity.form.file.picker.error", defaultMessage: "The assets couldn't be loaded" })}
                     description={error.message}
                 />
@@ -279,7 +279,7 @@ function DamFilePickerDialogContent({
         if (searchError) {
             return (
                 <EmptyState
-                    icon={<Icon name="warning" />}
+                    icon={<Icon name="warning-triangle" />}
                     title={intl.formatMessage({ id: "dextinity.form.file.picker.searchError", defaultMessage: "The search failed" })}
                     description={searchError.message}
                     actions={
@@ -326,7 +326,7 @@ function DamFilePickerDialogContent({
                             size="small"
                             variant="outlined"
                             color="secondary"
-                            startIcon={<Icon name="upload" />}
+                            startIcon={<Icon name="cloud-upload" />}
                             onClick={openFileChooser}
                             disabled={isUploading}
                         >

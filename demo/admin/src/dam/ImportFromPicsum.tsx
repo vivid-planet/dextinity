@@ -80,7 +80,7 @@ export const ImportFromPicsum = () => {
                         <Button
                             variant="outlined"
                             color="secondary"
-                            startIcon={<Icon name="reload" />}
+                            startIcon={<Icon name="refresh" />}
                             disabled={(picsumImage === undefined && !hasLoadingFailed) || isImporting}
                             onClick={shuffle}
                         >
@@ -95,7 +95,7 @@ export const ImportFromPicsum = () => {
                 <ImagePreview>
                     {hasLoadingFailed ? (
                         <EmptyState
-                            icon={<Icon name="warning" />}
+                            icon={<Icon name="warning-triangle" />}
                             title={intl.formatMessage({
                                 id: "pages.dam.importFromPicsum.dialog.loadingFailed",
                                 defaultMessage: "The photo couldn't be loaded",

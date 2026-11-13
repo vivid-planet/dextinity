@@ -135,7 +135,7 @@ export function BuildEntry() {
             title={title}
             trigger={
                 <IconButton aria-label={title} variant="text" color={running ? "primary" : "secondary"}>
-                    <Icon name={running ? "ssg-running" : "ssg-standby"} />
+                    <Icon name={running ? "static-site-generator-running" : "static-site-generator-standby"} />
                 </IconButton>
             }
         >

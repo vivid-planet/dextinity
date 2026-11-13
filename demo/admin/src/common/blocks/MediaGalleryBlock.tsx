@@ -33,7 +33,7 @@ export const MediaGalleryBlock = createCompositeBlock(
     },
     (block) => {
         block.category = BlockCategory.Media;
-        block.iconName = "assets";
+        block.iconName = "images";
         block.description = <FormattedMessage id="mediaGalleryBlock.description" defaultMessage="Images and videos to swipe through" />;
         return block;
     },

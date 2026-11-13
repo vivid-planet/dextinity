@@ -20,7 +20,7 @@ const blocks: Record<string, BlockInterface> = {
         name: "Heading",
         displayName: "Heading",
         category: BlockCategory.TextAndContent,
-        iconName: "rte-heading",
+        iconName: "heading",
         description: <FormattedMessage id="test.heading.description" defaultMessage="Title for a section" />,
     }),
     image: createTestBlock({

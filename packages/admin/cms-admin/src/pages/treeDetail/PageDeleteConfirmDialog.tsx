@@ -78,7 +78,7 @@ export function PageDeleteConfirmDialog({ open, onOpenChange, pages, page, onCon
                     <Button variant="text" color="secondary" disabled={loading} onClick={() => onOpenChange(false)}>
                         {intl.formatMessage({ id: "dextinity.pageTreeDetail.delete.cancel", defaultMessage: "Cancel" })}
                     </Button>
-                    <Button variant="outlined" color="error" startIcon={<Icon name="delete" />} loading={loading} onClick={onConfirm}>
+                    <Button variant="outlined" color="error" startIcon={<Icon name="trash" />} loading={loading} onClick={onConfirm}>
                         {intl.formatMessage({ id: "dextinity.pageTreeDetail.delete.confirm", defaultMessage: "Delete" })}
                     </Button>
                 </>

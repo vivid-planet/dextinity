@@ -14,7 +14,7 @@ export const QuoteBlock = createCompositeBlock({
     name: "Quote",
     displayName: <FormattedMessage id="quoteBlock.displayName" defaultMessage="Quote" />,
     category: BlockCategory.TextAndContent,
-    iconName: "chat-communication",
+    iconName: "chats",
     description: <FormattedMessage id="quoteBlock.description" defaultMessage="Quotation with its author" />,
     blocks: {
         // …

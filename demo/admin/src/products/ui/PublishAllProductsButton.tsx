@@ -47,7 +47,7 @@ export function PublishAllProductsButton({ onNotify }: PublishAllProductsButtonP
 
     return (
         <>
-            <Button variant="outlined" color="secondary" startIcon={<Icon name="online" />} onClick={() => setIsDialogOpen(true)}>
+            <Button variant="outlined" color="secondary" startIcon={<Icon name="bolt" />} onClick={() => setIsDialogOpen(true)}>
                 {intl.formatMessage({ id: "uiDemo.products.publishAll", defaultMessage: "Publish all" })}
             </Button>
             <ConfirmDialog
@@ -63,7 +63,7 @@ export function PublishAllProductsButton({ onNotify }: PublishAllProductsButtonP
                     defaultMessage: "Every product, also the unpublished and deleted ones, goes live on the site.",
                 })}
                 confirmLabel={intl.formatMessage({ id: "uiDemo.products.publishAll", defaultMessage: "Publish all" })}
-                confirmIcon={<Icon name="online" />}
+                confirmIcon={<Icon name="bolt" />}
                 onConfirm={() => void publishAll()}
                 loading={publishing}
                 labels={{ cancel: intl.formatMessage({ id: "uiDemo.productsCommon.cancel", defaultMessage: "Cancel" }) }}

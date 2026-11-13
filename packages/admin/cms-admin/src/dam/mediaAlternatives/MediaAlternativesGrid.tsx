@@ -177,7 +177,7 @@ export function MediaAlternativesGrid({ file, type, direction, addToast }: Media
                         ),
                 }}
                 actions={
-                    <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="add" />} onClick={() => setDialog({})}>
+                    <Button variant="outlined" color="secondary" size="small" startIcon={<Icon name="plus-circle" />} onClick={() => setDialog({})}>
                         {addLabel}
                     </Button>
                 }
@@ -210,7 +210,7 @@ export function MediaAlternativesGrid({ file, type, direction, addToast }: Media
                             size="small"
                             onClick={() => setDeleteCandidate(mediaAlternative)}
                         >
-                            <Icon name="delete" />
+                            <Icon name="trash" />
                         </IconButton>
                     </>
                 )}
@@ -227,7 +227,7 @@ export function MediaAlternativesGrid({ file, type, direction, addToast }: Media
                         />
                     ) : (
                         <EmptyState
-                            icon={<Icon name={isOtherFileTheAlternative ? "language" : "video"} />}
+                            icon={<Icon name={isOtherFileTheAlternative ? "flag" : "video"} />}
                             title={
                                 isOtherFileTheAlternative
                                     ? intl.formatMessage({ id: "dextinity.damMediaAlternatives.noCaptions", defaultMessage: "No captions yet" })
@@ -267,7 +267,7 @@ export function MediaAlternativesGrid({ file, type, direction, addToast }: Media
                     defaultMessage: "Only the link between the files is removed; both files stay in the DAM.",
                 })}
                 confirmLabel={intl.formatMessage({ id: "dextinity.damMediaAlternatives.remove", defaultMessage: "Remove" })}
-                confirmIcon={<Icon name="delete" />}
+                confirmIcon={<Icon name="trash" />}
                 onConfirm={() => void confirmDelete()}
                 loading={deleting}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.generic.cancel", defaultMessage: "Cancel" }) }}

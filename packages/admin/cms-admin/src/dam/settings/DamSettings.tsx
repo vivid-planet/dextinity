@@ -82,7 +82,7 @@ export function DamSettings() {
                 }
             >
                 <Panel>
-                    <EmptyState icon={<Icon name="warning" />} title={error?.message ?? ""} />
+                    <EmptyState icon={<Icon name="warning-triangle" />} title={error?.message ?? ""} />
                 </Panel>
             </EditLayout>
         );

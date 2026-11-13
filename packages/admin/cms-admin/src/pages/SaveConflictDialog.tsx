@@ -37,7 +37,7 @@ function SaveConflictDialog({ open, onClosePressed, onDiscardChangesPressed }: S
                 id: "dextinity.saveConflictDialog.actionButtons.discardChanges",
                 defaultMessage: "Discard your changes",
             })}
-            confirmIcon={<Icon name="delete" />}
+            confirmIcon={<Icon name="trash" />}
             onConfirm={() => {
                 onClosePressed();
                 onDiscardChangesPressed();

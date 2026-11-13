@@ -143,7 +143,7 @@ function EmailCampaignLoadError({ baseUrl, eyebrow, reason }: EmailCampaignLoadE
                     content: (
                         <Panel>
                             <EmptyState
-                                icon={<Icon name="warning" />}
+                                icon={<Icon name="warning-triangle" />}
                                 title={reason}
                                 actions={
                                     <Button variant="outlined" color="secondary" size="small" href={baseUrl} onClick={navigateWithRouter}>

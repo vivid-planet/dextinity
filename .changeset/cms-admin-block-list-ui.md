@@ -12,7 +12,7 @@ Show the items of blocks, list, and columns blocks in the `BlockList` of `@dexti
     AdditionalItemContextMenuItems: ({ item, onChange, openDialog }) => (
         <MenuItem
             label="Visibility rules"
-            icon={<Icon name="visibility-rules" />}
+            icon={<Icon name="checklist" />}
             onClick={() => openDialog((close) => <VisibilityRulesDialog item={item} onChange={onChange} onClose={close} />)}
         />
     ),

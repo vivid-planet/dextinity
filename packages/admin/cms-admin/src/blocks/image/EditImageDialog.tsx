@@ -171,7 +171,7 @@ export function EditImageDialog({ image, initialValues, onSubmit, onClose, inher
                                                         variant="outlined"
                                                         color="secondary"
                                                         size="small"
-                                                        startIcon={<Icon name="open-new-tab" />}
+                                                        startIcon={<Icon name="window" />}
                                                         onClick={async () => {
                                                             const path = await damDependency.resolvePath({ apolloClient, id: damFileId });
                                                             window.open(contentScope.match.url + path, "_blank");

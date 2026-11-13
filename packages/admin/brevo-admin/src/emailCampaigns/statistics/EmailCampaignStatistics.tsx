@@ -110,7 +110,7 @@ export function EmailCampaignStatistics({ baseUrl, id, scopeLabel }: EmailCampai
             )}
             <Card
                 title={intl.formatMessage({ id: "dextinity.emailCampaignStatistics.delivery", defaultMessage: "Delivery" })}
-                icon={<Icon name="send" duotone />}
+                icon={<Icon name="mail-out" />}
                 meta={intl.formatMessage(
                     { id: "dextinity.emailCampaignStatistics.sentCount", defaultMessage: "{count} sent" },
                     { count: formatCount(sent) },
@@ -137,7 +137,7 @@ export function EmailCampaignStatistics({ baseUrl, id, scopeLabel }: EmailCampai
             </Card>
             <Card
                 title={intl.formatMessage({ id: "dextinity.emailCampaignStatistics.engagement", defaultMessage: "Engagement" })}
-                icon={<Icon name="visible" duotone />}
+                icon={<Icon name="eye" />}
             >
                 <Tiles>
                     {renderShare(

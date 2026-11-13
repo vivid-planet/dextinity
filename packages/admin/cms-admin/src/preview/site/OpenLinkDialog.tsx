@@ -30,7 +30,7 @@ function OpenLinkDialog({ open, onClose, link }: OpenLinkDialogProps) {
                 { url: link?.targetUrl },
             )}
             confirmLabel={intl.formatMessage({ id: "dextinity.openLinkDialog.actionButtons.open", defaultMessage: "Open" })}
-            confirmIcon={<Icon name="open-new-tab" />}
+            confirmIcon={<Icon name="window" />}
             onConfirm={() => {
                 onClose();
                 window.open(link?.targetUrl, "_blank", "noopener,noreferrer");

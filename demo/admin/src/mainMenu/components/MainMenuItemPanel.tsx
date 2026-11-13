@@ -155,7 +155,7 @@ export function MainMenuItemPanel({ pageTreeNodeId, onClose, onUnsavedChangesCha
                     <Skeleton variant="row" count={4} />
                 ) : (
                     <EmptyState
-                        icon={<Icon name="warning" />}
+                        icon={<Icon name="warning-triangle" />}
                         title={intl.formatMessage({ id: "mainMenu.panel.loadFailed", defaultMessage: "The menu item couldn't be loaded" })}
                         description={error?.message}
                     />
@@ -205,7 +205,7 @@ export function MainMenuItemPanel({ pageTreeNodeId, onClose, onUnsavedChangesCha
                                 variant="outlined"
                                 color="secondary"
                                 size="small"
-                                startIcon={<Icon name="delete" />}
+                                startIcon={<Icon name="trash" />}
                                 onClick={() => setContent(null)}
                             >
                                 {intl.formatMessage({ id: "mainMenu.removeContent", defaultMessage: "Remove content" })}
@@ -221,7 +221,7 @@ export function MainMenuItemPanel({ pageTreeNodeId, onClose, onUnsavedChangesCha
                         </>
                     ) : (
                         <EmptyState
-                            icon={<Icon name="snips" />}
+                            icon={<Icon name="snippets" />}
                             title={intl.formatMessage({ id: "mainMenu.panel.noContent", defaultMessage: "No content" })}
                             description={intl.formatMessage({
                                 id: "mainMenu.panel.noContentDescription",

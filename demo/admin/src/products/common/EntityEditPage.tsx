@@ -327,7 +327,7 @@ export function EntityEditPageStatus({ listUrl, listLabel, loadError }: EntityEd
         >
             <Panel>
                 <EmptyState
-                    icon={<Icon name="warning" />}
+                    icon={<Icon name="warning-triangle" />}
                     title={loadError}
                     actions={
                         <Button variant="outlined" color="secondary" size="small" href={listUrl} onClick={navigateWithRouter}>

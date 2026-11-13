@@ -115,7 +115,7 @@ export function RedirectEditPanel({ redirectId, linkBlock, scope, onClose, onCre
                     </FormBody>
                 ) : (
                     <EmptyState
-                        icon={<Icon name="warning" />}
+                        icon={<Icon name="warning-triangle" />}
                         title={intl.formatMessage({ id: "dextinity.redirects.panel.loadFailed", defaultMessage: "The redirect couldn't be loaded" })}
                         description={error?.message}
                     />

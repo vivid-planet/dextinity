@@ -377,7 +377,7 @@ export function ProductsListPanelPage({ baseUrl }: ProductsListPanelPageProps) {
                             />
                         ) : (
                             <EmptyState
-                                icon={<Icon name="inbox" />}
+                                icon={<Icon name="file" />}
                                 title={intl.formatMessage({ id: "uiDemo.products.empty", defaultMessage: "No products yet" })}
                             />
                         )

@@ -171,7 +171,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
             undo: () => {
                 void updateStatuses(previous);
             },
-            icon: <Icon name={nextStatus === "deleted" ? "archive" : "reload"} />,
+            icon: <Icon name={nextStatus === "deleted" ? "archive" : "refresh"} />,
             message:
                 nextStatus === "deleted"
                     ? intl.formatMessage(
@@ -208,7 +208,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
         const failedCount = newsToDelete.length - deletedIds.length;
         if (failedCount === 0) {
             addToast({
-                icon: <Icon name="delete" />,
+                icon: <Icon name="trash" />,
                 message: intl.formatMessage(
                     { id: "uiDemo.news.list.deleted", defaultMessage: "{count, plural, one {# news} other {# news}} deleted permanently" },
                     { count: deletedIds.length },
@@ -341,7 +341,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                                 variant="outlined"
                                 color="secondary"
                                 size="small"
-                                startIcon={<Icon name="csv" />}
+                                startIcon={<Icon name="file-csv" />}
                                 loading={exporting}
                                 disabled={total === 0}
                                 onClick={() => void exportCsv()}
@@ -440,7 +440,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                     bulkActions={[
                         {
                             label: intl.formatMessage({ id: "uiDemo.news.list.bulk.restore", defaultMessage: "Restore" }),
-                            icon: <Icon name="reload" />,
+                            icon: <Icon name="refresh" />,
                             disabled: selectedRows.every((news) => news.status === "active"),
                             onClick: () => changeStatus(selectedRows, "active"),
                         },
@@ -452,7 +452,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                         },
                         {
                             label: intl.formatMessage({ id: "uiDemo.news.list.bulk.delete", defaultMessage: "Delete permanently" }),
-                            icon: <Icon name="delete" />,
+                            icon: <Icon name="trash" />,
                             color: "error",
                             onClick: () => setNewsToDelete(selectedRows),
                         },
@@ -485,7 +485,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                             />
                         ) : (
                             <EmptyState
-                                icon={<Icon name="inbox" />}
+                                icon={<Icon name="file" />}
                                 title={intl.formatMessage({ id: "uiDemo.news.list.empty", defaultMessage: "No news yet" })}
                                 description={intl.formatMessage({
                                     id: "uiDemo.news.list.emptyDescription",
@@ -517,7 +517,7 @@ export function NewsListPage({ baseUrl }: NewsListPageProps) {
                     defaultMessage: "This can't be undone. To hide news from the site and keep them, mark them as deleted instead.",
                 })}
                 confirmLabel={intl.formatMessage({ id: "uiDemo.news.list.deleteDialog.confirm", defaultMessage: "Delete permanently" })}
-                confirmIcon={<Icon name="delete" />}
+                confirmIcon={<Icon name="trash" />}
                 onConfirm={() => void deletePermanently()}
                 loading={deleting}
                 labels={{ cancel: intl.formatMessage({ id: "uiDemo.news.list.deleteDialog.cancel", defaultMessage: "Cancel" }) }}
@@ -574,14 +574,14 @@ function NewsRowMenu({ news, onEdit, onChangeStatus, onDelete }: NewsRowMenuProp
             ) : (
                 <MenuItem
                     label={intl.formatMessage({ id: "uiDemo.news.list.bulk.restore", defaultMessage: "Restore" })}
-                    icon={<Icon name="reload" />}
+                    icon={<Icon name="refresh" />}
                     onClick={() => onChangeStatus("active")}
                 />
             )}
             <MenuSeparator />
             <MenuItem
                 label={intl.formatMessage({ id: "uiDemo.news.list.bulk.delete", defaultMessage: "Delete permanently" })}
-                icon={<Icon name="delete" />}
+                icon={<Icon name="trash" />}
                 color="error"
                 onClick={onDelete}
             />

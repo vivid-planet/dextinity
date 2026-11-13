@@ -28,7 +28,7 @@ function UserGroupContextMenuItem({ item, onChange, openDialog }: Props): JSX.El
     return (
         <MenuItem
             label={intl.formatMessage({ id: "pageContentBlock.userGroup.menuItem", defaultMessage: "Visibility rules" })}
-            icon={<Icon name="visibility-rules" />}
+            icon={<Icon name="checklist" />}
             onClick={() => openDialog((close) => <UserGroupDialog item={item} onChange={onChange} onClose={close} />)}
         />
     );

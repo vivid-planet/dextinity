@@ -89,7 +89,7 @@ function ErrorFallback({ caught, title, description, showDetails, onRetry }: Err
     return (
         <Root role="alert">
             <EmptyState
-                icon={<Icon name="error" />}
+                icon={<Icon name="alert" />}
                 title={title ?? intl.formatMessage({ id: "dextinity.errorBoundary.title", defaultMessage: "Something went wrong" })}
                 description={
                     description ??
@@ -100,7 +100,7 @@ function ErrorFallback({ caught, title, description, showDetails, onRetry }: Err
                 }
                 actions={
                     <>
-                        <Button variant="contained" color="primary" startIcon={<Icon name="reload" />} onClick={onRetry}>
+                        <Button variant="contained" color="primary" startIcon={<Icon name="refresh" />} onClick={onRetry}>
                             {intl.formatMessage({ id: "dextinity.errorBoundary.retry", defaultMessage: "Try again" })}
                         </Button>
                         {showDetails && (

@@ -242,7 +242,7 @@ export function DependencyList<Query>({ query, variables, getPage, listKey, type
                         loading={isRefreshing}
                         onClick={() => void refresh()}
                     >
-                        <Icon name="reload" />
+                        <Icon name="refresh" />
                     </IconButton>
                 }
             >
@@ -346,7 +346,7 @@ export function DependencyList<Query>({ query, variables, getPage, listKey, type
                             }
                         />
                     ) : (
-                        <EmptyState icon={<Icon name="inbox" />} title={labels.emptyTitle} description={labels.emptyDescription} />
+                        <EmptyState icon={<Icon name="file" />} title={labels.emptyTitle} description={labels.emptyDescription} />
                     )
                 }
             />

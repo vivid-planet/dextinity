@@ -161,7 +161,7 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
                                 disabled={updateInProgress}
                                 onClick={() => setScopeToDelete(row)}
                             >
-                                <Icon name="delete" />
+                                <Icon name="trash" />
                             </IconButton>
                         </DataGridRowActions>
                     )
@@ -173,7 +173,7 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
                 }
                 emptyState={
                     <EmptyState
-                        icon={<Icon name="domain" />}
+                        icon={<Icon name="globe" />}
                         title={intl.formatMessage({ id: "dextinity.userPermissions.noScopes", defaultMessage: "No scopes assigned" })}
                         description={intl.formatMessage({
                             id: "dextinity.userPermissions.noScopesDescription",
@@ -222,7 +222,7 @@ export function RemoveScopeDialog({ open, loading, onCancel, onConfirm }: Remove
                 defaultMessage: "The user loses access to the content of this scope.",
             })}
             confirmLabel={intl.formatMessage({ id: "dextinity.userPermissions.removeScopeDialog.confirm", defaultMessage: "Remove" })}
-            confirmIcon={<Icon name="delete" />}
+            confirmIcon={<Icon name="trash" />}
             onConfirm={() => void onConfirm()}
             loading={loading}
             labels={{ cancel: intl.formatMessage({ id: "dextinity.userPermissions.cancel", defaultMessage: "Cancel" }) }}

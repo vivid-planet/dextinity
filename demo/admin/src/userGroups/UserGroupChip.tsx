@@ -25,7 +25,7 @@ function UserGroupChip({ item }: Props): JSX.Element | null {
     }
 
     return (
-        <Chip variant="outlined" color="secondary" size="small" startIcon={<Icon name="visibility-rules" />} title={intl.formatMessage(option.label)}>
+        <Chip variant="outlined" color="secondary" size="small" startIcon={<Icon name="checklist" />} title={intl.formatMessage(option.label)}>
             {intl.formatMessage(option.shortLabel)}
         </Chip>
     );

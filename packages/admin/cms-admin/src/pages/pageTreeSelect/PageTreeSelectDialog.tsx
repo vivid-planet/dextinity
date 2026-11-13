@@ -137,7 +137,7 @@ export function PageTreeSelectDialog({ value, onChange, open, onClose, defaultCa
         if (error) {
             return (
                 <EmptyState
-                    icon={<Icon name="warning" />}
+                    icon={<Icon name="warning-triangle" />}
                     title={intl.formatMessage({ id: "dextinity.pages.pageTreeSelect.error", defaultMessage: "The pages couldn't be loaded" })}
                     description={error.message}
                 />
@@ -198,7 +198,7 @@ export function PageTreeSelectDialog({ value, onChange, open, onClose, defaultCa
             footer={
                 <>
                     {value != null && (
-                        <RemoveButton variant="text" color="secondary" startIcon={<Icon name="delete" />} onClick={() => onChange(null)}>
+                        <RemoveButton variant="text" color="secondary" startIcon={<Icon name="trash" />} onClick={() => onChange(null)}>
                             {intl.formatMessage({ id: "dextinity.pages.pageTreeSelect.removeSelection", defaultMessage: "Remove Selection" })}
                         </RemoveButton>
                     )}

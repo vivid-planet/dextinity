@@ -169,18 +169,18 @@ export const ColumnActionsMenu = ({
                         ? tableBlockMessages.removeHighlighting
                         : intl.formatMessage({ id: "dextinity.tableBlock.highlightColumn", defaultMessage: "Highlight column" })
                 }
-                icon={<Icon name={highlighted ? "remove" : "palette"} />}
+                icon={<Icon name={highlighted ? "minus-circle" : "highlight"} />}
                 onClick={() => updateState((state) => toggleColumnHighlight(state, columnId))}
             />
             <MenuSeparator />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.tableBlock.insertColumnLeft", defaultMessage: "Insert column left" })}
-                icon={<Icon name="add" />}
+                icon={<Icon name="plus-circle" />}
                 onClick={() => insertColumnAtIndex(columnIndex)}
             />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.tableBlock.insertColumnRight", defaultMessage: "Insert column right" })}
-                icon={<Icon name="add" />}
+                icon={<Icon name="plus-circle" />}
                 onClick={() => insertColumnAtIndex(columnIndex + 1)}
             />
             <MenuSeparator />
@@ -204,7 +204,7 @@ export const ColumnActionsMenu = ({
             />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.tableBlock.pasteColumn", defaultMessage: "Paste" })}
-                icon={<Icon name="paste" />}
+                icon={<Icon name="paste-add" />}
                 onClick={pasteColumnFromClipboard}
             />
             <MenuItem
@@ -215,7 +215,7 @@ export const ColumnActionsMenu = ({
             <MenuSeparator />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.tableBlock.deleteColumn", defaultMessage: "Delete" })}
-                icon={<Icon name="delete" />}
+                icon={<Icon name="trash" />}
                 color="error"
                 onClick={() => updateState((state) => removeColumnFromState(state, columnId))}
             />

@@ -181,7 +181,7 @@ export const OverrideContentScopesDialog = ({ permissionId, userId, handleDialog
                                               disabled={updateInProgress}
                                               onClick={() => setScopeToDelete(row)}
                                           >
-                                              <Icon name="delete" />
+                                              <Icon name="trash" />
                                           </IconButton>
                                       </DataGridRowActions>
                                   )
@@ -200,7 +200,7 @@ export const OverrideContentScopesDialog = ({ permissionId, userId, handleDialog
                         }
                         emptyState={
                             <EmptyState
-                                icon={<Icon name="domain" />}
+                                icon={<Icon name="globe" />}
                                 title={intl.formatMessage({ id: "dextinity.userPermissions.noScopes", defaultMessage: "No scopes assigned" })}
                                 description={intl.formatMessage({
                                     id: "dextinity.userPermissions.overrideScopes.empty",

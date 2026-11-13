@@ -224,7 +224,7 @@ export const TipTapToolbar = ({
             ? [
                   {
                       key: "superscript",
-                      icon: <Icon name="rte-sup" />,
+                      icon: <Icon name="superscript" />,
                       label: label({ id: "dextinity.blocks.tipTapRichText.superscript.label", defaultMessage: "Superscript" }),
                       isActive: editorState.isSuperscriptActive,
                       onToggle: () => editor.chain().focus().toggleSuperscript().run(),
@@ -235,7 +235,7 @@ export const TipTapToolbar = ({
             ? [
                   {
                       key: "subscript",
-                      icon: <Icon name="rte-sub" />,
+                      icon: <Icon name="subscript" />,
                       label: label({ id: "dextinity.blocks.tipTapRichText.subscript.label", defaultMessage: "Subscript" }),
                       isActive: editorState.isSubscriptActive,
                       onToggle: () => editor.chain().focus().toggleSubscript().run(),
@@ -314,7 +314,7 @@ export const TipTapToolbar = ({
                         keepFocus
                         onClick={() => editor.chain().focus().undo().run()}
                     >
-                        <Icon name="rte-undo" />
+                        <Icon name="undo" />
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={label({ id: "dextinity.blocks.tipTapRichText.redo.tooltip", defaultMessage: "Redo" })}
@@ -323,7 +323,7 @@ export const TipTapToolbar = ({
                         keepFocus
                         onClick={() => editor.chain().focus().redo().run()}
                     >
-                        <Icon name="rte-redo" />
+                        <Icon name="redo" />
                     </ToolbarButton>
                 </ToolbarGroup>
             ),
@@ -402,7 +402,7 @@ export const TipTapToolbar = ({
                             keepFocus
                             onClick={() => editor.chain().focus().toggleBold().run()}
                         >
-                            <Icon name="rte-bold" />
+                            <Icon name="bold" />
                         </ToolbarButton>
                     )}
                     {resolvedOptions.italic && (
@@ -413,7 +413,7 @@ export const TipTapToolbar = ({
                             keepFocus
                             onClick={() => editor.chain().focus().toggleItalic().run()}
                         >
-                            <Icon name="rte-italic" />
+                            <Icon name="italic" />
                         </ToolbarButton>
                     )}
                     {resolvedOptions.underline && (
@@ -424,7 +424,7 @@ export const TipTapToolbar = ({
                             keepFocus
                             onClick={() => editor.chain().focus().toggleUnderline().run()}
                         >
-                            <Icon name="rte-underlined" />
+                            <Icon name="underline" />
                         </ToolbarButton>
                     )}
                     {resolvedOptions.strike && (
@@ -435,7 +435,7 @@ export const TipTapToolbar = ({
                             keepFocus
                             onClick={() => editor.chain().focus().toggleStrike().run()}
                         >
-                            <Icon name="rte-strikethrough" />
+                            <Icon name="strikethrough" />
                         </ToolbarButton>
                     )}
                     {moreOptionsItems.length > 0 &&
@@ -508,7 +508,7 @@ export const TipTapToolbar = ({
                             keepFocus
                             onClick={() => handleListToggle(resolvedOptions.orderedList as TipTapResolvedList)}
                         >
-                            <Icon name="rte-ol" />
+                            <Icon name="list-ordered" />
                         </ToolbarButton>
                     )}
                     {resolvedOptions.unorderedList && (
@@ -519,7 +519,7 @@ export const TipTapToolbar = ({
                             keepFocus
                             onClick={() => handleListToggle(resolvedOptions.unorderedList as TipTapResolvedList)}
                         >
-                            <Icon name="rte-ul-bullet-point" />
+                            <Icon name="list-unordered" />
                         </ToolbarButton>
                     )}
                     <ToolbarButton
@@ -529,7 +529,7 @@ export const TipTapToolbar = ({
                         keepFocus
                         onClick={() => editor.chain().focus().sinkListItem("listItem").run()}
                     >
-                        <Icon name="rte-indent-increase" />
+                        <Icon name="indent-increase" />
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={label({ id: "dextinity.blocks.tipTapRichText.dedent.tooltip", defaultMessage: "Decrease indent" })}
@@ -538,7 +538,7 @@ export const TipTapToolbar = ({
                         keepFocus
                         onClick={() => editor.chain().focus().liftListItem("listItem").run()}
                     >
-                        <Icon name="rte-indent-decrease" />
+                        <Icon name="indent-decrease" />
                     </ToolbarButton>
                 </ToolbarGroup>
             ),
@@ -557,7 +557,7 @@ export const TipTapToolbar = ({
                         keepFocus
                         onClick={() => setLinkDialogOpen(true)}
                     >
-                        <Icon name="rte-link" />
+                        <Icon name="link" />
                     </ToolbarButton>
                     <ToolbarButton
                         aria-label={label({ id: "dextinity.blocks.tipTapRichText.removeLink.tooltip", defaultMessage: "Remove link" })}
@@ -565,7 +565,7 @@ export const TipTapToolbar = ({
                         keepFocus
                         onClick={() => editor.chain().focus().extendMarkRange("link").unsetCmsLink().run()}
                     >
-                        <Icon name="rte-clear-link" />
+                        <Icon name="unlink" />
                     </ToolbarButton>
                 </ToolbarGroup>
             ),
@@ -577,7 +577,7 @@ export const TipTapToolbar = ({
             key: "placeholder",
             content: (
                 <ToolbarMenu
-                    icon={<Icon name="rte-text-placeholder" />}
+                    icon={<Icon name="braces" />}
                     aria-label={label({ id: "dextinity.blocks.tipTapRichText.placeholder.tooltip", defaultMessage: "Insert placeholder" })}
                     open={openMenu === "placeholder"}
                     onOpenChange={handleMenuOpenChange("placeholder")}
@@ -608,7 +608,7 @@ export const TipTapToolbar = ({
                             keepFocus
                             onClick={() => editor.chain().focus().insertNonBreakingSpace().run()}
                         >
-                            <Icon name="rte-non-breaking-space" />
+                            <Icon name="non-breaking-space" />
                         </ToolbarButton>
                     )}
                     {resolvedOptions.softHyphen && (
@@ -617,7 +617,7 @@ export const TipTapToolbar = ({
                             keepFocus
                             onClick={() => editor.chain().focus().insertSoftHyphen().run()}
                         >
-                            <Icon name="rte-soft-hyphen" />
+                            <Icon name="soft-hyphen" />
                         </ToolbarButton>
                     )}
                 </ToolbarGroup>

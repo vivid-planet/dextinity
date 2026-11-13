@@ -61,7 +61,7 @@ export function EmailCampaignView({ baseUrl, id, scope, scopeLabel, EmailCampaig
                         color="secondary"
                         href={`${baseUrl}/${id}/statistics`}
                         onClick={navigateWithRouter}
-                        startIcon={<Icon name="statistics" />}
+                        startIcon={<Icon name="chart-bars" />}
                     >
                         {intl.formatMessage({ id: "dextinity.emailCampaigns.statistics", defaultMessage: "Statistics" })}
                     </Button>
@@ -74,7 +74,7 @@ export function EmailCampaignView({ baseUrl, id, scope, scopeLabel, EmailCampaig
         return (
             <BlockContentEditor
                 header={header}
-                tabs={[{ key: "details", label: "", content: <EmptyState icon={<Icon name="warning" />} title={error.message} /> }]}
+                tabs={[{ key: "details", label: "", content: <EmptyState icon={<Icon name="warning-triangle" />} title={error.message} /> }]}
             />
         );
     }

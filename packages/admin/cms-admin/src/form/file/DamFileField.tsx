@@ -85,7 +85,7 @@ function SingleDamFileField({ allowedMimetypes, placeholder, labels, multiple: _
             helperText={loadError ?? props.helperText}
             placeholder={placeholder ?? intl.formatMessage({ id: "dextinity.form.file.chooseFile", defaultMessage: "Choose file" })}
             labels={{ clear: intl.formatMessage({ id: "dextinity.form.file.empty", defaultMessage: "Empty" }), ...labels }}
-            icon={<Icon name="assets" />}
+            icon={<Icon name="images" />}
             renderValue={(file) => (
                 <>
                     <FileThumbnail file={file} />
@@ -136,7 +136,7 @@ function MultipleDamFileField({ allowedMimetypes, placeholder, labels, multiple:
             helperText={loadError ?? props.helperText}
             placeholder={placeholder ?? intl.formatMessage({ id: "dextinity.form.file.chooseFiles", defaultMessage: "Choose files" })}
             labels={{ clear: intl.formatMessage({ id: "dextinity.form.file.empty", defaultMessage: "Empty" }), ...labels }}
-            icon={<Icon name="assets" />}
+            icon={<Icon name="images" />}
             renderValue={(files) => (
                 <>
                     {files.slice(0, maxThumbnailsInValue).map((file) => (

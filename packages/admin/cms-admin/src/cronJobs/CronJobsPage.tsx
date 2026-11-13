@@ -251,7 +251,7 @@ export function CronJobsPage() {
                     labels={dataGridLabels}
                     emptyState={
                         <EmptyState
-                            icon={<Icon name="time" />}
+                            icon={<Icon name="clock" />}
                             title={intl.formatMessage({ id: "dextinity.pages.cronJobs.empty", defaultMessage: "No cron jobs" })}
                             description={intl.formatMessage({
                                 id: "dextinity.pages.cronJobs.emptyDescription",

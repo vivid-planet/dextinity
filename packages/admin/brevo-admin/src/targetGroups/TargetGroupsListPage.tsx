@@ -291,7 +291,7 @@ export function TargetGroupsListPage<AdditionalAttributes extends object>({
                             />
                         ) : (
                             <EmptyState
-                                icon={<Icon name="target-groups" />}
+                                icon={<Icon name="target-group" />}
                                 title={intl.formatMessage({ id: "dextinity.targetGroup.empty", defaultMessage: "No target groups yet" })}
                                 description={intl.formatMessage({
                                     id: "dextinity.targetGroup.emptyDescription",
@@ -330,7 +330,7 @@ export function TargetGroupsListPage<AdditionalAttributes extends object>({
                     defaultMessage: "The contacts stay, but campaigns can no longer be sent to this target group. This can't be undone.",
                 })}
                 confirmLabel={intl.formatMessage({ id: "dextinity.targetGroup.deleteDialog.confirm", defaultMessage: "Delete" })}
-                confirmIcon={<Icon name="delete" />}
+                confirmIcon={<Icon name="trash" />}
                 onConfirm={() => void deleteTargetGroup()}
                 loading={deleting}
                 labels={{ cancel: intl.formatMessage({ id: "dextinity.targetGroup.deleteDialog.cancel", defaultMessage: "Cancel" }) }}
@@ -402,7 +402,7 @@ function TargetGroupRowMenu({ targetGroup, exporting, onEdit, onExport, onDuplic
             <MenuSeparator />
             <MenuItem
                 label={intl.formatMessage({ id: "dextinity.targetGroup.actions.delete", defaultMessage: "Delete" })}
-                icon={<Icon name="delete" />}
+                icon={<Icon name="trash" />}
                 color="error"
                 onClick={onDelete}
                 disabled={targetGroup.isMainList}

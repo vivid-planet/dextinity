@@ -84,7 +84,7 @@ export function AppFrameCommandPalette({ open, onOpenChange, menuEntries, comman
         .map(({ item, parentLabels, external }) => ({
             id: `menu:${item.id}`,
             label: [...parentLabels, item.label].join(breadcrumbSeparator),
-            icon: <Icon name={external ? "open-new-tab" : "arrow-right"} />,
+            icon: <Icon name={external ? "window" : "arrow-right"} />,
             onSelect: () => {
                 if (item.href == null) {
                     return;

@@ -1,5 +1,5 @@
 import { DateTimePicker, type DateTimePickerProps } from "@dextinity/ui";
-import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
+import { type ForwardedRef, forwardRef, memo, type ReactNode, type RefAttributes } from "react";
 
 import type { FieldAdapterActions, FieldAdapterBaseProps } from "../../fieldAdapter/fieldAdapterProps";
 import type { FinalFormFieldConfig } from "../../fieldAdapter/finalFormFieldConfig";
@@ -24,35 +24,37 @@ export function toDateTimeValue(value: unknown): string | null {
  * A `DateTimePicker` connected to a React Final Form field: an instant as an ISO 8601 date-time, or `null` for none. Shows the field's error once it was
  * touched or the form was submitted.
  */
-export const DateTimeField = forwardRef(function DateTimeField<FieldValue = string | null>(
-    { name, actions, onFocus, ...props }: DateTimeFieldProps<FieldValue>,
-    forwardedRef: ForwardedRef<HTMLInputElement>,
-) {
-    const [options, datePickerProps] = splitFieldAdapterProps(props);
-    const {
-        input,
-        validationProps,
-        ref,
-        onBlur,
-        onFocus: onFieldFocus,
-    } = useFieldAdapter<FieldValue, string | null, HTMLInputElement>(name, options, forwardedRef);
-    const value = toDateTimeValue(input.value);
+export const DateTimeField = memo(
+    forwardRef(function DateTimeField<FieldValue = string | null>(
+        { name, actions, onFocus, ...props }: DateTimeFieldProps<FieldValue>,
+        forwardedRef: ForwardedRef<HTMLInputElement>,
+    ) {
+        const [options, datePickerProps] = splitFieldAdapterProps(props);
+        const {
+            input,
+            validationProps,
+            ref,
+            onBlur,
+            onFocus: onFieldFocus,
+        } = useFieldAdapter<FieldValue, string | null, HTMLInputElement>(name, options, forwardedRef);
+        const value = toDateTimeValue(input.value);
 
-    return (
-        <DateTimePicker
-            {...datePickerProps}
-            {...validationProps}
-            ref={ref}
-            name={input.name}
-            value={value}
-            required={options.required}
-            actions={renderActions(actions, value, input.onChange)}
-            onChange={input.onChange}
-            onBlur={onBlur}
-            onFocus={(event) => {
-                onFieldFocus();
-                onFocus?.(event);
-            }}
-        />
-    );
-}) as <FieldValue = string | null>(props: DateTimeFieldProps<FieldValue> & RefAttributes<HTMLInputElement>) => ReactNode;
+        return (
+            <DateTimePicker
+                {...datePickerProps}
+                {...validationProps}
+                ref={ref}
+                name={input.name}
+                value={value}
+                required={options.required}
+                actions={renderActions(actions, value, input.onChange)}
+                onChange={input.onChange}
+                onBlur={onBlur}
+                onFocus={(event) => {
+                    onFieldFocus();
+                    onFocus?.(event);
+                }}
+            />
+        );
+    }),
+) as <FieldValue = string | null>(props: DateTimeFieldProps<FieldValue> & RefAttributes<HTMLInputElement>) => ReactNode;

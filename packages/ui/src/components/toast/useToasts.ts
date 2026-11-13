@@ -8,7 +8,8 @@ export interface ToastData {
     /** The result of the action, e.g. "Saved – the change is live". */
     message: string;
     /**
-     * Sets the icon and its color: `success` confirms, `error` reports a failure, `warning` points out something to look at although the action went through, `info` informs.
+     * Sets the icon and its color: `success` confirms, `error` reports a failure, `warning` points out something to look at although
+     * the action went through, `info` informs.
      *
      * @defaultValue `"success"`
      */

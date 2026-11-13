@@ -153,6 +153,7 @@ export const ReadOnly: Story = {
 };
 
 export const Sizes: Story = {
+    argTypes: { value: { control: false } },
     render: (args) => (
         <div style={{ display: "grid", gap: "var(--dextinity-space-4)", maxWidth: 320 }}>
             <StatefulNumberInput {...args} size="small" label="Small" />

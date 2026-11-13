@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UPDATE_STORY_ARGS } from "storybook/internal/core-events";
+import { RESET_STORY_ARGS, UPDATE_STORY_ARGS } from "storybook/internal/core-events";
 import { addons } from "storybook/preview-api";
 
 /**
@@ -8,6 +8,28 @@ import { addons } from "storybook/preview-api";
  */
 export function updateStoryArgs(storyId: string, updatedArgs: Record<string, unknown>) {
     addons.getChannel().emit(UPDATE_STORY_ARGS, { storyId, updatedArgs });
+}
+
+/**
+ * Records the arg changes made to a story, e.g. those `useControlledArg` writes back after a change on the canvas, so a play function
+ * can check that they reach the story's args. Returns the changed args merged into one object, which fills as changes arrive.
+ */
+export function recordArgsUpdates({ id, abortSignal }: { id: string; abortSignal: AbortSignal }): Record<string, unknown> {
+    const updatedArgs: Record<string, unknown> = {};
+    const channel = addons.getChannel();
+    const onUpdateStoryArgs = (update: { storyId: string; updatedArgs: Record<string, unknown> }) => {
+        if (update.storyId === id) {
+            Object.assign(updatedArgs, update.updatedArgs);
+        }
+    };
+    channel.on(UPDATE_STORY_ARGS, onUpdateStoryArgs);
+    abortSignal.addEventListener("abort", () => channel.off(UPDATE_STORY_ARGS, onUpdateStoryArgs), { once: true });
+    return updatedArgs;
+}
+
+/** Sets the named args of a story back to the values the story file gives them, the way the Controls panel's reset does. */
+export function resetStoryArgs(storyId: string, argNames: string[]) {
+    addons.getChannel().emit(RESET_STORY_ARGS, { storyId, argNames });
 }
 
 /**

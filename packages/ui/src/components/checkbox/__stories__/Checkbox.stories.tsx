@@ -3,7 +3,7 @@ import { useState } from "react";
 import { expect, fn, userEvent, waitFor } from "storybook/test";
 
 import { fieldArgTypes, type FieldStoryArgs, hasFieldArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
-import { useControlledArg } from "../../../storybook/storyArgs";
+import { recordArgsUpdates, updateStoryArgs, useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Checkbox, type CheckboxProps } from "../Checkbox";
 import checkboxTokens from "../Checkbox.tokens.scss?raw";
@@ -124,14 +124,21 @@ type Story = StoryObj<typeof meta>;
  * - Checkbox for selecting items, switch for turning a setting on or off.
  */
 export const Default: Story = {
-    play: async ({ args, canvas }) => {
+    play: async ({ args, canvas, id, abortSignal }) => {
+        const updatedArgs = recordArgsUpdates({ id, abortSignal });
         const control = canvas.getByRole("checkbox", { name: "Show in navigation" });
         await userEvent.click(control);
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(true));
         await expect(control).toHaveAttribute("aria-checked", "true");
+        await waitFor(() => expect(updatedArgs).toEqual({ checked: true }));
         await userEvent.click(canvas.getByText("Show in navigation"));
         await waitFor(() => expect(args.onChange).toHaveBeenLastCalledWith(false));
         await waitFor(() => expect(args.onChange).toHaveBeenCalledTimes(2));
+        await waitFor(() => expect(updatedArgs).toEqual({ checked: false }));
+        await expect(control).toHaveAttribute("aria-checked", "false");
+        updateStoryArgs(id, { checked: true });
+        await waitFor(() => expect(control).toHaveAttribute("aria-checked", "true"));
+        await expect(args.onChange).toHaveBeenCalledTimes(2);
     },
 };
 
@@ -177,6 +184,7 @@ export const Keyboard: Story = {
  * The states side by side: empty, checked, partial, disabled.
  */
 export const States: Story = {
+    argTypes: { checked: { control: false }, indeterminate: { control: false } },
     render: (args) => (
         <div className={styles.row}>
             <StatefulCheckbox {...args}>Empty</StatefulCheckbox>
@@ -200,6 +208,7 @@ export const States: Story = {
  * "Select all" over a list: checked when all items are, indeterminate when some are.
  */
 export const SelectAll: Story = {
+    parameters: { controls: { disable: true } },
     render: (args) => <SelectAllList onChange={args.onChange} />,
     play: async ({ canvas }) => {
         const selectAll = canvas.getByRole("checkbox", { name: "Select all" });

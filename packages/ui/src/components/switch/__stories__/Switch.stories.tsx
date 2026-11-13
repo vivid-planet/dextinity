@@ -154,6 +154,7 @@ export const Keyboard: Story = {
  * The states side by side: off, on, disabled off, disabled on.
  */
 export const States: Story = {
+    argTypes: { checked: { control: false } },
     render: (args) => (
         <div className={styles.states}>
             <StatefulSwitch {...args} children={undefined} aria-label="Off" />
@@ -168,6 +169,7 @@ export const States: Story = {
  * Settings stacked in a list, separated by hairlines.
  */
 export const SettingsList: Story = {
+    argTypes: { checked: { control: false } },
     render: (args) => (
         <div className={styles.settings}>
             <StatefulSwitch {...args} description="The page stays reachable but doesn't appear in the navigation." />

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { type FormEvent, useId, useRef, useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
-import { useControlledArg } from "../../../storybook/storyArgs";
+import { recordArgsUpdates, updateStoryArgs, useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Field } from "../../field/Field";
@@ -110,6 +110,18 @@ export const Default: Story = {
 
 export const Open: Story = {
     args: { open: true },
+    play: async ({ args, id, abortSignal }) => {
+        const updatedArgs = recordArgsUpdates({ id, abortSignal });
+        await screen.findByRole("dialog", { name: "Unsaved changes" });
+        await userEvent.keyboard("{Escape}");
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        await waitFor(() => expect(updatedArgs).toEqual({ open: false }));
+        updateStoryArgs(id, { open: true });
+        await screen.findByRole("dialog", { name: "Unsaved changes" });
+        updateStoryArgs(id, { open: false });
+        await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+        await expect(args.onOpenChange).toHaveBeenCalledTimes(1);
+    },
 };
 
 /**

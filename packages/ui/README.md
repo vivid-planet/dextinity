@@ -155,7 +155,7 @@ The docs show only the body of a story's `render` function, so everything the ex
 
 On the docs page, each story is only as tall as its content, and its frame cuts off what overflows it. So that a popup, such as a select's options, a menu, a calendar, or a dialog, isn't cut off or shrunk, the story grows when the popup opens: it measures the open popup and makes room for it, and keeps that room once the popup closes. When the popup still lacks room because its trigger is next to the window's edge, e.g. a select at the window's bottom, the page scrolls so that the popup opens in full. No story sets a height for this. A story whose popup opens above its trigger, e.g. a menu in a bar at the bottom of the page, sets `parameters.popupRoom` to `{ side: "above" }`, so the room is made above the story and the popup doesn't flip below. `test:storybook` checks that the frame doesn't cut off or shrink a popup (see [Testing](#testing)).
 
-A modal overlay that starts open, such as a dialog or a drawer, would lock the docs page's scrolling and take the reader's focus, so on the docs page such a story shows only its trigger, closed; its own page still starts open. Set `parameters.closedOnDocsPage` to `true`, on the meta or the story, and it renders with its `open` arg off on the docs page; a story without an `open` arg reads `viewMode` from its `render` function's context instead. When the reader opens a modal overlay from the docs page, it shows inside the story, which grows to fit it.
+A modal overlay that starts open, such as a dialog or a drawer, would lock the docs page's scrolling and take the reader's focus, so on the docs page such a story shows only its trigger, closed; its own page still starts open. Set `parameters.closedOnDocsPage` to `true`, on the meta or the story, and the docs page sets its `open` arg to `false`, which its own page sets back; a story without an `open` arg reads `viewMode` from its `render` function's context instead. When the reader opens a modal overlay from the docs page, it shows inside the story, which grows to fit it.
 
 A story that needs styles, for example to show a customization, puts them in a `.module.scss` file next to the story file and uses it in its `render` function. The file contains only styles that belong to the example: the docs show it next to the story's code.
 
@@ -166,6 +166,32 @@ export const CustomSize: Story = {
     render: (args) => <Icon {...args} className={sizeStyles.largeIcon} />,
 };
 ```
+
+#### Controlled stories
+
+The Controls panel drives every story of a controlled component, and a change on the canvas shows in the Controls panel. `useControlledArg(args, "<prop>", context)` from [`src/storybook/storyArgs.ts`](src/storybook/storyArgs.ts) binds the prop to its arg in both directions; call it in the `render` function, with the arguments `render` receives, instead of `useState`, and keep calling the arg's `fn()` callback, so the Actions panel still logs the change. Storybook's `useArgs` throws in a `render` function that also uses React's hooks. The docs show `useState(args.<prop>)` in its place, so the shown code works when copied.
+
+```tsx
+render: (args, context) => {
+    const [checked, setChecked] = useControlledArg(args, "checked", context);
+    return (
+        <Checkbox
+            {...args}
+            checked={checked}
+            onChange={(next) => {
+                args.onChange(next);
+                setChecked(next);
+            }}
+        />
+    );
+},
+```
+
+A story that shows several instances side by side, each with its own state, renders a `Stateful<Component>` wrapper with `useState` and hides the controlled prop's control with `argTypes: { <prop>: { control: false } }`. A story that composes the component into a larger example that ignores its args turns the Controls panel off with `parameters: { controls: { disable: true } }`. Either way, no control is left that does nothing.
+
+A play function checks both directions: `updateStoryArgs(id, { <prop>: … })` changes an arg the way the Controls panel does, and `recordArgsUpdates({ id, abortSignal })` collects the args a change on the canvas writes back. The story tests apply arg changes through `argsUpdatesInTestsDecorator`, as no Storybook UI does there. Because Storybook's own mock reset would also run on the re-render after such a change and clear the calls a play function checks, the preview turns it off (`parameters.test.restoreMocks: false`) and `restoreMocksOnFirstRender` restores the mocks before a story's first render instead.
+
+`meta.component` is always the real component, never a story wrapper, so the props table lists its props and their descriptions; a wrapper the stories need is rendered from `meta.render`. The preview hides the `ref` row of every props table, since `ref` reaches the table only for some components and without a description.
 
 #### Main story
 

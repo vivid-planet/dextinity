@@ -120,6 +120,7 @@ export const WithoutLineNumbers: Story = {
  */
 export const Follow: Story = {
     args: { follow: true, style: { "--dextinity-log-viewer-max-height": "200px" } as CSSProperties },
+    argTypes: { content: { control: false }, loading: { control: false } },
     render: (args) => <RunningLog {...args} />,
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);

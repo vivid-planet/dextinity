@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
-import { updateStoryArgs, useControlledArg } from "../../../storybook/storyArgs";
+import { recordArgsUpdates, updateStoryArgs, useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Avatar } from "../../avatar/Avatar";
 import { Icon } from "../../icon/Icon";
@@ -125,15 +125,18 @@ type Story = StoryObj<typeof meta>;
  * - Show the count of matching items so the effect of a filter is visible before choosing it.
  */
 export const Default: Story = {
-    play: async ({ args, canvas, id }) => {
+    play: async ({ args, canvas, id, abortSignal }) => {
+        const updatedArgs = recordArgsUpdates({ id, abortSignal });
         const chip = canvas.getByRole("button", { name: "Published" });
         await userEvent.click(chip);
         await waitFor(() => expect(args.onClick).toHaveBeenCalledTimes(1));
         await expect(chip).toHaveAttribute("aria-pressed", "true");
+        await waitFor(() => expect(updatedArgs).toEqual({ selected: true }));
         updateStoryArgs(id, { selected: false });
         await waitFor(() => expect(chip).toHaveAttribute("aria-pressed", "false"));
         updateStoryArgs(id, { selected: true });
         await waitFor(() => expect(chip).toHaveAttribute("aria-pressed", "true"));
+        await expect(args.onClick).toHaveBeenCalledTimes(1);
     },
 };
 
@@ -195,6 +198,7 @@ export const WithEndAdornment: Story = {
  * A chevron marks a chip that opens a menu to pick the filter's value, e.g. an author. Render the chip as the menu's trigger.
  */
 export const WithMenu: Story = {
+    parameters: { controls: { disable: true } },
     args: { children: "Author", hasMenu: true },
     render: (args) => <AuthorFilter onClick={args.onClick} />,
     play: async ({ args, canvas }) => {
@@ -220,6 +224,7 @@ export const Disabled: Story = {
  * Quick filters above a list, one active at a time.
  */
 export const Toolbar: Story = {
+    parameters: { controls: { disable: true } },
     render: (args) => <StatusFilterToolbar onClick={args.onClick} />,
     play: async ({ canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Unpublished 3" }));

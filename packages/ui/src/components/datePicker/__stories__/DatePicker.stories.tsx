@@ -237,6 +237,7 @@ export const MonthAndYear: Story = {
  * The locale sets the format, the names of months and weekdays, and the first day of the week.
  */
 export const Locales: Story = {
+    argTypes: { value: { control: false } },
     render: (args) => (
         <div className={styles.row}>
             <StatefulDatePicker {...args} label="en-US" locale="en-US" />

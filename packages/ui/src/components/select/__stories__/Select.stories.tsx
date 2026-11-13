@@ -3,7 +3,7 @@ import { useState } from "react";
 import { expect, fn, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { fieldArgTypes, type FieldStoryArgs, splitFieldArgs, StoryField } from "../../../storybook/fieldStoryArgs";
-import { useControlledArg } from "../../../storybook/storyArgs";
+import { recordArgsUpdates, updateStoryArgs, useControlledArg } from "../../../storybook/storyArgs";
 import { themeDecorator } from "../../../storybook/themeDecorator";
 import { Button } from "../../button/Button";
 import { Dialog } from "../../dialog/Dialog";
@@ -118,13 +118,18 @@ type Story = StoryObj<typeof meta>;
  * - For 2 to 4 options that are always visible, use a segmented control instead.
  */
 export const Default: Story = {
-    play: async ({ args, canvas }) => {
+    play: async ({ args, canvas, id, abortSignal }) => {
+        const updatedArgs = recordArgsUpdates({ id, abortSignal });
         const trigger = canvas.getByRole("combobox", { name: /Location/ });
         await expect(trigger).toHaveTextContent("Vienna");
         await userEvent.click(trigger);
         await userEvent.click(await screen.findByRole("option", { name: "Graz" }));
         await waitFor(() => expect(args.onChange).toHaveBeenCalledWith("graz"));
         await waitFor(() => expect(trigger).toHaveTextContent("Graz"));
+        await waitFor(() => expect(updatedArgs).toEqual({ value: "graz" }));
+        updateStoryArgs(id, { value: "linz" });
+        await waitFor(() => expect(trigger).toHaveTextContent("Linz"));
+        await expect(args.onChange).toHaveBeenCalledTimes(1);
     },
 };
 
@@ -365,6 +370,7 @@ function NumberSelect({ onChange }: { onChange: (value: number | null) => void }
  * Values can be of any type, e.g. numbers.
  */
 export const NumberValues: Story = {
+    parameters: { controls: { disable: true } },
     render: (args) => <NumberSelect onChange={args.onChange as (value: number | null) => void} />,
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("combobox", { name: /Rows per page/ }));
@@ -409,6 +415,7 @@ function ObjectSelect({ onChange }: { onChange: (value: Manufacturer | null) => 
  * Objects as values are matched by `getKey` (or `isOptionEqualToValue`), so a value equal to an option's, but not the same object, still shows as chosen.
  */
 export const ObjectValues: Story = {
+    parameters: { controls: { disable: true } },
     render: (args) => <ObjectSelect onChange={args.onChange as (value: Manufacturer | null) => void} />,
     play: async ({ args, canvas }) => {
         const trigger = canvas.getByRole("combobox", { name: /Manufacturer/ });

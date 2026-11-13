@@ -17,7 +17,7 @@ type TextEdit = { start: number; end: number; text: string };
 /**
  * Adds parameters to each story with a `render` function:
  *
- * - `renderSource`: the function's body as written in the story file.
+ * - `renderSource`: the function's body as written in the story file, with `useState` in place of the story-only `useControlledArg`.
  * - `styleSource`: the `.module.scss` files that the body uses.
  */
 export function storyCodePlugin(): Plugin {
@@ -51,7 +51,7 @@ export function storyCodePlugin(): Plugin {
 }
 
 function withRenderSourceEdits(storyFile: ts.SourceFile, styleImports: StyleImport[]) {
-    const edits = [...childrenPlaceholderEdits(storyFile), ...styleImportRenameEdits(storyFile, styleImports)].sort(
+    const edits = [...childrenPlaceholderEdits(storyFile), ...styleImportRenameEdits(storyFile, styleImports), ...controlledArgEdits(storyFile)].sort(
         (first, second) => first.start - second.start,
     );
     let editedCode = "";
@@ -77,6 +77,22 @@ function styleImportRenameEdits(storyFile: ts.SourceFile, styleImports: StyleImp
         end: reference.getEnd(),
         text: "styles",
     }));
+}
+
+// A reader copies the shown code, which can't import the story-only helper; `useState` keeps the value just as well outside Storybook
+function controlledArgEdits(storyFile: ts.SourceFile): TextEdit[] {
+    return controlledArgCalls(storyFile).flatMap((call) => {
+        const [argsExpression, keyExpression] = call.arguments;
+        if (!argsExpression || !keyExpression || !ts.isStringLiteral(keyExpression)) {
+            return [];
+        }
+        return [{ start: call.getStart(), end: call.getEnd(), text: `useState(${argsExpression.getText()}.${keyExpression.text})` }];
+    });
+}
+
+function controlledArgCalls(node: ts.Node): ts.CallExpression[] {
+    const ownMatch = ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "useControlledArg" ? [node] : [];
+    return [...ownMatch, ...node.getChildren().flatMap(controlledArgCalls)];
 }
 
 function selfClosingElementsSpreadingArgs(node: ts.Node): ts.JsxSelfClosingElement[] {

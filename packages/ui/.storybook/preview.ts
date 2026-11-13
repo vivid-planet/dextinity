@@ -10,7 +10,7 @@ import { CanvasWithStyleSource } from "../src/storybook/CanvasWithStyleSource";
 import { argsUpdatesInTestsDecorator } from "../src/storybook/argsUpdatesInTests";
 import { colorSchemeBackgroundDecorator } from "../src/storybook/colorSchemeBackgroundDecorator";
 import { DocsPage } from "../src/storybook/docs/DocsPage";
-import { closedOnDocsPageDecorator, popupRoomDecorator } from "../src/storybook/docsPopups";
+import { closedOnDocsPageDecorator, openAgainAfterDocsPage, popupRoomDecorator } from "../src/storybook/docsPopups";
 import { checkDocsPopups, docsFrameDecorator } from "../src/storybook/docsPopupsCheck";
 import { keyboardPlatformDecorator } from "../src/storybook/keyboardPlatformDecorator";
 import { renderSourceWithArgs } from "../src/storybook/renderSourceWithArgs";
@@ -20,7 +20,7 @@ const preview: Preview = {
     tags: ["autodocs"],
     // `ref` reaches the props table only for some components, and without a description
     argTypes: { ref: { table: { disable: true } } },
-    beforeEach: restoreMocksOnFirstRender,
+    beforeEach: [restoreMocksOnFirstRender, openAgainAfterDocsPage],
     decorators: [colorSchemeBackgroundDecorator, keyboardPlatformDecorator, popupRoomDecorator, closedOnDocsPageDecorator, docsFrameDecorator, argsUpdatesInTestsDecorator],
     afterEach: checkDocsPopups,
     parameters: {

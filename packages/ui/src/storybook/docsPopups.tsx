@@ -1,9 +1,9 @@
-import type { Decorator } from "@storybook/react-vite";
+import type { Decorator, StoryContext } from "@storybook/react-vite";
 import { type PropsWithChildren, type ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { popupCollisionPadding } from "../utils/popupCollisionPadding";
 import styles from "./docsPopups.module.scss";
-import { updateStoryArgs } from "./storyArgs";
+import { resetStoryArgs, updateStoryArgs } from "./storyArgs";
 
 type PopupSide = "below" | "above";
 
@@ -416,10 +416,15 @@ export const popupRoomDecorator: Decorator = (Story, { id, parameters, viewMode 
     );
 };
 
+// Storybook keeps changed args while the reader switches between pages, so a story closed on its docs page would also start
+// closed on its own page
+const storiesClosedOnDocsPage = new Set<string>();
+
 function ClosedOnFirstRender({ storyId, open, children }: { storyId: string; open: boolean; children: (closing: boolean) => ReactNode }) {
     const [closed, setClosed] = useState(!open);
     useEffect(() => {
         if (!closed) {
+            storiesClosedOnDocsPage.add(storyId);
             updateStoryArgs(storyId, { open: false });
         }
         // Only the docs page's first render closes the overlay; the reader opens it again afterwards
@@ -432,10 +437,23 @@ function ClosedOnFirstRender({ storyId, open, children }: { storyId: string; ope
 }
 
 /**
+ * Runs before a story renders. On the story's own page, sets the `open` arg of a story with `parameters.closedOnDocsPage` back to
+ * the story's value after its docs page set it to `false`, so the story's own page still starts with the overlay open.
+ */
+export function openAgainAfterDocsPage({ id, args, initialArgs, parameters, viewMode }: StoryContext) {
+    if (viewMode === "docs" || parameters.closedOnDocsPage !== true || !storiesClosedOnDocsPage.delete(id)) {
+        return;
+    }
+    // The first render already received the args before the reset arrives; only the following renders and the Controls panel get it
+    args.open = initialArgs.open;
+    resetStoryArgs(id, ["open"]);
+}
+
+/**
  * On docs pages, sets the `open` arg of a story with `parameters.closedOnDocsPage` to `false` when the page loads, so only its
  * trigger shows. A modal overlay that starts open would lock the docs page's scrolling and take the reader's focus as soon as the
- * page loads. The reader can still open the overlay with its trigger or the Controls panel, and the story's own page still starts
- * with the overlay open.
+ * page loads. The reader can still open the overlay with its trigger or the Controls panel. `openAgainAfterDocsPage` sets the
+ * `open` arg back on the story's own page.
  */
 export const closedOnDocsPageDecorator: Decorator = (Story, { id, args, parameters, viewMode }) => {
     if (viewMode !== "docs" || parameters.closedOnDocsPage !== true) {

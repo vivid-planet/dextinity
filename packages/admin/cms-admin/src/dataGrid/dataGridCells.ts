@@ -15,7 +15,7 @@ export const DataGridTitle = styled("span")`
 
 export const DataGridSecondaryText = styled("span")`
     overflow: hidden;
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     text-overflow: ellipsis;
     white-space: nowrap;
 `;

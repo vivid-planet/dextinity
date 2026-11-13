@@ -16,7 +16,7 @@ export const BuildStatusRow = styled("div")`
 `;
 
 export const BuildStatusText = styled("span")`
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
 `;
 
 export const BuildStatusError = styled("span")`

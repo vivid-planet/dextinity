@@ -11,7 +11,7 @@ export const DuplicatesToolbar = styled("div")`
     align-items: center;
     justify-content: space-between;
     gap: var(--dextinity-space-2);
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
 `;
 
 export const NameCell = styled("span")`
@@ -29,7 +29,7 @@ export const Name = styled("span")`
 
 export const SecondaryText = styled("span")`
     overflow: hidden;
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     text-overflow: ellipsis;
     white-space: nowrap;
 `;

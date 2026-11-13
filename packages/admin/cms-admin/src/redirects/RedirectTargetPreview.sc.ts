@@ -10,7 +10,7 @@ export const Root = styled("span")`
 export const Icon = styled("span")`
     display: inline-flex;
     flex-shrink: 0;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
 `;
 
 export const Text = styled("span")`
@@ -28,7 +28,7 @@ export const Title = styled("span")`
 
 export const Subtitle = styled("span")`
     overflow: hidden;
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
     font-size: 13px;
     text-overflow: ellipsis;
     white-space: nowrap;

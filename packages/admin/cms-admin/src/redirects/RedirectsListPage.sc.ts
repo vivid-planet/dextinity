@@ -13,13 +13,13 @@ export const Source = styled("span")`
 export const Comment = styled("span")`
     display: -webkit-box;
     overflow: hidden;
-    color: var(--dextinity-color-text-secondary);
+    color: var(--dextinity-color-text-subtle);
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
 `;
 
 export const Muted = styled("span")`
-    color: var(--dextinity-color-text-tertiary);
+    color: var(--dextinity-color-text-subtle);
 `;
 
 export const ActiveCell = styled("span")`

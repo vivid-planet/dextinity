@@ -2,6 +2,7 @@ import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
+import { popupCollisionPadding } from "../../utils/popupCollisionPadding";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { FieldContextReset } from "../field/fieldContext";
@@ -77,7 +78,14 @@ export const MenuSubmenu = forwardRef<HTMLDivElement, MenuSubmenuProps>(function
         ownerState,
     });
     const positionerProps = resolveSlotProps<MenuSubmenuOwnerState, typeof BaseMenu.Positioner, typeof BaseMenu.Positioner>({
-        ownProps: { side: "inline-end", align: "start", sideOffset: 2, alignOffset: -6, collisionPadding: 8, className: styles.positioner },
+        ownProps: {
+            side: "inline-end",
+            align: "start",
+            sideOffset: 2,
+            alignOffset: -6,
+            collisionPadding: popupCollisionPadding,
+            className: styles.positioner,
+        },
         slotProps: slotProps?.positioner,
         ownerState,
     });

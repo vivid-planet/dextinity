@@ -1,6 +1,7 @@
 import { Popover as BasePopover } from "@base-ui/react/popover";
 import { type KeyboardEvent, type RefObject, useEffect, useRef, useState } from "react";
 
+import { popupCollisionPadding } from "../../utils/popupCollisionPadding";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { Icon } from "../icon/Icon";
 import { closestTimeIndex, formatTime, type TimeOfDay, timesOfDay, timeStepMinutes } from "./dateValues";
@@ -130,7 +131,14 @@ export function TimePopover({
                 <Icon name="clock" />
             </BasePopover.Trigger>
             <BasePopover.Portal container={container}>
-                <BasePopover.Positioner className={styles.positioner} anchor={fieldBox} side="bottom" align="end" sideOffset={6} collisionPadding={8}>
+                <BasePopover.Positioner
+                    className={styles.positioner}
+                    anchor={fieldBox}
+                    side="bottom"
+                    align="end"
+                    sideOffset={6}
+                    collisionPadding={popupCollisionPadding}
+                >
                     <BasePopover.Popup
                         className={styles.popup}
                         aria-labelledby={labelledBy}

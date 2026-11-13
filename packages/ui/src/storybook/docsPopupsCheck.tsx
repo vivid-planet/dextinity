@@ -1,8 +1,7 @@
 import type { Decorator, StoryContext } from "@storybook/react-vite";
-import { createElement } from "react";
 import { userEvent } from "storybook/test";
 
-import { DocsPopupRoom, findClippingFrame, findOpenPopups, isFrameInView, overlaySurfaceHeight, shrunkAnchoredPopupHeight } from "./docsPopups";
+import { DocsPopupRoom, findClippingFrame, findOpenPopups, overlaySurfaceHeight, parsePopupRoom, shrunkAnchoredPopupHeight } from "./docsPopups";
 import styles from "./docsPopupsCheck.module.scss";
 
 let isEnabled = false;
@@ -19,15 +18,21 @@ export function enableDocsPopupCheck() {
  * While the check is on, renders the story in a {@link DocsPopupRoom} in a frame like the one of a docs page: as wide, scrolling
  * what overflows it, and the containing block of fixed overlays, e.g. a dialog.
  */
-export const docsFrameDecorator: Decorator = (Story, { parameters }) => {
+export const docsFrameDecorator: Decorator = (Story, { id, parameters }) => {
     if (!isEnabled) {
-        return Story();
+        return <Story />;
     }
-    const popupRoom = parameters.popupRoom as { side?: "below" | "above" } | undefined;
-    return createElement(
-        "div",
-        { className: styles.frame, "data-docs-frame": "" },
-        createElement("div", { className: styles.zoom }, createElement(DocsPopupRoom, { side: popupRoom?.side }, Story())),
+    const popupRoom = parameters.popupRoom === undefined ? undefined : parsePopupRoom(parameters.popupRoom, id);
+    return (
+        <div className={styles.page}>
+            <div className={styles.frame} data-docs-frame="">
+                <div className={styles.zoom}>
+                    <DocsPopupRoom side={popupRoom?.side}>
+                        <Story />
+                    </DocsPopupRoom>
+                </div>
+            </div>
+        </div>
     );
 };
 
@@ -42,14 +47,14 @@ function nextFrame() {
     return new Promise((resolve) => requestAnimationFrame(resolve));
 }
 
-// Waits until the room has stopped growing for a few frames: it measures the popups a frame after they move, and they move again
-// once the frame has grown
+// Waits until the room has stopped growing and the page has stopped scrolling for a few frames: the room measures the popups a
+// frame after they move, and they move again once the frame has grown or the room has scrolled the page
 async function waitForRoomToSettle(room: HTMLElement) {
     let previousSize = "";
     let stableFrames = 0;
     for (let frame = 0; frame < 120 && stableFrames < 5; frame++) {
         await nextFrame();
-        const size = `${room.style.paddingBlockStart}/${room.style.paddingBlockEnd}/${room.offsetHeight}`;
+        const size = `${room.style.paddingBlockStart}/${room.style.paddingBlockEnd}/${room.offsetHeight}/${window.scrollY}`;
         stableFrames = size === previousSize ? stableFrames + 1 : 0;
         previousSize = size;
     }
@@ -62,9 +67,6 @@ function describePopup(popup: HTMLElement) {
 }
 
 function findPopupProblems(room: HTMLElement, frame: HTMLElement) {
-    if (!isFrameInView(frame)) {
-        return [];
-    }
     const problems: string[] = [];
     const { anchored, overlays } = findOpenPopups(room);
     const popups = [
@@ -95,16 +97,32 @@ async function closePopups() {
     await userEvent.keyboard("{Escape}");
 }
 
+// Where a reader may find a trigger when they click it: near the window's top edge, with the story's top in view when it fits
+// the window, and next to the window's bottom edge, where its popup has no room below in the window
+const triggerPlacements = {
+    "near the window's top": (trigger: HTMLElement, frame: HTMLElement) => {
+        if (frame.offsetHeight <= window.innerHeight) {
+            frame.scrollIntoView({ block: "start" });
+        } else {
+            trigger.scrollIntoView({ block: "start" });
+        }
+    },
+    "at the window's bottom": (trigger: HTMLElement) => trigger.scrollIntoView({ block: "end" }),
+};
+
 /**
  * After a story's play function, checks while {@link enableDocsPopupCheck} is on that no popup open in the story, and no popup
- * that one of its triggers opens, is cut off or shrunk by the story's frame on the docs page.
+ * that one of its triggers opens, is cut off or shrunk by the story's frame on the docs page. Clicks each trigger twice, once
+ * near the window's top and once at its bottom.
  */
 export async function checkDocsPopups({ canvasElement, id }: StoryContext) {
     const room = isEnabled ? canvasElement.querySelector<HTMLElement>("[data-docs-popup-room]") : null;
     const frame = room === null ? null : findClippingFrame(room);
-    if (room === null || frame === null) {
+    const page = frame?.parentElement;
+    if (room === null || frame === null || !page) {
         return;
     }
+    page.dataset.checking = "";
     frame.scrollIntoView({ block: "start" });
     await waitForRoomToSettle(room);
     const problems = findPopupProblems(room, frame).map((problem) => `${problem}, after the play function`);
@@ -114,16 +132,18 @@ export async function checkDocsPopups({ canvasElement, id }: StoryContext) {
         .filter((trigger) => trigger.closest(popupSelector) === null && trigger.getClientRects().length > 0)
         .slice(0, maxTriggersPerStory);
     for (const trigger of triggers) {
-        if (!trigger.isConnected || trigger.closest("[inert], [aria-hidden='true']") !== null) {
-            continue;
+        for (const [placement, placeTrigger] of Object.entries(triggerPlacements)) {
+            if (!trigger.isConnected || trigger.closest("[inert], [aria-hidden='true']") !== null) {
+                continue;
+            }
+            await closePopups();
+            await waitForRoomToSettle(room);
+            placeTrigger(trigger, frame);
+            await userEvent.click(trigger, { pointerEventsCheck: 0 });
+            await waitForRoomToSettle(room);
+            const name = (trigger.getAttribute("aria-label") ?? trigger.textContent?.trim() ?? "").slice(0, 40);
+            problems.push(...findPopupProblems(room, frame).map((problem) => `${problem}, opened by "${name}" ${placement}`));
         }
-        await closePopups();
-        await waitForRoomToSettle(room);
-        frame.scrollIntoView({ block: "start" });
-        await userEvent.click(trigger, { pointerEventsCheck: 0 });
-        await waitForRoomToSettle(room);
-        const name = trigger.getAttribute("aria-label") ?? trigger.textContent?.trim() ?? "";
-        problems.push(...findPopupProblems(room, frame).map((problem) => `${problem}, opened by "${name.slice(0, 40)}"`));
     }
     await closePopups();
 

@@ -2,6 +2,7 @@ import { Popover as BasePopover } from "@base-ui/react/popover";
 import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type ReactElement, type ReactNode, type RefObject } from "react";
 
+import { popupCollisionPadding } from "../../utils/popupCollisionPadding";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { FieldContextReset } from "../field/fieldContext";
@@ -61,7 +62,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(function Popover
     const [side, align] = ownerState.placement.split("-") as ["bottom" | "top", "start" | "end"];
 
     const positionerProps = resolveSlotProps<PopoverOwnerState, typeof BasePopover.Positioner, typeof BasePopover.Positioner>({
-        ownProps: { side, align, sideOffset: 8, collisionPadding: 8, className: styles.positioner },
+        ownProps: { side, align, sideOffset: 8, collisionPadding: popupCollisionPadding, className: styles.positioner },
         slotProps: slotProps?.positioner,
         ownerState,
     });

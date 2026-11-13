@@ -1,6 +1,7 @@
 import { Popover as BasePopover } from "@base-ui/react/popover";
 import { type RefObject, useRef } from "react";
 
+import { popupCollisionPadding } from "../../utils/popupCollisionPadding";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { FieldContextReset } from "../field/fieldContext";
 import { Icon } from "../icon/Icon";
@@ -52,7 +53,7 @@ export function CalendarPopover({
                         side="bottom"
                         align="start"
                         sideOffset={6}
-                        collisionPadding={8}
+                        collisionPadding={popupCollisionPadding}
                     >
                         <BasePopover.Popup
                             ref={popupRef}

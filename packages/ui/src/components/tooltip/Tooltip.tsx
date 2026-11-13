@@ -2,6 +2,7 @@ import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
 import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, type ReactElement, type ReactNode, useMemo } from "react";
 
+import { popupCollisionPadding } from "../../utils/popupCollisionPadding";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
 import { FieldContextReset } from "../field/fieldContext";
@@ -117,7 +118,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(function Tooltip
     const themeDelay = useMemo(() => readTooltipDelay(anchor), [anchor]);
 
     const positionerProps = resolveSlotProps<TooltipOwnerState, typeof BaseTooltip.Positioner, typeof BaseTooltip.Positioner>({
-        ownProps: { side: ownerState.placement, sideOffset: 6, collisionPadding: 8, className: styles.positioner },
+        ownProps: { side: ownerState.placement, sideOffset: 6, collisionPadding: popupCollisionPadding, className: styles.positioner },
         slotProps: slotProps?.positioner,
         ownerState,
     });

@@ -440,11 +440,11 @@ importers:
   demo/api:
     dependencies:
       '@apollo/server':
-        specifier: ^5.5.1
-        version: 5.5.1(graphql@16.15.0)(supports-color@10.2.2)
+        specifier: ^5.5.2
+        version: 5.5.2(graphql@16.15.0)(supports-color@10.2.2)
       '@as-integrations/express5':
         specifier: ^1.1.2
-        version: 1.1.2(@apollo/server@5.5.1(graphql@16.15.0)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2))
+        version: 1.1.2(@apollo/server@5.5.2(graphql@16.15.0)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2))
       '@dextinity/brevo-api':
         specifier: workspace:*
         version: link:../../packages/api/brevo-api
@@ -477,7 +477,7 @@ importers:
         version: 6.6.17(@mikro-orm/core@6.6.17)(supports-color@10.2.2)
       '@nestjs/apollo':
         specifier: ^13.4.5
-        version: 13.4.5(@apollo/server@5.5.1(graphql@16.15.0)(supports-color@10.2.2))(@as-integrations/express5@1.1.2(@apollo/server@5.5.1(graphql@16.15.0)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2)))(@nestjs/common@11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@11.2.9)(@nestjs/graphql@13.4.5(@nestjs/common@11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@11.2.9)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@16.15.0)(reflect-metadata@0.2.2)(ts-morph@28.0.0))(graphql@16.15.0)
+        version: 13.4.5(@apollo/server@5.5.2(graphql@16.15.0)(supports-color@10.2.2))(@as-integrations/express5@1.1.2(@apollo/server@5.5.2(graphql@16.15.0)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2)))(@nestjs/common@11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@11.2.9)(@nestjs/graphql@13.4.5(@nestjs/common@11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@11.2.9)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@16.15.0)(reflect-metadata@0.2.2)(ts-morph@28.0.0))(graphql@16.15.0)
       '@nestjs/common':
         specifier: ^11.2.9
         version: 11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2)
@@ -3279,8 +3279,8 @@ packages:
     peerDependencies:
       '@apollo/server': ^5.1.0
 
-  '@apollo/server@5.5.1':
-    resolution: {integrity: sha512-Rn3g5TJQsMSUY23CWZTghWdBWyjX7dP1eaEBPkvmM2RHi82cDcpgTIkSCbGvtTUEGjwopLv1AAooU/n7iIZ20A==}
+  '@apollo/server@5.5.2':
+    resolution: {integrity: sha512-VTEEQdI2T6L5h9DFe/Bh75EBnGabqdFvYYbLjGwJ2G2kKik5gWINBpkK6vLfEwBaSgL2mBjd1o9GDBn+xde/AQ==}
     engines: {node: '>=20'}
     peerDependencies:
       graphql: ^16.11.0
@@ -19202,12 +19202,12 @@ snapshots:
       '@apollo/utils.logger': 3.0.0
       graphql: 16.15.0
 
-  '@apollo/server-plugin-landing-page-graphql-playground@4.0.1(@apollo/server@5.5.1(graphql@16.15.0)(supports-color@10.2.2))':
+  '@apollo/server-plugin-landing-page-graphql-playground@4.0.1(@apollo/server@5.5.2(graphql@16.15.0)(supports-color@10.2.2))':
     dependencies:
-      '@apollo/server': 5.5.1(graphql@16.15.0)(supports-color@10.2.2)
+      '@apollo/server': 5.5.2(graphql@16.15.0)(supports-color@10.2.2)
       '@apollographql/graphql-playground-html': 1.6.29
 
-  '@apollo/server@5.5.1(graphql@16.15.0)(supports-color@10.2.2)':
+  '@apollo/server@5.5.2(graphql@16.15.0)(supports-color@10.2.2)':
     dependencies:
       '@apollo/cache-control-types': 1.0.3(graphql@16.15.0)
       '@apollo/server-gateway-interface': 2.0.0(graphql@16.15.0)
@@ -19219,7 +19219,9 @@ snapshots:
       '@apollo/utils.logger': 3.0.0
       '@apollo/utils.usagereporting': 2.1.0(graphql@16.15.0)
       '@apollo/utils.withrequired': 3.0.0
-      '@graphql-tools/schema': 10.1.5(graphql@16.15.0)
+      '@graphql-tools/merge': 9.2.3(graphql@16.15.0)
+      '@graphql-tools/schema': 10.1.0(graphql@16.15.0)
+      '@graphql-tools/utils': 12.0.0(graphql@16.15.0)
       async-retry: 1.3.3
       body-parser: 2.4.0(supports-color@10.2.2)
       content-type: 1.0.5
@@ -19321,9 +19323,9 @@ snapshots:
       immutable: 5.1.9
       invariant: 2.2.4
 
-  '@as-integrations/express5@1.1.2(@apollo/server@5.5.1(graphql@16.15.0)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2))':
+  '@as-integrations/express5@1.1.2(@apollo/server@5.5.2(graphql@16.15.0)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2))':
     dependencies:
-      '@apollo/server': 5.5.1(graphql@16.15.0)(supports-color@10.2.2)
+      '@apollo/server': 5.5.2(graphql@16.15.0)(supports-color@10.2.2)
       express: 5.3.0(supports-color@10.2.2)
 
   '@asamuzakjp/css-color@5.1.11':
@@ -23137,7 +23139,7 @@ snapshots:
     dependencies:
       '@graphql-tools/utils': 12.0.0(graphql@16.15.0)
       graphql: 16.15.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@graphql-tools/merge@9.2.8(graphql@16.15.0)':
     dependencies:
@@ -23205,7 +23207,7 @@ snapshots:
       '@graphql-tools/merge': 9.2.3(graphql@16.15.0)
       '@graphql-tools/utils': 12.0.0(graphql@16.15.0)
       graphql: 16.15.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@graphql-tools/schema@10.1.5(graphql@16.15.0)':
     dependencies:
@@ -23287,7 +23289,7 @@ snapshots:
       '@whatwg-node/promise-helpers': 1.3.2
       cross-inspect: 1.0.1
       graphql: 16.15.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@graphql-tools/utils@12.1.0(graphql@16.15.0)':
     dependencies:
@@ -24359,10 +24361,10 @@ snapshots:
       '@tybys/wasm-util': 0.10.4
     optional: true
 
-  '@nestjs/apollo@13.4.5(@apollo/server@5.5.1(graphql@16.15.0)(supports-color@10.2.2))(@as-integrations/express5@1.1.2(@apollo/server@5.5.1(graphql@16.15.0)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2)))(@nestjs/common@11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@11.2.9)(@nestjs/graphql@13.4.5(@nestjs/common@11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@11.2.9)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@16.15.0)(reflect-metadata@0.2.2)(ts-morph@28.0.0))(graphql@16.15.0)':
+  '@nestjs/apollo@13.4.5(@apollo/server@5.5.2(graphql@16.15.0)(supports-color@10.2.2))(@as-integrations/express5@1.1.2(@apollo/server@5.5.2(graphql@16.15.0)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2)))(@nestjs/common@11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@11.2.9)(@nestjs/graphql@13.4.5(@nestjs/common@11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@11.2.9)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@16.15.0)(reflect-metadata@0.2.2)(ts-morph@28.0.0))(graphql@16.15.0)':
     dependencies:
-      '@apollo/server': 5.5.1(graphql@16.15.0)(supports-color@10.2.2)
-      '@apollo/server-plugin-landing-page-graphql-playground': 4.0.1(@apollo/server@5.5.1(graphql@16.15.0)(supports-color@10.2.2))
+      '@apollo/server': 5.5.2(graphql@16.15.0)(supports-color@10.2.2)
+      '@apollo/server-plugin-landing-page-graphql-playground': 4.0.1(@apollo/server@5.5.2(graphql@16.15.0)(supports-color@10.2.2))
       '@nestjs/common': 11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2)
       '@nestjs/core': 11.2.9(@nestjs/common@11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/platform-express@11.2.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/graphql': 13.4.5(@nestjs/common@11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@11.2.9)(class-transformer@0.5.1)(class-validator@0.15.1)(graphql@16.15.0)(reflect-metadata@0.2.2)(ts-morph@28.0.0)
@@ -24371,7 +24373,7 @@ snapshots:
       lodash.omit: 4.18.0
       tslib: 2.8.1
     optionalDependencies:
-      '@as-integrations/express5': 1.1.2(@apollo/server@5.5.1(graphql@16.15.0)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2))
+      '@as-integrations/express5': 1.1.2(@apollo/server@5.5.2(graphql@16.15.0)(supports-color@10.2.2))(express@5.3.0(supports-color@10.2.2))
 
   '@nestjs/cache-manager@3.1.3(@nestjs/common@11.2.9(class-transformer@0.5.1)(class-validator@0.15.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)(supports-color@10.2.2))(@nestjs/core@11.2.9)(cache-manager@7.2.9)(keyv@5.6.0)(rxjs@7.8.2)':
     dependencies:

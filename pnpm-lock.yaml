@@ -880,7 +880,7 @@ importers:
   docs:
     dependencies:
       '@algolia/client-search':
-        specifier: ^5.63.0
+        specifier: ^5.64.0
         version: 5.64.0
       '@docusaurus/core':
         specifier: ^3.10.2

@@ -1,5 +1,63 @@
 # @comet/cms-admin
 
+## 10.16.0
+
+### Minor Changes
+
+- e91490a: Add `name` option to `createDamVideoBlock`
+
+    A `DamVideoBlock` created with an option disabled needs a name of its own, because `DamVideo` is taken by the exported `DamVideoBlock`. The name must match the name of the block created with `createDamVideoBlock` in the API.
+
+    **Example**
+
+    ```tsx
+    import { createDamVideoBlock } from "@dextinity/cms-admin";
+
+    export const TeaserVideoBlock = createDamVideoBlock({ name: "TeaserVideo", controls: false, previewImage: false });
+    ```
+
+- e91490a: Replace the `supports` option of `createDamVideoBlock` with one option per feature
+
+    `controls` and `previewImage` are enabled by default and disabled by passing `false`, so a configuration only states what it leaves out, like the options of `createTipTapRichTextBlock`.
+    A disabled option is neither offered in the editor nor sent to the API, so disable the same options in the API block created with `createDamVideoBlock`, which rejects input for an option it doesn't have.
+    `supports` is deprecated and can't be combined with the new options. It keeps only hiding options from the editor, as the `DamVideoBlock` exported by the API requires them, so replace it together with the API block:
+
+    ```diff
+    -createDamVideoBlock({ name: "TeaserVideo", supports: ["controls"] });
+    +createDamVideoBlock({ name: "TeaserVideo", previewImage: false });
+    ```
+
+### Patch Changes
+
+- bf7ec52: Use `Chip` for the DAM license and archived tags to prevent clipping them on both sides
+
+    Previously, the "License expires in …" tag in the DAM data grid was clipped on the left and right when the license column was narrower than the tag.
+    The tags now keep the icon visible and truncate the text with an ellipsis. They also match the look of the other chips in the admin.
+
+- 4a1d83d: Show an error in `FinalFormFileUpload` when the upload request fails
+
+    Previously, a network error (e.g., a dropped connection) or a non-JSON response left the file in the loading state forever. The file is now shown as a failed upload instead.
+
+- 0dcec9b: Keep the order of pages and subpages when copying and pasting pages in the page tree
+
+    Previously, the pasted pages were ordered by how fast their documents were fetched while copying.
+
+- 495ec2e: Show the `MasterMenu` when all visible items are inside a single group
+
+    Previously, the menu counted only top-level entries to decide whether to render, so a group counted as a single entry regardless of how many items it contained. Users whose permitted pages were all inside one group got no navigation at all. The menu now counts the navigable items inside groups and collapsible items.
+
+- f4cbd70: Return a referentially stable callback from `useUserPermissionCheck`
+
+    The returned function changed identity on every render, so consumers using it as a `useMemo`/`useCallback` dependency never got a cache hit. It is now memoized and only changes when the current user or the content scope changes.
+
+- 25a2c8e: Fix duplicate `actions` columns in `UserPermissionsUserGrid`
+
+    The actions column was appended to the memoized column array in the render phase, so every re-render that did not invalidate the memo added another copy of it, causing React duplicate-key warnings.
+
+- @dextinity/admin@10.16.0
+    - @dextinity/admin-icons@10.16.0
+    - @dextinity/admin-rte@10.16.0
+
 ## 10.15.0
 
 ### Minor Changes

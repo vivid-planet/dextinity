@@ -1,5 +1,11 @@
 # @comet/site-nextjs
 
+## 10.16.0
+
+### Patch Changes
+
+- @dextinity/site-react@10.16.0
+
 ## 10.15.0
 
 ### Patch Changes

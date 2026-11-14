@@ -1,5 +1,26 @@
 # @comet/brevo-api
 
+## 10.16.0
+
+### Patch Changes
+
+- 9fa4ef1: Cache Brevo campaigns by scope and Brevo ID
+
+    `loadBrevoCampaignById` cached the campaign under the email campaign's ID instead of its Brevo ID, so it requested campaigns from Brevo that were already cached by `loadBrevoCampaignsByIds`.
+    Both now include the scope in the cache key, since scopes can use different Brevo accounts whose campaign IDs overlap. Before, `loadBrevoCampaignsByIds` could return a campaign cached for another scope.
+
+- ec25940: Fix `BrevoApiCampaignsService.loadBrevoCampaignsByIds` not returning campaigns that aren't on the first page of Brevo's campaign list
+
+    Previously, paging stopped at the first page that contained none of the requested campaigns, so older campaigns were skipped, for instance when syncing the sending states of email campaigns.
+    Now, paging continues until all requested campaigns are found or Brevo returns the last page.
+
+- 9825b41: Mark Brevo email campaigns as `FAILED` if sending them in the background was interrupted
+
+    If the API restarted while `sendBrevoEmailCampaignNow` was sending a campaign in the background, the campaign stayed `SCHEDULED` forever and couldn't be edited or sent again. A campaign that is still a draft in Brevo (or wasn't created in Brevo at all) one hour after it was scheduled is now set to `FAILED`, so it can be edited and sent again. A background send that takes longer than that is aborted before the campaign is sent, so the campaign isn't sent twice. Note that this limits campaigns to target groups that can be checked against the ECG RTR list within an hour, which is roughly 100,000 contacts.
+
+- Updated dependencies [e91490a]
+    - @dextinity/cms-api@10.16.0
+
 ## 10.15.0
 
 ### Minor Changes

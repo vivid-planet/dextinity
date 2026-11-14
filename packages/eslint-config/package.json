@@ -64,7 +64,7 @@
     "devDependencies": {
         "eslint": "^9.39.5",
         "npm-run-all2": "^9.0.4",
-        "prettier": "^3.9.10",
+        "prettier": "^3.10.0",
         "typescript": "^5.9.3"
     },
     "peerDependencies": {

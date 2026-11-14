@@ -1,5 +1,9 @@
 # @comet/eslint-plugin
 
+## 10.16.0
+
+No changes in this release.
+
 ## 10.15.0
 
 No changes in this release.

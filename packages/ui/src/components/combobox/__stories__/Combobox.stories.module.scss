@@ -1,0 +1,15 @@
+.narrow {
+    max-inline-size: 420px;
+}
+
+.option {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--dextinity-space-3);
+}
+
+.secondary {
+    color: var(--dextinity-color-text-subtle);
+    font-size: var(--dextinity-typography-small-size);
+}

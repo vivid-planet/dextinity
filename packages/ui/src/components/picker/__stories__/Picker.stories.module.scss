@@ -1,0 +1,18 @@
+.narrow {
+    max-inline-size: 420px;
+}
+
+.path {
+    overflow: hidden;
+    color: var(--dextinity-color-text-subtle);
+    font-size: var(--dextinity-typography-small-size);
+    text-overflow: ellipsis;
+}
+
+.thumbnail {
+    flex: none;
+    inline-size: 24px;
+    block-size: 24px;
+    border-radius: 4px;
+    object-fit: cover;
+}

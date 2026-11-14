@@ -1,0 +1,40 @@
+@mixin tokens {
+    // Glass fill of the drawer
+    --dextinity-drawer-background: var(--dextinity-material-glass-overlay);
+    // Blur behind the glass of the drawer
+    --dextinity-drawer-blur: var(--dextinity-material-blur);
+    // Corner radius of the drawer
+    --dextinity-drawer-radius: calc(24px * var(--dextinity-brand-radius-factor));
+    // Edge and shadow of the drawer
+    --dextinity-drawer-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge), var(--dextinity-shadow-3);
+    // Text color in the drawer
+    --dextinity-drawer-foreground: var(--dextinity-color-text);
+    // Width of a default drawer
+    --dextinity-drawer-width-default: 420px;
+    // Width of a large drawer
+    --dextinity-drawer-width-large: 560px;
+    // Gap between the drawer and the edges of the screen
+    --dextinity-drawer-inset: 10px;
+    // Tint over the page behind a modal drawer
+    --dextinity-drawer-backdrop: oklch(0 0 0 / 0.18);
+    // Space between the edge of the drawer and its content
+    --dextinity-drawer-padding: 20px;
+    // Size of the title
+    --dextinity-drawer-title-font-size: var(--dextinity-typography-title-size);
+    // Weight of the title
+    --dextinity-drawer-title-font-weight: var(--dextinity-font-weight-semibold);
+    // Letter spacing of the title
+    --dextinity-drawer-title-letter-spacing: -0.01em;
+    // Color of the description below the title
+    --dextinity-drawer-description-color: var(--dextinity-color-text-subtle);
+    // Size of the description below the title
+    --dextinity-drawer-description-font-size: var(--dextinity-typography-ui-size);
+    // Distance of the close button from the top and end edges
+    --dextinity-drawer-close-inset: 14px;
+    // Room at the end of the header that keeps the title clear of the close button
+    --dextinity-drawer-header-padding-end: 56px;
+    // Gap between the blocks of content in the body
+    --dextinity-drawer-body-gap: var(--dextinity-space-3);
+    // Line above the footer
+    --dextinity-drawer-footer-line: var(--dextinity-color-line);
+}

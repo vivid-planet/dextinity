@@ -1,15 +1,28 @@
+// The values match the label of `Field`, so a `FormLabel` above a custom control looks like the label of a field.
 @mixin tokens {
-    --dextinity-form-label-gap: var(--dextinity-unit-1);
+    // Gap between the label and its required marker or help button
+    --dextinity-form-label-gap: var(--dextinity-space-1);
 
-    --dextinity-form-label-font-size: var(--dextinity-typography-label-sm-size);
-    --dextinity-form-label-font-line-height: var(--dextinity-typography-label-sm-line-height);
-    --dextinity-form-label-font-weight: var(--dextinity-font-weight-medium);
-    --dextinity-form-label-font-weight-style: var(--dextinity-font-weight-medium-style);
+    // Size of the label
+    --dextinity-form-label-font-size: var(--dextinity-field-label-font-size);
+    // Line height of the label
+    --dextinity-form-label-font-line-height: calc(var(--dextinity-field-label-font-size) * 1.3);
+    // Weight of the label
+    --dextinity-form-label-font-weight: var(--dextinity-field-label-font-weight);
 
-    --dextinity-form-label-default-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-form-label-error-foreground: var(--dextinity-color-feedback-danger-default);
-    --dextinity-form-label-required-color: var(--dextinity-color-feedback-danger-default);
+    // Color of the label
+    --dextinity-form-label-default-foreground: var(--dextinity-field-label-color);
+    // Color of the label when the field has an error
+    --dextinity-form-label-error-foreground: var(--dextinity-field-message-color-error);
+    // Color of the required marker
+    --dextinity-form-label-required-color: var(--dextinity-field-required-color);
 
-    --dextinity-form-label-helper-icon-color: var(--dextinity-color-foreground-muted);
-    --dextinity-form-label-helper-icon-size: 16px;
+    // Size of the info button after the label that shows the help text; also used by `Field`
+    --dextinity-form-label-help-button-size: var(--dextinity-density-icon-button-size-xsmall);
+    // Color of the info icon after the label
+    --dextinity-form-label-help-icon-color: var(--dextinity-color-text-subtle);
+    // Color of the info icon while hovered or while its help text is shown
+    --dextinity-form-label-help-icon-color-hover: var(--dextinity-color-text);
+    // Size of the info icon after the label
+    --dextinity-form-label-help-icon-size: var(--dextinity-icon-size-xsmall);
 }

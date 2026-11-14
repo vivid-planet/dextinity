@@ -1,0 +1,137 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    font-family: var(--dextinity-font-family-text);
+}
+
+.list {
+    position: relative;
+    display: flex;
+    gap: var(--dextinity-tabs-gap);
+    overflow-x: auto;
+    box-shadow: inset 0 calc(-1 * var(--dextinity-line-width)) 0 var(--dextinity-tabs-line);
+    scrollbar-width: none;
+
+    @include forced-colors.separator;
+}
+
+.tab {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--dextinity-space-1-5);
+    box-sizing: border-box;
+    block-size: var(--dextinity-tabs-height);
+    padding-inline: var(--dextinity-tabs-padding);
+    border: 0;
+    border-radius: var(--dextinity-tabs-radius);
+    background: transparent;
+    color: var(--dextinity-tabs-foreground);
+    font: inherit;
+    font-size: var(--dextinity-tabs-font-size);
+    font-weight: var(--dextinity-tabs-font-weight);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--dextinity-motion-duration-short);
+
+    &:hover:not([data-disabled]) {
+        color: var(--dextinity-tabs-foreground-hover);
+    }
+
+    &[data-active] {
+        color: var(--dextinity-tabs-foreground-active);
+
+        // With the indicator alone, the active tab hardly stands out from the others, which forced colors draw in the same color
+        @media (forced-colors: active) {
+            color: Highlight;
+        }
+    }
+
+    &[data-tone="error"] {
+        color: var(--dextinity-tabs-error-foreground);
+    }
+
+    // A tab rendered as a link through `slots.tab`
+    &:any-link {
+        text-decoration: none;
+    }
+
+    // Drawn inside the tab and above the indicator: the scrolling list clips anything outside the tab
+    &::after {
+        content: "";
+        position: absolute;
+        inset-block: var(--dextinity-tabs-focus-inset) calc(var(--dextinity-tabs-indicator-height) + var(--dextinity-tabs-focus-inset));
+        inset-inline: 0;
+        border-radius: var(--dextinity-tabs-radius);
+        pointer-events: none;
+    }
+
+    &:focus-visible {
+        outline: none;
+
+        &::after {
+            box-shadow: var(--dextinity-focus-ring-inset);
+            @include forced-colors.focus-ring(-2px);
+        }
+    }
+
+    &[data-disabled] {
+        opacity: var(--dextinity-tabs-disabled-opacity);
+        cursor: not-allowed;
+    }
+}
+
+.errorMarker {
+    display: inline-flex;
+    color: var(--dextinity-tabs-error-marker-color);
+
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
+}
+
+.visuallyHidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.count {
+    padding-inline: 5px;
+    border-radius: var(--dextinity-tabs-count-radius);
+    background: var(--dextinity-tabs-count-background);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-tabs-count-line);
+    color: var(--dextinity-tabs-count-foreground);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-tabs-count-font-size);
+    font-weight: var(--dextinity-font-weight-regular);
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+
+    @include forced-colors.edge;
+}
+
+.indicator {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: calc(var(--active-tab-left) + var(--dextinity-tabs-indicator-inset));
+    inline-size: calc(var(--active-tab-width) - 2 * var(--dextinity-tabs-indicator-inset));
+    block-size: var(--dextinity-tabs-indicator-height);
+    border-radius: var(--dextinity-tabs-indicator-height);
+    background: var(--dextinity-tabs-indicator-background);
+    transition:
+        inset-inline-start var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        inline-size var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    @include forced-colors.fill(Highlight);
+}
+
+.panel {
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}

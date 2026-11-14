@@ -1,0 +1,21 @@
+.stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 120px;
+    padding: 24px;
+}
+
+.demo {
+    display: flex;
+    gap: var(--dextinity-space-2);
+    min-block-size: 220px;
+}
+
+.bottomBar {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: var(--dextinity-space-panel-gap);
+    display: flex;
+    justify-content: center;
+}

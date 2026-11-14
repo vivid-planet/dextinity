@@ -1,0 +1,29 @@
+// Quick look is dark in every color scheme, so the preview's colors read true.
+@mixin tokens {
+    // Scrim that dims the page behind the quick look
+    --dextinity-quick-look-backdrop: oklch(0 0 0 / 0.72);
+    // Blur of the page behind the scrim
+    --dextinity-quick-look-backdrop-blur: 6px;
+    // Color of the title, the controls and other primary text
+    --dextinity-quick-look-foreground: oklch(1 0 0);
+    // Color of secondary text: the description and the footer
+    --dextinity-quick-look-foreground-secondary: oklch(1 0 0 / 0.7);
+    // Fill of a control button
+    --dextinity-quick-look-control-background: oklch(1 0 0 / 0.14);
+    // Fill of a control button on hover
+    --dextinity-quick-look-control-background-hover: oklch(1 0 0 / 0.22);
+    // Outline of the keyboard key hints
+    --dextinity-quick-look-line: oklch(1 0 0 / 0.35);
+    // Maximum width of the quick look's content
+    --dextinity-quick-look-max-width: 1100px;
+    // Height of the preview, leaving room for the header and footer
+    --dextinity-quick-look-preview-max-height: 70vh;
+    // Corner radius of the preview
+    --dextinity-quick-look-preview-radius: 6px;
+    // Fill behind the preview, visible around letterboxed media
+    --dextinity-quick-look-preview-background: oklch(1 0 0 / 0.05);
+    // Space between the quick look's content and the edge of the screen
+    --dextinity-quick-look-padding: var(--dextinity-space-6);
+    // Gap between the header, the preview and the footer, and inside the header
+    --dextinity-quick-look-gap: var(--dextinity-space-2-5);
+}

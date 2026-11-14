@@ -1,0 +1,75 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+// The text inputs and buttons inside the field box, shared by the date pickers.
+
+@mixin input {
+    flex: 1;
+    align-self: stretch;
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    caret-color: var(--dextinity-color-accent);
+
+    &::placeholder {
+        color: var(--dextinity-date-picker-placeholder-color);
+        opacity: 1;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}
+
+@mixin button {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: 26px;
+    block-size: 26px;
+    margin: 0;
+    margin-inline-end: calc(-1 * var(--dextinity-space-1));
+    padding: 0;
+    border: 0;
+    border-radius: calc(var(--dextinity-field-radius) - 3px);
+    background: transparent;
+    color: var(--dextinity-date-picker-button-color);
+    cursor: pointer;
+
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
+
+    &:hover:not(:disabled) {
+        background: var(--dextinity-date-picker-button-background-hover);
+        color: var(--dextinity-date-picker-button-color-hover);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}
+
+@mixin clear-button {
+    @include button;
+
+    margin-inline-end: 0;
+
+    + * {
+        margin-inline-start: -6px;
+    }
+}
+
+@mixin separator {
+    flex: none;
+    color: var(--dextinity-date-picker-separator-color);
+}

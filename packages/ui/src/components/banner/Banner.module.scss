@@ -1,0 +1,53 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-banner-gap);
+    align-items: center;
+    box-sizing: border-box;
+    inline-size: 100%;
+    padding-block: var(--dextinity-banner-padding-block);
+    padding-inline: var(--dextinity-banner-padding-inline);
+    border-radius: var(--dextinity-banner-radius);
+    box-shadow: var(--dextinity-banner-shadow);
+    color: var(--dextinity-banner-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-banner-font-size);
+    line-height: var(--dextinity-typography-body-line-height);
+
+    &[data-tone="warning"] {
+        background: var(--dextinity-banner-warning-background);
+        --dextinity-banner-icon-color: var(--dextinity-banner-warning-icon);
+    }
+
+    &[data-tone="error"] {
+        background: var(--dextinity-banner-error-background);
+        --dextinity-banner-icon-color: var(--dextinity-banner-error-icon);
+    }
+
+    &[data-tone="info"] {
+        background: var(--dextinity-banner-info-background);
+        --dextinity-banner-icon-color: var(--dextinity-banner-info-icon);
+    }
+
+    @include forced-colors.edge;
+}
+
+.icon {
+    display: inline-flex;
+    flex: none;
+    color: var(--dextinity-banner-icon-color);
+    --dextinity-icon-size: var(--dextinity-banner-icon-size);
+}
+
+.message {
+    flex: 1 1 200px;
+    min-inline-size: 0;
+}
+
+.action {
+    display: inline-flex;
+    flex: none;
+    gap: var(--dextinity-space-2);
+}

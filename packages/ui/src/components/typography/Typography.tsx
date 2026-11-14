@@ -1,11 +1,10 @@
 import { useRender } from "@base-ui/react/use-render";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
 import styles from "./Typography.module.scss";
 
-type TypographyVariant =
-    "display" | "h1" | "h2" | "h3" | "h4" | "bodyL" | "bodyM" | "bodyS" | "bodyXs" | "caption" | "labelM" | "labelS" | "labelXs" | "dataM" | "dataS";
+type TypographyVariant = "displayXl" | "displayL" | "title" | "section" | "body" | "small" | "label" | "mono";
 type TypographyElement = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span";
 
 /**
@@ -16,28 +15,25 @@ export type TypographyOwnerState = {
 };
 
 const variantElement: Record<TypographyVariant, TypographyElement> = {
-    display: "h1",
-    h1: "h1",
-    h2: "h2",
-    h3: "h3",
-    h4: "h4",
-    bodyL: "p",
-    bodyM: "p",
-    bodyS: "p",
-    bodyXs: "p",
-    caption: "span",
-    labelM: "span",
-    labelS: "span",
-    labelXs: "span",
-    dataM: "span",
-    dataS: "span",
+    displayXl: "h1",
+    displayL: "h1",
+    title: "h2",
+    section: "h3",
+    body: "p",
+    small: "p",
+    label: "span",
+    mono: "span",
 };
 
 export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "className"> {
+    /** The text. */
+    children?: ReactNode;
     /**
-     * Visual style. Each variant has a default semantic element.
+     * Visual style. Each variant has a default semantic element: `displayXl` for the greeting on an overview, `displayL` for the page title
+     * (one per view), `title` for panels and cards, `section` for form sections, `body` for UI text and tables, `small` for help texts and
+     * metadata, `label` for groups and markers, `mono` for paths, IDs, and shortcuts.
      *
-     * @defaultValue `"bodyM"`
+     * @defaultValue `"body"`
      */
     variant?: TypographyVariant;
     /**
@@ -64,7 +60,7 @@ export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "clas
  * mapping to a default semantic element.
  */
 export const Typography = forwardRef<HTMLElement, TypographyProps>(function Typography(
-    { variant = "bodyM", element, className, children, render, ...restProps },
+    { variant = "body", element, className, children, render, ...restProps },
     ref,
 ) {
     const ownerState: TypographyOwnerState = { variant };

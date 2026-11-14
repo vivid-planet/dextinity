@@ -1,0 +1,105 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-pagination-gap);
+    color: var(--dextinity-pagination-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-pagination-font-size);
+    font-variant-numeric: tabular-nums;
+}
+
+.pageSize {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    white-space: nowrap;
+}
+
+.pageSizeTrigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-1);
+    box-sizing: border-box;
+    block-size: var(--dextinity-pagination-size-picker-height);
+    padding-inline: var(--dextinity-space-3) var(--dextinity-space-2);
+    border: 0;
+    border-radius: var(--dextinity-pagination-size-picker-radius);
+    background: var(--dextinity-pagination-size-picker-background);
+    box-shadow: var(--dextinity-pagination-size-picker-shadow);
+    color: var(--dextinity-pagination-size-picker-foreground);
+    font: inherit;
+    cursor: pointer;
+    transition: box-shadow var(--dextinity-motion-duration-short);
+
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
+
+    &:hover {
+        box-shadow: var(--dextinity-pagination-size-picker-shadow-hover);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    @include forced-colors.edge;
+}
+
+.range {
+    white-space: nowrap;
+}
+
+.pages {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-0-5);
+}
+
+.page {
+    box-sizing: border-box;
+    min-inline-size: var(--dextinity-pagination-page-size);
+    block-size: var(--dextinity-pagination-page-size);
+    padding-inline: var(--dextinity-space-1);
+    border: 0;
+    border-radius: var(--dextinity-pagination-page-radius);
+    background: transparent;
+    color: var(--dextinity-pagination-page-foreground);
+    font: inherit;
+    cursor: pointer;
+    transition:
+        background var(--dextinity-motion-duration-short),
+        color var(--dextinity-motion-duration-short);
+
+    &:hover:not([aria-current]) {
+        background: var(--dextinity-pagination-page-background-hover);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    &[aria-current] {
+        background: var(--dextinity-pagination-page-background-current);
+        color: var(--dextinity-pagination-page-foreground-current);
+        box-shadow: var(--dextinity-pagination-page-shadow-current);
+        cursor: default;
+        @include forced-colors.selected;
+
+        &:focus-visible {
+            box-shadow: var(--dextinity-focus-ring);
+            @include forced-colors.focus-ring;
+        }
+    }
+}
+
+.gap {
+    min-inline-size: 18px;
+    text-align: center;
+    color: var(--dextinity-color-text-disabled);
+}

@@ -1,6 +1,14 @@
 import { Button as BaseButton } from "@base-ui/react/button";
 import { clsx } from "clsx";
-import { type ElementType, type ForwardedRef, forwardRef, type ReactNode, type RefAttributes, type SyntheticEvent } from "react";
+import {
+    type ButtonHTMLAttributes,
+    type ElementType,
+    type ForwardedRef,
+    forwardRef,
+    type ReactNode,
+    type RefAttributes,
+    type SyntheticEvent,
+} from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Spinner } from "../spinner/Spinner";
@@ -56,6 +64,8 @@ export interface ButtonProps<
     EndIcon extends ElementType = "span",
     LoadingSpinner extends ElementType = typeof Spinner,
 > extends Omit<BaseButton.Props, "className" | "ref"> {
+    /** The label: a verb for the action, e.g. "Save". */
+    children?: ReactNode;
     /**
      * Visual emphasis: `contained` for the main action, `outlined` and `text` for less important ones.
      *
@@ -68,7 +78,11 @@ export interface ButtonProps<
      * @defaultValue `"primary"`
      */
     color?: ButtonColor;
-    /** @defaultValue `"default"` */
+    /**
+     * `small` in toolbars, table rows, and dense panels.
+     *
+     * @defaultValue `"default"`
+     */
     size?: ButtonSize;
     /**
      * Prevents interaction with the button.
@@ -77,7 +91,14 @@ export interface ButtonProps<
      */
     disabled?: boolean;
     /**
-     * Shows a spinner in place of the start icon and ignores clicks.
+     * The button's behavior in a form: `submit` submits it, `reset` resets it. Ignored with `href`, which renders a link.
+     *
+     * @defaultValue `"button"`
+     */
+    type?: ButtonHTMLAttributes<HTMLButtonElement>["type"];
+    /**
+     * Shows a spinner in place of the start icon and ignores clicks. Without a start icon, the spinner covers the label, so the
+     * button keeps its width.
      *
      * @defaultValue `false`
      */
@@ -92,6 +113,8 @@ export interface ButtonProps<
     startIcon?: ReactNode;
     /** The icon to render after the button's text. */
     endIcon?: ReactNode;
+    /** Renders the button as a link to this URL, keeping the button's look. */
+    href?: string;
 }
 
 function preventDefault(event: SyntheticEvent) {
@@ -124,6 +147,7 @@ export const Button: <
         slotProps,
         startIcon,
         endIcon,
+        href,
         children,
         onClick,
         ...restProps
@@ -147,7 +171,7 @@ export const Button: <
         ownerState,
     });
     const loadingSpinnerProps = resolveSlotProps<ButtonOwnerState, LoadingSpinner, typeof Spinner>({
-        ownProps: { className: styles.loadingSpinner },
+        ownProps: { className: clsx(styles.loadingSpinner, startIcon == null && styles.loadingSpinnerOverlay) },
         slotProps: slotProps?.loadingSpinner,
         ownerState,
     });
@@ -156,7 +180,9 @@ export const Button: <
         <BaseButton
             {...restProps}
             ref={ref}
-            type={type}
+            type={href == null ? type : undefined}
+            nativeButton={href == null}
+            render={href == null ? undefined : <a href={href} />}
             disabled={ownerState.disabled}
             data-variant={ownerState.variant}
             data-color={ownerState.color}

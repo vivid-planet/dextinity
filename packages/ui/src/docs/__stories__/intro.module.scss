@@ -1,7 +1,7 @@
 .showcase {
     display: grid;
-    gap: var(--dextinity-unit-4);
-    margin-block: var(--dextinity-unit-8);
+    gap: var(--dextinity-space-4);
+    margin-block: var(--dextinity-space-8);
 
     @media (min-width: 600px) {
         grid-template-columns: 1fr 1fr;
@@ -11,7 +11,7 @@
 .column {
     display: flex;
     flex-direction: column;
-    gap: var(--dextinity-unit-4);
+    gap: var(--dextinity-space-4);
 
     > :last-child {
         flex-grow: 1;
@@ -22,31 +22,30 @@
 .taskCard {
     display: flex;
     flex-direction: column;
-    gap: var(--dextinity-unit-3);
-    padding: var(--dextinity-unit-5);
-    border-radius: var(--dextinity-brand-radius-card);
+    gap: var(--dextinity-space-3);
+    padding: 20px;
+    border-radius: var(--dextinity-radius-panel);
 }
 
 .card {
-    border: 1px solid var(--dextinity-color-border-subtle);
-    background-color: var(--dextinity-color-background-default);
+    border: 1px solid var(--dextinity-color-line);
+    background-color: var(--dextinity-color-surface);
 }
 
 .taskCard {
-    background-color: var(--dextinity-color-action-primary-default);
-    color: var(--dextinity-color-foreground-on-accent);
+    background-color: var(--dextinity-color-accent);
+    color: var(--dextinity-color-accent-foreground);
 }
 
-.taskDate,
-.taskTitle,
-.taskMeta {
+// Typography's variants set their own color, which the accent background needs to override
+.taskCard :is(.taskDate, .taskTitle, .taskMeta) {
     color: inherit;
 }
 
 .taskDate {
     display: inline-flex;
     align-items: center;
-    gap: var(--dextinity-unit-1);
+    gap: var(--dextinity-space-1);
 }
 
 .taskMeta {
@@ -56,20 +55,20 @@
 .chips {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--dextinity-unit-2);
+    gap: var(--dextinity-space-2);
 }
 
 .field {
     display: flex;
     flex-direction: column;
-    gap: var(--dextinity-unit-1);
+    gap: var(--dextinity-space-1);
 }
 
 .actions {
     display: flex;
     margin-block-start: auto;
     justify-content: flex-end;
-    gap: var(--dextinity-unit-2);
+    gap: var(--dextinity-space-2);
 }
 
 .list {
@@ -82,7 +81,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--dextinity-unit-2);
+    gap: var(--dextinity-space-2);
 }
 
 .iconActions {
@@ -90,5 +89,5 @@
 }
 
 .muted {
-    color: var(--dextinity-color-foreground-muted);
+    color: var(--dextinity-color-text-subtle);
 }

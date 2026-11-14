@@ -1,62 +1,82 @@
+// The values match the box of `Field`, so an `Input` composed with `FormLabel` and `FormHelperText` looks like an `Input` in a `Field`.
 @mixin tokens {
-    --dextinity-input-border-width: 1px;
-    --dextinity-input-height: var(--dextinity-unit-10);
-    --dextinity-input-radius: var(--dextinity-brand-radius-forms);
-    --dextinity-input-gap: var(--dextinity-unit-2);
-    --dextinity-input-padding-horizontal: var(--dextinity-unit-3);
-    --dextinity-input-padding-vertical: var(--dextinity-unit-2);
-    --dextinity-input-icon-size: 16px;
+    // Width of the border around the input
+    --dextinity-input-border-width: var(--dextinity-line-width);
+    // Height of the input
+    --dextinity-input-height: var(--dextinity-field-height);
+    // Corner radius of the input
+    --dextinity-input-radius: var(--dextinity-field-radius);
+    // Gap between the text and the adornments
+    --dextinity-input-gap: var(--dextinity-space-2);
+    // Space between the border and the content on the left and right
+    --dextinity-input-padding-horizontal: var(--dextinity-field-padding);
+    // Space between the border and the content at the top and bottom
+    --dextinity-input-padding-vertical: var(--dextinity-space-2);
+    // Size of icons inside the input, e.g. in the adornments
+    --dextinity-input-icon-size: var(--dextinity-field-icon-size);
 
-    --dextinity-input-font-size: var(--dextinity-typography-body-md-size);
-    --dextinity-input-font-line-height: var(--dextinity-typography-body-md-line-height);
-    --dextinity-input-font-weight: var(--dextinity-font-weight-regular);
-    --dextinity-input-font-weight-style: var(--dextinity-font-weight-regular-style);
+    // Text size of the value and placeholder
+    --dextinity-input-font-size: var(--dextinity-field-font-size);
+    // Line height of the value and placeholder
+    --dextinity-input-font-line-height: var(--dextinity-typography-body-line-height);
+    // Text weight of the value and placeholder
+    --dextinity-input-font-weight: var(--dextinity-typography-body-font-weight);
+    // Color of the text cursor in the input
+    --dextinity-input-caret-color: var(--dextinity-color-accent);
 
-    --dextinity-input-state-default-background: var(--dextinity-color-background-default);
-    --dextinity-input-state-default-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-input-state-default-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
-    --dextinity-input-state-default-border: var(--dextinity-color-border-field);
+    // Fill of the input at rest
+    --dextinity-input-state-default-background: var(--dextinity-field-background);
+    // Text color of the value at rest
+    --dextinity-input-state-default-foreground: var(--dextinity-field-foreground);
+    // Text color of the placeholder at rest
+    --dextinity-input-state-default-foreground-placeholder: var(--dextinity-field-placeholder);
+    // Border color of the input at rest
+    --dextinity-input-state-default-border: var(--dextinity-field-line);
 
-    --dextinity-input-state-hover-background: var(--dextinity-color-background-default);
-    --dextinity-input-state-hover-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-input-state-hover-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
-    --dextinity-input-state-hover-border: var(--dextinity-color-border-strong);
+    // Fill of a hovered input
+    --dextinity-input-state-hover-background: var(--dextinity-field-background);
+    // Text color of the value of a hovered input
+    --dextinity-input-state-hover-foreground: var(--dextinity-field-foreground);
+    // Text color of the placeholder of a hovered input
+    --dextinity-input-state-hover-foreground-placeholder: var(--dextinity-field-placeholder);
+    // Border color of a hovered input
+    --dextinity-input-state-hover-border: var(--dextinity-field-line-hover);
 
-    --dextinity-input-state-focus-background: var(--dextinity-color-background-default);
-    --dextinity-input-state-focus-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-input-state-focus-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
-    --dextinity-input-state-focus-border: var(--dextinity-color-border-focus);
+    // Fill of the focused input
+    --dextinity-input-state-focus-background: var(--dextinity-field-background-focus);
+    // Text color of the value of the focused input
+    --dextinity-input-state-focus-foreground: var(--dextinity-field-foreground);
+    // Text color of the placeholder of the focused input
+    --dextinity-input-state-focus-foreground-placeholder: var(--dextinity-field-placeholder);
+    // Border color of the focused input
+    --dextinity-input-state-focus-border: var(--dextinity-field-line-focus);
+    // Soft halo around the focused input
+    --dextinity-input-state-focus-halo: var(--dextinity-field-halo-focus);
 
-    --dextinity-input-state-error-background: var(--dextinity-color-background-default);
-    --dextinity-input-state-error-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-input-state-error-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
-    --dextinity-input-state-error-border: var(--dextinity-color-feedback-danger-border-strong);
+    // Border color of an input with an error
+    --dextinity-input-state-error-border: var(--dextinity-field-line-error);
+    // Halo around a focused input with an error
+    --dextinity-input-state-error-halo: var(--dextinity-field-halo-error);
+    // Border color of an input in the success state
+    --dextinity-input-state-success-border: var(--dextinity-field-line-success);
+    // Halo around a focused input in the success state
+    --dextinity-input-state-success-halo: var(--dextinity-field-halo-success);
+    // Border color of an input with a warning
+    --dextinity-input-state-warning-border: var(--dextinity-field-line-warning);
+    // Halo around a focused input with a warning
+    --dextinity-input-state-warning-halo: var(--dextinity-field-halo-warning);
 
-    --dextinity-input-state-success-background: var(--dextinity-color-background-default);
-    --dextinity-input-state-success-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-input-state-success-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
-    --dextinity-input-state-success-border: var(--dextinity-color-feedback-success-border-strong);
+    // Color of the spinner in a loading input
+    --dextinity-input-state-loading-spinner: var(--dextinity-color-text-subtle);
 
-    --dextinity-input-state-warning-background: var(--dextinity-color-background-default);
-    --dextinity-input-state-warning-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-input-state-warning-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
-    --dextinity-input-state-warning-border: var(--dextinity-color-feedback-warning-border-strong);
+    // Opacity of a disabled input
+    --dextinity-input-state-disabled-opacity: var(--dextinity-field-disabled-opacity);
 
-    --dextinity-input-state-loading-background: var(--dextinity-color-background-default);
-    --dextinity-input-state-loading-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-input-state-loading-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
-    --dextinity-input-state-loading-border: var(--dextinity-color-border-field);
-    --dextinity-input-state-loading-spinner: var(--dextinity-color-foreground-muted);
+    // Fill of a read-only input
+    --dextinity-input-state-read-only-background: var(--dextinity-field-background-read-only);
+    // Border color of a read-only input
+    --dextinity-input-state-read-only-border: var(--dextinity-color-line);
 
-    --dextinity-input-state-disabled-background: var(--dextinity-color-background-muted);
-    --dextinity-input-state-disabled-foreground: var(--dextinity-color-foreground-subtle);
-    --dextinity-input-state-disabled-foreground-placeholder: var(--dextinity-color-foreground-subtle);
-    --dextinity-input-state-disabled-border: var(--dextinity-color-border-subtle);
-
-    --dextinity-input-state-read-only-background: var(--dextinity-color-background-subtle);
-    --dextinity-input-state-read-only-foreground: var(--dextinity-color-foreground-default);
-    --dextinity-input-state-read-only-foreground-placeholder: var(--dextinity-color-foreground-placeholder);
-    --dextinity-input-state-read-only-border: var(--dextinity-color-border-subtle);
-
-    --dextinity-input-adornment-foreground: var(--dextinity-color-foreground-muted);
+    // Text and icon color of the start and end adornments
+    --dextinity-input-adornment-foreground: var(--dextinity-field-adornment-color);
 }

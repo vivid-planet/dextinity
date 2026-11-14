@@ -1,0 +1,21 @@
+// The frame (label, box, message) comes from the Field tokens.
+@mixin tokens {
+    // Text color of the placeholder in the field
+    --dextinity-number-input-placeholder-color: var(--dextinity-field-placeholder);
+    // Color of the text cursor in the field
+    --dextinity-number-input-caret-color: var(--dextinity-color-accent);
+    // Width of the increase and decrease buttons at the end of the field
+    --dextinity-number-input-stepper-width: 22px;
+    // Size of the arrow icons in the increase and decrease buttons
+    --dextinity-number-input-stepper-icon-size: var(--dextinity-icon-size-xsmall);
+    // Corner radius of the increase and decrease buttons
+    --dextinity-number-input-stepper-radius: calc(var(--dextinity-radius-item) * 0.625);
+    // Icon color of the increase and decrease buttons
+    --dextinity-number-input-stepper-color: var(--dextinity-color-text-subtle);
+    // Icon color of a hovered increase or decrease button
+    --dextinity-number-input-stepper-color-hover: var(--dextinity-color-text);
+    // Fill of a hovered increase or decrease button
+    --dextinity-number-input-stepper-background-hover: var(--dextinity-color-surface-sunken);
+    // Opacity of an increase or decrease button that can't be used, e.g. at the limit
+    --dextinity-number-input-stepper-disabled-opacity: var(--dextinity-opacity-disabled);
+}

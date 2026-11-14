@@ -1,0 +1,54 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import motionSource from "../../theme/_motion.scss?raw";
+import { DocsDemo } from "../../storybook/docs/foundations/DocsDemo";
+import { DoDont } from "../../storybook/docs/foundations/DoDont";
+import { LayerTokenTable } from "../../storybook/docs/foundations/LayerTokenTable";
+import { NumberedList } from "../../storybook/docs/foundations/NumberedList";
+import { PageTransitionDemo } from "../../storybook/docs/foundations/PageTransitionDemo";
+import { TransitionKindTable } from "../../storybook/docs/foundations/TransitionKindTable";
+
+<Meta title="Foundations/Motion" />
+
+# Motion
+
+Motion explains where you are. Page transitions depend on their kind, with shared elements.
+
+## Tokens
+
+One curve for everything, three durations.
+
+<LayerTokenTable source={motionSource} />
+
+## Reduced motion
+
+With the operating system's "reduce motion" setting, `--dextinity-motion-distance` becomes `0px` and the medium and long durations shrink to the short one, so everything that moves only crossfades. Components that move build their offsets on the distance token and get this for free. Try it in the demo below with "Reduce motion".
+
+## Page transitions
+
+The kind of change determines the motion. The shell stays put; only the content moves.
+
+<PageTransitionDemo />
+
+<TransitionKindTable />
+
+## Shared elements
+
+An element travels from the old view into the new one and keeps the thread.
+
+<DocsDemo>
+    <NumberedList
+        items={[
+            { title: "Row → title", description: "The title of a row in a list or tree becomes the title of the edit view." },
+            { title: "Tile → image", description: "An asset preview becomes the large image of the detail page." },
+            { title: "Back", description: "The path runs backwards; the element lands in its row again." },
+        ]}
+    />
+</DocsDemo>
+
+## Rules
+
+<DoDont
+    dos={["Motion explains the place: deeper, up, beside.", "With reduced motion, crossfade only.", "Everything stays operable during a transition."]}
+    donts={["Motion as decoration on data.", "Durations longer than the long duration.", "Moving the shell."]}
+/>

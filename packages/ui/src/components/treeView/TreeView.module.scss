@@ -1,0 +1,356 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root,
+.group {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.root {
+    display: flex;
+    flex-direction: column;
+    color: var(--dextinity-tree-view-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-tree-view-font-size);
+}
+
+.groupFrame {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 1fr;
+
+    &[data-opening],
+    &[data-closing] {
+        > .group {
+            min-block-size: 0;
+            overflow: hidden;
+        }
+    }
+
+    &[data-opening] {
+        animation: expand var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+    }
+
+    &[data-closing] {
+        grid-template-rows: 0fr;
+        animation: collapse var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+    }
+
+    // Reduced motion keeps only crossfades: the children fade in and out instead of growing and shrinking
+    @media (prefers-reduced-motion: reduce) {
+        &[data-opening] {
+            animation-name: fade-in;
+        }
+
+        &[data-closing] {
+            grid-template-rows: 1fr;
+            opacity: 0;
+            animation-name: fade-out;
+        }
+    }
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes fade-out {
+    from {
+        opacity: 1;
+    }
+}
+
+@keyframes expand {
+    from {
+        grid-template-rows: 0fr;
+    }
+}
+
+@keyframes collapse {
+    from {
+        grid-template-rows: 1fr;
+    }
+}
+
+.group {
+    position: relative;
+
+    // The guide line along the children, starting below the parent's expand toggle
+    .root[data-guide-lines] &::before {
+        position: absolute;
+        inset-block: var(--dextinity-tree-view-guide-inset-block);
+        inset-inline-start: calc(var(--dextinity-tree-view-guide-offset) + var(--dextinity-tree-view-node-level) * var(--dextinity-tree-view-indent));
+        inline-size: var(--dextinity-tree-view-guide-width);
+        background: var(--dextinity-tree-view-guide-color);
+        content: "";
+        pointer-events: none;
+
+        @include forced-colors.fill(GrayText);
+    }
+}
+
+.item {
+    position: relative;
+    outline: none;
+
+    // The line showing where a dragged node lands as a sibling. It sits on the item, not the row, so "after" an expanded
+    // node is drawn below its subtree, where the node really lands. It is a straight line starting at the target level's
+    // toggle with a cap, inset from the row's rounded corners.
+    &[data-drop] {
+        // Center of the target level's expand toggle
+        --dextinity-tree-view-drop-line-start: calc(22px + var(--dextinity-tree-view-node-level) * var(--dextinity-tree-view-indent) + 11px);
+    }
+
+    &[data-drop]::before,
+    &[data-drop]::after {
+        position: absolute;
+        z-index: 1;
+        content: "";
+        pointer-events: none;
+    }
+
+    &[data-drop]::before {
+        inset-inline: var(--dextinity-tree-view-drop-line-start) var(--dextinity-tree-view-row-radius);
+        block-size: var(--dextinity-tree-view-drop-line-width);
+        border-radius: var(--dextinity-tree-view-drop-line-width);
+        background: var(--dextinity-tree-view-drop-color);
+
+        @include forced-colors.fill(Highlight);
+    }
+
+    &[data-drop]::after {
+        inset-inline-start: calc(var(--dextinity-tree-view-drop-line-start) - var(--dextinity-tree-view-drop-cap-size) / 2);
+        inline-size: var(--dextinity-tree-view-drop-cap-size);
+        block-size: var(--dextinity-tree-view-drop-cap-size);
+        border-radius: 50%;
+        background: var(--dextinity-tree-view-drop-color);
+
+        @include forced-colors.fill(Highlight);
+    }
+
+    &[data-drop="before"]::before {
+        inset-block-start: calc(var(--dextinity-tree-view-drop-line-width) / -2);
+    }
+
+    &[data-drop="after"]::before {
+        inset-block-end: calc(var(--dextinity-tree-view-drop-line-width) / -2);
+    }
+
+    &[data-drop="before"]::after {
+        inset-block-start: calc(var(--dextinity-tree-view-drop-cap-size) / -2);
+    }
+
+    &[data-drop="after"]::after {
+        inset-block-end: calc(var(--dextinity-tree-view-drop-cap-size) / -2);
+    }
+}
+
+.row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    box-sizing: border-box;
+    block-size: var(--dextinity-tree-view-row-height);
+    padding-inline: calc(22px + var(--dextinity-tree-view-node-level) * var(--dextinity-tree-view-indent)) var(--dextinity-space-2);
+    border-radius: var(--dextinity-tree-view-row-radius);
+    cursor: pointer;
+    user-select: none;
+    transition:
+        background var(--dextinity-motion-duration-short),
+        box-shadow var(--dextinity-motion-duration-short),
+        opacity var(--dextinity-motion-duration-short);
+
+    --dextinity-icon-size: var(--dextinity-icon-size-small);
+
+    &:hover {
+        background: var(--dextinity-tree-view-row-background-hover);
+        box-shadow: var(--dextinity-tree-view-row-shadow-hover);
+    }
+
+    &[data-checked] {
+        background: var(--dextinity-tree-view-row-background-checked);
+        box-shadow: var(--dextinity-tree-view-row-shadow-checked);
+    }
+
+    &[data-selected] {
+        background: var(--dextinity-tree-view-row-background-selected);
+        box-shadow: var(--dextinity-tree-view-row-shadow-selected);
+        @include forced-colors.selected;
+
+        .label {
+            font-weight: var(--dextinity-font-weight-semibold);
+        }
+    }
+
+    .item:focus-visible > & {
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    &[data-dragging],
+    &[data-cut] {
+        opacity: var(--dextinity-opacity-dragging);
+    }
+
+    &[data-drop="inside"] {
+        background: var(--dextinity-tree-view-drop-background);
+        box-shadow: inset 0 0 0 var(--dextinity-tree-view-drop-inside-line-width) var(--dextinity-tree-view-drop-color);
+        @include forced-colors.edge(2px, Highlight);
+    }
+}
+
+.dragHandle {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 2px;
+    display: grid;
+    place-items: center;
+    inline-size: 18px;
+    block-size: 24px;
+    color: var(--dextinity-tree-view-meta-color);
+    opacity: 0;
+    cursor: grab;
+    transform: translateY(-50%);
+    transition: opacity var(--dextinity-motion-duration-short);
+
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
+
+    .row:hover > & {
+        opacity: 1;
+    }
+}
+
+.toggle {
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 22px;
+    block-size: 22px;
+    border-radius: var(--dextinity-radius-item);
+    color: var(--dextinity-tree-view-icon-color);
+
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
+
+    > * {
+        transition: transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+    }
+
+    &:hover {
+        background: var(--dextinity-tree-view-row-background-hover);
+        color: var(--dextinity-tree-view-foreground);
+    }
+
+    &[data-hidden] {
+        visibility: hidden;
+    }
+
+    .item[aria-expanded="true"] > .row > & > * {
+        transform: rotate(90deg);
+    }
+}
+
+.checkbox {
+    display: inline-flex;
+    flex: none;
+    opacity: var(--dextinity-tree-view-controls-idle-opacity);
+    transition: opacity var(--dextinity-motion-duration-short);
+
+    .row:hover > &,
+    .row[data-checked] > &,
+    .root:has([data-checked]) &,
+    .item:focus-visible > .row > & {
+        opacity: 1;
+    }
+
+    @media (hover: none) {
+        opacity: 1;
+    }
+}
+
+.icon {
+    display: inline-flex;
+    flex: none;
+    color: var(--dextinity-tree-view-icon-color);
+}
+
+.label {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hiddenInMenu {
+    display: inline-flex;
+    flex: none;
+    color: var(--dextinity-tree-view-meta-color);
+
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
+}
+
+.count {
+    flex: none;
+    color: var(--dextinity-tree-view-count-color);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-tree-view-count-font-size);
+}
+
+.path {
+    flex: 1;
+    min-inline-size: 0;
+    padding-inline-start: var(--dextinity-space-2);
+    overflow: hidden;
+    color: var(--dextinity-tree-view-path-color);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-mono-size);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity var(--dextinity-motion-duration-medium);
+
+    .row:hover > & {
+        opacity: 1;
+    }
+}
+
+.actions {
+    display: inline-flex;
+    flex: none;
+    gap: var(--dextinity-space-0-5);
+    opacity: var(--dextinity-tree-view-controls-idle-opacity);
+    transition: opacity var(--dextinity-motion-duration-short);
+
+    .row:hover > &,
+    .row[data-selected] > &,
+    .row:focus-within > &,
+    .item:focus-visible > .row > &,
+    &:has([aria-expanded="true"]) {
+        opacity: 1;
+    }
+
+    @media (hover: none) {
+        opacity: 1;
+    }
+}
+
+.status {
+    flex: none;
+    margin-inline-start: var(--dextinity-space-1);
+}
+
+.row[data-context] {
+    > .icon,
+    > .label,
+    > .hiddenInMenu,
+    > .count {
+        opacity: var(--dextinity-tree-view-context-opacity);
+    }
+
+    > .status {
+        opacity: calc(var(--dextinity-tree-view-context-opacity) * 0.8);
+    }
+}

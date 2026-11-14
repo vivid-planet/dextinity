@@ -1,0 +1,56 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-save-state-gap);
+    border-radius: var(--dextinity-radius-item);
+    color: var(--dextinity-save-state-saved-color);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-save-state-font-size);
+    line-height: var(--dextinity-typography-small-line-height);
+    white-space: nowrap;
+
+    --dextinity-save-state-current-dot-color: var(--dextinity-save-state-saved-dot-color);
+
+    &[data-state="dirty"],
+    &[data-state="saving"] {
+        color: var(--dextinity-save-state-pending-color);
+
+        --dextinity-save-state-current-dot-color: var(--dextinity-save-state-pending-dot-color);
+    }
+
+    &[data-state="error"] {
+        color: var(--dextinity-save-state-error-color);
+
+        --dextinity-save-state-current-dot-color: var(--dextinity-save-state-error-dot-color);
+    }
+
+    &[data-state="saving"] .dot {
+        animation: breathe 1.2s ease-in-out infinite;
+
+        @media (prefers-reduced-motion: reduce) {
+            animation: none;
+        }
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}
+
+.dot {
+    flex: none;
+    inline-size: var(--dextinity-save-state-dot-size);
+    block-size: var(--dextinity-save-state-dot-size);
+    border-radius: 50%;
+    background: var(--dextinity-save-state-current-dot-color);
+}
+
+@keyframes breathe {
+    50% {
+        opacity: var(--dextinity-save-state-breathe-opacity);
+    }
+}

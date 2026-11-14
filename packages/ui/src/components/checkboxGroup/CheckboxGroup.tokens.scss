@@ -1,0 +1,24 @@
+// The checkboxes come from the Checkbox tokens.
+@mixin tokens {
+    // Gap between the options, and below the "Select all" checkbox
+    --dextinity-checkbox-group-option-gap: var(--dextinity-space-2);
+    // Space between the options of a horizontal group
+    --dextinity-checkbox-group-option-gap-horizontal: var(--dextinity-space-4);
+    // Indent of the options inside a group
+    --dextinity-checkbox-group-indent: calc(var(--dextinity-checkbox-size) + var(--dextinity-checkbox-gap));
+    // Line along the options inside a group
+    --dextinity-checkbox-group-guide-color: var(--dextinity-color-line);
+
+    // Color of a group's label while groups have no checkbox
+    --dextinity-checkbox-group-heading-color: var(--dextinity-color-text-subtle);
+    // Text size of a group's label while groups have no checkbox
+    --dextinity-checkbox-group-heading-font-size: var(--dextinity-typography-small-size);
+    // Font weight of a group's label while groups have no checkbox
+    --dextinity-checkbox-group-heading-font-weight: var(--dextinity-font-weight-semibold);
+    // Color of an option's description
+    --dextinity-checkbox-group-description-color: var(--dextinity-color-text-subtle);
+    // Text size of an option's description
+    --dextinity-checkbox-group-description-font-size: var(--dextinity-typography-small-size);
+    // Line below the "Select all" checkbox
+    --dextinity-checkbox-group-divider-color: var(--dextinity-color-line);
+}

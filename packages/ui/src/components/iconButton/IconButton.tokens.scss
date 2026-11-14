@@ -1,13 +1,33 @@
 @mixin tokens {
-    --dextinity-icon-button-default-height: var(--dextinity-unit-10);
-    --dextinity-icon-button-default-radius: var(--dextinity-brand-radius-control);
-    --dextinity-icon-button-default-padding-horizontal: var(--dextinity-unit-3);
-    --dextinity-icon-button-default-padding-vertical: var(--dextinity-unit-3);
-    --dextinity-icon-button-default-icon-size: 16px;
+    // Width and height of a medium button; follows the density
+    --dextinity-icon-button-size: var(--dextinity-density-icon-button-size);
+    // Width and height of a small button; follows the density
+    --dextinity-icon-button-size-small: var(--dextinity-density-icon-button-size-small);
+    // Corner radius of the button
+    --dextinity-icon-button-radius: var(--dextinity-radius-control);
+    // Size of the icon in a medium button; one step below what the button's height would suggest, so the icon doesn't crowd the button
+    --dextinity-icon-button-icon-size: var(--dextinity-icon-size-small);
+    // Size of the icon in a small button; one step below what the button's height would suggest
+    --dextinity-icon-button-icon-size-small: var(--dextinity-icon-size-xsmall);
+    // Opacity of a disabled button
+    --dextinity-icon-button-disabled-opacity: var(--dextinity-opacity-disabled);
 
-    --dextinity-icon-button-small-height: var(--dextinity-unit-8);
-    --dextinity-icon-button-small-radius: var(--dextinity-brand-radius-control-small);
-    --dextinity-icon-button-small-padding-horizontal: var(--dextinity-unit-2);
-    --dextinity-icon-button-small-padding-vertical: var(--dextinity-unit-2);
-    --dextinity-icon-button-small-icon-size: 16px;
+    // Icon color of a plain button
+    --dextinity-icon-button-foreground: var(--dextinity-color-text-subtle);
+    // Icon color on hover and while expanded
+    --dextinity-icon-button-foreground-hover: var(--dextinity-color-text);
+    // Fill of a plain button on hover
+    --dextinity-icon-button-background-hover: var(--dextinity-color-fill-hover);
+    // Fill while the menu or panel the button opens is open
+    --dextinity-icon-button-background-expanded: color-mix(in oklch, var(--dextinity-color-text) 8%, transparent);
+
+    // Fill of an outlined button
+    --dextinity-icon-button-outlined-background: var(--dextinity-color-surface);
+    // Icon color of an outlined button
+    --dextinity-icon-button-outlined-foreground: var(--dextinity-color-text);
+    // Outline and shadow of an outlined button
+    --dextinity-icon-button-outlined-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-1);
+    // Outline and shadow of an outlined button on hover
+    --dextinity-icon-button-outlined-shadow-hover:
+        inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line), var(--dextinity-shadow-2);
 }

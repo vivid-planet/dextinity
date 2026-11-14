@@ -1,0 +1,73 @@
+@mixin tokens {
+    // Height of a row
+    --dextinity-tree-view-row-height: var(--dextinity-density-tree-row-height);
+    // Corner radius of a row
+    --dextinity-tree-view-row-radius: var(--dextinity-radius-field);
+    // Indent per level
+    --dextinity-tree-view-indent: 24px;
+    // Text size of the rows
+    --dextinity-tree-view-font-size: var(--dextinity-typography-body-size);
+    // Text color of the rows
+    --dextinity-tree-view-foreground: var(--dextinity-color-text);
+    // Color of the expand toggles and the node icons
+    --dextinity-tree-view-icon-color: var(--dextinity-color-text-subtle);
+    // Color of the drag handle and the hidden-in-menu marker
+    --dextinity-tree-view-meta-color: var(--dextinity-color-text-disabled);
+    // Color of the count after a node's name
+    --dextinity-tree-view-count-color: var(--dextinity-color-text-subtle);
+    // Color of a node's path, shown on hover
+    --dextinity-tree-view-path-color: var(--dextinity-color-text-subtle);
+    // Text size of the count after a node's name
+    --dextinity-tree-view-count-font-size: var(--dextinity-typography-caption-size);
+
+    // Line along the children of an expanded node
+    --dextinity-tree-view-guide-color: var(--dextinity-color-line-strong);
+    // Width of the line along the children of an expanded node
+    --dextinity-tree-view-guide-width: var(--dextinity-line-width);
+    // Position of the guide line from the start of the parent's row
+    --dextinity-tree-view-guide-offset: 39px;
+    // Space between the guide line's ends and the first and last child
+    --dextinity-tree-view-guide-inset-block: 2px 10px;
+
+    // Fill of a hovered row
+    --dextinity-tree-view-row-background-hover: color-mix(in oklch, var(--dextinity-color-text) 5%, transparent);
+    // Outline of a hovered row
+    --dextinity-tree-view-row-shadow-hover: 0 0 transparent;
+    // Fill of the active row, e.g. the node shown in the detail panel
+    --dextinity-tree-view-row-background-selected: var(--dextinity-material-glass-strong);
+    // Outline of the active row
+    --dextinity-tree-view-row-shadow-selected:
+        inset 0 0 0 1px color-mix(in oklch, var(--dextinity-color-accent) 55%, transparent), var(--dextinity-shadow-1);
+    // Fill of a row whose checkbox is checked
+    --dextinity-tree-view-row-background-checked: color-mix(in oklch, var(--dextinity-color-accent) 12%, transparent);
+    // Outline of a row whose checkbox is checked
+    --dextinity-tree-view-row-shadow-checked: 0 0 transparent;
+    // Opacity of the checkboxes and row actions until the row is hovered or focused
+    --dextinity-tree-view-controls-idle-opacity: 0;
+    // Opacity of the ancestors shown as context while filtering
+    --dextinity-tree-view-context-opacity: 0.5;
+
+    // Color of the line that shows where a dragged node lands
+    --dextinity-tree-view-drop-color: var(--dextinity-color-accent);
+    // Fill of the row a dragged node lands inside
+    --dextinity-tree-view-drop-background: var(--dextinity-color-accent-soft);
+    // Thickness of the drop line between rows
+    --dextinity-tree-view-drop-line-width: var(--dextinity-indicator-width);
+    // Width of the outline of the row a dragged node lands inside
+    --dextinity-tree-view-drop-inside-line-width: var(--dextinity-line-width-strong);
+    // Size of the cap at the start of the drop line
+    --dextinity-tree-view-drop-cap-size: 6px;
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-tree-view-row-background-hover: transparent;
+    --dextinity-tree-view-row-shadow-hover: inset 0 0 0 1px var(--dextinity-color-text);
+    --dextinity-tree-view-row-background-selected: var(--dextinity-color-surface-raised);
+    --dextinity-tree-view-row-shadow-selected: inset 0 0 0 2px var(--dextinity-color-text);
+    --dextinity-tree-view-row-shadow-checked: inset 3px 0 0 var(--dextinity-color-focus);
+    --dextinity-tree-view-controls-idle-opacity: 1;
+    --dextinity-tree-view-drop-color: var(--dextinity-color-focus);
+    --dextinity-tree-view-drop-line-width: var(--dextinity-indicator-width-strong);
+    --dextinity-tree-view-drop-cap-size: 8px;
+    --dextinity-tree-view-drop-inside-line-width: var(--dextinity-indicator-width);
+}

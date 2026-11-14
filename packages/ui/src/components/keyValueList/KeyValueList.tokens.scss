@@ -1,0 +1,16 @@
+@mixin tokens {
+    // Gap between the key column and the value column
+    --dextinity-key-value-list-column-gap: var(--dextinity-space-4);
+    // Space above and below the content of a row
+    --dextinity-key-value-list-row-padding: 11px;
+    // Line between the rows
+    --dextinity-key-value-list-divider: var(--dextinity-line-width) solid var(--dextinity-color-line);
+    // Color of a key
+    --dextinity-key-value-list-key-color: var(--dextinity-color-text-subtle);
+    // Text size of a key
+    --dextinity-key-value-list-key-font-size: var(--dextinity-typography-ui-size);
+    // Color of a value
+    --dextinity-key-value-list-value-color: var(--dextinity-color-text);
+    // Text size of a value
+    --dextinity-key-value-list-value-font-size: var(--dextinity-typography-body-size);
+}

@@ -1,0 +1,88 @@
+@use "../../theme/forcedColors" as forced-colors;
+@use "../../theme/textStyles" as text-styles;
+
+.root {
+    min-inline-size: 0;
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-breadcrumbs-font-size);
+
+    &[data-variant="label"] {
+        color: var(--dextinity-breadcrumbs-label-color);
+        @include text-styles.label;
+
+        .link {
+            font-family: inherit;
+            font-size: inherit;
+        }
+
+        .current {
+            color: inherit;
+            font-weight: inherit;
+        }
+    }
+}
+
+.list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--dextinity-breadcrumbs-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-breadcrumbs-gap);
+    min-inline-size: 0;
+}
+
+.link {
+    font-size: inherit;
+}
+
+.linkButton {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    line-height: inherit;
+}
+
+.current {
+    color: var(--dextinity-breadcrumbs-current-color);
+    font-weight: var(--dextinity-breadcrumbs-current-font-weight);
+}
+
+.separator {
+    color: var(--dextinity-breadcrumbs-separator-color);
+}
+
+.moreButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: var(--dextinity-space-0-5) var(--dextinity-space-1);
+    border: 0;
+    border-radius: var(--dextinity-breadcrumbs-more-button-radius);
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color var(--dextinity-motion-duration-short);
+
+    --dextinity-icon-size: var(--dextinity-icon-size-xsmall);
+
+    &:hover,
+    &[data-popup-open] {
+        background: var(--dextinity-breadcrumbs-more-button-hover-background);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+}

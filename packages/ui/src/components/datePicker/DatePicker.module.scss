@@ -1,0 +1,13 @@
+@use "dateField";
+
+.input {
+    @include dateField.input;
+}
+
+.clear {
+    @include dateField.clear-button;
+}
+
+.trigger {
+    @include dateField.button;
+}

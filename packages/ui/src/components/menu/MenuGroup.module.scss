@@ -1,0 +1,16 @@
+@use "../../theme/textStyles" as text-styles;
+
+.root {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    padding: var(--dextinity-space-2) var(--dextinity-menu-item-padding) var(--dextinity-space-1-5);
+    color: var(--dextinity-menu-group-label-color);
+    @include text-styles.label;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

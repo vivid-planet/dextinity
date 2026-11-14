@@ -1,0 +1,40 @@
+@mixin tokens {
+    // Height of a chip; follows the density
+    --dextinity-filter-chip-height: var(--dextinity-density-chip-height);
+    // Space at the start and end of a chip
+    --dextinity-filter-chip-padding: var(--dextinity-space-3);
+    // Gap between the adornments, the label, the count, and the chevron
+    --dextinity-filter-chip-gap: 7px;
+    // Corner radius of a chip
+    --dextinity-filter-chip-radius: var(--dextinity-radius-control);
+    // Text size of the label
+    --dextinity-filter-chip-font-size: var(--dextinity-typography-ui-size);
+    // Size of the chevron of a chip with a menu
+    --dextinity-filter-chip-icon-size: var(--dextinity-icon-size-xsmall);
+    // Size of an icon in the start or end adornment
+    --dextinity-filter-chip-adornment-icon-size: var(--dextinity-icon-size-xsmall);
+    // Shift of the start adornment towards the chip's edge, so a dot or an avatar doesn't look indented
+    --dextinity-filter-chip-start-adornment-offset: calc(-1 * var(--dextinity-space-1));
+    // Opacity of a disabled chip
+    --dextinity-filter-chip-disabled-opacity: var(--dextinity-opacity-disabled);
+
+    // Label and icon color of an inactive chip
+    --dextinity-filter-chip-foreground: var(--dextinity-color-text-subtle);
+    // Label and icon color of an inactive chip on hover
+    --dextinity-filter-chip-foreground-hover: var(--dextinity-color-text);
+    // Outline of an inactive chip
+    --dextinity-filter-chip-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong);
+    // Outline of an inactive chip on hover
+    --dextinity-filter-chip-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line);
+    // Text size of the count after the label
+    --dextinity-filter-chip-count-font-size: var(--dextinity-typography-caption-size);
+    // Color of the count of an inactive chip
+    --dextinity-filter-chip-count-foreground: var(--dextinity-color-text-subtle);
+
+    // Fill of an active filter
+    --dextinity-filter-chip-selected-background: var(--dextinity-color-accent);
+    // Label and icon color of an active filter
+    --dextinity-filter-chip-selected-foreground: var(--dextinity-color-accent-foreground);
+    // Color of the count of an active filter
+    --dextinity-filter-chip-selected-count-foreground: color-mix(in oklch, var(--dextinity-color-accent-foreground) 70%, transparent);
+}

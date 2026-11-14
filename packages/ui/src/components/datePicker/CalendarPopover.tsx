@@ -1,0 +1,73 @@
+import { Popover as BasePopover } from "@base-ui/react/popover";
+import { type RefObject, useRef } from "react";
+
+import { popupCollisionPadding } from "../../utils/popupCollisionPadding";
+import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { FieldContextReset } from "../field/fieldContext";
+import { Icon } from "../icon/Icon";
+import { Calendar, type CalendarProps } from "./Calendar";
+import styles from "./Calendar.module.scss";
+import { usePopupTabOut } from "./usePopupTabOut";
+
+interface CalendarPopoverProps extends CalendarProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    /** Accessible name of the button that opens the calendar. */
+    triggerLabel: string;
+    triggerClassName: string;
+    disabled: boolean;
+    /** The element focused when the calendar closes, usually the text input. */
+    finalFocus: RefObject<HTMLElement | null>;
+    /** The id of the field's label, which names the popup. */
+    labelledBy: string | undefined;
+}
+
+/**
+ * The button at the end of a date field and the calendar it opens, placed below the whole field box.
+ */
+export function CalendarPopover({
+    open,
+    onOpenChange,
+    triggerLabel,
+    triggerClassName,
+    disabled,
+    finalFocus,
+    labelledBy,
+    ...calendarProps
+}: CalendarPopoverProps) {
+    const { anchor, anchorRef, container } = useThemePortalContainer<HTMLButtonElement>();
+    const fieldBox = anchor?.parentElement ?? null;
+    const popupRef = useRef<HTMLDivElement>(null);
+    const tabOut = usePopupTabOut({ trigger: anchor, finalFocus, onClose: () => onOpenChange(false) });
+
+    return (
+        <BasePopover.Root open={open} onOpenChange={(nextOpen) => onOpenChange(nextOpen)}>
+            <BasePopover.Trigger ref={anchorRef} type="button" className={triggerClassName} aria-label={triggerLabel} disabled={disabled}>
+                <Icon name="calendar" />
+            </BasePopover.Trigger>
+            <BasePopover.Portal container={container}>
+                <FieldContextReset>
+                    <BasePopover.Positioner
+                        className={styles.positioner}
+                        anchor={fieldBox}
+                        side="bottom"
+                        align="start"
+                        sideOffset={6}
+                        collisionPadding={popupCollisionPadding}
+                    >
+                        <BasePopover.Popup
+                            ref={popupRef}
+                            className={styles.popup}
+                            aria-labelledby={labelledBy}
+                            onKeyDown={tabOut.onKeyDown}
+                            initialFocus={() => popupRef.current?.querySelector<HTMLElement>("[data-focus-target]") ?? true}
+                            finalFocus={tabOut.finalFocus}
+                        >
+                            <Calendar {...calendarProps} />
+                        </BasePopover.Popup>
+                    </BasePopover.Positioner>
+                </FieldContextReset>
+            </BasePopover.Portal>
+        </BasePopover.Root>
+    );
+}

@@ -1,0 +1,63 @@
+@mixin tokens {
+    // Corner radius of the card
+    --dextinity-card-radius: var(--dextinity-radius-panel);
+    // Space between the card's edge and its header and body
+    --dextinity-card-padding: var(--dextinity-space-2-5);
+    // Space around the header with the orb, title, and meta text
+    --dextinity-card-header-padding: var(--dextinity-space-2-5) var(--dextinity-space-3) 14px;
+    // Gap between the orb, the title, and the meta text in the header
+    --dextinity-card-header-gap: var(--dextinity-space-3);
+    // Space around the body; none by default, as rows in the body bring their own padding
+    --dextinity-card-body-padding: 0;
+    // Glass fill of the card
+    --dextinity-card-background: var(--dextinity-material-glass);
+    // Blur of the content behind the glass
+    --dextinity-card-blur: var(--dextinity-material-blur);
+    // Edge highlight and drop shadow of the card
+    --dextinity-card-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
+
+    // Size of the round icon badge at the start of the header
+    --dextinity-card-orb-size: 38px;
+    // Size of the icon inside the orb
+    --dextinity-card-orb-icon-size: var(--dextinity-icon-size-default);
+    // Color of the icon inside the orb
+    --dextinity-card-orb-foreground: var(--dextinity-color-accent-text);
+    // Fill of the orb
+    --dextinity-card-orb-background: var(--dextinity-material-glass-strong);
+    // Edge highlight of the orb
+    --dextinity-card-orb-shadow: var(--dextinity-material-edge-shadow);
+
+    // Text size of the card title
+    --dextinity-card-title-font-size: var(--dextinity-typography-title-size);
+    // Font weight of the card title
+    --dextinity-card-title-font-weight: var(--dextinity-typography-title-font-weight);
+    // Color of the meta text next to the title
+    --dextinity-card-meta-color: var(--dextinity-color-text-subtle);
+    // Text size of the meta text next to the title
+    --dextinity-card-meta-font-size: var(--dextinity-typography-ui-size);
+
+    // Space around the content of a card row
+    --dextinity-card-row-padding: var(--dextinity-space-3) 14px;
+    // Gap between a row's text, its end content, and the arrow
+    --dextinity-card-row-gap: 14px;
+    // Corner radius of a row's hover background
+    --dextinity-card-row-radius: var(--dextinity-radius-row);
+    // Background of a row on hover
+    --dextinity-card-row-hover-background: var(--dextinity-color-fill-subtle);
+    // Font weight of a row's title
+    --dextinity-card-row-title-font-weight: var(--dextinity-font-weight-medium);
+    // Color of a row's subtitle
+    --dextinity-card-row-subtitle-color: var(--dextinity-color-text-subtle);
+    // Text size of a row's subtitle
+    --dextinity-card-row-subtitle-font-size: var(--dextinity-typography-small-size);
+    // Gap between the items in a row's end content
+    --dextinity-card-row-end-gap: var(--dextinity-space-2-5);
+    // Text color of a row's end content
+    --dextinity-card-row-end-color: var(--dextinity-color-text-subtle);
+    // Text size of a row's end content
+    --dextinity-card-row-end-font-size: var(--dextinity-typography-ui-size);
+    // Width of the column holding a row's arrow
+    --dextinity-card-row-arrow-size: 22px;
+    // Color of a row's arrow
+    --dextinity-card-row-arrow-color: var(--dextinity-color-text-disabled);
+}

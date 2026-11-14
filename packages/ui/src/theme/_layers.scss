@@ -1,0 +1,19 @@
+// Stacking order of the overlays that render in a portal on top of the page.
+@layer dextinity {
+    :root {
+        // Stacking level of drawers, incl. the app shell's navigation drawer on small screens
+        --dextinity-layer-drawer: 900;
+        // Stacking level of modal dialogs
+        --dextinity-layer-dialog: 1000;
+        // Stacking level of popovers, menus, select lists, and the date picker popup
+        --dextinity-layer-popup: 1000;
+        // Stacking level of tooltips
+        --dextinity-layer-tooltip: 1000;
+        // Stacking level of the command palette
+        --dextinity-layer-command-palette: 1100;
+        // Stacking level of toast notifications
+        --dextinity-layer-toast: 1100;
+        // Stacking level of the full-screen asset preview
+        --dextinity-layer-quick-look: 1200;
+    }
+}

@@ -1,0 +1,91 @@
+@mixin tokens {
+    // Vertical space between two blocks, and above the add button
+    --dextinity-block-list-gap: var(--dextinity-space-1-5);
+    // Height of the hover area between two blocks that holds the insert button
+    --dextinity-block-list-insert-height: 10px;
+    // Size of the round button that inserts a block between two blocks
+    --dextinity-block-list-insert-button-size: 22px;
+    // Color of the line showing where a dragged block lands
+    --dextinity-block-list-drop-indicator: var(--dextinity-color-accent);
+    // Height of the dashed add button below the blocks
+    --dextinity-block-list-add-height: 42px;
+    // Corner radius of the add button
+    --dextinity-block-list-add-radius: var(--dextinity-radius-field);
+    // Dashed border of the add button
+    --dextinity-block-list-add-border: 1px dashed var(--dextinity-color-line-strong);
+    // Text and icon color of the add button
+    --dextinity-block-list-add-foreground: var(--dextinity-color-text-subtle);
+    // Text and icon color of the hovered add button
+    --dextinity-block-list-add-foreground-hover: var(--dextinity-color-accent-text);
+
+    // Corner radius of a block
+    --dextinity-block-radius: var(--dextinity-radius-field);
+    // Fill of a block
+    --dextinity-block-background: var(--dextinity-color-surface);
+    // Outline and shadow of a block
+    --dextinity-block-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-1);
+    // Outline and shadow of a hovered block
+    --dextinity-block-shadow-hover: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-control-line), var(--dextinity-shadow-2);
+    // Selection ring and shadow of the selected block
+    --dextinity-block-selected-shadow: inset 0 0 0 var(--dextinity-line-width-strong) var(--dextinity-color-accent), var(--dextinity-shadow-1);
+    // Padding of a block's header row
+    --dextinity-block-padding: var(--dextinity-space-2-5) var(--dextinity-space-2-5) var(--dextinity-space-2-5) var(--dextinity-space-1-5);
+    // Padding around the fields of an expanded block, indented to line up with the title
+    --dextinity-block-fields-padding: var(--dextinity-space-1) var(--dextinity-space-4) var(--dextinity-space-4) 58px;
+    // Text size of the block's name in its header
+    --dextinity-block-title-font-size: 13.5px;
+    // Size of the block type icon in the header
+    --dextinity-block-icon-size: 32px;
+    // Corner radius of the block type icon
+    --dextinity-block-icon-radius: calc(var(--dextinity-radius-item) * 1.1);
+    // Fill behind the block type icon
+    --dextinity-block-icon-background: var(--dextinity-color-accent-soft);
+    // Color of the block type icon
+    --dextinity-block-icon-foreground: var(--dextinity-color-accent-text);
+    // Outline of the block type icon; visible in high contrast
+    --dextinity-block-icon-shadow: 0 0 transparent;
+    // Text color of the content summary in the block header
+    --dextinity-block-summary-foreground: var(--dextinity-color-text-subtle);
+    // Color of the drag grip at the start of a block
+    --dextinity-block-grip-foreground: var(--dextinity-color-text-disabled);
+
+    // Fill behind the icon of a hidden block (saved, but never live)
+    --dextinity-block-hidden-icon-background: var(--dextinity-color-surface-sunken);
+    // Color of the icon of a hidden block
+    --dextinity-block-hidden-icon-foreground: var(--dextinity-color-text-disabled);
+    // Fill of the "Hidden" tag on a hidden block
+    --dextinity-block-hidden-tag-background: var(--dextinity-color-warning-soft);
+    // Text color of the "Hidden" tag on a hidden block
+    --dextinity-block-hidden-tag-foreground: var(--dextinity-color-warning-text);
+    // Outline of the "Hidden" tag; visible in high contrast
+    --dextinity-block-hidden-tag-shadow: none;
+
+    // Error ring and shadow of an invalid block, e.g. one with an empty required field
+    --dextinity-block-invalid-shadow: inset 0 0 0 var(--dextinity-line-width-strong) var(--dextinity-color-danger), var(--dextinity-shadow-1);
+    // Color of the marker on an invalid block
+    --dextinity-block-invalid-marker-color: var(--dextinity-color-danger);
+    // Rings of a selected and invalid block: the selection ring with the error ring inside it
+    --dextinity-block-selected-invalid-shadow:
+        inset 0 0 0 var(--dextinity-line-width-strong) var(--dextinity-color-accent), inset 0 0 0 3px var(--dextinity-color-danger),
+        var(--dextinity-shadow-1);
+    // Fill of a block selected for bulk actions
+    --dextinity-block-checked-background: var(--dextinity-color-accent-soft);
+
+    // Height of the header above the blocks with the select-all checkbox and bulk actions
+    --dextinity-block-list-header-height: var(--dextinity-density-header-height);
+    // Text color of the header above the blocks
+    --dextinity-block-list-header-foreground: var(--dextinity-color-text-subtle);
+
+    // Corner radius of the line showing where a dragged block lands
+    --dextinity-block-drop-indicator-radius: 2px;
+    // Corner radius of the drag handle
+    --dextinity-block-handle-radius: 6px;
+    // Corner radius of the marker on an invalid block
+    --dextinity-block-invalid-marker-radius: 6px;
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-block-hidden-tag-shadow: inset 0 0 0 1px var(--dextinity-color-warning);
+    --dextinity-block-selected-shadow: inset 0 0 0 2px var(--dextinity-color-accent);
+    --dextinity-block-icon-shadow: inset 0 0 0 1px var(--dextinity-color-accent);
+}

@@ -1,0 +1,22 @@
+@mixin tokens {
+    // Height of the plot area
+    --dextinity-mini-chart-height: 70px;
+    // Gap between two bars
+    --dextinity-mini-chart-bar-gap: 3px;
+    // Corner radius of a bar
+    --dextinity-mini-chart-bar-radius: 3px;
+    // Stroke width of the line in a line chart
+    --dextinity-mini-chart-line-width: 1.5px;
+    // Diameter of the marked points in a line chart
+    --dextinity-mini-chart-point-size: 7px;
+    // Color of the usual values, which stay quiet
+    --dextinity-mini-chart-color: color-mix(in oklch, var(--dextinity-color-text-disabled) 55%, transparent);
+    // Color of the last value, e.g. today
+    --dextinity-mini-chart-color-last: var(--dextinity-color-accent);
+    // Color of the values passed in `highlighted`
+    --dextinity-mini-chart-color-highlighted: var(--dextinity-color-warning);
+    // Color of the labels under the chart
+    --dextinity-mini-chart-label-color: var(--dextinity-color-text-subtle);
+    // Text size of the labels under the chart
+    --dextinity-mini-chart-label-font-size: 12px;
+}

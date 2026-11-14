@@ -1,0 +1,103 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+// The surface shared by the menu and its submenus.
+@mixin popup {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-inline-size: var(--dextinity-menu-min-width);
+    max-inline-size: var(--dextinity-menu-max-width);
+    max-block-size: var(--available-height);
+    overflow-y: auto;
+    padding: var(--dextinity-menu-padding);
+    border-radius: var(--dextinity-menu-radius);
+    background: var(--dextinity-menu-background);
+    box-shadow: var(--dextinity-menu-shadow);
+    backdrop-filter: blur(var(--dextinity-menu-blur)) saturate(var(--dextinity-material-saturation));
+    color: var(--dextinity-menu-item-foreground);
+    font-family: var(--dextinity-font-family-text);
+    outline: none;
+    transform-origin: var(--transform-origin);
+    transition:
+        opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    &[data-starting-style],
+    &[data-ending-style] {
+        opacity: 0;
+        transform: scale(0.96) translateY(calc(var(--dextinity-motion-distance) * -0.5));
+    }
+
+    &[data-side="top"] {
+        &[data-starting-style],
+        &[data-ending-style] {
+            transform: scale(0.96) translateY(calc(var(--dextinity-motion-distance) * 0.5));
+        }
+    }
+
+    &[data-instant] {
+        transition-duration: 0ms;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &[data-starting-style],
+        &[data-ending-style] {
+            transform: none;
+        }
+    }
+
+    @include forced-colors.edge;
+}
+
+@mixin positioner {
+    z-index: var(--dextinity-layer-popup);
+    outline: none;
+}
+
+// A row in the menu: item, radio item, submenu trigger.
+@mixin item {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-menu-item-gap);
+    box-sizing: border-box;
+    min-block-size: var(--dextinity-menu-item-height);
+    padding-inline: var(--dextinity-menu-item-padding);
+    border-radius: var(--dextinity-menu-item-radius);
+    color: var(--dextinity-menu-item-foreground);
+    font-size: var(--dextinity-menu-item-font-size);
+    line-height: var(--dextinity-typography-ui-line-height);
+    white-space: nowrap;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+
+    --dextinity-icon-size: var(--dextinity-menu-item-icon-size);
+
+    &[data-highlighted],
+    &[data-popup-open] {
+        background: var(--dextinity-menu-item-background-highlight);
+        @include forced-colors.selected;
+    }
+
+    &[data-highlighted] {
+        box-shadow: var(--dextinity-menu-item-shadow-highlight);
+    }
+
+    &[data-disabled] {
+        opacity: var(--dextinity-menu-item-disabled-opacity);
+        cursor: default;
+    }
+}
+
+@mixin itemIcon {
+    display: inline-flex;
+    flex: none;
+    color: var(--dextinity-menu-item-icon-color);
+}
+
+@mixin itemLabel {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

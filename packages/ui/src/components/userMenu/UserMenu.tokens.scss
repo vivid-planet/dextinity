@@ -1,0 +1,12 @@
+@mixin tokens {
+    // Size of the avatar button, matching the other top bar controls
+    --dextinity-user-menu-trigger-size: var(--dextinity-density-control-height);
+    // Fill of the hovered avatar button
+    --dextinity-user-menu-trigger-background-hover: var(--dextinity-color-fill-hover);
+    // Minimum width of the opened menu
+    --dextinity-user-menu-min-width: 260px;
+    // Color of the user's name in the menu header
+    --dextinity-user-menu-name-color: var(--dextinity-color-text);
+    // Color of the user's role or email below the name
+    --dextinity-user-menu-role-color: var(--dextinity-color-text-subtle);
+}

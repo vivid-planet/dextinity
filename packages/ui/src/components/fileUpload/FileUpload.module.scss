@@ -1,0 +1,120 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-file-upload-gap);
+    min-inline-size: 0;
+    font-family: var(--dextinity-font-family-text);
+}
+
+.dropzone {
+    .root[data-invalid] > & > :global(.dextinityDropzone__zone) {
+        outline: var(--dextinity-file-upload-error-outline);
+    }
+}
+
+.files {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-file-upload-file-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.file {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--dextinity-space-3);
+    min-block-size: var(--dextinity-file-upload-file-height);
+    padding: var(--dextinity-space-2) var(--dextinity-space-2) var(--dextinity-space-2) var(--dextinity-space-3);
+    box-sizing: border-box;
+    border-radius: var(--dextinity-file-upload-file-radius);
+    background: var(--dextinity-file-upload-file-background);
+    box-shadow: var(--dextinity-file-upload-file-shadow);
+    font-size: var(--dextinity-typography-ui-size);
+
+    &[data-status="failed"],
+    &[data-status="rejected"] {
+        background: var(--dextinity-file-upload-file-error-background);
+
+        .fileIcon {
+            color: var(--dextinity-file-upload-error-foreground);
+        }
+    }
+
+    &[data-status="uploading"] .fileIcon {
+        color: var(--dextinity-color-accent-text);
+    }
+
+    @include forced-colors.edge;
+}
+
+.fileIcon {
+    color: var(--dextinity-color-text-subtle);
+
+    --dextinity-icon-size: 18px;
+}
+
+.thumbnail {
+    display: block;
+    inline-size: var(--dextinity-file-upload-thumbnail-size);
+    block-size: var(--dextinity-file-upload-thumbnail-size);
+    border-radius: calc(var(--dextinity-file-upload-file-radius) * 0.6);
+    object-fit: cover;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-inline-size: 0;
+}
+
+.name {
+    overflow: hidden;
+    color: var(--dextinity-color-text);
+    font-weight: var(--dextinity-font-weight-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:is(a) {
+        border-radius: var(--dextinity-file-upload-link-radius);
+        color: var(--dextinity-file-upload-link-color);
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+            text-underline-offset: var(--dextinity-link-underline-offset);
+        }
+
+        &:focus-visible {
+            outline: none;
+            box-shadow: var(--dextinity-focus-ring);
+            @include forced-colors.focus-ring;
+        }
+    }
+}
+
+.meta {
+    color: var(--dextinity-color-text-subtle);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-file-upload-meta-font-size);
+}
+
+.error {
+    color: var(--dextinity-file-upload-error-foreground);
+    font-size: var(--dextinity-file-upload-error-font-size);
+}
+
+.progress {
+    margin-block: var(--dextinity-space-1);
+}
+
+.actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-0-5);
+}

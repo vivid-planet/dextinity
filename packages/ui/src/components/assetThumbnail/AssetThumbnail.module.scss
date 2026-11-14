@@ -1,0 +1,200 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-2);
+    min-inline-size: 0;
+    font-family: var(--dextinity-font-family-text);
+    color: var(--dextinity-color-text);
+    outline: none;
+
+    &:is(button, a, [tabindex], [role="option"]) {
+        cursor: pointer;
+
+        &:is(:disabled, [aria-disabled="true"], [data-disabled]) {
+            cursor: not-allowed;
+        }
+
+        &:not(:disabled, [aria-disabled="true"], [data-disabled]):hover .preview {
+            box-shadow: var(--dextinity-asset-thumbnail-shadow-hover);
+            transform: translateY(var(--dextinity-asset-thumbnail-hover-lift));
+        }
+    }
+
+    &[data-selected] .preview,
+    &[data-selected]:hover .preview {
+        box-shadow: var(--dextinity-asset-thumbnail-selected-shadow);
+
+        @include forced-colors.edge(3px, Highlight);
+    }
+
+    &:focus-visible .preview,
+    &:focus-visible:hover .preview {
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    &[data-type="document"] .preview {
+        background: var(--dextinity-asset-thumbnail-document-background);
+    }
+
+    &[data-type="document"] .image {
+        box-sizing: border-box;
+        padding: 10% 22%;
+        object-fit: contain;
+        filter: drop-shadow(var(--dextinity-asset-thumbnail-document-page-shadow));
+    }
+
+    &[data-type="folder"] .preview {
+        background: transparent;
+        box-shadow: none;
+    }
+
+    &[data-ratio="1:1"] .preview {
+        aspect-ratio: 1;
+    }
+
+    &[data-ratio="original"] .preview {
+        aspect-ratio: auto;
+        min-block-size: 48px;
+    }
+
+    &[data-ratio="original"] .image {
+        block-size: auto;
+    }
+}
+
+.preview {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--dextinity-asset-thumbnail-radius);
+    background: var(--dextinity-asset-thumbnail-background);
+    box-shadow: var(--dextinity-asset-thumbnail-shadow);
+    transition:
+        box-shadow var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    @include forced-colors.surface;
+    @include forced-colors.edge;
+}
+
+.image {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+}
+
+.placeholder {
+    color: var(--dextinity-asset-thumbnail-placeholder-foreground);
+
+    --dextinity-icon-size: 28px;
+}
+
+// stylelint-disable declaration-property-value-disallowed-list -- The corners of the folder illustration are part of its drawing, not component corner radii
+.folder {
+    position: relative;
+    inline-size: 70%;
+    aspect-ratio: 5 / 3.4;
+    border-radius: 4px 8px 8px 8px;
+    background: var(--dextinity-asset-thumbnail-folder-back);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width-strong) var(--dextinity-asset-thumbnail-folder-line);
+
+    &,
+    &::before,
+    &::after {
+        @include forced-colors.surface;
+        @include forced-colors.edge(1.5px);
+    }
+
+    &::before {
+        position: absolute;
+        inset-block-start: -9%;
+        inset-inline-start: 0;
+        inline-size: 38%;
+        block-size: 14%;
+        border-radius: 4px 6px 0 0;
+        background: inherit;
+        box-shadow: inset 0 0 0 var(--dextinity-line-width-strong) var(--dextinity-asset-thumbnail-folder-line);
+        content: "";
+    }
+
+    &::after {
+        position: absolute;
+        inset: 14% 0 0;
+        border-radius: 6px 6px 8px 8px;
+        background: var(--dextinity-asset-thumbnail-folder-front);
+        box-shadow:
+            inset 0 1px 0 var(--dextinity-asset-thumbnail-folder-highlight),
+            inset 0 0 0 var(--dextinity-line-width-strong) var(--dextinity-asset-thumbnail-folder-line);
+        content: "";
+    }
+}
+// stylelint-enable declaration-property-value-disallowed-list
+
+.typeMark {
+    position: absolute;
+    inset-block-end: var(--dextinity-space-2);
+    inset-inline-start: var(--dextinity-space-2);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    block-size: 20px;
+    padding-inline: var(--dextinity-space-1-5);
+    border-radius: calc(var(--dextinity-radius-item) * 0.75);
+    background: var(--dextinity-asset-thumbnail-mark-background);
+    color: var(--dextinity-asset-thumbnail-mark-foreground);
+    font-size: var(--dextinity-typography-label-size);
+    font-weight: var(--dextinity-font-weight-semibold);
+    letter-spacing: 0.02em;
+    line-height: 1;
+
+    --dextinity-icon-size: 11px;
+
+    @include forced-colors.surface;
+    @include forced-colors.edge;
+
+    .root[data-type="document"] & {
+        background: var(--dextinity-asset-thumbnail-document-mark-background);
+        color: var(--dextinity-asset-thumbnail-document-mark-foreground);
+    }
+}
+
+.badges {
+    position: absolute;
+    inset-block-start: var(--dextinity-space-2);
+    inset-inline-end: var(--dextinity-space-2);
+    display: flex;
+    gap: var(--dextinity-space-1);
+}
+
+.caption {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-inline-size: 0;
+    padding-inline: var(--dextinity-space-0-5);
+}
+
+.name {
+    overflow: hidden;
+    font-size: var(--dextinity-asset-thumbnail-name-font-size);
+    font-weight: var(--dextinity-font-weight-medium);
+    line-height: var(--dextinity-typography-section-line-height);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.meta {
+    overflow: hidden;
+    color: var(--dextinity-asset-thumbnail-meta-foreground);
+    font-size: var(--dextinity-asset-thumbnail-meta-font-size);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

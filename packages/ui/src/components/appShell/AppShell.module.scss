@@ -1,0 +1,189 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    box-sizing: border-box;
+    min-block-size: 100dvh;
+    background: var(--dextinity-app-shell-background);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+
+    &[data-layout="narrow"] {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.lightField {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    contain: strict;
+    pointer-events: none;
+
+    &::before,
+    &::after,
+    > span {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(var(--dextinity-app-shell-field-blur));
+    }
+
+    &::before {
+        inset-block-start: -30%;
+        inset-inline-start: -12%;
+        inline-size: 75%;
+        block-size: 85%;
+        background: radial-gradient(closest-side, var(--dextinity-app-shell-field-1), transparent);
+        animation: drift-1 calc(var(--dextinity-app-shell-field-drift-duration) * 0.8125) ease-in-out infinite alternate;
+    }
+
+    &::after {
+        inset-block-start: -10%;
+        inset-inline-end: -15%;
+        inline-size: 70%;
+        block-size: 80%;
+        background: radial-gradient(closest-side, var(--dextinity-app-shell-field-2), transparent);
+        animation: drift-2 var(--dextinity-app-shell-field-drift-duration) ease-in-out infinite alternate;
+    }
+
+    > span {
+        inset-block-end: -35%;
+        inset-inline-start: 20%;
+        inline-size: 80%;
+        block-size: 70%;
+        background: radial-gradient(closest-side, var(--dextinity-app-shell-field-3), transparent);
+        filter: blur(calc(var(--dextinity-app-shell-field-blur) * 1.25));
+        animation: drift-1 calc(var(--dextinity-app-shell-field-drift-duration) * 1.1875) ease-in-out infinite alternate-reverse;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &::before,
+        &::after,
+        > span {
+            animation: none;
+        }
+    }
+}
+
+@keyframes drift-1 {
+    to {
+        transform: translate(8%, 6%) scale(1.08);
+    }
+}
+
+@keyframes drift-2 {
+    to {
+        transform: translate(-10%, 8%) scale(0.94);
+    }
+}
+
+.grain {
+    position: fixed;
+    inset: 0;
+    z-index: var(--dextinity-app-shell-grain-layer);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: var(--dextinity-app-shell-grain);
+    mix-blend-mode: overlay;
+    pointer-events: none;
+}
+
+.nav {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--dextinity-app-shell-nav-layer);
+    box-sizing: border-box;
+    display: flex;
+    align-self: start;
+    block-size: 100dvh;
+    min-inline-size: 0;
+    grid-column: 1;
+    grid-row: 1;
+    padding: var(--dextinity-app-shell-gap) 0 var(--dextinity-app-shell-gap) var(--dextinity-app-shell-gap);
+}
+
+.main {
+    container: dextinity-app-shell-main / inline-size;
+    grid-column: 2;
+    grid-row: 1;
+    min-inline-size: 0;
+    padding: var(--dextinity-app-shell-content-padding);
+
+    .root[data-layout="narrow"] & {
+        grid-column: 1;
+        padding: var(--dextinity-app-shell-content-padding-narrow);
+    }
+}
+
+.topBar {
+    position: sticky;
+    inset-block-start: var(--dextinity-app-shell-gap);
+    z-index: var(--dextinity-app-shell-top-bar-layer);
+
+    .root[data-layout="narrow"] & {
+        inset-block-start: 12px;
+    }
+}
+
+.content {
+    min-inline-size: 0;
+    padding: var(--dextinity-app-shell-content-offset) var(--dextinity-space-3) 0;
+
+    .root[data-layout="narrow"] & {
+        padding: var(--dextinity-app-shell-content-offset-narrow) var(--dextinity-space-1) 0;
+    }
+}
+
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: var(--dextinity-layer-drawer);
+    background: var(--dextinity-app-shell-backdrop);
+    transition: opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    @include forced-colors.backdrop;
+
+    &[data-starting-style],
+    &[data-ending-style] {
+        opacity: 0;
+    }
+}
+
+.navDrawer {
+    position: fixed;
+    z-index: var(--dextinity-layer-drawer);
+    display: flex;
+    box-sizing: border-box;
+    outline: none;
+    transition: transform var(--dextinity-motion-duration-long) var(--dextinity-motion-easing);
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: var(--dextinity-app-shell-drawer-width);
+    padding: var(--dextinity-space-2) 0 var(--dextinity-space-2) var(--dextinity-space-2);
+
+    > * {
+        inline-size: 100%;
+        box-shadow: var(--dextinity-app-shell-overlay-shadow);
+    }
+
+    &[data-starting-style],
+    &[data-ending-style] {
+        transform: translateX(-102%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .navDrawer {
+        transition: opacity var(--dextinity-motion-duration-short);
+
+        &[data-starting-style],
+        &[data-ending-style] {
+            opacity: 0;
+            transform: none;
+        }
+    }
+}

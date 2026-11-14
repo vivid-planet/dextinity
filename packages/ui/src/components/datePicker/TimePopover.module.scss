@@ -1,0 +1,39 @@
+@use "../select/menu";
+@use "popup";
+
+.positioner {
+    @include popup.positioner;
+}
+
+.popup {
+    @include popup.popup;
+
+    display: flex;
+    max-block-size: min(var(--dextinity-date-picker-time-list-max-height), var(--available-height));
+    padding: var(--dextinity-date-picker-time-list-padding);
+    color: var(--dextinity-color-text);
+    font-family: var(--dextinity-font-family-text);
+}
+
+.list {
+    @include menu.list;
+
+    display: flex;
+    flex-direction: column;
+    min-inline-size: var(--dextinity-date-picker-time-list-min-width);
+}
+
+.option {
+    @include menu.item;
+
+    flex: none;
+    font-variant-numeric: tabular-nums;
+}
+
+.optionText {
+    @include menu.itemText;
+}
+
+.indicator {
+    @include menu.itemIndicator;
+}

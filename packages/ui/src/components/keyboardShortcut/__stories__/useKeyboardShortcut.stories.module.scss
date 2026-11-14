@@ -1,0 +1,14 @@
+.demo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-4);
+    max-inline-size: 420px;
+}
+
+.row {
+    display: flex;
+    gap: var(--dextinity-space-2);
+    align-items: center;
+    color: var(--dextinity-color-text-subtle);
+    font-size: var(--dextinity-typography-small-size);
+}

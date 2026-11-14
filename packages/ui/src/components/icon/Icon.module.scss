@@ -1,11 +1,24 @@
 .root {
     display: inline-block;
     flex-shrink: 0;
-    inline-size: var(--dextinity-unit-4);
-    block-size: var(--dextinity-unit-4);
+    inline-size: var(--dextinity-icon-size, var(--dextinity-icon-size-small));
+    block-size: var(--dextinity-icon-size, var(--dextinity-icon-size-small));
+    vertical-align: middle;
     background: var(--dextinity-current-icon-image, currentColor) center / contain no-repeat;
     mask: var(--dextinity-current-icon-mask, none) center / contain no-repeat;
 
     // In high-contrast mode, Chromium replaces background colors, which would hide the icon
     forced-color-adjust: preserve-parent-color;
+
+    &[data-size="small"] {
+        --dextinity-icon-size: var(--dextinity-icon-size-small);
+    }
+
+    &[data-size="default"] {
+        --dextinity-icon-size: var(--dextinity-icon-size-default);
+    }
+
+    &[data-size="large"] {
+        --dextinity-icon-size: var(--dextinity-icon-size-large);
+    }
 }

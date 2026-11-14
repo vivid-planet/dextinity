@@ -1,0 +1,77 @@
+// Hierarchy through size and weight, not color. Font families come from the brand.
+@layer dextinity {
+    :root,
+    [data-dextinity-color-scheme] {
+        // Weight of body copy
+        --dextinity-font-weight-regular: 400;
+        // Weight of titles, buttons, and other text that stands out a little
+        --dextinity-font-weight-medium: 500;
+        // Weight of section headings, labels, and emphasized values
+        --dextinity-font-weight-semibold: 600;
+
+        // Text size of the largest display headings; scales with the viewport
+        --dextinity-typography-display-xl-size: clamp(44px, 6vw, 72px);
+        // Line height of the largest display headings
+        --dextinity-typography-display-xl-line-height: 1.02;
+        // Text size of large display headings; scales with the viewport
+        --dextinity-typography-display-l-size: clamp(34px, 4.5vw, 54px);
+        // Line height of large display headings
+        --dextinity-typography-display-l-line-height: 1.02;
+        // Weight of display headings; set by the brand
+        --dextinity-typography-display-font-weight: var(--dextinity-brand-display-font-weight);
+        // Tracking of display headings; set by the brand
+        --dextinity-typography-display-letter-spacing: var(--dextinity-brand-display-letter-spacing);
+        // Case of display headings; set by the brand
+        --dextinity-typography-display-text-transform: var(--dextinity-brand-display-text-transform);
+
+        // Text size of titles, e.g. panel, card, and drawer titles
+        --dextinity-typography-title-size: 17px;
+        // Line height of titles
+        --dextinity-typography-title-line-height: 1.3;
+        // Weight of titles
+        --dextinity-typography-title-font-weight: var(--dextinity-font-weight-medium);
+        // Tracking of titles, e.g. panel and card titles
+        --dextinity-typography-title-letter-spacing: -0.02em;
+
+        // Text size of section headings and dialog titles
+        --dextinity-typography-section-size: 15px;
+        // Line height of section headings and dialog titles
+        --dextinity-typography-section-line-height: 1.35;
+        // Weight of section headings and dialog titles
+        --dextinity-typography-section-font-weight: var(--dextinity-font-weight-semibold);
+        // Tracking of section headings and dialog titles
+        --dextinity-typography-section-letter-spacing: -0.01em;
+
+        // Text size of body copy and form values; set by the brand
+        --dextinity-typography-body-size: var(--dextinity-brand-font-size);
+        // Line height of body copy
+        --dextinity-typography-body-line-height: 1.45;
+        // Weight of body copy
+        --dextinity-typography-body-font-weight: var(--dextinity-font-weight-regular);
+
+        // Secondary UI text, e.g. menu items, hints, and table cells
+        --dextinity-typography-ui-size: 13px;
+        // Line height of short UI text that doesn't wrap often, e.g. labels, menu items, and tooltips
+        --dextinity-typography-ui-line-height: 1.3;
+
+        // Text size of small supporting text, e.g. subtitles and field messages
+        --dextinity-typography-small-size: 12.5px;
+        // Line height of small supporting text
+        --dextinity-typography-small-line-height: 1.4;
+
+        // Counts and meta text, e.g. file sizes and dates under a thumbnail
+        --dextinity-typography-caption-size: 11px;
+
+        // Text size of eyebrow labels above groups and sections
+        --dextinity-typography-label-size: 10.5px;
+        // Tracking of eyebrow labels above groups and sections
+        --dextinity-typography-label-letter-spacing: 0.11em;
+        // Case of eyebrow labels above groups and sections
+        --dextinity-typography-label-text-transform: var(--dextinity-brand-label-text-transform);
+
+        // Text size of monospaced text, e.g. IDs, keys, and code
+        --dextinity-typography-mono-size: 12px;
+        // Tracking of monospaced text
+        --dextinity-typography-mono-letter-spacing: -0.01em;
+    }
+}

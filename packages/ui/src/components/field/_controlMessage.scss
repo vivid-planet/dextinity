@@ -1,0 +1,9 @@
+// The star after the label of a required control
+@mixin required($component) {
+    color: var(--dextinity-#{$component}-required-color);
+
+    &::after {
+        content: "*";
+        margin-inline-start: 0.2em;
+    }
+}

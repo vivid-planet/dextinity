@@ -1,0 +1,176 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+    overflow: hidden;
+    border-radius: var(--dextinity-log-viewer-radius);
+    background: var(--dextinity-log-viewer-background);
+    box-shadow: var(--dextinity-log-viewer-shadow);
+    color: var(--dextinity-log-viewer-foreground);
+    font-family: var(--dextinity-font-family-text);
+
+    @include forced-colors.edge;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    min-block-size: var(--dextinity-log-viewer-header-height);
+    padding-inline: var(--dextinity-log-viewer-padding) var(--dextinity-space-1);
+    box-shadow: inset 0 calc(var(--dextinity-line-width) * -1) 0 var(--dextinity-log-viewer-line);
+
+    @include forced-colors.separator;
+}
+
+.title {
+    overflow: hidden;
+    color: var(--dextinity-log-viewer-title-color);
+    font-size: var(--dextinity-typography-ui-size);
+    font-weight: var(--dextinity-font-weight-semibold);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--dextinity-space-1);
+    margin-inline-start: auto;
+}
+
+.status {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.viewport {
+    flex: 1;
+    min-block-size: 0;
+    max-block-size: var(--dextinity-log-viewer-max-height);
+    overflow: auto;
+    padding-block: var(--dextinity-log-viewer-padding-block);
+    outline: none;
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-log-viewer-font-size);
+    line-height: var(--dextinity-log-viewer-line-height);
+    overscroll-behavior: contain;
+
+    &:focus-visible {
+        box-shadow: var(--dextinity-focus-ring-inset);
+        @include forced-colors.focus-ring(-2px);
+    }
+}
+
+.lines {
+    display: table;
+    min-inline-size: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    .root[data-wrap] & {
+        display: block;
+    }
+}
+
+.line {
+    display: table-row;
+    background: var(--dextinity-log-viewer-line-background);
+
+    --dextinity-log-viewer-line-background: transparent;
+
+    .root[data-wrap] & {
+        display: flex;
+    }
+
+    &[data-tone="error"] {
+        color: var(--dextinity-log-viewer-line-error-foreground);
+
+        --dextinity-log-viewer-line-background: var(--dextinity-log-viewer-line-error-background);
+    }
+
+    &[data-tone="warning"] {
+        color: var(--dextinity-log-viewer-line-warning-foreground);
+
+        --dextinity-log-viewer-line-background: var(--dextinity-log-viewer-line-warning-background);
+    }
+
+    &[data-tone="info"] {
+        color: var(--dextinity-log-viewer-line-info-foreground);
+    }
+
+    &[data-tone="success"] {
+        color: var(--dextinity-log-viewer-line-success-foreground);
+    }
+
+    &:hover:not([data-tone="error"], [data-tone="warning"]) {
+        --dextinity-log-viewer-line-background: var(--dextinity-log-viewer-line-background-hover);
+    }
+}
+
+.number {
+    display: table-cell;
+    position: sticky;
+    inset-inline-start: 0;
+    box-sizing: content-box;
+    inline-size: var(--dextinity-log-viewer-number-width);
+    padding-inline: var(--dextinity-log-viewer-padding) var(--dextinity-space-3);
+    // Opaque, so text scrolled sideways passes under the number, but tinted like its line
+    background:
+        linear-gradient(var(--dextinity-log-viewer-line-background), var(--dextinity-log-viewer-line-background)),
+        var(--dextinity-log-viewer-background);
+    color: var(--dextinity-log-viewer-number-color);
+    text-align: end;
+    user-select: none;
+
+    .root[data-wrap] & {
+        display: block;
+        flex: none;
+    }
+}
+
+.text {
+    display: table-cell;
+    padding-inline: var(--dextinity-log-viewer-padding);
+    white-space: pre;
+
+    .root[data-linenumbers] & {
+        padding-inline-start: 0;
+    }
+
+    .root[data-wrap] & {
+        display: block;
+        flex: 1;
+        min-inline-size: 0;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+}
+
+.empty {
+    margin: 0;
+    padding-inline: var(--dextinity-log-viewer-padding);
+    color: var(--dextinity-log-viewer-number-color);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-ui-size);
+}
+
+.spinner {
+    margin: var(--dextinity-space-2) var(--dextinity-log-viewer-padding) 0;
+    color: var(--dextinity-log-viewer-number-color);
+}
+
+.jump {
+    position: absolute;
+    inset-block-end: var(--dextinity-space-3);
+    inset-inline-end: var(--dextinity-space-4);
+    box-shadow: var(--dextinity-shadow-2);
+}

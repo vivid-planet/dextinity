@@ -1,0 +1,34 @@
+@mixin tokens {
+    // Corner radius of a panel
+    --dextinity-panel-radius: var(--dextinity-radius-panel);
+    // Between the edge and the header and body, which add their own padding
+    --dextinity-panel-padding: var(--dextinity-space-2-5);
+    // Padding around the title, description and actions
+    --dextinity-panel-header-padding: var(--dextinity-space-2-5) var(--dextinity-space-3) var(--dextinity-space-3);
+    // Gap between the title and description and the actions
+    --dextinity-panel-header-gap: var(--dextinity-space-3);
+    // Padding around the panel's content
+    --dextinity-panel-body-padding: var(--dextinity-space-0-5) var(--dextinity-space-3) var(--dextinity-space-3);
+
+    // Fill of a glass panel
+    --dextinity-panel-glass-background: var(--dextinity-material-glass);
+    // Blur of the backdrop behind a glass panel
+    --dextinity-panel-glass-blur: var(--dextinity-material-blur);
+    // Edge highlight and shadow of a glass panel
+    --dextinity-panel-glass-shadow: var(--dextinity-material-edge-shadow), var(--dextinity-shadow-2);
+    // Fill of a solid panel
+    --dextinity-panel-solid-background: var(--dextinity-color-surface);
+    // Outline and shadow of a solid panel
+    --dextinity-panel-solid-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-1);
+
+    // Text color of the title
+    --dextinity-panel-title-color: var(--dextinity-color-text);
+    // Text size of the title
+    --dextinity-panel-title-font-size: var(--dextinity-typography-title-size);
+    // Text weight of the title
+    --dextinity-panel-title-font-weight: var(--dextinity-typography-title-font-weight);
+    // Text color of the description below the title
+    --dextinity-panel-description-color: var(--dextinity-color-text-subtle);
+    // Text size of the description below the title
+    --dextinity-panel-description-font-size: var(--dextinity-typography-ui-size);
+}

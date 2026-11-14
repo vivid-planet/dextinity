@@ -1,0 +1,38 @@
+@mixin tokens {
+    // Width and height of the checkbox box
+    --dextinity-checkbox-size: 17px;
+    // Corner radius of the checkbox box
+    --dextinity-checkbox-radius: calc(var(--dextinity-radius-item) * 0.625);
+    // Size of the check icon; smaller than the box so it keeps a margin to the box's edge
+    --dextinity-checkbox-icon-size: var(--dextinity-icon-size-xxsmall);
+    // Width of the indeterminate dash; narrower than the check icon and a whole number of pixels
+    --dextinity-checkbox-indeterminate-mark-width: 9px;
+    // Thickness of the indeterminate dash
+    --dextinity-checkbox-indeterminate-mark-height: 2px;
+    // Gap between the checkbox and its label
+    --dextinity-checkbox-gap: var(--dextinity-space-2);
+    // Width of the line around an unchecked checkbox
+    --dextinity-checkbox-line-width: var(--dextinity-line-width-strong);
+    // Opacity of a disabled checkbox and its label
+    --dextinity-checkbox-disabled-opacity: var(--dextinity-opacity-disabled);
+
+    // Fill of an unchecked checkbox
+    --dextinity-checkbox-background: var(--dextinity-color-surface);
+    // Line around an unchecked checkbox
+    --dextinity-checkbox-line: var(--dextinity-color-control-line);
+    // Line around a hovered unchecked checkbox
+    --dextinity-checkbox-line-hover: var(--dextinity-color-text-subtle);
+    // Fill of a checked or indeterminate checkbox
+    --dextinity-checkbox-background-checked: var(--dextinity-color-accent);
+    // Color of the check or indeterminate icon
+    --dextinity-checkbox-foreground-checked: var(--dextinity-color-accent-foreground);
+
+    // Text color of the label
+    --dextinity-checkbox-label-color: var(--dextinity-color-text);
+    // Text size of the label
+    --dextinity-checkbox-label-font-size: var(--dextinity-typography-body-size);
+    // Color of the required marker after the label
+    --dextinity-checkbox-required-color: var(--dextinity-color-danger-text);
+    // Line of an unchecked checkbox in the error state
+    --dextinity-checkbox-line-error: var(--dextinity-color-danger);
+}

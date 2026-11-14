@@ -1,0 +1,10 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.root {
+    flex: none;
+    block-size: var(--dextinity-line-width);
+    margin: var(--dextinity-space-1-5) var(--dextinity-space-1);
+    background: var(--dextinity-menu-separator-color);
+
+    @include forced-colors.fill;
+}

@@ -1,0 +1,75 @@
+.mono {
+    color: var(--dextinity-color-text-subtle);
+    font-family: var(--dextinity-font-family-mono);
+    font-size: var(--dextinity-typography-mono-size);
+}
+
+.muted {
+    color: var(--dextinity-color-text-subtle);
+}
+
+.target {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    min-inline-size: 0;
+    color: var(--dextinity-color-text-subtle);
+
+    > span {
+        display: flex;
+        flex-direction: column;
+        min-inline-size: 0;
+    }
+
+    b {
+        color: var(--dextinity-color-text);
+        font-weight: 500;
+    }
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-density-form-gap);
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.groupLabel {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.formActions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding-block-start: 14px;
+    box-shadow: inset 0 var(--dextinity-line-width) 0 var(--dextinity-color-line);
+}
+
+.structure {
+    // The wireframe needs the full width to show the side panel next to the list
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+}
+
+.structureLayout {
+    --dextinity-list-detail-layout-header-spacing: 8px;
+    --dextinity-list-detail-layout-gap: 8px;
+    --dextinity-list-detail-layout-panel-width: 36%;
+}
+
+.structureList {
+    min-block-size: 220px;
+}
+
+.structurePanel {
+    min-block-size: 280px;
+}

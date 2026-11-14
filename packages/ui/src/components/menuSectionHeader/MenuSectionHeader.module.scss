@@ -6,11 +6,10 @@
     inline-size: 100%;
     padding-inline: var(--dextinity-menu-section-header-padding-horizontal);
     color: var(--dextinity-menu-section-header-default-foreground);
-    font-family: var(--dextinity-brand-font-family-sans);
+    font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-menu-section-header-font-size);
     font-weight: var(--dextinity-menu-section-header-font-weight);
     line-height: var(--dextinity-menu-section-header-font-line-height);
-    letter-spacing: var(--dextinity-font-letter-spacing-normal);
 
     .expandIcon {
         color: var(--dextinity-menu-section-header-default-icon);
@@ -48,8 +47,8 @@
     }
 
     &:focus-visible {
-        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
-        outline-offset: calc(var(--dextinity-focus-ring-width) * -1);
+        outline: var(--dextinity-focus-outline);
+        outline-offset: calc(-1 * var(--dextinity-focus-ring-width));
     }
 }
 

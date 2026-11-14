@@ -1,7 +1,11 @@
 @use "../../theme/primitives";
 @use "../../theme/brand";
-@use "../../theme/responsive";
 @use "../../theme/semantic";
+@use "../../theme/typography";
+@use "../../theme/motion";
+@use "../../theme/density";
+@use "../../theme/layout";
+@use "../../theme/layers";
 @use "../../theme/components";
 
 .root {

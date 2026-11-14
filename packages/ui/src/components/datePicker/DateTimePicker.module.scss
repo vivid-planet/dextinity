@@ -1,0 +1,37 @@
+@use "../../theme/forcedColors" as forced-colors;
+@use "dateField";
+
+.dateInput {
+    @include dateField.input;
+
+    min-inline-size: 6em;
+}
+
+.separator {
+    @include dateField.separator;
+
+    align-self: center;
+    inline-size: var(--dextinity-line-width);
+    block-size: 1.2em;
+    background: var(--dextinity-date-picker-separator-color);
+    opacity: var(--dextinity-date-picker-separator-opacity);
+
+    @include forced-colors.fill;
+}
+
+.timeInput {
+    @include dateField.input;
+
+    flex: 0 1 6.5em;
+    min-inline-size: 4em;
+}
+
+.clear {
+    @include dateField.clear-button;
+}
+
+.trigger {
+    @include dateField.button;
+
+    margin-inline-end: 0;
+}

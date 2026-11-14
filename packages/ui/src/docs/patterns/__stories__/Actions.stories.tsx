@@ -36,7 +36,7 @@ export const IconButtons: Story = {
                 <Icon name="copy" />
             </IconButton>
             <IconButton variant="text" color="error" aria-label="Delete">
-                <Icon name="delete" />
+                <Icon name="trash" />
             </IconButton>
         </div>
     ),

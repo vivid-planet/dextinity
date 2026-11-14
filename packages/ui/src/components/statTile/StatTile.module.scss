@@ -1,0 +1,52 @@
+@use "../../theme/textStyles" as text-styles;
+
+.root {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--dextinity-stat-tile-gap);
+    min-inline-size: 0;
+    font-family: var(--dextinity-font-family-text);
+}
+
+.value {
+    display: flex;
+    align-items: baseline;
+    gap: var(--dextinity-space-1-5);
+}
+
+.number {
+    color: var(--dextinity-stat-tile-value-color);
+    font-family: var(--dextinity-font-family-display);
+    font-size: var(--dextinity-stat-tile-value-font-size);
+    font-weight: var(--dextinity-typography-display-font-weight);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    letter-spacing: var(--dextinity-typography-display-letter-spacing);
+}
+
+.unit {
+    color: var(--dextinity-stat-tile-unit-color);
+    font-size: var(--dextinity-stat-tile-unit-font-size);
+}
+
+.trend {
+    display: inline-flex;
+    align-self: center;
+    color: var(--dextinity-stat-tile-trend-color);
+
+    --dextinity-icon-size: var(--dextinity-stat-tile-trend-size);
+}
+
+.label {
+    color: var(--dextinity-stat-tile-label-color);
+    @include text-styles.label;
+}
+
+.context {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-space-2);
+    color: var(--dextinity-stat-tile-context-color);
+    font-size: var(--dextinity-stat-tile-context-font-size);
+}

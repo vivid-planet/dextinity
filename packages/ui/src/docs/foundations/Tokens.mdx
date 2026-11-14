@@ -1,0 +1,114 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import brandSource from "../../theme/_brand.scss?raw";
+import densitySource from "../../theme/_density.scss?raw";
+import layersSource from "../../theme/_layers.scss?raw";
+import layoutSource from "../../theme/_layout.scss?raw";
+import motionSource from "../../theme/_motion.scss?raw";
+import primitivesSource from "../../theme/_primitives.scss?raw";
+import semanticSource from "../../theme/_semantic.scss?raw";
+import typographySource from "../../theme/_typography.scss?raw";
+import { ComponentTokenBrowser } from "../../storybook/docs/foundations/ComponentTokenBrowser";
+import { DocsDemo } from "../../storybook/docs/foundations/DocsDemo";
+import { LayerTokenTable } from "../../storybook/docs/foundations/LayerTokenTable";
+import { NumberedList } from "../../storybook/docs/foundations/NumberedList";
+import { PrimitiveScales } from "../../storybook/docs/foundations/PrimitiveScales";
+
+<Meta title="Foundations/Tokens" />
+
+# Tokens
+
+The token layers from brand to component, with their current values. The value column follows the toolbar.
+
+## Layers
+
+Each layer references only the layers before it, so a new brand is a single CSS block.
+
+<DocsDemo>
+    <NumberedList
+        items={[
+            {
+                title: "Brand",
+                description:
+                    "Hues and chromas (primary, secondary, neutral tint, success, danger), fonts, display weight and tracking, control radius, radius factor. Set on the theme boundary through Theme's brand prop.",
+            },
+            {
+                title: "Primitives",
+                description: "11-stop OKLCH scales on a fixed lightness curve; the brand supplies only hue and chroma. Spacing and radii.",
+            },
+            {
+                title: "Semantic",
+                description:
+                    "Text, surfaces, lines, accent, status, material (glass, blur, grain, light field), and shadows — per color scheme: light, dark, high contrast.",
+            },
+            {
+                title: "Typography, motion, density & layout",
+                description:
+                    "Text styles and font weights; one easing with three durations; fixed metrics per density level: comfortable, standard, compact; page layout rhythm; the stacking order of overlays.",
+            },
+            {
+                title: "Components",
+                description:
+                    "Each component's own overridable decisions. They use only semantic, material, motion, and density tokens — never primitives.",
+            },
+        ]}
+    />
+</DocsDemo>
+
+## Brand
+
+<LayerTokenTable source={brandSource} />
+
+## Primitives
+
+Scales computed from the brand. Components never use these directly.
+
+<PrimitiveScales />
+
+<LayerTokenTable source={primitivesSource} />
+
+## Semantic
+
+<LayerTokenTable
+    source={semanticSource}
+    prefixes={[
+        "--dextinity-color-",
+        "--dextinity-gradient-",
+        "--dextinity-focus-",
+        "--dextinity-line-",
+        "--dextinity-indicator-",
+        "--dextinity-opacity-",
+    ]}
+/>
+
+### Material & shadows
+
+<LayerTokenTable source={semanticSource} prefixes={["--dextinity-material-", "--dextinity-shadow-"]} />
+
+## Typography
+
+<LayerTokenTable source={typographySource} />
+
+## Motion
+
+<LayerTokenTable source={motionSource} />
+
+## Density
+
+<LayerTokenTable source={densitySource} />
+
+## Layout
+
+<LayerTokenTable source={layoutSource} />
+
+## Layers
+
+The stacking order of overlays that render on top of the page.
+
+<LayerTokenTable source={layersSource} />
+
+## Components
+
+Every component's docs page lists its tokens; pick one here to browse them all in one place.
+
+<ComponentTokenBrowser />

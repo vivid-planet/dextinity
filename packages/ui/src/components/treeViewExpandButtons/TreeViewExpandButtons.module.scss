@@ -1,0 +1,11 @@
+.root {
+    display: inline-flex;
+    flex: none;
+    gap: var(--dextinity-tree-view-expand-buttons-gap);
+    align-items: center;
+}
+
+.expandAllButton,
+.collapseAllButton {
+    flex: none;
+}

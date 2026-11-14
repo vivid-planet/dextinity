@@ -1,3 +1,5 @@
+@use "../../theme/forcedColors" as forced-colors;
+
 .root {
     display: flex;
     align-items: center;
@@ -10,12 +12,16 @@
     border-radius: var(--dextinity-input-radius);
     background: var(--dextinity-input-state-default-background);
     color: var(--dextinity-input-state-default-foreground);
-    font-family: var(--dextinity-brand-font-family-sans);
+    font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-input-font-size);
     font-weight: var(--dextinity-input-font-weight);
     line-height: var(--dextinity-input-font-line-height);
-    letter-spacing: var(--dextinity-font-letter-spacing-normal);
     cursor: text;
+    transition:
+        border-color var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        box-shadow var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    --dextinity-icon-size: var(--dextinity-input-icon-size);
 
     --placeholder-color: var(--dextinity-input-state-default-foreground-placeholder);
 
@@ -31,52 +37,52 @@
         border-color: var(--dextinity-input-state-focus-border);
         background: var(--dextinity-input-state-focus-background);
         color: var(--dextinity-input-state-focus-foreground);
-        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
-        outline-offset: var(--dextinity-focus-ring-offset);
+        box-shadow: 0 0 0 var(--dextinity-focus-halo-width) var(--dextinity-input-state-focus-halo);
+
+        @include forced-colors.focus-ring;
 
         --placeholder-color: var(--dextinity-input-state-focus-foreground-placeholder);
-    }
-
-    &[data-loading] {
-        border-color: var(--dextinity-input-state-loading-border);
-        background: var(--dextinity-input-state-loading-background);
-        color: var(--dextinity-input-state-loading-foreground);
-
-        --placeholder-color: var(--dextinity-input-state-loading-foreground-placeholder);
     }
 
     &[data-readonly] {
         border-color: var(--dextinity-input-state-read-only-border);
         background: var(--dextinity-input-state-read-only-background);
-        color: var(--dextinity-input-state-read-only-foreground);
-
-        --placeholder-color: var(--dextinity-input-state-read-only-foreground-placeholder);
     }
 
     &[data-status="error"] {
         border-color: var(--dextinity-input-state-error-border);
+
+        &:has(> :focus) {
+            box-shadow: 0 0 0 var(--dextinity-focus-halo-width) var(--dextinity-input-state-error-halo);
+        }
     }
 
     &[data-status="success"] {
         border-color: var(--dextinity-input-state-success-border);
+
+        &:has(> :focus) {
+            box-shadow: 0 0 0 var(--dextinity-focus-halo-width) var(--dextinity-input-state-success-halo);
+        }
     }
 
     &[data-status="warning"] {
         border-color: var(--dextinity-input-state-warning-border);
+
+        &:has(> :focus) {
+            box-shadow: 0 0 0 var(--dextinity-focus-halo-width) var(--dextinity-input-state-warning-halo);
+        }
     }
 
     &[data-disabled] {
-        border-color: var(--dextinity-input-state-disabled-border);
-        background: var(--dextinity-input-state-disabled-background);
-        color: var(--dextinity-input-state-disabled-foreground);
+        opacity: var(--dextinity-input-state-disabled-opacity);
         cursor: not-allowed;
+    }
 
-        --placeholder-color: var(--dextinity-input-state-disabled-foreground-placeholder);
-
-        .startAdornment,
-        .endAdornment {
-            color: var(--dextinity-input-state-disabled-foreground);
-        }
+    // The surrounding `Field` draws the box, so the input and its adornments sit directly in it.
+    &[data-in-field] {
+        display: contents;
+        color: inherit;
+        font: inherit;
     }
 }
 
@@ -89,6 +95,7 @@
     color: inherit;
     font: inherit;
     letter-spacing: inherit;
+    caret-color: var(--dextinity-input-caret-color);
     outline: none;
     appearance: none;
 
@@ -114,7 +121,7 @@
     align-items: center;
     color: var(--dextinity-input-adornment-foreground);
 
-    > :is(svg, :global(.dextinityIcon)) {
+    > svg {
         inline-size: var(--dextinity-input-icon-size);
         block-size: var(--dextinity-input-icon-size);
     }

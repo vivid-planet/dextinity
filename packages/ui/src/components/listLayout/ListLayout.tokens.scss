@@ -1,0 +1,6 @@
+@mixin tokens {
+    // Space between the page header and the toolbar
+    --dextinity-list-layout-header-spacing: var(--dextinity-layout-header-spacing);
+    // Gap between the toolbar and the list; follows the density
+    --dextinity-list-layout-gap: calc(var(--dextinity-density-panel-padding) - 2px);
+}

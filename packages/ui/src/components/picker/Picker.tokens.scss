@@ -1,0 +1,15 @@
+// The frame (label, box, message) comes from the Field tokens.
+@mixin tokens {
+    // Color of the placeholder while nothing is picked
+    --dextinity-picker-placeholder-color: var(--dextinity-field-placeholder);
+    // Icon color of the open and clear buttons at the end of the field
+    --dextinity-picker-icon-color: var(--dextinity-color-text-subtle);
+    // Icon color of the open and clear buttons on hover
+    --dextinity-picker-icon-color-hover: var(--dextinity-color-text);
+    // Width and height of the open and clear buttons
+    --dextinity-picker-button-size: var(--dextinity-density-icon-button-size-xsmall);
+    // Corner radius of the open and clear buttons
+    --dextinity-picker-button-radius: var(--dextinity-radius-item);
+    // Fill of the open and clear buttons on hover
+    --dextinity-picker-button-background-hover: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+}

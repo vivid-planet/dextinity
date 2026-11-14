@@ -4,11 +4,10 @@
     gap: var(--dextinity-form-helper-text-gap-internal);
     margin: 0;
     color: var(--dextinity-form-helper-text-type-hint-foreground);
-    font-family: var(--dextinity-brand-font-family-sans);
+    font-family: var(--dextinity-font-family-text);
     font-size: var(--dextinity-form-helper-text-font-size);
     font-weight: var(--dextinity-form-helper-text-font-weight);
     line-height: var(--dextinity-form-helper-text-font-line-height);
-    letter-spacing: var(--dextinity-font-letter-spacing-normal);
 
     &[data-error] {
         color: var(--dextinity-form-helper-text-type-error-foreground);
@@ -19,7 +18,9 @@
     display: flex;
     flex-shrink: 0;
     align-items: center;
-    block-size: var(--dextinity-form-helper-text-font-line-height);
+    block-size: calc(var(--dextinity-form-helper-text-font-size) * var(--dextinity-form-helper-text-font-line-height));
+
+    --dextinity-icon-size: var(--dextinity-form-helper-text-icon-size);
 }
 
 .text {

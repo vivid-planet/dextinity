@@ -1,0 +1,44 @@
+@mixin tokens {
+    // Nearly opaque glass, so a bright page behind it does not shine through in dark mode; solid in high contrast
+    --dextinity-dialog-background: var(--dextinity-material-glass-overlay);
+    // Blur of the page behind the dialog's glass
+    --dextinity-dialog-blur: var(--dextinity-material-blur);
+    // Corner radius of the dialog
+    --dextinity-dialog-radius: var(--dextinity-radius-row);
+    // Edge and drop shadow of the dialog
+    --dextinity-dialog-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-material-edge), var(--dextinity-shadow-3);
+    // Inner padding of the dialog's header, body and footer
+    --dextinity-dialog-padding: 22px;
+    // Text color in the dialog
+    --dextinity-dialog-foreground: var(--dextinity-color-text);
+    // Width of a small dialog, e.g. a confirmation
+    --dextinity-dialog-width-small: 440px;
+    // Width of a default dialog
+    --dextinity-dialog-width-default: 640px;
+    // Width of a large dialog
+    --dextinity-dialog-width-large: 960px;
+    // Space between the dialog and the edge of the screen
+    --dextinity-dialog-viewport-padding: var(--dextinity-space-4);
+    // Scrim that dims the page behind the dialog
+    --dextinity-dialog-backdrop: oklch(0 0 0 / 0.34);
+
+    // Text size of the title
+    --dextinity-dialog-title-font-size: 16px;
+    // Weight of the title
+    --dextinity-dialog-title-font-weight: var(--dextinity-font-weight-semibold);
+    // Tracking of the title
+    --dextinity-dialog-title-letter-spacing: -0.01em;
+    // Text color of the description below the title
+    --dextinity-dialog-description-color: var(--dextinity-color-text-subtle);
+    // Text size of the description below the title
+    --dextinity-dialog-description-font-size: var(--dextinity-typography-body-size);
+    // Gap between the fields of a form in the dialog
+    --dextinity-dialog-body-gap: var(--dextinity-density-form-gap);
+    // Gap between the buttons in the footer
+    --dextinity-dialog-footer-gap: var(--dextinity-space-2);
+}
+
+@mixin high-contrast-tokens {
+    // Dark enough that only the dialog reads as active
+    --dextinity-dialog-backdrop: oklch(0 0 0 / 0.85);
+}

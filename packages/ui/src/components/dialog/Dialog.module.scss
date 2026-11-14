@@ -1,0 +1,122 @@
+@use "../../theme/forcedColors" as forced-colors;
+
+.backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: var(--dextinity-layer-dialog);
+    background: var(--dextinity-dialog-backdrop);
+    transition: opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    @include forced-colors.backdrop;
+
+    &[data-starting-style],
+    &[data-ending-style] {
+        opacity: 0;
+    }
+}
+
+.viewport {
+    position: fixed;
+    inset: 0;
+    z-index: var(--dextinity-layer-dialog);
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    padding: var(--dextinity-dialog-viewport-padding);
+    overflow-y: auto;
+}
+
+.root {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-4);
+    box-sizing: border-box;
+    inline-size: min(100%, var(--dextinity-dialog-width));
+    max-block-size: calc(100dvh - 2 * var(--dextinity-dialog-viewport-padding));
+    padding: var(--dextinity-dialog-padding);
+    border-radius: var(--dextinity-dialog-radius);
+    background: var(--dextinity-dialog-background);
+    box-shadow: var(--dextinity-dialog-shadow);
+    backdrop-filter: blur(var(--dextinity-dialog-blur)) saturate(var(--dextinity-material-saturation));
+    color: var(--dextinity-dialog-foreground);
+    font-family: var(--dextinity-font-family-text);
+    font-size: var(--dextinity-typography-body-size);
+    line-height: var(--dextinity-typography-body-line-height);
+    outline: none;
+    transition:
+        opacity var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing),
+        transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+
+    --dextinity-dialog-width: var(--dextinity-dialog-width-default);
+
+    &[data-size="small"] {
+        --dextinity-dialog-width: var(--dextinity-dialog-width-small);
+    }
+
+    &[data-size="large"] {
+        --dextinity-dialog-width: var(--dextinity-dialog-width-large);
+    }
+
+    &[data-starting-style],
+    &[data-ending-style] {
+        opacity: 0;
+        transform: scale(0.97) translateY(calc(var(--dextinity-motion-distance) * 0.5));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        &[data-starting-style],
+        &[data-ending-style] {
+            transform: none;
+        }
+    }
+
+    @include forced-colors.edge;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-1-5);
+    padding-inline-end: var(--dextinity-space-8);
+}
+
+.title {
+    margin: 0;
+    font-size: var(--dextinity-dialog-title-font-size);
+    font-weight: var(--dextinity-dialog-title-font-weight);
+    letter-spacing: var(--dextinity-dialog-title-letter-spacing);
+    line-height: var(--dextinity-typography-title-line-height);
+}
+
+.description {
+    margin: 0;
+    color: var(--dextinity-dialog-description-color);
+    font-size: var(--dextinity-dialog-description-font-size);
+}
+
+.closeButton {
+    position: absolute;
+    inset-block-start: calc(var(--dextinity-dialog-padding) - 6px);
+    inset-inline-end: calc(var(--dextinity-dialog-padding) - 8px);
+}
+
+.body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--dextinity-dialog-body-gap);
+    min-block-size: 0;
+    // Room for the focus rings of the fields, which the scroll container would clip
+    margin: calc(-1 * var(--dextinity-focus-ring-extent));
+    padding: var(--dextinity-focus-ring-extent);
+    overflow-y: auto;
+}
+
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--dextinity-dialog-footer-gap);
+    margin-block-start: var(--dextinity-space-1);
+}

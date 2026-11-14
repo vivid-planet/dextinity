@@ -1,0 +1,35 @@
+.title {
+    font-weight: 500;
+}
+
+.muted {
+    color: var(--dextinity-color-text-subtle);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--dextinity-space-3);
+}
+
+.bulkActionBar {
+    align-self: center;
+}
+
+.structure {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    align-items: start;
+}
+
+.structureLayout {
+    --dextinity-list-layout-header-spacing: 8px;
+    --dextinity-list-layout-gap: 8px;
+}
+
+.structureContent {
+    display: grid;
+    grid-template-rows: 180px auto;
+    gap: 8px;
+}

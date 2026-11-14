@@ -39,6 +39,8 @@ export interface FormHelperTextProps<IconSlot extends ElementType = "span", Text
     HTMLAttributes<HTMLElement>,
     "className"
 > {
+    /** The help text or validation message. */
+    children?: ReactNode;
     /**
      * Explains why the field's value is invalid, with an error icon.
      *
@@ -55,6 +57,7 @@ export interface FormHelperTextProps<IconSlot extends ElementType = "span", Text
 
 /**
  * Gives additional information about a form field, or the reason its value is invalid.
+ * `Field` already shows its own help and validation message; use `FormHelperText` below a control without a `Field`.
  */
 export const FormHelperText: <IconSlot extends ElementType = "span", Text extends ElementType = "span">(
     props: FormHelperTextProps<IconSlot, Text> & RefAttributes<HTMLElement>,
@@ -89,7 +92,7 @@ export const FormHelperText: <IconSlot extends ElementType = "span", Text extend
                 <>
                     {ownerState.error && (
                         <IconSlotElement {...iconProps}>
-                            <Icon name="error" />
+                            <Icon name="alert" />
                         </IconSlotElement>
                     )}
                     <TextSlot {...textProps}>{children}</TextSlot>

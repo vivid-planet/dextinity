@@ -1,0 +1,372 @@
+import { Combobox as BaseCombobox } from "@base-ui/react/combobox";
+import { clsx } from "clsx";
+import { type ForwardedRef, forwardRef, type ReactNode, type RefAttributes, useCallback, useState } from "react";
+
+import { useThemePortalContainer } from "../../utils/themePortalContainer";
+import { ControlFrame, type FrameControlProps, type PureControlProps, useControlState } from "../field/ControlFrame";
+import type { FieldOwnerState } from "../field/Field";
+import { FieldContextReset } from "../field/fieldContext";
+import { Icon } from "../icon/Icon";
+import { groupOptions, hasGroups, type OptionGroup } from "../select/optionGroups";
+import { defaultGetKey } from "../select/optionKey";
+import { Spinner } from "../spinner/Spinner";
+import styles from "./Combobox.module.scss";
+import { useAsyncOptions } from "./useAsyncOptions";
+
+/**
+ * The value of a `Combobox`: a list of options with `multiple`, otherwise one option or `null` for nothing chosen.
+ */
+export type ComboboxValue<Multiple extends boolean, Option> = Multiple extends true ? Option[] : Option | null;
+
+/**
+ * The resolved configuration that influences the component's appearance or behavior.
+ */
+export type ComboboxOwnerState = FieldOwnerState & {
+    multiple: boolean;
+};
+
+/**
+ * Texts of the combobox, for translation.
+ */
+export interface ComboboxLabels {
+    /** Shown while the options load. */
+    loading: string;
+    /** Shown when no option matches the input. */
+    noResults: string;
+    /** Shown when loading the options failed. */
+    error: string;
+    /** The option that loads the options again after an error. */
+    retry: string;
+    /** The option that creates a new option from the input. */
+    create: (query: string) => string;
+    /** Accessible name of a chip's remove button. */
+    remove: (optionLabel: string) => string;
+    /** Accessible name of the button that clears the choice. */
+    clear: string;
+    /** Accessible name of the button that opens the list of options. */
+    showOptions: string;
+}
+
+const defaultLabels: ComboboxLabels = {
+    loading: "Loading…",
+    noResults: "No results",
+    error: "The options couldn't be loaded.",
+    retry: "Retry",
+    create: (query) => `Create “${query}”`,
+    remove: (optionLabel) => `Remove ${optionLabel}`,
+    clear: "Clear",
+    showOptions: "Show options",
+};
+
+export interface ComboboxProps<Option, Multiple extends boolean = false> extends PureControlProps {
+    /** Field name. Describes the data, not the UI. */
+    name: string;
+    /** The chosen option, a list of options with `multiple`, or `null` when nothing is chosen. Always controlled. */
+    value: ComboboxValue<Multiple, Option>;
+    /** Called with the new selection; set `value` from it. */
+    onChange: (value: ComboboxValue<Multiple, Option>) => void;
+    /**
+     * Loads the options matching the text typed into the field, e.g. from an API. Called with an empty query when the menu opens. Abort the
+     * request on `signal`: a newer query replaces it.
+     */
+    loadOptions: (query: string, context: { signal: AbortSignal }) => Promise<Option[]>;
+    /** The option as plain text, shown in the field, the chips, and by default in the menu. */
+    getOptionLabel: (option: Option) => string;
+    /**
+     * A unique string for an option, to tell whether it is chosen and to submit it with a native form.
+     *
+     * @defaultValue the option's `id` for objects that have one, otherwise the option itself as a string
+     */
+    getOptionKey?: (option: Option) => string;
+    /** The option's content in the menu, e.g. with an image or a second line. Defaults to the label. */
+    renderOption?: (option: Option) => ReactNode;
+    /** Shows an option in the menu without allowing to choose it. */
+    isOptionDisabled?: (option: Option) => boolean;
+    /** The header an option is listed under in the menu. Options with the same group are shown together, in the order the groups first appear. */
+    getOptionGroup?: (option: Option) => string | undefined;
+    /**
+     * Allows choosing several options, shown as chips in the field.
+     *
+     * @defaultValue `false`
+     */
+    multiple?: Multiple;
+    /**
+     * Milliseconds to wait after typing before loading the options.
+     *
+     * @defaultValue `300`
+     */
+    debounce?: number;
+    /**
+     * Offers to create an option from the typed text when no option has that label. Return the new option, e.g. after saving it; it gets
+     * chosen. A rejected promise leaves the value unchanged, so report the error, e.g. in a toast.
+     */
+    onCreate?: (query: string) => Option | Promise<Option>;
+    /** Shown while nothing is chosen. */
+    placeholder?: string;
+    /** Texts of the menu's states, the chips, and the clear button, for translation. */
+    labels?: Partial<ComboboxLabels>;
+}
+
+type OptionEntry<Option> = { kind: "option"; key: string; option: Option };
+type Entry<Option> = OptionEntry<Option> | { kind: "create"; key: string; query: string } | { kind: "retry"; key: string };
+
+function toList<Value>(value: Value | Value[] | null): Value[] {
+    if (value == null) {
+        return [];
+    }
+    return Array.isArray(value) ? value : [value];
+}
+
+function defaultGetOptionKey(option: unknown): string {
+    if (typeof option === "object" && option != null && "id" in option && (typeof option.id === "string" || typeof option.id === "number")) {
+        return String(option.id);
+    }
+    return defaultGetKey(option);
+}
+
+function inputProps(control: FrameControlProps) {
+    return {
+        id: control.id,
+        "aria-label": control["aria-label"],
+        "aria-labelledby": control["aria-labelledby"],
+        "aria-describedby": control["aria-describedby"],
+        "aria-invalid": control["aria-invalid"],
+        "aria-required": control["aria-required"],
+        "aria-busy": control["aria-busy"],
+    };
+}
+
+const fieldBoxSelector = ".dextinityField__box";
+
+/**
+ * Choosing from options loaded while typing, e.g. from an API, one or several, with an optional way to create a missing option.
+ */
+export const Combobox = forwardRef(function Combobox<Option, Multiple extends boolean = false>(
+    {
+        disabled: disabledProp,
+        readOnly: readOnlyProp,
+        name,
+        value,
+        onChange,
+        loadOptions,
+        getOptionLabel,
+        getOptionKey = defaultGetOptionKey,
+        renderOption,
+        isOptionDisabled,
+        getOptionGroup,
+        multiple,
+        debounce = 300,
+        onCreate,
+        placeholder,
+        labels: labelsProp,
+        id,
+        className,
+        style,
+        ...ariaProps
+    }: ComboboxProps<Option, Multiple>,
+    ref: ForwardedRef<HTMLInputElement>,
+) {
+    const labels = { ...defaultLabels, ...labelsProp };
+    const { disabled, readOnly, required } = useControlState(disabledProp, readOnlyProp);
+    const isMultiple = multiple === true;
+    const [open, setOpen] = useState(false);
+    const [inputValue, setInputValue] = useState("");
+    const [creating, setCreating] = useState(false);
+    const { anchor, anchorRef, container } = useThemePortalContainer<HTMLInputElement>();
+    const fieldBox = anchor?.closest<HTMLElement>(fieldBoxSelector) ?? null;
+    const setInputRef = useCallback(
+        (element: HTMLInputElement | null) => {
+            anchorRef(element);
+            if (typeof ref === "function") {
+                ref(element);
+            } else if (ref) {
+                ref.current = element;
+            }
+        },
+        [anchorRef, ref],
+    );
+
+    const toEntry = (option: Option): OptionEntry<Option> => ({ kind: "option", key: `option:${getOptionKey(option)}`, option });
+    const selectedEntries = toList(value as Option | Option[] | null).map(toEntry);
+
+    // In a single combobox, the input shows the chosen option's label until the user types something else
+    const showsChosenLabel = !isMultiple && selectedEntries.length > 0 && inputValue === getOptionLabel(selectedEntries[0].option);
+    const query = showsChosenLabel ? "" : inputValue.trim();
+    const { status, options, retry } = useAsyncOptions({ loadOptions, query, enabled: open, debounce });
+
+    const optionEntries: Entry<Option>[] = status === "error" ? [{ kind: "retry", key: "retry" }] : options.map(toEntry);
+    const canCreate =
+        onCreate != null &&
+        query !== "" &&
+        status === "success" &&
+        !options.some((option) => getOptionLabel(option).toLocaleLowerCase() === query.toLocaleLowerCase());
+    const entries: Entry<Option>[] = canCreate ? [...optionEntries, { kind: "create", key: `create:${query}`, query }] : optionEntries;
+    const entryGroup = (entry: Entry<Option>) => (entry.kind === "option" ? getOptionGroup?.(entry.option) : undefined);
+    const grouped = getOptionGroup != null && hasGroups(entries, entryGroup);
+
+    const emit = (next: Option[]) => {
+        onChange((isMultiple ? next : (next[0] ?? null)) as ComboboxValue<Multiple, Option>);
+    };
+
+    const create = async (createQuery: string, chosen: Option[]) => {
+        if (onCreate == null) {
+            return;
+        }
+        setCreating(true);
+        try {
+            const created = await onCreate(createQuery);
+            emit([...chosen, created]);
+        } catch {
+            // The application reports the error; the value stays as it was
+        } finally {
+            setCreating(false);
+        }
+    };
+
+    const handleValueChange = (next: Entry<Option> | Entry<Option>[] | null, eventDetails: { cancel: () => void }) => {
+        const nextEntries = toList(next);
+        if (nextEntries.some((entry) => entry.kind === "retry")) {
+            // Keeps the value and the open menu, which shows the options once they are loaded
+            eventDetails.cancel();
+            retry();
+            return;
+        }
+        const chosen = nextEntries.flatMap((entry) => (entry.kind === "option" ? [entry.option] : []));
+        const createEntry = nextEntries.find((entry) => entry.kind === "create");
+        if (createEntry != null) {
+            void create(createEntry.query, isMultiple ? chosen : []);
+            return;
+        }
+        emit(chosen);
+    };
+
+    const entryLabel = (entry: Entry<Option>) =>
+        entry.kind === "option" ? getOptionLabel(entry.option) : entry.kind === "create" ? entry.query : labels.retry;
+    const hasValue = selectedEntries.length > 0;
+    const showsClear = !isMultiple && hasValue && !required && !disabled && !readOnly;
+
+    const statusContent =
+        status === "loading" ? (
+            <>
+                <Spinner size="small" />
+                {labels.loading}
+            </>
+        ) : status === "error" ? (
+            labels.error
+        ) : entries.length === 0 ? (
+            labels.noResults
+        ) : null;
+
+    const renderEntry = (entry: Entry<Option>) =>
+        entry.kind === "retry" ? (
+            <BaseCombobox.Item key={entry.key} value={entry} className={styles.item}>
+                <span className={styles.itemIcon}>
+                    <Icon name="refresh" />
+                </span>
+                <span className={styles.itemText}>{labels.retry}</span>
+            </BaseCombobox.Item>
+        ) : entry.kind === "create" ? (
+            <BaseCombobox.Item key={entry.key} value={entry} className={styles.item}>
+                <span className={styles.itemIcon}>
+                    <Icon name="plus" />
+                </span>
+                <span className={styles.itemText}>{labels.create(entry.query)}</span>
+            </BaseCombobox.Item>
+        ) : (
+            <BaseCombobox.Item key={entry.key} value={entry} disabled={isOptionDisabled?.(entry.option)} className={styles.item}>
+                <span className={styles.itemText}>{renderOption != null ? renderOption(entry.option) : getOptionLabel(entry.option)}</span>
+                <BaseCombobox.ItemIndicator className={styles.itemIndicator}>
+                    <Icon name="check" />
+                </BaseCombobox.ItemIndicator>
+            </BaseCombobox.Item>
+        );
+
+    return (
+        <ControlFrame
+            controlName="Combobox"
+            {...ariaProps}
+            id={id}
+            disabled={disabledProp}
+            readOnly={readOnlyProp}
+            pending={creating}
+            className={className}
+            style={style}
+        >
+            {(control) => (
+                <BaseCombobox.Root
+                    items={grouped ? groupOptions(entries, entryGroup) : entries}
+                    filter={null}
+                    multiple={isMultiple}
+                    value={isMultiple ? selectedEntries : (selectedEntries[0] ?? null)}
+                    onValueChange={handleValueChange}
+                    open={open}
+                    onOpenChange={setOpen}
+                    onInputValueChange={setInputValue}
+                    itemToStringLabel={entryLabel}
+                    itemToStringValue={(entry: Entry<Option>) => entry.key}
+                    isItemEqualToValue={(entry: Entry<Option>, selected: Entry<Option>) => entry.key === selected.key}
+                    name={name}
+                    disabled={disabled}
+                    readOnly={readOnly}
+                    required={required}
+                    autoHighlight
+                >
+                    {isMultiple ? (
+                        <BaseCombobox.Chips className={styles.chips}>
+                            {selectedEntries.map((entry) => {
+                                const optionLabel = entryLabel(entry);
+                                return (
+                                    <BaseCombobox.Chip key={entry.key} className={styles.chip}>
+                                        {optionLabel}
+                                        <BaseCombobox.ChipRemove className={styles.chipRemove} aria-label={labels.remove(optionLabel)}>
+                                            <Icon name="close" />
+                                        </BaseCombobox.ChipRemove>
+                                    </BaseCombobox.Chip>
+                                );
+                            })}
+                            <BaseCombobox.Input
+                                {...inputProps(control)}
+                                ref={setInputRef}
+                                className={styles.input}
+                                placeholder={hasValue ? undefined : placeholder}
+                            />
+                        </BaseCombobox.Chips>
+                    ) : (
+                        <BaseCombobox.Input {...inputProps(control)} ref={setInputRef} className={styles.input} placeholder={placeholder} />
+                    )}
+                    {showsClear && (
+                        <BaseCombobox.Clear className={styles.iconButton} aria-label={labels.clear}>
+                            <Icon name="close" />
+                        </BaseCombobox.Clear>
+                    )}
+                    <BaseCombobox.Trigger className={clsx(styles.iconButton, styles.chevron)} tabIndex={-1} aria-label={labels.showOptions}>
+                        <Icon name="chevron-down" />
+                    </BaseCombobox.Trigger>
+                    <BaseCombobox.Portal container={container}>
+                        <FieldContextReset>
+                            <BaseCombobox.Positioner className={styles.positioner} anchor={fieldBox} sideOffset={6} align="start">
+                                <BaseCombobox.Popup className={styles.popup} aria-busy={status === "loading" ? true : undefined}>
+                                    <BaseCombobox.Status className={styles.status}>{statusContent}</BaseCombobox.Status>
+                                    <BaseCombobox.List className={styles.list}>
+                                        {grouped
+                                            ? (group: OptionGroup<Entry<Option>>) => (
+                                                  <BaseCombobox.Group key={group.label ?? ""} items={group.items} className={styles.group}>
+                                                      {group.label != null && (
+                                                          <BaseCombobox.GroupLabel className={styles.groupLabel}>
+                                                              {group.label}
+                                                          </BaseCombobox.GroupLabel>
+                                                      )}
+                                                      <BaseCombobox.Collection>{renderEntry}</BaseCombobox.Collection>
+                                                  </BaseCombobox.Group>
+                                              )
+                                            : renderEntry}
+                                    </BaseCombobox.List>
+                                </BaseCombobox.Popup>
+                            </BaseCombobox.Positioner>
+                        </FieldContextReset>
+                    </BaseCombobox.Portal>
+                </BaseCombobox.Root>
+            )}
+        </ControlFrame>
+    );
+}) as <Option, Multiple extends boolean = false>(props: ComboboxProps<Option, Multiple> & RefAttributes<HTMLInputElement>) => ReactNode;

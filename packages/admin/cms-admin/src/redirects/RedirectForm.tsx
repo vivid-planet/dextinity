@@ -117,7 +117,7 @@ export const RedirectForm = ({ mode, id, linkBlock, scope }: Props): JSX.Element
             value: "temporary",
             label: intl.formatMessage({
                 id: "dextinity.pages.redirects.redirect.redirectType.temporary",
-                defaultMessage: "Standard",
+                defaultMessage: "Standard (Temporary)",
             }),
         },
         {

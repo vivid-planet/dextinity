@@ -253,7 +253,7 @@ export const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
                         finalFocus={timeInputRef}
                         labelledBy={clsx(nameId, timeLabelId)}
                     />
-                    <input type="hidden" name={name} value={current == null ? "" : joinDateTime(current.date, current.time)} />
+                    <input type="hidden" name={name} value={current == null ? "" : (value ?? "")} />
                     {clearable && editable && current != null && (
                         <button
                             type="button"

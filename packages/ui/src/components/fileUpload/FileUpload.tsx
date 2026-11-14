@@ -324,7 +324,14 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
         updatePending(entry.key, null);
     };
 
+    const editable = !disabled && !readOnly;
+    const activeCount = value.length + pending.filter((entry) => entry.status === "uploading").length;
+    const full = multiple ? maxFiles != null && activeCount >= maxFiles : activeCount > 0;
+
     const retry = (entry: PendingFile) => {
+        if (!editable || full) {
+            return;
+        }
         updatePending(entry.key, { status: "uploading", progress: 0, error: undefined, controller: upload(entry.file, entry.key) });
     };
 
@@ -334,9 +341,6 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
         onChange(next);
     };
 
-    const editable = !disabled && !readOnly;
-    const activeCount = value.length + pending.filter((entry) => entry.status === "uploading").length;
-    const full = multiple ? maxFiles != null && activeCount >= maxFiles : activeCount > 0;
     const showsDropzone = !readOnly && !full;
 
     const filesProps = resolveSlotProps<FileUploadOwnerState, "ul", "ul">({
@@ -435,7 +439,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
                                 )}
                             </span>
                             <span className={styles.actions}>
-                                {entry.status === "failed" && !disabled && (
+                                {entry.status === "failed" && editable && !full && (
                                     <IconButton variant="text" color="secondary" size="small" aria-label={labels.retry} onClick={() => retry(entry)}>
                                         <Icon name="refresh" />
                                     </IconButton>

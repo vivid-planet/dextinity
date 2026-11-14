@@ -9,6 +9,19 @@ import { DateTimePicker } from "../DateTimePicker";
 afterEach(cleanup);
 
 describe("DatePicker", () => {
+    it("submits the date and time it got, with seconds, until they change", () => {
+        const { container } = render(
+            <Field label="Publish at">
+                <DateTimePicker name="publishAt" value="2026-11-06T08:30:45.123Z" onChange={vi.fn()} />
+            </Field>,
+        );
+
+        expect(container.querySelector<HTMLInputElement>("input[type='hidden']")).toMatchObject({
+            name: "publishAt",
+            value: "2026-11-06T08:30:45.123Z",
+        });
+    });
+
     it("shows the day in the locale and submits it as YYYY-MM-DD", () => {
         const { container } = render(
             <Field label="Published on">

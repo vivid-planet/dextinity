@@ -778,7 +778,7 @@ export const TipTapEditor = ({
     );
 };
 
-type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipTapRichTextBlockState, TipTapRichTextBlockInput> &
+export type TipTapRichTextBlockInterface = BlockInterface<TipTapRichTextBlockData, TipTapRichTextBlockState, TipTapRichTextBlockInput> &
     ReadOnlyBlockRenderInterface<TipTapRichTextBlockState>;
 
 /**

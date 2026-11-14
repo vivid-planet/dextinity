@@ -26,7 +26,7 @@ export interface ListLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
     header: ReactNode;
     /** Search and filters above the list, e.g. a `FilterBar`. */
     toolbar?: ReactNode;
-    /** The list, e.g. a table with its selection, sorting, row menu, and paging. A row opens the edit page. */
+    /** The list, e.g. a `DataGrid` with its selection, sorting, row menu, and paging. A row opens the edit page. */
     children: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;

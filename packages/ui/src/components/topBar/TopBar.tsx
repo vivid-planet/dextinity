@@ -11,19 +11,24 @@ import styles from "./TopBar.module.scss";
 export interface TopBarLabels {
     /** The search trigger's text and accessible name. */
     search: string;
+    /** The AI assistant toggle. */
+    ai: string;
     /** The menu button that opens the navigation on narrow windows. */
     menu: string;
 }
 
 const defaultLabels: TopBarLabels = {
     search: "Search, jump, create …",
+    ai: "AI assistant",
     menu: "Open navigation",
 };
 
 /**
  * The resolved configuration that influences the component's appearance or behavior.
  */
-export type TopBarOwnerState = Record<string, never>;
+export type TopBarOwnerState = {
+    aiOpen: boolean;
+};
 
 export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "children" | "title"> {
     /** Opens the command palette; shows the search trigger at the start of the bar. */
@@ -37,6 +42,14 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
     searchShortcut?: string;
     /** The scope picker, usually a `ScopeSwitcher`. The scope is global, so it lives only here. */
     scope?: ReactNode;
+    /**
+     * Whether the AI assistant is open.
+     *
+     * @defaultValue `false`
+     */
+    aiOpen?: boolean;
+    /** Shows the AI assistant toggle. */
+    onAiOpenChange?: (open: boolean) => void;
     /**
      * The app's own controls, before the scope, e.g. a popover with the status of the site's builds. Keep them few
      * and compact, e.g. icon buttons.
@@ -53,7 +66,7 @@ export interface TopBarProps extends Omit<HTMLAttributes<HTMLElement>, "classNam
 }
 
 /**
- * The glass bar above the content: search, the app's own actions, scope, and user menu. It looks the same on every page; a page's own
+ * The glass bar above the content: search, the app's own actions, scope, AI assistant, and user menu. It looks the same on every page; a page's own
  * back and actions belong in its `PageHeader`. The app name never appears here, only in the navigation.
  */
 export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
@@ -61,6 +74,8 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
         onSearchClick,
         searchShortcut = "mod+k",
         scope,
+        aiOpen = false,
+        onAiOpenChange,
         browseActions,
         userMenu,
         onMenuClick: onMenuClickProp,
@@ -72,11 +87,12 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
 ) {
     const shell = useAppShellContext();
     const labels = { ...defaultLabels, ...labelsProp };
+    const ownerState: TopBarOwnerState = { aiOpen };
     const onMenuClick = onMenuClickProp ?? shell?.onNavDrawerOpen;
     const searchKeyShortcuts = useAriaKeyShortcuts(searchShortcut);
 
     return (
-        <header {...restProps} ref={ref} className={clsx(styles.root, className)}>
+        <header {...restProps} ref={ref} data-aiopen={ownerState.aiOpen ? "" : undefined} className={clsx(styles.root, className)}>
             {onMenuClick != null && (
                 <IconButton variant="text" color="secondary" aria-label={labels.menu} onClick={onMenuClick} className={styles.menuButton}>
                     <Icon name="menu" />
@@ -99,6 +115,20 @@ export const TopBar = forwardRef<HTMLElement, TopBarProps>(function TopBar(
             <div className={styles.actions}>
                 {browseActions}
                 {scope}
+                {onAiOpenChange != null && (
+                    <button
+                        type="button"
+                        role="switch"
+                        aria-checked={ownerState.aiOpen}
+                        aria-label={labels.ai}
+                        onClick={() => onAiOpenChange(!ownerState.aiOpen)}
+                        className={styles.aiToggle}
+                    >
+                        <Icon name="magic-wand" className={styles.aiIcon} />
+                        <span className={styles.aiLabel}>{labels.ai}</span>
+                        <span className={styles.aiTrack} />
+                    </button>
+                )}
                 {userMenu}
             </div>
         </header>

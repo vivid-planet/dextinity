@@ -17,10 +17,13 @@ type AppShellLayout = "wide" | "medium" | "narrow";
 export interface AppShellLabels {
     /** Accessible name of the navigation drawer on narrow windows. */
     navigation: string;
+    /** Accessible name of the AI assistant sheet on narrow windows. */
+    ai: string;
 }
 
 const defaultLabels: AppShellLabels = {
     navigation: "Navigation",
+    ai: "AI assistant",
 };
 
 /**
@@ -30,6 +33,7 @@ export type AppShellOwnerState = {
     /** Follows the window width: `wide` from 1280px, `medium` from 768px, `narrow` below. */
     layout: AppShellLayout;
     navCollapsed: boolean;
+    aiOpen: boolean;
 };
 
 export interface AppShellSlotProps {
@@ -46,11 +50,21 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
     topBar: ReactNode;
     /** The page: page header, then panels. */
     children: ReactNode;
+    /** The AI assistant, usually an `AIPanel`, next to the content. */
+    aiPanel?: ReactNode;
+    /**
+     * Whether the AI assistant is open; it pushes the content aside on wide windows and lies over it below.
+     *
+     * @defaultValue `false`
+     */
+    aiOpen?: boolean;
+    /** Called to toggle the AI assistant with ⌘J / Ctrl+J, or to close its sheet on narrow windows. */
+    onAiOpenChange?: (open: boolean) => void;
     /** Whether the navigation shows only icons. A user setting; on medium windows the navigation is always collapsed. */
     navCollapsed: boolean;
     /** Called to collapse or expand the navigation, with its footer button or ⌘\ / Ctrl+\. */
     onNavCollapsedChange: (collapsed: boolean) => void;
-    /** Leaves out the shortcut ⌘\ / Ctrl+\, e.g. when the app handles it itself. */
+    /** Leaves out the shortcuts ⌘\ / Ctrl+\ and ⌘J / Ctrl+J, e.g. when the app handles them itself. */
     disableShortcuts?: boolean;
     /** The built-in texts. */
     labels?: Partial<AppShellLabels>;
@@ -61,22 +75,40 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
 }
 
 /**
- * The frame of every admin app: navigation, top bar, and content, as glass panels over the ambient light field. It stays in place
- * when the page changes and adapts to the window width: the navigation collapses to icons, then moves into a drawer.
+ * The frame of every admin app: navigation, top bar, content, and the AI assistant, as glass panels over the ambient light field. It
+ * stays in place when the page changes and adapts to the window width: the navigation collapses to icons, then moves into a drawer;
+ * the AI assistant lies over the content, then opens as a sheet from the bottom.
  */
 export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppShell(
-    { nav, topBar, children, navCollapsed, onNavCollapsedChange, disableShortcuts = false, labels: labelsProp, className, slotProps, ...restProps },
+    {
+        nav,
+        topBar,
+        children,
+        aiPanel,
+        aiOpen = false,
+        onAiOpenChange,
+        navCollapsed,
+        onNavCollapsedChange,
+        disableShortcuts = false,
+        labels: labelsProp,
+        className,
+        slotProps,
+        ...restProps
+    },
     ref,
 ) {
     const labels = { ...defaultLabels, ...labelsProp };
     const narrow = useMediaQuery(narrowQuery);
     const medium = useMediaQuery(mediumQuery);
     const layout: AppShellLayout = narrow ? "narrow" : medium ? "medium" : "wide";
-    const ownerState: AppShellOwnerState = { layout, navCollapsed };
+    const ownerState: AppShellOwnerState = { layout, navCollapsed, aiOpen: aiOpen && aiPanel != null };
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
     const { anchorRef, container } = useThemePortalContainer<HTMLSpanElement>();
 
     useKeyboardShortcut("mod+\\", () => onNavCollapsedChange(!navCollapsed), { enabled: !disableShortcuts && layout === "wide" });
+    useKeyboardShortcut("mod+j", () => onAiOpenChange?.(!aiOpen), {
+        enabled: !disableShortcuts && aiPanel != null && onAiOpenChange != null,
+    });
 
     const columnContext: AppShellContextValue = {
         navCollapsed: navCollapsed || layout === "medium",
@@ -100,6 +132,7 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
             ref={ref}
             data-layout={ownerState.layout}
             data-navcollapsed={ownerState.navCollapsed ? "" : undefined}
+            data-aiopen={ownerState.aiOpen ? "" : undefined}
             className={clsx(styles.root, className)}
         >
             <span ref={anchorRef} hidden />
@@ -128,6 +161,19 @@ export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppSh
                     <div className={styles.content}>{children}</div>
                 </main>
             </AppShellContext.Provider>
+            {aiPanel != null &&
+                (layout === "narrow" ? (
+                    <BaseDialog.Root open={ownerState.aiOpen} onOpenChange={(nextOpen) => onAiOpenChange?.(nextOpen)}>
+                        <BaseDialog.Portal container={container}>
+                            <BaseDialog.Backdrop className={styles.backdrop} />
+                            <BaseDialog.Popup aria-label={labels.ai} className={styles.aiSheet}>
+                                {aiPanel}
+                            </BaseDialog.Popup>
+                        </BaseDialog.Portal>
+                    </BaseDialog.Root>
+                ) : (
+                    ownerState.aiOpen && <div className={styles.ai}>{aiPanel}</div>
+                ))}
             <div className={styles.grain} aria-hidden />
         </div>
     );

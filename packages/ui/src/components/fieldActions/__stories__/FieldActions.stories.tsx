@@ -25,6 +25,10 @@ function MetaTitleField(props: FieldActionsProps) {
     );
 }
 
+function suggest(text: string) {
+    return () => new Promise<string>((resolve) => setTimeout(() => resolve(text), 600));
+}
+
 const translationFailedMessage = "Translation failed. Try again.";
 
 /** Shows a failed translation in the field's validation message until the next translation or input. */
@@ -47,6 +51,10 @@ function AltTextField(props: FieldActionsProps) {
                     onTranslateError={(error) => {
                         props.onTranslateError?.(error);
                         setTranslationFailed(true);
+                    }}
+                    onAiAccept={(suggestion) => {
+                        props.onAiAccept?.(suggestion);
+                        setValue(suggestion);
                     }}
                     onTranslateAccept={(translation) => {
                         props.onTranslateAccept?.(translation);
@@ -105,9 +113,13 @@ const meta = {
     render: (args) => <AltTextField {...args} />,
     args: {
         translate: true,
+        aiAssist: true,
         targetLocales: ["en", "fr"],
         onTranslate: fn(),
         onTranslateError: fn(),
+        onAiSuggest: fn(suggest("Three colleagues discuss a design draft at a bright office table.")),
+        onAiAccept: fn(),
+        onAiError: fn(),
     },
     argTypes: {
         labels: { control: false },
@@ -120,17 +132,54 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Translate sits at the label and becomes fully opaque on hover or focus. Pass the actions to the field:
- * `<Field label="Alt text" actions={<FieldActions translate … />}><Textarea … /></Field>`.
+ * Translate and AI sit at the label and become fully opaque on hover or focus. While the suggestion loads, the field shows a
+ * spinner; the suggestion then appears below the field to accept or discard. Pass the actions to the field:
+ * `<Field label="Alt text" actions={<FieldActions translate aiAssist … />}><Textarea … /></Field>`.
  *
  * **Rules**
- * - Offer translation only for fields with content per language, not at every field.
+ * - A person accepts a suggestion; it is never applied automatically.
+ * - Offer the actions only where they make sense (text per language, alt text, SEO), not at every field.
  * - Translations are created unpublished.
  */
 export const Default: Story = {
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Translate" }));
         await waitFor(() => expect(args.onTranslate).toHaveBeenCalledWith(["en", "fr"]));
+
+        await userEvent.click(canvas.getByRole("button", { name: "Improve with AI" }));
+        await expect(canvas.getByRole("textbox")).toHaveAttribute("aria-busy", "true");
+        const accept = await canvas.findByRole("button", { name: "Accept" });
+        await waitFor(() => expect(canvas.getByRole("group", { name: "AI suggestion" })).toHaveFocus());
+        await userEvent.click(accept);
+        await waitFor(() => expect(args.onAiAccept).toHaveBeenCalledWith("Three colleagues discuss a design draft at a bright office table."));
+        await expect(canvas.getByRole("textbox")).toHaveValue("Three colleagues discuss a design draft at a bright office table.");
+        await expect(canvas.queryByRole("group", { name: "AI suggestion" })).toBeNull();
+        await expect(canvas.getByRole("textbox")).toHaveFocus();
+    },
+};
+
+export const TranslateOnly: Story = {
+    args: {
+        aiAssist: false,
+    },
+};
+
+export const AiOnly: Story = {
+    args: {
+        translate: false,
+    },
+};
+
+/**
+ * Discarding removes the suggestion and keeps the value. Accepting or discarding returns focus to the field.
+ */
+export const Discard: Story = {
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Improve with AI" }));
+        await userEvent.click(await canvas.findByRole("button", { name: "Discard" }));
+        await expect(args.onAiAccept).not.toHaveBeenCalled();
+        await expect(canvas.getByRole("textbox")).toHaveFocus();
+        await expect(canvas.getByRole("textbox")).toHaveValue("Three people at a table in the office.");
     },
 };
 
@@ -170,6 +219,21 @@ export const TranslationFails: Story = {
 };
 
 /**
+ * When `onAiSuggest` fails, the loading state ends and `onAiError` receives the error.
+ */
+export const SuggestionFails: Story = {
+    args: {
+        onAiSuggest: fn(() => Promise.reject(new globalThis.Error("Service unavailable"))),
+    },
+    play: async ({ args, canvas }) => {
+        await userEvent.click(canvas.getByRole("button", { name: "Improve with AI" }));
+        await waitFor(() => expect(args.onAiError).toHaveBeenCalled());
+        await expect(canvas.getByRole("textbox")).not.toHaveAttribute("aria-busy");
+        await expect(canvas.getByRole("button", { name: "Improve with AI" })).toHaveFocus();
+    },
+};
+
+/**
  * The actions work on any field: here an input with a counter.
  */
 export const OnInput: Story = {
@@ -185,7 +249,7 @@ export const OnInput: Story = {
  * translation service. Return a promise from `onTranslate` to show the field as loading until the translation is set.
  */
 export const TranslateInPlace: Story = {
-    args: { targetLocales: undefined },
+    args: { aiAssist: false, targetLocales: undefined },
     render: (args) => <TranslatedInPlaceField {...args} />,
     play: async ({ args, canvas }) => {
         await userEvent.click(canvas.getByRole("button", { name: "Translate" }));
@@ -197,12 +261,12 @@ export const TranslateInPlace: Story = {
 };
 
 /**
- * With `onTranslateSuggest`, the translation is offered to accept or discard, e.g. for cms-admin's content translation service with
- * `showApplyTranslationDialog`. A person accepts the translation; it is never applied automatically. Accepting or discarding returns
- * focus to the field.
+ * With `onTranslateSuggest`, the translation is offered to accept or discard, like an AI suggestion, e.g. for cms-admin's content
+ * translation service with `showApplyTranslationDialog`.
  */
 export const ReviewTranslation: Story = {
     args: {
+        aiAssist: false,
         targetLocales: undefined,
         onTranslateSuggest: fn(() => translateToGerman("Three people at a table in the office.")),
         onTranslateAccept: fn(),
@@ -215,26 +279,5 @@ export const ReviewTranslation: Story = {
         await userEvent.click(canvas.getByRole("button", { name: "Accept" }));
         await waitFor(() => expect(args.onTranslateAccept).toHaveBeenCalledWith("Drei Personen an einem Tisch im Büro."));
         await expect(canvas.getByRole("textbox")).toHaveValue("Drei Personen an einem Tisch im Büro.");
-        await expect(canvas.getByRole("textbox")).toHaveFocus();
-    },
-};
-
-/**
- * Discarding removes the translation and keeps the value.
- */
-export const DiscardTranslation: Story = {
-    args: {
-        targetLocales: undefined,
-        onTranslateSuggest: fn(() => translateToGerman("Three people at a table in the office.")),
-        onTranslateAccept: fn(),
-    },
-    play: async ({ args, canvas }) => {
-        await userEvent.click(canvas.getByRole("button", { name: "Translate" }));
-        await waitFor(() => expect(canvas.getByRole("group", { name: "Translation" })).toHaveFocus());
-        await userEvent.click(canvas.getByRole("button", { name: "Discard" }));
-        await expect(args.onTranslateAccept).not.toHaveBeenCalled();
-        await expect(canvas.queryByRole("group", { name: "Translation" })).toBeNull();
-        await expect(canvas.getByRole("textbox")).toHaveFocus();
-        await expect(canvas.getByRole("textbox")).toHaveValue("Three people at a table in the office.");
     },
 };

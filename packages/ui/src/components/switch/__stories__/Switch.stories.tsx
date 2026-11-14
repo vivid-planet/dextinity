@@ -135,7 +135,7 @@ export const Small: Story = {
  * Without a visible label, e.g. in a table cell or a toolbar, `aria-label` names the switch.
  */
 export const WithoutLabel: Story = {
-    args: { children: undefined, "aria-label": "Hide in menu" },
+    args: { children: undefined, "aria-label": "AI assistant" },
 };
 
 /**

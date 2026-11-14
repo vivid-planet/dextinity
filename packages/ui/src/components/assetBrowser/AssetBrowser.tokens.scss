@@ -1,0 +1,88 @@
+@mixin tokens {
+    // Height of the browser
+    --dextinity-asset-browser-height: 520px;
+    // Corner radius of the browser
+    --dextinity-asset-browser-radius: var(--dextinity-radius-row);
+    // Fill of the browser
+    --dextinity-asset-browser-background: var(--dextinity-color-surface);
+    // Outline and drop shadow of the browser
+    --dextinity-asset-browser-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line-strong), var(--dextinity-shadow-1);
+    // Lines between the sidebar, toolbar, columns, rows, and path bar
+    --dextinity-asset-browser-divider: var(--dextinity-color-line);
+    // Width of the sidebar until it is resized
+    --dextinity-asset-browser-sidebar-width: 216px;
+    // Width of the area on the sidebar's edge that can be dragged to resize it
+    --dextinity-asset-browser-resize-handle-size: 9px;
+    // Width of the line on the sidebar's edge on hover, while dragging, and on focus
+    --dextinity-asset-browser-resize-line-width: 2px;
+    // Color of the line on the sidebar's edge on hover, while dragging, and on focus
+    --dextinity-asset-browser-resize-line-color: var(--dextinity-color-accent);
+    // Smallest width of a tile in the icons view
+    --dextinity-asset-browser-tile-size: 128px;
+    // Width of a column in the columns view
+    --dextinity-asset-browser-column-width: 228px;
+    // Height of a row in the list view
+    --dextinity-asset-browser-row-height: 38px;
+    // Corner radius of a tile and of a picture in the gallery view's strip
+    --dextinity-asset-browser-item-radius: var(--dextinity-radius-item);
+    // Corner radius of a row in the columns view
+    --dextinity-asset-browser-column-row-radius: 7px;
+    // Corner radius of a tile's name and of the field that renames an item
+    --dextinity-asset-browser-name-radius: 5px;
+    // Text color of the metadata, e.g. size and date
+    --dextinity-asset-browser-meta-foreground: var(--dextinity-color-text-subtle);
+    // Text size of the metadata next to the title
+    --dextinity-asset-browser-meta-font-size: 11.5px;
+    // Text size of the metadata in a row of the list view
+    --dextinity-asset-browser-row-meta-font-size: 12px;
+    // Opacity of the chevron after a folder in the columns view
+    --dextinity-asset-browser-chevron-opacity: 0.55;
+    // Opacity of the items that are being dragged
+    --dextinity-asset-browser-dragging-opacity: 0.45;
+
+    // Width of the search field
+    --dextinity-asset-browser-search-width: 220px;
+    // Height of the search field
+    --dextinity-asset-browser-search-height: calc(var(--dextinity-density-segment-height) - 4px);
+    // Corner radius of the search field
+    --dextinity-asset-browser-search-radius: var(--dextinity-radius-control);
+    // Fill of the search field
+    --dextinity-asset-browser-search-background: var(--dextinity-color-surface);
+    // Outline of the search field
+    --dextinity-asset-browser-search-line: var(--dextinity-color-line-strong);
+    // Outline of the search field on hover
+    --dextinity-asset-browser-search-line-hover: var(--dextinity-color-control-line);
+    // Outline of the search field while it has focus
+    --dextinity-asset-browser-search-line-focus: var(--dextinity-color-accent);
+    // Halo around the search field while it has focus
+    --dextinity-asset-browser-search-halo-focus: var(--dextinity-color-accent-soft);
+
+    // Fill of a tile, row, or folder on hover
+    --dextinity-asset-browser-hover-background: color-mix(in oklch, var(--dextinity-color-text) 5%, transparent);
+    // Fill of a selected tile, row, or folder
+    --dextinity-asset-browser-selected-background: var(--dextinity-color-accent-soft);
+    // Outline of a selected tile and a selected row in the list view; a full line in high contrast
+    --dextinity-asset-browser-selected-shadow: 0 0 transparent;
+    // Fill of the name of a selected tile and of a selected row in the columns view
+    --dextinity-asset-browser-selected-strong-background: var(--dextinity-color-accent);
+    // Text color of the name of a selected tile and of a selected row in the columns view
+    --dextinity-asset-browser-selected-strong-foreground: var(--dextinity-color-accent-foreground);
+    // Fill of the folders on the open path in the columns view
+    --dextinity-asset-browser-path-background: color-mix(in oklch, var(--dextinity-color-text) 9%, transparent);
+    // Fill of a folder or area while files are dragged over it
+    --dextinity-asset-browser-drop-background: color-mix(in oklch, var(--dextinity-color-accent) 16%, transparent);
+    // Outline of a folder or area while files are dragged over it
+    --dextinity-asset-browser-drop-shadow: inset 0 0 0 2px var(--dextinity-color-accent);
+    // Shadow below the large picture in the gallery view
+    --dextinity-asset-browser-gallery-image-shadow: 0 12px 24px oklch(0 0 0 / 0.22);
+
+    // Fill of the field that renames an item in place
+    --dextinity-asset-browser-name-field-background: var(--dextinity-field-background-focus);
+    // Outline and halo of the field that renames an item in place
+    --dextinity-asset-browser-name-field-shadow: inset 0 0 0 1px var(--dextinity-field-line-focus), 0 0 0 3px var(--dextinity-field-halo-focus);
+}
+
+@mixin high-contrast-tokens {
+    --dextinity-asset-browser-hover-background: transparent;
+    --dextinity-asset-browser-selected-shadow: inset 0 0 0 1px var(--dextinity-color-accent);
+}

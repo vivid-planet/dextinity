@@ -81,7 +81,93 @@
     }
 }
 
+.aiToggle {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--dextinity-top-bar-ai-gap);
+    block-size: var(--dextinity-top-bar-ai-height);
+    padding-block: 0;
+    padding-inline: var(--dextinity-top-bar-ai-padding-start) var(--dextinity-top-bar-ai-padding-end);
+    border: 0;
+    border-radius: var(--dextinity-top-bar-ai-radius);
+    background: var(--dextinity-top-bar-ai-background);
+    box-shadow: var(--dextinity-top-bar-ai-shadow);
+    color: var(--dextinity-color-text);
+    font: inherit;
+    font-weight: var(--dextinity-top-bar-ai-font-weight);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background var(--dextinity-motion-duration-medium);
+    --dextinity-icon-size: var(--dextinity-top-bar-ai-icon-size);
+
+    &[aria-checked="true"] {
+        background: var(--dextinity-top-bar-ai-background-on);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
+        @include forced-colors.focus-ring;
+    }
+
+    @include forced-colors.edge;
+}
+
+.aiIcon {
+    color: var(--dextinity-top-bar-ai-icon-color);
+}
+
+.aiTrack {
+    position: relative;
+    inline-size: var(--dextinity-top-bar-ai-track-width);
+    block-size: var(--dextinity-top-bar-ai-track-height);
+    border-radius: var(--dextinity-radius-pill);
+    background: var(--dextinity-top-bar-ai-track);
+
+    // The on track is a gradient, which can't transition to the off color, so it fades in on a layer above it
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: var(--dextinity-top-bar-ai-track-on);
+        opacity: 0;
+        transition: opacity var(--dextinity-motion-duration-medium);
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset-block-start: var(--dextinity-top-bar-ai-thumb-inset);
+        inset-inline-start: var(--dextinity-top-bar-ai-thumb-inset);
+        inline-size: calc(var(--dextinity-top-bar-ai-track-height) - 2 * var(--dextinity-top-bar-ai-thumb-inset));
+        block-size: calc(var(--dextinity-top-bar-ai-track-height) - 2 * var(--dextinity-top-bar-ai-thumb-inset));
+        border-radius: 50%;
+        background: var(--dextinity-top-bar-ai-thumb);
+        box-shadow: var(--dextinity-top-bar-ai-thumb-shadow);
+        transition: transform var(--dextinity-motion-duration-medium) var(--dextinity-motion-easing);
+        @include forced-colors.fill;
+    }
+
+    .aiToggle[aria-checked="true"] & {
+        @include forced-colors.fill(Highlight);
+
+        &::before {
+            opacity: 1;
+        }
+
+        &::after {
+            transform: translateX(calc(var(--dextinity-top-bar-ai-track-width) - var(--dextinity-top-bar-ai-track-height)));
+            @include forced-colors.fill(HighlightText);
+        }
+    }
+
+    @include forced-colors.edge;
+}
+
 @container dextinity-shell-bar (max-width: 860px) {
+    .aiLabel,
     .searchText,
     .searchShortcut {
         display: none;

@@ -32,9 +32,9 @@ describe("Switch", () => {
     });
 
     it("takes its accessible name from aria-label without a visible label", () => {
-        render(<Switch checked={false} onChange={vi.fn()} aria-label="Hide in menu" />);
+        render(<Switch checked={false} onChange={vi.fn()} aria-label="AI assistant" />);
 
-        expect(screen.getByRole("switch", { name: "Hide in menu" })).toBeTruthy();
+        expect(screen.getByRole("switch", { name: "AI assistant" })).toBeTruthy();
     });
 
     it("follows the surrounding field and keeps its own text as its name", () => {

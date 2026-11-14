@@ -570,7 +570,7 @@ export const Structure: Story = {
                         { title: "Header", description: "Back, title, kind · scope, status; save state and Save at the end." },
                         { title: "Preview", description: "Device switch; a click selects the block." },
                         { title: "Panel", description: "Tabs Blocks, SEO, Settings. Breadcrumbs when blocks are nested." },
-                        { title: "Form", description: "Fields in sections, with translate at the label." },
+                        { title: "Form", description: "Fields in sections, with translate and AI at the label." },
                     ]}
                 />
             </PatternSection>

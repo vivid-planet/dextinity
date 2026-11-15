@@ -207,7 +207,7 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0(supports-color@10.2.2)
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       rimraf:
         specifier: ^6.1.4
@@ -400,7 +400,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       rimraf:
         specifier: ^6.1.4
@@ -642,7 +642,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       rimraf:
         specifier: ^6.1.4
@@ -850,7 +850,7 @@ importers:
         specifier: ^1.65.0
         version: 1.65.0
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       sass:
         specifier: ^1.108.2
@@ -935,7 +935,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       typescript:
         specifier: ^5.9.3
@@ -1110,7 +1110,7 @@ importers:
         specifier: ^1.65.0
         version: 1.65.0
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       react:
         specifier: ^19.3.1
@@ -1228,7 +1228,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       react:
         specifier: ^19.3.1
@@ -1301,7 +1301,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       react:
         specifier: ^19.3.1
@@ -1401,7 +1401,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       react:
         specifier: ^19.3.1
@@ -1471,7 +1471,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       react:
         specifier: ^19.3.1
@@ -1553,7 +1553,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       react:
         specifier: ^19.3.1
@@ -1668,7 +1668,7 @@ importers:
         specifier: ^16.15.0
         version: 16.15.0
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       react:
         specifier: ^19.3.1
@@ -1954,7 +1954,7 @@ importers:
         specifier: ^1.65.0
         version: 1.65.0
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       react:
         specifier: ^19.3.1
@@ -2059,7 +2059,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       reflect-metadata:
         specifier: ^0.2.2
@@ -2165,7 +2165,7 @@ importers:
         specifier: ^16.15.0
         version: 16.15.0
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       reflect-metadata:
         specifier: ^0.2.2
@@ -2418,7 +2418,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       reflect-metadata:
         specifier: ^0.2.2
@@ -2448,7 +2448,7 @@ importers:
         specifier: ^5.5.0
         version: 5.5.0
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       ts-node:
         specifier: ^10.9.2
@@ -2540,7 +2540,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       typescript:
         specifier: ^5.9.3
@@ -2582,7 +2582,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       typescript:
         specifier: ^5.9.3
@@ -2667,7 +2667,7 @@ importers:
         specifier: ^1.65.0
         version: 1.65.0
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       react:
         specifier: ^19.3.1
@@ -2761,7 +2761,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       react:
         specifier: ^19.3.1
@@ -2843,7 +2843,7 @@ importers:
         specifier: ^9.0.4
         version: 9.0.4
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       react:
         specifier: ^19.3.1
@@ -3051,7 +3051,7 @@ importers:
         specifier: ^1.65.0
         version: 1.65.0
       prettier:
-        specifier: ^3.10.0
+        specifier: ^3.10.1
         version: 3.10.1
       react-dnd:
         specifier: ^16.0.1

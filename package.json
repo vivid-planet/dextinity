@@ -72,7 +72,7 @@
         "lint-staged": "^17.6.0",
         "npm-run-all2": "^9.0.4",
         "open-cli": "^9.0.0",
-        "prettier": "^3.10.0",
+        "prettier": "^3.10.1",
         "rimraf": "^6.1.4",
         "typescript": "^5.9.3"
     },

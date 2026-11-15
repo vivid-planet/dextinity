@@ -43,7 +43,7 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
-        "@apollo/server": "^5.5.1",
+        "@apollo/server": "^5.5.2",
         "@as-integrations/express5": "^1.1.2",
         "@dextinity/brevo-api": "workspace:*",
         "@dextinity/cms-api": "workspace:*",

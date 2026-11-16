@@ -41,7 +41,9 @@ The MCP server is part of the API (`@rekog/mcp-nest`) rather than a service of i
 
 The tools themselves, however, run in the strategy's own RPC pipeline, where none of the app's guards, interceptors, or decorators like `@AffectedEntity` run. Each tool therefore checks the permission and the scope it reads itself, as the corresponding resolver's decorators would. A node or file of a scope the user may not read is reported as not existing, as the resolvers do. A system user authenticated by basic auth is refused, because the tools serve the admin, which a person uses.
 
-A failed check throws a `ToolError`, so that it can't be skipped. `ToolErrorInterceptor` turns it into the tool's own result with the reason, rather than the "Internal server error" the MCP layer makes of every other exception: the agent can act on "You may not read the page tree of this scope", but not on an internal error. It is registered per tool controller, because an `APP_INTERCEPTOR` doesn't reach the strategy's pipeline either.
+A refusal is an expected outcome of a tool call, so a tool returns it as an error result with the reason (`errorResult`, `notSignedInResult`) rather than throwing: the agent can act on "You may not read the page tree of this scope", but not on the "Internal server error" the MCP layer makes of an exception.
+
+`get_page` returns the page as its editor sees it: with hidden blocks, unpublished and archived link targets, and DAM URLs that work before the page is published. The block transformers read that visibility from the headers of the GraphQL request, which a call in the RPC pipeline doesn't have, so `get_page` resolves them per call with the headers of the admin's requests.
 
 The server is stateless, so any replica of the API can answer a call.
 

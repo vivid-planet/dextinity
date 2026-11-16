@@ -80,7 +80,8 @@ GQL fragment: Include the block field name directly (e.g. `images`) — the bloc
 ## Rules
 
 - Ask the user whether a FileUpload field is an image or a document to pick the right variant
-- Use `sortable: false` and `filterable: false` for all file upload and image columns
+- Use `sortable: false` and `filterable: false` for image preview columns — the cell shows a preview, not a value to filter or sort by
+- For file list columns, derive the props from the schema: a many-to-many file field (e.g. `datasheets`) is usually in `<EntityName>Filter` but not in `<EntityName>SortField`, so only `sortable: false` applies
 - **FileUpload `imageUrl` is relative** — always prepend `apiUrl` from `useDextinityConfig()`
 - **DAM Image `fileUrl` is absolute** — use directly without prefix
 - Add `apiUrl` to the columns `useMemo` dependency array when using FileUpload image columns

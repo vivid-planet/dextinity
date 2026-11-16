@@ -17,7 +17,7 @@ export function EntitiesGrid() {
             scope, // pass content scope to query
             filter: gqlFilter,
             search: gqlSearch,
-            sort: muiGridSortToGql(dataGridProps.sortModel, columns) ?? [],
+            sort: muiGridSortToGql(dataGridProps.sortModel, columns),
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
         },
@@ -29,7 +29,7 @@ export function EntitiesGrid() {
 ## GQL
 
 ```graphql
-query EntitiesGrid($scope: EntityScopeInput!, $offset: Int!, $limit: Int!, $sort: [EntitySort!]!, $search: String, $filter: EntityFilter) {
+query EntitiesGrid($scope: EntityScopeInput!, $offset: Int!, $limit: Int!, $sort: [EntitySort!], $search: String, $filter: EntityFilter) {
     entities(scope: $scope, offset: $offset, limit: $limit, sort: $sort, search: $search, filter: $filter) {
         nodes {
             ...EntitiesGridItem

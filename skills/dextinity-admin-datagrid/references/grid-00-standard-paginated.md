@@ -19,7 +19,7 @@ const <entityName>sFragment = gql`
 `;
 
 export const <entityName>sQuery = gql`
-    query <EntityName>sGrid($offset: Int!, $limit: Int!, $sort: [<EntityName>Sort!]!, $search: String, $filter: <EntityName>Filter) {
+    query <EntityName>sGrid($offset: Int!, $limit: Int!, $sort: [<EntityName>Sort!], $search: String, $filter: <EntityName>Filter) {
         <entityName>s(offset: $offset, limit: $limit, sort: $sort, search: $search, filter: $filter) {
             nodes {
                 ...<EntityName>sGridItem
@@ -42,7 +42,7 @@ export const delete<EntityName>Mutation = gql`
 - Fragment name must be `<EntityName>sGridItem` (not `<EntityName>sGrid`) to avoid naming collision with the query operation name. The generated type will be `GQL<EntityName>sGridItemFragment`
 - Only include fields actually used in grid columns in the fragment
 - Omit `deleteXxxMutation` if no delete mutation exists in the schema
-- **Query variable types must match the schema signature exactly** — pay close attention to nullability (`!`), list wrappers (`[...]`), and default values. For example, if the schema declares `sort: [ProductSort!]!`, the query variable must be `$sort: [ProductSort!]!` (non-nullable), not `$sort: [ProductSort!]` (nullable). Always copy the exact type from `schema.gql`
+- **Query variable types must match the schema signature** — pay close attention to nullability (`!`), list wrappers (`[...]`), and default values. Copy the type from `schema.gql`, with one exception: declare `$sort` as nullable `[<EntityName>Sort!]` even when the schema declares `sort: [<EntityName>Sort!]! = [...]`. An omitted `$sort` makes the API apply its default sort; a non-null `$sort` would force the grid to send `[]`, which overrides it. Only if the schema's `sort` argument is non-null **without** a default, declare `$sort` non-null as well
 - Use the exact GQL query/mutation names from the schema — do not guess
 - For fragment field selection per column type, see the `grid-col-def-*.md` reference files
 
@@ -55,7 +55,7 @@ import {
     GQL<EntityName>sGridItemFragment,
     GQLDelete<EntityName>Mutation,
     GQLDelete<EntityName>MutationVariables,
-} from "./<EntityName>sGrid.generated";
+} from "./<EntityName>sGrid.gql.generated";
 import { useIntl } from "react-intl";
 import { FormattedNumber } from "react-intl";
 import { useApolloClient, useQuery } from "@apollo/client";
@@ -132,7 +132,7 @@ export function <EntityName>sGrid() {
         variables: {
             filter: gqlFilter,
             search: gqlSearch,
-            sort: muiGridSortToGql(dataGridProps.sortModel, columns) ?? [],
+            sort: muiGridSortToGql(dataGridProps.sortModel, columns),
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
         },
@@ -215,7 +215,7 @@ Override row height density on the DataGridPro:
 
 ## Rules
 
-- **`muiGridSortToGql` can return `undefined`** when no sort model is set. Since the `$sort` variable is non-nullable (`[EntitySort!]!`), always provide a fallback: `muiGridSortToGql(dataGridProps.sortModel, columns) ?? []`
+- **Pass `sort: muiGridSortToGql(dataGridProps.sortModel, columns)` without a fallback** — it returns `undefined` when the user hasn't sorted, so the API's default sort applies. Never add `?? []`: an empty list overrides the default sort
 - Always pass `showToolbar` when the grid has a toolbar slot — MUI X v8 renders the toolbar only when it's set
 - Only import what is actually used — remove unused imports
 - `queryParamsPrefix` = camelCase entity plural (e.g. `"products"`)
@@ -224,7 +224,7 @@ Override row height density on the DataGridPro:
 - Omit `CrudContextMenu` and `delete*` imports/types if no delete mutation exists in the schema
 - Omit `onRowClick` if the entity has no edit page
 - Use whichever DataGrid variant is installed (`DataGrid`, `DataGridPro`, or `DataGridPremium`)
-- Generated types come from `./<EntityName>sGrid.generated` — never create this file manually
+- Generated types come from `./<EntityName>sGrid.gql.generated` — codegen writes it next to `<EntityName>sGrid.gql.ts`; never create this file manually
 - `renderCell` can always be used for any field type when fully custom rendering is needed
 - For column type patterns, see the `grid-col-def-*.md` reference files
 - For grid variants, see the `grid-01` through `grid-08` reference files

@@ -27,7 +27,7 @@ export function ProductVariantsGrid({ product }: ProductVariantsGridProps) {
             product, // forwarded parent ID
             filter: gqlFilter,
             search: gqlSearch,
-            sort: muiGridSortToGql(dataGridProps.sortModel, columns) ?? [],
+            sort: muiGridSortToGql(dataGridProps.sortModel, columns),
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
         },

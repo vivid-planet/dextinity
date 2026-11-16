@@ -22,7 +22,7 @@ export function EntitiesGrid({ filter, toolbarAction, rowAction, actionsColumnWi
             // Combine external filter with grid filter
             filter: filter ? { and: [gqlFilter, filter] } : gqlFilter,
             search: gqlSearch,
-            sort: muiGridSortToGql(dataGridProps.sortModel, columns) ?? [],
+            sort: muiGridSortToGql(dataGridProps.sortModel, columns),
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
         },

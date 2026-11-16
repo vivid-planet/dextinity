@@ -19,6 +19,7 @@ export function SelectEntitiesGrid({ rowSelectionModel, onRowSelectionModelChang
         onRowSelectionModelChange,
         checkboxSelection: true,
         keepNonExistentRowsSelected: true,
+        disableRowSelectionExcludeModel: true,
     };
 
     const columns: GridColDef<GQLSelectEntitiesGridFragment>[] = useMemo(
@@ -65,5 +66,6 @@ function SelectEntitiesGridToolbar() {
 - No actions column, no delete mutation, no edit icon button
 - No `onRowClick` — selection is via checkboxes
 - `keepNonExistentRowsSelected: true` retains selections across pages
+- `disableRowSelectionExcludeModel: true` makes "select all" select the rows explicitly instead of producing an exclude model, so `rowSelectionModel` always lists the selected IDs
 - No `useStackSwitchApi` or `useApolloClient` needed
 - Toolbar has only search/filter, no add button

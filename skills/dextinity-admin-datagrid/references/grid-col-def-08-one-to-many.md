@@ -18,4 +18,4 @@
 - Spread `dataGridOneToManyColumn` from `@dextinity/admin` as the base
 - Include the label field (e.g. `name`) in the GQL fragment for the related entity
 - Use `disableExport: true` for array columns
-- Use `sortable: false` — one-to-many cannot be sorted server-side
+- Use `sortable: false` — one-to-many fields are not in `<EntityName>SortField`. They usually are in `<EntityName>Filter` (`OneToManyFilter`), so keep the column filterable; check the schema

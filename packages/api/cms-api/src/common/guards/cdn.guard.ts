@@ -1,6 +1,7 @@
 import { type CanActivate, type ExecutionContext, Injectable, Logger } from "@nestjs/common";
-import { GqlExecutionContext } from "@nestjs/graphql";
 import type { Request } from "express";
+
+import { getRequestFromExecutionContext } from "../decorators/utils.js";
 
 @Injectable()
 export class CdnGuard implements CanActivate {
@@ -19,9 +20,7 @@ export class CdnGuard implements CanActivate {
     }
 
     getRequest(context: ExecutionContext): Request {
-        return context.getType().toString() === "graphql"
-            ? GqlExecutionContext.create(context).getContext().req
-            : context.switchToHttp().getRequest();
+        return getRequestFromExecutionContext(context);
     }
 
     canActivate(context: ExecutionContext): boolean {

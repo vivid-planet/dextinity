@@ -3,6 +3,7 @@ import { Reflector } from "@nestjs/core";
 import { type GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
 import type { Request } from "express";
 
+import { getRequestFromExecutionContext } from "../../common/decorators/utils.js";
 import type { CurrentUser } from "../../user-permissions/dto/current-user.js";
 import type { User } from "../../user-permissions/interfaces/user.js";
 import { UserPermissionsService } from "../../user-permissions/user-permissions.service.js";
@@ -20,26 +21,24 @@ export class DextinityAuthGuard implements CanActivate {
         @Inject("DEXTINITY_AUTH_SERVICES") private readonly authServices: AuthServiceInterface[],
     ) {}
 
-    private getRequest(context: ExecutionContext): Request & { user: CurrentUser | SystemUser } {
-        return context.getType().toString() === "graphql"
-            ? GqlExecutionContext.create(context).getContext().req
-            : context.switchToHttp().getRequest();
-    }
-
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const request = this.getRequest(context);
+        const request: (Request & { user: CurrentUser | SystemUser }) | undefined = getRequestFromExecutionContext(context);
 
         const disableDextinityGuard = this.reflector.getAllAndOverride(DISABLE_DEXTINITY_GUARDS_METADATA_KEY, [
             context.getHandler(),
             context.getClass(),
         ]);
-        const hasIncludeInvisibleContentHeader = !!request.headers["x-include-invisible-content"];
+        const hasIncludeInvisibleContentHeader = !!request?.headers["x-include-invisible-content"];
         if (disableDextinityGuard && !hasIncludeInvisibleContentHeader) {
             return true;
         }
 
         if (this.isResolvingGraphQLField(context)) {
             return true;
+        }
+
+        if (!request) {
+            throw new UnauthorizedException("Can't authenticate the user without a request, e.g. for an MCP call over stdio");
         }
 
         const result = await this.getAuthenticatedUserResult(request);

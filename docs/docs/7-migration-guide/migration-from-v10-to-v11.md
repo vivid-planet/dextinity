@@ -1978,6 +1978,24 @@ Then verify that the site builds:
 npm run build
 ```
 
+### Copy `legacyPagesRouterSitePreviewApiHandler` into your project
+
+`legacyPagesRouterSitePreviewApiHandler` is removed from `@dextinity/site-nextjs/server`. Check whether your site uses it:
+
+```sh
+grep -rn "legacyPagesRouterSitePreviewApiHandler" src
+```
+
+If it does, copy [the handler](https://github.com/vivid-planet/dextinity/blob/1302d4d1324b10a4e7e8db7e43e8c64782458db0/packages/site/site-nextjs/src/sitePreview/pagesRouter/legacyPagesRouterSitePreviewApiHandler.ts) into your site, next to the API route that uses it.
+The handler imports `verifyJwt` and `SitePreviewJwtPayload`, which aren't exported by `@dextinity/site-nextjs`. Copy them from [`previewUtils.ts`](https://github.com/vivid-planet/dextinity/blob/1302d4d1324b10a4e7e8db7e43e8c64782458db0/packages/site/site-nextjs/src/sitePreview/previewUtils.ts#L6-L36) as well, and add `jose` to the dependencies of your site.
+
+Then import the handler from your copy:
+
+```diff
+-import { legacyPagesRouterSitePreviewApiHandler } from "@dextinity/site-nextjs/server";
++import { legacyPagesRouterSitePreviewApiHandler } from "@src/util/legacyPagesRouterSitePreviewApiHandler";
+```
+
 ## Mails
 
 Skip this section if your project doesn't use `@dextinity/mail-react`.

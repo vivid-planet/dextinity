@@ -1987,7 +1987,38 @@ grep -rn "legacyPagesRouterSitePreviewApiHandler" src
 ```
 
 If it does, copy [the handler](https://github.com/vivid-planet/dextinity/blob/1302d4d1324b10a4e7e8db7e43e8c64782458db0/packages/site/site-nextjs/src/sitePreview/pagesRouter/legacyPagesRouterSitePreviewApiHandler.ts) into your site, next to the API route that uses it.
-The handler imports `verifyJwt` and `SitePreviewJwtPayload`, which aren't exported by `@dextinity/site-nextjs`. Copy them from [`previewUtils.ts`](https://github.com/vivid-planet/dextinity/blob/1302d4d1324b10a4e7e8db7e43e8c64782458db0/packages/site/site-nextjs/src/sitePreview/previewUtils.ts#L6-L36) as well, and add `jose` to the dependencies of your site.
+The handler imports `verifyJwt` and `SitePreviewJwtPayload` from a file that isn't exported by `@dextinity/site-nextjs`. Replace that import in your copy with their definitions:
+
+```diff
+-import { type SitePreviewJwtPayload, verifyJwt } from "../previewUtils";
++import type { PreviewData } from "@dextinity/site-react";
++import { errors, jwtVerify } from "jose";
++
++type SitePreviewJwtPayload = {
++    // eslint-disable-next-line @typescript-eslint/no-explicit-any
++    scope: Record<string, any>;
++    previewData?: PreviewData;
++    userId: string;
++    path: string;
++};
++
++async function verifyJwt<T>(jwt: string): Promise<T | null> {
++    if (!process.env.SITE_PREVIEW_SECRET) {
++        throw new Error("SITE_PREVIEW_SECRET environment variable is required.");
++    }
++    try {
++        const data = await jwtVerify<T>(jwt, new TextEncoder().encode(process.env.SITE_PREVIEW_SECRET));
++        return data.payload;
++    } catch (e) {
++        if (e instanceof errors.JOSEError) {
++            return null;
++        }
++        throw e;
++    }
++}
+```
+
+Add `jose` to the dependencies of your site if it isn't there yet.
 
 Then import the handler from your copy:
 

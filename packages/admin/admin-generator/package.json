@@ -49,7 +49,7 @@
         "@mui/x-data-grid": "^8.29.5",
         "change-case": "^5.4.4",
         "commander": "^15.1.0",
-        "glob": "^14.0.4",
+        "glob": "^14.0.6",
         "graphql": "^16.15.0",
         "jiti": "^2.7.0",
         "object-path": "^0.11.8",

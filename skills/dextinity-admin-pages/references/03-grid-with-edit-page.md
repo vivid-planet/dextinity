@@ -57,4 +57,4 @@ Key points:
 - `StackPage name="edit"` uses render function `{(id) => ...}` to receive the URL payload
 - `StackPage name="add"` does not need a render function
 - Each form page gets its own `SaveBoundary`
-- **Redirect after create:** The form component can call `useStackSwitchApi()` to access the parent StackSwitch and redirect to the edit page after creation: `const stackSwitchApi = useStackSwitchApi(); ... stackSwitchApi.activatePage("edit", newId);`. Wrap in `setTimeout` to avoid updating state during render.
+- **Redirect after create:** The form component can call `useStackSwitchApi()` to access the parent StackSwitch and redirect to the edit page after creation: `const stackSwitchApi = useStackSwitchApi(); ... onCreate?.(newId); if (!event.navigatingBack) { stackSwitchApi.activatePage("edit", newId); }`. Skip the redirect when `event.navigatingBack` is set ("Save and go back"). Wrap in `setTimeout` to avoid updating state during render.

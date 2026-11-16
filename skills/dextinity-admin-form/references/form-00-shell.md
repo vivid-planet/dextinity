@@ -91,6 +91,8 @@ The shell template above shows the default **create + edit** mode (`id` prop is 
 - `FinalForm` gets `mode="add"`
 - Typically receives an `onCreate` callback prop instead of using `stackSwitchApi`
 
+**Page navigates after create** — when the page handles navigation itself via `onCreate` (see `useStackSwitch` in the pages skill), drop `stackSwitchApi` and only call `onCreate?.(newId)` in `setTimeout`. Otherwise the form navigates to the edit page itself, unless the user clicked "Save and go back" (`event.navigatingBack`).
+
 ### Fragment field rules by type
 
 | Field type                    | Fragment entry                                     |
@@ -173,6 +175,7 @@ type FormValues = <EntityName>FormDetailsFragment;
 // };
 
 interface FormProps {
+    onCreate?: (id: string) => void;
     id?: string;
 }
 
@@ -181,7 +184,7 @@ const submissionErrorMessages: Record<GQL<EntityName>MutationErrorCode, ReactNod
     // errorCode: <FormattedMessage id="..." defaultMessage="..." />,
 };
 
-export function <EntityName>Form({ id }: FormProps) {
+export function <EntityName>Form({ onCreate, id }: FormProps) {
     const client = useApolloClient();
     const mode = id ? "edit" : "add";
     const formApiRef = useFormApiRef<FormValues>();
@@ -203,6 +206,8 @@ export function <EntityName>Form({ id }: FormProps) {
                       // purchasePrice: data.<entityName>.purchasePrice ?? undefined,
                   }
                 : {
+                      // Boolean fields always start as false (or true if that's the intended default):
+                      // inStock: false,
                       // sensible defaults for new records
                   },
         [data],
@@ -224,8 +229,10 @@ export function <EntityName>Form({ id }: FormProps) {
 
         const output = {
             ...formValues,
-            // Send cleared nullable number fields as null (NumberField stores undefined, which the update would skip):
+            // Send cleared nullable text, number and LocalDate fields as null (the field stores undefined, which the update would skip):
+            // description: formValues.description ?? null,
             // purchasePrice: formValues.purchasePrice ?? null,
+            // availableSince: formValues.availableSince ?? null,
             // Transform relation fields to IDs:
             // category: formValues.category ? formValues.category.id : null,
             // tags: formValues.tags.map((item) => item.id),
@@ -284,7 +291,12 @@ export function <EntityName>Form({ id }: FormProps) {
 
             const newId = mutationResponse?.create<EntityName>.<entityName>?.id;
             if (newId) {
-                setTimeout(() => stackSwitchApi.activatePage("edit", newId));
+                setTimeout(() => {
+                    onCreate?.(newId);
+                    if (!event.navigatingBack) {
+                        stackSwitchApi.activatePage("edit", newId);
+                    }
+                });
             }
         }
     };

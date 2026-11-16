@@ -14,5 +14,6 @@ import { SwitchField } from "@dextinity/admin";
 
 - Import `SwitchField` from `@dextinity/admin`
 - Uses `fieldLabel` prop (same as `CheckboxField`)
+- Initialize it with `false` in the create-mode `initialValues` (`isActive: false`), or `true` if that's the intended default
 - Prefer `SwitchField` when toggling causes an immediate visible response (e.g. showing/hiding a FieldSet, activating a feature)
 - Prefer `CheckboxField` for simple boolean values without immediate UI feedback (e.g. "Accept terms", "In Stock")

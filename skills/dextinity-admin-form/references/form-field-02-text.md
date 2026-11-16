@@ -16,4 +16,5 @@ For longer nullable string fields.
 ## Rules
 
 - Import `TextAreaField` from `@dextinity/admin`
+- **Nullable fields**: a cleared `TextAreaField` holds `undefined`, so the field would be omitted from the update and the old value kept. Send it as `null` in `handleSubmit` (`description: formValues.description ?? null`)
 - Use for longer text fields; use `TextField` for short single-line strings

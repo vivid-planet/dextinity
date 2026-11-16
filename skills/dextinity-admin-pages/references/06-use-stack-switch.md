@@ -2,7 +2,7 @@
 
 `useStackSwitch` is a lower-level API that replaces `<StackSwitch>` with a hook, giving the **page component** direct access to `activatePage`. Prefer `StackSwitch` with `StackLink` for standard navigation.
 
-> **`useStackSwitch` vs `useStackSwitchApi`:** Most redirect-after-create cases are handled inside the **form component** using `useStackSwitchApi()`, which accesses an existing parent `StackSwitch` (see pattern 03). Use `useStackSwitch()` only when you need programmatic navigation from the **page component** itself (e.g., passing an `onCreate` callback to the form).
+> **`useStackSwitch` vs `useStackSwitchApi`:** Most redirect-after-create cases are handled inside the **form component** using `useStackSwitchApi()`, which accesses an existing parent `StackSwitch` (see pattern 03). Use `useStackSwitch()` only when you need programmatic navigation from the **page component** itself (e.g., passing an `onCreate` callback to the form). The form then only calls `onCreate?.(id)` after create and does not navigate itself.
 
 Example from `demo/admin/src/products/ProductsPage.tsx`:
 

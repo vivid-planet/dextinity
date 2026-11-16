@@ -52,5 +52,5 @@ Requires type transformation in `FormValues` (`Date | null`) and in `handleSubmi
     - `FormValues` type: `Omit<..., "lastCheckedAt"> & { lastCheckedAt?: Date | null }`
     - `initialValues`: `new Date(data.<entityName>.lastCheckedAt)`
     - `handleSubmit` output: `formValues.lastCheckedAt ? formValues.lastCheckedAt.toISOString() : null`
-- **LocalDate** does not need type transformation
+- **LocalDate** does not need type transformation. If nullable, send a cleared value as `null` in `handleSubmit` (`availableSince: formValues.availableSince ?? null`)
 - **Read-only** fields (audit timestamps) should strip the field from `handleSubmit` output: `createdAt: undefined`

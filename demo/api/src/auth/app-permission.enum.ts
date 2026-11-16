@@ -4,6 +4,7 @@ export enum AppPermission {
     news = "news",
     products = "products",
     manufacturers = "manufacturers",
+    aiHub = "aiHub",
 }
 
 registerEnumType(AppPermission, {

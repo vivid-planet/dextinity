@@ -179,11 +179,11 @@ export class EnvironmentVariables {
 
     // The AI Hub API behind the chat of the admin's AI Mode, with a secret key of type Widget. The AI Mode is off
     // without the key.
-    @IsOptional()
+    @IsUndefinable()
     @IsUrl({ require_tld: process.env.NODE_ENV === "production" })
     AI_HUB_API_URL?: string;
 
-    @IsOptional()
+    @IsUndefinable()
     @IsString()
     AI_HUB_API_KEY?: string;
 

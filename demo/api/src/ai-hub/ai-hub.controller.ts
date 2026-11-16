@@ -19,8 +19,8 @@ import {
  * request was authenticated as.
  */
 @Controller("ai-hub")
-// The AI Mode works on pages. No scope check, because the chat's requests carry none.
-@RequiredPermission("pageTree", { skipScopeCheck: true })
+// No scope check, because the chat's requests carry none.
+@RequiredPermission("aiHub", { skipScopeCheck: true })
 export class AiHubController {
     private readonly logger = new Logger(AiHubController.name);
 

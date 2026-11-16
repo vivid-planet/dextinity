@@ -4,6 +4,7 @@ import type { Request } from "express";
 import type { GraphQLResolveInfo } from "graphql";
 import { getClientIp } from "request-ip";
 
+import { getArgsFromExecutionContext, getRequestFromExecutionContext } from "../common/decorators/utils.js";
 import type { CurrentUser } from "../user-permissions/dto/current-user.js";
 import type { User } from "../user-permissions/interfaces/user.js";
 import { ACCESS_LOG_CONFIG } from "./access-log.constants.js";
@@ -51,6 +52,25 @@ export class AccessLogInterceptor implements NestInterceptor {
             }
             requestData.push(`resolver function: ${gqlInfo.fieldName}`);
             requestData.push(`args: ${JSON.stringify(gqlArgs)}`);
+        } else if (requestType === "mcp") {
+            const request: (Request & { user?: CurrentUser }) | undefined = getRequestFromExecutionContext(context);
+
+            if (request && this.config?.shouldLogRequest?.({ user: request.user, req: request }) === false) {
+                ignored = true;
+            }
+
+            if (request) {
+                requestData.push(`ip: ${getClientIp(request)}`);
+                this.pushUserToRequestData(request.user, requestData);
+            }
+
+            const mcpContext = context.getArgByIndex(1);
+            const mcpArgs = { ...getArgsFromExecutionContext(context) };
+            delete mcpArgs["input"];
+            delete mcpArgs["data"];
+
+            requestData.push(`${mcpContext?.kind ?? "call"}: ${mcpContext?.name}`);
+            requestData.push(`args: ${JSON.stringify(mcpArgs)}`);
         } else {
             const httpContext = context.switchToHttp();
             const httpRequest = httpContext.getRequest<Request>();
@@ -77,7 +97,7 @@ export class AccessLogInterceptor implements NestInterceptor {
         return next.handle();
     }
 
-    private pushUserToRequestData(currentUser: CurrentUser, requestData: string[]) {
+    private pushUserToRequestData(currentUser: CurrentUser | undefined, requestData: string[]) {
         if (currentUser) {
             const user = currentUser.authenticatedUser ? currentUser.authenticatedUser : currentUser;
             const impersonatedUser = currentUser.authenticatedUser ? currentUser : undefined;

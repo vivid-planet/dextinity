@@ -45,6 +45,7 @@ import { ContentGenerationService } from "@src/content-generation/content-genera
 import { DbModule } from "@src/db/db.module.js";
 import { LinksModule } from "@src/documents/links/links.module.js";
 import { PagesModule } from "@src/documents/pages/pages.module.js";
+import { AiModeMcpModule } from "@src/mcp/mcp.module.js";
 import { TranslationModule } from "@src/translation/translation.module.js";
 import type { Request } from "express";
 
@@ -231,7 +232,7 @@ export class AppModule {
                 MailTemplatesModule,
                 ProductsModule,
                 ...(config.azureAiTranslator ? [AzureAiTranslatorModule.register(config.azureAiTranslator)] : []),
-                ...(config.aiHub ? [AiHubModule.register(config.aiHub)] : []),
+                ...(config.aiHub ? [AiHubModule.register(config.aiHub), AiModeMcpModule.forRoot({ authModule })] : []),
                 ...(!config.debug
                     ? [
                           AccessLogModule.forRoot({

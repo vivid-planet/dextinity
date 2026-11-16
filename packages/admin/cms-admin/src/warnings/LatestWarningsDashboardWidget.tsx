@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { dataGridDateTimeColumn, type GridColDef } from "@dextinity/admin";
 import { Warning } from "@dextinity/admin-icons";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -27,6 +28,7 @@ export const LatestWarningsDashboardWidget = ({ showAllScopes = false }: LatestW
 
     const { data, loading, error } = useQuery<GQLLatestWarningsQuery, GQLLatestWarningsQueryVariables>(latestWarningsQuery, {
         variables: { scopes },
+        notifyOnNetworkStatusChange: false,
     });
 
     const intl = useIntl();

@@ -1,5 +1,6 @@
 import { RteHighlight, Tag } from "@dextinity/admin-icons";
 import { createTipTapRichTextBlock, type TipTapTextBlockStyle } from "@dextinity/cms-admin";
+import { Box, Typography } from "@mui/material";
 import { ProductPriceBlock } from "@src/products/blocks/ProductPriceBlock";
 import { ProductTeaserBlock } from "@src/products/blocks/ProductTeaserBlock";
 import type { HTMLAttributes } from "react";
@@ -7,17 +8,22 @@ import { FormattedMessage } from "react-intl";
 
 import { LinkBlock } from "./LinkBlock";
 
+// Typography resets the margins; keep the browser's default paragraph spacing the editor had with a plain <p>.
+function textStyleSx(fontSize: number, lineHeight: number) {
+    return { fontSize, lineHeight: `${lineHeight}px`, marginBlock: "1em" };
+}
+
 // Shared by both list types, so a list item's content offers the same styles either way.
 const listStyles: TipTapTextBlockStyle[] = [
     {
         name: "list300",
         label: <FormattedMessage id="tipTapRichTextBlock.list300" defaultMessage="List" />,
-        element: (props) => <p style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
+        element: (props) => <Typography sx={textStyleSx(18, 26)} {...props} />,
     },
     {
         name: "list200",
         label: <FormattedMessage id="tipTapRichTextBlock.list200" defaultMessage="List Small" />,
-        element: (props) => <p style={{ fontSize: 15, lineHeight: "22px" }} {...props} />,
+        element: (props) => <Typography sx={textStyleSx(15, 22)} {...props} />,
     },
 ];
 
@@ -38,32 +44,32 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
                 {
                     name: "paragraph300",
                     label: <FormattedMessage id="tipTapRichTextBlock.paragraph300" defaultMessage="Paragraph" />,
-                    element: (props) => <p style={{ fontSize: 18, lineHeight: "26px" }} {...props} />,
+                    element: (props) => <Typography sx={textStyleSx(18, 26)} {...props} />,
                 },
                 {
                     name: "paragraph200",
                     label: <FormattedMessage id="tipTapRichTextBlock.paragraph200" defaultMessage="Paragraph Small" />,
-                    element: (props) => <p style={{ fontSize: 15, lineHeight: "22px" }} {...props} />,
+                    element: (props) => <Typography sx={textStyleSx(15, 22)} {...props} />,
                 },
                 {
                     name: "eyebrow600",
                     label: <FormattedMessage id="tipTapRichTextBlock.eyebrow600" defaultMessage="Eyebrow 600" />,
-                    element: (props) => <p style={{ fontSize: 30, lineHeight: "30px" }} {...props} />,
+                    element: (props) => <Typography sx={textStyleSx(30, 30)} {...props} />,
                 },
                 {
                     name: "eyebrow550",
                     label: <FormattedMessage id="tipTapRichTextBlock.eyebrow550" defaultMessage="Eyebrow 550" />,
-                    element: (props) => <p style={{ fontSize: 26, lineHeight: "26px" }} {...props} />,
+                    element: (props) => <Typography sx={textStyleSx(26, 26)} {...props} />,
                 },
                 {
                     name: "eyebrow500",
                     label: <FormattedMessage id="tipTapRichTextBlock.eyebrow500" defaultMessage="Eyebrow 500" />,
-                    element: (props) => <p style={{ fontSize: 22, lineHeight: "22px" }} {...props} />,
+                    element: (props) => <Typography sx={textStyleSx(22, 22)} {...props} />,
                 },
                 {
                     name: "eyebrow450",
                     label: <FormattedMessage id="tipTapRichTextBlock.eyebrow450" defaultMessage="Eyebrow 450" />,
-                    element: (props) => <p style={{ fontSize: 18, lineHeight: "18px" }} {...props} />,
+                    element: (props) => <Typography sx={textStyleSx(18, 18)} {...props} />,
                 },
             ],
             defaultStyle: "paragraph300",
@@ -82,7 +88,9 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
             name: "highlight",
             label: <FormattedMessage id="tipTapRichTextBlock.inlineStyle.highlight" defaultMessage="Highlight" />,
             icon: RteHighlight,
-            element: (props: HTMLAttributes<HTMLElement>) => <span style={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />,
+            element: (props: HTMLAttributes<HTMLElement>) => (
+                <Box component="span" sx={{ backgroundColor: "#fff3cd", padding: "0 2px" }} {...props} />
+            ),
         },
         {
             name: "tag",
@@ -90,7 +98,7 @@ export const TipTapRichTextBlock = createTipTapRichTextBlock({
             appliesTo: ["paragraph"],
             icon: Tag,
             element: (props: HTMLAttributes<HTMLElement>) => (
-                <span style={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: 4 }} {...props} />
+                <Box component="span" sx={{ backgroundColor: "#e0f0ff", color: "#0066cc", padding: "0 4px", borderRadius: "4px" }} {...props} />
             ),
         },
     ],

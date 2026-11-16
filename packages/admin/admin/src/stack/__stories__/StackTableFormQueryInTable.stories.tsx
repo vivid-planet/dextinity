@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Edit } from "@dextinity/admin-icons";
 import { Card, CardContent, Grid, IconButton, Typography } from "@mui/material";
 import { useContext } from "react";
@@ -121,7 +122,7 @@ function ExampleForm(props: IExampleFormProps) {
         }
     `;
 
-    const { loading, data, error } = useQuery(detailQuery, { variables: { id: props.id } });
+    const { loading, data, error } = useQuery<{ user: { id: number; name: string } }>(detailQuery, { variables: { id: props.id } });
 
     if (error) {
         return <p>Error :( {error.toString()}</p>;

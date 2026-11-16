@@ -1,6 +1,5 @@
-import { useSubRoutePrefix } from "@dextinity/admin";
+import { useCurrentRouteMatch, useSubRoutePrefix } from "@dextinity/admin";
 import { type PropsWithChildren, useEffect, useRef } from "react";
-import { useRouteMatch } from "react-router";
 import scrollIntoView from "scroll-into-view-if-needed";
 
 import * as sc from "./HoverPreviewComponent.sc";
@@ -11,13 +10,13 @@ interface HoverPreviewComponentProps {
 }
 
 function useComponentRoute(componentSlug: string) {
-    const match = useRouteMatch();
+    const routeUrl = useCurrentRouteMatch()?.url ?? "";
     const subRoutePrefix = useSubRoutePrefix();
 
     if (componentSlug.startsWith("#")) {
         // The preview builds anchor routes from `parentUrl`, which doesn't contain the sub-route a composite block
-        // renders its child blocks in, so the router match is the matching prefix.
-        return `${match.url}${componentSlug}`;
+        // renders its child blocks in, so the URL of the route is the matching prefix.
+        return `${routeUrl}${componentSlug}`;
     }
 
     // The preview builds page routes from `parentUrlSubRoute ?? parentUrl`, like the `StackSwitch` builds its page URLs, so they

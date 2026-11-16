@@ -36,7 +36,7 @@ export interface SendPagesOptions {
 }
 
 interface SendPagesDependencies {
-    client: ApolloClient<unknown>;
+    client: ApolloClient;
     scope: ContentScope;
     documentTypes: PageTreeConfig["documentTypes"];
     apiUrl: string;

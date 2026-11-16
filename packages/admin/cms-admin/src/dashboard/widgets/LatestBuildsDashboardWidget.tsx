@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { type GridColDef, InlineAlert, LocalErrorScopeApolloContext } from "@dextinity/admin";
 import { styled } from "@mui/material/styles";
 import { parseISO } from "date-fns";
@@ -13,6 +14,7 @@ import type { GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables } from "./Late
 export const LatestBuildsDashboardWidget = () => {
     const { data, loading, error } = useQuery<GQLLatestBuildsQuery, GQLLatestBuildsQueryVariables>(latestBuildsQuery, {
         context: LocalErrorScopeApolloContext,
+        notifyOnNetworkStatusChange: false,
     });
 
     const intl = useIntl();

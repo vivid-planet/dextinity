@@ -44,7 +44,7 @@ const createFeaturesFromBlocktypeMap =
             })),
     ];
 
-type BlockChangeEvent = SelectChangeEvent<DraftBlockType>;
+type BlockChangeEvent = SelectChangeEvent<unknown>;
 
 export interface BlockTypesApi {
     dropdownFeatures: IFeatureConfig[];
@@ -87,13 +87,14 @@ export default function useBlockTypes({
         (e: BlockChangeEvent) => {
             e.preventDefault();
 
-            if (!e.target.value) {
+            const blockType = e.target.value;
+            if (typeof blockType === "string" && blockType) {
+                setEditorState(RichUtils.toggleBlockType(editorState, blockType));
+            } else {
                 const currentBlock = getCurrentBlock(editorState);
                 if (currentBlock) {
                     setEditorState(RichUtils.toggleBlockType(editorState, currentBlock.getType()));
                 }
-            } else {
-                setEditorState(RichUtils.toggleBlockType(editorState, e.target.value));
             }
             // keeps editor focused
             setTimeout(() => {

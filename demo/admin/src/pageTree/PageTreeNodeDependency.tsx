@@ -21,7 +21,7 @@ export const PageTreeNodeDependency: DependencyInterface = {
             },
         });
 
-        if (error || data.pageTreeNode === null) {
+        if (error || !data?.pageTreeNode) {
             throw new Error(`Error for PageTreeNode ${id}: ${error?.message ?? "PageTreeNode is undefined"}`);
         }
 

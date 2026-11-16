@@ -1100,7 +1100,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
                                 "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
                                 "tipTapText": "EmailCampaignTipTapRichText",
@@ -1142,7 +1142,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
                                 "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
                                 "tipTapText": "EmailCampaignTipTapRichText",
@@ -2151,6 +2151,26 @@
         ]
     },
     {
+        "name": "MailRichText",
+        "description": "Formatted text, edited in the Draft.js based rich text editor.",
+        "fields": [
+            {
+                "name": "draftContent",
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "MailLink"
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "draftContent",
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "MailLink"
+            }
+        ]
+    },
+    {
         "name": "MailSpacer",
         "fields": [
             {
@@ -2388,7 +2408,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "image": "PixelImage",
                                 "button": "MailButton",
                                 "spacer": "MailSpacer"
@@ -2425,7 +2445,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "image": "PixelImage",
                                 "button": "MailButton",
                                 "spacer": "MailSpacer"
@@ -3503,6 +3523,23 @@
         ]
     },
     {
+        "name": "RedirectsExternalLink",
+        "fields": [
+            {
+                "name": "targetUrl",
+                "kind": "String",
+                "nullable": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "targetUrl",
+                "kind": "String",
+                "nullable": true
+            }
+        ]
+    },
+    {
         "name": "RedirectsLink",
         "description": "The target a redirect points to, for instance a page of the page tree or an external URL.",
         "fields": [
@@ -3521,7 +3558,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "internal": "InternalLink",
-                                "external": "ExternalLink",
+                                "external": "RedirectsExternalLink",
                                 "news": "NewsLink"
                             },
                             "nullable": false
@@ -3550,7 +3587,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "internal": "InternalLink",
-                                "external": "ExternalLink",
+                                "external": "RedirectsExternalLink",
                                 "news": "NewsLink"
                             },
                             "nullable": false
@@ -3576,7 +3613,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "internal": "InternalLink",
-                                "external": "ExternalLink",
+                                "external": "RedirectsExternalLink",
                                 "news": "NewsLink"
                             },
                             "nullable": false
@@ -3589,26 +3626,6 @@
                 "name": "activeType",
                 "kind": "String",
                 "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "RichText",
-        "description": "Formatted text, edited in the Draft.js based rich text editor.",
-        "fields": [
-            {
-                "name": "draftContent",
-                "kind": "RichTextBlock",
-                "nullable": false,
-                "linkBlock": "MailLink"
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "draftContent",
-                "kind": "RichTextBlock",
-                "nullable": false,
-                "linkBlock": "MailLink"
             }
         ]
     },
@@ -5183,7 +5200,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
                                 "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
                                 "tipTapText": "MailTipTapRichText",
@@ -5225,7 +5242,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
                                 "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
                                 "tipTapText": "MailTipTapRichText",

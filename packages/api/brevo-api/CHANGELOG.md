@@ -1,5 +1,36 @@
 # @comet/brevo-api
 
+## 10.15.0
+
+### Minor Changes
+
+- 9918560: Send Brevo email campaigns in the background and add a `FAILED` sending state
+
+    Sending a large campaign with `sendBrevoEmailCampaignNow` could exceed the gateway timeout. The mutation now returns right after setting the campaign to `SCHEDULED`, and the campaign is sent in the background. If sending fails, or the campaign has no target group to send to, the campaign is set to `FAILED`.
+
+    The admin shows failed campaigns with a red indicator, and they can be edited and sent again.
+
+### Patch Changes
+
+- a63e95d: Allow contacts that already exist in Brevo to subscribe in another scope
+
+    Previously, subscribing failed with `ERROR_CONTACT_ALREADY_EXISTS` as soon as the email address existed in Brevo, for example because the contact had subscribed in another scope.
+    Now, `ERROR_CONTACT_ALREADY_EXISTS` is only returned when the contact is already in the scope's main list.
+    With double opt-in, the confirmation mail is sent again and the contact is added to the scope's lists after confirmation.
+    Without double opt-in (admin contact creation), the existing contact is added to the scope's lists and its attributes are updated.
+    Because the attributes are shared by all scopes, the contact's target groups in the other scopes it subscribed to are updated to the new attributes as well.
+    Contacts that unsubscribed from the scope's main list or are blacklisted in Brevo are rejected with `ERROR_CONTACT_IS_BLACKLISTED`.
+
+    `BrevoContactsService.subscribeBrevoContact` now returns the `SubscribeResponse` from `createContact` instead of `SUCCESSFUL` for every non-empty response.
+    An already subscribed contact is still reported as `SUCCESSFUL`, so the public subscribe endpoint does not reveal which email addresses are subscribed.
+
+- Updated dependencies [41492ce]
+- Updated dependencies [d9c1a9b]
+- Updated dependencies [ba7823c]
+- Updated dependencies [db525c0]
+- Updated dependencies [aabf937]
+    - @dextinity/cms-api@10.15.0
+
 ## 10.14.0
 
 ### Patch Changes

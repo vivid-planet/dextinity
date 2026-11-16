@@ -150,6 +150,13 @@ const usePageSearch = ({ tree, siteUrl, setExpandedIds, onUpdateCurrentMatch, pa
             });
         }
 
+        if (matches.length === 0) {
+            // Keep the previous state if it's already empty to prevent an endless render loop when the tree changes its identity on every render (e.g., while the pages are loading)
+            setMatches((previousMatches) => (previousMatches?.length === 0 ? previousMatches : matches));
+            setCurrentMatchIndex(0);
+            return;
+        }
+
         setMatches(matches);
         setCurrentMatchIndex(0);
 

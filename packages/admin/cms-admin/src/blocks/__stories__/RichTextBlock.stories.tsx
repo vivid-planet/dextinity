@@ -1,6 +1,6 @@
+import { RouterMemoryRouter } from "@dextinity/admin";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { MemoryRouter } from "react-router-dom";
 
 import { createRichTextBlock, type RichTextBlockState } from "../createRichTextBlock";
 import { createBlockSkeleton } from "../helpers/createBlockSkeleton";
@@ -21,9 +21,9 @@ function RichTextBlockStory() {
     const [state, setState] = useState<RichTextBlockState>(RichTextBlock.defaultValues());
 
     return (
-        <MemoryRouter>
+        <RouterMemoryRouter>
             <RichTextBlock.AdminComponent state={state} updateState={setState} />
-        </MemoryRouter>
+        </RouterMemoryRouter>
     );
 }
 

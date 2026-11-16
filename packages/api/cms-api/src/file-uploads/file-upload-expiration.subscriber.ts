@@ -1,9 +1,9 @@
-import { EntityName, EventArgs, EventSubscriber } from "@mikro-orm/core";
+import type { EntityName, EventArgs, EventSubscriber } from "@mikro-orm/core";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 
-import { FileUpload } from "./entities/file-upload.entity";
-import { FileUploadsService } from "./file-uploads.service";
+import { FileUpload } from "./entities/file-upload.entity.js";
+import { FileUploadsService } from "./file-uploads.service.js";
 
 @Injectable()
 export class FileUploadExpirationSubscriber implements EventSubscriber {

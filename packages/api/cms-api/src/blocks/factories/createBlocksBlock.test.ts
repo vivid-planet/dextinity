@@ -1,9 +1,9 @@
 import { validate } from "class-validator";
 import { describe, expect, it } from "vitest";
 
-import { InternalLinkBlock } from "../../page-tree/blocks/internal-link.block";
-import { ExternalLinkBlock } from "../externalLink/external-link.block";
-import { createBlocksBlock } from "./createBlocksBlock";
+import { InternalLinkBlock } from "../../page-tree/blocks/internal-link.block.js";
+import { ExternalLinkBlock } from "../externalLink/external-link.block.js";
+import { createBlocksBlock } from "./createBlocksBlock.js";
 
 const BlocksBlock = createBlocksBlock({ supportedBlocks: { internal: InternalLinkBlock, external: ExternalLinkBlock } }, "BlocksBlockValidationTest");
 

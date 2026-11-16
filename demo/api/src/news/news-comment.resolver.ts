@@ -2,9 +2,9 @@ import { AffectedEntity } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Args, ID, Mutation, Resolver } from "@nestjs/graphql";
 
-import { NewsCommentInput } from "./dto/news-comment.input";
-import { News } from "./entities/news.entity";
-import { NewsComment } from "./entities/news-comment.entity";
+import { NewsCommentInput } from "./dto/news-comment.input.js";
+import { News } from "./entities/news.entity.js";
+import { NewsComment } from "./entities/news-comment.entity.js";
 
 @Resolver(() => NewsComment)
 export class NewsCommentResolver {
@@ -23,7 +23,7 @@ export class NewsCommentResolver {
             news,
         });
 
-        await this.entityManager.persistAndFlush(newsComment);
+        await this.entityManager.persist(newsComment).flush();
         return newsComment;
     }
 
@@ -46,7 +46,7 @@ export class NewsCommentResolver {
     @Mutation(() => Boolean)
     @AffectedEntity(NewsComment)
     async deleteNewsComment(@Args("id", { type: () => ID }) id: string): Promise<boolean> {
-        await this.entityManager.removeAndFlush({ id });
+        await this.entityManager.remove({ id }).flush();
 
         return true;
     }

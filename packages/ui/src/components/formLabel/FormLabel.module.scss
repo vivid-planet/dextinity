@@ -1,0 +1,38 @@
+.root {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: var(--dextinity-form-label-gap);
+    color: var(--dextinity-form-label-default-foreground);
+    font-family: var(--dextinity-brand-font-family-sans);
+    font-size: var(--dextinity-form-label-font-size);
+    font-weight: var(--dextinity-form-label-font-weight);
+    line-height: var(--dextinity-form-label-font-line-height);
+    letter-spacing: var(--dextinity-font-letter-spacing-normal);
+
+    &[data-error] {
+        color: var(--dextinity-form-label-error-foreground);
+    }
+}
+
+.label {
+    min-inline-size: 0;
+    overflow-wrap: break-word;
+}
+
+.required {
+    margin-inline-start: var(--dextinity-form-label-gap);
+    color: var(--dextinity-form-label-required-color);
+}
+
+.helperIcon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    block-size: var(--dextinity-form-label-font-line-height);
+    color: var(--dextinity-form-label-helper-icon-color);
+
+    > :is(svg, :global(.dextinityIcon)) {
+        inline-size: var(--dextinity-form-label-helper-icon-size);
+        block-size: var(--dextinity-form-label-helper-icon-size);
+    }
+}

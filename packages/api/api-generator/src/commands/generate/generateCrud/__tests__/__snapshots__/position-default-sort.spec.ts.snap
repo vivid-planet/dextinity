@@ -5,8 +5,8 @@ exports[`position default sort > filter should include primary key > args dto sh
 import { Type } from "class-transformer";
 import { IsOptional, IsString, ValidateNested, IsEnum, IsUUID } from "class-validator";
 import { OffsetBasedPaginationArgs, SortDirection } from "@dextinity/cms-api";
-import { TestEntityFilter } from "./test-entity.filter";
-import { TestEntitySort, TestEntitySortField } from "./test-entity.sort";
+import { TestEntityFilter } from "./test-entity.filter.js";
+import { TestEntitySort, TestEntitySortField } from "./test-entity.sort.js";
 
 @ArgsType()
 export class TestEntitiesArgs extends OffsetBasedPaginationArgs {

@@ -8,7 +8,8 @@ Since we are building the API first, we will start by generating a new entity. N
 
 ```typescript
 import { CrudField, CrudGenerator } from "@dextinity/cms-api";
-import { BaseEntity, Entity, PrimaryKey, Property } from "@mikro-orm/core";
+import { Entity, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity } from "@mikro-orm/core";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { v4 as uuid } from "uuid";
 

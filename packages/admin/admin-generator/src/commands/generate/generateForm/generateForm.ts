@@ -77,8 +77,9 @@ export function generateForm(
 
     const imports: Imports = [
         { name: "FormattedMessage", importPath: "react-intl" },
-        { name: "useApolloClient", importPath: "@apollo/client" },
-        { name: "useQuery", importPath: "@apollo/client" },
+        { name: "useApolloClient", importPath: "@apollo/client/react" },
+        { name: "useQuery", importPath: "@apollo/client/react" },
+        { name: "skipToken", importPath: "@apollo/client/react" },
         { name: "gql", importPath: "@apollo/client" },
         { name: "CheckboxField", importPath: "@dextinity/admin" },
         { name: "Field", importPath: "@dextinity/admin" },
@@ -431,7 +432,7 @@ export function generateForm(
 
     const code = `
     ${generateImportsCode(imports)}
-    import isEqual from "lodash.isequal";
+    import { deepEqual } from "fast-equals";
 
     ${
         rootBlockFields.length > 0
@@ -461,7 +462,11 @@ export function generateForm(
                 ? `
         const { data, error, loading, refetch } = useQuery<GQL${gqlType}Query, GQL${gqlType}QueryVariables>(
             ${instanceGqlType}Query,
-            ${mode == "edit" ? `{ variables: { id } }` : `id ? { variables: { id } } : { skip: true }`},
+            ${
+                mode == "edit"
+                    ? `{ variables: { id }, notifyOnNetworkStatusChange: false }`
+                    : `id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken`
+            },
         );
         `
                 : ""
@@ -587,7 +592,7 @@ export function generateForm(
                 onSubmit={handleSubmit}
                 mode=${mode == "all" ? `{mode}` : editMode ? `"edit"` : `"add"`}
                 initialValues={initialValues}
-                initialValuesEqual={isEqual} //required to compare block data correctly
+                initialValuesEqual={deepEqual} //required to compare block data correctly
                 subscription={{ ${finalFormSubscription.length ? finalFormSubscription.map((field) => `${field}: true`).join(", ") : ``} }}
             >
                 {(${finalFormRenderProps.length ? `{${finalFormRenderProps.join(", ")}}` : ``}) => (

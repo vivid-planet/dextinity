@@ -1,7 +1,7 @@
 import { validate } from "class-validator";
 import { describe, expect, it } from "vitest";
 
-import { createSeoBlock } from "./createSeoBlock";
+import { createSeoBlock } from "./createSeoBlock.js";
 
 const SeoBlock = createSeoBlock();
 

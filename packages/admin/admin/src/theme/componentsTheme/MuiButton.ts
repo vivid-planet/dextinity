@@ -27,9 +27,13 @@ export const getMuiButton: GetMuiComponentTheme<"MuiButton"> = (component, { pal
                 marginLeft: "6px",
             },
 
-            [`&.${buttonClasses.textSizeSmall}`]: {
+            [`&.${buttonClasses.text}.${buttonClasses.sizeSmall}`]: {
                 fontSize: 14,
                 lineHeight: "20px",
+            },
+
+            [`&.${buttonClasses.sizeMedium} .${buttonClasses.icon} > *:first-of-type`]: {
+                fontSize: 16,
             },
         },
         text: ({ ownerState }) => ({
@@ -76,57 +80,60 @@ export const getMuiButton: GetMuiComponentTheme<"MuiButton"> = (component, { pal
                 outline: `2px solid ${palette.primary.dark}`,
                 outlineOffset: -2,
             },
-        },
-        containedPrimary: {
-            color: palette.primary.contrastText,
-            borderColor: palette.primary.main,
 
-            "&:hover": {
-                backgroundColor: palette.primary.dark,
-                borderColor: palette.primary.dark,
+            [`&.${buttonClasses.colorPrimary}`]: {
+                color: palette.primary.contrastText,
+                borderColor: palette.primary.main,
+
+                "&:hover": {
+                    backgroundColor: palette.primary.dark,
+                    borderColor: palette.primary.dark,
+                },
+
+                "&:focus": {
+                    backgroundColor: palette.primary.main,
+                    outline: `2px solid ${palette.primary.dark}`,
+                },
+
+                [`&.${buttonClasses.disabled}`]: {
+                    backgroundColor: palette.grey[100],
+                    color: palette.grey[200],
+                },
             },
 
-            "&:focus": {
-                backgroundColor: palette.primary.main,
-                outline: `2px solid ${palette.primary.dark}`,
-            },
-
-            [`&.${buttonClasses.disabled}`]: {
-                backgroundColor: palette.grey[100],
-                color: palette.grey[200],
-            },
-        },
-        containedSecondary: {
-            color: palette.secondary.contrastText,
-            borderColor: palette.secondary.main,
-
-            "&:hover": {
-                backgroundColor: palette.secondary.dark,
-                borderColor: palette.secondary.dark,
-            },
-
-            "&:focus": {
-                outline: `2px solid ${palette.primary.dark}`,
-            },
-
-            [`&.${buttonClasses.disabled}`]: {
-                backgroundColor: palette.grey[100],
+            [`&.${buttonClasses.colorSecondary}`]: {
                 color: palette.secondary.contrastText,
-            },
-        },
-        containedSuccess: {
-            "&:hover": {
-                backgroundColor: palette.success.dark,
+                borderColor: palette.secondary.main,
+
+                "&:hover": {
+                    backgroundColor: palette.secondary.dark,
+                    borderColor: palette.secondary.dark,
+                },
+
+                "&:focus": {
+                    outline: `2px solid ${palette.primary.dark}`,
+                },
+
+                [`&.${buttonClasses.disabled}`]: {
+                    backgroundColor: palette.grey[100],
+                    color: palette.secondary.contrastText,
+                },
             },
 
-            "&:focus": {
-                outline: `2px solid ${palette.success.dark}`,
-            },
+            [`&.${buttonClasses.colorSuccess}`]: {
+                "&:hover": {
+                    backgroundColor: palette.success.dark,
+                },
 
-            [`&.${buttonClasses.disabled}`]: {
-                backgroundColor: palette.secondary.main,
-                color: palette.secondary.contrastText,
-                opacity: 0.2,
+                "&:focus": {
+                    outline: `2px solid ${palette.success.dark}`,
+                },
+
+                [`&.${buttonClasses.disabled}`]: {
+                    backgroundColor: palette.secondary.main,
+                    color: palette.secondary.contrastText,
+                    opacity: 0.2,
+                },
             },
         },
         outlined: {
@@ -156,41 +163,34 @@ export const getMuiButton: GetMuiComponentTheme<"MuiButton"> = (component, { pal
                 borderColor: palette.grey[100],
                 color: palette.grey[100],
             },
-        },
-        outlinedError: {
-            color: palette.error.main,
-            borderColor: palette.error.main,
-            backgroundColor: palette.common.white,
 
-            "&:hover": {
-                color: palette.error.dark,
-                borderColor: palette.error.dark,
-                backgroundColor: palette.grey[50],
-            },
-
-            "&:focus": {
-                border: `2px solid ${palette.error.main}`,
-            },
-
-            [`&.${buttonClasses.disabled}`]: {
-                borderColor: palette.error.main,
+            [`&.${buttonClasses.colorError}`]: {
                 color: palette.error.main,
-                opacity: 0.2,
+                borderColor: palette.error.main,
+                backgroundColor: palette.common.white,
+
+                "&:hover": {
+                    color: palette.error.dark,
+                    borderColor: palette.error.dark,
+                    backgroundColor: palette.grey[50],
+                },
+
+                "&:focus": {
+                    border: `2px solid ${palette.error.main}`,
+                },
+
+                [`&.${buttonClasses.disabled}`]: {
+                    borderColor: palette.error.main,
+                    color: palette.error.main,
+                    opacity: 0.2,
+                },
             },
         },
         startIcon: {
             marginLeft: 0,
-
-            [`&.${buttonClasses.iconSizeMedium} > *:first-of-type`]: {
-                fontSize: 16,
-            },
         },
         endIcon: {
             marginRight: 0,
-
-            [`&.${buttonClasses.iconSizeMedium} > *:first-of-type`]: {
-                fontSize: 16,
-            },
         },
     }),
 });

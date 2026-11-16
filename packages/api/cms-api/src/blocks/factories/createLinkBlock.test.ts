@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { InternalLinkBlock } from "../../page-tree/blocks/internal-link.block";
-import { ExternalLinkBlock } from "../externalLink/external-link.block";
-import { createLinkBlock } from "./createLinkBlock";
+import { InternalLinkBlock } from "../../page-tree/blocks/internal-link.block.js";
+import { ExternalLinkBlock } from "../externalLink/external-link.block.js";
+import { createLinkBlock } from "./createLinkBlock.js";
 
 describe("createLinkBlock", () => {
     it("should have a title", () => {

@@ -14,6 +14,10 @@ export default defineConfig({
             entry: {
                 index: "./src/index.ts",
                 server: "./src/server.ts",
+                buildAssets: "./src/buildAssets.ts",
+                uploadBuildAssetsCommand: "./src/uploadBuildAssetsCommand.ts",
+                "intl/server": "./src/intl/server.ts",
+                "intl/client": "./src/intl/client.ts",
                 "persistedQueries/webpackPersistedQueriesLoader": "./src/persistedQueries/webpackPersistedQueriesLoader.ts",
             },
             formats: ["es"],
@@ -26,10 +30,8 @@ export default defineConfig({
                 // otherwise vite will bundle them into the library which caused issues with client / server components
                 // supposedly because server code was bundled into the client code
                 return (
-                    // We include @dextinity/site-react in the build. There are two reasons
-                    //      1. we want to include the css from @dextinity/site-react/css in the generated css file
-                    //      2. we want to avoid false-positive edge runtime errors in next when using methods from @dextinity/site-react in the middleware
-                    !source.startsWith("@dextinity/site-react") &&
+                    // Bundle the CSS of @dextinity/site-react into the generated css file, so that consumers only need to import @dextinity/site-nextjs/css
+                    source !== "@dextinity/site-react/css" &&
                     !source.startsWith(".") &&
                     !source.startsWith("/")
                 );

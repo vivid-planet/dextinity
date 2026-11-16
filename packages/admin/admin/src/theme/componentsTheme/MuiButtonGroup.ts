@@ -10,56 +10,60 @@ export const getMuiButtonGroup: GetMuiComponentTheme<"MuiButtonGroup"> = (compon
         ...component?.defaultProps,
     },
     styleOverrides: mergeOverrideStyles<"MuiButtonGroup">(component?.styleOverrides, {
-        contained: {
+        contained: ({ ownerState }) => ({
             border: "none",
-        },
-        groupedContained: ({ ownerState }) => ({
-            "&:not(:first-of-type)": {
-                borderLeftWidth: 0,
+
+            [`& .${buttonGroupClasses.grouped}`]: {
+                "&:not(:first-of-type)": {
+                    borderLeftWidth: 0,
+                },
+
+                ...(ownerState.color === "info" && {
+                    "&:not(:last-child)": {
+                        borderColor: palette.grey[200],
+
+                        [`&.${buttonGroupClasses.disabled}`]: {
+                            borderColor: palette.grey[100],
+                            borderRightColor: palette.grey[200],
+                        },
+                    },
+                }),
             },
 
-            ...(ownerState.color === "info" && {
+            [`&.${buttonGroupClasses.horizontal} .${buttonGroupClasses.grouped}`]: {
                 "&:not(:last-child)": {
-                    borderColor: palette.grey[200],
+                    borderRightColor: palette.grey[200],
 
                     [`&.${buttonGroupClasses.disabled}`]: {
                         borderColor: palette.grey[100],
                         borderRightColor: palette.grey[200],
                     },
                 },
-            }),
+            },
+
+            [`&.${buttonGroupClasses.colorPrimary} .${buttonGroupClasses.grouped}`]: {
+                "&:not(:last-child)": {
+                    borderColor: palette.primary.main,
+                    borderRightColor: palette.primary.dark,
+
+                    [`&.${buttonGroupClasses.disabled}`]: {
+                        borderColor: palette.grey[100],
+                        borderRightColor: palette.grey[200],
+                    },
+                },
+            },
+
+            [`&.${buttonGroupClasses.colorSecondary} .${buttonGroupClasses.grouped}`]: {
+                "&:not(:last-child)": {
+                    borderColor: palette.secondary.main,
+                    borderRightColor: palette.secondary.dark,
+
+                    [`&.${buttonGroupClasses.disabled}`]: {
+                        borderColor: palette.grey[100],
+                        borderRightColor: palette.grey[200],
+                    },
+                },
+            },
         }),
-        groupedContainedHorizontal: {
-            "&:not(:last-child)": {
-                borderRightColor: palette.grey[200],
-
-                [`&.${buttonGroupClasses.disabled}`]: {
-                    borderColor: palette.grey[100],
-                    borderRightColor: palette.grey[200],
-                },
-            },
-        },
-        groupedContainedPrimary: {
-            "&:not(:last-child)": {
-                borderColor: palette.primary.main,
-                borderRightColor: palette.primary.dark,
-
-                [`&.${buttonGroupClasses.disabled}`]: {
-                    borderColor: palette.grey[100],
-                    borderRightColor: palette.grey[200],
-                },
-            },
-        },
-        groupedContainedSecondary: {
-            "&:not(:last-child)": {
-                borderColor: palette.secondary.main,
-                borderRightColor: palette.secondary.dark,
-
-                [`&.${buttonGroupClasses.disabled}`]: {
-                    borderColor: palette.grey[100],
-                    borderRightColor: palette.grey[200],
-                },
-            },
-        },
     }),
 });

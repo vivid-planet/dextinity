@@ -1,8 +1,6 @@
-"use client";
-
+import { FormattedDate } from "@dextinity/site-nextjs/intl";
 import { DamImageBlock } from "@src/common/blocks/DamImageBlock";
 import { NewsContentBlock } from "@src/news/blocks/NewsContentBlock";
-import { FormattedDate } from "react-intl";
 
 import type { GQLNewsDetailPageFragment } from "./fragment.generated";
 

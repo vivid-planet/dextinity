@@ -1,9 +1,9 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { TextLinkBlock } from "@src/common/blocks/text-link.block";
-import { faker } from "@src/db/fixtures/faker";
+import type { TextLinkBlock } from "@src/common/blocks/text-link.block.js";
+import { faker } from "@src/db/fixtures/faker.js";
 
-import { LinkBlockFixtureService } from "./link-block-fixture.service";
+import { LinkBlockFixtureService } from "./link-block-fixture.service.js";
 
 @Injectable()
 export class TextLinkBlockFixtureService {

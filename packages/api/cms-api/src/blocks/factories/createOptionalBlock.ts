@@ -2,23 +2,24 @@ import { Transform } from "class-transformer";
 import { IsBoolean, IsOptional, ValidateNested } from "class-validator";
 
 import {
-    Block,
-    BlockContext,
+    type Block,
+    type BlockContext,
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockInput,
-    BlockInputInterface,
+    type BlockInputInterface,
     blockInputToData,
-    ChildBlockInfo,
+    type ChildBlockInfo,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
     isBlockDataInterface,
     isBlockInputInterface,
-    SimpleBlockInputInterface,
-    TraversableTransformBlockResponse,
-} from "../block";
-import { BlockField } from "../decorators/field";
-import { BlockFactoryNameOrOptions } from "./types";
+    type SimpleBlockInputInterface,
+    type TraversableTransformBlockResponse,
+} from "../block.js";
+import { BlockField } from "../decorators/field.js";
+import type { BlockFactoryNameOrOptions } from "./types.js";
+import { withDefaultDescription } from "./withDefaultDescription.js";
 
 export interface OptionalBlockInputInterface<DecoratedBlockInput extends BlockInputInterface> extends SimpleBlockInputInterface {
     block?: DecoratedBlockInput;
@@ -76,5 +77,12 @@ export function createOptionalBlock<DecoratedBlock extends Block>(
         }
     }
 
-    return createBlock(BlockOptional, BlockOptionalInput, nameOrOptions);
+    return createBlock(
+        BlockOptional,
+        BlockOptionalInput,
+        withDefaultDescription(
+            nameOrOptions,
+            'A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{"visible":false}` without `block`.',
+        ),
+    );
 }

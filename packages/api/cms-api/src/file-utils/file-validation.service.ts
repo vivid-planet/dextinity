@@ -1,7 +1,7 @@
 import { readFile } from "fs/promises";
 
-import type { FileUploadInput } from "./file-upload.input";
-import { getValidExtensionsForMimetype, isValidSvg } from "./files.utils";
+import type { FileUploadInput } from "./file-upload.input.js";
+import { getValidExtensionsForMimetype, isValidSvg } from "./files.utils.js";
 
 export class FileValidationService {
     constructor(public config: { maxFileSize: number; acceptedMimeTypes: string[] }) {}

@@ -1,6 +1,6 @@
 import type { JSONContent } from "@tiptap/core";
 
-import type { TipTapResolvedList, TipTapResolvedTextBlock } from "./textBlocks";
+import type { TipTapResolvedList, TipTapResolvedTextBlock } from "./textBlocks.js";
 
 /**
  * Gives every text block without a style the `defaultStyle` of its text block - or, inside a list

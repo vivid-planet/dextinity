@@ -1,4 +1,10 @@
-import { BlockMetaFieldKind, type BlockMetaInterface, type BlockMetaTipTap, getRegisteredBlocks } from "./block";
+import {
+    type Block,
+    type BlockMetaField as BlockMetaFieldInterface,
+    BlockMetaFieldKind,
+    type BlockMetaInterface,
+    type BlockMetaTipTap,
+} from "./block.js";
 
 type BlockMetaField =
     | {
@@ -9,9 +15,16 @@ type BlockMetaField =
       }
     | {
           name: string;
+          kind: "RichTextBlock";
+          nullable: boolean;
+          linkBlock: string;
+      }
+    | {
+          name: string;
           kind: "TipTapRichTextBlock";
           nullable: boolean;
           childBlocks: Record<string, string>;
+          linkBlock?: string;
           tipTap?: BlockMetaTipTap;
       }
     | {
@@ -66,12 +79,20 @@ function extractFromBlockMeta(blockMeta: BlockMetaInterface): BlockMetaField[] {
                 nullable: field.nullable,
                 array: field.array,
             };
+        } else if (field.kind === BlockMetaFieldKind.RichTextBlock) {
+            return {
+                name: field.name,
+                kind: field.kind,
+                nullable: field.nullable,
+                linkBlock: field.linkBlock.name,
+            };
         } else if (field.kind === BlockMetaFieldKind.TipTapRichTextBlock) {
             return {
                 name: field.name,
                 kind: field.kind,
                 nullable: field.nullable,
                 childBlocks: Object.fromEntries(Object.entries(field.childBlocks).map(([blockType, block]) => [blockType, block.name])),
+                linkBlock: field.linkBlock?.name,
                 tipTap: field.tipTap,
             };
         } else if (field.kind === BlockMetaFieldKind.Enum) {
@@ -111,8 +132,11 @@ function extractFromBlockMeta(blockMeta: BlockMetaInterface): BlockMetaField[] {
     });
 }
 
-export function getBlocksMeta(): BlockMeta[] {
-    return getRegisteredBlocks()
+/**
+ * Returns the meta of the given blocks and, recursively, of their child blocks. Consumers can therefore resolve every block reference in the meta.
+ */
+export function getBlocksMeta(rootBlocks: Block[]): BlockMeta[] {
+    return getUsedBlocks(rootBlocks)
         .sort((blockA, blockB) => blockA.name.localeCompare(blockB.name))
         .map((block) => {
             const meta: BlockMeta = {
@@ -123,4 +147,56 @@ export function getBlocksMeta(): BlockMeta[] {
             };
             return meta;
         });
+}
+
+function getBlocksOfMetaField(field: BlockMetaFieldInterface): Block[] {
+    switch (field.kind) {
+        case BlockMetaFieldKind.Block:
+            return [field.block];
+        case BlockMetaFieldKind.OneOfBlocks:
+            return Object.values(field.blocks);
+        case BlockMetaFieldKind.RichTextBlock:
+            return [field.linkBlock];
+        case BlockMetaFieldKind.TipTapRichTextBlock:
+            return [...Object.values(field.childBlocks), ...(field.linkBlock ? [field.linkBlock] : [])];
+        case BlockMetaFieldKind.NestedObject:
+        case BlockMetaFieldKind.NestedObjectList:
+            return getBlocksOfMeta(field.object);
+        default:
+            return [];
+    }
+}
+
+function getBlocksOfMeta(meta: BlockMetaInterface): Block[] {
+    return meta.fields.flatMap((field) => getBlocksOfMetaField(field));
+}
+
+/**
+ * Returns all blocks that are used by the given root blocks: the root blocks themselves and, recursively, all blocks they reference.
+ */
+export function getUsedBlocks(rootBlocks: Block[]): Block[] {
+    const usedBlocks = new Set<Block>();
+    const seenBlockNames = new Set<string>();
+    const blocksToVisit = [...rootBlocks];
+
+    while (blocksToVisit.length > 0) {
+        const block = blocksToVisit.pop();
+
+        if (!block || usedBlocks.has(block)) {
+            continue;
+        }
+
+        if (seenBlockNames.has(block.name)) {
+            throw new Error(
+                `Two different blocks are named "${block.name}". Block names must be unique, otherwise the generated block types and the block clipboard mix them up. Pass a different name to one of the blocks.`,
+            );
+        }
+
+        usedBlocks.add(block);
+        seenBlockNames.add(block.name);
+
+        blocksToVisit.push(...getBlocksOfMeta(block.blockMeta), ...getBlocksOfMeta(block.blockInputMeta));
+    }
+
+    return Array.from(usedBlocks);
 }

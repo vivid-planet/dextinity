@@ -1,10 +1,11 @@
-import { CreateRequestContext, MikroORM } from "@mikro-orm/core";
+import { MikroORM } from "@mikro-orm/core";
+import { CreateRequestContext } from "@mikro-orm/decorators/legacy";
 import { Inject, Logger } from "@nestjs/common";
 import { Command, CommandRunner, Option } from "nest-commander";
 
-import { MAILER_SERVICE_CONFIG } from "./mailer.constants";
-import { MailerModuleConfig } from "./mailer.module";
-import { MailerService } from "./mailer.service";
+import { MAILER_SERVICE_CONFIG } from "./mailer.constants.js";
+import type { MailerModuleConfig } from "./mailer.module.js";
+import { MailerService } from "./mailer.service.js";
 
 @Command({
     name: "mailer:send-test-mail",

@@ -1,8 +1,9 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { Button, DeleteDialog, FieldSet, type GridColDef, Loading } from "@dextinity/admin";
 import { Add, Delete } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -66,12 +67,12 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
     const hasAllContentScopes =
         data.availableContentScopes.length > 0 &&
         data.availableContentScopes.every((availableContentScope) =>
-            data.userContentScopesSkipManual.some((scope) => isEqual(scope, availableContentScope.scope)),
+            data.userContentScopesSkipManual.some((scope) => deepEqual(scope, availableContentScope.scope)),
         );
 
     // A scope is rule-based (as opposed to manually assigned) when it is part of the scopes granted by rule. Only manually
     // assigned scopes can be deleted here.
-    const isRuleBasedScope = (scope: ContentScope) => data.userContentScopesSkipManual.some((ruleBasedScope) => isEqual(ruleBasedScope, scope));
+    const isRuleBasedScope = (scope: ContentScope) => data.userContentScopesSkipManual.some((ruleBasedScope) => deepEqual(ruleBasedScope, scope));
 
     // Show manually assigned scopes before rule-based ones (sort is stable, so the order within each group is preserved).
     const sortedContentScopes = [...userContentScopes].sort((a, b) => Number(isRuleBasedScope(a)) - Number(isRuleBasedScope(b)));
@@ -87,13 +88,13 @@ export const ContentScopeGrid = ({ userId }: { userId: string }) => {
     };
 
     const handleAddScope = async (scope: ContentScope) => {
-        if (!manualContentScopes.some((contentScope) => isEqual(contentScope, scope))) {
+        if (!manualContentScopes.some((contentScope) => deepEqual(contentScope, scope))) {
             await setManualContentScopes([...manualContentScopes, scope]);
         }
     };
 
     const handleDeleteScope = async (scope: ContentScope) => {
-        await setManualContentScopes(manualContentScopes.filter((contentScope) => !isEqual(contentScope, scope)));
+        await setManualContentScopes(manualContentScopes.filter((contentScope) => !deepEqual(contentScope, scope)));
     };
 
     const additionalColumns: GridColDef<ContentScope>[] = [

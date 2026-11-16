@@ -47,7 +47,7 @@ export const ActionLogCompare: FunctionComponent<ActionLogCompareProps> = ({
     return (
         <Root>
             {onClickShowVersionHistory && (
-                <Box marginBottom={4}>
+                <Box sx={{ marginBottom: 4 }}>
                     <Button onClick={onClickShowVersionHistory} startIcon={<ArrowLeft />} variant="primary">
                         <FormattedMessage defaultMessage="Show Version History" id="actionLog.actionLogCompare.showVersionHistory" />
                     </Button>
@@ -90,7 +90,7 @@ export const ActionLogCompare: FunctionComponent<ActionLogCompareProps> = ({
             {error && <InlineAlert />}
 
             {!loading && !error && (afterVersion == null || beforeVersion == null) && (
-                <Box margin={6}>
+                <Box sx={{ margin: 6 }}>
                     <InlineAlert
                         title={<FormattedMessage id="actionLog.actionLogCompare.notFound.title" defaultMessage="Versions not found" />}
                         description={

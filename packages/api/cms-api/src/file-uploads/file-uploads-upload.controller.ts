@@ -1,16 +1,16 @@
 import { EntityManager } from "@mikro-orm/postgresql";
-import { Body, Controller, Inject, Post, Type, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Inject, Post, type Type, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { rimraf } from "rimraf";
 
-import { DisableDextinityGuards } from "../auth/decorators/disable-dextinity-guards.decorator";
-import { FileUploadInput } from "../file-utils/file-upload.input";
-import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { FileUploadBody } from "./dto/file-upload.body";
-import { FileUpload } from "./entities/file-upload.entity";
-import { FileUploadsConfig } from "./file-uploads.config";
-import { FILE_UPLOADS_CONFIG } from "./file-uploads.constants";
-import { FileUploadsService } from "./file-uploads.service";
-import { FileUploadsFileInterceptor } from "./file-uploads-file.interceptor";
+import { DisableDextinityGuards } from "../auth/decorators/disable-dextinity-guards.decorator.js";
+import type { FileUploadInput } from "../file-utils/file-upload.input.js";
+import { RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { FileUploadBody } from "./dto/file-upload.body.js";
+import type { FileUpload } from "./entities/file-upload.entity.js";
+import type { FileUploadsConfig } from "./file-uploads.config.js";
+import { FILE_UPLOADS_CONFIG } from "./file-uploads.constants.js";
+import { FileUploadsService } from "./file-uploads.service.js";
+import { FileUploadsFileInterceptor } from "./file-uploads-file.interceptor.js";
 
 type FileUploadsUploadResponse = Pick<FileUpload, "id" | "name" | "size" | "mimetype" | "contentHash" | "createdAt" | "updatedAt"> & {
     downloadUrl?: string;

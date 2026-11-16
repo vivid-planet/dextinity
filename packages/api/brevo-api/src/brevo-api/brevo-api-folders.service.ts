@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { EmailCampaignScopeInterface } from "src/types";
 
-import { handleBrevoError } from "./brevo-api.utils";
-import { BrevoApiClientFactory } from "./brevo-api-client.factory";
-import { BrevoApiFolder } from "./dto/brevo-api-folder";
+import type { EmailCampaignScopeInterface } from "../types.js";
+import { handleBrevoError } from "./brevo-api.utils.js";
+import { BrevoApiClientFactory } from "./brevo-api-client.factory.js";
+import type { BrevoApiFolder } from "./dto/brevo-api-folder.js";
 
 @Injectable()
 export class BrevoApiFoldersService {

@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     type BreadcrumbItem,
     DataGridToolbar,
@@ -446,6 +446,7 @@ const FolderDataGrid = ({
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             scope,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     const rowCount = useBufferedRowCount(dataGridData?.damItemsList.totalCount);
@@ -530,6 +531,10 @@ const FolderDataGrid = ({
                 },
             });
 
+            if (!result.data) {
+                return;
+            }
+
             const position = result.data.damItemListPosition;
             const targetPage = Math.floor(position / dataGridProps.paginationModel.pageSize);
 
@@ -569,8 +574,10 @@ const FolderDataGrid = ({
         <Snackbar
             anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
             autoHideDuration={5000}
-            TransitionComponent={(props: SlideProps) => <Slide {...props} direction="right" />}
             message={<FormattedMessage id="dextinity.dam.upload.noEmptyFolders" defaultMessage="Empty folders can't be uploaded" />}
+            slots={{
+                transition: (props: SlideProps) => <Slide {...props} direction="right" />,
+            }}
         />
     );
 

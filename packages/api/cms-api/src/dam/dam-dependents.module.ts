@@ -1,7 +1,7 @@
-import { DynamicModule, Module, Type } from "@nestjs/common";
+import { type DynamicModule, Module, type Type } from "@nestjs/common";
 
-import { DependentsResolverFactory } from "../dependencies/dependents.resolver.factory";
-import { FileInterface } from "./files/entities/file.entity";
+import { DependentsResolverFactory } from "../dependencies/dependents.resolver.factory.js";
+import type { FileInterface } from "./files/entities/file.entity.js";
 
 interface DamDependentsModuleOptions {
     File: Type<FileInterface>;

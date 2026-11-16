@@ -4,18 +4,16 @@ import { ActionLogShowVersionDialog, type ActionLogShowVersionDialogProps } from
 import type { GQLActionLogShowVersionDialogFragment } from "../ActionLogShowVersionDialog.gql.generated";
 
 const mockUpdatedRow: GQLActionLogShowVersionDialogFragment = {
-    __typename: "ActionLog",
     id: "log3",
-    user: { __typename: "ActionLogsUser", id: "bob", name: "Bob" },
+    user: { id: "bob", name: "Bob" },
     entityName: "News",
     entityId: "550e8400-e29b-41d4-a716-446655440002",
     version: 3,
     createdAt: "2026-05-27T15:30:00Z",
     snapshot: { title: "Release 9.0", slug: "release-9-0" },
     previousVersion: {
-        __typename: "ActionLog",
         id: "log2",
-        user: { __typename: "ActionLogsUser", id: "bob", name: "Bob" },
+        user: { id: "bob", name: "Bob" },
         entityName: "News",
         version: 2,
         createdAt: "2026-05-27T14:00:00Z",

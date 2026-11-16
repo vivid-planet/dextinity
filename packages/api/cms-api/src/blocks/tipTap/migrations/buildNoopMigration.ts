@@ -1,7 +1,7 @@
 import type { ClassConstructor } from "class-transformer";
 
-import { BlockMigration } from "../../migrations/BlockMigration";
-import type { BlockMigrationInterface } from "../../migrations/types";
+import { BlockMigration } from "../../migrations/BlockMigration.js";
+import type { BlockMigrationInterface } from "../../migrations/types.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type BlockData = Record<string, any>;

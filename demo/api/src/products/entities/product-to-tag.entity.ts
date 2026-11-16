@@ -1,9 +1,10 @@
-import { BaseEntity, Entity, ManyToOne, PrimaryKey, Property, Ref, types } from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, type Ref, types } from "@mikro-orm/postgresql";
 import { Field, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 
-import { Product } from "./product.entity";
-import { ProductTag } from "./product-tag.entity";
+import { Product } from "./product.entity.js";
+import { ProductTag } from "./product-tag.entity.js";
 
 @Entity()
 @ObjectType()

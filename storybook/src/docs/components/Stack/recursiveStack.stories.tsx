@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import {
     Button,
     InlineAlert,
@@ -63,12 +64,20 @@ const Page = ({ id }: PageProps) => {
     }
 
     return (
-        <Box display="flex" flexDirection="column" alignItems="left" gap={2} padding={2}>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "left",
+                gap: 2,
+                padding: 2,
+            }}
+        >
             <div>Current ID: {id}</div>
             {data?.subfolder.length === 0 && <InlineAlert title="No entries" severity="warning" description="There are no entries in this folder" />}
             {data?.subfolder.map((childId) => {
                 return (
-                    <Button variant="primary" component={StackLink} pageName="id" payload={childId.id}>
+                    <Button variant="primary" component={StackLink} nativeButton={false} pageName="id" payload={childId.id}>
                         {childId.name}
                     </Button>
                 );

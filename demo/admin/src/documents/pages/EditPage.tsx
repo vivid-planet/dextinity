@@ -8,6 +8,7 @@ import {
     Toolbar,
     ToolbarActions,
     ToolbarItem,
+    useCurrentRouteMatch,
     useStackApi,
 } from "@dextinity/admin";
 import { ArrowLeft, Preview } from "@dextinity/admin-icons";
@@ -30,7 +31,7 @@ import {
 } from "@dextinity/cms-admin";
 import { IconButton, Stack } from "@mui/material";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useRouteMatch } from "react-router";
+import { matchPath, useLocation } from "react-router";
 
 import { PageContentBlock } from "./blocks/PageContentBlock";
 import { SeoBlock } from "./blocks/SeoBlock";
@@ -144,7 +145,8 @@ export const EditPage = ({ id }: Props) => {
         pageId: id,
     });
 
-    const match = useRouteMatch();
+    const routeUrl = useCurrentRouteMatch()?.url ?? "";
+    const { pathname } = useLocation();
     const stackApi = useStackApi();
     const { match: contentScopeMatch, scope } = useContentScope();
     const siteConfig = useSiteConfig({ scope });
@@ -152,7 +154,7 @@ export const EditPage = ({ id }: Props) => {
 
     const blockContext = useBlockContext();
 
-    const tabRouteMatch = useRouteMatch<{ tab: string }>(`${match.path}/:tab`);
+    const tab = matchPath({ path: `${routeUrl}/:tab`, end: false }, pathname)?.params.tab;
 
     if (pageState == null || pageState.document == null) {
         return null;
@@ -165,18 +167,18 @@ export const EditPage = ({ id }: Props) => {
     let previewUrl: string;
     let previewState;
 
-    if (tabRouteMatch?.params.tab === "stage") {
+    if (tab === "stage") {
         previewUrl = `${siteConfig.blockPreviewBaseUrl}/stage`;
         previewState = StageBlock.createPreviewState(pageState.document.stage, {
             ...blockContext,
-            parentUrl: `${match.url}/stage`,
+            parentUrl: `${routeUrl}/stage`,
             showVisibleOnly: previewApi.showOnlyVisible,
         });
     } else {
         previewUrl = `${siteConfig.blockPreviewBaseUrl}/page`;
         previewState = PageContentBlock.createPreviewState(pageState.document.content, {
             ...blockContext,
-            parentUrl: match.url,
+            parentUrl: routeUrl,
             showVisibleOnly: previewApi.showOnlyVisible,
         });
     }
@@ -196,7 +198,7 @@ export const EditPage = ({ id }: Props) => {
             {hasChanges && (
                 <RouterPrompt
                     message={(location) => {
-                        if (location.pathname.startsWith(match.url)) {
+                        if (location.pathname.startsWith(routeUrl)) {
                             return true;
                         } //we navigated within our self
                         return intl.formatMessage({

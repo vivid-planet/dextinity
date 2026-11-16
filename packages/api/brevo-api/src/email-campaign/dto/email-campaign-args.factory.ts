@@ -1,12 +1,12 @@
 import { OffsetBasedPaginationArgs } from "@dextinity/cms-api";
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { ArgsType, Field } from "@nestjs/graphql";
 import { Type as TransformerType } from "class-transformer";
 import { IsOptional, IsString, ValidateNested } from "class-validator";
 
-import { EmailCampaignScopeInterface } from "../../types";
-import { EmailCampaignFilter } from "./email-campaign.filter";
-import { EmailCampaignSort } from "./email-campaign.sort";
+import type { EmailCampaignScopeInterface } from "../../types.js";
+import { EmailCampaignFilter } from "./email-campaign.filter.js";
+import { EmailCampaignSort } from "./email-campaign.sort.js";
 
 export class EmailCampaignArgsFactory {
     static create({ Scope }: { Scope: Type<EmailCampaignScopeInterface> }) {

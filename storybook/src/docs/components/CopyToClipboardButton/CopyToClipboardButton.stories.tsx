@@ -31,7 +31,12 @@ export const Basic = {
                         <Card>
                             <CardContent sx={{ textAlign: "center" }}>
                                 <Typography>Copy to the clipboard:</Typography>
-                                <Typography fontWeight={fontWeightMedium} sx={{ marginBottom: 4 }}>
+                                <Typography
+                                    sx={{
+                                        fontWeight: fontWeightMedium,
+                                        marginBottom: 4,
+                                    }}
+                                >
                                     “{text}”
                                 </Typography>
                                 <CopyToClipboardButton copyText={text} />

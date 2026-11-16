@@ -1,13 +1,13 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
+import { type CallHandler, type ExecutionContext, Injectable, type NestInterceptor } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { GraphQLResolveInfo } from "graphql";
-import { Observable } from "rxjs";
+import type { GraphQLResolveInfo } from "graphql";
+import type { Observable } from "rxjs";
 
-import { ContentScopeService } from "../user-permissions/content-scope.service";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { BuildsService } from "./builds.service";
-import { SKIP_BUILD_METADATA_KEY } from "./skip-build.decorator";
+import { ContentScopeService } from "../user-permissions/content-scope.service.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { BuildsService } from "./builds.service.js";
+import { SKIP_BUILD_METADATA_KEY } from "./skip-build.decorator.js";
 
 @Injectable()
 export class ChangesCheckerInterceptor implements NestInterceptor {

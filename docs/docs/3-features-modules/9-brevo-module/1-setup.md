@@ -269,7 +269,7 @@ To add custom contact attributes, add `BrevoContactAttributes` and `BrevoContact
 
 ```typescript
 import { IsUndefinable } from "@dextinity/cms-api";
-import { Embeddable, Enum } from "@mikro-orm/core";
+import { Embeddable, Enum } from "@mikro-orm/decorators/legacy";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 
@@ -786,7 +786,7 @@ const getMasterMenuData = ({
             icon: <Dashboard />,
             route: {
                 path: "/dashboard",
-                component: DashboardPage,
+                element: <DashboardPage />,
             },
         },
         {
@@ -795,7 +795,7 @@ const getMasterMenuData = ({
             icon: <PageTree />,
             route: {
                 path: "/pages/pagetree/main-navigation",
-                render: () => (
+                element: (
                     <PagesPage
                         path="/pages/pagetree/main-navigation"
                         allCategories={pageTreeCategories}
@@ -824,7 +824,7 @@ const getMasterMenuData = ({
                     ),
                     route: {
                         path: "/newsletter/email-campaigns",
-                        component: CampaignsPage,
+                        element: <CampaignsPage />,
                     },
                 },
                 {
@@ -837,7 +837,7 @@ const getMasterMenuData = ({
                     ),
                     route: {
                         path: "/newsletter/contacts",
-                        render: () => <BrevoContactsPage />,
+                        element: <BrevoContactsPage />,
                     },
                 },
                 {
@@ -850,7 +850,7 @@ const getMasterMenuData = ({
                     ),
                     route: {
                         path: "/newsletter/test-contacts",
-                        render: () => <BrevoTestContactsPage />,
+                        element: <BrevoTestContactsPage />,
                     },
                 },
                 {
@@ -863,7 +863,7 @@ const getMasterMenuData = ({
                     ),
                     route: {
                         path: "/newsletter/target-groups",
-                        render: () => <TargetGroupsPage />,
+                        element: <TargetGroupsPage />,
                     },
                 },
                 {
@@ -873,7 +873,7 @@ const getMasterMenuData = ({
                     ),
                     route: {
                         path: "/newsletter/config",
-                        render: () => <BrevoConfigPage />,
+                        element: <BrevoConfigPage />,
                     },
                     requiredPermission: "brevo-newsletter-config",
                 },
@@ -886,7 +886,7 @@ const getMasterMenuData = ({
             icon: <Assets />,
             route: {
                 path: "/assets",
-                component: DamPage,
+                element: <DamPage />,
             },
             requiredPermission: "dam",
         },
@@ -900,7 +900,7 @@ const getMasterMenuData = ({
                     primary: <FormattedMessage id="menu.publisher" defaultMessage="Publisher" />,
                     route: {
                         path: "/system/publisher",
-                        component: PublisherPage,
+                        element: <PublisherPage />,
                     },
                     requiredPermission: "builds",
                 },
@@ -909,7 +909,7 @@ const getMasterMenuData = ({
                     primary: <FormattedMessage id="menu.redirects" defaultMessage="Redirects" />,
                     route: {
                         path: "/system/redirects",
-                        render: () => <RedirectsPage redirectPathAfterChange="/system/redirects" />,
+                        element: <RedirectsPage redirectPathAfterChange="/system/redirects" />,
                     },
                     requiredPermission: "pageTree",
                 },
@@ -1002,7 +1002,7 @@ Render that component to HTML with `renderMailHtml` from `@dextinity/mail-react/
 ```tsx
 import { renderMailHtml } from "@dextinity/mail-react/server";
 
-const { html } = renderMailHtml(
+const { html } = await renderMailHtml(
     <EmailCampaignMail content={content} config={getMailConfig(scope)} />,
 );
 ```

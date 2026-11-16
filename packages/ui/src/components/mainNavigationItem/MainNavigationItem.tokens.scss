@@ -1,0 +1,33 @@
+@mixin tokens {
+    --dextinity-main-navigation-item-height: var(--dextinity-unit-10);
+    --dextinity-main-navigation-item-radius: var(--dextinity-radius-md);
+    --dextinity-main-navigation-item-gap: var(--dextinity-unit-2);
+    --dextinity-main-navigation-item-padding-horizontal: var(--dextinity-unit-3);
+    --dextinity-main-navigation-item-icon-size: 16px;
+    --dextinity-main-navigation-item-expand-icon-size: 12px;
+
+    --dextinity-main-navigation-item-active-indicator-width: 3px;
+    --dextinity-main-navigation-item-active-indicator-height: 24px;
+
+    --dextinity-main-navigation-item-indent-level-1: var(--dextinity-unit-3);
+    --dextinity-main-navigation-item-indent-level-2: var(--dextinity-unit-9);
+    --dextinity-main-navigation-item-indent-level-3: var(--dextinity-unit-15);
+
+    --dextinity-main-navigation-item-font-size: var(--dextinity-typography-body-md-size);
+    --dextinity-main-navigation-item-font-line-height: var(--dextinity-typography-body-md-line-height);
+    --dextinity-main-navigation-item-font-weight: var(--dextinity-font-weight-medium);
+    --dextinity-main-navigation-item-font-weight-style: var(--dextinity-font-weight-medium-style);
+
+    --dextinity-main-navigation-item-default-background: var(--dextinity-color-transparent);
+    --dextinity-main-navigation-item-default-foreground: var(--dextinity-color-foreground-default);
+    --dextinity-main-navigation-item-default-icon: var(--dextinity-color-foreground-default);
+
+    --dextinity-main-navigation-item-hover-background: var(--dextinity-color-background-subtle);
+    --dextinity-main-navigation-item-hover-foreground: var(--dextinity-color-foreground-default);
+    --dextinity-main-navigation-item-hover-icon: var(--dextinity-color-foreground-default);
+
+    --dextinity-main-navigation-item-active-background: var(--dextinity-color-action-primary-subtle);
+    --dextinity-main-navigation-item-active-foreground: var(--dextinity-color-action-primary-default);
+    --dextinity-main-navigation-item-active-icon: var(--dextinity-color-action-primary-default);
+    --dextinity-main-navigation-item-active-indicator: var(--dextinity-color-action-primary-default);
+}

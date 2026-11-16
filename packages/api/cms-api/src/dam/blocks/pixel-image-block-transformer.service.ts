@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
 
-import { BlockContext, BlockTransformerServiceInterface } from "../../blocks/block";
-import { DamFileAiContentType } from "../files/entities/ai-content-type.enum";
-import { FilesService } from "../files/files.service";
-import { ImageCropArea } from "../images/entities/image-crop-area.entity";
-import { ImagesService } from "../images/images.service";
-import { DamScopeInterface } from "../types";
-import { PixelImageBlockData } from "./pixel-image.block";
+import type { BlockContext, BlockTransformerServiceInterface } from "../../blocks/block.js";
+import type { DamFileAiContentType } from "../files/entities/ai-content-type.enum.js";
+import { FilesService } from "../files/files.service.js";
+import type { ImageCropArea } from "../images/entities/image-crop-area.entity.js";
+import { ImagesService } from "../images/images.service.js";
+import { isUsableCropArea } from "../images/images.util.js";
+import type { DamScopeInterface } from "../types.js";
+import type { PixelImageBlockData } from "./pixel-image.block.js";
 
 type TransformResponse = {
     damFile?: {
@@ -52,7 +53,8 @@ export class PixelImageBlockTransformerService implements BlockTransformerServic
             return {};
         }
 
-        const image = await this.filesService.findImageToDeliver({ file: blockFile, cropArea: block.cropArea }, { previewDamUrls });
+        const blockCropArea = block.cropArea && isUsableCropArea(block.cropArea) ? block.cropArea : undefined;
+        const image = await this.filesService.findImageToDeliver({ file: blockFile, cropArea: blockCropArea }, { previewDamUrls });
 
         if (!image) {
             return {};

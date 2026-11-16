@@ -2,6 +2,59 @@
 title: Redirects
 ---
 
+## Temporary and permanent redirects
+
+By default, path redirects are temporary (HTTP status code 307).
+Editors can additionally create permanent redirects (HTTP status code 308) once the site respects the `redirectType` of a redirect.
+
+First, query the `redirectType` and use `permanentRedirect` for permanent redirects in the site:
+
+```tsx title="app/[visibility]/[domain]/[language]/[[...path]]/page.tsx"
+import { notFound, permanentRedirect, redirect } from "next/navigation";
+
+const documentTypeQuery = gql`
+    query DocumentType(/* ... */) {
+        # ...
+        redirectBySource(source: $redirectSource, sourceType: path, scope: $redirectScope) {
+            target
+            // highlight-next-line
+            redirectType
+        }
+    }
+`;
+
+// ...
+
+if (destination) {
+    // highlight-start
+    if (data.redirectBySource.redirectType === "permanent") {
+        permanentRedirect(destination);
+    } else {
+        redirect(destination);
+    }
+    // highlight-end
+}
+```
+
+Then enable the redirect type setting in the admin:
+
+```tsx title="App.tsx"
+<DextinityConfigProvider
+    redirects={{
+        scopeParts: ["domain"],
+        // highlight-next-line
+        enableRedirectType: true,
+    }}
+>
+```
+
+:::warning
+
+Browsers, search engines and CDNs cache permanent redirects for a long time.
+A permanent redirect that was created by mistake can't be undone for visitors who were already redirected.
+
+:::
+
 ## Custom redirect targets
 
 Custom redirect targets (e.g., a news site) are supported via the `customTargets`-option.
@@ -47,8 +100,7 @@ import {
     RedirectsLinkBlock,
     RedirectTargetUrlServiceInterface,
 } from "@dextinity/cms-api";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Scope } from "@nestjs/common";
 import { Config } from "@src/config/config";
 import { CONFIG } from "@src/config/config.module";
@@ -63,7 +115,7 @@ export class MyRedirectTargetUrlService implements RedirectTargetUrlServiceInter
     constructor(
         private readonly pageTreeReadApi: PageTreeReadApiService,
         @Inject(CONFIG) private readonly config: Config,
-        @InjectRepository(News) private readonly newsRepository: EntityRepository<News>,
+        private readonly entityManager: EntityManager,
         private readonly predefinedPagesService: PredefinedPagesService,
     ) {}
 
@@ -91,7 +143,7 @@ export class MyRedirectTargetUrlService implements RedirectTargetUrlServiceInter
         } else {
             const newsId = (target.props as ExtractBlockData<typeof NewsLinkBlock>).id;
             if (newsId) {
-                const news = await this.newsRepository.findOne(newsId);
+                const news = await this.entityManager.findOne(News, newsId);
 
                 if (!news) {
                     return undefined;

@@ -1,6 +1,6 @@
 import { DextinityIcon } from "@dextinity/admin-icons";
 import { useContext } from "react";
-import { Redirect, Route, Switch } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 
 import { StackBreadcrumbs } from "../breadcrumbs/StackBreadcrumbs";
 import { StackPage } from "../Page";
@@ -23,7 +23,7 @@ function Page1() {
 function Story() {
     return (
         <Stack topLevelTitle="Stack">
-            <StackBreadcrumbs separator={<DextinityIcon />} />
+            <StackBreadcrumbs iconMapping={{ separator: <DextinityIcon /> }} />
             <StackSwitch>
                 <StackPage name="page1">
                     <Page1 />
@@ -40,13 +40,9 @@ export default {
 
 export const StackCustomSeparator = () => {
     return (
-        <Switch>
-            <Route exact path="/">
-                <Redirect to="/foo" />
-            </Route>
-            <Route path="/foo">
-                <Story />
-            </Route>
-        </Switch>
+        <Routes>
+            <Route index element={<Navigate to="/foo" replace />} />
+            <Route path="/foo/*" element={<Story />} />
+        </Routes>
     );
 };

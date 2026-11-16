@@ -1,4 +1,5 @@
-import { BaseEntity, BigIntType, Entity, Index, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, Index, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, BigIntType, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 import { GraphQLBigInt } from "graphql-scalars";

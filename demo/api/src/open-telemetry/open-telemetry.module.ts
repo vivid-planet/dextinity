@@ -1,9 +1,8 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { type MiddlewareConsumer, Module, type NestModule } from "@nestjs/common";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 
-import { ApiMetricsInterceptor } from "./api-metrics.interceptor";
-import { ApiMetricsMiddleware } from "./api-metrics.middleware";
-import { KnexService } from "./knex.service";
+import { ApiMetricsInterceptor } from "./api-metrics.interceptor.js";
+import { ApiMetricsMiddleware } from "./api-metrics.middleware.js";
 
 @Module({
     providers: [
@@ -11,7 +10,6 @@ import { KnexService } from "./knex.service";
             provide: APP_INTERCEPTOR,
             useClass: ApiMetricsInterceptor,
         },
-        KnexService,
     ],
 })
 export class OpenTelemetryModule implements NestModule {

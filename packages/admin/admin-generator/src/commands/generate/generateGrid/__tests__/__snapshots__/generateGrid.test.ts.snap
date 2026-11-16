@@ -17,8 +17,8 @@ import { FormattedNumber } from "react-intl";
 import { useIntl } from "react-intl";
 import { ReactNode } from "react";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { Button } from "@dextinity/admin";
 import { CrudContextMenu } from "@dextinity/admin";
 import { CrudMoreActionsMenu } from "@dextinity/admin";
@@ -102,7 +102,7 @@ import { Excel as ExcelIcon } from "@dextinity/admin-icons";
             <DataGridToolbar>
                 <GridFilterButton />
                 <FillSpace />
-        <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+        <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         <FormattedMessage id="book.booksForm.newEntry" defaultMessage="New Book" />
     </Button>
             </DataGridToolbar>
@@ -142,7 +142,7 @@ renderCell: (params) => {
                             return (
                                 <>
                                 
-                                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                             <EditIcon />
                                         </IconButton>
                                         <CrudContextMenu
@@ -170,6 +170,7 @@ renderCell: (params) => {
             variables: {
                 filter: gqlFilter, sort: muiGridSortToGql(dataGridProps.sortModel, columns), offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.books.totalCount);
         if (error) throw error;
@@ -215,8 +216,8 @@ import { FormattedNumber } from "react-intl";
 import { useIntl } from "react-intl";
 import { ReactNode } from "react";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { Button } from "@dextinity/admin";
 import { CrudContextMenu } from "@dextinity/admin";
 import { CrudMoreActionsMenu } from "@dextinity/admin";
@@ -300,7 +301,7 @@ import { Excel as ExcelIcon } from "@dextinity/admin-icons";
             <DataGridToolbar>
                 <GridFilterButton />
                 <FillSpace />
-        <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+        <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         <FormattedMessage id="book.booksForm.newEntry" defaultMessage="New Book" />
     </Button>
             </DataGridToolbar>
@@ -362,7 +363,7 @@ renderCell: (params) => {
                             return (
                                 <>
                                 
-                                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                             <EditIcon />
                                         </IconButton>
                                         <CrudContextMenu
@@ -390,6 +391,7 @@ renderCell: (params) => {
             variables: {
                 filter: gqlFilter, sort: muiGridSortToGql(dataGridProps.sortModel, columns), offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.books.totalCount);
         if (error) throw error;
@@ -435,8 +437,8 @@ import { FormattedNumber } from "react-intl";
 import { useIntl } from "react-intl";
 import { ReactNode } from "react";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { Button } from "@dextinity/admin";
 import { CrudContextMenu } from "@dextinity/admin";
 import { CrudMoreActionsMenu } from "@dextinity/admin";
@@ -520,7 +522,7 @@ import { Excel as ExcelIcon } from "@dextinity/admin-icons";
             <DataGridToolbar>
                 <GridFilterButton />
                 <FillSpace />
-        <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+        <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         <FormattedMessage id="book.booksForm.newEntry" defaultMessage="New Book" />
     </Button>
             </DataGridToolbar>
@@ -560,7 +562,7 @@ renderCell: (params) => {
                             return (
                                 <>
                                 
-                                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                             <EditIcon />
                                         </IconButton>
                                         <CrudContextMenu
@@ -588,6 +590,7 @@ renderCell: (params) => {
             variables: {
                 filter: gqlFilter, sort: muiGridSortToGql(dataGridProps.sortModel, columns)
             },
+            notifyOnNetworkStatusChange: false,
         });
         
         if (error) throw error;
@@ -633,8 +636,8 @@ import { FormattedNumber } from "react-intl";
 import { useIntl } from "react-intl";
 import { ReactNode } from "react";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { Button } from "@dextinity/admin";
 import { CrudContextMenu } from "@dextinity/admin";
 import { CrudMoreActionsMenu } from "@dextinity/admin";
@@ -716,7 +719,7 @@ import { Excel as ExcelIcon } from "@dextinity/admin-icons";
         return (
             <DataGridToolbar>
                 <FillSpace />
-        <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+        <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         <FormattedMessage id="book.booksForm.newEntry" defaultMessage="New Book" />
     </Button>
             </DataGridToolbar>
@@ -756,7 +759,7 @@ renderCell: (params) => {
                             return (
                                 <>
                                 
-                                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                             <EditIcon />
                                         </IconButton>
                                         <CrudContextMenu
@@ -784,6 +787,7 @@ renderCell: (params) => {
             variables: {
                 
             },
+            notifyOnNetworkStatusChange: false,
         });
         
         if (error) throw error;
@@ -829,8 +833,8 @@ import { FormattedNumber } from "react-intl";
 import { useIntl } from "react-intl";
 import { ReactNode } from "react";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { Button } from "@dextinity/admin";
 import { CrudContextMenu } from "@dextinity/admin";
 import { CrudMoreActionsMenu } from "@dextinity/admin";
@@ -914,7 +918,7 @@ import { Excel as ExcelIcon } from "@dextinity/admin-icons";
             <DataGridToolbar>
                 <GridFilterButton />
                 <FillSpace />
-        <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+        <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         <FormattedMessage id="book.booksForm.newEntry" defaultMessage="New Book" />
     </Button>
             </DataGridToolbar>
@@ -954,7 +958,7 @@ renderCell: (params) => {
                             return (
                                 <>
                                 
-                                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                             <EditIcon />
                                         </IconButton>
                                         <CrudContextMenu
@@ -982,6 +986,7 @@ renderCell: (params) => {
             variables: {
                 filter: gqlFilter, sort: muiGridSortToGql(dataGridProps.sortModel, columns), offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.books.totalCount);
         if (error) throw error;
@@ -1027,8 +1032,8 @@ import { FormattedNumber } from "react-intl";
 import { useIntl } from "react-intl";
 import { ReactNode } from "react";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { Button } from "@dextinity/admin";
 import { CrudContextMenu } from "@dextinity/admin";
 import { CrudMoreActionsMenu } from "@dextinity/admin";
@@ -1131,7 +1136,7 @@ import { Excel as ExcelIcon } from "@dextinity/admin-icons";
                     }
         ]}
     />
-        <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+        <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         <FormattedMessage id="book.booksForm.newEntry" defaultMessage="New Book" />
     </Button>
             </DataGridToolbar>
@@ -1174,7 +1179,7 @@ renderCell: (params) => {
                             return (
                                 <>
                                 
-                                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                             <EditIcon />
                                         </IconButton>
                                         <CrudContextMenu
@@ -1202,6 +1207,7 @@ renderCell: (params) => {
             variables: {
                 authorId, filter: gqlFilter, sort: muiGridSortToGql(dataGridProps.sortModel, columns), offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.booksByAuthor.totalCount);
         if (error) throw error;
@@ -1261,8 +1267,8 @@ import { FormattedNumber } from "react-intl";
 import { useIntl } from "react-intl";
 import { ReactNode } from "react";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { Button } from "@dextinity/admin";
 import { CrudContextMenu } from "@dextinity/admin";
 import { CrudMoreActionsMenu } from "@dextinity/admin";
@@ -1365,7 +1371,7 @@ import { Excel as ExcelIcon } from "@dextinity/admin-icons";
                     }
         ]}
     />
-        <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+        <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         <FormattedMessage id="book.booksForm.newEntry" defaultMessage="New Book" />
     </Button>
             </DataGridToolbar>
@@ -1412,7 +1418,7 @@ renderCell: (params) => {
                             return (
                                 <>
                                 
-                                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                             <EditIcon />
                                         </IconButton>
                                         <CrudContextMenu
@@ -1440,6 +1446,7 @@ renderCell: (params) => {
             variables: {
                 filter: gqlFilter, sort: muiGridSortToGql(dataGridProps.sortModel, columns), offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.books.totalCount);
         if (error) throw error;
@@ -1499,8 +1506,8 @@ import { FormattedNumber } from "react-intl";
 import { useIntl } from "react-intl";
 import { ReactNode } from "react";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { Button } from "@dextinity/admin";
 import { CrudContextMenu } from "@dextinity/admin";
 import { CrudMoreActionsMenu } from "@dextinity/admin";
@@ -1582,7 +1589,7 @@ import { Excel as ExcelIcon } from "@dextinity/admin-icons";
         return (
             <DataGridToolbar>
                 <FillSpace />
-        <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+        <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
         <FormattedMessage id="book.booksForm.newEntry" defaultMessage="New Book" />
     </Button>
             </DataGridToolbar>
@@ -1624,7 +1631,7 @@ renderCell: (params) => {
                             return (
                                 <>
                                 
-                                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                             <EditIcon />
                                         </IconButton>
                                         <CrudContextMenu
@@ -1652,6 +1659,7 @@ renderCell: (params) => {
             variables: {
                 offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize, limit: dataGridProps.paginationModel.pageSize
             },
+            notifyOnNetworkStatusChange: false,
         });
         const rowCount = useBufferedRowCount(data?.books.totalCount);
         if (error) throw error;

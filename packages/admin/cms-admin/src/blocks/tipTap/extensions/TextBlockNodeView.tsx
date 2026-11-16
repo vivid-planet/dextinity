@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { findListNodeType } from "../findListNodeType";
 import { TextBlockContext } from "../TextBlockContext";
 import { findTextBlock, type TipTapResolvedStyledNode, type TipTapResolvedTextBlock } from "../textBlocks";
+import type { TipTapTextAlign } from "./textBlockAttributes";
 
 /**
  * Renders a text block the way it is configured: through the selected text block style, or through
@@ -32,17 +33,19 @@ export function createTextBlockNodeView(defaultTextBlock: TipTapResolvedTextBloc
         const findStyle = (styledNode: TipTapResolvedStyledNode) => styledNode.styles.find((style) => style.name === styleName);
         const listElement = list ? (findStyle(list)?.element ?? list.element) : undefined;
         const element = listElement ?? findStyle(textBlock)?.element ?? textBlock.element;
+        const textAlign = node.attrs.textAlign as TipTapTextAlign | null | undefined;
+        const wrapperStyle = textAlign ? { textAlign } : undefined;
 
         if (element) {
             return (
-                <NodeViewWrapper>
+                <NodeViewWrapper style={wrapperStyle}>
                     {element({ "data-text-block-style": styleName ?? undefined, children: <NodeViewContent<"span"> as="span" /> }, textBlock.tag)}
                 </NodeViewWrapper>
             );
         }
 
         return (
-            <NodeViewWrapper as={textBlock.tag}>
+            <NodeViewWrapper as={textBlock.tag} style={wrapperStyle}>
                 <NodeViewContent<"span"> as="span" />
             </NodeViewWrapper>
         );

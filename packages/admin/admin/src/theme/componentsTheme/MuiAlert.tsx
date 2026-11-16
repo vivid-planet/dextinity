@@ -1,4 +1,5 @@
 import { Check, Error, Info, Warning } from "@dextinity/admin-icons";
+import { alertClasses } from "@mui/material";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
 import type { GetMuiComponentTheme } from "./getComponentsTheme";
@@ -24,18 +25,22 @@ export const getMuiAlert: GetMuiComponentTheme<"MuiAlert"> = (component, { palet
             borderRadius: spacing(1),
             borderLeftWidth: spacing(1),
             boxShadow: shadows[2],
-        },
-        outlinedSuccess: {
-            borderColor: palette.success.main,
-        },
-        outlinedInfo: {
-            borderColor: palette.info.main,
-        },
-        outlinedWarning: {
-            borderColor: palette.warning.main,
-        },
-        outlinedError: {
-            borderColor: palette.error.main,
+
+            [`&.${alertClasses.colorSuccess}`]: {
+                borderColor: palette.success.main,
+            },
+
+            [`&.${alertClasses.colorInfo}`]: {
+                borderColor: palette.info.main,
+            },
+
+            [`&.${alertClasses.colorWarning}`]: {
+                borderColor: palette.warning.main,
+            },
+
+            [`&.${alertClasses.colorError}`]: {
+                borderColor: palette.error.main,
+            },
         },
         icon: {
             marginRight: 0,

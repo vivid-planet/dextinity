@@ -1,10 +1,10 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
+import { type CallHandler, type ExecutionContext, Injectable, type NestInterceptor } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { Counter, Histogram } from "@opentelemetry/api";
-import { GraphQLResolveInfo } from "graphql";
-import { Observable, tap } from "rxjs";
+import type { Counter, Histogram } from "@opentelemetry/api";
+import type { GraphQLResolveInfo } from "graphql";
+import { type Observable, tap } from "rxjs";
 
-import { getOrCreateCounter, getOrCreateHistogram } from "./metrics";
+import { getOrCreateCounter, getOrCreateHistogram } from "./metrics.js";
 
 @Injectable()
 export class ApiMetricsInterceptor implements NestInterceptor {

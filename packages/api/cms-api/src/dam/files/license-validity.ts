@@ -1,6 +1,6 @@
 import { add, isAfter, isBefore } from "date-fns";
 
-import { type License, LicenseType } from "./entities/license.embeddable";
+import { type License, LicenseType } from "./entities/license.embeddable.js";
 
 function isDurationApplicable(license: License): boolean {
     return license.type !== LicenseType.ROYALTY_FREE;

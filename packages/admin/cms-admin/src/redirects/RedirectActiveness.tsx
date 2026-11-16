@@ -1,4 +1,5 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import { ChevronDown, Invisible, Visible } from "@dextinity/admin-icons";
 import { Chip, ListItemIcon, Menu, MenuItem } from "@mui/material";
 import { green } from "@mui/material/colors";
@@ -14,6 +15,7 @@ import type {
 const updateRedirectActivenessMutation = gql`
     mutation UpdateRedirectActiveness($id: ID!, $input: RedirectUpdateActivenessInput!) {
         updateRedirectActiveness(id: $id, input: $input) {
+            __typename
             id
             active
             activatedAt
@@ -57,7 +59,7 @@ const RedirectActiveness = ({ redirect }: RedirectActivenessProps): JSX.Element 
                     __typename: "Redirect",
                     id: redirect.id,
                     active: active,
-                    activatedAt: active ? new Date() : null,
+                    activatedAt: active ? new Date().toISOString() : null,
                 },
             },
         });

@@ -1,16 +1,16 @@
 import {
     BlockData,
-    BlockDataInterface,
+    type BlockDataInterface,
     BlockField,
     BlockInput,
     blockInputToData,
     ChildBlock,
     ChildBlockInput,
     createBlock,
-    ExtractBlockInput,
+    type ExtractBlockInput,
 } from "@dextinity/cms-api";
-import { MediaBlock } from "@src/common/blocks/media.block";
-import { RichTextBlock } from "@src/common/blocks/rich-text.block";
+import { MediaBlock } from "@src/common/blocks/media.block.js";
+import { RichTextBlock } from "@src/common/blocks/rich-text.block.js";
 import { IsEnum } from "class-validator";
 
 export enum LayoutBlockLayout {

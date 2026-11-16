@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { generateEnumFilterDto } from "../generate-enum-filter-dto";
+import { generateEnumFilterDto } from "../generate-enum-filter-dto.js";
 
 describe("generateEnumFilterDto", () => {
     describe("path", () => {

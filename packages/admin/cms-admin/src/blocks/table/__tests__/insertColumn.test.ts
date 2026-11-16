@@ -6,14 +6,14 @@ vi.mock("../../context/useBlockContext", () => ({
 }));
 
 import { mockStates } from "../__mocks__/TableBlockData.mocks";
-import { clickButtonOfColumnAtIndex, renderTableBlock } from "./utils";
+import { clickButtonOfColumnAtIndex, getBodyRowgroup, renderTableBlock } from "./utils";
 
 afterEach(cleanup);
 
 describe("TableBlock: Insert a new column", () => {
     it("should insert a new, empty column at the left side of the table", async () => {
         const rendered = renderTableBlock(mockStates.default);
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
         const originalNumberOfCellsInRow = within(rows[0]).getAllByRole("gridcell").length;
         const targetColumnIndex = 0;
@@ -55,7 +55,7 @@ describe("TableBlock: Insert a new column", () => {
     it("should insert a new, empty column at the right side of the table", async () => {
         const initialBlockData = mockStates.default;
         const rendered = renderTableBlock(initialBlockData);
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
         const originalNumberOfCellsInRow = within(rows[0]).getAllByRole("gridcell").length;
         const targetColumnIndex = initialBlockData.columns.length - 1;
@@ -96,7 +96,7 @@ describe("TableBlock: Insert a new column", () => {
     });
     it("should insert a new, empty column in the middle of the table", async () => {
         const rendered = renderTableBlock(mockStates.default);
-        const rowgroup = rendered.getByRole("rowgroup");
+        const rowgroup = getBodyRowgroup(rendered);
         const rows = within(rowgroup).getAllByRole("row");
         const originalNumberOfCellsInRow = within(rows[0]).getAllByRole("gridcell").length;
         const targetColumnIndex = 2;

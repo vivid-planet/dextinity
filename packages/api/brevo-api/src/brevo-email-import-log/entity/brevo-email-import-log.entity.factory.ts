@@ -1,10 +1,11 @@
 import { DocumentInterface, IsUndefinable } from "@dextinity/cms-api";
-import { Embedded, Entity, Enum, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import { Embedded, Entity, Enum, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { OptionalProps } from "@mikro-orm/postgresql";
+import type { Type } from "@nestjs/common";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 
-import { EmailCampaignScopeInterface } from "../../types";
+import type { EmailCampaignScopeInterface } from "../../types.js";
 
 export interface BrevoEmailImportLogInterface {
     importedEmail: string;
@@ -58,12 +59,11 @@ export function createBrevoEmailImportLogEntity({ Scope }: { Scope: Type<EmailCa
         @Field(() => Scope)
         scope: typeof Scope;
 
-        @Property({ columnType: "uuid" })
+        @Property({ columnType: "uuid", nullable: true })
         @IsUndefinable()
-        @Field(() => ID)
+        @Field(() => ID, { nullable: true })
         importId?: string = randomUUID();
 
-        @Property({ columnType: "text" })
         @Field(() => ContactSource)
         @Enum({ items: () => ContactSource })
         contactSource: ContactSource;

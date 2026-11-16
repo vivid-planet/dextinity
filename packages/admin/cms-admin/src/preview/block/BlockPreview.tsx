@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Minimize } from "@dextinity/admin-icons";
 import { Grid, IconButton } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -60,7 +61,15 @@ function BlockPreview({ url, previewState, previewApi: { device, setDevice, show
     return (
         <Root>
             <ActionsContainer>
-                <Grid container justifyContent="space-between" alignItems="center" wrap="nowrap" spacing={1}>
+                <Grid
+                    container
+                    wrap="nowrap"
+                    spacing={1}
+                    sx={{
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    }}
+                >
                     <Grid>
                         <MinimizeButton onClick={handleMinimizeClick}>
                             <Minimize />

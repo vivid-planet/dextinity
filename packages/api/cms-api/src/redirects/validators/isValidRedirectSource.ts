@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { isURL, registerDecorator, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
+import { isURL, registerDecorator, type ValidationOptions, ValidatorConstraint, type ValidatorConstraintInterface } from "class-validator";
 
-import { RedirectValidationArguments } from "../dto/redirect-input.factory";
-import { RedirectSourceType } from "../redirects.enum";
+import type { RedirectValidationArguments } from "../dto/redirect-input.factory.js";
+import { RedirectSourceType } from "../redirects.enum.js";
 
 export const IsValidRedirectSource = (validationOptions?: ValidationOptions) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

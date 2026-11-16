@@ -1,4 +1,5 @@
-import { type DocumentNode, gql, useApolloClient, useQuery } from "@apollo/client";
+import { type DocumentNode, gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Alert,
     Button,
@@ -75,7 +76,15 @@ function BrevoTestContactsGridToolbar({ intl, totalCount }: BrevoTestContactsGri
             <ToolbarFillSpace />
             <Tooltip title={disableButton ? tooltipMessage : ""}>
                 <span>
-                    <Button startIcon={<Add />} component={StackLink} pageName="add" payload="add" variant="primary" disabled={disableButton}>
+                    <Button
+                        startIcon={<Add />}
+                        component={StackLink}
+                        nativeButton={false}
+                        pageName="add"
+                        payload="add"
+                        variant="primary"
+                        disabled={disableButton}
+                    >
                         <FormattedMessage id="dextinity.brevoTestContact.newContact" defaultMessage="New test contact" />
                     </Button>
                 </span>
@@ -145,7 +154,7 @@ export function BrevoTestContactsGrid({
             renderCell: (params) => {
                 return (
                     <>
-                        <IconButton component={StackLink} pageName="edit" payload={params.row.id.toString()}>
+                        <IconButton component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id.toString()}>
                             <Edit color="primary" />
                         </IconButton>
                         <RowActionsMenu>
@@ -177,6 +186,7 @@ export function BrevoTestContactsGrid({
             email: dataGridProps.filterModel?.quickFilterValues ? dataGridProps.filterModel?.quickFilterValues[0] : undefined,
             scope,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     const rowCount = useBufferedRowCount(data?.brevoTestContacts.totalCount);

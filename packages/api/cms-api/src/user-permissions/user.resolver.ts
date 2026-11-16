@@ -1,15 +1,15 @@
 import { Logger } from "@nestjs/common";
 import { Args, Int, ObjectType, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 
-import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator";
-import { PaginatedResponseFactory } from "../common/pagination/paginated-response.factory";
-import { AbstractAccessControlService } from "./access-control.service";
-import { RequiredPermission } from "./decorators/required-permission.decorator";
-import { CurrentUser } from "./dto/current-user";
-import { FindUsersArgs, PermissionFilter } from "./dto/paginated-user-list";
-import { UserPermissionsUser } from "./dto/user";
-import { User } from "./interfaces/user";
-import { UserPermissionsService } from "./user-permissions.service";
+import { GetCurrentUser } from "../auth/decorators/get-current-user.decorator.js";
+import { PaginatedResponseFactory } from "../common/pagination/paginated-response.factory.js";
+import { AbstractAccessControlService } from "./access-control.service.js";
+import { RequiredPermission } from "./decorators/required-permission.decorator.js";
+import { CurrentUser } from "./dto/current-user.js";
+import { FindUsersArgs, type PermissionFilter } from "./dto/paginated-user-list.js";
+import { UserPermissionsUser } from "./dto/user.js";
+import type { User } from "./interfaces/user.js";
+import { UserPermissionsService } from "./user-permissions.service.js";
 
 @ObjectType()
 class UserPermissionPaginatedUserList extends PaginatedResponseFactory.create(UserPermissionsUser) {}

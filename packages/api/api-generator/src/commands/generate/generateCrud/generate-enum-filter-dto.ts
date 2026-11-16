@@ -1,7 +1,7 @@
 import * as path from "path";
 
-import { generateImportsCode, type Imports } from "../utils/generate-imports-code";
-import type { GeneratedFile } from "../utils/write-generated-files";
+import { generateImportsCode, type Imports } from "../utils/generate-imports-code.js";
+import type { GeneratedFile } from "../utils/write-generated-files.js";
 
 export function generateEnumFilterDto(type: "enum" | "enums", enumName: string, enumPath: string): GeneratedFile {
     const imports: Imports = [];

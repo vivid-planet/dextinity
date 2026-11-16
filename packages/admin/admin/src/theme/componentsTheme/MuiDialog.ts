@@ -1,3 +1,4 @@
+import { dialogClasses } from "@mui/material";
 import type { Components } from "@mui/material/styles";
 
 import { mergeOverrideStyles } from "../utils/mergeOverrideStyles";
@@ -11,8 +12,10 @@ export const getMuiDialog: GetMuiComponentTheme<"MuiDialog"> = (component, { spa
             width: "100%",
             margin: spacing(8),
         },
-        paperScrollPaper: {
-            maxHeight: `calc(100% - ${spacing(16)})`,
+        scrollPaper: {
+            [`& .${dialogClasses.paper}`]: {
+                maxHeight: `calc(100% - ${spacing(16)})`,
+            },
         },
         paperWidthXs: {
             maxWidth: 350,

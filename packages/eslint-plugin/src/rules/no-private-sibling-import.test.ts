@@ -1,6 +1,6 @@
 import { RuleTester } from "eslint";
 
-import noPrivateSiblingImport from "./no-private-sibling-import";
+import noPrivateSiblingImport from "./no-private-sibling-import.js";
 
 const ruleTester = new RuleTester();
 

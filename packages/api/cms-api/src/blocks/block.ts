@@ -1,16 +1,16 @@
 import type { Type } from "@nestjs/common";
 import { type ClassConstructor, instanceToPlain, plainToInstance } from "class-transformer";
 import { Equals } from "class-validator";
-import type { WarningSeverity as WarningSeverityEnum } from "src/warnings/entities/warning-severity.enum";
 
-import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorators/field";
-import { strictBlockDataFactoryDecorator } from "./helpers/strictBlockDataFactoryDecorator";
-import { strictBlockInputFactoryDecorator } from "./helpers/strictBlockInputFactoryDecorator";
-import { getBlockDataMigrateVendor, setBlockDataMigrateVendor } from "./migrations/blockDataMigrateVendor";
-import { createAppliedMigrationsBlockDataFactoryDecorator } from "./migrations/createAppliedMigrationsBlockDataFactoryDecorator";
-import { BlockDataMigrationVersion } from "./migrations/decorators/BlockDataMigrationVersion";
-import type { MigrateOptions, MigrateVendorOptions } from "./migrations/types";
-import type { SearchText } from "./search/get-search-text";
+import type { WarningSeverity as WarningSeverityEnum } from "../warnings/entities/warning-severity.enum.js";
+import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorators/field.js";
+import { strictBlockDataFactoryDecorator } from "./helpers/strictBlockDataFactoryDecorator.js";
+import { strictBlockInputFactoryDecorator } from "./helpers/strictBlockInputFactoryDecorator.js";
+import { getBlockDataMigrateVendor, setBlockDataMigrateVendor } from "./migrations/blockDataMigrateVendor.js";
+import { createAppliedMigrationsBlockDataFactoryDecorator } from "./migrations/createAppliedMigrationsBlockDataFactoryDecorator.js";
+import { BlockDataMigrationVersion } from "./migrations/decorators/BlockDataMigrationVersion.js";
+import type { MigrateOptions, MigrateVendorOptions } from "./migrations/types.js";
+import type { SearchText } from "./search/get-search-text.js";
 
 export interface BlockTransformerServiceInterface<
     Block extends BlockDataInterface = BlockDataInterface,
@@ -233,6 +233,7 @@ export enum BlockMetaFieldKind {
     OneOfBlocks = "OneOfBlocks",
     NestedObject = "NestedObject",
     NestedObjectList = "NestedObjectList",
+    RichTextBlock = "RichTextBlock",
     TipTapRichTextBlock = "TipTapRichTextBlock",
 }
 
@@ -252,12 +253,25 @@ export type BlockMetaField =
     | { name: string; kind: BlockMetaFieldKind.OneOfBlocks; blocks: Record<string, Block>; nullable: boolean }
     | {
           name: string;
+          kind: BlockMetaFieldKind.RichTextBlock;
+          /**
+           * The link block used for links in the rich text content.
+           */
+          linkBlock: Block;
+          nullable: boolean;
+      }
+    | {
+          name: string;
           kind: BlockMetaFieldKind.TipTapRichTextBlock;
           /**
            * The child blocks the rich text content may contain, keyed by their stable config key.
            * Lets consumers like the block loader process blocks embedded in the content.
            */
           childBlocks: Record<string, Block>;
+          /**
+           * The link block used for links in the rich text content. Undefined if links are disabled.
+           */
+          linkBlock?: Block;
           /**
            * The editor schema and options the content is validated against, so tools outside the
            * editor can build valid content.
@@ -297,8 +311,6 @@ export type Block<BlockType extends BlockDataInterface = BlockDataInterface, Blo
     blockMeta: BlockMetaInterface;
     blockInputMeta: BlockMetaInterface;
 };
-
-const blocks: Block[] = [];
 
 interface CreateBlockOptions {
     name: string;
@@ -376,18 +388,7 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
         blockInputMeta: options.blockInputMeta ? options.blockInputMeta : new AnnotationBlockMeta(BlockInput),
     };
 
-    const finalBlock = overwrite(block);
-    registerBlock(finalBlock);
-
-    return finalBlock;
-}
-
-export function registerBlock(block: Block): void {
-    blocks.push(block);
-}
-
-export function getRegisteredBlocks(): Block[] {
-    return blocks;
+    return overwrite(block);
 }
 
 export interface BlockContext {

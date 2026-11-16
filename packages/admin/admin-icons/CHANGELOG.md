@@ -1,5 +1,23 @@
 # @comet/admin-icons
 
+## 10.15.0
+
+No changes in this release.
+
+## 10.14.0
+
+### Minor Changes
+
+- 1595266: Add `RteAlignLeft`, `RteAlignCenter`, `RteAlignRight`, and `RteAlignJustify` icons
+
+### Patch Changes
+
+- 45cb8e2: Update the design of the `Rte*` icons
+
+## 10.13.1
+
+## 10.13.0
+
 ## 10.12.0
 
 ## 10.11.0

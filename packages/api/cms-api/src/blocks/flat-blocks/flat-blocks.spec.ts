@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { createBlocksBlock } from "../factories/createBlocksBlock";
-import { FlatBlocks } from "./flat-blocks";
-import { ABlock } from "./test/blocks/ABlock";
-import { CBlock } from "./test/blocks/CBlock";
+import { createBlocksBlock } from "../factories/createBlocksBlock.js";
+import { FlatBlocks } from "./flat-blocks.js";
+import { ABlock } from "./test/blocks/ABlock.js";
+import { CBlock } from "./test/blocks/CBlock.js";
 
 describe("FlatBlocks", () => {
     it("visits all BlockData-references breadth first", () => {

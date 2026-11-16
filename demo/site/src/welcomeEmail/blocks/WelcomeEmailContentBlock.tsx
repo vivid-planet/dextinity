@@ -6,6 +6,7 @@ import { MailImageBlock } from "@src/mail/blocks/MailImageBlock";
 import { MailRichTextBlock } from "@src/mail/blocks/MailRichTextBlock";
 import { MailSpacerBlock } from "@src/mail/blocks/MailSpacerBlock";
 import { MailTipTapRichTextBlock } from "@src/mail/blocks/MailTipTapRichTextBlock";
+import { MailTwoColumnsBlock } from "@src/mail/blocks/MailTwoColumnsBlock";
 import { MailTwoListSizesRichTextBlock } from "@src/mail/blocks/MailTwoListSizesRichTextBlock";
 import { MailTwoListSizesTipTapRichTextBlock } from "@src/mail/blocks/MailTwoListSizesTipTapRichTextBlock";
 
@@ -18,6 +19,7 @@ const supportedBlocks: SupportedBlocks = {
     button: (data) => <MailButtonBlock data={data} />,
     divider: (data) => <MailDividerBlock data={data} />,
     spacer: (data) => <MailSpacerBlock data={data} />,
+    twoColumns: (data) => <MailTwoColumnsBlock data={data} />,
 };
 
 interface Props {

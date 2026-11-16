@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Button, MainContent, StackLink, Toolbar, ToolbarActions, ToolbarBackButton, ToolbarFillSpace } from "@dextinity/admin";
 import { Add as AddIcon } from "@dextinity/admin-icons";
 import { ContentScopeIndicator, useContentScopeConfig } from "@dextinity/cms-admin";
@@ -31,7 +31,7 @@ export const EmailCampaignStatistics = ({ id }: Props): ReactElement => {
                 <ToolbarBackButton />
                 <ToolbarFillSpace />
                 <ToolbarActions>
-                    <Button startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add" variant="primary">
+                    <Button startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add" variant="primary">
                         <FormattedMessage id="dextinity.emailCampaign.newEmailCampaign" defaultMessage="New email campaign" />
                     </Button>
                 </ToolbarActions>
@@ -55,8 +55,7 @@ export const EmailCampaignStatistics = ({ id }: Props): ReactElement => {
                             }
                             currentNumber={
                                 campaignStatistics?.brevoEmailCampaignStatistics
-                                    ? campaignStatistics.brevoEmailCampaignStatistics?.sent -
-                                      campaignStatistics.brevoEmailCampaignStatistics?.delivered
+                                    ? calculateFailedDeliveries(campaignStatistics.brevoEmailCampaignStatistics)
                                     : undefined
                             }
                             targetNumber={campaignStatistics?.brevoEmailCampaignStatistics?.sent}
@@ -83,8 +82,7 @@ export const EmailCampaignStatistics = ({ id }: Props): ReactElement => {
                             title={<FormattedMessage id="dextinity.emailCampaignStatistics.overallBounce" defaultMessage="Overall bounce" />}
                             currentNumber={
                                 campaignStatistics?.brevoEmailCampaignStatistics
-                                    ? campaignStatistics.brevoEmailCampaignStatistics.softBounces +
-                                      campaignStatistics.brevoEmailCampaignStatistics.hardBounces
+                                    ? calculateBounces(campaignStatistics.brevoEmailCampaignStatistics)
                                     : undefined
                             }
                             targetNumber={campaignStatistics?.brevoEmailCampaignStatistics?.sent}
@@ -104,3 +102,21 @@ export const EmailCampaignStatistics = ({ id }: Props): ReactElement => {
         </>
     );
 };
+
+type CampaignStatistics = NonNullable<GQLEmailCampaignStatisticsQuery["brevoEmailCampaignStatistics"]>;
+
+function calculateFailedDeliveries({ sent, delivered }: CampaignStatistics): number | null {
+    if (sent === null || delivered === null) {
+        return null;
+    }
+
+    return sent - delivered;
+}
+
+function calculateBounces({ softBounces, hardBounces }: CampaignStatistics): number | null {
+    if (softBounces === null || hardBounces === null) {
+        return null;
+    }
+
+    return softBounces + hardBounces;
+}

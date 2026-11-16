@@ -1,3 +1,3 @@
-import { DextinityException } from "./dextinity.exception";
+import { DextinityException } from "./dextinity.exception.js";
 
 export class DextinityEntityNotFoundException extends DextinityException {}

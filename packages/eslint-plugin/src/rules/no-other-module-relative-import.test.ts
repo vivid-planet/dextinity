@@ -1,6 +1,6 @@
 import { RuleTester } from "eslint";
 
-import noOtherModuleRelativeImport from "./no-other-module-relative-import";
+import noOtherModuleRelativeImport from "./no-other-module-relative-import.js";
 
 const ruleTester = new RuleTester();
 

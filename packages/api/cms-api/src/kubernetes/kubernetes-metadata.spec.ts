@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { LABEL_ANNOTATION, PARENT_CRON_JOB_LABEL } from "./kubernetes.constants";
-import { getAnnotation, getLabel, toLegacyLabelSelector, toLegacyName } from "./kubernetes-metadata";
+import { LABEL_ANNOTATION, PARENT_CRON_JOB_LABEL } from "./kubernetes.constants.js";
+import { getAnnotation, getLabel, toLegacyLabelSelector, toLegacyName } from "./kubernetes-metadata.js";
 
 describe("kubernetes-metadata", () => {
     describe("getAnnotation", () => {

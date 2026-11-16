@@ -56,7 +56,14 @@ export const ToggleButtonFieldStory: Story = {
             },
             {
                 label: (
-                    <Box display="flex" gap={2} alignItems="center" component="span">
+                    <Box
+                        component="span"
+                        sx={{
+                            display: "flex",
+                            gap: 2,
+                            alignItems: "center",
+                        }}
+                    >
                         <Info />
                         Icon and Label
                     </Box>
@@ -137,7 +144,14 @@ export const DisabledOptions: Story = {
                                     },
                                     {
                                         label: (
-                                            <Box display="flex" gap={2} alignItems="center" component="span">
+                                            <Box
+                                                component="span"
+                                                sx={{
+                                                    display: "flex",
+                                                    gap: 2,
+                                                    alignItems: "center",
+                                                }}
+                                            >
                                                 <Info />
                                                 Icon and Label
                                             </Box>
@@ -146,7 +160,6 @@ export const DisabledOptions: Story = {
                                     },
                                 ]}
                             />
-
                             <Alert title="FormState">
                                 <pre>{JSON.stringify(values, null, 2)}</pre>
                             </Alert>
@@ -269,7 +282,13 @@ export const ToggleButtonFieldAddressSample: Story = {
             >
                 {({ values }) => {
                     return (
-                        <Box display="flex" gap={2} flexDirection="column">
+                        <Box
+                            sx={{
+                                display: "flex",
+                                gap: 2,
+                                flexDirection: "column",
+                            }}
+                        >
                             <ToggleButtonGroupField<AddressType>
                                 label="AddressType"
                                 name="type"
@@ -284,8 +303,11 @@ export const ToggleButtonFieldAddressSample: Story = {
                                     },
                                 ]}
                             />
-
-                            <Box marginBottom={2}>
+                            <Box
+                                sx={{
+                                    marginBottom: 2,
+                                }}
+                            >
                                 <Divider />
                             </Box>
                             {values.type === "address" && (
@@ -295,7 +317,6 @@ export const ToggleButtonFieldAddressSample: Story = {
                                     <TextField name="address.street" label="Street" />
                                 </>
                             )}
-
                             {values.type === "coordinates" && (
                                 <>
                                     <NumberField name="coordinates.latitude" label="Latitude" decimals={14} />

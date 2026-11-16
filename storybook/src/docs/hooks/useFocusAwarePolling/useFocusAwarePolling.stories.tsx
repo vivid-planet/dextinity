@@ -1,10 +1,21 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Button, useFocusAwarePolling } from "@dextinity/admin";
 import { Pause, Play } from "@dextinity/admin-icons";
 import { Typography } from "@mui/material";
 import { useState } from "react";
 
 import { apolloStoryDecorator } from "../../../apollo-story.decorator";
+
+interface GQLLaunchesPastQuery {
+    launchesPastResult: {
+        data: Array<{
+            id: string;
+            mission_name: string;
+            launch_date_local: string;
+        }>;
+    };
+}
 
 export default {
     title: "Docs/Hooks/useFocusAwarePolling",
@@ -13,7 +24,7 @@ export default {
 
 export const BasicExample = {
     render: () => {
-        const { data, loading, error, refetch, startPolling, stopPolling } = useQuery(
+        const { data, loading, error, refetch, startPolling, stopPolling } = useQuery<GQLLaunchesPastQuery>(
             gql`
                 query LaunchesPast {
                     launchesPastResult(limit: 1) {
@@ -61,7 +72,7 @@ export const WithSkipOption = {
     render: () => {
         const [paused, setPaused] = useState(false);
 
-        const { data, loading, error, refetch, startPolling, stopPolling } = useQuery(
+        const { data, loading, error, refetch, startPolling, stopPolling } = useQuery<GQLLaunchesPastQuery>(
             gql`
                 query LaunchesPast {
                     launchesPastResult(limit: 1) {

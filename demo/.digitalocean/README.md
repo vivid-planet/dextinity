@@ -10,6 +10,8 @@ Deploys the demo for internal use, the same way the [Starter](https://github.com
 
 The admin requires a login with a `vivid-planet.com` account. The site is public, as in the Starter.
 
+At the end of its build, the site uploads its `.next/static` files to the bucket under `demo-site/_next/static` with the `dextinity-upload-build-assets` command of `@dextinity/site-nextjs`. The storage keeps the files of every deployed build. When a request for one of these files reaches an instance of another build, the site server loads the file from the bucket.
+
 Like the Starter's, the components are built with App Platform's Node.js buildpack. Unlike the Starter's, they build from the repository root, because the demo depends on the packages in this repository rather than on released versions.
 
 ## One-time setup
@@ -30,8 +32,10 @@ Like the Starter's, the components are built with App Platform's Node.js buildpa
 | `DEMO_OAUTH2_PROXY_COOKIE_SECRET`                                                                                              | secret   | `openssl rand -base64 32 \| tr -- '+/' '-_'`                                                                                            |
 | `DEMO_POSTGRESQL_PWD_BASE64`                                                                                                   | secret   | Password of the `demo` database user, base64-encoded                                                                                    |
 | `DEMO_S3_ACCESS_KEY_ID`, `DEMO_S3_SECRET_ACCESS_KEY`                                                                           | secrets  | The Spaces access key                                                                                                                   |
+| `DEMO_BUILD_ASSETS_S3_ACCESS_KEY_ID`, `DEMO_BUILD_ASSETS_S3_SECRET_ACCESS_KEY`                                                 | secrets  | A Spaces access key for the bucket's build assets, used by the site build to upload them and by the running site to serve them          |
 | `DEMO_IMGPROXY_KEY`, `DEMO_IMGPROXY_SALT`                                                                                      | secrets  | `openssl rand -hex 32` each                                                                                                             |
 | `DEMO_API_BASIC_AUTH_SYSTEM_USER_PASSWORD`, `DEMO_DAM_SECRET`, `DEMO_FILE_UPLOADS_DOWNLOAD_SECRET`, `DEMO_SITE_PREVIEW_SECRET` | secrets  | At least 16 characters each, e.g. `openssl rand -hex 16`                                                                                |
+| `DEMO_MUI_LICENSE_KEY`                                                                                                         | secret   | MUI X license key, without it the admin's data grids show a "MUI X Missing license key" watermark                                       |
 
 ## Deploying
 

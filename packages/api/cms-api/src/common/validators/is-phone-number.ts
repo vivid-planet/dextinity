@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { isString, registerDecorator, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
+import { isString, registerDecorator, ValidatorConstraint, type ValidatorConstraintInterface } from "class-validator";
 
 const PHONE_NUMBER_REGEX = /^\+?[0-9\s]+$/;
 

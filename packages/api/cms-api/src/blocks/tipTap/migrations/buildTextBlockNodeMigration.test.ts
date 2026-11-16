@@ -1,8 +1,8 @@
 import type { JSONContent } from "@tiptap/core";
 import { describe, expect, it } from "vitest";
 
-import { createTipTapRichTextBlock, resolveTipTapOptions } from "../createTipTapRichTextBlock";
-import { buildTextBlockNodeMigration } from "./buildTextBlockNodeMigration";
+import { createTipTapRichTextBlock, resolveTipTapOptions } from "../createTipTapRichTextBlock.js";
+import { buildTextBlockNodeMigration } from "./buildTextBlockNodeMigration.js";
 
 const resolvedOptions = resolveTipTapOptions({});
 

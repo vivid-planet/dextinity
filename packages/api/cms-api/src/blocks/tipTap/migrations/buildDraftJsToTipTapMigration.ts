@@ -2,10 +2,10 @@ import type { JSONContent } from "@tiptap/core";
 import type { Schema } from "@tiptap/pm/model";
 import type { ClassConstructor } from "class-transformer";
 
-import type { Block } from "../../block";
-import { BlockMigration } from "../../migrations/BlockMigration";
-import type { BlockMigrationInterface } from "../../migrations/types";
-import { isValidTipTapContentSync } from "../tipTapValidation";
+import type { Block } from "../../block.js";
+import { BlockMigration } from "../../migrations/BlockMigration.js";
+import type { BlockMigrationInterface } from "../../migrations/types.js";
+import { isValidTipTapContentSync } from "../tipTapValidation.js";
 import {
     buildEmptyTipTapDoc,
     buildStrippedTipTapDoc,
@@ -14,7 +14,7 @@ import {
     type DraftJsContent,
     isBuiltInDraftJsListBlockType,
     LIST_TARGETS,
-} from "./convertDraftJsToTipTap";
+} from "./convertDraftJsToTipTap.js";
 
 interface From {
     draftContent?: DraftJsContent;
@@ -104,6 +104,7 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
                     defaultTextBlock: resolvedOptions.defaultTextBlock,
                     orderedList: resolvedOptions.orderedList,
                     unorderedList: resolvedOptions.unorderedList,
+                    textAlign: resolvedOptions.textAlign,
                 })
             ) {
                 return { tipTapContent: converted };
@@ -121,6 +122,7 @@ export function buildDraftJsToTipTapMigration(options: BuildOptions): ClassConst
                     defaultTextBlock: resolvedOptions.defaultTextBlock,
                     orderedList: resolvedOptions.orderedList,
                     unorderedList: resolvedOptions.unorderedList,
+                    textAlign: resolvedOptions.textAlign,
                 })
             ) {
                 console.warn("DraftJS->TipTap migration failed, using stripped content");

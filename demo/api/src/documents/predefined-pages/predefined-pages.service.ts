@@ -1,8 +1,8 @@
-import { PageTreeNodeInterface, PageTreeReadApiService, PageTreeService } from "@dextinity/cms-api";
+import { type PageTreeNodeInterface, PageTreeReadApiService, PageTreeService } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { PageTreeNodeScope } from "@src/page-tree/dto/page-tree-node-scope";
+import type { PageTreeNodeScope } from "@src/page-tree/dto/page-tree-node-scope.js";
 
-import { PredefinedPage, PredefinedPageType } from "./entities/predefined-page.entity";
+import { type PredefinedPage, PredefinedPageType } from "./entities/predefined-page.entity.js";
 
 @Injectable()
 export class PredefinedPagesService {

@@ -1,12 +1,12 @@
 import { CsvColumn, CsvColumnType } from "@dextinity/cms-api";
-import { Collection, Ref } from "@mikro-orm/core";
+import { Collection, type Ref } from "@mikro-orm/core";
 import { camelCase } from "change-case";
 import { IsArray, IsBoolean, IsDate, IsEnum, IsInt, IsOptional, IsString } from "class-validator";
 
-import { ProductDimensions, ProductDiscounts, ProductPriceRange, ProductStatus } from "./entities/product.entity";
-import { ProductCategory } from "./entities/product-category.entity";
-import { ProductColor } from "./entities/product-color.entity";
-import { ProductType } from "./entities/product-type.enum";
+import { ProductDimensions, type ProductDiscounts, ProductPriceRange, ProductStatus } from "./entities/product.entity.js";
+import type { ProductCategory } from "./entities/product-category.entity.js";
+import type { ProductColor } from "./entities/product-color.entity.js";
+import { ProductType } from "./entities/product-type.enum.js";
 
 const transformToProductType = (value: string) => {
     return ProductType[camelCase(value) as keyof typeof ProductType];

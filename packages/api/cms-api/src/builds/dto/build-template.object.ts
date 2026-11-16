@@ -1,7 +1,7 @@
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 
-import { LABEL_ANNOTATION } from "../../kubernetes/kubernetes.constants";
-import { toLegacyName } from "../../kubernetes/kubernetes-metadata";
+import { LABEL_ANNOTATION } from "../../kubernetes/kubernetes.constants.js";
+import { toLegacyName } from "../../kubernetes/kubernetes-metadata.js";
 
 @ObjectType("BuildTemplate")
 export class BuildTemplateObject {

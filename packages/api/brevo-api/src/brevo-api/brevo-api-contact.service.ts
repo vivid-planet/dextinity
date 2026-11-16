@@ -1,19 +1,19 @@
-import { Brevo } from "@getbrevo/brevo";
-import { InjectRepository } from "@mikro-orm/nestjs";
-import { EntityRepository } from "@mikro-orm/postgresql";
+import { resolveEntityClass } from "@dextinity/cms-api";
+import type { Brevo } from "@getbrevo/brevo";
+import { EntityManager } from "@mikro-orm/postgresql";
 import { Inject, Injectable, Optional } from "@nestjs/common";
-import { BrevoConfigInterface } from "src/brevo-config/entities/brevo-config-entity.factory";
-import { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "src/types";
 
-import { BlacklistedContactsService } from "../blacklisted-contacts/blacklisted-contacts.service";
-import { BrevoContactInterface } from "../brevo-contact/dto/brevo-contact.factory";
-import { BrevoEmailImportLogService } from "../brevo-email-import-log/brevo-email-import-log.service";
-import { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory";
-import { BrevoModuleConfig } from "../config/brevo-module.config";
-import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants";
-import { handleBrevoError, isErrorFromBrevo } from "./brevo-api.utils";
-import { BrevoApiClientFactory } from "./brevo-api-client.factory";
-import { BrevoApiContactList } from "./dto/brevo-api-contact-list";
+import { BlacklistedContactsService } from "../blacklisted-contacts/blacklisted-contacts.service.js";
+import type { BrevoConfigInterface } from "../brevo-config/entities/brevo-config-entity.factory.js";
+import type { BrevoContactInterface } from "../brevo-contact/dto/brevo-contact.factory.js";
+import { BrevoEmailImportLogService } from "../brevo-email-import-log/brevo-email-import-log.service.js";
+import type { ContactSource } from "../brevo-email-import-log/entity/brevo-email-import-log.entity.factory.js";
+import type { BrevoModuleConfig } from "../config/brevo-module.config.js";
+import { BREVO_MODULE_CONFIG } from "../config/brevo-module.constants.js";
+import type { BrevoContactAttributesInterface, EmailCampaignScopeInterface } from "../types.js";
+import { handleBrevoError, isErrorFromBrevo } from "./brevo-api.utils.js";
+import { BrevoApiClientFactory } from "./brevo-api-client.factory.js";
+import type { BrevoApiContactList } from "./dto/brevo-api-contact-list.js";
 
 export interface CreateDoubleOptInContactData {
     email: string;
@@ -25,7 +25,7 @@ export interface CreateDoubleOptInContactData {
 export class BrevoApiContactsService {
     constructor(
         @Inject(BREVO_MODULE_CONFIG) private readonly config: BrevoModuleConfig,
-        @InjectRepository("BrevoConfig") private readonly brevoConfigRepository: EntityRepository<BrevoConfigInterface>,
+        private readonly entityManager: EntityManager,
         private readonly clientFactory: BrevoApiClientFactory,
         @Optional() private readonly blacklistedContactsService: BlacklistedContactsService,
         @Optional() private readonly brevoContactLogService: BrevoEmailImportLogService,
@@ -234,7 +234,7 @@ export class BrevoApiContactsService {
     }
 
     public async createBrevoContactList(title: string, scope: EmailCampaignScopeInterface): Promise<number | undefined> {
-        const brevoConfig = await this.brevoConfigRepository.findOne({ scope });
+        const brevoConfig = await this.entityManager.findOne(resolveEntityClass<BrevoConfigInterface>("BrevoConfig"), { scope });
 
         try {
             const data = await this.clientFactory.getClient(scope).contacts.createList({

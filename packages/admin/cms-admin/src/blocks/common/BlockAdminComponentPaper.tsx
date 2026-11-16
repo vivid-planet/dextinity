@@ -15,12 +15,26 @@ export const BlockAdminComponentPaper = ({ children, disablePadding }: PropsWith
     const hasBackground = useContext(BlockAdminComponentPaperContext);
 
     if (hasBackground) {
-        return <Box padding={disablePadding ? 0 : 3}>{children}</Box>;
+        return (
+            <Box
+                sx={{
+                    padding: disablePadding ? 0 : 3,
+                }}
+            >
+                {children}
+            </Box>
+        );
     } else {
         return (
             <BlockAdminComponentPaperContext.Provider value={true}>
                 <Paper variant="outlined">
-                    <Box padding={disablePadding ? 0 : 3}>{children}</Box>
+                    <Box
+                        sx={{
+                            padding: disablePadding ? 0 : 3,
+                        }}
+                    >
+                        {children}
+                    </Box>
                 </Paper>
             </BlockAdminComponentPaperContext.Provider>
         );

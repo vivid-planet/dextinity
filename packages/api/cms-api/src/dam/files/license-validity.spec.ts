@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { type License, LicenseType } from "./entities/license.embeddable";
-import { getLicenseExpirationDate, isLicenseValid } from "./license-validity";
+import { type License, LicenseType } from "./entities/license.embeddable.js";
+import { getLicenseExpirationDate, isLicenseValid } from "./license-validity.js";
 
 const now = new Date("2026-10-19T12:00:00.000Z");
 

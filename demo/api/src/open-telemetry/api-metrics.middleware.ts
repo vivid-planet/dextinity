@@ -1,8 +1,8 @@
-import { Injectable, NestMiddleware } from "@nestjs/common";
-import { Attributes, Counter, Histogram } from "@opentelemetry/api";
+import { Injectable, type NestMiddleware } from "@nestjs/common";
+import type { Attributes, Counter, Histogram } from "@opentelemetry/api";
 import responseTime from "response-time";
 
-import { getOrCreateCounter, getOrCreateHistogram } from "./metrics";
+import { getOrCreateCounter, getOrCreateHistogram } from "./metrics.js";
 
 //adapted from https://github.com/pragmaticivan/nestjs-otel/
 @Injectable()

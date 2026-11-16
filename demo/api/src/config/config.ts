@@ -1,8 +1,9 @@
-import dextinityConfig from "@src/dextinity-config.json";
 import { plainToClass } from "class-transformer";
 import { validateSync } from "class-validator";
 
-import { EnvironmentVariables } from "./environment-variables";
+// eslint-disable-next-line @dextinity/no-other-module-relative-import -- @swc-node/register doesn't resolve path aliases for imports with attributes
+import dextinityConfig from "../dextinity-config.json" with { type: "json" };
+import { EnvironmentVariables } from "./environment-variables.js";
 
 export function createConfig(processEnv: NodeJS.ProcessEnv) {
     const envVars = plainToClass(EnvironmentVariables, { ...processEnv });

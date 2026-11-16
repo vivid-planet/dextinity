@@ -1,19 +1,18 @@
 import type { DiscoveryService } from "@golevelup/nestjs-discovery";
 import { createMock } from "@golevelup/ts-vitest";
-import type { EntityRepository } from "@mikro-orm/postgresql";
+import type { EntityManager } from "@mikro-orm/postgresql";
 import { describe, expect, it, vi } from "vitest";
 
-import type { UserContentScopes } from "./entities/user-content-scopes.entity";
-import type { UserPermission } from "./entities/user-permission.entity";
-import type { ContentScope } from "./interfaces/content-scope.interface";
-import type { User } from "./interfaces/user";
-import { UserPermissionsService } from "./user-permissions.service";
+import type { UserContentScopes } from "./entities/user-content-scopes.entity.js";
+import type { ContentScope } from "./interfaces/content-scope.interface.js";
+import type { User } from "./interfaces/user.js";
+import { UserPermissionsService } from "./user-permissions.service.js";
 import {
     type AccessControlServiceInterface,
     UserPermissions,
     type UserPermissionsOptions,
     type UserPermissionsUserServiceInterface,
-} from "./user-permissions.types";
+} from "./user-permissions.types.js";
 
 const user: User = { id: "1", name: "User", email: "user@example.com" };
 
@@ -33,8 +32,7 @@ function createService(
         options,
         userService,
         createMock<AccessControlServiceInterface>({ isAllowed: () => true, getContentScopesForUser }),
-        createMock<EntityRepository<UserPermission>>(),
-        createMock<EntityRepository<UserContentScopes>>({
+        createMock<EntityManager>({
             findOne: async () => (manualContentScopes ? ({ userId: user.id, contentScopes: manualContentScopes } as UserContentScopes) : null),
         }),
         createMock<DiscoveryService>(),

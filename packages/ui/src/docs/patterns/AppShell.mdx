@@ -1,0 +1,21 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+
+import * as AppShellStories from "./__stories__/AppShell.stories";
+
+<Meta title="Patterns/App shell" />
+
+# App shell
+
+The app shell is the frame of every page of an application: the app bar at the top, the main navigation on the side, and the page in a `main` element, with a toolbar above its content.
+
+## Layout
+
+- Put the app bar at the top, over the full width.
+- Put the main navigation on the left, with a width of 280px. See [Main navigation](?path=/docs/patterns-main-navigation--docs).
+- Put the `main` element next to the main navigation: the toolbar at the top, and the content below it, with a padding of 24px, or 16px on small screens. See [Toolbar](?path=/docs/patterns-toolbar--docs).
+
+Until `@dextinity/ui` has a component for the app bar, build it with your own elements, as in the full example.
+
+## Full example
+
+<Canvas of={AppShellStories.AppShell} />

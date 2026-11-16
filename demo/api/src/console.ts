@@ -1,10 +1,10 @@
 import { UserPermissionsStorageService } from "@dextinity/cms-api";
-import { AppModule } from "@src/app.module";
-import { SYSTEM_USER_NAME } from "@src/auth/constants";
+import { AppModule } from "@src/app.module.js";
+import { SYSTEM_USER_NAME } from "@src/auth/constants.js";
 import { useContainer } from "class-validator";
 import { CommandFactory } from "nest-commander";
 
-import { createConfig } from "./config/config";
+import { createConfig } from "./config/config.js";
 
 const config = createConfig(process.env);
 const appModule = AppModule.forRoot(config);

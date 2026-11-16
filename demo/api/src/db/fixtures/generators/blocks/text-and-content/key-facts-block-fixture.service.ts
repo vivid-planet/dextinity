@@ -1,11 +1,11 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { faker } from "@src/db/fixtures/faker";
-import { KeyFactsBlock } from "@src/documents/pages/blocks/key-facts.block";
-import { KeyFactsItemBlock } from "@src/documents/pages/blocks/key-facts-item.block";
+import { faker } from "@src/db/fixtures/faker.js";
+import type { KeyFactsBlock } from "@src/documents/pages/blocks/key-facts.block.js";
+import type { KeyFactsItemBlock } from "@src/documents/pages/blocks/key-facts-item.block.js";
 
-import { SvgImageBlockFixtureService } from "../media/svg-image-block-fixture.service";
-import { RichTextBlockFixtureService } from "./rich-text-block-fixture.service";
+import { SvgImageBlockFixtureService } from "../media/svg-image-block-fixture.service.js";
+import { RichTextBlockFixtureService } from "./rich-text-block-fixture.service.js";
 
 @Injectable()
 export class KeyFactsBlockFixtureService {

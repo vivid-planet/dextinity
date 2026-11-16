@@ -1,6 +1,7 @@
 [
     {
         "name": "Accordion",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -58,6 +59,7 @@
     },
     {
         "name": "AccordionContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -406,6 +408,7 @@
     },
     {
         "name": "CallToActionList",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -530,6 +533,7 @@
     },
     {
         "name": "ColumnsContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -662,6 +666,7 @@
     },
     {
         "name": "ContentGroupContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -836,6 +841,7 @@
     },
     {
         "name": "DamImage",
+        "description": "One of several blocks. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. The block can't be empty, so `activeType` must be set.",
         "fields": [
             {
                 "name": "attachedBlocks",
@@ -1068,6 +1074,7 @@
     },
     {
         "name": "EmailCampaignContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -1093,7 +1100,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
                                 "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
                                 "tipTapText": "EmailCampaignTipTapRichText",
@@ -1135,7 +1142,7 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
                                 "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
                                 "tipTapText": "EmailCampaignTipTapRichText",
@@ -1168,6 +1175,7 @@
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
                 "childBlocks": {},
+                "linkBlock": "MailLink",
                 "tipTap": {
                     "nodes": [
                         "textBlock",
@@ -1226,6 +1234,7 @@
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
                 "childBlocks": {},
+                "linkBlock": "MailLink",
                 "tipTap": {
                     "nodes": [
                         "textBlock",
@@ -1542,6 +1551,7 @@
     },
     {
         "name": "KeyFacts",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -1733,6 +1743,7 @@
     },
     {
         "name": "Link",
+        "description": "A link to one of several targets. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. The block can't be empty, so `activeType` must be set.",
         "fields": [
             {
                 "name": "title",
@@ -1841,6 +1852,7 @@
     },
     {
         "name": "LinkList",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -2043,6 +2055,7 @@
     },
     {
         "name": "MailLink",
+        "description": "A link to one of several targets. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. The block can't be empty, so `activeType` must be set.",
         "fields": [
             {
                 "name": "title",
@@ -2138,6 +2151,26 @@
         ]
     },
     {
+        "name": "MailRichText",
+        "description": "Formatted text, edited in the Draft.js based rich text editor.",
+        "fields": [
+            {
+                "name": "draftContent",
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "MailLink"
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "draftContent",
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "MailLink"
+            }
+        ]
+    },
+    {
         "name": "MailSpacer",
         "fields": [
             {
@@ -2173,6 +2206,7 @@
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
                 "childBlocks": {},
+                "linkBlock": "MailLink",
                 "tipTap": {
                     "nodes": [
                         "textBlock",
@@ -2228,6 +2262,7 @@
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
                 "childBlocks": {},
+                "linkBlock": "MailLink",
                 "tipTap": {
                     "nodes": [
                         "textBlock",
@@ -2279,20 +2314,167 @@
         ]
     },
     {
-        "name": "MailTwoListSizesRichText",
-        "description": "Formatted text, edited in the Draft.js based rich text editor.",
+        "name": "MailTwoColumns",
         "fields": [
             {
-                "name": "draftContent",
-                "kind": "Json",
+                "name": "layout",
+                "kind": "String",
+                "nullable": false
+            },
+            {
+                "name": "columns",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "Block",
+                            "block": "MailTwoColumnsContent",
+                            "nullable": false
+                        }
+                    ]
+                },
                 "nullable": false
             }
         ],
         "inputFields": [
             {
-                "name": "draftContent",
-                "kind": "Json",
+                "name": "layout",
+                "kind": "String",
                 "nullable": false
+            },
+            {
+                "name": "columns",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "Block",
+                            "block": "MailTwoColumnsContent",
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailTwoColumnsContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
+        "fields": [
+            {
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "text": "MailRichText",
+                                "image": "PixelImage",
+                                "button": "MailButton",
+                                "spacer": "MailSpacer"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "type",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "OneOfBlocks",
+                            "blocks": {
+                                "text": "MailRichText",
+                                "image": "PixelImage",
+                                "button": "MailButton",
+                                "spacer": "MailSpacer"
+                            },
+                            "nullable": false
+                        }
+                    ]
+                },
+                "nullable": false
+            }
+        ]
+    },
+    {
+        "name": "MailTwoListSizesRichText",
+        "description": "Formatted text, edited in the Draft.js based rich text editor.",
+        "fields": [
+            {
+                "name": "draftContent",
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "MailLink"
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "draftContent",
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "MailLink"
             }
         ]
     },
@@ -2305,6 +2487,7 @@
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
                 "childBlocks": {},
+                "linkBlock": "MailLink",
                 "tipTap": {
                     "nodes": [
                         "textBlock",
@@ -2362,6 +2545,7 @@
                 "kind": "TipTapRichTextBlock",
                 "nullable": false,
                 "childBlocks": {},
+                "linkBlock": "MailLink",
                 "tipTap": {
                     "nodes": [
                         "textBlock",
@@ -2416,6 +2600,7 @@
     },
     {
         "name": "Media",
+        "description": "One of several blocks. `attachedBlocks` lists entries of a `type` and the `props` of the block that type names in the `blocks` of the `props` field. `activeType` names the entry in use, so an entry with that `type` must be in the list. Entries of other types may stay in the list and aren't shown. `activeType` `null` means the block is empty, e.g. `{\"attachedBlocks\":[],\"activeType\":null}`.",
         "fields": [
             {
                 "name": "attachedBlocks",
@@ -2592,6 +2777,7 @@
     },
     {
         "name": "MediaGalleryList",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -2649,6 +2835,7 @@
     },
     {
         "name": "NewsContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -2743,25 +2930,6 @@
         ]
     },
     {
-        "name": "NewsletterImage",
-        "fields": [
-            {
-                "name": "image",
-                "kind": "Block",
-                "block": "PixelImage",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "image",
-                "kind": "Block",
-                "block": "PixelImage",
-                "nullable": false
-            }
-        ]
-    },
-    {
         "name": "NewsLink",
         "description": "A link to a news entry.",
         "fields": [
@@ -2838,6 +3006,7 @@
     },
     {
         "name": "OptionalPixelImage",
+        "description": "A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{\"visible\":false}` without `block`.",
         "fields": [
             {
                 "name": "block",
@@ -2867,6 +3036,7 @@
     },
     {
         "name": "OptionalRichText",
+        "description": "A block that can be turned off. `block` holds the props of the wrapped block, `visible` `false` hides it on the site. An empty block is `{\"visible\":false}` without `block`.",
         "fields": [
             {
                 "name": "block",
@@ -2896,6 +3066,7 @@
     },
     {
         "name": "PageContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -3352,6 +3523,23 @@
         ]
     },
     {
+        "name": "RedirectsExternalLink",
+        "fields": [
+            {
+                "name": "targetUrl",
+                "kind": "String",
+                "nullable": true
+            }
+        ],
+        "inputFields": [
+            {
+                "name": "targetUrl",
+                "kind": "String",
+                "nullable": true
+            }
+        ]
+    },
+    {
         "name": "RedirectsLink",
         "description": "The target a redirect points to, for instance a page of the page tree or an external URL.",
         "fields": [
@@ -3370,7 +3558,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "internal": "InternalLink",
-                                "external": "ExternalLink",
+                                "external": "RedirectsExternalLink",
                                 "news": "NewsLink"
                             },
                             "nullable": false
@@ -3399,7 +3587,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "internal": "InternalLink",
-                                "external": "ExternalLink",
+                                "external": "RedirectsExternalLink",
                                 "news": "NewsLink"
                             },
                             "nullable": false
@@ -3425,7 +3613,7 @@
                             "kind": "OneOfBlocks",
                             "blocks": {
                                 "internal": "InternalLink",
-                                "external": "ExternalLink",
+                                "external": "RedirectsExternalLink",
                                 "news": "NewsLink"
                             },
                             "nullable": false
@@ -3447,33 +3635,17 @@
         "fields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "Link"
             }
         ],
         "inputFields": [
             {
                 "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "RichText",
-        "description": "Formatted text, edited in the Draft.js based rich text editor.",
-        "fields": [
-            {
-                "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "draftContent",
-                "kind": "Json",
-                "nullable": false
+                "kind": "RichTextBlock",
+                "nullable": false,
+                "linkBlock": "Link"
             }
         ]
     },
@@ -3671,19 +3843,58 @@
     },
     {
         "name": "Slider",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
-                "name": "sliderList",
-                "kind": "Block",
-                "block": "SliderList",
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "Block",
+                            "block": "SliderItem",
+                            "nullable": false
+                        }
+                    ]
+                },
                 "nullable": false
             }
         ],
         "inputFields": [
             {
-                "name": "sliderList",
-                "kind": "Block",
-                "block": "SliderList",
+                "name": "blocks",
+                "kind": "NestedObjectList",
+                "object": {
+                    "fields": [
+                        {
+                            "name": "key",
+                            "kind": "String",
+                            "nullable": false
+                        },
+                        {
+                            "name": "visible",
+                            "kind": "Boolean",
+                            "nullable": false
+                        },
+                        {
+                            "name": "props",
+                            "kind": "Block",
+                            "block": "SliderItem",
+                            "nullable": false
+                        }
+                    ]
+                },
                 "nullable": false
             }
         ]
@@ -3715,80 +3926,6 @@
                 "name": "text",
                 "kind": "Block",
                 "block": "RichText",
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "SliderList",
-        "fields": [
-            {
-                "name": "blocks",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "key",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "visible",
-                            "kind": "Boolean",
-                            "nullable": false
-                        },
-                        {
-                            "name": "props",
-                            "kind": "Block",
-                            "block": "SliderItem",
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "blocks",
-                "kind": "NestedObjectList",
-                "object": {
-                    "fields": [
-                        {
-                            "name": "key",
-                            "kind": "String",
-                            "nullable": false
-                        },
-                        {
-                            "name": "visible",
-                            "kind": "Boolean",
-                            "nullable": false
-                        },
-                        {
-                            "name": "props",
-                            "kind": "Block",
-                            "block": "SliderItem",
-                            "nullable": false
-                        }
-                    ]
-                },
-                "nullable": false
-            }
-        ]
-    },
-    {
-        "name": "Space",
-        "fields": [
-            {
-                "name": "height",
-                "kind": "Number",
-                "nullable": false
-            }
-        ],
-        "inputFields": [
-            {
-                "name": "height",
-                "kind": "Number",
                 "nullable": false
             }
         ]
@@ -3836,6 +3973,7 @@
     },
     {
         "name": "Stage",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -4324,6 +4462,7 @@
     },
     {
         "name": "Teaser",
+        "description": "A list of blocks of one type. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site) and the `props` of the block. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -4558,6 +4697,7 @@
                     "productPrice": "ProductPrice",
                     "productTeaser": "ProductTeaser"
                 },
+                "linkBlock": "Link",
                 "tipTap": {
                     "nodes": [
                         "textBlock",
@@ -4675,6 +4815,7 @@
                     "productPrice": "ProductPrice",
                     "productTeaser": "ProductTeaser"
                 },
+                "linkBlock": "Link",
                 "tipTap": {
                     "nodes": [
                         "textBlock",
@@ -5033,6 +5174,7 @@
     },
     {
         "name": "WelcomeEmailContent",
+        "description": "A list of blocks of several types. Each entry in `blocks` has a unique `key` (e.g. a UUID), `visible` (`false` hides the entry on the site), a `type` and the `props` of the block that type names in the `blocks` of the `props` field. The order of `blocks` is the display order. An empty block is `{\"blocks\":[]}`.",
         "fields": [
             {
                 "name": "blocks",
@@ -5058,14 +5200,15 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
                                 "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
                                 "tipTapText": "MailTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
-                                "spacer": "MailSpacer"
+                                "spacer": "MailSpacer",
+                                "twoColumns": "MailTwoColumns"
                             },
                             "nullable": false
                         }
@@ -5099,14 +5242,15 @@
                             "name": "props",
                             "kind": "OneOfBlocks",
                             "blocks": {
-                                "text": "RichText",
+                                "text": "MailRichText",
                                 "twoListSizesText": "MailTwoListSizesRichText",
                                 "twoListSizesTipTapText": "MailTwoListSizesTipTapRichText",
                                 "tipTapText": "MailTipTapRichText",
                                 "image": "MailImage",
                                 "button": "MailButton",
                                 "divider": "MailDivider",
-                                "spacer": "MailSpacer"
+                                "spacer": "MailSpacer",
+                                "twoColumns": "MailTwoColumns"
                             },
                             "nullable": false
                         }

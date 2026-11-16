@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -86,7 +87,6 @@ function ProductsGridToolbar({ exportApi, selectionModel }: ProductsGridToolbarP
                                     mutation: updateProductStatusMutation,
                                     variables: { id: id as string, status: "Published" },
                                     optimisticResponse: {
-                                        __typename: "Mutation",
                                         updateProduct: { __typename: "Product", id: id as string, status: "Published" },
                                     },
                                 });
@@ -102,7 +102,6 @@ function ProductsGridToolbar({ exportApi, selectionModel }: ProductsGridToolbarP
                                     mutation: updateProductStatusMutation,
                                     variables: { id: id as string, status: "Unpublished" },
                                     optimisticResponse: {
-                                        __typename: "Mutation",
                                         updateProduct: { __typename: "Product", id: id as string, status: "Unpublished" },
                                     },
                                 });
@@ -112,7 +111,7 @@ function ProductsGridToolbar({ exportApi, selectionModel }: ProductsGridToolbarP
                 ]}
                 selectionSize={selectionModel.ids.size}
             />
-            <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+            <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
                 <FormattedMessage id="products.newProduct" defaultMessage="New Product" />
             </Button>
         </DataGridToolbar>
@@ -292,7 +291,6 @@ export function ProductsGrid() {
                                     mutation: updateProductStatusMutation,
                                     variables: { id: params.row.id, status: status ? "Published" : "Unpublished" },
                                     optimisticResponse: {
-                                        __typename: "Mutation",
                                         updateProduct: { __typename: "Product", id: params.row.id, status: status ? "Published" : "Unpublished" },
                                     },
                                 });
@@ -322,7 +320,7 @@ export function ProductsGrid() {
                     return (
                         <>
                             <ProductsGridPreviewAction {...params} />
-                            <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                            <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                 <Edit />
                             </IconButton>
                             <CrudContextMenu
@@ -349,6 +347,7 @@ export function ProductsGrid() {
             limit: dataGridProps.paginationModel.pageSize,
             sort: muiGridSortToGql(sortModel, columns),
         },
+        notifyOnNetworkStatusChange: false,
     });
     if (error) {
         throw error;
@@ -460,6 +459,7 @@ const deleteProductMutation = gql`
 const updateProductStatusMutation = gql`
     mutation UpdateProductStatus($id: ID!, $status: ProductStatus!) {
         updateProduct(id: $id, input: { status: $status }) {
+            __typename
             id
             status
         }

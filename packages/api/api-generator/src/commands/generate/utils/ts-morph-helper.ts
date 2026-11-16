@@ -102,7 +102,7 @@ export function findEnumImportPath(enumName: string, targetDirectory: string, me
         if (!tsSource.getEnum(enumName)?.isExported()) {
             throw new Error(`Enum ${enumName} is not exported in ${metadata.path}`);
         }
-        return path.relative(targetDirectory, metadata.path).replace(/\.ts$/, "");
+        return path.relative(targetDirectory, metadata.path).replace(/\.ts$/, ".js");
     } else {
         //try to find import where enum is imported from
         const { importPath } = findImportPathOrThrow(enumName, targetDirectory, metadata);
@@ -117,7 +117,7 @@ export function findValidatorImportPath(validatorName: string, targetDirectory: 
         if (!(tsSource.getVariableDeclaration(validatorName)?.isExported() || tsSource.getFunction(validatorName)?.isExported())) {
             throw new Error(`Validator ${validatorName} is not exported in ${metadata.path}`);
         }
-        return path.relative(`${targetDirectory}/dto`, metadata.path).replace(/\.ts$/, "");
+        return path.relative(`${targetDirectory}/dto`, metadata.path).replace(/\.ts$/, ".js");
     } else {
         const { importPath } = findImportPathOrThrow(validatorName, targetDirectory, metadata);
         return importPath;
@@ -144,7 +144,7 @@ export function findBlockImportPath(blockName: string, targetDirectory: string, 
         if (!tsSource.getVariableDeclaration(blockName)?.isExported()) {
             throw new Error(`Block ${blockName} is not exported in ${metadata.path}`);
         }
-        return path.relative(targetDirectory, metadata.path).replace(/\.ts$/, "");
+        return path.relative(targetDirectory, metadata.path).replace(/\.ts$/, ".js");
     } else {
         //try to find import where block is imported from
         const { importPath } = findImportPathOrThrow(blockName, targetDirectory, metadata);
@@ -165,7 +165,7 @@ export function findInputClassImportPath(className: string, targetDirectory: str
         }
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         classDeclaration = tsSource.getClass(className)!;
-        returnImportPath = path.relative(targetDirectory, metadata.path).replace(/\.ts$/, "");
+        returnImportPath = path.relative(targetDirectory, metadata.path).replace(/\.ts$/, ".js");
     } else {
         //try to find import where block is imported from
         const { importPath, exportedDeclaration } = findImportPathOrThrow(className, targetDirectory, metadata);

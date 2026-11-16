@@ -14,7 +14,12 @@ import { AppHeaderMenuButton } from "../menuButton/AppHeaderMenuButton";
 
 function AccountHeaderItem() {
     return (
-        <Box display="flex" alignItems="center">
+        <Box
+            sx={{
+                display: "flex",
+                alignItems: "center",
+            }}
+        >
             <Avatar style={{ marginRight: 10 }}>
                 <Account />
             </Avatar>
@@ -63,7 +68,11 @@ function MasterHeader() {
 
                 <Divider />
 
-                <Box padding={4}>
+                <Box
+                    sx={{
+                        padding: 4,
+                    }}
+                >
                     <Button startIcon={<Logout />} fullWidth>
                         Logout
                     </Button>

@@ -38,7 +38,13 @@ export const BasicUsage = {
         return (
             <Paper elevation={1} sx={{ p: 2, height: 110 }}>
                 <ContentOverflow>
-                    <Typography variant="h4" fontWeight={600} gutterBottom>
+                    <Typography
+                        variant="h4"
+                        gutterBottom
+                        sx={{
+                            fontWeight: 600,
+                        }}
+                    >
                         Ornare Inceptos Egestas Bibendum
                     </Typography>
                     <DummyParagraph gutterBottom />
@@ -84,7 +90,12 @@ export const InDataGrid = {
                     const paragraphsCount = 10;
                     return (
                         <ContentOverflow>
-                            <Typography fontWeight={600} gutterBottom>
+                            <Typography
+                                gutterBottom
+                                sx={{
+                                    fontWeight: 600,
+                                }}
+                            >
                                 Ornare Inceptos Egestas Bibendum
                             </Typography>
                             {Array.from({ length: paragraphsCount }).map((_, index) => (

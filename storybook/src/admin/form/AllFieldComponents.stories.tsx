@@ -69,7 +69,11 @@ export const AllFieldComponents = {
                 initialValues={initalValues}
                 render={({ handleSubmit, values }) => (
                     <form onSubmit={handleSubmit}>
-                        <Box maxWidth={1024}>
+                        <Box
+                            sx={{
+                                maxWidth: 1024,
+                            }}
+                        >
                             <FieldSet title="Common Field-Components">
                                 <TextField name="text" label="Text" variant={fieldVariant} fullWidth />
                                 <TextAreaField name="textarea" label="TextArea" variant={fieldVariant} fullWidth />

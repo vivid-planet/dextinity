@@ -24,7 +24,7 @@ exports[`AsyncSelect autocomplete > generates field with default autocomplete be
                             search,
                          }
                     });
-                    return data.categories.nodes;
+                    return data?.categories.nodes ?? [];
                 }}
                 getOptionLabel={(option) => option.name}
                 
@@ -55,7 +55,7 @@ exports[`AsyncSelect autocomplete > generates field without autocomplete explici
                             
                         
                     });
-                    return data.categories.nodes;
+                    return data?.categories.nodes ?? [];
                 }}
                 getOptionLabel={(option) => option.name}
                 

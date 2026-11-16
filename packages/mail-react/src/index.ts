@@ -16,6 +16,8 @@ export type { HtmlButtonProps } from "./components/button/HtmlButton.js";
 export { HtmlButton } from "./components/button/HtmlButton.js";
 export type { MjmlButtonProps } from "./components/button/MjmlButton.js";
 export { MjmlButton } from "./components/button/MjmlButton.js";
+export { MjmlComment } from "./components/comment/MjmlComment.js";
+export { MjmlConditionalComment } from "./components/comment/MjmlConditionalComment.js";
 export type { HtmlDividerProps } from "./components/divider/HtmlDivider.js";
 export { HtmlDivider } from "./components/divider/HtmlDivider.js";
 export type { MjmlDividerProps } from "./components/divider/MjmlDivider.js";
@@ -29,6 +31,8 @@ export { HtmlInlineLink } from "./components/inlineLink/HtmlInlineLink.js";
 export { MjmlMailRoot } from "./components/mailRoot/MjmlMailRoot.js";
 export type { MjmlSectionProps } from "./components/section/MjmlSection.js";
 export { MjmlSection } from "./components/section/MjmlSection.js";
+export { MjmlStyle } from "./components/style/MjmlStyle.js";
+export { MjmlYahooStyle } from "./components/style/MjmlYahooStyle.js";
 export type { HtmlTextProps } from "./components/text/HtmlText.js";
 export { HtmlText } from "./components/text/HtmlText.js";
 export type { MjmlTextProps } from "./components/text/MjmlText.js";
@@ -125,12 +129,11 @@ export {
     type IMjmlSocialProps as MjmlSocialProps,
     MjmlSpacer,
     type IMjmlSpacerProps as MjmlSpacerProps,
-    MjmlStyle,
     type IMjmlStyleProps as MjmlStyleProps,
     MjmlTable,
     type IMjmlTableProps as MjmlTableProps,
     MjmlTitle,
     type IMjmlTitleProps as MjmlTitleProps,
 } from "@faire/mjml-react";
-export { MjmlComment, MjmlConditionalComment, MjmlHtml, MjmlTrackingPixel, MjmlYahooStyle } from "@faire/mjml-react/extensions/index.js";
+export { MjmlHtml, MjmlTrackingPixel } from "@faire/mjml-react/extensions/index.js";
 export { renderToMjml } from "@faire/mjml-react/utils/renderToMjml.js";

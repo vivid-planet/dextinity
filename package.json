@@ -15,7 +15,7 @@
         "build:docs": "pnpm --filter dextinity-docs run build",
         "clean": "pnpm --recursive run clean",
         "copy-project-files": "node copy-project-files.js",
-        "dev": "pnpm dev:admin && pnpm dev:cms && pnpm dev:mail-react && pnpm dev:brevo && pnpm dev:demo",
+        "dev": "pnpm dev:admin && pnpm dev:cms && pnpm dev:mail-react && pnpm dev:ui && pnpm dev:brevo && pnpm dev:demo",
         "dev:admin": "dev-pm start @dextinity-admin",
         "dev:cms": "dev-pm start @cms",
         "dev:cms:admin": "dev-pm start @cms-admin",
@@ -26,6 +26,7 @@
         "dev:brevo-api": "dev-pm start @brevo-api",
         "dev:brevo-admin": "dev-pm start @brevo-admin",
         "dev:mail-react": "dev-pm start @mail-react",
+        "dev:ui": "dev-pm start @dextinity-ui",
         "dev:demo": "dev-pm start @demo",
         "dev:demo:admin": "dev-pm start @demo-admin",
         "dev:demo:api": "dev-pm start @demo-api",
@@ -60,25 +61,25 @@
         "setup:download-oauth2-proxy": "dotenv -- sh -c 'pnpm exec dextinity download-oauth2-proxy -v $OAUTH2_PROXY_VERSION'"
     },
     "devDependencies": {
-        "@changesets/cli": "^2.31.1",
+        "@changesets/cli": "^3.0.3",
         "@dextinity/cli": "workspace:*",
-        "@formatjs/cli": "^6.16.36",
+        "@formatjs/cli": "^6.18.2",
         "@types/node": "^24.19.2",
         "dev-oidc-provider": "^2.1.2",
         "dev-process-manager": "^4.1.0",
         "dotenv-cli": "^11.1.0",
         "husky": "^9.1.7",
-        "knip": "^6.44.0",
+        "knip": "^6.44.2",
         "lint-staged": "^17.6.0",
         "npm-run-all2": "^9.0.4",
         "open-cli": "^9.0.0",
         "prettier": "^3.9.10",
-        "rimraf": "^6.1.3",
-        "typescript": "^5.9.3"
+        "rimraf": "^6.1.4",
+        "typescript": "^6.0.3"
     },
-    "packageManager": "pnpm@12.16.1",
+    "packageManager": "pnpm@12.18.0",
     "engines": {
         "node": "24",
-        "pnpm": "12.16.1"
+        "pnpm": "12.18.0"
     }
 }

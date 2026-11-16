@@ -1,6 +1,6 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { PageTreeIndexBlock } from "@src/common/blocks/page-tree-index.block";
+import type { PageTreeIndexBlock } from "@src/common/blocks/page-tree-index.block.js";
 
 @Injectable()
 export class PageTreeIndexBlockFixtureService {

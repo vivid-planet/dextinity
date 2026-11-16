@@ -1,11 +1,11 @@
-import { BlockInputInterface, RootBlockInputScalar } from "@dextinity/cms-api";
+import { type BlockInputInterface, RootBlockInputScalar } from "@dextinity/cms-api";
 import { Field, InputType } from "@nestjs/graphql";
 import { Transform } from "class-transformer";
 import { ValidateNested } from "class-validator";
 
-import { PageContentBlock } from "../blocks/page-content.block";
-import { SeoBlock } from "../blocks/seo.block";
-import { StageBlock } from "../blocks/stage.block";
+import { PageContentBlock } from "../blocks/page-content.block.js";
+import { SeoBlock } from "../blocks/seo.block.js";
+import { StageBlock } from "../blocks/stage.block.js";
 
 @InputType()
 export class PageInput {

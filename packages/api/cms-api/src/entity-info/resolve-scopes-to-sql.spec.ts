@@ -1,10 +1,11 @@
-import { BaseEntity, defineConfig, Embeddable, Embedded, Entity, ManyToOne, MikroORM, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
+import { Embeddable, Embedded, Entity, ManyToOne, PrimaryKey, Property, ReflectMetadataProvider } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, defineConfig, MikroORM, type Ref } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { EntityScopeServiceInterface } from "../user-permissions/decorators/scoped-entity.decorator";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { resolveScopesToSql } from "./resolve-scopes-to-sql";
+import type { EntityScopeServiceInterface } from "../user-permissions/decorators/scoped-entity.decorator.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { resolveScopesToSql } from "./resolve-scopes-to-sql.js";
 
 @Embeddable()
 class ContentScopeEmbeddable {
@@ -70,8 +71,8 @@ describe("resolveScopesToSql", () => {
     beforeAll(async () => {
         orm = await MikroORM.init(
             defineConfig({
+                metadataProvider: ReflectMetadataProvider,
                 dbName: "test-db",
-                connect: false,
                 entities: [Company, News, NewsComment, Product, GlobalEntity, ContentScopeEmbeddable],
             }),
         );
@@ -82,7 +83,7 @@ describe("resolveScopesToSql", () => {
     });
 
     function metadataFor(entityName: string) {
-        return orm.em.getMetadata().get(entityName);
+        return orm.em.getMetadata().getByClassName(entityName);
     }
 
     describe("scope property (simple case)", () => {

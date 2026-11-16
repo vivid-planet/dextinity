@@ -1,9 +1,10 @@
 import { CrudGenerator } from "@dextinity/cms-api";
-import { BaseEntity, Collection, Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, Collection } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 
-import { ProductCategory } from "./product-category.entity";
+import { ProductCategory } from "./product-category.entity.js";
 
 @ObjectType()
 @Entity()

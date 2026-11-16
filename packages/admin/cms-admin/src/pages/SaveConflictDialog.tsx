@@ -32,12 +32,26 @@ function SaveConflictDialog({ open, onClosePressed, onDiscardChangesPressed }: S
                     <FormattedMessage id="dextinity.saveConflictDialog.description1" defaultMessage="There was a conflict while saving" />
                 </Alert>
 
-                <Stack spacing={2} pt={2}>
+                <Stack
+                    spacing={2}
+                    sx={{
+                        pt: 2,
+                    }}
+                >
                     <Box>
-                        <Typography variant="h4" fontWeight="bold">
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontWeight: "bold",
+                            }}
+                        >
                             <FormattedMessage id="dextinity.saveConflictDialog.whatHappened.heading" defaultMessage="What happened?" />
                         </Typography>
-                        <Typography py={2}>
+                        <Typography
+                            sx={{
+                                py: 2,
+                            }}
+                        >
                             <FormattedMessage
                                 id="dextinity.saveConflictDialog.whatHappened.description"
                                 defaultMessage="Someone else made changes to this page while you were editing it. <strong>You can't save this page.</strong> Otherwise, your changes would overwrite the other changes."
@@ -47,7 +61,12 @@ function SaveConflictDialog({ open, onClosePressed, onDiscardChangesPressed }: S
                     </Box>
 
                     <Box>
-                        <Typography variant="h4" fontWeight="bold">
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontWeight: "bold",
+                            }}
+                        >
                             <FormattedMessage id="dextinity.saveConflictDialog.whatCanIDoNow.heading" defaultMessage="What can I do now?" />
                         </Typography>
                         <Typography variant="list">
@@ -67,7 +86,12 @@ function SaveConflictDialog({ open, onClosePressed, onDiscardChangesPressed }: S
                     </Box>
 
                     <Box>
-                        <Typography variant="h4" fontWeight="bold">
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontWeight: "bold",
+                            }}
+                        >
                             <FormattedMessage id="dextinity.saveConflictDialog.avoidConflicts.heading" defaultMessage="How can I avoid conflicts?" />
                         </Typography>
 

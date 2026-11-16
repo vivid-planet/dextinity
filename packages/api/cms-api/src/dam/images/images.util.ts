@@ -1,5 +1,20 @@
-import type { DamFileImage } from "../files/entities/file-image.entity";
-import type { ImageCropArea } from "./entities/image-crop-area.entity";
+import type { DamFileImage } from "../files/entities/file-image.entity.js";
+import type { ImageCropArea } from "./entities/image-crop-area.entity.js";
+
+/**
+ * Check if a crop area can be used to crop an image.
+ * Crop areas without dimensions (e.g., created by older Dextinity versions) must be treated as if no crop area was set at all.
+ *
+ * @param cropArea the crop area
+ * @returns whether the crop area is usable
+ */
+export function isUsableCropArea(cropArea: ImageCropArea): boolean {
+    if (cropArea.focalPoint === "SMART") {
+        return true;
+    }
+
+    return Boolean(cropArea.width) && Boolean(cropArea.height);
+}
 
 /**
  * Calculate a DAM image's aspect ratio based on a specified crop area.

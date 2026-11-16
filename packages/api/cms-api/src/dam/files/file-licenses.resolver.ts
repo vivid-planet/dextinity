@@ -1,9 +1,9 @@
 import { Parent, ResolveField, Resolver } from "@nestjs/graphql";
 import { differenceInCalendarDays, isBefore } from "date-fns";
 
-import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator";
-import { License } from "./entities/license.embeddable";
-import { getLicenseExpirationDate, hasLicenseExpired, isLicenseNotValidYet, isLicenseValid } from "./license-validity";
+import { RequiredPermission } from "../../user-permissions/decorators/required-permission.decorator.js";
+import { License } from "./entities/license.embeddable.js";
+import { getLicenseExpirationDate, hasLicenseExpired, isLicenseNotValidYet, isLicenseValid } from "./license-validity.js";
 
 @Resolver(() => License)
 @RequiredPermission(["dam"])

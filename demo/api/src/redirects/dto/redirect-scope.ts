@@ -1,4 +1,4 @@
-import { Embeddable, Index, Property } from "@mikro-orm/postgresql";
+import { Embeddable, Index, Property } from "@mikro-orm/decorators/legacy";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsString } from "class-validator";
 

@@ -22,12 +22,12 @@ Use the `showAllScopes` prop on `WarningsPage` and `LatestWarningsDashboardWidge
 <LatestWarningsDashboardWidget showAllScopes />
 ```
 
-For `WarningsPage`, the masterMenu entry needs a `render` function instead of `component` to pass the prop:
+For `WarningsPage`, pass the prop in the `element` of the masterMenu entry:
 
 ```tsx
 route: {
     path: "/system/warnings",
-    render: () => <WarningsPage showAllScopes />,
+    element: <WarningsPage showAllScopes />,
 }
 ```
 
@@ -74,7 +74,7 @@ To make the warnings accessible in the admin panel, add the following entry to t
     primary: <FormattedMessage id="menu.warnings" defaultMessage="Warnings" />,
     route: {
         path: "/system/warnings",
-        component: WarningsPage,
+        element: <WarningsPage />,
     },
     requiredPermission: "warnings",
 }
@@ -154,23 +154,20 @@ class NewsBlockData extends BlockData {
 ```typescript
 @Injectable()
 export class NewsBlockWarningsService implements BlockWarningsServiceInterface<NewsBlockData> {
-    constructor(
-        @InjectRepository(NewsRepository)
-        private readonly newsRepository: EntityRepository<NewsRepository>,
-    ) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
-    async createWarnings(block: NewsBlockData): Promise<BlockWarning[]> {
-        const warnings: BlockWarning[] = [];
-
-        if (block.id) {
-            const news = await this.newsRepository.findOne({ id: block.id });
-            if (!news) {
-                warnings.push({ severity: "high", message: "invalidNewsTarget" });
-            }
-        } else {
-            warnings.push({ severity: "high", message: "missingNewsTarget" });
+    async warnings(block: NewsBlockData): Promise<BlockWarning[]> {
+        if (!block.id) {
+            return [];
         }
-        return warnings;
+
+        const news = await this.entityManager.findOne(News, { id: block.id });
+
+        if (!news) {
+            return [{ severity: "high", message: "invalidNewsTarget" }];
+        }
+
+        return [];
     }
 }
 ```
@@ -220,16 +217,13 @@ class NewsPageType {
 
 ```typescript
 class NewsWarningService implements CreateWarningsServiceInterface<NewsPageType> {
-    constructor(
-        @InjectRepository(News)
-        private readonly newsRepository: EntityRepository<News>,
-    ) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     async createWarnings(entity: MyEntity): Promise<EntityWarning[]> {
         const warnings: EntityWarning[] = [];
 
         if (entity.newsId) {
-            const news = await this.newsRepository.findOne(entity.newsId);
+            const news = await this.entityManager.findOne(News, entity.newsId);
             if (!news) {
                 warnings.push({ severity: "high", message: "invalidNewsTarget" });
             }
@@ -250,10 +244,7 @@ Here's how to implement this:
 
 ```typescript
 class NewsWarningService implements CreateWarningsServiceInterface {
-    constructor(
-        @InjectRepository(News)
-        private readonly newsRepository: EntityRepository<News>,
-    ) {}
+    constructor(private readonly entityManager: EntityManager) {}
 
     async *bulkCreateWarnings() {
         let offset = 0;
@@ -261,7 +252,8 @@ class NewsWarningService implements CreateWarningsServiceInterface {
 
         let news = [];
         do {
-            news = await this.newsRepository.find(
+            news = await this.entityManager.find(
+                News,
                 {
                     isArchived: false,
                 },

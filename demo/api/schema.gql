@@ -150,42 +150,42 @@ input BooleanFilter {
 
 type BrevoApiCampaignStatistics {
   """Number of total clicks for the campaign"""
-  clickers: Int!
+  clickers: Int
 
   """Number of complaints (Spam reports) for the campaign"""
-  complaints: Int!
+  complaints: Int
 
   """Number of delivered emails for the campaign"""
-  delivered: Int!
+  delivered: Int
 
   """
   Rate of recipients without any privacy protection option enabled in their email client, applied to all delivered emails
   """
-  estimatedViews: Int!
+  estimatedViews: Int
 
   """Number of hardbounces for the campaign"""
-  hardBounces: Int!
+  hardBounces: Int
 
   """Number of sent emails for the campaign"""
-  sent: Int!
+  sent: Int
 
   """Number of softbounce for the campaign"""
-  softBounces: Int!
+  softBounces: Int
 
   """Number of unique openings for the campaign"""
-  trackableViews: Int!
+  trackableViews: Int
 
   """Number of unique clicks for the campaign"""
-  uniqueClicks: Int!
+  uniqueClicks: Int
 
   """Number of unique openings for the campaign"""
-  uniqueViews: Int!
+  uniqueViews: Int
 
   """Number of unsubscription for the campaign"""
-  unsubscriptions: Int!
+  unsubscriptions: Int
 
   """Number of openings for the campaign"""
-  viewed: Int!
+  viewed: Int
 }
 
 type BrevoApiEmailTemplate {
@@ -2153,6 +2153,7 @@ type Redirect {
   dependencies(filter: DependencyFilter, forceRefresh: Boolean! = false, limit: Int! = 25, offset: Int! = 0, sort: [DependencySort!]): PaginatedDependencies!
   generationType: RedirectGenerationType!
   id: ID!
+  redirectType: RedirectType!
   scope: RedirectScope!
   source: String!
   sourceType: RedirectSourceType!
@@ -2167,6 +2168,7 @@ input RedirectFilter {
   createdAt: DateTimeFilter
   generationType: StringFilter
   or: [RedirectFilter!]
+  redirectType: RedirectTypeEnumFilter
   source: StringFilter
   sourceType: RedirectSourceTypeEnumFilter
   target: StringFilter
@@ -2182,6 +2184,7 @@ input RedirectInput {
   active: Boolean
   comment: String
   generationType: RedirectGenerationType!
+  redirectType: RedirectType
   source: String!
   sourceType: RedirectSourceType!
   target: JSONObject!
@@ -2217,6 +2220,17 @@ input RedirectSourceTypeEnumFilter {
   notEqual: RedirectSourceType
 }
 
+enum RedirectType {
+  permanent
+  temporary
+}
+
+input RedirectTypeEnumFilter {
+  equal: RedirectType
+  isAnyOf: [RedirectType!]
+  notEqual: RedirectType
+}
+
 input RedirectUpdateActivenessInput {
   active: Boolean!
 }
@@ -2243,6 +2257,7 @@ input SendTestEmailCampaignArgs {
 
 enum SendingState {
   DRAFT
+  FAILED
   SCHEDULED
   SENT
 }

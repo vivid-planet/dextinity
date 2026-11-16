@@ -1,4 +1,5 @@
-import { type DocumentNode, gql, useApolloClient, useQuery } from "@apollo/client";
+import { type DocumentNode, gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudMoreActionsMenu,
@@ -85,7 +86,7 @@ function BrevoContactsGridToolbar({ intl, scope }: BrevoContactsGridToolbarProps
                 />
                 <ToolbarFillSpace />
                 <CrudMoreActionsMenu overallActions={[moreActionsMenuItem]} />
-                <Button startIcon={<Add />} component={StackLink} pageName="add" payload="add" variant="primary">
+                <Button startIcon={<Add />} component={StackLink} nativeButton={false} pageName="add" payload="add" variant="primary">
                     <FormattedMessage id="dextinity.brevoContact.newContact" defaultMessage="New contact" />
                 </Button>
             </DataGridToolbar>
@@ -163,7 +164,7 @@ export function BrevoContactsGrid({
             renderCell: (params) => {
                 return (
                     <>
-                        <IconButton component={StackLink} pageName="edit" payload={params.row.id.toString()}>
+                        <IconButton component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id.toString()}>
                             <Edit color="primary" />
                         </IconButton>
                         <RowActionsMenu>
@@ -212,6 +213,7 @@ export function BrevoContactsGrid({
             email: dataGridProps.filterModel?.quickFilterValues ? dataGridProps.filterModel?.quickFilterValues[0] : undefined,
             scope,
         },
+        notifyOnNetworkStatusChange: false,
     });
 
     const rowCount = useBufferedRowCount(data?.brevoContacts.totalCount);

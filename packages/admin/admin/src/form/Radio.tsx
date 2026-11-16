@@ -1,4 +1,5 @@
 import MuiRadio, { type RadioProps } from "@mui/material/Radio";
+import { mergeSlotProps } from "@mui/material/utils";
 import type { FieldRenderProps } from "react-final-form";
 
 export type FinalFormRadioProps = RadioProps & FieldRenderProps<string, HTMLInputElement>;
@@ -9,5 +10,15 @@ export type FinalFormRadioProps = RadioProps & FieldRenderProps<string, HTMLInpu
  * @see {@link RadioGroupField} – preferred for typical form use. Use this only if no Field wrapper is needed.
  */
 export const FinalFormRadio = ({ input: { checked, value, name, onChange, ...restInput }, meta, ...rest }: FinalFormRadioProps) => (
-    <MuiRadio {...rest} name={name} inputProps={restInput} onChange={onChange} checked={!!checked} value={value} />
+    <MuiRadio
+        {...rest}
+        name={name}
+        onChange={onChange}
+        checked={!!checked}
+        value={value}
+        slotProps={{
+            ...rest.slotProps,
+            input: mergeSlotProps(rest.slotProps?.input, restInput),
+        }}
+    />
 );

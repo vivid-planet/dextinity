@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { Request } from "express";
+import type { Request } from "express";
 
-import { AuthenticateUserResult, AuthServiceInterface, SKIP_AUTH_SERVICE } from "../util/auth-service.interface";
+import { type AuthenticateUserResult, type AuthServiceInterface, SKIP_AUTH_SERVICE } from "../util/auth-service.interface.js";
 
 interface BasicAuthServiceConfig {
     username: string;

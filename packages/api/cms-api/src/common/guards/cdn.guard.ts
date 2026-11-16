@@ -1,6 +1,6 @@
-import { CanActivate, ExecutionContext, Injectable, Logger } from "@nestjs/common";
+import { type CanActivate, type ExecutionContext, Injectable, Logger } from "@nestjs/common";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { Request } from "express";
+import type { Request } from "express";
 
 @Injectable()
 export class CdnGuard implements CanActivate {

@@ -1,15 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { BlockContext } from "../../blocks/block";
-import { FocalPoint } from "../../file-utils/focal-point.enum";
-import type { DamConfig } from "../dam.config";
-import type { FileInterface } from "../files/entities/file.entity";
-import type { FilesService } from "../files/files.service";
-import type { ImageInterface } from "../images/dto/image.interface";
-import type { ImageCropArea } from "../images/entities/image-crop-area.entity";
-import { ImagesService } from "../images/images.service";
-import type { PixelImageBlockData } from "./pixel-image.block";
-import { PixelImageBlockTransformerService } from "./pixel-image-block-transformer.service";
+import type { BlockContext } from "../../blocks/block.js";
+import { FocalPoint } from "../../file-utils/focal-point.enum.js";
+import type { DamConfig } from "../dam.config.js";
+import type { FileInterface } from "../files/entities/file.entity.js";
+import type { FilesService } from "../files/files.service.js";
+import type { ImageInterface } from "../images/dto/image.interface.js";
+import type { ImageCropArea } from "../images/entities/image-crop-area.entity.js";
+import { ImagesService } from "../images/images.service.js";
+import type { PixelImageBlockData } from "./pixel-image.block.js";
+import { PixelImageBlockTransformerService } from "./pixel-image-block-transformer.service.js";
 
 const blockCropArea = { focalPoint: FocalPoint.CENTER, width: 50, height: 50, x: 25, y: 25 } as ImageCropArea;
 

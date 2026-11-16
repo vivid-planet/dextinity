@@ -18,7 +18,7 @@ export function ScopeCell({ scopes }: ScopeCellProps) {
     }
 
     return (
-        <Box display="flex" gap={1} flexWrap="wrap">
+        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
             {scopes.map((scope) => (
                 <Chip key={JSON.stringify(scope)} label={getContentScopeLabel({ scope, values: scopeValues })} />
             ))}

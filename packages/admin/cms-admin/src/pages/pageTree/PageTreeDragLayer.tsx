@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { useDragLayer, type XYCoord } from "react-dnd";
-import { FormattedMessage } from "react-intl/lib";
+import { FormattedMessage } from "react-intl";
 
 import PageLabel from "./PageLabel";
 import * as sc from "./PageTreeDragLayer.sc";
@@ -41,7 +41,11 @@ const PageTreeDragLayer = ({ numberSelectedPages }: PageTreeDragLayerProps) => {
                 {!item.selected || numberSelectedPages === 1 ? (
                     <PageLabel page={item} />
                 ) : (
-                    <Box pl={4}>
+                    <Box
+                        sx={{
+                            pl: 4,
+                        }}
+                    >
                         <FormattedMessage
                             id="dextinity.pagetree.dragLayer.numberDraggedPages"
                             defaultMessage="{numItems} pages"

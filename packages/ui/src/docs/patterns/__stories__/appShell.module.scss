@@ -1,0 +1,124 @@
+.shell {
+    display: flex;
+    flex-direction: column;
+    min-block-size: 100vh;
+}
+
+.appBar {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    block-size: var(--dextinity-unit-15);
+    padding-inline: var(--dextinity-unit-4);
+    background-color: var(--dextinity-color-background-inverse);
+}
+
+.appBarTitle {
+    color: var(--dextinity-color-foreground-inverse);
+}
+
+.body {
+    display: flex;
+    flex-grow: 1;
+}
+
+.navigation {
+    display: none;
+    flex-shrink: 0;
+    inline-size: 280px;
+    padding-block: var(--dextinity-unit-4);
+    border-inline-end: 1px solid var(--dextinity-color-border-default);
+
+    @media (min-width: 1024px) {
+        display: block;
+    }
+}
+
+.list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.main {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    min-inline-size: 0;
+}
+
+.toolbar {
+    border-block-end: 1px solid var(--dextinity-color-border-default);
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--dextinity-unit-2);
+    margin: 0;
+    padding: var(--dextinity-unit-2) var(--dextinity-unit-4);
+    border-block-end: 1px solid var(--dextinity-color-border-default);
+    list-style: none;
+}
+
+.breadcrumbLink {
+    color: var(--dextinity-color-foreground-muted);
+    text-decoration: none;
+}
+
+.breadcrumbSeparator {
+    display: flex;
+    color: var(--dextinity-color-foreground-muted);
+}
+
+.titleRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--dextinity-unit-4);
+    padding: var(--dextinity-unit-3) var(--dextinity-unit-4);
+}
+
+.actions {
+    display: none;
+    gap: var(--dextinity-unit-2);
+
+    @media (min-width: 1024px) {
+        display: flex;
+    }
+}
+
+.moreActions {
+    @media (min-width: 1024px) {
+        display: none;
+    }
+}
+
+.content {
+    flex-grow: 1;
+    padding: var(--dextinity-unit-4);
+    background-color: var(--dextinity-color-background-subtle);
+
+    @media (min-width: 1024px) {
+        padding: var(--dextinity-unit-6);
+    }
+}
+
+.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    block-size: 100%;
+    min-block-size: 240px;
+    border: 1px dashed var(--dextinity-color-border-default);
+    color: var(--dextinity-color-foreground-muted);
+}
+
+.appBar,
+.breadcrumb,
+.titleRow {
+    @media (min-width: 1024px) {
+        padding-inline: var(--dextinity-unit-6);
+    }
+}

@@ -1,14 +1,14 @@
-import { AnyEntity, EntityManager } from "@mikro-orm/postgresql";
+import { type AnyEntity, EntityManager } from "@mikro-orm/postgresql";
 import { Injectable, Optional } from "@nestjs/common";
 
-import { DiscoverService } from "../dependencies/discover.service";
-import { ENTITY_INFO_METADATA_KEY, EntityInfo } from "../entity-info/entity-info.decorator";
-import { isEntityInfoSql, requiredPermissionToSql } from "../entity-info/entity-info.utils";
-import { resolveFieldToSql } from "../entity-info/resolve-field-to-sql";
-import { resolveScopesToSql } from "../entity-info/resolve-scopes-to-sql";
-import { PageTreeFullTextService } from "../page-tree/fullText/page-tree-full-text.service";
-import { REQUIRED_PERMISSION_METADATA_KEY, RequiredPermissionMetadata } from "../user-permissions/decorators/required-permission.decorator";
-import { SCOPED_ENTITY_METADATA_KEY, ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator";
+import { DiscoverService } from "../dependencies/discover.service.js";
+import { ENTITY_INFO_METADATA_KEY, type EntityInfo } from "../entity-info/entity-info.decorator.js";
+import { isEntityInfoSql, requiredPermissionToSql } from "../entity-info/entity-info.utils.js";
+import { resolveFieldToSql } from "../entity-info/resolve-field-to-sql.js";
+import { resolveScopesToSql } from "../entity-info/resolve-scopes-to-sql.js";
+import { PageTreeFullTextService } from "../page-tree/fullText/page-tree-full-text.service.js";
+import { REQUIRED_PERMISSION_METADATA_KEY, type RequiredPermissionMetadata } from "../user-permissions/decorators/required-permission.decorator.js";
+import { SCOPED_ENTITY_METADATA_KEY, type ScopedEntityMeta } from "../user-permissions/decorators/scoped-entity.decorator.js";
 
 @Injectable()
 export class FullTextSearchService {

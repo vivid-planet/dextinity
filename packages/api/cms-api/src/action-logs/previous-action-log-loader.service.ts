@@ -2,7 +2,7 @@ import { EntityManager, PostgreSqlDriver } from "@mikro-orm/postgresql";
 import { Injectable, Scope } from "@nestjs/common";
 import DataLoader from "dataloader";
 
-import { ActionLog } from "./entities/action-log.entity";
+import { ActionLog } from "./entities/action-log.entity.js";
 
 type Key = Pick<ActionLog, "entityName" | "entityId" | "version">;
 

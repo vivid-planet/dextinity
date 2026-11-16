@@ -58,7 +58,7 @@ export class MigrateCommand extends CommandRunner {
                     await em.begin(em.getTransactionContext());
                 }
             }
-            const migrator = this.orm.getMigrator();
+            const migrator = this.orm.migrator;
             await migrator.up({
                 transaction: em.getTransactionContext(),
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any

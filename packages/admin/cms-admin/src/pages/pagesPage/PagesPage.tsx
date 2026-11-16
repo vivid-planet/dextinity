@@ -1,7 +1,8 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import {
     Alert,
     Button,
+    InlineAlert,
     Loading,
     LocalErrorScopeApolloContext,
     MainContent,
@@ -16,7 +17,7 @@ import {
     useFocusAwarePolling,
     useStoredState,
 } from "@dextinity/admin";
-import { Add } from "@dextinity/admin-icons";
+import { Add, Error } from "@dextinity/admin-icons";
 import { Box, DialogContent, Divider, FormControlLabel, LinearProgress, Paper, Switch } from "@mui/material";
 import { type ComponentType, type ReactNode, useCallback, useEffect, useMemo, useRef } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -73,6 +74,7 @@ export function PagesPage({
 
     const { loading, data, error, refetch, startPolling, stopPolling } = useQuery<GQLPagesQuery, GQLPagesQueryVariables>(pagesQuery, {
         fetchPolicy: "cache-and-network",
+        notifyOnNetworkStatusChange: false,
         variables: {
             contentScope: pageTreeScope,
             category,
@@ -202,15 +204,24 @@ export function PagesPage({
                                                 /* Placeholder to avoid content jumping when the loading bar appears */
                                                 <Box sx={{ backgroundColor: "white", width: "100%", height: 2 }} />
                                             )}
-                                            <PageTree
-                                                ref={refPageTree}
-                                                pages={pagesToRenderWithMatches}
-                                                editDialogApi={editDialogApi}
-                                                toggleExpand={toggleExpand}
-                                                onSelectChanged={onSelectChanged}
-                                                category={category}
-                                                siteUrl={siteConfig.url}
-                                            />
+                                            {data?.pages.length === 0 ? (
+                                                <InlineAlert
+                                                    severity="info"
+                                                    icon={<Error sx={{ fontSize: "32px", color: "common.black" }} />}
+                                                    title={<FormattedMessage id="dextinity.pages.pages.noPagesYet" defaultMessage="No pages yet" />}
+                                                    sx={{ height: "100%" }}
+                                                />
+                                            ) : (
+                                                <PageTree
+                                                    ref={refPageTree}
+                                                    pages={pagesToRenderWithMatches}
+                                                    editDialogApi={editDialogApi}
+                                                    toggleExpand={toggleExpand}
+                                                    onSelectChanged={onSelectChanged}
+                                                    category={category}
+                                                    siteUrl={siteConfig.url}
+                                                />
+                                            )}
                                         </>
                                     )}
                                 </Paper>

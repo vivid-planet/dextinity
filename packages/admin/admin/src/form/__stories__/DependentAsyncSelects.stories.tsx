@@ -1,4 +1,5 @@
-import { gql, useApolloClient } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { Box } from "@mui/material";
 
 import type { Manufacturer, Product } from "../../../.storybook/mocks/handlers";
@@ -19,7 +20,11 @@ export const DependentAsyncSelects = function () {
     const client = useApolloClient();
 
     return (
-        <Box maxWidth={400}>
+        <Box
+            sx={{
+                maxWidth: 400,
+            }}
+        >
             <FinalForm<FormValues>
                 mode="add"
                 onSubmit={() => {
@@ -42,7 +47,7 @@ export const DependentAsyncSelects = function () {
                                     `,
                                 });
 
-                                return data.manufacturers;
+                                return data?.manufacturers ?? [];
                             }}
                             getOptionLabel={(option) => option.name}
                             label="Manufacturer"
@@ -63,7 +68,7 @@ export const DependentAsyncSelects = function () {
                                     variables: { manufacturer: values.manufacturer?.id },
                                 });
 
-                                return data.products;
+                                return data?.products ?? [];
                             }}
                             getOptionLabel={(option) => option.name}
                             label="Product"

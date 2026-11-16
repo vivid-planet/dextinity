@@ -2,6 +2,7 @@ import { migrationsList as brevoMigrationsList } from "@dextinity/brevo-api";
 import { createMigrationsList, createOrmConfig } from "@dextinity/cms-api";
 import { DataloaderType, TextType, Type } from "@mikro-orm/core";
 import { defineConfig, EntityCaseNamingStrategy } from "@mikro-orm/postgresql";
+import { createSqlMetricsLogger } from "@src/open-telemetry/sql-metrics-logger.js";
 import path from "path";
 
 export const ormConfig = createOrmConfig(
@@ -14,11 +15,11 @@ export const ormConfig = createOrmConfig(
             .trim(),
         dbName: process.env.POSTGRESQL_DB,
         driverOptions: {
-            connection: { ssl: process.env.POSTGRESQL_USE_SSL === "true" },
+            ssl: process.env.POSTGRESQL_USE_SSL === "true",
         },
         namingStrategy: EntityCaseNamingStrategy,
+        loggerFactory: createSqlMetricsLogger,
         debug: false,
-        connect: process.env.MIKRO_ORM_NO_CONNECT !== "true",
         dataloader: DataloaderType.ALL,
         discovery: {
             getMappedType(type: string, platform) {
@@ -33,7 +34,7 @@ export const ormConfig = createOrmConfig(
             tableName: "Migrations",
             //  `path` is only used to tell MikroORM where to place newly generated migrations. Available migrations are defined using `migrationsList`.
             path: "./src/db/migrations",
-            migrationsList: [...brevoMigrationsList, ...createMigrationsList(path.resolve(__dirname, "migrations"))],
+            migrationsList: [...brevoMigrationsList, ...createMigrationsList(path.resolve(import.meta.dirname, "migrations"))],
             disableForeignKeys: false,
             dropTables: false,
             snapshot: false,

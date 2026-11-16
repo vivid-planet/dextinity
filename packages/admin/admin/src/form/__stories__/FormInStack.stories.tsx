@@ -44,7 +44,11 @@ function Page1() {
 
     return (
         <>
-            <Box marginBottom={4}>
+            <Box
+                sx={{
+                    marginBottom: 4,
+                }}
+            >
                 <Toolbar>
                     <FillSpace />
                     <ToolbarActions>
@@ -61,7 +65,11 @@ function Page1() {
             <FinalForm mode="edit" onSubmit={onSubmit} initialValues={{}} resolveSubmitErrors={resolveSubmitErrors}>
                 <Card variant="outlined">
                     <CardContent>
-                        <Box marginBottom={4}>
+                        <Box
+                            sx={{
+                                marginBottom: 4,
+                            }}
+                        >
                             <Field label="Foo" name="foo" component={FinalFormInput} />
                         </Box>
                         <FinalFormSaveCancelButtonsLegacy />
@@ -77,7 +85,11 @@ function Page2() {
         <FinalForm mode="edit" onSubmit={onSubmit} initialValues={{}} resolveSubmitErrors={resolveSubmitErrors}>
             <Card variant="outlined">
                 <CardContent>
-                    <Box marginBottom={4}>
+                    <Box
+                        sx={{
+                            marginBottom: 4,
+                        }}
+                    >
                         <Field label="Bar" name="bar" component={FinalFormInput} />
                     </Box>
                     <FinalFormSaveCancelButtonsLegacy />

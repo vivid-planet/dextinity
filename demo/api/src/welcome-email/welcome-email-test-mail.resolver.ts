@@ -1,11 +1,11 @@
 import { MailerService, RequiredPermission } from "@dextinity/cms-api";
 import { Inject } from "@nestjs/common";
 import { Args, Mutation, Resolver } from "@nestjs/graphql";
-import { Config } from "@src/config/config";
-import { CONFIG } from "@src/config/config.module";
+import type { Config } from "@src/config/config.js";
+import { CONFIG } from "@src/config/config.module.js";
 
-import { WelcomeEmailScope } from "./dto/welcome-email-scope";
-import { WelcomeEmail } from "./entities/welcome-email.entity";
+import { WelcomeEmailScope } from "./dto/welcome-email-scope.js";
+import { WelcomeEmail } from "./entities/welcome-email.entity.js";
 
 const testMailRecipient = "welcome-email-test@dextinity.com";
 

@@ -1,9 +1,9 @@
 import { mediaType } from "@hapi/accept";
 import mime from "mime";
 
-import { Extension } from "../imgproxy/imgproxy.enum";
-import { FocalPoint } from "./focal-point.enum";
-import { BASIC_TYPES, JPEG } from "./images.constants";
+import { Extension } from "../imgproxy/imgproxy.enum.js";
+import { FocalPoint } from "./focal-point.enum.js";
+import { BASIC_TYPES, JPEG } from "./images.constants.js";
 
 interface ImageDimensions {
     width: number;

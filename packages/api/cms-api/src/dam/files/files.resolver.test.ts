@@ -1,11 +1,11 @@
 import type { IncomingMessage } from "http";
 import { describe, expect, it, vi } from "vitest";
 
-import type { ImageInterface } from "../images/dto/image.interface";
-import { createFileEntity, type FileInterface } from "./entities/file.entity";
-import { createFolderEntity } from "./entities/folder.entity";
-import { createFilesResolver } from "./files.resolver";
-import type { FilesService } from "./files.service";
+import type { ImageInterface } from "../images/dto/image.interface.js";
+import { createFileEntity, type FileInterface } from "./entities/file.entity.js";
+import { createFolderEntity } from "./entities/folder.entity.js";
+import { createFilesResolver } from "./files.resolver.js";
+import type { FilesService } from "./files.service.js";
 
 interface FilesResolverForTest {
     fileUrl(file: FileInterface, req: IncomingMessage): Promise<string>;

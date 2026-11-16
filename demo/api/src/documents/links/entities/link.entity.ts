@@ -1,5 +1,5 @@
 import {
-    BlockDataInterface,
+    type BlockDataInterface,
     DocumentInterface,
     PageTreeNodeDocumentEntityScopeService,
     RootBlock,
@@ -8,9 +8,10 @@ import {
     RootBlockType,
     ScopedEntity,
 } from "@dextinity/cms-api";
-import { BaseEntity, Entity, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, OptionalProps } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
-import { LinkBlock } from "@src/common/blocks/link.block";
+import { LinkBlock } from "@src/common/blocks/link.block.js";
 import { randomUUID } from "crypto";
 
 @Entity()

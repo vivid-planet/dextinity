@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import type { Block } from "../../block";
-import { resolveTipTapOptions } from "../createTipTapRichTextBlock";
-import { assertDraftJsHeadingsAreUnambiguous, buildStrippedTipTapDoc, convertDraftJsToTipTap, type DraftJsContent } from "./convertDraftJsToTipTap";
+import type { Block } from "../../block.js";
+import { resolveTipTapOptions } from "../createTipTapRichTextBlock.js";
+import {
+    assertDraftJsHeadingsAreUnambiguous,
+    buildStrippedTipTapDoc,
+    convertDraftJsToTipTap,
+    type DraftJsContent,
+} from "./convertDraftJsToTipTap.js";
 
 const allEnabled = resolveTipTapOptions({ underline: true });
 const allDisabled = resolveTipTapOptions({

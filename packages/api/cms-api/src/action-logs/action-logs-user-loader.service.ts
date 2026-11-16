@@ -1,8 +1,8 @@
 import { Injectable, Scope } from "@nestjs/common";
 import DataLoader from "dataloader";
 
-import { UserPermissionsService } from "../user-permissions/user-permissions.service";
-import { ActionLogsUser } from "./dto/action-logs-user";
+import { UserPermissionsService } from "../user-permissions/user-permissions.service.js";
+import { ActionLogsUser } from "./dto/action-logs-user.js";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ActionLogsUserLoaderService {

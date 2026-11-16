@@ -1,9 +1,10 @@
 import { ScopedEntity } from "@dextinity/cms-api";
-import { BaseEntity, Entity, ManyToOne, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, OptionalProps, type Rel } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 
-import { News } from "./news.entity";
+import { News } from "./news.entity.js";
 
 @Entity()
 @ObjectType()
@@ -16,7 +17,7 @@ export class NewsComment extends BaseEntity {
     id: string = randomUUID();
 
     @ManyToOne(() => News)
-    news!: News;
+    news!: Rel<News>;
 
     @Property()
     @Field()

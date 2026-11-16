@@ -28,7 +28,11 @@ export const Select = () => {
     ];
 
     return (
-        <Box width={500}>
+        <Box
+            sx={{
+                width: 500,
+            }}
+        >
             <Form
                 initialValues={{
                     multipleFlavors: [],

@@ -1,9 +1,10 @@
 import { CrudField, DocumentInterface } from "@dextinity/cms-api";
-import { BaseEntity, Entity, ManyToOne, OptionalProps, PrimaryKey, Property, Ref } from "@mikro-orm/postgresql";
+import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { BaseEntity, OptionalProps, type Ref } from "@mikro-orm/postgresql";
 import { Field, ID, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 
-import { Product } from "./product.entity";
+import { Product } from "./product.entity.js";
 
 @ObjectType({
     implements: () => [DocumentInterface],

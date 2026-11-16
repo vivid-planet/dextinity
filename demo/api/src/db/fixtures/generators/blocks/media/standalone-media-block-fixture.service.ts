@@ -1,10 +1,10 @@
-import { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
+import type { ExtractBlockInputFactoryProps } from "@dextinity/cms-api";
 import { Injectable } from "@nestjs/common";
-import { StandaloneMediaBlock } from "@src/common/blocks/standalone-media.block";
-import { faker } from "@src/db/fixtures/faker";
-import { MediaAspectRatios } from "@src/util/mediaAspectRatios";
+import type { StandaloneMediaBlock } from "@src/common/blocks/standalone-media.block.js";
+import { faker } from "@src/db/fixtures/faker.js";
+import { MediaAspectRatios } from "@src/util/mediaAspectRatios.js";
 
-import { MediaBlockFixtureService } from "./media-block.fixture.service";
+import { MediaBlockFixtureService } from "./media-block.fixture.service.js";
 
 @Injectable()
 export class StandaloneMediaBlockFixtureService {

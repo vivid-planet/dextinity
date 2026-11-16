@@ -1,6 +1,4 @@
-"use client";
-
-import { type ComponentType, createContext, useContext } from "react";
+import type { ComponentType } from "react";
 
 import { Preview } from "./Preview";
 
@@ -25,37 +23,23 @@ interface PreviewOptions {
     enabledChildrenAutoScrolling?: boolean;
 }
 
-interface AdminRouteContextOptions {
-    parentRoute: string;
-    parentEnabledAutoScrolling: boolean;
-}
-const AdminRouteContext = createContext<AdminRouteContextOptions>({
-    parentRoute: "",
-    parentEnabledAutoScrolling: true,
-});
-
+// No hooks or directive, so blocks using withPreview can be rendered as server components.
+// adminMeta is only present in the admin's block preview, which renders on the client.
 export const withPreview = <ComponentProps,>(
     Component: ComponentType<ComponentProps>,
     { label = "No type", enabledChildrenAutoScrolling = true }: PreviewOptions,
 ) => {
-    return ({ ...componentProps }: WithPreviewProps & ComponentProps) => {
-        const { parentRoute, parentEnabledAutoScrolling } = useContext(AdminRouteContext);
+    return function WithPreview(componentProps: WithPreviewProps & ComponentProps) {
+        const adminRoute = componentProps.data?.adminMeta?.route;
 
-        if (componentProps.data?.adminMeta && componentProps.data?.adminMeta.route !== parentRoute) {
-            return (
-                <AdminRouteContext.Provider
-                    value={{
-                        parentRoute: componentProps.data?.adminMeta.route,
-                        parentEnabledAutoScrolling: !parentEnabledAutoScrolling ? false : enabledChildrenAutoScrolling,
-                    }}
-                >
-                    <Preview adminRoute={componentProps.data?.adminMeta.route} label={label} enabledAutoScrolling={parentEnabledAutoScrolling}>
-                        <Component {...componentProps} />
-                    </Preview>
-                </AdminRouteContext.Provider>
-            );
+        if (adminRoute === undefined) {
+            return <Component {...componentProps} />;
         }
 
-        return <Component {...componentProps} />;
+        return (
+            <Preview adminRoute={adminRoute} label={label} enabledChildrenAutoScrolling={enabledChildrenAutoScrolling}>
+                <Component {...componentProps} />
+            </Preview>
+        );
     };
 };

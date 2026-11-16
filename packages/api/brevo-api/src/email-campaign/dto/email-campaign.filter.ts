@@ -3,7 +3,7 @@ import { Field, InputType } from "@nestjs/graphql";
 import { Type } from "class-transformer";
 import { IsOptional, ValidateNested } from "class-validator";
 
-import { SendingState } from "../sending-state.enum";
+import { SendingState } from "../sending-state.enum.js";
 
 @InputType()
 class SendingStateEnumFilter extends createEnumFilter(SendingState) {}

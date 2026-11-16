@@ -48,7 +48,7 @@ export const _DataGridToolbar = {
                     <GridFilterButton />
                     <GridColumnsButton />
                     <FillSpace />
-                    <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+                    <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
                         Add person
                     </Button>
                 </DataGridToolbar>

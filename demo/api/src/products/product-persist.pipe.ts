@@ -4,10 +4,10 @@ import type { LoggerService } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { Transform, type TransformCallback } from "stream";
 
-import { Product } from "./entities/product.entity";
-import type { ProductCategory } from "./entities/product-category.entity";
-import { ProductColor } from "./entities/product-color.entity";
-import type { ProductImporterInput } from "./product-importer.input";
+import { Product } from "./entities/product.entity.js";
+import type { ProductCategory } from "./entities/product-category.entity.js";
+import { ProductColor } from "./entities/product-color.entity.js";
+import type { ProductImporterInput } from "./product-importer.input.js";
 
 type ProductData = Omit<ProductImporterInput, "image"> & {
     id: string;
@@ -71,7 +71,7 @@ class ProductPersist extends Transform {
                 // keeping the id from the input data (in the DataTransformer plainToInstance always creates a new Entity instance, which is populated with the new id)
                 data.id = record.id;
                 // nativeUpdate is used for performance reasons
-                await this.em.nativeUpdate(Product.name, { id: record.id }, { ...productData, category, id: data.id, updatedAt: new Date() });
+                await this.em.nativeUpdate(Product, { id: record.id }, { ...productData, category, id: data.id, updatedAt: new Date() });
             } else {
                 // in case the id is not provided
                 data.id = data?.id || randomUUID();

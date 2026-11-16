@@ -1,5 +1,3 @@
-"use client";
-
 import type { HTMLAttributes } from "react";
 
 import type { SvgImageBlockData } from "../blocks.generated";

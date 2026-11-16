@@ -48,7 +48,7 @@ Run the appropriate checks after every change and fix all reported errors.
 
 ### Post-Change Workflow
 
-After making changes to any package (`packages/*`) or the demo project (`demo/*`), run `lint:fix` to auto-fix ESLint and Prettier issues:
+After making changes to any package (`packages/*`) or the demo project (`demo/*`), run `lint:fix` to auto-fix linter and Prettier issues:
 
 ```bash
 # Fix a single package (from the package folder or repo root)
@@ -66,8 +66,9 @@ pnpm run lint:fix
 
 Every package and demo service exposes these scripts:
 
-- `lint:fix` — runs `lint:fix:eslint` and `lint:fix:prettier` in parallel (plus `lint:fix:style` in `demo/site`)
-- `lint:fix:eslint` — runs ESLint with `--fix` (also applies Prettier formatting via `eslint-plugin-prettier`)
+- `lint:fix` — runs the linters' fix scripts and `lint:fix:prettier` in parallel (plus `lint:fix:style` in `demo/site`)
+- `lint:fix:eslint` — runs ESLint with `--fix`; in packages it also applies Prettier formatting via `eslint-plugin-prettier`, in `demo/*` it only lints JSON files
+- `lint:fix:oxlint` — runs oxlint with `--fix`; `demo/*` only (Prettier formatting is covered by `lint:fix:prettier`)
 - `lint:fix:prettier` — runs Prettier with `--write` for any remaining formatting issues
 - `lint:fix:style` — runs Stylelint with `--fix` (`demo/site` only)
 
@@ -107,6 +108,14 @@ Demo frontend site (Next.js)
 
 - Start using `pnpm exec dev-pm start @demo-site`
 - access at: http://localhost:3000/
+
+**Site Storybook:**
+Storybook for the demo site components (Vite, `@storybook/nextjs-vite`)
+
+- Start using `pnpm exec dev-pm start demo-site-storybook`
+- access at: http://localhost:26648/
+- stories live in `__stories__` folders next to the component
+- run the story tests with `pnpm --filter dextinity-demo-site run test:storybook`
 
 ### dev-pm
 
@@ -154,10 +163,10 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 
 ### Site (`packages/site/`)
 
-| Package                  | Description                                                   |
-| ------------------------ | ------------------------------------------------------------- |
-| `@dextinity/site-react`  | React components and utilities for the frontend/site layer    |
-| `@dextinity/site-nextjs` | Next.js-specific site layer components (extends `site-react`) |
+| Package                  | Description                                                                                                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@dextinity/site-react`  | React components and utilities for the frontend/site layer                                                                                                          |
+| `@dextinity/site-nextjs` | Next.js-specific site layer components (extends `site-react`), serves build assets of other builds during rolling deployments (`dextinity-upload-build-assets` bin) |
 
 ### Utilities
 
@@ -167,6 +176,8 @@ Every process loads `.env.local` itself: the demo packages and `dev:*` scripts r
 | `@dextinity/eslint-config` | Shared ESLint configurations                                     |
 | `@dextinity/eslint-plugin` | Custom ESLint rules for Dextinity projects                       |
 | `@dextinity/mail-react`    | Utilities for building HTML emails with React (MJML-based)       |
+| `@dextinity/oxlint-config` | Shared oxlint configurations, an alternative to `eslint-config`  |
+| `@dextinity/ui`            | UI-only React component library (Base UI, CSS Modules)           |
 
 ### Docs & Storybook
 
@@ -199,6 +210,11 @@ Example:
 Fix description here
 ```
 
+## Branches
+
+- `next` is protected and can't be pushed to directly. When a session targets `next` (e.g. it was started on `next` or a task asks for a breaking change), always create a new branch from `next` before committing, push that branch, and open the pull request against `next`.
+- Name branches that merge one branch into another `merge-<source>-into-<target>`, replacing `/` with `-`, e.g. `merge-main-into-next` or `merge-next-into-feature-new-block`. The labeler workflow relies on the `merge-main-`/`merge-next-` prefix.
+
 ## Commit messages
 
 - Do not use Conventional Commits.
@@ -216,6 +232,10 @@ Fix description here
 - Keep the length proportional to the change. A one-line fix gets a paragraph, not a report.
 - The description becomes the message of the squashed commit. See CONTRIBUTING.md#pull-requests.
 - After opening a pull request, always check its description and rewrite it to follow these rules, also when the pull request was created by a tool or UI that generated the description.
+
+## Pull request labels
+
+- When opening a pull request from a feature branch (`feature/…`) or a `merge-main-…`/`merge-next-…` branch, add the `skip-greptile-review` label when creating it. The labeler workflow sets it as well, but may run after Greptile has already started its review.
 
 ## Pull request comments
 

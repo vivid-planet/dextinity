@@ -1,4 +1,4 @@
-import type { MigrateVendorOptions } from "./types";
+import type { MigrateVendorOptions } from "./types.js";
 
 // The vendor migrations are kept on the BlockData class, so a block extending another block's data
 // inherits them. Without that, the extending block would neither run them nor be allowed to claim

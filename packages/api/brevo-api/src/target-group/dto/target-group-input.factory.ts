@@ -1,10 +1,10 @@
 import { IsUndefinable, PartialType } from "@dextinity/cms-api";
-import { Type } from "@nestjs/common";
+import type { Type } from "@nestjs/common";
 import { Field, InputType } from "@nestjs/graphql";
 import { Type as TypeTransformer } from "class-transformer";
 import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
 
-import { BrevoContactFilterAttributesInterface } from "../../types";
+import type { BrevoContactFilterAttributesInterface } from "../../types.js";
 
 export interface TargetGroupInputInterface {
     title: string;

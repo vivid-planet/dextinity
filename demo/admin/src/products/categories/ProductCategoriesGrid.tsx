@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Button,
     CrudContextMenu,
@@ -67,7 +68,7 @@ function ProductCategoriesGridToolbar() {
     return (
         <DataGridToolbar>
             <FillSpace />
-            <Button responsive startIcon={<AddIcon />} component={StackLink} pageName="add" payload="add">
+            <Button responsive startIcon={<AddIcon />} component={StackLink} nativeButton={false} pageName="add" payload="add">
                 <FormattedMessage id="productCategory.productCategoriesGrid.newEntry" defaultMessage="New Product Category" />
             </Button>
         </DataGridToolbar>
@@ -129,7 +130,7 @@ export function ProductCategoriesGrid() {
                 renderCell: (params) => {
                     return (
                         <>
-                            <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                            <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                 <EditIcon />
                             </IconButton>
                             <CrudContextMenu
@@ -154,6 +155,7 @@ export function ProductCategoriesGrid() {
             limit: 100,
             sort: { field: "position", direction: "ASC" },
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.productCategories.totalCount);
     if (error) {

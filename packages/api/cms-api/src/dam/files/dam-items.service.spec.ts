@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { SortDirection } from "../../common/sorting/sort-direction.enum";
-import { DamItemsService } from "./dam-items.service";
-import { DamItemType } from "./dto/dam-items.args";
-import type { FilesService } from "./files.service";
-import type { FoldersService } from "./folders.service";
+import { SortDirection } from "../../common/sorting/sort-direction.enum.js";
+import { DamItemsService } from "./dam-items.service.js";
+import { DamItemType } from "./dto/dam-items.args.js";
+import type { FilesService } from "./files.service.js";
+import type { FoldersService } from "./folders.service.js";
 
 const FOLDER_ID = "11111111-1111-1111-1111-111111111111";
 const FILE_ID = "22222222-2222-2222-2222-222222222222";

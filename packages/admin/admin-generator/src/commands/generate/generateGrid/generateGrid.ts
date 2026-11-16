@@ -239,8 +239,8 @@ export function generateGrid<T extends { __typename?: string }>(
         { name: "useIntl", importPath: "react-intl" },
         { name: "ReactNode", importPath: "react" },
         { name: "gql", importPath: "@apollo/client" },
-        { name: "useApolloClient", importPath: "@apollo/client" },
-        { name: "useQuery", importPath: "@apollo/client" },
+        { name: "useApolloClient", importPath: "@apollo/client/react" },
+        { name: "useQuery", importPath: "@apollo/client/react" },
         { name: "Button", importPath: "@dextinity/admin" },
         { name: "CrudContextMenu", importPath: "@dextinity/admin" },
         { name: "CrudMoreActionsMenu", importPath: "@dextinity/admin" },
@@ -1012,7 +1012,7 @@ export function generateGrid<T extends { __typename?: string }>(
                                         ? forwardRowAction
                                             ? `{rowAction && rowAction(params)}`
                                             : `
-                                        <IconButton color="primary" component={StackLink} pageName="edit" payload={params.row.id}>
+                                        <IconButton color="primary" component={StackLink} nativeButton={false} pageName="edit" payload={params.row.id}>
                                             <EditIcon />
                                         </IconButton>`
                                         : ""
@@ -1085,6 +1085,7 @@ export function generateGrid<T extends { __typename?: string }>(
                         : []),
                 ].join(", ")}
             },
+            notifyOnNetworkStatusChange: false,
         });
         ${hasPaging ? `const rowCount = useBufferedRowCount(data?.${gridQuery}.totalCount);` : ""}
         if (error) throw error;

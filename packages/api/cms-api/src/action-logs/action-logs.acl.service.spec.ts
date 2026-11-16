@@ -1,19 +1,20 @@
 import { createMock } from "@golevelup/ts-vitest";
-import { Entity, EntityManager, PrimaryKey, RawQueryFragment } from "@mikro-orm/postgresql";
+import { Entity, PrimaryKey } from "@mikro-orm/decorators/legacy";
+import { EntityManager, RawQueryFragment } from "@mikro-orm/postgresql";
 import { ForbiddenException } from "@nestjs/common";
 import { describe, expect, it } from "vitest";
 
-import { DiscoverService } from "../dependencies/discover.service";
-import { AbstractAccessControlService } from "../user-permissions/access-control.service";
-import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
-import { ScopedEntity } from "../user-permissions/decorators/scoped-entity.decorator";
-import { CurrentUser, CurrentUserPermission } from "../user-permissions/dto/current-user";
-import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
-import { UserPermissionsService } from "../user-permissions/user-permissions.service";
-import { AccessControlServiceInterface, Permission } from "../user-permissions/user-permissions.types";
-import { ActionLogsAclService } from "./action-logs.acl.service";
-import { ActionLogs } from "./action-logs.decorator";
-import { ActionLogsService } from "./action-logs.service";
+import { DiscoverService } from "../dependencies/discover.service.js";
+import { AbstractAccessControlService } from "../user-permissions/access-control.service.js";
+import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/decorators/required-permission.decorator.js";
+import { ScopedEntity } from "../user-permissions/decorators/scoped-entity.decorator.js";
+import { CurrentUser, CurrentUserPermission } from "../user-permissions/dto/current-user.js";
+import type { ContentScope } from "../user-permissions/interfaces/content-scope.interface.js";
+import { UserPermissionsService } from "../user-permissions/user-permissions.service.js";
+import type { AccessControlServiceInterface, Permission } from "../user-permissions/user-permissions.types.js";
+import { ActionLogsAclService } from "./action-logs.acl.service.js";
+import { ActionLogs } from "./action-logs.decorator.js";
+import { ActionLogsService } from "./action-logs.service.js";
 
 @Entity()
 @ActionLogs()
@@ -99,7 +100,7 @@ const getEntityFilters = (filter: unknown) => (filter as { $or: Array<Record<str
 const getNewsFilter = (filter: unknown) => getEntityFilters(filter).find(({ entityName }) => entityName === "News");
 
 const getAllowedNewsScopes = (filter: unknown): ContentScope[] => {
-    const rawKey = Object.keys(getNewsFilter(filter) ?? {}).find((key) => key !== "entityName") as string;
+    const rawKey = Reflect.ownKeys(getNewsFilter(filter) ?? {}).find((key) => RawQueryFragment.isKnownFragmentSymbol(key));
     return JSON.parse(RawQueryFragment.getKnownFragment(rawKey)?.params[0] as string);
 };
 

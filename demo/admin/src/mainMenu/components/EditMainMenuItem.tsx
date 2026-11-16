@@ -1,4 +1,5 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 import {
     Button,
     FillSpace,
@@ -10,6 +11,7 @@ import {
     ToolbarActions,
     ToolbarBackButton,
     ToolbarTitleItem,
+    useCurrentRouteMatch,
 } from "@dextinity/admin";
 import { Add, Delete, Preview } from "@dextinity/admin-icons";
 import {
@@ -29,10 +31,9 @@ import {
 } from "@dextinity/cms-admin";
 import { Box } from "@mui/material";
 import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useRouteMatch } from "react-router-dom";
 
 import type {
     GQLEditMainMenuItemFragment,
@@ -74,7 +75,7 @@ type RichTextBlockOutput = BlockOutputApi<typeof RichTextBlock>;
 
 const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
     const previewApi = useBlockPreview();
-    const match = useRouteMatch();
+    const routeUrl = useCurrentRouteMatch()?.url ?? "";
     const [updateMainMenuItem, { loading: saving, error: saveError }] = useMutation<
         GQLUpdateMainMenuItemMutation,
         GQLUpdateMainMenuItemMutationVariables
@@ -93,7 +94,7 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
     }, [item]);
 
     useEffect(() => {
-        const equal = isEqual(referenceContent, content ? RichTextBlock.state2Output(content) : null);
+        const equal = deepEqual(referenceContent, content ? RichTextBlock.state2Output(content) : null);
         setHasChanges(!equal);
     }, [content, referenceContent]);
     let previewState = undefined;
@@ -101,7 +102,7 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
     if (content) {
         previewState = RichTextBlock.createPreviewState(content, {
             ...blockContext,
-            parentUrl: match.url,
+            parentUrl: routeUrl,
             showVisibleOnly: previewApi.showOnlyVisible,
         });
     }
@@ -156,7 +157,7 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
             {hasChanges && (
                 <RouterPrompt
                     message={(location) => {
-                        if (location.pathname.startsWith(match.url)) {
+                        if (location.pathname.startsWith(routeUrl)) {
                             return true;
                         } //we navigated within our self
                         return intl.formatMessage(messages.saveUnsavedChanges);
@@ -177,7 +178,11 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
                                         }}
                                     />
                                     <HiddenInSubroute>
-                                        <Box mb={4} />
+                                        <Box
+                                            sx={{
+                                                mb: 4,
+                                            }}
+                                        />
                                         <Button variant="destructive" startIcon={<Delete />} onClick={handleRemoveContentClick}>
                                             <FormattedMessage id="mainMenu.removeContent" defaultMessage="Remove content" />
                                         </Button>

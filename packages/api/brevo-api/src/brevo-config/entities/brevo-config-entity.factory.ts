@@ -1,10 +1,11 @@
 import { DocumentInterface } from "@dextinity/cms-api";
-import { Embedded, Entity, OptionalProps, PrimaryKey, Property } from "@mikro-orm/postgresql";
-import { Type } from "@nestjs/common";
+import { Embedded, Entity, PrimaryKey, Property } from "@mikro-orm/decorators/legacy";
+import { OptionalProps } from "@mikro-orm/postgresql";
+import type { Type } from "@nestjs/common";
 import { Field, ID, Int, ObjectType } from "@nestjs/graphql";
 import { randomUUID } from "crypto";
 
-import { EmailCampaignScopeInterface } from "../../types";
+import type { EmailCampaignScopeInterface } from "../../types.js";
 
 export interface BrevoConfigInterface {
     [OptionalProps]?: "createdAt" | "updatedAt";

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { InternalLinkBlock } from "../../page-tree/blocks/internal-link.block";
-import { createImageLinkBlock } from "./createImageLinkBlock";
+import { InternalLinkBlock } from "../../page-tree/blocks/internal-link.block.js";
+import { createImageLinkBlock } from "./createImageLinkBlock.js";
 
 describe("createImageLinkBlock", () => {
     it("should allow overriding the name", () => {

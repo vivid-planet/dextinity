@@ -1,8 +1,16 @@
+import { register } from "node:module";
+
 import { diag, DiagConsoleLogger, DiagLogLevel } from "@opentelemetry/api";
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 import { PrometheusExporter } from "@opentelemetry/exporter-prometheus";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { NodeSDK } from "@opentelemetry/sdk-node";
+import { createAddHookMessageChannel } from "import-in-the-middle";
+
+// Lets the instrumentations patch modules loaded via ESM `import`, which bypasses the `require` hooks they use otherwise.
+// The message channel limits the hook to the modules the instrumentations patch: wrapping every module breaks packages with circular imports, such as @getbrevo/brevo.
+const { registerOptions, waitForAllMessagesAcknowledged } = createAddHookMessageChannel();
+register("import-in-the-middle/hook.mjs", import.meta.url, registerOptions);
 
 diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
 
@@ -40,3 +48,5 @@ const sdk = new NodeSDK({
 });
 
 sdk.start();
+
+await waitForAllMessagesAcknowledged();

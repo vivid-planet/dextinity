@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "rootDir": "src"
+    },
+    "exclude": [
+        "node_modules",
+        "lib",
+        "src/cssModules",
+        "src/storybook",
+        "**/*.test.tsx",
+        "**/*.test.ts",
+        "**/*.spec.tsx",
+        "**/*.spec.ts",
+        "**/__tests__",
+        "**/__stories__/**",
+        "**/*.stories.ts",
+        "**/*.stories.tsx"
+    ],
+    "extends": "./tsconfig.json",
+    "include": ["./src"]
+}

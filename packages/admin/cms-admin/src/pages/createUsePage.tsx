@@ -1,6 +1,7 @@
-import { type ApolloError, gql, type TypedDocumentNode, useApolloClient, useQuery } from "@apollo/client";
+import { type ErrorLike, gql, type TypedDocumentNode } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import { messages, SaveButton } from "@dextinity/admin";
-import isEqual from "lodash.isequal";
+import { deepEqual } from "fast-equals";
 import {
     type ComponentProps,
     createElement,
@@ -120,7 +121,7 @@ interface UsePageApi<PageState, RootBlocks extends RootBlocksInterface> {
     handleSavePage: () => Promise<void>;
     hasChanges?: boolean;
     loading: boolean;
-    error: ApolloError | undefined;
+    error: ErrorLike | undefined;
     saving: boolean;
     saveError: "invalid" | "conflict" | "error" | undefined;
     pageSaveButton: JSX.Element;
@@ -205,7 +206,7 @@ export const createUsePage: CreateUsePage =
 
             try {
                 if (pageState) {
-                    hasChanges = !isEqual(referenceOutput, generateOutput(pageState));
+                    hasChanges = !deepEqual(referenceOutput, generateOutput(pageState));
                 }
             } catch {
                 // Can't generate the output. This is likely to be caused by adding new blocks which have an invalid output upon creation (for instance
@@ -217,6 +218,7 @@ export const createUsePage: CreateUsePage =
                 variables: {
                     id: pageId,
                 } as GQLEditPageQueryVariables,
+                notifyOnNetworkStatusChange: false,
             });
 
             const resetPageStateToLatest = async () => {

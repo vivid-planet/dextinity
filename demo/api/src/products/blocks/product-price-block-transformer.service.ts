@@ -1,9 +1,9 @@
-import { BlockTransformerServiceInterface } from "@dextinity/cms-api";
+import type { BlockTransformerServiceInterface } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
 import { Injectable } from "@nestjs/common";
 
-import { Product } from "../entities/product.entity";
-import { ProductPriceBlockData } from "./product-price.block";
+import { Product } from "../entities/product.entity.js";
+import type { ProductPriceBlockData } from "./product-price.block.js";
 
 type TransformResponse = {
     product?: {

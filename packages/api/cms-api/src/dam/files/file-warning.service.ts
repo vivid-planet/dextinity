@@ -1,12 +1,13 @@
-import { EntityManager, FilterQuery } from "@mikro-orm/postgresql";
+import { EntityManager, type FilterQuery } from "@mikro-orm/postgresql";
 import { Inject, Injectable } from "@nestjs/common";
-import { WarningData } from "src/warnings/dto/warning-data";
 
-import { CreateWarningsServiceInterface } from "../../warnings/decorators/create-warnings.decorator";
-import { DamConfig } from "../dam.config";
-import { DAM_CONFIG } from "../dam.constants";
-import { FileInterface } from "./entities/file.entity";
-import { LicenseType } from "./entities/license.embeddable";
+import type { CreateWarningsServiceInterface } from "../../warnings/decorators/create-warnings.decorator.js";
+import type { WarningData } from "../../warnings/dto/warning-data.js";
+import type { DamConfig } from "../dam.config.js";
+import { DAM_CONFIG } from "../dam.constants.js";
+import type { FileInterface } from "./entities/file.entity.js";
+import { LicenseType } from "./entities/license.embeddable.js";
+import { resolveFileEntity } from "./entities/resolve-dam-entity.js";
 
 @Injectable()
 export class FileWarningService implements CreateWarningsServiceInterface<FileInterface> {
@@ -42,7 +43,8 @@ export class FileWarningService implements CreateWarningsServiceInterface<FileIn
         let offset = 0;
         const limit = 50;
         do {
-            files = await this.entityManager.getRepository<FileInterface>("DamFile").find(
+            files = await this.entityManager.find(
+                resolveFileEntity(),
                 {
                     $or: filterQuery,
                 },

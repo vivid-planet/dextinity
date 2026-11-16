@@ -54,7 +54,13 @@ export const NoContentScopeFallback: FunctionComponent = () => {
                         </Typography>
                     </Typography>
 
-                    <Typography variant="subtitle1" marginBottom={2} marginTop={4}>
+                    <Typography
+                        variant="subtitle1"
+                        sx={{
+                            marginBottom: 2,
+                            marginTop: 4,
+                        }}
+                    >
                         <FormattedMessage id="dextinity.admin.contentScope.noContentScopeError.help.whatCanYouDo" defaultMessage="What can you do?" />
                     </Typography>
                     <Typography variant="body1">

@@ -1,7 +1,7 @@
 import { ContentTranslationServiceProvider } from "@dextinity/admin";
 import { Box } from "@mui/material";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type PropsWithChildren, type ReactNode, useState } from "react";
+import { type PropsWithChildren, useState } from "react";
 import { expect, waitFor, within } from "storybook/test";
 
 import { createTipTapRichTextBlock, type TipTapRichTextBlockState } from "../createTipTapRichTextBlock";
@@ -14,7 +14,7 @@ function StatePreview({ state }: { state: TipTapRichTextBlockState }) {
     );
 }
 
-function StoryWrapper({ children, state }: { children: ReactNode; state: TipTapRichTextBlockState }) {
+function StoryWrapper({ children, state }: PropsWithChildren<{ state: TipTapRichTextBlockState }>) {
     return (
         <>
             {children}

@@ -1,4 +1,5 @@
-import { type DocumentNode, gql, useApolloClient, useQuery } from "@apollo/client";
+import { type DocumentNode, gql } from "@apollo/client";
+import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Alert,
     FillSpace,
@@ -75,7 +76,7 @@ export function BrevoTestContactForm({ id, scope, input2State, additionalFormFie
 `;
     const { data, error, loading, refetch } = useQuery<GQLBrevoContactFormQuery, GQLBrevoContactFormQueryVariables>(
         brevoContactFormQuery(brevoTestContactFormFragment),
-        id ? { variables: { id, scope } } : { skip: true },
+        id ? { variables: { id, scope }, notifyOnNetworkStatusChange: false } : skipToken,
     );
 
     const initialValues = useMemo<Partial<EditBrevoContactFormValuesWithAttributes>>(() => {
@@ -107,7 +108,7 @@ export function BrevoTestContactForm({ id, scope, input2State, additionalFormFie
                 fetchPolicy: "no-cache",
             });
 
-            return resolveHasSaveConflict(data?.brevoContact?.modifiedAt, updatedData.brevoContact.modifiedAt);
+            return resolveHasSaveConflict(data?.brevoContact?.modifiedAt, updatedData?.brevoContact.modifiedAt);
         },
         formApiRef,
         loadLatestVersion: async () => {

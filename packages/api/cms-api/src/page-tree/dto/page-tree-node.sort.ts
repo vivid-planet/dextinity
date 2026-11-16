@@ -1,7 +1,7 @@
 import { Field, InputType, registerEnumType } from "@nestjs/graphql";
 import { IsEnum } from "class-validator";
 
-import { SortDirection } from "../../common/sorting/sort-direction.enum";
+import { SortDirection } from "../../common/sorting/sort-direction.enum.js";
 
 export enum PageTreeNodeSortField {
     updatedAt = "updatedAt",

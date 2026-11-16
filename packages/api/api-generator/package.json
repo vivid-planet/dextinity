@@ -47,9 +47,9 @@
     },
     "devDependencies": {
         "@dextinity/eslint-config": "workspace:*",
-        "@mikro-orm/cli": "^6.6.17",
-        "@mikro-orm/core": "^6.6.17",
-        "@mikro-orm/postgresql": "^6.6.17",
+        "@mikro-orm/cli": "^6.6.18",
+        "@mikro-orm/core": "^6.6.18",
+        "@mikro-orm/postgresql": "^6.6.18",
         "@nestjs/graphql": "^13.4.5",
         "@types/node": "^24.19.2",
         "@types/pluralize": "^0.0.33",

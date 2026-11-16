@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type KeyboardEvent, type ReactNode, useId, useRef } from "react";
+import { forwardRef, type HTMLAttributes, type KeyboardEvent, type PropsWithChildren, type ReactNode, useId, useRef } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { FilterChip } from "../filterChip/FilterChip";
@@ -74,9 +74,7 @@ export interface BlockPickerSlotProps {
     item?: SlotPropsValue<BlockPickerOwnerState, "button">;
 }
 
-export interface BlockPickerProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onSelect"> {
-    /** Shown between the search field and the block types, e.g. a `Checkbox` "Edit after adding" and where the block will be inserted. */
-    children?: ReactNode;
+export interface BlockPickerProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onSelect">, PropsWithChildren {
     /** The block types that can be added here. */
     items: BlockPickerItem[];
     /** Called with the `value` of the chosen block type. */
@@ -116,6 +114,9 @@ function matches(item: BlockPickerItem, query: string) {
 /**
  * Chooses the type of a new block: search by name, filter by category, or take one of the recently used. Show it in a `Drawer` or
  * `Popover` opened from the add buttons of a `BlockList`. Enter in the search field adds the first match.
+ *
+ * `children`: Shown between the search field and the block types, e.g. a `Checkbox` "Edit after adding" and where the block will be
+ * inserted.
  */
 export const BlockPicker = forwardRef<HTMLDivElement, BlockPickerProps>(function BlockPicker(
     {

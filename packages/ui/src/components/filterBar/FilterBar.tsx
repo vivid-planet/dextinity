@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { type ChangeEvent, forwardRef, type HTMLAttributes, type KeyboardEvent, type ReactNode, useRef } from "react";
+import { type ChangeEvent, forwardRef, type HTMLAttributes, type KeyboardEvent, type PropsWithChildren, type ReactNode, useRef } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -46,15 +46,13 @@ export interface FilterBarSlotProps {
     actions?: SlotPropsValue<FilterBarOwnerState, "div">;
 }
 
-export interface FilterBarProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
+export interface FilterBarProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
     /** The search text; filters as it is typed. */
     searchValue: string;
     /** Called with the new search text; with `""` when Escape clears it. */
     onSearchChange: (value: string) => void;
     /** Before the search, e.g. a `Checkbox` that marks all items. */
     start?: ReactNode;
-    /** The filters, usually a `FilterChip` per status, a "More filters" menu, and a chip per active filter. */
-    children?: ReactNode;
     /** Shows the number of results after the filters, announced to screen readers as it changes. */
     resultCount?: number;
     /** Actions at the end, e.g. "Export". */
@@ -76,6 +74,8 @@ export interface FilterBarProps extends Omit<HTMLAttributes<HTMLDivElement>, "cl
 /**
  * Narrows a list: a search field, filters that apply right away, and the number of results. `/` jumps into the search, Escape
  * clears it.
+ *
+ * `children`: The filters, usually a `FilterChip` per status, a "More filters" menu, and a chip per active filter.
  */
 export const FilterBar = forwardRef<HTMLDivElement, FilterBarProps>(function FilterBar(
     {

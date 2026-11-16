@@ -133,7 +133,7 @@ export function PatternSpecs({ children }: PropsWithChildren) {
     return <div className={styles.specs}>{children}</div>;
 }
 
-export function PatternSpec({ label, caption, children }: { label: string; caption?: ReactNode; children: ReactNode }) {
+export function PatternSpec({ label, caption, children }: PropsWithChildren<{ label: string; caption?: ReactNode }>) {
     return (
         <div className={styles.spec}>
             <div className={styles.specContent}>{children}</div>

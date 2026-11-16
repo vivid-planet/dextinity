@@ -1,6 +1,6 @@
 import { Toolbar as BaseToolbar } from "@base-ui/react/toolbar";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type PropsWithChildren } from "react";
 
 import styles from "./Toolbar.module.scss";
 
@@ -14,9 +14,7 @@ export type ToolbarOwnerState = {
     disabled: boolean;
 };
 
-export interface ToolbarProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
-    /** The controls: `ToolbarButton`, `ToolbarMenu`, `ToolbarGroup`, and `ToolbarSeparator`. */
-    children: ReactNode;
+export interface ToolbarProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
     /** The accessible name, e.g. "Formatting". */
     "aria-label": string;
     /**
@@ -38,6 +36,8 @@ export interface ToolbarProps extends Omit<HTMLAttributes<HTMLDivElement>, "clas
 /**
  * A row of controls for a shared context, e.g. the formatting of a text editor. Tab moves into the toolbar once, arrow keys move between
  * its controls.
+ *
+ * `children`: The controls: `ToolbarButton`, `ToolbarMenu`, `ToolbarGroup`, and `ToolbarSeparator`.
  */
 export const Toolbar = forwardRef<HTMLDivElement, ToolbarProps>(function Toolbar(
     { children, orientation = "horizontal", disabled = false, className, ...restProps },

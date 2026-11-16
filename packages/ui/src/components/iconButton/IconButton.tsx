@@ -5,6 +5,7 @@ import {
     type ElementType,
     type ForwardedRef,
     forwardRef,
+    type PropsWithChildren,
     type ReactNode,
     type RefAttributes,
     type SyntheticEvent,
@@ -55,14 +56,10 @@ export interface IconButtonSlotProps<Icon extends ElementType, LoadingSpinner ex
     tooltip?: Partial<Omit<TooltipProps, "content" | "children" | "shortcut">>;
 }
 
-export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinner extends ElementType = typeof Spinner> extends Omit<
-    BaseButton.Props,
-    "className" | "ref"
-> {
+export interface IconButtonProps<Icon extends ElementType = "span", LoadingSpinner extends ElementType = typeof Spinner>
+    extends Omit<BaseButton.Props, "className" | "ref">, PropsWithChildren {
     /** Names the action, since the button shows no text. It is also shown as the button's tooltip, e.g. "More actions". */
     "aria-label": string;
-    /** The icon to show, e.g. `<Icon name="more-horizontal" />`. */
-    children?: ReactNode;
     /** A keyboard shortcut for the action, shown in the tooltip, in the notation of `useKeyboardShortcut`, e.g. `"mod+s"`. */
     shortcut?: string;
     /**
@@ -117,6 +114,8 @@ function preventDefault(event: SyntheticEvent) {
 /**
  * A button that shows only an icon, for actions that are clear without text. Its accessible name is also its tooltip, so every
  * icon-only action explains itself.
+ *
+ * `children`: The icon to show, e.g. `<Icon name="more-horizontal" />`.
  */
 export const IconButton: <Icon extends ElementType = "span", LoadingSpinner extends ElementType = typeof Spinner>(
     props: IconButtonProps<Icon, LoadingSpinner> & RefAttributes<HTMLButtonElement>,

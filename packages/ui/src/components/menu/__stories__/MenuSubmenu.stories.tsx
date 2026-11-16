@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ReactNode } from "react";
+import type { PropsWithChildren } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { useControlledArg } from "../../../storybook/storyArgs";
@@ -12,7 +12,7 @@ import { MenuItem } from "../MenuItem";
 import { MenuSubmenu } from "../MenuSubmenu";
 import styles from "./Menu.stories.module.scss";
 
-function InOpenMenu({ children }: { children: ReactNode }) {
+function InOpenMenu({ children }: PropsWithChildren) {
     return (
         <Menu
             open

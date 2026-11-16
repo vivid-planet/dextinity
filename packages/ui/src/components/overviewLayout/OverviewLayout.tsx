@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type MouseEvent, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type MouseEvent, type PropsWithChildren, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -44,7 +44,7 @@ export interface OverviewLayoutSlotProps {
     cards?: SlotPropsValue<OverviewLayoutOwnerState, "div">;
 }
 
-export interface OverviewLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title"> {
+export interface OverviewLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title">, PropsWithChildren {
     /** The greeting, e.g. "Good morning, Max". */
     title: ReactNode;
     /** A mono label above the greeting, e.g. the app name. */
@@ -55,8 +55,6 @@ export interface OverviewLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>
     summary?: ReactNode;
     /** Shown at the end of the greeting, e.g. a clock with the date; hidden in narrow layouts. */
     aside?: ReactNode;
-    /** The cards, at most six; each leads on to its full view. Two columns, one in narrow layouts. */
-    children: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -67,6 +65,8 @@ const labelSeparator = "·";
 
 /**
  * The layout of an overview page, the entry point of an app: a greeting with a summary of what happened, then cards that lead on.
+ *
+ * `children`: The cards, at most six; each leads on to its full view. Two columns, one in narrow layouts.
  */
 export const OverviewLayout = forwardRef<HTMLDivElement, OverviewLayoutProps>(function OverviewLayout(
     { title, eyebrow, back, summary, aside, children, className, slotProps, ...restProps },

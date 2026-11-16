@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type PropsWithChildren } from "react";
 
 import { Icon } from "../icon/Icon";
 import { Tooltip } from "../tooltip/Tooltip";
@@ -14,13 +14,11 @@ export type BadgeOwnerState = {
     variant: BadgeVariant;
 };
 
-export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children"> {
+export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, "className" | "children">, PropsWithChildren {
     /**
      * `warning` marks a problem such as a missing alt text, `count` a number of items, and `dot` something new or changed.
      */
     variant: BadgeVariant;
-    /** The number of a `count`; `warning` and `dot` show no text. */
-    children?: ReactNode;
     /**
      * The explanation, shown as a tooltip on hover and keyboard focus. Required for `warning` and `dot`, where it is also the accessible
      * name; without it they are hidden from assistive technology.
@@ -32,6 +30,8 @@ export interface BadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>, "class
 
 /**
  * Marks a real exception on an element: a missing value, a count, or something new. One badge per element at most.
+ *
+ * `children`: The number of a `count`; `warning` and `dot` show no text.
  */
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge({ variant, children, tooltip, className, ...restProps }, ref) {
     const ownerState: BadgeOwnerState = { variant };

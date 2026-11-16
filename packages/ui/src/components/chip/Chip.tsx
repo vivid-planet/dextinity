@@ -6,6 +6,7 @@ import {
     forwardRef,
     type HTMLAttributes,
     type MouseEvent,
+    type PropsWithChildren,
     type ReactNode,
     type RefAttributes,
     type SyntheticEvent,
@@ -60,12 +61,8 @@ interface ChipSlotProps<StartIcon extends ElementType, EndIcon extends ElementTy
     clearButton?: SlotPropsValue<ChipOwnerState, ClearButton>;
 }
 
-interface ChipOwnProps<StartIcon extends ElementType, EndIcon extends ElementType, ClearButton extends ClearButtonElement> extends Omit<
-    HTMLAttributes<HTMLElement>,
-    "className" | "color"
-> {
-    /** The label, e.g. a value or a status. */
-    children?: ReactNode;
+interface ChipOwnProps<StartIcon extends ElementType, EndIcon extends ElementType, ClearButton extends ClearButtonElement>
+    extends Omit<HTMLAttributes<HTMLElement>, "className" | "color">, PropsWithChildren {
     /**
      * Visual emphasis: `contained` for chips that need attention, `outlined` for quieter ones, for example in a long list of filters.
      *
@@ -138,6 +135,8 @@ function preventDefault(event: SyntheticEvent) {
 
 /**
  * A compact element for a value, a status, or a filter.
+ *
+ * `children`: The label, e.g. a value or a status.
  */
 export const Chip: <StartIcon extends ElementType = "span", EndIcon extends ElementType = "span", ClearButton extends ClearButtonElement = "button">(
     props: ChipProps<StartIcon, EndIcon, ClearButton> & RefAttributes<HTMLElement>,

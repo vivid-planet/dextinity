@@ -1,6 +1,6 @@
 import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type PropsWithChildren } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./MenuGroup.module.scss";
@@ -15,11 +15,9 @@ export interface MenuGroupSlotProps {
     label?: SlotPropsValue<MenuGroupOwnerState, typeof BaseMenu.GroupLabel>;
 }
 
-export interface MenuGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
+export interface MenuGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
     /** What the items act on or choose, e.g. "3 items" or "Theme". */
     label: string;
-    /** The items of the group. */
-    children: ReactNode;
     /** Added alongside the component's own classes. */
     className?: string;
     /** Props for each slot, merged with the slot's own props rather than replacing them. */
@@ -28,6 +26,8 @@ export interface MenuGroupProps extends Omit<HTMLAttributes<HTMLDivElement>, "cl
 
 /**
  * Items of a `Menu` under a heading. Menus with more than ten items use groups.
+ *
+ * `children`: The items of the group.
  */
 export const MenuGroup = forwardRef<HTMLDivElement, MenuGroupProps>(function MenuGroup({ label, children, className, slotProps, ...restProps }, ref) {
     const ownerState: MenuGroupOwnerState = {};

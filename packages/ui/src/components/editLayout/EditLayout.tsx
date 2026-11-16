@@ -1,5 +1,15 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode, type RefObject, useEffect, useImperativeHandle, useRef, useState } from "react";
+import {
+    forwardRef,
+    type HTMLAttributes,
+    type PropsWithChildren,
+    type ReactNode,
+    type RefObject,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+    useState,
+} from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Panel } from "../panel/Panel";
@@ -46,7 +56,7 @@ export interface EditLayoutSlotProps {
     aside?: SlotPropsValue<EditLayoutOwnerState, "aside">;
 }
 
-export interface EditLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
+export interface EditLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
     /**
      * How the editor and the preview share the page:
      *
@@ -63,8 +73,6 @@ export interface EditLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
      * primary action.
      */
     header: ReactNode;
-    /** The editor: the panel with the blocks, or the fields in sections. */
-    children: ReactNode;
     /** The preview, e.g. a `DevicePreview`. Shown in all variants but `form`; it fills the viewport's height and stays in view. */
     preview?: ReactNode;
     /** The side column of a `form`, e.g. status and the danger zone. Stays in view while the form scrolls. */
@@ -102,6 +110,8 @@ export interface EditLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
 /**
  * The layout of an edit page: the header, then the editor next to a preview of the result. Pages always have the preview on the left and
  * the blocks on the right; structured content uses one of the three form variants.
+ *
+ * `children`: The editor: the panel with the blocks, or the fields in sections.
  */
 export const EditLayout = forwardRef<HTMLDivElement, EditLayoutProps>(function EditLayout(
     {

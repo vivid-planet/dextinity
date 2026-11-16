@@ -1,4 +1,4 @@
-import { type CSSProperties, type ReactNode, useRef, useState } from "react";
+import { type CSSProperties, type PropsWithChildren, useRef, useState } from "react";
 
 import { Button } from "../../../components/button/Button";
 import { Checkbox } from "../../../components/checkbox/Checkbox";
@@ -260,7 +260,7 @@ export function OklchPlayground() {
     );
 }
 
-function Fact({ label, children }: { label: string; children: ReactNode }) {
+function Fact({ label, children }: PropsWithChildren<{ label: string }>) {
     return (
         <div className={styles.fact}>
             <dt>{label}</dt>

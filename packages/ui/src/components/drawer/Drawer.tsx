@@ -1,6 +1,6 @@
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode, type RefObject } from "react";
+import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, type RefObject } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
@@ -40,7 +40,7 @@ export interface DrawerSlotProps {
     footer?: SlotPropsValue<DrawerOwnerState, "div">;
 }
 
-export interface DrawerProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title"> {
+export interface DrawerProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title">, PropsWithChildren {
     /** Whether the drawer is open. */
     open: boolean;
     /** Called when the close button or Escape requests to close the drawer; for a modal drawer, also a click on the backdrop. */
@@ -49,8 +49,6 @@ export interface DrawerProps extends Omit<HTMLAttributes<HTMLDivElement>, "class
     title: string;
     /** A sentence under the title. */
     description?: string;
-    /** The content, usually a form. */
-    children: ReactNode;
     /** The actions, as `Button`s, at the bottom. */
     footer?: ReactNode;
     /**
@@ -78,6 +76,8 @@ export interface DrawerProps extends Omit<HTMLAttributes<HTMLDivElement>, "class
 
 /**
  * A panel at the right edge for editing next to a list, e.g. a redirect. The list stays visible.
+ *
+ * `children`: The content, usually a form.
  */
 export const Drawer = forwardRef<HTMLDivElement, DrawerProps>(function Drawer(
     {

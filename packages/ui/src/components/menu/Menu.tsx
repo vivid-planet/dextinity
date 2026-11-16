@@ -1,6 +1,6 @@
 import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactElement, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactElement } from "react";
 
 import { popupCollisionPadding } from "../../utils/popupCollisionPadding";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
@@ -23,11 +23,9 @@ export interface MenuSlotProps {
     positioner?: SlotPropsValue<MenuOwnerState, typeof BaseMenu.Positioner>;
 }
 
-export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
+export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
     /** The element that opens the menu, e.g. an `IconButton`. It must accept a ref and event handlers; it gets `aria-haspopup` and `aria-expanded`. */
     trigger: ReactElement;
-    /** The entries: `MenuItem`, `MenuCheckboxItem`, `MenuRadioGroup`, `MenuGroup`, `MenuSeparator`, and `MenuSubmenu`. */
-    children: ReactNode;
     /** Whether the menu is open. */
     open: boolean;
     /** Called when the trigger, an item, Escape, or a click outside requests to open or close the menu. */
@@ -52,6 +50,8 @@ export interface MenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "classNa
 
 /**
  * A list of actions at a trigger. Arrow keys move through the items, Enter selects, Escape closes.
+ *
+ * `children`: The entries: `MenuItem`, `MenuCheckboxItem`, `MenuRadioGroup`, `MenuGroup`, `MenuSeparator`, and `MenuSubmenu`.
  */
 export const Menu = forwardRef<HTMLDivElement, MenuProps>(function Menu(
     { trigger, children, open, onOpenChange, placement = "bottom-start", disabled = false, className, slotProps, ...restProps },

@@ -1,6 +1,6 @@
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode, useState } from "react";
+import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, useState } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
@@ -37,15 +37,13 @@ export interface AppShellSlotProps {
     main?: SlotPropsValue<AppShellOwnerState, "main">;
 }
 
-export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
+export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
     /** The navigation, usually a `SideNav` without `collapsed` and `onCollapsedChange`, which then follows the shell. */
     nav: ReactNode;
     /**
      * The top bar, usually a `TopBar`; it sticks to the top. Without `onMenuClick`, its menu button opens the navigation drawer.
      */
     topBar: ReactNode;
-    /** The page: page header, then panels. */
-    children: ReactNode;
     /** Whether the navigation shows only icons. A user setting; on medium windows the navigation is always collapsed. */
     navCollapsed: boolean;
     /** Called to collapse or expand the navigation, with its footer button or ⌘\ / Ctrl+\. */
@@ -63,6 +61,8 @@ export interface AppShellProps extends Omit<HTMLAttributes<HTMLDivElement>, "cla
 /**
  * The frame of every admin app: navigation, top bar, and content, as glass panels over the ambient light field. It stays in place
  * when the page changes and adapts to the window width: the navigation collapses to icons, then moves into a drawer.
+ *
+ * `children`: The page: page header, then panels.
  */
 export const AppShell = forwardRef<HTMLDivElement, AppShellProps>(function AppShell(
     { nav, topBar, children, navCollapsed, onNavCollapsedChange, disableShortcuts = false, labels: labelsProp, className, slotProps, ...restProps },

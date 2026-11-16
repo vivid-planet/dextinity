@@ -1,6 +1,6 @@
 import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type PropsWithChildren } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { type ControlAriaProps, isAriaInvalid, useSingleChoiceFieldWarning } from "../field/ControlFrame";
@@ -32,9 +32,10 @@ export interface CheckboxSlotProps {
 }
 
 export interface CheckboxProps
-    extends ControlAriaProps, Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | keyof ControlAriaProps> {
-    /** The label, which names the checkbox even inside a `Field`. Without a visible label, set `aria-label`. */
-    children?: ReactNode;
+    extends
+        ControlAriaProps,
+        Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "onChange" | keyof ControlAriaProps>,
+        PropsWithChildren {
     /** Whether the checkbox is checked. */
     checked: boolean;
     /** Called with the new state when the checkbox is toggled. */
@@ -72,6 +73,8 @@ export interface CheckboxProps
  * Selects an item, for multiple selection in lists, the page tree, and assets. For a validation message, e.g. on a consent checkbox, put it
  * in a `Field` with `layout="group"` and without `label`: the checkbox takes the field's message, state, `required`, `disabled`, and
  * `readOnly`, and its own text names it.
+ *
+ * `children`: The label, which names the checkbox even inside a `Field`. Without a visible label, set `aria-label`.
  */
 export const Checkbox = forwardRef<HTMLDivElement, CheckboxProps>(function Checkbox(
     {

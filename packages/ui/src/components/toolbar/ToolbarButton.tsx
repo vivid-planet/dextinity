@@ -1,6 +1,6 @@
 import { Toolbar as BaseToolbar } from "@base-ui/react/toolbar";
 import { clsx } from "clsx";
-import { type ButtonHTMLAttributes, forwardRef, type MouseEvent, type ReactNode } from "react";
+import { type ButtonHTMLAttributes, forwardRef, type MouseEvent, type PropsWithChildren } from "react";
 
 import { IconButton } from "../iconButton/IconButton";
 import type { TooltipProps } from "../tooltip/Tooltip";
@@ -20,9 +20,8 @@ export interface ToolbarButtonSlotProps {
     tooltip?: Partial<Omit<TooltipProps, "content" | "children" | "shortcut">>;
 }
 
-export interface ToolbarButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className" | "children" | "aria-pressed"> {
-    /** The icon, e.g. `<Icon name="bold" />`. */
-    children: ReactNode;
+export interface ToolbarButtonProps
+    extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className" | "children" | "aria-pressed">, PropsWithChildren {
     /** The accessible name, also shown as the tooltip. Name the action, e.g. "Bold". */
     "aria-label": string;
     /** A keyboard shortcut for the action, shown in the tooltip, in the notation of `useKeyboardShortcut`, e.g. `"mod+b"`. */
@@ -56,6 +55,8 @@ function preventFocusLoss(event: MouseEvent) {
 
 /**
  * An icon button in a `Toolbar`, as a plain action or a toggle. Its accessible name and shortcut show as its tooltip.
+ *
+ * `children`: The icon, e.g. `<Icon name="bold" />`.
  */
 export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(function ToolbarButton(
     { children, "aria-label": ariaLabel, shortcut, pressed, disabled = false, keepFocus = false, className, slotProps, onMouseDown, ...restProps },

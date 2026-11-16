@@ -1,6 +1,6 @@
 import { useRender } from "@base-ui/react/use-render";
 import { clsx } from "clsx";
-import { type AnchorHTMLAttributes, forwardRef, type ReactNode } from "react";
+import { type AnchorHTMLAttributes, forwardRef, type PropsWithChildren, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -34,9 +34,7 @@ const defaultLabels: LinkLabels = {
     opensInNewTab: "(opens in a new tab)",
 };
 
-export interface LinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className" | "color"> {
-    /** The link text. Say where the link goes, never "Click here". */
-    children: ReactNode;
+export interface LinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className" | "color">, PropsWithChildren {
     /** The destination. */
     href?: string;
     /**
@@ -74,6 +72,8 @@ export interface LinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>,
 
 /**
  * A text link that says where it goes. Its icon nudges in the direction of travel on hover.
+ *
+ * `children`: The link text. Say where the link goes, never "Click here".
  */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
     { children, color = "secondary", external = false, startIcon, endIcon, labels: labelsProp, className, slotProps, render, ...restProps },

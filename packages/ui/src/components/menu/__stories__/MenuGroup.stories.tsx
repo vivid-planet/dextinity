@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ReactNode } from "react";
+import type { PropsWithChildren } from "react";
 import { expect, fn, screen } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -11,7 +11,7 @@ import { MenuGroup } from "../MenuGroup";
 import { MenuItem } from "../MenuItem";
 import styles from "./Menu.stories.module.scss";
 
-function InOpenMenu({ children }: { children: ReactNode }) {
+function InOpenMenu({ children }: PropsWithChildren) {
     return (
         <Menu
             open

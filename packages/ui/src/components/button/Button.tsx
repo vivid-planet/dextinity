@@ -5,6 +5,7 @@ import {
     type ElementType,
     type ForwardedRef,
     forwardRef,
+    type PropsWithChildren,
     type ReactNode,
     type RefAttributes,
     type SyntheticEvent,
@@ -63,9 +64,8 @@ export interface ButtonProps<
     StartIcon extends ElementType = "span",
     EndIcon extends ElementType = "span",
     LoadingSpinner extends ElementType = typeof Spinner,
-> extends Omit<BaseButton.Props, "className" | "ref"> {
-    /** The label: a verb for the action, e.g. "Save". */
-    children?: ReactNode;
+>
+    extends Omit<BaseButton.Props, "className" | "ref">, PropsWithChildren {
     /**
      * Visual emphasis: `contained` for the main action, `outlined` and `text` for less important ones.
      *
@@ -123,6 +123,8 @@ function preventDefault(event: SyntheticEvent) {
 
 /**
  * A button for triggering actions.
+ *
+ * `children`: The label: a verb for the action, e.g. "Save".
  */
 export const Button: <
     StartIcon extends ElementType = "span",

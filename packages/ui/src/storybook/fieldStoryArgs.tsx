@@ -1,5 +1,5 @@
 import type { ArgTypes } from "@storybook/react-vite";
-import type { ReactNode } from "react";
+import type { PropsWithChildren } from "react";
 
 import { Field, type FieldLayout, type FieldProps } from "../components/field/Field";
 
@@ -86,7 +86,7 @@ export function hasFieldArgs(field: FieldStoryArgs) {
 /**
  * Renders a control in a `Field` with the field args of a story.
  */
-export function StoryField({ field, layout, children }: { field: FieldStoryArgs; layout?: FieldLayout; children: ReactNode }) {
+export function StoryField({ field, layout, children }: PropsWithChildren<{ field: FieldStoryArgs; layout?: FieldLayout }>) {
     return (
         <Field {...field} layout={layout}>
             {children}

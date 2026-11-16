@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext } from "react";
+import { createContext, type PropsWithChildren, type ReactNode, useContext } from "react";
 
 import type { FieldControlProps, FieldOwnerState } from "./Field";
 
@@ -43,6 +43,6 @@ export function useFieldContext() {
  * Hides the surrounding field from portaled content. React context passes through portals, so without it an `Input` in a popup
  * opened from inside a `Field` would take over that field's id, label, message and state.
  */
-export function FieldContextReset({ children }: { children?: ReactNode }) {
+export function FieldContextReset({ children }: PropsWithChildren) {
     return <FieldContext.Provider value={null}>{children}</FieldContext.Provider>;
 }

@@ -1,5 +1,15 @@
 import { clsx } from "clsx";
-import { Children, type DragEvent, forwardRef, type HTMLAttributes, isValidElement, type KeyboardEvent, type ReactNode, useState } from "react";
+import {
+    Children,
+    type DragEvent,
+    forwardRef,
+    type HTMLAttributes,
+    isValidElement,
+    type KeyboardEvent,
+    type PropsWithChildren,
+    type ReactNode,
+    useState,
+} from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -36,9 +46,7 @@ export interface BlockListSlotProps {
     addButton?: SlotPropsValue<BlockListOwnerState, "button">;
 }
 
-export interface BlockListProps extends Omit<HTMLAttributes<HTMLUListElement>, "className"> {
-    /** The blocks, as `Block` elements in their order. */
-    children?: ReactNode;
+export interface BlockListProps extends Omit<HTMLAttributes<HTMLUListElement>, "className">, PropsWithChildren {
     /** A row above the blocks, e.g. a `BlockListHeader` with the select-all checkbox and the bulk actions. */
     header?: ReactNode;
     /** The accessible name of the list, e.g. "Blocks". */
@@ -69,6 +77,8 @@ interface DropTarget {
 /**
  * The blocks of a page in their order: move them by dragging or with the keyboard, and add new ones before, between, or after them. A
  * block's fields can hold a nested `BlockList`, e.g. the blocks of a column; each list moves only its own blocks.
+ *
+ * `children`: The blocks, as `Block` elements in their order.
  */
 export const BlockList = forwardRef<HTMLUListElement, BlockListProps>(function BlockList(
     { children, header, onReorder, onAdd, labels: labelsProp, className, slotProps, ...restProps },

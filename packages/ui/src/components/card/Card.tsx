@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode, useId } from "react";
+import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, useId } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./Card.module.scss";
@@ -35,11 +35,9 @@ export interface CardSlotProps {
     body?: SlotPropsValue<CardOwnerState, "div">;
 }
 
-export interface CardProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "title"> {
+export interface CardProps extends Omit<HTMLAttributes<HTMLElement>, "className" | "title">, PropsWithChildren {
     /** The heading of the card, which also names it for assistive technology. */
     title: string;
-    /** The content, e.g. rows that bring their own padding. */
-    children: ReactNode;
     /** An icon in the orb before the title, e.g. `<Icon name="clock" />`. */
     icon?: ReactNode;
     /** An addition after the title, e.g. "30 days". */
@@ -56,6 +54,8 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLElement>, "className"
 
 /**
  * A card on an overview: an icon in an orb, a title, a link to the full view, and a short excerpt of the content.
+ *
+ * `children`: The content, e.g. rows that bring their own padding.
  */
 export const Card = forwardRef<HTMLElement, CardProps>(function Card(
     { title, children, icon, meta, link, className, slots, slotProps, ...restProps },

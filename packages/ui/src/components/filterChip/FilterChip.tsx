@@ -1,6 +1,6 @@
 import { Toggle } from "@base-ui/react/toggle";
 import { clsx } from "clsx";
-import { type ComponentPropsWithoutRef, forwardRef, type MouseEvent, type ReactNode } from "react";
+import { type ComponentPropsWithoutRef, forwardRef, type MouseEvent, type PropsWithChildren, type ReactNode } from "react";
 
 import { hasRenderableContent } from "../../utils/hasRenderableContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
@@ -29,12 +29,13 @@ export interface FilterChipSlotProps {
     menuIcon?: SlotPropsValue<FilterChipOwnerState, "span">;
 }
 
-export interface FilterChipProps extends Omit<
-    ComponentPropsWithoutRef<typeof Toggle>,
-    "className" | "children" | "onClick" | "pressed" | "defaultPressed" | "onPressedChange" | "value"
-> {
-    /** The label, one line. */
-    children: ReactNode;
+export interface FilterChipProps
+    extends
+        Omit<
+            ComponentPropsWithoutRef<typeof Toggle>,
+            "className" | "children" | "onClick" | "pressed" | "defaultPressed" | "onPressedChange" | "value"
+        >,
+        PropsWithChildren {
     /** Whether the filter is active. */
     selected: boolean;
     /** Called when the chip is clicked, to toggle the filter or open its menu. */
@@ -72,6 +73,8 @@ export interface FilterChipProps extends Omit<
 
 /**
  * A quick filter above a list, with the number of matching items. Toggles the filter, or opens a menu to pick its value.
+ *
+ * `children`: The label, one line.
  */
 export const FilterChip = forwardRef<HTMLButtonElement, FilterChipProps>(function FilterChip(
     { children, selected, onClick, count, startAdornment, endAdornment, hasMenu = false, disabled = false, className, slotProps, ...restProps },

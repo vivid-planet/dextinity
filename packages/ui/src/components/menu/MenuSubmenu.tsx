@@ -1,6 +1,6 @@
 import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode } from "react";
 
 import { popupCollisionPadding } from "../../utils/popupCollisionPadding";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
@@ -29,11 +29,9 @@ export interface MenuSubmenuSlotProps {
     popup?: SlotPropsValue<MenuSubmenuOwnerState, typeof BaseMenu.Popup>;
 }
 
-export interface MenuSubmenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
+export interface MenuSubmenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
     /** The item's name, e.g. "Move to". */
     label: string;
-    /** The entries of the submenu. */
-    children: ReactNode;
     /** An icon before the label. */
     icon?: ReactNode;
     /** Whether the submenu is open. */
@@ -54,6 +52,8 @@ export interface MenuSubmenuProps extends Omit<HTMLAttributes<HTMLDivElement>, "
 
 /**
  * An item of a `Menu` that opens a nested menu, on hover, click, or the arrow key towards it.
+ *
+ * `children`: The entries of the submenu.
  */
 export const MenuSubmenu = forwardRef<HTMLDivElement, MenuSubmenuProps>(function MenuSubmenu(
     { label, children, icon, open, onOpenChange, disabled = false, className, slotProps, ...restProps },

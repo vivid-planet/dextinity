@@ -1,7 +1,7 @@
 import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog";
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode, type RefObject } from "react";
+import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode, type RefObject } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { useThemePortalContainer } from "../../utils/themePortalContainer";
@@ -45,7 +45,7 @@ export interface DialogSlotProps {
     footer?: SlotPropsValue<DialogOwnerState, "div">;
 }
 
-export interface DialogProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title" | "role"> {
+export interface DialogProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children" | "title" | "role">, PropsWithChildren {
     /** Whether the dialog is open. */
     open: boolean;
     /** Called when the close button, Escape, or a click on the backdrop requests to close the dialog, unless it isn't `dismissible`. */
@@ -54,8 +54,6 @@ export interface DialogProps extends Omit<HTMLAttributes<HTMLDivElement>, "class
     title: string;
     /** A sentence under the title, e.g. the consequence of the decision. */
     description?: string;
-    /** The content, e.g. a short form. */
-    children?: ReactNode;
     /** The actions, as `Button`s: secondary ones first, the primary one last. */
     footer?: ReactNode;
     /**
@@ -96,6 +94,8 @@ export interface DialogProps extends Omit<HTMLAttributes<HTMLDivElement>, "class
 /**
  * A modal window for a decision or a short task that needs full attention. Focus stays in the dialog and returns to the
  * trigger on close.
+ *
+ * `children`: The content, e.g. a short form.
  */
 export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
     {

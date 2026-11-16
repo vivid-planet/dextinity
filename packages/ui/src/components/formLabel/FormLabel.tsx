@@ -5,6 +5,7 @@ import {
     type ForwardedRef,
     forwardRef,
     type LabelHTMLAttributes,
+    type PropsWithChildren,
     type ReactNode,
     type Ref,
     type RefAttributes,
@@ -74,9 +75,8 @@ export interface FormLabelProps<
     Label extends LabelElement = "label",
     RequiredMarker extends ElementType = "span",
     HelpIcon extends ElementType = typeof Icon,
-> extends Omit<LabelHTMLAttributes<HTMLLabelElement>, "className" | "style"> {
-    /** The label text. */
-    children?: ReactNode;
+>
+    extends Omit<LabelHTMLAttributes<HTMLLabelElement>, "className" | "style">, PropsWithChildren {
     /**
      * Marks the field as required with an asterisk.
      *
@@ -115,6 +115,8 @@ export interface FormLabelProps<
 
 /**
  * Names a form field, for a custom layout without `Field`. `Field` renders its own label with the same look.
+ *
+ * `children`: The label text.
  */
 export const FormLabel: <
     Label extends LabelElement = "label",

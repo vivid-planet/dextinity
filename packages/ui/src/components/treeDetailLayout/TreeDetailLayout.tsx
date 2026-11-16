@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type PropsWithChildren, type ReactNode } from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./TreeDetailLayout.module.scss";
@@ -31,7 +31,7 @@ export interface TreeDetailLayoutSlotProps {
     detail?: SlotPropsValue<TreeDetailLayoutOwnerState, "aside">;
 }
 
-export interface TreeDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
+export interface TreeDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
     /** The page header with the scope, the count, and the primary action, e.g. a `PageHeader`. */
     header: ReactNode;
     /** At the top of the tree's card: select all, search, status filter, expand and collapse all, e.g. a `FilterBar`. */
@@ -43,8 +43,6 @@ export interface TreeDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElemen
      * @defaultValue `"glass"`
      */
     surface?: TreeDetailLayoutSurface;
-    /** The tree, e.g. a `TreeView`, without a card of its own. Selecting a node shows it in the detail; checking nodes is separate from that. */
-    children: ReactNode;
     /** The detail of the selected node: path, edit button, published switch, properties. Stays in view while the tree scrolls. */
     detail: ReactNode;
     /** The accessible name of the detail, e.g. the selected page's title. */
@@ -58,6 +56,9 @@ export interface TreeDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElemen
 /**
  * The layout of a tree page, e.g. the page tree: the page header, and a card with a toolbar and the tree, with the detail of the selected
  * node next to it. In narrow layouts the detail moves below the tree.
+ *
+ * `children`: The tree, e.g. a `TreeView`, without a card of its own. Selecting a node shows it in the detail; checking nodes is separate
+ * from that.
  */
 export const TreeDetailLayout = forwardRef<HTMLDivElement, TreeDetailLayoutProps>(function TreeDetailLayout(
     { header, toolbar, surface = "glass", children, detail, detailLabel, className, slotProps, ...restProps },

@@ -1,5 +1,14 @@
 import { clsx } from "clsx";
-import { type FocusEvent, forwardRef, type HTMLAttributes, type KeyboardEvent, type ReactNode, useEffect, useRef } from "react";
+import {
+    type FocusEvent,
+    forwardRef,
+    type HTMLAttributes,
+    type KeyboardEvent,
+    type PropsWithChildren,
+    type ReactNode,
+    useEffect,
+    useRef,
+} from "react";
 
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./ListDetailLayout.module.scss";
@@ -29,13 +38,11 @@ export interface ListDetailLayoutSlotProps {
     sidePanel?: SlotPropsValue<ListDetailLayoutOwnerState, "aside">;
 }
 
-export interface ListDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children"> {
+export interface ListDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElement>, "className" | "children">, PropsWithChildren {
     /** The page header with the scope, the count, and the primary action, e.g. a `PageHeader`. */
     header: ReactNode;
     /** Search and filters above the list, e.g. a `FilterBar`. */
     toolbar?: ReactNode;
-    /** The list, e.g. a table. A click on a row opens the side panel; the list stays visible. */
-    children: ReactNode;
     /** The side panel: a short form with save, e.g. for a redirect. Long forms belong on an edit page. */
     sidePanel: ReactNode;
     /** The accessible name of the side panel, e.g. "Edit redirect". */
@@ -56,6 +63,8 @@ export interface ListDetailLayoutProps extends Omit<HTMLAttributes<HTMLDivElemen
 /**
  * The layout of a list whose short records are edited in a side panel next to it: the page header, a toolbar, the list, and the side
  * panel. In narrow layouts the side panel moves above the list.
+ *
+ * `children`: The list, e.g. a table. A click on a row opens the side panel; the list stays visible.
  */
 export const ListDetailLayout = forwardRef<HTMLDivElement, ListDetailLayoutProps>(function ListDetailLayout(
     { header, toolbar, children, sidePanel, sidePanelLabel, open, onOpenChange, className, slotProps, onFocusCapture, ...restProps },

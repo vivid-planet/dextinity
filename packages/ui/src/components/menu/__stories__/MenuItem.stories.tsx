@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ReactNode } from "react";
+import type { PropsWithChildren } from "react";
 import { expect, fn, screen, userEvent, waitFor } from "storybook/test";
 
 import { themeDecorator } from "../../../storybook/themeDecorator";
@@ -16,7 +16,7 @@ const iconOptions = {
     Trash: <Icon name="trash" />,
 };
 
-function InOpenMenu({ children }: { children: ReactNode }) {
+function InOpenMenu({ children }: PropsWithChildren) {
     return (
         <Menu
             open

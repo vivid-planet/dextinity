@@ -79,6 +79,7 @@ describe("AiModeFlyout", () => {
         // Marks the script as loaded, so that `ScriptLoader` renders the chat right away.
         const script = document.createElement("script");
         script.id = scriptSrc;
+        script.dataset.loaded = "true";
         document.body.appendChild(script);
     });
 

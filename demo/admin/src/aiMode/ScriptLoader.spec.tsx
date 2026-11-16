@@ -15,10 +15,11 @@ describe("ScriptLoader", () => {
         }
     });
 
-    it("renders the children right away when the script is already in the document, without adding it again", () => {
+    it("renders the children right away when the script has already loaded, without adding it again", () => {
         const script = document.createElement("script");
         script.id = scriptSrc;
         script.src = scriptSrc;
+        script.dataset.loaded = "true";
         document.body.appendChild(script);
 
         renderAdmin(
@@ -44,6 +45,28 @@ describe("ScriptLoader", () => {
         expect(screen.queryByText("Chat")).not.toBeInTheDocument();
 
         fireEvent.load(scripts[0]);
+
+        expect(screen.getByText("Chat")).toBeInTheDocument();
+    });
+
+    it("waits for a script that another mount added and that is still loading, as in StrictMode", () => {
+        const first = renderAdmin(
+            <ScriptLoader src={scriptSrc}>
+                <p>Chat</p>
+            </ScriptLoader>,
+        );
+        first.unmount();
+
+        renderAdmin(
+            <ScriptLoader src={scriptSrc}>
+                <p>Chat</p>
+            </ScriptLoader>,
+        );
+
+        expect(findScripts()).toHaveLength(1);
+        expect(screen.queryByText("Chat")).not.toBeInTheDocument();
+
+        fireEvent.load(findScripts()[0]);
 
         expect(screen.getByText("Chat")).toBeInTheDocument();
     });

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { MemoryRouter } from "react-router";
 
 import { ActionLogShowVersion } from "../ActionLogShowVersion";
 
@@ -16,13 +15,6 @@ const mockActionLog = {
 type Story = StoryObj<typeof ActionLogShowVersion>;
 const meta: Meta<typeof ActionLogShowVersion> = {
     component: ActionLogShowVersion,
-    decorators: [
-        (Story) => (
-            <MemoryRouter>
-                <Story />
-            </MemoryRouter>
-        ),
-    ],
     tags: ["!autodocs"],
     title: "actionLog/components/actionLogShowVersion/ActionLogShowVersion",
     args: {

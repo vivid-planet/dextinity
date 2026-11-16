@@ -47,14 +47,22 @@ function nextFrame() {
     return new Promise((resolve) => requestAnimationFrame(resolve));
 }
 
-// Waits until the room has stopped growing and the page has stopped scrolling for a few frames: the room measures the popups a
-// frame after they move, and they move again once the frame has grown or the room has scrolled the page
+// Waits until the room has stopped growing, the page has stopped scrolling and the open popups have stopped moving or resizing for
+// a few frames: the room measures the popups a frame after they move, and they move again once the frame has grown or the room
+// has scrolled the page. On a busy machine a popup can still be opening when the room looks settled.
 async function waitForRoomToSettle(room: HTMLElement) {
     let previousSize = "";
     let stableFrames = 0;
     for (let frame = 0; frame < 120 && stableFrames < 5; frame++) {
         await nextFrame();
-        const size = `${room.style.paddingBlockStart}/${room.style.paddingBlockEnd}/${room.offsetHeight}/${window.scrollY}`;
+        const { anchored, overlays } = findOpenPopups(room);
+        const popupBoxes = [...anchored, ...overlays.map(({ surface }) => surface)]
+            .map((popup) => {
+                const { top, height } = popup.getBoundingClientRect();
+                return `${Math.round(top)}:${Math.round(height)}`;
+            })
+            .join(",");
+        const size = `${room.style.paddingBlockStart}/${room.style.paddingBlockEnd}/${room.offsetHeight}/${window.scrollY}/${popupBoxes}`;
         stableFrames = size === previousSize ? stableFrames + 1 : 0;
         previousSize = size;
     }

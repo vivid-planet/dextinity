@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { DiscoverService } from "../dependencies/discover.service";
 import { AbstractAccessControlService } from "../user-permissions/access-control.service";
 import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
+import { ScopedEntity } from "../user-permissions/decorators/scoped-entity.decorator";
 import { CurrentUser, CurrentUserPermission } from "../user-permissions/dto/current-user";
 import { ContentScope } from "../user-permissions/interfaces/content-scope.interface";
 import { UserPermissionsService } from "../user-permissions/user-permissions.service";
@@ -17,6 +18,7 @@ import { ActionLogsService } from "./action-logs.service";
 @Entity()
 @ActionLogs()
 @RequiredPermission("news" as Permission)
+@ScopedEntity(() => ({ domain: "main", language: "en" }))
 class News {
     @PrimaryKey()
     id: number;
@@ -64,33 +66,27 @@ const createEntityManager = (newsRowScopes: ContentScope[] = defaultNewsRowScope
             }) as never,
     });
 
-const createUserPermissionsService = (availableContentScopes: ContentScope[] = []) =>
+const createUserPermissionsService = () =>
     createMock<UserPermissionsService>({
         isSystemUser: (id: string) => id === "system-user",
-        getAvailableContentScopes: async () => availableContentScopes.map((scope) => ({ scope, label: {} })),
     });
 
 const createAclService = ({
     accessControlService = new AccessControlService(),
     newsRowScopes,
-    availableContentScopes,
 }: {
     accessControlService?: AccessControlServiceInterface;
     newsRowScopes?: ContentScope[];
-    availableContentScopes?: ContentScope[];
 } = {}): ActionLogsAclService => {
     const actionLogsService = new ActionLogsService(
         createMock(),
         createMock(),
-        createMock<DiscoverService>({ discoverTargetEntities: () => [News, Product, PublicEntity].map((entity) => ({ entity })) as never }),
+        createMock<DiscoverService>({
+            discoverTargetEntities: () => [News, Product, PublicEntity].map((entity) => ({ entity, metadata: { properties: {} } })) as never,
+        }),
     );
     actionLogsService.onModuleInit();
-    return new ActionLogsAclService(
-        createEntityManager(newsRowScopes),
-        actionLogsService,
-        createUserPermissionsService(availableContentScopes),
-        accessControlService,
-    );
+    return new ActionLogsAclService(createEntityManager(newsRowScopes), actionLogsService, createUserPermissionsService(), accessControlService);
 };
 
 const actionLogPermission: CurrentUserPermission = { permission: "actionLog" as Permission, contentScopes: [{ domain: "main" }] };
@@ -103,8 +99,7 @@ const getEntityFilters = (filter: unknown) => (filter as { $or: Array<Record<str
 const getNewsFilter = (filter: unknown) => getEntityFilters(filter).find(({ entityName }) => entityName === "News");
 
 const getAllowedNewsScopes = (filter: unknown): ContentScope[] => {
-    const [, rowScopeCondition] = getNewsFilter(filter)?.$or as Array<Record<string, unknown>>;
-    const [rawKey] = Object.keys(rowScopeCondition);
+    const rawKey = Object.keys(getNewsFilter(filter) ?? {}).find((key) => key !== "entityName") as string;
     return JSON.parse(RawQueryFragment.getKnownFragment(rawKey)?.params[0] as string);
 };
 
@@ -141,12 +136,11 @@ describe("ActionLogsAclService", () => {
         expect(entityFilters.map(({ entityName }) => entityName)).toEqual(["Product", "News"]);
     });
 
-    it("restricts scoped entities to unscoped rows and rows of the scopes the user is allowed in", async () => {
+    it("restricts scoped entities to the rows of the scopes the user is allowed in", async () => {
         const filter = await aclService.getReadableActionLogsFilter(
             user(actionLogPermission, { permission: "news" as Permission, contentScopes: [{ domain: "main", language: "en" }] }),
         );
 
-        expect((getNewsFilter(filter)?.$or as unknown[])[0]).toEqual({ scope: null });
         expect(getAllowedNewsScopes(filter)).toEqual([{ domain: "main", language: "en" }]);
     });
 
@@ -169,30 +163,29 @@ describe("ActionLogsAclService", () => {
         expect(getAllowedNewsScopes(filter)).toEqual([{ domain: "main", language: "en" }]);
     });
 
-    it("excludes scoped entities, including their unscoped rows, when the user is allowed in none of their row scopes", async () => {
+    it("excludes scoped entities when the user is allowed in none of their row scopes", async () => {
         await expect(
             aclService.getReadableActionLogsFilter(user(actionLogPermission, { permission: "news" as Permission, contentScopes: [] })),
         ).resolves.toBeNull();
     });
 
-    it("includes the unscoped rows of a scoped entity that has no scoped rows", async () => {
-        const filter = await createAclService({ newsRowScopes: [] }).getReadableActionLogsFilter(
-            user(actionLogPermission, { permission: "news" as Permission, contentScopes: [{ domain: "main", language: "en" }] }),
-        );
-
-        expect(getNewsFilter(filter)).toEqual({ entityName: "News", $or: [{ scope: null }] });
+    it("excludes scoped entities when the access control service denies all of their row scopes", async () => {
+        await expect(
+            createAclService({
+                accessControlService: new GermanNewsDeniedAccessControlService(),
+                newsRowScopes: [{ domain: "main", language: "de" }],
+            }).getReadableActionLogsFilter(
+                user(actionLogPermission, { permission: "news" as Permission, contentScopes: [{ domain: "main", language: "*" }] }),
+            ),
+        ).resolves.toBeNull();
     });
 
-    it("includes the unscoped rows of a scoped entity when the user is allowed in another scope but none of its row scopes", async () => {
-        const filter = await createAclService({
-            accessControlService: new GermanNewsDeniedAccessControlService(),
-            newsRowScopes: [{ domain: "main", language: "de" }],
-            availableContentScopes: [{ domain: "main", language: "en" }],
-        }).getReadableActionLogsFilter(
-            user(actionLogPermission, { permission: "news" as Permission, contentScopes: [{ domain: "main", language: "*" }] }),
-        );
-
-        expect(getNewsFilter(filter)).toEqual({ entityName: "News", $or: [{ scope: null }] });
+    it("excludes scoped entities that have no logged rows", async () => {
+        await expect(
+            createAclService({ newsRowScopes: [] }).getReadableActionLogsFilter(
+                user(actionLogPermission, { permission: "news" as Permission, contentScopes: [{ domain: "main", language: "en" }] }),
+            ),
+        ).resolves.toBeNull();
     });
 
     it("returns null when the user can read no entity", async () => {

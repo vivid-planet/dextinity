@@ -1,7 +1,7 @@
 import "@fontsource-variable/roboto-flex/full.css";
 
 import { ApolloProvider } from "@apollo/client";
-import { ErrorDialogHandler, MasterLayout, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@dextinity/admin";
+import { ErrorDialogHandler, MuiThemeProvider, RouterBrowserRouter, SnackbarProvider } from "@dextinity/admin";
 import { BrevoConfigProvider } from "@dextinity/brevo-admin";
 import {
     AzureAiTranslatorProvider,
@@ -17,6 +17,7 @@ import { DataGridPro } from "@mui/x-data-grid-pro";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LicenseInfo } from "@mui/x-license";
+import { AdminAiModeProvider } from "@src/aiMode/AdminAiModeProvider";
 import { createApolloClient } from "@src/common/apollo/createApolloClient";
 import { createConfig } from "@src/config";
 import { PageTreeNodeDependency } from "@src/pageTree/PageTreeNodeDependency";
@@ -28,9 +29,9 @@ import { DndProvider } from "react-dnd-multi-backend";
 import { FormattedMessage, IntlProvider } from "react-intl";
 import { Route, Switch } from "react-router";
 
+import { AppMasterLayout } from "./common/AppMasterLayout";
 import { additionalPageTreeNodeFieldsFragment } from "./common/EditPageNode";
-import MasterHeader from "./common/MasterHeader";
-import { AppMasterMenu, AppMasterMenuRoutes, pageTreeDocumentTypes } from "./common/MasterMenu";
+import { pageTreeDocumentTypes } from "./common/MasterMenu";
 import { ImportFromPicsum } from "./dam/ImportFromPicsum";
 import { Link } from "./documents/links/Link";
 import { Page } from "./documents/pages/Page";
@@ -185,9 +186,9 @@ export function App() {
                                                                 />
                                                                 <Route
                                                                     render={() => (
-                                                                        <MasterLayout headerComponent={MasterHeader} menuComponent={AppMasterMenu}>
-                                                                            <AppMasterMenuRoutes />
-                                                                        </MasterLayout>
+                                                                        <AdminAiModeProvider>
+                                                                            <AppMasterLayout />
+                                                                        </AdminAiModeProvider>
                                                                     )}
                                                                 />
                                                             </Switch>

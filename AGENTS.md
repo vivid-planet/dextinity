@@ -117,6 +117,9 @@ Storybook for the demo site components (Vite, `@storybook/nextjs-vite`)
 - stories live in `__stories__` folders next to the component
 - run the story tests with `pnpm --filter dextinity-demo-site run test:storybook`
 
+**AI Mode:**
+The admin's AI Mode puts the chat of the Dextinity AI Hub next to the page tree. It is off unless `AI_HUB_API_KEY` (secret key of type Widget, for the API) and `AI_HUB_WIDGET_ID` (for the admin) are set in `.env.local`. The API then serves the AI Hub proxy at `/api/ai-hub` and the MCP server at `/api/mcp`.
+
 ### dev-pm
 
 Use dev-pm for managing demo processes:

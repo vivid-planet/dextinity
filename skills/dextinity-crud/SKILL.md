@@ -3,7 +3,7 @@ name: dextinity-crud
 description: |
     Orchestrates full-stack CRUD entity generation for a Dextinity project by composing existing skills in sequence:
     dextinity-api-graphql → dextinity-admin-enum → dextinity-admin-datagrid → dextinity-admin-form → dextinity-admin-pages → MasterMenu.
-    Each step includes lint/tsc validation and a git commit.
+    Each step includes lint/tsc validation and a git commit, unless the user asked not to commit.
     TRIGGER when: user says "create a new entity", "generate CRUD for X", "scaffold X", "full CRUD for X",
     or any phrase requesting end-to-end entity generation (API + admin UI) in a Dextinity project.
     Also trigger when a crud sample command (crud-01 through crud-05) is invoked.
@@ -105,7 +105,7 @@ Use the **dextinity-admin-pages** skill.
 
 ## Commit Strategy
 
-After each phase, create a git commit:
+After each phase, create a git commit without asking for confirmation, so each phase can be reviewed and reverted on its own. Skip committing if the user asked not to commit; in that case, leave all changes uncommitted and only validate each phase.
 
 1. Stage only the files created/modified in that phase (use `git add <file1> <file2> ...`)
 2. Create commit with a descriptive message, e.g.:

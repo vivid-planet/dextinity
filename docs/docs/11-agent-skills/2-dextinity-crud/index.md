@@ -3,7 +3,7 @@ title: dextinity-crud
 sidebar_position: 2
 ---
 
-The `dextinity-crud` skill orchestrates all other skills to generate a complete full-stack CRUD entity — from the API layer through to the admin UI — in a single run. Each phase is validated (lint + tsc) and committed separately.
+The `dextinity-crud` skill orchestrates all other skills to generate a complete full-stack CRUD entity — from the API layer through to the admin UI — in a single run. Each phase is validated (lint + tsc) and committed separately. If you ask it not to commit, it leaves the changes uncommitted.
 
 ## What It Does
 

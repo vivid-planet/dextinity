@@ -155,7 +155,7 @@ contacts: ContactInput[];
 ### Common Mistakes to Avoid
 
 - **Missing `@IsNotEmpty()`**: Every required field MUST have `@IsNotEmpty()`. Without it, empty strings and null values pass validation silently.
-- **Missing `@MaxLength()`**: If the entity has `@Property({ length: N })`, the input MUST have `@MaxLength(N)`. Without it, values exceeding the column length cause database errors at runtime.
+- **Missing `@MaxLength()`**: If the entity has `@Property({ length: N })`, the input MUST have `@MaxLength(N)`. Without it, values exceeding the column length cause database errors at runtime. The API generator doesn't emit `@MaxLength()`; add it anyway.
 - **Wrong `PartialType` import**: Always from `@dextinity/cms-api`, never from `@nestjs/graphql`. The NestJS version doesn't preserve validators correctly.
 - **`@IsString()` for UUID relations**: ManyToOne relation fields use `@IsUUID()`, not `@IsString()`. Exception: FileUpload relations use `@IsString()` (still with `@Field(() => ID)`), because `FileUpload.id` is typed `string` although its column is `uuid`.
 - **Missing `@Type()` for nested objects**: Without `@Type()`, class-transformer cannot instantiate the nested class, and `@ValidateNested()` silently skips validation.

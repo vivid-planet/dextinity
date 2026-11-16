@@ -11,7 +11,7 @@ import {
 } from "@dextinity/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import type { FormApi } from "final-form";
-import { type CSSProperties, type ReactNode, useState } from "react";
+import { type CSSProperties, type PropsWithChildren, useState } from "react";
 import { Form } from "react-final-form";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 
@@ -85,7 +85,7 @@ function validateSlug(slug: string | undefined) {
     return undefined;
 }
 
-function Fields({ children }: { children: ReactNode }) {
+function Fields({ children }: PropsWithChildren) {
     return <div style={fieldsStyle}>{children}</div>;
 }
 

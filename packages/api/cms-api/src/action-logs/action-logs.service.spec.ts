@@ -1,6 +1,6 @@
 import { createMock } from "@golevelup/ts-vitest";
-import type { Type } from "@nestjs/common";
-import { describe, expect, it } from "vitest";
+import { Logger, type Type } from "@nestjs/common";
+import { describe, expect, it, vi } from "vitest";
 
 import { DiscoverService } from "../dependencies/discover.service";
 import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
@@ -28,6 +28,16 @@ class ScopedByCallbackReturningEmptyDimensions {}
 
 @ScopedEntity(() => ({}) as never)
 class ScopedByCallbackReturningScopeWithoutDimensions {}
+
+@ScopedEntity(() => {
+    throw new Error("scope lookup failed");
+})
+class ScopedByThrowingCallback {}
+
+@ScopedEntity(async () => {
+    throw new Error("async scope lookup failed");
+})
+class ScopedByRejectingCallback {}
 
 @ActionLogs()
 @RequiredPermission("news" as Permission)
@@ -119,6 +129,18 @@ describe("ActionLogsService.getScopeFromEntity", () => {
 
     it("keeps a scope without dimensions", async () => {
         await expect(service.getScopeFromEntity(new ScopedByCallbackReturningScopeWithoutDimensions())).resolves.toEqual([{}]);
+    });
+
+    it("returns undefined and logs the error when the scope lookup throws", async () => {
+        const logError = vi.spyOn(Logger.prototype, "error").mockImplementation(() => undefined);
+
+        await expect(service.getScopeFromEntity(new ScopedByThrowingCallback())).resolves.toBeUndefined();
+        await expect(service.getScopeFromEntity(new ScopedByRejectingCallback())).resolves.toBeUndefined();
+
+        expect(logError).toHaveBeenCalledTimes(2);
+        expect(logError).toHaveBeenCalledWith(expect.stringContaining("ScopedByThrowingCallback"), expect.any(String));
+        expect(logError).toHaveBeenCalledWith(expect.stringContaining("async scope lookup failed"), expect.any(String));
+        logError.mockRestore();
     });
 
     it("drops empty entries from the resolved scopes", async () => {

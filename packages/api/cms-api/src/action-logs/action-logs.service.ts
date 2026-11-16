@@ -1,5 +1,5 @@
 import { type AnyEntity, EntityManager, type EntityMetadata, type EntityName } from "@mikro-orm/postgresql";
-import { Injectable, type OnModuleInit, type Type } from "@nestjs/common";
+import { Injectable, Logger, type OnModuleInit, type Type } from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 
 import { DiscoverService } from "../dependencies/discover.service";
@@ -12,6 +12,7 @@ import { entityChecksScope } from "./entity-checks-scope";
 
 @Injectable()
 export class ActionLogsService implements OnModuleInit {
+    private readonly logger = new Logger(ActionLogsService.name);
     private loggedEntities: Array<Type<AnyEntity>> = [];
 
     constructor(
@@ -52,14 +53,25 @@ export class ActionLogsService implements OnModuleInit {
         }
         const scoped = Reflect.getMetadata(SCOPED_ENTITY_METADATA_KEY, entity.constructor) as ScopedEntityMeta | undefined;
         if (scoped) {
-            const scopedEntityScope = await getScopesForScopedEntity({
-                scoped,
-                entity: entity.constructor as EntityName<AnyEntity>,
-                row: entity,
-                entityManager: this.entityManager,
-                moduleRef: this.moduleRef,
-            });
-            return toScopes(scopedEntityScope);
+            try {
+                const scopedEntityScope = await getScopesForScopedEntity({
+                    scoped,
+                    entity: entity.constructor as EntityName<AnyEntity>,
+                    row: entity,
+                    entityManager: this.entityManager,
+                    moduleRef: this.moduleRef,
+                });
+                return toScopes(scopedEntityScope);
+            } catch (error) {
+                // The lookup runs while the entity is flushed, so an error would fail saving or deleting it.
+                this.logger.error(
+                    `Could not determine the scope of ${entity.constructor.name} for the action log, its entry is stored without a scope: ${
+                        error instanceof Error ? error.message : String(error)
+                    }`,
+                    error instanceof Error ? error.stack : undefined,
+                );
+                return undefined;
+            }
         }
         return undefined;
     }

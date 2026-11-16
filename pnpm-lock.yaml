@@ -1788,8 +1788,8 @@ importers:
         specifier: ^6.1.4
         version: 6.1.4
       scroll-into-view-if-needed:
-        specifier: ^3.1.0
-        version: 3.1.0
+        specifier: ^3.2.1
+        version: 3.2.1
       slugify:
         specifier: ^1.6.9
         version: 1.6.9
@@ -2712,8 +2712,8 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2
       scroll-into-view-if-needed:
-        specifier: ^3.1.0
-        version: 3.1.0
+        specifier: ^3.2.1
+        version: 3.2.1
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -2806,8 +2806,8 @@ importers:
         specifier: ^6.2.17
         version: 6.2.17
       scroll-into-view-if-needed:
-        specifier: ^3.1.0
-        version: 3.1.0
+        specifier: ^3.2.1
+        version: 3.2.1
       usehooks-ts:
         specifier: ^3.1.1
         version: 3.1.1(react@19.3.1)
@@ -11131,8 +11131,8 @@ packages:
     resolution: {integrity: sha512-o8vI5RE5A6EVVOd9o41jKp41aJom+QTEO/Bx8MYNjexMo/Bv2WOjUfZr+aL0WnYSgymUy6zeguqLTsIhV0gMvQ==}
     engines: {node: '>= 0.8.0'}
 
-  compute-scroll-into-view@3.1.1:
-    resolution: {integrity: sha512-VRhuHOLoKYOy4UbilLbUzbYg93XLjv2PncJC50EuTWPA3gaja1UjBsUP/D/9/juV3vQFr6XBEzn9KCAHdUvOHw==}
+  compute-scroll-into-view@3.2.2:
+    resolution: {integrity: sha512-X+jf3y2j3TbtxA3fq3/kBNiSnD1QlIChiIQdAc2Yo1LtOc0yjO1TzgxWJf8PwtKPGgSvSfWUlVvrb7vGx1eYWA==}
 
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
@@ -16949,8 +16949,8 @@ packages:
       webpack:
         optional: true
 
-  scroll-into-view-if-needed@3.1.0:
-    resolution: {integrity: sha512-49oNpRjWRvnU8NyGVmUaYG4jtTkNonFZI86MmGRDqBphEK2EXT9gdEUoQPZhuBM8yWHxCWbobltqYO5M4XrUvQ==}
+  scroll-into-view-if-needed@3.2.1:
+    resolution: {integrity: sha512-dgeJvJhSV9MY6hyhtsivbSxHoZVm+lumsWTObtUdAchJflwOGmKKHNkEpU8pVYMomZ8h/yrfzVQkcPlObQNDWQ==}
 
   scuid@1.1.0:
     resolution: {integrity: sha512-MuCAyrGZcTLfQoH2XoBlQ8C6bzwN88XT/0slOGz0pn8+gIP85BOAfYa44ZXQUTOwRwPU0QvgU+V+OSajl/59Xg==}
@@ -28708,7 +28708,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  compute-scroll-into-view@3.1.1: {}
+  compute-scroll-into-view@3.2.2: {}
 
   concat-map@0.0.1: {}
 
@@ -35777,9 +35777,9 @@ snapshots:
     optionalDependencies:
       webpack: 5.112.2(@swc/core@1.16.22(@swc/helpers@0.5.23))(clean-css@5.3.3)(cssnano@6.1.2(postcss@8.5.32))(csso@5.0.5)(esbuild@0.28.2)(html-minifier-terser@7.2.0)(lightningcss@1.33.0)(postcss@8.5.32)(sharp@0.35.5(@types/node@24.19.2))(svgo@3.3.5)(uglify-js@3.19.3)
 
-  scroll-into-view-if-needed@3.1.0:
+  scroll-into-view-if-needed@3.2.1:
     dependencies:
-      compute-scroll-into-view: 3.1.1
+      compute-scroll-into-view: 3.2.2
 
   scuid@1.1.0: {}
 

@@ -1,7 +1,7 @@
 import { ChevronRight } from "@dextinity/admin-icons";
 import { Typography } from "@mui/material";
 import { type ReactNode, type Ref, useEffect, useRef, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 
 import type { Breadcrumb, BreadcrumbsProps, BreadcrumbsSlotProps } from "./Breadcrumbs";
 import {

@@ -14,7 +14,13 @@ describe("defaultCreatePath", () => {
         ];
         const result = defaultCreatePath(values);
 
-        expect(result).toEqual(["/:domain(main|secondary)/:language(de|en)", "/:country(secondary)"]);
+        expect(result).toEqual([
+            [
+                { dimension: "domain", values: ["main", "secondary"] },
+                { dimension: "language", values: ["de", "en"] },
+            ],
+            [{ dimension: "country", values: ["secondary"] }],
+        ]);
     });
 
     it("should handle empty values", () => {
@@ -30,7 +36,7 @@ describe("defaultCreatePath", () => {
 
         const result = defaultCreatePath(values);
 
-        expect(result).toEqual(["/:domain(main)"]);
+        expect(result).toEqual([[{ dimension: "domain", values: ["main"] }]]);
     });
 
     it("should handle multiple dimensions", () => {
@@ -38,6 +44,33 @@ describe("defaultCreatePath", () => {
 
         const result = defaultCreatePath(values);
 
-        expect(result).toEqual(["/:domain(main)/:language(de)/:country(DE)"]);
+        expect(result).toEqual([
+            [
+                { dimension: "domain", values: ["main"] },
+                { dimension: "language", values: ["de"] },
+                { dimension: "country", values: ["DE"] },
+            ],
+        ]);
+    });
+
+    it("should allow null values as they are written in the URL", () => {
+        const values: ContentScopeValues = [{ scope: { domain: "main", language: "de" } }, { scope: { domain: "main", language: null } }];
+
+        const result = defaultCreatePath(values);
+
+        expect(result).toEqual([
+            [
+                { dimension: "domain", values: ["main"] },
+                { dimension: "language", values: ["de", "-"] },
+            ],
+        ]);
+    });
+
+    it("should handle scopes without dimensions", () => {
+        const values: ContentScopeValues = [{ scope: {} }];
+
+        const result = defaultCreatePath(values);
+
+        expect(result).toEqual([[]]);
     });
 });

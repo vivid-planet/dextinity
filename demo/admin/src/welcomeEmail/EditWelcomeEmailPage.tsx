@@ -11,6 +11,7 @@ import {
     ToolbarActions,
     ToolbarTitleItem,
     Tooltip,
+    useCurrentRouteMatch,
     useSnackbarApi,
 } from "@dextinity/admin";
 import { OpenNewTabAlternative, Send } from "@dextinity/admin-icons";
@@ -32,7 +33,6 @@ import type { WelcomeEmailContentBlockInput } from "@src/blocks.generated";
 import { deepEqual } from "fast-equals";
 import { type JSX, useEffect, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { useRouteMatch } from "react-router";
 
 import { WelcomeEmailContentBlock } from "./blocks/WelcomeEmailContentBlock";
 import {
@@ -56,7 +56,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
     const [welcomeEmailState, setWelcomeEmailState] = useState<BlockState<typeof WelcomeEmailContentBlock>>(WelcomeEmailContentBlock.defaultValues());
     const [hasChanges, setHasChanges] = useState(false);
     const [referenceContent, setReferenceContent] = useState<WelcomeEmailContentBlockInput | null>(null);
-    const match = useRouteMatch();
+    const routeUrl = useCurrentRouteMatch()?.url ?? "";
     const previewApi = useBlockPreview();
     const blockContext = useBlockContext();
 
@@ -176,7 +176,7 @@ export function EditWelcomeEmailPage(): JSX.Element | null {
 
     const previewState = WelcomeEmailContentBlock.createPreviewState(welcomeEmailState, {
         ...blockContext,
-        parentUrl: match.url,
+        parentUrl: routeUrl,
         showVisibleOnly: previewApi.showOnlyVisible,
     });
 

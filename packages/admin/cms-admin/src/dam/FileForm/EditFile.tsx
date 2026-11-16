@@ -21,7 +21,7 @@ import { format } from "date-fns";
 import { deepEqual } from "fast-equals";
 import { type ReactNode, useCallback } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import ReactSplit from "react-split";
 
 import { fullCropArea } from "../../common/image/cropArea";

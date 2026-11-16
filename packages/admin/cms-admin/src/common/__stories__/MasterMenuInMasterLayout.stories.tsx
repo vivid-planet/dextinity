@@ -33,7 +33,7 @@ const masterMenuDataOneItem: MasterMenuData = [
         icon: <Dashboard />,
         route: {
             path: "/only-page",
-            component: OnlyPage,
+            element: <OnlyPage />,
         },
     },
 ];
@@ -67,7 +67,7 @@ const masterMenuDataTwoItems: MasterMenuData = [
         icon: <Dashboard />,
         route: {
             path: "/page-1",
-            render: () => <Page num={1} />,
+            element: <Page num={1} />,
         },
     },
     {
@@ -76,7 +76,7 @@ const masterMenuDataTwoItems: MasterMenuData = [
         icon: <Dashboard />,
         route: {
             path: "/page-2",
-            component: () => <Page num={2} />,
+            element: <Page num={2} />,
         },
     },
 ];

@@ -10,6 +10,7 @@ import {
     ToolbarActions,
     ToolbarBackButton,
     ToolbarTitleItem,
+    useCurrentRouteMatch,
 } from "@dextinity/admin";
 import { Add, Delete, Preview } from "@dextinity/admin-icons";
 import {
@@ -32,7 +33,6 @@ import { RichTextBlock } from "@src/common/blocks/RichTextBlock";
 import { deepEqual } from "fast-equals";
 import { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useRouteMatch } from "react-router-dom";
 
 import type {
     GQLEditMainMenuItemFragment,
@@ -74,7 +74,7 @@ type RichTextBlockOutput = BlockOutputApi<typeof RichTextBlock>;
 
 const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
     const previewApi = useBlockPreview();
-    const match = useRouteMatch();
+    const routeUrl = useCurrentRouteMatch()?.url ?? "";
     const [updateMainMenuItem, { loading: saving, error: saveError }] = useMutation<
         GQLUpdateMainMenuItemMutation,
         GQLUpdateMainMenuItemMutationVariables
@@ -101,7 +101,7 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
     if (content) {
         previewState = RichTextBlock.createPreviewState(content, {
             ...blockContext,
-            parentUrl: match.url,
+            parentUrl: routeUrl,
             showVisibleOnly: previewApi.showOnlyVisible,
         });
     }
@@ -156,7 +156,7 @@ const EditMainMenuItem = ({ item }: EditMainMenuItemProps) => {
             {hasChanges && (
                 <RouterPrompt
                     message={(location) => {
-                        if (location.pathname.startsWith(match.url)) {
+                        if (location.pathname.startsWith(routeUrl)) {
                             return true;
                         } //we navigated within our self
                         return intl.formatMessage(messages.saveUnsavedChanges);

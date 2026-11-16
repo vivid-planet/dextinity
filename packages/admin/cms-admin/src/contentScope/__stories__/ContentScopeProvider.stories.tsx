@@ -54,7 +54,7 @@ export const OptionalDimensions: Story = {
                         content scope select.
                     </Typography>
                     <Typography>
-                        Path: <strong>{match.path}</strong>
+                        Params: <strong>{JSON.stringify(match.params)}</strong>
                     </Typography>
                     <Typography>
                         URL: <strong>{match.url}</strong>

@@ -3,7 +3,7 @@ import { messages, Tooltip } from "@dextinity/admin";
 import { ArrowRight, OpenNewTab } from "@dextinity/admin-icons";
 import { Box, IconButton } from "@mui/material";
 import { FormattedMessage } from "react-intl";
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 
 import { type ContentScope, useContentScope } from "../contentScope/Provider";
 import { useDependenciesConfig } from "./dependenciesConfig";
@@ -25,7 +25,7 @@ interface DependencyActionsProps {
 export const DependencyActions = ({ graphqlObjectType, id, rootColumnName, jsonPath, scope }: DependencyActionsProps) => {
     const { entityDependencyMap } = useDependenciesConfig();
     const apolloClient = useApolloClient();
-    const history = useHistory();
+    const navigate = useNavigate();
     const contentScope = useContentScope();
 
     const dependencyObject = entityDependencyMap[graphqlObjectType] as DependencyInterface | undefined;
@@ -101,7 +101,7 @@ export const DependencyActions = ({ graphqlObjectType, id, rootColumnName, jsonP
                     onClick={async () => {
                         const url = await loadUrl();
 
-                        history.push(url);
+                        navigate(url);
                     }}
                 >
                     <ArrowRight />

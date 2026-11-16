@@ -1,0 +1,18 @@
+// Like the rest of a docs page, around the story: a window's height of it above and below, so that the check can place the
+// story anywhere in the window. Only while checking, so the story's play function runs at the top of the page as usual.
+.page[data-checking] {
+    padding-block: 100vh;
+}
+
+// Like the frame of a story on a docs page, which cuts off what overflows it. Clips rather than scrolls like the docs page's
+// frame, so that a sticky header in a story still sticks to the window while its play function scrolls the page.
+.frame {
+    overflow: clip;
+    max-inline-size: 1000px;
+    padding: 30px 20px;
+}
+
+// Like Storybook's zoom wrapper inside the frame, the containing block of fixed overlays
+.zoom {
+    transform: scale(1);
+}

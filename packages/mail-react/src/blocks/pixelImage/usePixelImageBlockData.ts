@@ -41,8 +41,8 @@ export function usePixelImageBlockData({
         imageUrl: isAbsoluteUrl(resolvedImageUrl) ? resolvedImageUrl : `${baseUrl}${resolvedImageUrl}`,
         defaultRenderWidth,
         desktopImageHeight: Math.round(defaultRenderWidth / aspectRatio),
-        alt: damFile.altText,
-        title: damFile.title,
+        alt: damFile.altText ?? undefined,
+        title: damFile.title ?? undefined,
     };
 }
 
@@ -78,10 +78,10 @@ interface ImageDimensions {
 
 interface CropArea {
     focalPoint: "SMART" | "CENTER" | "NORTHWEST" | "NORTHEAST" | "SOUTHWEST" | "SOUTHEAST";
-    width?: number;
-    height?: number;
-    x?: number;
-    y?: number;
+    width?: number | null;
+    height?: number | null;
+    x?: number | null;
+    y?: number | null;
 }
 
 // Copied from `calculateInheritAspectRatio` in `@dextinity/site-react` (`src/image/image.utils.ts`).

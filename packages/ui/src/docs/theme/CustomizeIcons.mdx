@@ -2,7 +2,7 @@ import { Canvas, Meta } from "@storybook/addon-docs/blocks";
 
 import * as CustomizeIconsStories from "./__stories__/CustomizeIcons.stories";
 
-<Meta title="Theme/Customize icons" />
+<Meta title="Foundations/Icons/Customize icons" />
 
 # Customize icons
 
@@ -14,7 +14,7 @@ Create a global stylesheet and import it once in your application:
 
 ```css
 :root {
-    --dextinity-icon-favorite: url("./icons/favorite.svg#icon");
+    --dextinity-icon-star-fill: url("./icons/star-fill.svg#icon");
 }
 ```
 
@@ -54,7 +54,23 @@ Every icon that you add needs both, otherwise it doesn't show correctly. If you 
 
 `Icon` shows an icon in the text color: it uses only the shape of the SVG file. For an icon that keeps its own colors, such as a logo, set `--dextinity-colored-icon-<name>` instead. `Icon` then shows the SVG file as an image.
 
+In the high-contrast color scheme and in forced colors, for example a Windows contrast theme, a colored icon keeps its own colors. To show it in the text color instead, switch to a flat form of it there, as `@dextinity/ui` does for `dextinity-color` and `dextinity-filled-color`:
+
+```css
+[data-dextinity-color-scheme="high-contrast"] {
+    --dextinity-colored-icon-my-logo: initial;
+    --dextinity-icon-my-logo: url("./icons/my-logo-flat.svg#icon");
+}
+
+@media (forced-colors: active) {
+    :root {
+        --dextinity-colored-icon-my-logo: initial;
+        --dextinity-icon-my-logo: url("./icons/my-logo-flat.svg#icon");
+    }
+}
+```
+
 ## Prepare an SVG file
 
-- The root element is `<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 16 16" fill="none">`. For any other size, ask for a 16×16 version instead of scaling it.
+- The root element is `<svg xmlns="http://www.w3.org/2000/svg" id="icon" viewBox="0 0 24 24" fill="none">`. The default icons are lines on this 24×24 grid with a 1.5 stroke and round ends; an icon that sits next to them matches that. For any other size, ask for a 24×24 version instead of scaling it.
 - In an icon in the text color, the colors of the file don't matter, only its shape.

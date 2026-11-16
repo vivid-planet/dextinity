@@ -1,23 +1,48 @@
-@use "../button/buttonColors";
+@use "../../theme/hoverLayer" as hover-layer;
 
 .root {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-grid;
+    place-items: center;
+    flex: none;
     box-sizing: border-box;
-    block-size: var(--dextinity-icon-button-default-height);
-    padding-block: calc(var(--dextinity-icon-button-default-padding-vertical) - var(--dextinity-button-border-width));
-    padding-inline: calc(var(--dextinity-icon-button-default-padding-horizontal) - var(--dextinity-button-border-width));
-    border: var(--dextinity-button-border-width) solid;
-    border-radius: var(--dextinity-icon-button-default-radius);
+    inline-size: var(--dextinity-icon-button-size);
+    block-size: var(--dextinity-icon-button-size);
+    padding: 0;
+    border: 0;
+    border-radius: var(--dextinity-icon-button-radius);
+    background: transparent;
+    color: var(--dextinity-icon-button-foreground);
     cursor: pointer;
+    transition:
+        transform var(--dextinity-motion-duration-short) var(--dextinity-motion-easing),
+        background-color var(--dextinity-motion-duration-short),
+        #{hover-layer.$transition-property} var(--dextinity-motion-duration-short),
+        color var(--dextinity-motion-duration-short),
+        box-shadow var(--dextinity-motion-duration-medium);
+
+    --dextinity-icon-size: var(--dextinity-icon-button-icon-size);
+
+    &:hover:not([data-disabled], [data-loading]) {
+        background: var(--dextinity-icon-button-background-hover);
+        color: var(--dextinity-icon-button-foreground-hover);
+    }
+
+    &[aria-expanded="true"] {
+        background: var(--dextinity-icon-button-background-expanded);
+        color: var(--dextinity-icon-button-foreground-hover);
+    }
+
+    &:active:not([data-disabled], [data-loading]) {
+        transform: scale(0.96);
+    }
 
     &:focus-visible {
-        outline: var(--dextinity-focus-ring-width) solid var(--dextinity-color-border-focus);
-        outline-offset: var(--dextinity-focus-ring-offset);
+        outline: none;
+        box-shadow: var(--dextinity-focus-ring);
     }
 
     &[data-disabled] {
+        opacity: var(--dextinity-icon-button-disabled-opacity);
         cursor: not-allowed;
     }
 
@@ -25,34 +50,105 @@
         cursor: progress;
     }
 
-    .loadingSpinner {
-        color: inherit;
-    }
-
     &[data-size="small"] {
-        block-size: var(--dextinity-icon-button-small-height);
-        padding-block: calc(var(--dextinity-icon-button-small-padding-vertical) - var(--dextinity-button-border-width));
-        padding-inline: calc(var(--dextinity-icon-button-small-padding-horizontal) - var(--dextinity-button-border-width));
-        border-radius: var(--dextinity-icon-button-small-radius);
+        inline-size: var(--dextinity-icon-button-size-small);
+        block-size: var(--dextinity-icon-button-size-small);
+
+        --dextinity-icon-size: var(--dextinity-icon-button-icon-size-small);
     }
 
-    @include buttonColors.colors;
+    // Text and outlined: `secondary` is neutral, the other colors tint the icon
+    &:is([data-variant="text"], [data-variant="outlined"]) {
+        &[data-color="primary"] {
+            color: var(--dextinity-color-accent-text);
+        }
+
+        &[data-color="error"] {
+            color: var(--dextinity-button-danger-foreground);
+        }
+
+        &[data-color="success"] {
+            color: var(--dextinity-button-success-foreground);
+        }
+    }
+
+    // Contained: a filled button for the main action, in the colors of the contained `Button`
+    &[data-variant="contained"] {
+        @include hover-layer.background(var(--dextinity-button-primary-background), var(--dextinity-button-primary-background-hover));
+        color: var(--dextinity-button-primary-foreground);
+        box-shadow: var(--dextinity-button-primary-shadow);
+
+        &:hover:not([data-disabled], [data-loading]) {
+            @include hover-layer.background(var(--dextinity-button-primary-background), var(--dextinity-button-primary-background-hover));
+            @include hover-layer.hovered;
+            color: var(--dextinity-button-primary-foreground);
+            box-shadow: var(--dextinity-button-primary-shadow-hover);
+        }
+
+        &[data-color="secondary"],
+        &[data-color="secondary"]:hover:not([data-disabled], [data-loading]) {
+            background: var(--dextinity-color-text);
+            color: var(--dextinity-color-canvas);
+            box-shadow: var(--dextinity-shadow-1);
+        }
+
+        &[data-color="error"],
+        &[data-color="error"]:hover:not([data-disabled], [data-loading]) {
+            background: var(--dextinity-button-danger-background);
+            color: var(--dextinity-button-danger-background-foreground);
+            box-shadow: var(--dextinity-shadow-1);
+        }
+
+        &[data-color="success"],
+        &[data-color="success"]:hover:not([data-disabled], [data-loading]) {
+            background: var(--dextinity-button-success-background);
+            color: var(--dextinity-color-accent-foreground);
+            box-shadow: var(--dextinity-shadow-1);
+        }
+
+        &:active:not([data-disabled], [data-loading]) {
+            filter: brightness(var(--dextinity-button-active-brightness));
+        }
+
+        &:focus-visible {
+            box-shadow: var(--dextinity-focus-ring);
+        }
+    }
+
+    &[data-variant="outlined"] {
+        background: var(--dextinity-icon-button-outlined-background);
+        color: var(--dextinity-icon-button-outlined-foreground);
+        box-shadow: var(--dextinity-icon-button-outlined-shadow);
+
+        &:hover:not([data-disabled], [data-loading]) {
+            background: var(--dextinity-icon-button-outlined-background);
+            box-shadow: var(--dextinity-icon-button-outlined-shadow-hover);
+        }
+
+        &:focus-visible {
+            box-shadow: var(--dextinity-focus-ring);
+        }
+    }
+
+    // Forced colors remove backgrounds and box shadows, which would leave the button without an edge and without a focus ring
+    @media (forced-colors: active) {
+        border: 1px solid;
+
+        &:focus-visible {
+            outline: 2px solid Highlight;
+            outline-offset: 2px;
+        }
+    }
 }
 
 .icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    inline-size: var(--dextinity-icon-button-default-icon-size);
-    block-size: var(--dextinity-icon-button-default-icon-size);
+    inline-size: var(--dextinity-icon-size);
+    block-size: var(--dextinity-icon-size);
+}
 
-    .root[data-size="small"] & {
-        inline-size: var(--dextinity-icon-button-small-icon-size);
-        block-size: var(--dextinity-icon-button-small-icon-size);
-    }
-
-    > :is(svg, :global(.dextinityIcon)) {
-        inline-size: 100%;
-        block-size: 100%;
-    }
+.loadingSpinner {
+    color: inherit;
 }

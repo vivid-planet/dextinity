@@ -2,31 +2,37 @@ import { Canvas, Meta } from "@storybook/addon-docs/blocks";
 
 import * as OverviewStories from "./__stories__/Overview.stories";
 
-<Meta title="Theme/Overview" />
+<Meta title="Foundations/Theme/Overview" />
 
 # Theme
 
 The components take their colors, space, corner radii, fonts, and icons from CSS variables whose names start with `--dextinity-`. You can use these variables in your own styles, and change them in your own stylesheet.
 
-Wrap your application in [`Theme`](?path=/docs/components-theme--docs). Outside it, the components have no styles, and the color variables have no value.
+Wrap your application in [`Theme`](?path=/docs/foundations-theme-theme--docs). Outside it, the components have no styles, and the color variables have no value.
 
-- To give the components your colors, corner radii, and font, see [Customize brand](?path=/docs/theme-customize-brand--docs).
-- To replace or add icons, see [Customize icons](?path=/docs/theme-customize-icons--docs).
-- To look up an icon, see [All icons](?path=/docs/theme-all-icons--docs).
+- To give the components your hues, fonts, and corner radii, see [Customize brand](?path=/docs/foundations-theme-customize-brand--docs).
+- To replace or add icons, see [Customize icons](?path=/docs/foundations-icons-customize-icons--docs).
+- To look up an icon, see [All icons](?path=/docs/foundations-icons-all-icons--docs).
+- For every token with its current value, see [Tokens](?path=/docs/foundations-tokens--docs).
 
 ## Use tokens in your styles
 
-Use the tokens with `var()` in your own styles:
+Use the semantic tokens with `var()` in your own styles. They change with the brand, the color scheme, and the density. Don't use the color scales (`--dextinity-color-<scale>-<step>`): they don't change with the color scheme.
 
-- **Colors** of backgrounds, text, and borders. They change with the color scheme.
-    - `--dextinity-color-background-*`, `--dextinity-color-foreground-*`, `--dextinity-color-border-*`
-    - For actions and feedback, such as errors: `--dextinity-color-action-*`, `--dextinity-color-feedback-*`
-- **Space** between and around sections.
-    - `--dextinity-space-layout-xs` to `--dextinity-space-layout-2xl`
-- **Space** in small groups, such as chips.
-    - `--dextinity-unit-*`
-- **Corner radius** of surfaces, such as cards.
-    - `--dextinity-brand-radius-surface`, `--dextinity-brand-radius-card`
+- **Colors** of backgrounds, text, and lines.
+    - `--dextinity-color-canvas`, `--dextinity-color-surface`, `--dextinity-color-surface-raised`, `--dextinity-color-surface-sunken`
+    - `--dextinity-color-text`, `--dextinity-color-text-subtle`, `--dextinity-color-text-disabled`, `--dextinity-color-accent-text`
+    - `--dextinity-color-line`, `--dextinity-color-line-strong`, `--dextinity-color-control-line`
+    - For the accent and for feedback, such as errors: `--dextinity-color-accent-*`, `--dextinity-color-danger-*`, `--dextinity-color-warning-*`, `--dextinity-color-success-*`, `--dextinity-color-info-*`
+- **Space** between and around sections, and in small groups, such as chips.
+    - `--dextinity-space-0-5` (2px) to `--dextinity-space-12`, `--dextinity-space-panel-gap`
+    - Space that follows the density: `--dextinity-density-*`, such as `--dextinity-density-panel-padding`
+- **Corner radius** of surfaces, such as panels and cards, and of controls.
+    - `--dextinity-radius-panel`, `--dextinity-radius-control`, `--dextinity-radius-item`, `--dextinity-radius-pill`
+- **Text styles** and **fonts**.
+    - `--dextinity-typography-*`, `--dextinity-font-weight-regular`, `--dextinity-font-weight-medium`, `--dextinity-font-weight-semibold`, `--dextinity-font-family-text`, `--dextinity-font-family-display`, `--dextinity-font-family-mono`
+- **Shadows** of raised surfaces.
+    - `--dextinity-shadow-1` to `--dextinity-shadow-3`
 
 Arrange the components with flexbox or grid, and set the space between them with `gap`:
 
@@ -34,19 +40,19 @@ Arrange the components with flexbox or grid, and set the space between them with
 .panel {
     display: flex;
     flex-direction: column;
-    gap: var(--dextinity-space-layout-xs);
-    padding: var(--dextinity-space-layout-md);
-    border: 1px solid var(--dextinity-color-border-default);
-    border-radius: var(--dextinity-brand-radius-card);
-    background-color: var(--dextinity-color-background-subtle);
-    color: var(--dextinity-color-foreground-default);
+    gap: var(--dextinity-space-2);
+    padding: var(--dextinity-density-panel-padding);
+    border-radius: var(--dextinity-radius-panel);
+    box-shadow: inset 0 0 0 var(--dextinity-line-width) var(--dextinity-color-line);
+    background-color: var(--dextinity-color-surface);
+    color: var(--dextinity-color-text);
 }
 ```
 
-## Color schemes
+## Color schemes, brands, and density
 
-Set the color scheme with the `colorScheme` prop of `Theme`: `"light"`, `"dark"`, or `"high-contrast"`. To use another color scheme in a part of the application, wrap that part in another `Theme` with its own `colorScheme`. To use another brand in a part, see [Customize a part of the application](?path=/docs/theme-customize-brand--docs#customize-a-part-of-the-application).
+Set the color scheme with the `colorScheme` prop of `Theme`: `"light"`, `"dark"`, or `"high-contrast"`. The `brand` prop selects the brand, and the `density` prop the density: `"comfortable"`, `"standard"`, or `"compact"`. To use another color scheme, brand, or density in a part of the application, wrap that part in another `Theme` with its own props, see [Customize a part of the application](?path=/docs/foundations-theme-customize-brand--docs#customize-a-part-of-the-application).
 
-To follow the color scheme of the operating system, read `prefers-color-scheme` with `matchMedia`, and pass the result to `colorScheme`:
+`Theme` reads only its props. To follow the color scheme of the operating system, read `prefers-color-scheme` with `matchMedia`, and pass the result to `colorScheme`:
 
 <Canvas of={OverviewStories.SwitchSystemColorScheme} />

@@ -1,6 +1,14 @@
 import { useRender } from "@base-ui/react/use-render";
 import { clsx } from "clsx";
-import { type AnchorHTMLAttributes, type ElementType, type ForwardedRef, forwardRef, type ReactNode, type RefAttributes } from "react";
+import {
+    type AnchorHTMLAttributes,
+    type ElementType,
+    type ForwardedRef,
+    forwardRef,
+    type PropsWithChildren,
+    type ReactNode,
+    type RefAttributes,
+} from "react";
 
 import { hasRenderableContent } from "../../utils/hasRenderableContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
@@ -84,7 +92,8 @@ export interface MainNavigationItemProps<
     IconSlot extends ElementType = "span",
     Label extends ElementType = "span",
     ExpandIcon extends ExpandIconElementType = typeof Icon,
-> extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className"> {
+>
+    extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "className">, PropsWithChildren {
     /** The icon to render before the label. */
     icon?: ReactNode;
     /**
@@ -124,6 +133,8 @@ export interface MainNavigationItemProps<
 
 /**
  * An entry in the main navigation of an application.
+ *
+ * `children`: The item's label.
  */
 export const MainNavigationItem: <
     ActiveIndicator extends ElementType = "span",

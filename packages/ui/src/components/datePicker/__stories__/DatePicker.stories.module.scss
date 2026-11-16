@@ -1,0 +1,17 @@
+.narrow {
+    max-inline-size: 320px;
+}
+
+.wide {
+    max-inline-size: 420px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--dextinity-space-6);
+
+    > * {
+        flex: 1 1 240px;
+    }
+}

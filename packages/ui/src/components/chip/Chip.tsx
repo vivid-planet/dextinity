@@ -6,6 +6,7 @@ import {
     forwardRef,
     type HTMLAttributes,
     type MouseEvent,
+    type PropsWithChildren,
     type ReactNode,
     type RefAttributes,
     type SyntheticEvent,
@@ -60,10 +61,8 @@ interface ChipSlotProps<StartIcon extends ElementType, EndIcon extends ElementTy
     clearButton?: SlotPropsValue<ChipOwnerState, ClearButton>;
 }
 
-interface ChipOwnProps<StartIcon extends ElementType, EndIcon extends ElementType, ClearButton extends ClearButtonElement> extends Omit<
-    HTMLAttributes<HTMLElement>,
-    "className" | "color"
-> {
+interface ChipOwnProps<StartIcon extends ElementType, EndIcon extends ElementType, ClearButton extends ClearButtonElement>
+    extends Omit<HTMLAttributes<HTMLElement>, "className" | "color">, PropsWithChildren {
     /**
      * Visual emphasis: `contained` for chips that need attention, `outlined` for quieter ones, for example in a long list of filters.
      *
@@ -76,7 +75,11 @@ interface ChipOwnProps<StartIcon extends ElementType, EndIcon extends ElementTyp
      * @defaultValue `"primary"`
      */
     color?: ChipColor;
-    /** @defaultValue `"default"` */
+    /**
+     * `small` in table rows and dense lists.
+     *
+     * @defaultValue `"default"`
+     */
     size?: ChipSize;
     /**
      * Shows the chip as unavailable and disables its clear button.
@@ -103,17 +106,20 @@ interface ChipOwnProps<StartIcon extends ElementType, EndIcon extends ElementTyp
      * ```
      */
     render?: useRender.RenderProp<ChipOwnerState>;
+    /** Shows a clear button that calls this function. Don't combine it with a `render` element that is itself interactive. */
+    onClear?: (event: MouseEvent<HTMLButtonElement>) => void;
+    /** Names the clear button for assistive technology, for example "Remove filter: Published". Required with `onClear`. */
+    clearLabel?: string;
 }
 
+// Declared in `ChipOwnProps` as well, where the props table finds their descriptions; this union only requires them together
 type ChipClearProps =
     | {
           onClear?: undefined;
           clearLabel?: undefined;
       }
     | {
-          /** Shows a clear button that calls this function. Don't combine it with a `render` element that is itself interactive. */
           onClear: (event: MouseEvent<HTMLButtonElement>) => void;
-          /** Names the clear button for assistive technology, for example "Remove filter: Published". */
           clearLabel: string;
       };
 
@@ -129,6 +135,8 @@ function preventDefault(event: SyntheticEvent) {
 
 /**
  * A compact element for a value, a status, or a filter.
+ *
+ * `children`: The label, e.g. a value or a status.
  */
 export const Chip: <StartIcon extends ElementType = "span", EndIcon extends ElementType = "span", ClearButton extends ClearButtonElement = "button">(
     props: ChipProps<StartIcon, EndIcon, ClearButton> & RefAttributes<HTMLElement>,
@@ -195,7 +203,7 @@ export const Chip: <StartIcon extends ElementType = "span", EndIcon extends Elem
                     {endIcon != null && <EndIconSlot {...endIconProps}>{endIcon}</EndIconSlot>}
                     {onClear !== undefined && (
                         <ClearButtonSlot {...clearButtonProps}>
-                            <Icon name="clear" />
+                            <Icon name="close-circle-fill" />
                         </ClearButtonSlot>
                     )}
                 </>

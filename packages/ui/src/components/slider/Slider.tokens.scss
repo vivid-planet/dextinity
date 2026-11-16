@@ -1,0 +1,39 @@
+@mixin tokens {
+    // The track's minimum width; the slider grows with its container
+    --dextinity-slider-width: 96px;
+    // Gap between the track and the start and end icons
+    --dextinity-slider-gap: var(--dextinity-space-1-5);
+    // Thickness of the track
+    --dextinity-slider-track-height: 4px;
+    // Diameter of the thumb
+    --dextinity-slider-thumb-size: 14px;
+    // Width of the thumb's outline against the track
+    --dextinity-slider-thumb-ring-width: 2px;
+    // Size of the icon before the track
+    --dextinity-slider-start-icon-size: var(--dextinity-icon-size-xxsmall);
+    // Size of the icon after the track
+    --dextinity-slider-end-icon-size: var(--dextinity-icon-size-small);
+    // Opacity of a disabled slider
+    --dextinity-slider-disabled-opacity: var(--dextinity-opacity-disabled);
+
+    // Color of the start and end icons
+    --dextinity-slider-icon-color: var(--dextinity-color-text-subtle);
+    // Fill of the unfilled part of the track
+    --dextinity-slider-track-background: var(--dextinity-color-line-strong);
+    // Line around the track; transparent normally, a full line in high contrast
+    --dextinity-slider-track-line: transparent;
+    // Fill of the part of the track up to the thumb
+    --dextinity-slider-indicator-background: var(--dextinity-color-accent);
+    // Fill of the thumb
+    --dextinity-slider-thumb-background: var(--dextinity-color-accent);
+    // Color of the thumb's outline against the track
+    --dextinity-slider-thumb-ring: var(--dextinity-color-surface);
+    // Shadow of the thumb
+    --dextinity-slider-thumb-shadow: var(--dextinity-shadow-1);
+}
+
+@mixin high-contrast-tokens {
+    // The track and the filled part would otherwise look alike
+    --dextinity-slider-track-background: var(--dextinity-color-canvas);
+    --dextinity-slider-track-line: var(--dextinity-color-text);
+}

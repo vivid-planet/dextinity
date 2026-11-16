@@ -34,7 +34,7 @@ export const Form: Story = {
     render: () => (
         <form className={styles.form} onSubmit={(event) => event.preventDefault()}>
             <fieldset className={styles.section}>
-                <Typography variant="h4" render={<legend className={styles.sectionTitle} />}>
+                <Typography variant="section" render={<legend className={styles.sectionTitle} />}>
                     Page
                 </Typography>
                 <div className={styles.row}>
@@ -53,7 +53,7 @@ export const Form: Story = {
                 </div>
             </fieldset>
             <fieldset className={styles.section}>
-                <Typography variant="h4" render={<legend className={styles.sectionTitle} />}>
+                <Typography variant="section" render={<legend className={styles.sectionTitle} />}>
                     Search engines
                 </Typography>
                 <div className={styles.field}>

@@ -1,8 +1,8 @@
 import type { StorybookConfig } from "@storybook/react-vite";
 import { mergeConfig } from "vite";
 
-import { storyCodePlugin } from "./storyCodePlugin";
 import { addStyleSourcesToManifests } from "./addStyleSourcesToManifests";
+import { storyCodePlugin } from "./storyCodePlugin";
 
 const config: StorybookConfig = {
     stories: ["../src/**/*.mdx", "../src/**/__stories__/*.stories.tsx"],

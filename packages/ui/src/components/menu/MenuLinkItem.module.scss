@@ -1,0 +1,16 @@
+@use "menuPopup";
+
+.root {
+    @include menuPopup.item;
+
+    color: var(--dextinity-menu-item-foreground);
+    text-decoration: none;
+}
+
+.icon {
+    @include menuPopup.itemIcon;
+}
+
+.label {
+    @include menuPopup.itemLabel;
+}

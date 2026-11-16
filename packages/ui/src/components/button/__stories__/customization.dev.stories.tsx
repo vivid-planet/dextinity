@@ -7,7 +7,7 @@ import styles from "./customization.dev.module.scss";
 
 const meta = {
     component: Button,
-    title: "Components/Button",
+    title: "Building blocks/Buttons/Button",
     tags: ["development", "!autodocs", "!manifest"],
     decorators: [themeDecorator],
 } satisfies Meta<typeof Button>;
@@ -19,7 +19,7 @@ type Story = StoryObj<typeof meta>;
 export const CustomizationViaSlotPropsClassName: Story = {
     args: {
         children: "Slot-level override",
-        startIcon: <Icon name="favorite" />,
+        startIcon: <Icon name="star-fill" />,
         endIcon: <Icon name="arrow-right" />,
         className: styles.customRoot,
         slotProps: {
@@ -31,7 +31,7 @@ export const CustomizationViaSlotPropsClassName: Story = {
 export const CustomizationViaWrapperGlobalSelectors: Story = {
     render: () => (
         <div className={styles.wrapper}>
-            <Button startIcon={<Icon name="favorite" />}>Themed via wrapper</Button>
+            <Button startIcon={<Icon name="star-fill" />}>Themed via wrapper</Button>
             <Button color="secondary" endIcon={<Icon name="arrow-right" />}>
                 Secondary in the same wrapper
             </Button>

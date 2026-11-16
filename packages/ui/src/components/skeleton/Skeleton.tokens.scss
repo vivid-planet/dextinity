@@ -1,0 +1,25 @@
+@mixin tokens {
+    // Fill of the placeholder shapes
+    --dextinity-skeleton-color: color-mix(in oklch, var(--dextinity-color-text) 7%, transparent);
+    // The light band that moves across the shapes; it stands still with reduced motion
+    --dextinity-skeleton-highlight-color: color-mix(in oklch, var(--dextinity-color-text) 13%, transparent);
+    // Time the light band takes for one sweep across a shape
+    --dextinity-skeleton-shimmer-duration: 1.6s;
+    // Gap between repetitions
+    --dextinity-skeleton-gap: var(--dextinity-space-2-5);
+    // Height of a line in the `text` variant
+    --dextinity-skeleton-text-height: 12px;
+    // Corner radius of a line in the `text` variant
+    --dextinity-skeleton-text-radius: 6px;
+    // Height of the `tile` variant
+    --dextinity-skeleton-tile-height: 120px;
+    // Corner radius of the `tile` variant
+    --dextinity-skeleton-tile-radius: var(--dextinity-radius-row);
+    // Height of the `block` variant
+    --dextinity-skeleton-block-height: 200px;
+    // Corner radius of the `block` variant
+    --dextinity-skeleton-block-radius: var(--dextinity-radius-field);
+
+    // Corner radius of the checkbox placeholder at the start of the `row` variant
+    --dextinity-skeleton-row-leading-radius: 5px;
+}

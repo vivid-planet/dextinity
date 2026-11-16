@@ -46,7 +46,8 @@ export function createAzureBuildAssetsStorage({
         },
         async deleteFiles(keys) {
             for (const key of keys) {
-                await containerClient.deleteBlob(key, { deleteSnapshots: "include" });
+                // Tolerates missing blobs, so a cleanup that failed halfway can be retried
+                await containerClient.getBlobClient(key).deleteIfExists({ deleteSnapshots: "include" });
             }
         },
     };

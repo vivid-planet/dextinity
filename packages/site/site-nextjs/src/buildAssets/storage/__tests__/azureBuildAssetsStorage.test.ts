@@ -77,13 +77,17 @@ describe("createAzureBuildAssetsStorage", () => {
         expect(listBlobsFlat).toHaveBeenCalledWith({ prefix: "site/_next/static/" });
     });
 
-    it("deletes the blobs", async () => {
-        const deleteBlob = vi
-            .spyOn(ContainerClient.prototype, "deleteBlob")
-            .mockResolvedValue({} as Awaited<ReturnType<ContainerClient["deleteBlob"]>>);
+    it("deletes the blobs and tolerates missing ones", async () => {
+        const deleteIfExists = vi
+            .spyOn(BlobClient.prototype, "deleteIfExists")
+            .mockResolvedValueOnce({ succeeded: true } as Awaited<ReturnType<BlobClient["deleteIfExists"]>>)
+            .mockResolvedValueOnce({ succeeded: false } as Awaited<ReturnType<BlobClient["deleteIfExists"]>>);
 
-        await storage.deleteFiles(["site/_next/static/a.js", "site/_next/static/b.js"]);
+        await storage.deleteFiles(["site/_next/static/a.js", "site/_next/static/missing.js"]);
 
-        expect(deleteBlob.mock.calls.map(([key]) => key)).toEqual(["site/_next/static/a.js", "site/_next/static/b.js"]);
+        expect(deleteIfExists.mock.contexts.map((blobClient) => (blobClient as BlobClient).name)).toEqual([
+            "site/_next/static/a.js",
+            "site/_next/static/missing.js",
+        ]);
     });
 });

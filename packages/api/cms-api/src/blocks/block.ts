@@ -7,6 +7,7 @@ import { AnnotationBlockMeta, getBlockFieldData, getFieldKeys } from "./decorato
 import { strictBlockDataFactoryDecorator } from "./helpers/strictBlockDataFactoryDecorator.js";
 import { strictBlockInputFactoryDecorator } from "./helpers/strictBlockInputFactoryDecorator.js";
 import { getBlockDataMigrateVendor, setBlockDataMigrateVendor } from "./migrations/blockDataMigrateVendor.js";
+import { applyCoreMigrations, CORE_MIGRATIONS_VERSION } from "./migrations/coreMigrations.js";
 import { createAppliedMigrationsBlockDataFactoryDecorator } from "./migrations/createAppliedMigrationsBlockDataFactoryDecorator.js";
 import { BlockDataMigrationVersion } from "./migrations/decorators/BlockDataMigrationVersion.js";
 import type { MigrateOptions, MigrateVendorOptions } from "./migrations/types.js";
@@ -353,15 +354,12 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
     }
     const migrateVendor = options.migrateVendor ?? inheritedMigrateVendor;
 
-    if (options.migrate || migrateVendor) {
-        // Overwrite the transformToSave of BlockDate to append the version numbers
-        BlockDataMigrationVersion(options.migrate?.version, migrateVendor?.version)(BlockData);
-    }
+    // Overwrite the transformToSave of BlockDate to append the version numbers
+    BlockDataMigrationVersion(options.migrate?.version, migrateVendor?.version, CORE_MIGRATIONS_VERSION)(BlockData);
 
+    // The core migrations run after the block's own migrations, which wrap this factory
     const blockDataFactory: BlockDataFactory<BlockType> = (o) => {
-        const blockData = plainToInstance(BlockData, o);
-        setMissingNullableFieldsToNull(blockData, BlockData);
-        return blockData;
+        return plainToInstance(BlockData, applyCoreMigrations(o, BlockData));
     };
 
     const blockInputFactory: BlockInputFactory<BlockInputType> = (o) => plainToInstance(BlockInput, o);
@@ -391,28 +389,6 @@ export function createBlock<BlockType extends BlockDataInterface, BlockInputType
     };
 
     return overwrite(block);
-}
-
-// Block data saved before optional fields were always stored as null omits them. Setting them to null here migrates such data on load, and the migrateBlocks command persists it.
-function setMissingNullableFieldsToNull(target: object, ctor: ClassConstructor<unknown>): void {
-    const record = target as Record<string, unknown>;
-    for (const key of getFieldKeys(ctor)) {
-        const field = getBlockFieldData(ctor, key);
-        const value = record[key];
-        if (value === undefined) {
-            if (field.nullable) {
-                record[key] = null;
-            }
-        } else if (field.kind === BlockMetaFieldKind.NestedObject && value !== null && typeof value === "object") {
-            setMissingNullableFieldsToNull(value, field.object);
-        } else if (field.kind === BlockMetaFieldKind.NestedObjectList && Array.isArray(value)) {
-            for (const item of value) {
-                if (item !== null && typeof item === "object") {
-                    setMissingNullableFieldsToNull(item, field.object);
-                }
-            }
-        }
-    }
 }
 
 export interface BlockContext {

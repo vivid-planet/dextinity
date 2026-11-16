@@ -5,6 +5,9 @@ import { describe, expect, it } from "vitest";
 import { IsNullable } from "../common/validators/is-nullable.js";
 import { BlockData, BlockInput, blockInputToData, createBlock, transformToBlockSave } from "./block.js";
 import { BlockField } from "./decorators/field.js";
+import { BlockMigration } from "./migrations/BlockMigration.js";
+import type { BlockMigrationInterface } from "./migrations/types.js";
+import { typeSafeBlockMigrationPipe } from "./migrations/typeSafeBlockMigrationPipe.js";
 
 class NestedItem extends BlockData {
     @BlockField({ type: "string", nullable: true })
@@ -43,11 +46,48 @@ class NullableFieldsBlockInput extends BlockInput {
 
 const NullableFieldsBlock = createBlock(NullableFieldsBlockData, NullableFieldsBlockInput, "NullableFields");
 
+class ReplaceTextMigration extends BlockMigration<(from: { text: string }) => { text: string; items: [] }> implements BlockMigrationInterface {
+    public readonly toVersion = 1;
+
+    protected migrate({ text }: { text: string }): { text: string; items: [] } {
+        return { text: `${text}+migrated`, items: [] };
+    }
+}
+
+class AddDefaultHeadlineMigration
+    extends BlockMigration<(from: { headline?: string | null }) => { headline: string | null }>
+    implements BlockMigrationInterface
+{
+    public readonly toVersion = 1;
+
+    protected migrate(from: { headline?: string | null }): { headline: string | null } {
+        return { ...from, headline: from.headline === undefined ? "default" : from.headline };
+    }
+}
+
 describe("nullable block fields", () => {
-    it("should set missing nullable fields to null when loading block data", () => {
+    it("should set missing nullable fields to null when loading block data that wasn't migrated yet", () => {
         const data = NullableFieldsBlock.blockDataFactory({ text: "text", items: [{ title: "item" }] });
 
-        expect(transformToBlockSave(data)).toEqual({ headline: null, text: "text", items: [{ caption: null, title: "item" }] });
+        expect(transformToBlockSave(data)).toEqual({ headline: null, text: "text", items: [{ caption: null, title: "item" }], $$coreVersion: 1 });
+    });
+
+    it("should not migrate block data a second time", () => {
+        const data = NullableFieldsBlock.blockDataFactory({ text: "text", items: [{ title: "item" }], $$coreVersion: 1 });
+
+        expect(transformToBlockSave(data)).toEqual({ text: "text", items: [{ title: "item" }], $$coreVersion: 1 });
+    });
+
+    it("should stamp the core version on block data created from an input", () => {
+        const data = NullableFieldsBlock.blockInputFactory({ headline: null, text: "text" }).transformToBlockData();
+
+        expect(transformToBlockSave(data)).toMatchObject({ $$coreVersion: 1 });
+    });
+
+    it("should leave the core version out of the plain block data", async () => {
+        const data = NullableFieldsBlock.blockDataFactory({ text: "text", items: [] });
+
+        expect(await data.transformToPlain({})).not.toHaveProperty("$$coreVersion");
     });
 
     it("should keep the values of nullable fields", () => {
@@ -60,6 +100,28 @@ describe("nullable block fields", () => {
         const data = NullableFieldsBlock.blockDataFactory({ items: [] });
 
         expect(transformToBlockSave(data)).not.toHaveProperty("text");
+    });
+
+    it("should run the block's own migrations first", () => {
+        const MigratedBlock = createBlock(NullableFieldsBlockData, NullableFieldsBlockInput, {
+            name: "MigratedNullableFields",
+            migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([AddDefaultHeadlineMigration]) },
+        });
+
+        const data = MigratedBlock.blockDataFactory({ text: "text", items: [] });
+
+        expect(transformToBlockSave(data)).toMatchObject({ headline: "default", $$version: 1, $$coreVersion: 1 });
+    });
+
+    it("should not migrate block data a second time after a block migration replaced the data", () => {
+        const ReplacingBlock = createBlock(NullableFieldsBlockData, NullableFieldsBlockInput, {
+            name: "ReplacingNullableFields",
+            migrate: { version: 1, migrations: typeSafeBlockMigrationPipe([ReplaceTextMigration]) },
+        });
+
+        const data = ReplacingBlock.blockDataFactory({ text: "text", $$coreVersion: 1 });
+
+        expect(transformToBlockSave(data)).toEqual({ text: "text+migrated", items: [], $$version: 1, $$coreVersion: 1 });
     });
 
     it("should accept null for a nullable field in the block input", async () => {

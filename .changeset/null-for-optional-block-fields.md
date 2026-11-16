@@ -22,7 +22,8 @@ The properties of the library blocks are typed as `T | null`, and `generate-bloc
 Block inputs must contain optional fields: `null` is accepted, a missing field fails validation.
 Validate custom optional fields with `@IsNullable()` instead of `@IsOptional()` or `@IsUndefinable()`, and pass the type to `@BlockField` explicitly, e.g. `@BlockField({ type: "string", nullable: true })`. TypeScript emits `Object` as the design type of a union with `null`, so it can't be inferred.
 
-Existing block data is migrated when it's loaded: missing optional fields are set to `null`. The `migrateBlocks` command persists the migrated data.
+Existing block data is migrated once by a core block migration, counted in `$$coreVersion` next to `$$version` and `$$vendorVersion`: missing optional fields are set to `null`. The `migrateBlocks` command persists the migrated data.
+Adding an optional field to an existing block later on requires a block migration that sets the field to `null`.
 
 In the Admin, use `null` instead of `undefined` as the default value of optional fields. `BlocksFinalForm` submits a cleared field as `null`.
 See the migration guide for details.

@@ -820,11 +820,13 @@ Then replace strict comparisons with `undefined` on these fields, which miss `nu
 
 Block transformer services must return `null` for the optional fields of their output as well, e.g., `damFile: null` instead of leaving `damFile` out.
 
-Existing block data is migrated automatically: when block data is loaded, optional fields that are missing are set to `null`, including the fields of nested objects. Run the `migrateBlocks` command after deploying, as after every deployment, to persist the migrated data:
+Existing block data is migrated automatically by a one-time core block migration, counted in `$$coreVersion` next to the block's own `$$version`: when block data that hasn't been migrated yet is loaded, optional fields that are missing are set to `null`, including the fields of nested objects. Run the `migrateBlocks` command after deploying, as after every deployment, to persist the migrated data:
 
 ```sh
 npm run console -- migrateBlocks
 ```
+
+Block data migrated this way isn't migrated again. When you add an optional field to an existing block from now on, add a block migration that sets the field to `null` in the existing data.
 
 ### Read `validationErrors` as a list of paths and messages
 

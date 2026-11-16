@@ -1,6 +1,6 @@
 import { createMock } from "@golevelup/ts-vitest";
 import { Logger, type Type } from "@nestjs/common";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { DiscoverService } from "../dependencies/discover.service";
 import { DisablePermissionCheck, RequiredPermission } from "../user-permissions/decorators/required-permission.decorator";
@@ -101,6 +101,10 @@ describe("ActionLogsService.onModuleInit", () => {
 describe("ActionLogsService.getScopeFromEntity", () => {
     const service = createService();
 
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
     it("reads the scope from the scope property", async () => {
         await expect(service.getScopeFromEntity(new WithScopeProperty())).resolves.toEqual([{ domain: "main", language: "de" }]);
     });
@@ -140,7 +144,6 @@ describe("ActionLogsService.getScopeFromEntity", () => {
         expect(logError).toHaveBeenCalledTimes(2);
         expect(logError).toHaveBeenCalledWith(expect.stringContaining("ScopedByThrowingCallback"), expect.any(String));
         expect(logError).toHaveBeenCalledWith(expect.stringContaining("async scope lookup failed"), expect.any(String));
-        logError.mockRestore();
     });
 
     it("drops empty entries from the resolved scopes", async () => {

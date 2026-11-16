@@ -27,9 +27,9 @@ export function MjmlWarningsPanel({ active }: { active: boolean }) {
 
     return (
         <AddonPanel active={active}>
-            {renderResult && (
-                <div style={{ padding: 16 }}>
-                    {renderResult.mjmlWarnings.length === 0 ? (
+            <div style={{ padding: 16 }}>
+                {renderResult !== null &&
+                    (renderResult.mjmlWarnings.length === 0 ? (
                         <p style={{ color: "green" }}>✓ No MJML warnings</p>
                     ) : (
                         <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
@@ -39,9 +39,8 @@ export function MjmlWarningsPanel({ active }: { active: boolean }) {
                                 </li>
                             ))}
                         </ul>
-                    )}
-                </div>
-            )}
+                    ))}
+            </div>
         </AddonPanel>
     );
 }

@@ -18,11 +18,11 @@ title: string;
 @Field()
 body: string;
 
-// Optional / nullable
-@IsOptional()
+// Nullable
+@IsNullable()
 @IsString()
 @MaxLength(200)
-@Field({ nullable: true })
+@Field({ nullable: true, defaultValue: null })
 description?: string;
 ```
 
@@ -65,10 +65,10 @@ quantity: number;
 @Field(() => Float)
 price: number;
 
-// Optional
-@IsOptional()
+// Nullable
+@IsNullable()
 @IsInt()
-@Field(() => Int, { nullable: true })
+@Field(() => Int, { nullable: true, defaultValue: null })
 stock?: number;
 ```
 
@@ -133,12 +133,26 @@ Include in sort enum: `isActive = "isActive"`.
 @Field()
 publishedAt: Date;
 
-// Optional
-@IsOptional()
+// Nullable
+@IsNullable()
 @IsDate()
-@Field({ nullable: true })
+@Field({ nullable: true, defaultValue: null })
 publishedAt?: Date;
+
+// LocalDate (date-only, `@Property({ type: types.date })` with `string` type in entity)
+@IsNotEmpty()
+@IsDateString()
+@Field(() => GraphQLLocalDate)
+eventDate: string;
+
+// LocalDate nullable
+@IsNullable()
+@IsDateString()
+@Field(() => GraphQLLocalDate, { nullable: true, defaultValue: null })
+eventDate?: string;
 ```
+
+`GraphQLLocalDate` is imported from `graphql-scalars`.
 
 ### Filter
 
@@ -185,4 +199,4 @@ When a field has a well-known format, prefer a semantic validator from `class-va
 | UUID (non-relation) | `@IsUUID()`                             | `@IsString()` |
 | Slug                | `@IsSlug()` (from `@dextinity/cms-api`) | `@IsString()` |
 
-These validators are used **in addition to** `@IsNotEmpty()` / `@IsOptional()`, replacing the generic type validator.
+These validators are used **in addition to** `@IsNotEmpty()` / `@IsNullable()`, replacing the generic type validator.

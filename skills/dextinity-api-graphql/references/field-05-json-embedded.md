@@ -16,7 +16,7 @@ import { Type } from "class-transformer";
 address: AddressInput;
 
 // Nullable object — use { nullable: true } WITHOUT defaultValue: null
-@IsOptional()
+@IsNullable()
 @ValidateNested()
 @Type(() => AddressInput)
 @Field(() => AddressInput, { nullable: true })

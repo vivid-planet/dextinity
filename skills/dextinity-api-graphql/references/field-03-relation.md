@@ -16,18 +16,20 @@ category: string;  // FK as UUID string
 ### Input — nullable
 
 ```typescript
-@IsOptional()
+@IsNullable()
 @IsUUID()
-@Field(() => ID, { nullable: true })
+@Field(() => ID, { nullable: true, defaultValue: null })
 category?: string;
 ```
 
-### Input — FileUpload (non-UUID)
+### Input — FileUpload
+
+`FileUpload.id` is typed `string` (its column is `uuid`), so the generator emits `@IsString()` instead of `@IsUUID()`:
 
 ```typescript
 @IsNotEmpty()
-@IsString()  // NOT @IsUUID — FileUpload uses string IDs
-@Field()
+@IsString()
+@Field(() => ID)
 image: string;
 ```
 

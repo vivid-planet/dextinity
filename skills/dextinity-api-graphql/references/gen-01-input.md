@@ -31,7 +31,7 @@ export class ProductTagUpdateInput extends PartialType(ProductTagInput) {}
 - **UpdateInput** always `extends PartialType(EntityInput)` — no additional fields.
 - **`[OptionalProps]`** on the entity does NOT affect validation — still use `@IsNotEmpty()` for required fields.
 - **Exclude** from input: `id`, `createdAt`, `updatedAt`, `position` (handled separately), and fields that should not be user-editable.
-- **Nullable fields**: Use `@IsOptional()` + `{ nullable: true }` on `@Field`.
+- **Nullable fields**: Use `@IsNullable()` (from `@dextinity/cms-api`) + `{ nullable: true, defaultValue: null }` on `@Field`. Exception: nested object fields (embedded/JSON objects, nested inputs) use `{ nullable: true }` without `defaultValue`.
 - See field-specific reference files for per-type examples.
 
 ## Validation Reference
@@ -42,7 +42,7 @@ Every input field MUST have validation decorators. These are the single source o
 
 Always apply decorators in this order (top to bottom):
 
-1. **Presence**: `@IsNotEmpty()` or `@IsOptional()`
+1. **Presence**: `@IsNotEmpty()` or `@IsNullable()`
 2. **Type/format validator**: `@IsString()`, `@IsInt()`, `@IsEmail()`, `@IsEnum(MyEnum)`, etc.
 3. **Constraint validators**: `@MaxLength(120)`, `@Min(1)`, `@Max(100)`, etc.
 4. **Nested/transform** (when applicable): `@ValidateNested()`, `@Type(() => ...)`, `@Transform(...)`
@@ -50,13 +50,13 @@ Always apply decorators in this order (top to bottom):
 
 ### Required vs Optional
 
-| Entity property                    | Input decorators                                                      |
-| ---------------------------------- | --------------------------------------------------------------------- |
-| Required (no `?`, no default)      | `@IsNotEmpty()` + type validator                                      |
-| Nullable (`?` or `nullable: true`) | `@IsOptional()` + type validator + `@Field({ nullable: true })`       |
-| Has default value in entity        | `@IsNotEmpty()` in input — the DTO doesn't know about entity defaults |
+| Entity property                    | Input decorators                                                                    |
+| ---------------------------------- | ----------------------------------------------------------------------------------- |
+| Required (no `?`, no default)      | `@IsNotEmpty()` + type validator                                                    |
+| Nullable (`?` or `nullable: true`) | `@IsNullable()` + type validator + `@Field({ nullable: true, defaultValue: null })` |
+| Has default value in entity        | `@IsNotEmpty()` in input — the DTO doesn't know about entity defaults               |
 
-> **Important**: `@IsNotEmpty()` rejects `null`, `undefined`, and empty strings. `@IsOptional()` allows `null` and `undefined` (skips all subsequent validators when value is missing).
+> **Important**: `@IsNotEmpty()` rejects `null`, `undefined`, and empty strings. `@IsNullable()` skips all subsequent validators only when the value is `null` — `undefined` is still validated, which is why nullable fields get `defaultValue: null`. In the UpdateInput, `PartialType` makes every field optional. Don't use `@IsOptional()` in the input; the only exception is `position` (see [feature-01-position.md](feature-01-position.md)).
 
 ### Validator Mapping — Entity Property to Input Decorator
 
@@ -69,13 +69,15 @@ Derive input validators from the entity's MikroORM property decorators:
 | `@Property({ type: "integer" })` / `number`  | `@IsInt()` + `@Field(() => Int)`                                           |                                           |
 | `@Property({ type: "float" })` / `number`    | `@IsNumber()` + `@Field(() => Float)`                                      |                                           |
 | `@Property({ type: "boolean" })` / `boolean` | `@IsBoolean()`                                                             |                                           |
-| `@Property({ type: "date" })` / `Date`       | `@IsDate()`                                                                | DateTime — use `DateTimeFilter` in filter |
+| `@Property()` / `Date`                       | `@IsDate()`                                                                | DateTime — use `DateTimeFilter` in filter |
+| `@Property({ type: types.date })` / `string` | `@IsDateString()` + `@Field(() => GraphQLLocalDate)`                       | Date only — use `DateFilter` in filter    |
 | `@Enum(() => MyEnum)`                        | `@IsEnum(MyEnum)` + `@Field(() => MyEnum)`                                 |                                           |
 | `@Enum(() => MyEnum)` (array)                | `@IsEnum(MyEnum, { each: true })` + `@Field(() => [MyEnum])`               |                                           |
 | `@ManyToOne` (required)                      | `@IsUUID()` + `@Field(() => ID)`                                           | FK as UUID string                         |
-| `@ManyToOne` (nullable)                      | `@IsUUID()` + `@Field(() => ID, { nullable: true })`                       |                                           |
-| `@ManyToOne` (FileUpload)                    | `@IsString()` + `@Field()`                                                 | FileUpload uses string IDs, NOT UUID      |
+| `@ManyToOne` (nullable)                      | `@IsUUID()` + `@Field(() => ID, { nullable: true, defaultValue: null })`   |                                           |
+| `@ManyToOne` (FileUpload)                    | `@IsString()` + `@Field(() => ID)`                                         | `FileUpload.id` is typed `string`         |
 | `@ManyToMany`                                | `@IsArray()` + `@IsUUID(undefined, { each: true })` + `@Field(() => [ID])` |                                           |
+| `@ManyToMany` (FileUpload)                   | `@IsArray()` + `@IsString({ each: true })` + `@Field(() => [ID])`          | `FileUpload.id` is typed `string`         |
 | `@RootBlock(BlockType)`                      | 4-decorator pattern — see [field-04-block.md](field-04-block.md)           |                                           |
 | `@Embedded(() => Type)`                      | `@ValidateNested()` + `@Type(() => InputType)`                             |                                           |
 | JSON object                                  | `@ValidateNested()` + `@Type(() => InputType)`                             |                                           |
@@ -155,6 +157,7 @@ contacts: ContactInput[];
 - **Missing `@IsNotEmpty()`**: Every required field MUST have `@IsNotEmpty()`. Without it, empty strings and null values pass validation silently.
 - **Missing `@MaxLength()`**: If the entity has `@Property({ length: N })`, the input MUST have `@MaxLength(N)`. Without it, values exceeding the column length cause database errors at runtime.
 - **Wrong `PartialType` import**: Always from `@dextinity/cms-api`, never from `@nestjs/graphql`. The NestJS version doesn't preserve validators correctly.
-- **`@IsString()` for UUID relations**: ManyToOne relation fields use `@IsUUID()`, not `@IsString()`. Exception: FileUpload IDs use `@IsString()`.
+- **`@IsString()` for UUID relations**: ManyToOne relation fields use `@IsUUID()`, not `@IsString()`. Exception: FileUpload relations use `@IsString()` (still with `@Field(() => ID)`), because `FileUpload.id` is typed `string` although its column is `uuid`.
 - **Missing `@Type()` for nested objects**: Without `@Type()`, class-transformer cannot instantiate the nested class, and `@ValidateNested()` silently skips validation.
-- **`@IsOptional()` with `@IsNotEmpty()`**: Never combine these — they contradict each other. Use one or the other.
+- **`@IsOptional()` for nullable fields**: Use `@IsNullable()` from `@dextinity/cms-api` instead.
+- **`@IsNullable()` with `@IsNotEmpty()`**: Never combine these — they contradict each other. Use one or the other.

@@ -12,10 +12,10 @@ import { ProductType } from "../entities/product.entity"; // or separate enum fi
 @Field(() => ProductType)
 type: ProductType;
 
-// Optional
-@IsOptional()
+// Nullable
+@IsNullable()
 @IsEnum(ProductType)
-@Field(() => ProductType, { nullable: true })
+@Field(() => ProductType, { nullable: true, defaultValue: null })
 type?: ProductType;
 ```
 
@@ -56,17 +56,12 @@ Include in sort enum: `type = "type"`.
 ### Input
 
 ```typescript
-@IsNotEmpty()
 @IsEnum(ProductType, { each: true })
-@Field(() => [ProductType])
+@Field(() => [ProductType], { defaultValue: [] })
 types: ProductType[];
-
-// Optional
-@IsOptional()
-@IsEnum(ProductType, { each: true })
-@Field(() => [ProductType], { nullable: true })
-types?: ProductType[];
 ```
+
+Enum arrays get no presence decorator. Nullable enum arrays are not supported — use an empty array instead of `null`.
 
 ### Filter
 

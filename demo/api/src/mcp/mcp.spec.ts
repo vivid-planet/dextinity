@@ -1,6 +1,16 @@
-import { BlocksTransformerService, type ContentScope, CorePermission, type CurrentUser, FilesService, PageTreeService } from "@dextinity/cms-api";
+import {
+    BlocksTransformerService,
+    type ContentScope,
+    CorePermission,
+    type CurrentUser,
+    FilesService,
+    getRequestContextHeadersFromRequest,
+    PageTreeNodeVisibility,
+    PageTreeService,
+    type RequestContextInterface,
+} from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
-import { type CanActivate, type ExecutionContext, type INestApplication, Inject, Injectable, Logger } from "@nestjs/common";
+import { type CanActivate, type ExecutionContext, type INestApplication, Inject, Injectable } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { CONTEXT } from "@nestjs/graphql";
 import type { NestExpressApplication } from "@nestjs/platform-express";
@@ -36,17 +46,20 @@ class HeaderAuthGuard implements CanActivate {
     }
 }
 
-const transformedBlocks: { block: unknown; context: unknown }[] = [];
+const transformedBlocks: { block: unknown; requestContext: RequestContextInterface }[] = [];
 
-// Request-scoped like the real one, which reads its block context off the GraphQL request.
+// Request-scoped like the real one, which reads its block context off the request's headers, as the services of the
+// block transformers (e.g. the `PageTreeReadApiService` of internal links) do.
 @Injectable()
 class RequestScopedBlocksTransformerService {
+    private readonly requestContext: RequestContextInterface;
+
     constructor(@Inject(CONTEXT) context: { req: Request }) {
-        expect(context.req.headers).toEqual({});
+        this.requestContext = getRequestContextHeadersFromRequest(context.req);
     }
 
-    async transformToPlain(block: unknown, context: unknown) {
-        transformedBlocks.push({ block, context });
+    async transformToPlain(block: unknown) {
+        transformedBlocks.push({ block, requestContext: this.requestContext });
         return { transformed: block };
     }
 }
@@ -133,7 +146,6 @@ beforeAll(async () => {
 
 beforeEach(() => {
     transformedBlocks.length = 0;
-    vi.spyOn(Logger.prototype, "warn").mockImplementation(() => {});
 });
 
 afterAll(async () => {
@@ -152,7 +164,14 @@ describe("MCP endpoint of the API", () => {
             stage: { transformed: "stage" },
             seo: { transformed: "seo" },
         });
-        expect(transformedBlocks.map(({ context }) => context)).toEqual(Array(3).fill({ includeInvisibleContent: true, previewDamUrls: true }));
+        expect(transformedBlocks).toHaveLength(3);
+        for (const { requestContext } of transformedBlocks) {
+            expect(requestContext).toMatchObject({ includeInvisibleBlocks: true, previewDamUrls: true });
+            // So that internal links to unpublished and archived pages resolve to their target, as in the admin.
+            expect(requestContext.includeInvisiblePages).toEqual(
+                expect.arrayContaining([PageTreeNodeVisibility.Unpublished, PageTreeNodeVisibility.Archived]),
+            );
+        }
     });
 
     it("answers a page of a scope the user may not read as if it didn't exist", async () => {

@@ -1,12 +1,10 @@
 import { type ContentScope, CorePermission, type FileInterface, FilesService, SortDirection } from "@dextinity/cms-api";
-import { UseInterceptors } from "@nestjs/common";
 import { Payload } from "@nestjs/microservices";
 import { McpController, McpRawRequest, Tool } from "@rekog/mcp-nest";
 import { AccessControlService } from "@src/auth/access-control.service.js";
 import { z } from "zod";
 
-import { damScopeSchema, getUser, jsonResult, type McpRequest, ToolError } from "./mcp-tool.utils.js";
-import { ToolErrorInterceptor } from "./tool-error.interceptor.js";
+import { damScopeSchema, errorResult, getSignedInUser, jsonResult, type McpRequest, notSignedInResult } from "./mcp-tool.utils.js";
 
 const listDamFilesParameters = z.object({
     scope: damScopeSchema,
@@ -29,7 +27,6 @@ const getDamFileParameters = z.object({
 });
 
 @McpController()
-@UseInterceptors(ToolErrorInterceptor)
 export class DamTools {
     constructor(
         private readonly filesService: FilesService,
@@ -51,10 +48,14 @@ Optional: filter by mimetype (e.g. "image/jpeg"), search by filename, or list fi
         @Payload() { scope, folderId, filter, limit, offset, sortColumnName, sortDirection }: z.infer<typeof listDamFilesParameters>,
         @McpRawRequest() request: McpRequest,
     ) {
+        const user = getSignedInUser(request);
+        if (!user) {
+            return notSignedInResult;
+        }
         // As `@RequiredPermission("dam")` checks the scope argument of the `damFilesList` query. The DAM scope has
         // fewer dimensions than a content scope, and the check compares only the dimensions it is given.
-        if (!this.accessControlService.isAllowed(getUser(request), CorePermission.dam, scope as ContentScope)) {
-            throw new ToolError("You may not read the DAM of this scope.");
+        if (!this.accessControlService.isAllowed(user, CorePermission.dam, scope as ContentScope)) {
+            return errorResult("You may not read the DAM of this scope.");
         }
 
         const [files, totalCount] = await this.filesService.findAndCount(
@@ -72,12 +73,15 @@ Optional: filter by mimetype (e.g. "image/jpeg"), search by filename, or list fi
         annotations: { readOnlyHint: true },
     })
     async getDamFile(@Payload() { id }: z.infer<typeof getDamFileParameters>, @McpRawRequest() request: McpRequest) {
-        const user = getUser(request);
+        const user = getSignedInUser(request);
+        if (!user) {
+            return notSignedInResult;
+        }
         const file = await this.filesService.findOneById(id);
         // As `@AffectedEntity(File)` checks the scope of the file, with the same answer for a file the user may not
         // read as for one that doesn't exist.
         if (!file?.scope || !this.accessControlService.isAllowed(user, CorePermission.dam, { ...file.scope } as ContentScope)) {
-            throw new ToolError(`There is no DAM file ${id}.`);
+            return errorResult(`There is no DAM file ${id}.`);
         }
 
         return jsonResult({ ...(await this.toDamFile(file)), damPath: await this.filesService.getDamPath(file) });

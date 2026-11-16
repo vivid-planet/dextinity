@@ -1,12 +1,10 @@
 import { readFile } from "node:fs/promises";
 
-import { UseInterceptors } from "@nestjs/common";
 import { Payload } from "@nestjs/microservices";
 import { McpController, McpRawRequest, Tool } from "@rekog/mcp-nest";
 import { z } from "zod";
 
-import { getUser, jsonResult, type McpRequest, ToolError } from "./mcp-tool.utils.js";
-import { ToolErrorInterceptor } from "./tool-error.interceptor.js";
+import { errorResult, getSignedInUser, jsonResult, type McpRequest, notSignedInResult } from "./mcp-tool.utils.js";
 
 // Written by the API itself at the root of the app, which is the same two levels up from src/mcp and dist/mcp.
 const blockMetaUrl = new URL("../../block-meta.json", import.meta.url);
@@ -25,7 +23,6 @@ const getBlockSchemaParameters = z.object({
 });
 
 @McpController()
-@UseInterceptors(ToolErrorInterceptor)
 export class BlockTools {
     @Tool({
         name: "list_available_blocks",
@@ -36,7 +33,9 @@ Pass one of the returned names to the get_block_schema tool to get that block's 
     })
     async listAvailableBlocks(@McpRawRequest() request: McpRequest) {
         // The schemas aren't scoped, but they are no one's business outside the admin either.
-        getUser(request);
+        if (!getSignedInUser(request)) {
+            return notSignedInResult;
+        }
         return jsonResult((await loadBlockMeta()).map((block) => block.name));
     }
 
@@ -55,10 +54,12 @@ A block's "description" says what the block is for and, where the fields alone d
         annotations: { readOnlyHint: true },
     })
     async getBlockSchema(@Payload() { name }: z.infer<typeof getBlockSchemaParameters>, @McpRawRequest() request: McpRequest) {
-        getUser(request);
+        if (!getSignedInUser(request)) {
+            return notSignedInResult;
+        }
         const block = (await loadBlockMeta()).find((candidate) => candidate.name.toLowerCase() === name.toLowerCase());
         if (!block) {
-            throw new ToolError(`Unknown block "${name}". Use the list_available_blocks tool to get the available block names.`);
+            return errorResult(`Unknown block "${name}". Use the list_available_blocks tool to get the available block names.`);
         }
         return jsonResult(block);
     }

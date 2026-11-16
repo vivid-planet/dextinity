@@ -1,6 +1,5 @@
 import { BlocksTransformerService, type ContentScope, type PageTreeNodeInterface, type PageTreeReadApi, PageTreeService } from "@dextinity/cms-api";
 import { EntityManager } from "@mikro-orm/postgresql";
-import { UseInterceptors } from "@nestjs/common";
 import { ContextIdFactory, ModuleRef } from "@nestjs/core";
 import { Payload } from "@nestjs/microservices";
 import { McpController, McpRawRequest, Tool } from "@rekog/mcp-nest";
@@ -10,8 +9,7 @@ import type { PageTreeNode } from "@src/page-tree/entities/page-tree-node.entity
 import { PageTreeNodeCategory } from "@src/page-tree/page-tree-node-category.js";
 import { z } from "zod";
 
-import { getUser, jsonResult, type McpRequest, pageTreeScopeSchema, ToolError } from "./mcp-tool.utils.js";
-import { ToolErrorInterceptor } from "./tool-error.interceptor.js";
+import { errorResult, getSignedInUser, jsonResult, type McpRequest, notSignedInResult, pageTreeScopeSchema } from "./mcp-tool.utils.js";
 
 const listPageTreeNodesParameters = z.object({
     scope: pageTreeScopeSchema,
@@ -34,8 +32,13 @@ const getPageParameters = z.object({
     id: z.uuid().describe('The page document ID, which a page tree node of document type "Page" names as "documentId"'),
 });
 
+// As cms-admin's `includeInvisibleContentContext` sets them.
+const adminRequestHeaders = {
+    "x-include-invisible-content": "Pages:Unpublished,Pages:Archived,Blocks:Invisible",
+    "x-preview-dam-urls": "1",
+};
+
 @McpController()
-@UseInterceptors(ToolErrorInterceptor)
 export class PageTreeTools {
     constructor(
         private readonly entityManager: EntityManager,
@@ -56,9 +59,13 @@ Use get_page_tree_node with a returned id for the node's children and attached d
         @Payload() { scope, category, documentType, limit, offset }: z.infer<typeof listPageTreeNodesParameters>,
         @McpRawRequest() request: McpRequest,
     ) {
+        const user = getSignedInUser(request);
+        if (!user) {
+            return notSignedInResult;
+        }
         // As `@RequiredPermission("pageTree")` checks the scope argument of the `paginatedPageTreeNodes` query.
-        if (!this.accessControlService.isAllowed(getUser(request), "pageTree", scope)) {
-            throw new ToolError("You may not read the page tree of this scope.");
+        if (!this.accessControlService.isAllowed(user, "pageTree", scope)) {
+            return errorResult("You may not read the page tree of this scope.");
         }
 
         const readApi = this.createReadApi();
@@ -77,13 +84,16 @@ For a node of document type "Page", pass the "documentId" to get_page for the pa
         annotations: { readOnlyHint: true },
     })
     async getPageTreeNode(@Payload() { id }: z.infer<typeof getPageTreeNodeParameters>, @McpRawRequest() request: McpRequest) {
-        const user = getUser(request);
+        const user = getSignedInUser(request);
+        if (!user) {
+            return notSignedInResult;
+        }
         const readApi = this.createReadApi();
         const node = await readApi.getNode(id);
         // As `@AffectedEntity(PageTreeNode)` checks the scope of the node, with the same answer for a node the user may
         // not read as for one that doesn't exist.
         if (!node?.scope || !this.accessControlService.isAllowed(user, "pageTree", node.scope as ContentScope)) {
-            throw new ToolError(`There is no page tree node ${id}.`);
+            return errorResult(`There is no page tree node ${id}.`);
         }
 
         return jsonResult(await this.toNodeWithRelations(readApi, node));
@@ -96,14 +106,18 @@ For a node of document type "Page", pass the "documentId" to get_page for the pa
         annotations: { readOnlyHint: true },
     })
     async getPageTreeNodeByPath(@Payload() { scope, path }: z.infer<typeof getPageTreeNodeByPathParameters>, @McpRawRequest() request: McpRequest) {
-        if (!this.accessControlService.isAllowed(getUser(request), "pageTree", scope)) {
-            throw new ToolError("You may not read the page tree of this scope.");
+        const user = getSignedInUser(request);
+        if (!user) {
+            return notSignedInResult;
+        }
+        if (!this.accessControlService.isAllowed(user, "pageTree", scope)) {
+            return errorResult("You may not read the page tree of this scope.");
         }
 
         const readApi = this.createReadApi();
         const node = await readApi.getNodeByPath(path, { scope });
         if (!node) {
-            throw new ToolError(`There is no page tree node at ${path} in this scope.`);
+            return errorResult(`There is no page tree node at ${path} in this scope.`);
         }
 
         return jsonResult(await this.toNodeWithRelations(readApi, node));
@@ -117,26 +131,26 @@ The content is the "PageContent" block, the stage the "Stage" block, and the SEO
         annotations: { readOnlyHint: true },
     })
     async getPage(@Payload() { id }: z.infer<typeof getPageParameters>, @McpRawRequest() request: McpRequest) {
-        const user = getUser(request);
+        const user = getSignedInUser(request);
+        if (!user) {
+            return notSignedInResult;
+        }
         const page = await this.entityManager.findOne(Page, id);
         const readApi = this.createReadApi();
         const node = page ? await readApi.getFirstNodeByAttachedPageId(page.id) : null;
         // As `@AffectedEntity(Page)` checks the scope of the node the page is attached to.
         if (!page || !node?.scope || !this.accessControlService.isAllowed(user, "pageTree", node.scope as ContentScope)) {
-            throw new ToolError(`There is no page ${id}.`);
+            return errorResult(`There is no page ${id}.`);
         }
 
         const blocksTransformer = await this.resolveBlocksTransformer();
-        // As the admin's editor sees the page: hidden blocks included, and with DAM URLs that work before the page is
-        // published.
-        const blockContext = { includeInvisibleContent: true, previewDamUrls: true };
 
         return jsonResult({
             id: page.id,
             pageTreeNode: { id: node.id, name: node.name, path: await readApi.nodePath(node), visibility: node.visibility },
-            content: await blocksTransformer.transformToPlain(page.content, blockContext),
-            stage: await blocksTransformer.transformToPlain(page.stage, blockContext),
-            seo: await blocksTransformer.transformToPlain(page.seo, blockContext),
+            content: await blocksTransformer.transformToPlain(page.content),
+            stage: await blocksTransformer.transformToPlain(page.stage),
+            seo: await blocksTransformer.transformToPlain(page.seo),
             updatedAt: page.updatedAt,
         });
     }
@@ -176,13 +190,16 @@ The content is the "PageContent" block, the stage the "Stage" block, and the SEO
     }
 
     /**
-     * `BlocksTransformerService` reads its block context from the GraphQL request. Injected into this class, it would
-     * get the request of the RPC pipeline instead, which has no headers, and fail to construct. Each call gets its own
-     * instance, as each GraphQL request does, and passes the block context explicitly.
+     * `BlocksTransformerService` and the services of the block transformers, such as the `PageTreeReadApiService` an
+     * internal link resolves its target with, read their context from the headers of the GraphQL request. Injected
+     * into this class, they would get the request of the RPC pipeline instead, which has no headers, and fail to
+     * construct. Each call gets its own instance, as each GraphQL request does, resolved with the headers of the
+     * admin's requests: the page as its editor sees it, with hidden blocks, unpublished and archived link targets,
+     * and DAM URLs that work before the page is published.
      */
     private async resolveBlocksTransformer(): Promise<BlocksTransformerService> {
         const contextId = ContextIdFactory.create();
-        this.moduleRef.registerRequestByContextId({ req: { headers: {} } }, contextId);
+        this.moduleRef.registerRequestByContextId({ req: { headers: adminRequestHeaders } }, contextId);
         return this.moduleRef.resolve(BlocksTransformerService, contextId, { strict: false });
     }
 }

@@ -24,6 +24,7 @@ const documentTypeQuery = gql`
         }
         redirectBySource(source: $redirectSource, sourceType: path, scope: $redirectScope) {
             target
+            redirectType
         }
     }
 `;
@@ -86,7 +87,11 @@ export async function DocumentPage(params: Params) {
                     }
                 }
                 if (destination) {
-                    redirect(destination);
+                    if (data.redirectBySource.redirectType === "permanent") {
+                        redirect(destination, 308);
+                    } else {
+                        redirect(destination);
+                    }
                 }
             }
         }

@@ -2,7 +2,8 @@
 name: dextinity-admin-pages
 description: |
     Best practices for building Dextinity admin page navigation patterns (Stack, StackSwitch, StackPage, StackLink), page layouts (StackToolbar, StackMainContent), RouterTabs, EditDialog, and SaveBoundary placement.
-    TRIGGER when: user asks to create or modify admin pages, CRUD page structure, navigation patterns, page layouts, or asks about best practices for page structure, toolbars, tabs, or navigation in the Dextinity admin framework. Also trigger when the user mentions "toolbar", "entity toolbar", or asks to create/modify a toolbar for an entity. Also trigger when any user or agent action involves creating, modifying, or working on admin page components (Stack, StackSwitch, StackPage, RouterTabs, EditDialog, SaveBoundary, StackLink, StackToolbar, StackMainContent).
+    TRIGGER when: user asks to build or restructure the pages of a CRUD feature for an entity — grid page, add/edit page, edit dialog, edit page with tabs, nested sub-entity pages, or the entity toolbar of an edit page — or when dextinity-crud runs its pages phase.
+    Do NOT trigger for general admin UI, layout or toolbar work outside an entity's CRUD pages — use dextinity-admin-ui for that.
 ---
 
 # Dextinity Admin Pages - Navigation Patterns

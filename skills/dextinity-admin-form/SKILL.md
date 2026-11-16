@@ -2,7 +2,8 @@
 name: dextinity-admin-form
 description: |
     Generates Final Form components for a Dextinity admin project using @dextinity/admin field components. All forms support create and edit modes, save conflict detection, and Apollo Client mutations.
-    TRIGGER when: user says "create a form for X", "add a form for X", "generate a form", "build an edit form for X", or any similar phrase requesting a data entry form component. Also trigger when any user or agent action involves creating, modifying, or working on admin form components (FinalForm, form fields, form validation, form mutations).
+    TRIGGER when: user asks to create or change the create/edit form of a GraphQL entity, e.g. "create a form for X", "build an edit form for X", "add field Y to the X form", or when dextinity-crud runs its form phase.
+    Do NOT trigger for general form or field UI work that isn't tied to an entity's create/update mutations — use dextinity-admin-ui for that.
 ---
 
 # Dextinity Form Skill

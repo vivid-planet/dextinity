@@ -2,7 +2,8 @@
 name: dextinity-api-graphql
 description: |
     Generates NestJS/GraphQL CRUD API files (resolver with inline CRUD logic, input/filter/sort/args DTOs, paginated response, conditional position/business-logic services) for a MikroORM entity in a Dextinity project, matching the output style of @dextinity/api-generator. Resolvers inject EntityManager and contain the CRUD logic; services exist only for position helpers and business-logic hooks. Uses @dextinity/cms-api utilities for pagination, filtering, sorting, and permissions.
-    TRIGGER when: any work involves NestJS, MikroORM, or GraphQL entities in the api/ package — creating, modifying, or generating resolvers, services, DTOs, inputs, filters, sorts, args, entities, or modules. Also trigger when the user or another skill/agent describes a new entity, asks to generate API boilerplate, or adds/removes fields from an existing entity.
+    TRIGGER when: user asks to create the CRUD API (resolver, DTOs) for a new or existing entity, to add or remove fields on an entity that has a CRUD resolver and DTOs, or when dextinity-crud runs its API phase.
+    Do NOT trigger for other API work, e.g. custom queries or mutations, services, jobs, migrations or module wiring that isn't part of an entity's CRUD API.
 ---
 
 # Dextinity GraphQL API Skill

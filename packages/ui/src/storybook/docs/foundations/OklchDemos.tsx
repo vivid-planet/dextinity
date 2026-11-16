@@ -500,12 +500,12 @@ export function ColorFormatComparison() {
                     </tr>
                 </thead>
                 <tbody>
-                    {formatComparison.map(([criterion, ...formats]) => (
+                    {formatComparison.map(([criterion, hexOrRgb, hsl, oklch]) => (
                         <tr key={criterion}>
                             <th scope="row">{criterion}</th>
-                            {formats.map((format, index) => (
-                                <td key={index}>{format}</td>
-                            ))}
+                            <td>{hexOrRgb}</td>
+                            <td>{hsl}</td>
+                            <td>{oklch}</td>
                         </tr>
                     ))}
                 </tbody>

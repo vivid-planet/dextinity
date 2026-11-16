@@ -195,7 +195,7 @@ export const BlockList = forwardRef<HTMLUListElement, BlockListProps>(function B
         >
             {header != null && <li {...headerProps}>{header}</li>}
             {blocks.map((block, index) => (
-                <BlockListItemContext.Provider key={block.key ?? index} value={createItemContext(index)}>
+                <BlockListItemContext.Provider key={block.key} value={createItemContext(index)}>
                     {ownerState.addable && (
                         <li role="none" className={styles.insert}>
                             <Tooltip content={labels.insert}>

@@ -155,7 +155,7 @@ export function TimePopover({
                                 const selected = isSameTime(value, time);
                                 return (
                                     <div
-                                        key={index}
+                                        key={`${time.hours}:${time.minutes}`}
                                         role="option"
                                         aria-selected={selected}
                                         tabIndex={index === focusedIndex ? 0 : -1}

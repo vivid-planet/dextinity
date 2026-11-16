@@ -24,6 +24,7 @@ import {
     PatternUses,
 } from "../../../storybook/patterns/PatternPage";
 import { themeDecorator } from "../../../storybook/themeDecorator";
+import { keysByContent } from "../../../utils/keysByContent";
 
 type StatusFilter = JobAdStatus | "all";
 
@@ -41,8 +42,9 @@ function Highlight({ text, query }: { text: string; query: string }) {
         return text;
     }
     const parts = text.split(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "i"));
+    const partKeys = keysByContent(parts);
     return parts.map((part, index) =>
-        part.toLowerCase() === query.toLowerCase() ? <mark key={index}>{part}</mark> : <Fragment key={index}>{part}</Fragment>,
+        part.toLowerCase() === query.toLowerCase() ? <mark key={partKeys[index]}>{part}</mark> : <Fragment key={partKeys[index]}>{part}</Fragment>,
     );
 }
 

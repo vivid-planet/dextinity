@@ -11,6 +11,7 @@ import {
     useState,
 } from "react";
 
+import { keysByContent } from "../../utils/keysByContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Panel } from "../panel/Panel";
 import { Skeleton } from "../skeleton/Skeleton";
@@ -253,8 +254,8 @@ function EditorPlaceholder({ variant }: { variant: EditLayoutVariant }) {
                     <Skeleton width={40} />
                     <Skeleton width={64} />
                 </div>
-                {Array.from({ length: fieldCount }, (_, index) => (
-                    <div key={index} className={styles.fieldPlaceholder}>
+                {keysByContent(Array.from({ length: fieldCount }, () => "field")).map((fieldKey) => (
+                    <div key={fieldKey} className={styles.fieldPlaceholder}>
                         <Skeleton width="28%" />
                         <Skeleton variant="tile" />
                     </div>

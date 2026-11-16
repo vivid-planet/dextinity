@@ -12,6 +12,7 @@ import {
     useState,
 } from "react";
 
+import { keysByContent } from "../../utils/keysByContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Button } from "../button/Button";
 import { Icon } from "../icon/Icon";
@@ -148,6 +149,7 @@ export const LogViewer = forwardRef<HTMLDivElement, LogViewerProps>(function Log
     const labels = { ...defaultLabels, ...labelsProp };
     const ownerState: LogViewerOwnerState = { lineNumbers, wrap, follow, loading };
     const lines = useMemo(() => splitLines(content), [content]);
+    const lineKeys = useMemo(() => keysByContent(lines), [lines]);
     const viewportRef = useRef<HTMLDivElement>(null);
     const stuckToEnd = useRef(true);
     const [atEnd, setAtEnd] = useState(true);
@@ -260,7 +262,7 @@ export const LogViewer = forwardRef<HTMLDivElement, LogViewerProps>(function Log
                 ) : (
                     <ol {...linesProps}>
                         {lines.map((line, index) => (
-                            <li key={index} className={styles.line} data-tone={getLineTone?.(line, index)}>
+                            <li key={lineKeys[index]} className={styles.line} data-tone={getLineTone?.(line, index)}>
                                 {lineNumbers && (
                                     <span className={styles.number} aria-hidden="true">
                                         {index + 1}

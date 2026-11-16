@@ -344,10 +344,10 @@ export function Calendar({ start, end, range, onSelect, min, max, locale, weekSt
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {monthWeeks(month, weekStartsOn).map((week, weekIndex) => (
-                                        <tr key={weekIndex}>
-                                            {week.map((day, dayIndex) =>
-                                                day == null ? <td key={`empty${dayIndex}`} className={styles.cell} /> : renderDay(day),
+                                    {monthWeeks(month, weekStartsOn).map((week) => (
+                                        <tr key={week[0]}>
+                                            {week.map((day) =>
+                                                startOfMonth(day) === startOfMonth(month) ? renderDay(day) : <td key={day} className={styles.cell} />,
                                             )}
                                         </tr>
                                     ))}

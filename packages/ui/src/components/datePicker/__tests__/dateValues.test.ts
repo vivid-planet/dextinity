@@ -38,14 +38,14 @@ describe("addMonths", () => {
 });
 
 describe("monthWeeks", () => {
-    it("starts each week on the given day and leaves other months' days empty", () => {
+    it("starts each week on the given day and fills six weeks with the adjacent months' days", () => {
         const weeks = monthWeeks("2026-11-15", 1);
 
         expect(weeks).toHaveLength(6);
-        expect(weeks[0]).toStrictEqual([null, null, null, null, null, null, "2026-11-01"]);
+        expect(weeks[0]).toStrictEqual(["2026-10-26", "2026-10-27", "2026-10-28", "2026-10-29", "2026-10-30", "2026-10-31", "2026-11-01"]);
         expect(weeks[4]).toStrictEqual(["2026-11-23", "2026-11-24", "2026-11-25", "2026-11-26", "2026-11-27", "2026-11-28", "2026-11-29"]);
         expect(weeks[5][0]).toBe("2026-11-30");
-        expect(weeks[5][1]).toBeNull();
+        expect(weeks[5][6]).toBe("2026-12-06");
         expect(monthWeeks("2026-11-15", 0)[0][0]).toBe("2026-11-01");
     });
 });

@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import { type CSSProperties, forwardRef, type HTMLAttributes } from "react";
 
+import { keysByContent } from "../../utils/keysByContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./Skeleton.module.scss";
 
@@ -71,9 +72,9 @@ export const Skeleton = forwardRef<HTMLSpanElement, SkeletonProps>(function Skel
             className={clsx(styles.root, className)}
             style={{ inlineSize: typeof width === "number" ? `${width}px` : width, ...style }}
         >
-            {Array.from({ length: Math.max(1, count) }, (_, index) =>
+            {keysByContent(Array.from({ length: Math.max(1, count) }, () => variant)).map((itemKey, index) =>
                 variant === "row" ? (
-                    <span key={index} {...itemProps}>
+                    <span key={itemKey} {...itemProps}>
                         <span className={clsx(styles.shape, styles.rowLeading)} />
                         <span
                             className={clsx(styles.shape, styles.rowText)}
@@ -82,7 +83,7 @@ export const Skeleton = forwardRef<HTMLSpanElement, SkeletonProps>(function Skel
                         <span className={clsx(styles.shape, styles.rowTrailing)} />
                     </span>
                 ) : (
-                    <span key={index} {...itemProps}>
+                    <span key={itemKey} {...itemProps}>
                         <span className={clsx(styles.shape, count > 1 && index === count - 1 && variant === "text" && styles.lastLine)} />
                     </span>
                 ),

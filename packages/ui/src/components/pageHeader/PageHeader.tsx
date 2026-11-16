@@ -114,13 +114,6 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
     });
 
     const isBackLink = back != null && (back.href != null || back.render != null);
-    const labelParts: ReactNode[] = [];
-    if (breadcrumbs != null) {
-        labelParts.push(<div key="breadcrumbs">{breadcrumbs}</div>);
-    }
-    if (eyebrow != null) {
-        labelParts.push(<span key="eyebrow">{eyebrow}</span>);
-    }
 
     return (
         <header
@@ -132,18 +125,15 @@ export const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(function Page
             className={clsx(styles.root, className)}
         >
             <div {...headingProps}>
-                {labelParts.length > 0 && (
+                {(breadcrumbs != null || eyebrow != null) && (
                     <div {...labelLineProps}>
-                        {labelParts.flatMap((part, index) =>
-                            index === 0
-                                ? [part]
-                                : [
-                                      <span key={`separator-${index}`} className={styles.separator} aria-hidden>
-                                          {labelSeparator}
-                                      </span>,
-                                      part,
-                                  ],
+                        {breadcrumbs != null && <div>{breadcrumbs}</div>}
+                        {breadcrumbs != null && eyebrow != null && (
+                            <span className={styles.separator} aria-hidden>
+                                {labelSeparator}
+                            </span>
                         )}
+                        {eyebrow != null && <span>{eyebrow}</span>}
                     </div>
                 )}
                 {back != null && (

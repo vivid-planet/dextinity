@@ -154,18 +154,16 @@ export function calendarYears(shown: IsoDate, min: IsoDate | undefined, max: Iso
 }
 
 /**
- * The weeks shown for a month: always six rows of seven days starting on `weekStartsOn`, with `null` for days of other months, so the
- * calendar keeps its height from month to month.
+ * The weeks shown for a month: always six rows of seven days starting on `weekStartsOn`, including the days of the adjacent months, so
+ * the calendar keeps its height from month to month.
  */
-export function monthWeeks(month: IsoDate, weekStartsOn: number): Array<Array<IsoDate | null>> {
-    const first = startOfMonth(month);
-    const monthPrefix = first.slice(0, 8);
-    let day = startOfWeek(first, weekStartsOn);
-    const weeks: Array<Array<IsoDate | null>> = [];
+export function monthWeeks(month: IsoDate, weekStartsOn: number): IsoDate[][] {
+    let day = startOfWeek(startOfMonth(month), weekStartsOn);
+    const weeks: IsoDate[][] = [];
     for (let week = 0; week < 6; week++) {
-        const days: Array<IsoDate | null> = [];
+        const days: IsoDate[] = [];
         for (let weekday = 0; weekday < 7; weekday++) {
-            days.push(day.startsWith(monthPrefix) ? day : null);
+            days.push(day);
             day = addDays(day, 1);
         }
         weeks.push(days);

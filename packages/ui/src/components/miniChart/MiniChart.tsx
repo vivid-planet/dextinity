@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import { type CSSProperties, forwardRef, type HTMLAttributes } from "react";
 
+import { keysByContent } from "../../utils/keysByContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import styles from "./MiniChart.module.scss";
 
@@ -87,6 +88,7 @@ export const MiniChart = forwardRef<HTMLDivElement, MiniChartProps>(function Min
         ownerState,
     });
 
+    const valueKeys = keysByContent(data.map(String));
     const points = shares.map((share, index) => ({
         x: shares.length > 1 ? (index / (shares.length - 1)) * 100 : 50,
         y: (1 - share) * 100,
@@ -98,7 +100,7 @@ export const MiniChart = forwardRef<HTMLDivElement, MiniChartProps>(function Min
                 {variant === "bars" ? (
                     shares.map((share, index) => (
                         <span
-                            key={index}
+                            key={valueKeys[index]}
                             className={styles.bar}
                             data-last={isLast(index) ? "" : undefined}
                             data-highlighted={isMarked(index) ? "" : undefined}
@@ -113,7 +115,7 @@ export const MiniChart = forwardRef<HTMLDivElement, MiniChartProps>(function Min
                         {points.map(({ x, y }, index) =>
                             isLast(index) || isMarked(index) ? (
                                 <span
-                                    key={index}
+                                    key={valueKeys[index]}
                                     className={styles.point}
                                     data-last={isLast(index) ? "" : undefined}
                                     data-highlighted={isMarked(index) ? "" : undefined}

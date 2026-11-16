@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import { forwardRef, type HTMLAttributes, isValidElement, type MouseEvent, useState } from "react";
 
+import { keysByContent } from "../../utils/keysByContent";
 import { isModifiedClick } from "../../utils/modifiedClick";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { Icon } from "../icon/Icon";
@@ -93,10 +94,11 @@ export interface BreadcrumbsProps extends Omit<HTMLAttributes<HTMLElement>, "cla
     slotProps?: BreadcrumbsSlotProps;
 }
 
-type VisibleEntry = { kind: "item"; item: BreadcrumbsItem; index: number } | { kind: "collapsed"; items: BreadcrumbsItem[] };
+type VisibleEntry = { kind: "item"; item: BreadcrumbsItem; key: string } | { kind: "collapsed"; items: BreadcrumbsItem[] };
 
 function getVisibleEntries(items: readonly BreadcrumbsItem[], maxItems: number): VisibleEntry[] {
-    const entries = items.map((item, index): VisibleEntry => ({ kind: "item", item, index }));
+    const itemKeys = keysByContent(items.map((item) => item.label));
+    const entries = items.map((item, index): VisibleEntry => ({ kind: "item", item, key: itemKeys[index] }));
     if (items.length <= maxItems || items.length < 3) {
         return entries;
     }
@@ -156,6 +158,7 @@ export const Breadcrumbs = forwardRef<HTMLElement, BreadcrumbsProps>(function Br
                     const isLast = position === entries.length - 1;
                     let content;
                     if (entry.kind === "collapsed") {
+                        const collapsedKeys = keysByContent(entry.items.map((item) => item.label));
                         content = (
                             <Menu
                                 open={collapsedMenuOpen}
@@ -169,14 +172,14 @@ export const Breadcrumbs = forwardRef<HTMLElement, BreadcrumbsProps>(function Br
                                 {entry.items.map((item, index) =>
                                     item.href != null || item.render != null ? (
                                         <MenuLinkItem
-                                            key={index}
+                                            key={collapsedKeys[index]}
                                             label={item.label}
                                             href={item.href}
                                             render={isValidElement(item.render) ? item.render : undefined}
                                             onClick={item.onClick}
                                         />
                                     ) : (
-                                        <MenuItem key={index} label={item.label} onClick={item.onClick} />
+                                        <MenuItem key={collapsedKeys[index]} label={item.label} onClick={item.onClick} />
                                     ),
                                 )}
                             </Menu>
@@ -212,7 +215,7 @@ export const Breadcrumbs = forwardRef<HTMLElement, BreadcrumbsProps>(function Br
                         );
                     }
                     return (
-                        <li key={entry.kind === "item" ? entry.index : "collapsed"} {...itemProps}>
+                        <li key={entry.kind === "item" ? entry.key : "collapsed"} {...itemProps}>
                             {content}
                             {!isLast && <span {...separatorProps}>{separator}</span>}
                         </li>

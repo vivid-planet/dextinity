@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import { forwardRef, Fragment, type TableHTMLAttributes } from "react";
 
+import { keysByContent } from "../../utils/keysByContent";
 import { resolveSlotProps, type SlotPropsValue } from "../../utils/slotProps";
 import { KeyboardShortcut } from "../keyboardShortcut/KeyboardShortcut";
 import styles from "./ShortcutList.module.scss";
@@ -95,24 +96,29 @@ export const ShortcutList = forwardRef<HTMLTableElement, ShortcutListProps>(func
                 </tr>
             </thead>
             <tbody>
-                {shortcuts.map((item) => (
-                    <tr key={`${[...shortcutsOf(item), ...(item.keys ?? [])].join(" ")} ${item.description}`}>
-                        <td>
-                            <span {...keysProps}>
-                                {shortcutsOf(item).map((shortcut, index) => (
-                                    <Fragment key={index}>
-                                        {index > 0 && <span className={styles.separator}>{", "}</span>}
-                                        <KeyboardShortcut shortcut={shortcut} />
-                                    </Fragment>
-                                ))}
-                                {item.keys?.map((key, index) => (
-                                    <KeyboardShortcut key={index}>{key}</KeyboardShortcut>
-                                ))}
-                            </span>
-                        </td>
-                        <td>{item.description}</td>
-                    </tr>
-                ))}
+                {shortcuts.map((item) => {
+                    const itemShortcuts = shortcutsOf(item);
+                    const shortcutKeys = keysByContent(itemShortcuts);
+                    const capKeys = keysByContent(item.keys ?? []);
+                    return (
+                        <tr key={`${[...itemShortcuts, ...(item.keys ?? [])].join(" ")} ${item.description}`}>
+                            <td>
+                                <span {...keysProps}>
+                                    {itemShortcuts.map((shortcut, index) => (
+                                        <Fragment key={shortcutKeys[index]}>
+                                            {index > 0 && <span className={styles.separator}>{", "}</span>}
+                                            <KeyboardShortcut shortcut={shortcut} />
+                                        </Fragment>
+                                    ))}
+                                    {item.keys?.map((key, index) => (
+                                        <KeyboardShortcut key={capKeys[index]}>{key}</KeyboardShortcut>
+                                    ))}
+                                </span>
+                            </td>
+                            <td>{item.description}</td>
+                        </tr>
+                    );
+                })}
             </tbody>
         </table>
     );

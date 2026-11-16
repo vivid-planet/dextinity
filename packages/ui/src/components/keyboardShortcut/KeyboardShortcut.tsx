@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import { forwardRef, Fragment, type HTMLAttributes, type PropsWithChildren } from "react";
 
+import { keysByContent } from "../../utils/keysByContent";
 import { describeShortcut, formatShortcut, type KeyboardShortcutLabels } from "./formatShortcut";
 import styles from "./KeyboardShortcut.module.scss";
 import { type KeyboardShortcutPlatform, useKeyboardShortcutLabels, useKeyboardShortcutPlatform } from "./keyboardShortcutPlatform";
@@ -56,12 +57,13 @@ export const KeyboardShortcut = forwardRef<HTMLElement, KeyboardShortcutProps>(f
 
     const apple = ownerState.platform === "apple";
     const caps = formatShortcut(shortcut, apple);
+    const capKeys = keysByContent(caps);
 
     return (
         <kbd {...restProps} ref={ref} data-platform={ownerState.platform} className={clsx(styles.root, className)}>
             <span aria-hidden className={styles.keys}>
                 {caps.map((cap, index) => (
-                    <Fragment key={index}>
+                    <Fragment key={capKeys[index]}>
                         {index > 0 && !apple && "+"}
                         <kbd className={styles.key}>{cap}</kbd>
                     </Fragment>

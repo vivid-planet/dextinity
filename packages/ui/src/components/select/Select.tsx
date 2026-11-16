@@ -186,7 +186,7 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
             {isMultiple ? (
                 <span id={valueId} className={styles.visuallyHidden}>
                     {selectedOptions.map((option, index) => (
-                        <Fragment key={selectedKeys[index]}>
+                        <Fragment key={getKey(option.value)}>
                             {index > 0 && ", "}
                             {option.label}
                         </Fragment>
@@ -204,8 +204,8 @@ export const Select = forwardRef(function Select<Multiple extends boolean = fals
     );
 
     const chips = isMultiple
-        ? selectedOptions.map((option, index) => (
-              <span key={selectedKeys[index]} className={styles.chip}>
+        ? selectedOptions.map((option) => (
+              <span key={getKey(option.value)} className={styles.chip}>
                   {option.label}
                   <button
                       type="button"

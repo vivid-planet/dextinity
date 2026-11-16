@@ -1,4 +1,5 @@
-import { graphql, HttpResponse } from "msw";
+import { HttpResponse } from "msw";
+import { graphql } from "msw/graphql";
 
 const alice = { __typename: "ActionLogsUser", id: "Alice", name: "Alice" };
 const bob = { __typename: "ActionLogsUser", id: "Bob", name: "Bob" };

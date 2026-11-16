@@ -13,6 +13,15 @@ export interface PixelImageBlockConfig {
 }
 
 /**
+ * The image that `HtmlImage` or `MjmlImage` is about to render, as passed to `Config.resolveImageSrc`.
+ */
+export interface ResolveImageSrcOptions {
+    src: string;
+    width?: number | string;
+    height?: number | string;
+}
+
+/**
  * Configuration context for mails.
  *
  * Add custom keys via TypeScript interface declaration merging:
@@ -31,6 +40,12 @@ export interface Config {
      * Required when those components are rendered.
      */
     pixelImageBlock?: PixelImageBlockConfig;
+    /**
+     * Returns the `src` that `HtmlImage` and `MjmlImage` render for an image, e.g. a `cid:` reference to an
+     * attachment of the sent mail. Also applies to `HtmlPixelImageBlock` and `MjmlPixelImageBlock`, which render
+     * through them. Without it, an image is rendered with its own `src`.
+     */
+    resolveImageSrc?: (image: ResolveImageSrcOptions) => string;
 }
 
 const ConfigContext = createContext<Config>({});

@@ -5,12 +5,16 @@ title: Rendering
 In Storybook, the decorator handles MJML-to-HTML conversion automatically. When rendering the final HTML to send, use the `renderMailHtml` function:
 
 ```tsx title="src/emails/MyEmail.tsx"
-import { MjmlMailRoot, MjmlSection, MjmlColumn, MjmlText, createTheme } from "@dextinity/mail-react";
+import {
+    MjmlMailRoot,
+    MjmlSection,
+    MjmlColumn,
+    MjmlText,
+    createTheme,
+} from "@dextinity/mail-react";
 import { renderMailHtml } from "@dextinity/mail-react/server";
 
-const theme = createTheme({
-    /* your project theme */
-});
+const theme = createTheme({/* your project theme */});
 
 const { html, mjmlWarnings } = renderMailHtml(
     <MjmlMailRoot theme={theme}>
@@ -37,6 +41,38 @@ There is no decorator outside Storybook, so you must wrap your content in [`Mjml
 ### MJML Warnings
 
 `mjmlWarnings` are non-critical validation messages from the MJML compiler — the output HTML is always produced regardless. Log them in development (as shown above) to catch structural issues early, but avoid logging in production where they would add noise to error trackers like Sentry.
+
+## Rewriting image sources
+
+`config.resolveImageSrc` returns the `src` that `HtmlImage` and `MjmlImage` render for an image, including the image in classic Outlook's VML. `HtmlPixelImageBlock` and `MjmlPixelImageBlock` render through these components, so the function applies to them as well. It receives the image's `src`, `width` and `height`.
+
+Use it when mail clients can't load an image from its own URL, e.g. because the API is behind an auth proxy. The function can hand out a `cid:` reference instead and remember the image, so it can be attached to the sent mail once the mail is rendered:
+
+```tsx
+import { MjmlMailRoot } from "@dextinity/mail-react";
+import { renderMailHtml } from "@dextinity/mail-react/server";
+import { randomUUID } from "node:crypto";
+
+const contentIdsBySrc = new Map<string, string>();
+
+const { html } = renderMailHtml(
+    <MjmlMailRoot
+        config={{
+            resolveImageSrc: ({ src }) => {
+                const contentId = contentIdsBySrc.get(src) ?? randomUUID();
+                contentIdsBySrc.set(src, contentId);
+                return `cid:${contentId}`;
+            },
+        }}
+    >
+        <MailContent />
+    </MjmlMailRoot>,
+);
+
+// Fetch each image of contentIdsBySrc and pass it as an attachment with its `cid`
+```
+
+The rendering is synchronous, so the function can't fetch an image itself.
 
 ## Integration with the Mail Templates Module
 

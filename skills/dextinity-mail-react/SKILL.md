@@ -384,6 +384,10 @@ const config: Config = { assetBaseUrl: process.env.ASSET_BASE_URL };
 <MjmlMailRoot config={config}>{/* descendants can call useConfig() */}</MjmlMailRoot>;
 ```
 
+### Rewriting Image Sources
+
+`config.resolveImageSrc({ src, width, height })` returns the `src` that `HtmlImage`, `MjmlImage` and the pixel-image blocks render, including the Outlook VML. Use it to replace an image URL that mail clients can't reach, e.g. with a `cid:` reference to an attachment. Rendering is synchronous: the function only hands out the new `src`; fetch and attach the images after `renderMailHtml`. Use `HtmlImage`/`MjmlImage` instead of a raw `<img>`, which the function doesn't reach.
+
 ---
 
 ## Components Overview

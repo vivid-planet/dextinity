@@ -39,7 +39,7 @@ export type { MjmlTextProps } from "./components/text/MjmlText.js";
 export { MjmlText } from "./components/text/MjmlText.js";
 export type { MjmlWrapperProps } from "./components/wrapper/MjmlWrapper.js";
 export { MjmlWrapper } from "./components/wrapper/MjmlWrapper.js";
-export { type Config, ConfigProvider, type PixelImageBlockConfig, useConfig } from "./config/ConfigProvider.js";
+export { type Config, ConfigProvider, type PixelImageBlockConfig, type ResolveImageSrcOptions, useConfig } from "./config/ConfigProvider.js";
 export { useRefToRegisterMailBlocksForPreview } from "./preview/useRefToRegisterMailBlocksForPreview.js";
 export { withPreview } from "./preview/withPreview.js";
 export { registerStyles } from "./styles/registerStyles.js";

@@ -112,14 +112,31 @@ describe("uploadBuildAssets", () => {
         expect(manifestKeys()[0]).toBe("site/build-assets-manifests/2026-01-02T00:00:00.000Z-b.json");
     });
 
-    it("keeps build assets without a manifest until there are more uploads than kept", async () => {
-        files.set("site/_next/static/chunks/uploaded-before-manifests.js", { body: Buffer.from("old") });
-        givenUpload("2026-01-01T00:00:00.000Z-a", ["site/_next/static/chunks/previous.js"]);
+    it("keeps build assets that no manifest lists, e.g., of an upload running in parallel", async () => {
+        givenUpload("2026-01-01T00:00:00.000Z-a", ["site/_next/static/chunks/oldest.js"]);
+        files.set("site/_next/static/chunks/upload-in-progress.js", { body: Buffer.from("new") });
 
-        await uploadBuildAssets({ storage, storageKeyPrefix: "site", keepBuilds: 2 });
+        await uploadBuildAssets({ storage, storageKeyPrefix: "site", keepBuilds: 1 });
 
-        expect(buildAssetKeys()).toContain("site/_next/static/chunks/uploaded-before-manifests.js");
-        expect(buildAssetKeys()).toContain("site/_next/static/chunks/previous.js");
+        expect(buildAssetKeys()).toContain("site/_next/static/chunks/upload-in-progress.js");
+        expect(buildAssetKeys()).not.toContain("site/_next/static/chunks/oldest.js");
+    });
+
+    it("keeps the outdated manifests if deleting their build assets fails", async () => {
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+        givenUpload("2026-01-01T00:00:00.000Z-a", ["site/_next/static/chunks/oldest.js"]);
+        const deleteFiles = storage.deleteFiles;
+        storage.deleteFiles = async (keys) => {
+            if (keys.includes("site/_next/static/chunks/oldest.js")) {
+                throw new Error("Access Denied");
+            }
+            await deleteFiles(keys);
+        };
+
+        await uploadBuildAssets({ storage, storageKeyPrefix: "site", keepBuilds: 1 });
+
+        expect(manifestKeys()).toContain("site/build-assets-manifests/2026-01-01T00:00:00.000Z-a.json");
+        expect(consoleError).toHaveBeenCalled();
     });
 
     it("keeps everything if a kept manifest can't be read", async () => {

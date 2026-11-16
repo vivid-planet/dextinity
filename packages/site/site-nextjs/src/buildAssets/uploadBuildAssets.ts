@@ -70,7 +70,7 @@ export async function uploadBuildAssets({
     });
 
     try {
-        await deleteBuildAssetsOfOlderUploads({ storage, storageKeyPrefix, manifestsPrefix, keepBuilds });
+        await deleteBuildAssetsOfOlderUploads({ storage, manifestsPrefix, keepBuilds });
     } catch (error) {
         // The build assets of this build are in the storage, so the deployment can go ahead
         console.error("Failed to delete the build assets of older uploads", error);
@@ -79,32 +79,46 @@ export async function uploadBuildAssets({
 
 async function deleteBuildAssetsOfOlderUploads({
     storage,
-    storageKeyPrefix,
     manifestsPrefix,
     keepBuilds,
 }: {
     storage: BuildAssetsStorage;
-    storageKeyPrefix: string;
     manifestsPrefix: string;
     keepBuilds: number;
 }): Promise<void> {
     const manifestKeys = (await storage.listFiles(manifestsPrefix)).sort();
-    // Until then, the storage may still hold build assets uploaded before the manifests were introduced, which running instances may need
-    if (manifestKeys.length <= keepBuilds) {
+    const keptManifestKeys = manifestKeys.slice(-keepBuilds);
+    const outdatedManifestKeys = manifestKeys.slice(0, -keepBuilds);
+    if (outdatedManifestKeys.length === 0) {
         return;
     }
 
     const keptKeys = new Set<string>();
-    for (const manifestKey of manifestKeys.slice(-keepBuilds)) {
-        const manifest = await storage.getFile(manifestKey);
-        if (!manifest) {
-            throw new Error(`The manifest ${manifestKey} is missing, so the build assets it lists can't be told apart from older ones`);
-        }
-        for (const key of JSON.parse(await text(manifest.body)) as string[]) {
+    for (const manifestKey of keptManifestKeys) {
+        for (const key of await readManifest(storage, manifestKey)) {
             keptKeys.add(key);
         }
     }
 
-    const staleKeys = (await storage.listFiles(posix.join(storageKeyPrefix, "_next/static/"))).filter((key) => !keptKeys.has(key));
-    await storage.deleteFiles([...staleKeys, ...manifestKeys.slice(0, -keepBuilds)]);
+    // Only files listed in an outdated manifest are deleted, never unlisted ones: an upload running in parallel lists its files only after uploading them
+    const outdatedKeys = new Set<string>();
+    for (const manifestKey of outdatedManifestKeys) {
+        for (const key of await readManifest(storage, manifestKey)) {
+            if (!keptKeys.has(key)) {
+                outdatedKeys.add(key);
+            }
+        }
+    }
+
+    // The manifests last, so the files they list are deleted by the next upload if deleting them fails
+    await storage.deleteFiles([...outdatedKeys]);
+    await storage.deleteFiles(outdatedManifestKeys);
+}
+
+async function readManifest(storage: BuildAssetsStorage, manifestKey: string): Promise<string[]> {
+    const manifest = await storage.getFile(manifestKey);
+    if (!manifest) {
+        throw new Error(`The manifest ${manifestKey} is missing, so the build assets it lists can't be told apart from older ones`);
+    }
+    return JSON.parse(await text(manifest.body)) as string[];
 }

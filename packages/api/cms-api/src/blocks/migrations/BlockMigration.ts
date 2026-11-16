@@ -28,17 +28,20 @@ export abstract class BlockMigration<Fn extends BlockMigrationTransformFn = Bloc
             throw new Error("migration cannot be applied");
         }
 
-        const { $$version, $$vendorVersion, ...rest } = raw;
+        const { $$version, $$vendorVersion, $$coreVersion, ...rest } = raw;
 
         const result = this.migrate(rest as From<Fn>);
         const migrated = { ...result } as To<Fn> & VersionDataInterface;
 
-        // The counter of the other chain has to survive this migration
+        // The counters of the other chains have to survive this migration
         if ($$version !== undefined) {
             migrated.$$version = $$version;
         }
         if ($$vendorVersion !== undefined) {
             migrated.$$vendorVersion = $$vendorVersion;
+        }
+        if ($$coreVersion !== undefined) {
+            migrated.$$coreVersion = $$coreVersion;
         }
         migrated[versionField] = (raw[versionField] ?? 0) + 1;
 

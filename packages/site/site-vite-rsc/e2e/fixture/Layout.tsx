@@ -1,3 +1,5 @@
+import "./Layout.css";
+
 import type { PropsWithChildren } from "react";
 
 import { ClientPreviewInfo, HydrationMarker } from "./clientComponents.js";

@@ -104,9 +104,11 @@ describe("dextinitySite", () => {
         expect(config.envDir).toBe(false);
     });
 
-    it("builds the client assets into _assets", async () => {
+    it("builds the assets of all environments into _assets, so that the CSS of server components is served from there as well", async () => {
         const config = await resolveSiteConfig();
 
         expect(config.environments.client.build.assetsDir).toBe("_assets");
+        expect(config.environments.ssr.build.assetsDir).toBe("_assets");
+        expect(config.environments.rsc.build.assetsDir).toBe("_assets");
     });
 });

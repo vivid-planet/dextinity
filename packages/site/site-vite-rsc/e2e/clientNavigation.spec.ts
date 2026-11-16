@@ -56,7 +56,7 @@ test("loads the stylesheets when going back to a page left with a full page load
     const stylesheetsHaveRules = await page.evaluate(() =>
         [...document.querySelectorAll<HTMLLinkElement>("link[rel=stylesheet]")].map((link) => (link.sheet?.cssRules.length ?? 0) > 0),
     );
-    expect(stylesheetsHaveRules).toEqual([true]);
+    expect(stylesheetsHaveRules).toEqual([true, true]);
     await expect(page.getByText("Styled text")).toHaveCSS("color", "rgb(0, 128, 0)");
 });
 

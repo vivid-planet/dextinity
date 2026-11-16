@@ -41,3 +41,18 @@ test("embeds the RSC payload into the HTML for hydration", async ({ request }) =
 test("only strips the RSC prefix as a whole path segment", async ({ request }) => {
     expect((await request.get("/_rscx")).status()).toBe(404);
 });
+
+test("serves the stylesheets of server and client components from _assets in the build", async ({ page }) => {
+    test.skip(test.info().project.name !== "build", "Vite serves the source files in dev");
+    await page.goto("/pages/first");
+
+    const stylesheetPaths = await page
+        .locator("link[rel=stylesheet]")
+        .evaluateAll((links: HTMLLinkElement[]) => links.map((link) => new URL(link.href).pathname));
+    expect(stylesheetPaths).toHaveLength(2);
+    for (const path of stylesheetPaths) {
+        expect(path).toMatch(/^\/_assets\//);
+    }
+    await expect(page.locator("body")).toHaveCSS("background-color", "rgb(255, 255, 240)");
+    await expect(page.getByText("Styled text")).toHaveCSS("color", "rgb(0, 128, 0)");
+});

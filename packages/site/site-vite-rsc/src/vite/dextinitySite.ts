@@ -101,11 +101,12 @@ function dextinitySiteConfig(): Plugin {
             return {
                 // Sites don't use VITE_* variables, and the .env files of a project would set NODE_ENV for the build
                 envDir: false,
+                // Served with a long cache duration, the files in public/assets with a shorter one.
+                // Also for the server environments, because plugin-rsc copies the CSS and fonts of server components to the client build with their file names.
                 environments: {
-                    client: {
-                        // Served with a long cache duration, the files in public/assets with a shorter one
-                        build: { assetsDir: "_assets" },
-                    },
+                    client: { build: { assetsDir: "_assets" } },
+                    ssr: { build: { assetsDir: "_assets" } },
+                    rsc: { build: { assetsDir: "_assets" } },
                 },
             };
         },

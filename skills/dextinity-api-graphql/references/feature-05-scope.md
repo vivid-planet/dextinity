@@ -206,7 +206,7 @@ export class NewsComment extends BaseEntity {
 ### @RequiredPermission — NO skipScopeCheck
 
 ```typescript
-@RequiredPermission(["newsComment"])
+@RequiredPermission(["newsComments"])
 ```
 
 ### Args DTO — relation ID as required first field, no scope field

@@ -105,13 +105,13 @@ Read the relevant field file when determining how to handle each property in inp
 
 ### Step 4 — Register permission in AppPermission enum
 
-The permission string used in `@RequiredPermission` must be registered in the `AppPermission` enum. Locate it in the api package's auth folder — in a typical starter it is `api/src/auth/app-permission.enum.ts`. Add a new entry to the `AppPermission` enum for the entity's permission. Use camelCase for the enum key and the camelCase permission string as the value.
+The permission string used in `@RequiredPermission` must be registered in the `AppPermission` enum. Locate it in the api package's auth folder — in a typical starter it is `api/src/auth/app-permission.enum.ts`. Add a new entry to the `AppPermission` enum for the entity's permission. Use the plural, camelCase entity name (e.g. `weatherStations`) for both the enum key and the value.
 
-Example — if the resolver uses `@RequiredPermission(["weatherStation"])`:
+Example — if the resolver uses `@RequiredPermission(["weatherStations"])`:
 
 ```typescript
 export enum AppPermission {
-    weatherStation = "weatherStation",
+    weatherStations = "weatherStations",
 }
 ```
 

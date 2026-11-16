@@ -99,7 +99,7 @@ Use the **dextinity-admin-pages** skill.
     - Add `type: "route"` entry with `<FormattedMessage>` label, icon, path, component, requiredPermission
     - Choose an appropriate icon from `@dextinity/admin-icons` (ask user if unsure)
     - Use kebab-case path (e.g., `/weather-stations`)
-    - Use camelCase permission string (e.g., `weatherStations`)
+    - Use the same plural, camelCase permission string as the API (e.g., `weatherStations`)
 2. Validate admin (see [Project Layout & Validation Commands](#project-layout--validation-commands))
 3. Commit (see [Commit Strategy](#commit-strategy))
 

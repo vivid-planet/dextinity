@@ -13,7 +13,7 @@ async function main() {
     });
 
     if (process.env.TRACING == "dev") {
-        await import("./tracing.dev.js");
+        await import("./tracing.dev.ts");
     }
 
     // Required after setting up tracing, so that the http module is instrumented

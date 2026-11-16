@@ -29,7 +29,7 @@ docker compose -p dextinity-demo-deploy-preview down [--volumes]
 
 `site` is the Next.js demo site (`demo/site`, `Site.Dockerfile`), `site-vite-rsc` the same demo
 built with `@dextinity/site-vite-rsc` (`demo/site-vite-rsc`, `SiteViteRsc.Dockerfile`, started with
-`node dist/server.js`). Both render the same content from the same api with the same environment,
+`node server.ts`). Both render the same content from the same api with the same environment,
 except that `site-vite-rsc` prefixes its Valkey keys with `site-vite-rsc:`.
 
 A site finds its site config by its host, so `start-deploy-preview.sh` renders the site configs twice:

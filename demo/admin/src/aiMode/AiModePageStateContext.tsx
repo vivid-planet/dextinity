@@ -1,6 +1,6 @@
 import { createContext, type PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef } from "react";
 
-export type AiModePageStateMetadata = {
+type AiModePageStateMetadata = {
     pageTreeNodeId: string;
     documentType: string;
     documentId?: string;

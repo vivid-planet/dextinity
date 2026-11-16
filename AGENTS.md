@@ -122,6 +122,14 @@ Storybook for the demo site components (Vite, `@storybook/nextjs-vite`)
 - stories live in `__stories__` folders next to the component
 - run the story tests with `pnpm --filter dextinity-demo-site run test:storybook`
 
+**Site Storybook (Vite RSC):**
+Storybook for the components of the Vite RSC demo site (Vite, `@storybook/react-vite`), uses its own Vite config in `demo/site-vite-rsc/.storybook/vite.config.ts` without `@vitejs/plugin-rsc`
+
+- Start using `pnpm exec dev-pm start demo-site-vite-rsc-storybook`
+- access at: http://localhost:26649/
+- stories live in `__stories__` folders next to the component
+- run the story tests with `pnpm --filter dextinity-demo-site-vite-rsc run test:storybook`
+
 ### dev-pm
 
 Use dev-pm for managing demo processes:

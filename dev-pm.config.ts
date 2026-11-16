@@ -312,6 +312,12 @@ export default defineConfig({
             script: "pnpm --filter dextinity-demo-site-vite-rsc run css:types:watch",
             group: ["demo-site-vite-rsc"],
         },
+        {
+            name: "demo-site-vite-rsc-storybook",
+            script: "pnpm --filter dextinity-demo-site-vite-rsc run storybook",
+            group: ["demo-site-vite-rsc"],
+            waitOn: waitOnPackages("@dextinity/site-react", "@dextinity/site-vite-rsc"),
+        },
 
         // group docs
         {

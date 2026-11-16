@@ -10,7 +10,7 @@ import {
     useKeyboardShortcut,
 } from "@dextinity/ui";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { type CSSProperties, type ReactNode, useState } from "react";
+import { type CSSProperties, type PropsWithChildren, useState } from "react";
 import { type Control, useForm } from "react-hook-form";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 
@@ -78,7 +78,7 @@ function wait(milliseconds: number) {
 
 const slugPattern = { value: /^[a-z0-9-]*$/, message: "Use lowercase letters, digits, and dashes only" };
 
-function Fields({ children }: { children: ReactNode }) {
+function Fields({ children }: PropsWithChildren) {
     return <div style={fieldsStyle}>{children}</div>;
 }
 

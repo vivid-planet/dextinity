@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useMemo } from "react";
+import { createContext, type PropsWithChildren, useContext, useMemo } from "react";
 
 /**
  * When a field shows a message: once the field was touched (blurred) or the form was submitted, or right away.
@@ -28,13 +28,12 @@ const defaultConfig: FieldAdapterConfig = { showErrors: "touched-or-submitted", 
 
 const FieldAdapterConfigContext = createContext<FieldAdapterConfig>(defaultConfig);
 
-export interface FieldAdapterConfigProviderProps extends Partial<FieldAdapterConfig> {
-    /** The forms or fields the configuration applies to. */
-    children?: ReactNode;
-}
+export interface FieldAdapterConfigProviderProps extends Partial<FieldAdapterConfig>, PropsWithChildren {}
 
 /**
  * Configures how the field adapters inside it show validation. Settings left out are inherited from a surrounding provider.
+ *
+ * `children`: The forms or fields the configuration applies to.
  */
 export function FieldAdapterConfigProvider({ showErrors, showWarnings, children }: FieldAdapterConfigProviderProps) {
     const parentConfig = useContext(FieldAdapterConfigContext);

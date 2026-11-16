@@ -188,7 +188,12 @@ if (import.meta.env.PROD) {
     app.use(staticFilesMiddleware);
     app.use(
         buildAssetsMiddleware({
-            storage: await createBuildAssetsStorage({ driver: "s3", s3: { bucket: process.env.BUILD_ASSETS_S3_BUCKET /* ... */ } }),
+            storage: process.env.BUILD_ASSETS_S3_BUCKET
+                ? await createBuildAssetsStorage({
+                      driver: "s3",
+                      s3: { bucket: process.env.BUILD_ASSETS_S3_BUCKET, region: process.env.BUILD_ASSETS_S3_REGION /* endpoint, credentials */ },
+                  })
+                : undefined,
             storageKeyPrefix: "my-project",
         }),
     );

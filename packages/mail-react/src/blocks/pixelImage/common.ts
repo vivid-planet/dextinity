@@ -7,8 +7,8 @@ export type PixelImageBlockBaseProps = {
     width: number;
     /**
      * Largest possible width the image can be rendered at across breakpoints.
-     * Defaults to `theme.sizes.bodyWidth`. Use this when the image can stretch
-     * wider on a narrower breakpoint than its desktop render width.
+     * Defaults to `width`. Use this when the image can stretch wider on a
+     * narrower breakpoint than its desktop render width.
      */
     largestPossibleRenderWidth?: number;
     /**

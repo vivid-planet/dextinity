@@ -56,7 +56,7 @@ The `width` prop is the desktop render width — the width at which the image di
 <MjmlPixelImageBlock data={pixelImageData} width={536} />
 ```
 
-Use `largestPossibleRenderWidth` when an image stretches wider on a narrower breakpoint than its desktop render width — e.g. in a two-column layout that stacks on mobile. The default is `theme.sizes.bodyWidth`.
+Use `largestPossibleRenderWidth` when an image stretches wider on a narrower breakpoint than its desktop render width — e.g. in a two-column layout that stacks on mobile. The default is `width`.
 
 ```tsx
 <MjmlPixelImageBlock data={pixelImageData} width={300} largestPossibleRenderWidth={420} />

@@ -38,6 +38,7 @@
         "test:watch": "vitest --watch"
     },
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.1168.0",
         "@base-ui/react": "^1.9.0",
         "@dextinity/mail-react": "workspace:*",
         "@dextinity/site-react": "workspace:*",

@@ -1,3 +1,4 @@
+import { buildAssetsMiddleware, createBuildAssetsStorage } from "@dextinity/site-vite-rsc/build-assets";
 import {
     cdnOriginCheckMiddleware,
     errorResponseCacheControlMiddleware,
@@ -28,6 +29,25 @@ if (process.env.CDN_ORIGIN_CHECK_SECRET) {
 app.use(securityHeadersMiddleware, errorResponseCacheControlMiddleware);
 if (import.meta.env.PROD) {
     app.use(staticFilesMiddleware);
+    app.use(
+        buildAssetsMiddleware({
+            storage: process.env.BUILD_ASSETS_S3_BUCKET
+                ? await createBuildAssetsStorage({
+                      driver: "s3",
+                      s3: {
+                          bucket: process.env.BUILD_ASSETS_S3_BUCKET,
+                          region: process.env.BUILD_ASSETS_S3_REGION,
+                          endpoint: process.env.BUILD_ASSETS_S3_ENDPOINT,
+                          credentials: {
+                              accessKeyId: process.env.BUILD_ASSETS_S3_ACCESS_KEY_ID ?? "",
+                              secretAccessKey: process.env.BUILD_ASSETS_S3_SECRET_ACCESS_KEY ?? "",
+                          },
+                      },
+                  })
+                : undefined,
+            storageKeyPrefix: "demo-site-vite-rsc",
+        }),
+    );
 }
 
 app.use(trailingSlashRedirectMiddleware);

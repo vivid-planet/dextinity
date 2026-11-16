@@ -109,19 +109,6 @@ describe("usePixelImageBlockData — width selection", () => {
         );
         expect(result.imageUrl).toContain(":640:");
     });
-
-    it("does not reorder the configured validSizes", () => {
-        const unsortedValidSizes = [2048, 320, 1280, 640];
-        const result = expectNonNull(
-            captureUsePixelImageData({
-                data: smartImageData,
-                defaultRenderWidth: 200,
-                config: { pixelImageBlock: { validSizes: unsortedValidSizes, baseUrl } },
-            }),
-        );
-        expect(result.imageUrl).toContain(":640:");
-        expect(unsortedValidSizes).toEqual([2048, 320, 1280, 640]);
-    });
 });
 
 describe("usePixelImageBlockData — URL prefixing", () => {

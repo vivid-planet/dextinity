@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import { CheckboxField, ErrorScope, Field, FieldContainer, FinalForm, FinalFormInput, FinalFormSelect, Loading, Tooltip } from "@dextinity/admin";
 import { Info } from "@dextinity/admin-icons";
 import { Box, Divider, IconButton, MenuItem, Typography } from "@mui/material";
@@ -167,6 +168,10 @@ export function createEditPageNode({
                     fetchPolicy: "cache-first",
                 });
 
+                if (!data) {
+                    throw new Error("Failed to check slug availability");
+                }
+
                 return data.availability;
             },
             [apollo, scope, parentId, slug],
@@ -177,15 +182,14 @@ export function createEditPageNode({
 
         const { data: redirectQueryData } = useQuery<GQLRedirectSourceAvailableQuery, GQLRedirectSourceAvailableQueryVariables>(
             redirectSourceAvailableForPageEdit,
-            {
-                variables: debouncedRedirectSource
-                    ? {
+            debouncedRedirectSource
+                ? {
+                      variables: {
                           scope: redirectScope,
                           source: debouncedRedirectSource,
-                      }
-                    : undefined,
-                skip: !debouncedRedirectSource,
-            },
+                      },
+                  }
+                : skipToken,
         );
 
         const isRedirectSourceAvailable = redirectQueryData?.redirectSourceAvailable ?? true;

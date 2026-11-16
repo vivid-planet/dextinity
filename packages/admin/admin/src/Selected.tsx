@@ -1,4 +1,5 @@
-import { type ApolloError, useQuery } from "@apollo/client";
+import type { ErrorLike } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { Box, Card, Typography } from "@mui/material";
 import type { DocumentNode } from "graphql";
 import { type ComponentType, Fragment, type ReactNode } from "react";
@@ -14,12 +15,12 @@ interface IProps<Data extends { id: string | number } = { id: string | number }>
     dataAccessor?: string;
     children: (data: Data | undefined, options: { selectionMode: "edit" | "add" }) => ReactNode;
     components?: {
-        error?: ComponentType<{ error: ApolloError }>;
+        error?: ComponentType<{ error: ErrorLike }>;
     };
 }
 
 const SelectEdit = <Data extends { id: string | number }>(props: IProps<Data>) => {
-    const queryResult = useQuery(props.query!, { variables: { id: props.selectedId } });
+    const queryResult = useQuery<Record<string, Data>>(props.query!, { variables: { id: props.selectedId }, notifyOnNetworkStatusChange: false });
     if (queryResult.error) {
         const ErrorComponent = props.components?.error;
         return ErrorComponent !== undefined ? (

@@ -58,7 +58,7 @@
         "uuid": "^14.0.3"
     },
     "devDependencies": {
-        "@apollo/client": "^3.14.1",
+        "@apollo/client": "^4.3.5",
         "@babel/cli": "^8.0.6",
         "@babel/core": "^8.0.10",
         "@dextinity/admin-babel-preset": "workspace:*",
@@ -103,6 +103,7 @@
         "react-intl": "^12.1.4",
         "react-router": "^8.5.1",
         "rimraf": "^6.1.4",
+        "rxjs": "^7.8.2",
         "storybook": "^10.6.6",
         "storybook-addon-tag-badges": "^3.1.0",
         "typescript": "^6.0.3",
@@ -111,7 +112,7 @@
         "vitest": "^5.1.0"
     },
     "peerDependencies": {
-        "@apollo/client": "^3.7.0",
+        "@apollo/client": "^4.0.0",
         "@emotion/react": "^11.5.0",
         "@emotion/styled": "^11.3.0",
         "@mui/material": "^9.0.0",
@@ -127,7 +128,8 @@
         "react-dom": "^19.2.7",
         "react-final-form": "^6.3.1",
         "react-intl": "^12.0.0",
-        "react-router": "^8.0.0"
+        "react-router": "^8.0.0",
+        "rxjs": "^7.3.0"
     },
     "peerDependenciesMeta": {
         "@mui/x-data-grid-premium": {

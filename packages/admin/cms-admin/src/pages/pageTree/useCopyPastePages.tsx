@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { LocalErrorScopeApolloContext, messages, readClipboardText, useErrorDialog, writeClipboardText } from "@dextinity/admin";
 import { type ReactNode, useCallback } from "react";
 import { FormattedMessage } from "react-intl";

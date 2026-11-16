@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client/react";
 import { Search } from "@dextinity/admin-icons";
 import { Box, CircularProgress, ClickAwayListener, InputBase, List, ListItemButton, ListItemText, Paper, Popper, Typography } from "@mui/material";
 import { useRef, useState } from "react";

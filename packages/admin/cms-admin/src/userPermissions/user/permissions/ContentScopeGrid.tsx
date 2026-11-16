@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { Button, DeleteDialog, FieldSet, type GridColDef, Loading } from "@dextinity/admin";
 import { Add, Delete } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";

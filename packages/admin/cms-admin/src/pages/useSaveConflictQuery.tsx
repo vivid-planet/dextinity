@@ -1,12 +1,17 @@
-import { type DocumentNode, type OperationVariables, type QueryOptions, type TypedDocumentNode, useApolloClient } from "@apollo/client";
+import type { ApolloClient, DocumentNode, OperationVariables, TypedDocumentNode } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { LocalErrorScopeApolloContext } from "@dextinity/admin";
 
 import { type SaveConflictHookReturn, useSaveConflict } from "./useSaveConflict";
 
-interface SaveConflictQueryHookOptions<TData, TVariables> extends Omit<QueryOptions<TVariables, TData>, "query"> {
+type SaveConflictQueryHookOptions<TData, TVariables extends OperationVariables> = Omit<
+    ApolloClient.QueryOptions<TData, TVariables>,
+    "query" | "variables"
+> & {
+    variables?: TVariables;
     resolveHasConflict: (query: TData) => boolean;
     skip?: boolean;
-}
+};
 interface SaveConflictDialogOptions {
     hasChanges: boolean;
     loadLatestVersion: () => Promise<void>;
@@ -24,13 +29,13 @@ export function useSaveConflictQuery<TData, TVariables extends OperationVariable
             return false;
         }
         try {
-            const { data, error } = await client.query({
+            const { data, error } = await client.query<TData, OperationVariables>({
                 query,
                 fetchPolicy: "no-cache",
                 context: LocalErrorScopeApolloContext,
                 ...restOptions,
             });
-            if (error) {
+            if (error || !data) {
                 return false;
             }
             return resolveHasConflict(data);

@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { FillSpace, MainContent, StackLink, Toolbar, ToolbarBackButton, ToolbarTitleItem, Tooltip } from "@dextinity/admin";
 import { List } from "@dextinity/admin-icons";
 import { IconButton } from "@mui/material";
@@ -80,6 +81,7 @@ export function JobsGrid(props: JobsGridProps) {
     const { data, loading, error } = useQuery<GQLKubernetesJobsQuery, GQLKubernetesJobsQueryVariables>(jobsQuery, {
         variables: { cronJobName: cronJob },
         pollInterval: 10 * 1000,
+        notifyOnNetworkStatusChange: false,
     });
 
     if (error) {

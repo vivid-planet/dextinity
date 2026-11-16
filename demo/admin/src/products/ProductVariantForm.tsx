@@ -1,4 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { skipToken, useApolloClient, useQuery } from "@apollo/client/react";
 import {
     Field,
     filterByFragment,
@@ -69,7 +69,7 @@ export function ProductVariantForm({ id, productId }: FormProps) {
 
     const { data, error, loading, refetch } = useQuery<GQLProductVariantFormQuery, GQLProductVariantFormQueryVariables>(
         productVariantFormQuery,
-        id ? { variables: { id } } : { skip: true },
+        id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
     );
 
     const initialValues: Partial<FormValues> = data?.productVariant

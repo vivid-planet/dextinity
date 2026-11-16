@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
 import { useErrorDialog } from "@dextinity/admin";
 import { act, renderHook } from "test-utils";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
@@ -44,9 +44,10 @@ const mockErrorDialog = {
 
 const mockApolloClient = new ApolloClient({
     cache: new InMemoryCache(),
+    link: ApolloLink.empty(),
 });
 
-vi.mock(import("@apollo/client"), async (importOriginal) => {
+vi.mock(import("@apollo/client/react"), async (importOriginal) => {
     const originalModule = await importOriginal();
     return {
         ...originalModule,

@@ -3,8 +3,9 @@
 exports[`optionalNestedFields > generates form for optionalNestedFields 1`] = `
 "
     import { FormattedMessage } from "react-intl";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
+import { skipToken } from "@apollo/client/react";
 import { gql } from "@apollo/client";
 import { CheckboxField } from "@dextinity/admin";
 import { Field } from "@dextinity/admin";
@@ -74,7 +75,7 @@ title: string;
         
         const { data, error, loading, refetch } = useQuery<GQLProductQuery, GQLProductQueryVariables>(
             productQuery,
-            id ? { variables: { id } } : { skip: true },
+            id ? { variables: { id }, notifyOnNetworkStatusChange: false } : skipToken,
         );
         
 

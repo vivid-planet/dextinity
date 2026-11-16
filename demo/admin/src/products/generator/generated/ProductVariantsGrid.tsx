@@ -10,8 +10,8 @@ import {
 import { FormattedMessage } from "react-intl";
 import { useIntl } from "react-intl";
 import { gql } from "@apollo/client";
-import { useApolloClient } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react";
 import { Button } from "@dextinity/admin";
 import { CrudContextMenu } from "@dextinity/admin";
 import { CrudMoreActionsMenu } from "@dextinity/admin";
@@ -169,6 +169,7 @@ export function ProductVariantsGrid({ product }: Props) {
             offset: dataGridProps.paginationModel.page * dataGridProps.paginationModel.pageSize,
             limit: dataGridProps.paginationModel.pageSize,
         },
+        notifyOnNetworkStatusChange: false,
     });
     const rowCount = useBufferedRowCount(data?.productVariants.totalCount);
     if (error) throw error;

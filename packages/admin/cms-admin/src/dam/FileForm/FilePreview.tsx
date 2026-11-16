@@ -1,4 +1,4 @@
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient } from "@apollo/client/react";
 import { Button, downloadFile, useStackApi } from "@dextinity/admin";
 import { Archive, Delete, Download, Restore, ZipFile } from "@dextinity/admin-icons";
 import { Paper } from "@mui/material";

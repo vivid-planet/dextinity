@@ -1,4 +1,5 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import {
     CrudContextMenu,
     DataGridToolbar,
@@ -123,6 +124,7 @@ export const UserPermissionsUserGrid = ({ toolbarAction, rowAction, actionsColum
                 limit: dataGridProps.paginationModel.pageSize ?? 0,
                 sort: muiGridSortToGql(dataGridProps.sortModel),
             },
+            notifyOnNetworkStatusChange: false,
         },
     );
 

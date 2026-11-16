@@ -1,4 +1,4 @@
-import { MockedProvider } from "@apollo/client/testing";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { RouterBrowserRouter, RouterMemoryRouter, useCurrentRouteMatch } from "@dextinity/admin";
 import { type PropsWithChildren, type ReactNode, useState } from "react";
 import { type Location, type NavigationType, Route, Routes, useParams } from "react-router";

@@ -124,7 +124,14 @@ function dextinitySiteConfig(): Plugin {
                     // plugin-rsc has to transform the "use client" files of this package
                     exclude: [packageName],
                 },
-                resolve: name === "client" ? undefined : { noExternal: [packageName] },
+                resolve:
+                    name === "client"
+                        ? undefined
+                        : {
+                              noExternal: [packageName],
+                              // Optional peer dependencies of the build assets storage, a project only installs the SDK of the storage it uses
+                              external: ["@aws-sdk/client-s3", "@azure/storage-blob"],
+                          },
             };
         },
     };

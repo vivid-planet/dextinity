@@ -168,6 +168,33 @@ server.on("request", await createRequestListener({ dev: process.env.NODE_ENV !==
 server.listen(3000);
 ```
 
+**Build assets of other builds during rolling deployments** (`@dextinity/site-vite-rsc/build-assets`)
+
+During a rolling deployment, instances of the old and the new build run side by side, so a request for an `/_assets` file can reach an instance that doesn't have it. `dextinity-site-vite-rsc-upload-build-assets` uploads the `dist/client/_assets` files of a build to a storage that holds the files of every deployed build, and `buildAssetsMiddleware()` serves a file that's missing in the own build from there, with the content type and cache header stored with the file. Requests for other paths, for files of the own build and for files missing in the storage are passed on, as are all requests without a storage. It's the counterpart to `dextinity-upload-build-assets` and `serveBuildAsset` of `@dextinity/site-nextjs`, with a bin name of its own, so both packages can be installed in one project.
+
+S3-compatible storages (`s3`) and Azure Blob Storage (`azure`) are supported. They require `@aws-sdk/client-s3` or `@azure/storage-blob`, only the SDK of the used storage is loaded. The storage key prefix is required and must be unique per project. Run the upload in the site directory after `vite build` and before the build is rolled out:
+
+```bash
+npx dextinity-site-vite-rsc-upload-build-assets --driver s3 --storage-key-prefix my-project --bucket <bucket> --region <region> --endpoint <url> --access-key-id <id> --secret-access-key <key>
+npx dextinity-site-vite-rsc-upload-build-assets --driver azure --storage-key-prefix my-project --account-name <name> --account-key <key> --container <container>
+```
+
+Register the middleware after `staticFilesMiddleware`, with the same prefix:
+
+```ts
+import { buildAssetsMiddleware, createBuildAssetsStorage } from "@dextinity/site-vite-rsc/build-assets";
+
+if (import.meta.env.PROD) {
+    app.use(staticFilesMiddleware);
+    app.use(
+        buildAssetsMiddleware({
+            storage: await createBuildAssetsStorage({ driver: "s3", s3: { bucket: process.env.BUILD_ASSETS_S3_BUCKET /* ... */ } }),
+            storageKeyPrefix: "my-project",
+        }),
+    );
+}
+```
+
 **Sitemap and robots.txt** (`@dextinity/site-vite-rsc/server`)
 
 `sitemapResponse()` and `robotsResponse()` render a sitemap and robots rules in the shapes of Next.js' `MetadataRoute.Sitemap` and `MetadataRoute.Robots`, so the `sitemap()` and `robots()` functions of a Next.js site can be reused. In a preview, the sitemap isn't cached, as it may contain unpublished pages:

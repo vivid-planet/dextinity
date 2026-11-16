@@ -61,6 +61,13 @@ describe("dextinitySite", () => {
         expect(config.environments.ssr.resolve.noExternal).toContain("@dextinity/site-vite-rsc");
     });
 
+    it("doesn't bundle the SDKs of the build assets storage, so that a project only installs the one it uses", async () => {
+        const config = await resolveSiteConfig();
+
+        expect(config.environments.rsc.resolve.external).toEqual(expect.arrayContaining(["@aws-sdk/client-s3", "@azure/storage-blob"]));
+        expect(config.environments.ssr.resolve.external).toEqual(expect.arrayContaining(["@aws-sdk/client-s3", "@azure/storage-blob"]));
+    });
+
     it("resolves the app module to the project's app relative to the root", async () => {
         const config = await resolveSiteConfig();
 

@@ -1,4 +1,4 @@
-import { useContentScope } from "@dextinity/cms-admin";
+import { useContentScope, useUserPermissionCheck } from "@dextinity/cms-admin";
 import { createConfig } from "@src/config";
 import type { PropsWithChildren } from "react";
 import { useRouteMatch } from "react-router";
@@ -13,9 +13,10 @@ const config = createConfig();
 export function AdminAiModeProvider({ children }: PropsWithChildren) {
     const { match } = useContentScope();
     const pageTreeRouteMatch = useRouteMatch(`${match.path}/pages/pagetree`);
+    const isAllowed = useUserPermissionCheck();
 
     return (
-        <AiModeProvider isEnabled={isAiHubConfigured(config)} isAvailable={pageTreeRouteMatch !== null}>
+        <AiModeProvider isEnabled={isAiHubConfigured(config) && isAllowed("aiHub")} isAvailable={pageTreeRouteMatch !== null}>
             {children}
         </AiModeProvider>
     );

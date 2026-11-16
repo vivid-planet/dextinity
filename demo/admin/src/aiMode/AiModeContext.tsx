@@ -2,7 +2,7 @@ import { useStoredState } from "@dextinity/admin";
 import { createContext, type PropsWithChildren, useCallback, useContext, useMemo } from "react";
 
 type AiModeContextValue = {
-    /** Whether the AI Hub is configured, see `isAiHubConfigured`. */
+    /** Whether the AI Hub is configured, see `isAiHubConfigured`, and the user has the `aiHub` permission. */
     isEnabled: boolean;
     /** Whether the page that is open supports the AI Mode. For now, only the page tree does. */
     isAvailable: boolean;

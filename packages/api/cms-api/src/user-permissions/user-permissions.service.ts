@@ -154,6 +154,19 @@ export class UserPermissionsService {
         throw new Error("For this functionality you need to define `findUser` (or the deprecated `getUser`) in the userService.");
     }
 
+    async findUsersByIds(ids: string[]): Promise<Array<User | null>> {
+        if (this.userService?.findUsersByIds) {
+            const usersById = new Map<string, User>();
+            for (const user of await this.userService.findUsersByIds(ids)) {
+                if (user) {
+                    usersById.set(user.id, user);
+                }
+            }
+            return ids.map((id) => usersById.get(id) ?? null);
+        }
+        return Promise.all(ids.map((id) => this.findUser(id)));
+    }
+
     async findUsers(args: FindUsersArgs): Promise<[User[], number]> {
         if (!this.userService) {
             throw new Error("For this functionality you need to define the userService in the UserPermissionsModule.");
